@@ -1,27 +1,33 @@
 package main
 
 import (
+	"./serial"
+	"./settings"
+	"path/filepath"
+	"os"
 	"log"
-
-	"github.com/tarm/serial"
+	"fmt"
 )
 
+func run(dir string) {
+
+	s := settings.SettingsPtr()
+	s.Init(dir)
+
+	fmt.Printf("start node v%s\n", s.AppVresion())
+
+	serial.Init()
+}
+
 func main() {
-	c := &serial.Config{Name: "COM45", Baud: 115200}
-	s, err := serial.OpenPort(c)
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	n, err := s.Write([]byte("test"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	run(dir)
+}
 
-	buf := make([]byte, 128)
-	n, err = s.Read(buf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("%q", buf[:n])
+func init() {
+
 }
