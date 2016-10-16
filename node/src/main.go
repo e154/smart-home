@@ -1,33 +1,19 @@
 package main
 
 import (
-	"./serial"
 	"./settings"
-	"path/filepath"
-	"os"
-	"log"
+	"./serial"
 	"fmt"
+
 )
 
-func run(dir string) {
-
+func main() {
 	s := settings.SettingsPtr()
-	s.Init(dir)
+	s.Init()
 
 	fmt.Printf("start node v%s\n", s.AppVresion())
 
-	serial.Init()
-}
+	//fmt.Println(serial.LRC([]byte{1,3,0,0,0,5}))
 
-func main() {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	run(dir)
-}
-
-func init() {
-
+	serial.Run()
 }

@@ -1,84 +1,37 @@
 package serial
 
 import (
-	"log"
-	"bufio"
-	"os"
-
 	"github.com/tarm/serial"
-	"fmt"
-	"io/ioutil"
-	"strings"
-	"io"
+	"time"
 )
 
-const (
-	BAUD int = 9600
-	PORT string = "/dev/ttyUSB0"
-)
+type Serial struct {
+	Dev	string
+	Baud	int
+	ReadTimeout time.Duration
+	StopBits serial.StopBits
+	config	*serial.Config
+	Port	*serial.Port
+}
 
-var (
-	PORTS []string
-)
+func (s *Serial) Open() (*Serial, error) {
 
-func checkErr(err error) {
+	s.config = &serial.Config{Name: s.Dev, Baud: s.Baud, StopBits: s.StopBits, ReadTimeout: s.ReadTimeout}
 
+	var err error
+	s.Port, err = serial.OpenPort(s.config)
 	if err != nil {
-		log.Fatal(err.Error)
-		os.Exit(1)
-	}
-}
-
-func getBytes(buf *bufio.Reader, n int) []byte {
-	// Читаем n байт
-	bytes, err:= buf.Peek(n)
-	checkErr(err)
-	// Освобождаем n байт
-	//skipBytes(buf, n)
-	return bytes
-}
-
-
-
-func Init() {
-	c := &serial.Config{Name: PORT, Baud: BAUD, StopBits: serial.Stop2}
-	s, err := serial.OpenPort(c)
-	if err != nil {
-		log.Fatal(err)
+		return s, err
 	}
 
-	//n, err := s.Write([]byte("test"))
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
-	findSerials()
-
-	fmt.Println(PORTS)
-
-	r := bufio.NewReader(s)
-	//for {
-		buf := getBytes(r, 16)
-		fmt.Println(buf)
-	//}
-
+	return s, nil
 }
 
-func findSerials() {
-	contents, _ := ioutil.ReadDir("/dev")
+func (s *Serial) Close() (*Serial, error) {
 
-	for _, f := range contents {
-		if strings.Contains(f.Name(), "tty.usbserial") ||
-			strings.Contains(f.Name(), "ttyS") ||
-			strings.Contains(f.Name(), "ttyUSB") {
-			PORTS = append(PORTS, "/dev/" + f.Name())
-		}
+	if s.Port != nil {
+		return s, s.Port.Close()
 	}
 
-}
-
-func sendCommand(command byte, argument float32, serialPort io.ReadWriteCloser) error {
-
-
-	return nil
+	return s, nil
 }

@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"strconv"
 	"io/ioutil"
+	"path/filepath"
+	"log"
 )
 
 const (
@@ -38,10 +40,15 @@ type Settings struct {
 	dir		string
 }
 
-func (s *Settings) Init(path string) *Settings {
+func (s *Settings) Init() *Settings {
+
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	s.StartTime = time.Now()
-	s.dir = fmt.Sprintf("%s/", path)
+	s.dir = fmt.Sprintf("%s/", dir)
 	s.IP = "127.0.0.1"
 	s.Port = 8888
 
