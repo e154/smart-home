@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"bytes"
+	"errors"
 )
 
 const (
@@ -202,23 +203,23 @@ func (m *Modbus) checkError(buf []byte) error {
 	var err error
 	switch errCode {
 	case ILLEGAL_FUNCTION:
-		err = fmt.Errorf("ILLEGAL_FUNCTION")
+		err = errors.New("ILLEGAL_FUNCTION")
 	case ILLEGAL_DATA_ADDRESS:
-		err = fmt.Errorf("ILLEGAL_DATA_ADDRESS")
+		err = errors.New("ILLEGAL_DATA_ADDRESS")
 	case ILLEGAL_DATA_VALUE:
-		err = fmt.Errorf("ILLEGAL_DATA_VALUE")
+		err = errors.New("ILLEGAL_DATA_VALUE")
 	case SLAVE_DEVICE_FAILURE:
-		err = fmt.Errorf("SLAVE_DEVICE_FAILURE")
+		err = errors.New("SLAVE_DEVICE_FAILURE")
 	case ACKNOWLEDGE:
-		err = fmt.Errorf("ACKNOWLEDGE")
+		err = errors.New("ACKNOWLEDGE")
 	case SLAVE_DEVICE_BUSY:
-		err = fmt.Errorf("SLAVE_DEVICE_BUSY")
+		err = errors.New("SLAVE_DEVICE_BUSY")
 	case NEGATIVE_ACKNOWLEDGE:
-		err = fmt.Errorf("NEGATIVE_ACKNOWLEDGE")
+		err = errors.New("NEGATIVE_ACKNOWLEDGE")
 	case MEMORY_PARITY_ERROR:
-		err = fmt.Errorf("MEMORY_PARITY_ERROR")
+		err = errors.New("MEMORY_PARITY_ERROR")
 	case ILLEGAL_LRC:
-		err = fmt.Errorf("ILLEGAL_LRC")
+		err = errors.New("ILLEGAL_LRC")
 	}
 
 	return err
