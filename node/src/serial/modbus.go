@@ -7,6 +7,18 @@ import (
 )
 
 const (
+	ILLEGAL_FUNCTION uint8 = iota + 1
+	ILLEGAL_DATA_ADDRESS
+	ILLEGAL_DATA_VALUE
+	SLAVE_DEVICE_FAILURE
+	ACKNOWLEDGE
+	SLAVE_DEVICE_BUSY
+	NEGATIVE_ACKNOWLEDGE
+	MEMORY_PARITY_ERROR
+	ILLEGAL_LRC
+)
+
+const (
 	STATE_RX_IDLE uint8 = iota
 	STATE_RX_RCV
 	STATE_RX_WAIT_EOF
@@ -15,10 +27,6 @@ const (
 const (
 	BYTE_HIGH_NIBBLE uint8 = iota
 	BYTE_LOW_NIBBLE
-)
-
-const (
-	hexTable = "0123456789ABCDEF"
 )
 
 type Modbus struct {
@@ -69,8 +77,7 @@ func (m *Modbus) Send(data []byte) (result []byte, err error) {
 
 func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
 
-	fmt.Print(string(b))
-
+	//fmt.Print(string(b))
 	switch m.rcvState {
 	case STATE_RX_RCV:
 		if( b == ':' ) {
@@ -79,6 +86,7 @@ func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
 		} else if( b == '\r' ) {
 			m.rcvState = STATE_RX_WAIT_EOF;
 		} else {
+			b = m.char2bin(b)
 			switch m.rcvBytePos {
 			case BYTE_HIGH_NIBBLE:
 				m.rcvBuf = append(m.rcvBuf, b<<4)
@@ -91,7 +99,9 @@ func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
 	case STATE_RX_WAIT_EOF:
 		if (b == '\n') {
 			m.rcvState = STATE_RX_IDLE
-			return m.rcvBuf, nil
+			fmt.Printf("receive <- %X\r\n", m.rcvBuf) //TODO remove
+
+			return m.rcvBuf, m.checkError(m.rcvBuf)
 		} else if (b == ':') {
 			m.rcvBytePos = BYTE_HIGH_NIBBLE;
 			m.rcvState = STATE_RX_RCV;
@@ -138,7 +148,7 @@ func (m *Modbus) asciiTransmit(data []byte) error {
 		}
 	}
 
-	//fmt.Printf("%X\r\n", buf)
+	fmt.Printf("send -> %X\r\n", m.trcBuff.Bytes()) //TODO remove
 
 	_, err := m.serial.Port.Write(m.trcBuff.Bytes())
 	if err != nil {
@@ -152,24 +162,64 @@ func (m *Modbus) Device(address byte) *Device {
 	return &Device{address: address, modbus: m}
 }
 
-func (m *Modbus) bin2char(buf *bytes.Buffer, b byte) error {
+func (m *Modbus) bin2char(b byte) byte {
 
-	var h [2]byte
-	h[0] = hexTable[b>>4]
-	h[1] = hexTable[b&0xf]
-
-	if _, err := buf.Write(h[:]); err != nil {
-		return err
+	if( b <= 0x09 ) {
+		return byte( '0' + b )
+	} else if( ( b >= 0x0A ) && ( b <= 0x0F ) ) {
+		return byte( b - 0x0A + 'A' )
 	}
 
-	return nil
+	return '0'
 }
 
 func (m *Modbus) char2bin(b byte) byte {
 
-	return b
+	if( b >= '0' ) && ( b <= '9' ) {
+		return byte( b - '0' )
+	} else if( ( b >= 'A' ) && ( b <= 'F' ) ) {
+		return byte( b - 'A' + 0x0A )
+	}
+
+	return 0xFF
 }
 
-func (m *Modbus) error() {
+func (m *Modbus) checkError(buf []byte) error {
 
+	var errCode uint8
+
+	// check lrc
+	if ( LRC(buf[0:len(buf) - 1]) != buf[len(buf) - 1] ) {
+		errCode = ILLEGAL_LRC
+	}
+
+	// check error bite
+	if ( buf[1] & (1<<7) != 0 ) {
+		errCode = buf[2]
+	}
+
+	// convert error code
+	var err error
+	switch errCode {
+	case ILLEGAL_FUNCTION:
+		err = fmt.Errorf("ILLEGAL_FUNCTION")
+	case ILLEGAL_DATA_ADDRESS:
+		err = fmt.Errorf("ILLEGAL_DATA_ADDRESS")
+	case ILLEGAL_DATA_VALUE:
+		err = fmt.Errorf("ILLEGAL_DATA_VALUE")
+	case SLAVE_DEVICE_FAILURE:
+		err = fmt.Errorf("SLAVE_DEVICE_FAILURE")
+	case ACKNOWLEDGE:
+		err = fmt.Errorf("ACKNOWLEDGE")
+	case SLAVE_DEVICE_BUSY:
+		err = fmt.Errorf("SLAVE_DEVICE_BUSY")
+	case NEGATIVE_ACKNOWLEDGE:
+		err = fmt.Errorf("NEGATIVE_ACKNOWLEDGE")
+	case MEMORY_PARITY_ERROR:
+		err = fmt.Errorf("MEMORY_PARITY_ERROR")
+	case ILLEGAL_LRC:
+		err = fmt.Errorf("ILLEGAL_LRC")
+	}
+
+	return err
 }
