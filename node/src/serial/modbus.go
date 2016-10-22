@@ -62,12 +62,11 @@ func (m *Modbus) Send(data []byte) (result []byte, err error) {
 
 		result, err = m.asciiReceiveFSM(b)
 		if err != nil {
-			return result, err
+			return nil, err
 			break
 		}
 
 		if m.rcvState == STATE_RX_IDLE {
-			result = m.rcvBuf
 			break
 		}
 
@@ -101,8 +100,8 @@ func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
 		if (b == '\n') {
 			m.rcvState = STATE_RX_IDLE
 			fmt.Printf("receive <- %X\r\n", m.rcvBuf) //TODO remove
+			return m.rcvBuf[2:len(m.rcvBuf) - 1], m.checkError(m.rcvBuf)
 
-			return m.rcvBuf, m.checkError(m.rcvBuf)
 		} else if (b == ':') {
 			m.rcvBytePos = BYTE_HIGH_NIBBLE;
 			m.rcvState = STATE_RX_RCV;
@@ -128,7 +127,6 @@ func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
 // 1 - \n		u08
 func (m *Modbus) asciiTransmit(data []byte) error {
 
-//TODO add decoder
 	if m.trcBuff != nil {
 		m.trcBuff.Reset()
 	}
@@ -137,8 +135,8 @@ func (m *Modbus) asciiTransmit(data []byte) error {
 	m.trcBuff.WriteByte(':')
 
 	for _, d := range data {
-		m.trcBuff.WriteByte(HI(d))
-		m.trcBuff.WriteByte(LOW(d))
+		m.trcBuff.WriteByte(m.bin2char(HI(d)))
+		m.trcBuff.WriteByte(m.bin2char(LOW(d)))
 	}
 
 	m.trcBuff.Write([]byte{'\r', '\n'})
@@ -149,7 +147,7 @@ func (m *Modbus) asciiTransmit(data []byte) error {
 		}
 	}
 
-	fmt.Printf("send -> %X\r\n", m.trcBuff.Bytes()) //TODO remove
+	fmt.Printf("send -> %X\r\n", m.trcBuff.Bytes()) //TODO comment
 
 	_, err := m.serial.Port.Write(m.trcBuff.Bytes())
 	if err != nil {

@@ -23,7 +23,7 @@ func FindSerials() {
 }
 
 func HI(b byte) (byte) {
-	return b >> 4
+	return (b >> 8) & 0xFF
 }
 
 func LOW(b byte) (byte) {
