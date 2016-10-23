@@ -1,4 +1,3 @@
-/bin
 # Created by .ignore support plugin (hsz.mobi)
 ### CMake template
 CMakeCache.txt
@@ -72,3 +71,12 @@ install_manifest.txt
 
 .idea
 /vendor/
+/public
+src/static_source/fonts
+src/static_source/tmp
+src/node_modules
+src/static_source/css
+src/static_source/js
+src/static_source/bower_components
+.idea
+src/src
