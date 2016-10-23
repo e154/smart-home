@@ -27,7 +27,8 @@ func (m *Node_20161022_194424) Up() {
 	description Text NOT NULL,
 	created_at DateTime NOT NULL,
 	update_at DateTime NOT NULL,
-	CONSTRAINT unique_id UNIQUE( id ) )
+	CONSTRAINT unique_id UNIQUE( id ),
+	CONSTRAINT node UNIQUE( port, ip ) )
 	ENGINE = InnoDB
 	AUTO_INCREMENT = 1;`)
 }

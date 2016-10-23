@@ -10,7 +10,8 @@ function do_init() {
 	npm install
 	sudo ln -sr /usr/bin/nodejs  /usr/bin/node
 	bower install
-	ln -sr src/static_source/bower_components/bootstrap/fonts/ src/static_source/fonts
+#	ln -sr src/static_source/bower_components/bootstrap/fonts/ src/static_source/fonts
+    ln -sr src/static_source/bower_components/font-awesome/fonts/ src/static_source/fonts
 	gulp
 }
 

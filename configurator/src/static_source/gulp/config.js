@@ -51,15 +51,15 @@ module.exports = {
         ]
     },
     build_haml: {
-        source: 'static_source/templates/**/*.haml',
+        source: 'static_source/app/**/*.haml',
         tmp: 'static_source/tmp/templates',
         watch: [
-            "static_source/templates/**/*.haml"
+            "static_source/app/**/*.haml"
         ]
     },
     build_templates: {
         filename: "templates.min.js",
-        prefix: '/templates/',
+        prefix: '/',
         source: 'static_source/tmp/templates/**/*.html',
         watch: [
             'static_source/tmp/templates/**/*'

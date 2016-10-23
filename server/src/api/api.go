@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"time"
+	"github.com/astaxie/beego/plugins/cors"
 	_ "github.com/astaxie/beego/session/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego"
@@ -44,4 +45,16 @@ func Initialize() {
 
 	// register access filters
 	filters.RegisterFilters()
+
+	// CORS for https://foo.* origins, allowing:
+	// - PUT and PATCH methods
+	// - Origin header
+	// - Credentials share
+	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
+		AllowOrigins:     []string{"http://*", "https://*"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 }
