@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="app" ng-controller="BaseCtrl as base">
+<html lang="en" ng-app="app">
 <head>
     {{{template "default/header.tpl.html" .}}}
 </head>
@@ -10,6 +10,6 @@
 {{{safeHtml "<!-- app:js -->"}}}{{{if .Scripts}}}{{{range $script := .Scripts}}}
 <script src="{{{$script}}}"></script>{{{end}}}{{{end}}}
 
-<toaster-container></toaster-container>
+<toaster-container toaster-options="{'close-button': false}"></toaster-container>
 </body>
 </html>

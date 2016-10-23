@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"html/template"
 )
 
 type BaseController struct {
@@ -23,6 +24,8 @@ func (b *BaseController) Prepare() {
 		"/static/css/lib.min.css",
 		"/static/css/app.min.css",
 	}
+
+	b.Data["xsrf_token"] = template.HTML(b.XSRFToken())
 
 	// get user role
 	// -------------------------------

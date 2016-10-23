@@ -3,6 +3,10 @@ var gulp = require('gulp'),
     config = require('../config').webserver;
 
 gulp.task('webserver', function() {
+    if (!config.enabled){
+        return;
+    }
+
     connect.server({
         root: config.root,
         livereload: config.livereload,
@@ -14,6 +18,10 @@ gulp.task('webserver', function() {
 });
 
 gulp.task('webserver_reload', function () {
+    if (!config.enabled){
+        return;
+    }
+
     gulp.src(config.watch)
         .pipe(connect.reload());
 });

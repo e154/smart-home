@@ -9,9 +9,8 @@ type DashboardController struct {
 }
 
 func (h *DashboardController) Index() {
-
-	h.Layout = h.GetTemplate() + "/frontend/base.tpl.html"
-	h.TplName = h.GetTemplate() + "/frontend/index.tpl.html"
+	h.Layout = h.GetTemplate() + "/base.tpl.html"
+	h.TplName = h.GetTemplate() + "/index.tpl.html"
 	beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
 	h.Render()
 }

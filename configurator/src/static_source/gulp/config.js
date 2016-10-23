@@ -1,5 +1,4 @@
 var source = "static_source";
-var pub = "public";
 var tmp = "tmp";
 
 module.exports = {
@@ -16,10 +15,7 @@ module.exports = {
         filename: 'app.min.js',
         source: [
             source + "/app/app.coffee",
-            source + "/app/*.coffee",
-            source + "/app/services/**/*.coffee",
-            source + "/app/directives/**/*.coffee",
-            source + "/app/controllers/**/*.coffee"
+            source + "/app/**/*.coffee"
         ],
         watch: source + "/app/**/*.coffee",
         dest: source + '/js'
@@ -45,6 +41,7 @@ module.exports = {
     },
     webserver: {
         root: [ source + '/templates', source],
+        enabled: false,
         livereload: true,
         port: 8088,
         fallback: 'static_source/index.html',
@@ -63,7 +60,7 @@ module.exports = {
     build_templates: {
         filename: "templates.min.js",
         prefix: '/templates/',
-        source: 'static_source/tmp/templates/**/*',
+        source: 'static_source/tmp/templates/**/*.html',
         watch: [
             'static_source/tmp/templates/**/*'
         ],
