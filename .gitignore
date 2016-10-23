@@ -72,3 +72,4 @@ install_manifest.txt
 
 .idea
 /vendor/
+.git
