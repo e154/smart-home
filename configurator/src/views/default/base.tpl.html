@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app" ng-controller="BaseCtrl as base">
+<head>
+    {{{template "default/header.tpl.html" .}}}
+</head>
+<body>
+
+{{{.LayoutContent}}}
+
+{{{safeHtml "<!-- app:js -->"}}}{{{if .Scripts}}}{{{range $script := .Scripts}}}
+<script src="{{{$script}}}"></script>{{{end}}}{{{end}}}
+
+<toaster-container></toaster-container>
+</body>
+</html>

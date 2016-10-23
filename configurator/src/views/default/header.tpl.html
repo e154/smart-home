@@ -1,0 +1,24 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Delta54 <support@e154.ru>">
+<meta name="_xsrf" content="{{{.xsrf_token}}}" />
+
+{{{safeHtml "<!-- app:css -->"}}}{{{if .Styles}}}{{{range $style := .Styles}}}
+<link rel="stylesheet" href="{{{$style}}}">{{{end}}}{{{end}}}
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/attach/images/logo/apple-touch-icon-144x144-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/attach/images/logo/apple-touch-icon-114x114-precomposed.png" />
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/attach/images/logo/apple-touch-icon-72x72-precomposed.png" />
+<link rel="apple-touch-icon-precomposed" href="/attach/images/logo/apple-touch-icon-57x57-precomposed.png" />
+<link itemprop="logo" href="/attach/images/logo/logo.png" />
+<link rel="logo" href="/attach/images/logo/logo.png" />
+<link rel="shortcut icon" type="image/png" href="/attach/images/logo/favicon.png" />
+
+<script type="text/javascript">
+{{{safeJs "/*<![CDATA[*/"}}}
+    var authorized={{{.authorized}}};{{{if .domen}}}
+{{{safeJs "/*]]>*/"}}}
+</script>
+
+<title>{{{.Title}}}</title>
