@@ -54,7 +54,7 @@ angular
     )
 
     .state(
-      name: "dashboard.node_edit"
+      name: "dashboard.node.edit"
       url: "/:id/edit"
       templateUrl: '/node/templates/node.edit.html'
       controller: 'nodeEditCtrl as node'

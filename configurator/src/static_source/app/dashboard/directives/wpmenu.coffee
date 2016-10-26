@@ -35,6 +35,8 @@ angular
       link: ($scope, $element, $attrs) ->
 
         menu_storage = new storage('main_menu')
+
+
         MainMenu =
           minimized: false
           init: ->

@@ -20,7 +20,7 @@ angular
         width: '48%'
         clickCallback: ($event, item)->
           $event.preventDefault()
-          $state.go('dashboard.node_show', {id: item.id})
+          $state.go('dashboard.node.show', {id: item.id})
           false
       }
       {

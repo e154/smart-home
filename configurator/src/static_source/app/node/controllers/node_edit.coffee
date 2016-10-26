@@ -9,7 +9,7 @@ angular
 
   vm.submit =->
     success =(data)->
-      $state.go("dashboard.node_show", {id: data.id})
+      $state.go("dashboard.node.show", {id: data.id})
 
     error =(result)->
       Message result.data.status, result.data.message
