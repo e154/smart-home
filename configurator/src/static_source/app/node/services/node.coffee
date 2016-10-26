@@ -1,26 +1,25 @@
 angular
 .module('appServices')
-.factory 'Node', ['$resource'
-($resource) ->
+.factory 'Node', ['$resource', ($resource) ->
   $resource window.server_url + '/api/v1/node/:id', {id: '@id'},
-    get:
+    show:
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
-        data.nodes
+        data.node
 
-    post:
+    create:
       method: 'POST'
       responseType: 'json'
 
-    put:
+    update:
         method: 'PUT'
 
     delete:
       method: 'DELETE'
 
     all:
-      method: 'POST'
+      method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
         meta: data.meta

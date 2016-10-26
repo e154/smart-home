@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/astaxie/beego/plugins/cors"
+	"github.com/astaxie/beego/validation"
 	_ "github.com/astaxie/beego/session/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego"
@@ -52,9 +53,32 @@ func Initialize() {
 	// - Credentials share
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
 		AllowOrigins:     []string{"http://*", "https://*"},
-		AllowMethods:     []string{"PUT", "PATCH", "GET"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS"},
+		//AllowHeaders:     []string{"Origin"},
+		//ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
+
+	validation.SetDefaultMessage(map[string]string{
+		"Required":     "Должно быть заполнено",
+		"Min":          "Минимально допустимое значение %d",
+		"Max":          "Максимально допустимое значение %d",
+		"Range":        "Должно быть в диапазоне от %d до %d",
+		"MinSize":      "Минимально допустимая длина %d",
+		"MaxSize":      "Максимально допустимая длина %d",
+		"Length":       "Длина должна быть равна %d",
+		"Alpha":        "Должно состоять из букв",
+		"Numeric":      "Должно состоять из цифр",
+		"AlphaNumeric": "Должно состоять из букв или цифр",
+		"Match":        "Должно совпадать с %s",
+		"NoMatch":      "Не должно совпадать с %s",
+		"AlphaDash":    "Должно состоять из букв, цифр или символов (-_)",
+		"Email":        "Должно быть в правильном формате email",
+		"IP":           "Должен быть правильный IP адрес",
+		"Base64":       "Должно быть представлено в правильном формате base64",
+		"Mobile":       "Должно быть правильным номером мобильного телефона",
+		"Tel":          "Должно быть правильным номером телефона",
+		"Phone":        "Должно быть правильным номером телефона или мобильного телефона",
+		"ZipCode":      "Должно быть правильным почтовым индексом",
+	})
 }

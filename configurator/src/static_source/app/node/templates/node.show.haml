@@ -1,1 +1,31 @@
-show
+.row
+  .col-md-6
+    %h3 Нода №{{node.node.id}}
+      .edit-icon-link
+        %a(ui-sref="dashboard.node_edit({id:node.node.id})")
+          %span.fa.fa-pencil
+
+    .pull-right.date-info-block
+      %small
+        Создано {{node.node.created_at | readableDateTime}}
+      %small
+        Редактировалось {{node.node.update_at | readableDateTime}}
+
+.row
+  .col-md-6
+    .form-group
+      .text-muted
+        {{'node.name' | translate}}
+      %div
+        {{::node.node.name}}
+    .form-group
+      .text-muted
+        {{'node.ip' | translate}}
+      %div
+        {{::node.node.ip}}:{{::node.node.port}}
+
+    .form-group(ng-if="node.node.description")
+      .text-muted
+        {{'node.description' | translate}}
+      %div
+        {{::node.node.description}}

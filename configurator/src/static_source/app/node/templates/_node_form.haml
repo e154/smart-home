@@ -1,7 +1,16 @@
 .form-group
-    %laber {{'node.name' | translate}}
+    %laber {{'node.name' | translate}}*
     %input.form-control(ng-model="node.node.name")
 
 .form-group
+    %laber {{'node.ip' | translate}}*
+    %input.form-control(ng-model="node.node.ip")
+
+.form-group
+    %laber {{'node.port' | translate}}*
+    %input.form-control(ng-model="node.node.port" type="number")
+
+.form-group
     %laber {{'node.description' | translate}}
-    %input.form-control(ng-model="node.node.description")
+    %textarea.form-control(ng-model="node.node.description" rows="10" )
+

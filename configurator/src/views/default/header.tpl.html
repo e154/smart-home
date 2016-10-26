@@ -18,6 +18,9 @@
 <link rel="shortcut icon" type="image/ico" href="/static/images/logo/favicon.ico" />
 
 <script type="text/javascript">
+{{{if .server_url}}}
+window.server_url={{{.server_url}}};
+{{{end}}}
 </script>
 
 <title>Конфигуатор</title>

@@ -15,15 +15,16 @@ angular
       {
         'label': 'Nodes'
         'route': 'dashboard.node'
+        'link': 'dashboard.node.index'
         'icon': 'fa fa-sitemap'
         'items': [
           {
             'label': 'All nodes'
-            'route': 'dashboard.node'
+            'route': 'dashboard.node.index'
           }
           {
             'label': 'Add new'
-            'route': 'dashboard.node_new'
+            'route': 'dashboard.node.new'
           }
         ]
       }

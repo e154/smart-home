@@ -8,16 +8,22 @@ import (
 
 	"github.com/astaxie/beego/orm"
 	"time"
+	"github.com/astaxie/beego/validation"
+	"github.com/astaxie/beego"
 )
 
 type Node struct {
 	Id    		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Name 		string 		`orm:"size(128)" json:"name"`
-	Port 		int 		`orm:"" json:"port"`
+	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
+	Ip		string		`orm:"size(128)" json:"ip" valid:"IP;Required"`			// Must be a valid IPv4 address
+	Port 		int 		`orm:"" json:"port" valid:"Range(1, 65535);Required"`
 	Description 	string 		`orm:"type(longtext)" json:"description"`
-	Ip		string		`orm:"size(128)" json:"ip"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+}
+
+func (m *Node) TableName() string {
+	return beego.AppConfig.String("db_node")
 }
 
 func init() {
@@ -153,5 +159,20 @@ func DeleteNode(id int64) (err error) {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
+	return
+}
+
+func (n *Node) Valid(v *validation.Validation)  {
+
+	o := orm.NewOrm()
+	nn := Node{Ip: n.Ip, Port: n.Port}
+	o.Read(&nn, "Ip", "Port")
+
+	if nn.Id != 0 {
+		v.SetError("ip", "Not unique")
+		v.SetError("port", "Not unique")
+		return
+	}
+
 	return
 }

@@ -3,6 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"../models"
+	"fmt"
+	"github.com/astaxie/beego/validation"
 )
 
 // NodeController operations for Node
@@ -30,6 +32,25 @@ func (c *NodeController) URLMapping() {
 func (c *NodeController) Post() {
 	var node models.Node
 	json.Unmarshal(c.Ctx.Input.RequestBody, &node)
+
+	// validation
+	valid := validation.Validation{}
+	b, err := valid.Valid(&node)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if !b {
+		var msg string
+		for _, err := range valid.Errors {
+			msg += fmt.Sprintf("%s: %s\r", err.Key, err.Message)
+		}
+		c.ErrHan(403, msg)
+		return
+	}
+	//....
+
 	nid, err := models.AddNode(&node)
 	if err != nil {
 		c.ErrHan(403, err.Error())

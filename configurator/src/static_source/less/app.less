@@ -2,6 +2,7 @@
 
 @import "notify";
 @import "wpmenu";
+@import "wpmenu-theme";
 
 html,
 body {
@@ -10,33 +11,62 @@ body {
   font-size: 13px;
 }
 
-#wrap {
-  min-height: 100%;
-  height: 100% !important;
-  margin: 0 auto;
-}
-
 #main-content {
   height: auto;
   min-height: 100% !important;
-}
 
-.mainbar {
-  height: 100%;
-  padding: 15px;
-  background: #fbfcff;
-}
+  .navbar {
+    margin-bottom: 0;
+  }
 
-#main-content {
-  background-color: #474f57;
-}
-
-.navbar {
-  margin-bottom: 0;
-}
+  .sidebar {
+    top: 50px;
+    z-index: 12;
+  }
+  .main-body-wrapper {
+    position: fixed;
+    overflow: auto;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    .main-body {
+      overflow: auto;
+      height: 100%;
+      padding: 15px;
+      background: #fbfcff;
+    }
+  }
+}//#main-content
 
 .btn {
   + .btn {
     margin-left: 15px;
+  }
+}
+
+.date-info-block {
+  small {
+    &:first-child {
+      background-color: #dadbde;
+      padding: 5px 13px;
+    }
+
+    + small {
+      padding-left: 10px;
+    }
+  }
+}
+
+.edit-icon-link {
+  display: inline-block;
+  font-size: 0.7em;
+  padding: 0 0 0 10px;
+  line-height: 1.3;
+  a {
+    color: #999;
+    &:hover {
+      color: #565656;
+    }
   }
 }

@@ -1,6 +1,6 @@
 @color_1: #fff;
 @color_2: #777;
-@color_3: #565656;
+@color_3: #d4d4d4;
 @color_4: #999;
 @color_5: #bbb;
 @color_6: #c5ced6;
@@ -8,60 +8,18 @@
 
 @min-width: 50px;
 @max-width: 190px;
-@child-width: @max-width - @min-width;
+
 
 #main-content.enlarged {
   .sidebar {
-    width: @min-width;
-    .navbar-form {
-      padding: 10px 7px;
-      &:hover {
-        width: @max-width;
-        position: relative;
-        z-index: 100;
-      }
-      .search-button {
-        right: 7px;
-      }
-    }
     #nav {
       >li {
-        white-space: nowrap;
-        position: relative;
-        >ul {
-          display: none;
-        }
         &:hover {
           >ul {
-            position: absolute;
-            left: @min-width;
-            width: @child-width;
-            display: block;
             a {
               background: #2e3338;
-              padding-left: 10px;
               border: none;
-              box-shadow: none;
-              position: relative;
             }
-          }
-          >a {
-            width: @max-width;
-            position: relative;
-            span {
-              display: inline;
-            }
-            span.pull-right {
-              position: absolute;
-              right: 10px;
-              top: 7px;
-            }
-          }
-        }
-        >a {
-          span {
-            display: none;
-            padding-left: 10px;
           }
         }
       }
@@ -76,98 +34,44 @@
                 color: @color_1;
               }
             }
-            >ul {
-              position: absolute;
-              left: @child-width;
-              margin-top: -32px;
-              width: @child-width;
-              display: block;
-            }
-          }
-          >a {
-            span.pull-right {
-              position: absolute;
-              right: 5px;
-              top: 5px;
-            }
           }
         }
       }
     }
   }
-  .main-body {
-    margin-left: @min-width;
-  }
 }
 .sidebar {
-  width: @max-width;
-  float: left;
-  display: block;
   color: @color_2;
-  position: fixed;
   background-color: #474f57;
-  bottom: 0;
-  left: 0;
-  top: 0;
-
   .sidebar-dropdown {
-    display: none;
     a {
       color: @color_1 !important;
       box-shadow: inset 0 0 1px #000;
       background-color: #3d3d3d;
-      padding: 6px;
-      text-transform: uppercase;
-      text-align: center;
-      font-size: 11px;
-      display: block;
       border-top: 2px solid #666;
       border-bottom: 1px solid #333;
     }
   }
-  ul {
-    padding: 0;
-    margin: 0;
-    li {
-      list-style-type: none;
-    }
-  }
   #nav {
-    display: block;
-    width: 100%;
-    margin: 0 auto;
-    position: relative;
-    z-index: 50;
     li {
       i {
-        display: inline-block;
-        margin-right: 10px;
-        margin-left: 5px;
-        font-size: 17px;
         color: @color_3;
-        width: 20px;
-        line-height: 20px;
-        text-align: center;
       }
       span {
         i {
-          margin: 0;
           color: @color_4;
-          font-size: 12px !important;
           text-shadow: 0 -1px 1px rgba(0,0,0,0.5);
           background: transparent !important;
           border: 0;
         }
       }
       ul {
-        display: none;
         background: #efefef;
         li {
           a {
-            display: block;
+
             background: #2e3338;
-            padding: 5px 10px 5px 20px;
-            text-decoration: none;
+
             color: @color_5;
             border-bottom: 1px solid #2e3338;
             box-shadow: inset 0 1px 0 rgba(0,0,0,0.1);
@@ -187,12 +91,9 @@
     }
     >li {
       >a {
-        display: block;
-        padding: 10px 10px;
-        font-size: 13px;
+
         color: @color_6;
         text-shadow: 0 1px 1px rgba(0,0,0,0.6);
-        text-decoration: none;
         border-top: 1px solid #515a63;
         border-bottom: 1px solid #424a52;
         background-color: #474f57;
@@ -254,27 +155,7 @@
       }
     }
     .has_sub {
-      ul {
-        i {
-          font-size: 14px;
-          width: 16px;
-          margin-left: 0;
-          margin-right: 6px;
-        }
-      }
       .has_sub {
-        ul {
-          a {
-            padding-left: 40px;
-          }
-        }
-        .has_sub {
-          ul {
-            a {
-              padding-left: 60px;
-            }
-          }
-        }
         a.subdrop {
           background: #59646e;
           color: @color_1;
@@ -287,31 +168,66 @@
     }
   }
 }
-.sidebar-widget {
-  padding: 10px 4px;
+
+#nav {
+  >li {
+    .glow {
+      position: absolute;
+      height: 40px;
+      width: 5px;
+      -webkit-transition: box-shadow 0.3s;
+      -moz-transition: box-shadow 0.3s;
+      -o-transition: box-shadow 0.3s;
+      transition: box-shadow 0.3s;
+      background: #1f2b42;
+      -webkit-box-shadow: 0 0 2px 1px #434d59 inset;
+      -moz-box-shadow: 0 0 2px 1px #434d59 inset;
+      box-shadow: 0 0 2px 1px #434d59 inset;
+      margin-top: 2px;
+      z-index: 100;
+    }
+    &:hover {
+      .glow {
+        background: #4291a6;
+        -webkit-box-shadow: 0 0 2px 1px #7bc8d7 inset;
+        -moz-box-shadow: 0 0 2px 1px #7bc8d7 inset;
+        box-shadow: 0 0 2px 1px #7bc8d7 inset;
+      }
+    }
+  }
+  >li.active {
+    .glow {
+      background: #4291a6;
+      -webkit-box-shadow: 0 0 2px 1px #7bc8d7 inset;
+      -moz-box-shadow: 0 0 2px 1px #7bc8d7 inset;
+      box-shadow: 0 0 2px 1px #7bc8d7 inset;
+    }
+  }
 }
-.main-body {
-  position: relative;
-  margin-left: @max-width;
-  margin-right: 0;
-  width: auto;
-  background: #eeeff2;
-  z-index: 1;
+.active {
+  .glow {
+    &:after {
+      content: "";
+      border-radius: 50%;
+      position: absolute;
+      top: 20px;
+      width: 0;
+      height: 0;
+      left: 8px;
+      -webkit-box-shadow: -10px 0 15px 23px rgba(122,171,216,0.15);
+      -moz-box-shadow: -10px 0 15px 23px rgba(122,171,216,0.15);
+      box-shadow: -10px 0 15px 23px rgba(122,171,216,0.15);
+      background: rgba(124,190,215,0.2);
+    }
+  }
 }
 .menu-toggle {
-  position: relative;
-  z-index: 12;
-  width: 50px;
-  height: 50px;
   a.menubutton {
     cursor: pointer;
-    color: @color_3;
+    color: #565656;
     &:hover {
       color: #2f2f2f;
     }
-    i.fa.fa-bars {
-      font-size: 20px;
-      padding: 15px;
-    }
+
   }
 }

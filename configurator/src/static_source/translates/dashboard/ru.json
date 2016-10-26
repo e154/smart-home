@@ -3,16 +3,18 @@
   "Submit": "Применить",
   "Save": "Сохранить",
   "Create": "Создать",
-
-  "node": {
-    "name": "Название",
-    "description": "Описание",
-    "ip": "ip"
-  },
+  "Update": "Обновить",
   "Configurator": "Конфигуратор",
   "Nodes": "Узлы",
   "All nodes": "Все узлы",
   "Add new": " Добавить",
   "Main Menu": "Главное меню",
-  "Dashboard": "Панель управления"
+  "Dashboard": "Панель управления",
+  "node": {
+    "name": "Название",
+    "description": "Описание",
+    "ip": "Адрес",
+    "port": "Порт",
+    "total items": "всего"
+  }
 }

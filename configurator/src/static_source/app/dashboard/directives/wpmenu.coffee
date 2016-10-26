@@ -13,9 +13,9 @@ angular
       template: '<!--- Sidebar navigation -->
         <script type="text/ng-template" id="categoryTree">
           <ul>
-            <li ng-repeat="item in item.items" ui-sref-active="open" ng-class="{has_sub: item.items.length}">
-              <a ui-sref="{{item.route}}"><i ng-if="item.icon" ng-class=[item.icon]></i><span translate="{{item.label}}"></span>
-                <span ng-if="item.items.length" class="pull-right"><i class="fa fa-chevron-left"></i></span>
+            <li ng-repeat="item in item.items" ng-class="{open: (item.route | includedByState), has_sub: item.items.length}">
+              <a ui-sref="{{item.route}}" ui-sref-active="active"><i ng-if="item.icon" ng-class=[item.icon]></i><span translate="{{item.label}}"></span>
+                <span ng-if="item.items.length" class="pull-right"><i class="fa" ng-class="(item.route | includedByState) ? \'fa-chevron-down\' : \'fa-chevron-left\'"></i></span>
               </a>
               <div ng-if="item.items" ng-include src="\'categoryTree\'" include-replace></div>
             </li>
@@ -24,10 +24,10 @@ angular
         <!-- If the main navigation has sub navigation, then add the class "has_sub" to "li" of main navigation. -->
         <ul id="nav">
           <!-- Main menu with font awesome icon -->
-          <li ng-repeat="item in wpmenu.items" ui-sref-active="open" ng-class="{ has_sub: item.items.length}">
+          <li ng-repeat="item in wpmenu.items" ng-class="{active: (item.route | includedByState), has_sub: item.items.length}">
               <span class="glow"></span>
-              <a ui-sref="{{item.route}}" ui-sref-active="open" ng-class="{has_sub: item.items}"><i ng-class=[item.icon]></i><span translate="{{item.label}}"></span>
-                <span ng-if="item.items.length" class="pull-right"><i class="fa fa-chevron-left"></i></span>
+              <a ui-sref="{{item.link || item.route}}" ng-class="{has_sub: item.items}"><i ng-class=[item.icon]></i><span translate="{{item.label}}"></span>
+                <span ng-if="item.items.length" class="pull-right"><i class="fa" ng-class="(item.route | includedByState) ? \'fa-chevron-down\' : \'fa-chevron-left\'"></i></span>
               </a>
               <div ng-if="item.items" ng-include src="\'categoryTree\'" include-replace></div>
           </li>
@@ -38,13 +38,19 @@ angular
         MainMenu =
           minimized: false
           init: ->
+
             # востановление состояния min/max
             if localStorage
               minimized = menu_storage.getBool('minimized')
+            if minimized
               MainMenu.min()
 
             MainMenu.update()
-            return
+
+
+            $timeout ()->
+              MainMenu.restore()
+            , 1000
 
           update: ->
             $('body')
@@ -107,11 +113,11 @@ angular
               MainMenu.max()
 
             if localStorage
-              menu_storage.SetItem('minimized', MainMenu.minimized)
+              menu_storage.setItem('minimized', MainMenu.minimized)
 
           max: ->
             if $('#main-content').hasClass('enlarged')
-              $('#nav .has_sub .pull-right i').addClass('fa-chevron-left').removeClass('fa-chevron-down').removeClass 'fa-chevron-right'
+#              $('#nav .has_sub .pull-right i').addClass('fa-chevron-left').removeClass('fa-chevron-down').removeClass 'fa-chevron-right'
               $('#main-content').removeClass 'enlarged'
               MainMenu.minimized = false
               MainMenu.restore()
@@ -119,7 +125,7 @@ angular
           min: ->
             if !$('#main-content').hasClass('enlarged')
               $('#nav .has_sub ul').removeAttr 'style'
-              $('#nav .has_sub .pull-right i').removeClass('fa-chevron-left').addClass 'fa-chevron-down'
+#              $('#nav .has_sub .pull-right i').removeClass('fa-chevron-left').addClass 'fa-chevron-down'
               $('#nav ul .has_sub .pull-right i').removeClass('fa-chevron-down').addClass 'fa-chevron-right'
               $('#main-content').addClass 'enlarged'
               MainMenu.minimized = true

@@ -4,7 +4,9 @@ angular
 ($scope, Notify, Node, $stateParams) ->
   vm = this
 
-  vm.node = Node.get {id: $stateParams.id}
+  Node.show {id: $stateParams.id}, (node)->
+    vm.node = node
+
 
   vm
 ]

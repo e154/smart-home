@@ -28,7 +28,8 @@
     "angular-translate-loader-partial": "^2.12.1",
     "angular-translate-loader-static-files": "^2.12.1",
     "font-awesome": "^4.6.3",
-    "angular-sanitize": "^1.5.8"
+    "angular-sanitize": "^1.5.8",
+    "moment": "momentjs#^2.15.1"
   },
   "overrides": {
     "jquery": {
@@ -39,6 +40,12 @@
     "font-awesome": {
       "main": [
         "css/font-awesome.min.css"
+      ]
+    },
+    "moment": {
+      "main": [
+        "moment.js",
+        "locale/ru.js"
       ]
     }
   }
