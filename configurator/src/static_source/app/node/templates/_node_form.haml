@@ -11,6 +11,13 @@
     %input.form-control(ng-model="node.node.port" type="number")
 
 .form-group
+    %laber {{'node.status' | translate}}
+    %select.form-control(ng-model="node.node.status")
+        %option(value="enabled")
+            {{'node.enabled' | translate}}
+        %option(value="disabled")
+            {{'node.disabled' | translate}}
+.form-group
     %laber {{'node.description' | translate}}
     %textarea.form-control(ng-model="node.node.description" rows="10" )
 
