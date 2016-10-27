@@ -10,43 +10,37 @@ angular
     resource: Node
     columns: [
       {
-        name: 'id'
+        name: '#'
         field: 'id'
-        width: '50px'
       }
       {
-        name: 'Node name'
+        name: 'node.name'
         field: 'name'
-        width: '48%'
         clickCallback: ($event, item)->
           $event.preventDefault()
           $state.go('dashboard.node.show', {id: item.id})
           false
       }
       {
-        name: 'ip'
+        name: 'node.ip'
         field: 'ip'
-        width: '100px'
       }
       {
-        name: 'port'
+        name: 'node.port'
         field: 'port'
-        width: '50px'
       }
       {
-        name: 'created at'
+        name: 'node.created_at'
         field: 'created_at'
-        template: '<span>{{item[field] | date:"H:mm dd.MM.yyyy"}}</span>'
+        template: '<span>{{item[field] | readableDateTime}}</span>'
       }
       {
-        name: 'update at'
+        name: 'node.update_at'
         field: 'update_at'
-        template: '<span>{{item[field] | date:"H:mm dd.MM.yyyy"}}</span>'
+        template: '<span>{{item[field] | readableDateTime}}</span>'
       }
     ]
-    menu:
-      column: 1
-      buttons: []
+    menu:null
     callback: tableCallback
 
   vm

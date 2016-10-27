@@ -155,7 +155,7 @@ ng-change="tableUpdate()"></select>
     <th ng-repeat="column in table.columns" width="{{column.width}}">
         <a href="" ng-click="sortBy(column)"
 ng-class="{ \'sorted desc\': order == \'desc\' && sortby.indexOf(column.field) != -1, \'sorted asc\': order == \'asc\' && sortby.indexOf(column.field) != -1 }">
-            <span>{{column.name}}</span>
+            <span>{{column.name | translate}}</span>
             <span class="sorting-indicator"></span>
         </a>
     </th>
@@ -277,7 +277,8 @@ angular
         field: "=field"
       link: ($scope, $element, attrs) ->
         if $scope.column?.template
-          $element.html($compile($scope.column.template)($scope))
+          template = $compile($scope.column.template)($scope)
+          $element.append(template)
 
   ]
 
@@ -291,6 +292,7 @@ angular
         field: "=field"
       link: ($scope, $element, attrs) ->
         if $scope.button?.template
+          console.log $scope.button.template
           $element.html($compile($scope.button.template)($scope))
 
   ]
