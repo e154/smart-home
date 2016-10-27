@@ -8,6 +8,8 @@
 .row
   .col-md-6
     .pull-right
+      %a.btn.btn-danger(href="" role="button" ng-click="node.remove()")
+        {{'Delete' | translate}}
       %a.btn.btn-default(href="" role="button" ui-sref="dashboard.node.index")
         {{'Cancel' | translate}}
       %a.btn.btn-primary(href="" role="button" ng-click="node.submit()")

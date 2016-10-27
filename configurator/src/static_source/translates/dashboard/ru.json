@@ -3,11 +3,12 @@
   "Submit": "Применить",
   "Save": "Сохранить",
   "Create": "Создать",
+  "Delete": "Удалить",
   "Update": "Обновить",
   "Configurator": "Конфигуратор",
   "Nodes": "Узлы",
   "All nodes": "Все узлы",
-  "Add new": " Добавить",
+  "Add new": "Добавить",
   "Main Menu": "Главное меню",
   "Dashboard": "Панель управления",
   "node": {

@@ -53,7 +53,7 @@ func Initialize() {
 	// - Credentials share
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
 		AllowOrigins:     []string{"http://*", "https://*"},
-		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
 		//AllowHeaders:     []string{"Origin"},
 		//ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
