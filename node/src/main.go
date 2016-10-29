@@ -2,18 +2,21 @@ package main
 
 import (
 	"./settings"
-	"./serial"
-	"fmt"
-
+	"./server"
+	"log"
 )
 
 func main() {
-	s := settings.SettingsPtr()
-	s.Init()
+	st := settings.SettingsPtr()
+	st.Init()
 
-	fmt.Printf("start node v%s\n", s.AppVresion())
+	log.Printf("Start node v%s\n", st.AppVresion())
 
-	//fmt.Println(serial.LRC([]byte{1,3,0,0,0,5}))
+	//263
+	sr := server.ServerPtr()
+	if err := sr.Start(st.IP, st.Port); err != nil {
+		log.Println(err.Error())
+	}
 
-	serial.Run()
+	for {}
 }
