@@ -22,6 +22,7 @@ const (
 
 // Singleton
 var instantiated *Settings = nil
+var iter uint8
 
 func SettingsPtr() *Settings {
 	if instantiated == nil {
@@ -50,7 +51,7 @@ func (s *Settings) Init() *Settings {
 	s.StartTime = time.Now()
 	s.dir = fmt.Sprintf("%s/", dir)
 	s.IP = "127.0.0.1"
-	s.Port = 8888
+	s.Port = 3000
 
 	s.Load()
 
@@ -58,6 +59,8 @@ func (s *Settings) Init() *Settings {
 }
 
 func (s *Settings) Load() (*Settings, error) {
+
+	iter++
 
 	if _, err := os.Stat(s.dir + CONF_NAME); os.IsNotExist(err) {
 		return s.Save()
@@ -71,6 +74,10 @@ func (s *Settings) Load() (*Settings, error) {
 
 	if cfg.String("app_version") != s.AppVresion() {
 		s.Save()
+		if iter > 2 {
+			return
+		}
+
 		return s.Load()
 	}
 
