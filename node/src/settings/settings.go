@@ -75,7 +75,7 @@ func (s *Settings) Load() (*Settings, error) {
 	if cfg.String("app_version") != s.AppVresion() {
 		s.Save()
 		if iter > 2 {
-			return
+			return s, fmt.Errorf("Не известная ошибка")
 		}
 
 		return s.Load()

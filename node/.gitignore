@@ -72,3 +72,5 @@ install_manifest.txt
 
 .idea
 /vendor/
+/src/node.conf
+/src/src
