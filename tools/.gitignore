@@ -73,3 +73,5 @@ install_manifest.txt
 .idea
 performance/**/*.conf
 performance/src/src
+/node_tester/src/src
+/node_tester/src/node_tester.conf

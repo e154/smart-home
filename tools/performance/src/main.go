@@ -45,18 +45,20 @@ func exec(device string, command []byte) (res []byte, err error) {
 
 func performance(command []byte) (res []byte, err error) {
 
-	if cache != "" {
-		res, err = exec(cache, command)
-		if err == nil {
-			return
-		}
-	} else {
-		log.Println("############ search ##############")
-		devices := serial.FindSerials()
-		for _, device := range devices {
-			res, err = exec(device, command)
+	for i := 0; i<5; i++ { //TODO testing
+		if cache != "" {
+			res, err = exec(cache, command)
 			if err == nil {
 				return
+			}
+		} else {
+			log.Println("############ search ##############")
+			devices := serial.FindSerials()
+			for _, device := range devices {
+				res, err = exec(device, command)
+				if err == nil {
+					return
+				}
 			}
 		}
 	}

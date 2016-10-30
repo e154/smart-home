@@ -3,4 +3,4 @@ Smart home tools
 
 #####TODO
 
-* test tools
+* performance - check device performance and interference immunity

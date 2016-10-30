@@ -9,7 +9,9 @@ var (
 	Devices []string
 )
 
-func FindSerials() {
+func FindSerials() []string {
+
+	Devices = []string{}
 	contents, _ := ioutil.ReadDir("/dev")
 
 	for _, f := range contents {
@@ -20,6 +22,7 @@ func FindSerials() {
 		}
 	}
 
+	return Devices
 }
 
 func HI(b byte) (byte) {

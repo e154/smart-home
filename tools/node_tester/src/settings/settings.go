@@ -1,9 +1,9 @@
 package settings
 
 import (
+	"github.com/astaxie/beego/config"
 	"os"
 	"time"
-	"github.com/astaxie/beego/config"
 	"fmt"
 	"strconv"
 	"io/ioutil"
@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	CONF_NAME string = "node.conf"
-	APP_NAME string = "node"
+	CONF_NAME string = "node_tester.conf"
+	APP_NAME string = "node_tester"
 	APP_MAJOR = 0
 	APP_MINOR = 1
 	APP_PATCH = 0
@@ -32,6 +32,7 @@ func SettingsPtr() *Settings {
 }
 
 type Settings struct {
+	Iterations	int
 	IP		string
 	Port		int
 	DeviceList	[]string
@@ -41,6 +42,7 @@ type Settings struct {
 	Timeout		time.Duration
 	Cachetime	time.Duration
 	StopBits	int
+	Command		string
 	cfg 		config.IniConfigContainer
 	dir		string
 }
@@ -60,6 +62,8 @@ func (s *Settings) Init() *Settings {
 	s.Timeout = 2
 	s.Cachetime = 3600
 	s.StopBits = 2
+	s.Command = "010300000005"
+	s.Iterations = 1000
 
 	s.Load()
 
@@ -97,6 +101,8 @@ func (s *Settings) Load() (*Settings, error) {
 	cachetime, _ := cfg.Int("cachetime")
 	s.Cachetime = time.Duration(cachetime)
 	s.StopBits, _ = cfg.Int("stopbits")
+	s.Iterations, _ = cfg.Int("iterations")
+	s.Command = cfg.String("command")
 
 	return s, err
 }
@@ -119,6 +125,8 @@ func (s *Settings) Save() (*Settings, error) {
 	cfg.Set("timeout", strconv.Itoa(int(s.Timeout)))
 	cfg.Set("cachetime", strconv.Itoa(int(s.Cachetime)))
 	cfg.Set("stopbits", strconv.Itoa(s.StopBits))
+	cfg.Set("iterations", strconv.Itoa(s.Iterations))
+	cfg.Set("command", s.Command)
 
 	if err := cfg.SaveConfigFile(s.dir + CONF_NAME); err != nil {
 		fmt.Printf("err with create conf file: %s\n", s.dir + CONF_NAME)

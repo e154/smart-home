@@ -2,7 +2,6 @@ package serial
 
 import (
 	"bufio"
-	"fmt"
 	"bytes"
 	"errors"
 )
@@ -31,12 +30,12 @@ const (
 )
 
 type Modbus struct {
-	serial *Serial
-	rcvState uint8
-	rcvBytePos uint8
+	Serial       *Serial
+	rcvState     uint8
+	rcvBytePos   uint8
 	rcvBufferPos uint8
-	rcvBuf []byte
-	trcBuff *bytes.Buffer
+	rcvBuf       []byte
+	trcBuff      *bytes.Buffer
 }
 
 // 1 - address		u08
@@ -51,8 +50,12 @@ func (m *Modbus) Send(data []byte) (result []byte, err error) {
 		return
 	}
 
+	if m.Serial == nil {
+		return
+	}
+
 	m.rcvState = STATE_RX_IDLE
-	reader := bufio.NewReader(m.serial.Port)
+	reader := bufio.NewReader(m.Serial.Port)
 	for {
 		b, err := reader.ReadByte();
 		if err != nil {
@@ -99,7 +102,7 @@ func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
 	case STATE_RX_WAIT_EOF:
 		if (b == '\n') {
 			m.rcvState = STATE_RX_IDLE
-			fmt.Printf("receive <- %X\r\n", m.rcvBuf) //TODO remove
+			//fmt.Printf("receive <- %X\r\n", m.rcvBuf) //TODO remove
 			return m.rcvBuf[2:len(m.rcvBuf) - 1], m.checkError(m.rcvBuf)
 
 		} else if (b == ':') {
@@ -125,14 +128,16 @@ func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
 // 1 - lrc		u08
 // 1 - \r		u08
 // 1 - \n		u08
-func (m *Modbus) asciiTransmit(data []byte) error {
+func (m *Modbus) asciiTransmit(data []byte) (err error) {
 
 	if m.trcBuff != nil {
 		m.trcBuff.Reset()
 	}
 
 	m.trcBuff = &bytes.Buffer{}
-	m.trcBuff.WriteByte(':')
+	if err = m.trcBuff.WriteByte(':'); err != nil {
+		return
+	}
 
 	for _, d := range data {
 		m.trcBuff.WriteByte(m.bin2char(HI(d)))
@@ -141,20 +146,19 @@ func (m *Modbus) asciiTransmit(data []byte) error {
 
 	m.trcBuff.Write([]byte{'\r', '\n'})
 
-	if m.serial.Port == nil {
-		if _, err := m.serial.Open(); err != nil {
-			return err
-		}
+	if m.Serial == nil {
+		err = errors.New("serial is nil")
+		return
 	}
 
-	fmt.Printf("send -> %X\r\n", m.trcBuff.Bytes()) //TODO comment
+	//fmt.Printf("send -> %X\r\n", m.trcBuff.Bytes()) //TODO comment
 
-	_, err := m.serial.Port.Write(m.trcBuff.Bytes())
+	_, err = m.Serial.Port.Write(m.trcBuff.Bytes())
 	if err != nil {
-		return err
+		return
 	}
 
-	return nil
+	return
 }
 
 func (m *Modbus) Device(address byte) *Device {

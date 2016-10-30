@@ -51,7 +51,7 @@ func (s *Server) AddClient(conn net.Conn) {
 	addr := conn.RemoteAddr().String()
 	log.Printf("New client %s\r\n", addr)
 
-	client := &Client{}
+	client := &Client{Conn:conn}
 	s.clients[client] = true
 	defer func() {
 		conn.Close()
