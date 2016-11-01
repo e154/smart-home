@@ -13,11 +13,16 @@ import (
 	"bytes"
 	"bufio"
 	"./lib/pack"
+	"flag"
 )
 
 var (
 	st	*settings.Settings
 	conn	net.Conn
+	ip 	string
+	port 	int
+	baud	int
+	com	string
 )
 
 func testNode(command []byte) {
@@ -67,6 +72,13 @@ func main() {
 	st = settings.SettingsPtr()
 	st.Init()
 
+	// args
+	flag.Parse()
+	if ip != st.IP {st.IP = ip}
+	if com != st.Command {st.Command = com}
+	if port != st.Port {st.Port = port}
+	if baud != st.Baud {st.Baud = baud}
+
 	command, err := hex.DecodeString(st.Command)
 	if err != nil {
 		log.Printf("error %s\r\n",err.Error())
@@ -91,4 +103,11 @@ func main() {
 	testNode(command)
 
 	log.Println("##########################")
+}
+
+func init() {
+	flag.StringVar(&ip, "ip", "127.0.0.1", "node service address")
+	flag.IntVar(&port, "p", 3001, "node service port")
+	flag.IntVar(&baud, "b", 19200, "serial port baud")
+	flag.StringVar(&com, "c", "010300000005", "serial port command")
 }

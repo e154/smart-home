@@ -40,7 +40,6 @@ type Settings struct {
 	UpTime		time.Duration
 	Baud		int
 	Timeout		time.Duration
-	Cachetime	time.Duration
 	StopBits	int
 	Command		string
 	cfg 		config.IniConfigContainer
@@ -60,7 +59,6 @@ func (s *Settings) Init() *Settings {
 	s.Port = 3001
 	s.Baud = 19200
 	s.Timeout = 2
-	s.Cachetime = 3600
 	s.StopBits = 2
 	s.Command = "010300000005"
 	s.Iterations = 1000
@@ -98,8 +96,6 @@ func (s *Settings) Load() (*Settings, error) {
 	s.Baud, _ = cfg.Int("baud")
 	timeout, _ := cfg.Int("timeout")
 	s.Timeout = time.Duration(timeout)
-	cachetime, _ := cfg.Int("cachetime")
-	s.Cachetime = time.Duration(cachetime)
 	s.StopBits, _ = cfg.Int("stopbits")
 	s.Iterations, _ = cfg.Int("iterations")
 	s.Command = cfg.String("command")
@@ -123,7 +119,6 @@ func (s *Settings) Save() (*Settings, error) {
 	cfg.Set("port", strconv.Itoa(s.Port))
 	cfg.Set("baud", strconv.Itoa(s.Baud))
 	cfg.Set("timeout", strconv.Itoa(int(s.Timeout)))
-	cfg.Set("cachetime", strconv.Itoa(int(s.Cachetime)))
 	cfg.Set("stopbits", strconv.Itoa(s.StopBits))
 	cfg.Set("iterations", strconv.Itoa(s.Iterations))
 	cfg.Set("command", s.Command)
