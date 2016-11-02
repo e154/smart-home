@@ -6,6 +6,13 @@ import (
 	"log"
 )
 
+const (
+	SERIAL_PORT_ERROR  = iota + 1
+	MODBUS_LINE_ERROR
+	TCP_READ_LINE_ERROR
+	TCP_UNMARSHAL_ERROR
+)
+
 // Singleton
 var instantiated *Server = nil
 

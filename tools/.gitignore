@@ -73,5 +73,6 @@ install_manifest.txt
 .idea
 performance/**/*.conf
 performance/src/src
-/node_tester/src/src
-/node_tester/src/node_tester.conf
+/modbus_tester/src/modbus_tester.conf
+/serial_tester/src/modbus_tester.conf
+/serial_tester/src/src

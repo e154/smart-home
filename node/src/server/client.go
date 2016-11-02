@@ -5,13 +5,13 @@ import (
 	"bufio"
 	"io"
 	"time"
-	"log"
 	"encoding/json"
 	"bytes"
 	"errors"
 	"../serial"
 	"../settings"
 	"../lib/pack"
+	"log"
 )
 
 type Client struct {
@@ -20,28 +20,29 @@ type Client struct {
 
 func (c *Client) Send(b []byte) (int64, error) {
 	if c.Conn == nil {
-		log.Print("Client conn is nil")
 		return 0, errors.New("Client conn is nil")
 	}
+
+	b = append(b, '\n')
 
 	return  io.Copy(c.Conn, bytes.NewBuffer(b))
 }
 
-func (c *Client) listener(conn net.Conn) {
+func (c *Client) listener(l net.Conn) {
 
 	re := &pack.Package{}
 
 	for ;; {
-		data, err := bufio.NewReader(conn).ReadBytes('\n')
+		data, err := bufio.NewReader(l).ReadBytes('\n')
 		if err != nil {
-			log.Println(5)
-			c.Err(err)
+			c.Err(err, TCP_READ_LINE_ERROR)
 			return
 		}
 
+		log.Println(data)
+
 		if err := json.Unmarshal(data, &re); err != nil {
-			log.Println(6)
-			c.Err(err)
+			c.Err(err, TCP_UNMARSHAL_ERROR)
 			continue
 		}
 
@@ -51,11 +52,14 @@ func (c *Client) listener(conn net.Conn) {
 
 		case "get_device_list":
 			devices := serial.FindSerials()
-			j, _ := json.Marshal(&map[string]interface {}{"line": "get_device_list", "result": devices, "time": time.Now()})
+			j, _ := json.Marshal(&map[string]interface {}{"line": "get_device_list", "result": devices})
 			c.Send(j)
 
+		case "serial":
+			c.serialExec(re, l)
+
 		default:
-			c.rawExec(re)
+			c.serialExec(re, l)
 		}
 	}
 }
@@ -83,10 +87,9 @@ func (c *Client) modBusExec(p *pack.Package) {
 		conn.ReadTimeout = p.Timeout
 	}
 
-	res, err := ModBusProxy(conn, p.Command)
+	res, err, errcode := ModBusProxy(conn, p.Command)
 	if err != nil {
-		log.Println(3)
-		c.Err(err)
+		c.Err(err, errcode)
 		return
 	}
 
@@ -97,22 +100,39 @@ func (c *Client) modBusExec(p *pack.Package) {
 		Line: p.Line,
 		Time: time.Now(),
 	})
-	j = append(j, '\n')
 
 	if _, err = c.Send(j); err != nil {
-		log.Println(4)
-		c.Err(err)
 		return
 	}
 }
 
-func (c *Client) rawExec(p *pack.Package) {
+func (c *Client) serialExec(p *pack.Package, l net.Conn) (err error, errcode int) {
 
+	s := &serial.Serial{
+		Dev: p.Device,
+		Baud: p.Baud,
+		ReadTimeout: time.Second * p.Timeout,
+		StopBits: p.StopBits,
+	}
+
+	if _, err = s.Open(); err != nil {
+		c.Err(err, SERIAL_PORT_ERROR)
+		return
+	}
+
+	done := make(chan bool, 2)
+
+	go serialToNet(l, s.Port, done)
+	go netToSerial(l, s.Port, done)
+
+	for {
+		<-done
+		s.Close()
+	}
 }
 
-func (c *Client) Err(err error) {
-	log.Print("error", err.Error())
-	j, _ := json.Marshal(&pack.Error{Error: err.Error(), Time:time.Now()})
+func (c *Client) Err(err error, errcode int) {
+	j, _ := json.Marshal(&pack.Result{Error: err.Error(), ErrorCode: errcode, Time: time.Now()})
 	c.Send(j)
 }
 

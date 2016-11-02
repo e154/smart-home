@@ -10,39 +10,49 @@ const (
 	ADDRESS uint8 = 0
 )
 
-func ModBusProxy(conn *serial.Serial, command []byte) (res []byte, err error) {
+func ModBusProxy(conn *serial.Serial, command []byte) (res []byte, err error, errcode int) {
 
-	cache_ptr := cache.CachePtr()
-	cache_key := cache_ptr.GetKey(fmt.Sprintf("%d_dev", command[ADDRESS]))
+	if conn.Dev == "" {
 
+		cache_ptr := cache.CachePtr()
+		cache_key := cache_ptr.GetKey(fmt.Sprintf("%d_dev", command[ADDRESS]))
 
-	for i := 0; i<5; i++ {
+		for i := 0; i<5; i++ {
 
-		cache_exist := cache_ptr.IsExist(cache_key)
-		if cache_exist {
-			conn.Dev = cache_ptr.Get(cache_key).(string)
-			res, err = ModBusExec(conn, command)
-			if err == nil {
-				return
-			}
-		} else {
-
-			devices := serial.FindSerials()
-			for _, device := range devices {
-				conn.Dev = device
-				res, err = ModBusExec(conn, command)
+			cache_exist := cache_ptr.IsExist(cache_key)
+			if cache_exist {
+				conn.Dev = cache_ptr.Get(cache_key).(string)
+				res, err, errcode = ModBusExec(conn, command)
 				if err == nil {
 					return
 				}
+			} else {
+
+				devices := serial.FindSerials()
+				for _, device := range devices {
+					conn.Dev = device
+					res, err, errcode = ModBusExec(conn, command)
+					if err == nil {
+						return
+					}
+				}
+			}
+
+		}
+	} else {
+		for i := 0; i<5; i++ {
+			res, err, errcode = ModBusExec(conn, command)
+			if err == nil {
+				return
 			}
 		}
-
 	}
+
 
 	return
 }
 
-func ModBusExec(conn *serial.Serial, command []byte) (res []byte, err error) {
+func ModBusExec(conn *serial.Serial, command []byte) (res []byte, err error, errcode int) {
 
 	// get cache
 	cache_ptr := cache.CachePtr()
@@ -50,6 +60,7 @@ func ModBusExec(conn *serial.Serial, command []byte) (res []byte, err error) {
 
 	if _, err = conn.Open(); err != nil {
 		cache_ptr.Delete(cache_key)
+		errcode = SERIAL_PORT_ERROR
 		//log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
 		return
 	}
@@ -58,6 +69,7 @@ func ModBusExec(conn *serial.Serial, command []byte) (res []byte, err error) {
 	res, err = modbus.Send(command)
 	if err != nil {
 		cache_ptr.Delete(cache_key)
+		errcode = MODBUS_LINE_ERROR
 		//log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
 		return
 	}

@@ -145,6 +145,10 @@ func (c *Cache) Get(key string) interface {} {
 func (c *Cache) Delete(key string) *Cache {
 	c.log("delete value by key %s", key)
 
+	if c.bm == nil {
+		c.init()
+	}
+
 	c.bm.Delete(key)
 
 	return c
