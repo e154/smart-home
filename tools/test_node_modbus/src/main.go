@@ -6,19 +6,14 @@ import (
 	"log"
 	"fmt"
 	"encoding/hex"
-	"net"
-	"github.com/astaxie/beego"
-	"encoding/json"
-	"io"
-	"bytes"
-	"bufio"
-	"./lib/pack"
 	"flag"
+	"net/rpc"
+	r "./lib/rpc"
 )
 
 var (
 	st	*settings.Settings
-	conn	net.Conn
+	client	*rpc.Client
 	ip 	string
 	port 	int
 	baud	int
@@ -28,47 +23,34 @@ var (
 
 func testNode(command []byte) {
 
-	j, _ := json.Marshal(&map[string]interface {}{
-		"line": "modbus",
-		"device": st.Device,
-		"baud": st.Baud,
-		"timeout": time.Millisecond * st.Timeout,
-		"result": true,
-		"command": command,
-	})
+	args := r.Request{
+		Baud: 19200,
+		Result: true,
+		Command: command,
+		Device: st.Device,
+		Line: "",
+		StopBits: 2,
+		Time: time.Now(),
+		Timeout: time.Millisecond * st.Timeout,
+	}
 
-	j = append(j, '\n')
-
-	log.Printf("send -> %s\r\n", string(j))
-
+	log.Println("send -> ", args)
 
 	for i := 0; i< st.Iterations; i++ {
-		_, err := io.Copy(conn, bytes.NewBuffer(j))
+
+		result := &r.Result{}
+
+		err := client.Call("Modbus.Send", args, result)
+
+		log.Println("data", result)
+
 		if err != nil {
-			log.Printf("error %s\r\n", err.Error())
-			return
+			log.Println("error: ", err)
 		}
 
-		for {
-			res, err := bufio.NewReader(conn).ReadBytes('\n')
-			if err != nil {
-				log.Printf("error %s\r\n", err.Error())
-			}
+		//log.Println("data", result)
 
-			r := &pack.Result{}
-			if err := json.Unmarshal(res, r); err != nil {
-				log.Printf("error %s\r\n", err.Error())
-			}
-
-			if r.Error != "" {
-				i = st.Iterations
-				log.Printf("error %s\r\n", r.Error)
-			}
-
-			log.Println("data", r)
-
-			break
-		}
+		//time.Sleep(time.Second)
 	}
 }
 
@@ -99,13 +81,11 @@ func main() {
 	log.Printf("connect %s:%d\r\n", st.IP, st.Port)
 
 	// connect to node
-	conn, err = net.Dial("tcp",fmt.Sprintf("%s:%d", st.IP, st.Port))
+	client, err = rpc.Dial("tcp",fmt.Sprintf("%s:%d", st.IP, st.Port))
 	if err != nil {
-		beego.Debug(err.Error())
+		log.Println(err.Error())
 		return
 	}
-
-	defer conn.Close()
 
 	testNode(command)
 

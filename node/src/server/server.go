@@ -4,6 +4,7 @@ import (
 	"net"
 	"fmt"
 	"log"
+	"net/rpc"
 )
 
 const (
@@ -32,14 +33,21 @@ type Server struct {
 
 func (s *Server) Start(addr string, port int) (err error) {
 
-	s.listener, err = net.Listen("tcp", fmt.Sprintf("%s:%d", addr, port))
+	tcpAddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", addr, port))
+	if err != nil {
+		return
+	}
+
+	s.listener, err = net.ListenTCP("tcp", tcpAddr)
 	if err != nil {
 		return
 	}
 
 	log.Printf("Start server on %s:%d\r\n", addr, port)
 
-	go func(){
+	rpc.Register(&Modbus{})
+
+	go func() {
 		for {
 			conn, err := s.listener.Accept()
 			if err != nil {
@@ -58,7 +66,7 @@ func (s *Server) AddClient(conn net.Conn) {
 	addr := conn.RemoteAddr().String()
 	log.Printf("New client %s\r\n", addr)
 
-	client := &Client{Conn:conn}
+	client := &Client{}
 	s.clients[client] = true
 	defer func() {
 		conn.Close()
@@ -67,10 +75,6 @@ func (s *Server) AddClient(conn net.Conn) {
 	}()
 
 	client.listener(conn)
-}
-
-func (s *Server) handleConn(conn net.Conn) {
-
 }
 
 func init() {

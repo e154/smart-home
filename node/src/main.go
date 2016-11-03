@@ -18,13 +18,13 @@ func main() {
 
 	log.Printf("Start node v%s\n", st.AppVresion())
 
-	// tcp server
+	// rpc server
 	sr := server.ServerPtr()
 	if err := sr.Start(st.IP, st.Port); err != nil {
-		log.Println(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	for ;; {
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Second)
 	}
 }
