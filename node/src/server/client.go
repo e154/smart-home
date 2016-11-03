@@ -11,7 +11,6 @@ import (
 	"../serial"
 	"../settings"
 	"../lib/pack"
-	"log"
 )
 
 type Client struct {
@@ -38,8 +37,6 @@ func (c *Client) listener(l net.Conn) {
 			c.Err(err, TCP_READ_LINE_ERROR)
 			return
 		}
-
-		log.Println(data)
 
 		if err := json.Unmarshal(data, &re); err != nil {
 			c.Err(err, TCP_UNMARSHAL_ERROR)
