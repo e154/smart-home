@@ -36,6 +36,14 @@ func testNode(command []byte) {
 
 	log.Println("send -> ", args)
 
+	version := ""
+	err := client.Call("Node.Version", "", &version)
+	if err != nil {
+		log.Println("error: ", err)
+	}
+
+	log.Printf("Node version %s\r\n", version)
+
 	for i := 0; i< st.Iterations; i++ {
 
 		result := &r.Result{}
@@ -47,8 +55,6 @@ func testNode(command []byte) {
 		if err != nil {
 			log.Println("error: ", err)
 		}
-
-		//log.Println("data", result)
 
 		//time.Sleep(time.Second)
 	}

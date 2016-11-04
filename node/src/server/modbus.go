@@ -86,7 +86,7 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 	return nil
 }
 
-func (m *Modbus) exec(conn *serial.Serial, command []byte) (res []byte, err error, errcode int) {
+func (m *Modbus) exec(conn *serial.Serial, command []byte) (res []byte, err error, errcode string) {
 
 	// get cache
 	cache_ptr := cache.CachePtr()
@@ -94,7 +94,7 @@ func (m *Modbus) exec(conn *serial.Serial, command []byte) (res []byte, err erro
 
 	if _, err = conn.Open(); err != nil {
 		cache_ptr.Delete(cache_key)
-		errcode = SERIAL_PORT_ERROR
+		errcode = "SERIAL_PORT_ERROR"
 		//log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
 		return
 	}
@@ -103,7 +103,7 @@ func (m *Modbus) exec(conn *serial.Serial, command []byte) (res []byte, err erro
 	res, err = modbus.Send(command)
 	if err != nil {
 		cache_ptr.Delete(cache_key)
-		errcode = MODBUS_LINE_ERROR
+		errcode = "MODBUS_LINE_ERROR"
 		//log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
 		return
 	}

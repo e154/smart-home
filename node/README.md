@@ -1,6 +1,18 @@
 Smart home node
 ---------------
 
+#####Instalation
+
+access to serial port
+
+sudo gpasswd --add ${USER} dialout
+    
+or
+    
+sudo usermod -a -G dialout ${USER}
+    
+You then need to log out and log back in again for it to be effective. 
+
 #####Error codes
     
     1 serial port errors 
@@ -10,18 +22,8 @@ Smart home node
 
 #####TODO
 
-* ~~поиск доступных портов~~ 
-* ~~конфиг файл настроек~~
-* ~~клас~~ 
-* ~~подключение к порту~~
-* тип соединения автомат./постоянное 
-* одновременная работа с несколькими портами ввода/вывода 
 * работа в качестве демона https://github.com/takama/daemon
-* ~~выбор TCP порта~~
-* ~~выбор адреса~~ 
-* ~~кешь запросов:~~
-    * ~~нужный порт на котором висит устройство будет храниться в памяти~~
-    * ~~если устройства нет в кеше, отсылается запрос сразу на все порты~~
+* доступ по сертификату
 
 #####Протокол основанный но modbus
 

@@ -7,13 +7,6 @@ import (
 	"net/rpc"
 )
 
-const (
-	SERIAL_PORT_ERROR  = iota + 1
-	MODBUS_LINE_ERROR
-	TCP_READ_LINE_ERROR
-	TCP_UNMARSHAL_ERROR
-)
-
 // Singleton
 var instantiated *Server = nil
 
@@ -45,15 +38,9 @@ func (s *Server) Start(addr string, port int) (err error) {
 
 	log.Printf("Start server on %s:%d\r\n", addr, port)
 
-	rpc.Register(&Modbus{})
-
 	go func() {
 		for {
-			conn, err := s.listener.Accept()
-			if err != nil {
-				log.Print(err)
-				continue
-			}
+			conn, _ := s.listener.Accept()
 			go s.AddClient(conn)
 		}
 	}()
@@ -79,4 +66,6 @@ func (s *Server) AddClient(conn net.Conn) {
 
 func init() {
 	ServerPtr()
+	rpc.Register(&Modbus{})
+	rpc.Register(&Node{})
 }

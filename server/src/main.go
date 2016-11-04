@@ -4,11 +4,6 @@ import (
 	"github.com/astaxie/beego"
 	"./api"
 	"time"
-	"net"
-	"bytes"
-	"io"
-	"encoding/json"
-	"fmt"
 )
 
 func main() {
