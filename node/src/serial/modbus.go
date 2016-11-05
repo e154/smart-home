@@ -43,6 +43,8 @@ type Modbus struct {
 // 1..n - data		u08 x N
 func (m *Modbus) Send(data []byte) (result []byte, err error) {
 
+	var b byte
+	var ok bool
 	lrc := LRC(data)
 	data = append(data, lrc)
 
@@ -51,36 +53,39 @@ func (m *Modbus) Send(data []byte) (result []byte, err error) {
 	}
 
 	if m.Serial == nil {
+		errors.New("serial pointer is nil")
 		return
 	}
 
 	m.rcvState = STATE_RX_IDLE
 	reader := bufio.NewReader(m.Serial.Port)
 	for {
-		b, err := reader.ReadByte();
+		if b, err = reader.ReadByte(); err != nil {
+			break
+		}
+
+		ok, err = m.asciiReceiveFSM(b)
 		if err != nil {
-			return result, err
 			break
 		}
 
-		result, err = m.asciiReceiveFSM(b)
-		if err != nil {
-			return nil, err
+		if ok {
 			break
 		}
-
-		if m.rcvState == STATE_RX_IDLE {
-			break
-		}
-
 	}
+
+	if len(m.rcvBuf) > 2 {
+		result = m.rcvBuf[2:len(m.rcvBuf) - 1]
+	}
+
+	//log.Printf("receive <- %X, len %d\r\n", result, len(m.rcvBuf)) //TODO remove
 
 	return
 }
 
-func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
+func (m *Modbus) asciiReceiveFSM(b byte) (bool, error) {
 
-	//fmt.Print(string(b))
+	//log.Print(string(b))
 	switch m.rcvState {
 	case STATE_RX_RCV:
 		if( b == ':' ) {
@@ -102,10 +107,11 @@ func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
 	case STATE_RX_WAIT_EOF:
 		if (b == '\n') {
 			m.rcvState = STATE_RX_IDLE
-			//fmt.Printf("receive <- %X\r\n", m.rcvBuf) //TODO remove
-			return m.rcvBuf[2:len(m.rcvBuf) - 1], m.checkError(m.rcvBuf)
+			//log.Printf("receive <- %X, len: %d\r\n", m.rcvBuf, len(m.rcvBuf)) //TODO remove
+			return true, m.checkError(m.rcvBuf)
 
 		} else if (b == ':') {
+			m.rcvBuf = []byte{}
 			m.rcvBytePos = BYTE_HIGH_NIBBLE;
 			m.rcvState = STATE_RX_RCV;
 		} else {
@@ -119,7 +125,7 @@ func (m *Modbus) asciiReceiveFSM(b byte) ([]byte, error) {
 		}
 	}
 
-	return  []byte{}, nil
+	return  false, nil
 }
 
 // 1 - address		u08
@@ -151,7 +157,7 @@ func (m *Modbus) asciiTransmit(data []byte) (err error) {
 		return
 	}
 
-	//fmt.Printf("send -> %X\r\n", m.trcBuff.Bytes()) //TODO comment
+	//log.Printf("send -> %X\r\n", m.trcBuff.Bytes()) //TODO comment
 
 	_, err = m.Serial.Port.Write(m.trcBuff.Bytes())
 	if err != nil {

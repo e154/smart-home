@@ -19,6 +19,9 @@ var (
 	baud	int
 	com	string
 	device	string
+	counter int
+	last int
+	errors 	[]int
 )
 
 func testNode(command []byte) {
@@ -50,7 +53,15 @@ func testNode(command []byte) {
 
 		err := client.Call("Modbus.Send", args, result)
 
-		log.Println("data", result)
+		if err == nil {
+			if len(result.Result) == 0 {
+				counter = i - last
+				last = i
+				errors = append(errors, counter)
+			}
+		}
+
+		log.Printf("counter: %d, data %v, %d",i, result, errors)
 
 		if err != nil {
 			log.Println("error: ", err)
@@ -65,6 +76,8 @@ func main() {
 	// settings
 	st = settings.SettingsPtr()
 	st.Init()
+
+	errors = []int{}
 
 	// args
 	flag.Parse()
