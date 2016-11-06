@@ -5,21 +5,21 @@ import (
 )
 
 // DO NOT MODIFY
-type Node_20161022_194424 struct {
+type Nodes_20161022_194424 struct {
 	migration.Migration
 }
 
 // DO NOT MODIFY
 func init() {
-	m := &Node_20161022_194424{}
+	m := &Nodes_20161022_194424{}
 	m.Created = "20161022_194424"
-	migration.Register("Node_20161022_194424", m)
+	migration.Register("Nodes_20161022_194424", m)
 }
 
 // Run the migrations
-func (m *Node_20161022_194424) Up() {
+func (m *Nodes_20161022_194424) Up() {
 	// use m.SQL("CREATE TABLE ...") to make schema update
-	m.SQL(`CREATE TABLE node (
+	m.SQL(`CREATE TABLE nodes (
 	id Int( 255 ) AUTO_INCREMENT NOT NULL,
 	ip VarChar( 255 ) NOT NULL,
 	port Int( 255 ) NOT NULL,
@@ -36,7 +36,7 @@ func (m *Node_20161022_194424) Up() {
 }
 
 // Reverse the migrations
-func (m *Node_20161022_194424) Down() {
+func (m *Nodes_20161022_194424) Down() {
 	// use m.SQL("DROP TABLE ...") to reverse schema update
-	m.SQL("DROP TABLE IF EXISTS `node` CASCADE")
+	m.SQL("DROP TABLE IF EXISTS `nodes` CASCADE")
 }
