@@ -6,7 +6,6 @@ import (
 	"../settings"
 	"../lib/rpc"
 	"fmt"
-	"time"
 )
 
 const (
@@ -22,7 +21,7 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 	conn := &serial.Serial{
 		Dev: "",
 		Baud: st.Baud,
-		ReadTimeout: time.Second * st.Timeout,
+		ReadTimeout: st.Timeout,
 		StopBits: st.StopBits,
 	}
 
