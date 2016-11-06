@@ -34,7 +34,7 @@ func testNode(command []byte) {
 		Line: "",
 		StopBits: 2,
 		Time: time.Now(),
-		Timeout: time.Millisecond * st.Timeout,
+		Timeout: st.Timeout,
 	}
 
 	log.Println("send -> ", args)

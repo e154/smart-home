@@ -59,7 +59,7 @@ func (s *Settings) Init() *Settings {
 	s.IP = "127.0.0.1"
 	s.Port = 3001
 	s.Baud = 19200
-	s.Timeout = 2
+	s.Timeout = 5000000
 	s.StopBits = 2
 	s.Command = "010300000005"
 	s.Iterations = 1000
