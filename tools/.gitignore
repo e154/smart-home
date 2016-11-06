@@ -77,3 +77,4 @@ performance/src/src
 /serial_tester/src/modbus_tester.conf
 /serial_tester/src/src
 /test_node_modbus/src/src
+/test_serial_api/src/src
