@@ -11,55 +11,48 @@ import (
 	"github.com/astaxie/beego"
 )
 
-type Entity struct {
+type Workflow struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	EntityId   	int64  		`orm:"size(11)" json:"entity_id"`
-	NodeId   	int64  		`orm:"size(11)" json:"node_id"`
-	StopBite   	int64  		`orm:"size(11)" json:"stop_bite"`
-	Address   	int  		`orm:"" json:"address"`
-	Timeout   	time.Duration 	`orm:"" json:"timeout"`
-	Status	 	string 		`orm:"size(254)" json:"status" valid:"MaxSize(254)"`
-	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	Device 		string 		`orm:"size(254)" json:"device" valid:"MaxSize(254);Required"`
-	Description 	string 		`orm:"size(254)" json:"description" valid:"MaxSize(254)"`
-	Baud		int		`orm:"" json:"baud" valid:"Range(1, 115200);Required"`
+	Name		string		`orm:"" json:"name"`
+	Status		string		`orm:"" json:"status"`
+	Flows		[]*Flow		`orm:"-" json:"flows"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
-func (m *Entity) TableName() string {
-	return beego.AppConfig.String("db_nodes")
+func (m *Workflow) TableName() string {
+	return beego.AppConfig.String("db_workflows")
 }
 
 func init() {
-	orm.RegisterModel(new(Entity))
+	orm.RegisterModel(new(Workflow))
 }
 
-// AddEntity insert a new Entity into database and returns
+// AddWorkflow insert a new Workflow into database and returns
 // last inserted Id on success.
-func AddEntity(m *Entity) (id int64, err error) {
+func AddWorkflow(m *Workflow) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetEntityById retrieves Entity by Id. Returns error if
+// GetWorkflowById retrieves Workflow by Id. Returns error if
 // Id doesn't exist
-func GetEntityById(id int64) (v *Entity, err error) {
+func GetWorkflowById(id int64) (v *Workflow, err error) {
 	o := orm.NewOrm()
-	v = &Entity{Id: id}
+	v = &Workflow{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllEntity retrieves all Entity matches certain condition. Returns empty list if
+// GetAllWorkflow retrieves all Workflow matches certain condition. Returns empty list if
 // no records exist
-func GetAllEntity(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllWorkflow(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(Entity))
+	qs := o.QueryTable(new(Workflow))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -105,7 +98,7 @@ func GetAllEntity(query map[string]string, fields []string, sortby []string, ord
 		}
 	}
 
-	var l []Entity
+	var l []Workflow
 	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
@@ -137,11 +130,11 @@ func GetAllEntity(query map[string]string, fields []string, sortby []string, ord
 	return nil, nil, err
 }
 
-// UpdateEntity updates Entity by Id and returns error if
+// UpdateWorkflow updates Workflow by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateEntityById(m *Entity) (err error) {
+func UpdateWorkflowById(m *Workflow) (err error) {
 	o := orm.NewOrm()
-	v := Entity{Id: m.Id}
+	v := Workflow{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -152,17 +145,29 @@ func UpdateEntityById(m *Entity) (err error) {
 	return
 }
 
-// DeleteEntity deletes Entity by Id and returns error if
+// DeleteWorkflow deletes Workflow by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteEntity(id int64) (err error) {
+func DeleteWorkflow(id int64) (err error) {
 	o := orm.NewOrm()
-	v := Entity{Id: id}
+	v := Workflow{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Entity{Id: id}); err == nil {
+		if num, err = o.Delete(&Workflow{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
 	return
+}
+
+func GetAllEnabledWorkflow() (wfs []*Workflow, err error) {
+	o := orm.NewOrm()
+	wfs = []*Workflow{}
+	_, err = o.QueryTable(&Workflow{}).Filter("status", "enabled").All(&wfs)
+
+	return
+}
+
+func (wf *Workflow) GetAllEnabledFlows() ([]*Flow, error) {
+	return GetAllEnabledFlowsByWf(wf)
 }

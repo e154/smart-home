@@ -5,57 +5,59 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"time"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/astaxie/beego/validation"
+	"time"
 	"github.com/astaxie/beego"
 )
 
-type Node struct {
-	Id    		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	Ip		string		`orm:"size(128)" json:"ip" valid:"IP;Required"`			// Must be a valid IPv4 address
-	Port 		int 		`orm:"size(11)" json:"port" valid:"Range(1, 65535);Required"`
-	Status	 	string 		`orm:"size(254)" json:"status"`
-	Description 	string 		`orm:"type(longtext)" json:"description"`
+type Connection struct {
+	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
+	Name		string		`orm:"" json:"name"`
+	ElementFrom	int64		`orm:"column(element_from)" json:"element_from"`
+	ElementTo	int64		`orm:"column(element_to)" json:"element_to"`
+	FlowId		int64		`orm:"column(flow_id)" json:"flow_id"`
+	GraphSettings	string		`orm:"column(graph_settings)" json:"graph_settings"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	FlowElementFrom	*FlowElement	`orm:"-" json:"flow_elemet_from"`
+	FlowElementTo	*FlowElement	`orm:"-" json:"flow_elemet_to"`
+	Flow		*Flow		`orm:"-" json:"flow"`
 }
 
-func (m *Node) TableName() string {
-	return beego.AppConfig.String("db_node")
+func (m *Connection) TableName() string {
+	return beego.AppConfig.String("db_connections")
 }
 
 func init() {
-	orm.RegisterModel(new(Node))
+	orm.RegisterModel(new(Connection))
 }
 
-// AddNode insert a new Node into database and returns
+// AddConnection insert a new Connection into database and returns
 // last inserted Id on success.
-func AddNode(m *Node) (id int64, err error) {
+func AddConnection(m *Connection) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetNodeById retrieves Node by Id. Returns error if
+// GetConnectionById retrieves Connection by Id. Returns error if
 // Id doesn't exist
-func GetNodeById(id int64) (v *Node, err error) {
+func GetConnectionById(id int64) (v *Connection, err error) {
 	o := orm.NewOrm()
-	v = &Node{Id: id}
+	v = &Connection{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllNode retrieves all Node matches certain condition. Returns empty list if
+// GetAllConnection retrieves all Connection matches certain condition. Returns empty list if
 // no records exist
-func GetAllNode(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllConnection(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(Node))
+	qs := o.QueryTable(new(Connection))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -101,7 +103,7 @@ func GetAllNode(query map[string]string, fields []string, sortby []string, order
 		}
 	}
 
-	var l []Node
+	var l []Connection
 	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
@@ -125,19 +127,19 @@ func GetAllNode(query map[string]string, fields []string, sortby []string, order
 		}
 		meta = &map[string]int64{
 			"objects_count": objects_count,
-			"limit": limit,
-			"offset": offset,
+			"limit":         limit,
+			"offset":        offset,
 		}
 		return ml, meta, nil
 	}
 	return nil, nil, err
 }
 
-// UpdateNode updates Node by Id and returns error if
+// UpdateConnection updates Connection by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateNodeById(m *Node) (err error) {
+func UpdateConnectionById(m *Connection) (err error) {
 	o := orm.NewOrm()
-	v := Node{Id: m.Id}
+	v := Connection{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -148,32 +150,25 @@ func UpdateNodeById(m *Node) (err error) {
 	return
 }
 
-// DeleteNode deletes Node by Id and returns error if
+// DeleteConnection deletes Connection by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteNode(id int64) (err error) {
+func DeleteConnection(id int64) (err error) {
 	o := orm.NewOrm()
-	v := Node{Id: id}
+	v := Connection{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Node{Id: id}); err == nil {
+		if num, err = o.Delete(&Connection{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
 	return
 }
 
-func (n *Node) Valid(v *validation.Validation)  {
 
+func GetConnectionsByFlow(flow *Flow) (connections []*Connection, err error) {
 	o := orm.NewOrm()
-	nn := Node{Ip: n.Ip, Port: n.Port}
-	o.Read(&nn, "Ip", "Port")
-
-	if nn.Id != 0 {
-		v.SetError("ip", "Not unique")
-		v.SetError("port", "Not unique")
-		return
-	}
+	_, err = o.QueryTable(&Connection{}).Filter("flow_id", flow.Id).All(&connections)
 
 	return
 }

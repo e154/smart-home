@@ -5,57 +5,61 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"time"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/astaxie/beego/validation"
 	"github.com/astaxie/beego"
+	"time"
 )
 
-type Node struct {
-	Id    		int64  		`orm:"pk;auto;column(id)" json:"id"`
+type DeviceAction struct {
+	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
+	StartAddr   	int64  		`orm:"" json:"start_addr"`
+	ColCells	int64		`orm:"" json:"col_cells" valid:"Required"`
+	DeviceId   	int64  		`orm:"size(11)" json:"device_id"`
+	Device		*Device		`orm:"-" json:"device"`
+	Function   	int64  		`orm:"size(11)" json:"function"`
+	Command 	string 		`orm:"" json:"command" valid:"Required"`
 	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	Ip		string		`orm:"size(128)" json:"ip" valid:"IP;Required"`			// Must be a valid IPv4 address
-	Port 		int 		`orm:"size(11)" json:"port" valid:"Range(1, 65535);Required"`
-	Status	 	string 		`orm:"size(254)" json:"status"`
-	Description 	string 		`orm:"type(longtext)" json:"description"`
+	Direction	string 		`orm:"size(254)" json:"direction" valid:"MaxSize(254);Required"`
+	Description 	string 		`orm:"" json:"description"`
+	ResultType 	string 		`orm:"" json:"result_type"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
-func (m *Node) TableName() string {
-	return beego.AppConfig.String("db_node")
+func (m *DeviceAction) TableName() string {
+	return beego.AppConfig.String("db_device_actions")
 }
 
 func init() {
-	orm.RegisterModel(new(Node))
+	orm.RegisterModel(new(DeviceAction))
 }
 
-// AddNode insert a new Node into database and returns
+// AddDeviceAction insert a new DeviceAction into database and returns
 // last inserted Id on success.
-func AddNode(m *Node) (id int64, err error) {
+func AddDeviceAction(m *DeviceAction) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetNodeById retrieves Node by Id. Returns error if
+// GetDeviceActionById retrieves DeviceAction by Id. Returns error if
 // Id doesn't exist
-func GetNodeById(id int64) (v *Node, err error) {
+func GetDeviceActionById(id int64) (v *DeviceAction, err error) {
 	o := orm.NewOrm()
-	v = &Node{Id: id}
+	v = &DeviceAction{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllNode retrieves all Node matches certain condition. Returns empty list if
+// GetAllDeviceAction retrieves all DeviceAction matches certain condition. Returns empty list if
 // no records exist
-func GetAllNode(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllDeviceAction(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(Node))
+	qs := o.QueryTable(new(DeviceAction))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -101,7 +105,7 @@ func GetAllNode(query map[string]string, fields []string, sortby []string, order
 		}
 	}
 
-	var l []Node
+	var l []DeviceAction
 	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
@@ -125,19 +129,19 @@ func GetAllNode(query map[string]string, fields []string, sortby []string, order
 		}
 		meta = &map[string]int64{
 			"objects_count": objects_count,
-			"limit": limit,
-			"offset": offset,
+			"limit":         limit,
+			"offset":        offset,
 		}
 		return ml, meta, nil
 	}
 	return nil, nil, err
 }
 
-// UpdateNode updates Node by Id and returns error if
+// UpdateDeviceAction updates DeviceAction by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateNodeById(m *Node) (err error) {
+func UpdateDeviceActionById(m *DeviceAction) (err error) {
 	o := orm.NewOrm()
-	v := Node{Id: m.Id}
+	v := DeviceAction{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -148,32 +152,17 @@ func UpdateNodeById(m *Node) (err error) {
 	return
 }
 
-// DeleteNode deletes Node by Id and returns error if
+// DeleteDeviceAction deletes DeviceAction by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteNode(id int64) (err error) {
+func DeleteDeviceAction(id int64) (err error) {
 	o := orm.NewOrm()
-	v := Node{Id: id}
+	v := DeviceAction{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Node{Id: id}); err == nil {
+		if num, err = o.Delete(&DeviceAction{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
-	return
-}
-
-func (n *Node) Valid(v *validation.Validation)  {
-
-	o := orm.NewOrm()
-	nn := Node{Ip: n.Ip, Port: n.Port}
-	o.Read(&nn, "Ip", "Port")
-
-	if nn.Id != 0 {
-		v.SetError("ip", "Not unique")
-		v.SetError("port", "Not unique")
-		return
-	}
-
 	return
 }

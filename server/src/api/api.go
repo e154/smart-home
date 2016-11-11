@@ -11,9 +11,13 @@ import (
 	"github.com/astaxie/beego/orm"
 	"./routers"
 	"./filters"
+	"./bpms"
+	"log"
 )
 
 func Initialize() {
+	log.Println("Api initialize...")
+
 	// site base
 	db_user := beego.AppConfig.String("db_user")
 	db_pass := beego.AppConfig.String("db_pass")
@@ -30,7 +34,7 @@ func Initialize() {
 
 	beego.Info("AppPath:", beego.AppPath)
 	if(beego.BConfig.RunMode == "dev") {
-		beego.Info("Develment mode enabled")
+		beego.Info("Development mode enabled")
 		// orm debug mode
 		if orm_debug, _ := beego.AppConfig.Bool("orm_debug"); orm_debug {
 			orm.Debug = true
@@ -81,4 +85,7 @@ func Initialize() {
 		"Phone":        "Должно быть правильным номером телефона или мобильного телефона",
 		"ZipCode":      "Должно быть правильным почтовым индексом",
 	})
+
+	// bpms
+	bpms.Initialize()
 }

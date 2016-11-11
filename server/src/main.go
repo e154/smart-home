@@ -1,13 +1,14 @@
 package main
 
 import (
+	"time"
 	"github.com/astaxie/beego"
 	"./api"
-	"time"
 )
 
 func main() {
 	api.Initialize()
+
 	beego.Info("Starting....")
 	go beego.Run()
 
