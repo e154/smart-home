@@ -10,6 +10,8 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 	"github.com/astaxie/beego"
+	"net/rpc"
+	"net"
 )
 
 type Node struct {
@@ -21,10 +23,12 @@ type Node struct {
 	Description 	string 		`orm:"type(longtext)" json:"description"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	rpcClient	*rpc.Client	`orm:"-" json:"-"`
+	netConn		net.Conn	`orm:"-" json:"-"`
 }
 
 func (m *Node) TableName() string {
-	return beego.AppConfig.String("db_node")
+	return beego.AppConfig.String("db_nodes")
 }
 
 func init() {
@@ -176,4 +180,52 @@ func (n *Node) Valid(v *validation.Validation)  {
 	}
 
 	return
+}
+
+func GetAllEnabledNodes() (nodes []*Node, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(&Node{}).Filter("status", "enabled").All(&nodes)
+	return
+}
+
+func (n *Node) RpcDial() (*rpc.Client, error) {
+	var err error
+	if _ , err = n.TcpDial(); err != nil {return nil, err}
+	if n.rpcClient == nil { n.rpcClient = rpc.NewClient(n.netConn) }
+	return n.rpcClient, err
+}
+
+func (n *Node) TcpDial() (net.Conn, error) {
+	var err error
+	if n.netConn == nil {
+		n.netConn, err = net.Dial("tcp",fmt.Sprintf("%s:%d", n.Ip, n.Port))
+	}
+	//defer n.netConn.Close()
+	return n.netConn, err
+}
+
+func (n *Node) TcpClose() {
+	if n.netConn == nil {
+		defer n.netConn.Close()
+	}
+}
+
+func (n *Node) GetVersion() (version string, err error) {
+	if n.rpcClient == nil {
+		err = errors.New("rpc.client is nil")
+		return
+	}
+	err = n.rpcClient.Call("Node.Version", "", &version)
+	return
+}
+
+func (n *Node) ModbusSend(args interface{}, reply interface{}) error {
+	if n.rpcClient == nil {
+		return errors.New("rpc.client is nil")
+	}
+	return n.rpcClient.Call("Modbus.Send", args, reply)
+}
+
+func (n *Node) IsConnected() bool {
+	return n.netConn != nil
 }

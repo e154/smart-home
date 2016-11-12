@@ -1,22 +1,20 @@
 package models
 
-import "log"
-
 //ActionPrototypes
 type MessageEmitter struct {}
 
 func (m *MessageEmitter) After(message *Message, flow *Flow) (err error) {
-	log.Println("MessageEmitter.after: ", message)
+	//log.Println("MessageEmitter.after: ", message)
 	return
 }
 
 func (m *MessageEmitter) Run(message *Message, flow *Flow) (err error) {
-	log.Println("MessageEmitter.run: ", message)
+	//log.Println("MessageEmitter.run: ", message)
 	return
 }
 
 func (m *MessageEmitter) Before(message *Message, flow *Flow) (err error) {
-	log.Println("MessageEmitter.before: ", message)
+	//log.Println("MessageEmitter.before: ", message)
 	return
 }
 

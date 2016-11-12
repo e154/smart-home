@@ -1,22 +1,20 @@
 package models
 
-import "log"
-
 //ActionPrototypes
 type MessageHandler struct {}
 
 func (m *MessageHandler) After(message *Message, flow *Flow) (err error) {
-	log.Println("MessageHandler.after: ", message)
+	//log.Println("MessageHandler.after: ", message)
 	return
 }
 
 func (m *MessageHandler) Run(message *Message, flow *Flow) (err error) {
-	log.Println("MessageHandler.run: ", message)
+	//log.Println("MessageHandler.run: ", message)
 	return
 }
 
 func (m *MessageHandler) Before(message *Message, flow *Flow) (err error) {
-	log.Println("MessageHandler.before: ", message)
+	//log.Println("MessageHandler.before: ", message)
 	return
 }
 

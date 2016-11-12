@@ -5,61 +5,61 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
-	"time"
 )
 
-type DeviceAction struct {
+type Worker struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	StartAddr   	int64  		`orm:"column(start_addr)" json:"start_addr"`
-	ColCells	int64		`orm:"column(col_cells)" json:"col_cells" valid:"Required"`
-	DeviceId   	int64  		`orm:"size(11);column(device_id)" json:"device_id"`
-	Function   	int64  		`orm:"size(11)" json:"function"`
+	FlowId   	int64  		`orm:"column(flow_id)" json:"flow_id" valid:"Required"`
+	WorkflowId	int64		`orm:"column(workflow_id)" json:"workflow_id" valid:"Required"`
+	DeviceAction	*DeviceAction  	`orm:"rel(fk);column(device_action_id);null" json:"device_action"`
 	Device		*Device		`orm:"-" json:"device"`
-	Command 	string 		`orm:"" json:"command" valid:"Required"`
+	Flow		*Flow		`orm:"-" json:"flow"`
+	Message		*Message	`orm:"-" json:"-"`
+	Node		*Node		`orm:"-" json:"-"`
+	Status	 	string 		`orm:"size(254)" json:"status" valid:"Required"`
 	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	Direction	string 		`orm:"size(254)" json:"direction" valid:"MaxSize(254);Required"`
-	Description 	string 		`orm:"" json:"description"`
-	ResultType 	string 		`orm:"" json:"result_type"`
+	Time	   	string  	`orm:"size(254)" json:"time"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
-func (m *DeviceAction) TableName() string {
-	return beego.AppConfig.String("db_device_actions")
+func (m *Worker) TableName() string {
+	return beego.AppConfig.String("db_workers")
 }
 
 func init() {
-	orm.RegisterModel(new(DeviceAction))
+	orm.RegisterModel(new(Worker))
 }
 
-// AddDeviceAction insert a new DeviceAction into database and returns
+// AddWorker insert a new Worker into database and returns
 // last inserted Id on success.
-func AddDeviceAction(m *DeviceAction) (id int64, err error) {
+func AddWorker(m *Worker) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetDeviceActionById retrieves DeviceAction by Id. Returns error if
+// GetWorkerById retrieves Worker by Id. Returns error if
 // Id doesn't exist
-func GetDeviceActionById(id int64) (v *DeviceAction, err error) {
+func GetWorkerById(id int64) (v *Worker, err error) {
 	o := orm.NewOrm()
-	v = &DeviceAction{Id: id}
+	v = &Worker{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllDeviceAction retrieves all DeviceAction matches certain condition. Returns empty list if
+// GetAllWorker retrieves all Worker matches certain condition. Returns empty list if
 // no records exist
-func GetAllDeviceAction(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllWorker(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(DeviceAction))
+	qs := o.QueryTable(new(Worker))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -105,7 +105,7 @@ func GetAllDeviceAction(query map[string]string, fields []string, sortby []strin
 		}
 	}
 
-	var l []DeviceAction
+	var l []Worker
 	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
@@ -137,11 +137,11 @@ func GetAllDeviceAction(query map[string]string, fields []string, sortby []strin
 	return nil, nil, err
 }
 
-// UpdateDeviceAction updates DeviceAction by Id and returns error if
+// UpdateWorker updates Worker by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateDeviceActionById(m *DeviceAction) (err error) {
+func UpdateWorkerById(m *Worker) (err error) {
 	o := orm.NewOrm()
-	v := DeviceAction{Id: m.Id}
+	v := Worker{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -152,17 +152,31 @@ func UpdateDeviceActionById(m *DeviceAction) (err error) {
 	return
 }
 
-// DeleteDeviceAction deletes DeviceAction by Id and returns error if
+// DeleteWorker deletes Worker by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteDeviceAction(id int64) (err error) {
+func DeleteWorker(id int64) (err error) {
 	o := orm.NewOrm()
-	v := DeviceAction{Id: id}
+	v := Worker{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&DeviceAction{Id: id}); err == nil {
+		if num, err = o.Delete(&Worker{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
+	}
+	return
+}
+
+func GetAllEnabledWorkers() (workers []*Worker, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(&Worker{}).Filter("status", "enabled").All(&workers)
+	for _,  worker := range workers {
+		if _, err = o.LoadRelated(worker, "DeviceAction"); err != nil {
+			return
+		}
+
+		worker.Device, _ = GetParentDeviceByChildId(worker.DeviceAction.DeviceId)
+		worker.Device.Id = worker.DeviceAction.DeviceId
 	}
 	return
 }

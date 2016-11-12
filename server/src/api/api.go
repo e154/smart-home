@@ -12,6 +12,7 @@ import (
 	"./routers"
 	"./filters"
 	"./bpms"
+	"./worker_manager"
 	"log"
 )
 
@@ -86,6 +87,13 @@ func Initialize() {
 		"ZipCode":      "Должно быть правильным почтовым индексом",
 	})
 
+	// worker manager
+	if err := worker_manager.Initialize(); err != nil {
+		log.Fatal(err.Error())
+	}
+
 	// bpms
-	bpms.Initialize()
+	if err := bpms.Initialize(); err != nil {
+		log.Fatal(err.Error())
+	}
 }
