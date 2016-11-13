@@ -6,25 +6,27 @@ import (
 	"reflect"
 	"strings"
 	"time"
+	"../crontab"
 
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 )
 
 type Worker struct {
-	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	FlowId   	int64  		`orm:"column(flow_id)" json:"flow_id" valid:"Required"`
-	WorkflowId	int64		`orm:"column(workflow_id)" json:"workflow_id" valid:"Required"`
-	DeviceAction	*DeviceAction  	`orm:"rel(fk);column(device_action_id);null" json:"device_action"`
-	Device		*Device		`orm:"-" json:"device"`
-	Flow		*Flow		`orm:"-" json:"flow"`
-	Message		*Message	`orm:"-" json:"-"`
-	Node		*Node		`orm:"-" json:"-"`
-	Status	 	string 		`orm:"size(254)" json:"status" valid:"Required"`
-	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	Time	   	string  	`orm:"size(254)" json:"time"`
-	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	Id           int64  		`orm:"pk;auto;column(id)" json:"id"`
+	FlowId       int64  		`orm:"column(flow_id)" json:"flow_id" valid:"Required"`
+	WorkflowId   int64		`orm:"column(workflow_id)" json:"workflow_id" valid:"Required"`
+	DeviceAction *DeviceAction  	`orm:"rel(fk);column(device_action_id);null" json:"device_action"`
+	Device       *Device		`orm:"-" json:"device"`
+	Flow         *Flow		`orm:"-" json:"flow"`
+	Message      *Message	`orm:"-" json:"-"`
+	Node         *Node		`orm:"-" json:"-"`
+	CronTask     *crontab.Task	`orm:"-" json:"-"`
+	Status       string 		`orm:"size(254)" json:"status" valid:"Required"`
+	Name         string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
+	Time         string  	`orm:"size(254)" json:"time"`
+	Created_at   time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at    time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
 func (m *Worker) TableName() string {
@@ -181,10 +183,25 @@ func GetAllEnabledWorkers() (workers []*Worker, err error) {
 	return
 }
 
-func (w *Worker) Start(flow *Flow) {
-
+func (w *Worker) Run() bool {
+	if w.CronTask != nil {
+		w.CronTask.Run()
+		return true
+	}
+	return false
 }
 
-func (w *Worker) Stop() {
+func (w *Worker) Stop() bool {
+	if w.CronTask != nil {
+		w.CronTask.Stop()
+		return true
+	}
+	return false
+}
 
+func (w *Worker) IsRun() bool {
+	if w.CronTask != nil {
+		return w.CronTask.IsRun()
+	}
+	return false
 }

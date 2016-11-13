@@ -19,6 +19,11 @@ type Workflow struct {
 
 func (wf *Workflow) Init() (err error) {
 
+	return
+}
+
+func (wf *Workflow) Run() (err error) {
+
 	var flows	[]*models.Flow
 	var workers	[]*models.Worker
 
@@ -88,11 +93,6 @@ func (wf *Workflow) Init() (err error) {
 	log.Println("ok")
 
 	wf.flows = flows
-
-	return
-}
-
-func (wf *Workflow) Run() (err error) {
 
 	return
 }

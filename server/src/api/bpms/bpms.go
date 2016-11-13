@@ -24,6 +24,11 @@ func BpmsPtr() *BPMS {
 
 func (b *BPMS) Init() (err error) {
 
+	return
+}
+
+func (b *BPMS) Run() (err error) {
+
 	if b.nodes, err = models.GetAllEnabledNodes(); err != nil {
 		return
 	}
@@ -54,12 +59,6 @@ func (b *BPMS) Init() (err error) {
 
 		b.wfs = append(b.wfs, wf)
 	}
-
-
-	return
-}
-
-func (b *BPMS) Run() (err error) {
 
 	for _, wf := range b.wfs {
 		if err = wf.Run(); err != nil {
