@@ -1,21 +1,27 @@
 package crontab
 
-import "time"
+import (
+	"time"
+)
 
 type Task struct {
 	_time	string
 	_func	func()
-	quit	chan struct{}
+	quit	chan bool
 	isRun	bool
 }
 
 //TODO need normal cron like runner
 func (t *Task) Run() *Task {
 
+	if t.isRun {
+		return t
+	}
+
 	ticker := time.NewTicker(10 * time.Second)
-	t.quit = make(chan struct{})
+	t.quit = make(chan bool)
+	t.isRun = true
 	go func() {
-		t.isRun = true
 		for {
 			select {
 			case <- ticker.C:
@@ -24,6 +30,7 @@ func (t *Task) Run() *Task {
 
 			case <- t.quit:
 				ticker.Stop()
+				close(t.quit)
 				t.isRun = false
 				return
 			}
@@ -34,7 +41,11 @@ func (t *Task) Run() *Task {
 }
 
 func (t *Task) Stop() *Task {
-	close(t.quit)
+	if !t.isRun {
+		return t
+	}
+
+	t.quit <- true
 	return t
 }
 

@@ -10,16 +10,16 @@ var (
 	Cron        *cron.Crontab
 )
 
-type BPMS struct {
-	nodes		[]*models.Node
-	wfs		[]*Workflow
-}
-
 // Singleton
 var instantiated *BPMS = nil
 
 func BpmsPtr() *BPMS {
 	return instantiated
+}
+
+type BPMS struct {
+	nodes     map[int64]*models.Node
+	workflows map[int64]*Workflow
 }
 
 func (b *BPMS) Init() (err error) {
@@ -29,8 +29,15 @@ func (b *BPMS) Init() (err error) {
 
 func (b *BPMS) Run() (err error) {
 
-	if b.nodes, err = models.GetAllEnabledNodes(); err != nil {
+	var nodes []*models.Node
+	b.nodes = make(map[int64]*models.Node)
+	b.workflows = make(map[int64]*Workflow)
+
+	if nodes, err = models.GetAllEnabledNodes(); err != nil {
 		return
+	}
+	for _, node := range nodes {
+		b.nodes[node.Id] = node
 	}
 
 	log.Println("--------------------- NODES ---------------------")
@@ -57,10 +64,10 @@ func (b *BPMS) Run() (err error) {
 			return
 		}
 
-		b.wfs = append(b.wfs, wf)
+		b.workflows[workflow.Id] = wf
 	}
 
-	for _, wf := range b.wfs {
+	for _, wf := range b.workflows {
 		if err = wf.Run(); err != nil {
 			return
 		}
@@ -68,9 +75,17 @@ func (b *BPMS) Run() (err error) {
 	return
 }
 
+func (b *BPMS) AddNode(node *models.Node) *models.Node {
+	if _, ok := b.nodes[node.Id]; !ok {
+		b.nodes[node.Id] = node
+	}
+	
+	return b.nodes[node.Id]
+}
+
 func (b *BPMS) Stop() (err error) {
 
-	for _, wf := range b.wfs {
+	for _, wf := range b.workflows {
 		if err = wf.Stop(); err != nil {
 			return
 		}
@@ -80,7 +95,7 @@ func (b *BPMS) Stop() (err error) {
 
 func (b *BPMS) Restart() (err error) {
 
-	for _, wf := range b.wfs {
+	for _, wf := range b.workflows {
 		if err = wf.Restart(); err != nil {
 			return
 		}

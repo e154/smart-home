@@ -172,46 +172,60 @@ func GetAllEnabledFlows() (fs []*Flow, err error) {
 	return
 }
 
+func GetEnabledFlowById(id int64) (flow *Flow, err error) {
+	o := orm.NewOrm()
+	err = o.QueryTable(&Flow{}).Filter("id", id).Filter("status", "enabled").One(flow)
+	FlowGetRelatedDate(flow)
+	return
+}
+
 func GetAllEnabledFlowsByWf(wf *Workflow) (flows []*Flow, err error) {
 	o := orm.NewOrm()
 	flows = []*Flow{}
 	_, err = o.QueryTable(&Flow{}).Filter("status", "enabled").Filter("workflow_id", wf.Id).All(&flows)
 
-	for _, f := range flows {
-		//_, err = o.LoadRelated(f, "Connections")
-		//_, err = o.LoadRelated(f, "FlowElements")
+	for _, flow := range flows {
+		FlowGetRelatedDate(flow)
+	}
 
-		if f.FlowElements, err = GetFlowElementsByFlow(f); err != nil {
-			return
-		}
+	return
+}
 
-		if f.Connections, err = GetConnectionsByFlow(f); err != nil {
-			return
-		}
+func FlowGetRelatedDate(flow *Flow) (err error) {
 
-		for _, conn := range f.Connections {
-			for _, element := range f.FlowElements {
-				if element.Id == conn.ElementFrom {
-					conn.FlowElementFrom = element
-				} else if element.Id == conn.ElementTo {
-					conn.FlowElementTo = element
-				}
+	//_, err = o.LoadRelated(f, "Connections")
+	//_, err = o.LoadRelated(f, "FlowElements")
+
+	if flow.FlowElements, err = GetFlowElementsByFlow(flow); err != nil {
+		return
+	}
+
+	if flow.Connections, err = GetConnectionsByFlow(flow); err != nil {
+		return
+	}
+
+	for _, conn := range flow.Connections {
+		for _, element := range flow.FlowElements {
+			if element.Id == conn.ElementFrom {
+				conn.FlowElementFrom = element
+			} else if element.Id == conn.ElementTo {
+				conn.FlowElementTo = element
 			}
 		}
+	}
 
-		for _, element := range f.FlowElements {
-			element.Flow = f
-			switch element.PrototypeType  {
-			case "MessageHandler":
-				element.Prototype = &MessageHandler{}
-				break
-			case "MessageEmitter":
-				element.Prototype = &MessageEmitter{}
-				break
-			case "Task":
-				element.Prototype = &Task{}
-				break
-			}
+	for _, element := range flow.FlowElements {
+		element.Flow = flow
+		switch element.PrototypeType  {
+		case "MessageHandler":
+			element.Prototype = &MessageHandler{}
+			break
+		case "MessageEmitter":
+			element.Prototype = &MessageEmitter{}
+			break
+		case "Task":
+			element.Prototype = &Task{}
+			break
 		}
 	}
 

@@ -15,7 +15,7 @@ type Crontab struct {
 
 func (c *Crontab) NewTask(t string, h func()) *Task {
 	c.Tasks = append(c.Tasks, &Task{_time:t, _func:h})
-	return c.Tasks[len(c.Tasks) - 1].Run()
+	return c.Tasks[len(c.Tasks) - 1]
 }
 
 func (c *Crontab) Run() {
