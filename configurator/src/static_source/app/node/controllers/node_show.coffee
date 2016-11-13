@@ -1,11 +1,16 @@
 angular
 .module('appControllers')
-.controller 'nodeShowCtrl', ['$scope', 'Notify', 'Node', '$stateParams'
-($scope, Notify, Node, $stateParams) ->
+.controller 'nodeShowCtrl', ['$scope', 'Notify', 'Node', '$stateParams', '$state'
+($scope, Notify, Node, $stateParams, $state) ->
   vm = this
 
-  Node.show {id: $stateParams.id}, (node)->
+  success = (node) ->
     vm.node = node
+
+  error = ->
+    $state.go 'dashboard.node.index'
+
+  Node.show {id: $stateParams.id}, success, error
 
 
   vm

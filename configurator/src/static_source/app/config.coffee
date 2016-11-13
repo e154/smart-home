@@ -1,7 +1,7 @@
 angular
 .module('app')
-.config ['$translatePartialLoaderProvider', '$translateProvider'
-($translatePartialLoaderProvider, $translateProvider) ->
+.config ['$translatePartialLoaderProvider', '$translateProvider', '$locationProvider', '$routeProvider'
+($translatePartialLoaderProvider, $translateProvider, $locationProvider, $routeProvider) ->
 
   window.server_url = 'http://127.0.0.1:3000'
 
@@ -14,4 +14,11 @@ angular
 
   $translateProvider.preferredLanguage 'ru'
   $translateProvider.useSanitizeValueStrategy null
+
+  $locationProvider.html5Mode
+    enabled: true
+    requireBase: false
+
+  $routeProvider.otherwise
+    redirectTo: '/'
 ]

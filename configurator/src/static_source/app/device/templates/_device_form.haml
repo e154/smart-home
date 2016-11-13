@@ -1,0 +1,39 @@
+.form-group
+    %laber {{'device.name' | translate}}*
+    %input.form-control(ng-model="device.device.name")
+
+.form-group
+    %laber {{'device.baud' | translate}}*
+    %input.form-control(ng-model="device.device.baud" type="number" )
+
+.form-group
+    %laber {{'device.stop_byte' | translate}}
+    %select.form-control(ng-model="device.device.stop_byte")
+        %option(value=1)
+            1
+        %option(value=2)
+            2
+
+.form-group
+    %laber {{'device.address' | translate}}*
+    %input.form-control(ng-model="device.device.address" type="number" )
+
+.form-group
+    %laber {{'device.tty' | translate}}*
+    %input.form-control(ng-model="device.device.tty" type="string" )
+
+.form-group
+    %laber {{'device.parent' | translate}}*
+    %select.form-control(ng-model="device.device.device_id" ng-options="device.id as device.name  for device in device.devices")
+
+.form-group
+    %laber {{'device.status' | translate}}
+    %select.form-control(ng-model="device.device.status")
+        %option(value="enabled")
+            {{'device.enabled' | translate}}
+        %option(value="disabled")
+            {{'device.disabled' | translate}}
+.form-group
+    %laber {{'device.description' | translate}}
+    %textarea.form-control(ng-model="device.device.description" rows="10" )
+

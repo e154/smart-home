@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'dashboardCtrl', ['$scope', 'Notify'
-($scope, Notify) ->
+.controller 'dashboardCtrl', ['$scope', 'Notify', 'Stream'
+($scope, Notify, Stream) ->
   vm = this
 
   vm.menu =
@@ -25,6 +25,22 @@ angular
           {
             'label': 'Add new'
             'route': 'dashboard.node.new'
+          }
+        ]
+      }
+      {
+        'label': 'Devices'
+        'route': 'dashboard.device'
+        'link': 'dashboard.device.index'
+        'icon': 'fa fa-microchip'
+        'items': [
+          {
+            'label': 'All devices'
+            'route': 'dashboard.device.index'
+          }
+          {
+            'label': 'Add new'
+            'route': 'dashboard.device.new'
           }
         ]
       }

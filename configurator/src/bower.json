@@ -29,7 +29,9 @@
     "angular-translate-loader-static-files": "^2.12.1",
     "font-awesome": "^4.6.3",
     "angular-sanitize": "^1.5.8",
-    "moment": "momentjs#^2.15.1"
+    "moment": "momentjs#^2.15.1",
+    "sockjs-client": "^1.1.1",
+    "angular-sockjs": "^0.1.0"
   },
   "overrides": {
     "jquery": {

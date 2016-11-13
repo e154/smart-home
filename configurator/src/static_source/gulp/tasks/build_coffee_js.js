@@ -6,7 +6,9 @@ var gulp = require('gulp'),
     coffee = require('gulp-coffee'),
     uglify = require('gulp-uglify'),
     ngClassify = require('gulp-ng-classify'),
-    gutil = require('gulp-util');
+    replace = require('gulp-replace');
+
+var date = new Date();
 
 gulp.task('build_coffee_js', function(done) {
     return gulp.src(conf.source)
@@ -16,6 +18,7 @@ gulp.task('build_coffee_js', function(done) {
         .pipe(concat(conf.filename))
         //.pipe(uglify())
         //.pipe(ngClassify())
+        .pipe(replace('__CURRENT_TIME__', date))
         .pipe(gulp.dest(conf.dest));
 
 });

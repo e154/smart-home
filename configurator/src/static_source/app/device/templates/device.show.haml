@@ -1,0 +1,61 @@
+.row
+  .col-md-6
+    %h3 Устройство №{{device.device.id}}
+      .edit-icon-link
+        %a(ui-sref="dashboard.device.edit({id:device.device.id})")
+          %span.fa.fa-pencil
+
+    .pull-right.date-info-block
+      %small
+        Создано {{device.device.created_at | readableDateTime}}
+      %small
+        Редактировалось {{device.device.update_at | readableDateTime}}
+
+.row
+  .col-md-6
+    .form-group
+      .text-muted
+        {{'device.name' | translate}}
+      %div
+        {{::device.device.name}}
+    .form-group(ng-if="device.device.address")
+      .text-muted
+        {{'device.address' | translate}}
+      %div
+        {{::device.device.address}}
+
+    .form-group(ng-if="device.device.baud")
+      .text-muted
+        {{'device.baud' | translate}}
+      %div
+        {{::device.device.baud}}
+
+    .form-group(ng-if="device.device.stop_bite")
+      .text-muted
+        {{'device.stop_bite' | translate}}
+      %div
+        {{::device.device.stop_bite}}
+
+    .form-group(ng-if="device.device.timeout")
+      .text-muted
+        {{'device.timeout' | translate}}
+      %div
+        {{::device.device.timeout}}
+
+    .form-group(ng-if="device.device.tty")
+      .text-muted
+        {{'device.tty' | translate}}
+      %div
+        {{::device.device.tty}}
+
+    .form-group
+      .text-muted
+        {{'device.status' | translate}}
+      %div
+        {{::device.device.status}}
+
+    .form-group(ng-if="device.device.description")
+      .text-muted
+        {{'device.description' | translate}}
+      %div
+        {{::device.device.description}}

@@ -1,12 +1,12 @@
 angular
 .module('appServices')
-.factory 'Node', ['$resource', ($resource) ->
-  $resource window.server_url + '/api/v1/node/:id', {id: '@id'},
+.factory 'Device', ['$resource', ($resource) ->
+  $resource window.server_url + '/api/v1/device/:id', {id: '@id'},
     show:
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
-        data?.node || data
+        data?.device || data
 
     create:
       method: 'POST'
@@ -23,6 +23,6 @@ angular
       responseType: 'json'
       transformResponse: (data) ->
         meta: data.meta
-        items: data.nodes
+        items: data.devices
 
 ]
