@@ -1,48 +1,42 @@
 package crontab
 
-import (
-	"log"
-	"time"
-)
+import "log"
 
 // Singleton
 var instantiated *Crontab = nil
 
-func WorkerManagerPtr() *Crontab {
+func CrontabPtr() *Crontab {
 	return instantiated
 }
 
 type Crontab struct {
-
+	Tasks []*Task
 }
 
-//TODO need normal cron like runner
-func (wm *Crontab) Run(timer string, h func()) *Crontab {
+func (c *Crontab) NewTask(t string, h func()) *Task {
+	c.Tasks = append(c.Tasks, &Task{_time:t, _func:h})
+	return c.Tasks[len(c.Tasks) - 1].Run()
+}
 
-	ticker := time.NewTicker(1 * time.Second)
-	quit := make(chan struct{})
-	go func() {
-		for {
-			select {
-			case <- ticker.C:
-			// do stuff
-			h()
+func (c *Crontab) Run() {
+	for _, task := range c.Tasks {
+		task.Run()
+	}
+}
 
-			case <- quit:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
-
-	return wm
+func (c *Crontab) Stop() {
+	for _, task := range c.Tasks {
+		task.Stop()
+	}
 }
 
 func Initialize() (err error) {
 	log.Println("Crontab initialize...")
 
 	if instantiated == nil {
-		instantiated = &Crontab{}
+		instantiated = &Crontab{
+			Tasks: make([]*Task, 0),
+		}
 	}
 
 	return

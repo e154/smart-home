@@ -87,7 +87,7 @@ func Initialize() {
 		"ZipCode":      "Должно быть правильным почтовым индексом",
 	})
 
-	// worker manager
+	// crontab
 	if err := crontab.Initialize(); err != nil {
 		log.Fatal(err.Error())
 	}

@@ -92,6 +92,8 @@ func (b *BPMS) Restart() (err error) {
 func Initialize() (err error) {
 	log.Println("BPMS initialize...")
 
+	Cron = cron.CrontabPtr()
+
 	instantiated = &BPMS{}
 	if err = instantiated.Init(); err != nil {
 		return
@@ -102,8 +104,4 @@ func Initialize() (err error) {
 	}
 
 	return
-}
-
-func init() {
-	Cron = cron.WorkerManagerPtr()
 }
