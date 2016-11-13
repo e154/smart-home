@@ -180,3 +180,11 @@ func GetAllEnabledWorkers() (workers []*Worker, err error) {
 	}
 	return
 }
+
+func (w *Worker) Start(flow *Flow) {
+
+}
+
+func (w *Worker) Stop() {
+
+}

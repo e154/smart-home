@@ -12,7 +12,7 @@ import (
 	"./routers"
 	"./filters"
 	"./bpms"
-	"./worker_manager"
+	"./crontab"
 	"log"
 )
 
@@ -88,7 +88,7 @@ func Initialize() {
 	})
 
 	// worker manager
-	if err := worker_manager.Initialize(); err != nil {
+	if err := crontab.Initialize(); err != nil {
 		log.Fatal(err.Error())
 	}
 

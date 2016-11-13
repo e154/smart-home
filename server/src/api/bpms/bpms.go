@@ -3,11 +3,11 @@ package bpms
 import (
 	"log"
 	"../models"
-	"../worker_manager"
+	cron "../crontab"
 )
 
 var (
-	WM	*worker_manager.WorkerManager
+	Cron        *cron.Crontab
 )
 
 type BPMS struct {
@@ -105,5 +105,5 @@ func Initialize() (err error) {
 }
 
 func init() {
-	WM = worker_manager.WorkerManagerPtr()
+	Cron = crontab.WorkerManagerPtr()
 }

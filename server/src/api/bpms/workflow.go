@@ -69,7 +69,7 @@ func (wf *Workflow) Init() (err error) {
 			Timeout: worker.Device.Timeout,
 		}
 
-		WM.Run(worker.Time, func() {
+		Cron.Run(worker.Time, func() {
 
 			args.Time = time.Now()
 

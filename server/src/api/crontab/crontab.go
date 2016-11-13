@@ -1,4 +1,4 @@
-package worker_manager
+package crontab
 
 import (
 	"log"
@@ -6,18 +6,18 @@ import (
 )
 
 // Singleton
-var instantiated *WorkerManager = nil
+var instantiated *Crontab = nil
 
-func WorkerManagerPtr() *WorkerManager {
+func WorkerManagerPtr() *Crontab {
 	return instantiated
 }
 
-type WorkerManager struct {
+type Crontab struct {
 
 }
 
 //TODO need normal cron like runner
-func (wm *WorkerManager) Run(timer string, h func()) *WorkerManager {
+func (wm *Crontab) Run(timer string, h func()) *Crontab {
 
 	ticker := time.NewTicker(1 * time.Second)
 	quit := make(chan struct{})
@@ -39,10 +39,10 @@ func (wm *WorkerManager) Run(timer string, h func()) *WorkerManager {
 }
 
 func Initialize() (err error) {
-	log.Println("Worker Manager initialize...")
+	log.Println("Crontab initialize...")
 
 	if instantiated == nil {
-		instantiated = &WorkerManager{}
+		instantiated = &Crontab{}
 	}
 
 	return
