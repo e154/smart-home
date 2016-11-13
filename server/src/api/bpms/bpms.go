@@ -105,5 +105,5 @@ func Initialize() (err error) {
 }
 
 func init() {
-	Cron = crontab.WorkerManagerPtr()
+	Cron = cron.WorkerManagerPtr()
 }
