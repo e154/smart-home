@@ -14,6 +14,7 @@ import (
 type Workflow struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
 	Name		string		`orm:"" json:"name"`
+	Description	string		`orm:"" json:"description"`
 	Status		string		`orm:"" json:"status"`
 	Flows		[]*Flow		`orm:"-" json:"flows"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`

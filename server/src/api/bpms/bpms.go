@@ -105,6 +105,7 @@ func Initialize() (err error) {
 	Hub = stream.GetHub()
 	Hub.Subscribe("get.nodes.status", streamNodesStatus)
 	Hub.Subscribe("get.workflow.status", streamWorkflowsStatus)
+	Hub.Subscribe("get.flows.status", streamWorkflowsStatus)
 
 	return
 }

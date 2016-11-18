@@ -40,5 +40,23 @@
     "enabled": "Включен",
     "disabled": "Выключен"
   },
-  "total items": "всего"
+  "total items": "всего",
+  "workflow": {
+    "name": "Название",
+    "description": "Описание",
+    "status": "Состояние",
+    "enabled": "Включен",
+    "disabled": "Выключен",
+    "created_at": "Дата создания",
+    "update_at": "Дата обновления"
+  },
+  "flow": {
+    "name": "Название",
+    "description": "Описание",
+    "status": "Состояние",
+    "enabled": "Включен",
+    "disabled": "Выключен",
+    "created_at": "Дата создания",
+    "update_at": "Дата обновления"
+  }
 }

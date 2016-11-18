@@ -5,7 +5,7 @@ angular
   vm = this
 
   vm.workflow = new Workflow({
-    name: "workflow"
+    name: "Новый процесс"
     ip: "127.0.0.1"
     port: 3000
     status: "enabled"

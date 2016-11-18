@@ -25,6 +25,7 @@ app = angular.module('app', [
   'ui.router'
   'toaster'
   'bd.sockjs'
+  'angular-bpmn'
 ])
 
 app.version =

@@ -20,6 +20,5 @@ angular
 
   Workflow.show {id: $stateParams.id}, success, error
 
-
   vm
 ]

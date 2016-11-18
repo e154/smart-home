@@ -1,0 +1,666 @@
+
+@selected: #ff7248;
+@active: #ff4200;
+@hover: #ff6528;
+@disbled: rgba(255, 66, 0, 0.5);
+@base: #ff4200;
+@group_back: rgba(255, 180, 159, 0.52);
+@group_border: #ffa57b;
+@text_color: #ff4200;
+@arrows: '';
+
+/* ------------------------ main ----------------------------*/
+
+.bpmn-wrapper.orange {
+  .bpmn {
+    .poster {
+
+    } //poster
+
+    .jsplumb-connector {
+      path {
+        stroke: @base;
+        &:last-child {
+          fill: @base;
+        }
+      }
+
+      &.jsplumb-hover {
+        path {
+          stroke: @selected;
+          &:last-child {
+            fill: @selected;
+          }
+        }
+      }
+    }// jsplumb-connector
+
+    .event {
+      svg {
+        position: absolute;
+        right: 3px;
+        top: 6px;
+      }
+
+      // base color
+      // ------------------------
+      circle.end {
+        stroke: @base;
+        fill: 'none';
+      }
+      g.intermediate {
+        stroke-width: 2px;
+        circle {
+          stroke: @base;
+          &.circle56 {
+            fill: 'none';
+          }
+        }
+        &.dashed {
+          circle {
+            stroke-dasharray: 6,3;
+            stroke-dashoffset: 0;
+          }
+        }
+      }
+      g.start {
+        circle {
+          stroke-width: 2px;
+          stroke: @base;
+          fill: 'none';
+        }
+        &.dashed {
+          circle {
+            stroke-dasharray: 6,3;
+            stroke-dashoffset: 0;
+          }
+        }
+      }
+
+      .message_inverted {
+        fill: @base;
+      }
+      .timer,
+      .escalation {
+        stroke-width: 2px;
+        stroke: @base;
+      }
+      .conditional,
+      .compensation,
+      .signal,
+      .message,
+      .cancel,
+      .error,
+      .compound,
+      .parallel,
+      .link {
+        stroke: @base;
+      }
+      .compensation_invert,
+      .cancel_invert,
+      .error_invert,
+      .link_invert,
+      .signal_invert,
+      .compound_invert,
+      .stop,
+      .escalation_invert {
+        stroke: @base;
+        fill: @base;
+      }
+
+      // ------------------------
+      &.active {
+        circle.end {
+          stroke: @active;
+          fill: 'none';
+        }
+        g.intermediate {
+          circle {
+            stroke: @active;
+            &.circle56 {
+              fill: 'none';
+            }
+          }
+        }
+        g.start {
+          circle {
+            stroke: @active;
+            fill: 'none';
+          }
+        }
+
+
+        .message_inverted {
+          fill: @active;
+        }
+        .timer,
+        .conditional,
+        .link,
+        .cancel,
+        .signal,
+        .compensation
+        .compound
+        .parallel
+        .message {
+          stroke: @active;
+        }
+        .escalation {
+          stroke-width: 2px;
+          stroke: @active;
+        }
+        .escalation_invert,
+        .cancel_invert,
+        .error,
+        .compensation_invert,
+        .error_invert,
+        .signal_invert,
+        .stop,
+        .compound_invert,
+        .link_invert {
+          stroke: @active;
+          fill: @active;
+        }
+      } //active
+      &.done,
+      &.disabled {
+
+        circle.end {
+          stroke: @disbled;
+          fill: 'none';
+        }
+
+        g.intermediate {
+          circle {
+            stroke: @disbled;
+            &.circle56 {
+              fill: 'none';
+            }
+          }
+        }
+        g.start {
+          circle {
+            stroke: @disbled;
+            fill: 'none';
+          }
+        }
+
+        .message_inverted {
+          fill: @disbled;
+        }
+        .escalation {
+          stroke-width: 2px;
+          stroke: @disbled;
+        }
+        .escalation_invert,
+        .error_invert,
+        .compensation_invert,
+        .cancel_invert,
+        .signal_invert,
+        .stop,
+        .compound_invert,
+        .link_invert {
+          stroke: @disbled;
+          fill: @disbled;
+        }
+        .conditional,
+        .link,
+        .error,
+        .compensation,
+        .cancel,
+        .timer,
+        .signal,
+        .parallel,
+        .compound,
+        .message {
+          stroke: @disbled;
+        }
+      } //disabled
+      &.selected {
+        circle.end {
+          stroke: @selected;
+          fill: 'none';
+        }
+        g.intermediate {
+          circle {
+            stroke: @selected;
+            &.circle56 {
+              fill: 'none';
+            }
+          }
+        }
+        g.start {
+          circle {
+            stroke: @selected;
+            fill: 'none';
+          }
+        }
+        .message_inverted {
+          fill: @selected;
+        }
+        .timer,
+        .link,
+        .compensation,
+        .cancel,
+        .error,
+        .conditional,
+        .signal,
+        .parallel,
+        .compound,
+        .message {
+          stroke: @selected;
+        }
+
+        .escalation {
+          stroke-width: 2px;
+          stroke: @selected;
+        }
+
+        .compensation_invert,
+        .cancel_invert,
+        .error_invert,
+        .escalation_invert,
+        .signal_invert,
+        .stop,
+        .compound_invert,
+        .link_invert {
+          stroke: @selected;
+          fill: @selected;
+        }
+      } //selected
+      &:hover {
+
+        circle.end {
+          stroke: @hover;
+          fill: 'none';
+        }
+
+        g.intermediate {
+          circle {
+            stroke: @hover;
+            &.circle56 {
+              fill: 'none';
+            }
+          }
+        }
+        g.start {
+          circle {
+            stroke: @hover;
+            fill: 'none';
+          }
+        }
+
+        .message_inverted {
+          fill: @hover;
+        }
+
+        .escalation {
+          stroke-width: 2px;
+          stroke: @hover;
+        }
+        .error_invert,
+        .link_invert,
+        .escalation_invert,
+        .cancel_invert,
+        .compound_invert,
+        .signal_invert,
+        .stop,
+        .compensation_invert {
+          stroke: @hover;
+          fill: @hover;
+        }
+        .conditional,
+        .message,
+        .cancel,
+        .error,
+        .signal,
+        .parallel,
+        .link,
+        .compound,
+        .compensation,
+        .timer {
+          stroke: @hover;
+        }
+      } //hover
+
+      // -----------------------
+      .title {
+        position: absolute;
+        top: 50px;
+        left: -23px;
+      }
+
+    } //event
+
+    .task {
+
+      // base color
+      // ------------------------
+      .base,
+      .transaction,
+      .cause_actions,
+      .subprocess rect,
+
+      .user path,
+      .manual path,
+      #service path,
+      .script path,
+      .parallel-mi path,
+      .sequential-mi path,
+      .business_rule path,
+      .receive path,
+      .cycle path {
+        stroke: @base;
+      }
+      .base.dashed {
+        stroke-dasharray: 6,3;
+        stroke-dashoffset: 0;
+      }
+      .send path {
+        stroke: #fff;
+        fill: @base;
+      }
+
+      // ------------------------
+      &.active {
+        .base,
+        .transaction,
+        .cause_actions,
+        .subprocess rect,
+
+        .user path,
+        .manual path,
+        #service path,
+        .script path,
+        .parallel-mi path,
+        .sequential-mi path,
+        .business_rule path,
+        .receive path,
+        .cycle path {
+          stroke: @active;
+        }
+        .send path {
+          stroke: #fff;
+          fill: @active;
+        }
+        .base,
+        .cause_actions,
+        .transaction .rect48 {
+          fill: 'none';
+        }
+      }
+      &.done,
+      &.disabled {
+        .base,
+        .transaction,
+        .cause_actions,
+        .subprocess rect,
+
+        .user path,
+        .manual path,
+        #service path,
+        .script path,
+        .parallel-mi path,
+        .sequential-mi path,
+        .business_rule path,
+        .receive path,
+        .cycle path {
+          stroke: @disbled;
+        }
+        .send path {
+          stroke: #fff;
+          fill: @disbled;
+        }
+        .base,
+        .cause_actions,
+        .transaction .rect48 {
+          fill: 'none';
+        }
+      }
+      &.selected {
+        .base,
+        .transaction,
+        .cause_actions,
+        .subprocess rect,
+
+        .user path,
+        .manual path,
+        .service path,
+        .script path,
+        .parallel-mi path,
+        .sequential-mi path,
+        .business_rule path,
+        .receive path,
+        .cycle path {
+          stroke: @selected;
+        }
+        .send path {
+          stroke: #fff;
+          fill: @selected;
+        }
+        .base,
+        .cause_actions,
+        .transaction .rect48 {
+          fill: 'none';
+        }
+      }
+      &:hover {
+        .base,
+        .transaction,
+        .cause_actions,
+        .subprocess rect,
+
+        .user path,
+        .manual path,
+        .service path,
+        .script path,
+        .parallel-mi path,
+        .sequential-mi path,
+        .business_rule path,
+        .receive path,
+        .cycle path {
+          stroke: @hover;
+        }
+        .send path {
+          stroke: #fff;
+          fill: @hover;
+        }
+        .base,
+        .cause_actions,
+        .transaction .rect48 {
+          fill: 'none';
+        }
+      }
+
+      .inner {
+        color: #111111;
+        position: absolute;
+        display: table;
+        width: 112px;
+        height: 92px;
+        top: 0;
+        padding: 10px;
+
+        .title {
+          display: table-cell;
+          width: 112px;
+          vertical-align: middle;
+          position: relative;
+          background-color: inherit;
+        }
+      }
+      .ep {
+        right: 7px;
+        top: 7px;
+      }
+
+      .label {
+        position: absolute;
+        bottom: 2px;
+        left: 91px;
+      }
+
+      .info {
+        position: absolute;
+        left: 5px;
+        bottom: -15px;
+        z-index: 999999;
+        padding: 3px;
+        background-color: rgba(255, 255, 255, 0.84);
+        opacity: 0.9;
+        width: 100px;
+      }
+    } //task
+
+    .group {
+      outline: @group_border 1px;
+      //border-radius: 15px;
+      background-color: @group_back;
+
+      &.solid {
+        outline-style: solid;
+      }
+      &.dashed {
+        outline-style: dashed;
+      }
+      > .title {
+        width: 100%;
+        background: none;
+      }
+    }//group
+
+    .swimlane {
+      outline: @group_border solid 1px;
+      .swimlane-row {
+        border-color: @group_border;
+        .header {
+          border-color: @group_border;
+          background-color: @group_back;
+          .text {
+            color: @text_color;
+          }
+        }
+      }
+    }//swimlane
+
+    .gateway {
+
+      // base color
+      // ------------------------
+      path {
+        stroke: @base;
+        fill: @base;
+      }
+      .xor-event {
+        path {
+          fill: none
+        }
+      }
+      circle {
+        stroke: @base;
+      }
+      polygon.quad {
+        stroke: @base;
+        fill: 'none';
+      }
+
+      // ------------------------
+      &.active {
+        path {
+          stroke: @active;
+          fill: @active;
+        }
+        .xor-event {
+          path {
+            fill: none
+          }
+        }
+        circle {
+          stroke: @active;
+        }
+        polygon.quad {
+          stroke: @active;
+          fill: 'none';
+        }
+      }
+      &.done,
+      &.disabled {
+        path {
+          stroke: @disbled;
+          fill: @disbled;
+        }
+        .xor-event {
+          path {
+            fill: none
+          }
+        }
+        circle {
+          stroke: @disbled;
+        }
+        polygon.quad {
+          stroke: @disbled;
+          fill: 'none';
+        }
+      }
+      &.selected {
+        path {
+          stroke: @selected;
+          fill: @selected;
+        }
+        .xor-event {
+          path {
+            fill: none
+          }
+        }
+        circle {
+          stroke: @selected;
+        }
+        polygon.quad {
+          stroke: @selected;
+          fill: 'none';
+        }
+      }
+      &:hover {
+        path {
+          stroke: @hover;
+          fill: @hover;
+        }
+        .xor-event {
+          path {
+            fill: none
+          }
+        }
+        circle {
+          stroke: @hover;
+        }
+        polygon.quad {
+          stroke: @hover;
+          fill: 'none';
+        }
+      }
+
+      .title {
+        position: absolute;
+        top: 60px;
+        left: -23px;
+      }
+    }//gateway
+
+    .dummy {
+      padding: 3px;
+      outline: @hover solid 1px;
+    }
+
+    .ep {
+      position: absolute;
+      cursor: pointer;
+      background-image: url(@arrows);
+      background-color: rgba(255, 255, 255, 0.65);
+      background-size: 100%;
+      background-repeat: no-repeat;
+      width: 27px;
+      height: 27px;
+      display: none;
+    }//ep
+
+  } //bpmn
+}

@@ -1,0 +1,667 @@
+/* ------------------------ main ----------------------------*/
+.bpmn-wrapper.minimal .bpmn .jsplumb-endpoint rect {
+  stroke: #A5A5A5;
+  stroke-width: 2px;
+}
+.bpmn-wrapper.minimal .bpmn .jsplumb-endpoint.jsplumb-hover rect {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .jsplumb-connector path {
+  stroke: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .jsplumb-connector path:last-child {
+  fill: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .jsplumb-connector.selected path,
+.bpmn-wrapper.minimal .bpmn .jsplumb-connector.jsplumb-hover path {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .jsplumb-connector.selected path:last-child,
+.bpmn-wrapper.minimal .bpmn .jsplumb-connector.jsplumb-hover path:last-child {
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event svg {
+  position: absolute;
+  right: 3px;
+  top: 6px;
+}
+.bpmn-wrapper.minimal .bpmn .event circle.end {
+  stroke: #2b2b2b;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event g.intermediate {
+  stroke-width: 2px;
+}
+.bpmn-wrapper.minimal .bpmn .event g.intermediate circle {
+  stroke: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .event g.intermediate circle.circle56 {
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event g.intermediate.dashed circle {
+  stroke-dasharray: 6,3;
+  stroke-dashoffset: 0;
+}
+.bpmn-wrapper.minimal .bpmn .event g.start circle {
+  stroke-width: 2px;
+  stroke: #2b2b2b;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event g.start.dashed circle {
+  stroke-dasharray: 6,3;
+  stroke-dashoffset: 0;
+}
+.bpmn-wrapper.minimal .bpmn .event .message_inverted {
+  fill: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .event .timer,
+.bpmn-wrapper.minimal .bpmn .event .escalation {
+  stroke-width: 2px;
+  stroke: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .event .conditional,
+.bpmn-wrapper.minimal .bpmn .event .compensation,
+.bpmn-wrapper.minimal .bpmn .event .signal,
+.bpmn-wrapper.minimal .bpmn .event .message,
+.bpmn-wrapper.minimal .bpmn .event .cancel,
+.bpmn-wrapper.minimal .bpmn .event .error,
+.bpmn-wrapper.minimal .bpmn .event .compound,
+.bpmn-wrapper.minimal .bpmn .event .parallel,
+.bpmn-wrapper.minimal .bpmn .event .link {
+  stroke: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .event .compensation_invert,
+.bpmn-wrapper.minimal .bpmn .event .cancel_invert,
+.bpmn-wrapper.minimal .bpmn .event .error_invert,
+.bpmn-wrapper.minimal .bpmn .event .link_invert,
+.bpmn-wrapper.minimal .bpmn .event .signal_invert,
+.bpmn-wrapper.minimal .bpmn .event .compound_invert,
+.bpmn-wrapper.minimal .bpmn .event .stop,
+.bpmn-wrapper.minimal .bpmn .event .escalation_invert {
+  stroke: #2b2b2b;
+  fill: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .event.active circle.end {
+  stroke: #448dc8;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event.active g.intermediate circle {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event.active g.intermediate circle.circle56 {
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event.active g.start circle {
+  stroke: #448dc8;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event.active .message_inverted {
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event.active .timer,
+.bpmn-wrapper.minimal .bpmn .event.active .conditional,
+.bpmn-wrapper.minimal .bpmn .event.active .link,
+.bpmn-wrapper.minimal .bpmn .event.active .cancel,
+.bpmn-wrapper.minimal .bpmn .event.active .signal,
+.bpmn-wrapper.minimal .bpmn .event.active .compensation .compound .parallel .message {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event.active .escalation {
+  stroke-width: 2px;
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event.active .escalation_invert,
+.bpmn-wrapper.minimal .bpmn .event.active .cancel_invert,
+.bpmn-wrapper.minimal .bpmn .event.active .error,
+.bpmn-wrapper.minimal .bpmn .event.active .compensation_invert,
+.bpmn-wrapper.minimal .bpmn .event.active .error_invert,
+.bpmn-wrapper.minimal .bpmn .event.active .signal_invert,
+.bpmn-wrapper.minimal .bpmn .event.active .stop,
+.bpmn-wrapper.minimal .bpmn .event.active .compound_invert,
+.bpmn-wrapper.minimal .bpmn .event.active .link_invert {
+  stroke: #448dc8;
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event.done circle.end,
+.bpmn-wrapper.minimal .bpmn .event.disabled circle.end {
+  stroke: #a5a5a5;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event.done g.intermediate circle,
+.bpmn-wrapper.minimal .bpmn .event.disabled g.intermediate circle {
+  stroke: #a5a5a5;
+}
+.bpmn-wrapper.minimal .bpmn .event.done g.intermediate circle.circle56,
+.bpmn-wrapper.minimal .bpmn .event.disabled g.intermediate circle.circle56 {
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event.done g.start circle,
+.bpmn-wrapper.minimal .bpmn .event.disabled g.start circle {
+  stroke: #a5a5a5;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event.done .message_inverted,
+.bpmn-wrapper.minimal .bpmn .event.disabled .message_inverted {
+  fill: #a5a5a5;
+}
+.bpmn-wrapper.minimal .bpmn .event.done .escalation,
+.bpmn-wrapper.minimal .bpmn .event.disabled .escalation {
+  stroke-width: 2px;
+  stroke: #a5a5a5;
+}
+.bpmn-wrapper.minimal .bpmn .event.done .escalation_invert,
+.bpmn-wrapper.minimal .bpmn .event.disabled .escalation_invert,
+.bpmn-wrapper.minimal .bpmn .event.done .error_invert,
+.bpmn-wrapper.minimal .bpmn .event.disabled .error_invert,
+.bpmn-wrapper.minimal .bpmn .event.done .compensation_invert,
+.bpmn-wrapper.minimal .bpmn .event.disabled .compensation_invert,
+.bpmn-wrapper.minimal .bpmn .event.done .cancel_invert,
+.bpmn-wrapper.minimal .bpmn .event.disabled .cancel_invert,
+.bpmn-wrapper.minimal .bpmn .event.done .signal_invert,
+.bpmn-wrapper.minimal .bpmn .event.disabled .signal_invert,
+.bpmn-wrapper.minimal .bpmn .event.done .stop,
+.bpmn-wrapper.minimal .bpmn .event.disabled .stop,
+.bpmn-wrapper.minimal .bpmn .event.done .compound_invert,
+.bpmn-wrapper.minimal .bpmn .event.disabled .compound_invert,
+.bpmn-wrapper.minimal .bpmn .event.done .link_invert,
+.bpmn-wrapper.minimal .bpmn .event.disabled .link_invert {
+  stroke: #a5a5a5;
+  fill: #a5a5a5;
+}
+.bpmn-wrapper.minimal .bpmn .event.done .conditional,
+.bpmn-wrapper.minimal .bpmn .event.disabled .conditional,
+.bpmn-wrapper.minimal .bpmn .event.done .link,
+.bpmn-wrapper.minimal .bpmn .event.disabled .link,
+.bpmn-wrapper.minimal .bpmn .event.done .error,
+.bpmn-wrapper.minimal .bpmn .event.disabled .error,
+.bpmn-wrapper.minimal .bpmn .event.done .compensation,
+.bpmn-wrapper.minimal .bpmn .event.disabled .compensation,
+.bpmn-wrapper.minimal .bpmn .event.done .cancel,
+.bpmn-wrapper.minimal .bpmn .event.disabled .cancel,
+.bpmn-wrapper.minimal .bpmn .event.done .timer,
+.bpmn-wrapper.minimal .bpmn .event.disabled .timer,
+.bpmn-wrapper.minimal .bpmn .event.done .signal,
+.bpmn-wrapper.minimal .bpmn .event.disabled .signal,
+.bpmn-wrapper.minimal .bpmn .event.done .parallel,
+.bpmn-wrapper.minimal .bpmn .event.disabled .parallel,
+.bpmn-wrapper.minimal .bpmn .event.done .compound,
+.bpmn-wrapper.minimal .bpmn .event.disabled .compound,
+.bpmn-wrapper.minimal .bpmn .event.done .message,
+.bpmn-wrapper.minimal .bpmn .event.disabled .message {
+  stroke: #a5a5a5;
+}
+.bpmn-wrapper.minimal .bpmn .event.selected circle.end {
+  stroke: #448dc8;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event.selected g.intermediate circle {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event.selected g.intermediate circle.circle56 {
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event.selected g.start circle {
+  stroke: #448dc8;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event.selected .message_inverted {
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event.selected .timer,
+.bpmn-wrapper.minimal .bpmn .event.selected .link,
+.bpmn-wrapper.minimal .bpmn .event.selected .compensation,
+.bpmn-wrapper.minimal .bpmn .event.selected .cancel,
+.bpmn-wrapper.minimal .bpmn .event.selected .error,
+.bpmn-wrapper.minimal .bpmn .event.selected .conditional,
+.bpmn-wrapper.minimal .bpmn .event.selected .signal,
+.bpmn-wrapper.minimal .bpmn .event.selected .parallel,
+.bpmn-wrapper.minimal .bpmn .event.selected .compound,
+.bpmn-wrapper.minimal .bpmn .event.selected .message {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event.selected .escalation {
+  stroke-width: 2px;
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event.selected .compensation_invert,
+.bpmn-wrapper.minimal .bpmn .event.selected .cancel_invert,
+.bpmn-wrapper.minimal .bpmn .event.selected .error_invert,
+.bpmn-wrapper.minimal .bpmn .event.selected .escalation_invert,
+.bpmn-wrapper.minimal .bpmn .event.selected .signal_invert,
+.bpmn-wrapper.minimal .bpmn .event.selected .stop,
+.bpmn-wrapper.minimal .bpmn .event.selected .compound_invert,
+.bpmn-wrapper.minimal .bpmn .event.selected .link_invert {
+  stroke: #448dc8;
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event:hover circle.end,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover circle.end,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover circle.end {
+  stroke: #448dc8;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event:hover g.intermediate circle,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover g.intermediate circle,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover g.intermediate circle {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event:hover g.intermediate circle.circle56,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover g.intermediate circle.circle56,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover g.intermediate circle.circle56 {
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event:hover g.start circle,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover g.start circle,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover g.start circle {
+  stroke: #448dc8;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .event:hover .message_inverted,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .message_inverted,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .message_inverted {
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event:hover .escalation,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .escalation,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .escalation {
+  stroke-width: 2px;
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event:hover .error_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .error_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .error_invert,
+.bpmn-wrapper.minimal .bpmn .event:hover .link_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .link_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .link_invert,
+.bpmn-wrapper.minimal .bpmn .event:hover .escalation_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .escalation_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .escalation_invert,
+.bpmn-wrapper.minimal .bpmn .event:hover .cancel_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .cancel_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .cancel_invert,
+.bpmn-wrapper.minimal .bpmn .event:hover .compound_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .compound_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .compound_invert,
+.bpmn-wrapper.minimal .bpmn .event:hover .signal_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .signal_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .signal_invert,
+.bpmn-wrapper.minimal .bpmn .event:hover .stop,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .stop,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .stop,
+.bpmn-wrapper.minimal .bpmn .event:hover .compensation_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .compensation_invert,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .compensation_invert {
+  stroke: #448dc8;
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event:hover .conditional,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .conditional,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .conditional,
+.bpmn-wrapper.minimal .bpmn .event:hover .message,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .message,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .message,
+.bpmn-wrapper.minimal .bpmn .event:hover .cancel,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .cancel,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .cancel,
+.bpmn-wrapper.minimal .bpmn .event:hover .error,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .error,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .error,
+.bpmn-wrapper.minimal .bpmn .event:hover .signal,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .signal,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .signal,
+.bpmn-wrapper.minimal .bpmn .event:hover .parallel,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .parallel,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .parallel,
+.bpmn-wrapper.minimal .bpmn .event:hover .link,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .link,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .link,
+.bpmn-wrapper.minimal .bpmn .event:hover .compound,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .compound,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .compound,
+.bpmn-wrapper.minimal .bpmn .event:hover .compensation,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .compensation,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .compensation,
+.bpmn-wrapper.minimal .bpmn .event:hover .timer,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-source-hover .timer,
+.bpmn-wrapper.minimal .bpmn .event.jsplumb-target-hover .timer {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .event .title {
+  position: absolute;
+  top: 50px;
+  left: -23px;
+}
+.bpmn-wrapper.minimal .bpmn .task .base,
+.bpmn-wrapper.minimal .bpmn .task .transaction,
+.bpmn-wrapper.minimal .bpmn .task .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task .subprocess rect,
+.bpmn-wrapper.minimal .bpmn .task .user path,
+.bpmn-wrapper.minimal .bpmn .task .manual path,
+.bpmn-wrapper.minimal .bpmn .task #service path,
+.bpmn-wrapper.minimal .bpmn .task .script path,
+.bpmn-wrapper.minimal .bpmn .task .parallel-mi path,
+.bpmn-wrapper.minimal .bpmn .task .sequential-mi path,
+.bpmn-wrapper.minimal .bpmn .task .business_rule path,
+.bpmn-wrapper.minimal .bpmn .task .receive path,
+.bpmn-wrapper.minimal .bpmn .task .cycle path {
+  stroke: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .task .base.dashed {
+  stroke-dasharray: 6,3;
+  stroke-dashoffset: 0;
+}
+.bpmn-wrapper.minimal .bpmn .task .send path {
+  stroke: #fff;
+  fill: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .task.active .base,
+.bpmn-wrapper.minimal .bpmn .task.active .transaction,
+.bpmn-wrapper.minimal .bpmn .task.active .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.active .subprocess rect,
+.bpmn-wrapper.minimal .bpmn .task.active .user path,
+.bpmn-wrapper.minimal .bpmn .task.active .manual path,
+.bpmn-wrapper.minimal .bpmn .task.active #service path,
+.bpmn-wrapper.minimal .bpmn .task.active .script path,
+.bpmn-wrapper.minimal .bpmn .task.active .parallel-mi path,
+.bpmn-wrapper.minimal .bpmn .task.active .sequential-mi path,
+.bpmn-wrapper.minimal .bpmn .task.active .business_rule path,
+.bpmn-wrapper.minimal .bpmn .task.active .receive path,
+.bpmn-wrapper.minimal .bpmn .task.active .cycle path {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .task.active .send path {
+  stroke: #fff;
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .task.active .base,
+.bpmn-wrapper.minimal .bpmn .task.active .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.active .transaction .rect48 {
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .task.done .base,
+.bpmn-wrapper.minimal .bpmn .task.disabled .base,
+.bpmn-wrapper.minimal .bpmn .task.done .transaction,
+.bpmn-wrapper.minimal .bpmn .task.disabled .transaction,
+.bpmn-wrapper.minimal .bpmn .task.done .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.disabled .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.done .subprocess rect,
+.bpmn-wrapper.minimal .bpmn .task.disabled .subprocess rect,
+.bpmn-wrapper.minimal .bpmn .task.done .user path,
+.bpmn-wrapper.minimal .bpmn .task.disabled .user path,
+.bpmn-wrapper.minimal .bpmn .task.done .manual path,
+.bpmn-wrapper.minimal .bpmn .task.disabled .manual path,
+.bpmn-wrapper.minimal .bpmn .task.done #service path,
+.bpmn-wrapper.minimal .bpmn .task.disabled #service path,
+.bpmn-wrapper.minimal .bpmn .task.done .script path,
+.bpmn-wrapper.minimal .bpmn .task.disabled .script path,
+.bpmn-wrapper.minimal .bpmn .task.done .parallel-mi path,
+.bpmn-wrapper.minimal .bpmn .task.disabled .parallel-mi path,
+.bpmn-wrapper.minimal .bpmn .task.done .sequential-mi path,
+.bpmn-wrapper.minimal .bpmn .task.disabled .sequential-mi path,
+.bpmn-wrapper.minimal .bpmn .task.done .business_rule path,
+.bpmn-wrapper.minimal .bpmn .task.disabled .business_rule path,
+.bpmn-wrapper.minimal .bpmn .task.done .receive path,
+.bpmn-wrapper.minimal .bpmn .task.disabled .receive path,
+.bpmn-wrapper.minimal .bpmn .task.done .cycle path,
+.bpmn-wrapper.minimal .bpmn .task.disabled .cycle path {
+  stroke: #a5a5a5;
+}
+.bpmn-wrapper.minimal .bpmn .task.done .send path,
+.bpmn-wrapper.minimal .bpmn .task.disabled .send path {
+  stroke: #fff;
+  fill: #a5a5a5;
+}
+.bpmn-wrapper.minimal .bpmn .task.done .base,
+.bpmn-wrapper.minimal .bpmn .task.disabled .base,
+.bpmn-wrapper.minimal .bpmn .task.done .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.disabled .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.done .transaction .rect48,
+.bpmn-wrapper.minimal .bpmn .task.disabled .transaction .rect48 {
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .task.selected .base,
+.bpmn-wrapper.minimal .bpmn .task.selected .transaction,
+.bpmn-wrapper.minimal .bpmn .task.selected .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.selected .subprocess rect,
+.bpmn-wrapper.minimal .bpmn .task.selected .user path,
+.bpmn-wrapper.minimal .bpmn .task.selected .manual path,
+.bpmn-wrapper.minimal .bpmn .task.selected .service path,
+.bpmn-wrapper.minimal .bpmn .task.selected .script path,
+.bpmn-wrapper.minimal .bpmn .task.selected .parallel-mi path,
+.bpmn-wrapper.minimal .bpmn .task.selected .sequential-mi path,
+.bpmn-wrapper.minimal .bpmn .task.selected .business_rule path,
+.bpmn-wrapper.minimal .bpmn .task.selected .receive path,
+.bpmn-wrapper.minimal .bpmn .task.selected .cycle path {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .task.selected .send path {
+  stroke: #fff;
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .task.selected .base,
+.bpmn-wrapper.minimal .bpmn .task.selected .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.selected .transaction .rect48 {
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .task:hover .base,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .base,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .base,
+.bpmn-wrapper.minimal .bpmn .task:hover .transaction,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .transaction,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .transaction,
+.bpmn-wrapper.minimal .bpmn .task:hover .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task:hover .subprocess rect,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .subprocess rect,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .subprocess rect,
+.bpmn-wrapper.minimal .bpmn .task:hover .user path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .user path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .user path,
+.bpmn-wrapper.minimal .bpmn .task:hover .manual path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .manual path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .manual path,
+.bpmn-wrapper.minimal .bpmn .task:hover .service path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .service path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .service path,
+.bpmn-wrapper.minimal .bpmn .task:hover .script path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .script path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .script path,
+.bpmn-wrapper.minimal .bpmn .task:hover .parallel-mi path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .parallel-mi path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .parallel-mi path,
+.bpmn-wrapper.minimal .bpmn .task:hover .sequential-mi path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .sequential-mi path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .sequential-mi path,
+.bpmn-wrapper.minimal .bpmn .task:hover .business_rule path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .business_rule path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .business_rule path,
+.bpmn-wrapper.minimal .bpmn .task:hover .receive path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .receive path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .receive path,
+.bpmn-wrapper.minimal .bpmn .task:hover .cycle path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .cycle path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .cycle path {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .task:hover .send path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .send path,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .send path {
+  stroke: #fff;
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .task:hover .base,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .base,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .base,
+.bpmn-wrapper.minimal .bpmn .task:hover .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .cause_actions,
+.bpmn-wrapper.minimal .bpmn .task:hover .transaction .rect48,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-source-hover .transaction .rect48,
+.bpmn-wrapper.minimal .bpmn .task.jsplumb-target-hover .transaction .rect48 {
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .task .inner {
+  color: #111111;
+  position: absolute;
+  display: table;
+  width: 112px;
+  height: 92px;
+  top: 0;
+  padding: 10px;
+}
+.bpmn-wrapper.minimal .bpmn .task .inner .title {
+  display: table-cell;
+  width: 112px;
+  vertical-align: middle;
+  position: relative;
+  background-color: inherit;
+}
+.bpmn-wrapper.minimal .bpmn .task .ep {
+  right: 7px;
+  top: 7px;
+}
+.bpmn-wrapper.minimal .bpmn .task .label {
+  position: absolute;
+  bottom: 2px;
+  left: 91px;
+}
+.bpmn-wrapper.minimal .bpmn .task .info {
+  position: absolute;
+  left: 5px;
+  bottom: -15px;
+  z-index: 999999;
+  padding: 3px;
+  background-color: rgba(255, 255, 255, 0.84);
+  opacity: 0.9;
+  width: 100px;
+}
+.bpmn-wrapper.minimal .bpmn .group {
+  outline: #A5A5A5 1px;
+  background-color: rgba(243, 243, 243, 0.23);
+}
+.bpmn-wrapper.minimal .bpmn .group.solid {
+  outline-style: solid;
+}
+.bpmn-wrapper.minimal .bpmn .group.dashed {
+  outline-style: dashed;
+}
+.bpmn-wrapper.minimal .bpmn .group > .title {
+  width: 100%;
+  background: none;
+}
+.bpmn-wrapper.minimal .bpmn .swimlane {
+  outline: #A5A5A5 solid 1px;
+}
+.bpmn-wrapper.minimal .bpmn .swimlane .swimlane-row {
+  border-color: #A5A5A5;
+}
+.bpmn-wrapper.minimal .bpmn .swimlane .swimlane-row .header {
+  border-color: #A5A5A5;
+  background-color: rgba(243, 243, 243, 0.23);
+}
+.bpmn-wrapper.minimal .bpmn .swimlane .swimlane-row .header .text {
+  color: #222222;
+}
+.bpmn-wrapper.minimal .bpmn .gateway path {
+  stroke: #2b2b2b;
+  fill: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .gateway .xor-event path {
+  fill: none;
+}
+.bpmn-wrapper.minimal .bpmn .gateway circle {
+  stroke: #2b2b2b;
+}
+.bpmn-wrapper.minimal .bpmn .gateway polygon.quad {
+  stroke: #2b2b2b;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .gateway.active path {
+  stroke: #448dc8;
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .gateway.active .xor-event path {
+  fill: none;
+}
+.bpmn-wrapper.minimal .bpmn .gateway.active circle {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .gateway.active polygon.quad {
+  stroke: #448dc8;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .gateway.done path,
+.bpmn-wrapper.minimal .bpmn .gateway.disabled path {
+  stroke: #a5a5a5;
+  fill: #a5a5a5;
+}
+.bpmn-wrapper.minimal .bpmn .gateway.done .xor-event path,
+.bpmn-wrapper.minimal .bpmn .gateway.disabled .xor-event path {
+  fill: none;
+}
+.bpmn-wrapper.minimal .bpmn .gateway.done circle,
+.bpmn-wrapper.minimal .bpmn .gateway.disabled circle {
+  stroke: #a5a5a5;
+}
+.bpmn-wrapper.minimal .bpmn .gateway.done polygon.quad,
+.bpmn-wrapper.minimal .bpmn .gateway.disabled polygon.quad {
+  stroke: #a5a5a5;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .gateway.selected path {
+  stroke: #448dc8;
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .gateway.selected .xor-event path {
+  fill: none;
+}
+.bpmn-wrapper.minimal .bpmn .gateway.selected circle {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .gateway.selected polygon.quad {
+  stroke: #448dc8;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .gateway:hover path,
+.bpmn-wrapper.minimal .bpmn .gateway.jsplumb-source-hover path,
+.bpmn-wrapper.minimal .bpmn .gateway.jsplumb-target-hover path {
+  stroke: #448dc8;
+  fill: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .gateway:hover .xor-event path,
+.bpmn-wrapper.minimal .bpmn .gateway.jsplumb-source-hover .xor-event path,
+.bpmn-wrapper.minimal .bpmn .gateway.jsplumb-target-hover .xor-event path {
+  fill: none;
+}
+.bpmn-wrapper.minimal .bpmn .gateway:hover circle,
+.bpmn-wrapper.minimal .bpmn .gateway.jsplumb-source-hover circle,
+.bpmn-wrapper.minimal .bpmn .gateway.jsplumb-target-hover circle {
+  stroke: #448dc8;
+}
+.bpmn-wrapper.minimal .bpmn .gateway:hover polygon.quad,
+.bpmn-wrapper.minimal .bpmn .gateway.jsplumb-source-hover polygon.quad,
+.bpmn-wrapper.minimal .bpmn .gateway.jsplumb-target-hover polygon.quad {
+  stroke: #448dc8;
+  fill: 'none';
+}
+.bpmn-wrapper.minimal .bpmn .gateway .title {
+  position: absolute;
+  top: 60px;
+  left: -23px;
+}
+.bpmn-wrapper.minimal .bpmn .dummy {
+  padding: 3px;
+  outline: #448dc8 solid 1px;
+}
+.bpmn-wrapper.minimal .bpmn .ep {
+  position: absolute;
+  cursor: pointer;
+  background-image: url('');
+  background-color: rgba(255, 255, 255, 0.65);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  width: 27px;
+  height: 27px;
+  display: none;
+}

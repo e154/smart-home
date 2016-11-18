@@ -174,6 +174,7 @@ func GetAllEnabledFlows() (fs []*Flow, err error) {
 
 func GetEnabledFlowById(id int64) (flow *Flow, err error) {
 	o := orm.NewOrm()
+	flow = new(Flow)
 	err = o.QueryTable(&Flow{}).Filter("id", id).Filter("status", "enabled").One(flow)
 	FlowGetRelatedDate(flow)
 	return

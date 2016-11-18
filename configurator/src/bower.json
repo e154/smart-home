@@ -31,7 +31,14 @@
     "angular-sanitize": "^1.5.8",
     "moment": "momentjs#^2.15.1",
     "sockjs-client": "^1.1.1",
-    "angular-sockjs": "^0.1.0"
+    "angular-sockjs": "^0.1.0",
+    "jsPlumb": "sporritt/jsplumb#~2.0.5",
+    "jquery-mousewheel": "~3.1.13",
+    "jquery-ui": "~1.11.4",
+    "animate.css": "daneden/animate.css#*",
+    "jQuery-contextMenu": "~2.0.1",
+    "keymaster": "~1.6.3",
+    "bpmn-font": "^0.7.0"
   },
   "overrides": {
     "jquery": {
@@ -48,6 +55,28 @@
       "main": [
         "moment.js",
         "locale/ru.js"
+      ]
+    },
+    "jQuery-contextMenu": {
+      "main": [
+        "dist/jquery.contextMenu.js",
+        "dist/jquery.contextMenu.css",
+        "dist/jquery.ui.position.min.js",
+        "dist/images/cut.png",
+        "dist/images/door.png",
+        "dist/images/page_white_add.png",
+        "dist/images/page_white_copy.png",
+        "dist/images/page_white_delete.png",
+        "dist/images/page_white_edit.png",
+        "dist/images/page_white_paste.png",
+        "dist/images/cut.png"
+      ]
+    },
+    "bpmn-font": {
+      "main": [
+        "dist/css/bpmn.css",
+        "dist/css/bpmn-embedded",
+        "dist/css/bpmn-codes.css"
       ]
     }
   }

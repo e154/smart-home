@@ -1,0 +1,246 @@
+/* ------------------------ main ----------------------------*/
+
+@zSwimlane: 10;
+@zSwimlaneRow: 15;
+@zConnector: 20;
+@zGroup: 25;
+@zLabel: 30;
+@zDraggable: 35;
+@zPageLoader: 40;
+@zControls: 50;
+@zFullscreen: 60;
+@zHelper: 70;
+@zEndpoint: 80;
+@zOverlay: 90;
+
+@import 'bpmn-tooltip';
+
+/* ------------------------ bpmn ----------------------------*/
+.bpmn-wrapper {
+  position: relative;
+  margin: 15px 0;
+  outline: 1px solid #e2e2e2;
+  overflow: hidden;
+
+  &:-ms-fullscreen {
+    margin: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: #fff;
+    z-index: @zFullscreen;
+  }
+
+  &:-moz-full-screen {
+    margin: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: #fff;
+    z-index: @zFullscreen;
+  }
+
+  &:-webkit-full-screen {
+    margin: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: #fff;
+    z-index: @zFullscreen;
+  }
+
+  .page-loader {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: @zPageLoader;
+    background-color: #ffffff;
+    opacity: 0.6;
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -64px 0 0 -64px;
+      width: 123px;
+      height: 86px;
+    }
+    .spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: 0;
+    }
+  }
+
+  .zoom-info {
+    position: absolute;
+    z-index: @zControls;
+    top: 10px;
+    right: 25px;
+    font-size: 25px;
+    font-style: italic;
+    color: #5d5d5d;
+    opacity: 0.3;
+  }
+
+  .theme-selector {
+    position: absolute;
+    z-index: @zControls;
+    top: 10px;
+    right: 90px;
+    opacity: 0.3;
+  }
+
+  .fullscreen {
+    position: absolute;
+    z-index: @zControls;
+    top: 17px;
+    right: 207px;
+    opacity: 0.3;
+    cursor: pointer;
+  }//fullscreen
+
+  /* editor */
+  .palette-entries {
+    position: absolute;
+    z-index: 99;
+    left: 20px;
+    top: 20px;
+    touch-action: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+    &.popup {
+      background: #FAFAFA;
+      border: solid 1px #CCC;
+      border-radius: 2px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+
+    .group {
+      width: 40px;
+      min-width: inherit;
+      min-height: inherit;
+
+      .entry {
+        color: #333;
+        font-size: 28px;
+        text-align: center;
+
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        cursor: default;
+        &:hover {
+          color: #448dc8;
+        }
+      }//entry
+    }//group
+  }//palette-entries
+}
+
+.bpmn{
+  font-size: 11px;
+  position: relative;
+
+  .panning-cross {
+    svg {
+      width: 58px;
+      height: 34px;
+    }
+  }
+
+  .draggable {
+    cursor: pointer;
+    z-index: @zDraggable;
+    position: absolute;
+
+    -webkit-transition: -webkit-box-shadow 0.15s ease-in;
+    -moz-transition: -moz-box-shadow 0.15s ease-in;
+    -o-transition: -o-box-shadow 0.15s ease-in;
+    transition: box-shadow 0.15s ease-in;
+  }
+
+  .aLabel {
+    background-color: white;
+    opacity: 0.8;
+    padding: 0.3em;
+    cursor: pointer;
+    z-index: @zLabel;
+    max-width: 150px;
+    text-align: center;
+  }
+
+  .title {
+    position: absolute;
+    text-align: center;
+    background-color: #ffffff;
+    opacity: 0.8;
+    width: 100px;
+  }
+
+  .group {
+    position: absolute;
+    z-index: @zGroup;
+    min-width: 100px;
+    min-height: 100px;
+  }
+
+  .swimlane {
+    min-height: 200px;
+    min-width: 400px;
+    z-index: @zSwimlane;
+    .swimlane-row {
+      position: relative;
+      min-width: 400px;
+      min-height: 200px;
+      z-index: @zSwimlaneRow;
+      border-bottom: solid 1px;
+      padding-left: 50px;
+      &:last-child {
+        border-bottom: none;
+      }
+      .header {
+        border-right: solid 1px;
+        width: 50px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        .text {
+          position: absolute;
+          top: 75px;
+          left: -77px;
+          right: 0;
+          bottom: 0;
+          height: 50px;
+          width: 200px;
+
+          -webkit-transform: rotate(-90deg);
+          -moz-transform: rotate(-90deg);
+          -ms-transform: rotate(-90deg);
+          -o-transform: rotate(-90deg);
+          filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+          text-align: center;
+          padding: 0.8rem;
+          font-size: 1.3rem;
+          font-weight: 600;
+          line-height: 1.5;
+        }
+      }
+    }
+  }
+
+  .jsplumb-connector {
+    z-index: @zConnector;
+  }
+
+  .jsplumb-endpoint {
+    z-index: @zEndpoint;
+  }
+
+  .jsplumb-overlay {
+    z-index: @zOverlay;
+  }
+}
+/* ------------------------ etc ----------------------------*/

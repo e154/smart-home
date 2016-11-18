@@ -17,59 +17,70 @@ func (b *BPMS) AddWorkflow(workflow *models.Workflow) (err error) {
 		return
 	}
 
-	wf := &Workflow{model: workflow, nodes: b.nodes}
-	if err = wf.AddWorkfow(); err != nil {
+	wf := &Workflow{model: workflow, Nodes: b.nodes}
+	if err = wf.Run(); err != nil {
 		return
 	}
 
 	b.workflows[workflow.Id] = wf
 
-	// run
-	err = wf.Run()
+	return
+}
+
+func (b *BPMS) RemoveWorkflow(workflow *models.Workflow) (err error) {
+
+	if _, ok := b.workflows[workflow.Id]; !ok {
+		return
+	}
+
+	b.workflows[workflow.Id].Stop()
+	delete(b.workflows, workflow.Id)
 
 	return
 }
 
 type Workflow struct {
-	model		*models.Workflow
-	flows	 	map[int64]*models.Flow
-	workers		map[int64]*models.Worker
-	nodes		map[int64]*models.Node
-}
-
-func (wf *Workflow) AddWorkfow() (err error) {
-
-	//var flows	[]*models.Flow
-	//var workers	[]*models.Worker
-
-	wf.flows = make(map[int64]*models.Flow)
-	wf.workers = make(map[int64]*models.Worker)
-
-	//log.Println("-------------------- FLOWS ----------------------")
-	//if flows, err = wf.model.GetAllEnabledFlows(); err != nil {return}
-	//for _, flow := range flows {
-	//	wf.flows[flow.Id] = flow
-	//}
-	//log.Println("ok")
-	//
-	//log.Println("------------------- WORKERS ---------------------")
-	//if workers, err = models.GetAllEnabledWorkers(); err != nil {return}
-	//for _, worker := range workers {
-	//	wf.workers[worker.Id] = worker
-	//}
-	//
-	//for _, worker := range wf.workers {
-	//	wf.AddWorker(worker)
-	//}
-	//log.Println("ok")
-
-	return
+	model   *models.Workflow
+	Flows   map[int64]*models.Flow
+	Workers map[int64]*models.Worker
+	Nodes   map[int64]*models.Node
 }
 
 func (wf *Workflow) Run() (err error) {
 
-	for _, worker := range wf.workers {
-		worker.CronTask.Run()
+	err = wf.InitFlows()
+	if err != nil {
+		return
+	}
+
+	err = wf.InitWorkers()
+
+	return
+}
+
+func (wf *Workflow) InitFlows() (err error) {
+
+	log.Println("-------------------- FLOWS ----------------------")
+
+	var flows	[]*models.Flow
+	wf.Flows = make(map[int64]*models.Flow)
+	if flows, err = wf.model.GetAllEnabledFlows(); err != nil {return}
+	for _, flow := range flows {
+		wf.AddFlow(flow)
+	}
+
+	return
+}
+
+func (wf *Workflow) InitWorkers() (err error) {
+
+	log.Println("------------------- WORKERS ---------------------")
+
+	var workers	[]*models.Worker
+	wf.Workers = make(map[int64]*models.Worker)
+	if workers, err = models.GetAllEnabledWorkersByWorkflow(wf.model); err != nil {return}
+	for _, worker := range workers {
+		wf.AddWorker(worker)
 	}
 
 	return
@@ -77,7 +88,7 @@ func (wf *Workflow) Run() (err error) {
 
 func (wf *Workflow) Stop() (err error) {
 
-	for _, worker := range wf.workers {
+	for _, worker := range wf.Workers {
 		worker.CronTask.Stop()
 	}
 
@@ -92,14 +103,48 @@ func (wf *Workflow) Restart() (err error) {
 	return
 }
 
+func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
+
+	if _, ok := wf.Flows[flow.Id]; ok {
+		return
+	}
+
+	wf.Flows[flow.Id] = flow
+
+	return
+}
+
+func (wf *Workflow) UpdateFlow(flow *models.Flow) (err error) {
+
+	return
+}
+
+func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
+
+	if _, ok := wf.Flows[flow.Id]; !ok {
+		return
+	}
+
+	delete(wf.Flows, flow.Id)
+
+	return
+}
+
 func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
+
+	if _, ok := wf.Workers[worker.Id]; ok {
+		return
+	}
+
+	wf.Workers[worker.Id] = worker
+
 	log.Printf("start \"%s\"", worker.Name)
 	//j, _ := json.Marshal(worker)
 	//log.Println(string(j))
 
 	// autoload flows
-	if _, ok := wf.flows[worker.FlowId]; ok {
-		worker.Flow = wf.flows[worker.FlowId]
+	if _, ok := wf.Flows[worker.FlowId]; ok {
+		worker.Flow = wf.Flows[worker.FlowId]
 	} else {
 		var flow *models.Flow
 		flow, err = models.GetEnabledFlowById(worker.FlowId)
@@ -107,16 +152,16 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 			return
 		}
 
-		wf.flows[flow.Id] = flow
-		worker.Flow = wf.flows[flow.Id]
+		wf.Flows[flow.Id] = flow
+		worker.Flow = wf.Flows[flow.Id]
 	}
 
 	// message
 	worker.Message = &models.Message{Variable: []byte(worker.DeviceAction.Command)}
 
 	// autoload nodes
-	if _, ok := wf.nodes[worker.Device.NodeId]; ok {
-		worker.Node = wf.nodes[worker.Device.NodeId]
+	if _, ok := wf.Nodes[worker.Device.NodeId]; ok {
+		worker.Node = wf.Nodes[worker.Device.NodeId]
 	} else {
 		var node *models.Node
 		node, err = models.GetNodeById(worker.Device.NodeId)
@@ -162,6 +207,18 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 			log.Println("err" , err.Error())
 		}
 	})
+
+	worker.Run()
+
+	return
+}
+
+func (wf *Workflow) UpdateWorker(worker *models.Worker) (err error) {
+
+	return
+}
+
+func (wf *Workflow) RemoveWorker(worker *models.Worker) (err error) {
 
 	return
 }

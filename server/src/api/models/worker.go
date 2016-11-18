@@ -169,6 +169,21 @@ func DeleteWorker(id int64) (err error) {
 	return
 }
 
+func GetAllEnabledWorkersByWorkflow(workflow *Workflow) (workers []*Worker, err error) {
+
+	o := orm.NewOrm()
+	_, err = o.QueryTable(&Worker{}).Filter("workflow_id", workflow.Id).Filter("status", "enabled").All(&workers)
+	for _,  worker := range workers {
+		if _, err = o.LoadRelated(worker, "DeviceAction"); err != nil {
+			return
+		}
+
+		worker.Device, _ = GetParentDeviceByChildId(worker.DeviceAction.DeviceId)
+		worker.Device.Id = worker.DeviceAction.DeviceId
+	}
+	return
+}
+
 func GetAllEnabledWorkers() (workers []*Worker, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(&Worker{}).Filter("status", "enabled").All(&workers)
@@ -184,24 +199,29 @@ func GetAllEnabledWorkers() (workers []*Worker, err error) {
 }
 
 func (w *Worker) Run() bool {
-	if w.CronTask != nil {
-		w.CronTask.Run()
-		return true
+	if w.CronTask == nil {
+		return false
 	}
-	return false
+
+	w.CronTask.Run()
+
+	return true
 }
 
 func (w *Worker) Stop() bool {
-	if w.CronTask != nil {
-		w.CronTask.Stop()
-		return true
+	if w.CronTask == nil {
+		return false
 	}
-	return false
+
+	w.CronTask.Stop()
+
+	return true
 }
 
 func (w *Worker) IsRun() bool {
-	if w.CronTask != nil {
-		return w.CronTask.IsRun()
+	if w.CronTask == nil {
+		return false
 	}
-	return false
+
+	return w.CronTask.IsRun()
 }

@@ -1,0 +1,36 @@
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="52.8125" width="52.8125" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+ <g stroke="#000" transform="translate(0.40625,0.40625)">
+  <polygon class="quad" transform="translate(1,1)" points="50,25,25,50,0,25,25,0" stroke-width="2px" display="block" fill="#FFF"/>
+
+  <path ng-if="data.type['status'] == 'and' && data.type['base'] == 'data'" d="m23.5,11,0,12.5-12.5,0,0,5,12.5,0,0,12.5,5,0,0-12.5,12.5,0,0-5-12.5,0,0-12.5-5,0z" stroke-width="1px" display="block" fill="#000"/>
+  <circle ng-if="data.type['status'] == 'or' && data.type['base'] == 'data'" stroke-width="2.5px" d="m 38,25 c 0,7.179702 -5.820298,13 -13,13 -7.179702,0 -13,-5.820298 -13,-13 0,-7.179702 5.820298,-13 13,-13 7.179702,0 13,5.820298 13,13 z" transform="translate(1,1)" cy="25" cx="25" r="13" display="block" fill="none"/>
+  <path ng-if="data.type['status'] == 'xor' && data.type['base'] == 'data'" d="m16.857147,16.285715,7.428566,9.714289-7.428566,9.71428,3.428566,0,5.71428-7.46422,5.71429,7.464221,3.42857,0-7.42857-9.71428,7.42857-9.714289-3.42857,0-5.71429,7.464229-5.71428-7.464229-3.428566,0z" stroke-width="1px" display="block" fill="#000"/>
+
+  <g class="xor-event" ng-if="data.type['status'] == 'xor' && data.type['base'] == 'event'" transform="translate(1,1)" display="block" fill="none">
+   <circle stroke-width="1px" d="m 40,25 c 0,8.284271 -6.715729,15 -15,15 -8.284271,0 -15,-6.715729 -15,-15 0,-8.284271 6.715729,-15 15,-15 8.284271,0 15,6.715729 15,15 z" cx="25" cy="25" r="15"/>
+   <circle stroke-width="1px" d="m 37,25 c 0,6.627417 -5.372583,12 -12,12 -6.627417,0 -12,-5.372583 -12,-12 0,-6.627417 5.372583,-12 12,-12 6.627417,0 12,5.372583 12,12 z" cx="25" cy="25" r="12"/>
+   <path stroke-width="2px" d="M18,22,25.363636,17.090909,32.727273,22,30.272727,31.818182h-9.818182z"/>
+  </g>
+
+  <path ng-if="data.type['status'] == 'complex'" d="m23.81022,13.59124,0,7.116789-5.01825-5.018239-3.10219,3.102189,5.01825,5.01824-7.11679,0,0,4.37957,7.11679,0-5.01825,5.01824,3.10219,3.102191,5.01825-5.018241,0,7.11678,4.37956,0,0-7.11678,5.01825,5.018241,3.10219-3.102191-5.01825-5.01824,7.11679,0,0-4.37957-7.11679,0,5.01825-5.01824-3.10219-3.102189-5.01825,5.018239,0-7.116789-4.37956,0z" stroke-width="1px" display="block" fill="#000"/>
+
+  <g ng-if="data.type['status'] == 'and' && data.type['base'] == 'event'" >
+	  <g transform="matrix(1.4361009,0,0,1.4361009,-12.403224,-11.786187)">
+	   <path stroke-linejoin="round" d="m28.097563,24.952902,5.4375,0,0,2.71625-5.4375,0,0,5.43375-2.7125,0,0-5.43375-5.4375,0,0-2.71625,5.4375,0,0-5.4325,2.7125,0,0,5.4325z" stroke="#000" stroke-linecap="round" stroke-width="1px" fill="none"/>
+	  </g>
+	  <g transform="translate(1,1)" display="block" fill="none">
+		<circle stroke-width="1px" d="m 40,25 c 0,8.284271 -6.715729,15 -15,15 -8.284271,0 -15,-6.715729 -15,-15 0,-8.284271 6.715729,-15 15,-15 8.284271,0 15,6.715729 15,15 z" cx="25" cy="25" r="15"/>
+	  </g>
+  </g>
+
+  <g class="xor-event" ng-if="data.type['status'] == 'or' && data.type['base'] == 'event'" transform="translate(1,1)" display="block" fill="none">
+      <circle stroke-width="1px" d="m 40,25 c 0,8.284271 -6.715729,15 -15,15 -8.284271,0 -15,-6.715729 -15,-15 0,-8.284271 6.715729,-15 15,-15 8.284271,0 15,6.715729 15,15 z" cx="25" cy="25" r="15"/>
+      <path stroke-width="2px" d="M18,22,25.363636,17.090909,32.727273,22,30.272727,31.818182h-9.818182z"/>
+  </g>
+ </g>
+ <g>
+   <div ng-if="data.title" class="title">{{data.title}}</div>
+   <div class="ep"></div>
+ </g>
+</svg>

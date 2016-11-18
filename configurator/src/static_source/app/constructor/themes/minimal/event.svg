@@ -1,0 +1,76 @@
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="40" width="40" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+ <!--default value-->
+ <g ng-if="!data.type['end'] && !data.type['intermediate'] && !data.type['start']" class="default" transform="translate(2,2)">
+    <circle stroke-width="2px" d="M 36,18 C 36,27.941125 27.941125,36 18,36 8.0588745,36 0,27.941125 0,18 0,8.0588745 8.0588745,0 18,0 27.941125,0 36,8.0588745 36,18 z" cx="18" stroke="#000" cy="18" r="18" fill="#FFF"/>
+ </g>
+
+ <!-- end -->
+ <g ng-if="data.type['end']" transform="translate(2,2)" >
+  <circle class="end" stroke-width="4px" d="M 36,18 C 36,27.941125 27.941125,36 18,36 8.0588745,36 0,27.941125 0,18 0,8.0588745 8.0588745,0 18,0 27.941125,0 36,8.0588745 36,18 z" cx="18" cy="18" stroke="#000" r="18" fill="#FFF"/>
+ </g>
+  <!-- /end -->
+
+ <!-- intermediate -->
+ <g ng-if="data.type['intermediate']" class="intermediate" stroke-width="1px" stroke="#000" transform="translate(-520,-146)" ng-class="{dashed: data.type['intermediate']['message']['edge_not_interrupts'] || data.type['intermediate']['timer']['edge_not_interrupts'] || data.type['intermediate']['escalation']['edge_not_interrupts'] || data.type['intermediate']['conditional']['edge_not_interrupts'] || data.type['intermediate']['signal']['edge_not_interrupts'] || data.type['intermediate']['compound']['edge_not_interrupts'] || data.type['intermediate']['parallel']['edge_not_interrupts']}">
+  <circle class="circle56" d="M 36,18 C 36,27.941125 27.941125,36 18,36 8.0588745,36 0,27.941125 0,18 0,8.0588745 8.0588745,0 18,0 27.941125,0 36,8.0588745 36,18 z" transform="translate(522,148)" cy="18" cx="18" r="18" fill="#FFF"/>
+  <circle class="circle58" d="M 33,18 C 33,26.284271 26.284271,33 18,33 9.7157288,33 3,26.284271 3,18 3,9.7157288 9.7157288,3 18,3 26.284271,3 33,9.7157288 33,18 z" transform="translate(522,148)" cy="18" cx="18" r="15" fill="none"/>
+ </g>
+ <!-- /intermediate -->
+
+ <!-- start -->
+ <g ng-if="data.type['start']" class="start" transform="translate(2,2)"  ng-class="{dashed: data.type['start']['message']['not_interrupts'] || data.type['start']['timer']['not_interrupts'] || data.type['start']['escalation']['not_interrupts'] || data.type['start']['conditional']['not_interrupts'] || data.type['start']['signal']['not_interrupts'] || data.type['start']['compound']['not_interrupts'] || data.type['start']['parallel']['not_interrupts']}">
+  <circle stroke-width="2px" d="M 36,18 C 36,27.941125 27.941125,36 18,36 8.0588745,36 0,27.941125 0,18 0,8.0588745 8.0588745,0 18,0 27.941125,0 36,8.0588745 36,18 z" cx="18" stroke="#000" cy="18" r="18" fill="#FFF"/>
+ </g>
+ <!-- /start -->
+ <g ng-if="data.type['start']['timer'] || data.type['intermediate']['timer']" class="timer" stroke="#000" transform="translate(-255,-187.6345)">
+  <circle stroke-width="2px" d="M 29,18 C 29,24.075132 24.075132,29 18,29 11.924868,29 7,24.075132 7,18 7,11.924868 11.924868,7 18,7 c 6.075132,0 11,4.924868 11,11 z" transform="translate(257,189.6345)" cy="18" cx="18" r="11" fill="none"/>
+  <path d="m275,207.63,2.25-7.5m-2.25,7.5,5.25,1.5" stroke-linecap="square" stroke-width="2px" fill="none"/>
+  <path d="m275,207.63m0,7.5,0,2.25" stroke-linecap="square" stroke-width="1px" fill="none"/>
+  <path d="m275,207.63m-3.75,6.495-1.125,1.9485" stroke-linecap="square" stroke-width="0.99997801px" fill="none"/>
+  <path d="m275,207.63m-6.495,3.75-1.9485,1.125" stroke-linecap="square" stroke-width="0.99997801px" fill="none"/>
+  <path d="m275,207.63m-7.5,0-2.25,0" stroke-linecap="square" stroke-width="1px" fill="none"/>
+  <path d="m275,207.63m-6.495-3.75-1.9485-1.125" stroke-linecap="square" stroke-width="0.99997801px" fill="none"/>
+  <path d="m275,207.64m-3.75-6.495-1.125-1.9485" stroke-linecap="square" stroke-width="0.99997801px" fill="none"/>
+  <path d="m275,207.63m0-7.5,0-2.25" stroke-linecap="square" stroke-width="1px" fill="none"/>
+  <path d="m275,207.64m3.75-6.495,1.125-1.9485" stroke-linecap="square" stroke-width="0.99997801px" fill="none"/>
+  <path d="m275,207.64m6.495-3.75,1.9485-1.125" stroke-linecap="square" stroke-width="0.99997801px" fill="none"/>
+  <path d="m275,207.63m7.5,0,2.25,0" stroke-linecap="square" stroke-width="1px" fill="none"/>
+  <path d="m275,207.64m6.495,3.75,1.9485,1.125" stroke-linecap="square" stroke-width="0.99997801px" fill="none"/>
+  <path d="m275,207.63m3.75,6.495,1.125,1.9485" stroke-linecap="square" stroke-width="0.99997801px" fill="none"/>
+ </g>
+ <path ng-if="data.type['start']['conditional'] || data.type['intermediate']['conditional']" class="conditional" d="m12.75,11,14.5,0,0,18-14.5,0zm2,3,10.5,0m-10.5,3,10.5,0m-10.5,3,10.5,0m-10.5,3,10.5,0m-10.5,3,10.5,0m-10.5,3,10.5,0" stroke="#000" stroke-width="1px" fill="none"/>
+
+ <path ng-if="data.type['start']['message'] || (data.type['intermediate']['message'] && !data.type['intermediate']['message']['generated'])" class="message" stroke-linejoin="round" d="m10.557812,13.708026,0,12.6,18.9,0,0-12.6zm18.9,0-9.45,5.4-9.465623-5.416052z" stroke="#000" stroke-width="1px" fill="none"/>
+ <path ng-if="data.type['intermediate']['message']['generated'] || data.type['end']['message']" class="message_inverted" d="m10.585357,13.7,0,12.6,18.899996,0,0-12.6zm9.45,5.4,9.449996-5.4-18.970706,0z" stroke="#FFF" stroke-width="1px" fill="#000"/>
+
+ <path ng-if="data.type['start']['escalation'] || (data.type['intermediate']['escalation'] && !data.type['intermediate']['escalation']['generated'])" class="escalation" d="m20.5175,22.738c-2.808,2.382-5.616,4.764-8.424,7.146,2.808-6.589333,5.616-13.178667,8.424-19.768,2.463,6.589333,4.926,13.178667,7.389,19.768-2.463-2.382-4.926-4.764-7.389-7.146z" stroke="#000" stroke-width="1px" display="block" fill="none"/>
+ <path ng-if="data.type['intermediate']['escalation']['generated'] || data.type['end']['escalation'][0]" class="escalation_invert" d="m20.5175,22.738c-2.808,2.382-5.616,4.764-8.424,7.146,2.808-6.589333,5.616-13.178667,8.424-19.768,2.463,6.589333,4.926,13.178667,7.389,19.768-2.463-2.382-4.926-4.764-7.389-7.146z" stroke="#000" stroke-width="1px" display="block" fill="#000"/>
+
+ <path ng-if="data.type['intermediate']['link']['machinig']" class="link" d="m21.828125,12.1875,0,4.4375-13.5,0,0,6.75,13.5,0,0,4.4375,9.84375-7.8125-9.84375-7.8125z" stroke="#000" stroke-width="1px" display="block" fill="none"/>
+ <path ng-if="data.type['intermediate']['link']['generated']" class="link_invert" d="m21.828126,12.1875,0,4.4375-13.500002,0,0,6.75,13.500002,0,0,4.4375,9.84375-7.8125-9.84375-7.8125z" stroke="#000" stroke-width="1px" display="block" fill="#000"/>
+
+ <path ng-if="data.type['start']['error']['interrupts'] || data.type['intermediate']['error']['edge_interrupts']" class="error" d="m8.3687499,28.45,7.0875001-16.5375,6.15,9.45,8.025-11.8125001l-7.0875,17.4750001-6.1375-8.025-8.0375001,9.45z" stroke="#000" stroke-linecap="round" stroke-width="1px" fill="none"/>
+ <path ng-if="data.type['end']['error'][0]" class="error_invert" d="m8.3687499,28.45,7.0875001-16.5375,6.15,9.45,8.025-11.8125001l-7.0875,17.4750001-6.1375-8.025-8.0375001,9.45z" stroke="#000" stroke-linecap="round" stroke-width="1px" fill="#000"/>
+
+ <path ng-if="data.type['intermediate']['cancel']['edge_interrupts']" class="cancel" d="M11.4875,8.975,19,16.5,26.5125,8.975,29.025,11.4875,21.5,19,29.025,26.5125,26.5125,29.025,19,21.5125,11.4875,29.025,8.975,26.5125,16.4875,19,8.975,11.4875,11.4875,8.975z" stroke="#000" stroke-linecap="round" stroke-dasharray="none" stroke-width="1px" fill="none"/>
+ <path ng-if="data.type['end']['cancel'][0]" class="cancel_invert" d="M11.4875,8.975,19,16.5,26.5125,8.975,29.025,11.4875,21.5,19,29.025,26.5125,26.5125,29.025,19,21.5125,11.4875,29.025,8.975,26.5125,16.4875,19,8.975,11.4875,11.4875,8.975z" stroke="#000" stroke-linecap="round" stroke-dasharray="none" stroke-width="1px" fill="#000"/>
+
+ <path ng-if="data.type['start']['compensation']['interrupts'] || data.type['intermediate']['compensation']['edge_interrupts'] || data.type['intermediate']['compensation']['generated']" class="compensation" d="m10,20,10-5,0,10zm10,0,10-5,0,10z" stroke="#000" stroke-width="1px" display="block" fill="none"/>
+ <path ng-if="data.type['end']['compensation'][0]" class="compensation_invert" d="m10,20,10-5,0,10zm10,0,10-5,0,10z" stroke="#000" stroke-width="1px" display="block" fill="#000"/>
+
+ <path transform="translate(0.3,0)" ng-if="data.type['start']['signal'] || (data.type['intermediate']['signal'] && !data.type['intermediate']['signal']['generated'])" class="signal" d="m20,11.9,9,16.2-18,0z" stroke="#000" stroke-width="1px" fill="none"/>
+ <path transform="translate(0.3,0)" ng-if="data.type['end']['signal'][0] || data.type['intermediate']['signal']['generated']" class="signal_invert" d="m20,11.9,9,16.2-18,0z" stroke="#000" stroke-width="1px" fill="#000"/>
+
+ <path transform="translate(1,0.9)" ng-if="data.type['start']['compound'] || (data.type['intermediate']['compound'] && !data.type['intermediate']['compound']['generated'])" class="compound" d="M8.16875,16.7,18.99375,8.6375002,29.83125,16.7l-3.925,12.6625h-13.8125l-3.925-12.6625z" stroke="#000" stroke-linecap="round" stroke-dasharray="none" stroke-width="1px" fill="none"/>
+ <path transform="translate(1,0.9)" ng-if="data.type['end']['compound'][0] || data.type['intermediate']['compound']['generated']" class="compound_invert" d="M8.16875,16.7,18.99375,8.6375002,29.83125,16.7l-3.925,12.6625h-13.8125l-3.925-12.6625z" stroke="#000" stroke-linecap="round" stroke-width="1px" fill="#000"/>
+
+ <path transform="translate(0.8,0.9)" ng-if="data.type['start']['parallel'] || (data.type['intermediate']['parallel'] && !data.type['intermediate']['parallel']['generated'])" class="parallel" stroke-linejoin="round" d="m16.34375,8.3687501,5.3125,0,0,7.9749999,7.975,0,0,5.3125-7.975,0,0,7.975-5.3125,0,0-7.975-7.9750001,0,0-5.3125,7.9750001,0,0-7.9749999z" stroke="#000" stroke-linecap="round" stroke-miterlimit="10" stroke-dasharray="none" stroke-width="1px" fill="none"/>
+
+ <path transform="translate(0.8,0.9)" ng-if="data.type['end']['stop'][0]" class="stop" fill-rule="evenodd" fill="#000" d="M31.836763,19c0-7.089891-5.746871-12.8367639-12.836763-12.8367639-7.089891,0-12.8367631,5.7468729-12.8367631,12.8367639s5.7468721,12.836764,12.8367631,12.836764c7.089892,0,12.836763-5.746873,12.836763-12.836764z"/>
+    <g>
+        <div ng-if="data.title" class="title">{{data.title}}</div>
+        <div class="ep"></div>
+
+    </g>
+</svg>

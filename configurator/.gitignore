@@ -72,7 +72,8 @@ install_manifest.txt
 .idea
 /vendor/
 /public
-src/static_source/fonts
+src/static_source/fonts/*
+src/static_source/font/*
 src/static_source/tmp
 src/node_modules
 src/static_source/css

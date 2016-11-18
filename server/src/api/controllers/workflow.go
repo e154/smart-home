@@ -75,12 +75,12 @@ func (c *WorkflowController) Post() {
 // @router /:id [get]
 func (c *WorkflowController) GetOne() {
 	id, _ := c.GetInt(":id")
-	node, err := models.GetWorkerById(int64(id))
+	workflow, err := models.GetWorkflowById(int64(id))
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	} else {
-		c.Data["json"] = map[string]interface{}{"workflow": node}
+		c.Data["json"] = map[string]interface{}{"workflow": workflow}
 	}
 
 	c.ServeJSON()
@@ -143,6 +143,8 @@ func (c *WorkflowController) Delete() {
 		c.ErrHan(403, err.Error())
 		return
 	}
+
+	bpms.BpmsPtr().RemoveWorkflow(&models.Workflow{Id:int64(id)})
 
 	c.ServeJSON()
 }

@@ -45,6 +45,22 @@ angular
         ]
       }
       {
+        'label': 'Flows'
+        'route': 'dashboard.flow'
+        'link': 'dashboard.flow.index'
+        'icon': 'fa fa-cube'
+        'items': [
+          {
+            'label': 'All flow'
+            'route': 'dashboard.flow.index'
+          }
+          {
+            'label': 'Add new'
+            'route': 'dashboard.flow.new'
+          }
+        ]
+      }
+      {
         'label': 'Workflow'
         'route': 'dashboard.workflow'
         'link': 'dashboard.workflow.index'

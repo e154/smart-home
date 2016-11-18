@@ -29,6 +29,12 @@ func Initialize() {
 			beego.NSRouter("/workflow", &controllers.WorkflowController{}, "post:Post"),
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "put:Put"),
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "delete:Delete"),
+
+			beego.NSRouter("/flow/:id([0-9]+)", &controllers.FlowController{}, "get:GetOne"),
+			beego.NSRouter("/flow", &controllers.FlowController{}, "get:GetAll"),
+			beego.NSRouter("/flow", &controllers.FlowController{}, "post:Post"),
+			beego.NSRouter("/flow/:id([0-9]+)", &controllers.FlowController{}, "put:Put"),
+			beego.NSRouter("/flow/:id([0-9]+)", &controllers.FlowController{}, "delete:Delete"),
 		),
 	)
 	beego.AddNamespace(ns)
