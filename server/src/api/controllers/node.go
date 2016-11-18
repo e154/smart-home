@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
-	"../models"
-	"fmt"
 	"github.com/astaxie/beego/validation"
+	"encoding/json"
+	"fmt"
+	"../bpms"
+	"../models"
 )
 
 // NodeController operations for Node
@@ -59,6 +60,10 @@ func (c *NodeController) Post() {
 		c.Data["json"] = map[string]interface{}{"id": nid}
 
 	}
+
+	pm := bpms.BpmsPtr()
+	node.Id = nid
+	pm.AddNode(&node)
 
 	c.ServeJSON()
 }
@@ -122,6 +127,12 @@ func (c *NodeController) Put() {
 	node.Id = int64(id)
 	if err := models.UpdateNodeById(&node); err != nil {
 		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if err := bpms.BpmsPtr().ReloadNode(&node); err != nil {
+		c.ErrHan(403, err.Error())
+		return
 	}
 
 	c.ServeJSON()
@@ -136,8 +147,23 @@ func (c *NodeController) Put() {
 // @router /:id [delete]
 func (c *NodeController) Delete() {
 	id, _ := c.GetInt(":id")
+
+	// get node
+	node, err := models.GetNodeById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	// remove from process
+	if err := bpms.BpmsPtr().RemoveNode(node); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
 	if err := models.DeleteNode(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
+		return
 	}
 
 	c.ServeJSON()

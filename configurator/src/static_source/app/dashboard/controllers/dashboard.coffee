@@ -46,5 +46,10 @@ angular
       }
     ]
 
+
+  $scope.nodes = {}
+  Stream.subscribe "nodes", (nodes)->
+    $scope.nodes = nodes
+
   vm
 ]

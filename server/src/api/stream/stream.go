@@ -3,7 +3,7 @@ package stream
 import (
 	"net/http"
 	"gopkg.in/igm/sockjs-go.v2/sockjs"
-	"../controllers"
+	"github.com/astaxie/beego"
 )
 
 var (
@@ -11,7 +11,7 @@ var (
 )
 
 type StreamCotroller struct {
-	controllers.CommonController
+	beego.Controller
 }
 
 func (w *StreamCotroller) Get() {
@@ -28,6 +28,6 @@ func (w *StreamCotroller) echoHandler(session sockjs.Session) {
 		Referer: w.Ctx.Input.Header("Referer"),
 		UserAgent: w.Ctx.Request.UserAgent(),
 	}
-	w.SetSession("clientinfo", client)
+	//w.SetSession("clientinfo", client)
 	hub.AddClient(client)
 }

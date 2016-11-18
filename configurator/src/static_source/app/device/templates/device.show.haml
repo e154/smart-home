@@ -1,6 +1,10 @@
 .row
   .col-md-6
-    %h3 Устройство №{{device.device.id}}
+    %h3
+      %a(href="" ui-sref="dashboard.device.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      Устройство №{{device.device.id}}
       .edit-icon-link
         %a(ui-sref="dashboard.device.edit({id:device.device.id})")
           %span.fa.fa-pencil

@@ -19,14 +19,14 @@ type Worker struct {
 	DeviceAction *DeviceAction  	`orm:"rel(fk);column(device_action_id);null" json:"device_action"`
 	Device       *Device		`orm:"-" json:"device"`
 	Flow         *Flow		`orm:"-" json:"flow"`
-	Message      *Message	`orm:"-" json:"-"`
+	Message      *Message		`orm:"-" json:"-"`
 	Node         *Node		`orm:"-" json:"-"`
 	CronTask     *crontab.Task	`orm:"-" json:"-"`
 	Status       string 		`orm:"size(254)" json:"status" valid:"Required"`
 	Name         string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	Time         string  	`orm:"size(254)" json:"time"`
-	Created_at   time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at    time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	Time         string  		`orm:"size(254)" json:"time"`
+	Created_at   time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at    time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
 func (m *Worker) TableName() string {

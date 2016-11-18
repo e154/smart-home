@@ -3,7 +3,6 @@ package api
 import (
 	"fmt"
 	"time"
-	"github.com/astaxie/beego/plugins/cors"
 	"github.com/astaxie/beego/validation"
 	_ "github.com/astaxie/beego/session/mysql"
 	_ "github.com/go-sql-driver/mysql"
@@ -51,18 +50,6 @@ func Initialize() {
 
 	// register access filters
 	filters.RegisterFilters()
-
-	// CORS for https://foo.* origins, allowing:
-	// - PUT and PATCH methods
-	// - Origin header
-	// - Credentials share
-	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
-		AllowOrigins:     []string{"http://*", "https://*"},
-		AllowMethods:     []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
-		//AllowHeaders:     []string{"Origin"},
-		//ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-	}))
 
 	validation.SetDefaultMessage(map[string]string{
 		"Required":     "Должно быть заполнено",

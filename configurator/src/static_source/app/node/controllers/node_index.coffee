@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'nodeIndexCtrl', ['$scope', 'Notify', 'Node', '$state'
-($scope, Notify, Node, $state) ->
+.controller 'nodeIndexCtrl', ['$scope', 'Notify', 'Node', '$state', '$timeout'
+($scope, Notify, Node, $state, $timeout) ->
   vm = this
 
   tableCallback = {}
@@ -39,9 +39,25 @@ angular
         field: 'update_at'
         template: '<span>{{item[field] | readableDateTime}}</span>'
       }
+      {
+        name: 'node.status'
+        width: '50px'
+        template: "<span class='label label-success' ng-if='column.getStatus(item[\"id\"]) == \"connected\"'>{{\"node.state.connected\" | translate}}</span>
+<span class='label label-warning' ng-if='column.getStatus(item[\"id\"]) == \"wait\"'>{{'node.state.wait' | translate}}</span>
+<span class='label label-danger' ng-if='column.getStatus(item[\"id\"]) == \"error\"'>{{'node.state.error' | translate}}</span>
+<span class='label label-default' ng-if='item[\"status\"] == \"disabled\"'>{{'node.disabled' | translate}}</span>
+"
+        getStatus: (id)->
+          $scope.nodes[id]
+      }
     ]
     menu:null
     callback: tableCallback
+    onLoad: (result)->
+      $timeout ()->
+        $scope.getStatus().then (result)->
+          $scope.nodes = result.nodes
+      , 500
 
   vm
 ]

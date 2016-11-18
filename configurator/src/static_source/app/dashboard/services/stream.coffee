@@ -22,9 +22,14 @@ angular
   class Stream
     socket: null
     callbacks: null
+    subscribers: null
 
     constructor: ->
+      @subscribers = {}
       @callbacks = {}
+      @connect()
+
+    connect: ->
       @socket = socketFactory({
         url: "#{window.server_url}/api/v1/ws"
         socket: new SockJS("#{window.server_url}/api/v1/ws")
@@ -48,6 +53,9 @@ angular
       switch m.type
         when "notify"
           Notify m.value.type, m.value.body
+        when "broadcast"
+          if (m.value.type in Object.keys(@subscribers))
+            @subscribers[m.value.type](m.value.body)
 
       if !m.id || m.id == ""
         return
@@ -73,7 +81,10 @@ angular
 
       @send angular.toJson({client_info: {value: clientInfo()}})
 
-    onclose: ->
+    onclose: =>
+      $timeout ()=>
+        @connect()
+      , 1000
 
     send: (m)->
       if typeof m != 'object'
@@ -98,6 +109,17 @@ angular
         @send q
 
       defer.promise
+
+    subscribe: (name, func)=>
+      if !(name in @subscribers)
+        @subscribers[name] = func
+      else
+        Notify "Ошибка", "Подписчик #{name} уже есть в списке"
+
+    unsubscribe: (name)->
+      if (name in @subscribers)
+        delete @subscribers[name]
+
 
   new Stream()
 ]

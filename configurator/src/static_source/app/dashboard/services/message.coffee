@@ -21,7 +21,7 @@ angular
     if typeof message == 'undefined'
       return
     if typeof time == 'undefined'
-      time = 50000
+      time = 5000
     arr = message.split('\r')
     if arr.length > 1
       i = 0

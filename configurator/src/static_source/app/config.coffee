@@ -3,8 +3,6 @@ angular
 .config ['$translatePartialLoaderProvider', '$translateProvider', '$locationProvider', '$routeProvider'
 ($translatePartialLoaderProvider, $translateProvider, $locationProvider, $routeProvider) ->
 
-  window.server_url = 'http://127.0.0.1:3000'
-
   $translatePartialLoaderProvider.addPart('dashboard');
 
   $translateProvider.useLoader('$translatePartialLoader', {

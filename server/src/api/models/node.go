@@ -25,6 +25,8 @@ type Node struct {
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 	rpcClient	*rpc.Client	`orm:"-" json:"-"`
 	netConn		net.Conn	`orm:"-" json:"-"`
+	Errors		int64		`orm:"-" json:"-"`
+	connStatus	string		`orm:"-" json:"-"`
 }
 
 func (m *Node) TableName() string {
@@ -157,6 +159,18 @@ func UpdateNodeById(m *Node) (err error) {
 func DeleteNode(id int64) (err error) {
 	o := orm.NewOrm()
 	v := Node{Id: id}
+
+	var count int64
+	count, err = o.QueryTable(&Device{}).Filter("node_id", id).Count()
+	if err != nil {
+		return
+	}
+
+	if count > 0 {
+		err = errors.New("node: Not delete with child devices!")
+		return
+	}
+
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -198,7 +212,10 @@ func (n *Node) RpcDial() (*rpc.Client, error) {
 func (n *Node) TcpDial() (net.Conn, error) {
 	var err error
 	if n.netConn == nil {
-		n.netConn, err = net.Dial("tcp",fmt.Sprintf("%s:%d", n.Ip, n.Port))
+		n.netConn, err = net.DialTimeout("tcp", fmt.Sprintf("%s:%d", n.Ip, n.Port), time.Second * 2)
+		if err != nil {
+			return nil, err
+		}
 	}
 	//defer n.netConn.Close()
 	return n.netConn, err
@@ -206,8 +223,11 @@ func (n *Node) TcpDial() (net.Conn, error) {
 
 func (n *Node) TcpClose() {
 	if n.netConn == nil {
-		defer n.netConn.Close()
+		return
 	}
+	n.netConn.Close()
+	n.netConn = nil
+	n.rpcClient = nil
 }
 
 func (n *Node) GetVersion() (version string, err error) {
@@ -226,6 +246,23 @@ func (n *Node) ModbusSend(args interface{}, reply interface{}) error {
 	return n.rpcClient.Call("Modbus.Send", args, reply)
 }
 
+//TODO remove
 func (n *Node) IsConnected() bool {
 	return n.netConn != nil
+}
+
+func (n *Node) GetConn() net.Conn {
+	return n.netConn
+}
+
+func (n *Node) GetConnectStatus() string {
+	if n.Status == "disabled" {
+		n.connStatus = "disabled"
+	}
+
+	return n.connStatus
+}
+
+func (n *Node) SetConnectStatus(st string) {
+	n.connStatus = st
 }

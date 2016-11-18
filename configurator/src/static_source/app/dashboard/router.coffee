@@ -9,7 +9,7 @@ angular
       url: "/"
       abstract: true
       views:
-        '@':
+        'dashboard@':
           templateUrl: '/dashboard/templates/dashboard.html'
           controller: 'dashboardCtrl as dashboard'
       )

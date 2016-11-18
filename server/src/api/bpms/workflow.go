@@ -15,6 +15,35 @@ type Workflow struct {
 	nodes		map[int64]*models.Node
 }
 
+func (b *BPMS) InitWorkflows() (err error) {
+
+	b.workflows = make(map[int64]*Workflow)
+	log.Println("------------------- WORKFLOW --------------------")
+	workflows, err := models.GetAllEnabledWorkflow()
+	if err != nil {
+		return
+	}
+	log.Println("ok")
+
+	for _, workflow := range workflows {
+
+		wf := &Workflow{model: workflow, nodes: b.nodes}
+		if err = wf.Init(); err != nil {
+			return
+		}
+
+		b.workflows[workflow.Id] = wf
+	}
+
+	for _, wf := range b.workflows {
+		if err = wf.Run(); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
 func (wf *Workflow) Init() (err error) {
 
 	var flows	[]*models.Flow
@@ -124,8 +153,15 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 		args.Time = time.Now()
 
 		result := &r.Result{}
+		if !worker.Node.IsConnected() {
+			worker.Node.Errors++
+			return
+		}
+
 		if err := worker.Node.ModbusSend(args, result); err != nil {
-			log.Println("err ", err.Error())
+			worker.Node.Errors++
+			// нет связи с нодой, или что-то случилось
+			return
 		}
 
 		worker.Message.Variable = result.Result

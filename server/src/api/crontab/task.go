@@ -18,7 +18,7 @@ func (t *Task) Run() *Task {
 		return t
 	}
 
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(1 * time.Second)
 	t.quit = make(chan bool)
 	t.isRun = true
 	go func() {

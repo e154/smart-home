@@ -9,6 +9,12 @@ const (
 	maxMessageSize = 512
 )
 
+type Hub interface {
+	Broadcast(message string)
+	Subscribe(command string, f func(client *Client, value interface{}))
+	UnSubscribe(command string)
+}
+
 var instantiated *hub
 
 type hub struct {
@@ -72,6 +78,11 @@ func (h *hub) Recv(client *Client, message string) {
 
 func (h *hub) Send(client *Client, message string) {
 	client.Session.Send(message)
+}
+
+func (h *hub) Broadcast(message string) {
+
+	h.broadcast <- message
 }
 
 func (h *hub) Clients() (clients []*Client) {

@@ -4,6 +4,8 @@ import  (
 	"github.com/astaxie/beego"
 	"net/url"
 	"strconv"
+	"reflect"
+	"html/template"
 )
 
 type Request struct {
@@ -57,4 +59,28 @@ offset int64, limit int64) {
 	}
 
 	return
+}
+
+func (c *CommonController) GetTemplate() string {
+
+	templatetype := beego.AppConfig.String("template_type")
+	if templatetype == "" {
+		templatetype = "default"
+	}
+	return templatetype
+}
+
+func (c *CommonController) Prepare() {
+
+
+}
+
+func init() {
+	beego.AddFuncMap("safeHtml", func(s string) template.HTML {return template.HTML(s)})
+	beego.AddFuncMap("safeCss", func(s string) template.CSS {return template.CSS(s)})
+	beego.AddFuncMap("safeUrl", func(s string) template.URL {return template.URL(s)})
+	beego.AddFuncMap("safeJs", func(s string) template.JS {return template.JS(s)})
+	beego.AddFuncMap("attr", func(s string) template.HTMLAttr {return template.HTMLAttr(s)})
+	beego.AddFuncMap("last", func(i int, s interface{}) bool {return i == reflect.ValueOf(s).Len() - 1})
+	beego.AddFuncMap("len", func(s interface{}) int {return reflect.ValueOf(s).Len()})
 }

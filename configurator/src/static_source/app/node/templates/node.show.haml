@@ -1,6 +1,10 @@
 .row
   .col-md-6
-    %h3 Узел №{{node.node.id}}
+    %h3
+      %a(href="" ui-sref="dashboard.node.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      Узел №{{node.node.id}}
       .edit-icon-link
         %a(ui-sref="dashboard.node.edit({id:node.node.id})")
           %span.fa.fa-pencil
@@ -13,6 +17,20 @@
 
 .row
   .col-md-6
+    .form-group
+      .text-muted
+        {{'node.status' | translate}}
+      %div(ng-if="node.node.status != 'disabled'")
+        %span.label.label-success(ng-if="node.node.state == 'connected'")
+          {{"node.state.connected" | translate}}
+        %span.label.label-warning(ng-if="node.node.state == 'wait'")
+          {{"node.state.wait" | translate}}
+        %span.label.label-danger(ng-if="node.node.state == 'error'")
+          {{"node.state.error" | translate}}
+      %div(ng-if="node.node.status == 'disabled'")
+        %span.label.label-default
+          {{"node.disabled" | translate}}
+
     .form-group
       .text-muted
         {{'node.name' | translate}}

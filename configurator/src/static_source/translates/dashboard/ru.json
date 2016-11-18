@@ -20,7 +20,13 @@
     "update_at": "Дата обновления",
     "enabled": "Включен",
     "disabled": "Выключен",
-    "status": "Состояние"
+    "status": "Состояние",
+    "state": {
+      "disconnected": "Отключено",
+      "connected": "Подключено",
+      "wait": "Ожидается",
+      "error": "Ошибка"
+    }
   },
   "device": {
     "name": "Название",

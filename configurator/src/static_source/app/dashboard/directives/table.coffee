@@ -8,6 +8,7 @@
 #  tableCallback = {}
 #  tableCallback.update()
 #  vm.options =
+#    onLoad: (result)->
 #    perPage: 20
 #    resource: LayersliderResource
 #    columns: [
@@ -223,6 +224,9 @@ ng-class="{ \'sorted desc\': order == \'desc\' && sortby.indexOf(column.field) !
         success =(result)->
           $scope.items = angular.copy(result.items)
           $scope.pagination = angular.copy(result.meta)
+          try
+            $scope.table?.onLoad(result)
+          catch
 
         error =(result)->
           Message result.data.status, result.data.message
