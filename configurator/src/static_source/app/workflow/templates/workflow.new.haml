@@ -1,0 +1,14 @@
+.row
+    .col-md-6
+        %h3 Новая раюочая зона
+
+.row
+    .col-md-6
+        %div(ng-include="'/workflow/templates/_workflow_form.html'")
+.row
+    .col-md-6
+        .pull-right
+            %a.btn.btn-default(href="" role="button" ui-sref="dashboard.workflow.index")
+                {{'Cancel' | translate}}
+            %a.btn.btn-primary(href="" role="button" ng-click="workflow.submit()")
+                {{'Create' | translate}}

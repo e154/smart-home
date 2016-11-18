@@ -6,7 +6,29 @@ import (
 	"log"
 	"time"
 	"encoding/hex"
+	"reflect"
+	"encoding/json"
+	"../stream"
 )
+
+func (b *BPMS) AddWorkflow(workflow *models.Workflow) (err error) {
+
+	if _, ok := b.workflows[workflow.Id]; ok {
+		return
+	}
+
+	wf := &Workflow{model: workflow, nodes: b.nodes}
+	if err = wf.AddWorkfow(); err != nil {
+		return
+	}
+
+	b.workflows[workflow.Id] = wf
+
+	// run
+	err = wf.Run()
+
+	return
+}
 
 type Workflow struct {
 	model		*models.Workflow
@@ -15,60 +37,31 @@ type Workflow struct {
 	nodes		map[int64]*models.Node
 }
 
-func (b *BPMS) InitWorkflows() (err error) {
+func (wf *Workflow) AddWorkfow() (err error) {
 
-	b.workflows = make(map[int64]*Workflow)
-	log.Println("------------------- WORKFLOW --------------------")
-	workflows, err := models.GetAllEnabledWorkflow()
-	if err != nil {
-		return
-	}
-	log.Println("ok")
-
-	for _, workflow := range workflows {
-
-		wf := &Workflow{model: workflow, nodes: b.nodes}
-		if err = wf.Init(); err != nil {
-			return
-		}
-
-		b.workflows[workflow.Id] = wf
-	}
-
-	for _, wf := range b.workflows {
-		if err = wf.Run(); err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func (wf *Workflow) Init() (err error) {
-
-	var flows	[]*models.Flow
-	var workers	[]*models.Worker
+	//var flows	[]*models.Flow
+	//var workers	[]*models.Worker
 
 	wf.flows = make(map[int64]*models.Flow)
 	wf.workers = make(map[int64]*models.Worker)
 
-	log.Println("-------------------- FLOWS ----------------------")
-	if flows, err = wf.model.GetAllEnabledFlows(); err != nil {return}
-	for _, flow := range flows {
-		wf.flows[flow.Id] = flow
-	}
-	log.Println("ok")
-
-	log.Println("------------------- WORKERS ---------------------")
-	if workers, err = models.GetAllEnabledWorkers(); err != nil {return}
-	for _, worker := range workers {
-		wf.workers[worker.Id] = worker
-	}
-
-	for _, worker := range wf.workers {
-		wf.AddWorker(worker)
-	}
-	log.Println("ok")
+	//log.Println("-------------------- FLOWS ----------------------")
+	//if flows, err = wf.model.GetAllEnabledFlows(); err != nil {return}
+	//for _, flow := range flows {
+	//	wf.flows[flow.Id] = flow
+	//}
+	//log.Println("ok")
+	//
+	//log.Println("------------------- WORKERS ---------------------")
+	//if workers, err = models.GetAllEnabledWorkers(); err != nil {return}
+	//for _, worker := range workers {
+	//	wf.workers[worker.Id] = worker
+	//}
+	//
+	//for _, worker := range wf.workers {
+	//	wf.AddWorker(worker)
+	//}
+	//log.Println("ok")
 
 	return
 }
@@ -171,4 +164,28 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 	})
 
 	return
+}
+
+func (wf *Workflow) GetStatus() string {
+	return wf.model.Status
+}
+
+func GetWorkflowsStatus() (result map[int64]string) {
+	result = make(map[int64]string)
+	for id, workflow := range bpmsPtr.workflows {
+		result[id] = workflow.model.Status
+	}
+
+	return
+}
+
+func streamWorkflowsStatus(client *stream.Client, value interface{}) {
+	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
+	if !ok {
+		return
+	}
+
+	result := GetWorkflowsStatus()
+	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "workflows": result})
+	client.Send(string(msg))
 }

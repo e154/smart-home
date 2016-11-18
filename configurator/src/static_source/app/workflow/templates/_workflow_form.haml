@@ -1,0 +1,15 @@
+.form-group
+    %laber {{'workflow.name' | translate}}*
+    %input.form-control(ng-model="workflow.workflow.name")
+
+.form-group
+    %laber {{'workflow.status' | translate}}
+    %select.form-control(ng-model="workflow.workflow.status")
+        %option(value="enabled")
+            {{'workflow.enabled' | translate}}
+        %option(value="disabled")
+            {{'workflow.disabled' | translate}}
+.form-group
+    %laber {{'workflow.description' | translate}}
+    %textarea.form-control(ng-model="workflow.workflow.description" rows="10" )
+

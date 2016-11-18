@@ -1,7 +1,6 @@
 package bpms
 
 import (
-	"log"
 	"time"
 	"encoding/json"
 	"reflect"
@@ -9,34 +8,13 @@ import (
 	"../stream"
 )
 
-func (b *BPMS) InitNodes() (err error) {
-	var nodes []*models.Node
-	b.nodes = make(map[int64]*models.Node)
-	b.chanals = make(map[int64]chan string)
-
-	log.Println("--------------------- NODES ---------------------")
-	if nodes, err = models.GetAllEnabledNodes(); err != nil {
-		return
-	}
-
-	for _, node := range nodes {
-		b.AddNode(node)
-	}
-
-	if len(b.nodes) == 0 {
-		return
-	}
-
-	return
-}
-
 func (b *BPMS) AddNode(node *models.Node) (err error) {
 	if _, ok := b.nodes[node.Id]; ok {
 		return
 	}
 
 	b.nodes[node.Id] = node
-	b.chanals[node.Id] = make(chan string)
+	b.nodes_chan[node.Id] = make(chan string)
 
 	go func(ch <- chan string) {
 		var quit, disconnect bool
@@ -92,7 +70,7 @@ func (b *BPMS) AddNode(node *models.Node) (err error) {
 
 			time.Sleep(time.Second)
 		}
-	}(b.chanals[node.Id])
+	}(b.nodes_chan[node.Id])
 
 	return
 }
@@ -100,9 +78,9 @@ func (b *BPMS) AddNode(node *models.Node) (err error) {
 func (b *BPMS) RemoveNode(node *models.Node) (err error) {
 
 	if _, ok := b.nodes[node.Id]; ok {
-		b.chanals[node.Id] <- "quit"
-		close(b.chanals[node.Id])
-		delete(b.chanals, node.Id)
+		b.nodes_chan[node.Id] <- "quit"
+		close(b.nodes_chan[node.Id])
+		delete(b.nodes_chan, node.Id)
 		delete(b.nodes, node.Id)
 	}
 
@@ -123,9 +101,9 @@ func (b *BPMS) ReloadNode(node *models.Node) (err error) {
 	b.nodes[node.Id].Port = node.Port
 	b.nodes[node.Id].SetConnectStatus("wait")
 	if node.Status == "disabled" {
-		b.chanals[node.Id] <- "disconnect"
+		b.nodes_chan[node.Id] <- "disconnect"
 	} else {
-		b.chanals[node.Id] <- "connect"
+		b.nodes_chan[node.Id] <- "connect"
 	}
 
 	BroadcastNodesStatus()
@@ -136,7 +114,7 @@ func (b *BPMS) ReloadNode(node *models.Node) (err error) {
 func (b *BPMS) ConnectNode(node *models.Node) (err error) {
 
 	if _, ok := b.nodes[node.Id]; ok {
-		b.chanals[node.Id] <- "connect"
+		b.nodes_chan[node.Id] <- "connect"
 	}
 
 	BroadcastNodesStatus()
@@ -147,7 +125,7 @@ func (b *BPMS) ConnectNode(node *models.Node) (err error) {
 func (b *BPMS) DisconnectNode(node *models.Node) (err error) {
 
 	if _, ok := b.nodes[node.Id]; ok {
-		b.chanals[node.Id] <- "disconnect"
+		b.nodes_chan[node.Id] <- "disconnect"
 	}
 
 	BroadcastNodesStatus()

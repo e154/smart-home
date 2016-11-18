@@ -13,6 +13,22 @@ angular
         'icon': 'fa fa-home'
       }
       {
+        'label': 'Devices'
+        'route': 'dashboard.device'
+        'link': 'dashboard.device.index'
+        'icon': 'fa fa-microchip'
+        'items': [
+          {
+            'label': 'All devices'
+            'route': 'dashboard.device.index'
+          }
+          {
+            'label': 'Add new'
+            'route': 'dashboard.device.new'
+          }
+        ]
+      }
+      {
         'label': 'Nodes'
         'route': 'dashboard.node'
         'link': 'dashboard.node.index'
@@ -29,18 +45,18 @@ angular
         ]
       }
       {
-        'label': 'Devices'
-        'route': 'dashboard.device'
-        'link': 'dashboard.device.index'
-        'icon': 'fa fa-microchip'
+        'label': 'Workflow'
+        'route': 'dashboard.workflow'
+        'link': 'dashboard.workflow.index'
+        'icon': 'fa fa-cube'
         'items': [
           {
-            'label': 'All devices'
-            'route': 'dashboard.device.index'
+            'label': 'All workflow'
+            'route': 'dashboard.workflow.index'
           }
           {
             'label': 'Add new'
-            'route': 'dashboard.device.new'
+            'route': 'dashboard.workflow.new'
           }
         ]
       }

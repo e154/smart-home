@@ -1,0 +1,39 @@
+.row
+  .col-md-6
+    %h3
+      %a(href="" ui-sref="dashboard.workflow.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      Узел №{{workflow.workflow.id}}
+      .edit-icon-link
+        %a(ui-sref="dashboard.workflow.edit({id:workflow.workflow.id})")
+          %span.fa.fa-pencil
+
+    .pull-right.date-info-block
+      %small
+        Создано {{workflow.workflow.created_at | readableDateTime}}
+      %small
+        Редактировалось {{workflow.workflow.update_at | readableDateTime}}
+
+.row
+  .col-md-6
+    .form-group
+      .text-muted
+        {{'workflow.status' | translate}}
+
+      %span.label.label-success(ng-if="workflow.workflow.state == 'enabled'")
+        {{"workflow.enabled" | translate}}
+      %span.label.label-default(ng-if="workflow.workflow.status == 'disabled'")
+        {{"workflow.disabled" | translate}}
+
+    .form-group
+      .text-muted
+        {{'workflow.name' | translate}}
+      %div
+        {{::workflow.workflow.name}}
+
+    .form-group(ng-if="workflow.workflow.description")
+      .text-muted
+        {{'workflow.description' | translate}}
+      %div
+        {{::workflow.workflow.description}}
