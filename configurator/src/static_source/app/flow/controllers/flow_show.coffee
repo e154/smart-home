@@ -4,21 +4,23 @@ angular
 ($scope, Notify, Flow, $stateParams, $state, $timeout) ->
   vm = this
 
+  # get flow
+  $scope.flow = {}
   success = (flow) ->
-    vm.flow = flow
+    $scope.flow = flow
     $timeout ()->
       $scope.getStatus().then (result)->
         $scope.flows = result.flows
 
         angular.forEach $scope.flows, (value, id)->
           if flow.id == parseInt(id, 10)
-            vm.flow.state = value
+            $scope.flow.state = value
     , 500
 
   error = ->
     $state.go 'dashboard.flow.index'
 
-  Flow.show {id: $stateParams.id}, success, error
+  Flow.get_redactor {id: $stateParams.id}, success, error
 
   vm
 ]

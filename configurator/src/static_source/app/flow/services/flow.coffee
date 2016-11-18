@@ -8,6 +8,24 @@ angular
       transformResponse: (data) ->
         data?.flow || data
 
+    full:
+      url: window.server_url + '/api/v1/flow/:id/full'
+      method: 'GET'
+      responseType: 'json'
+      transformResponse: (data) ->
+        data?.flow || data
+
+    get_redactor:
+      url: window.server_url + '/api/v1/flow/:id/redactor'
+      method: 'GET'
+      responseType: 'json'
+      transformResponse: (data) ->
+        data?.flow || data
+
+    update_redactor:
+      url: window.server_url + '/api/v1/flow/:id/redactor'
+      method: 'PUT'
+
     create:
       method: 'POST'
       responseType: 'json'

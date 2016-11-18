@@ -9,6 +9,7 @@ import (
 
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
+	"encoding/json"
 )
 
 type Flow struct {
@@ -48,6 +49,35 @@ func GetFlowById(id int64) (v *Flow, err error) {
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
+	return nil, err
+}
+
+// GetFlowById retrieves Flow by Id. Returns error if
+// Id doesn't exist
+func GetFullFlowById(id int64) (v *Flow, err error) {
+	o := orm.NewOrm()
+	v = &Flow{Id: id}
+	if err = o.Read(v); err == nil {
+		err = FlowGetRelatedDate(v)
+		return v, nil
+	}
+
+	return nil, err
+}
+
+// GetFlowById retrieves Flow by Id. Returns error if
+// Id doesn't exist
+func GetRedactorFlowById(id int64) (r *RedactorFlow, err error) {
+	o := orm.NewOrm()
+	v := &Flow{Id: id}
+	if err = o.Read(v); err != nil {
+		return nil, err
+	}
+
+	if r, err = v.ExportToRedactor(); err == nil {
+		return r, nil
+	}
+
 	return nil, err
 }
 
@@ -264,6 +294,71 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 
 	if !exist {
 		err = errors.New("Message handler not found")
+	}
+
+	return
+}
+
+func (f *Flow) ExportToRedactor() (flow *RedactorFlow, err error) {
+
+	flow = new(RedactorFlow)
+	flow.Name = f.Name
+	flow.Description = ""
+	flow.Objects = make([]*RedactorObject, 0)
+	flow.Connectors = make([]*RedactorConnector, 0)
+
+	var flowElements []*FlowElement
+	if flowElements, err = GetFlowElementsByFlow(f); err != nil {
+		return
+	}
+
+	for _, el := range flowElements {
+		object := &RedactorObject{
+			Id: el.Id,
+			Title: el.Name,
+		}
+
+		switch el.PrototypeType {
+		case "MessageHandler":
+			object.Type.Name = "event"
+			object.Type.Start = map[int64]interface{}{0: &map[int64]interface{}{0: true}}
+		case "MessageEmitter":
+			object.Type.Name = "event"
+			object.Type.End = map[string]interface{}{"simply": &map[string]interface{}{"top_level": true}}
+		case "Task":
+			object.Type.Name = "task"
+		default:
+
+		}
+
+		gst := new(RedactorGrapSettings)
+		if err = json.Unmarshal([]byte(el.GraphSettings), &gst); err != nil {
+			return
+		}
+
+		object.Position = gst.Position
+
+		flow.Objects = append(flow.Objects, object)
+	}
+
+	var connections []*Connection
+	if connections, err = GetConnectionsByFlow(f); err != nil {
+		return
+	}
+
+	for _, con := range connections {
+		connector := &RedactorConnector{
+			Id: con.Id,
+			flow_type: "default",
+			title: con.Name,
+		}
+		connector.Start.Object = con.ElementFrom
+		connector.Start.Point = con.ElementFrom
+
+		connector.End.Object = con.ElementTo
+		connector.End.Point = con.PointTo
+
+		flow.Connectors = append(flow.Connectors, connector)
 	}
 
 	return

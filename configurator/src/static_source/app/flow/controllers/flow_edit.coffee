@@ -4,6 +4,14 @@ angular
 ($scope, Message, $stateParams, Flow, $state, Workflow) ->
   vm = this
 
+  vm.workflows = []
+  success = (result)->
+    console.log result
+    vm.workflows = result.items
+  error = (result)->
+    Message result.data.status, result.data.message
+  Workflow.all {}, success, error
+
   Flow.show {id: $stateParams.id}, (flow)->
     vm.flow = flow
 

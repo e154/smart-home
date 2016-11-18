@@ -4,38 +4,38 @@
       %a(href="" ui-sref="dashboard.flow.index")
         %small.fa.fa-long-arrow-left
           &nbsp;
-      Процесс "{{flow.flow.name}}"
+      Процесс "{{flow.name}}"
       .edit-icon-link
-        %a(ui-sref="dashboard.flow.edit({id:flow.flow.id})")
+        %a(ui-sref="dashboard.flow.edit({id:flow.id})")
           %span.fa.fa-pencil
 
     .pull-right.date-info-block
       %small
-        Создано {{flow.flow.created_at | readableDateTime}}
+        Создано {{flow.created_at | readableDateTime}}
       %small
-        Редактировалось {{flow.flow.update_at | readableDateTime}}
+        Редактировалось {{flow.update_at | readableDateTime}}
 
 .row
   .col-md-2
     .form-group
       .text-muted
         {{'flow.status' | translate}}
-      %span.label.label-success(ng-if="flow.flow.status == 'enabled'")
+      %span.label.label-success(ng-if="flow.status == 'enabled'")
         {{"flow.enabled" | translate}}
-      %span.label.label-default(ng-if="flow.flow.status == 'disabled'")
+      %span.label.label-default(ng-if="flow.status == 'disabled'")
         {{"flow.disabled" | translate}}
 
     .form-group
       .text-muted
         {{'flow.name' | translate}}
       %div
-        {{::flow.flow.name}}
+        {{::flow.name}}
 
-    .form-group(ng-if="flow.flow.description")
+    .form-group(ng-if="flow.description")
       .text-muted
         {{'flow.description' | translate}}
       %div
-        {{::flow.flow.description}}
+        {{::flow.description}}
 
   .col-md-10(ng-controller="constructorCtrl as editor" )
     #scheme1.scheme(style="height:600px;")

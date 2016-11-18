@@ -5,6 +5,8 @@ angular
 ($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings) ->
   vm = this
 
+  # settings
+  #------------------------------------------------------------------------------
   settings =
     engine:
       status: 'editor'
@@ -94,10 +96,25 @@ angular
         }
       ]
 
+  # instance
+  #------------------------------------------------------------------------------
   instance = new bpmnScheme($('#scheme1'))
-  instance.setScheme(bpmnMock.scheme1)
   instance.setSettings(settings)
   instance.start()
+
+  # prepare scheme
+  #------------------------------------------------------------------------------
+
+  prepareSheme = (scheme)->
+    console.log scheme
+    scheme
+
+  $scope.$watch 'flow', (scheme)->
+    if !scheme
+      return
+
+    instance.setScheme(prepareSheme(scheme))
+    instance.restart()
 
   vm
 ]

@@ -16,6 +16,8 @@ type Connection struct {
 	Name		string		`orm:"" json:"name"`
 	ElementFrom	int64		`orm:"column(element_from)" json:"element_from"`
 	ElementTo	int64		`orm:"column(element_to)" json:"element_to"`
+	PointFrom	int64		`orm:"column(point_from)" json:"point_from"`
+	PointTo		int64		`orm:"column(point_to)" json:"point_to"`
 	FlowId		int64		`orm:"column(flow_id)" json:"flow_id"`
 	GraphSettings	string		`orm:"column(graph_settings)" json:"graph_settings"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`

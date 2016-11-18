@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego/validation"
 	"../models"
+	"log"
 )
 
 // FlowController operations for Flow
@@ -18,6 +19,7 @@ func (c *FlowController) URLMapping() {
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Get", c.GetAll)
+	c.Mapping("Get", c.GetOneFull)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
 }
@@ -85,6 +87,27 @@ func (c *FlowController) GetOne() {
 	c.ServeJSON()
 }
 
+// GetOne ...
+// @Title GetOne
+// @Description get Flow by id
+// @Param	id		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.Flow
+// @Failure 403 :id is empty
+// @router /:id [get]
+func (c *FlowController) GetOneFull() {
+	id, _ := c.GetInt(":id")
+	flow, err := models.GetFullFlowById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	} else {
+		log.Println(flow)
+		c.Data["json"] = map[string]interface{}{"flow": flow}
+	}
+
+	c.ServeJSON()
+}
+
 // GetAll ...
 // @Title GetAll
 // @Description get Flow
@@ -146,4 +169,21 @@ func (c *FlowController) Delete() {
 	//bpms.BpmsPtr().RemoveWorkflow(&models.Workflow{Id:int64(id)})
 
 	c.ServeJSON()
+}
+
+func (c *FlowController) GetOneRedactor() {
+	id, _ := c.GetInt(":id")
+	flow, err := models.GetRedactorFlowById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	} else {
+		c.Data["json"] = map[string]interface{}{"flow": flow}
+	}
+
+	c.ServeJSON()
+}
+
+func (c *FlowController) UpdateRedactor() {
+
 }
