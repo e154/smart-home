@@ -302,14 +302,17 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 
 func (f *Flow) ExportToRedactor() (flow *RedactorFlow, err error) {
 
-	flow = new(RedactorFlow)
-	flow.Id = f.Id
-	flow.Name = f.Name
-	flow.Status = f.Status
-	flow.Description = f.Description
-	flow.WorkflowId = f.WorkflowId
-	flow.Objects = make([]*RedactorObject, 0)
-	flow.Connectors = make([]*RedactorConnector, 0)
+	flow = &RedactorFlow{
+		Id: f.Id,
+		Name: f.Name,
+		Status: f.Status,
+		Description: f.Description,
+		WorkflowId: f.WorkflowId,
+		Objects: make([]*RedactorObject, 0),
+		Connectors: make([]*RedactorConnector, 0),
+		Created_at: f.Created_at,
+		Update_at: f.Update_at,
+	}
 
 	var flowElements []*FlowElement
 	if flowElements, err = GetFlowElementsByFlow(f); err != nil {
@@ -357,7 +360,7 @@ func (f *Flow) ExportToRedactor() (flow *RedactorFlow, err error) {
 			title: con.Name,
 		}
 		connector.Start.Object = con.ElementFrom
-		connector.Start.Point = con.ElementFrom
+		connector.Start.Point = con.PointFrom
 
 		connector.End.Object = con.ElementTo
 		connector.End.Point = con.PointTo

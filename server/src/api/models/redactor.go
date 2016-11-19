@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type RedactorGrapSettings struct {
 	Position	struct{
 				Top int64	`json:"top"`
@@ -49,4 +51,6 @@ type RedactorFlow struct {
 	WorkflowId	int64                   `json:"workflow_id"`
 	Objects		[]*RedactorObject	`json:"objects"`
 	Connectors	[]*RedactorConnector	`json:"connectors"`
+	Created_at	time.Time		`json:"created_at"`
+	Update_at	time.Time		`json:"update_at"`
 }

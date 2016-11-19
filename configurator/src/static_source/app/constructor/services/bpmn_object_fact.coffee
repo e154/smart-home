@@ -59,7 +59,7 @@ angular
 
         if @templateUrl? && @templateUrl != ''
           if !@element?
-            @element = $compile('<div bpmn-object class="'+@data.type.name+' draggable etc" ng-class="[data.status]"></div>')(childScope)
+            @element = $compile('<div bpmn-object class="'+@data.type.name+' draggable etc" ng-class="[data.status]" element-id="{{::data.id}}" ></div>')(childScope)
           templateUrl = @settings.theme.root_path + '/' + @settings.engine.theme + '/' + @templateUrl
           template = $templateCache.get(templateUrl)
           if template?.then?
@@ -84,10 +84,12 @@ angular
           return
 
         points = []
-        angular.forEach @anchor, (anchor)=>
+        angular.forEach @anchor, (anchor, id)=>
           point = @parentScope.instance.addEndpoint(@element, {
             anchor: anchor
             maxConnections: -1
+            parameters:
+              'anchor-id': id
           }, options)
 
           if points.indexOf(point) == -1

@@ -1,10 +1,15 @@
 angular
 .module('appControllers')
-.controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow', '$timeout'
-($scope, Message, $stateParams, Flow, $state, Workflow, $timeout) ->
+.controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow', '$timeout', 'log'
+($scope, Message, $stateParams, Flow, $state, Workflow, $timeout, log) ->
   vm = this
 
+  # vars
+  $scope.callback = {}
   $scope.workflows = []
+
+  # workflow list
+  #------------------------------------------------------------------------------
   success = (result)->
     console.log result
     $scope.workflows = result.items
@@ -13,6 +18,7 @@ angular
   Workflow.all {}, success, error
 
   # get flow
+  #------------------------------------------------------------------------------
   $scope.flow = {}
   success = (flow) ->
     $scope.flow = flow
@@ -33,6 +39,8 @@ angular
     if confirm('точно удалить процесс?')
       remove()
 
+  # buttons remove|submit
+  #------------------------------------------------------------------------------
   remove =->
     success =->
       $state.go("dashboard.flow.index")
@@ -47,7 +55,10 @@ angular
     error =(result)->
       Message result.data.status, result.data.message
 
-    $scope.flow.$update(success, error)
+    scheme = $scope.callback.save()
+    log.debug 'scheme:', scheme
+
+#    $scope.flow.$update(success, error)
 
   vm
 ]

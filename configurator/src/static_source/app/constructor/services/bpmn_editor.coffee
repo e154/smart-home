@@ -1,7 +1,7 @@
 angular
 .module('angular-bpmn')
-.factory 'bpmnEditor', ['log', 'bpmnUuid', '$compile', 'bpmnObjectFact', '$q'
-  (log, bpmnUuid, $compile, bpmnObjectFact, $q) ->
+.factory 'bpmnEditor', ['log', 'bpmnUuid', '$compile', 'bpmnObjectFact', '$q', '$timeout'
+  (log, bpmnUuid, $compile, bpmnObjectFact, $q, $timeout) ->
     class bpmnEditor
       wrapper: null
       container: null
@@ -192,27 +192,73 @@ angular
 
         @scope.selected
 
+      serialiseConnection: (connection)->
+        params = connection.getParameters()
+
+        id = ""
+        if !params['element-id']
+          id = genId()
+          connection.setParameter("element-id", id)
+        else
+          id = params['element-id']
+
+        id: id
+        start:
+          object: $(connection.source).attr('element-id')
+          point: connection.endpoints[0].getParameters()['anchor-id'] || 0
+        end:
+          object: $(connection.target).attr('element-id')
+          point: connection.endpoints[1].getParameters()['anchor-id'] || 0
+        title: connection.getOverlay('myLabel')?.getLabel() || ''
+
       serialise: (scope)->
+
         objects = []
+        connectors = []
+
+        # objects
+        #----------------
+        #log.debug 'objects',scope.intScheme.objects
         angular.forEach scope.intScheme.objects, (obj)->
 
+          draggable = true
+          type = obj.data['type']
+          if type == 'swimlane' || type == 'swimlane-row'
+            draggable = false
+
           objects.push({
-            id: obj.data.id
-            type: obj.data.type
+            id: obj.data?.id || bpmnUuid.gen()
+            type: obj.data.type || 'default'
+            width: obj.data.width || 'auto'
+            height: obj.data.height || 'auto'
+            draggable: draggable
             position: obj.position
-            status: ''
+            status: obj.data.status || 'enabled'
             error: ''
-            title: obj.data.title
-            description: obj.data.description
+            title: obj?.data?.title
+            description: obj?.data?.description || ''
           })
 
-        @scope.$apply(
-          @scope.extScheme.objects = objects
-        )
+        # connectors
+        #----------------
+        #log.debug 'connectors',scope.intScheme.connectors
+        angular.forEach scope.intScheme.connectors, (connection)=>
+          end = false; start = false
+          con = @serialiseConnection(connection)
+          for id, obj of scope.intScheme.objects
+            start = true if id == con.start.object
+            end = true if id == con.end.object
+            if start && end
+              connectors.push angular.copy(con)
+              break
+
+        @scope.extScheme = {
+          objects: objects
+          connectors: connectors
+        }
 
       getScheme: ()->
-        @serialise(@scope.intScheme.objects)
-        @scope.extScheme
+        @serialise(@scope)
 
     bpmnEditor
 ]

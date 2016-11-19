@@ -1,8 +1,8 @@
 angular
 .module('appControllers')
 .controller 'bpmnEditorCtrl', ['$scope', 'Notify', 'Flow', '$stateParams', '$state', '$timeout', 'bpmnMock'
-'bpmnScheme', 'bpmnSettings'
-($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings) ->
+'bpmnScheme', 'bpmnSettings', 'log'
+($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings, log) ->
   vm = this
 
   # settings
@@ -109,6 +109,17 @@ angular
       return
     redactor.setScheme(scheme)
     redactor.restart()
+
+  $scope.serialise =->
+    $scope.scheme = redactor.getScheme()
+
+  $scope.callback['save']= ()->
+    $scope.serialise()
+
+  $timeout ()->
+    $scope.$apply(
+      $scope.callback
+    )
 
   vm
 ]
