@@ -100,15 +100,14 @@ angular
   #------------------------------------------------------------------------------
   redactor = new bpmnScheme($('#scheme1'))
   redactor.setSettings(settings)
-  redactor.start()
 
   # prepare scheme
   #------------------------------------------------------------------------------
   $scope.$watch 'flow', (scheme)->
     if !scheme || !scheme?.name
       return
+    redactor.start()
     redactor.setScheme(scheme)
-    redactor.restart()
 
   $scope.serialise =->
     $scope.scheme = redactor.getScheme()

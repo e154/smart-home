@@ -18,15 +18,14 @@ angular
   #------------------------------------------------------------------------------
   redactor = new bpmnScheme($('#scheme1'))
   redactor.setSettings(settings)
-  redactor.start()
 
   # prepare scheme
   #------------------------------------------------------------------------------
   $scope.$watch 'flow', (scheme)->
     if !scheme || !scheme?.name
       return
-    redactor.setScheme(scheme)
-    redactor.restart()
+    redactor.start()
+    redactor.setScheme(angular.copy(scheme))
 
   vm
 ]

@@ -5,17 +5,16 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-
-	"github.com/astaxie/beego/orm"
 	"time"
+	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 )
 
 type Connection struct {
-	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
+	Uuid   		string  	`orm:"pk" json:"uuid"`
 	Name		string		`orm:"" json:"name"`
-	ElementFrom	int64		`orm:"column(element_from)" json:"element_from"`
-	ElementTo	int64		`orm:"column(element_to)" json:"element_to"`
+	ElementFrom	string		`orm:"column(element_from);type(string)" json:"element_from"`
+	ElementTo	string		`orm:"column(element_to);type(string)" json:"element_to"`
 	PointFrom	int64		`orm:"column(point_from)" json:"point_from"`
 	PointTo		int64		`orm:"column(point_to)" json:"point_to"`
 	FlowId		int64		`orm:"column(flow_id)" json:"flow_id"`
@@ -43,11 +42,19 @@ func AddConnection(m *Connection) (id int64, err error) {
 	return
 }
 
+// AddFlowElement insert a new FlowElement into database and returns
+// last inserted Id on success.
+func AddOrUpdateConnection(m *Connection) (id int64, err error) {
+	o := orm.NewOrm()
+	id, err = o.InsertOrUpdate(m, "uuid")
+	return
+}
+
 // GetConnectionById retrieves Connection by Id. Returns error if
 // Id doesn't exist
-func GetConnectionById(id int64) (v *Connection, err error) {
+func GetConnectionById(id string) (v *Connection, err error) {
 	o := orm.NewOrm()
-	v = &Connection{Id: id}
+	v = &Connection{Uuid: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
@@ -141,7 +148,7 @@ func GetAllConnection(query map[string]string, fields []string, sortby []string,
 // the record to be updated doesn't exist
 func UpdateConnectionById(m *Connection) (err error) {
 	o := orm.NewOrm()
-	v := Connection{Id: m.Id}
+	v := Connection{Uuid: m.Uuid}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -154,13 +161,13 @@ func UpdateConnectionById(m *Connection) (err error) {
 
 // DeleteConnection deletes Connection by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteConnection(id int64) (err error) {
+func DeleteConnection(id string) (err error) {
 	o := orm.NewOrm()
-	v := Connection{Id: id}
+	v := Connection{Uuid: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Connection{Id: id}); err == nil {
+		if num, err = o.Delete(&Connection{Uuid: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}

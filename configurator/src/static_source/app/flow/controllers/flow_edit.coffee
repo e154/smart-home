@@ -50,15 +50,15 @@ angular
 
   $scope.submit =->
     success =(data)->
-      $state.go("dashboard.flow.show", {id: data.id})
+#      $state.go("dashboard.flow.show", {id: data.id})
 
     error =(result)->
       Message result.data.status, result.data.message
 
     scheme = $scope.callback.save()
-    log.debug 'scheme:', scheme
-
-#    $scope.flow.$update(success, error)
+    $scope.flow.objects = scheme.objects || []
+    $scope.flow.connectors = scheme.connectors || []
+    Flow.update_redactor {id: $stateParams.id}, $scope.flow, success, error
 
   vm
 ]

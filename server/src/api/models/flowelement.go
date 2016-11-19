@@ -9,10 +9,11 @@ import (
 	"sync"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
+	UUID "../../lib/uuid"
 )
 
 type FlowElement struct {
-	Id   		int64  			`orm:"pk;auto;column(id)" json:"id"`
+	Uuid   		string  		`orm:"pk" json:"uuid"`
 	Name		string			`orm:"" json:"name"`
 	GraphSettings	string			`orm:"column(graph_settings)" json:"graph_settings"`
 	Status		string			`orm:"" json:"status"`
@@ -38,15 +39,29 @@ func init() {
 // last inserted Id on success.
 func AddFlowElement(m *FlowElement) (id int64, err error) {
 	o := orm.NewOrm()
+	if m.Uuid == "" {
+		m.Uuid = UUID.NewV4().String()
+	}
 	id, err = o.Insert(m)
+	return
+}
+
+// AddFlowElement insert a new FlowElement into database and returns
+// last inserted Id on success.
+func AddOrUpdateFlowElement(m *FlowElement) (id int64, err error) {
+	o := orm.NewOrm()
+	if m.Uuid == "" {
+		m.Uuid = UUID.NewV4().String()
+	}
+	id, err = o.InsertOrUpdate(m, "uuid")
 	return
 }
 
 // GetFlowElementById retrieves FlowElement by Id. Returns error if
 // Id doesn't exist
-func GetFlowElementById(id int64) (v *FlowElement, err error) {
+func GetFlowElementById(uuid string) (v *FlowElement, err error) {
 	o := orm.NewOrm()
-	v = &FlowElement{Id: id}
+	v = &FlowElement{Uuid: uuid}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
@@ -140,7 +155,7 @@ func GetAllFlowElement(query map[string]string, fields []string, sortby []string
 // the record to be updated doesn't exist
 func UpdateFlowElementById(m *FlowElement) (err error) {
 	o := orm.NewOrm()
-	v := FlowElement{Id: m.Id}
+	v := FlowElement{Uuid: m.Uuid}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -153,13 +168,13 @@ func UpdateFlowElementById(m *FlowElement) (err error) {
 
 // DeleteFlowElement deletes FlowElement by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteFlowElement(id int64) (err error) {
+func DeleteFlowElement(uuid string) (err error) {
 	o := orm.NewOrm()
-	v := FlowElement{Id: id}
+	v := FlowElement{Uuid: uuid}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&FlowElement{Id: id}); err == nil {
+		if num, err = o.Delete(&FlowElement{Uuid: uuid}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
@@ -168,7 +183,7 @@ func DeleteFlowElement(id int64) (err error) {
 
 func GetFlowElementsByFlow(flow *Flow) (elements []*FlowElement, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(&FlowElement{}).Filter("status", "enabled").Filter("flow_id", flow.Id).All(&elements)
+	_, err = o.QueryTable(&FlowElement{}).Filter("flow_id", flow.Id).All(&elements)
 	return
 }
 
@@ -208,7 +223,7 @@ func (m *FlowElement) Run(message *Message) (err error) {
 
 	var elements []*FlowElement
 	for _, conn := range m.Flow.Connections {
-		if conn.ElementFrom != m.Id {
+		if conn.ElementFrom != m.Uuid {
 			continue
 		}
 

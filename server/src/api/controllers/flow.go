@@ -173,17 +173,198 @@ func (c *FlowController) Delete() {
 
 func (c *FlowController) GetOneRedactor() {
 	id, _ := c.GetInt(":id")
-	flow, err := models.GetRedactorFlowById(int64(id))
+	flow, err := models.GetFlowById(int64(id))
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
-	} else {
-		c.Data["json"] = map[string]interface{}{"flow": flow}
 	}
 
+	var r *models.RedactorFlow
+	r, err = ExportToRedactor(flow)
+
+	c.Data["json"] = map[string]interface{}{"flow": r}
 	c.ServeJSON()
 }
 
 func (c *FlowController) UpdateRedactor() {
+	var flow models.RedactorFlow
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &flow); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
+
+	var err error
+	var flowElements []*models.FlowElement
+	// update flow elements
+	//---------------------------------------------------
+	if flowElements, err = models.GetFlowElementsByFlow(&models.Flow{Id:flow.Id}); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	todo_remove := []*models.FlowElement{}
+	for _, element := range flowElements {
+		exist := false
+		for _, object := range flow.Objects {
+			if object.Id == element.Uuid {
+				exist = true
+				break
+			}
+		}
+
+		if !exist {
+			todo_remove = append(todo_remove, element)
+		}
+	}
+
+	// remove flow elements
+	for _, element := range todo_remove {
+		if err = models.DeleteFlowElement(element.Uuid); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
+	var j []byte
+	// insert or update flow elements
+	for _, element := range flow.Objects {
+
+		if j, err = json.Marshal(element.Position); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+
+		fl := &models.FlowElement{
+			Uuid: element.Id,
+			Name: element.Title,
+			GraphSettings: fmt.Sprintf("{\"position\":%s}", j),
+			Status: element.Status,
+			FlowId: flow.Id,
+		}
+
+		switch element.Type.Name {
+		case "event":
+			if element.Type.Start != nil {
+				fl.PrototypeType = "MessageHandler"
+			} else if element.Type.End != nil {
+				fl.PrototypeType = "MessageEmitter"
+			}
+		case "task":
+			fl.PrototypeType = "Task"
+		default:
+			fl.PrototypeType = "default"
+		}
+
+		if _, err = models.AddOrUpdateFlowElement(fl); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
+	// connectors
+	//---------------------------------------------------
+	for _, connector := range flow.Connectors {
+
+		conn := &models.Connection{
+			Uuid: connector.Id,
+			Name: connector.Title,
+			ElementFrom: connector.Start.Object,
+			ElementTo: connector.End.Object,
+			PointFrom: connector.Start.Point,
+			PointTo: connector.End.Point,
+			FlowId: flow.Id,
+			GraphSettings: "",
+		}
+
+		if _, err = models.AddOrUpdateConnection(conn); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
+	//---------------------------------------------------
+	newflow, err := models.GetFlowById(flow.Id)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	var r *models.RedactorFlow
+	r, err = ExportToRedactor(newflow)
+
+	c.Data["json"] = map[string]interface{}{"flow": r}
+	c.ServeJSON()
+
+}
+
+func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
+
+	flow = &models.RedactorFlow{
+		Id: f.Id,
+		Name: f.Name,
+		Status: f.Status,
+		Description: f.Description,
+		WorkflowId: f.WorkflowId,
+		Objects: make([]*models.RedactorObject, 0),
+		Connectors: make([]*models.RedactorConnector, 0),
+		Created_at: f.Created_at,
+		Update_at: f.Update_at,
+	}
+
+	var flowElements []*models.FlowElement
+	if flowElements, err = models.GetFlowElementsByFlow(f); err != nil {
+		return
+	}
+
+	for _, el := range flowElements {
+		object := &models.RedactorObject{
+			Id: el.Uuid,
+			Title: el.Name,
+		}
+
+		switch el.PrototypeType {
+		case "MessageHandler":
+			object.Type.Name = "event"
+			object.Type.Start = map[int64]interface{}{0: &map[int64]interface{}{0: true}}
+		case "MessageEmitter":
+			object.Type.Name = "event"
+			object.Type.End = map[string]interface{}{"simply": &map[string]interface{}{"top_level": true}}
+		case "Task":
+			object.Type.Name = "task"
+		default:
+
+		}
+
+		gst := new(models.RedactorGrapSettings)
+		if err = json.Unmarshal([]byte(el.GraphSettings), &gst); err != nil {
+			return
+		}
+
+		object.Position = gst.Position
+
+		flow.Objects = append(flow.Objects, object)
+	}
+
+	var connections []*models.Connection
+	if connections, err = models.GetConnectionsByFlow(f); err != nil {
+		return
+	}
+
+	for _, con := range connections {
+		connector := &models.RedactorConnector{
+			Id: con.Uuid,
+			Flow_type: "default",
+			Title: con.Name,
+		}
+		connector.Start.Object = con.ElementFrom
+		connector.Start.Point = con.PointFrom
+
+		connector.End.Object = con.ElementTo
+		connector.End.Point = con.PointTo
+
+		flow.Connectors = append(flow.Connectors, connector)
+	}
+
+	return
 }
