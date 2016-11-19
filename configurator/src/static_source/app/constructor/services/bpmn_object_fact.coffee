@@ -62,13 +62,14 @@ angular
             @element = $compile('<div bpmn-object class="'+@data.type.name+' draggable etc" ng-class="[data.status]"></div>')(childScope)
           templateUrl = @settings.theme.root_path + '/' + @settings.engine.theme + '/' + @templateUrl
           template = $templateCache.get(templateUrl)
-          if !template?
-            log.debug 'template not found', templateUrl
+          if template?.then?
+            log.debug 'load template'
             @elementPromise = $templateRequest(templateUrl)
             @elementPromise.then (result)->
               appendToElement($compile(result)(childScope))
               $templateCache.put(templateUrl, result)
           else
+            log.debug 'get template from cache'
             appendToElement($compile(template)(childScope))
         else
           if !@element?

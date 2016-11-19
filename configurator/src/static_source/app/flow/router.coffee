@@ -12,7 +12,7 @@ angular
       views:
         '@dashboard':
           templateUrl: '/flow/templates/flow.html'
-          controller: 'flowCtrl as flow'
+          controller: 'flowCtrl'
     )
 
     .state(
@@ -21,28 +21,28 @@ angular
       views:
         '@dashboard.flow':
           templateUrl: '/flow/templates/flow.index.html'
-          controller: 'flowIndexCtrl as flow'
+          controller: 'flowIndexCtrl'
     )
 
     .state(
       name: "dashboard.flow.new"
       url: "/new"
       templateUrl: '/flow/templates/flow.new.html'
-      controller: 'flowNewCtrl as flow'
+      controller: 'flowNewCtrl'
     )
 
     .state(
       name: "dashboard.flow.show"
       url: "/:id"
       templateUrl: '/flow/templates/flow.show.html'
-      controller: 'flowShowCtrl as flow'
+      controller: 'flowShowCtrl'
     )
 
     .state(
       name: "dashboard.flow.edit"
       url: "/:id/edit"
       templateUrl: '/flow/templates/flow.edit.html'
-      controller: 'flowEditCtrl as flow'
+      controller: 'flowEditCtrl'
     )
 
 ]

@@ -24,6 +24,7 @@ You then need to log out and log back in again for it to be effective.
 
 * работа в качестве демона https://github.com/takama/daemon
 * доступ по сертификату
+* shell console ?
 
 #####Протокол основанный но modbus
 

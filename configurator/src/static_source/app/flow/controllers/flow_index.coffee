@@ -5,7 +5,7 @@ angular
   vm = this
 
   tableCallback = {}
-  vm.options =
+  $scope.options =
     perPage: 20
     resource: Flow
     columns: [
@@ -33,6 +33,7 @@ angular
       }
       {
         name: 'flow.status'
+        field: 'status'
         width: '50px'
         template: "
 <span class='label label-success' ng-if='item[\"status\"] == \"enabled\"'>{{'flow.enabled' | translate}}</span>

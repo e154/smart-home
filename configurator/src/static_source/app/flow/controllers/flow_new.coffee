@@ -4,28 +4,28 @@ angular
 ($scope, Notify, Flow, $state, Message, Workflow) ->
   vm = this
 
-  vm.flow = new Flow({
+  $scope.flow = new Flow({
     name: "Процесс"
     status: "enabled"
     description: ""
   })
 
-  vm.workflows = []
+  $scope.workflows = []
   success = (result)->
     console.log result
-    vm.workflows = result.items
+    $scope.workflows = result.items
   error = (result)->
     Message result.data.status, result.data.message
   Workflow.all {}, success, error
 
-  vm.submit =->
+  $scope.submit =->
     success =(data)->
       $state.go("dashboard.flow.show", {id: data.id})
 
     error =(result)->
       Message result.data.status, result.data.message
 
-    vm.flow.$create(success, error)
+    $scope.flow.$create(success, error)
 
   vm
 ]

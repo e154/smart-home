@@ -42,8 +42,11 @@ type RedactorObject struct {
 }
 
 type RedactorFlow struct {
+	Id		int64                   `json:"id"`
 	Name		string			`json:"name"`
 	Description	string			`json:"description"`
+	Status		string                  `json:"status"`
+	WorkflowId	int64                   `json:"workflow_id"`
 	Objects		[]*RedactorObject	`json:"objects"`
 	Connectors	[]*RedactorConnector	`json:"connectors"`
 }

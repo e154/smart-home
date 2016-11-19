@@ -1,6 +1,6 @@
 angular
 .module('appControllers')
-.controller 'constructorCtrl', ['$scope', 'Notify', 'Flow', '$stateParams', '$state', '$timeout', 'bpmnMock'
+.controller 'bpmnEditorCtrl', ['$scope', 'Notify', 'Flow', '$stateParams', '$state', '$timeout', 'bpmnMock'
 'bpmnScheme', 'bpmnSettings'
 ($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings) ->
   vm = this
@@ -96,25 +96,19 @@ angular
         }
       ]
 
-  # instance
+  # redactor
   #------------------------------------------------------------------------------
-  instance = new bpmnScheme($('#scheme1'))
-  instance.setSettings(settings)
-  instance.start()
+  redactor = new bpmnScheme($('#scheme1'))
+  redactor.setSettings(settings)
+  redactor.start()
 
   # prepare scheme
   #------------------------------------------------------------------------------
-
-  prepareSheme = (scheme)->
-    console.log scheme
-    scheme
-
   $scope.$watch 'flow', (scheme)->
-    if !scheme
+    if !scheme || !scheme?.name
       return
-
-    instance.setScheme(prepareSheme(scheme))
-    instance.restart()
+    redactor.setScheme(scheme)
+    redactor.restart()
 
   vm
 ]

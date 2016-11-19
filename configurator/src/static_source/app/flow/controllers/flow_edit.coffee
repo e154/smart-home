@@ -1,21 +1,35 @@
 angular
 .module('appControllers')
-.controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow'
-($scope, Message, $stateParams, Flow, $state, Workflow) ->
+.controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow', '$timeout'
+($scope, Message, $stateParams, Flow, $state, Workflow, $timeout) ->
   vm = this
 
-  vm.workflows = []
+  $scope.workflows = []
   success = (result)->
     console.log result
-    vm.workflows = result.items
+    $scope.workflows = result.items
   error = (result)->
     Message result.data.status, result.data.message
   Workflow.all {}, success, error
 
-  Flow.show {id: $stateParams.id}, (flow)->
-    vm.flow = flow
+  # get flow
+  $scope.flow = {}
+  success = (flow) ->
+    $scope.flow = flow
+    $timeout ()->
+      $scope.getStatus().then (result)->
+        $scope.flows = result.flows
 
-  vm.remove =->
+        angular.forEach $scope.flows, (value, id)->
+          if flow.id == parseInt(id, 10)
+            $scope.flow.state = value
+    , 500
+
+  error = ->
+    $state.go 'dashboard.flow.index'
+
+  Flow.get_redactor {id: $stateParams.id}, success, error
+  $scope.remove =->
     if confirm('точно удалить процесс?')
       remove()
 
@@ -24,16 +38,16 @@ angular
       $state.go("dashboard.flow.index")
     error =(result)->
       Message result.data.status, result.data.message
-    vm.flow.$delete success, error
+    $scope.flow.$delete success, error
 
-  vm.submit =->
+  $scope.submit =->
     success =(data)->
       $state.go("dashboard.flow.show", {id: data.id})
 
     error =(result)->
       Message result.data.status, result.data.message
 
-    vm.flow.$update(success, error)
+    $scope.flow.$update(success, error)
 
   vm
 ]

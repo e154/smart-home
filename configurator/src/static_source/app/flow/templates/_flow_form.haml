@@ -1,10 +1,10 @@
 .form-group
     %laber {{'flow.name' | translate}}*
-    %input.form-control(ng-model="flow.flow.name")
+    %input.form-control(ng-model="flow.name")
 
 .form-group
     %laber {{'flow.status' | translate}}
-    %select.form-control(ng-model="flow.flow.status")
+    %select.form-control(ng-model="flow.status")
         %option(value="enabled")
             {{'flow.enabled' | translate}}
         %option(value="disabled")
@@ -12,9 +12,9 @@
 
 .form-group
     %laber {{'flow.workflow' | translate}}
-    %select.form-control(ng-model="flow.flow.workflow_id" ng-options="wf.id as wf.name for wf in flow.workflows")
+    %select.form-control(ng-model="flow.workflow_id" ng-options="wf.id as wf.name for wf in workflows")
 
 .form-group
     %laber {{'flow.description' | translate}}
-    %textarea.form-control(ng-model="flow.flow.description" rows="10" )
+    %textarea.form-control(ng-model="flow.description" rows="10" )
 

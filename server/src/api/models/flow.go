@@ -15,6 +15,7 @@ import (
 type Flow struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
 	Name		string		`orm:"" json:"name"`
+	Description	string		`orm:"" json:"description"`
 	Status		string		`orm:"" json:"status"`
 	WorkflowId	int64		`orm:"column(workflow_id)" json:"workflow_id"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
@@ -302,8 +303,11 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 func (f *Flow) ExportToRedactor() (flow *RedactorFlow, err error) {
 
 	flow = new(RedactorFlow)
+	flow.Id = f.Id
 	flow.Name = f.Name
-	flow.Description = ""
+	flow.Status = f.Status
+	flow.Description = f.Description
+	flow.WorkflowId = f.WorkflowId
 	flow.Objects = make([]*RedactorObject, 0)
 	flow.Connectors = make([]*RedactorConnector, 0)
 
