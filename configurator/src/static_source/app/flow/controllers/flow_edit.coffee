@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow', '$timeout', 'log'
-($scope, Message, $stateParams, Flow, $state, Workflow, $timeout, log) ->
+.controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow', '$timeout', 'log', 'Notify'
+($scope, Message, $stateParams, Flow, $state, Workflow, $timeout, log, Notify) ->
   vm = this
 
   # vars
@@ -50,7 +50,7 @@ angular
 
   $scope.submit =->
     success =(data)->
-#      $state.go("dashboard.flow.show", {id: data.id})
+      Notify 'success', 'Схема успешно сохранена', 3
 
     error =(result)->
       Message result.data.status, result.data.message

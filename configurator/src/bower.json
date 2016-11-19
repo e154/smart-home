@@ -78,6 +78,14 @@
         "dist/css/bpmn-embedded",
         "dist/css/bpmn-codes.css"
       ]
+    },
+    "jquery-ui": {
+      "main": [
+        "jquery-ui.js",
+        "themes/base/core.css",
+        "themes/base/theme.css",
+        "themes/base/resizable.css"
+      ]
     }
   }
 }
