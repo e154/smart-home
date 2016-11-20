@@ -203,7 +203,7 @@ func (c *FlowController) UpdateRedactor() {
 		return
 	}
 
-	todo_remove := []*models.FlowElement{}
+	flow_todo_remove := []*models.FlowElement{}
 	for _, element := range flowElements {
 		exist := false
 		for _, object := range flow.Objects {
@@ -214,12 +214,12 @@ func (c *FlowController) UpdateRedactor() {
 		}
 
 		if !exist {
-			todo_remove = append(todo_remove, element)
+			flow_todo_remove = append(flow_todo_remove, element)
 		}
 	}
 
 	// remove flow elements
-	for _, element := range todo_remove {
+	for _, element := range flow_todo_remove {
 		if err = models.DeleteFlowElement(element.Uuid); err != nil {
 			c.ErrHan(403, err.Error())
 			return
@@ -264,6 +264,33 @@ func (c *FlowController) UpdateRedactor() {
 
 	// connectors
 	//---------------------------------------------------
+	var connections []*models.Connection
+	if connections, err = models.GetConnectionsByFlow(&models.Flow{Id:flow.Id}); err != nil {
+		return
+	}
+
+	conn_todo_remove := []*models.Connection{}
+	for _, old_conn := range connections {
+		exist := false
+		for _, new_conn := range flow.Connectors {
+			if old_conn.Uuid == new_conn.Id {
+				exist = true
+				break
+			}
+		}
+
+		if !exist {
+			conn_todo_remove = append(conn_todo_remove, old_conn)
+		}
+	}
+
+	for _, conn := range conn_todo_remove {
+		if err = models.DeleteConnection(conn.Uuid); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
 	for _, connector := range flow.Connectors {
 
 		conn := &models.Connection{

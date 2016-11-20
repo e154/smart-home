@@ -112,15 +112,21 @@ angular
         if !scope || !scope.selected
           return
 
-        #TODO first remove child objects
-        angular.forEach scope.selected, (id)=>
-          index = 0
-          for key, object of scope.intScheme.objects
-            if object.data.id == id
-              object.remove()
-              delete scope.intScheme.objects[key]
-              break
-            index++
+        angular.forEach scope.selected, (selected)=>
+          switch selected?.type
+            when "connector"
+              @scope.instance.detach(selected.object)
+            when "shape"
+              #TODO first remove child objects
+              index = 0
+              for key, object of scope.intScheme.objects
+                if object.data.id == selected.id
+                  object.remove()
+                  delete scope.intScheme.objects[key]
+                  break
+                index++
+            else
+              log.error 'unknown object type'
 
         scope.selected = []
 
@@ -172,6 +178,9 @@ angular
             @scope.selected.push(object.data.id)
             break
 
+      getAllConnections: ()->
+        @scope.instance.getAllConnections()
+
       selectElementByPoint: (t, l)->
         @scope.selected = []
         log.debug 'check position:',t, l
@@ -197,7 +206,7 @@ angular
 
         id = ""
         if !params['element-id']
-          id = genId()
+          id = bpmnUuid.gen()
           connection.setParameter("element-id", id)
         else
           id = params['element-id']
@@ -242,7 +251,8 @@ angular
         # connectors
         #----------------
         #log.debug 'connectors',scope.intScheme.connectors
-        angular.forEach scope.intScheme.connectors, (connection)=>
+        connections = @getAllConnections()
+        angular.forEach connections, (connection)=>
           end = false; start = false
           con = @serialiseConnection(connection)
           for id, obj of scope.intScheme.objects

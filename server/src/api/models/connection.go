@@ -161,13 +161,13 @@ func UpdateConnectionById(m *Connection) (err error) {
 
 // DeleteConnection deletes Connection by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteConnection(id string) (err error) {
+func DeleteConnection(uuid string) (err error) {
 	o := orm.NewOrm()
-	v := Connection{Uuid: id}
+	v := Connection{Uuid: uuid}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Connection{Uuid: id}); err == nil {
+		if num, err = o.Delete(&Connection{Uuid: uuid}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}

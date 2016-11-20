@@ -123,7 +123,7 @@ angular
 
           @parentScope.selected = [] if !shift
           @parentScope.$apply(
-            @parentScope.selected.push(@data.id)
+            @parentScope.selected.push({id: @data.id, type: 'shape'})
           )
 
           # deselect all
