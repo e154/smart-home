@@ -1,5 +1,7 @@
 package models
 
+import "log"
+
 //ActionPrototypes
 type Task struct {}
 
@@ -9,7 +11,7 @@ func (m *Task) After(message *Message, flow *Flow) (err error) {
 }
 
 func (m *Task) Run(message *Message, flow *Flow) (err error) {
-	//log.Println("Task.run: ", message)
+	log.Println("Task.run: ", message)
 	return
 }
 

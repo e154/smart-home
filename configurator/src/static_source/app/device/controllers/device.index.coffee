@@ -35,10 +35,6 @@ angular
         field: 'node_id'
       }
       {
-        name: 'device.status'
-        field: 'status'
-      }
-      {
         name: 'device.created_at'
         field: 'created_at'
         template: '<span>{{item[field] | readableDateTime}}</span>'
@@ -47,6 +43,15 @@ angular
         name: 'device.update_at'
         field: 'update_at'
         template: '<span>{{item[field] | readableDateTime}}</span>'
+      }
+      {
+        name: 'device.status'
+        field: 'status'
+        width: '50px'
+        template: "
+<span class='label label-success' ng-if='item[\"status\"] == \"enabled\"'>{{'device.enabled' | translate}}</span>
+<span class='label label-default' ng-if='item[\"status\"] == \"disabled\"'>{{'device.disabled' | translate}}</span>
+"
       }
     ]
     menu:null

@@ -22,6 +22,15 @@
         {{'device.name' | translate}}
       %div
         {{::device.device.name}}
+
+    .form-group
+      .text-muted
+        {{'device.status' | translate}}
+      %span.label.label-success(ng-if="device.device.status == 'enabled'")
+        {{"device.enabled" | translate}}
+      %span.label.label-default(ng-if="device.device.status == 'disabled'")
+        {{"device.disabled" | translate}}
+
     .form-group(ng-if="device.device.address")
       .text-muted
         {{'device.address' | translate}}
@@ -51,12 +60,6 @@
         {{'device.tty' | translate}}
       %div
         {{::device.device.tty}}
-
-    .form-group
-      .text-muted
-        {{'device.status' | translate}}
-      %div
-        {{::device.device.status}}
 
     .form-group(ng-if="device.device.description")
       .text-muted

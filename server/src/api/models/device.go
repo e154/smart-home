@@ -14,15 +14,15 @@ import (
 type Device struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
 	Address   	int  		`orm:"" json:"address"`
-	Baud		int		`orm:"" json:"baud" valid:"Range(1, 115200);Required"`
-	DeviceId   	int64  		`orm:"size(11)" json:"device_id"`
+	Baud		int		`orm:"size(11)" json:"baud"`
+	DeviceId   	*int64  	`orm:"size(11)" json:"device_id"`
 	Description 	string 		`orm:"size(254)" json:"description" valid:"MaxSize(254)"`
 	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	NodeId   	int64  		`orm:"size(11)" json:"node_id"`
+	NodeId   	*int64  	`orm:"size(11)" json:"node_id"`
 	Status	 	string 		`orm:"size(254)" json:"status" valid:"MaxSize(254)"`
 	StopBite   	int64  		`orm:"size(11)" json:"stop_bite"`
 	Timeout   	time.Duration 	`orm:"" json:"timeout"`
-	Tty 		string 		`orm:"size(254)" json:"tty" valid:"MaxSize(254);Required"`
+	Tty 		string 		`orm:"size(254)" json:"tty" valid:"MaxSize(254)"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }

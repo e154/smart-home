@@ -13,6 +13,8 @@ import (
 
 func (b *BPMS) AddWorkflow(workflow *models.Workflow) (err error) {
 
+	log.Println("Add workflow:", workflow.Name)
+
 	if _, ok := b.workflows[workflow.Id]; ok {
 		return
 	}
@@ -28,6 +30,8 @@ func (b *BPMS) AddWorkflow(workflow *models.Workflow) (err error) {
 }
 
 func (b *BPMS) RemoveWorkflow(workflow *models.Workflow) (err error) {
+
+	log.Println("Remove workflow:", workflow.Name)
 
 	if _, ok := b.workflows[workflow.Id]; !ok {
 		return
@@ -105,6 +109,10 @@ func (wf *Workflow) Restart() (err error) {
 
 func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
 
+	if flow.Status != "enabled" {
+		return
+	}
+
 	log.Println("Add flow:", flow.Name)
 
 	if _, ok := wf.Flows[flow.Id]; ok {
@@ -168,11 +176,11 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 	worker.Message = &models.Message{Variable: []byte(worker.DeviceAction.Command)}
 
 	// autoload nodes
-	if _, ok := wf.Nodes[worker.Device.NodeId]; ok {
-		worker.Node = wf.Nodes[worker.Device.NodeId]
+	if _, ok := wf.Nodes[*worker.Device.NodeId]; ok {
+		worker.Node = wf.Nodes[*worker.Device.NodeId]
 	} else {
 		var node *models.Node
-		node, err = models.GetNodeById(worker.Device.NodeId)
+		node, err = models.GetNodeById(*worker.Device.NodeId)
 		if err != nil {
 			return
 		}

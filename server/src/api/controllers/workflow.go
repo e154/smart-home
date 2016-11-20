@@ -138,13 +138,20 @@ func (c *WorkflowController) Put() {
 // @Failure 403 id is empty
 // @router /:id [delete]
 func (c *WorkflowController) Delete() {
+
 	id, _ := c.GetInt(":id")
+	workflow, err := models.GetWorkflowById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
 	if err := models.DeleteWorkflow(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	bpms.BpmsPtr().RemoveWorkflow(&models.Workflow{Id:int64(id)})
+	bpms.BpmsPtr().RemoveWorkflow(workflow)
 
 	c.ServeJSON()
 }

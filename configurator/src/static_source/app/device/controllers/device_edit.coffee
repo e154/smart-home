@@ -12,6 +12,7 @@ angular
     sortby: 'created_at'
   }, (data)->
     vm.devices = data.devices
+    vm.devices.push({name: "Без группы", id: null})
 
   Node.get {
     limit:99
@@ -24,6 +25,7 @@ angular
 
   Device.show {id: $stateParams.id}, (device)->
     vm.device = device
+    vm.device.stop_bite = device.stop_bite.toString()
 
   vm.remove =->
     if confirm('точно удалить узел?')
@@ -43,6 +45,16 @@ angular
     error =(result)->
       Message result.data.status, result.data.message
 
+    vm.device.stop_bite = parseInt(vm.device.stop_bite, 10)
+
+    if vm.device.device_id != null
+      vm.device.stop_bite = null
+      vm.device.node_id = null
+      vm.device.baud = null
+      vm.device.tty = ""
+      vm.device.timeout = null
+      vm.device.address = null
+      
     vm.device.$update(success, error)
 
   vm

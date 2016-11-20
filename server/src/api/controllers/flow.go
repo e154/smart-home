@@ -194,6 +194,17 @@ func (c *FlowController) UpdateRedactor() {
 		return
 	}
 
+	newFlow := &models.Flow{
+		Id: flow.Id,
+		Name: flow.Name,
+		Description: flow.Description,
+		Status: flow.Status,
+		WorkflowId: flow.WorkflowId,
+	}
+	if err := models.UpdateFlowById(newFlow); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
 	var err error
 	var flowElements []*models.FlowElement

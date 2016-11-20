@@ -12,6 +12,7 @@ angular
     sortby: 'created_at'
   }, (data)->
     vm.devices = data.devices
+    vm.devices.push({name: "Без группы", id: null})
 
   Node.get {
     limit:99
@@ -29,7 +30,7 @@ angular
     node_id: null
     baud: null
     tty: null
-    stop_byte: "2"
+    stop_bite: "2"
     timeout: null
     address: null
     status: "enabled"
@@ -42,7 +43,16 @@ angular
     error =(result)->
       Message result.data.status, result.data.message
 
-    vm.device.stop_byte = parseInt(vm.device.stop_byte, 10)
+    vm.device.stop_bite = parseInt(vm.device.stop_bite, 10)
+
+    if vm.device.device_id != null
+      vm.device.stop_bite = null
+      vm.device.node_id = null
+      vm.device.baud = null
+      vm.device.tty = ""
+      vm.device.timeout = null
+      vm.device.address = null
+
     vm.device.$create(success, error)
 
   vm

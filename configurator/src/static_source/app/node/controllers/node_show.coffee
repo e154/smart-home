@@ -20,19 +20,5 @@ angular
 
   Node.show {id: $stateParams.id}, success, error
 
-  # bpmn scheme editor
-  # -----------------------------------------------------------
-  scheme4 = bpmnMock.scheme4
-  settings =
-    engine:
-      status: 'editor'
-    theme:
-      root_path: "/static/themes"
-
-  instance = new bpmnScheme($('#scheme1'))
-  instance.setScheme(scheme4)
-  instance.setSettings(settings)
-  instance.start()
-
   vm
 ]

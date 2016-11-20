@@ -122,6 +122,7 @@ func (c *DeviceController) Put() {
 	device.Id = int64(id)
 	if err := models.UpdateDeviceById(&device); err != nil {
 		c.ErrHan(403, err.Error())
+		return
 	}
 
 	c.ServeJSON()
@@ -138,6 +139,7 @@ func (c *DeviceController) Delete() {
 	id, _ := c.GetInt(":id")
 	if err := models.DeleteDevice(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
+		return
 	}
 
 	c.ServeJSON()
