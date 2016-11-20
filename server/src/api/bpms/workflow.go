@@ -176,11 +176,11 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 	worker.Message = &models.Message{Variable: []byte(worker.DeviceAction.Command)}
 
 	// autoload nodes
-	if _, ok := wf.Nodes[*worker.Device.NodeId]; ok {
-		worker.Node = wf.Nodes[*worker.Device.NodeId]
+	if _, ok := wf.Nodes[worker.Device.Node.Id]; ok {
+		worker.Node = wf.Nodes[worker.Device.Node.Id]
 	} else {
 		var node *models.Node
-		node, err = models.GetNodeById(*worker.Device.NodeId)
+		node, err = models.GetNodeById(worker.Device.Node.Id)
 		if err != nil {
 			return
 		}

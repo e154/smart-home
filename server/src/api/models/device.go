@@ -13,12 +13,12 @@ import (
 
 type Device struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Address   	int  		`orm:"" json:"address"`
+	Device		*Device		`orm:"rel(fk);null" json:"device"`
+	Node		*Node		`orm:"rel(fk);null" json:"node"`
+	Address   	*int  		`orm:"" json:"address"`
 	Baud		int		`orm:"size(11)" json:"baud"`
-	DeviceId   	*int64  	`orm:"size(11)" json:"device_id"`
 	Description 	string 		`orm:"size(254)" json:"description" valid:"MaxSize(254)"`
 	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	NodeId   	*int64  	`orm:"size(11)" json:"node_id"`
 	Status	 	string 		`orm:"size(254)" json:"status" valid:"MaxSize(254)"`
 	StopBite   	int64  		`orm:"size(11)" json:"stop_bite"`
 	Timeout   	time.Duration 	`orm:"" json:"timeout"`

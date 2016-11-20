@@ -31,8 +31,14 @@ angular
           false
       }
       {
+        name: 'device.group'
+        field: 'device'
+        template: "<a href='' ui-sref='dashboard.device.show({id:item[field].id})'>{{item[field].name}}</a>"
+      }
+      {
         name: 'device.node'
-        field: 'node_id'
+        field: 'node'
+        template: "<a href='' ui-sref='dashboard.node.show({id:item[field].id})'>{{item[field].name}}</a>"
       }
       {
         name: 'device.created_at'

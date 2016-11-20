@@ -1,47 +1,77 @@
-.form-group
-    %laber {{'device.name' | translate}}*
-    %input.form-control(ng-model="device.device.name")
+.row
+    .col-md-6
+        .form-group
+            %laber {{'device.name' | translate}}*
+            %input.form-control(ng-model="device.device.name")
 
-.form-group(ng-if="device.devices.length")
-    %laber {{'device.parent' | translate}}*
-    %select.form-control(ng-model="device.device.device_id" ng-options="device.id as device.name  for device in device.devices")
+        .form-group(ng-if="device.devices.length")
+            %laber {{'device.group' | translate}}
+            %select.form-control(ng-model="device.device.device" ng-options="dev as dev.name for dev in device.devices track by dev.id" ng-change="device.getNodeInfo()")
 
-%div(ng-if="device.device.device_id == null")
+        .form-group
+            %laber {{'device.address' | translate}}
+            %input.form-control(ng-model="device.device.address" type="number" )
 
-    .form-group
-        %laber {{'device.node' | translate}}*
-        %select.form-control(ng-model="device.device.node_id" ng-options="node.id as node.name  for node in device.nodes")
+        %div(ng-if="device.device.device.id == null")
 
-    .form-group
-        %laber {{'device.baud' | translate}}*
-        %input.form-control(ng-model="device.device.baud" type="number" )
+            .form-group
+                %laber {{'device.node' | translate}}
+                %select.form-control(ng-model="device.device.node" ng-options="node as node.name for node in device.nodes track by node.id")
 
-    .form-group
-        %laber {{'device.stop_bite' | translate}}
-        %select.form-control(ng-model="device.device.stop_bite")
-            %option(value=0)
-                {{'device.default' | translate}}
-            %option(value=1)
-                1
-            %option(value=2)
-                2
+            .form-group
+                %laber {{'device.baud' | translate}}
+                %input.form-control(ng-model="device.device.baud" type="number" )
 
-    .form-group
-        %laber {{'device.address' | translate}}*
-        %input.form-control(ng-model="device.device.address" type="number" )
+            .form-group
+                %laber {{'device.timeout' | translate}}
+                %input.form-control(ng-model="device.device.timeout" type="number" )
 
-    .form-group
-        %laber {{'device.tty' | translate}}*
-        %input.form-control(ng-model="device.device.tty" type="string" )
+            .form-group
+                %laber {{'device.stop_bite' | translate}}
+                %select.form-control(ng-model="device.device.stop_bite")
+                    %option(value=0)
+                        {{'device.default' | translate}}
+                    %option(value=1)
+                        1
+                    %option(value=2)
+                        2
 
-    .form-group
-        %laber {{'device.status' | translate}}
-        %select.form-control(ng-model="device.device.status")
-            %option(value="enabled")
-                {{'device.enabled' | translate}}
-            %option(value="disabled")
-                {{'device.disabled' | translate}}
-    .form-group
-        %laber {{'device.description' | translate}}
-        %textarea.form-control(ng-model="device.device.description" rows="10" )
+            .form-group
+                %laber {{'device.tty' | translate}}
+                %input.form-control(ng-model="device.device.tty" type="string" )
+
+            .form-group
+                %laber {{'device.status' | translate}}
+                %select.form-control(ng-model="device.device.status")
+                    %option(value="enabled")
+                        {{'device.enabled' | translate}}
+                    %option(value="disabled")
+                        {{'device.disabled' | translate}}
+        .form-group
+            %laber {{'device.description' | translate}}
+            %textarea.form-control(ng-model="device.device.description" rows="10" )
+
+    .col-md-6(ng-if="device.device.device.id != null")
+
+        .form-group
+            %laber {{'device.node' | translate}}
+            %div
+                %a(href="" ui-sref="dashboard.node.show({id: device.device.device.node.id})" )
+                    {{device.device.device.node.name}}
+
+        .form-group
+            %laber {{'device.baud' | translate}}
+            %div {{device.device.device.baud}}
+
+        .form-group(ng-if="device.device.device.stop_bite")
+            %laber {{'device.stop_bite' | translate}}
+            %div {{device.device.device.stop_bite}}
+
+        .form-group(ng-if="device.device.device.tty")
+            %laber {{'device.tty' | translate}}
+            %div {{device.device.device.tty}}
+
+        .form-group(ng-if="device.device.device.timeout")
+            %laber {{'device.timeout' | translate}}
+            %div {{device.device.device.timeout}}
 

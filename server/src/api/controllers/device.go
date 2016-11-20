@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"../models"
+	"github.com/astaxie/beego/orm"
 )
 
 // DeviceController operations for Device
@@ -76,9 +77,26 @@ func (c *DeviceController) GetOne() {
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
-	} else {
-		c.Data["json"] = map[string]interface{}{"device": device}
 	}
+
+	o := orm.NewOrm()
+
+	if device.Node != nil {
+		if _, err = o.LoadRelated(device, "Node"); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
+	if device.Device != nil {
+		if _, err = o.LoadRelated(device, "Device"); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
+
+	c.Data["json"] = map[string]interface{}{"device": device}
 
 	c.ServeJSON()
 }
@@ -103,7 +121,29 @@ func (c *DeviceController) GetAll() {
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"devices": ml, "meta": meta}
+	o := orm.NewOrm()
+	devices := []models.Device{}
+	for _, m := range ml {
+		device := m.(models.Device)
+
+		if device.Node != nil {
+			if _, err = o.LoadRelated(&device, "Node"); err != nil {
+				c.ErrHan(403, err.Error())
+				return
+			}
+		}
+
+		if device.Device != nil {
+			if _, err = o.LoadRelated(&device, "Device"); err != nil {
+				c.ErrHan(403, err.Error())
+				return
+			}
+		}
+
+		devices = append(devices, device)
+	}
+
+	c.Data["json"] = &map[string]interface{}{"devices": devices, "meta": meta}
 	c.ServeJSON()
 }
 

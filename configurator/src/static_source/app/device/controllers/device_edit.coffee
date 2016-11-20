@@ -8,7 +8,7 @@ angular
     limit:99
     offset: 0
     order: 'desc'
-    query: {}
+    query: {"address": "NULL"}
     sortby: 'created_at'
   }, (data)->
     vm.devices = data.devices
@@ -26,6 +26,7 @@ angular
   Device.show {id: $stateParams.id}, (device)->
     vm.device = device
     vm.device.stop_bite = device.stop_bite.toString()
+    vm.getNodeInfo()
 
   vm.remove =->
     if confirm('точно удалить узел?')
@@ -56,6 +57,13 @@ angular
       vm.device.address = null
       
     vm.device.$update(success, error)
+
+  vm.getNodeInfo =->
+    if !vm.device.device.node?.id
+      return
+
+    Node.show {id: vm.device.device.node.id}, (node)->
+      vm.device.device.node = node
 
   vm
 ]
