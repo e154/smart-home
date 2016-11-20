@@ -9,7 +9,9 @@ angular
 
   getDevices =->
     Device.group {}, (data)->
-      vm.devices = data.devices
+      angular.forEach data.devices, (device)->
+        if device.id != vm.device.id
+          vm.devices.push(device)
       vm.devices.push({name: "Без группы", id: null})
 
   Node.get {
