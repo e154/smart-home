@@ -39,7 +39,7 @@ func (b *BPMS) InitNodes() (err error) {
 	b.nodes = make(map[int64]*models.Node)
 	b.nodes_chan = make(map[int64]chan string)
 
-	log.Println("--------------------- NODES ---------------------")
+	//log.Println("--------------------- NODES ---------------------")
 	if nodes, err = models.GetAllEnabledNodes(); err != nil {
 		return
 	}
@@ -59,7 +59,7 @@ func (b *BPMS) InitNodes() (err error) {
 func (b *BPMS) InitWorkflows() (err error) {
 
 	b.workflows = make(map[int64]*Workflow)
-	log.Println("------------------- WORKFLOW --------------------")
+	//log.Println("------------------- WORKFLOW --------------------")
 	workflows, err := models.GetAllEnabledWorkflow()
 	if err != nil {
 		return
@@ -89,6 +89,54 @@ func (b *BPMS) Restart() (err error) {
 			return
 		}
 	}
+	return
+}
+
+func (b *BPMS) AddFlow(f *models.Flow) (err error) {
+
+	var flow *models.Flow
+	if flow, err = models.GetFlowById(f.Id); err != nil {
+		return
+	}
+
+	if _, ok := b.workflows[flow.WorkflowId]; ok {
+		if err = b.workflows[flow.WorkflowId].AddFlow(flow); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (b *BPMS) UpdateFlow(f *models.Flow) (err error) {
+
+	var flow *models.Flow
+	if flow, err = models.GetFlowById(f.Id); err != nil {
+		return
+	}
+
+	if _, ok := b.workflows[flow.WorkflowId]; ok {
+		if err = b.workflows[flow.WorkflowId].UpdateFlow(flow); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (b *BPMS) RemoveFlow(f *models.Flow) (err error) {
+
+	var flow *models.Flow
+	if flow, err = models.GetFlowById(f.Id); err != nil {
+		return
+	}
+
+	if _, ok := b.workflows[flow.WorkflowId]; ok {
+		if err = b.workflows[flow.WorkflowId].RemoveFlow(flow); err != nil {
+			return
+		}
+	}
+
 	return
 }
 

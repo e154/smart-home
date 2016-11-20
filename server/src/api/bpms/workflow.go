@@ -60,7 +60,7 @@ func (wf *Workflow) Run() (err error) {
 
 func (wf *Workflow) InitFlows() (err error) {
 
-	log.Println("-------------------- FLOWS ----------------------")
+	//log.Println("-------------------- FLOWS ----------------------")
 
 	var flows	[]*models.Flow
 	wf.Flows = make(map[int64]*models.Flow)
@@ -74,7 +74,7 @@ func (wf *Workflow) InitFlows() (err error) {
 
 func (wf *Workflow) InitWorkers() (err error) {
 
-	log.Println("------------------- WORKERS ---------------------")
+	//log.Println("------------------- WORKERS ---------------------")
 
 	var workers	[]*models.Worker
 	wf.Workers = make(map[int64]*models.Worker)
@@ -105,6 +105,8 @@ func (wf *Workflow) Restart() (err error) {
 
 func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
 
+	log.Println("Add flow:", flow.Name)
+
 	if _, ok := wf.Flows[flow.Id]; ok {
 		return
 	}
@@ -116,10 +118,16 @@ func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
 
 func (wf *Workflow) UpdateFlow(flow *models.Flow) (err error) {
 
-	return
+	if err = wf.RemoveFlow(flow); err != nil {
+		return
+	}
+
+	return wf.AddFlow(flow)
 }
 
 func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
+
+	log.Println("Remove flow:", flow.Name)
 
 	if _, ok := wf.Flows[flow.Id]; !ok {
 		return
@@ -138,7 +146,7 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
 	wf.Workers[worker.Id] = worker
 
-	log.Printf("start \"%s\"", worker.Name)
+	log.Printf("Start worker: \"%s\"", worker.Name)
 	//j, _ := json.Marshal(worker)
 	//log.Println(string(j))
 

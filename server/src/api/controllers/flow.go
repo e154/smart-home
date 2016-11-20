@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego/validation"
 	"../models"
-	"log"
+	"../bpms"
 )
 
 // FlowController operations for Flow
@@ -62,7 +62,7 @@ func (c *FlowController) Post() {
 
 	}
 
-	//bpms.BpmsPtr().AddFlow(&flow)
+	bpms.BpmsPtr().AddFlow(&flow)
 
 	c.ServeJSON()
 }
@@ -101,7 +101,6 @@ func (c *FlowController) GetOneFull() {
 		c.ErrHan(403, err.Error())
 		return
 	} else {
-		log.Println(flow)
 		c.Data["json"] = map[string]interface{}{"flow": flow}
 	}
 
@@ -149,6 +148,8 @@ func (c *FlowController) Put() {
 		return
 	}
 
+	bpms.BpmsPtr().UpdateFlow(&flow)
+
 	c.ServeJSON()
 }
 
@@ -166,7 +167,7 @@ func (c *FlowController) Delete() {
 		return
 	}
 
-	//bpms.BpmsPtr().RemoveWorkflow(&models.Workflow{Id:int64(id)})
+	bpms.BpmsPtr().RemoveFlow(&models.Flow{Id: int64(id)})
 
 	c.ServeJSON()
 }
@@ -319,6 +320,8 @@ func (c *FlowController) UpdateRedactor() {
 
 	var r *models.RedactorFlow
 	r, err = ExportToRedactor(newflow)
+
+	bpms.BpmsPtr().UpdateFlow(&models.Flow{Id:flow.Id})
 
 	c.Data["json"] = map[string]interface{}{"flow": r}
 	c.ServeJSON()

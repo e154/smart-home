@@ -262,7 +262,6 @@ func (m *FlowElement) After(message *Message) error {
 			if f != m {
 				continue
 			}
-
 			m.Flow.Cursor = append(m.Flow.Cursor[:k], m.Flow.Cursor[k+1:]...)
 		}
 	} else {
