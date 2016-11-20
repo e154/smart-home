@@ -4,15 +4,13 @@ angular
 ($scope, Message, $stateParams, Device, $state, Node) ->
   vm = this
 
-  Device.get {
-    limit:99
-    offset: 0
-    order: 'desc'
-    query: {"address": "NULL"}
-    sortby: 'created_at'
-  }, (data)->
-    vm.devices = data.devices
-    vm.devices.push({name: "Без группы", id: null})
+  vm.nodes = {}
+  vm.devices = []
+
+  getDevices =->
+    Device.group {}, (data)->
+      vm.devices = data.devices
+      vm.devices.push({name: "Без группы", id: null})
 
   Node.get {
     limit:99
@@ -22,6 +20,7 @@ angular
     sortby: 'created_at'
   }, (data)->
     vm.nodes = data.nodes
+    getDevices()
 
   Device.show {id: $stateParams.id}, (device)->
     vm.device = device
@@ -48,18 +47,19 @@ angular
 
     vm.device.stop_bite = parseInt(vm.device.stop_bite, 10)
 
-    if vm.device.device_id != null
+    if vm.device.device?
       vm.device.stop_bite = null
       vm.device.node_id = null
       vm.device.baud = null
       vm.device.tty = ""
       vm.device.timeout = null
-      vm.device.address = null
-      
+    else
+      vm.device.device = null
+
     vm.device.$update(success, error)
 
   vm.getNodeInfo =->
-    if !vm.device.device.node?.id
+    if !vm.device.device?.node?.id
       return
 
     Node.show {id: vm.device.device.node.id}, (node)->

@@ -17,6 +17,7 @@ type DeviceController struct {
 func (c *DeviceController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
+	c.Mapping("GetGroup", c.GetGroup)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Get", c.GetAll)
 	c.Mapping("Put", c.Put)
@@ -97,6 +98,28 @@ func (c *DeviceController) GetOne() {
 
 
 	c.Data["json"] = map[string]interface{}{"device": device}
+
+	c.ServeJSON()
+}
+
+// GetGroup ...
+// @Title GetGroup
+// @Description get Device by id
+// @Param	id		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.Device
+// @Failure 403 :id is empty
+// @router / [get]
+func (c *DeviceController) GetGroup() {
+
+	o := orm.NewOrm()
+
+	devices := []*models.Device{}
+	if _, err := o.QueryTable(&models.Device{}).Filter("address__isnull", true).RelatedSel("Node", "Device").All(&devices); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = map[string]interface{}{"devices": devices}
 
 	c.ServeJSON()
 }

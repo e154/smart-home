@@ -8,6 +8,11 @@ angular
       transformResponse: (data) ->
         data?.device || data
 
+    group:
+      url: window.server_url + '/api/v1/device/group'
+      method: 'GET'
+      responseType: 'json'
+
     create:
       method: 'POST'
       responseType: 'json'

@@ -23,6 +23,7 @@ func Initialize() {
 			beego.NSRouter("/device", &controllers.DeviceController{}, "post:Post"),
 			beego.NSRouter("/device/:id([0-9]+)", &controllers.DeviceController{}, "put:Put"),
 			beego.NSRouter("/device/:id([0-9]+)", &controllers.DeviceController{}, "delete:Delete"),
+			beego.NSRouter("/device/group", &controllers.DeviceController{}, "get:GetGroup"),
 
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "get:GetOne"),
 			beego.NSRouter("/workflow", &controllers.WorkflowController{}, "get:GetAll"),
