@@ -27,13 +27,13 @@ angular
   vm.getDefaultAction =->
     vm.current = new DeviceAction({
         name: "Новое действие"
-        command: ""
+        command: "000000000"
         direction: "inside"
         start_addr: 0
         col_cells: 1
         result_type: "byte"
         function: 2
-        description: ""
+        description: "Какое-то действие"
         device_id: parseInt($stateParams.id, 10)
       })
 
