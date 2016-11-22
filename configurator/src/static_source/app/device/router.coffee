@@ -34,8 +34,13 @@ angular
     .state(
       name: "dashboard.device.show"
       url: "/:id"
-      templateUrl: '/device/templates/device.show.html'
-      controller: 'deviceShowCtrl as device'
+      views:
+        "":
+          templateUrl: '/device/templates/device.show.html'
+          controller: 'deviceShowCtrl as device'
+        "tab-view@dashboard.device.show":
+          templateUrl: '/device/templates/device.action.html'
+          controller: 'deviceActionCtrl as action'
     )
 
     .state(
@@ -45,4 +50,12 @@ angular
       controller: 'deviceEditCtrl as device'
     )
 
+    .state(
+      name: "dashboard.device.show.tasks"
+      url: "/tasks"
+      views:
+        "tab-view@dashboard.device.show":
+          templateUrl: '/device/templates/device.task.html'
+          controller: 'deviceTaskCtrl as task'
+    )
 ]

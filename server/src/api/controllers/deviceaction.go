@@ -1,12 +1,15 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego"
+	"encoding/json"
+	"github.com/astaxie/beego/validation"
+	"fmt"
+	"../models"
 )
 
 // DeviceActionController operations for DeviceAction
 type DeviceActionController struct {
-	beego.Controller
+	CommonController
 }
 
 // URLMapping ...
@@ -26,7 +29,37 @@ func (c *DeviceActionController) URLMapping() {
 // @Failure 403 body is empty
 // @router / [post]
 func (c *DeviceActionController) Post() {
+	var action models.DeviceAction
+	json.Unmarshal(c.Ctx.Input.RequestBody, &action)
 
+	// validation
+	valid := validation.Validation{}
+	b, err := valid.Valid(&action)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if !b {
+		var msg string
+		for _, err := range valid.Errors {
+			msg += fmt.Sprintf("%s: %s\r", err.Key, err.Message)
+		}
+		c.ErrHan(403, msg)
+		return
+	}
+	//....
+
+	nid, err := models.AddDeviceAction(&action)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	} else {
+		c.Data["json"] = map[string]interface{}{"id": nid}
+
+	}
+
+	c.ServeJSON()
 }
 
 // GetOne ...
@@ -37,7 +70,16 @@ func (c *DeviceActionController) Post() {
 // @Failure 403 :id is empty
 // @router /:id [get]
 func (c *DeviceActionController) GetOne() {
+	id, _ := c.GetInt(":id")
+	action, err := models.GetDeviceActionById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
+	c.Data["json"] = map[string]interface{}{"action": action}
+
+	c.ServeJSON()
 }
 
 // GetAll ...
@@ -54,6 +96,14 @@ func (c *DeviceActionController) GetOne() {
 // @router / [get]
 func (c *DeviceActionController) GetAll() {
 
+	ml, meta, err := models.GetAllDeviceAction(c.pagination())
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"actions": ml, "meta": meta}
+	c.ServeJSON()
 }
 
 // Put ...
@@ -66,6 +116,16 @@ func (c *DeviceActionController) GetAll() {
 // @router /:id [put]
 func (c *DeviceActionController) Put() {
 
+	id, _ := c.GetInt(":id")
+	var action models.DeviceAction
+	json.Unmarshal(c.Ctx.Input.RequestBody, &action)
+	action.Id = int64(id)
+	if err := models.UpdateDeviceActionById(&action); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.ServeJSON()
 }
 
 // Delete ...
@@ -76,5 +136,11 @@ func (c *DeviceActionController) Put() {
 // @Failure 403 id is empty
 // @router /:id [delete]
 func (c *DeviceActionController) Delete() {
+	id, _ := c.GetInt(":id")
+	if err := models.DeleteDeviceAction(int64(id)); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
+	c.ServeJSON()
 }

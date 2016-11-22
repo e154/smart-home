@@ -44,7 +44,20 @@
     "node": "Узел",
     "timeout": "timeout",
     "created_at": "Дата создания",
-    "update_at": "Дата обновления"
+    "update_at": "Дата обновления",
+    "actions": "Действия",
+    "tasks": "Задачи",
+    "action": {
+      "name": "Название действия",
+      "start_addr": "Стартовый адрес",
+      "col_cells": "Количесто ячеек",
+      "function": "Функция",
+      "direction": "Направление",
+      "inside": "Входящие",
+      "outside": "Исходящие",
+      "result_type": "Тип результата выполнения команды",
+      "command": "Комманда"
+    }
   },
   "total items": "всего",
   "workflow": {

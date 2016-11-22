@@ -1,0 +1,37 @@
+.row
+  .col-md-6
+    .row
+      .col-md-12
+        .form-group
+          %a(href="#" ng-click="action.addNew()")
+            .fa.fa-plus &nbsp;
+            Добавить действие
+
+    %div
+      %div(ng-include="'/device/templates/_action_form.html'" )
+
+      .form-group
+        .pull-right
+          %a.btn.btn-danger(href="" role="button" ng-click="action.remove()" ng-if="action.current.id")
+            {{'Delete' | translate}}
+          %a.btn.btn-default(href="" role="button" ng-click="action.cancel()" ng-if="action.current.id")
+            {{'Cancel' | translate}}
+          %a.btn.btn-primary(href="" role="button" ng-click="action.submit()")
+            %span(ng-if="!action.current.id")
+              {{'Create' | translate}}
+            %span(ng-if="action.current.id")
+              {{'Update' | translate}}
+        .clearfix
+
+  .col-md-6
+    .form-group(ng-repeat="act in action.actions" )
+      .panel.panel-default
+        .panel-body
+          %strong
+            %a(href="#" ng-click="action.show(act)")
+              {{act.name}}
+          .pull-right.small
+            Редактировалось {{act.update_at | readableDateTime}}
+          .clearfix
+          .small
+            {{act.description}}

@@ -1,5 +1,5 @@
 .row
-  .col-md-12
+  .col-sm-12
     %h3
       %a(href="" ui-sref="dashboard.device.index")
         %small.fa.fa-long-arrow-left
@@ -16,7 +16,7 @@
         Редактировалось {{device.device.update_at | readableDateTime}}
 
 .row
-  .col-md-2
+  .col-sm-2
     .form-group
       .text-muted
         {{'device.name' | translate}}
@@ -66,3 +66,16 @@
         {{'device.description' | translate}}
       %div
         {{::device.device.description}}
+
+  .col-sm-10
+    .form-group
+      %ul.nav.nav-tabs
+        %li(role="presentation" ui-sref-active-eq="active" ui-sref="dashboard.device.show")
+          %a(href="#")
+            {{'device.actions' | translate}}
+        %li(role="presentation" ui-sref-active-eq="active" ui-sref="dashboard.device.show.tasks")
+          %a(href="#")
+            {{'device.tasks' | translate}}
+
+
+    %div(ui-view="tab-view")
