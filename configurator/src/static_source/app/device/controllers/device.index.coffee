@@ -31,6 +31,11 @@ angular
           false
       }
       {
+        name: 'device.is_group'
+        field: 'is_group'
+        template: "<span ng-if='item[field]'>{{'device.yes' | translate}}</span>"
+      }
+      {
         name: 'device.group'
         field: 'device'
         template: "<a href='' ui-sref='dashboard.device.show({id:item[field].id})'>{{item[field].name}}</a>"
@@ -61,6 +66,12 @@ angular
       }
     ]
     menu:null
+    rows: (item)->
+      style
+      if item.is_group
+        style = 'bg-warning'
+      style
+
     callback: tableCallback
 
   vm

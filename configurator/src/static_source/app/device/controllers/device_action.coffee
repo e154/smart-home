@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'deviceActionCtrl', ['$scope', 'Notify', 'DeviceAction', 'Message', '$stateParams'
-($scope, Notify, DeviceAction, Message, $stateParams) ->
+.controller 'deviceActionCtrl', ['$scope', 'Notify', 'DeviceAction', 'Message', '$stateParams', 'Device'
+($scope, Notify, DeviceAction, Message, $stateParams, Device) ->
   vm = this
   vm.actions = []
   vm.current ={}
@@ -15,14 +15,8 @@ angular
     vm.current = new DeviceAction(action)
 
   vm.getDeviceActions =->
-    DeviceAction.get {
-      limit:99
-      offset: 0
-      order: 'desc'
-      query: {}
-      sortby: 'created_at'
-    }, (data)->
-      vm.actions = data.actions
+    Device.actions {id: $stateParams.id}, (actions)->
+      vm.actions = actions
 
   vm.getDefaultAction =->
     vm.current = new DeviceAction({
@@ -34,7 +28,8 @@ angular
         result_type: "byte"
         function: 2
         description: "Какое-то действие"
-        device_id: parseInt($stateParams.id, 10)
+        device:
+          id: parseInt($stateParams.id, 10)
       })
 
   vm.submit =->

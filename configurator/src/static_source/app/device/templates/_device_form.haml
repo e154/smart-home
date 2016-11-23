@@ -4,11 +4,11 @@
             %laber {{'device.name' | translate}}*
             %input.form-control(ng-model="device.device.name")
 
-        .form-group(ng-if="device.devices.length")
+        .form-group(ng-if="!device.device.is_group")
             %laber {{'device.group' | translate}}
             %select.form-control(ng-model="device.device.device" ng-options="dev as dev.name for dev in device.devices track by dev.id" ng-change="device.getNodeInfo()")
 
-        .form-group
+        .form-group(ng-if="!device.device.is_group")
             %laber {{'device.address' | translate}}
             %input.form-control(ng-model="device.device.address" type="number" )
 

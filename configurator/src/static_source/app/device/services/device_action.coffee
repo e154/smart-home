@@ -17,12 +17,4 @@ angular
 
     delete:
       method: 'DELETE'
-
-    all:
-      method: 'GET'
-      responseType: 'json'
-      transformResponse: (data) ->
-        meta: data.meta
-        items: data.actions
-
 ]

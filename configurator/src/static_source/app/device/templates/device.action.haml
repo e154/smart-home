@@ -5,7 +5,7 @@
         .form-group
           %a(href="#" ng-click="action.addNew()")
             .fa.fa-plus &nbsp;
-            Добавить действие
+            {{'device.action.add' | translate}}
 
     %div
       %div(ng-include="'/device/templates/_action_form.html'" )
@@ -23,13 +23,18 @@
               {{'Update' | translate}}
         .clearfix
 
-  .col-md-6
+  .col-md-6(ng-if="action.actions.length")
     .list-group
-      %a.list-group-item(href="#" ng-repeat="act in action.actions" ng-click="action.show(act)" ng-class="{'active' : action.current.id == act.id}" )
-        %strong.list-group-item-heading
-          {{act.name}}
-        .pull-right.small
-          Редактировалось {{act.update_at | readableDateTime}}
-        .clearfix
-        %p.list-group-item-text
-          {{act.description}}
+      .panel.panel-default
+        .panel-heading
+          {{'device.action.all' | translate}}
+        %a.list-group-item(href="#" ng-repeat="act in action.actions" ng-click="action.show(act)" ng-class="{'active' : action.current.id == act.id}" )
+          %strong.list-group-item-heading
+            {{act.name}}
+          .pull-right.small
+            Редактировалось {{act.update_at | readableDateTime}}
+          .clearfix
+          .small.list-group-item-text
+            {{'device.device' | translate}} {{act.device.name}}
+          .small
+            {{act.description}}

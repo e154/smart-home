@@ -15,9 +15,8 @@ type DeviceAction struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
 	StartAddr   	int64  		`orm:"column(start_addr)" json:"start_addr"`
 	ColCells	int64		`orm:"column(col_cells)" json:"col_cells" valid:"Required"`
-	DeviceId   	int64  		`orm:"size(11);column(device_id)" json:"device_id"`
+	Device		*Device 	`orm:"rel(fk)" json:"device"`
 	Function   	int64  		`orm:"size(11)" json:"function"`
-	Device		*Device		`orm:"-" json:"device"`
 	Command 	string 		`orm:"" json:"command" valid:"Required"`
 	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
 	Direction	string 		`orm:"size(254)" json:"direction" valid:"MaxSize(254);Required"`
@@ -39,6 +38,16 @@ func init() {
 // last inserted Id on success.
 func AddDeviceAction(m *DeviceAction) (id int64, err error) {
 	o := orm.NewOrm()
+
+	device := &Device{}
+	if device, err = GetDeviceById(m.Device.Id); err != nil {
+		return
+	}
+
+	if device.Device != nil {
+		m.Device = device.Device
+	}
+
 	id, err = o.Insert(m)
 	return
 }
@@ -164,5 +173,14 @@ func DeleteDeviceAction(id int64) (err error) {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
+	return
+}
+
+func GetDeviceActionsByDeviceId(ids []int64) (actions []*DeviceAction, err error) {
+
+	o := orm.NewOrm()
+
+	actions = []*DeviceAction{}
+	_, err = o.QueryTable(&DeviceAction{}).Filter("device_id__in", ids).RelatedSel("Device").All(&actions)
 	return
 }

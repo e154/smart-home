@@ -178,8 +178,8 @@ func GetAllEnabledWorkersByWorkflow(workflow *Workflow) (workers []*Worker, err 
 			return
 		}
 
-		worker.Device, _ = GetParentDeviceByChildId(worker.DeviceAction.DeviceId)
-		worker.Device.Id = worker.DeviceAction.DeviceId
+		worker.Device, _ = GetParentDeviceByChildId(worker.DeviceAction.Device.Id)
+		worker.Device.Id = worker.DeviceAction.Device.Id
 	}
 	return
 }
@@ -192,8 +192,8 @@ func GetAllEnabledWorkers() (workers []*Worker, err error) {
 			return
 		}
 
-		worker.Device, _ = GetParentDeviceByChildId(worker.DeviceAction.DeviceId)
-		worker.Device.Id = worker.DeviceAction.DeviceId
+		worker.Device, _ = GetParentDeviceByChildId(worker.DeviceAction.Device.Id)
+		worker.Device.Id = worker.DeviceAction.Device.Id
 	}
 	return
 }
