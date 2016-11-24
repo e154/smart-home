@@ -23,6 +23,7 @@ type Flow struct {
 	FlowElements	[]*FlowElement	`orm:"-" json:"flow_elements"`
 	Cursor		[]*FlowElement	`orm:"-" json:"-"`
 	wf		*Workflow	`orm:"-" json:"-"`
+	Worker		*Worker		`orm:"-" json:"worker"`
 }
 
 func (m *Flow) TableName() string {

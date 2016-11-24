@@ -14,11 +14,10 @@ import (
 
 type Worker struct {
 	Id           int64  		`orm:"pk;auto;column(id)" json:"id"`
-	FlowId       int64  		`orm:"column(flow_id)" json:"flow_id" valid:"Required"`
-	WorkflowId   int64		`orm:"column(workflow_id)" json:"workflow_id" valid:"Required"`
+	Workflow     *Workflow		`orm:"rel(fk)" json:"workflow_id" valid:"Required"`
 	DeviceAction *DeviceAction  	`orm:"rel(fk);column(device_action_id);null" json:"device_action"`
 	Device       *Device		`orm:"-" json:"device"`
-	Flow         *Flow		`orm:"-" json:"flow"`
+	Flow         *Flow		`orm:"rel(fk)" json:"flow" valid:"Required"`
 	Message      *Message		`orm:"-" json:"-"`
 	Node         *Node		`orm:"-" json:"-"`
 	CronTask     *crontab.Task	`orm:"-" json:"-"`

@@ -34,7 +34,8 @@
           .pull-right.small
             Редактировалось {{act.update_at | readableDateTime}}
           .clearfix
-          .small.list-group-item-text
-            {{'device.device' | translate}} {{act.device.name}}
-          .small
-            {{act.description}}
+          .list-group-item-text
+            .small
+              {{'device.device' | translate}} {{act.device.name}}
+            .small
+              {{act.description}}

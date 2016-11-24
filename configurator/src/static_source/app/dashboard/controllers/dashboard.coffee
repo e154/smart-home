@@ -48,7 +48,7 @@ angular
         'label': 'Flows'
         'route': 'dashboard.flow'
         'link': 'dashboard.flow.index'
-        'icon': 'fa fa-cube'
+        'icon': 'bpmn-icon-business-rule'
         'items': [
           {
             'label': 'All flow'

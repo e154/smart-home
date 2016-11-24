@@ -159,11 +159,11 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 	//log.Println(string(j))
 
 	// autoload flows
-	if _, ok := wf.Flows[worker.FlowId]; ok {
-		worker.Flow = wf.Flows[worker.FlowId]
+	if _, ok := wf.Flows[worker.Flow.Id]; ok {
+		worker.Flow = wf.Flows[worker.Flow.Id]
 	} else {
 		var flow *models.Flow
-		flow, err = models.GetEnabledFlowById(worker.FlowId)
+		flow, err = models.GetEnabledFlowById(worker.Flow.Id)
 		if err != nil {
 			return
 		}

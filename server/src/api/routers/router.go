@@ -46,6 +46,12 @@ func Initialize() {
 			beego.NSRouter("/device_action", &controllers.DeviceActionController{}, "post:Post"),
 			beego.NSRouter("/device_action/:id([0-9]+)", &controllers.DeviceActionController{}, "put:Put"),
 			beego.NSRouter("/device_action/:id([0-9]+)", &controllers.DeviceActionController{}, "delete:Delete"),
+
+			beego.NSRouter("/worker/:id([0-9]+)", &controllers.WorkerController{}, "get:GetOne"),
+			beego.NSRouter("/worker", &controllers.WorkerController{}, "get:GetAll"),
+			beego.NSRouter("/worker", &controllers.WorkerController{}, "post:Post"),
+			beego.NSRouter("/worker/:id([0-9]+)", &controllers.WorkerController{}, "put:Put"),
+			beego.NSRouter("/worker/:id([0-9]+)", &controllers.WorkerController{}, "delete:Delete"),
 		),
 	)
 	beego.AddNamespace(ns)
