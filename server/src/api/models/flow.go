@@ -16,13 +16,12 @@ type Flow struct {
 	Name		string		`orm:"" json:"name"`
 	Description	string		`orm:"" json:"description"`
 	Status		string		`orm:"" json:"status"`
-	WorkflowId	int64		`orm:"column(workflow_id)" json:"workflow_id"`
+	Workflow	*Workflow	`orm:"rel(fk)" json:"workflow"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 	Connections	[]*Connection	`orm:"-" json:"connections"`
 	FlowElements	[]*FlowElement	`orm:"-" json:"flow_elements"`
 	Cursor		[]*FlowElement	`orm:"-" json:"-"`
-	wf		*Workflow	`orm:"-" json:"-"`
 	Worker		*Worker		`orm:"-" json:"worker"`
 }
 
@@ -118,7 +117,7 @@ func GetAllFlow(query map[string]string, fields []string, sortby []string, order
 	}
 
 	var l []Flow
-	qs = qs.OrderBy(sortFields...)
+	qs = qs.RelatedSel("Workflow").OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
 		return

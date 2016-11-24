@@ -22,6 +22,11 @@ angular
           false
       }
       {
+        name: 'flow.workflow'
+        field: 'workflow'
+        template: '<a ui-sref="dashboard.workflow.show({id:item.workflow.id})">{{item.workflow.name}}</a>'
+      }
+      {
         name: 'flow.created_at'
         field: 'created_at'
         template: '<span>{{item[field] | readableDateTime}}</span>'

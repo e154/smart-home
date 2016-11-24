@@ -120,13 +120,13 @@ func (c *FlowController) GetOneFull() {
 // @Failure 403
 // @router / [get]
 func (c *FlowController) GetAll() {
-	ml, meta, err := models.GetAllFlow(c.pagination())
+	ml, flows, err := models.GetAllFlow(c.pagination())
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"flows": ml, "meta": meta}
+	c.Data["json"] = &map[string]interface{}{"flows": ml, "meta": flows}
 	c.ServeJSON()
 }
 
@@ -199,7 +199,7 @@ func (c *FlowController) UpdateRedactor() {
 		Name: flow.Name,
 		Description: flow.Description,
 		Status: flow.Status,
-		WorkflowId: flow.WorkflowId,
+		Workflow: &models.Workflow{Id:flow.WorkflowId},
 	}
 	if err := models.UpdateFlowById(newFlow); err != nil {
 		c.ErrHan(403, err.Error())
@@ -346,7 +346,7 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 		Name: f.Name,
 		Status: f.Status,
 		Description: f.Description,
-		WorkflowId: f.WorkflowId,
+		WorkflowId: f.Workflow.Id,
 		Objects: make([]*models.RedactorObject, 0),
 		Connectors: make([]*models.RedactorConnector, 0),
 		Created_at: f.Created_at,

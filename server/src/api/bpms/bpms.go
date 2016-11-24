@@ -99,8 +99,8 @@ func (b *BPMS) AddFlow(f *models.Flow) (err error) {
 		return
 	}
 
-	if _, ok := b.workflows[flow.WorkflowId]; ok {
-		if err = b.workflows[flow.WorkflowId].AddFlow(flow); err != nil {
+	if _, ok := b.workflows[flow.Workflow.Id]; ok {
+		if err = b.workflows[flow.Workflow.Id].AddFlow(flow); err != nil {
 			return
 		}
 	}
@@ -115,8 +115,8 @@ func (b *BPMS) UpdateFlow(f *models.Flow) (err error) {
 		return
 	}
 
-	if _, ok := b.workflows[flow.WorkflowId]; ok {
-		if err = b.workflows[flow.WorkflowId].UpdateFlow(flow); err != nil {
+	if _, ok := b.workflows[flow.Workflow.Id]; ok {
+		if err = b.workflows[flow.Workflow.Id].UpdateFlow(flow); err != nil {
 			return
 		}
 	}
@@ -131,8 +131,8 @@ func (b *BPMS) RemoveFlow(f *models.Flow) (err error) {
 		return
 	}
 
-	if _, ok := b.workflows[flow.WorkflowId]; ok {
-		if err = b.workflows[flow.WorkflowId].RemoveFlow(flow); err != nil {
+	if _, ok := b.workflows[flow.Workflow.Id]; ok {
+		if err = b.workflows[flow.Workflow.Id].RemoveFlow(flow); err != nil {
 			return
 		}
 	}
