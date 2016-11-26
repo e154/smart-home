@@ -6,6 +6,7 @@ import (
 	"../settings"
 	"../lib/rpc"
 	"fmt"
+	"errors"
 )
 
 const (
@@ -15,6 +16,10 @@ const (
 type Modbus struct {}
 
 func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
+
+	if len(request.Command) == 0 {
+		return errors.New("command == []")
+	}
 
 	st := settings.SettingsPtr()
 

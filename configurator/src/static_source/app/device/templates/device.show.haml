@@ -67,7 +67,7 @@
       %div
         {{::device.device.description}}
 
-  .col-sm-10
+  .col-sm-10(ng-if="!device.device.device.id")
     .form-group
       %ul.nav.nav-tabs
         %li(role="presentation" ui-sref-active-eq="active" ui-sref="dashboard.device.show")

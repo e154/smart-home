@@ -10,7 +10,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"./routers"
 	"./filters"
-	"./bpms"
+	"./core"
 	"./crontab"
 	"log"
 )
@@ -80,7 +80,7 @@ func Initialize() {
 	}
 
 	// bpms
-	if err := bpms.Initialize(); err != nil {
+	if err := core.Initialize(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

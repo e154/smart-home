@@ -1,47 +1,17 @@
-package bpms
+package core
 
 import (
-	"../models"
 	r "../../lib/rpc"
 	"log"
 	"time"
-	"encoding/hex"
 	"reflect"
+	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"../models"
 	"../stream"
+	"fmt"
 )
-
-func (b *BPMS) AddWorkflow(workflow *models.Workflow) (err error) {
-
-	log.Println("Add workflow:", workflow.Name)
-
-	if _, ok := b.workflows[workflow.Id]; ok {
-		return
-	}
-
-	wf := &Workflow{model: workflow, Nodes: b.nodes}
-	if err = wf.Run(); err != nil {
-		return
-	}
-
-	b.workflows[workflow.Id] = wf
-
-	return
-}
-
-func (b *BPMS) RemoveWorkflow(workflow *models.Workflow) (err error) {
-
-	log.Println("Remove workflow:", workflow.Name)
-
-	if _, ok := b.workflows[workflow.Id]; !ok {
-		return
-	}
-
-	b.workflows[workflow.Id].Stop()
-	delete(b.workflows, workflow.Id)
-
-	return
-}
 
 type Workflow struct {
 	model   *models.Workflow
@@ -84,7 +54,11 @@ func (wf *Workflow) InitWorkers() (err error) {
 	wf.Workers = make(map[int64]*models.Worker)
 	if workers, err = models.GetAllEnabledWorkersByWorkflow(wf.model); err != nil {return}
 	for _, worker := range workers {
-		wf.AddWorker(worker)
+		if err = wf.AddWorker(worker); err != nil {
+			log.Println("error:", err.Error())
+			return
+		}
+
 	}
 
 	return
@@ -102,7 +76,7 @@ func (wf *Workflow) Stop() (err error) {
 func (wf *Workflow) Restart() (err error) {
 
 	wf.Stop()
-	wf.Run()
+	err = wf.Run()
 
 	return
 }
@@ -175,17 +149,23 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 	// message
 	worker.Message = &models.Message{Variable: []byte(worker.DeviceAction.Command)}
 
-	// autoload nodes
+	if worker.Device.Node.Id == 0 {
+		err = errors.New("device node.id = 0")
+		return
+	}
+
+	// check node list
 	if _, ok := wf.Nodes[worker.Device.Node.Id]; ok {
 		worker.Node = wf.Nodes[worker.Device.Node.Id]
 	} else {
+		// autoload nodes
 		var node *models.Node
 		node, err = models.GetNodeById(worker.Device.Node.Id)
 		if err != nil {
 			return
 		}
 
-		BpmsPtr().AddNode(node)
+		CorePtr().AddNode(node)
 		worker.Node = node
 	}
 
@@ -213,6 +193,7 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 		}
 
 		if err := worker.Node.ModbusSend(args, result); err != nil {
+			log.Println(err.Error())
 			worker.Node.Errors++
 			// нет связи с нодой, или что-то случилось
 			return
@@ -231,10 +212,24 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
 func (wf *Workflow) UpdateWorker(worker *models.Worker) (err error) {
 
+	if _, ok := wf.Workers[worker.Id]; ok {
+		wf.RemoveWorker(worker)
+		err = wf.AddWorker(worker)
+	} else {
+		err = fmt.Errorf("worker id:%d not found", worker.Id)
+	}
+
 	return
 }
 
 func (wf *Workflow) RemoveWorker(worker *models.Worker) (err error) {
+
+	if _, ok := wf.Workers[worker.Id]; ok {
+		wf.Workers[worker.Id].Stop()
+		delete(wf.Workers, worker.Id)
+	} else {
+		err = fmt.Errorf("worker id:%d not found", worker.Id)
+	}
 
 	return
 }

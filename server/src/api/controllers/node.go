@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"encoding/json"
 	"fmt"
-	"../bpms"
+	"../core"
 	"../models"
 )
 
@@ -61,7 +61,7 @@ func (c *NodeController) Post() {
 
 	}
 
-	pm := bpms.BpmsPtr()
+	pm := core.CorePtr()
 	node.Id = nid
 	pm.AddNode(&node)
 
@@ -130,7 +130,7 @@ func (c *NodeController) Put() {
 		return
 	}
 
-	if err := bpms.BpmsPtr().ReloadNode(&node); err != nil {
+	if err := core.CorePtr().ReloadNode(&node); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
@@ -156,7 +156,7 @@ func (c *NodeController) Delete() {
 	}
 
 	// remove from process
-	if err := bpms.BpmsPtr().RemoveNode(node); err != nil {
+	if err := core.CorePtr().RemoveNode(node); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}

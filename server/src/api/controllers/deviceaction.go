@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"../models"
+	"../core"
 	"net/url"
 )
 
@@ -127,6 +128,15 @@ func (c *DeviceActionController) Put() {
 		return
 	}
 
+	//restart worker
+	workers, err := models.GetWorkersByDeviceAction(&action)
+	for _, worker := range workers {
+		if err = core.CorePtr().UpdateWorker(worker); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
 	c.ServeJSON()
 }
 
@@ -142,6 +152,15 @@ func (c *DeviceActionController) Delete() {
 	if err := models.DeleteDeviceAction(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
+	}
+
+	//restart worker
+	workers, err := models.GetWorkersByDeviceAction(&models.DeviceAction{Id: int64(id)})
+	for _, worker := range workers {
+		if err = core.CorePtr().RemoveWorker(worker); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
 	}
 
 	c.ServeJSON()

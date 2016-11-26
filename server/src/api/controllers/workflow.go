@@ -5,7 +5,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"../models"
-	"../bpms"
+	"../core"
 )
 
 // WorkflowController operations for Workflow
@@ -61,7 +61,7 @@ func (c *WorkflowController) Post() {
 
 	}
 
-	bpms.BpmsPtr().AddWorkflow(&workflow)
+	core.CorePtr().AddWorkflow(&workflow)
 
 	c.ServeJSON()
 }
@@ -151,7 +151,7 @@ func (c *WorkflowController) Delete() {
 		return
 	}
 
-	bpms.BpmsPtr().RemoveWorkflow(workflow)
+	core.CorePtr().RemoveWorkflow(workflow)
 
 	c.ServeJSON()
 }

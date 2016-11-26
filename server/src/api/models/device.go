@@ -168,14 +168,13 @@ func DeleteDevice(id int64) (err error) {
 	return
 }
 
-//TODO need recursive parent query!!!
 func GetParentDeviceByChildId(id int64) (parent *Device, err error) {
 	o := orm.NewOrm()
 	err = o.Raw(fmt.Sprintf(`SELECT p2.*
 		FROM %s as p1
 		LEFT JOIn %[1]s as p2 on p2.id = p1.device_id
-		WHERE p1.id = 3
-		`, parent.TableName())).QueryRow(&parent)
+		WHERE p1.id = %d
+		`, parent.TableName(), id)).QueryRow(&parent)
 
 	parent.Id = id
 

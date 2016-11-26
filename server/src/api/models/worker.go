@@ -171,13 +171,21 @@ func DeleteWorker(id int64) (err error) {
 func GetAllEnabledWorkersByWorkflow(workflow *Workflow) (workers []*Worker, err error) {
 
 	o := orm.NewOrm()
-	_, err = o.QueryTable(&Worker{}).Filter("workflow_id", workflow.Id).Filter("status", "enabled").All(&workers)
+	_, err = o.QueryTable(&Worker{}).Filter("workflow_id", workflow.Id).Filter("status", "enabled").RelatedSel("DeviceAction").All(&workers)
 	for _,  worker := range workers {
-		if _, err = o.LoadRelated(worker, "DeviceAction"); err != nil {
+		if worker.Device, err = GetParentDeviceByChildId(worker.DeviceAction.Device.Id); err != nil {
 			return
 		}
 
-		worker.Device, _ = GetParentDeviceByChildId(worker.DeviceAction.Device.Id)
+		if worker.Device == nil {
+			err = errors.New("device not found")
+			return
+		}
+
+		if _, err = o.LoadRelated(worker.Device, "Node"); err != nil {
+			return
+		}
+
 		worker.Device.Id = worker.DeviceAction.Device.Id
 	}
 	return
@@ -191,30 +199,33 @@ func GetAllEnabledWorkers() (workers []*Worker, err error) {
 			return
 		}
 
-		worker.Device, _ = GetParentDeviceByChildId(worker.DeviceAction.Device.Id)
+		if worker.Device, err = GetParentDeviceByChildId(worker.DeviceAction.Device.Id); err != nil {
+			return
+		}
+
 		worker.Device.Id = worker.DeviceAction.Device.Id
 	}
 	return
 }
 
-func (w *Worker) Run() bool {
+func (w *Worker) Run() {
 	if w.CronTask == nil {
-		return false
+		return
 	}
 
 	w.CronTask.Run()
 
-	return true
+	return
 }
 
-func (w *Worker) Stop() bool {
+func (w *Worker) Stop() {
 	if w.CronTask == nil {
-		return false
+		return
 	}
 
 	w.CronTask.Stop()
 
-	return true
+	return
 }
 
 func (w *Worker) IsRun() bool {
@@ -228,5 +239,11 @@ func (w *Worker) IsRun() bool {
 func GetWorkersByFlowId(id int64) (workers []*Worker, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(&Worker{}).Filter("flow_id", id).All(&workers)
+	return
+}
+
+func GetWorkersByDeviceAction(device_action *DeviceAction) (workers []*Worker, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(&Worker{}).Filter("device_action_id", device_action.Id).RelatedSel("Workflow", "DeviceAction", "Flow").All(&workers)
 	return
 }
