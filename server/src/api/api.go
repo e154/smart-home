@@ -79,7 +79,7 @@ func Initialize() {
 		log.Fatal(err.Error())
 	}
 
-	// bpms
+	// core
 	if err := core.Initialize(); err != nil {
 		log.Fatal(err.Error())
 	}

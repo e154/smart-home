@@ -32,6 +32,7 @@ angular
       }
       {
         name: 'device.is_group'
+        sort: 'disable'
         field: 'is_group'
         template: "<span ng-if='item[field]'>{{'device.yes' | translate}}</span>"
       }

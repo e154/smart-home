@@ -49,10 +49,18 @@ func AddDevice(m *Device) (id int64, err error) {
 func GetDeviceById(id int64) (v *Device, err error) {
 	o := orm.NewOrm()
 	v = &Device{Id: id}
-	if err = o.Read(v); err == nil {
-		return v, nil
+	if err = o.Read(v); err != nil {
+		return
 	}
-	return nil, err
+
+	if v.Device != nil {
+		_, err = o.LoadRelated(v, "Device")
+	}
+	if v.Node != nil {
+		_, err = o.LoadRelated(v, "Node")
+	}
+
+	return
 }
 
 // GetAllDevice retrieves all Device matches certain condition. Returns empty list if
@@ -107,7 +115,7 @@ func GetAllDevice(query map[string]string, fields []string, sortby []string, ord
 	}
 
 	var l []Device
-	qs = qs.OrderBy(sortFields...)
+	qs = qs.RelatedSel("Device", "Node").OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
 		return
@@ -177,6 +185,14 @@ func GetParentDeviceByChildId(id int64) (parent *Device, err error) {
 		`, parent.TableName(), id)).QueryRow(&parent)
 
 	parent.Id = id
+
+	if parent.Device != nil {
+		_, err = o.LoadRelated(parent, "Device")
+	}
+
+	if parent.Node != nil {
+		_, err = o.LoadRelated(parent, "Node")
+	}
 
 	return
 }

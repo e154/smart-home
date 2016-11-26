@@ -11,6 +11,7 @@ import (
 	"../models"
 	"../stream"
 	"fmt"
+	"github.com/astaxie/beego/orm"
 )
 
 type Workflow struct {
@@ -122,13 +123,40 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 
 func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
+	log.Printf("Add worker: \"%s\"", worker.Name)
+
+	if worker.DeviceAction != nil {
+		o := orm.NewOrm()
+		o.LoadRelated(worker, "DeviceAction")
+	}
+
+	if worker.DeviceAction.Device != nil {
+		o := orm.NewOrm()
+		o.LoadRelated(worker.DeviceAction, "Device")
+	}
+
+	if worker.Device, err = models.GetParentDeviceByChildId(worker.DeviceAction.Device.Id); err != nil {
+		return
+	}
+
+	if worker.Device == nil {
+		err = errors.New("device not found")
+		return
+	}
+
+	o := orm.NewOrm()
+	if _, err = o.LoadRelated(worker.Device, "Node"); err != nil {
+		return
+	}
+
+	worker.Device.Id = worker.DeviceAction.Device.Id
+
 	if _, ok := wf.Workers[worker.Id]; ok {
 		return
 	}
 
 	wf.Workers[worker.Id] = worker
 
-	log.Printf("Start worker: \"%s\"", worker.Name)
 	//j, _ := json.Marshal(worker)
 	//log.Println(string(j))
 
@@ -212,9 +240,14 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
 func (wf *Workflow) UpdateWorker(worker *models.Worker) (err error) {
 
+	log.Printf("Update worker: \"%s\"", worker.Name)
+
 	if _, ok := wf.Workers[worker.Id]; ok {
 		wf.RemoveWorker(worker)
-		err = wf.AddWorker(worker)
+		if err = wf.AddWorker(worker); err != nil {
+			log.Println("error:", err.Error())
+		}
+
 	} else {
 		err = fmt.Errorf("worker id:%d not found", worker.Id)
 	}
@@ -223,6 +256,8 @@ func (wf *Workflow) UpdateWorker(worker *models.Worker) (err error) {
 }
 
 func (wf *Workflow) RemoveWorker(worker *models.Worker) (err error) {
+
+	log.Printf("Remove worker: \"%s\"", worker.Name)
 
 	if _, ok := wf.Workers[worker.Id]; ok {
 		wf.Workers[worker.Id].Stop()
@@ -240,7 +275,7 @@ func (wf *Workflow) GetStatus() string {
 
 func GetWorkflowsStatus() (result map[int64]string) {
 	result = make(map[int64]string)
-	for id, workflow := range bpmsPtr.workflows {
+	for id, workflow := range corePtr.workflows {
 		result[id] = workflow.model.Status
 	}
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"../models"
 	"github.com/astaxie/beego/orm"
+	"log"
 )
 
 // DeviceController operations for Device
@@ -83,20 +84,6 @@ func (c *DeviceController) GetOne() {
 
 	o := orm.NewOrm()
 
-	if device.Node != nil {
-		if _, err = o.LoadRelated(device, "Node"); err != nil {
-			c.ErrHan(403, err.Error())
-			return
-		}
-	}
-
-	if device.Device != nil {
-		if _, err = o.LoadRelated(device, "Device"); err != nil {
-			c.ErrHan(403, err.Error())
-			return
-		}
-	}
-
 	var count int64
 	if count, err = o.QueryTable(device).Filter("device_id", id).Count(); err != nil {
 		return
@@ -123,7 +110,7 @@ func (c *DeviceController) GetGroup() {
 	o := orm.NewOrm()
 
 	devices := []*models.Device{}
-	if _, err := o.QueryTable(&models.Device{}).Filter("address__isnull", true).RelatedSel("Node", "Device").All(&devices); err != nil {
+	if _, err := o.QueryTable(&models.Device{}).Filter("address__isnull", true).Filter("device_id__isnull", true).RelatedSel("Node").All(&devices); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
@@ -161,21 +148,6 @@ func (c *DeviceController) GetAll() {
 	devices := []models.Device{}
 	for _, m := range ml {
 		device := m.(models.Device)
-
-		if device.Node != nil {
-			if _, err = o.LoadRelated(&device, "Node"); err != nil {
-				c.ErrHan(403, err.Error())
-				return
-			}
-		}
-
-		if device.Device != nil {
-			if _, err = o.LoadRelated(&device, "Device"); err != nil {
-				c.ErrHan(403, err.Error())
-				return
-			}
-		}
-
 		devices = append(devices, device)
 	}
 
@@ -251,6 +223,7 @@ func (c *DeviceController) GetActions() {
 	}
 
 	ids := []int64{int64(id)}
+	log.Println("device",device)
 	if device.Device != nil {
 		ids = append(ids, device.Device.Id)
 	}

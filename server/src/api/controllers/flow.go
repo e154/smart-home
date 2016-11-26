@@ -6,6 +6,8 @@ import (
 	"github.com/astaxie/beego/validation"
 	"../models"
 	"../core"
+	"log"
+	"errors"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -129,13 +131,25 @@ func (c *FlowController) GetOneFull() {
 // @Failure 403
 // @router / [get]
 func (c *FlowController) GetAll() {
-	ml, flows, err := models.GetAllFlow(c.pagination())
+	ml, meta, err := models.GetAllFlow(c.pagination())
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"flows": ml, "meta": flows}
+	flows := []models.Flow{}
+	for _, m := range ml {
+		flow :=  m.(models.Flow)
+		workers, err := models.GetWorkersByFlowId(flow.Id)
+		if err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+		flow.Workers = workers
+		flows = append(flows, flow)
+	}
+
+	c.Data["json"] = &map[string]interface{}{"flows": flows, "meta": meta}
 	c.ServeJSON()
 }
 
@@ -189,8 +203,6 @@ func (c *FlowController) GetOneRedactor() {
 		return
 	}
 
-	o := orm.NewOrm()
-	_, err = o.LoadRelated(flow, "Workflow")
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
@@ -205,7 +217,16 @@ func (c *FlowController) GetOneRedactor() {
 		return
 	}
 
-	r.Workers = workers
+	o := orm.NewOrm()
+	for _, worker := range workers {
+		if worker.DeviceAction.Device != nil {
+			if _, err = o.LoadRelated(worker.DeviceAction, "Device"); err != nil {
+				return
+			}
+		}
+
+		r.Workers = append(r.Workers, worker)
+	}
 
 	c.Data["json"] = map[string]interface{}{"flow": r}
 	c.ServeJSON()
@@ -348,9 +369,55 @@ func (c *FlowController) UpdateRedactor() {
 
 	// workers
 	//---------------------------------------------------
-	//var workers []*models.Worker
+	workers_todo_remove := []*models.Worker{}
+	var workers []*models.Worker
+	if workers, err = models.GetWorkersByFlow(newFlow); err != nil {
+		return
+	}
 
+	for _, old_worker := range workers {
+		exist := false
+		for _, new_worker := range flow.Workers {
+			if new_worker.Id == old_worker.Id {
+				exist = true
+				break
+			}
+		}
 
+		if !exist {
+			workers_todo_remove = append(workers_todo_remove, old_worker)
+		}
+	}
+
+	for _, worker := range workers_todo_remove {
+		if err = models.DeleteWorker(worker.Id); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+		core.CorePtr().RemoveWorker(worker)
+	}
+
+	for _, worker := range flow.Workers {
+		if worker.Id == 0 {
+			if _, err = models.AddWorker(worker); err != nil {
+				c.ErrHan(403, err.Error())
+				return
+			}
+
+			core.CorePtr().AddWorker(worker)
+
+		} else {
+			if err = models.UpdateWorkerById(worker); err != nil {
+				c.ErrHan(403, err.Error())
+				return
+			}
+
+			core.CorePtr().UpdateWorker(worker)
+		}
+
+	}
+
+	log.Println(4)
 	//---------------------------------------------------
 	newflow, err := models.GetFlowById(flow.Id)
 	if err != nil {
@@ -369,6 +436,11 @@ func (c *FlowController) UpdateRedactor() {
 }
 
 func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
+
+	if f == nil {
+		err = errors.New("ExportToRedactor: Nil point")
+		return
+	}
 
 	flow = &models.RedactorFlow{
 		Id: f.Id,

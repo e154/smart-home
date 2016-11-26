@@ -33,6 +33,7 @@ angular
       }
       {
         name: 'workflow.status'
+        sort: 'disable'
         width: '50px'
         template: "
 <span class='label label-success' ng-if='item[\"status\"] == \"enabled\"'>{{'workflow.enabled' | translate}}</span>

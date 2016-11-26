@@ -9,48 +9,53 @@ $http) ->
   # vars
   $scope.callback = {}
   $scope.workflows = []
+  $scope.flow = {}
 
   # workflow list
   #------------------------------------------------------------------------------
-  success = (result)->
-    $scope.workflows = result.items
-  error = (result)->
-    Message result.data.status, result.data.message
-  Workflow.all {}, success, error
+  getWorkflow =->
+    success = (result)->
+      $scope.workflows = result.items
+    error = (result)->
+      Message result.data.status, result.data.message
+    Workflow.all {}, success, error
 
   # get flow
   #------------------------------------------------------------------------------
-  $scope.flow = {}
-  success = (flow) ->
-    $scope.flow = flow
-    $timeout ()->
-      $scope.getStatus().then (result)->
-        $scope.flows = result.flows
+  getFlow =->
+    success = (flow) ->
+      $scope.flow = flow
+      if !$scope.flow?.workers
+        $scope.flow.workers = []
 
-        angular.forEach $scope.flows, (value, id)->
-          if flow.id == parseInt(id, 10)
-            $scope.flow.state = value
-    , 500
+      $timeout ()->
+        $scope.getStatus().then (result)->
+          angular.forEach $scope.flows, (value, id)->
+            if flow.id == parseInt(id, 10)
+              $scope.flow.state = value
+      , 500
 
-  error = ->
-    $state.go 'dashboard.flow.index'
+    error = ->
+      $state.go 'dashboard.flow.index'
 
-  Flow.get_redactor {id: $stateParams.id}, success, error
-  $scope.remove =->
-    if confirm('точно удалить процесс?')
-      remove()
+    Flow.get_redactor {id: $stateParams.id}, success, error
+    $scope.remove =->
+      if confirm('точно удалить процесс?')
+        remove()
 
   # get worker
   #------------------------------------------------------------------------------
   $scope.addNewWorker =->
     worker = new Worker({
-      id: null
       name: ''
       time: '0 0 0 0 0 0'
       status: 'enabled'
-      device_Action_id: null
-      flow_id: $scope.flow.id
-      workflow_id: $scope.flow.workflow.id
+      flow:
+        id: parseInt($stateParams.id, 10)
+      device_action:
+        id: null
+      workflow:
+        id: $scope.flow.workflow.id
     })
 
     $scope.flow.workers.push worker
@@ -67,7 +72,6 @@ $http) ->
 
   # select2
   # ------------------
-  $scope.selected = {}
   $scope.actions = []
   $scope.refreshActions = (query)->
     $http(
@@ -100,6 +104,11 @@ $http) ->
     $scope.flow.objects = scheme.objects || []
     $scope.flow.connectors = scheme.connectors || []
     Flow.update_redactor {id: $stateParams.id}, $scope.flow, success, error
+
+  # init
+  #------------------------------------------------------------------------------
+  getWorkflow()
+  getFlow()
 
   vm
 ]

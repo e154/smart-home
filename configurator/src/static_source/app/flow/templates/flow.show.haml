@@ -31,6 +31,20 @@
       %div
         {{::flow.name}}
 
+    .form-group
+      .text-muted
+        {{'flow.workers' | translate}}
+      %div
+        .form-group(ng-repeat="worker in flow.workers")
+          %div
+            %small
+              {{'worker.name' | translate}}:
+              {{worker.name}}
+          %div
+            %small
+              {{'worker.action_name' | translate}}:
+              {{worker.device_action.name}}
+
     .form-group(ng-if="flow.description")
       .text-muted
         {{'flow.description' | translate}}

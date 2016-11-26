@@ -12,11 +12,11 @@ import (
 var (
 	Cron		*cron.Crontab
 	Hub		stream.Hub
-	bpmsPtr         *Core = nil
+	corePtr         *Core = nil
 )
 
 func CorePtr() *Core {
-	return bpmsPtr
+	return corePtr
 }
 
 type Core struct {
@@ -333,12 +333,12 @@ func (b *Core) RemoveWorker(worker *models.Worker) (err error) {
 }
 
 func Initialize() (err error) {
-	log.Println("BPMS initialize...")
+	log.Println("Core initialize...")
 
 	Cron = cron.CrontabPtr()
 
-	bpmsPtr = &Core{}
-	if err = bpmsPtr.Run(); err != nil {
+	corePtr = &Core{}
+	if err = corePtr.Run(); err != nil {
 		return
 	}
 

@@ -46,10 +46,15 @@ func AddFlow(m *Flow) (id int64, err error) {
 func GetFlowById(id int64) (v *Flow, err error) {
 	o := orm.NewOrm()
 	v = &Flow{Id: id}
-	if err = o.Read(v); err == nil {
-		return v, nil
+	if err = o.Read(v); err != nil {
+		return
 	}
-	return nil, err
+
+	if v.Workflow != nil {
+		_, err = o.LoadRelated(v, "Workflow")
+	}
+
+	return
 }
 
 // GetFlowById retrieves Flow by Id. Returns error if
@@ -57,12 +62,13 @@ func GetFlowById(id int64) (v *Flow, err error) {
 func GetFullFlowById(id int64) (v *Flow, err error) {
 	o := orm.NewOrm()
 	v = &Flow{Id: id}
-	if err = o.Read(v); err == nil {
-		err = FlowGetRelatedDate(v)
-		return v, nil
+	if err = o.Read(v); err != nil {
+		return
 	}
 
-	return nil, err
+	err = FlowGetRelatedDate(v)
+
+	return
 }
 
 // GetAllFlow retrieves all Flow matches certain condition. Returns empty list if
@@ -181,7 +187,7 @@ func DeleteFlow(id int64) (err error) {
 func GetAllEnabledFlows() (fs []*Flow, err error) {
 	o := orm.NewOrm()
 	fs = []*Flow{}
-	_, err = o.QueryTable(&Flow{}).Filter("status", "enabled").All(&fs)
+	_, err = o.QueryTable(&Flow{}).Filter("status", "enabled").RelatedSel("Workflow").All(&fs)
 
 	return
 }

@@ -20,6 +20,7 @@
 #      {
 #        name: 'изображение'
 #        field: 'data'
+#        sort: 'disable'
 #        template: "<div class='ls-preview-img' ng-init='image = angular.fromJson(item).layers[0].properties.background'>
 #                                <a ng-href='#/layerslider/{{item.id}}'>
 #                                    <img style='width: 100%' ng-src='#{vm.image_path}/{{item.id}}/{{column.getImage(item)}}' alt='' title='small'/>
@@ -154,11 +155,12 @@ ng-change="tableUpdate()"></select>
 <thead>
 <tr class="sortable">
     <th ng-repeat="column in table.columns" width="{{column.width}}">
-        <a href="" ng-click="sortBy(column)"
+        <a href="" ng-click="sortBy(column)" ng-if="column.sort != \'disable\'"
 ng-class="{ \'sorted desc\': order == \'desc\' && sortby.indexOf(column.field) != -1, \'sorted asc\': order == \'asc\' && sortby.indexOf(column.field) != -1 }">
             <span>{{column.name | translate}}</span>
             <span class="sorting-indicator"></span>
         </a>
+        <div ng-if="column.sort == \'disable\'"><span>{{column.name | translate}}</span></span></div>
     </th>
 </tr>
 </thead>

@@ -8,7 +8,7 @@ import (
 
 func GetNodesStatus() (result map[int64]string) {
 	result = make(map[int64]string)
-	for _, node := range bpmsPtr.nodes {
+	for _, node := range corePtr.nodes {
 		result[node.Id] = node.GetConnectStatus()
 	}
 

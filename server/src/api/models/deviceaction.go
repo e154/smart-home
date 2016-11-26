@@ -57,10 +57,15 @@ func AddDeviceAction(m *DeviceAction) (id int64, err error) {
 func GetDeviceActionById(id int64) (v *DeviceAction, err error) {
 	o := orm.NewOrm()
 	v = &DeviceAction{Id: id}
-	if err = o.Read(v); err == nil {
-		return v, nil
+	if err = o.Read(v); err != nil {
+		return
 	}
-	return nil, err
+
+	if v.Device != nil {
+		_, err = o.LoadRelated(v, "Device")
+	}
+
+	return
 }
 
 // GetAllDeviceAction retrieves all DeviceAction matches certain condition. Returns empty list if

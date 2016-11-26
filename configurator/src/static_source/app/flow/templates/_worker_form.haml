@@ -20,9 +20,9 @@
   -#
   -#  select2
   -#
-  %ui-select(ng-model="worker.action" theme="bootstrap")
+  %ui-select(ng-model="worker.device_action" theme="bootstrap")
     %ui-select-match(placeholder="{{'device.action.name' | translate}}")
-      {{worker.action.name}} ({{worker.action.device.name}})
+      {{worker.device_action.name}} ({{worker.device_action.device.name}})
     %ui-select-choices(repeat="item in actions | filter: $select.search" refresh="refreshActions($select.search)" refresh-delay="0")
       %div(ng-bind-html="item.name | highlight: $select.search")
       %small(ng-bind-html="item.device.name | highlight: $select.search")

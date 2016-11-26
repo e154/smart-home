@@ -14,7 +14,7 @@ import (
 
 type Worker struct {
 	Id           int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Workflow     *Workflow		`orm:"rel(fk)" json:"workflow_id" valid:"Required"`
+	Workflow     *Workflow		`orm:"rel(fk)" json:"workflow" valid:"Required"`
 	DeviceAction *DeviceAction  	`orm:"rel(fk);column(device_action_id);null" json:"device_action"`
 	Device       *Device		`orm:"-" json:"device"`
 	Flow         *Flow		`orm:"rel(fk)" json:"flow" valid:"Required"`
@@ -49,10 +49,23 @@ func AddWorker(m *Worker) (id int64, err error) {
 func GetWorkerById(id int64) (v *Worker, err error) {
 	o := orm.NewOrm()
 	v = &Worker{Id: id}
-	if err = o.Read(v); err == nil {
-		return v, nil
+	if err = o.Read(v); err != nil {
+		return
 	}
-	return nil, err
+
+	if v.Workflow != nil {
+		_, err = o.LoadRelated(v, "Workflow")
+	}
+
+	if v.DeviceAction != nil {
+		_, err = o.LoadRelated(v, "DeviceAction")
+	}
+
+	if v.Flow != nil {
+		_, err = o.LoadRelated(v, "Flow")
+	}
+
+	return
 }
 
 // GetAllWorker retrieves all Worker matches certain condition. Returns empty list if
@@ -107,7 +120,7 @@ func GetAllWorker(query map[string]string, fields []string, sortby []string, ord
 	}
 
 	var l []Worker
-	qs = qs.OrderBy(sortFields...)
+	qs = qs.RelatedSel("Workflow", "DeviceAction", "Flow").OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
 		return
@@ -171,40 +184,10 @@ func DeleteWorker(id int64) (err error) {
 func GetAllEnabledWorkersByWorkflow(workflow *Workflow) (workers []*Worker, err error) {
 
 	o := orm.NewOrm()
-	_, err = o.QueryTable(&Worker{}).Filter("workflow_id", workflow.Id).Filter("status", "enabled").RelatedSel("DeviceAction").All(&workers)
-	for _,  worker := range workers {
-		if worker.Device, err = GetParentDeviceByChildId(worker.DeviceAction.Device.Id); err != nil {
-			return
-		}
-
-		if worker.Device == nil {
-			err = errors.New("device not found")
-			return
-		}
-
-		if _, err = o.LoadRelated(worker.Device, "Node"); err != nil {
-			return
-		}
-
-		worker.Device.Id = worker.DeviceAction.Device.Id
-	}
-	return
-}
-
-func GetAllEnabledWorkers() (workers []*Worker, err error) {
-	o := orm.NewOrm()
-	_, err = o.QueryTable(&Worker{}).Filter("status", "enabled").All(&workers)
-	for _,  worker := range workers {
-		if _, err = o.LoadRelated(worker, "DeviceAction"); err != nil {
-			return
-		}
-
-		if worker.Device, err = GetParentDeviceByChildId(worker.DeviceAction.Device.Id); err != nil {
-			return
-		}
-
-		worker.Device.Id = worker.DeviceAction.Device.Id
-	}
+	qs := o.QueryTable(&Worker{})
+	qs.Filter("workflow_id", workflow.Id).Filter("status", "enabled")
+	qs.RelatedSel("Workflow", "DeviceAction", "Flow")
+	_, err = qs.All(&workers)
 	return
 }
 
@@ -238,12 +221,28 @@ func (w *Worker) IsRun() bool {
 
 func GetWorkersByFlowId(id int64) (workers []*Worker, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(&Worker{}).Filter("flow_id", id).All(&workers)
+	_, err = o.QueryTable(&Worker{}).Filter("flow_id", id).RelatedSel("Workflow", "DeviceAction", "Flow").All(&workers)
 	return
 }
 
 func GetWorkersByDeviceAction(device_action *DeviceAction) (workers []*Worker, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(&Worker{}).Filter("device_action_id", device_action.Id).RelatedSel("Workflow", "DeviceAction", "Flow").All(&workers)
+	return
+}
+
+func GetWorkersByFlow(flow *Flow) (workers []*Worker, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(&Worker{}).Filter("flow_id", flow.Id).RelatedSel("Workflow", "DeviceAction", "Flow").All(&workers)
+	return
+}
+
+func InsertOrUpdateWorker(worker *Worker) (id int64, err error) {
+
+	o := orm.NewOrm()
+	if id, err = o.InsertOrUpdate(worker, "Id"); err == nil {
+		fmt.Println("Number of records updated in database:", 1)
+	}
+
 	return
 }

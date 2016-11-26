@@ -22,6 +22,12 @@ angular
           false
       }
       {
+        name: 'flow.workers'
+        field: 'workers'
+        sort: "disable"
+        template: '<span ng-if="!item.workers.length">{{"no" | translate}}</span><span ng-if="item.workers.length">{{item.workers.length}}</span>'
+      }
+      {
         name: 'flow.workflow'
         field: 'workflow'
         template: '<a ui-sref="dashboard.workflow.show({id:item.workflow.id})">{{item.workflow.name}}</a>'

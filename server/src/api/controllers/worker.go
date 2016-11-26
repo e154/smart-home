@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"fmt"
-	"../models"
 	"encoding/json"
 	"github.com/astaxie/beego/validation"
 	"github.com/astaxie/beego/orm"
+	"../models"
+	"../core"
 )
 
 // WorkerController operations for Worker
@@ -60,7 +61,7 @@ func (c *WorkerController) Post() {
 
 	}
 
-	//bpms.BpmsPtr().AddWorker(&worker)
+	core.CorePtr().AddWorker(&worker)
 
 	c.ServeJSON()
 }
@@ -136,6 +137,8 @@ func (c *WorkerController) Put() {
 		return
 	}
 
+	core.CorePtr().UpdateWorker(&worker)
+
 	c.ServeJSON()
 }
 
@@ -153,7 +156,7 @@ func (c *WorkerController) Delete() {
 		return
 	}
 
-	//bpms.BpmsPtr().RemoveWorker(workflow)
+	core.CorePtr().RemoveWorker(&models.Worker{Id: int64(id)})
 
 	c.ServeJSON()
 }
