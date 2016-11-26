@@ -16,10 +16,10 @@
     "tests"
   ],
   "dependencies": {
+    "jquery": "~2.1.4",
     "angular": "~1.4",
     "angular-route": "~1.4.3",
     "angular-resource": "~1.4.3",
-    "jquery": "~2.1.4",
     "bootstrap": "~3.3.5",
     "AngularJS-Toaster": "^2.0.0",
     "angular-ui-router": "^0.3.1",
@@ -38,7 +38,8 @@
     "animate.css": "daneden/animate.css#*",
     "jQuery-contextMenu": "~2.0.1",
     "keymaster": "~1.6.3",
-    "bpmn-font": "^0.7.0"
+    "bpmn-font": "^0.7.0",
+    "angular-ui-select": "^0.19.6"
   },
   "overrides": {
     "jquery": {

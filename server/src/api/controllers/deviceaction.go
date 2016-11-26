@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"../models"
+	"net/url"
 )
 
 // DeviceActionController operations for DeviceAction
@@ -19,6 +20,7 @@ func (c *DeviceActionController) URLMapping() {
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
+	c.Mapping("Search", c.Search)
 }
 
 // Post ...
@@ -142,5 +144,28 @@ func (c *DeviceActionController) Delete() {
 		return
 	}
 
+	c.ServeJSON()
+}
+
+func (c *DeviceActionController) Search() {
+
+	query, fields, sortby, order, offset, limit := c.pagination()
+	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
+	q := link.Query()
+
+	if val, ok := q["query"]; ok {
+		for _, v := range val {
+			query["name__icontains"] = v
+			query["description__icontains"] = v
+		}
+	}
+
+	ml, meta, err := models.GetAllDeviceAction(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"actions": ml, "meta": meta}
 	c.ServeJSON()
 }

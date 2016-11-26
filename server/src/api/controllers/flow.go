@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"../models"
 	"../bpms"
+	"github.com/astaxie/beego/orm"
 )
 
 // FlowController operations for Flow
@@ -18,8 +19,9 @@ func (c *FlowController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
-	c.Mapping("Get", c.GetAll)
-	c.Mapping("Get", c.GetOneFull)
+	c.Mapping("GetAll", c.GetAll)
+	c.Mapping("GetOneFull", c.GetOneFull)
+	c.Mapping("GetWorkers", c.GetWorkers)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
 }
@@ -83,6 +85,13 @@ func (c *FlowController) GetOne() {
 	} else {
 		c.Data["json"] = map[string]interface{}{"flow": flow}
 	}
+
+	workers, err := models.GetWorkersByFlowId(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+	flow.Workers = workers
 
 	c.ServeJSON()
 }
@@ -180,8 +189,23 @@ func (c *FlowController) GetOneRedactor() {
 		return
 	}
 
+	o := orm.NewOrm()
+	_, err = o.LoadRelated(flow, "Workflow")
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
 	var r *models.RedactorFlow
 	r, err = ExportToRedactor(flow)
+
+	workers, err := models.GetWorkersByFlowId(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	r.Workers = workers
 
 	c.Data["json"] = map[string]interface{}{"flow": r}
 	c.ServeJSON()
@@ -199,7 +223,7 @@ func (c *FlowController) UpdateRedactor() {
 		Name: flow.Name,
 		Description: flow.Description,
 		Status: flow.Status,
-		Workflow: &models.Workflow{Id:flow.WorkflowId},
+		Workflow: &models.Workflow{Id:flow.Workflow.Id},
 	}
 	if err := models.UpdateFlowById(newFlow); err != nil {
 		c.ErrHan(403, err.Error())
@@ -322,6 +346,11 @@ func (c *FlowController) UpdateRedactor() {
 		}
 	}
 
+	// workers
+	//---------------------------------------------------
+	//var workers []*models.Worker
+
+
 	//---------------------------------------------------
 	newflow, err := models.GetFlowById(flow.Id)
 	if err != nil {
@@ -346,7 +375,7 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 		Name: f.Name,
 		Status: f.Status,
 		Description: f.Description,
-		WorkflowId: f.Workflow.Id,
+		Workflow: f.Workflow,
 		Objects: make([]*models.RedactorObject, 0),
 		Connectors: make([]*models.RedactorConnector, 0),
 		Created_at: f.Created_at,
@@ -408,4 +437,16 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 	}
 
 	return
+}
+
+func (c *FlowController) GetWorkers() {
+	id, _ := c.GetInt(":id")
+	workers, err := models.GetWorkersByFlowId(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = map[string]interface{}{"workers": workers}
+	c.ServeJSON()
 }

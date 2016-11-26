@@ -224,3 +224,9 @@ func (w *Worker) IsRun() bool {
 
 	return w.CronTask.IsRun()
 }
+
+func GetWorkersByFlowId(id int64) (workers []*Worker, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(&Worker{}).Filter("flow_id", id).All(&workers)
+	return
+}

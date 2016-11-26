@@ -1,7 +1,9 @@
 angular
 .module('appControllers')
-.controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow', '$timeout', 'log', 'Notify'
-($scope, Message, $stateParams, Flow, $state, Workflow, $timeout, log, Notify) ->
+.controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow', '$timeout'
+'log', 'Notify', 'Worker', '$http'
+($scope, Message, $stateParams, Flow, $state, Workflow, $timeout, log, Notify, Worker
+$http) ->
   vm = this
 
   # vars
@@ -11,7 +13,6 @@ angular
   # workflow list
   #------------------------------------------------------------------------------
   success = (result)->
-    console.log result
     $scope.workflows = result.items
   error = (result)->
     Message result.data.status, result.data.message
@@ -38,6 +39,46 @@ angular
   $scope.remove =->
     if confirm('точно удалить процесс?')
       remove()
+
+  # get worker
+  #------------------------------------------------------------------------------
+  $scope.addNewWorker =->
+    worker = new Worker({
+      id: null
+      name: ''
+      time: '0 0 0 0 0 0'
+      status: 'enabled'
+      device_Action_id: null
+      flow_id: $scope.flow.id
+      workflow_id: $scope.flow.workflow.id
+    })
+
+    $scope.flow.workers.push worker
+
+  $scope.removeWorker =(worker, $index)->
+    if !worker.id
+      $scope.flow.workers.splice($index, 1)
+      return
+
+    for i in [0...$scope.flow.workers.length]
+      if $scope.flow.workers[i].id == worker.id
+        $scope.flow.workers.splice(i, 1)
+        break
+
+  # select2
+  # ------------------
+  $scope.selected = {}
+  $scope.actions = []
+  $scope.refreshActions = (query)->
+    $http(
+      method: 'GET'
+      url: window.server_url + "/api/v1/device_action/search"
+      params:
+        query: query
+        limit: 5
+        offset: 0
+      ).then (response)->
+        $scope.actions = response.data.actions
 
   # buttons remove|submit
   #------------------------------------------------------------------------------

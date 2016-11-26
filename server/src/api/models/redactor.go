@@ -51,9 +51,10 @@ type RedactorFlow struct {
 	Name		string				`json:"name"`
 	Description	string				`json:"description"`
 	Status		string                  	`json:"status"`
-	WorkflowId	int64                   	`json:"workflow_id"`
 	Objects		[]*RedactorObject		`json:"objects"`
 	Connectors	[]*RedactorConnector		`json:"connectors"`
 	Created_at	time.Time			`json:"created_at"`
 	Update_at	time.Time			`json:"update_at"`
+	Workflow	*Workflow                   	`json:"workflow"`
+	Workers		[]*Worker			`json:"workers"`
 }

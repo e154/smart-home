@@ -12,7 +12,7 @@
 
 .form-group
     %laber {{'flow.workflow' | translate}}
-    %select.form-control(ng-model="flow.workflow_id" ng-options="wf.id as wf.name for wf in workflows")
+    %select.form-control(ng-model="flow.workflow.id" ng-options="wf.id as wf.name for wf in workflows")
 
 .form-group
     %laber {{'flow.description' | translate}}

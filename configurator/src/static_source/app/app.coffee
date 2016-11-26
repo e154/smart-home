@@ -26,6 +26,8 @@ app = angular.module('app', [
   'toaster'
   'bd.sockjs'
   'angular-bpmn'
+  'ui.select'
+  'ngSanitize'
 ])
 
 app.version =

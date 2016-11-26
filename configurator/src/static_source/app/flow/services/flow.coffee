@@ -26,6 +26,12 @@ angular
       url: window.server_url + '/api/v1/flow/:id/redactor'
       method: 'PUT'
 
+    workers:
+      url: window.server_url + '/api/v1/flow/:id/workers'
+      method: 'GET'
+      transformResponse: (data) ->
+        data?.workers || []
+
     create:
       method: 'POST'
       responseType: 'json'

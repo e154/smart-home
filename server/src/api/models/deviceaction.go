@@ -115,7 +115,7 @@ func GetAllDeviceAction(query map[string]string, fields []string, sortby []strin
 	}
 
 	var l []DeviceAction
-	qs = qs.OrderBy(sortFields...)
+	qs = qs.RelatedSel("Device").OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
 		return
