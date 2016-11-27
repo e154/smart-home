@@ -1,23 +1,26 @@
 package core
 
 import (
-	r "../../lib/rpc"
 	"log"
 	"time"
 	"reflect"
 	"encoding/hex"
+	"github.com/astaxie/beego/orm"
+	cr "github.com/e154/cron"
+	r "../../lib/rpc"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"../models"
 	"../stream"
-	"fmt"
-	"github.com/astaxie/beego/orm"
+	"../cron"
 )
 
 type Workflow struct {
 	model   *models.Workflow
 	Flows   map[int64]*models.Flow
 	Workers map[int64]*models.Worker
+	CronTasks map[int64]*cr.Task
 	Nodes   map[int64]*models.Node
 }
 
@@ -67,8 +70,8 @@ func (wf *Workflow) InitWorkers() (err error) {
 
 func (wf *Workflow) Stop() (err error) {
 
-	for _, worker := range wf.Workers {
-		worker.CronTask.Stop()
+	for _, task := range wf.CronTasks {
+		task.Disable()
 	}
 
 	return
@@ -110,6 +113,8 @@ func (wf *Workflow) UpdateFlow(flow *models.Flow) (err error) {
 
 func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 
+	//TODO remove workers for this flow
+
 	log.Println("Remove flow:", flow.Name)
 
 	if _, ok := wf.Flows[flow.Id]; !ok {
@@ -124,6 +129,9 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
 	log.Printf("Add worker: \"%s\"", worker.Name)
+
+	j, _ := json.Marshal(worker)
+	log.Println("worker:",string(j))
 
 	if worker.DeviceAction != nil {
 		o := orm.NewOrm()
@@ -210,7 +218,7 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 		Timeout: worker.Device.Timeout,
 	}
 
-	worker.CronTask = Cron.NewTask(worker.Time, func() {
+	wf.CronTasks[worker.Id] = cron.Cron().NewTask(worker.Time, func() {
 
 		args.Time = time.Now()
 
@@ -233,8 +241,6 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 		}
 	})
 
-	worker.Run()
-
 	return
 }
 
@@ -243,7 +249,9 @@ func (wf *Workflow) UpdateWorker(worker *models.Worker) (err error) {
 	log.Printf("Update worker: \"%s\"", worker.Name)
 
 	if _, ok := wf.Workers[worker.Id]; ok {
+
 		wf.RemoveWorker(worker)
+
 		if err = wf.AddWorker(worker); err != nil {
 			log.Println("error:", err.Error())
 		}
@@ -260,8 +268,17 @@ func (wf *Workflow) RemoveWorker(worker *models.Worker) (err error) {
 	log.Printf("Remove worker: \"%s\"", worker.Name)
 
 	if _, ok := wf.Workers[worker.Id]; ok {
-		wf.Workers[worker.Id].Stop()
+
+		// stop cron task
+		wf.CronTasks[worker.Id].Disable()
+
+		// remove task from cron
+		cron.Cron().RemoveTask(wf.CronTasks[worker.Id])
+
+		// delete worker
 		delete(wf.Workers, worker.Id)
+		delete(wf.CronTasks, worker.Id)
+
 	} else {
 		err = fmt.Errorf("worker id:%d not found", worker.Id)
 	}

@@ -25,7 +25,7 @@ angular
         name: 'flow.workers'
         field: 'workers'
         sort: "disable"
-        template: '<span ng-if="!item.workers.length">{{"no" | translate}}</span><span ng-if="item.workers.length">{{item.workers.length}}</span>'
+        template: '<span ng-if="!item.workers.length">-</span><span ng-if="item.workers.length">{{item.workers.length}}</span>'
       }
       {
         name: 'flow.workflow'

@@ -6,8 +6,6 @@ import (
 	"reflect"
 	"strings"
 	"time"
-	"../crontab"
-
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 )
@@ -20,7 +18,6 @@ type Worker struct {
 	Flow         *Flow		`orm:"rel(fk)" json:"flow" valid:"Required"`
 	Message      *Message		`orm:"-" json:"-"`
 	Node         *Node		`orm:"-" json:"-"`
-	CronTask     *crontab.Task	`orm:"-" json:"-"`
 	Status       string 		`orm:"size(254)" json:"status" valid:"Required"`
 	Name         string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
 	Time         string  		`orm:"size(254)" json:"time"`
@@ -189,34 +186,6 @@ func GetAllEnabledWorkersByWorkflow(workflow *Workflow) (workers []*Worker, err 
 	qs.RelatedSel("Workflow", "DeviceAction", "Flow")
 	_, err = qs.All(&workers)
 	return
-}
-
-func (w *Worker) Run() {
-	if w.CronTask == nil {
-		return
-	}
-
-	w.CronTask.Run()
-
-	return
-}
-
-func (w *Worker) Stop() {
-	if w.CronTask == nil {
-		return
-	}
-
-	w.CronTask.Stop()
-
-	return
-}
-
-func (w *Worker) IsRun() bool {
-	if w.CronTask == nil {
-		return false
-	}
-
-	return w.CronTask.IsRun()
 }
 
 func GetWorkersByFlowId(id int64) (workers []*Worker, err error) {

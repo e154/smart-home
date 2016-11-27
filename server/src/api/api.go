@@ -11,7 +11,7 @@ import (
 	"./routers"
 	"./filters"
 	"./core"
-	"./crontab"
+	"./cron"
 	"log"
 )
 
@@ -74,10 +74,8 @@ func Initialize() {
 		"ZipCode":      "Должно быть правильным почтовым индексом",
 	})
 
-	// crontab
-	if err := crontab.Initialize(); err != nil {
-		log.Fatal(err.Error())
-	}
+	// cron
+	cron.Initialize()
 
 	// core
 	if err := core.Initialize(); err != nil {

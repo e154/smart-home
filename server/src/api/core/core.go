@@ -2,15 +2,14 @@ package core
 
 import (
 	"log"
+	"fmt"
 	"time"
 	"../models"
 	"../stream"
-	cron "../crontab"
-	"fmt"
+	"github.com/e154/cron"
 )
 
 var (
-	Cron		*cron.Crontab
 	Hub		stream.Hub
 	corePtr         *Core = nil
 )
@@ -150,7 +149,11 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 		return
 	}
 
-	wf := &Workflow{model: workflow, Nodes: b.nodes}
+	wf := &Workflow{
+		model: workflow,
+		Nodes: b.nodes,
+		CronTasks: make(map[int64]*cron.Task),
+	}
 	if err = wf.Run(); err != nil {
 		return
 	}
@@ -334,8 +337,6 @@ func (b *Core) RemoveWorker(worker *models.Worker) (err error) {
 
 func Initialize() (err error) {
 	log.Println("Core initialize...")
-
-	Cron = cron.CrontabPtr()
 
 	corePtr = &Core{}
 	if err = corePtr.Run(); err != nil {
