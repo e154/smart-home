@@ -14,10 +14,7 @@ type Worker struct {
 	Id           int64  		`orm:"pk;auto;column(id)" json:"id"`
 	Workflow     *Workflow		`orm:"rel(fk)" json:"workflow" valid:"Required"`
 	DeviceAction *DeviceAction  	`orm:"rel(fk);column(device_action_id);null" json:"device_action"`
-	Device       *Device		`orm:"-" json:"device"`
 	Flow         *Flow		`orm:"rel(fk)" json:"flow" valid:"Required"`
-	Message      *Message		`orm:"-" json:"-"`
-	Node         *Node		`orm:"-" json:"-"`
 	Status       string 		`orm:"size(254)" json:"status" valid:"Required"`
 	Name         string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
 	Time         string  		`orm:"size(254)" json:"time"`
@@ -181,28 +178,26 @@ func DeleteWorker(id int64) (err error) {
 func GetAllEnabledWorkersByWorkflow(workflow *Workflow) (workers []*Worker, err error) {
 
 	o := orm.NewOrm()
-	qs := o.QueryTable(&Worker{})
-	qs.Filter("workflow_id", workflow.Id).Filter("status", "enabled")
-	qs.RelatedSel("Workflow", "DeviceAction", "Flow")
-	_, err = qs.All(&workers)
+	qs := o.QueryTable(&Worker{}).RelatedSel().Filter("workflow_id", workflow.Id)
+	_, err = qs.Filter("status", "enabled").All(&workers)
 	return
 }
 
 func GetWorkersByFlowId(id int64) (workers []*Worker, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(&Worker{}).Filter("flow_id", id).RelatedSel("Workflow", "DeviceAction", "Flow").All(&workers)
+	_, err = o.QueryTable(&Worker{}).RelatedSel().Filter("flow_id", id).All(&workers)
 	return
 }
 
 func GetWorkersByDeviceAction(device_action *DeviceAction) (workers []*Worker, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(&Worker{}).Filter("device_action_id", device_action.Id).RelatedSel("Workflow", "DeviceAction", "Flow").All(&workers)
+	_, err = o.QueryTable(&Worker{}).RelatedSel().Filter("device_action_id", device_action.Id).All(&workers)
 	return
 }
 
 func GetWorkersByFlow(flow *Flow) (workers []*Worker, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(&Worker{}).Filter("flow_id", flow.Id).RelatedSel("Workflow", "DeviceAction", "Flow").All(&workers)
+	_, err = o.QueryTable(&Worker{}).RelatedSel().Filter("flow_id", flow.Id).All(&workers)
 	return
 }
 

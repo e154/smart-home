@@ -2,10 +2,11 @@ package core
 
 import (
 	"log"
-	"fmt"
-	"time"
 	"../models"
 	"../stream"
+	"time"
+	"encoding/json"
+	"reflect"
 	"github.com/e154/cron"
 )
 
@@ -26,37 +27,22 @@ type Core struct {
 
 func (b *Core) Run() (err error) {
 
-	if err = b.InitNodes(); err != nil {
+	err = b.InitNodes()
+
+	if err != nil {
 		return
 	}
 
 	err = b.InitWorkflows()
-
 	return
 }
 
-func (b *Core) InitNodes() (err error) {
-	var nodes []*models.Node
-	b.nodes = make(map[int64]*models.Node)
-	b.nodes_chan = make(map[int64]chan string)
+// ------------------------------------------------
+// Workflows
+// ------------------------------------------------
 
-	//log.Println("--------------------- NODES ---------------------")
-	if nodes, err = models.GetAllEnabledNodes(); err != nil {
-		return
-	}
-
-	for _, node := range nodes {
-		b.AddNode(node)
-	}
-
-	//TODO remove
-	if len(b.nodes) == 0 {
-		return
-	}
-
-	return
-}
-
+// инициализация всего рабочего процесса, с запуском
+// дочерни подпроцессов
 func (b *Core) InitWorkflows() (err error) {
 
 	b.workflows = make(map[int64]*Workflow)
@@ -73,74 +59,8 @@ func (b *Core) InitWorkflows() (err error) {
 	return
 }
 
-func (b *Core) Stop() (err error) {
-
-	for _, wf := range b.workflows {
-		if err = wf.Stop(); err != nil {
-			return
-		}
-	}
-	return
-}
-
-func (b *Core) Restart() (err error) {
-
-	for _, wf := range b.workflows {
-		if err = wf.Restart(); err != nil {
-			return
-		}
-	}
-	return
-}
-
-func (b *Core) AddFlow(f *models.Flow) (err error) {
-
-	var flow *models.Flow
-	if flow, err = models.GetFlowById(f.Id); err != nil {
-		return
-	}
-
-	if _, ok := b.workflows[flow.Workflow.Id]; ok {
-		if err = b.workflows[flow.Workflow.Id].AddFlow(flow); err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func (b *Core) UpdateFlow(f *models.Flow) (err error) {
-
-	var flow *models.Flow
-	if flow, err = models.GetFlowById(f.Id); err != nil {
-		return
-	}
-
-	if _, ok := b.workflows[flow.Workflow.Id]; ok {
-		if err = b.workflows[flow.Workflow.Id].UpdateFlow(flow); err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func (b *Core) RemoveFlow(f *models.Flow) (err error) {
-
-	var flow *models.Flow
-	if flow, err = models.GetFlowById(f.Id); err != nil {
-		return
-	}
-
-	if _, ok := b.workflows[flow.Workflow.Id]; ok {
-		if err = b.workflows[flow.Workflow.Id].RemoveFlow(flow); err != nil {
-			return
-		}
-	}
-
-	return
-}
-
+// добавление рабочего процесс, без автоматического поиска
+// и запуска подпроцессов
 func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 
 	log.Println("Add workflow:", workflow.Name)
@@ -163,6 +83,7 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 	return
 }
 
+// нельзя удалить workflow если к нему привязаны связанные сущности
 func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
 
 	log.Println("Remove workflow:", workflow.Name)
@@ -174,10 +95,78 @@ func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
 	b.workflows[workflow.Id].Stop()
 	delete(b.workflows, workflow.Id)
 
+
+	return
+}
+
+// ------------------------------------------------
+// Workers
+// ------------------------------------------------
+
+func (b *Core) AddWorker(flow *models.Worker) (err error) {
+
+	return
+}
+
+func (b *Core) UpdateWorker(flow *models.Worker) (err error) {
+
+	return
+}
+
+func (b *Core) RemoveWorker(flow *models.Worker) (err error) {
+
+	return
+}
+
+// ------------------------------------------------
+// Flows
+// ------------------------------------------------
+
+func (b *Core) AddFlow(flow *models.Flow) (err error) {
+
+	return
+}
+
+func (b *Core) UpdateFlow(flow *models.Flow) (err error) {
+
+	return
+}
+
+func (b *Core) RemoveFlow(flow *models.Flow) (err error) {
+
+	return
+}
+
+// ------------------------------------------------
+// Nodes
+// ------------------------------------------------
+
+func (b *Core) InitNodes() (err error) {
+
+	var nodes []*models.Node
+	b.nodes = make(map[int64]*models.Node)
+	b.nodes_chan = make(map[int64]chan string)
+
+	//log.Println("--------------------- NODES ---------------------")
+	if nodes, err = models.GetAllEnabledNodes(); err != nil {
+		return
+	}
+
+	for _, node := range nodes {
+		b.AddNode(node)
+	}
+
 	return
 }
 
 func (b *Core) AddNode(node *models.Node) (err error) {
+
+	if _, exist := b.nodes[node.Id]; exist {
+		return b.ReloadNode(node)
+	}
+
+	log.Printf("Add node: \"%s\"", node.Name)
+
 	if _, ok := b.nodes[node.Id]; ok {
 		return
 	}
@@ -246,6 +235,12 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 
 func (b *Core) RemoveNode(node *models.Node) (err error) {
 
+	log.Printf("Remove node: \"%s\"", node.Name)
+
+	if _, exist := b.nodes[node.Id]; !exist {
+		return
+	}
+
 	if _, ok := b.nodes[node.Id]; ok {
 		b.nodes_chan[node.Id] <- "quit"
 		close(b.nodes_chan[node.Id])
@@ -255,10 +250,13 @@ func (b *Core) RemoveNode(node *models.Node) (err error) {
 
 	BroadcastNodesStatus()
 
+
 	return
 }
 
 func (b *Core) ReloadNode(node *models.Node) (err error) {
+
+	log.Printf("Reload node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; !ok {
 		b.AddNode(node)
@@ -282,6 +280,8 @@ func (b *Core) ReloadNode(node *models.Node) (err error) {
 
 func (b *Core) ConnectNode(node *models.Node) (err error) {
 
+	log.Printf("Connect to node: \"%s\"", node.Name)
+
 	if _, ok := b.nodes[node.Id]; ok {
 		b.nodes_chan[node.Id] <- "connect"
 	}
@@ -293,6 +293,8 @@ func (b *Core) ConnectNode(node *models.Node) (err error) {
 
 func (b *Core) DisconnectNode(node *models.Node) (err error) {
 
+	log.Printf("Disconnect from node: \"%s\"", node.Name)
+
 	if _, ok := b.nodes[node.Id]; ok {
 		b.nodes_chan[node.Id] <- "disconnect"
 	}
@@ -302,37 +304,39 @@ func (b *Core) DisconnectNode(node *models.Node) (err error) {
 	return
 }
 
-func (b *Core) AddWorker(worker *models.Worker) (err error) {
+// ------------------------------------------------
+//
+// ------------------------------------------------
 
-	if _, ok := b.workflows[worker.Workflow.Id]; ok {
-		err = b.workflows[worker.Workflow.Id].AddWorker(worker)
-	} else {
-		err = fmt.Errorf("workflow id:%d not found", worker.Workflow.Id)
+func streamWorkflowsStatus(client *stream.Client, value interface{}) {
+
+	return
+}
+
+func GetNodesStatus() (result map[int64]string) {
+	result = make(map[int64]string)
+	for _, node := range corePtr.nodes {
+		result[node.Id] = node.GetConnectStatus()
 	}
 
 	return
 }
 
-func (b *Core) UpdateWorker(worker *models.Worker) (err error) {
-
-	if _, ok := b.workflows[worker.Workflow.Id]; ok {
-		err = b.workflows[worker.Workflow.Id].UpdateWorker(worker)
-	} else {
-		err = fmt.Errorf("workflow id:%d not found", worker.Workflow.Id)
+func streamNodesStatus(client *stream.Client, value interface{}) {
+	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
+	if !ok {
+		return
 	}
 
-	return
+	result := GetNodesStatus()
+	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "nodes": result})
+	client.Send(string(msg))
 }
 
-func (b *Core) RemoveWorker(worker *models.Worker) (err error) {
-
-	if _, ok := b.workflows[worker.Workflow.Id]; ok {
-		err = b.workflows[worker.Workflow.Id].RemoveWorker(worker)
-	} else {
-		err = fmt.Errorf("workflow id:%d not found", worker.Workflow.Id)
-	}
-
-	return
+func BroadcastNodesStatus() {
+	result := GetNodesStatus()
+	msg, _ := json.Marshal(map[string]interface{}{"type": "broadcast", "value": &map[string]interface{}{"type": "nodes", "body": result}})
+	Hub.Broadcast(string(msg))
 }
 
 func Initialize() (err error) {

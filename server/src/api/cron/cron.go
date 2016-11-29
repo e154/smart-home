@@ -17,6 +17,7 @@ func Initialize() {
 
 	if instantiated == nil {
 		instantiated = cron.NewCron()
+		instantiated.Run()
 	}
 
 	return

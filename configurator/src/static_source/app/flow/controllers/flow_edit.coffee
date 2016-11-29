@@ -48,7 +48,7 @@ $http) ->
   $scope.addNewWorker =->
     worker = new Worker({
       name: ''
-      time: '0 0 0 0 0 0'
+      time: '* * * * * *'
       status: 'enabled'
       flow:
         id: parseInt($stateParams.id, 10)
