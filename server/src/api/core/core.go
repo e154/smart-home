@@ -4,7 +4,6 @@ import (
 	"log"
 	"sync"
 	"time"
-	"github.com/e154/cron"
 	"encoding/json"
 	"reflect"
 	"../models"
@@ -74,8 +73,9 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 		mutex: &sync.Mutex{},
 		model: workflow,
 		Nodes: b.nodes,
-		CronTasks: make(map[int64]*cron.Task),
+		Workers: make(map[int64]*Worker),
 	}
+
 	if err = wf.Run(); err != nil {
 		return
 	}
@@ -113,6 +113,19 @@ func (b *Core) AddWorker(worker *models.Worker) (err error) {
 
 	if err = b.workflows[worker.Workflow.Id].AddWorker(worker); err != nil {
 		return
+	}
+
+	return
+}
+
+func (b *Core) UpdateWorkerFromDevice(device *models.Device) (err error) {
+
+	for _, workflow := range b.workflows {
+		for _, worker := range workflow.Workers {
+			if worker.Device.Id == device.Id {
+				workflow.UpdateWorker(worker.Model)
+			}
+		}
 	}
 
 	return

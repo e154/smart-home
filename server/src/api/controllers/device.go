@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"fmt"
+	"log"
 	"encoding/json"
 	"github.com/astaxie/beego/validation"
-	"fmt"
-	"../models"
 	"github.com/astaxie/beego/orm"
-	"log"
+	"../models"
+	"../core"
 )
 
 // DeviceController operations for Device
@@ -186,6 +187,8 @@ func (c *DeviceController) Put() {
 		c.ErrHan(403, err.Error())
 		return
 	}
+
+	core.CorePtr().UpdateWorkerFromDevice(&device)
 
 	c.ServeJSON()
 }

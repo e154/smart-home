@@ -12,12 +12,17 @@ import (
 	"fmt"
 )
 
+type Worker struct {
+	Model    *models.Worker
+	CronTask *cr.Task
+	Device   *models.Device
+}
+
 type Workflow struct {
 	model   	*models.Workflow
 	mutex   	*sync.Mutex
 	Flows   	map[int64]*models.Flow
-	Workers 	map[int64]*models.Worker
-	CronTasks 	map[int64]*cr.Task
+	Workers 	map[int64]*Worker
 	Nodes   	map[int64]*models.Node
 }
 
@@ -42,7 +47,7 @@ func (wf *Workflow) Stop() (err error) {
 
 	//TODO check!!!
 	for _, worker := range wf.Workers {
-		wf.RemoveWorker(worker)
+		wf.RemoveWorker(worker.Model)
 	}
 
 	return
@@ -146,8 +151,6 @@ func (wf *Workflow) InitWorkers() (err error) {
 	//log.Println("------------------- WORKERS ---------------------")
 
 	var workers	[]*models.Worker
-	wf.Workers = make(map[int64]*models.Worker)
-
 	if workers, err = wf.model.GetAllEnabledWorkers(); err != nil {
 		return
 	}
@@ -164,13 +167,17 @@ func (wf *Workflow) InitWorkers() (err error) {
 
 func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
+	if worker.Status != "enabled" {
+		return
+	}
+
 	log.Printf("Add worker: \"%s\"", worker.Name)
 
 	if _, ok := wf.Workers[worker.Id]; ok {
 		return
 	}
 
-	wf.Workers[worker.Id] = worker
+	wf.Workers[worker.Id] = &Worker{Model:worker,}
 
 	// vars
 	// ------------------------------------------------
@@ -236,7 +243,11 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 			Timeout: device.Timeout,
 		}
 
-		wf.CronTasks[worker.Id] = cron.Cron().NewTask(worker.Time, func() {
+		// device
+		wf.Workers[worker.Id].Device = device
+
+		// cron task
+		wf.Workers[worker.Id].CronTask = cron.Cron().NewTask(worker.Time, func() {
 
 			args.Time = time.Now()
 
@@ -265,16 +276,14 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
 func (wf *Workflow) UpdateWorker(worker *models.Worker) (err error) {
 
-	if _, ok := wf.Workers[worker.Id]; ok {
-
-		wf.RemoveWorker(worker)
-
-		if err = wf.AddWorker(worker); err != nil {
-			log.Println("error:", err.Error())
-		}
-
-	} else {
+	if _, ok := wf.Workers[worker.Id]; !ok {
 		err = fmt.Errorf("worker id:%d not found", worker.Id)
+	}
+
+	wf.RemoveWorker(worker)
+
+	if err = wf.AddWorker(worker); err != nil {
+		log.Println("error:", err.Error())
 	}
 
 	return
@@ -287,14 +296,13 @@ func (wf *Workflow) RemoveWorker(worker *models.Worker) (err error) {
 	if _, ok := wf.Workers[worker.Id]; ok {
 
 		// stop cron task
-		wf.CronTasks[worker.Id].Disable()
+		wf.Workers[worker.Id].CronTask.Disable()
 
 		// remove task from cron
-		cron.Cron().RemoveTask(wf.CronTasks[worker.Id])
+		cron.Cron().RemoveTask(wf.Workers[worker.Id].CronTask)
 
 		// delete worker
 		delete(wf.Workers, worker.Id)
-		delete(wf.CronTasks, worker.Id)
 
 	} else {
 		err = fmt.Errorf("worker id:%d not found", worker.Id)
