@@ -6,7 +6,6 @@ import (
 	"github.com/astaxie/beego/validation"
 	"../models"
 	"../core"
-	"log"
 	"errors"
 	"github.com/astaxie/beego/orm"
 )
@@ -66,6 +65,7 @@ func (c *FlowController) Post() {
 
 	}
 
+	models.FlowGetRelatedDate(&flow)
 	core.CorePtr().AddFlow(&flow)
 
 	c.ServeJSON()
@@ -171,6 +171,7 @@ func (c *FlowController) Put() {
 		return
 	}
 
+	models.FlowGetRelatedDate(&flow)
 	core.CorePtr().UpdateFlow(&flow)
 
 	c.ServeJSON()
@@ -185,12 +186,19 @@ func (c *FlowController) Put() {
 // @router /:id [delete]
 func (c *FlowController) Delete() {
 	id, _ := c.GetInt(":id")
+
+	flow, err  := models.GetFlowById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
 	if err := models.DeleteFlow(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	core.CorePtr().RemoveFlow(&models.Flow{Id: int64(id)})
+	core.CorePtr().RemoveFlow(flow)
 
 	c.ServeJSON()
 }
@@ -367,6 +375,20 @@ func (c *FlowController) UpdateRedactor() {
 		}
 	}
 
+	// flow
+	//---------------------------------------------------
+	newflow, err := models.GetFlowById(flow.Id)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	var r *models.RedactorFlow
+	r, err = ExportToRedactor(newflow)
+
+	models.FlowGetRelatedDate(newflow)
+	core.CorePtr().UpdateFlow(newflow)
+
 	// workers
 	//---------------------------------------------------
 	workers_todo_remove := []*models.Worker{}
@@ -417,18 +439,7 @@ func (c *FlowController) UpdateRedactor() {
 
 	}
 
-	log.Println(4)
 	//---------------------------------------------------
-	newflow, err := models.GetFlowById(flow.Id)
-	if err != nil {
-		c.ErrHan(403, err.Error())
-		return
-	}
-
-	var r *models.RedactorFlow
-	r, err = ExportToRedactor(newflow)
-
-	core.CorePtr().UpdateFlow(&models.Flow{Id:flow.Id})
 
 	c.Data["json"] = map[string]interface{}{"flow": r}
 	c.ServeJSON()

@@ -1,5 +1,7 @@
 package models
 
+import "log"
+
 //ActionPrototypes
 type MessageEmitter struct {}
 
@@ -9,7 +11,7 @@ func (m *MessageEmitter) After(message *Message, flow *Flow) (err error) {
 }
 
 func (m *MessageEmitter) Run(message *Message, flow *Flow) (err error) {
-	//log.Println("MessageEmitter.run: ", message)
+	log.Println("MessageEmitter.run: ", message)
 	return
 }
 

@@ -196,3 +196,13 @@ func GetParentDeviceByChildId(id int64) (parent *Device, err error) {
 
 	return
 }
+
+func (m *Device) GetChilds() (childs []*Device, all int64, err error) {
+	o := orm.NewOrm()
+	all, err = o.QueryTable(m).RelatedSel().Filter("device_id", m.Id).All(&childs)
+	return
+}
+
+func (m *Device) GetNode() (*Node, error) {
+	return GetNodeById(m.Node.Id)
+}

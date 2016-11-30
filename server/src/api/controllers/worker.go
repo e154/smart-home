@@ -151,12 +151,19 @@ func (c *WorkerController) Put() {
 // @router /:id [delete]
 func (c *WorkerController) Delete() {
 	id, _ := c.GetInt(":id")
+
+	worker, err  := models.GetWorkerById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
 	if err := models.DeleteWorker(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	core.CorePtr().RemoveWorker(&models.Worker{Id: int64(id)})
+	core.CorePtr().RemoveWorker(worker)
 
 	c.ServeJSON()
 }

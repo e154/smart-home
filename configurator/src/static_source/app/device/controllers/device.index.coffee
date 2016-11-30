@@ -31,6 +31,12 @@ angular
           false
       }
       {
+        name: 'device.address'
+        field: 'address'
+        template: "<span ng-if='!item[field]'>-</span>
+<span ng-if='item[field]'>{{item[field]}}</span>"
+      }
+      {
         name: 'device.is_group'
         sort: 'disable'
         field: 'is_group'

@@ -2,12 +2,13 @@ package core
 
 import (
 	"log"
-	"../models"
-	"../stream"
+	"sync"
 	"time"
+	"github.com/e154/cron"
 	"encoding/json"
 	"reflect"
-	"github.com/e154/cron"
+	"../models"
+	"../stream"
 )
 
 var (
@@ -70,6 +71,7 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 	}
 
 	wf := &Workflow{
+		mutex: &sync.Mutex{},
 		model: workflow,
 		Nodes: b.nodes,
 		CronTasks: make(map[int64]*cron.Task),
@@ -83,7 +85,7 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 	return
 }
 
-// нельзя удалить workflow если к нему привязаны связанные сущности
+// нельзя удалить workflow, если присутствуют связанные сущности
 func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
 
 	log.Println("Remove workflow:", workflow.Name)
@@ -103,17 +105,41 @@ func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
 // Workers
 // ------------------------------------------------
 
-func (b *Core) AddWorker(flow *models.Worker) (err error) {
+func (b *Core) AddWorker(worker *models.Worker) (err error) {
+
+	if _, ok := b.workflows[worker.Workflow.Id]; !ok {
+		return
+	}
+
+	if err = b.workflows[worker.Workflow.Id].AddWorker(worker); err != nil {
+		return
+	}
 
 	return
 }
 
-func (b *Core) UpdateWorker(flow *models.Worker) (err error) {
+func (b *Core) UpdateWorker(worker *models.Worker) (err error) {
+
+	if _, ok := b.workflows[worker.Workflow.Id]; !ok {
+		return
+	}
+
+	if err = b.workflows[worker.Workflow.Id].UpdateWorker(worker); err != nil {
+		return
+	}
 
 	return
 }
 
-func (b *Core) RemoveWorker(flow *models.Worker) (err error) {
+func (b *Core) RemoveWorker(worker *models.Worker) (err error) {
+
+	if _, ok := b.workflows[worker.Workflow.Id]; !ok {
+		return
+	}
+
+	if err = b.workflows[worker.Workflow.Id].RemoveWorker(worker); err != nil {
+		return
+	}
 
 	return
 }
@@ -122,17 +148,43 @@ func (b *Core) RemoveWorker(flow *models.Worker) (err error) {
 // Flows
 // ------------------------------------------------
 
+// need full flow !!!
 func (b *Core) AddFlow(flow *models.Flow) (err error) {
+
+	if _, ok := b.workflows[flow.Workflow.Id]; !ok {
+		return
+	}
+
+	if err = b.workflows[flow.Workflow.Id].AddFlow(flow); err != nil {
+		return
+	}
 
 	return
 }
 
+// need full flow !!!
 func (b *Core) UpdateFlow(flow *models.Flow) (err error) {
+
+	if _, ok := b.workflows[flow.Workflow.Id]; !ok {
+		return
+	}
+
+	if err = b.workflows[flow.Workflow.Id].UpdateFlow(flow); err != nil {
+		return
+	}
 
 	return
 }
 
 func (b *Core) RemoveFlow(flow *models.Flow) (err error) {
+
+	if _, ok := b.workflows[flow.Workflow.Id]; !ok {
+		return
+	}
+
+	if err = b.workflows[flow.Workflow.Id].RemoveFlow(flow); err != nil {
+		return
+	}
 
 	return
 }
@@ -305,7 +357,7 @@ func (b *Core) DisconnectNode(node *models.Node) (err error) {
 }
 
 // ------------------------------------------------
-//
+// etc
 // ------------------------------------------------
 
 func streamWorkflowsStatus(client *stream.Client, value interface{}) {

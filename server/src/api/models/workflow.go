@@ -169,6 +169,10 @@ func GetAllEnabledWorkflow() (wfs []*Workflow, err error) {
 	return
 }
 
+func (wf *Workflow) GetAllEnabledWorkers() ([]*Worker, error) {
+	return GetAllEnabledWorkersByWorkflow(&Workflow{Id:wf.Id})
+}
+
 func (wf *Workflow) GetAllEnabledFlows() ([]*Flow, error) {
 	return GetAllEnabledFlowsByWf(wf)
 }

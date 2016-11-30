@@ -128,7 +128,7 @@ func (c *DeviceActionController) Put() {
 		return
 	}
 
-	//restart worker
+	// restart worker
 	workers, err := models.GetWorkersByDeviceAction(&action)
 	for _, worker := range workers {
 		if err = core.CorePtr().UpdateWorker(worker); err != nil {
@@ -149,18 +149,19 @@ func (c *DeviceActionController) Put() {
 // @router /:id [delete]
 func (c *DeviceActionController) Delete() {
 	id, _ := c.GetInt(":id")
-	if err := models.DeleteDeviceAction(int64(id)); err != nil {
-		c.ErrHan(403, err.Error())
-		return
-	}
 
-	//restart worker
+	// restart worker
 	workers, err := models.GetWorkersByDeviceAction(&models.DeviceAction{Id: int64(id)})
 	for _, worker := range workers {
 		if err = core.CorePtr().RemoveWorker(worker); err != nil {
 			c.ErrHan(403, err.Error())
 			return
 		}
+	}
+
+	if err := models.DeleteDeviceAction(int64(id)); err != nil {
+		c.ErrHan(403, err.Error())
+		return
 	}
 
 	c.ServeJSON()
