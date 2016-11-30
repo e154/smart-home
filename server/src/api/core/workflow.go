@@ -123,13 +123,13 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 
 	log.Println("Remove flow:", flow.Name)
 
-	if _, ok := wf.Flows[flow.Workflow.Id]; !ok {
+	if _, ok := wf.Flows[flow.Id]; !ok {
 		return
 	}
 
 	// to do first remove all workers
 	var workers	[]*models.Worker
-	if workers, err = wf.model.GetAllEnabledWorkers(); err != nil {
+	if workers, err = flow.GetWorkers(); err != nil {
 		return
 	}
 

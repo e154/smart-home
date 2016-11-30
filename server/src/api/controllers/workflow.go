@@ -146,12 +146,13 @@ func (c *WorkflowController) Delete() {
 		return
 	}
 
+	// update core
+	core.CorePtr().RemoveWorkflow(workflow)
+
 	if err := models.DeleteWorkflow(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
-
-	core.CorePtr().RemoveWorkflow(workflow)
 
 	c.ServeJSON()
 }

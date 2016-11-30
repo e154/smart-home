@@ -158,12 +158,13 @@ func (c *WorkerController) Delete() {
 		return
 	}
 
+	// update core
+	core.CorePtr().RemoveWorker(worker)
+
 	if err := models.DeleteWorker(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
-
-	core.CorePtr().RemoveWorker(worker)
 
 	c.ServeJSON()
 }

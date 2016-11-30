@@ -193,12 +193,13 @@ func (c *FlowController) Delete() {
 		return
 	}
 
+	// update core
+	core.CorePtr().RemoveFlow(flow)
+
 	if err := models.DeleteFlow(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
-
-	core.CorePtr().RemoveFlow(flow)
 
 	c.ServeJSON()
 }
