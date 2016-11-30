@@ -65,6 +65,8 @@ func (c *DeviceController) Post() {
 
 	}
 
+	core.CorePtr().UpdateWorkerFromDevice(&device)
+
 	c.ServeJSON()
 }
 
@@ -202,6 +204,14 @@ func (c *DeviceController) Put() {
 // @router /:id [delete]
 func (c *DeviceController) Delete() {
 	id, _ := c.GetInt(":id")
+	device, err := models.GetDeviceById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	core.CorePtr().UpdateWorkerFromDevice(device)
+
 	if err := models.DeleteDevice(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
 		return

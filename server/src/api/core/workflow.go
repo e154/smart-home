@@ -14,7 +14,7 @@ import (
 
 type Worker struct {
 	Model    *models.Worker
-	CronTask *cr.Task
+	CronTask []*cr.Task
 	Device   *models.Device
 }
 
@@ -247,7 +247,7 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 		wf.Workers[worker.Id].Device = device
 
 		// cron task
-		wf.Workers[worker.Id].CronTask = cron.Cron().NewTask(worker.Time, func() {
+		cronTask := cron.Cron().NewTask(worker.Time, func() {
 
 			args.Time = time.Now()
 
@@ -269,6 +269,8 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 				log.Println("error" , err.Error())
 			}
 		})
+
+		wf.Workers[worker.Id].CronTask = append(wf.Workers[worker.Id].CronTask, cronTask)
 	}
 
 	return
@@ -301,10 +303,13 @@ func (wf *Workflow) RemoveWorker(worker *models.Worker) (err error) {
 	}
 
 	// stop cron task
-	wf.Workers[worker.Id].CronTask.Disable()
+	for _, task := range wf.Workers[worker.Id].CronTask {
 
-	// remove task from cron
-	cron.Cron().RemoveTask(wf.Workers[worker.Id].CronTask)
+		task.Disable()
+
+		// remove task from cron
+		cron.Cron().RemoveTask(task)
+	}
 
 	// delete worker
 	delete(wf.Workers, worker.Id)
