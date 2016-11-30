@@ -280,7 +280,9 @@ func (wf *Workflow) UpdateWorker(worker *models.Worker) (err error) {
 		err = fmt.Errorf("worker id:%d not found", worker.Id)
 	}
 
-	wf.RemoveWorker(worker)
+	if err = wf.RemoveWorker(worker); err != nil {
+		log.Println("error:", err.Error())
+	}
 
 	if err = wf.AddWorker(worker); err != nil {
 		log.Println("error:", err.Error())
@@ -293,20 +295,19 @@ func (wf *Workflow) RemoveWorker(worker *models.Worker) (err error) {
 
 	log.Printf("Remove worker: \"%s\"", worker.Name)
 
-	if _, ok := wf.Workers[worker.Id]; ok {
-
-		// stop cron task
-		wf.Workers[worker.Id].CronTask.Disable()
-
-		// remove task from cron
-		cron.Cron().RemoveTask(wf.Workers[worker.Id].CronTask)
-
-		// delete worker
-		delete(wf.Workers, worker.Id)
-
-	} else {
+	if _, ok := wf.Workers[worker.Id]; !ok {
 		err = fmt.Errorf("worker id:%d not found", worker.Id)
+		return
 	}
+
+	// stop cron task
+	wf.Workers[worker.Id].CronTask.Disable()
+
+	// remove task from cron
+	cron.Cron().RemoveTask(wf.Workers[worker.Id].CronTask)
+
+	// delete worker
+	delete(wf.Workers, worker.Id)
 
 	return
 }
