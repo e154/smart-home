@@ -8,11 +8,13 @@ import (
 	"reflect"
 	"../models"
 	"../stream"
+	cr "github.com/e154/cron"
 )
 
 var (
 	Hub		stream.Hub
 	corePtr         *Core = nil
+	cron		*cr.Cron = nil
 )
 
 func CorePtr() *Core {
@@ -412,6 +414,11 @@ func BroadcastNodesStatus() {
 
 func Initialize() (err error) {
 	log.Println("Core initialize...")
+
+	if cron == nil {
+		cron = cr.NewCron()
+		cron.Run()
+	}
 
 	corePtr = &Core{}
 	if err = corePtr.Run(); err != nil {

@@ -6,7 +6,6 @@ import (
 	cr "github.com/e154/cron"
 	r "../../lib/rpc"
 	"../models"
-	"../cron"
 	"time"
 	"encoding/hex"
 	"fmt"
@@ -260,7 +259,7 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 			wf.Workers[worker.Id].CronTasks = make(map[int64]*cr.Task)
 		}
 
-		wf.Workers[worker.Id].CronTasks[device.Id] = cron.Cron().NewTask(worker.Time, func() {
+		wf.Workers[worker.Id].CronTasks[device.Id] = cron.NewTask(worker.Time, func() {
 
 			args.Time = time.Now()
 
@@ -320,7 +319,7 @@ func (wf *Workflow) RemoveWorker(worker *models.Worker) (err error) {
 		task.Disable()
 
 		// remove task from cron
-		cron.Cron().RemoveTask(task)
+		cron.RemoveTask(task)
 	}
 
 	// delete worker
