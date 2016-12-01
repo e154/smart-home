@@ -122,8 +122,14 @@ func (b *Core) UpdateWorkerFromDevice(device *models.Device) (err error) {
 
 	for _, workflow := range b.workflows {
 		for _, worker := range workflow.Workers {
-			if worker.Device.Id == device.Id {
+			if _, ok := worker.Devices[device.Id]; ok {
 				workflow.UpdateWorker(worker.Model)
+				break
+				return
+			} else if worker.Model.DeviceAction.Device.Id == device.Device.Id {
+				workflow.UpdateWorker(worker.Model)
+				break
+				return
 			}
 		}
 	}

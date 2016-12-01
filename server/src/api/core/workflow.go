@@ -13,9 +13,9 @@ import (
 )
 
 type Worker struct {
-	Model    *models.Worker
-	CronTask []*cr.Task
-	Device   *models.Device
+	Model     *models.Worker
+	CronTasks map[int64]*cr.Task
+	Devices   map[int64]*models.Device
 }
 
 type Workflow struct {
@@ -201,10 +201,15 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 		}
 
 		for _, child := range childs {
+			if child.Address == nil {
+				continue
+			}
+
 			device := &models.Device{}
 			*device = *worker.DeviceAction.Device
 			device.Id = child.Id
-			device.Address = child.Address
+			device.Address = new(int)
+			*device.Address = *child.Address
 			devices = append(devices, device)
 		}
 	}
@@ -244,10 +249,18 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 		}
 
 		// device
-		wf.Workers[worker.Id].Device = device
+		if wf.Workers[worker.Id].Devices == nil {
+			wf.Workers[worker.Id].Devices = make(map[int64]*models.Device)
+		}
+
+		wf.Workers[worker.Id].Devices[device.Id] = device
 
 		// cron task
-		cronTask := cron.Cron().NewTask(worker.Time, func() {
+		if wf.Workers[worker.Id].CronTasks == nil {
+			wf.Workers[worker.Id].CronTasks = make(map[int64]*cr.Task)
+		}
+
+		wf.Workers[worker.Id].CronTasks[device.Id] = cron.Cron().NewTask(worker.Time, func() {
 
 			args.Time = time.Now()
 
@@ -270,7 +283,6 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 			}
 		})
 
-		wf.Workers[worker.Id].CronTask = append(wf.Workers[worker.Id].CronTask, cronTask)
 	}
 
 	return
@@ -303,7 +315,7 @@ func (wf *Workflow) RemoveWorker(worker *models.Worker) (err error) {
 	}
 
 	// stop cron task
-	for _, task := range wf.Workers[worker.Id].CronTask {
+	for _, task := range wf.Workers[worker.Id].CronTasks {
 
 		task.Disable()
 
