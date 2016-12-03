@@ -76,6 +76,22 @@ angular
           }
         ]
       }
+      {
+        'label': 'Scripts'
+        'route': 'dashboard.script'
+        'link': 'dashboard.script.index'
+        'icon': 'fa fa-pencil-square-o'
+        'items': [
+          {
+            'label': 'All scripts'
+            'route': 'dashboard.script.index'
+          }
+          {
+            'label': 'Add new'
+            'route': 'dashboard.script.new'
+          }
+        ]
+      }
     ]
 
 

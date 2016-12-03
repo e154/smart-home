@@ -10,6 +10,7 @@ gulp.task('default', function(cb) {
         'build_lib_css',
         'build_less',
         'webserver',
+        'ace_themes',
         'watch'
     );
 });
@@ -21,6 +22,7 @@ gulp.task('pack', function(cb) {
         ['build_haml'],
         ['build_templates'],
         'build_lib_css',
-        'build_less'
+        'build_less',
+        'ace_themes'
     );
 });

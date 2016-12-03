@@ -65,5 +65,9 @@ module.exports = {
             'static_source/tmp/templates/**/*'
         ],
         dest: 'static_source/js'
+    },
+    ace_themes: {
+        source: source + '/bower_components/ace-builds/**/*',
+        dest: source + '/js/ace-builds'
     }
 };

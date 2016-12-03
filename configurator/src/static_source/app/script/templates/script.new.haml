@@ -1,0 +1,14 @@
+.row
+    .col-md-6
+        %h3 Новый скрипт
+
+.row
+    .col-md-12
+        %div(ng-include="'/script/templates/_script_form.html'")
+.row
+    .col-md-12
+        .pull-right
+            %a.btn.btn-default(href="" role="button" ui-sref="dashboard.script.index")
+                {{'Cancel' | translate}}
+            %a.btn.btn-primary(href="" role="button" ng-click="script.submit()")
+                {{'Create' | translate}}

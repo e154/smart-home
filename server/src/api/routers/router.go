@@ -54,6 +54,12 @@ func Initialize() {
 			beego.NSRouter("/worker", &controllers.WorkerController{}, "post:Post"),
 			beego.NSRouter("/worker/:id([0-9]+)", &controllers.WorkerController{}, "put:Put"),
 			beego.NSRouter("/worker/:id([0-9]+)", &controllers.WorkerController{}, "delete:Delete"),
+
+			beego.NSRouter("/script/:id([0-9]+)", &controllers.ScriptController{}, "get:GetOne"),
+			beego.NSRouter("/script", &controllers.ScriptController{}, "get:GetAll"),
+			beego.NSRouter("/script", &controllers.ScriptController{}, "post:Post"),
+			beego.NSRouter("/script/:id([0-9]+)", &controllers.ScriptController{}, "put:Put"),
+			beego.NSRouter("/script/:id([0-9]+)", &controllers.ScriptController{}, "delete:Delete"),
 		),
 	)
 	beego.AddNamespace(ns)

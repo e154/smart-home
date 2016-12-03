@@ -28,6 +28,7 @@ app = angular.module('app', [
   'angular-bpmn'
   'ui.select'
   'ngSanitize'
+  'ui.ace'
 ])
 
 app.version =

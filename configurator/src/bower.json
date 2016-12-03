@@ -39,7 +39,9 @@
     "jQuery-contextMenu": "~2.0.1",
     "keymaster": "~1.6.3",
     "bpmn-font": "^0.7.0",
-    "angular-ui-select": "^0.19.6"
+    "angular-ui-select": "^0.19.6",
+    "angular-ui-ace": "^0.2.3",
+    "ace": "nemanjan00/ui-ace"
   },
   "overrides": {
     "jquery": {
@@ -86,6 +88,14 @@
         "themes/base/core.css",
         "themes/base/theme.css",
         "themes/base/resizable.css"
+      ]
+    },
+    "ace-builds": {
+      "main": [
+        "src-noconflict/ace.js",
+        "src-noconflict/mode-javascript.js",
+        "src-noconflict/mode-lua.js",
+        "src-noconflict/mode-coffee.js"
       ]
     }
   }

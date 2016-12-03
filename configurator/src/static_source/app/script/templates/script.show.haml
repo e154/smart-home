@@ -1,0 +1,37 @@
+.row
+  .col-md-12
+    %h3
+      %a(href="" ui-sref="dashboard.script.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      Узел №{{script.script.id}}
+      .edit-icon-link
+        %a(ui-sref="dashboard.script.edit({id:script.script.id})")
+          %span.fa.fa-pencil
+
+    .pull-right.date-info-block
+      %small
+        Создано {{script.script.created_at | readableDateTime}}
+      %small
+        Редактировалось {{script.script.update_at | readableDateTime}}
+
+.row
+  .col-md-12
+
+    .form-group
+      .text-muted
+        {{'script.name' | translate}}
+      %div
+        {{::script.script.name}}
+
+    .form-group
+      .text-muted
+        {{'script.lang' | translate}}
+      %div
+        {{::script.script.lang}}
+
+    .form-group(ng-if="script.script.description")
+      .text-muted
+        {{'script.description' | translate}}
+      %div
+        {{::script.script.description}}

@@ -1,0 +1,24 @@
+.row
+    .col-md-2
+        .form-group
+            %laber {{'script.name' | translate}}*
+            %input.form-control(ng-model="script.script.name")
+
+        .form-group
+            %laber {{'script.lang' | translate}}*
+            %select.form-control(ng-model="script.script.lang")
+                %option(value="coffeescript")
+                    coffee script
+                %option(value="javascript")
+                    javascript
+                %option(value="lua")
+                    lua
+
+        .form-group
+            %laber {{'script.description' | translate}}
+            %textarea.form-control(ng-model="script.script.description" rows="10" )
+
+    .col-md-10
+        .form-group
+            %laber {{'script.source' | translate}}
+            .ace-editor.form-control(ng-model="script.script.source" rows="20" ui-ace="{useWrapMode : true, mode:'coffee', theme:'dawn', advanced:{}, workerPath:'/static/js/ace-builds/src-noconflict'}")
