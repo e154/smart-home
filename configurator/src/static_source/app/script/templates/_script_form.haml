@@ -21,4 +21,4 @@
     .col-md-10
         .form-group
             %laber {{'script.source' | translate}}
-            .ace-editor.form-control(ng-model="script.script.source" rows="20" ui-ace="{useWrapMode : true, mode:'coffee', theme:'dawn', advanced:{}, workerPath:'/static/js/ace-builds/src-noconflict'}")
+            .ace-editor.form-control(ng-model="script.script.source" rows="20" ui-ace="ace_options")

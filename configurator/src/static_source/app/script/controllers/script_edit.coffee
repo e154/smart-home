@@ -26,5 +26,15 @@ angular
 
     vm.script.$update(success, error)
 
+  $scope.$watch 'script.script.lang', (lang)->
+    return if !lang || lang == ''
+    switch lang
+      when 'javascript'
+        $scope.ace_options.mode = 'javascript'
+      when 'coffeescript'
+        $scope.ace_options.mode = 'coffee'
+      when 'lua'
+        $scope.ace_options.mode = 'lua'
+
   vm
 ]
