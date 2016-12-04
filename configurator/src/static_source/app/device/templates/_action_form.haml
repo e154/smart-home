@@ -3,32 +3,22 @@
   %input.form-control(ng-model="action.current.name")
 
 .form-group
-  %laber {{'device.action.command' | translate}}*
-  %input.form-control(ng-model="action.current.command")
+  %laber
+    {{'device.script' | translate}}
+  -#
+  -#  select2
+  -#
+  %ui-select(ng-model="action.current.script" theme="bootstrap")
+    %ui-select-match(placeholder="{{'device.action.script' | translate}}")
+      %div(ng-if="action.current.script")
+        {{action.current.script.name}} ({{action.current.script.lang}})
+    %ui-select-choices(repeat="item in scripts | filter: $select.search" refresh="refreshScripts($select.search)" refresh-delay="0")
+      %div
+        %span(ng-bind-html="item.name | highlight: $select.search")
+        (
+        %small.text-muted(ng-bind-html="item.lang | highlight: $select.search")
+        )
 
-.form-group
-  %laber {{'device.action.direction' | translate}}
-  %select.form-control(ng-model="action.current.direction")
-    %option(value="inside")
-      {{'device.action.inside' | translate}}
-    %option(value="outside")
-      {{'device.action.outside' | translate}}
-
-.form-group
-  %laber {{'device.action.start_addr' | translate}}
-  %input.form-control(ng-model="action.current.start_addr")
-
-.form-group
-  %laber {{'device.action.col_cells' | translate}}
-  %input.form-control(ng-model="action.current.col_cells")
-
-.form-group
-  %laber {{'device.action.result_type' | translate}}
-  %input.form-control(ng-model="action.current.result_type")
-
-.form-group
-  %laber {{'device.action.function' | translate}}
-  %input.form-control(ng-model="action.current.function")
 
 .form-group
   %laber {{'device.action.description' | translate}}

@@ -3,9 +3,11 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/astaxie/beego/validation"
+	"net/url"
 	"fmt"
 	"../models"
 	"../scripts"
+	"../core"
 )
 
 // ScriptController operations for Script
@@ -149,6 +151,8 @@ func (c *ScriptController) Put() {
 		return
 	}
 
+	core.CorePtr().UpdateScript(&script)
+
 	c.ServeJSON()
 }
 
@@ -203,5 +207,28 @@ func (c *ScriptController) Exec() {
 	s.Close()
 
 	c.Data["json"] = map[string]interface{}{"result": result, "script": script}
+	c.ServeJSON()
+}
+
+func (c *ScriptController) Search() {
+
+	query, fields, sortby, order, offset, limit := c.pagination()
+	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
+	q := link.Query()
+
+	if val, ok := q["query"]; ok {
+		for _, v := range val {
+			query["name__icontains"] = v
+			//query["description__icontains"] = v
+		}
+	}
+
+	ml, meta, err := models.GetAllScript(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"scripts": ml, "meta": meta}
 	c.ServeJSON()
 }

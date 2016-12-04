@@ -22,13 +22,13 @@
             %a.btn.btn-success.full-width(ng-click="script.exec()")
                 {{'script.execute' | translate}}
 
+    .col-md-10
         .form-group(ng-if="script.script.result")
             .console
                 %pre(ng-bind-html="script.script.result")
                 %a.close(href="#" ng-click="script.script.result = ''" )
                     x
 
-    .col-md-10
         .form-group
             %laber {{'script.source' | translate}}
             .ace-editor.form-control(ng-model="script.script.source" ui-ace="ace_options")

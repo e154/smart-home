@@ -3,12 +3,15 @@ package scripts
 import (
 	"../models"
 	"errors"
+	"github.com/astaxie/beego"
 )
 
 type Magic interface {
 	Init() error
 	Do() (string, error)
 	Compile() error
+	PushStruct(string, interface{}) (int, error)
+	PushFunction(string, interface{}) (int, error)
 	Close()
 }
 
@@ -59,8 +62,12 @@ func (s *Engine) Update() (err error) {
 	return
 }
 
-func (s *Engine) Reg() {
+func (s *Engine) PushStruct(name string, i interface{}) (int, error) {
+	return s.script.PushStruct(name, i)
+}
 
+func (s *Engine) PushFunction(name string, i interface{}) (int, error) {
+	return s.script.PushFunction(name, i)
 }
 
 func (s *Engine) Close() {
@@ -80,5 +87,7 @@ func (s *Engine) Do() (res string, err error) {
 }
 
 func (s *Engine) Print(str string) {
+	//TODO remove
+	beego.Debug(str)
 	s.buf = append(s.buf, str)
 }

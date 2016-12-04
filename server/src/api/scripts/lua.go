@@ -6,18 +6,18 @@ import (
 )
 
 type Lua struct {
-	State *lua.State
-	engine	*Engine
+	state  *lua.State
+	engine *Engine
 }
 
 func (l *Lua) Init() (err error)  {
-	l.State = luar.Init()
-	l.State.OpenLibs();
+	l.state = luar.Init()
+	l.state.OpenLibs();
 	return
 }
 
 func (l *Lua) Close() {
-	l.State.Close()
+	l.state.Close()
 }
 
 func (j *Lua) Compile() (err error) {
@@ -31,8 +31,12 @@ func (l *Lua) Do() (result string, err error) {
 	return
 }
 
-func (j *Lua) Reg() (err error) {
+func (j *Lua) PushStruct(name string, i interface{}) (int, error) {
 
-	return
+	return 0, nil
 }
 
+func (j *Lua) PushFunction(name string, i interface{}) (int, error) {
+
+	return 0, nil
+}

@@ -13,15 +13,11 @@ import (
 
 type DeviceAction struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	StartAddr   	int64  		`orm:"column(start_addr)" json:"start_addr"`
-	ColCells	int64		`orm:"column(col_cells)" json:"col_cells" valid:"Required"`
 	Device		*Device 	`orm:"rel(fk)" json:"device"`
-	Function   	int64  		`orm:"size(11)" json:"function"`
-	Command 	string 		`orm:"" json:"command" valid:"Required"`
+	//Command 	string 		`orm:"" json:"command" valid:"Required"`
 	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	Direction	string 		`orm:"size(254)" json:"direction" valid:"MaxSize(254);Required"`
 	Description 	string 		`orm:"" json:"description"`
-	ResultType 	string 		`orm:"" json:"result_type"`
+	Script		*Script		`orm:"rel(fk)" json:"script"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
@@ -63,6 +59,10 @@ func GetDeviceActionById(id int64) (v *DeviceAction, err error) {
 
 	if v.Device != nil {
 		_, err = o.LoadRelated(v, "Device")
+	}
+
+	if v.Script != nil {
+		_, err = o.LoadRelated(v, "Script")
 	}
 
 	return
@@ -120,7 +120,7 @@ func GetAllDeviceAction(query map[string]string, fields []string, sortby []strin
 	}
 
 	var l []DeviceAction
-	qs = qs.RelatedSel("Device").OrderBy(sortFields...)
+	qs = qs.RelatedSel("Device", "Script").OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
 		return
@@ -186,6 +186,6 @@ func GetDeviceActionsByDeviceId(ids []int64) (actions []*DeviceAction, err error
 	o := orm.NewOrm()
 
 	actions = []*DeviceAction{}
-	_, err = o.QueryTable(&DeviceAction{}).Filter("device_id__in", ids).RelatedSel("Device").All(&actions)
+	_, err = o.QueryTable(&DeviceAction{}).Filter("device_id__in", ids).RelatedSel().All(&actions)
 	return
 }

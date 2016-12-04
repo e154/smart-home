@@ -39,3 +39,10 @@
               {{'device.device' | translate}} {{act.device.name}}
             .small
               {{act.description}}
+            .small
+              %span
+                {{act.script.name}}
+              (
+              %span.text-muted
+                {{act.script.lang}}
+              )

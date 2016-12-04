@@ -12,6 +12,14 @@
             %laber {{'device.address' | translate}}
             %input.form-control(ng-model="device.device.address" type="number" )
 
+        .form-group
+            %laber {{'device.status' | translate}}
+            %select.form-control(ng-model="device.device.status")
+                %option(value="enabled")
+                    {{'device.enabled' | translate}}
+                %option(value="disabled")
+                    {{'device.disabled' | translate}}
+
         %div(ng-if="device.device.device.id == null")
 
             .form-group
@@ -40,13 +48,6 @@
                 %laber {{'device.tty' | translate}}
                 %input.form-control(ng-model="device.device.tty" type="string" )
 
-            .form-group
-                %laber {{'device.status' | translate}}
-                %select.form-control(ng-model="device.device.status")
-                    %option(value="enabled")
-                        {{'device.enabled' | translate}}
-                    %option(value="disabled")
-                        {{'device.disabled' | translate}}
         .form-group
             %laber {{'device.description' | translate}}
             %textarea.form-control(ng-model="device.device.description" rows="10" )

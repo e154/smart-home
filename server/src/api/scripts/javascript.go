@@ -2,9 +2,11 @@ package scripts
 
 import (
 	"fmt"
-	"gopkg.in/olebedev/go-duktape.v2"
+	"github.com/e154/go-candyjs"
 	"strings"
 	"errors"
+	"gopkg.in/olebedev/go-duktape.v2"
+	"../models"
 )
 
 const (
@@ -14,17 +16,26 @@ const (
 
 type Javascript struct {
 	engine	*Engine
-	ctx	*duktape.Context
+	ctx	*candyjs.Context
 }
 
 func (j *Javascript) Init() (err error) {
 
-	j.ctx = duktape.New()
+	j.ctx = candyjs.NewContext()
 	if err = j.ctx.PevalString(j.engine.model.Compiled); err != nil {
 		return
 	}
 
-	j.Reg()
+	// override default print function
+	j.ctx.Context.PushGlobalGoFunction("print", func(ctx *duktape.Context) int {
+		j.engine.Print(ctx.SafeToString(-1))
+		return 0
+	})
+
+	// device
+	j.PushStruct("device", &models.Device{})
+	j.PushStruct("flow", &models.Flow{})
+	j.PushStruct("node", &models.Node{})
 
 	return
 }
@@ -101,17 +112,10 @@ func (j *Javascript) Do() (result string, err error) {
 	return
 }
 
-func (j *Javascript) Reg() (err error) {
+func (j *Javascript) PushStruct(name string, s interface{}) (int, error) {
+	return j.ctx.PushGlobalStruct(name, s)
+}
 
-	p := func(ctx *duktape.Context) int {
-		j.engine.Print(ctx.SafeToString(-1))
-		return 1
-	}
-
-	// override default print function
-	if _, err = j.ctx.PushGlobalGoFunction("print", p); err != nil {
-		return
-	}
-
-	return
+func (j *Javascript) PushFunction(name string, s interface{}) (int, error) {
+	return j.ctx.PushGlobalGoFunction(name, s)
 }

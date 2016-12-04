@@ -1,7 +1,8 @@
 angular
 .module('appControllers')
 .controller 'deviceActionCtrl', ['$scope', 'Notify', 'DeviceAction', 'Message', '$stateParams', 'Device'
-($scope, Notify, DeviceAction, Message, $stateParams, Device) ->
+'$http'
+($scope, Notify, DeviceAction, Message, $stateParams, Device, $http) ->
   vm = this
   vm.actions = []
   vm.current ={}
@@ -21,12 +22,8 @@ angular
   vm.getDefaultAction =->
     vm.current = new DeviceAction({
         name: "Новое действие"
-        command: "000000000"
-        direction: "inside"
-        start_addr: 0
-        col_cells: 1
-        result_type: "byte"
-        function: 2
+        command: "03000005"
+        script: null
         description: "Какое-то действие"
         device:
           id: parseInt($stateParams.id, 10)
@@ -34,6 +31,8 @@ angular
 
   vm.submit =->
     success =(result)->
+      Notify 'success', 'Действие успешно обновлено', 3
+
       vm.getDeviceActions()
       vm.getDefaultAction()
 
@@ -58,6 +57,20 @@ angular
       Message result.data.status, result.data.message
 
     vm.current.$remove(success, error)
+
+  # select2
+  # ------------------
+  $scope.scripts = []
+  $scope.refreshScripts = (query)->
+    $http(
+      method: 'GET'
+      url: window.server_url + "/api/v1/script/search"
+      params:
+        query: query
+        limit: 5
+        offset: 0
+    ).then (response)->
+      $scope.scripts = response.data.scripts
 
   # starting
   # ------------------------------------------

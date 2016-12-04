@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"encoding/json"
 	"github.com/astaxie/beego/validation"
 	"github.com/astaxie/beego/orm"
@@ -236,7 +235,6 @@ func (c *DeviceController) GetActions() {
 	}
 
 	ids := []int64{int64(id)}
-	log.Println("device",device)
 	if device.Device != nil {
 		ids = append(ids, device.Device.Id)
 	}

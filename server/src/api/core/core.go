@@ -378,6 +378,24 @@ func (b *Core) DisconnectNode(node *models.Node) (err error) {
 }
 
 // ------------------------------------------------
+// Script
+// ------------------------------------------------
+func (b *Core) UpdateScript(script *models.Script) (err error) {
+
+	for _, workflow := range b.workflows {
+		for _, worker := range workflow.Workers {
+			if worker.Model.DeviceAction.Script.Id == script.Id {
+				workflow.UpdateWorker(worker.Model)
+				break
+				return
+			}
+		}
+	}
+
+	return
+}
+
+// ------------------------------------------------
 // etc
 // ------------------------------------------------
 
