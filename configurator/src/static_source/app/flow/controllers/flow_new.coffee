@@ -20,7 +20,10 @@ angular
 
   $scope.submit =->
     success =(data)->
-      $state.go("dashboard.flow.show", {id: data.id})
+      Notify 'success', 'Скрипт успешно создан', 3
+      $timeout ()->
+        $state.go("dashboard.flow.show", {id: data.id})
+      , 2000
 
     error =(result)->
       Message result.data.status, result.data.message

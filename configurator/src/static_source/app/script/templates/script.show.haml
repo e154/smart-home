@@ -4,7 +4,7 @@
       %a(href="" ui-sref="dashboard.script.index")
         %small.fa.fa-long-arrow-left
           &nbsp;
-      Узел №{{script.script.id}}
+      Скрипт №{{script.script.id}}
       .edit-icon-link
         %a(ui-sref="dashboard.script.edit({id:script.script.id})")
           %span.fa.fa-pencil
@@ -16,7 +16,7 @@
         Редактировалось {{script.script.update_at | readableDateTime}}
 
 .row
-  .col-md-12
+  .col-md-2
 
     .form-group
       .text-muted
@@ -35,3 +35,7 @@
         {{'script.description' | translate}}
       %div
         {{::script.script.description}}
+  .col-md-10
+    .form-group
+      %laber {{'script.source' | translate}}
+      .ace-editor.form-control(ng-model="script.script.source" ui-ace="ace_options")

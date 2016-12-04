@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'scriptEditCtrl', ['$scope', 'Message', '$stateParams', 'Script', '$state'
-($scope, Message, $stateParams, Script, $state) ->
+.controller 'scriptEditCtrl', ['$scope', 'Message', '$stateParams', 'Script', '$state', 'Notify'
+($scope, Message, $stateParams, Script, $state, Notify) ->
   vm = this
 
   Script.show {id: $stateParams.id}, (script)->
@@ -20,6 +20,7 @@ angular
 
   vm.submit =->
     success =(data)->
+      Notify 'success', 'Скрипт успешно сохранен', 3
 
     error =(result)->
       Message result.data.status, result.data.message
@@ -35,6 +36,14 @@ angular
         $scope.ace_options.mode = 'coffee'
       when 'lua'
         $scope.ace_options.mode = 'lua'
+
+  vm.exec =->
+    success =(data)->
+
+    error =(result)->
+      Message result.data.status, result.data.message
+
+    vm.script.$exec success, error
 
   vm
 ]

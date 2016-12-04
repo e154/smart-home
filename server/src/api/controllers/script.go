@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"../models"
+	"../scripts"
 )
 
 // ScriptController operations for Script
@@ -50,15 +51,26 @@ func (c *ScriptController) Post() {
 	}
 	//....
 
+	s, err := scripts.New(&script)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if err = s.Compile(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	s.Close()
+
 	nid, err := models.AddScript(&script)
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
-	} else {
-		c.Data["json"] = map[string]interface{}{"id": nid}
-
 	}
 
+	c.Data["json"] = map[string]interface{}{"id": nid}
 	c.ServeJSON()
 }
 
@@ -117,6 +129,20 @@ func (c *ScriptController) Put() {
 	id, _ := c.GetInt(":id")
 	var script models.Script
 	json.Unmarshal(c.Ctx.Input.RequestBody, &script)
+
+	s, err := scripts.New(&script)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if err = s.Compile(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	s.Close()
+
 	script.Id = int64(id)
 	if err := models.UpdateScriptById(&script); err != nil {
 		c.ErrHan(403, err.Error())
@@ -141,5 +167,41 @@ func (c *ScriptController) Delete() {
 		return
 	}
 
+	c.ServeJSON()
+}
+
+// Post ...
+// @Title Post
+// @Description exec the Script
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.Script	true		"body for Script content"
+// @Success 200 {object} models.Script
+// @Failure 403 :id is not int
+// @router /:id/exec [post]
+func (c *ScriptController) Exec() {
+
+	var script models.Script
+	json.Unmarshal(c.Ctx.Input.RequestBody, &script)
+
+	s, err := scripts.New(&script)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if err = s.Compile(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	result, err := s.Do()
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	s.Close()
+
+	c.Data["json"] = map[string]interface{}{"result": result, "script": script}
 	c.ServeJSON()
 }

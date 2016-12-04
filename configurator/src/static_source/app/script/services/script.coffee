@@ -25,4 +25,12 @@ angular
         meta: data.meta
         items: data.scripts
 
+    exec:
+      url: window.server_url + '/api/v1/script/:id/exec'
+      method: 'POST'
+      responseType: 'json'
+      transformResponse: (data) ->
+        script = data?.script || data
+        script.result = data?.result || ""
+        script
 ]

@@ -16,9 +16,19 @@
 
         .form-group
             %laber {{'script.description' | translate}}
-            %textarea.form-control(ng-model="script.script.description" rows="10" )
+            %textarea.form-control(ng-model="script.script.description" rows="2" )
+
+        .form-group
+            %a.btn.btn-success.full-width(ng-click="script.exec()")
+                {{'script.execute' | translate}}
+
+        .form-group(ng-if="script.script.result")
+            .console
+                %pre(ng-bind-html="script.script.result")
+                %a.close(href="#" ng-click="script.script.result = ''" )
+                    x
 
     .col-md-10
         .form-group
             %laber {{'script.source' | translate}}
-            .ace-editor.form-control(ng-model="script.script.source" rows="20" ui-ace="ace_options")
+            .ace-editor.form-control(ng-model="script.script.source" ui-ace="ace_options")

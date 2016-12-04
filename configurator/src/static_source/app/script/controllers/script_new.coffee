@@ -30,5 +30,13 @@ angular
       when 'lua'
         $scope.ace_options.mode = 'lua'
 
+  vm.exec =->
+    success =(data)->
+
+    error =(result)->
+      Message result.data.status, result.data.message
+
+    vm.script.$exec success, error
+
   vm
 ]

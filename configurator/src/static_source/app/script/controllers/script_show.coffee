@@ -6,19 +6,22 @@ angular
 
   success = (script) ->
     vm.script = script
-    $timeout ()->
-      $scope.getStatus().then (result)->
-        $scope.scripts = result.scripts
-
-        angular.forEach $scope.scripts, (value, id)->
-          if script.id == parseInt(id, 10)
-            vm.script.state = value
-    , 500
+    $scope.ace_options.readOnly = true
 
   error = ->
     $state.go 'dashboard.script.index'
 
   Script.show {id: $stateParams.id}, success, error
+
+  $scope.$watch 'script.script.lang', (lang)->
+    return if !lang || lang == ''
+    switch lang
+      when 'javascript'
+        $scope.ace_options.mode = 'javascript'
+      when 'coffeescript'
+        $scope.ace_options.mode = 'coffee'
+      when 'lua'
+        $scope.ace_options.mode = 'lua'
 
   vm
 ]
