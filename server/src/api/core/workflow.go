@@ -3,11 +3,12 @@ package core
 import (
 	"log"
 	"sync"
+	"github.com/astaxie/beego/orm"
 	cr "github.com/e154/cron"
 	r "../../lib/rpc"
 	"../models"
+	"../scripts"
 	"time"
-	"encoding/hex"
 	"fmt"
 )
 
@@ -182,10 +183,11 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 	// ------------------------------------------------
 	flow := wf.Flows[worker.Flow.Id]
 	message := &models.Message{}
-	command := []byte{}
-	if command, err = hex.DecodeString(worker.DeviceAction.Command); err != nil {
-		return
-	}
+	//command := []byte{}
+	////if command, err = hex.DecodeString(worker.DeviceAction.Command); err != nil {
+	//if command, err = hex.DecodeString("0300000005"); err != nil {
+	//	return
+	//}
 
 	// get device
 	// ------------------------------------------------
@@ -200,13 +202,14 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 		}
 
 		for _, child := range childs {
-			if child.Address == nil {
+			if child.Address == nil || child.Status != "enabled" {
 				continue
 			}
 
 			device := &models.Device{}
 			*device = *worker.DeviceAction.Device
 			device.Id = child.Id
+			device.Name = child.Name
 			device.Address = new(int)
 			*device.Address = *child.Address
 			devices = append(devices, device)
@@ -232,14 +235,14 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 	// ------------------------------------------------
 	for _, device := range devices {
 
-		var _command []byte
-		_command = append(_command, byte(*device.Address))
-		_command = append(_command, command...)
+		//var _command []byte
+		//_command = append(_command, byte(*device.Address))
+		//_command = append(_command, command...)
 
 		args := r.Request{
 			Baud: device.Baud,
 			Result: true,
-			Command: _command,
+			//Command: _command,
 			Device: device.Tty,
 			Line: "",
 			StopBits: int(device.StopBite),
@@ -254,32 +257,51 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
 		wf.Workers[worker.Id].Devices[device.Id] = device
 
-		// cron task
+		// get script
+		// ------------------------------------------------
+		o := orm.NewOrm()
+		if _, err = o.LoadRelated(worker.DeviceAction, "Script"); err != nil {
+			return
+		}
+
+		// add script
+		script, _ := scripts.New(worker.DeviceAction.Script)
+
+
+		script.PushStruct("device", device)
+		script.PushStruct("flow", flow)
+		script.PushStruct("node", node)
+		script.PushStruct("message", message)
+
+		script.PushFunction("modbus_send", func(command []byte) (result r.Result) {
+
+			args.Command = command
+			if err := node.ModbusSend(args, &result); err != nil {
+				result.Error = err.Error()
+			}
+
+			return
+		})
+
+		script.PushFunction("flow_new_message", func(v []byte) string {
+
+			message.Variable = v
+			if err = flow.NewMessage(message); err != nil {
+				log.Println("error" , err.Error())
+				return err.Error()
+			}
+
+			return ""
+		})
+
+		// set cron
+		// ------------------------------------------------
 		if wf.Workers[worker.Id].CronTasks == nil {
 			wf.Workers[worker.Id].CronTasks = make(map[int64]*cr.Task)
 		}
 
 		wf.Workers[worker.Id].CronTasks[device.Id] = cron.NewTask(worker.Time, func() {
-
-			args.Time = time.Now()
-
-			result := &r.Result{}
-			if !node.IsConnected() {
-				node.Errors++
-				return
-			}
-
-			if err := node.ModbusSend(args, result); err != nil {
-				log.Println(err.Error())
-				node.Errors++
-				// нет связи с нодой, или что-то случилось
-				return
-			}
-
-			message.Variable = result.Result
-			if err := flow.NewMessage(message); err != nil {
-				log.Println("error" , err.Error())
-			}
+			script.Do()
 		})
 
 	}

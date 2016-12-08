@@ -189,6 +189,14 @@ func (c *DeviceController) Put() {
 		return
 	}
 
+	if device.Device != nil {
+		o := orm.NewOrm()
+		if _, err := o.LoadRelated(&device, "Device"); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
 	core.CorePtr().UpdateWorkerFromDevice(&device)
 
 	c.ServeJSON()

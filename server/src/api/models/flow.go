@@ -294,3 +294,7 @@ func (f *Flow) GetWorkers() (workers []*Worker, err error) {
 	_, err = o.QueryTable(&Worker{}).Filter("flow_id", f.Id).All(&workers)
 	return
 }
+
+func NewMessage(flow *Flow, message *Message) error {
+	return flow.NewMessage(message)
+}

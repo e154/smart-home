@@ -5,7 +5,6 @@ import (
 	"github.com/e154/go-candyjs"
 	"strings"
 	"errors"
-	"gopkg.in/olebedev/go-duktape.v2"
 	"../models"
 )
 
@@ -26,18 +25,31 @@ func (j *Javascript) Init() (err error) {
 		return
 	}
 
-	// override default print function
-	j.ctx.Context.PushGlobalGoFunction("print", func(ctx *duktape.Context) int {
-		j.engine.Print(ctx.SafeToString(-1))
-		return 0
+	j.pushGlobalCandyJSObject()
+
+	return
+}
+
+func (j *Javascript) pushGlobalCandyJSObject() {
+
+	// print
+	j.ctx.PushGlobalGoFunction("print", func(a ...interface{}){
+		j.engine.Print(a...)
 	})
 
-	// device
+	// etc
 	j.PushStruct("device", &models.Device{})
 	j.PushStruct("flow", &models.Flow{})
 	j.PushStruct("node", &models.Node{})
-
-	return
+	j.ctx.PevalString(`SmartJs = {}`)
+	j.ctx.PevalString(`SmartJs.hex2arr = function (hexString) {
+   var result = [];
+   while (hexString.length >= 2) {
+       result.push(parseInt(hexString.substring(0, 2), 16));
+       hexString = hexString.substring(2, hexString.length);
+   }
+   return result;
+}`)
 }
 
 func (j *Javascript) Close() {
@@ -106,8 +118,6 @@ func (j *Javascript) Do() (result string, err error) {
 	}
 
 	result = j.ctx.SafeToString(-1)
-
-	j.ctx.Pop()
 
 	return
 }

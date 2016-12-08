@@ -128,7 +128,9 @@ func (b *Core) UpdateWorkerFromDevice(device *models.Device) (err error) {
 				workflow.UpdateWorker(worker.Model)
 				break
 				return
-			} else if worker.Model.DeviceAction.Device.Id == device.Device.Id {
+			}
+
+			if device.Device != nil && worker.Model.DeviceAction.Device.Id == device.Device.Id {
 				workflow.UpdateWorker(worker.Model)
 				break
 				return
@@ -290,11 +292,11 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 
 				if _, err := node.RpcDial(); err == nil {
 					node.Errors = 0
-					//log.Printf("Node dial tcp %s:%d ... ok",node.Ip, node.Port)
+					log.Printf("Node dial tcp %s:%d ... ok",node.Ip, node.Port)
 					connect = false
 					node.SetConnectStatus("connected")
 				} else {
-					//log.Printf("Node error %s", err.Error())
+					log.Printf("Node error %s", err.Error())
 					node.SetConnectStatus("error")
 				}
 			}

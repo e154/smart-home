@@ -3,6 +3,7 @@ package scripts
 import (
 	"../models"
 	"errors"
+	"fmt"
 	"github.com/astaxie/beego"
 )
 
@@ -42,7 +43,8 @@ func New(s *models.Script) (engine *Engine, err error) {
 type Engine struct {
 	model  *models.Script
 	script Magic
-	buf	[]string
+	buf    []string
+	IsRun  bool
 }
 
 func (s *Engine) Compile() error {
@@ -75,6 +77,11 @@ func (s *Engine) Close() {
 }
 
 func (s *Engine) Do() (res string, err error) {
+	if s.IsRun {
+		return
+	}
+
+	s.IsRun = true
 	var result string
 	result, err = s.script.Do()
 	for _, r := range s.buf {
@@ -83,11 +90,18 @@ func (s *Engine) Do() (res string, err error) {
 
 	res += result + "\n"
 
+	// reset buffer
+	s.buf = []string{}
+	s.IsRun = false
+
 	return
 }
 
-func (s *Engine) Print(str string) {
-	//TODO remove
-	beego.Debug(str)
-	s.buf = append(s.buf, str)
+func (s *Engine) Print(v ...interface{}) {
+	beego.Debug(v...)
+	s.buf = append(s.buf, fmt.Sprint(v...))
+}
+
+func (s *Engine) Get() Magic {
+	return s.script
 }

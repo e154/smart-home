@@ -7,6 +7,7 @@ import (
 	"../lib/rpc"
 	"fmt"
 	"errors"
+	"encoding/hex"
 )
 
 const (
@@ -55,6 +56,7 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 			if cache_exist {
 				conn.Dev = cache_ptr.Get(cache_key).(string)
 				result.Result, err, result.ErrorCode = m.exec(conn, request.Command)
+				result.ResultStr = hex.EncodeToString(result.Result)
 				if err == nil {
 					result.Device = conn.Dev
 					return nil
@@ -65,6 +67,7 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 				for _, device := range devices {
 					conn.Dev = device
 					result.Result, err, result.ErrorCode = m.exec(conn, request.Command)
+					result.ResultStr = hex.EncodeToString(result.Result)
 					if err == nil {
 						result.Device = device
 						return nil

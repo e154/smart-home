@@ -240,10 +240,22 @@ func (n *Node) GetVersion() (version string, err error) {
 }
 
 func (n *Node) ModbusSend(args interface{}, reply interface{}) error {
+
 	if n.rpcClient == nil {
 		return errors.New("rpc.client is nil")
 	}
-	return n.rpcClient.Call("Modbus.Send", args, reply)
+
+	if n.netConn == nil {
+		n.Errors++
+		return errors.New("node not connected")
+	}
+
+	if err := n.rpcClient.Call("Modbus.Send", args, reply); err != nil {
+		n.Errors++
+		return err
+	}
+
+	return nil
 }
 
 //TODO remove
@@ -265,4 +277,8 @@ func (n *Node) GetConnectStatus() string {
 
 func (n *Node) SetConnectStatus(st string) {
 	n.connStatus = st
+}
+
+func ModbusSend(node *Node, args interface{}, reply interface{}) error {
+	return node.ModbusSend(args, reply)
 }

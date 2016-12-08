@@ -20,9 +20,10 @@ type Request struct {
 }
 
 type Result struct {
-	Command		[]byte		`json: "command"`
-	Device		string		`json: "device"`
-	Result		[]byte		`json: "result"`
-	Error		string		`json: "error"`
-	ErrorCode	string		`json: "error_code"`
+	Command   []byte		`json: "command"`
+	Device    string		`json: "device"`
+	Result    []byte		`json: "result"`
+	ResultStr string		`json: "str_result"`
+	Error     string		`json: "error"`
+	ErrorCode string		`json: "error_code"`
 }
