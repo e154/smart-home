@@ -93,7 +93,11 @@
     "update_at": "Дата обновления",
     "workflow": "Рабочая группа",
     "remove_worker": "Удалить воркер",
-    "add_worker": "Добавить воркер"
+    "add_worker": "Добавить воркер",
+    "element": {
+      "title": "Название",
+      "description": "Описание"
+    }
   },
   "worker": {
     "action_name": "Действие",

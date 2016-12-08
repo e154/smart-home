@@ -5,6 +5,8 @@ angular
 ($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings, log) ->
   vm = this
 
+  $scope.selected = []
+
   # settings
   #------------------------------------------------------------------------------
   settings =
@@ -98,7 +100,7 @@ angular
 
   # redactor
   #------------------------------------------------------------------------------
-  redactor = new bpmnScheme($('#scheme1'))
+  $scope.redactor = redactor = new bpmnScheme($('#scheme1'))
   redactor.setSettings(settings)
 
   # prepare scheme
@@ -119,6 +121,23 @@ angular
     $scope.$apply(
       $scope.callback
     )
+
+  # select
+  #------------------------------------------------------------------------------
+  redactor.scope.$watch 'selected', (objects)=>
+    log.debug objects
+    return if !objects
+    $scope.selected = []
+    for object in objects
+      angular.forEach $scope.redactor.scope.intScheme.objects, (obj, key)->
+        if key == object.id
+          log.debug 'selected object:', obj
+          $scope.selected.push obj
+
+    $timeout ()->
+      $scope.$apply()
+
+  , true
 
   vm
 ]

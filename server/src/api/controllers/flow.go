@@ -304,6 +304,7 @@ func (c *FlowController) UpdateRedactor() {
 		fl := &models.FlowElement{
 			Uuid: element.Id,
 			Name: element.Title,
+			Description: element.Description,
 			GraphSettings: fmt.Sprintf("{\"position\":%s}", j),
 			Status: element.Status,
 			FlowId: flow.Id,
@@ -475,6 +476,8 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 		object := &models.RedactorObject{
 			Id: el.Uuid,
 			Title: el.Name,
+			Description: el.Description,
+			PrototypeType: el.PrototypeType,
 		}
 
 		switch el.PrototypeType {

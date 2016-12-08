@@ -117,10 +117,7 @@ angular
         @parentScope.instance.off @element
         @parentScope.instance.on @element, 'click', (e)=>
 
-          shift = false
-          if key.getPressedKeyCodes().indexOf(16) > -1
-            shift = true
-
+          shift = key.getPressedKeyCodes().indexOf(16) > -1
           @parentScope.selected = [] if !shift
           @parentScope.$apply(
             @parentScope.selected.push({id: @data.id, type: 'shape'})

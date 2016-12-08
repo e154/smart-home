@@ -15,6 +15,7 @@ import (
 type FlowElement struct {
 	Uuid   		string  		`orm:"pk" json:"uuid"`
 	Name		string			`orm:"" json:"name"`
+	Description	string			`orm:"" json:"description"`
 	GraphSettings	string			`orm:"column(graph_settings)" json:"graph_settings"`
 	Status		string			`orm:"" json:"status"`
 	FlowId		int64			`orm:"column(flow_id)" json:"flow_id"`
