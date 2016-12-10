@@ -14,18 +14,18 @@ import (
 )
 
 type Flow struct {
-	Id           int64  			`orm:"pk;auto;column(id)" json:"id"`
-	Name         string			`orm:"" json:"name"`
-	Description  string			`orm:"" json:"description"`
-	Status       string			`orm:"" json:"status"`
-	Workflow     *Workflow			`orm:"rel(fk)" json:"workflow"`
-	Created_at   time.Time			`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at    time.Time			`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
-	Connections  []*Connection		`orm:"-" json:"connections"`
-	FlowElements []*FlowElement		`orm:"-" json:"flow_elements"`
-	        sync.RWMutex		`orm:"-" json:"-"`
-	Workers      []*Worker			`orm:"-" json:"workers"`
-	cursor       map[string]*FlowElement 	`orm:"-" json:"-"`
+	Id          	int64  				`orm:"pk;auto;column(id)" json:"id"`
+	Name        	string				`orm:"" json:"name"`
+	Description 	string				`orm:"" json:"description"`
+	Status      	string				`orm:"" json:"status"`
+	Workflow    	*Workflow			`orm:"rel(fk)" json:"workflow"`
+	Created_at  	time.Time			`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at   	time.Time			`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	Connections 	[]*Connection			`orm:"-" json:"connections"`
+	FlowElements	[]*FlowElement			`orm:"-" json:"flow_elements"`
+	Workers     	[]*Worker			`orm:"-" json:"workers"`
+	mutex       	sync.RWMutex			`orm:"-" json:"-"`
+	cursor      	map[string]*FlowElement		`orm:"-" json:"-"`
 }
 
 func (m *Flow) TableName() string {
@@ -303,8 +303,8 @@ func NewMessage(flow *Flow, message *Message) error {
 }
 
 func (f *Flow) PushCursor(cursor *FlowElement) (uuid string) {
-	f.Lock()
-	defer f.Unlock()
+	f.mutex.Lock()
+	defer f.mutex.Unlock()
 
 	if f.cursor == nil {
 		f.cursor = make(map[string]*FlowElement)
@@ -317,8 +317,8 @@ func (f *Flow) PushCursor(cursor *FlowElement) (uuid string) {
 }
 
 func (f Flow) PopCursor(uuid string) {
-	f.Lock()
-	defer f.Unlock()
+	f.mutex.Lock()
+	defer f.mutex.Unlock()
 
 	if f.cursor == nil {
 		f.cursor = make(map[string]*FlowElement)

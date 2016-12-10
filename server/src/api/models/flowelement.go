@@ -218,7 +218,7 @@ func (m *FlowElement) Run(message *Message) (err error) {
 
 	var elements []*FlowElement
 	for _, conn := range m.Flow.Connections {
-		if conn.ElementFrom != m.Uuid {
+		if conn.ElementFrom != m.Uuid || conn.ElementTo == m.Uuid {
 			continue
 		}
 
