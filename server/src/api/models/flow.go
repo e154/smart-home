@@ -321,11 +321,11 @@ func (f Flow) PopCursor(uuid string) {
 	defer f.Unlock()
 
 	if f.cursor == nil {
-		//TODO fix panic!!!
 		f.cursor = make(map[string]*FlowElement)
 	}
 
 	if _, ok := f.cursor[uuid]; ok {
+		//TODO fix panic!!!
 		delete(f.cursor, uuid)
 	}
 }
