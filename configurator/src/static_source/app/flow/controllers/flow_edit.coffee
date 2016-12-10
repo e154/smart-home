@@ -32,7 +32,7 @@ angular
 
       # scripts
       angular.forEach $scope.flow.objects, (object)->
-        $scope.elementScripts[object.id] = object.script
+        $scope.elementScripts[object.id] = object.script if object.script.id
 
       $timeout ()->
         $scope.getStatus().then (result)->
@@ -74,8 +74,7 @@ angular
 
     # scripts
     angular.forEach $scope.flow.objects, (object)->
-      if $scope.elementScripts.hasOwnProperty(object.id)
-        object.script = $scope.elementScripts[object.id]
+      object.script = $scope.elementScripts[object.id] || null
 
     $scope.flow.connectors = scheme.connectors || []
     Flow.update_redactor {id: $stateParams.id}, $scope.flow, success, error

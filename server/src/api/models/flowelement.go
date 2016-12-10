@@ -197,14 +197,9 @@ func (m *FlowElement) Before(message *Message) error {
 	if m.Flow == nil {
 		return errors.New("flow is nil ...")
 	}
-	// mutex
-	//----------------------
-	m.mutex.Lock()
-	m.Flow.Cursor  = append(m.Flow.Cursor, m)
-	m.mutex.Unlock()
 
 	m.status = DONE
-	return  m.Prototype.Before(message, m.Flow)
+	return m.Prototype.Before(message, m.Flow)
 }
 
 // run internal process
@@ -215,13 +210,11 @@ func (m *FlowElement) Run(message *Message) (err error) {
 		return errors.New("flow is nil ...")
 	}
 
+	cursor := m.Flow.PushCursor(m)
 	err = m.Before(message)
 	err = m.Prototype.Run(message, m.Flow)
 	err = m.After(message)
-
-	if err != nil {
-		return
-	}
+	m.Flow.PopCursor(cursor)
 
 	var elements []*FlowElement
 	for _, conn := range m.Flow.Connections {
@@ -233,11 +226,7 @@ func (m *FlowElement) Run(message *Message) (err error) {
 	}
 
 	for _, element := range elements {
-		if len(elements) > 1 {
-			go element.Run(message)
-		} else {
-			element.Run(message)
-		}
+		go element.Run(message)
 	}
 
 	m.status = ENDED
@@ -255,22 +244,6 @@ func (m *FlowElement) After(message *Message) error {
 	if m.Flow == nil {
 		return errors.New("flow is nil ...")
 	}
-
-	// mutex
-	//----------------------
-	m.mutex.Lock()
-	if len(m.Flow.Cursor) > 1 {
-		for k, f := range m.Flow.Cursor {
-			if f != m {
-				continue
-			}
-			//TODO fix panic!!!
-			m.Flow.Cursor = append(m.Flow.Cursor[:k], m.Flow.Cursor[k+1:]...)
-		}
-	} else {
-		m.Flow.Cursor = []*FlowElement{}
-	}
-	m.mutex.Unlock()
 
 	return  m.Prototype.After(message, m.Flow)
 }

@@ -6,23 +6,26 @@ import (
 	"reflect"
 	"strings"
 	"time"
+	"sync"
 
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
+	UUID "../../lib/uuid"
 )
 
 type Flow struct {
-	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Name		string		`orm:"" json:"name"`
-	Description	string		`orm:"" json:"description"`
-	Status		string		`orm:"" json:"status"`
-	Workflow	*Workflow	`orm:"rel(fk)" json:"workflow"`
-	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
-	Connections	[]*Connection	`orm:"-" json:"connections"`
-	FlowElements	[]*FlowElement	`orm:"-" json:"flow_elements"`
-	Cursor		[]*FlowElement	`orm:"-" json:"-"`
-	Workers		[]*Worker	`orm:"-" json:"workers"`
+	Id           int64  			`orm:"pk;auto;column(id)" json:"id"`
+	Name         string			`orm:"" json:"name"`
+	Description  string			`orm:"" json:"description"`
+	Status       string			`orm:"" json:"status"`
+	Workflow     *Workflow			`orm:"rel(fk)" json:"workflow"`
+	Created_at   time.Time			`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at    time.Time			`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	Connections  []*Connection		`orm:"-" json:"connections"`
+	FlowElements []*FlowElement		`orm:"-" json:"flow_elements"`
+	        sync.RWMutex		`orm:"-" json:"-"`
+	Workers      []*Worker			`orm:"-" json:"workers"`
+	cursor       map[string]*FlowElement 	`orm:"-" json:"-"`
 }
 
 func (m *Flow) TableName() string {
@@ -214,9 +217,6 @@ func GetAllEnabledFlowsByWf(wf *Workflow) (flows []*Flow, err error) {
 
 func FlowGetRelatedDate(flow *Flow) (err error) {
 
-	//_, err = o.LoadRelated(f, "Connections")
-	//_, err = o.LoadRelated(f, "FlowElements")
-
 	if flow.FlowElements, err = GetFlowElementsByFlow(flow); err != nil {
 		return
 	}
@@ -246,6 +246,9 @@ func FlowGetRelatedDate(flow *Flow) (err error) {
 			break
 		case "Task":
 			element.Prototype = &Task{}
+			break
+		case "Gateway":
+			element.Prototype = &Gateway{}
 			break
 		}
 	}
@@ -297,4 +300,32 @@ func (f *Flow) GetWorkers() (workers []*Worker, err error) {
 
 func NewMessage(flow *Flow, message *Message) error {
 	return flow.NewMessage(message)
+}
+
+func (f *Flow) PushCursor(cursor *FlowElement) (uuid string) {
+	f.Lock()
+	defer f.Unlock()
+
+	if f.cursor == nil {
+		f.cursor = make(map[string]*FlowElement)
+	}
+
+	uuid = UUID.NewV4().String()
+	f.cursor[uuid] = cursor
+
+	return
+}
+
+func (f Flow) PopCursor(uuid string) {
+	f.Lock()
+	defer f.Unlock()
+
+	if f.cursor == nil {
+		//TODO fix panic!!!
+		f.cursor = make(map[string]*FlowElement)
+	}
+
+	if _, ok := f.cursor[uuid]; ok {
+		delete(f.cursor, uuid)
+	}
 }

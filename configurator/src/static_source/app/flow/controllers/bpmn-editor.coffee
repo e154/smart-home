@@ -118,8 +118,7 @@ angular
         if key == object.id
           $scope.selected.push obj
           if !$scope.elementScripts.hasOwnProperty(obj.data.id)
-            $scope.elementScripts[obj.data.id] =
-              id: null
+            $scope.elementScripts[obj.data.id] = null
 
     $timeout ()->
       $scope.$apply()

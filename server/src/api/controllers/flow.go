@@ -323,6 +323,8 @@ func (c *FlowController) UpdateRedactor() {
 			}
 		case "task":
 			fl.PrototypeType = "Task"
+		case "gateway":
+			fl.PrototypeType = "Gateway"
 		default:
 			fl.PrototypeType = "default"
 		}
@@ -494,6 +496,9 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 			object.Type.End = map[string]interface{}{"simply": &map[string]interface{}{"top_level": true}}
 		case "Task":
 			object.Type.Name = "task"
+		case "Gateway":
+			object.Type.Name = "gateway"
+			object.Type.Start = map[int64]interface{}{0: &map[int64]interface{}{0: true}}
 		default:
 
 		}
