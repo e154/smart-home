@@ -2,15 +2,16 @@ angular
 .module('appControllers')
 .controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow', '$timeout'
 'log', 'Notify', 'Worker', '$http'
-($scope, Message, $stateParams, Flow, $state, Workflow, $timeout, log, Notify, Worker
-$http) ->
+($scope, Message, $stateParams, Flow, $state, Workflow, $timeout, log, Notify, Worker, $http) ->
   vm = this
 
   # vars
   $scope.callback = {}
   $scope.workflows = []
   $scope.flow = {}
+  $scope.elementScripts = {}
 
+  #------------------------------------------------------------------------------
   # workflow list
   #------------------------------------------------------------------------------
   getWorkflow =->
@@ -20,13 +21,18 @@ $http) ->
       Message result.data.status, result.data.message
     Workflow.all {}, success, error
 
-  # get flow
+  #------------------------------------------------------------------------------
+  # flow
   #------------------------------------------------------------------------------
   getFlow =->
     success = (flow) ->
       $scope.flow = flow
       if !$scope.flow?.workers
         $scope.flow.workers = []
+
+      # scripts
+      angular.forEach $scope.flow.objects, (object)->
+        $scope.elementScripts[object.id] = object.script
 
       $timeout ()->
         $scope.getStatus().then (result)->
@@ -43,47 +49,8 @@ $http) ->
       if confirm('точно удалить процесс?')
         remove()
 
-  # get worker
   #------------------------------------------------------------------------------
-  $scope.addNewWorker =->
-    worker = new Worker({
-      name: 'Действие'
-      time: '* * * * * *'
-      status: 'enabled'
-      flow:
-        id: parseInt($stateParams.id, 10)
-      device_action: null
-      workflow:
-        id: $scope.flow.workflow.id
-    })
-
-    $scope.flow.workers.push worker
-
-  $scope.removeWorker =(worker, $index)->
-    if !worker.id
-      $scope.flow.workers.splice($index, 1)
-      return
-
-    for i in [0...$scope.flow.workers.length]
-      if $scope.flow.workers[i].id == worker.id
-        $scope.flow.workers.splice(i, 1)
-        break
-
-  # select2
-  # ------------------
-  $scope.actions = []
-  $scope.refreshActions = (query)->
-    $http(
-      method: 'GET'
-      url: window.server_url + "/api/v1/device_action/search"
-      params:
-        query: query
-        limit: 5
-        offset: 0
-      ).then (response)->
-        $scope.actions = response.data.actions
-
-  # buttons remove|submit
+  # remove
   #------------------------------------------------------------------------------
   remove =->
     success =->
@@ -92,6 +59,9 @@ $http) ->
       Message result.data.status, result.data.message
     $scope.flow.$delete success, error
 
+  #------------------------------------------------------------------------------
+  # save
+  #------------------------------------------------------------------------------
   $scope.submit =->
     success =(data)->
       Notify 'success', 'Схема успешно сохранена', 3
@@ -101,9 +71,22 @@ $http) ->
 
     scheme = $scope.callback.save()
     $scope.flow.objects = scheme.objects || []
+
+    # scripts
+    angular.forEach $scope.flow.objects, (object)->
+      if $scope.elementScripts.hasOwnProperty(object.id)
+        object.script = $scope.elementScripts[object.id]
+
     $scope.flow.connectors = scheme.connectors || []
     Flow.update_redactor {id: $stateParams.id}, $scope.flow, success, error
 
+  # watcher
+  #------------------------------------------------------------------------------
+  $scope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams, options)->
+    if !confirm('Вы точно хотите покинут редактирование процесса?')
+      event.preventDefault()
+
+  #------------------------------------------------------------------------------
   # init
   #------------------------------------------------------------------------------
   getWorkflow()

@@ -44,6 +44,7 @@ type RedactorObject struct {
 	Title		string				`json:"title"`
 	Description	string                  	`json:"description"`
 	PrototypeType	string                          `json:"prototype_type"`
+	Script		*Script 			`json:"script"`
 }
 
 type RedactorFlow struct {

@@ -310,6 +310,10 @@ func (c *FlowController) UpdateRedactor() {
 			FlowId: flow.Id,
 		}
 
+		if element.Script != nil {
+			fl.Script = element.Script
+		}
+
 		switch element.Type.Name {
 		case "event":
 			if element.Type.Start != nil {
@@ -478,6 +482,7 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 			Title: el.Name,
 			Description: el.Description,
 			PrototypeType: el.PrototypeType,
+			Script: el.Script,
 		}
 
 		switch el.PrototypeType {

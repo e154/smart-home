@@ -14,6 +14,7 @@ import (
 
 type FlowElement struct {
 	Uuid   		string  		`orm:"pk" json:"uuid"`
+	Script		*Script			`orm:"rel(fk);null" json:"script"`
 	Name		string			`orm:"" json:"name"`
 	Description	string			`orm:"" json:"description"`
 	GraphSettings	string			`orm:"column(graph_settings)" json:"graph_settings"`
@@ -184,7 +185,7 @@ func DeleteFlowElement(uuid string) (err error) {
 
 func GetFlowElementsByFlow(flow *Flow) (elements []*FlowElement, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(&FlowElement{}).Filter("flow_id", flow.Id).All(&elements)
+	_, err = o.QueryTable(&FlowElement{}).Filter("flow_id", flow.Id).RelatedSel().All(&elements)
 	return
 }
 

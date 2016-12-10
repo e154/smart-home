@@ -26,6 +26,8 @@
     %ui-select-choices(repeat="item in actions | filter: $select.search" refresh="refreshActions($select.search)" refresh-delay="0")
       %div(ng-bind-html="item.name | highlight: $select.search")
       %small(ng-bind-html="item.device.name | highlight: $select.search")
+    %ui-select-no-choice
+      {{'No data' | translate}}
 
 .form-group
   %a.btn.btn-default.full-width(ng-click="removeWorker(worker, $index)")

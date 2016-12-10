@@ -18,6 +18,8 @@
         (
         %small.text-muted(ng-bind-html="item.lang | highlight: $select.search")
         )
+    %ui-select-no-choice
+      {{'No data' | translate}}
 
 
 .form-group

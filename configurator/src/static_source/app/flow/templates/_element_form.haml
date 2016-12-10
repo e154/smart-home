@@ -1,7 +1,37 @@
-.form-group
-  %laber {{'flow.element.title' | translate}}
-  %input.form-control(ng-model="element.data.title")
+-# selected object options
+.row
+  .col-md-12(ng-repeat="element in selected" )
+    .form-group.element-type-name(ng-if="element.data.type.name")
+      %strong
+        {{element.data.type.name}}
 
-.form-group
-  %laber {{'flow.element.description' | translate}}
-  %textarea.form-control(ng-model="element.data.description" rows="2" )
+    .form-group
+      %laber {{'flow.element.title' | translate}}
+      %input.form-control(ng-model="element.data.title")
+
+    -#
+    -#  select2
+    -#
+    .form-group
+      %laber
+        {{'flow.element.script' | translate}}
+      %ui-select(ng-model="elementScripts[element.data.id]" theme="bootstrap")
+        %ui-select-match(placeholder="{{'device.action.script' | translate}}" allow-clear="true")
+          %div(ng-if="elementScripts[element.data.id].name")
+            {{elementScripts[element.data.id].name}} ({{elementScripts[element.data.id].lang}})
+        %ui-select-choices(repeat="item in scripts | filter: $select.search" refresh="refreshScripts($select.search)" refresh-delay="0")
+          %div
+            %span(ng-bind-html="item.name | highlight: $select.search")
+            (
+            %small.text-muted(ng-bind-html="item.lang | highlight: $select.search")
+            )
+        %ui-select-no-choice
+          {{'No data' | translate}}
+
+    .form-group
+      %laber {{'flow.element.description' | translate}}
+      %textarea.form-control(ng-model="element.data.description" rows="2" )
+
+    .form-group
+      %a.btn.btn-default.full-width.cropping(ng-click="removeElement(element, $index)" href="#")
+        {{'flow.element.remove' | translate}}

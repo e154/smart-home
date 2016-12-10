@@ -14,6 +14,11 @@
   "Add new": "Добавить",
   "Main Menu": "Главное меню",
   "Dashboard": "Панель управления",
+  "Create start event": "Добавить событие старта процесса",
+  "Create end event": "Добавить событие окончание процесса",
+  "Create gateway": "Добавить логический оператор",
+  "Create task": "Добавить задачу",
+  "No data": "Нет данных",
   "node": {
     "name": "Название",
     "description": "Описание",
@@ -94,9 +99,17 @@
     "workflow": "Рабочая группа",
     "remove_worker": "Удалить воркер",
     "add_worker": "Добавить воркер",
+    "elements": "Выделенные элементы",
     "element": {
       "title": "Название",
-      "description": "Описание"
+      "script": "Скрипт",
+      "group": "Группа",
+      "remove": "Удалить элемени схемы",
+      "description": "Описание",
+      "type": {
+        "event": "Событие",
+        "task": "Задача"
+      }
     }
   },
   "worker": {

@@ -6,10 +6,13 @@
           &nbsp;
       {{'flow.edit' | translate}} "{{flow.name}}"
 
-.row
+.row(ng-controller="bpmnEditorCtrl" callback="callback")
   .col-md-2
     .dark(accordion-v1="flow-description" title="{{'flow.description' | translate}}")
       %div(ng-include="'/flow/templates/_flow_form.html'")
+
+    .dark(accordion-v1="flow-elements" title="{{'flow.elements' | translate}}" ng-if="selected.length" expand=true)
+      %div(ng-include="'/flow/templates/_element_form.html'")
 
     .dark(accordion-v1="flow-worker" title="{{'flow.worker' | translate}} ({{worker.name}})" ng-repeat="worker in flow.workers")
       %div(ng-include="'/flow/templates/_worker_form.html'")
@@ -19,16 +22,11 @@
         .fa.fa-plus &nbsp;
         {{'flow.add_worker' | translate}}
 
-  .col-md-10(ng-controller="bpmnEditorCtrl" callback="callback")
+  .col-md-10
     -# ---------------------------------------------
     -# redactor
     -# ---------------------------------------------
     #scheme1.scheme(style="height:400px;")
-
-    -# selected object options
-    .row
-      .col-md-6.col-sm-4.col-xs-6(ng-repeat="element in selected" ng-include="'/flow/templates/_element_form.html'")
-
 
 .row
   .col-md-12
@@ -36,6 +34,6 @@
       %a.btn.btn-danger(href="" role="button" ng-click="remove()")
         {{'Delete' | translate}}
       %a.btn.btn-default(href="" role="button" ui-sref="dashboard.flow.show({id:flow.id})")
-        {{'Cancel' | translate}}
+        {{'Close' | translate}}
       %a.btn.btn-primary(href="" role="button" ng-click="submit()")
         {{'Update' | translate}}

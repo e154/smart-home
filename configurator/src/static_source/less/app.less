@@ -8,6 +8,7 @@
 @import "bpmn";
 @import "accordion";
 @import "ace-editor";
+@import "icons";
 
 html,
 body {
@@ -15,6 +16,8 @@ body {
   min-height: 100% !important;
   font-size: 13px;
 }
+
+textarea { resize:vertical }
 
 #main-content {
   height: auto;
@@ -130,5 +133,24 @@ body {
     overflow: hidden;
     white-space: pre-line;
 
+  }
+}
+
+/* ------------------------ element ----------------------------*/
+.element-type-name {
+  padding: 10px 0 10px 15px;
+  background-color: #bac1ca;
+  color: #4e4e4e;
+}
+
+.cropping {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ui-select-match-text {
+  div {
+    .cropping
   }
 }

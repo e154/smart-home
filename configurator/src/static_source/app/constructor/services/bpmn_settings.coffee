@@ -310,7 +310,7 @@ angular
   keyboardBinds =
     'delete':
       name: 'delete'
-      callback: 'removeObject'
+      callback: 'removeSelected'
 
   {
     theme: themeSettings

@@ -5,9 +5,10 @@ angular
   scope:
     accordionV1: '=accordionV1'
     title: '@'
+    expand: '@'
   transclude: true
   replace: true
-  template: '<div class="panel panel-default collapsed">
+  template: '<div class="panel panel-default" ng-class="{collapsed : !expand}">
   <div class="panel-heading" ng-click="callback($event)">{{title}} <span class="icon-triangle">◀</span></div>
   <div class="panel-body" ng-transclude></div>
 </div>'

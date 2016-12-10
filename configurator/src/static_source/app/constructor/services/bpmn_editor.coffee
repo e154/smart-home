@@ -108,25 +108,31 @@ angular
             # добавляем объект в контейнер
             object.appendTo(@container, @scope.settings.point)
 
-      removeObject: (scope)=>
+      removeObject: (selected)=>
+        return if !selected
+
+        switch selected?.type
+          when "connector"
+            @scope.instance.detach(selected.object)
+          when "shape"
+            #TODO first remove child objects
+            index = 0
+            for key, object of @scope.intScheme.objects
+              if object.data.id == selected.id
+                log.debug 'found', selected
+                object.remove()
+                delete @scope.intScheme.objects[key]
+                break
+              index++
+          else
+            log.error 'unknown object type'
+
+      removeSelected: (scope)=>
         if !scope || !scope.selected
           return
 
         angular.forEach scope.selected, (selected)=>
-          switch selected?.type
-            when "connector"
-              @scope.instance.detach(selected.object)
-            when "shape"
-              #TODO first remove child objects
-              index = 0
-              for key, object of scope.intScheme.objects
-                if object.data.id == selected.id
-                  object.remove()
-                  delete scope.intScheme.objects[key]
-                  break
-                index++
-            else
-              log.error 'unknown object type'
+          @removeObject(selected)
 
         scope.selected = []
 
@@ -261,6 +267,9 @@ angular
             if start && end
               connectors.push angular.copy(con)
               break
+
+        $timeout ()=>
+          @scope.$apply()
 
         @scope.extScheme = {
           objects: objects

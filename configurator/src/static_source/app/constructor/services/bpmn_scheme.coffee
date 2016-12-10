@@ -292,6 +292,9 @@ angular
 
         @wrapper.on 'mousedown', (e)=>
           log.debug '@mousedown'
+          @scope.selected = []
+          $timeout ()=>
+            @scope.$apply()
 
       destroy: ()->
         log.debug 'destroy'
