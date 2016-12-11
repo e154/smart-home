@@ -428,6 +428,8 @@ func (c *FlowController) UpdateRedactor() {
 	}
 
 	for _, worker := range flow.Workers {
+		worker.Workflow = &models.Workflow{Id:flow.Workflow.Id}
+		worker.Flow = newFlow
 		if worker.Id == 0 {
 			if _, err = models.AddWorker(worker); err != nil {
 				c.ErrHan(403, err.Error())

@@ -6,11 +6,9 @@ import (
 	"reflect"
 	"strings"
 	"time"
-	"sync"
-
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
-	UUID "../../lib/uuid"
+
 )
 
 type Flow struct {
@@ -24,8 +22,6 @@ type Flow struct {
 	Connections 	[]*Connection			`orm:"-" json:"connections"`
 	FlowElements	[]*FlowElement			`orm:"-" json:"flow_elements"`
 	Workers     	[]*Worker			`orm:"-" json:"workers"`
-	mutex       	sync.RWMutex			`orm:"-" json:"-"`
-	cursor      	map[string]*FlowElement		`orm:"-" json:"-"`
 }
 
 func (m *Flow) TableName() string {
@@ -256,76 +252,18 @@ func FlowGetRelatedDate(flow *Flow) (err error) {
 	return
 }
 
-//---------------------------------------------------
-// Workflow
-//---------------------------------------------------
 func (f *Flow) AddConnection(connection *Connection) {
 	f.Connections = append(f.Connections, connection)
 }
 
-func (f *Flow) AddElement(flow_element *FlowElement) {
-	flow_element.Flow = f
-	f.FlowElements = append(f.FlowElements, flow_element)
-}
-
-func (f *Flow) NewMessage(message *Message) (err error) {
-
-	var exist bool
-	for _, element := range f.FlowElements {
-		if element.Prototype == nil {
-			continue
-		}
-
-		if element.PrototypeType != "MessageHandler" {
-			continue
-		}
-
-		element.Run(message)
-
-		exist = true
-	}
-
-	if !exist {
-		err = errors.New("Message handler not found")
-	}
-
-	return
-}
+//TODO remove
+//func (f *Flow) AddElement(flow_element *FlowElement) {
+//	flow_element.Flow = f
+//	f.FlowElements = append(f.FlowElements, flow_element)
+//}
 
 func (f *Flow) GetWorkers() (workers []*Worker, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(&Worker{}).Filter("flow_id", f.Id).All(&workers)
 	return
-}
-
-func NewMessage(flow *Flow, message *Message) error {
-	return flow.NewMessage(message)
-}
-
-func (f *Flow) PushCursor(cursor *FlowElement) (uuid string) {
-	f.mutex.Lock()
-	defer f.mutex.Unlock()
-
-	if f.cursor == nil {
-		f.cursor = make(map[string]*FlowElement)
-	}
-
-	uuid = UUID.NewV4().String()
-	f.cursor[uuid] = cursor
-
-	return
-}
-
-func (f Flow) PopCursor(uuid string) {
-	f.mutex.Lock()
-	defer f.mutex.Unlock()
-
-	if f.cursor == nil {
-		f.cursor = make(map[string]*FlowElement)
-	}
-
-	if _, ok := f.cursor[uuid]; ok {
-		//TODO fix panic!!!
-		delete(f.cursor, uuid)
-	}
 }

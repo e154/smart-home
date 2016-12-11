@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'flowNewCtrl', ['$scope', 'Notify', 'Flow', '$state', 'Message', 'Workflow'
-($scope, Notify, Flow, $state, Message, Workflow) ->
+.controller 'flowNewCtrl', ['$scope', 'Notify', 'Flow', '$state', 'Message', 'Workflow', '$timeout'
+($scope, Notify, Flow, $state, Message, Workflow, $timeout) ->
   vm = this
 
   $scope.flow = new Flow({
@@ -20,10 +20,10 @@ angular
 
   $scope.submit =->
     success =(data)->
-      Notify 'success', 'Скрипт успешно создан', 3
+      Notify 'success', 'Процесс успешно создан', 1
       $timeout ()->
         $state.go("dashboard.flow.show", {id: data.id})
-      , 2000
+      , 1000
 
     error =(result)->
       Message result.data.status, result.data.message

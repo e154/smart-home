@@ -18,10 +18,23 @@ type Worker struct {
 	Devices   map[int64]*models.Device
 }
 
+func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow *Workflow) {
+
+	workflow = &Workflow{
+		model: model,
+		Nodes: nodes,
+		Flows: make(map[int64]*Flow),
+		Workers: make(map[int64]*Worker),
+		mutex: &sync.Mutex{},
+	}
+
+	return
+}
+
 type Workflow struct {
 	model   	*models.Workflow
 	mutex   	*sync.Mutex
-	Flows   	map[int64]*models.Flow
+	Flows   	map[int64]*Flow
 	Workers 	map[int64]*Worker
 	Nodes   	map[int64]*models.Node
 }
@@ -42,7 +55,7 @@ func (wf *Workflow) Run() (err error) {
 func (wf *Workflow) Stop() (err error) {
 
 	for _, flow := range wf.Flows {
-		wf.RemoveFlow(flow)
+		wf.RemoveFlow(flow.model)
 	}
 
 	//TODO check!!!
@@ -69,8 +82,6 @@ func (wf *Workflow) Restart() (err error) {
 func (wf *Workflow) InitFlows() (err error) {
 
 	var flows []*models.Flow
-	wf.Flows = make(map[int64]*models.Flow)
-
 	if flows, err = wf.model.GetAllEnabledFlows(); err != nil {
 		return
 	}
@@ -102,7 +113,7 @@ func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
 		return
 	}
 
-	wf.Flows[flow.Id] = flow
+	wf.Flows[flow.Id] = NewFlow(flow, wf)
 
 	return
 }
@@ -137,6 +148,7 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 		wf.RemoveWorker(worker)
 	}
 
+	wf.Flows[flow.Id].Close()
 	delete(wf.Flows, flow.Id)
 
 	return
@@ -269,7 +281,7 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
 
 		script.PushStruct("device", device)
-		script.PushStruct("flow", flow)
+		script.PushStruct("flow", flow.model)
 		script.PushStruct("node", node)
 		script.PushStruct("message", message)
 

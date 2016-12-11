@@ -11,6 +11,12 @@ angular
   $scope.flow = {}
   $scope.elementScripts = {}
 
+  # watcher
+  #------------------------------------------------------------------------------
+  instance = $scope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams, options)->
+    if !confirm('Вы точно хотите покинут редактирование процесса?')
+      event.preventDefault()
+
   #------------------------------------------------------------------------------
   # workflow list
   #------------------------------------------------------------------------------
@@ -32,7 +38,7 @@ angular
 
       # scripts
       angular.forEach $scope.flow.objects, (object)->
-        $scope.elementScripts[object.id] = object.script if object.script.id
+        $scope.elementScripts[object.id] = object.script if object.script?.id?
 
       $timeout ()->
         $scope.getStatus().then (result)->
@@ -53,6 +59,7 @@ angular
   # remove
   #------------------------------------------------------------------------------
   remove =->
+    instance()
     success =->
       $state.go("dashboard.flow.index")
     error =(result)->
@@ -64,6 +71,7 @@ angular
   #------------------------------------------------------------------------------
   $scope.submit =->
     success =(data)->
+      instance()
       Notify 'success', 'Схема успешно сохранена', 3
 
     error =(result)->
@@ -78,12 +86,6 @@ angular
 
     $scope.flow.connectors = scheme.connectors || []
     Flow.update_redactor {id: $stateParams.id}, $scope.flow, success, error
-
-  # watcher
-  #------------------------------------------------------------------------------
-  $scope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams, options)->
-    if !confirm('Вы точно хотите покинут редактирование процесса?')
-      event.preventDefault()
 
   #------------------------------------------------------------------------------
   # init

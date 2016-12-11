@@ -210,11 +210,11 @@ func (m *FlowElement) Run(message *Message) (err error) {
 		return errors.New("flow is nil ...")
 	}
 
-	cursor := m.Flow.PushCursor(m)
+	//cursor := m.Flow.PushCursor(m)
 	err = m.Before(message)
 	err = m.Prototype.Run(message, m.Flow)
 	err = m.After(message)
-	m.Flow.PopCursor(cursor)
+	//m.Flow.PopCursor(cursor)
 
 	var elements []*FlowElement
 	for _, conn := range m.Flow.Connections {

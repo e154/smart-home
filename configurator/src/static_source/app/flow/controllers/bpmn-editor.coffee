@@ -1,8 +1,8 @@
 angular
 .module('appControllers')
 .controller 'bpmnEditorCtrl', ['$scope', 'Notify', 'Flow', '$stateParams', '$state', '$timeout', 'bpmnMock'
-'bpmnScheme', 'bpmnSettings', '$http', 'log'
-($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings, $http, log) ->
+'bpmnScheme', 'bpmnSettings', '$http', 'log', 'Worker'
+($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings, $http, log, Worker) ->
   vm = this
 
   $scope.selected = []

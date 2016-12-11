@@ -2,7 +2,6 @@ package core
 
 import (
 	"log"
-	"sync"
 	"time"
 	"encoding/json"
 	"reflect"
@@ -71,12 +70,7 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 		return
 	}
 
-	wf := &Workflow{
-		mutex: &sync.Mutex{},
-		model: workflow,
-		Nodes: b.nodes,
-		Workers: make(map[int64]*Worker),
-	}
+	wf := NewWorkflow(workflow, b.nodes)
 
 	if err = wf.Run(); err != nil {
 		return
