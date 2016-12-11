@@ -1,15 +1,15 @@
 package core
 
 import (
-	"sync"
 	"../models"
 	"errors"
+	"sync"
 )
 
-func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow) {
+func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
 
 	flow = &Flow{
-		model: model,
+		Model: model,
 		workflow: workflow,
 		cursor: []*models.FlowElement{},
 		quit: make(chan bool),
@@ -18,42 +18,86 @@ func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow) {
 		stat: make(chan []*models.FlowElement),
 	}
 
+	// get flow elements
+	var flowelements []*models.FlowElement
+	if flowelements, err = models.GetFlowElementsByFlow(model); err != nil {
+		return
+	}
+
+	for _, element := range flowelements {
+		flow.FlowElements = append(flow.FlowElements, &FlowElement{Model:element, Flow: flow, Workflow: workflow})
+	}
+
+	// get connections
+	if flow.Connections, err = models.GetConnectionsByFlow(model); err != nil {
+		return
+	}
+
+	//for _, conn := range flow.Connections {
+	//	for _, element := range flow.FlowElements {
+	//		if element.Model.Uuid == conn.ElementFrom {
+	//			conn.FlowElementFrom = element.Model
+	//		} else if element.Model.Uuid == conn.ElementTo {
+	//			conn.FlowElementTo = element.Model
+	//		}
+	//	}
+	//}
+
+
+	for _, element := range flow.FlowElements {
+		element.Flow = flow
+		switch element.Model.PrototypeType  {
+		case "MessageHandler":
+			element.Prototype = &MessageHandler{}
+			break
+		case "MessageEmitter":
+			element.Prototype = &MessageEmitter{}
+			break
+		case "Task":
+			element.Prototype = &Task{}
+			break
+		case "Gateway":
+			element.Prototype = &Gateway{}
+			break
+		}
+	}
+
 	go flow.loop()
 
 	return
 }
 
 type Flow struct {
-	model 		*models.Flow
-	workflow	*Workflow
-	//Connections 	[]*models.Connection
-	//FlowElements	[]*models.FlowElement
-	//Workers     	[]*Worker
-	mutex       	sync.RWMutex
-	cursor      	[]*models.FlowElement
-	quit		chan bool
-	push 		chan *models.FlowElement
-	pop 		chan *models.FlowElement
-	stat		chan []*models.FlowElement
+	Model        	*models.Flow
+	workflow     	*Workflow
+	Connections  	[]*models.Connection
+	FlowElements 	[]*FlowElement
+	Workers     	[]*Worker
+	mutex        	sync.RWMutex
+	cursor       	[]*models.FlowElement
+	quit         	chan bool
+	push         	chan *models.FlowElement
+	pop          	chan *models.FlowElement
+	stat         	chan []*models.FlowElement
 }
 
 func (f *Flow) Close() {
 	f.quit <- true
 }
 
-func NewMessage(flow *Flow, message *models.Message) error {
+func NewMessage(flow *Flow, message *Message) error {
 	return flow.NewMessage(message)
 }
 
-func (f *Flow) NewMessage(message *models.Message) (err error) {
+func (f *Flow) NewMessage(message *Message) (err error) {
 
 	var exist bool
-	for _, element := range f.model.FlowElements {
+	for _, element := range f.FlowElements {
 		if element.Prototype == nil {
 			continue
 		}
 
-		if element.PrototypeType != "MessageHandler" {
+		if element.Model.PrototypeType != "MessageHandler" {
 			continue
 		}
 

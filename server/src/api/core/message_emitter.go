@@ -1,4 +1,4 @@
-package models
+package core
 
 //ActionPrototypes
 type MessageEmitter struct {}

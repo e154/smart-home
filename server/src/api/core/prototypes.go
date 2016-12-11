@@ -1,4 +1,4 @@
-package models
+package core
 
 type ActionPrototypes interface {
 	After(*Message, *Flow) error

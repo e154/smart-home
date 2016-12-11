@@ -204,9 +204,10 @@ func GetAllEnabledFlowsByWf(wf *Workflow) (flows []*Flow, err error) {
 	flows = []*Flow{}
 	_, err = o.QueryTable(&Flow{}).Filter("status", "enabled").Filter("workflow_id", wf.Id).All(&flows)
 
-	for _, flow := range flows {
-		FlowGetRelatedDate(flow)
-	}
+	//TODO remove
+	//for _, flow := range flows {
+	//	FlowGetRelatedDate(flow)
+	//}
 
 	return
 }
@@ -231,23 +232,24 @@ func FlowGetRelatedDate(flow *Flow) (err error) {
 		}
 	}
 
-	for _, element := range flow.FlowElements {
-		element.Flow = flow
-		switch element.PrototypeType  {
-		case "MessageHandler":
-			element.Prototype = &MessageHandler{}
-			break
-		case "MessageEmitter":
-			element.Prototype = &MessageEmitter{}
-			break
-		case "Task":
-			element.Prototype = &Task{}
-			break
-		case "Gateway":
-			element.Prototype = &Gateway{}
-			break
-		}
-	}
+	//TODO remove
+	//for _, element := range flow.FlowElements {
+	//	element.Flow = flow
+	//	switch element.PrototypeType  {
+	//	case "MessageHandler":
+	//		element.Prototype = &MessageHandler{}
+	//		break
+	//	case "MessageEmitter":
+	//		element.Prototype = &MessageEmitter{}
+	//		break
+	//	case "Task":
+	//		element.Prototype = &Task{}
+	//		break
+	//	case "Gateway":
+	//		element.Prototype = &Gateway{}
+	//		break
+	//	}
+	//}
 
 	return
 }

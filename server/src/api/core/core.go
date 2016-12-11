@@ -165,7 +165,6 @@ func (b *Core) RemoveWorker(worker *models.Worker) (err error) {
 // Flows
 // ------------------------------------------------
 
-// need full flow !!!
 func (b *Core) AddFlow(flow *models.Flow) (err error) {
 
 	if _, ok := b.workflows[flow.Workflow.Id]; !ok {
@@ -179,7 +178,6 @@ func (b *Core) AddFlow(flow *models.Flow) (err error) {
 	return
 }
 
-// need full flow !!!
 func (b *Core) UpdateFlow(flow *models.Flow) (err error) {
 
 	if _, ok := b.workflows[flow.Workflow.Id]; !ok {

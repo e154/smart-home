@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"strings"
 	"time"
-	"sync"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 	UUID "../../lib/uuid"
@@ -23,10 +22,6 @@ type FlowElement struct {
 	Created_at	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 	PrototypeType	string			`orm:"column(prototype_type)" json:"prototype_type"`
-	Flow		*Flow			`orm:"-" json:"-"`
-	Prototype	ActionPrototypes	`orm:"-" json:"-"`
-	status		Status			`orm:"-" json:"-"`
-	mutex     	sync.Mutex		`orm:"-" json:"-"`
 }
 
 func (m *FlowElement) TableName() string {
@@ -187,63 +182,4 @@ func GetFlowElementsByFlow(flow *Flow) (elements []*FlowElement, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(&FlowElement{}).Filter("flow_id", flow.Id).RelatedSel().All(&elements)
 	return
-}
-
-//---------------------------------------------------
-// Workflow
-//---------------------------------------------------
-func (m *FlowElement) Before(message *Message) error {
-
-	if m.Flow == nil {
-		return errors.New("flow is nil ...")
-	}
-
-	m.status = DONE
-	return m.Prototype.Before(message, m.Flow)
-}
-
-// run internal process
-func (m *FlowElement) Run(message *Message) (err error) {
-	m.status = IN_PROCESS
-
-	if m.Flow == nil {
-		return errors.New("flow is nil ...")
-	}
-
-	//cursor := m.Flow.PushCursor(m)
-	err = m.Before(message)
-	err = m.Prototype.Run(message, m.Flow)
-	err = m.After(message)
-	//m.Flow.PopCursor(cursor)
-
-	var elements []*FlowElement
-	for _, conn := range m.Flow.Connections {
-		if conn.ElementFrom != m.Uuid || conn.ElementTo == m.Uuid {
-			continue
-		}
-
-		elements = append(elements, conn.FlowElementTo)
-	}
-
-	for _, element := range elements {
-		go element.Run(message)
-	}
-
-	m.status = ENDED
-
-	if len(elements) == 0 {
-		err = errors.New("Element not found")
-	}
-
-	return
-}
-
-func (m *FlowElement) After(message *Message) error {
-	m.status = STARTED
-
-	if m.Flow == nil {
-		return errors.New("flow is nil ...")
-	}
-
-	return  m.Prototype.After(message, m.Flow)
 }

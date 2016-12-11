@@ -55,7 +55,7 @@ func (wf *Workflow) Run() (err error) {
 func (wf *Workflow) Stop() (err error) {
 
 	for _, flow := range wf.Flows {
-		wf.RemoveFlow(flow.model)
+		wf.RemoveFlow(flow.Model)
 	}
 
 	//TODO check!!!
@@ -113,7 +113,7 @@ func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
 		return
 	}
 
-	wf.Flows[flow.Id] = NewFlow(flow, wf)
+	wf.Flows[flow.Id], err = NewFlow(flow, wf)
 
 	return
 }
@@ -194,7 +194,7 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 	// vars
 	// ------------------------------------------------
 	flow := wf.Flows[worker.Flow.Id]
-	message := &models.Message{}
+	message := &Message{}
 	//command := []byte{}
 	////if command, err = hex.DecodeString(worker.DeviceAction.Command); err != nil {
 	//if command, err = hex.DecodeString("0300000005"); err != nil {
@@ -281,7 +281,7 @@ func (wf *Workflow) AddWorker(worker *models.Worker) (err error) {
 
 
 		script.PushStruct("device", device)
-		script.PushStruct("flow", flow.model)
+		script.PushStruct("flow", flow.Model)
 		script.PushStruct("node", node)
 		script.PushStruct("message", message)
 

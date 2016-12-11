@@ -1,4 +1,4 @@
-package models
+package core
 
 const (
 	STARTED		= Status("started")
