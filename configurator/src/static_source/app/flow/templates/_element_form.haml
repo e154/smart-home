@@ -16,11 +16,20 @@
       %laber.clearfix
         {{'flow.element.script' | translate}}
         .pull-right
-          %a(href="#" ng-click="addScript(element, $event)")
-            .fa.fa-plus
-            &nbsp;
-          %a(href="#" ng-click="showScript(elementScripts[element.data.id], $event)" ng-if="elementScripts[element.data.id].name")
-            .fa.fa-eye
+          .dropdown
+            %a.dropdown-toggle( data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" href="#")
+              {{'flow.element.menu' | translate}}
+              %span.caret
+            %ul.dropdown-menu(aria-labelledby="dropdownMenu1")
+              %li
+                %a(href="#" ng-click="addScript(element.data.id, $event)")
+                  {{'flow.element.add_script' | translate}}
+                %a(href="#" ng-click="showScript(elementScripts[element.data.id], $event)" ng-if="elementScripts[element.data.id].name")
+                  {{'flow.element.show_script' | translate}}
+                %a(href="#" ng-click="editScript(elementScripts, element.data.id, $event)" ng-if="elementScripts[element.data.id].name")
+                  {{'flow.element.edit_script' | translate}}
+
+
       %ui-select(ng-model="elementScripts[element.data.id]" theme="bootstrap")
         %ui-select-match(placeholder="{{'device.action.script' | translate}}" allow-clear="true")
           %div(ng-if="elementScripts[element.data.id].name")

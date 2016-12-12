@@ -1,8 +1,8 @@
 angular
 .module('appControllers')
 .controller 'deviceActionCtrl', ['$scope', 'Notify', 'DeviceAction', 'Message', '$stateParams', 'Device'
-'$http'
-($scope, Notify, DeviceAction, Message, $stateParams, Device, $http) ->
+'$http', 'ngDialog'
+($scope, Notify, DeviceAction, Message, $stateParams, Device, $http, ngDialog) ->
   vm = this
   vm.actions = []
   vm.current ={}
@@ -56,7 +56,8 @@ angular
     error =(result)->
       Message result.data.status, result.data.message
 
-    vm.current.$remove(success, error)
+    if confirm('Вы точно хотите удалить это действие?')
+      vm.current.$remove(success, error)
 
   # select2
   # ------------------
@@ -71,6 +72,51 @@ angular
         offset: 0
     ).then (response)->
       $scope.scripts = response.data.scripts
+
+  # scripts
+  #------------------------------------------------------------------------------
+  vm.showScript =(script, e)->
+    e.preventDefault()
+    $scope.script = script
+
+    ngDialog.open
+      scope: $scope
+      showClose: false
+      template: '/script/templates/modal.show.html'
+      className: 'ngdialog-theme-default ngdialog-scripts-show'
+      controller: 'scriptModalShowCtrl'
+      controllerAs: 'script'
+
+  vm.addScript =(e)=>
+    e.preventDefault()
+    $scope.setScript =(script)=>
+      vm.current.script = script
+
+    ngDialog.open
+      scope: $scope
+      showClose: false
+      closeByEscape: false
+      closeByDocument: false
+      template: '/script/templates/modal.new.html'
+      className: 'ngdialog-theme-default ngdialog-scripts-edit'
+      controller: 'scriptModalNewCtrl'
+      controllerAs: 'script'
+
+  vm.editScript =(script, e)->
+    e.preventDefault()
+    $scope.script = script
+    $scope.setScript =(script)=>
+      vm.current.script = script
+
+    ngDialog.open
+      scope: $scope
+      showClose: false
+      closeByEscape: false
+      closeByDocument: false
+      template: '/script/templates/modal.edit.html'
+      className: 'ngdialog-theme-default ngdialog-scripts-edit'
+      controller: 'scriptModalEditCtrl'
+      controllerAs: 'script'
 
   # starting
   # ------------------------------------------

@@ -225,6 +225,12 @@ angular
         angular.forEach @scope.intScheme.objects, (object)->
           object.select(false)
 
+        angular.forEach @scope.selected, (selected)->
+          if selected.type == 'connector'
+            selected.object.removeClass('selected')
+
+        @scope.selected = []
+
       objectsUpdate: ()->
         angular.forEach @scope.intScheme.objects, (object)->
           object.templateUpdate()
@@ -291,10 +297,8 @@ angular
           @destroy()
 
         @wrapper.on 'mousedown', (e)=>
-          log.debug '@mousedown'
-          @scope.selected = []
-          $timeout ()=>
-            @scope.$apply()
+#          log.debug '@mousedown'
+          @deselectAll()
 
       destroy: ()->
         log.debug 'destroy'

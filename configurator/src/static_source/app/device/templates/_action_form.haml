@@ -5,6 +5,19 @@
 .form-group
   %laber
     {{'device.script' | translate}}
+    .pull-right
+      .dropdown
+        %a.dropdown-toggle( data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" href="#")
+          {{'device.action.menu' | translate}}
+          %span.caret
+        %ul.dropdown-menu(aria-labelledby="dropdownMenu1")
+          %li
+            %a(href="#" ng-click="action.addScript($event)")
+              {{'device.action.add_script' | translate}}
+            %a(href="#" ng-click="action.showScript(action.current.script, $event)" ng-if="action.current.script")
+              {{'device.action.show_script' | translate}}
+            %a(href="#" ng-click="action.editScript(action.current.script, $event)" ng-if="action.current.script")
+              {{'device.action.edit_script' | translate}}
   -#
   -#  select2
   -#

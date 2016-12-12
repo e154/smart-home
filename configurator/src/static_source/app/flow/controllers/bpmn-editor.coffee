@@ -189,28 +189,13 @@ log, Worker, ngDialog) ->
       showClose: false
       template: '/script/templates/modal.show.html'
       className: 'ngdialog-theme-default ngdialog-scripts-show'
-      controller: ()->
-        $scope.ace_options =
-          useWrapMode: true
-          mode:'coffee'
-          theme:'dawn'
-          advanced:{}
-          workerPath:'/static/js/ace-builds/src-noconflict'
-          readOnly: true
+      controller: 'scriptModalShowCtrl'
+      controllerAs: 'script'
 
-        $scope.$watch 'script.lang', (lang)->
-          return if !lang || lang == ''
-          switch lang
-            when 'javascript'
-              $scope.ace_options.mode = 'javascript'
-            when 'coffeescript'
-              $scope.ace_options.mode = 'coffee'
-            when 'lua'
-              $scope.ace_options.mode = 'lua'
-
-
-  $scope.addScript =(element, e)->
+  $scope.addScript =(id, e)->
     e.preventDefault()
+    $scope.setScript = (script)->
+      $scope.elementScripts[id] = script
 
     ngDialog.open
       scope: $scope
@@ -218,8 +203,24 @@ log, Worker, ngDialog) ->
       closeByEscape: false
       closeByDocument: false
       template: '/script/templates/modal.new.html'
-      className: 'ngdialog-theme-default ngdialog-scripts-new'
+      className: 'ngdialog-theme-default ngdialog-scripts-edit'
       controller: 'scriptModalNewCtrl'
+      controllerAs: 'script'
+
+  $scope.editScript =(elementScripts, id, e)->
+    e.preventDefault()
+    $scope.script = elementScripts[id]
+    $scope.setScript = (script)->
+      $scope.elementScripts[id] = script
+
+    ngDialog.open
+      scope: $scope
+      showClose: false
+      closeByEscape: false
+      closeByDocument: false
+      template: '/script/templates/modal.edit.html'
+      className: 'ngdialog-theme-default ngdialog-scripts-edit'
+      controller: 'scriptModalEditCtrl'
       controllerAs: 'script'
 
   vm

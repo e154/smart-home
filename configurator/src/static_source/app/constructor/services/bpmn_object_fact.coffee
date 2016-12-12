@@ -119,6 +119,7 @@ angular
 
           shift = key.getPressedKeyCodes().indexOf(16) > -1
           @parentScope.selected = [] if !shift
+          #TODO fix, unstable state!
           @parentScope.$apply(
             @parentScope.selected.push({id: @data.id, type: 'shape'})
           )

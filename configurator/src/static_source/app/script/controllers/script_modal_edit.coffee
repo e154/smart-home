@@ -1,6 +1,6 @@
 angular
 .module('appControllers')
-.controller 'scriptModalNewCtrl', ['$scope', 'Notify', 'Script', '$state', 'Message'
+.controller 'scriptModalEditCtrl', ['$scope', 'Notify', 'Script', '$state', 'Message'
 ($scope, Notify, Script, $state, Message) ->
   vm = this
   $scope.ace_options =
@@ -11,21 +11,17 @@ angular
     workerPath:'/static/js/ace-builds/src-noconflict'
     readOnly: false
 
-  vm.script = new Script
-    name: "Новый скрипт"
-    lang: "coffeescript"
-    description: ""
-    source: ""
+  vm.script = new Script($scope.$parent.script)
 
   vm.submitScript =->
     success =(script)->
       $scope.$parent.setScript(script)
-      Notify 'success', 'Скрипт успешно создан', 1
+      Notify 'success', 'Скрипт успешно сохранён', 1
 
     error =(result)->
       Message result.data.status, result.data.message
 
-    vm.script.$create(success, error)
+    vm.script.$update(success, error)
 
   $scope.$watch 'script.script.lang', (lang)->
     return if !lang || lang == ''

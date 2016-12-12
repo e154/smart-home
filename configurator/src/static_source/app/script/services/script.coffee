@@ -16,6 +16,9 @@ angular
 
     update:
         method: 'PUT'
+        responseType: 'json'
+        transformResponse: (data) ->
+          data?.script || data
 
     delete:
       method: 'DELETE'
