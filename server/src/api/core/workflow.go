@@ -107,13 +107,26 @@ func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
 	log.Println("Add flow:", flow.Name)
 
 	wf.mutex.Lock()
-	defer wf.mutex.Unlock()
-
 	if _, ok := wf.Flows[flow.Id]; ok {
 		return
 	}
 
-	wf.Flows[flow.Id], err = NewFlow(flow, wf)
+	if wf.Flows[flow.Id], err = NewFlow(flow, wf); err != nil {
+		return
+
+	}
+	wf.mutex.Unlock()
+
+	workers, err := models.GetAllEnabledWorkersByFlow(flow)
+	if err != nil {
+		return
+	}
+
+	for _, worker := range workers {
+		if err = wf.AddWorker(worker); err != nil {
+			break
+		}
+	}
 
 	return
 }

@@ -183,6 +183,14 @@ func GetAllEnabledWorkersByWorkflow(workflow *Workflow) (workers []*Worker, err 
 	return
 }
 
+func GetAllEnabledWorkersByFlow(flow *Flow) (workers []*Worker, err error) {
+	o := orm.NewOrm()
+	qs := o.QueryTable(&Worker{}).RelatedSel().Filter("flow_id", flow.Id)
+	_, err = qs.Filter("status", "enabled").All(&workers)
+
+	return
+}
+
 func GetWorkersByFlowId(id int64) (workers []*Worker, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(&Worker{}).RelatedSel().Filter("flow_id", id).All(&workers)

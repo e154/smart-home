@@ -384,6 +384,18 @@ func (b *Core) UpdateScript(script *models.Script) (err error) {
 				return
 			}
 		}
+
+		for _, flow := range workflow.Flows {
+			for _, flowElement := range flow.FlowElements {
+				if flowElement.Model.Script == nil {
+					continue
+				}
+
+				if flowElement.Model.Script.Id == script.Id {
+					workflow.UpdateFlow(flow.Model)
+				}
+			}
+		}
 	}
 
 	return

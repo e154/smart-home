@@ -1,15 +1,48 @@
 package core
 
 import (
-	"../models"
 	"errors"
 	"sync"
+	"../models"
+	"../scripts"
 )
+
+func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (flowElement *FlowElement, err error) {
+
+	flowElement = &FlowElement{
+		Model:model,
+		Flow: flow,
+		Workflow: workflow,
+	}
+
+	if model.Script == nil {
+		return
+	}
+
+	var script *models.Script
+	if script, err = models.GetScriptById(model.Script.Id); err != nil {
+		return
+	}
+
+	if flowElement.Script, err = scripts.New(script); err != nil {
+		return
+	}
+
+	//flowElement.Script("device", device)
+	//flowElement.Script("flow", flow.Model)
+	//flowElement.Script("node", node)
+	//flowElement.Script("message", message)
+
+	//debug(flowElement.Script)
+
+	return
+}
 
 type FlowElement struct {
 	Model 		*models.FlowElement
 	Flow		*Flow
 	Workflow	*Workflow
+	Script		*scripts.Engine
 	Prototype	ActionPrototypes
 	status		Status
 	mutex     	sync.Mutex
@@ -33,6 +66,12 @@ func (m *FlowElement) Run(message *Message) (err error) {
 	//m.Flow.PushCursor(m)
 	err = m.Before(message)
 	err = m.Prototype.Run(message, m.Flow)
+
+	//run script if exist
+	if m.Script != nil {
+		m.Script.Do()
+	}
+
 	err = m.After(message)
 
 	// each connections
