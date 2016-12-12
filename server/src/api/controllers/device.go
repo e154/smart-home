@@ -64,7 +64,7 @@ func (c *DeviceController) Post() {
 
 	}
 
-	core.CorePtr().UpdateWorkerFromDevice(&device)
+	core.CorePtr().UpdateFlowFromDevice(&device)
 
 	c.ServeJSON()
 }
@@ -197,7 +197,7 @@ func (c *DeviceController) Put() {
 		}
 	}
 
-	core.CorePtr().UpdateWorkerFromDevice(&device)
+	core.CorePtr().UpdateFlowFromDevice(&device)
 
 	c.ServeJSON()
 }
@@ -217,7 +217,7 @@ func (c *DeviceController) Delete() {
 		return
 	}
 
-	core.CorePtr().UpdateWorkerFromDevice(device)
+	core.CorePtr().UpdateFlowFromDevice(device)
 
 	if err := models.DeleteDevice(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())

@@ -101,33 +101,22 @@ func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
 // Workers
 // ------------------------------------------------
 
-func (b *Core) AddWorker(worker *models.Worker) (err error) {
-
-	if _, ok := b.workflows[worker.Workflow.Id]; !ok {
-		return
-	}
-
-	if err = b.workflows[worker.Workflow.Id].AddWorker(worker); err != nil {
-		return
-	}
-
-	return
-}
-
-func (b *Core) UpdateWorkerFromDevice(device *models.Device) (err error) {
+func (b *Core) UpdateFlowFromDevice(device *models.Device) (err error) {
 
 	for _, workflow := range b.workflows {
-		for _, worker := range workflow.Workers {
-			if _, ok := worker.Devices[device.Id]; ok {
-				workflow.UpdateWorker(worker.Model)
-				break
-				return
-			}
+		for _, flow := range workflow.Flows {
+			for _, worker := range flow.Workers {
+				if _, ok := worker.Devices[device.Id]; ok {
+					flow.UpdateWorker(worker.Model)
+					break
+					return
+				}
 
-			if device.Device != nil && worker.Model.DeviceAction.Device.Id == device.Device.Id {
-				workflow.UpdateWorker(worker.Model)
-				break
-				return
+				if device.Device != nil && worker.Model.DeviceAction.Device.Id == device.Device.Id {
+					flow.UpdateWorker(worker.Model)
+					break
+					return
+				}
 			}
 		}
 	}
@@ -135,27 +124,33 @@ func (b *Core) UpdateWorkerFromDevice(device *models.Device) (err error) {
 	return
 }
 
-func (b *Core) UpdateWorker(worker *models.Worker) (err error) {
+func (b *Core) UpdateWorker(_worker *models.Worker) (err error) {
 
-	if _, ok := b.workflows[worker.Workflow.Id]; !ok {
-		return
-	}
-
-	if err = b.workflows[worker.Workflow.Id].UpdateWorker(worker); err != nil {
-		return
+	for _, workflow := range b.workflows {
+		for _, flow := range workflow.Flows {
+			for _, worker := range flow.Workers {
+				if worker.Model.Id == _worker.Id {
+					flow.UpdateWorker(_worker)
+					break
+				}
+			}
+		}
 	}
 
 	return
 }
 
-func (b *Core) RemoveWorker(worker *models.Worker) (err error) {
+func (b *Core) RemoveWorker(_worker *models.Worker) (err error) {
 
-	if _, ok := b.workflows[worker.Workflow.Id]; !ok {
-		return
-	}
-
-	if err = b.workflows[worker.Workflow.Id].RemoveWorker(worker); err != nil {
-		return
+	for _, workflow := range b.workflows {
+		for _, flow := range workflow.Flows {
+			for _, worker := range flow.Workers {
+				if worker.Model.Id == _worker.Id {
+					flow.RemoveWorker(_worker)
+					break
+				}
+			}
+		}
 	}
 
 	return
@@ -377,13 +372,13 @@ func (b *Core) DisconnectNode(node *models.Node) (err error) {
 func (b *Core) UpdateScript(script *models.Script) (err error) {
 
 	for _, workflow := range b.workflows {
-		for _, worker := range workflow.Workers {
-			if worker.Model.DeviceAction.Script.Id == script.Id {
-				workflow.UpdateWorker(worker.Model)
-				break
-				return
-			}
-		}
+		//for _, worker := range workflow.Workers {
+		//	if worker.Model.DeviceAction.Script.Id == script.Id {
+		//		workflow.UpdateWorker(worker.Model)
+		//		break
+		//		return
+		//	}
+		//}
 
 		for _, flow := range workflow.Flows {
 			for _, flowElement := range flow.FlowElements {

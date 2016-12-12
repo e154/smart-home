@@ -50,19 +50,13 @@ func (c *WorkerController) Post() {
 		c.ErrHan(403, msg)
 		return
 	}
-	//....
 
-	nid, err := models.AddWorker(&worker)
-	if err != nil {
+	if _, err = models.AddWorker(&worker); err != nil {
 		c.ErrHan(403, err.Error())
 		return
-	} else {
-		c.Data["json"] = map[string]interface{}{"id": nid}
-
 	}
 
-	core.CorePtr().AddWorker(&worker)
-
+	c.Data["json"] = map[string]interface{}{"worker": worker}
 	c.ServeJSON()
 }
 

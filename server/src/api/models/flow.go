@@ -203,12 +203,6 @@ func GetAllEnabledFlowsByWf(wf *Workflow) (flows []*Flow, err error) {
 	o := orm.NewOrm()
 	flows = []*Flow{}
 	_, err = o.QueryTable(&Flow{}).Filter("status", "enabled").Filter("workflow_id", wf.Id).All(&flows)
-
-	//TODO remove
-	//for _, flow := range flows {
-	//	FlowGetRelatedDate(flow)
-	//}
-
 	return
 }
 
@@ -232,25 +226,6 @@ func FlowGetRelatedDate(flow *Flow) (err error) {
 		}
 	}
 
-	//TODO remove
-	//for _, element := range flow.FlowElements {
-	//	element.Flow = flow
-	//	switch element.PrototypeType  {
-	//	case "MessageHandler":
-	//		element.Prototype = &MessageHandler{}
-	//		break
-	//	case "MessageEmitter":
-	//		element.Prototype = &MessageEmitter{}
-	//		break
-	//	case "Task":
-	//		element.Prototype = &Task{}
-	//		break
-	//	case "Gateway":
-	//		element.Prototype = &Gateway{}
-	//		break
-	//	}
-	//}
-
 	return
 }
 
@@ -258,14 +233,15 @@ func (f *Flow) AddConnection(connection *Connection) {
 	f.Connections = append(f.Connections, connection)
 }
 
-//TODO remove
-//func (f *Flow) AddElement(flow_element *FlowElement) {
-//	flow_element.Flow = f
-//	f.FlowElements = append(f.FlowElements, flow_element)
-//}
+func (f *Flow) GetAllEnabledWorkers() (workers []*Worker, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(&Worker{}).Filter("flow_id", f.Id).Filter( "status", "enabled").RelatedSel().All(&workers)
+	return
+}
 
 func (f *Flow) GetWorkers() (workers []*Worker, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(&Worker{}).Filter("flow_id", f.Id).All(&workers)
 	return
 }
+

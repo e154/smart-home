@@ -389,9 +389,6 @@ func (c *FlowController) UpdateRedactor() {
 	var r *models.RedactorFlow
 	r, err = ExportToRedactor(newflow)
 
-	models.FlowGetRelatedDate(newflow)
-	core.CorePtr().UpdateFlow(newflow)
-
 	// workers
 	//---------------------------------------------------
 	workers_todo_remove := []*models.Worker{}
@@ -419,7 +416,7 @@ func (c *FlowController) UpdateRedactor() {
 			c.ErrHan(403, err.Error())
 			return
 		}
-		core.CorePtr().RemoveWorker(worker)
+		//core.CorePtr().RemoveWorker(worker)
 	}
 
 	for _, worker := range flow.Workers {
@@ -431,7 +428,7 @@ func (c *FlowController) UpdateRedactor() {
 				return
 			}
 
-			core.CorePtr().AddWorker(worker)
+			//core.CorePtr().AddWorker(worker)
 
 		} else {
 			if err = models.UpdateWorkerById(worker); err != nil {
@@ -439,10 +436,12 @@ func (c *FlowController) UpdateRedactor() {
 				return
 			}
 
-			core.CorePtr().UpdateWorker(worker)
+			//core.CorePtr().UpdateWorker(worker)
 		}
 
 	}
+
+	core.CorePtr().UpdateFlow(newflow)
 
 	//---------------------------------------------------
 
