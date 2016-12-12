@@ -30,20 +30,26 @@ func (m *FlowElement) Run(message *Message) (err error) {
 	m.status = IN_PROCESS
 	m.mutex.Unlock()
 
-	//m.Flow.PushCursor(m)
+	m.Flow.PushCursor(m)
 	err = m.Before(message)
 	err = m.Prototype.Run(message, m.Flow)
 	err = m.After(message)
-	//m.Flow.PopCursor(m)
+	m.Flow.PopCursor(m)
 
+	// each connections
 	var elements []*FlowElement
-	//for _, conn := range m.Flow.Model.Connections {
-	//	if conn.ElementFrom != m.Model.Uuid || conn.ElementTo == m.Model.Uuid {
-	//		continue
-	//	}
-	//
-	//	elements = append(elements, conn.FlowElementTo)
-	//}
+	for _, conn := range m.Flow.Connections {
+		if conn.ElementFrom != m.Model.Uuid || conn.ElementTo == m.Model.Uuid {
+			continue
+		}
+
+		for _, element := range m.Flow.FlowElements {
+			if conn.ElementTo != element.Model.Uuid {
+				continue
+			}
+			elements = append(elements, element)
+		}
+	}
 
 	for _, element := range elements {
 		go element.Run(message)

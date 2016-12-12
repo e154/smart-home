@@ -11,11 +11,11 @@ func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
 	flow = &Flow{
 		Model: model,
 		workflow: workflow,
-		cursor: []*models.FlowElement{},
+		cursor: []*FlowElement{},
 		quit: make(chan bool),
-		push: make(chan *models.FlowElement),
-		pop: make(chan *models.FlowElement),
-		stat: make(chan []*models.FlowElement),
+		push: make(chan *FlowElement),
+		pop: make(chan *FlowElement),
+		stat: make(chan []*FlowElement),
 	}
 
 	// get flow elements
@@ -32,17 +32,6 @@ func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
 	if flow.Connections, err = models.GetConnectionsByFlow(model); err != nil {
 		return
 	}
-
-	//for _, conn := range flow.Connections {
-	//	for _, element := range flow.FlowElements {
-	//		if element.Model.Uuid == conn.ElementFrom {
-	//			conn.FlowElementFrom = element.Model
-	//		} else if element.Model.Uuid == conn.ElementTo {
-	//			conn.FlowElementTo = element.Model
-	//		}
-	//	}
-	//}
-
 
 	for _, element := range flow.FlowElements {
 		element.Flow = flow
@@ -74,11 +63,11 @@ type Flow struct {
 	FlowElements 	[]*FlowElement
 	Workers     	[]*Worker
 	mutex        	sync.RWMutex
-	cursor       	[]*models.FlowElement
+	cursor       	[]*FlowElement
 	quit         	chan bool
-	push         	chan *models.FlowElement
-	pop          	chan *models.FlowElement
-	stat         	chan []*models.FlowElement
+	push         	chan *FlowElement
+	pop          	chan *FlowElement
+	stat         	chan []*FlowElement
 }
 
 func (f *Flow) Close() {
@@ -113,16 +102,16 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 	return
 }
 
-func (f *Flow) PushCursor(element *models.FlowElement) {
+func (f *Flow) PushCursor(element *FlowElement) {
 	f.push <- element
 }
 
-func (f *Flow) PopCursor(element *models.FlowElement) {
+func (f *Flow) PopCursor(element *FlowElement) {
 	f.pop <- element
 }
 
-func (f *Flow) GetCursor() (cursor []*models.FlowElement) {
-	f.stat <- []*models.FlowElement{}
+func (f *Flow) GetCursor() (cursor []*FlowElement) {
+	f.stat <- []*FlowElement{}
 	cursor = <- f.stat
 	return
 }
@@ -133,13 +122,28 @@ func (f *Flow) loop() {
 		case <- f.quit:
 			break
 		case element := <- f.push:
+			//log.Println("push before", len(f.cursor))
 			f.cursor = append(f.cursor, element)
+			//log.Println("push after", len(f.cursor))
 		case element := <- f.pop:
+			//log.Println("pop before", len(f.cursor))
+			if len(f.cursor) == 1 {
+				f.cursor = []*FlowElement{}
+				continue
+			}
+
 			for i, cursor := range f.cursor {
-				if cursor.Uuid == element.Uuid {
+				if cursor.Model.Uuid == element.Model.Uuid {
+
+					if len(f.cursor) == 1 {
+						f.cursor = []*FlowElement{}
+						continue
+					}
+
 					f.cursor = append(f.cursor[:i], f.cursor[i+1:]...)
 				}
 			}
+			//log.Println("pop after", len(f.cursor))
 		case <- f.stat:
 			f.stat <- f.cursor
 		}
