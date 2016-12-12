@@ -1,8 +1,8 @@
 angular
 .module('appControllers')
 .controller 'flowEditCtrl', ['$scope', 'Message', '$stateParams', 'Flow', '$state', 'Workflow', '$timeout'
-'log', 'Notify', 'Worker', '$http'
-($scope, Message, $stateParams, Flow, $state, Workflow, $timeout, log, Notify, Worker, $http) ->
+'log', 'Notify', 'Worker', '$rootScope'
+($scope, Message, $stateParams, Flow, $state, Workflow, $timeout, log, Notify, Worker, $rootScope) ->
   vm = this
 
   # vars
@@ -13,9 +13,10 @@ angular
 
   # watcher
   #------------------------------------------------------------------------------
-  instance = $scope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams, options)->
+  instance = $rootScope.$on '$stateChangeStart', (event, toState, toParams, fromState, fromParams, options)->
     if !confirm('Вы точно хотите покинут редактирование процесса?')
       event.preventDefault()
+    $scope.$on('$destroy', instance);
 
   #------------------------------------------------------------------------------
   # workflow list
@@ -59,7 +60,7 @@ angular
   # remove
   #------------------------------------------------------------------------------
   remove =->
-    instance()
+    $scope.$on('$destroy', instance);
     success =->
       $state.go("dashboard.flow.index")
     error =(result)->
@@ -71,7 +72,7 @@ angular
   #------------------------------------------------------------------------------
   $scope.submit =->
     success =(data)->
-      instance()
+      $scope.$on('$destroy', instance);
       Notify 'success', 'Схема успешно сохранена', 3
 
     error =(result)->

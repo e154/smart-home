@@ -60,14 +60,11 @@ func (c *FlowController) Post() {
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
-	} else {
-		c.Data["json"] = map[string]interface{}{"id": nid}
-
 	}
 
-	models.FlowGetRelatedDate(&flow)
 	core.CorePtr().AddFlow(&flow)
 
+	c.Data["json"] = map[string]interface{}{"id": nid}
 	c.ServeJSON()
 }
 
@@ -84,8 +81,6 @@ func (c *FlowController) GetOne() {
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
-	} else {
-		c.Data["json"] = map[string]interface{}{"flow": flow}
 	}
 
 	workers, err := models.GetWorkersByFlowId(int64(id))
@@ -95,6 +90,7 @@ func (c *FlowController) GetOne() {
 	}
 	flow.Workers = workers
 
+	c.Data["json"] = map[string]interface{}{"flow": flow}
 	c.ServeJSON()
 }
 
@@ -171,7 +167,6 @@ func (c *FlowController) Put() {
 		return
 	}
 
-	models.FlowGetRelatedDate(&flow)
 	core.CorePtr().UpdateFlow(&flow)
 
 	c.ServeJSON()

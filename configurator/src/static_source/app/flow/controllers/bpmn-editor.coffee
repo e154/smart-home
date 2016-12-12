@@ -1,8 +1,9 @@
 angular
 .module('appControllers')
 .controller 'bpmnEditorCtrl', ['$scope', 'Notify', 'Flow', '$stateParams', '$state', '$timeout', 'bpmnMock'
-'bpmnScheme', 'bpmnSettings', '$http', 'log', 'Worker'
-($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings, $http, log, Worker) ->
+'bpmnScheme', 'bpmnSettings', '$http', 'log', 'Worker', 'ngDialog'
+($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings, $http
+log, Worker, ngDialog) ->
   vm = this
 
   $scope.selected = []
@@ -176,6 +177,50 @@ angular
         offset: 0
     ).then (response)->
       $scope.scripts = response.data.scripts
+
+  # scripts
+  #------------------------------------------------------------------------------
+  $scope.showScript =(script, e)->
+    e.preventDefault()
+    $scope.script = script
+
+    ngDialog.open
+      scope: $scope
+      showClose: false
+      template: '/script/templates/modal.show.html'
+      className: 'ngdialog-theme-default ngdialog-scripts-show'
+      controller: ()->
+        $scope.ace_options =
+          useWrapMode: true
+          mode:'coffee'
+          theme:'dawn'
+          advanced:{}
+          workerPath:'/static/js/ace-builds/src-noconflict'
+          readOnly: true
+
+        $scope.$watch 'script.lang', (lang)->
+          return if !lang || lang == ''
+          switch lang
+            when 'javascript'
+              $scope.ace_options.mode = 'javascript'
+            when 'coffeescript'
+              $scope.ace_options.mode = 'coffee'
+            when 'lua'
+              $scope.ace_options.mode = 'lua'
+
+
+  $scope.addScript =(element, e)->
+    e.preventDefault()
+
+    ngDialog.open
+      scope: $scope
+      showClose: false
+      closeByEscape: false
+      closeByDocument: false
+      template: '/script/templates/modal.new.html'
+      className: 'ngdialog-theme-default ngdialog-scripts-new'
+      controller: 'scriptModalNewCtrl'
+      controllerAs: 'script'
 
   vm
 ]

@@ -1,0 +1,11 @@
+.row
+  .col-md-12
+    %div(ng-include="'/script/templates/_script_form.html'")
+
+.row
+  .col-md-12
+    .pull-right
+      %a.btn.btn-default(href="" role="button" ng-click="closeThisDialog()" )
+        {{'Close' | translate}}
+      %a.btn.btn-primary(href="" role="button" ng-click="script.submitScript()")
+        {{'Create' | translate}}

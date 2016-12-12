@@ -41,7 +41,8 @@
     "bpmn-font": "^0.7.0",
     "angular-ui-select": "^0.19.6",
     "angular-ui-ace": "^0.2.3",
-    "ace": "nemanjan00/ui-ace"
+    "ace": "nemanjan00/ui-ace",
+    "ng-dialog": "^0.6.4"
   },
   "overrides": {
     "jquery": {
@@ -96,6 +97,13 @@
         "src-noconflict/mode-javascript.js",
         "src-noconflict/mode-lua.js",
         "src-noconflict/mode-coffee.js"
+      ]
+    },
+    "ngDialog": {
+      "main": [
+        "js/ngDialog.js",
+        "css/ngDialog.css",
+        "css/ngDialog-theme-default.css"
       ]
     }
   }

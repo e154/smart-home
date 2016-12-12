@@ -29,6 +29,7 @@ app = angular.module('app', [
   'ui.select'
   'ngSanitize'
   'ui.ace'
+  'ngDialog'
 ])
 
 app.version =

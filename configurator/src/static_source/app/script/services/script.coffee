@@ -11,6 +11,8 @@ angular
     create:
       method: 'POST'
       responseType: 'json'
+      transformResponse: (data) ->
+        data?.script || data
 
     update:
         method: 'PUT'

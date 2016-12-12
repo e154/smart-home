@@ -30,11 +30,10 @@ func (m *FlowElement) Run(message *Message) (err error) {
 	m.status = IN_PROCESS
 	m.mutex.Unlock()
 
-	m.Flow.PushCursor(m)
+	//m.Flow.PushCursor(m)
 	err = m.Before(message)
 	err = m.Prototype.Run(message, m.Flow)
 	err = m.After(message)
-	m.Flow.PopCursor(m)
 
 	// each connections
 	var elements []*FlowElement
@@ -54,6 +53,8 @@ func (m *FlowElement) Run(message *Message) (err error) {
 	for _, element := range elements {
 		go element.Run(message)
 	}
+
+	//m.Flow.PopCursor(m)
 
 	m.mutex.Lock()
 	m.status = ENDED

@@ -13,8 +13,14 @@
     -#  select2
     -#
     .form-group
-      %laber
+      %laber.clearfix
         {{'flow.element.script' | translate}}
+        .pull-right
+          %a(href="#" ng-click="addScript(element, $event)")
+            .fa.fa-plus
+            &nbsp;
+          %a(href="#" ng-click="showScript(elementScripts[element.data.id], $event)" ng-if="elementScripts[element.data.id].name")
+            .fa.fa-eye
       %ui-select(ng-model="elementScripts[element.data.id]" theme="bootstrap")
         %ui-select-match(placeholder="{{'device.action.script' | translate}}" allow-clear="true")
           %div(ng-if="elementScripts[element.data.id].name")

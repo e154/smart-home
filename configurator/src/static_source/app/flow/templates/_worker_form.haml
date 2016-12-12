@@ -15,8 +15,11 @@
       {{'worker.disabled' | translate}}
 
 .form-group
-  %laber
+  %laber.clearfix
     {{'worker.action_name' | translate}}
+    .pull-right(ng-if="worker.device_action.device.id")
+      %a(href="#" ui-sref="dashboard.device.show({id: worker.device_action.device.id})")
+        {{'go to' | translate}}
   -#
   -#  select2
   -#

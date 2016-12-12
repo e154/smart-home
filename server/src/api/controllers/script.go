@@ -66,13 +66,13 @@ func (c *ScriptController) Post() {
 
 	s.Close()
 
-	nid, err := models.AddScript(&script)
+	_, err = models.AddScript(&script)
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{"id": nid}
+	c.Data["json"] = map[string]interface{}{"script": script}
 	c.ServeJSON()
 }
 

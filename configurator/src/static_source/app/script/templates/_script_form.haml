@@ -18,7 +18,7 @@
             %laber {{'script.description' | translate}}
             %textarea.form-control(ng-model="script.script.description" rows="2" )
 
-        .form-group
+        .form-group(ng-if="script.script.id")
             %a.btn.btn-success.full-width(ng-click="script.exec()")
                 {{'script.execute' | translate}}
 

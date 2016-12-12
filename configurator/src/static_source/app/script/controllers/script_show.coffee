@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'scriptShowCtrl', ['$scope', 'Notify', 'Script', '$stateParams', '$state', '$timeout'
-($scope, Notify, Script, $stateParams, $state, $timeout) ->
+.controller 'scriptShowCtrl', ['$scope', 'Notify', 'Script', '$stateParams', '$state', 'Message'
+($scope, Notify, Script, $stateParams, $state, Message) ->
   vm = this
 
   success = (script) ->
@@ -9,7 +9,7 @@ angular
     $scope.ace_options.readOnly = true
 
   error = ->
-    $state.go 'dashboard.script.index'
+    Message result.data.status, result.data.message
 
   Script.show {id: $stateParams.id}, success, error
 

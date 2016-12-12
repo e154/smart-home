@@ -287,7 +287,7 @@ angular
         @scope.instance.bind 'beforeDrop', (e)=>
           e.sourceId != e.targetId
 
-        @stopListen = @scope.$on '$routeChangeSuccess', ()=>
+        @stopListen = @scope.$on '$stateChangeStart', ()=>
           @destroy()
 
         @wrapper.on 'mousedown', (e)=>
@@ -298,7 +298,7 @@ angular
 
       destroy: ()->
         log.debug 'destroy'
-        log.debug 'total objects:', @scope.intScheme.objects
+#        log.debug 'total objects:', @scope.intScheme.objects
         log.debug 'total connectors:', @scope.intScheme.connectors.length
 
         @wrapper.find(".page-loader").fadeIn("fast")
