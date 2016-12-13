@@ -10,6 +10,7 @@ import (
 	cr "github.com/e154/cron"
 	r "../../lib/rpc"
 	"../models"
+	"encoding/hex"
 )
 
 type Worker struct {
@@ -153,6 +154,11 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 		return
 	}
 
+	if len(f.FlowElements) == 0 {
+		err = errors.New("No flow elements")
+		return
+	}
+
 	f.Workers[worker.Id] = &Worker{Model:worker,}
 
 	message := &Message{}
@@ -239,7 +245,6 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 		script.PushStruct("device", device)
 		script.PushStruct("flow", f.Model)
 		script.PushStruct("node", node)
-		script.PushStruct("message", message)
 
 		script.PushFunction("modbus_send", func(command []byte) (result r.Result) {
 
@@ -253,7 +258,12 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 
 		script.PushFunction("flow_new_message", func(v []byte) string {
 
-			message.Variable = v
+			message.Result = v
+			message.ResultStr = hex.EncodeToString(v)
+			message.Flow = f.Model
+			message.Device = device
+			message.Node = node
+
 			if err = f.NewMessage(message); err != nil {
 				log.Println("error" , err.Error())
 				return err.Error()
@@ -277,17 +287,17 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 	return
 }
 
-func (wf *Flow) UpdateWorker(worker *models.Worker) (err error) {
+func (f *Flow) UpdateWorker(worker *models.Worker) (err error) {
 
-	if _, ok := wf.Workers[worker.Id]; !ok {
+	if _, ok := f.Workers[worker.Id]; !ok {
 		err = fmt.Errorf("worker id:%d not found", worker.Id)
 	}
 
-	if err = wf.RemoveWorker(worker); err != nil {
+	if err = f.RemoveWorker(worker); err != nil {
 		log.Println("error:", err.Error())
 	}
 
-	if err = wf.AddWorker(worker); err != nil {
+	if err = f.AddWorker(worker); err != nil {
 		log.Println("error:", err.Error())
 	}
 

@@ -76,7 +76,7 @@ func (s *Engine) Close() {
 	s.script.Close()
 }
 
-func (s *Engine) Do() (res string, err error) {
+func (s *Engine) DoFull() (res string, err error) {
 	if s.IsRun {
 		return
 	}
@@ -89,6 +89,21 @@ func (s *Engine) Do() (res string, err error) {
 	}
 
 	res += result + "\n"
+
+	// reset buffer
+	s.buf = []string{}
+	s.IsRun = false
+
+	return
+}
+
+func (s *Engine) Do() (result string, err error) {
+	if s.IsRun {
+		return
+	}
+
+	s.IsRun = true
+	result, err = s.script.Do()
 
 	// reset buffer
 	s.buf = []string{}

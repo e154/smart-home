@@ -1,12 +1,30 @@
 angular
 .module('appControllers')
 .controller 'bpmnEditorCtrl', ['$scope', 'Notify', 'Flow', '$stateParams', '$state', '$timeout', 'bpmnMock'
-'bpmnScheme', 'bpmnSettings', '$http', 'log', 'Worker', 'ngDialog'
+'bpmnScheme', 'bpmnSettings', '$http', 'log', 'Worker', 'ngDialog', '$filter'
 ($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings, $http
-log, Worker, ngDialog) ->
+log, Worker, ngDialog, $filter) ->
   vm = this
 
   $scope.selected = []
+  $scope.selectedConn =
+    title: ""
+    object: ""
+    direction: ""
+  $scope.directions = [
+    {
+      name: $filter('translate')('true')
+      value: "true"
+    }
+    {
+      name: $filter('translate')('false')
+      value: "false"
+    }
+    {
+      name: $filter('translate')('no mater')
+      value: ""
+    }
+  ]
 
   # settings
   #------------------------------------------------------------------------------
@@ -110,16 +128,37 @@ log, Worker, ngDialog) ->
 
   # select element on scheme
   #------------------------------------------------------------------------------
-  redactor.scope.$watch 'selected', (objects)=>
-    return if !objects
+  redactor.scope.$watch 'selected', (selected)=>
+    return if !selected
 
     $scope.selected = []
-    for object in objects
+    connections = redactor.getAllConnections()
+    connection = null
+    for object in selected
       angular.forEach $scope.redactor.scope.intScheme.objects, (obj, key)->
         if key == object.id
           $scope.selected.push obj
           if !$scope.elementScripts.hasOwnProperty(obj.data.id)
             $scope.elementScripts[obj.data.id] = null
+
+      # connections
+      if object.type != "connector"
+        continue
+
+      angular.forEach connections, (conn)->
+        if object.id == conn.id
+          connection = conn
+
+    if connection?
+      $scope.selectedConn =
+        title: redactor.getLabel(connection)
+        direction: connection.getParameter("direction") || ""
+        object: connection
+    else $scope.selectedConn =
+        object: null
+#        redactor.getLabel(conn)
+#        redactor.setLabel(conn, "title3")
+#        conn.setParameter("bool", true)
 
     $timeout ()->
       $scope.$apply()
@@ -222,6 +261,18 @@ log, Worker, ngDialog) ->
       className: 'ngdialog-theme-default ngdialog-scripts-edit'
       controller: 'scriptModalEditCtrl'
       controllerAs: 'script'
+
+  # connections
+  #------------------------------------------------------------------------------
+  $scope.setDirection =->
+    return if !$scope.selectedConn
+    direction = $scope.selectedConn.direction
+    $scope.selectedConn.object.setParameter("direction", direction)
+
+  $scope.setLabel =->
+    return if !$scope.selectedConn
+    conn = $scope.selectedConn.object
+    redactor.setLabel(conn, $scope.selectedConn.title)
 
   vm
 ]

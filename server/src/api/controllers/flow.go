@@ -370,6 +370,7 @@ func (c *FlowController) UpdateRedactor() {
 			PointTo: connector.End.Point,
 			FlowId: flow.Id,
 			GraphSettings: "",
+			Direction: connector.Direction,
 		}
 
 		if _, err = models.AddOrUpdateConnection(conn); err != nil {
@@ -519,6 +520,7 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 			Id: con.Uuid,
 			Flow_type: "default",
 			Title: con.Name,
+			Direction: con.Direction,
 		}
 		connector.Start.Object = con.ElementFrom
 		connector.Start.Point = con.PointFrom

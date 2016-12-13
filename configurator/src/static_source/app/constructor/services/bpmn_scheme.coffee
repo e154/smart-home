@@ -211,6 +211,7 @@ angular
             # параметры соединения: id ...
             parameters:
               'element-id': connector.id || bpmnUuid.gen()
+              'direction': connector.direction || ''
           }
 
           # подпись для связи
@@ -225,9 +226,8 @@ angular
         angular.forEach @scope.intScheme.objects, (object)->
           object.select(false)
 
-        angular.forEach @scope.selected, (selected)->
-          if selected.type == 'connector'
-            selected.object.removeClass('selected')
+        @scope.instance.select().each (c)->
+          c.removeClass('selected')
 
         @scope.selected = []
 
@@ -280,20 +280,25 @@ angular
         #-------------------------------
         @scope.instance.bind 'click', (e)=>
 
-          @scope.instance.select().each (c)->
-            c.removeClass('selected')
+          shift = key.getPressedKeyCodes().indexOf(16) > -1
+          @deselectAll() if !shift
+
           e.addClass('selected')
 
+          #TODO fix, circular dependencies
           @scope.selected.push({
-            object: e
+            id: e.id
+            #object: e
             type: 'connector'
           })
+
+          @scope.$apply()
 
         # disable loopback
         @scope.instance.bind 'beforeDrop', (e)=>
           e.sourceId != e.targetId
 
-        @stopListen = @scope.$on '$stateChangeStart', ()=>
+        @stopListen = @scope.$on '$stateChangeSuccess', ()=>
           @destroy()
 
         @wrapper.on 'mousedown', (e)=>

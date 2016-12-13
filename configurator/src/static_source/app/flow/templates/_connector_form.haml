@@ -1,0 +1,9 @@
+.row
+  .col-md-12
+    .form-group
+      %laber {{'flow.element.title' | translate}}
+      %input.form-control(ng-model="selectedConn.title" ng-change="setLabel()" )
+
+    .form-group
+      %laber {{'flow.element.direction' | translate}}
+      %select.form-control(ng-model="selectedConn.direction" ng-options="direction.value as direction.name for direction in directions" ng-change="setDirection()")

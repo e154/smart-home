@@ -23,6 +23,7 @@ type RedactorConnector struct {
 				}			`json:"end"`
 	Flow_type	string				`json:"flow_type"`
 	Title		string				`json:"title"`
+	Direction	string				`json:"direction"`
 
 }
 

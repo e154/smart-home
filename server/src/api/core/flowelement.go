@@ -1,10 +1,10 @@
 package core
 
 import (
-	"errors"
 	"sync"
 	"../models"
 	"../scripts"
+	"log"
 )
 
 func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (flowElement *FlowElement, err error) {
@@ -27,13 +27,6 @@ func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (
 	if flowElement.Script, err = scripts.New(script); err != nil {
 		return
 	}
-
-	//flowElement.Script("device", device)
-	//flowElement.Script("flow", flow.Model)
-	//flowElement.Script("node", node)
-	//flowElement.Script("message", message)
-
-	//debug(flowElement.Script)
 
 	return
 }
@@ -68,14 +61,18 @@ func (m *FlowElement) Run(message *Message) (err error) {
 	err = m.Prototype.Run(message, m.Flow)
 
 	//run script if exist
+	var isTrue, isScripted bool
 	if m.Script != nil {
-		m.Script.Do()
+		isScripted = true
+		m.Script.PushStruct("message", message)
+		res, _ := m.Script.Do()
+		isTrue = res == "true"
+		log.Println(isTrue)
 	}
 
 	err = m.After(message)
 
 	// each connections
-	var elements []*FlowElement
 	for _, conn := range m.Flow.Connections {
 		if conn.ElementFrom != m.Model.Uuid || conn.ElementTo == m.Model.Uuid {
 			continue
@@ -85,12 +82,21 @@ func (m *FlowElement) Run(message *Message) (err error) {
 			if conn.ElementTo != element.Model.Uuid {
 				continue
 			}
-			elements = append(elements, element)
-		}
-	}
 
-	for _, element := range elements {
-		go element.Run(message)
+			if isScripted {
+				if conn.Direction == "true" {
+					if !isTrue {
+						continue
+					}
+				} else if conn.Direction == "false" {
+					if isTrue {
+						continue
+					}
+				}
+			}
+
+			go element.Run(message)
+		}
 	}
 
 	//m.Flow.PopCursor(m)
@@ -98,10 +104,6 @@ func (m *FlowElement) Run(message *Message) (err error) {
 	m.mutex.Lock()
 	m.status = ENDED
 	m.mutex.Unlock()
-
-	if len(elements) == 0 {
-		err = errors.New("Element not found")
-	}
 
 	return
 }

@@ -198,7 +198,7 @@ func (c *ScriptController) Exec() {
 		return
 	}
 
-	result, err := s.Do()
+	result, err := s.DoFull()
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return

@@ -14,6 +14,9 @@
     .dark(accordion-v1="flow-elements" title="{{'flow.elements' | translate}}" ng-if="selected.length" expand=true)
       %div(ng-include="'/flow/templates/_element_form.html'")
 
+    .dark(accordion-v1="flow-worker" title="{{'flow.element.type.connector' | translate}}" ng-if="selectedConn.object" expand=true)
+      %div(ng-include="'/flow/templates/_connector_form.html'")
+
     .dark(accordion-v1="flow-worker" title="{{'flow.worker' | translate}} ({{worker.name}})" ng-repeat="worker in flow.workers")
       %div(ng-include="'/flow/templates/_worker_form.html'")
 
