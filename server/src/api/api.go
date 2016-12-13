@@ -12,11 +12,11 @@ import (
 	"./filters"
 	"./core"
 	"./cron"
-	"log"
+	"../log"
 )
 
 func Initialize() {
-	log.Println("Api initialize...")
+	//log.Println("Api initialize...")
 
 	// site base
 	db_user := beego.AppConfig.String("db_user")
@@ -81,4 +81,12 @@ func Initialize() {
 	if err := core.Initialize(); err != nil {
 		log.Fatal(err.Error())
 	}
+
+	// logger
+	log.Initialize()
+	//log.Trace("trace")
+	//log.Info("info")
+	//log.Warn("warning")
+	//log.Debug("debug")
+	//log.Critical("critical")
 }
