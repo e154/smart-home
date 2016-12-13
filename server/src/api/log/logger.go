@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego"
 	"runtime"
 	"fmt"
+	"../models"
 )
 
 // brush is a color join function
@@ -53,13 +54,15 @@ func (c *logger) Init(jsonConfig string) error {
 }
 
 // WriteMsg write message in console.
-func (c *logger) WriteMsg(when time.Time, msg string, level int) error {
+func (c *logger) WriteMsg(when time.Time, msg string, level int) (err error) {
 
 	//...
-	//
+	if err = c.story(when, msg, level); err != nil {
+		return err
+	}
 
 	if(beego.BConfig.RunMode != "dev") {
-		return nil
+		return
 	}
 
 	if c.Colorful {
@@ -68,7 +71,7 @@ func (c *logger) WriteMsg(when time.Time, msg string, level int) error {
 
 	fmt.Println(when.Format("2006/01/02 15:04:05"), msg)
 
-	return nil
+	return
 }
 
 // Destroy implementing method. empty.
@@ -79,4 +82,39 @@ func (c *logger) Destroy() {
 // Flush implementing method. empty.
 func (c *logger) Flush() {
 
+}
+
+func (c *logger) story(when time.Time, msg string, l int) (err error) {
+
+	var level string
+	switch l {
+	case logs.LevelEmergency:
+		level = "Emergency"
+	case logs.LevelAlert:
+		level = "Alert"
+	case logs.LevelCritical:
+		level = "Critical"
+	case logs.LevelError:
+		level = "Error"
+	case logs.LevelWarning:
+		level = "Warning"
+	case logs.LevelNotice:
+		level = "Notice"
+	case logs.LevelInformational:
+		level = "Info"
+	case logs.LevelDebug:
+		level = "Debug"
+	}
+
+	log := &models.Log{
+		Level: level,
+		Created_at: when,
+		Body: msg,
+	}
+
+	if _, err = models.AddLog(log); err != nil {
+		beego.Error("error", err.Error())
+	}
+
+	return
 }

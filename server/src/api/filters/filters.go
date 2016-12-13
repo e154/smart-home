@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"log"
+	"../log"
 )
 
 func RegisterFilters() {

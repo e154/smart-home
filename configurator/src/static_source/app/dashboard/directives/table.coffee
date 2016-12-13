@@ -198,18 +198,33 @@ ng-class="{ \'sorted desc\': order == \'desc\' && sortby.indexOf(column.field) !
       table: "="
 
     link: ($scope, $element, attrs) ->
+
+      pageRecalc =(perPage)->
+        $scope.perPage = perPage
+        $scope.itemsPerPage = [
+          1 * $scope.perPage
+          2 * $scope.perPage
+          3 * $scope.perPage
+          5 * $scope.perPage
+          6 * $scope.perPage
+        ]
+
       $scope.pagination =
         limit: 0
         objects_count: 0
         offset: 0
-      $scope.perPage = 10
+      pageRecalc(10)
       $scope.maxSize = 4
       $scope.currentPage = 1
-      $scope.itemsPerPage = [10,20,30,50,60]
       $scope.items = []
       $scope.query = {}
       $scope.sortby = ['created_at']
       $scope.order = ['desc']
+
+      $scope.$watch 'table', (table)->
+        return if !table
+        if table.perPage?
+          pageRecalc(table.perPage)
 
       # callback
       $scope.table.callback.query = (query)->

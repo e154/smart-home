@@ -92,6 +92,12 @@ angular
           }
         ]
       }
+      {
+        'label': 'Dashboard'
+        'route': 'dashboard.log.index'
+        'icon': 'fa fa-file-text-o'
+
+      }
     ]
 
 

@@ -2,7 +2,7 @@ package cron
 
 import (
 	"github.com/e154/cron"
-	"log"
+	"../log"
 )
 
 // Singleton

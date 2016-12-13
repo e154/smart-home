@@ -12,7 +12,7 @@ import (
 	"./filters"
 	"./core"
 	"./cron"
-	"../log"
+	"../api/log"
 )
 
 func Initialize() {
@@ -81,12 +81,4 @@ func Initialize() {
 	if err := core.Initialize(); err != nil {
 		log.Fatal(err.Error())
 	}
-
-	// logger
-	log.Initialize()
-	//log.Trace("trace")
-	//log.Info("info")
-	//log.Warn("warning")
-	//log.Debug("debug")
-	//log.Critical("critical")
 }

@@ -3,6 +3,7 @@ package log
 import (
 	"strings"
 	"github.com/astaxie/beego/logs"
+	"github.com/astaxie/beego"
 )
 
 // BeeLogger references the used application logger.
@@ -65,6 +66,7 @@ func Informational(v ...interface{}) {
 
 // Info compatibility alias for Warning()
 func Info(v ...interface{}) {
+	beego.Info()
 	log.Info(generateFmtStr(len(v)), v...)
 }
 
@@ -84,14 +86,14 @@ func generateFmtStr(n int) string {
 }
 
 func Println(v ...interface{}) {
-	Info(v)
+	Info(v...)
 }
 
 func Fatal(v ...interface{}) {
-	Critical(v)
+	Critical(v...)
 }
 
-func Initialize() {
+func init() {
 	if log != nil {
 		return
 	}

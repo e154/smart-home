@@ -30,6 +30,7 @@ app = angular.module('app', [
   'ngSanitize'
   'ui.ace'
   'ngDialog'
+  'ui.bootstrap.pagination'
 ])
 
 app.version =

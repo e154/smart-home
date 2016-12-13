@@ -1,7 +1,7 @@
 package core
 
 import (
-	"log"
+	"../log"
 	"time"
 	"encoding/json"
 	"reflect"
@@ -47,7 +47,6 @@ func (b *Core) Run() (err error) {
 func (b *Core) InitWorkflows() (err error) {
 
 	b.workflows = make(map[int64]*Workflow)
-	//log.Println("------------------- WORKFLOW --------------------")
 	workflows, err := models.GetAllEnabledWorkflow()
 	if err != nil {
 		return
@@ -64,7 +63,7 @@ func (b *Core) InitWorkflows() (err error) {
 // и запуска подпроцессов
 func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 
-	log.Println("Add workflow:", workflow.Name)
+	log.Info("Add workflow:", workflow.Name)
 
 	if _, ok := b.workflows[workflow.Id]; ok {
 		return
@@ -84,7 +83,7 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 // нельзя удалить workflow, если присутствуют связанные сущности
 func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
 
-	log.Println("Remove workflow:", workflow.Name)
+	log.Info("Remove workflow:", workflow.Name)
 
 	if _, ok := b.workflows[workflow.Id]; !ok {
 		return
@@ -209,7 +208,6 @@ func (b *Core) InitNodes() (err error) {
 	b.nodes = make(map[int64]*models.Node)
 	b.nodes_chan = make(map[int64]chan string)
 
-	//log.Println("--------------------- NODES ---------------------")
 	if nodes, err = models.GetAllEnabledNodes(); err != nil {
 		return
 	}
@@ -227,7 +225,7 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 		return b.ReloadNode(node)
 	}
 
-	log.Printf("Add node: \"%s\"", node.Name)
+	log.Info("Add node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; ok {
 		return
@@ -279,11 +277,11 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 
 				if _, err := node.RpcDial(); err == nil {
 					node.Errors = 0
-					log.Printf("Node dial tcp %s:%d ... ok",node.Ip, node.Port)
+					log.Info("Node dial tcp %s:%d ... ok",node.Ip, node.Port)
 					connect = false
 					node.SetConnectStatus("connected")
 				} else {
-					log.Printf("Node error %s", err.Error())
+					log.Info("Node error %s", err.Error())
 					node.SetConnectStatus("error")
 				}
 			}
@@ -297,7 +295,7 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 
 func (b *Core) RemoveNode(node *models.Node) (err error) {
 
-	log.Printf("Remove node: \"%s\"", node.Name)
+	log.Info("Remove node: \"%s\"", node.Name)
 
 	if _, exist := b.nodes[node.Id]; !exist {
 		return
@@ -318,7 +316,7 @@ func (b *Core) RemoveNode(node *models.Node) (err error) {
 
 func (b *Core) ReloadNode(node *models.Node) (err error) {
 
-	log.Printf("Reload node: \"%s\"", node.Name)
+	log.Info("Reload node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; !ok {
 		b.AddNode(node)
@@ -342,7 +340,7 @@ func (b *Core) ReloadNode(node *models.Node) (err error) {
 
 func (b *Core) ConnectNode(node *models.Node) (err error) {
 
-	log.Printf("Connect to node: \"%s\"", node.Name)
+	log.Info("Connect to node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; ok {
 		b.nodes_chan[node.Id] <- "connect"
@@ -355,7 +353,7 @@ func (b *Core) ConnectNode(node *models.Node) (err error) {
 
 func (b *Core) DisconnectNode(node *models.Node) (err error) {
 
-	log.Printf("Disconnect from node: \"%s\"", node.Name)
+	log.Info("Disconnect from node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; ok {
 		b.nodes_chan[node.Id] <- "disconnect"
@@ -432,7 +430,7 @@ func BroadcastNodesStatus() {
 }
 
 func Initialize() (err error) {
-	log.Println("Core initialize...")
+	log.Info("Core initialize...")
 
 	if cron == nil {
 		cron = cr.NewCron()
