@@ -4,7 +4,6 @@ import (
 	"sync"
 	"../models"
 	"../scripts"
-	"log"
 )
 
 func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (flowElement *FlowElement, err error) {
@@ -67,7 +66,6 @@ func (m *FlowElement) Run(message *Message) (err error) {
 		m.Script.PushStruct("message", message)
 		res, _ := m.Script.Do()
 		isTrue = res == "true"
-		log.Println(isTrue)
 	}
 
 	err = m.After(message)

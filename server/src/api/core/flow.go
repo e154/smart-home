@@ -161,8 +161,6 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 
 	f.Workers[worker.Id] = &Worker{Model:worker,}
 
-	message := &Message{}
-
 	// get device
 	// ------------------------------------------------
 	var devices []*models.Device
@@ -256,10 +254,10 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 			return
 		})
 
+		message := &Message{}
 		script.PushFunction("flow_new_message", func(v []byte) string {
 
-			message.Result = v
-			message.ResultStr = hex.EncodeToString(v)
+			message.Result = hex.EncodeToString(v)
 			message.Flow = f.Model
 			message.Device = device
 			message.Node = node

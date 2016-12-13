@@ -1,7 +1,5 @@
 package core
 
-import "log"
-
 //ActionPrototypes
 type Gateway struct {}
 
@@ -11,7 +9,7 @@ func (m *Gateway) After(message *Message, flow *Flow) (err error) {
 }
 
 func (m *Gateway) Run(message *Message, flow *Flow) (err error) {
-	log.Println("Gateway.run: ", message)
+	//log.Println("Gateway.run: ", message)
 	return
 }
 
