@@ -13,7 +13,7 @@ func Cron() *cron.Cron {
 }
 
 func Initialize() {
-	log.Println("Crontab initialize...")
+	log.Info("Crontab initialize...")
 
 	if instantiated == nil {
 		instantiated = cron.NewCron()

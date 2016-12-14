@@ -1,7 +1,7 @@
 package core
 
 import (
-	"log"
+	"../log"
 	"sync"
 	"../models"
 )
@@ -83,7 +83,7 @@ func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
 		return
 	}
 
-	log.Println("Add flow:", flow.Name)
+	log.Info("Add flow:", flow.Name)
 
 	wf.mutex.Lock()
 	if _, ok := wf.Flows[flow.Id]; ok {
@@ -118,7 +118,7 @@ func (wf *Workflow) UpdateFlow(flow *models.Flow) (err error) {
 
 func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 
-	log.Println("Remove flow:", flow.Name)
+	log.Info("Remove flow:", flow.Name)
 
 	wf.mutex.Lock()
 	defer wf.mutex.Unlock()

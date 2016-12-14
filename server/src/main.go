@@ -5,12 +5,13 @@ import (
 	"./api"
 	"./static"
 	"time"
+	"./api/log"
 )
 
 func main() {
 	api.Initialize()
 	static.Initialize()
-	beego.Info("Starting....")
+	log.Info("Starting....")
 	go beego.Run()
 
 	for ;; {

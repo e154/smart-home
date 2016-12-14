@@ -1,11 +1,56 @@
 angular
 .module('appControllers')
-.controller 'logIndexCtrl', ['$scope', 'Log', '$state', '$timeout'
-($scope, Log, $state, $timeout) ->
+.controller 'logIndexCtrl', ['$scope', 'Log', '$state', '$timeout', '$httpParamSerializer'
+($scope, Log, $state, $timeout, $httpParamSerializer) ->
+
+  $scope.levels = [
+    {
+      name: 'Emergency'
+      value: 'Emergency'
+      selected: false
+    }
+    {
+      name: 'Alert'
+      value: 'Alert'
+      selected: false
+    }
+    {
+      name: 'Critical'
+      value: 'Critical'
+      selected: false
+    }
+    {
+      name: 'Error'
+      value: 'Error'
+      selected: false
+    }
+    {
+      name: 'Warning'
+      value: 'Warning'
+      selected: false
+    }
+    {
+      name: 'Notice'
+      value: 'Notice'
+      selected: false
+    }
+    {
+      name: 'Info'
+      value: 'Info'
+      selected: false
+    }
+    {
+      name: 'Debug'
+      value: 'Debug'
+      selected: false
+    }
+  ]
+  $scope.start_date
+  $scope.end_date
 
   tableCallback = {}
   $scope.options =
-    perPage: 50
+    perPage: 100
     resource: Log
     columns: [
       {
@@ -47,5 +92,39 @@ angular
         when 'Debug'
           style = 'log-debug'
       style
+
+  $scope.$watch 'levels', (val)->
+    return if !val
+    $scope.update()
+
+  , true
+
+  $scope.setEndDay =(date)->
+    $scope.end_date = date
+    $scope.update()
+
+  $scope.setStartDay =(date)->
+    $scope.start_date = date
+    $scope.update()
+
+  $scope.update =->
+    selected = []
+    angular.forEach $scope.levels, (level)->
+      if level.selected
+        selected.push "'#{level.value}'"
+
+    query = {}
+
+    if $scope.start_date
+      query.start_date = moment($scope.start_date).format("YYYY-MM-DD")
+
+    if $scope.end_date
+      query.end_date = moment($scope.end_date).format("YYYY-MM-DD")
+
+    if selected.length
+      query.levels = selected.join(',')
+
+    tableCallback.query(query)
+    tableCallback.update()
 
 ]

@@ -6,6 +6,7 @@ import  (
 	"strconv"
 	"reflect"
 	"html/template"
+	"encoding/json"
 )
 
 type Request struct {
@@ -37,6 +38,19 @@ offset int64, limit int64) {
 	fields = []string{}
 	sortby = []string{}
 	order = []string{}
+
+	values, _ := url.ParseQuery(q.Encode())
+	if val, ok := values["query"]; ok {
+		for _, v := range val {
+			json.Unmarshal([]byte(v), &query)
+		}
+	}
+
+	if val, ok := q["fields"]; ok {
+		for _, v := range val {
+			fields = append(fields, v)
+		}
+	}
 
 	if val, ok := q["sortby"]; ok {
 		for _, v := range val {

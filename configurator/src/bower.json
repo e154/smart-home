@@ -42,7 +42,9 @@
     "angular-ui-select": "^0.19.6",
     "angular-ui-ace": "^0.2.3",
     "ace": "nemanjan00/ui-ace",
-    "ng-dialog": "^0.6.4"
+    "ng-dialog": "^0.6.4",
+    "pikaday": "^1.5.1",
+    "pikaday-angular": "^2.0.0"
   },
   "overrides": {
     "jquery": {

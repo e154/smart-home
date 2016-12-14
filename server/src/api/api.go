@@ -16,7 +16,6 @@ import (
 )
 
 func Initialize() {
-	//log.Println("Api initialize...")
 
 	// site base
 	db_user := beego.AppConfig.String("db_user")
@@ -32,9 +31,9 @@ func Initialize() {
 
 	routers.Initialize()
 
-	beego.Info("AppPath:", beego.AppPath)
+	log.Info("AppPath:", beego.AppPath)
 	if(beego.BConfig.RunMode == "dev") {
-		beego.Info("Development mode enabled")
+		log.Info("Development mode enabled")
 		// orm debug mode
 		if orm_debug, _ := beego.AppConfig.Bool("orm_debug"); orm_debug {
 			orm.Debug = true
@@ -44,7 +43,7 @@ func Initialize() {
 		//beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 		//beego.SetStaticPath("/admin/static", "static_source/admin")
 	} else {
-		beego.Info("Product mode enabled")
+		log.Info("Product mode enabled")
 		//beego.SetStaticPath("/admin/static", "www/admin")
 	}
 

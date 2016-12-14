@@ -1,10 +1,7 @@
 package models
 
 import (
-	"errors"
 	"fmt"
-	"reflect"
-	"strings"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -48,84 +45,67 @@ func GetLogById(id int64) (v *Log, err error) {
 // GetAllLog retrieves all Log matches certain condition. Returns empty list if
 // no records exist
 func GetAllLog(query map[string]string, fields []string, sortby []string, order []string,
-	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
-	o := orm.NewOrm()
-	qs := o.QueryTable(new(Log))
-	// query k=v
-	for k, v := range query {
-		// rewrite dot-notation to Object__Attribute
-		k = strings.Replace(k, ".", "__", -1)
-		qs = qs.Filter(k, v)
-	}
-	// order by:
-	var sortFields []string
-	if len(sortby) != 0 {
-		if len(sortby) == len(order) {
-			// 1) for each sort field, there is an associated order
-			for i, v := range sortby {
-				orderby := ""
-				if order[i] == "desc" {
-					orderby = "-" + v
-				} else if order[i] == "asc" {
-					orderby = v
-				} else {
-					return nil, nil, errors.New("Error: Invalid order. Must be either [asc|desc]")
-				}
-				sortFields = append(sortFields, orderby)
-			}
-			qs = qs.OrderBy(sortFields...)
-		} else if len(sortby) != len(order) && len(order) == 1 {
-			// 2) there is exactly one order, all the sorted fields will be sorted by this order
-			for _, v := range sortby {
-				orderby := ""
-				if order[0] == "desc" {
-					orderby = "-" + v
-				} else if order[0] == "asc" {
-					orderby = v
-				} else {
-					return nil, nil, errors.New("Error: Invalid order. Must be either [asc|desc]")
-				}
-				sortFields = append(sortFields, orderby)
-			}
-		} else if len(sortby) != len(order) && len(order) != 1 {
-			return nil, nil, errors.New("Error: 'sortby', 'order' sizes mismatch or 'order' size is not 1")
-		}
-	} else {
-		if len(order) != 0 {
-			return nil, nil, errors.New("Error: unused 'order' fields")
-		}
+	offset int64, limit int64) (logs []Log, meta *map[string]int64, err error) {
+
+	//TODO refactor!!!
+	q := `SELECT *
+FROM logs
+`
+
+	start_date, ok := query["start_date"];
+	if  ok {
+		q += `
+		WHERE Date(logs.created_at) >= '`+start_date+`'`
 	}
 
-	var l []Log
-	qs = qs.OrderBy(sortFields...)
-	objects_count, err := qs.Count()
-	if err != nil {
-		return
-	}
-	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
-		if len(fields) == 0 {
-			for _, v := range l {
-				ml = append(ml, v)
-			}
+	end_date, ok := query["end_date"];
+	if  ok {
+		if start_date != "" {
+			q += `
+			AND`
 		} else {
-			// trim unused fields
-			for _, v := range l {
-				m := make(map[string]interface{})
-				val := reflect.ValueOf(v)
-				for _, fname := range fields {
-					m[fname] = val.FieldByName(fname).Interface()
-				}
-				ml = append(ml, m)
-			}
+			q += `
+			WHERE`
 		}
-		meta = &map[string]int64{
-			"objects_count": objects_count,
-			"limit":         limit,
-			"offset":        offset,
-		}
-		return ml, meta, nil
+
+		q += `
+		Date(logs.created_at) <= '`+end_date+`'`
 	}
-	return nil, nil, err
+
+	if levels, ok := query["levels"]; ok {
+		if start_date != "" || end_date != "" {
+			q += `
+			AND`
+		} else {
+			q += `
+			WHERE`
+		}
+
+		q += `
+		logs.level IN (`+levels+`)`
+	}
+
+	o := orm.NewOrm()
+	objects_count, _ := o.Raw(fmt.Sprint(q)).QueryRows(&logs)
+
+	if len(sortby) > 0 && len(order) > 0 {
+
+		q += `
+		ORDER BY logs.`+ sortby[0] +` ` + order[0]
+	}
+
+	q += `
+LIMIT %d
+OFFSET %d`
+
+	o.Raw(fmt.Sprintf(q, limit, offset)).QueryRows(&logs)
+	meta = &map[string]int64{
+		"objects_count": objects_count,
+		"limit":         limit,
+		"offset":        offset,
+	}
+
+	return
 }
 
 // UpdateLog updates Log by Id and returns error if

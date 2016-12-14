@@ -92,13 +92,13 @@ func (c *LogController) GetOne() {
 // @Failure 403
 // @router / [get]
 func (c *LogController) GetAll() {
-	ml, meta, err := models.GetAllLog(c.pagination())
+	logs, meta, err := models.GetAllLog(c.pagination())
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"logs": ml, "meta": meta}
+	c.Data["json"] = &map[string]interface{}{"logs": logs, "meta": meta}
 	c.ServeJSON()
 }
 

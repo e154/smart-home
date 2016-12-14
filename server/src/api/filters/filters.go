@@ -5,7 +5,7 @@ import (
 )
 
 func RegisterFilters() {
-	log.Println("Filters initialize...")
+	log.Info("Filters initialize...")
 
 	 //https://github.com/astaxie/beego/issues/1294
 	//var filer = func(ctx *context.Context) {
