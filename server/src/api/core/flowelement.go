@@ -93,7 +93,16 @@ func (m *FlowElement) Run(message *Message) (err error) {
 				}
 			}
 
-			go element.Run(message)
+			// send message to linked flow
+			if element.Model.PrototypeType == "Flow" && element.Model.FlowLink.Valid {
+				if flow, ok := m.Workflow.Flows[element.Model.FlowLink.Int64]; ok {
+					go flow.NewMessage(message)
+				}
+
+			} else {
+				go element.Run(message)
+			}
+
 		}
 	}
 
