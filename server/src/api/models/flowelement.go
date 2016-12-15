@@ -9,6 +9,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 	UUID "../../lib/uuid"
+	"database/sql"
 )
 
 type FlowElement struct {
@@ -19,6 +20,7 @@ type FlowElement struct {
 	GraphSettings	string			`orm:"column(graph_settings)" json:"graph_settings"`
 	Status		string			`orm:"" json:"status"`
 	FlowId		int64			`orm:"column(flow_id)" json:"flow_id"`
+	FlowLink	sql.NullInt64		`orm:"column(flow_link)" json:"flow"`
 	Created_at	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 	PrototypeType	string			`orm:"column(prototype_type)" json:"prototype_type"`

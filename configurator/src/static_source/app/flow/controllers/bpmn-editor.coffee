@@ -6,6 +6,7 @@ angular
 log, Worker, ngDialog, $filter) ->
   vm = this
 
+  $scope.flowLinks = []
   $scope.selected = []
   $scope.selectedConn =
     title: ""
@@ -91,6 +92,19 @@ log, Worker, ngDialog, $filter) ->
             }
           ]
         }
+        {
+          name: 'flow'
+          items: [
+            {
+              type:
+                name: 'flow'
+              title: 'flow'
+              class: 'bpmn-icon-participant'
+              tooltip: 'Create flow link'
+              shape: bpmnSettings.template('flow')
+            }
+          ]
+        }
       ]
 
 
@@ -131,6 +145,7 @@ log, Worker, ngDialog, $filter) ->
   redactor.scope.$watch 'selected', (selected)=>
     return if !selected
 
+    console.log 'selected',selected
     $scope.selected = []
     connections = redactor.getAllConnections()
     connection = null
@@ -156,9 +171,6 @@ log, Worker, ngDialog, $filter) ->
         object: connection
     else $scope.selectedConn =
         object: null
-#        redactor.getLabel(conn)
-#        redactor.setLabel(conn, "title3")
-#        conn.setParameter("bool", true)
 
     $timeout ()->
       $scope.$apply()

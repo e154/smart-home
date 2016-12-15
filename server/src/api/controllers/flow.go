@@ -305,6 +305,10 @@ func (c *FlowController) UpdateRedactor() {
 			FlowId: flow.Id,
 		}
 
+		if element.FlowLink == 0 {
+			fl.FlowLink.Valid = false
+		}
+
 		if element.Script != nil {
 			fl.Script = element.Script
 		}
@@ -320,6 +324,8 @@ func (c *FlowController) UpdateRedactor() {
 			fl.PrototypeType = "Task"
 		case "gateway":
 			fl.PrototypeType = "Gateway"
+		case "flow":
+			fl.PrototypeType = "Flow"
 		default:
 			fl.PrototypeType = "default"
 		}
@@ -484,6 +490,10 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 			Script: el.Script,
 		}
 
+		if el.FlowLink.Valid {
+			object.FlowLink = el.FlowLink.Int64
+		}
+
 		switch el.PrototypeType {
 		case "MessageHandler":
 			object.Type.Name = "event"
@@ -493,6 +503,8 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 			object.Type.End = map[string]interface{}{"simply": &map[string]interface{}{"top_level": true}}
 		case "Task":
 			object.Type.Name = "task"
+		case "Flow":
+			object.Type.Name = "flow"
 		case "Gateway":
 			object.Type.Name = "gateway"
 			object.Type.Start = map[int64]interface{}{0: &map[int64]interface{}{0: true}}

@@ -64,6 +64,9 @@ func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
 		case "Gateway":
 			element.Prototype = &Gateway{}
 			break
+		case "Flow":
+			element.Prototype = &FlowLink{}
+			break
 		}
 	}
 

@@ -46,6 +46,7 @@ type RedactorObject struct {
 	Description	string                  	`json:"description"`
 	PrototypeType	string                          `json:"prototype_type"`
 	Script		*Script 			`json:"script"`
+	FlowLink	int64				`json:"flow_link"`
 }
 
 type RedactorFlow struct {

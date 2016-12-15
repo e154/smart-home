@@ -121,7 +121,7 @@ angular
           @parentScope.selected = [] if !shift
           #TODO fix, unstable state!
           @parentScope.$apply(
-            @parentScope.selected.push({id: @data.id, type: 'shape'})
+            @parentScope.selected.push({id: @data.id, type: 'shape', prototype: @data?.type?.name || '' })
           )
 
           # deselect all
