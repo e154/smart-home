@@ -10,6 +10,7 @@ angular
   $scope.workflows = []
   $scope.flow = {}
   $scope.elementScripts = {}
+  $scope.elementFlows = {}
 
   # watcher
   #------------------------------------------------------------------------------
@@ -40,6 +41,7 @@ angular
       # scripts
       angular.forEach $scope.flow.objects, (object)->
         $scope.elementScripts[object.id] = object.script if object.script?.id?
+        $scope.elementFlows[object.id] = object.flow_link if object.flow_link?
 
       $timeout ()->
         $scope.getStatus().then (result)->
@@ -81,9 +83,10 @@ angular
     scheme = $scope.callback.save()
     $scope.flow.objects = scheme.objects || []
 
-    # scripts
+    # scripts & flows
     angular.forEach $scope.flow.objects, (object)->
       object.script = $scope.elementScripts[object.id] || null
+      object.flow_link = $scope.elementFlows[object.id] || null
 
     $scope.flow.connectors = scheme.connectors || []
     Flow.update_redactor {id: $stateParams.id}, $scope.flow, success, error

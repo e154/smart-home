@@ -36,3 +36,10 @@ angular
     theme: 'smart-theme'
 
 ]
+
+angular
+.module('app')
+.run ['$rootScope', '$state',($rootScope, $state) ->
+  $rootScope.$on '$stateChangeSuccess', (event, toState, toParams, fromState, fromParams) ->
+    document.getElementsByTagName('body')[0].classList.remove('loading')
+]

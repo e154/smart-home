@@ -10,9 +10,24 @@
       %input.form-control(ng-model="element.data.title")
 
     -#
-    -#  select2
+    -#  Flow (select2)
     -#
-    .form-group
+    .form-group(ng-if="element.data.type.name == 'flow'")
+      %laber.clearfix
+        {{'flow.element.flow_link' | translate}}
+      %ui-select(ng-model="elementFlows[element.data.id]" theme="bootstrap")
+        %ui-select-match(placeholder="{{'flow.element.flow' | translate}}" allow-clear="true")
+          %div(ng-if="elementFlows[element.data.id].name")
+            {{elementFlows[element.data.id].name}}
+        %ui-select-choices(repeat="item in flows | filter: $select.search" refresh="refreshFlows($select.search)" refresh-delay="0")
+          %span(ng-bind-html="item.name | highlight: $select.search")
+        %ui-select-no-choice
+          {{'No data' | translate}}
+
+    -#
+    -#  Script (select2)
+    -#
+    .form-group(ng-if="element.data.type.name != 'flow'")
       %laber.clearfix
         {{'flow.element.script' | translate}}
         .pull-right

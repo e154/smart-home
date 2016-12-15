@@ -8,6 +8,7 @@ import (
 	"../core"
 	"errors"
 	"github.com/astaxie/beego/orm"
+	"net/url"
 )
 
 // FlowController operations for Flow
@@ -305,8 +306,11 @@ func (c *FlowController) UpdateRedactor() {
 			FlowId: flow.Id,
 		}
 
-		if element.FlowLink == 0 {
+		// set id to flow link
+		if element.FlowLink == nil {
 			fl.FlowLink.Valid = false
+		} else {
+			fl.FlowLink.Scan(element.FlowLink.Id)
 		}
 
 		if element.Script != nil {
@@ -491,7 +495,7 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 		}
 
 		if el.FlowLink.Valid {
-			object.FlowLink = el.FlowLink.Int64
+			object.FlowLink, _ = models.GetFlowById(el.FlowLink.Int64)
 		}
 
 		switch el.PrototypeType {
@@ -555,5 +559,27 @@ func (c *FlowController) GetWorkers() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"workers": workers}
+	c.ServeJSON()
+}
+
+func (c *FlowController) Search() {
+
+	query, fields, sortby, order, offset, limit := c.pagination()
+	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
+	q := link.Query()
+
+	if val, ok := q["query"]; ok {
+		for _, v := range val {
+			query["name__icontains"] = v
+		}
+	}
+
+	ml, meta, err := models.GetAllFlow(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"flows": ml, "meta": meta}
 	c.ServeJSON()
 }

@@ -6,7 +6,6 @@ angular
 log, Worker, ngDialog, $filter) ->
   vm = this
 
-  $scope.flowLinks = []
   $scope.selected = []
   $scope.selectedConn =
     title: ""
@@ -145,7 +144,6 @@ log, Worker, ngDialog, $filter) ->
   redactor.scope.$watch 'selected', (selected)=>
     return if !selected
 
-    console.log 'selected',selected
     $scope.selected = []
     connections = redactor.getAllConnections()
     connection = null
@@ -155,6 +153,9 @@ log, Worker, ngDialog, $filter) ->
           $scope.selected.push obj
           if !$scope.elementScripts.hasOwnProperty(obj.data.id)
             $scope.elementScripts[obj.data.id] = null
+
+          if !$scope.elementFlows.hasOwnProperty(obj.data.id)
+            $scope.elementFlows[obj.data.id] = null
 
       # connections
       if object.type != "connector"
@@ -172,6 +173,7 @@ log, Worker, ngDialog, $filter) ->
     else $scope.selectedConn =
         object: null
 
+    console.log 'selected',$scope.selected
     $timeout ()->
       $scope.$apply()
 
@@ -285,6 +287,24 @@ log, Worker, ngDialog, $filter) ->
     return if !$scope.selectedConn
     conn = $scope.selectedConn.object
     redactor.setLabel(conn, $scope.selectedConn.title)
+
+  # flows
+  #------------------------------------------------------------------------------
+  # select flows for flow elements (select2)
+  $scope.flows = []
+  $scope.refreshFlows = (query)->
+    $http(
+      method: 'GET'
+      url: window.server_url + "/api/v1/flow/search"
+      params:
+        query: query
+        limit: 5
+        offset: 0
+    ).then (response)->
+      $scope.flows = []
+      angular.forEach response.data.flows, (flow)->
+        if flow.id != $scope.flow.id
+          $scope.flows.push flow
 
   vm
 ]

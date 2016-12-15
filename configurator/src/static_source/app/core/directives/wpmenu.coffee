@@ -38,7 +38,7 @@ angular
 
 
         MainMenu =
-          minimized: false
+          minimized: true
           init: ->
 
             # востановление состояния min/max
