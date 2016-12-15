@@ -40,7 +40,7 @@ func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
 		if err == nil {
 			flow.FlowElements = append(flow.FlowElements, flowElement)
 		} else {
-			log.Warning(err.Error())
+			log.Warn(err.Error())
 		}
 	}
 
@@ -138,7 +138,7 @@ func (f *Flow) InitWorkers() (err error) {
 
 	for _, worker := range workers {
 		if err = f.AddWorker(worker); err != nil {
-			log.Warning(err.Error())
+			log.Warn(err.Error())
 			return
 		}
 	}
@@ -148,7 +148,7 @@ func (f *Flow) InitWorkers() (err error) {
 
 func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 
-	log.Info("Add worker: \"%s\"", worker.Name)
+	log.Infof("Add worker: \"%s\"", worker.Name)
 
 	if _, ok := f.Workers[worker.Id]; ok {
 		return
@@ -263,7 +263,7 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 			message.Node = node
 
 			if err = f.NewMessage(message); err != nil {
-				log.Warning(err.Error())
+				log.Warn(err.Error())
 				return err.Error()
 			}
 
@@ -292,11 +292,11 @@ func (f *Flow) UpdateWorker(worker *models.Worker) (err error) {
 	}
 
 	if err = f.RemoveWorker(worker); err != nil {
-		log.Warning("error:", err.Error())
+		log.Warn("error:", err.Error())
 	}
 
 	if err = f.AddWorker(worker); err != nil {
-		log.Warning("error:", err.Error())
+		log.Warn("error:", err.Error())
 	}
 
 	return
@@ -304,7 +304,7 @@ func (f *Flow) UpdateWorker(worker *models.Worker) (err error) {
 
 func (f *Flow) RemoveWorker(worker *models.Worker) (err error) {
 
-	log.Info("Remove worker: \"%s\"", worker.Name)
+	log.Infof("Remove worker: \"%s\"", worker.Name)
 
 	if _, ok := f.Workers[worker.Id]; !ok {
 		err = fmt.Errorf("worker id:%d not found", worker.Id)

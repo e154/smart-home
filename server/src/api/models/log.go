@@ -47,58 +47,45 @@ func GetLogById(id int64) (v *Log, err error) {
 func GetAllLog(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (logs []Log, meta *map[string]int64, err error) {
 
-	//TODO refactor!!!
-	q := `SELECT *
-FROM logs
-`
+	qb, _ := orm.NewQueryBuilder("mysql")
+	qb.Select("*").From(new(Log).TableName())
+	var start_date, end_date, levels string
+	var ok bool
 
-	start_date, ok := query["start_date"];
-	if  ok {
-		q += `
-		WHERE Date(logs.created_at) >= '`+start_date+`'`
+	if start_date, ok = query["start_date"]; ok {
+		qb.Where(fmt.Sprintf("Date(logs.created_at) >= %s", start_date))
 	}
 
-	end_date, ok := query["end_date"];
-	if  ok {
+	if end_date, ok = query["end_date"]; ok {
 		if start_date != "" {
-			q += `
-			AND`
+			qb.And(fmt.Sprintf("Date(logs.created_at) <= '%s'", end_date))
 		} else {
-			q += `
-			WHERE`
+			qb.Where(fmt.Sprintf("Date(logs.created_at) <= '%s'", end_date))
 		}
-
-		q += `
-		Date(logs.created_at) <= '`+end_date+`'`
 	}
 
-	if levels, ok := query["levels"]; ok {
+	if levels, ok = query["levels"]; ok {
 		if start_date != "" || end_date != "" {
-			q += `
-			AND`
+			qb.And(fmt.Sprintf("logs.level IN (%s)", levels))
 		} else {
-			q += `
-			WHERE`
+			qb.Where(fmt.Sprintf("logs.level IN (%s)", levels))
 		}
 
-		q += `
-		logs.level IN (`+levels+`)`
 	}
 
 	o := orm.NewOrm()
-	objects_count, _ := o.Raw(fmt.Sprint(q)).QueryRows(&logs)
-
+	objects_count, _ := o.Raw(qb.String()).QueryRows(&logs)
 	if len(sortby) > 0 && len(order) > 0 {
-
-		q += `
-		ORDER BY logs.`+ sortby[0] +` ` + order[0]
+		qb.OrderBy(fmt.Sprintf("logs.%s",sortby[0]))
+		if order[0] == "desc" {
+			qb.Desc()
+		} else {
+			qb.Asc()
+		}
 	}
 
-	q += `
-LIMIT %d
-OFFSET %d`
-
-	o.Raw(fmt.Sprintf(q, limit, offset)).QueryRows(&logs)
+	qb.Limit(int(limit)).Offset(int(offset))
+	o.Raw(qb.String()).QueryRows(&logs)
 	meta = &map[string]int64{
 		"objects_count": objects_count,
 		"limit":         limit,

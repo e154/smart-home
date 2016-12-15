@@ -4,17 +4,17 @@ package core
 type Task struct {}
 
 func (m *Task) After(message *Message, flow *Flow) (err error) {
-	//log.Println("Task.after: ", message)
+	//log.Info("Task.after: ", message)
 	return
 }
 
 func (m *Task) Run(message *Message, flow *Flow) (err error) {
-	//log.Println("Task.run: ", message)
+	//log.Info("Task.run: ", message)
 	return
 }
 
 func (m *Task) Before(message *Message, flow *Flow) (err error) {
-	//log.Println("Task.before: ", message)
+	//log.Info("Task.before: ", message)
 	return
 }
 

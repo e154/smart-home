@@ -225,7 +225,7 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 		return b.ReloadNode(node)
 	}
 
-	log.Info("Add node: \"%s\"", node.Name)
+	log.Infof("Add node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; ok {
 		return
@@ -277,11 +277,11 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 
 				if _, err := node.RpcDial(); err == nil {
 					node.Errors = 0
-					log.Info("Node dial tcp %s:%d ... ok",node.Ip, node.Port)
+					log.Infof("Node dial tcp %s:%d ... ok",node.Ip, node.Port)
 					connect = false
 					node.SetConnectStatus("connected")
 				} else {
-					log.Info("Node error %s", err.Error())
+					log.Infof("Node error %s", err.Error())
 					node.SetConnectStatus("error")
 				}
 			}
@@ -295,7 +295,7 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 
 func (b *Core) RemoveNode(node *models.Node) (err error) {
 
-	log.Info("Remove node: \"%s\"", node.Name)
+	log.Infof("Remove node: \"%s\"", node.Name)
 
 	if _, exist := b.nodes[node.Id]; !exist {
 		return
@@ -316,7 +316,7 @@ func (b *Core) RemoveNode(node *models.Node) (err error) {
 
 func (b *Core) ReloadNode(node *models.Node) (err error) {
 
-	log.Info("Reload node: \"%s\"", node.Name)
+	log.Infof("Reload node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; !ok {
 		b.AddNode(node)
@@ -340,7 +340,7 @@ func (b *Core) ReloadNode(node *models.Node) (err error) {
 
 func (b *Core) ConnectNode(node *models.Node) (err error) {
 
-	log.Info("Connect to node: \"%s\"", node.Name)
+	log.Infof("Connect to node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; ok {
 		b.nodes_chan[node.Id] <- "connect"
@@ -353,7 +353,7 @@ func (b *Core) ConnectNode(node *models.Node) (err error) {
 
 func (b *Core) DisconnectNode(node *models.Node) (err error) {
 
-	log.Info("Disconnect from node: \"%s\"", node.Name)
+	log.Infof("Disconnect from node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; ok {
 		b.nodes_chan[node.Id] <- "disconnect"

@@ -4,17 +4,17 @@ package core
 type Gateway struct {}
 
 func (m *Gateway) After(message *Message, flow *Flow) (err error) {
-	//log.Println("Gateway.after: ", message)
+	//log.Info("Gateway.after: ", message)
 	return
 }
 
 func (m *Gateway) Run(message *Message, flow *Flow) (err error) {
-	//log.Println("Gateway.run: ", message)
+	//log.Info("Gateway.run: ", message)
 	return
 }
 
 func (m *Gateway) Before(message *Message, flow *Flow) (err error) {
-	//log.Println("Gateway.before: ", message)
+	//log.Info("Gateway.before: ", message)
 	return
 }
 
