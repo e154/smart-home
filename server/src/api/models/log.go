@@ -53,7 +53,7 @@ func GetAllLog(query map[string]string, fields []string, sortby []string, order 
 	var ok bool
 
 	if start_date, ok = query["start_date"]; ok {
-		qb.Where(fmt.Sprintf("Date(logs.created_at) >= %s", start_date))
+		qb.Where(fmt.Sprintf("Date(logs.created_at) >= '%s'", start_date))
 	}
 
 	if end_date, ok = query["end_date"]; ok {

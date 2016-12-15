@@ -80,8 +80,4 @@ func Initialize() {
 	if err := core.Initialize(); err != nil {
 		log.Error(err.Error())
 	}
-
-	log.Debugf("test: %s %d", "test", 123)
-	log.Infof("test: %s %d", "test", 123)
-	log.Warnf("test: %s %d", "test", 123)
 }
