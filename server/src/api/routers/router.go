@@ -69,7 +69,22 @@ func Initialize() {
 			beego.NSRouter("/log", &controllers.LogController{}, "post:Post"),
 			beego.NSRouter("/log/:id([0-9]+)", &controllers.LogController{}, "put:Put"),
 			beego.NSRouter("/log/:id([0-9]+)", &controllers.LogController{}, "delete:Delete"),
-		),
+
+			beego.NSRouter("/email/template/:name([\\w]+)", &controllers.EmailTemplateController{}, "get:GetOne"),
+			beego.NSRouter("/email/templates", &controllers.EmailTemplateController{}, "get:GetAll"),
+			beego.NSRouter("/email/template", &controllers.EmailTemplateController{}, "post:Post"),
+			beego.NSRouter("/email/template/:name([\\w]+)", &controllers.EmailTemplateController{}, "put:Put"),
+			beego.NSRouter("/email/template/:name([\\w]+)", &controllers.EmailTemplateController{}, "delete:Delete"),
+			beego.NSRouter("/email/preview", &controllers.EmailTemplateController{}, "post:Preview")		,
+			beego.NSRouter("/email/item/:name([\\w]+)", &controllers.EmailItemController{}, "get:GetOne"),
+			beego.NSRouter("/email/items", &controllers.EmailItemController{}, "get:GetAll"),
+			beego.NSRouter("/email/item", &controllers.EmailItemController{}, "post:Post"),
+			beego.NSRouter("/email/item/:name([\\w]+)", &controllers.EmailItemController{}, "put:Put"),
+			beego.NSRouter("/email/item/:name([\\w]+)", &controllers.EmailItemController{}, "delete:Delete"),
+			beego.NSRouter("/email/items/tree", &controllers.EmailItemController{}, "get:GetTree"),
+			beego.NSRouter("/email/items/tree", &controllers.EmailItemController{}, "post:UpdateTree"),
+
+	),
 	)
 	beego.AddNamespace(ns)
 }

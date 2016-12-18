@@ -44,7 +44,8 @@
     "ace": "nemanjan00/ui-ace",
     "ng-dialog": "^0.6.4",
     "pikaday": "^1.5.1",
-    "pikaday-angular": "^2.0.0"
+    "pikaday-angular": "^2.0.0",
+    "angular-ui-tree": "^2.22.1"
   },
   "overrides": {
     "jquery": {

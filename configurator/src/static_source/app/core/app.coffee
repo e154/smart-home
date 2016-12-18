@@ -32,6 +32,7 @@ app = angular.module('app', [
   'ngDialog'
   'ui.bootstrap.pagination'
   'pikaday'
+  'ui.tree'
 ])
 
 app.version =

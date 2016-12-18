@@ -152,5 +152,20 @@
     "start_date": "От",
     "end_date": "По",
     "created_at": "Дата создания"
+  },
+  "notifr": {
+    "email_system": "Система уведомлений",
+    "refrash_list": "Обновить список",
+    "email_template": "Шаблон сообщения",
+    "element_of_template": "Элементы шаблона",
+    "name": "Название",
+    "system_name": "Системное название",
+    "description": "Описание",
+    "created_at": "Дата создания",
+    "updated_at": "Дата обновления",
+    "title": "Заголовок",
+    "items": "Элементы",
+    "preview": "Просмотр",
+    "source_code": "Исходный код"
   }
 }

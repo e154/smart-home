@@ -93,10 +93,29 @@ angular
         ]
       }
       {
-        'label': 'Dashboard'
+        'label': 'Logs'
         'route': 'dashboard.log.index'
         'icon': 'fa fa-file-text-o'
 
+      }
+      {
+        'label': 'Notifr'
+        'route': 'dashboard.notifr.index'
+        'icon': 'fa fa-envelope'
+        'items': [
+          {
+            'label': 'All templates'
+            'route': 'dashboard.notifr.index'
+          }
+          {
+            'label': 'Add template'
+            'route': 'dashboard.notifr.new_template'
+          }
+          {
+            'label': 'All items'
+            'route': 'dashboard.notifr.items'
+          }
+        ]
       }
     ]
 

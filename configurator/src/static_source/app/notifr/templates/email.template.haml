@@ -1,0 +1,51 @@
+.row
+  .col-md-12
+    %h3
+      %a(href="" ui-sref="dashboard.notifr.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      {{ 'notifr.email_template' | translate }}
+
+.row.section
+  .col-md-8
+    .form-group
+      %label(for="vars") Основные переменные:
+      %span(id="vars")
+        [site:name],
+        [site:url],
+        [site:login-url],
+        [site:url-brief],
+
+        [user:name:nick],
+        [user:name:first],
+        [user:name:last],
+        [user:mail],
+        [user:edit-url],
+        [user:one-time-login-url],
+        [user:cancel-url].
+
+    .form-group
+      %label(for="title") {{'notifr.title' | translate}}
+      %input.form-control(id="title" ng-model="ctrl.content.title" placeholder="{{'template name' | translate}}" type="text")/
+
+    .form-group
+      %label(for="preview") {{'notifr.preview' | translate}}
+      %iframe(id="preview" frameborder="no" style="border: 1px #aaaaaa dashed; padding: 1px; height: 900px; width: 100%;")
+
+  .col-md-4
+    .form-group
+      %label(for="name") {{'notifr.system_name' | translate}}
+      %input.form-control(id="name" ng-disabled="!ctrl.isNew" ng-model="ctrl.template.name" placeholder="{{'template name' | translate}}" type="text")/
+
+    .form-group
+      %label(for="description") {{'notifr.description' | translate}}
+      %input.form-control(id="description" ng-model="ctrl.template.description" placeholder="{{'template description' | translate}}" type="text")/
+
+    .form-group
+      %label(for="items") {{'items' | translate}}
+      %select(id="items" data-ng-attr-size="{{ctrl.selectSize}}" multiple="multiple" ng-model="selectedItems" ng-options="item as item for item in ctrl.items" style="width: 100%;")
+
+    .form-group
+      %button.btn.btn-primary(ng-click="ctrl.save()" ng-if="ctrl.isNew" type="button") {{'Save' | translate}}
+      %button.btn.btn-primary(ng-click="ctrl.update()" ng-if="!ctrl.isNew" type="button") {{'Update' | translate}}
+      %button.btn.btn-danger(ng-click="ctrl.delete()" ng-if="!ctrl.isNew" type="button") {{'Delete' | translate}}

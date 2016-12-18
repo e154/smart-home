@@ -13,6 +13,7 @@ import (
 	"./core"
 	"./cron"
 	"../api/log"
+	"../api/notifr"
 )
 
 func Initialize() {
@@ -80,4 +81,7 @@ func Initialize() {
 	if err := core.Initialize(); err != nil {
 		log.Error(err.Error())
 	}
+
+	// notifr
+	notifr.Initialize()
 }

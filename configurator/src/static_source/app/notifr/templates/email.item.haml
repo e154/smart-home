@@ -1,0 +1,71 @@
+.row
+  .col-md-12
+    %h3
+      %a(href="" ui-sref="dashboard.notifr.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+
+      {{ 'notifr.element_of_template' | translate }}
+
+.row
+  .col-md-4
+    .form-group
+      %a(href="#" ng-click="ctrl.getTree()")
+        %span.icon
+          %i.fa.fa-refresh
+          {{'notifr.refrash_list' | translate}}
+
+
+      %a.pull-right(href="#" ng-click="ctrl.addNew()" ng-if="!ctrl.isNew")
+        %span.icon
+          %i.fa.fa-plus
+          {{'Add new' | translate}}
+.row
+  .col-md-4
+    / Nested node template
+    %script(id="nodes_renderer.html" type="text/ng-template")
+      .tree-node.tree-node-content(ui-tree-handle="true")
+        %a(ng-if="node.nodes && node.nodes.length > 0" data-nodrag="true" ng-click="toggle(this)")
+          %span.fa.pointer(ng-class="{'fa-chevron-right': collapsed, 'fa-chevron-down': !collapsed}")
+        #
+        {{node.name}}
+
+        .pull-right(data-nodrag="true")
+          %a(href="" ng-click="ctrl.toggleStatus(node)" data-nodrag="true")
+            .fa.fa-eye(ng-if="node.status == 'active'" )
+            .fa.fa-eye-slash(ng-if="node.status == 'inactive'" )
+
+          %a(href="" data-nodrag="true" ng-click="ctrl.edit(node.name)" style="margin-left: 8px;")
+            .fa.fa-pencil
+
+        %ol(ui-tree-nodes="true" ng-model="node.nodes" ng-class="{hidden: collapsed}")
+          %li(ng-repeat="node in node.nodes" ui-tree-node="true" ng-include="'nodes_renderer.html'")
+
+    #tree-root(ui-tree="true")
+      %ol(ng-model="ctrl.tree" ui-tree-nodes="true")
+        %li(ng-include="'nodes_renderer.html'" ng-repeat="node in ctrl.tree" ui-tree-node="true")
+
+    .form-group
+      %br/
+      %br/
+      %br/
+      %button.btn.btn-primary(ng-click="ctrl.updateTree()" type="button") {{'Update' | translate}}
+
+  .col-md-8
+    .list-group
+      .form-group
+        %label(for="name") {{'notifr.name' | translate}}
+        %input#name.form-control(ng-model="ctrl.activeItem.name" placeholder="{{'item name' | translate}}" type="text")/
+
+      .form-group
+        %label(for="description") {{'notifr.description' | translate}}
+        %input#description.form-control(ng-model="ctrl.activeItem.description" placeholder="{{'item description' | translate}}" type="text")/
+
+      .form-group
+        %label(for="content") {{'notifr.source_code' | translate}}
+        #content.ace-editor.form-control(ng-model="ctrl.activeItem.content" rows="20" ui-ace="ace_options")
+
+      .form-group
+        %button.btn.btn-primary(ng-click="ctrl.save()" ng-if="ctrl.isNew" type="button") {{'Save' | translate}}
+        %button.btn.btn-primary(ng-click="ctrl.update()" ng-if="!ctrl.isNew" type="button") {{'Update' | translate}}
+        %button.btn.btn-danger(ng-click="ctrl.delete()" ng-if="!ctrl.isNew" type="button") {{'Delete' | translate}}
