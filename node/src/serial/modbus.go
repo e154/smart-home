@@ -52,11 +52,6 @@ func (m *Modbus) Send(data []byte) (result []byte, err error) {
 		return
 	}
 
-	if m.Serial == nil {
-		errors.New("serial pointer is nil")
-		return
-	}
-
 	m.rcvState = STATE_RX_IDLE
 	reader := bufio.NewReader(m.Serial.Port)
 	for {
@@ -64,12 +59,7 @@ func (m *Modbus) Send(data []byte) (result []byte, err error) {
 			break
 		}
 
-		ok, err = m.asciiReceiveFSM(b)
-		if err != nil {
-			break
-		}
-
-		if ok {
+		if ok, err = m.asciiReceiveFSM(b); err != nil || ok {
 			break
 		}
 	}
@@ -153,7 +143,7 @@ func (m *Modbus) asciiTransmit(data []byte) (err error) {
 	m.trcBuff.Write([]byte{'\r', '\n'})
 
 	if m.Serial == nil {
-		err = errors.New("serial is nil")
+		err = errors.New("serial pointer is nil")
 		return
 	}
 

@@ -61,13 +61,13 @@ func testNode(command []byte) {
 			}
 		}
 
-		log.Printf("counter: %d, data %v, %d",i, result, errors)
+		log.Printf("counter: %d, data %v, %d",i, result, len(errors))
 
 		if err != nil {
 			log.Println("error: ", err)
 		}
 
-		//time.Sleep(time.Second)
+		//time.Sleep(time.Millisecond * 50)
 	}
 }
 

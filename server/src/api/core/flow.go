@@ -187,6 +187,8 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 			device.Name = child.Name
 			device.Address = new(int)
 			*device.Address = *child.Address
+			device.Device = &models.Device{Id:worker.DeviceAction.Device.Id}
+			device.Tty = child.Tty
 			devices = append(devices, device)
 		}
 	}

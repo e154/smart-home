@@ -24,9 +24,8 @@ func (s *Serial) Open() (*Serial, error) {
 	}
 
 	var err error
-	s.Port, err = serial.OpenPort(s.config)
-	if err != nil {
-		return s, err
+	if s.Port, err = serial.OpenPort(s.config); err != nil {
+		return nil, err
 	}
 
 	return s, nil

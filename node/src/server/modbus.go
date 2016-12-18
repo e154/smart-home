@@ -105,6 +105,7 @@ func (m *Modbus) exec(conn *serial.Serial, command []byte) (res []byte, err erro
 		//log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
 		return
 	}
+	defer conn.Close()
 
 	modbus := &serial.Modbus{Serial: conn}
 	res, err = modbus.Send(command)
