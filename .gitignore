@@ -74,3 +74,4 @@ install_manifest.txt
 /vendor/
 .git
 /tmp/
+/configurator/src/static_source/themes/
