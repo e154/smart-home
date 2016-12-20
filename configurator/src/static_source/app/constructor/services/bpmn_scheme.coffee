@@ -39,7 +39,7 @@ angular
         if wrapper.length == 0
           container.wrap('<div class="' + @wrap_class + '"></div>')
         @wrapper = container.parent('.' + @wrap_class).attr('id', @id)
-        preventSelection(document)
+#        preventSelection(document)
 
 #        create scope
         @scope = $rootScope.$new()
