@@ -1,5 +1,6 @@
 var source = "static_source";
 var tmp = "tmp";
+var assets = "assets";
 
 module.exports = {
     build_lib_js: {
@@ -69,5 +70,24 @@ module.exports = {
     ace_themes: {
         source: source + '/bower_components/ace-builds/**/*',
         dest: source + '/js/ace-builds'
+    },
+    redactor_theme_less: {
+        filename: 'style.css',
+        watch: 'static_source/app/constructor/themes/**/*',
+        minimal: {
+            source: [
+                'static_source/app/constructor/themes/minimal/**/*.less'
+            ],
+            dest: 'static_source/themes/minimal'
+        }
+    },
+    redactor_theme_files: {
+        watch: 'static_source/app/constructor/themes/**/*',
+        minimal: {
+            source: [
+                'static_source/app/constructor/themes/minimal/**/*.svg'
+            ],
+            dest: 'static_source/themes/minimal'
+        }
     }
 };

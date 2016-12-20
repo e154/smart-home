@@ -681,5 +681,81 @@
       display: none;
     }//ep
 
+    .flow {
+
+      // base color
+      // ------------------------
+      rect {
+        stroke:#000000;
+        stroke-width:2px;
+        display:block;
+        fill:#ffffff;
+      }
+
+      // ------------------------
+      &.active {
+        rect{
+          stroke: @hover;
+        }
+      }
+      &.done,
+      &.disabled {
+        rect{
+          stroke: @disbled;
+        }
+      }
+      &.selected {
+        rect{
+          stroke: @hover;
+        }
+      }
+      &:hover,
+      &.jsplumb-source-hover,
+      &.jsplumb-target-hover {
+        rect{
+          stroke: @hover;
+        }
+      }
+
+      .inner {
+        color: #111111;
+        position: absolute;
+        display: table;
+        width: 112px;
+        height: 92px;
+        top: 0;
+        padding: 10px;
+
+        .title {
+          display: table-cell;
+          width: 112px;
+          vertical-align: middle;
+          position: relative;
+          background-color: inherit;
+        }
+      }
+      .ep {
+        right: 7px;
+        top: 7px;
+      }
+
+      .label {
+        position: absolute;
+        bottom: 2px;
+        left: 91px;
+      }
+
+      .info {
+        position: absolute;
+        left: 5px;
+        bottom: -15px;
+        z-index: 999999;
+        padding: 3px;
+        background-color: rgba(255, 255, 255, 0.84);
+        opacity: 0.9;
+        width: 100px;
+      }
+    } //flow
+
   } //bpmn
 }

@@ -4,7 +4,7 @@ angular
 
   themeSettings =
     root_path: '/themes'
-    list: ['orange', 'minimal']
+    list: ['minimal']
 
   engineSettings =
     theme: 'minimal'
