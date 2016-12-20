@@ -12,21 +12,23 @@ import (
 	"github.com/astaxie/beego"
 	"net/rpc"
 	"net"
+	"sync"
 )
 
 type Node struct {
 	Id    		int64  		`orm:"pk;auto;column(id)" json:"id"`
 	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
 	Ip		string		`orm:"size(128)" json:"ip" valid:"IP;Required"`			// Must be a valid IPv4 address
-	Port 		int 		`orm:"size(11)" json:"port" valid:"Range(1, 65535);Required"`
-	Status	 	string 		`orm:"size(254)" json:"status"`
+	Port        	int 		`orm:"size(11)" json:"port" valid:"Range(1, 65535);Required"`
+	Status      	string 		`orm:"size(254)" json:"status"`
 	Description 	string 		`orm:"type(longtext)" json:"description"`
-	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
-	rpcClient	*rpc.Client	`orm:"-" json:"-"`
-	netConn		net.Conn	`orm:"-" json:"-"`
-	Errors		int64		`orm:"-" json:"-"`
-	connStatus	string		`orm:"-" json:"-"`
+	Created_at  	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at   	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	rpcClient   	*rpc.Client	`orm:"-" json:"-"`
+	netConn     	net.Conn	`orm:"-" json:"-"`
+	Errors      	int64		`orm:"-" json:"-"`
+	connStatus  	string		`orm:"-" json:"-"`
+	mutex       	sync.Mutex
 }
 
 func (m *Node) TableName() string {

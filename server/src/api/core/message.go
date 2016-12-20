@@ -9,4 +9,5 @@ type Message struct {
 	Flow		*models.Flow
 	Node		*models.Node
 	Result		string
+	Error		string
 }

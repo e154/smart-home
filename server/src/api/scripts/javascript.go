@@ -110,6 +110,8 @@ func (j *Javascript) Do() (result string, err error) {
 		return
 	}
 
+	j.ctx.PushTimers()
+
 	// call(arg)
 	// arg = stack - num args
 	if r := j.ctx.Pcall(0); r != 0 {

@@ -3,7 +3,6 @@ package core
 import (
 	"../log"
 	"fmt"
-	"time"
 	"errors"
 	"github.com/astaxie/beego/orm"
 	"../scripts"
@@ -83,6 +82,7 @@ type Flow struct {
 	workflow     	*Workflow
 	Connections  	[]*models.Connection
 	FlowElements 	[]*FlowElement
+	Node		*models.Node
 	Workers     	map[int64]*Worker
 	cursor       	[]*FlowElement
 	quit         	chan bool
@@ -195,96 +195,79 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 
 	// get node
 	// ------------------------------------------------
-	var node *models.Node
 	if _, ok := f.workflow.Nodes[worker.DeviceAction.Device.Node.Id]; ok {
-		node = f.workflow.Nodes[worker.DeviceAction.Device.Node.Id]
+		f.Node = f.workflow.Nodes[worker.DeviceAction.Device.Node.Id]
 	} else {
 		// autoload nodes
-		node, err = models.GetNodeById(worker.DeviceAction.Device.Node.Id)
+		f.Node, err = models.GetNodeById(worker.DeviceAction.Device.Node.Id)
 		if err != nil {
 			return
 		}
 
-		CorePtr().AddNode(node)
+		CorePtr().AddNode(f.Node)
 	}
 
 	// cron worker
 	// ------------------------------------------------
 	for _, device := range devices {
 
-		//var _command []byte
-		//_command = append(_command, byte(*device.Address))
-		//_command = append(_command, command...)
+		func(device *models.Device){
 
-		args := r.Request{
-			Baud: device.Baud,
-			Result: true,
-			//Command: _command,
-			Device: device.Tty,
-			Line: "",
-			StopBits: int(device.StopBite),
-			Time: time.Now(),
-			Timeout: device.Timeout,
-		}
-
-		// device
-		if f.Workers[worker.Id].Devices == nil {
-			f.Workers[worker.Id].Devices = make(map[int64]*models.Device)
-		}
-
-		f.Workers[worker.Id].Devices[device.Id] = device
-
-		// get script
-		// ------------------------------------------------
-		o := orm.NewOrm()
-		if _, err = o.LoadRelated(worker.DeviceAction, "Script"); err != nil {
-			return
-		}
-
-		// add script
-		script, _ := scripts.New(worker.DeviceAction.Script)
-
-
-		script.PushStruct("device", device)
-		script.PushStruct("flow", f.Model)
-		script.PushStruct("node", node)
-
-		script.PushFunction("modbus_send", func(command []byte) (result r.Result) {
-
-			args.Command = command
-			if err := node.ModbusSend(args, &result); err != nil {
-				result.Error = err.Error()
+			// device
+			if f.Workers[worker.Id].Devices == nil {
+				f.Workers[worker.Id].Devices = make(map[int64]*models.Device)
 			}
 
-			return
-		})
+			f.Workers[worker.Id].Devices[device.Id] = device
 
-		message := &Message{}
-		script.PushFunction("flow_new_message", func(v []byte) string {
-
-			message.Result = hex.EncodeToString(v)
-			message.Flow = f.Model
-			message.Device = device
-			message.Node = node
-
-			if err = f.NewMessage(message); err != nil {
-				log.Warn(err.Error())
-				return err.Error()
+			// get script
+			// ------------------------------------------------
+			o := orm.NewOrm()
+			if _, err = o.LoadRelated(worker.DeviceAction, "Script"); err != nil {
+				return
 			}
 
-			return ""
-		})
+			// add script
+			script, _ := scripts.New(worker.DeviceAction.Script)
+			script.PushStruct("device", device)
+			script.PushStruct("flow", f.Model)
+			script.PushStruct("node", f.Node)
+			script.PushStruct("request", &r.Request{})
 
-		// set cron
-		// ------------------------------------------------
-		if f.Workers[worker.Id].CronTasks == nil {
-			f.Workers[worker.Id].CronTasks = make(map[int64]*cr.Task)
-		}
+			script.PushFunction("modbus_send", func(args *r.Request) (result r.Result) {
+				if err := f.Node.ModbusSend(args, &result); err != nil {
+					result.Error = err.Error()
+				}
 
-		f.Workers[worker.Id].CronTasks[device.Id] = cron.NewTask(worker.Time, func() {
-			script.Do()
-		})
+				return
+			})
 
+			script.PushFunction("flow_new_message", func(v []byte) string {
+				message := &Message{
+					Result: hex.EncodeToString(v),
+					Flow: f.Model,
+					Device: device,
+					Node: f.Node,
+				}
+
+				if err = f.NewMessage(message); err != nil {
+					log.Warn(err.Error())
+					return err.Error()
+				}
+
+				return ""
+			})
+
+			// set cron
+			// ------------------------------------------------
+			if f.Workers[worker.Id].CronTasks == nil {
+				f.Workers[worker.Id].CronTasks = make(map[int64]*cr.Task)
+			}
+
+			f.Workers[worker.Id].CronTasks[device.Id] = cron.NewTask(worker.Time, func() {
+				script.Do()
+			})
+		}(device)
 	}
 
 	return

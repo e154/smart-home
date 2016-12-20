@@ -286,7 +286,10 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 					connect = false
 					node.SetConnectStatus("connected")
 				} else {
-					log.Debugf("Node error %s", err.Error())
+					node.Errors++
+					if node.Errors == 7 {
+						log.Errorf("Node error %s", err.Error())
+					}
 					node.SetConnectStatus("error")
 				}
 			}
@@ -375,15 +378,14 @@ func (b *Core) DisconnectNode(node *models.Node) (err error) {
 func (b *Core) UpdateScript(script *models.Script) (err error) {
 
 	for _, workflow := range b.workflows {
-		//for _, worker := range workflow.Workers {
-		//	if worker.Model.DeviceAction.Script.Id == script.Id {
-		//		workflow.UpdateWorker(worker.Model)
-		//		break
-		//		return
-		//	}
-		//}
-
 		for _, flow := range workflow.Flows {
+
+			for _, worker := range flow.Workers {
+				if worker.Model.DeviceAction.Script.Id == script.Id {
+					workflow.UpdateFlow(flow.Model)
+				}
+			}
+
 			for _, flowElement := range flow.FlowElements {
 				if flowElement.Model.Script == nil {
 					continue

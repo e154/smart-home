@@ -16,14 +16,12 @@ type Request struct {
 	Timeout		time.Duration	`json: "timeout"`
 	Command		[]byte		`json: "command"`
 	Result		bool		`json: "result"`
-	Time		time.Time	`json: "time"`
 }
 
 type Result struct {
 	Command   []byte		`json: "command"`
 	Device    string		`json: "device"`
-	Result    []byte		`json: "result"`
-	ResultStr string		`json: "str_result"`
+	Result    string		`json: "result"`
 	Error     string		`json: "error"`
 	ErrorCode string		`json: "error_code"`
 }
