@@ -105,17 +105,18 @@ func (b *Core) UpdateFlowFromDevice(device *models.Device) (err error) {
 	for _, workflow := range b.workflows {
 		for _, flow := range workflow.Flows {
 			for _, worker := range flow.Workers {
-				for _, dev := range worker.Devices {
-					if dev.Device.Id == device.Id {
-						workflow.UpdateFlow(flow.Model)
-						continue
-					}
-
-					if dev.Device != nil && dev.Device.Id == device.Id {
-						workflow.UpdateFlow(flow.Model)
-						continue
-					}
-				}
+				//TODO fix
+				//for _, dev := range worker.Devices {
+				//	if dev.Device.Id == device.Id {
+				//		workflow.UpdateFlow(flow.Model)
+				//		continue
+				//	}
+				//
+				//	if dev.Device != nil && dev.Device.Id == device.Id {
+				//		workflow.UpdateFlow(flow.Model)
+				//		continue
+				//	}
+				//}
 
 				if device.Device != nil && worker.Model.DeviceAction.Device.Id == device.Device.Id {
 					workflow.UpdateFlow(flow.Model)

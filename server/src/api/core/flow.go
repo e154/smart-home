@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"errors"
 	"github.com/astaxie/beego/orm"
-	"../scripts"
-	cr "github.com/e154/cron"
-	r "../../lib/rpc"
 	"../models"
 	"encoding/hex"
 )
@@ -143,11 +140,11 @@ func (f *Flow) InitWorkers() (err error) {
 	return
 }
 
-func (f *Flow) AddWorker(worker *models.Worker) (err error) {
+func (f *Flow) AddWorker(model *models.Worker) (err error) {
 
-	log.Infof("Add worker: \"%s\"", worker.Name)
+	log.Infof("Add worker: \"%s\"", model.Name)
 
-	if _, ok := f.Workers[worker.Id]; ok {
+	if _, ok := f.Workers[model.Id]; ok {
 		return
 	}
 
@@ -156,17 +153,18 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 		return
 	}
 
-	f.Workers[worker.Id] = &Worker{Model:worker,}
+	// generate new worker
+	worker := NewWorker(model)
 
 	// get device
 	// ------------------------------------------------
 	var devices []*models.Device
-	if worker.DeviceAction.Device.Address != nil {
-		devices = append(devices, worker.DeviceAction.Device)
+	if model.DeviceAction.Device.Address != nil {
+		devices = append(devices, model.DeviceAction.Device)
 	} else {
 		// значит тут группа устройств
 		var childs []*models.Device
-		if childs, _, err = worker.DeviceAction.Device.GetChilds(); err != nil {
+		if childs, _, err = model.DeviceAction.Device.GetChilds(); err != nil {
 			return
 		}
 
@@ -176,12 +174,12 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 			}
 
 			device := &models.Device{}
-			*device = *worker.DeviceAction.Device
+			*device = *model.DeviceAction.Device
 			device.Id = child.Id
 			device.Name = child.Name
 			device.Address = new(int)
 			*device.Address = *child.Address
-			device.Device = &models.Device{Id:worker.DeviceAction.Device.Id}
+			device.Device = &models.Device{Id:model.DeviceAction.Device.Id}
 			device.Tty = child.Tty
 			devices = append(devices, device)
 		}
@@ -189,11 +187,11 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 
 	// get node
 	// ------------------------------------------------
-	if _, ok := f.workflow.Nodes[worker.DeviceAction.Device.Node.Id]; ok {
-		f.Node = f.workflow.Nodes[worker.DeviceAction.Device.Node.Id]
+	if _, ok := f.workflow.Nodes[model.DeviceAction.Device.Node.Id]; ok {
+		f.Node = f.workflow.Nodes[model.DeviceAction.Device.Node.Id]
 	} else {
 		// autoload nodes
-		f.Node, err = models.GetNodeById(worker.DeviceAction.Device.Node.Id)
+		f.Node, err = models.GetNodeById(model.DeviceAction.Device.Node.Id)
 		if err != nil {
 			return
 		}
@@ -201,42 +199,25 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 		CorePtr().AddNode(f.Node)
 	}
 
-	// cron worker
+	// get script
+	// ------------------------------------------------
+	o := orm.NewOrm()
+	if _, err = o.LoadRelated(model.DeviceAction, "Script"); err != nil {
+		return
+	}
+
+	// add devices to worker
 	// ------------------------------------------------
 	for _, device := range devices {
 
 		func(device *models.Device){
 
-			// device
-			if f.Workers[worker.Id].Devices == nil {
-				f.Workers[worker.Id].Devices = make(map[int64]*models.Device)
-			}
-
-			f.Workers[worker.Id].Devices[device.Id] = device
-
-			// get script
-			// ------------------------------------------------
-			o := orm.NewOrm()
-			if _, err = o.LoadRelated(worker.DeviceAction, "Script"); err != nil {
+			var action *Action
+			if action, err = NewAction(device, model.DeviceAction, f.Node); err != nil {
 				return
 			}
 
-			// add script
-			script, _ := scripts.New(worker.DeviceAction.Script)
-			script.PushStruct("device", device)
-			script.PushStruct("flow", f.Model)
-			script.PushStruct("node", f.Node)
-			script.PushStruct("request", &r.Request{})
-
-			script.PushFunction("modbus_send", func(args *r.Request) (result r.Result) {
-				if err := f.Node.ModbusSend(args, &result); err != nil {
-					result.Error = err.Error()
-				}
-
-				return
-			})
-
-			script.PushFunction("flow_new_message", func(v []byte) string {
+			action.Script.PushFunction("flow_new_message", func(v []byte) string {
 				message := &Message{
 					Result: hex.EncodeToString(v),
 					Flow: f.Model,
@@ -252,17 +233,13 @@ func (f *Flow) AddWorker(worker *models.Worker) (err error) {
 				return ""
 			})
 
-			// set cron
-			// ------------------------------------------------
-			if f.Workers[worker.Id].CronTasks == nil {
-				f.Workers[worker.Id].CronTasks = make(map[int64]*cr.Task)
-			}
+			worker.AddAction(action)
 
-			f.Workers[worker.Id].CronTasks[device.Id] = cron.NewTask(worker.Time, func() {
-				script.Do()
-			})
 		}(device)
 	}
+
+	f.Workers[model.Id] = worker
+	f.Workers[model.Id].RegTask()
 
 	return
 }
@@ -294,13 +271,7 @@ func (f *Flow) RemoveWorker(worker *models.Worker) (err error) {
 	}
 
 	// stop cron task
-	for _, task := range f.Workers[worker.Id].CronTasks {
-
-		task.Disable()
-
-		// remove task from cron
-		cron.RemoveTask(task)
-	}
+	f.Workers[worker.Id].RemoveTask()
 
 	// delete worker
 	delete(f.Workers, worker.Id)

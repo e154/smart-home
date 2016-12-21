@@ -7,6 +7,3 @@ type ActionPrototypes interface {
 	Type() string
 }
 
-type Action interface {
-	Compare(*Message, *Flow) error
-}
