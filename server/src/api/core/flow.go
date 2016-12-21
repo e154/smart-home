@@ -12,12 +12,6 @@ import (
 	"encoding/hex"
 )
 
-type Worker struct {
-	Model     *models.Worker
-	CronTasks map[int64]*cr.Task
-	Devices   map[int64]*models.Device
-}
-
 func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
 
 	flow = &Flow{
