@@ -31,6 +31,11 @@ func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (
 	flowElement.Script.PushStruct("request", &r.Request{})
 	flowElement.Script.PushFunction("modbus_send", func(args *r.Request) (result r.Result) {
 
+		if flow.Node == nil {
+			result.Error = "Node is nil pointer"
+			return
+		}
+
 		if err := flow.Node.ModbusSend(args, &result); err != nil {
 			result.Error = err.Error()
 		}

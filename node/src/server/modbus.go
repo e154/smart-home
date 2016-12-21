@@ -9,7 +9,7 @@ import (
 	"errors"
 	"encoding/hex"
 	"sync"
-	"log"
+	"time"
 )
 
 const (
@@ -57,7 +57,7 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 		cache_ptr := cache.CachePtr()
 		cache_key := cache_ptr.GetKey(fmt.Sprintf("%d_dev", request.Command[ADDRESS]))
 
-		log.Println("send", request.Command)
+		//log.Println("send", request.Command)
 		//for i := 0; i<5; i++ {
 
 			cache_exist := cache_ptr.IsExist(cache_key)
@@ -70,6 +70,7 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 				}
 			} else {
 
+				//
 				devices := serial.FindSerials()
 				for _, device := range devices {
 					conn.Dev = device
@@ -106,9 +107,9 @@ func (m *Modbus) exec(conn *serial.Serial, command []byte) (result string, err e
 	cache_key := cache_ptr.GetKey(fmt.Sprintf("%d_dev", command[ADDRESS]))
 
 	if _, err = conn.Open(); err != nil {
-		cache_ptr.Delete(cache_key)
+		//cache_ptr.Delete(cache_key)
 		errcode = "SERIAL_PORT_ERROR"
-		log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
+		//log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
 		return
 	}
 	defer conn.Close()
@@ -116,15 +117,17 @@ func (m *Modbus) exec(conn *serial.Serial, command []byte) (result string, err e
 	modbus := &serial.Modbus{Serial: conn}
 	var b []byte
 	if b, err = modbus.Send(command); err != nil {
-		cache_ptr.Delete(cache_key)
+		//cache_ptr.Delete(cache_key)
 		errcode = "MODBUS_LINE_ERROR"
-		log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
+		//log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
 		return
 	}
-	result = hex.EncodeToString(b)
 
-	//cache update
+	result = hex.EncodeToString(b)
 	cache_ptr.Put("node", cache_key, conn.Dev)
+
+	// bug in the devices need timeout, need fix!!!
+	time.Sleep(time.Millisecond * 100)
 
 	return
 }

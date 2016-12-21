@@ -173,7 +173,6 @@ log, Worker, ngDialog, $filter) ->
     else $scope.selectedConn =
         object: null
 
-    console.log 'selected',$scope.selected
     $timeout ()->
       $scope.$apply()
 
