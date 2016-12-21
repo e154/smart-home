@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/astaxie/beego/orm"
 	"../models"
-	"encoding/hex"
 )
 
 func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
@@ -88,7 +87,11 @@ func (f *Flow) Remove() {
 
 func (f *Flow) NewMessage(message *Message) (err error) {
 
-	var exist bool
+
+	var _element *FlowElement
+
+	// find message handler
+	// ------------------------------------------------
 	for _, element := range f.FlowElements {
 		if element.Prototype == nil {
 			continue
@@ -98,14 +101,70 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 			continue
 		}
 
-		element.Run(message)
-
-		exist = true
+		_element = element
+		break
 	}
 
-	if !exist {
+	if _element == nil {
 		err = errors.New("Message handler not found")
+		return
 	}
+
+	// ------------------------------------------------
+	getNextElements := func(element *FlowElement, isScripted, isTrue bool) (elements []*FlowElement) {
+		// each connections
+		for _, conn := range f.Connections {
+			if conn.ElementFrom != element.Model.Uuid || conn.ElementTo == element.Model.Uuid {
+				continue
+			}
+
+			for _, element := range f.FlowElements {
+				if conn.ElementTo != element.Model.Uuid {
+					continue
+				}
+
+				if isScripted {
+					if conn.Direction == "true" {
+						if !isTrue {
+							continue
+						}
+					} else if conn.Direction == "false" {
+						if isTrue {
+							continue
+						}
+					}
+				}
+
+				// send message to linked flow
+				if element.Model.PrototypeType == "Flow" && element.Model.FlowLink.Valid {
+					//if flow, ok := f.workflow.Flows[element.Model.FlowLink.Int64]; ok {
+					//	go flow.NewMessage(message)
+					//}
+
+				} else {
+					elements = append(elements, element)
+				}
+			}
+		}
+
+		return
+	}
+
+	var runElement func(*FlowElement)
+	runElement = func(element *FlowElement) {
+		var isTrue, isScripted bool
+		//run script if exist
+		isScripted = element.Script != nil
+		res, _ := element.Run(message)
+		isTrue = res == "true"
+
+		elements := getNextElements(element, isScripted, isTrue)
+		for _, e := range elements {
+			runElement(e)
+		}
+	}
+
+	runElement(_element)
 
 	return
 }
@@ -154,7 +213,7 @@ func (f *Flow) AddWorker(model *models.Worker) (err error) {
 	}
 
 	// generate new worker
-	worker := NewWorker(model)
+	worker := NewWorker(model, f)
 
 	// get device
 	// ------------------------------------------------
@@ -216,22 +275,6 @@ func (f *Flow) AddWorker(model *models.Worker) (err error) {
 			if action, err = NewAction(device, model.DeviceAction, f.Node); err != nil {
 				return
 			}
-
-			action.Script.PushFunction("flow_new_message", func(v []byte) string {
-				message := &Message{
-					Result: hex.EncodeToString(v),
-					Flow: f.Model,
-					Device: device,
-					Node: f.Node,
-				}
-
-				if err = f.NewMessage(message); err != nil {
-					log.Warn(err.Error())
-					return err.Error()
-				}
-
-				return ""
-			})
 
 			worker.AddAction(action)
 

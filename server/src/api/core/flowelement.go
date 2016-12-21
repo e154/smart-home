@@ -59,93 +59,41 @@ type FlowElement struct {
 
 func (m *FlowElement) Before(message *Message) error {
 
-	m.mutex.Lock()
 	m.status = DONE
-	m.mutex.Unlock()
 	return m.Prototype.Before(message, m.Flow)
 }
 
 // run internal process
-func (m *FlowElement) Run(message *Message) (err error) {
+func (m *FlowElement) Run(message *Message) (res string, err error) {
 
-	m.mutex.Lock()
 	m.status = IN_PROCESS
-	m.mutex.Unlock()
 
 	//m.Flow.PushCursor(m)
 	err = m.Before(message)
 	err = m.Prototype.Run(message, m.Flow)
 
-	//run script if exist
-	var isTrue, isScripted bool
 	if m.Script != nil {
-		isScripted = true
 		m.Script.PushStruct("message", message)
-		res, _ := m.Script.Do()
-		isTrue = res == "true"
+		res, _ = m.Script.Do()
+	} else {
+		res = "false"
 	}
 
 	err = m.After(message)
-
-	// each connections
-	for _, conn := range m.Flow.Connections {
-		if conn.ElementFrom != m.Model.Uuid || conn.ElementTo == m.Model.Uuid {
-			continue
-		}
-
-		for _, element := range m.Flow.FlowElements {
-			if conn.ElementTo != element.Model.Uuid {
-				continue
-			}
-
-			if isScripted {
-				if conn.Direction == "true" {
-					if !isTrue {
-						continue
-					}
-				} else if conn.Direction == "false" {
-					if isTrue {
-						continue
-					}
-				}
-			}
-
-			// send message to linked flow
-			if element.Model.PrototypeType == "Flow" && element.Model.FlowLink.Valid {
-				if flow, ok := m.Workflow.Flows[element.Model.FlowLink.Int64]; ok {
-					go flow.NewMessage(message)
-				}
-
-			} else {
-				go element.Run(message)
-			}
-
-		}
-	}
-
 	//m.Flow.PopCursor(m)
 
-	m.mutex.Lock()
 	m.status = ENDED
-	m.mutex.Unlock()
 
 	return
 }
 
 func (m *FlowElement) After(message *Message) error {
-
-	m.mutex.Lock()
 	m.status = STARTED
-	m.mutex.Unlock()
-
 	return  m.Prototype.After(message, m.Flow)
 }
 
 func (m *FlowElement) GetStatus() (status Status) {
 
-	m.mutex.Lock()
 	status = m.status
-	m.mutex.Unlock()
-
 	return
 }

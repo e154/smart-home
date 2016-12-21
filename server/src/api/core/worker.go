@@ -4,12 +4,14 @@ import (
 	"../models"
 	cr "github.com/e154/cron"
 	"sync"
+	"../log"
 )
 
-func NewWorker(model *models.Worker) (worker *Worker) {
+func NewWorker(model *models.Worker, flow *Flow) (worker *Worker) {
 
 	worker = &Worker{
 		Model: model,
+		flow:	flow,
 		actions:	make(map[int64]*Action),
 	}
 
@@ -18,6 +20,7 @@ func NewWorker(model *models.Worker) (worker *Worker) {
 
 type Worker struct {
 	Model    *models.Worker
+	flow     *Flow
 	CronTask *cr.Task
 	mu       sync.Mutex
 	actions  map[int64]*Action
@@ -54,11 +57,27 @@ func (w *Worker) RegTask() {
 	})
 }
 
+// Run worker script, and send result to flow as message struct
 func (w *Worker) Do() {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
 	for _, action := range w.actions {
-		action.Do()
+		res, err := action.Do()
+		if err != nil {
+			log.Error(err.Error())
+		}
+
+		message := &Message{
+			Result: res,
+			Flow: w.flow.Model,
+			Device: action.Device,
+			Node: action.Node,
+		}
+
+		if err = w.flow.NewMessage(message); err != nil {
+			log.Error(err.Error())
+		}
+
 	}
 }
