@@ -10,7 +10,8 @@ angular
       limit:100
       offset:0
       order:'desc'
-      query:{}
+      query:
+        device_id: $stateParams.id
       sortby:'created_at'
 
     success =(result)->
