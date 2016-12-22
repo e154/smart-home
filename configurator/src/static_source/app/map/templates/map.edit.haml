@@ -1,10 +1,35 @@
 .row
-  .col-md-6
-    %h3 Редактирование карты
+  .col-sm-12
+    %h3
+      %a(href="" ui-sref="dashboard.map.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      Редактирование карты №{{map.id}} - {{map.name}}
+
+    .pull-right.date-info-block
+      %small
+        Создано {{map.created_at | readableDateTime}}
+      %small
+        Редактировалось {{map.update_at | readableDateTime}}
 
 .row
-  .col-md-12
-    %div(ng-include="'/map/templates/_map_form.html'")
+  .col-sm-12
+    .form-group
+      %ul.nav.nav-tabs
+        %li(role="presentation" ui-sref-active-eq="active" ui-sref="dashboard.map.edit.settings")
+          %a(href="#")
+            {{'map.settings' | translate}}
+        %li(role="presentation" ui-sref-active-eq="active" ui-sref="dashboard.map.edit.main")
+          %a(href="#")
+            {{'map.main_window' | translate}}
+        %li(role="presentation" ui-sref-active-eq="active" ui-sref="dashboard.map.edit.callback")
+          %a(href="#")
+            {{'map.callback' | translate}}
+
+.row
+  .col-sm-12
+    %div(ui-view="editortabs")
+
 .row
   .col-md-12
     .pull-right

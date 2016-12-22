@@ -36,6 +36,7 @@ angular
     .state(
       name: "dashboard.map.edit"
       url: "/:id"
+      abstract: true
       views:
         '@dashboard.map':
           templateUrl: '/map/templates/map.edit.html'
@@ -43,11 +44,29 @@ angular
     )
 
     .state(
+      name: "dashboard.map.edit.main"
+      url: ""
+      views:
+        'editortabs@dashboard.map.edit':
+          templateUrl: '/map/templates/map.main_window.html'
+          controller: 'mapEditCtrl'
+    )
+
+    .state(
       name: "dashboard.map.edit.settings"
       url: "/settings"
       views:
-        '@dashboard.map':
+        'editortabs@dashboard.map.edit':
           templateUrl: '/map/templates/map.settings.html'
+          controller: 'mapEditCtrl'
+    )
+
+    .state(
+      name: "dashboard.map.edit.callback"
+      url: "/callback"
+      views:
+        'editortabs@dashboard.map.edit':
+          templateUrl: '/map/templates/map.callback.html'
           controller: 'mapEditCtrl'
     )
 ]

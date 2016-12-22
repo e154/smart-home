@@ -181,6 +181,9 @@
     "name": "Название",
     "description": "Описание",
     "created_at": "Дата создания",
+    "settings": "Настройки",
+    "main_window": "Основное окно",
+    "callback": "Event callbacks",
     "update_at": "Дата обновления"
   }
 }
