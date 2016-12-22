@@ -55,7 +55,9 @@ angular
 
   vm.update =(_state)->
     success =(result)->
-      _state = result
+      angular.forEach vm.statuses, (status, key)->
+        if status.system_name == result.system_name
+          vm.statuses[key] = angular.copy result
 
     error =(result)->
       Message result.data.status, result.data.message
