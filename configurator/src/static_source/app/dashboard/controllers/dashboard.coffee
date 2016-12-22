@@ -13,6 +13,22 @@ angular
         'icon': 'fa fa-home'
       }
       {
+        'label': 'Maps'
+        'route': 'dashboard.map'
+        'link': 'dashboard.map.index'
+        'icon': 'fa fa-map-o'
+        'items': [
+          {
+            'label': 'All devices'
+            'route': 'dashboard.map.index'
+          }
+          {
+            'label': 'Add new'
+            'route': 'dashboard.map.new'
+          }
+        ]
+      }
+      {
         'label': 'Devices'
         'route': 'dashboard.device'
         'link': 'dashboard.device.index'

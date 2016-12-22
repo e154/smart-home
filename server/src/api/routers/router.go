@@ -84,6 +84,22 @@ func Initialize() {
 			beego.NSRouter("/email/items/tree", &controllers.EmailItemController{}, "get:GetTree"),
 			beego.NSRouter("/email/items/tree", &controllers.EmailItemController{}, "post:UpdateTree"),
 
+			beego.NSRouter("/map/:id([0-9]+)", &controllers.MapController{}, "get:GetOne"),
+			beego.NSRouter("/map", &controllers.MapController{}, "get:GetAll"),
+			beego.NSRouter("/map", &controllers.MapController{}, "post:Post"),
+			beego.NSRouter("/map/:id([0-9]+)", &controllers.MapController{}, "put:Put"),
+			beego.NSRouter("/map/:id([0-9]+)", &controllers.MapController{}, "delete:Delete"),
+			beego.NSRouter("/map_layer/:id([0-9]+)", &controllers.MapLayerController{}, "get:GetOne"),
+			beego.NSRouter("/map_layer", &controllers.MapLayerController{}, "get:GetAll"),
+			beego.NSRouter("/map_layer", &controllers.MapLayerController{}, "post:Post"),
+			beego.NSRouter("/map_layer/:id([0-9]+)", &controllers.MapLayerController{}, "put:Put"),
+			beego.NSRouter("/map_layer/:id([0-9]+)", &controllers.MapLayerController{}, "delete:Delete"),
+			beego.NSRouter("/map_entity/:id([0-9]+)", &controllers.MapEntityController{}, "get:GetOne"),
+			beego.NSRouter("/map_entity", &controllers.MapEntityController{}, "get:GetAll"),
+			beego.NSRouter("/map_entity", &controllers.MapEntityController{}, "post:Post"),
+			beego.NSRouter("/map_entity/:id([0-9]+)", &controllers.MapEntityController{}, "put:Put"),
+			beego.NSRouter("/map_entity/:id([0-9]+)", &controllers.MapEntityController{}, "delete:Delete"),
+
 	),
 	)
 	beego.AddNamespace(ns)

@@ -30,7 +30,7 @@ type EmailItem struct {
 type Items []*EmailItem
 
 func (i *EmailItem) TableName() string {
-	return beego.AppConfig.String("email_template")
+	return beego.AppConfig.String("db_email_templates")
 }
 
 func (i *EmailItem) GetTemplate() (tpl *EmailTemplate, err error) {
