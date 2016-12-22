@@ -16,6 +16,7 @@ type StreamCotroller struct {
 
 func (w *StreamCotroller) Get() {
 	h = sockjs.NewHandler("/ws", sockjs.DefaultOptions, w.echoHandler)
+	w.Ctx.ResponseWriter.Header().Del("Access-Control-Allow-Credentials")
 	h.ServeHTTP(w.Ctx.ResponseWriter, w.Ctx.Request)
 }
 
