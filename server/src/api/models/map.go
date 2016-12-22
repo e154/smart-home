@@ -13,7 +13,7 @@ import (
 
 type Map struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
-	Name        	string			`orm:"" json:"name"`
+	Name        	string			`orm:"" json:"name" valid:"MaxSize(254);Required"`
 	Description 	string			`orm:"" json:"description"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`

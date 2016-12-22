@@ -1,14 +1,23 @@
 .row
   .col-md-6
-    %h3 Новый скрипт
+    %h3 Новая карта
 
 .row
-  .col-md-12
-    %div(ng-include="'/map/templates/_map_form.html'")
+  .col-md-6
+    .form-group
+      %laber {{'map.name' | translate}}*
+      %input.form-control(ng-model="map.name")
+
 .row
-  .col-md-12
+  .col-md-6
+    .form-group
+      %laber {{'map.description' | translate}}
+      %textarea.form-control(ng-model="map.description" rows="10" )
+
+.row
+  .col-md-6
     .pull-right
       %a.btn.btn-default(href="" role="button" ui-sref="dashboard.map.index")
         {{'Cancel' | translate}}
-      %a.btn.btn-primary(href="" role="button" ng-click="Create()")
+      %a.btn.btn-primary(href="" role="button" ng-click="create()")
         {{'Create' | translate}}

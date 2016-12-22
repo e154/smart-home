@@ -41,4 +41,13 @@ angular
           templateUrl: '/map/templates/map.edit.html'
           controller: 'mapEditCtrl'
     )
+
+    .state(
+      name: "dashboard.map.edit.settings"
+      url: "/settings"
+      views:
+        '@dashboard.map':
+          templateUrl: '/map/templates/map.settings.html'
+          controller: 'mapEditCtrl'
+    )
 ]
