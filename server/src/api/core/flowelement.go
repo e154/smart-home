@@ -1,7 +1,6 @@
 package core
 
 import (
-	"sync"
 	"../models"
 	"../scripts"
 	r "../../lib/rpc"
@@ -31,6 +30,10 @@ func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (
 	flowElement.Script.PushStruct("request", &r.Request{})
 	flowElement.Script.PushFunction("modbus_send", func(args *r.Request) (result r.Result) {
 
+		if args == nil {
+			return
+		}
+
 		if flow.Node == nil {
 			result.Error = "Node is nil pointer"
 			return
@@ -54,7 +57,7 @@ type FlowElement struct {
 	Script		*scripts.Engine
 	Prototype	ActionPrototypes
 	status		Status
-	mutex     	sync.Mutex
+	Action		*Action
 }
 
 func (m *FlowElement) Before(message *Message) error {
@@ -64,22 +67,43 @@ func (m *FlowElement) Before(message *Message) error {
 }
 
 // run internal process
-func (m *FlowElement) Run(message *Message) (res string, err error) {
+func (m *FlowElement) Run(message *Message) (b bool, return_message *Message, err error) {
 
 	m.status = IN_PROCESS
 
 	//m.Flow.PushCursor(m)
-	err = m.Before(message)
-	err = m.Prototype.Run(message, m.Flow)
-
-	if m.Script != nil {
-		m.Script.PushStruct("message", message)
-		res, _ = m.Script.Do()
-	} else {
-		res = "false"
+	if err = m.Before(message); err != nil {
+		m.status = ERROR
+		return
 	}
 
-	err = m.After(message)
+	if err = m.Prototype.Run(message, m.Flow); err != nil {
+		m.status = ERROR
+		return
+	}
+
+	return_message = &Message{}
+	*return_message = *message
+
+	//run script if exist
+	if m.Script != nil {
+
+		m.Script.PushStruct("message", message)
+
+		var ok string
+		if ok, err = m.Script.Do(); err != nil {
+			m.status = ERROR
+			return
+		}
+
+		b = ok == "true"
+	}
+
+	if err = m.After(message); err != nil {
+		m.status = ERROR
+		return
+	}
+
 	//m.Flow.PopCursor(m)
 
 	m.status = ENDED

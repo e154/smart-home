@@ -137,9 +137,9 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 
 				// send message to linked flow
 				if element.Model.PrototypeType == "Flow" && element.Model.FlowLink.Valid {
-					//if flow, ok := f.workflow.Flows[element.Model.FlowLink.Int64]; ok {
-					//	go flow.NewMessage(message)
-					//}
+					if flow, ok := f.workflow.Flows[element.Model.FlowLink.Int64]; ok {
+						go flow.NewMessage(message)
+					}
 
 				} else {
 					elements = append(elements, element)
@@ -151,14 +151,21 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 	}
 
 	var runElement func(*FlowElement)
+	var return_message *Message
 	runElement = func(element *FlowElement) {
-		var isTrue, isScripted bool
-		//run script if exist
+		var ok, isScripted bool
 		isScripted = element.Script != nil
-		res, _ := element.Run(message)
-		isTrue = res == "true"
+		if ok, return_message, err = element.Run(message); err != nil {
+			log.Error(err.Error())
+			return
+		}
 
-		elements := getNextElements(element, isScripted, isTrue)
+		// copy message
+		if return_message != nil {
+			message = return_message
+		}
+
+		elements := getNextElements(element, isScripted, ok)
 		for _, e := range elements {
 			runElement(e)
 		}
@@ -269,16 +276,13 @@ func (f *Flow) AddWorker(model *models.Worker) (err error) {
 	// ------------------------------------------------
 	for _, device := range devices {
 
-		func(device *models.Device){
+		var action *Action
+		if action, err = NewAction(device, model.DeviceAction.Script, f.Node); err != nil {
+			log.Error(err.Error())
+			continue
+		}
 
-			var action *Action
-			if action, err = NewAction(device, model.DeviceAction, f.Node); err != nil {
-				return
-			}
-
-			worker.AddAction(action)
-
-		}(device)
+		worker.AddAction(action)
 	}
 
 	f.Workers[model.Id] = worker
