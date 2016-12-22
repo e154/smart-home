@@ -11,47 +11,48 @@ import (
 	"time"
 )
 
-type MapEntity struct {
+type MapElement struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
 	Name        	string			`orm:"" json:"name"`
 	Description 	string			`orm:"" json:"description"`
+	GraphSettings	string			`orm:"column(graph_settings)" json:"graph_settings"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
-func (m *MapEntity) TableName() string {
-	return beego.AppConfig.String("db_map_entities")
+func (m *MapElement) TableName() string {
+	return beego.AppConfig.String("db_map_elements")
 }
 
 func init() {
-	orm.RegisterModel(new(MapEntity))
+	orm.RegisterModel(new(MapElement))
 }
 
-// AddMapEntity insert a new MapEntity into database and returns
+// AddMapElement insert a new MapElement into database and returns
 // last inserted Id on success.
-func AddMapEntity(m *MapEntity) (id int64, err error) {
+func AddMapElement(m *MapElement) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetMapEntityById retrieves MapEntity by Id. Returns error if
+// GetMapElementById retrieves MapElement by Id. Returns error if
 // Id doesn't exist
-func GetMapEntityById(id int64) (v *MapEntity, err error) {
+func GetMapElementById(id int64) (v *MapElement, err error) {
 	o := orm.NewOrm()
-	v = &MapEntity{Id: id}
+	v = &MapElement{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllMapEntity retrieves all MapEntity matches certain condition. Returns empty list if
+// GetAllMapElement retrieves all MapElement matches certain condition. Returns empty list if
 // no records exist
-func GetAllMapEntity(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllMapElement(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(MapEntity))
+	qs := o.QueryTable(new(MapElement))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -97,7 +98,7 @@ func GetAllMapEntity(query map[string]string, fields []string, sortby []string, 
 		}
 	}
 
-	var l []MapEntity
+	var l []MapElement
 	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
@@ -129,11 +130,11 @@ func GetAllMapEntity(query map[string]string, fields []string, sortby []string, 
 	return nil, nil, err
 }
 
-// UpdateMapEntity updates MapEntity by Id and returns error if
+// UpdateMapElement updates MapElement by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateMapEntityById(m *MapEntity) (err error) {
+func UpdateMapElementById(m *MapElement) (err error) {
 	o := orm.NewOrm()
-	v := MapEntity{Id: m.Id}
+	v := MapElement{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -144,15 +145,15 @@ func UpdateMapEntityById(m *MapEntity) (err error) {
 	return
 }
 
-// DeleteMapEntity deletes MapEntity by Id and returns error if
+// DeleteMapElement deletes MapElement by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteMapEntity(id int64) (err error) {
+func DeleteMapElement(id int64) (err error) {
 	o := orm.NewOrm()
-	v := MapEntity{Id: id}
+	v := MapElement{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&MapEntity{Id: id}); err == nil {
+		if num, err = o.Delete(&MapElement{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}

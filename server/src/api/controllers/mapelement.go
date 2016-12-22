@@ -7,13 +7,13 @@ import (
 	"../models"
 )
 
-// MapEntityController operations for MapEntity
-type MapEntityController struct {
+// MapElementController operations for MapElement
+type MapElementController struct {
 	CommonController
 }
 
 // URLMapping ...
-func (c *MapEntityController) URLMapping() {
+func (c *MapElementController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
@@ -23,13 +23,13 @@ func (c *MapEntityController) URLMapping() {
 
 // Post ...
 // @Title Create
-// @Description create MapEntity
-// @Param	body		body 	models.MapEntity	true		"body for MapEntity content"
-// @Success 201 {object} models.MapEntity
+// @Description create MapElement
+// @Param	body		body 	models.MapElement	true		"body for MapElement content"
+// @Success 201 {object} models.MapElement
 // @Failure 403 body is empty
 // @router / [post]
-func (c *MapEntityController) Post() {
-	var entity models.MapEntity
+func (c *MapElementController) Post() {
+	var entity models.MapElement
 	json.Unmarshal(c.Ctx.Input.RequestBody, &entity)
 
 	// validation
@@ -49,7 +49,7 @@ func (c *MapEntityController) Post() {
 		return
 	}
 
-	if _, err = models.AddMapEntity(&entity); err != nil {
+	if _, err = models.AddMapElement(&entity); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
@@ -60,14 +60,14 @@ func (c *MapEntityController) Post() {
 
 // GetOne ...
 // @Title GetOne
-// @Description get MapEntity by id
+// @Description get MapElement by id
 // @Param	id		path 	string	true		"The key for staticblock"
-// @Success 200 {object} models.MapEntity
+// @Success 200 {object} models.MapElement
 // @Failure 403 :id is empty
 // @router /:id [get]
-func (c *MapEntityController) GetOne() {
+func (c *MapElementController) GetOne() {
 	id, _ := c.GetInt(":id")
-	entity, err := models.GetMapEntityById(int64(id))
+	entity, err := models.GetMapElementById(int64(id))
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
@@ -79,17 +79,17 @@ func (c *MapEntityController) GetOne() {
 
 // GetAll ...
 // @Title GetAll
-// @Description get MapEntity
+// @Description get MapElement
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
 // @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
 // @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
 // @Param	offset	query	string	false	"Start position of result set. Must be an integer"
-// @Success 200 {object} models.MapEntity
+// @Success 200 {object} models.MapElement
 // @Failure 403
 // @router / [get]
-func (c *MapEntityController) GetAll() {
+func (c *MapElementController) GetAll() {
 	ml, meta, err := models.GetAllMap(c.pagination())
 	if err != nil {
 		c.ErrHan(403, err.Error())
@@ -102,18 +102,18 @@ func (c *MapEntityController) GetAll() {
 
 // Put ...
 // @Title Put
-// @Description update the MapEntity
+// @Description update the MapElement
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	models.MapEntity	true		"body for MapEntity content"
-// @Success 200 {object} models.MapEntity
+// @Param	body		body 	models.MapElement	true		"body for MapElement content"
+// @Success 200 {object} models.MapElement
 // @Failure 403 :id is not int
 // @router /:id [put]
-func (c *MapEntityController) Put() {
+func (c *MapElementController) Put() {
 	id, _ := c.GetInt(":id")
-	var entity models.MapEntity
+	var entity models.MapElement
 	json.Unmarshal(c.Ctx.Input.RequestBody, &entity)
 	entity.Id = int64(id)
-	if err := models.UpdateMapEntityById(&entity); err != nil {
+	if err := models.UpdateMapElementById(&entity); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
@@ -123,14 +123,14 @@ func (c *MapEntityController) Put() {
 
 // Delete ...
 // @Title Delete
-// @Description delete the MapEntity
+// @Description delete the MapElement
 // @Param	id		path 	string	true		"The id you want to delete"
 // @Success 200 {string} delete success!
 // @Failure 403 id is empty
 // @router /:id [delete]
-func (c *MapEntityController) Delete() {
+func (c *MapElementController) Delete() {
 	id, _ := c.GetInt(":id")
-	if err := models.DeleteMapEntity(int64(id)); err != nil {
+	if err := models.DeleteMapElement(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
