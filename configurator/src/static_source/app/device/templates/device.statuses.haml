@@ -1,0 +1,30 @@
+.row
+  .col-md-6
+    .row
+      .col-md-12
+        .form-group
+          %a(href="#" ng-click="status.addNew()")
+            .fa.fa-plus &nbsp;
+            {{'device.status.add' | translate}}
+
+.row
+  .col-md-12
+    .row(ng-repeat="_state in status.statuses" )
+      .col-md-3
+        .form-group
+          %laber {{'device.status.system_name' | translate}}*
+          %input.form-control(ng-model="_state.system_name" type="text" ng-disabled="_state.id" )
+      .col-md-6
+        .form-group
+          %laber {{'device.status.description' | translate}}
+          %input.form-control(ng-model="_state.description" type="text")
+      .col-md-3
+        .form-group
+          %laber {{'device.status.action' | translate}}
+          .input-group-btn
+            %button.btn.btn-default(ng-click="status.remove(_state)")
+              {{'Delete' | translate}}
+            %button.btn.btn-default(ng-click="status.update(_state)" ng-if="_state.id")
+              {{'Update' | translate}}
+            %button.btn.btn-default(ng-click="status.create(_state)" ng-if="!_state.id")
+              {{'Create' | translate}}

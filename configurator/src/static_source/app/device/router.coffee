@@ -51,11 +51,11 @@ angular
     )
 
     .state(
-      name: "dashboard.device.show.tasks"
-      url: "/tasks"
+      name: "dashboard.device.show.statuses"
+      url: "/statuses"
       views:
         "tab-view@dashboard.device.show":
-          templateUrl: '/device/templates/device.task.html'
-          controller: 'deviceTaskCtrl as task'
+          templateUrl: '/device/templates/device.statuses.html'
+          controller: 'deviceStatusCtrl as status'
     )
 ]

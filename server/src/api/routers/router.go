@@ -100,6 +100,12 @@ func Initialize() {
 			beego.NSRouter("/map_entity/:id([0-9]+)", &controllers.MapEntityController{}, "put:Put"),
 			beego.NSRouter("/map_entity/:id([0-9]+)", &controllers.MapEntityController{}, "delete:Delete"),
 
+			beego.NSRouter("/device_state/:id([0-9]+)", &controllers.DeviceStateController{}, "get:GetOne"),
+			beego.NSRouter("/device_state", &controllers.DeviceStateController{}, "get:GetAll"),
+			beego.NSRouter("/device_state", &controllers.DeviceStateController{}, "post:Post"),
+			beego.NSRouter("/device_state/:id([0-9]+)", &controllers.DeviceStateController{}, "put:Put"),
+			beego.NSRouter("/device_state/:id([0-9]+)", &controllers.DeviceStateController{}, "delete:Delete"),
+
 	),
 	)
 	beego.AddNamespace(ns)

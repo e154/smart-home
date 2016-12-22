@@ -25,7 +25,7 @@
 
     .form-group
       .text-muted
-        {{'device.status' | translate}}
+        {{'device.status.name' | translate}}
       %span.label.label-success(ng-if="device.device.status == 'enabled'")
         {{"device.enabled" | translate}}
       %span.label.label-default(ng-if="device.device.status == 'disabled'")
@@ -73,9 +73,9 @@
         %li(role="presentation" ui-sref-active-eq="active" ui-sref="dashboard.device.show")
           %a(href="#")
             {{'device.actions' | translate}}
-        %li(role="presentation" ui-sref-active-eq="active" ui-sref="dashboard.device.show.tasks")
+        %li(role="presentation" ui-sref-active-eq="active" ui-sref="dashboard.device.show.statuses")
           %a(href="#")
-            {{'device.tasks' | translate}}
+            {{'device.statuses' | translate}}
 
 
     %div(ui-view="tab-view")
