@@ -15,6 +15,10 @@ type MapElement struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
 	Name        	string			`orm:"" json:"name"`
 	Description 	string			`orm:"" json:"description"`
+	Status		string			`orm:"" json:"status"`
+	Type		string			`orm:"" json:"type"`
+	Layer		*MapLayer		`orm:"rel(fk)" json:"layer"`
+	Map		*Map			`orm:"rel(fk)" json:"map"`
 	GraphSettings	string			`orm:"column(graph_settings)" json:"graph_settings"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`

@@ -14,6 +14,7 @@ import (
 type MapLayer struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
 	Name        	string			`orm:"" json:"name"`
+	Status		string			`orm:"" json:"status"`
 	Description 	string			`orm:"" json:"description"`
 	Map	 	*Map			`orm:"rel(fk)" json:"map"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
