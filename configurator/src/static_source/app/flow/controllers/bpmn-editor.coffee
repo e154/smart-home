@@ -1,9 +1,9 @@
 angular
 .module('appControllers')
 .controller 'bpmnEditorCtrl', ['$scope', 'Notify', 'Flow', '$stateParams', '$state', '$timeout', 'bpmnMock'
-'bpmnScheme', 'bpmnSettings', '$http', 'log', 'Worker', 'ngDialog', '$filter'
+'bpmnScheme', 'bpmnSettings', '$http', 'log', 'Worker', 'ngDialog', '$filter', 'Stream'
 ($scope, Notify, Flow, $stateParams, $state, $timeout, bpmnMock, bpmnScheme, bpmnSettings, $http
-log, Worker, ngDialog, $filter) ->
+log, Worker, ngDialog, $filter, Stream) ->
   vm = this
 
   $scope.selected = []
@@ -203,6 +203,14 @@ log, Worker, ngDialog, $filter) ->
       if $scope.flow.workers[i].id == worker.id
         $scope.flow.workers.splice(i, 1)
         break
+
+  $scope.doWorker =(worker, $index)->
+    return if !worker.id
+    Stream.sendRequest("do.worker", {worker_id: worker.id}).then (result)->
+      if !result.error
+        Notify 'success', "Команда выполнена успешно", 3
+      else
+        Notify 'error', "Результат выполнения команды:\n\r #{result.error}", 3
 
   # get device actions (select2)
   $scope.actions = []

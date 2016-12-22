@@ -3,8 +3,6 @@ package core
 import (
 	"../log"
 	"time"
-	"encoding/json"
-	"reflect"
 	"../models"
 	"../stream"
 	cr "github.com/e154/cron"
@@ -105,18 +103,17 @@ func (b *Core) UpdateFlowFromDevice(device *models.Device) (err error) {
 	for _, workflow := range b.workflows {
 		for _, flow := range workflow.Flows {
 			for _, worker := range flow.Workers {
-				//TODO fix
-				//for _, dev := range worker.Devices {
-				//	if dev.Device.Id == device.Id {
-				//		workflow.UpdateFlow(flow.Model)
-				//		continue
-				//	}
-				//
-				//	if dev.Device != nil && dev.Device.Id == device.Id {
-				//		workflow.UpdateFlow(flow.Model)
-				//		continue
-				//	}
-				//}
+				for _, action := range worker.actions {
+					if action.Device.Id == device.Id {
+						workflow.UpdateFlow(flow.Model)
+						continue
+					}
+
+					if action.Device != nil && action.Device.Id == device.Id {
+						workflow.UpdateFlow(flow.Model)
+						continue
+					}
+				}
 
 				if device.Device != nil && worker.Model.DeviceAction.Device.Id == device.Device.Id {
 					workflow.UpdateFlow(flow.Model)
@@ -154,6 +151,20 @@ func (b *Core) RemoveWorker(_worker *models.Worker) (err error) {
 					flow.RemoveWorker(_worker)
 					break
 				}
+			}
+		}
+	}
+
+	return
+}
+
+func (b *Core) DoWorker(model *models.Worker) (err error) {
+
+	for _, workflow := range b.workflows {
+		for _, flow := range workflow.Flows {
+			if worker, ok := flow.Workers[model.Id]; ok {
+				worker.Do()
+				break
 			}
 		}
 	}
@@ -402,41 +413,6 @@ func (b *Core) UpdateScript(script *models.Script) (err error) {
 	return
 }
 
-// ------------------------------------------------
-// etc
-// ------------------------------------------------
-
-func streamWorkflowsStatus(client *stream.Client, value interface{}) {
-
-	return
-}
-
-func GetNodesStatus() (result map[int64]string) {
-	result = make(map[int64]string)
-	for _, node := range corePtr.nodes {
-		result[node.Id] = node.GetConnectStatus()
-	}
-
-	return
-}
-
-func streamNodesStatus(client *stream.Client, value interface{}) {
-	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-	if !ok {
-		return
-	}
-
-	result := GetNodesStatus()
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "nodes": result})
-	client.Send(string(msg))
-}
-
-func BroadcastNodesStatus() {
-	result := GetNodesStatus()
-	msg, _ := json.Marshal(map[string]interface{}{"type": "broadcast", "value": &map[string]interface{}{"type": "nodes", "body": result}})
-	Hub.Broadcast(string(msg))
-}
-
 func Initialize() (err error) {
 	log.Info("Core initialize...")
 
@@ -454,6 +430,7 @@ func Initialize() (err error) {
 	Hub.Subscribe("get.nodes.status", streamNodesStatus)
 	Hub.Subscribe("get.workflow.status", streamWorkflowsStatus)
 	Hub.Subscribe("get.flows.status", streamWorkflowsStatus)
+	Hub.Subscribe("do.worker", streamDoWorker)
 
 	return
 }

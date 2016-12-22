@@ -33,5 +33,8 @@
       {{'No data' | translate}}
 
 .form-group
+  %a.btn.btn-success.full-width(ng-click="doWorker(worker, $index)")
+    {{'flow.do_worker' | translate}}
+.form-group
   %a.btn.btn-default.full-width(ng-click="removeWorker(worker, $index)")
     {{'flow.remove_worker' | translate}}
