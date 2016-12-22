@@ -1,8 +1,8 @@
 angular
 .module('appControllers')
 .controller 'deviceActionCtrl', ['$scope', 'Notify', 'DeviceAction', 'Message', '$stateParams', 'Device'
-'$http', 'ngDialog'
-($scope, Notify, DeviceAction, Message, $stateParams, Device, $http, ngDialog) ->
+'$http', 'ngDialog', 'Stream'
+($scope, Notify, DeviceAction, Message, $stateParams, Device, $http, ngDialog, Stream) ->
   vm = this
   vm.actions = []
   vm.current ={}
@@ -117,6 +117,17 @@ angular
       className: 'ngdialog-theme-default ngdialog-scripts-edit'
       controller: 'scriptModalEditCtrl'
       controllerAs: 'script'
+
+  vm.doAction =(action, e)->
+    e.preventDefault()
+    e.stopPropagation()
+    return if !action.id
+
+    Stream.sendRequest("do.action", {action_id: action.id, device_id: parseInt($stateParams.id, 10)}).then (result)->
+      if !result.error
+        Notify 'success', "Команда выполнена успешно", 3
+      else
+        Notify 'error', "Результат выполнения команды:\n\r #{result.error}", 3
 
   # starting
   # ------------------------------------------

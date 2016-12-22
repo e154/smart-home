@@ -384,6 +384,10 @@ func (b *Core) DisconnectNode(node *models.Node) (err error) {
 	return
 }
 
+func (b *Core) GetNodes() (map[int64]*models.Node) {
+	return b.nodes
+}
+
 // ------------------------------------------------
 // Script
 // ------------------------------------------------
@@ -431,6 +435,7 @@ func Initialize() (err error) {
 	Hub.Subscribe("get.workflow.status", streamWorkflowsStatus)
 	Hub.Subscribe("get.flows.status", streamWorkflowsStatus)
 	Hub.Subscribe("do.worker", streamDoWorker)
+	Hub.Subscribe("do.action", streamDoAction)
 
 	return
 }

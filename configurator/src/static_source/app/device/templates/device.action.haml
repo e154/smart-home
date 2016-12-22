@@ -34,7 +34,12 @@
           .pull-right.small
             Редактировалось {{act.update_at | readableDateTime}}
           .clearfix
-          .list-group-item-text
+          .pull-right
+            %button.btn.btn-success.btn-xs(ng-click="action.doAction(act, $event)" type="button")
+              .fa.fa-play
+              &nbsp;
+              {{'device.action.do_action' | translate}}
+          .pull-left.list-group-item-text
             .small
               {{'device.device' | translate}} {{act.device.name}}
             .small
@@ -46,3 +51,4 @@
               %span.text-muted
                 {{act.script.lang}}
               )
+          .clearfix
