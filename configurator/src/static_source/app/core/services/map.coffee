@@ -27,4 +27,16 @@ angular
       transformResponse: (data) ->
         meta: data?.meta || {}
         items: data?.maps || []
+
+    showFull:
+      url: window.server_url + '/api/v1/map/:id/full'
+      method: 'GET'
+      responseType: 'json'
+      transformResponse: (data) ->
+        data?.map || data
+
+    updateFull:
+      url: window.server_url + '/api/v1/map/:id/full'
+      method: 'PUT'
+      responseType: 'json'
 ]

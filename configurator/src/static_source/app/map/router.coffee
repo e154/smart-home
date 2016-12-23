@@ -40,7 +40,6 @@ angular
       views:
         '@dashboard.map':
           templateUrl: '/map/templates/map.edit.html'
-          controller: 'mapEditCtrl'
     )
 
     .state(
@@ -48,7 +47,7 @@ angular
       url: ""
       views:
         'editortabs@dashboard.map.edit':
-          templateUrl: '/map/templates/map.main_window.html'
+          templateUrl: '/map/templates/map.editor.main_window.html'
           controller: 'mapEditCtrl'
     )
 
@@ -57,7 +56,7 @@ angular
       url: "/settings"
       views:
         'editortabs@dashboard.map.edit':
-          templateUrl: '/map/templates/map.settings.html'
+          templateUrl: '/map/templates/map.editor.settings.html'
           controller: 'mapEditCtrl'
     )
 
@@ -66,7 +65,7 @@ angular
       url: "/callback"
       views:
         'editortabs@dashboard.map.edit':
-          templateUrl: '/map/templates/map.callback.html'
+          templateUrl: '/map/templates/map.editor.callback.html'
           controller: 'mapEditCtrl'
     )
 ]

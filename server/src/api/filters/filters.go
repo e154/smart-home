@@ -14,7 +14,6 @@ func RegisterFilters() {
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
 		AllowAllOrigins: true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "UPDATE"},
-		AllowHeaders:     []string{"X-Requested-With"},
 		AllowCredentials: true,
 	}))
 

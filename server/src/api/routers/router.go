@@ -85,9 +85,11 @@ func Initialize() {
 			beego.NSRouter("/email/items/tree", &controllers.EmailItemController{}, "post:UpdateTree"),
 
 			beego.NSRouter("/map/:id([0-9]+)", &controllers.MapController{}, "get:GetOne"),
+			beego.NSRouter("/map/:id([0-9]+)/full", &controllers.MapController{}, "get:GetFull"),
 			beego.NSRouter("/map", &controllers.MapController{}, "get:GetAll"),
 			beego.NSRouter("/map", &controllers.MapController{}, "post:Post"),
 			beego.NSRouter("/map/:id([0-9]+)", &controllers.MapController{}, "put:Put"),
+			beego.NSRouter("/map/:id([0-9]+)/full", &controllers.MapController{}, "put:PutFull"),
 			beego.NSRouter("/map/:id([0-9]+)", &controllers.MapController{}, "delete:Delete"),
 			beego.NSRouter("/map_layer/:id([0-9]+)", &controllers.MapLayerController{}, "get:GetOne"),
 			beego.NSRouter("/map_layer", &controllers.MapLayerController{}, "get:GetAll"),

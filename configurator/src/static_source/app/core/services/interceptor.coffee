@@ -2,7 +2,7 @@ angular
 .module('appServices')
 .factory('myHttpInterceptor', ['$q','$injector', ($q, $injector) ->
   'request': (config) ->
-    config.headers['X-Requested-With'] = 'XMLHttpRequest'
+#    config.headers['X-Requested-With'] = 'XMLHttpRequest'
     config
 
   'requestError': (rejection) ->

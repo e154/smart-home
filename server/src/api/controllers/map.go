@@ -17,7 +17,9 @@ func (c *MapController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
+	c.Mapping("GetFull", c.GetFull)
 	c.Mapping("Put", c.Put)
+	c.Mapping("PutFull", c.PutFull)
 	c.Mapping("Delete", c.Delete)
 }
 
@@ -136,4 +138,12 @@ func (c *MapController) Delete() {
 	}
 
 	c.ServeJSON()
+}
+
+func (c *MapController) GetFull() {
+
+}
+
+func (c *MapController) PutFull() {
+
 }

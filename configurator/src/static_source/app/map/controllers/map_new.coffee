@@ -7,7 +7,7 @@ angular
 
   $scope.create =->
     success =(data)->
-      $state.go("dashboard.map.edit", {id: data.id})
+      $state.go("dashboard.map.edit.main", {id: data.id})
 
     error =(result)->
       Message result.data.status, result.data.message

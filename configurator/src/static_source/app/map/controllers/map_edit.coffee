@@ -1,39 +1,24 @@
 angular
 .module('appControllers')
-.controller 'mapEditCtrl', ['$scope', 'Map', '$state', 'Message', '$stateParams'
-($scope, Map, $state, Message, $stateParams) ->
+.controller 'mapEditCtrl', ['$scope', 'Map', '$state', 'Message', '$stateParams', 'mapConstructor', 'Notify'
+($scope, Map, $state, Message, $stateParams, mapConstructor, Notify) ->
 
-  $scope.map = {}
-
-  #------------------------------------------------------------------------------
-  # crud
-  #------------------------------------------------------------------------------
-  $scope.getMap =->
-    success =(data)->
-      $scope.map = angular.copy(data)
-    error =(result)->
-      Message result.data.status, result.data.message
-    Map.show {id: $stateParams.id}, success, error
+  $scope.map = new mapConstructor($scope, $stateParams.id)
 
   $scope.remove =->
-    return if !confirm('Вы точно хотите удалить эту карту?')
     success =(data)->
-      $state.go("dashboard.map.index", {id: data.id})
-    error =(result)->
-      Message result.data.status, result.data.message
-    $scope.map.$delete success, error
+      $state.go("dashboard.map.index")
+    $scope.map.remove success
 
   $scope.update =->
-    success =->
+    success =(data)->
       Notify 'success', 'Карта успешно обновлена', 3
-    error =(result)->
-      Message result.data.status, result.data.message
-    $scope.map.$update success, error
-
+    $scope.map.update success
 
   #------------------------------------------------------------------------------
   # init
   #------------------------------------------------------------------------------
-  $scope.getMap()
+  $scope.map.load()
 
+  return
 ]
