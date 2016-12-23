@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'Fullscreen', ['log', (log) ->
-    class Fullscreen
+.factory 'mapFullscreen', ['log', (log) ->
+    class mapFullscreen
       container: null
       scope: null
       available: false
@@ -45,5 +45,5 @@ angular
         else
           @toFull()
 
-    Fullscreen
+    mapFullscreen
 ]

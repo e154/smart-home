@@ -8,17 +8,21 @@ angular
       elements: null
       settings: null
       scope: null
+      panning: null
       container: null
       wrap_class: 'map-wrapper'
       wrapper: null
-
-      grid: 5
-      minHeight: 400
-      minWidth: 400
       model: null
 
       constructor: (@scope, @id)->
         @model = new Map({id: @id})
+        @scope.zoom = 1.0
+        @scope.settings =
+          movable: true
+          zoom: true
+          grid: 5
+          minHeight: 400
+          minWidth: 400
 
       update: (cb)->
         @fadeIn()
