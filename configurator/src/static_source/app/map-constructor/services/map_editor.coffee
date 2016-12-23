@@ -14,12 +14,12 @@ angular
         if wrapper.length == 0
           @container.wrap('<div class="' + @wrap_class + '"></div>')
         @wrapper = @container.parent('.' + @wrap_class).attr('id', @id)
-        @wrapper.append('<div class="page-loader"><div class="spinner">loading...</div></div>')
+        @wrapper.append('<div class="page-loader"><div class="spinner">{{"loading..."| translate}}</div></div>')
 
         # fullscreen
         # --------------------
         @fullscreen = new mapFullscreen(@wrapper, @scope)
-        @wrapper.append($compile('<div class="fullscreen entry" ng-click="resize()" data-help="resize editor window">full screen</div>')(@scope)) if @fullscreen.available
+        @wrapper.append($compile('<div class="fullscreen entry" ng-click="resize()" data-help="resize editor window">{{"full screen" | translate}}</div>')(@scope)) if @fullscreen.available
 
         # resizable
         # --------------------

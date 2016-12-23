@@ -4,13 +4,13 @@
       %a(href="" ui-sref="dashboard.map.index")
         %small.fa.fa-long-arrow-left
           &nbsp;
-      Редактирование карты №{{map.id}} - {{map.name}}
+      Редактирование карты №{{map.model.id}} - {{map.model.name}}
 
     .pull-right.date-info-block
       %small
-        Создано {{map.created_at | readableDateTime}}
+        Создано {{map.model.created_at | readableDateTime}}
       %small
-        Редактировалось {{map.update_at | readableDateTime}}
+        Редактировалось {{map.model.update_at | readableDateTime}}
 
 .row
   .col-sm-12
