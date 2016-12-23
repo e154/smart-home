@@ -4,6 +4,8 @@ angular
   ($rootScope, $compile, Fullscreen) ->
     class mapElement
 
+      scope: null
+
       load_editor: (selector)->
         # container
         # --------------------

@@ -48,6 +48,7 @@ angular
         @model.$delete success, error
 
       init: ()->
+
       fadeIn: ()->
         @wrapper.find(".page-loader").fadeIn("fast")
       fadeOut: ()->

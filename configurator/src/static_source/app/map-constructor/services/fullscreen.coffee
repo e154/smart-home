@@ -9,15 +9,16 @@ angular
       isFull: false
 
       constructor: (@container, @scope, @callback)->
+        @scope.resize = @resize
         @init()
 
-      init: ()=>
+      init: ()->
         @available = document.fullscreenEnabled ||
             document.webkitFullscreenEnabled ||
             document.mozFullScreenEnabled ||
             document.msFullscreenEnabled
 
-      toFull: ()=>
+      toFull: ()->
         if @container[0].requestFullscreen
           @container[0].requestFullscreen()
         else if @container[0].webkitRequestFullscreen
@@ -27,7 +28,7 @@ angular
         else if @container[0].msRequestFullscreen
           @container[0].msRequestFullscreen()
 
-      toMin: ()=>
+      toMin: ()->
         if document.cancelFullscreen
           document.cancelFullScreen()
         else if document.webkitCancelFullScreen
