@@ -26,14 +26,14 @@ angular
 
       update: (cb)->
         @fadeIn()
-        success =(data)->
+        success =(data)=>
           @fadeOut()
           cb(data)
 
         error =(result)->
           Message result.data.status, result.data.message
 
-        @model.$update success, error
+        @model.$updateFull success, error
 
       load: ()->
         success =()=>
@@ -41,7 +41,7 @@ angular
         error =(result)->
           Message result.data.status, result.data.message
 
-        @model.$show success, error
+        @model.$showFull success, error
 
       remove: (cb)->
         return if !confirm('Вы точно хотите удалить эту карту?')

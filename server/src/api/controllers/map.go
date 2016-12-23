@@ -141,9 +141,26 @@ func (c *MapController) Delete() {
 }
 
 func (c *MapController) GetFull() {
+	id, _ := c.GetInt(":id")
+	_map, err := models.GetMapById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
+	c.Data["json"] = map[string]interface{}{"map": _map}
+	c.ServeJSON()
 }
 
 func (c *MapController) PutFull() {
+	id, _ := c.GetInt(":id")
+	var _map models.Map
+	json.Unmarshal(c.Ctx.Input.RequestBody, &_map)
+	_map.Id = int64(id)
+	if err := models.UpdateMapById(&_map); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
+	c.ServeJSON()
 }
