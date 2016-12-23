@@ -186,6 +186,16 @@
     "settings": "Настройки",
     "main_window": "Основное окно",
     "callback": "Event callbacks",
-    "update_at": "Дата обновления"
+    "update_at": "Дата обновления",
+    "layer": {
+      "name": "Название",
+      "status": "Состояние",
+      "enabled": "Включен",
+      "disabled": "Выключен",
+      "hidden": "Скрыт",
+      "created_at": "Дата создания",
+      "updated_at": "Дата обновления",
+      "description": "Описание"
+    }
   }
 }

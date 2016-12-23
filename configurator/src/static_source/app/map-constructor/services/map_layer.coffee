@@ -8,7 +8,7 @@ angular
       map_id: null
       name: 'Новый слой'
       description: ''
-      status: null
+      status: 'enabled'
       elements: null
       scope: null
       created_at: null

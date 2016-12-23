@@ -22,11 +22,27 @@
         .panel-heading
           {{'current layer' | translate}}
         .panel-body
+          .row(ng-if="current_layer.created_at && current_layer.update_at")
+            .col-sm-12
+              .pull-right.date-info-block
+                %small
+                  Создано {{current_layer.created_at | readableDateTime}}
+                %small
+                  Редактировалось {{current_layer.update_at | readableDateTime}}
           .form-group
-            %laber {{'map.name' | translate}}*
+            %laber {{'map.layer.name' | translate}}*
             %input.form-control(ng-model="current_layer.name")
           .form-group
-            %laber {{'map.description' | translate}}
+            %laber {{'map.layer.status' | translate}}
+            %select.form-control(ng-model="current_layer.status")
+              %option(value="enabled")
+                {{'map.layer.enabled' | translate}}
+              %option(value="disabled")
+                {{'map.layer.disabled' | translate}}
+              %option(value="hidden")
+                {{'map.layer.hidden' | translate}}
+          .form-group
+            %laber {{'map.layer.description' | translate}}
             %textarea.form-control(ng-model="current_layer.description" rows="5" )
           .form-group
             %a.btn.btn-danger(href="" role="button" ng-click="removeLayer(current_layer)")
