@@ -15,7 +15,40 @@
             %span.map-element-handler
               ☰
             %span.map-element-subtitle
-              %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="selectElement(element, $index)")
-          .panel.panel-default
+              %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="$event.stopPropagation()")
+          .panel.panel-default(ng-click="$event.stopPropagation()" )
             .panel-body
-              qwe
+              .row
+                .col-md-6
+                  .form-group
+                    %laber {{'map.element.name' | translate}}*
+                    %input.form-control(ng-model="current_element.name")
+                .col-md-6
+                  .form-group
+                    %laber {{'map.element.type' | translate}}
+                    %select.form-control(ng-model="current_element.type")
+                      %option(value="image")
+                        {{'map.element.image' | translate}}
+                      %option(value="device")
+                        {{'map.element.device' | translate}}
+                      %option(value="script")
+                        {{'map.element.script' | translate}}
+              .row
+                .col-md-6
+                  .form-group
+                    %laber {{'map.element.status' | translate}}
+                    %select.form-control(ng-model="current_element.status")
+                      %option(value="enabled")
+                        {{'map.element.enabled' | translate}}
+                      %option(value="disabled")
+                        {{'map.element.disabled' | translate}}
+                      %option(value="hidden")
+                        {{'map.element.hidden' | translate}}
+
+              .row
+                .col-md-12
+                  %hr
+
+              .row
+                .col-md-12
+

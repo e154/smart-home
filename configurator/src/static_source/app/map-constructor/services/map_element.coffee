@@ -5,31 +5,35 @@ angular
     class mapElement
 
       id: null
+      layer_id: null
+      map_id: null
       scope: null
-      type: null
+      type: 'image'
       name: 'Новый элемент'
       description: ''
       status: 'enabled'
       created_at: null
       update_at: null
-      selected: null
+      selected: false
 
-      constructor: (@scope)->
-        @selected = false
+      constructor: (@scope, @layer_id)->
 
       serialize: ()->
         id: @id if @id
         map_id: map_id if @map_id
+        layer_id: @layer_id
         name: @name || ''
         status: @status || ''
         description: @description || ''
 
-      deserialize: (layer)->
-        @id = layer?.id || null
-        @map_id = layer?.map_id || null
-        @name = layer.name || ''
-        @description = layer.description || ''
-        @status = layer.status || ''
+      deserialize: (element)->
+        @id = element?.id || null
+        @map_id = element?.map_id || null
+        @layer_id = element?.layer_id || null
+        @name = element.name || ''
+        @description = element.description || ''
+        @status = element.status || ''
+        @type = element.type || 'image'
 
         return @
 

@@ -55,11 +55,16 @@ angular
         return
 
       selectLayer: (layer, $index)=>
-        @scope.current_layer = layer
+        if @scope.current_layer == layer
+          @scope.current_layer = null
+        else
+          @scope.current_layer = layer
 
       selectElement: (element, $index)=>
-        console.log 'element',element
-        @scope.current_element = element
+        if @scope.current_element == element
+          @scope.current_element = null
+        else
+          @scope.current_element = element
 
       addElement: ()=>
         return if !@scope.current_layer

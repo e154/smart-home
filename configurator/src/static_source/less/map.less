@@ -143,7 +143,13 @@
 
     &.selected {
       background-color: @base_color;
-      color: #d8d8d8;
+
+      .map-layer-handler,
+      .map-element-handler {
+        color: #d8d8d8;
+      }
+
+      .map-layer-title,
       input.map-element-title {
         color: #d8d8d8;
       }
@@ -161,8 +167,6 @@
     }
 
     &.selected {
-      background-color: @base_color;
-      color: #d8d8d8;
       .panel {
         display: inherit;
       }

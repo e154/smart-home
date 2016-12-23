@@ -196,6 +196,20 @@
       "created_at": "Дата создания",
       "updated_at": "Дата обновления",
       "description": "Описание"
+    },
+    "element": {
+      "name": "Название",
+      "status": "Состояние",
+      "enabled": "Включен",
+      "disabled": "Выключен",
+      "type": "Тип",
+      "hidden": "Скрыт",
+      "image": "Изображение",
+      "device": "Устройство",
+      "script": "Скрипт",
+      "created_at": "Дата создания",
+      "updated_at": "Дата обновления",
+      "description": "Описание"
     }
   }
 }
