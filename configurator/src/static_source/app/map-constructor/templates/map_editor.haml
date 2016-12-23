@@ -15,7 +15,7 @@
   .col-md-3
     %div(ng-include="'/map-constructor/templates/_map_layers.html'")
   .col-md-9
-    .form-group
+    .form-group(ng-if="current_layer")
       %div(ng-include="'/map-constructor/templates/_map_elements.html'")
     .form-group(ng-if="current_layer")
       .panel.panel-default
@@ -29,21 +29,26 @@
                   Создано {{current_layer.created_at | readableDateTime}}
                 %small
                   Редактировалось {{current_layer.update_at | readableDateTime}}
-          .form-group
-            %laber {{'map.layer.name' | translate}}*
-            %input.form-control(ng-model="current_layer.name")
-          .form-group
-            %laber {{'map.layer.status' | translate}}
-            %select.form-control(ng-model="current_layer.status")
-              %option(value="enabled")
-                {{'map.layer.enabled' | translate}}
-              %option(value="disabled")
-                {{'map.layer.disabled' | translate}}
-              %option(value="hidden")
-                {{'map.layer.hidden' | translate}}
+          .row
+            .col-md-6
+              .form-group
+                %laber {{'map.layer.name' | translate}}*
+                %input.form-control(ng-model="current_layer.name")
+            .col-md-6
+              .form-group
+                %laber {{'map.layer.status' | translate}}
+                %select.form-control(ng-model="current_layer.status")
+                  %option(value="enabled")
+                    {{'map.layer.enabled' | translate}}
+                  %option(value="disabled")
+                    {{'map.layer.disabled' | translate}}
+                  %option(value="hidden")
+                    {{'map.layer.hidden' | translate}}
+
           .form-group
             %laber {{'map.layer.description' | translate}}
-            %textarea.form-control(ng-model="current_layer.description" rows="5" )
+            %textarea.form-control(ng-model="current_layer.description" rows="2" )
+
           .form-group
             %a.btn.btn-danger(href="" role="button" ng-click="removeLayer(current_layer)")
               {{'Delete' | translate}}

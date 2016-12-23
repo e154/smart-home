@@ -1,4 +1,4 @@
-.panel.panel-default
+.panel.panel-default.map-elements-editor
   .panel-heading
     {{'Elements' | translate}}
   .panel-body
@@ -7,5 +7,15 @@
         .fa.fa-plus
         &nbsp;
         {{'Add element' | translate}}
+
     .form-group
-      elements...
+      %ul.list-group(ng-sortable="{ group: 'elements', animation: 0, handle: '.map-element-handler', onSort: up}")
+        %li.list-group-item(ng-repeat="element in current_layer.elements track by $index" ng-click="selectElement(element, $index)" ng-class="{'selected': element == current_element}")
+          .map-element-header
+            %span.map-element-handler
+              ☰
+            %span.map-element-subtitle
+              %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="selectElement(element, $index)")
+          .panel.panel-default
+            .panel-body
+              qwe

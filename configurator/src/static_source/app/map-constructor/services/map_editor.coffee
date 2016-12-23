@@ -1,13 +1,15 @@
 angular
 .module('angular-map')
-.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'mapLayer'
-  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, mapLayer) ->
-    class mapElement
+.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'mapLayer', 'mapElement'
+  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, mapLayer, mapElement) ->
+    class mapEditor
 
       constructor: ()->
         @scope.addLayer = @addLayer
         @scope.removeLayer = @removeLayer
         @scope.selectLayer = @selectLayer
+        @scope.selectElement = @selectElement
+        @scope.addElement = @addElement
         @scope.current_layer = null
 
       loadEditor: (c)=>
@@ -55,6 +57,21 @@ angular
       selectLayer: (layer, $index)=>
         @scope.current_layer = layer
 
+      selectElement: (element, $index)=>
+        console.log 'element',element
+        @scope.current_element = element
 
-    mapElement
+      addElement: ()=>
+        return if !@scope.current_layer
+        @scope.current_layer.addElement new mapElement(@scope)
+
+      removeElement: (_element)=>
+        index = @scope.current_element.elements.indexOf(_element)
+        if index > -1
+          @scope.current_element.elements.splice(index, 1)
+          @scope.current_element = null
+        return
+
+
+    mapEditor
 ]

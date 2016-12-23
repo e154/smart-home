@@ -15,6 +15,7 @@ angular
       update_at: null
 
       constructor: (@scope)->
+        @elements = []
 
       serialize: ()->
         id: @id if @id
@@ -32,6 +33,8 @@ angular
 
         return @
 
+      addElement: (element)=>
+        @elements.push element
 
     mapLayer
 ]
