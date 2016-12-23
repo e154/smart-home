@@ -25,8 +25,10 @@
           .form-group
             %laber {{'map.name' | translate}}*
             %input.form-control(ng-model="current_layer.name")
-
           .form-group
             %laber {{'map.description' | translate}}
             %textarea.form-control(ng-model="current_layer.description" rows="5" )
+          .form-group
+            %a.btn.btn-danger(href="" role="button" ng-click="removeLayer(current_layer)")
+              {{'Delete' | translate}}
 

@@ -5,22 +5,30 @@ angular
     class mapLayer
 
       id: null
-      name: "Новый слой"
-
+      map_id: null
+      name: 'Новый слой'
+      description: ''
+      status: null
       elements: null
       scope: null
+      created_at: null
+      update_at: null
 
       constructor: (@scope)->
 
       serialize: ()->
-        {
-          id: @id if @id
-          name: @name
-        }
+        id: @id if @id
+        map_id: map_id if @map_id
+        name: @name || ''
+        status: @status || ''
+        description: @description || ''
 
       deserialize: (layer)->
         @id = layer?.id || null
-        @name = layer.name if layer?.name
+        @map_id = layer?.map_id || null
+        @name = layer.name || ''
+        @description = layer.description || ''
+        @status = layer.status || ''
 
         return @
 

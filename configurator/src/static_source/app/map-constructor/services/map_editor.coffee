@@ -45,7 +45,12 @@ angular
 
         @model.layers.push new mapLayer(@scope)
 
-      removeLayer: (layer)=>
+      removeLayer: (_layer)=>
+        index = @model.layers.indexOf(_layer)
+        if index > -1
+          @model.layers.splice(index, 1)
+          @scope.current_layer = null
+        return
 
       selectLayer: (layer, $index)=>
         @scope.current_layer = layer
