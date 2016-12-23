@@ -29,3 +29,13 @@
 .row
   .col-sm-12
     %div(ui-view="editortabs")
+
+.row
+  .col-md-12
+    .pull-right
+      %a.btn.btn-danger(href="" role="button" ng-click="remove()")
+        {{'Delete' | translate}}
+      %a.btn.btn-default(href="" role="button" ui-sref="dashboard.map.index")
+        {{'Close' | translate}}
+      %a.btn.btn-primary(href="" role="button" ng-click="update()")
+        {{'Update' | translate}}

@@ -13,7 +13,7 @@
             %input.form-control(ng-model="device.device.address" type="number" )
 
         .form-group
-            %laber {{'device.status' | translate}}
+            %laber {{'device.status.name' | translate}}
             %select.form-control(ng-model="device.device.status")
                 %option(value="enabled")
                     {{'device.enabled' | translate}}

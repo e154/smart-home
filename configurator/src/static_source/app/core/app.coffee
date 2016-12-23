@@ -33,6 +33,7 @@ app = angular.module('app', [
   'ui.bootstrap.pagination'
   'pikaday'
   'ui.tree'
+  'angular-map'
 ])
 
 app.version =

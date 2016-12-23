@@ -63,7 +63,7 @@ angular
         template: '<span>{{item[field] | readableDateTime}}</span>'
       }
       {
-        name: 'device.status'
+        name: 'device.status.name'
         field: 'status'
         width: '50px'
         template: "

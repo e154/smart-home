@@ -1,12 +1,6 @@
-#map-editor
-  #main-wrapper
 
-.row
-  .col-md-12
-    .pull-right
-      %a.btn.btn-danger(href="" role="button" ng-click="remove()")
-        {{'Delete' | translate}}
-      %a.btn.btn-default(href="" role="button" ui-sref="dashboard.map.index")
-        {{'Close' | translate}}
-      %a.btn.btn-primary(href="" role="button" ng-click="update()")
-        {{'Update' | translate}}
+.panel.panel-default
+  .panel-heading
+    {{'map.main_window' | translate}}
+  .map-editor
+    map

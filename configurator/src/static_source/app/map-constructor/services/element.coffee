@@ -1,5 +1,5 @@
 angular
-.module('appServices')
+.module('angular-map')
 .factory 'mapElement', ['$rootScope', '$compile'
   ($rootScope, $compile) ->
     class mapElement
