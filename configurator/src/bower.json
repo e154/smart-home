@@ -45,7 +45,8 @@
     "ng-dialog": "^0.6.4",
     "pikaday": "^1.5.1",
     "pikaday-angular": "^2.0.0",
-    "angular-ui-tree": "^2.22.1"
+    "angular-ui-tree": "^2.22.1",
+    "Sortable": "^1.4.2"
   },
   "overrides": {
     "jquery": {
@@ -107,6 +108,12 @@
         "js/ngDialog.js",
         "css/ngDialog.css",
         "css/ngDialog-theme-default.css"
+      ]
+    },
+    "Sortable": {
+      "main": [
+        "Sortable.js",
+        "ng-sortable.js"
       ]
     }
   }

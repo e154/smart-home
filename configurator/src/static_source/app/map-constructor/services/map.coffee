@@ -1,21 +1,26 @@
 angular
 .module('angular-map')
-.factory 'mapConstructor', ['$rootScope', '$compile', 'Map', 'Message', 'Notify', 'mapEditor'
-  ($rootScope, $compile, Map, Message, Notify, mapEditor) ->
+.factory 'mapConstructor', ['$rootScope', '$compile', 'Map', 'Message', 'Notify', 'mapEditor', 'mapLayer'
+  ($rootScope, $compile, Map, Message, Notify, mapEditor, mapLayer) ->
     class mapConstructor extends mapEditor
 
       id: null
-      elements: null
       settings: null
       scope: null
       panning: null
       container: null
-      wrap_class: 'map-wrapper'
       wrapper: null
       model: null
+      _model: null
 
       constructor: (@scope, @id)->
-        @model = new Map({id: @id})
+        super
+
+        @model = {}
+        @_model = new Map({
+          id: @id
+          layers: []
+        })
         @scope.zoom = 1.0
         @scope.settings =
           movable: true
@@ -29,19 +34,21 @@ angular
         success =(data)=>
           @fadeOut()
           cb(data)
+          @deserialize()
 
         error =(result)->
           Message result.data.status, result.data.message
 
-        @model.$updateFull success, error
+        @serialize()
+        @_model.$updateFull success, error
 
       load: ()->
         success =()=>
-          @init()
+          @deserialize()
         error =(result)->
           Message result.data.status, result.data.message
 
-        @model.$showFull success, error
+        @_model.$showFull success, error
 
       remove: (cb)->
         return if !confirm('Вы точно хотите удалить эту карту?')
@@ -49,16 +56,28 @@ angular
           cb(data)
         error =(result)->
           Message result.data.status, result.data.message
-        @model.$delete success, error
-
-      init: ()->
+        @_model.$delete success, error
 
       fadeIn: ()->
         @wrapper.find(".page-loader").fadeIn("fast")
       fadeOut: ()->
         @wrapper.find(".page-loader").fadeOut("fast")
 
+      serialize: ()=>
+        @_model.layers = []
+        angular.forEach @model.layers, (layer)=>
+          @_model.layers.push layer.serialize()
 
+      deserialize: ()=>
+        @model =
+          id: @_model.id
+          name: @_model.name
+          description: @_model.description
+          layers: []
+
+        if @_model?.layers && @_model.layers.length != 0
+          angular.forEach @_model.layers, (layer)=>
+            @model.layers.push new mapLayer(@scope).deserialize(layer)
 
     mapConstructor
 ]

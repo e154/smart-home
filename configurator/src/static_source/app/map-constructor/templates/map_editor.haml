@@ -1,0 +1,32 @@
+.row
+  .col-md-12
+    .panel.panel-default
+      .panel-heading
+        {{'map.main_window' | translate}}
+      .map-wrapper
+        .map-editor
+        .page-loader
+          .spinner
+            {{"loading..."| translate}}
+        .fullscreen.entry(ng-click="resize()" data-help="resize editor window")
+          {{"full screen" | translate}}
+
+.row
+  .col-md-3
+    %div(ng-include="'/map-constructor/templates/_map_layers.html'")
+  .col-md-9
+    .form-group
+      %div(ng-include="'/map-constructor/templates/_map_elements.html'")
+    .form-group(ng-if="current_layer")
+      .panel.panel-default
+        .panel-heading
+          {{'current layer' | translate}}
+        .panel-body
+          .form-group
+            %laber {{'map.name' | translate}}*
+            %input.form-control(ng-model="current_layer.name")
+
+          .form-group
+            %laber {{'map.description' | translate}}
+            %textarea.form-control(ng-model="current_layer.description" rows="5" )
+

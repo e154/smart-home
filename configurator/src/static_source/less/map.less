@@ -4,12 +4,11 @@
 
 .map-wrapper {
   position: relative;
-  margin: 0 0 15px 0;
+  margin: 0;
   outline: 1px solid #e2e2e2;
   overflow: hidden;
   min-height: 400px;
   background: rgba(245,245,245,0.88);
-  margin-bottom: 20px;
 
   > .ui-resizable-handle {
     background: @base_color;
@@ -95,15 +94,42 @@
   .map-editor,
   .map-viewer {
 
-
   }
 
   .map-viewer {
 
   }//map-viewer
+}
 
-  .map-editor {
+.map-layers-editor {
+  .list-group-item {
+    width: 100%;
+    color: #555;
+    line-height: 1.5;
+    padding: 8px;
+    margin: 0;
+    float: left;
 
-  }//map-editor
+    .map-layer-handler {
+      float: left;
+      cursor: row-resize;
+    }
+
+    .map-layer-subtitle {
+      float: left;
+      width: 200px;
+
+      input.map-layer-title {
+        margin: 0;
+        padding-left: 7px;
+        font: normal normal normal 12px/14px Lato, 'Open Sans', sans-serif;
+        color: #333;
+        background-color: transparent !important;
+        border: 1px solid transparent !important;
+        box-shadow: none !important;
+        width: 100%;
+      }
+    }
+  }
 
 }

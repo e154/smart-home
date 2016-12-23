@@ -34,6 +34,7 @@ app = angular.module('app', [
   'pikaday'
   'ui.tree'
   'angular-map'
+  'ng-sortable'
 ])
 
 app.version =

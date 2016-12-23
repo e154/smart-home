@@ -1,0 +1,17 @@
+.panel.panel-default.map-layers-editor
+  .panel-heading
+    {{'Layers' | translate}}
+  .panel-body
+    .form-group
+      %a(href="#" ng-click="addLayer()")
+        .fa.fa-plus
+        &nbsp;
+        {{'Add layer' | translate}}
+
+    .form-group
+      %ul.list-group(ng-sortable="{ group: 'layers', animation: 0, handle: '.map-layer-handler', onSort: up}")
+        %li.list-group-item(ng-repeat="layer in map.model.layers track by $index" ng-click="selectLayer(layer, $index)")
+          %span.map-layer-handler
+            ☰
+          %span.map-layer-subtitle
+            %input.map-layer-title(type="text" name="subtitle" ng-model="layer.name" ng-disabled="true" ng-click="selectLayer(layer, $index)")

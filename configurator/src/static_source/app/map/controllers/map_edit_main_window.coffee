@@ -3,7 +3,7 @@ angular
 .controller 'mapEditMainWindowCtrl', ['$scope', '$state', 'Message', '$stateParams', 'mapConstructor', 'Notify', '$timeout'
 ($scope, $state, Message, $stateParams, mapConstructor, Notify, $timeout) ->
 
-  $scope.map.load_editor('.map-editor')
+  $scope.map.loadEditor('#map-editor1')
 
   return
 ]
