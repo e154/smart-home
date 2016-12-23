@@ -27,8 +27,8 @@ angular
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
-        meta: data.meta
-        items: data.scripts
+        meta: data?.meta || {}
+        items: data?.scripts || []
 
     exec:
       url: window.server_url + '/api/v1/script/:id/exec'

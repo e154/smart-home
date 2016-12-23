@@ -22,7 +22,7 @@ angular
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
-        meta: data.meta
+        meta: data?.meta || {}
         items: data?.workers || []
 
 ]

@@ -35,7 +35,7 @@ angular
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
-        meta: data.meta
-        items: data.devices
+        meta: data?.meta || {}
+        items: data?.devices || []
 
 ]

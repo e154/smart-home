@@ -25,6 +25,6 @@ angular
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
-        meta: data.meta
-        items: data.device_states
+        meta: data?.meta || {}
+        items: data?.device_states || []
 ]
