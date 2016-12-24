@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'mapLayer', ['$rootScope', '$compile'
-  ($rootScope, $compile) ->
+.factory 'mapLayer', ['$rootScope', '$compile', 'mapElement'
+  ($rootScope, $compile, mapElement) ->
     class mapLayer
 
       id: null
@@ -34,6 +34,9 @@ angular
         @status = layer.status || ''
         @created_at = layer.created_at || ''
         @update_at = layer.update_at || ''
+
+        angular.forEach layer.elements, (element)=>
+          @elements.push new mapElement(@scope).deserialize(element)
 
         return @
 

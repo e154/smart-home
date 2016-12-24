@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"../models"
+	"github.com/astaxie/beego/orm"
 )
 
 // MapController operations for Map
@@ -146,6 +147,19 @@ func (c *MapController) GetFull() {
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
+	}
+
+	o := orm.NewOrm()
+	if _, err = o.LoadRelated(_map, "Layers", false); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	for _, layer := range _map.Layers {
+		if _, err = o.LoadRelated(layer, "Elements", false); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
 	}
 
 	c.Data["json"] = map[string]interface{}{"map": _map}

@@ -17,6 +17,7 @@ type MapLayer struct {
 	Status		string			`orm:"" json:"status"`
 	Description 	string			`orm:"" json:"description"`
 	Map	 	*Map			`orm:"rel(fk)" json:"map"`
+	Elements	[]*MapElement		`orm:"reverse(many)" json:"elements"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
