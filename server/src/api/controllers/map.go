@@ -162,8 +162,7 @@ func (c *MapController) GetFull() {
 
 		for _, element := range layer.Elements {
 			if _, err = element.GetPrototype(); err != nil {
-				c.ErrHan(403, err.Error())
-				return
+
 			}
 		}
 	}

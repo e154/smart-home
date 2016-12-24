@@ -1,12 +1,12 @@
 angular
 .module('angular-map')
-.factory 'mapTypeImage', ['$rootScope', '$compile', 'Message', 'Notify'
+.factory 'MapImage', ['$rootScope', '$compile', 'Message', 'Notify'
   ($rootScope, $compile, Message, Notify) ->
-    class mapTypeImage
+    class MapImage
 
       scope: null
 
       constructor: (@scope)->
 
-    mapTypeImage
+    MapImage
 ]

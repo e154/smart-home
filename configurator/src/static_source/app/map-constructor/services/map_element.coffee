@@ -1,10 +1,12 @@
 angular
 .module('angular-map')
-.factory 'mapElement', ['$rootScope', '$compile', 'MapElement', 'Message', 'Notify'
-  ($rootScope, $compile, MapElement, Message, Notify) ->
+.factory 'mapElement', ['$rootScope', '$compile', 'MapElement', 'Message', 'Notify', 'MapImage'
+  ($rootScope, $compile, MapElement, Message, Notify, MapImage) ->
     class mapElement
 
       scope: null
+
+      prototype: null
 
       id: null
       layer_id: null
@@ -24,6 +26,11 @@ angular
           left:0
 
       constructor: (@scope, @layer_id)->
+        @scope.$watch(()=>
+            @prototype_type
+        , (prototype_type)=>
+          @get_prototype()
+        )
 
       serialize: ()->
         name: @name
@@ -85,6 +92,11 @@ angular
         model = new MapElement({id: @id})
         model.$delete success, error
 
+      get_prototype: ()->
+
+        switch @prototype_type
+          when 'image'
+            @prototype = new MapImage(@scope)
 
     mapElement
 ]

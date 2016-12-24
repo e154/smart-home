@@ -53,9 +53,14 @@
                       %option(value="script")
                         {{'map.element.script' | translate}}
 
-              .row
-                .col-md-12
-                  %hr
+              -#image
+              %div(ng-if="current_element.prototype_type == 'image'" ng-include="'/map-constructor/templates/_map_image.html'")
+
+              -#device
+              %div(ng-if="current_element.prototype_type == 'device'" ng-include="'/map-constructor/templates/_map_device.html'")
+
+              -#script
+              %div(ng-if="current_element.prototype_type == 'script'" ng-include="'/map-constructor/templates/_map_script.html'")
 
               .row
                 .col-md-12
