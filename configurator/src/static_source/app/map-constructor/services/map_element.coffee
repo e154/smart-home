@@ -11,7 +11,8 @@ angular
       map_id: null
       name: 'Новый элемент'
       description: ''
-      type: 'image'
+      prototype_type: 'image'
+      prototype_id: null
       status: 'enabled'
       selected: false
       created_at: null
@@ -30,7 +31,8 @@ angular
         created_at: @created_at if @created_at
         update_at: @update_at if @update_at
         weight: @weight
-        type: @type
+        prototype_type: @prototype_type
+        prototype_id: @prototype_id if @prototype_id
 
       deserialize: (element)->
         @id = element.id || null
@@ -39,7 +41,8 @@ angular
         @name = element.name || ''
         @description = element.description || ''
         @status = element.status || ''
-        @type = element.type || 'image'
+        @prototype_type = element.prototype_type || 'image'
+        @prototype_id = element.prototype_id || null
         @weight = element.weight || 0
         @created_at = element.created_at || ''
         @update_at = element.update_at || ''

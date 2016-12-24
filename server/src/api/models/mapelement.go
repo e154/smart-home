@@ -16,7 +16,8 @@ type MapElement struct {
 	Name        	string			`orm:"" json:"name"`
 	Description 	string			`orm:"" json:"description"`
 	Status		string			`orm:"" json:"status"`
-	Type		string			`orm:"" json:"type"`
+	PrototypeType	string			`orm:"" json:"prototype_type"`
+	PrototypeId	int64			`orm:"" json:"prototype_id"`
 	Weight 		int8			`orm:"" json:"weight"`
 	Layer		*MapLayer		`orm:"rel(fk)" json:"layer"`
 	Map		*Map			`orm:"rel(fk)" json:"map"`
