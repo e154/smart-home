@@ -18,6 +18,14 @@
               %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="$event.stopPropagation()")
           .panel.panel-default(ng-click="$event.stopPropagation()" )
             .panel-body
+              .row(ng-if="current_element.created_at && current_element.update_at")
+                .col-sm-12
+                  .pull-right.date-info-block
+                    .form-group
+                      %small
+                        Создано {{current_element.created_at | readableDateTime}}
+                      %small
+                        Редактировалось {{current_element.update_at | readableDateTime}}
               .row
                 .col-md-6
                   .form-group
@@ -51,4 +59,6 @@
 
               .row
                 .col-md-12
+                  %a.btn.btn-danger(href="" role="button" ng-click="removeElement(current_element)")
+                    {{'Delete' | translate}}
 

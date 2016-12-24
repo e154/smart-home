@@ -13,6 +13,7 @@ angular
         @scope.current_layer = null
         @scope.sortLayers = @sortLayers
         @scope.sortElements = @sortElements
+        @scope.removeElement = @removeElement
 
       loadEditor: (c)=>
         # container
@@ -75,9 +76,9 @@ angular
         @scope.current_layer.addElement new mapElement(@scope)
 
       removeElement: (_element)=>
-        index = @scope.current_element.elements.indexOf(_element)
+        index = @scope.current_layer.elements.indexOf(_element)
         if index > -1
-          @scope.current_element.elements.splice(index, 1)
+          @scope.current_layer.elements.splice(index, 1)
           @scope.current_element = null
         return
 
@@ -90,7 +91,6 @@ angular
       sortElements: ()=>
         return if !@scope.current_layer
         weight = 0
-        E
         for element in @scope.current_layer.elements
           element.weight = weight
           weight++

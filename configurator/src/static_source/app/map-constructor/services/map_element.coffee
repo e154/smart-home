@@ -30,6 +30,7 @@ angular
         created_at: @created_at if @created_at
         update_at: @update_at if @update_at
         weight: @weight
+        type: @type
 
       deserialize: (element)->
         @id = element.id || null
@@ -40,6 +41,8 @@ angular
         @status = element.status || ''
         @type = element.type || 'image'
         @weight = element.weight || 0
+        @created_at = element.created_at || ''
+        @update_at = element.update_at || ''
 
         return @
 

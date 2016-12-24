@@ -190,8 +190,36 @@ func (c *MapController) PutFull() {
 
 func updateLayerElements(newLayer, oldLayer *models.MapLayer) (err error) {
 
-	err = models.UpdateMapLayerById(newLayer)
+	var exist bool
+	for _, oldElement := range oldLayer.Elements {
+		exist = false
+		for _, newElement := range newLayer.Elements {
+			if oldElement.Id == newElement.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			// get old elements
+			if err = models.DeleteMapElement(oldElement.Id); err != nil {
+				return
+			}
+		}
+	}
 
+	for _, newElement := range newLayer.Elements {
+		if newElement.Id == 0 {
+			if _, err = models.AddMapElement(newElement); err != nil {
+				return
+			}
+		} else {
+			if err = models.UpdateMapElementById(newElement); err != nil {
+				return
+			}
+		}
+	}
+
+	err = models.UpdateMapLayerById(newLayer)
 
 	return
 }

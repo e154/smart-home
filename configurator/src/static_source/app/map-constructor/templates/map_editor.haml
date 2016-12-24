@@ -25,10 +25,11 @@
           .row(ng-if="current_layer.created_at && current_layer.update_at")
             .col-sm-12
               .pull-right.date-info-block
-                %small
-                  Создано {{current_layer.created_at | readableDateTime}}
-                %small
-                  Редактировалось {{current_layer.update_at | readableDateTime}}
+                .form-group
+                  %small
+                    Создано {{current_layer.created_at | readableDateTime}}
+                  %small
+                    Редактировалось {{current_layer.update_at | readableDateTime}}
           .row
             .col-md-6
               .form-group

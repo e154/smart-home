@@ -50,6 +50,8 @@ angular
         return @
 
       addElement: (element)=>
+        element.layer_id = @id
+        element.map_id = @map_id
         @elements.push element
 
     mapLayer
