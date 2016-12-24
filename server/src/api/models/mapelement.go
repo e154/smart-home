@@ -164,3 +164,7 @@ func DeleteMapElement(id int64) (err error) {
 	}
 	return
 }
+
+func (m *MapElement) CompareWith(element *MapElement) bool {
+	return reflect.DeepEqual(m, element)
+}
