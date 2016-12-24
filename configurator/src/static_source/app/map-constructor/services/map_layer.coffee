@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'mapLayer', ['$rootScope', '$compile', 'mapElement'
-  ($rootScope, $compile, mapElement) ->
+.factory 'mapLayer', ['$rootScope', '$compile', 'mapElement', 'MapLayer', 'Notify', 'Message'
+  ($rootScope, $compile, mapElement, MapLayer, Notify, Message) ->
     class mapLayer
 
       scope: null
@@ -53,6 +53,36 @@ angular
         element.layer_id = @id
         element.map_id = @map_id
         @elements.push element
+
+      create: ()->
+        success =(data)=>
+          @id = data.id
+          Notify 'success', 'Слой успешно создан', 3
+        error =(result)->
+          Message result.data.status, result.data.message
+
+        model = new MapLayer(@serialize())
+        model.$create success, error
+
+      update: (cb)->
+        success =(data)=>
+          Notify 'success', 'Слой успешно обновлён', 3
+        error =(result)->
+          Message result.data.status, result.data.message
+
+        model = new MapLayer(@serialize())
+        model.$update success, error
+
+      remove: (cb)->
+        return if !confirm('Вы точно хотите удалить этот слой?')
+        success =(data)=>
+          cb() if cb
+          Notify 'success', 'Слой успешно удалён', 3
+        error =(result)->
+          Message result.data.status, result.data.message
+
+        model = new MapLayer({id: @id})
+        model.$delete success, error
 
     mapLayer
 ]

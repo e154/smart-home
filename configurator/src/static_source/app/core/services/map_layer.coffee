@@ -1,18 +1,18 @@
 angular
 .module('appServices')
-.factory 'Map', ['$resource', ($resource) ->
-  $resource window.server_url + '/api/v1/map/:id', {id: '@id'},
+.factory 'MapLayer', ['$resource', ($resource) ->
+  $resource window.server_url + '/api/v1/map_layer/:id', {id: '@id'},
     show:
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
-        data?.map || data
+        data?.map_layer || data
 
     create:
       method: 'POST'
       responseType: 'json'
       transformResponse: (data) ->
-        data?.map || data
+        data?.map_layer || data
 
     update:
         method: 'PUT'
@@ -26,12 +26,5 @@ angular
       responseType: 'json'
       transformResponse: (data) ->
         meta: data?.meta || {}
-        items: data?.maps || []
-
-    showFull:
-      url: window.server_url + '/api/v1/map/:id/full'
-      method: 'GET'
-      responseType: 'json'
-      transformResponse: (data) ->
-        data?.map || data
+        items: data?.map_layers || []
 ]

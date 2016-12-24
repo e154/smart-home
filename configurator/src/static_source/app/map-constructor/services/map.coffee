@@ -38,8 +38,7 @@ angular
         error =(result)->
           Message result.data.status, result.data.message
 
-        @serialize()
-        @_model.$updateFull success, error
+        @_model.$update success, error
 
       load: ()->
         success =()=>
@@ -61,11 +60,6 @@ angular
         @wrapper.find(".page-loader").fadeIn("fast")
       fadeOut: ()->
         @wrapper.find(".page-loader").fadeOut("fast")
-
-      serialize: ()=>
-        @_model.layers = []
-        angular.forEach @model.layers, (layer)=>
-          @_model.layers.push layer.serialize()
 
       deserialize: ()=>
         @model =

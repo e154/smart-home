@@ -7,6 +7,7 @@ angular
       constructor: ()->
         @scope.addLayer = @addLayer
         @scope.removeLayer = @removeLayer
+        @scope.updateLayer = @updateLayer
         @scope.selectLayer = @selectLayer
         @scope.selectElement = @selectElement
         @scope.addElement = @addElement
@@ -50,14 +51,21 @@ angular
 
         layer = new mapLayer(@scope)
         layer.map_id = @id
+        layer.create()
         @model.layers.push layer
 
       removeLayer: (_layer)=>
         index = @model.layers.indexOf(_layer)
-        if index > -1
-          @model.layers.splice(index, 1)
-          @scope.current_layer = null
+        success =()=>
+          if index > -1
+            @model.layers.splice(index, 1)
+            @scope.current_layer = null
+        _layer.remove success
         return
+
+      updateLayer: (_layer)=>
+        return if !_layer
+        _layer.update()
 
       selectLayer: (layer, $index)=>
         if @scope.current_layer == layer

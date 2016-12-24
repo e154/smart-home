@@ -1,1 +1,19 @@
-settings
+.row
+  .col-md-6
+    .form-group
+      %laber {{'map.name' | translate}}*
+      %input.form-control(ng-model="map.model.name")
+
+.row
+  .col-md-6
+    .form-group
+      %laber {{'map.description' | translate}}
+      %textarea.form-control(ng-model="map.model.description" rows="10" )
+
+.row
+  .col-md-12
+    .pull-right
+      %a.btn.btn-danger(href="" role="button" ng-click="remove()")
+        {{'Delete' | translate}}
+      %a.btn.btn-primary(href="" role="button" ng-click="update()")
+        {{'Update' | translate}}
