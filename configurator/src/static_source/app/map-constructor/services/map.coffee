@@ -34,7 +34,6 @@ angular
         success =(data)=>
           @fadeOut()
           cb(data)
-          @deserialize()
 
         error =(result)->
           Message result.data.status, result.data.message

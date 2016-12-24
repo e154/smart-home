@@ -14,6 +14,7 @@ angular
       elements: null
       created_at: null
       update_at: null
+      weight: 0
 
       constructor: (@scope)->
         @elements = []
@@ -31,6 +32,7 @@ angular
         created_at: @created_at if @created_at
         update_at: @update_at if @update_at
         elements: elements if elements.length
+        weight: @weight
 
       deserialize: (layer)->
         @id = layer.id || null
@@ -40,6 +42,7 @@ angular
         @status = layer.status || ''
         @created_at = layer.created_at || ''
         @update_at = layer.update_at || ''
+        @weight = layer.weight || 0
 
         angular.forEach layer.elements, (element)=>
           @elements.push new mapElement(@scope).deserialize(element)

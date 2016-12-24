@@ -16,6 +16,7 @@ angular
       selected: false
       created_at: null
       update_at: null
+      weight: 0
 
       constructor: (@scope, @layer_id)->
 
@@ -28,6 +29,7 @@ angular
         description: @description
         created_at: @created_at if @created_at
         update_at: @update_at if @update_at
+        weight: @weight
 
       deserialize: (element)->
         @id = element.id || null
@@ -37,6 +39,7 @@ angular
         @description = element.description || ''
         @status = element.status || ''
         @type = element.type || 'image'
+        @weight = element.weight || 0
 
         return @
 

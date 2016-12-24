@@ -16,6 +16,7 @@ type MapLayer struct {
 	Name        	string			`orm:"" json:"name"`
 	Status		string			`orm:"" json:"status"`
 	Description 	string			`orm:"" json:"description"`
+	Weight 		int8			`orm:"" json:"weight"`
 	Map	 	*Map			`orm:"rel(fk)" json:"map"`
 	Elements	[]*MapElement		`orm:"reverse(many)" json:"elements"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`

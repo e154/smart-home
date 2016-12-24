@@ -11,6 +11,8 @@ angular
         @scope.selectElement = @selectElement
         @scope.addElement = @addElement
         @scope.current_layer = null
+        @scope.sortLayers = @sortLayers
+        @scope.sortElements = @sortElements
 
       loadEditor: (c)=>
         # container
@@ -78,6 +80,20 @@ angular
           @scope.current_element.elements.splice(index, 1)
           @scope.current_element = null
         return
+
+      sortLayers: ()=>
+        weight = 0
+        for layer in @model.layers
+          layer.weight = weight
+          weight++
+
+      sortElements: ()=>
+        return if !@scope.current_layer
+        weight = 0
+        E
+        for element in @scope.current_layer.elements
+          element.weight = weight
+          weight++
 
 
     mapEditor
