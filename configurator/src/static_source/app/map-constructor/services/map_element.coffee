@@ -18,6 +18,10 @@ angular
       created_at: null
       update_at: null
       weight: 0
+      graph_settings:
+        position:
+          top:0
+          left:0
 
       constructor: (@scope, @layer_id)->
 
@@ -33,6 +37,7 @@ angular
         weight: @weight
         prototype_type: @prototype_type
         prototype_id: @prototype_id if @prototype_id
+        graph_settings: @graph_settings
 
       deserialize: (element)->
         @id = element.id || null
@@ -46,6 +51,7 @@ angular
         @weight = element.weight || 0
         @created_at = element.created_at || ''
         @update_at = element.update_at || ''
+        @graph_settings = element.graph_settings if element.graph_settings
 
         return @
 

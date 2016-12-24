@@ -159,6 +159,13 @@ func (c *MapController) GetFull() {
 			c.ErrHan(403, err.Error())
 			return
 		}
+
+		for _, element := range layer.Elements {
+			if _, err = element.GetPrototype(); err != nil {
+				c.ErrHan(403, err.Error())
+				return
+			}
+		}
 	}
 
 	c.Data["json"] = map[string]interface{}{"map": _map}

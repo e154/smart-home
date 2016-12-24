@@ -8,54 +8,51 @@ import (
 
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
-	"time"
 )
 
-type MapLayer struct {
+type MapImage struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
+	Thumb        	string			`orm:"" json:"thumb"`
+	Image        	string			`orm:"" json:"image"`
+	MimeType       	string			`orm:"" json:"mime_type"`
+	Title       	string			`orm:"" json:"title"`
+	Size       	int64			`orm:"" json:"size"`
 	Name        	string			`orm:"" json:"name"`
-	Status		string			`orm:"" json:"status"`
-	Description 	string			`orm:"" json:"description"`
-	Weight 		int64			`orm:"" json:"weight"`
-	Map	 	*Map			`orm:"rel(fk)" json:"map"`
-	Elements	[]*MapElement		`orm:"reverse(many)" json:"elements"`
-	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
-func (m *MapLayer) TableName() string {
-	return beego.AppConfig.String("db_map_layers")
+func (m *MapImage) TableName() string {
+	return beego.AppConfig.String("db_map_images")
 }
 
 func init() {
-	orm.RegisterModel(new(MapLayer))
+	orm.RegisterModel(new(MapImage))
 }
 
-// AddMapLayer insert a new MapLayer into database and returns
+// AddMapImage insert a new MapImage into database and returns
 // last inserted Id on success.
-func AddMapLayer(m *MapLayer) (id int64, err error) {
+func AddMapImage(m *MapImage) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetMapLayerById retrieves MapLayer by Id. Returns error if
+// GetMapImageById retrieves MapImage by Id. Returns error if
 // Id doesn't exist
-func GetMapLayerById(id int64) (v *MapLayer, err error) {
+func GetMapImageById(id int64) (v *MapImage, err error) {
 	o := orm.NewOrm()
-	v = &MapLayer{Id: id}
+	v = &MapImage{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllMapLayer retrieves all MapLayer matches certain condition. Returns empty list if
+// GetAllMapImage retrieves all MapImage matches certain condition. Returns empty list if
 // no records exist
-func GetAllMapLayer(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllMapImage(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(MapLayer))
+	qs := o.QueryTable(new(MapImage))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -101,7 +98,7 @@ func GetAllMapLayer(query map[string]string, fields []string, sortby []string, o
 		}
 	}
 
-	var l []MapLayer
+	var l []MapImage
 	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
@@ -133,11 +130,11 @@ func GetAllMapLayer(query map[string]string, fields []string, sortby []string, o
 	return nil, nil, err
 }
 
-// UpdateMapLayer updates MapLayer by Id and returns error if
+// UpdateMapImage updates MapImage by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateMapLayerById(m *MapLayer) (err error) {
+func UpdateMapImageById(m *MapImage) (err error) {
 	o := orm.NewOrm()
-	v := MapLayer{Id: m.Id}
+	v := MapImage{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -148,15 +145,15 @@ func UpdateMapLayerById(m *MapLayer) (err error) {
 	return
 }
 
-// DeleteMapLayer deletes MapLayer by Id and returns error if
+// DeleteMapImage deletes MapImage by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteMapLayer(id int64) (err error) {
+func DeleteMapImage(id int64) (err error) {
 	o := orm.NewOrm()
-	v := MapLayer{Id: id}
+	v := MapImage{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&MapLayer{Id: id}); err == nil {
+		if num, err = o.Delete(&MapImage{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}

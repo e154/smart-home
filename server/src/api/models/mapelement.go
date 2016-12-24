@@ -18,7 +18,8 @@ type MapElement struct {
 	Status		string			`orm:"" json:"status"`
 	PrototypeType	string			`orm:"" json:"prototype_type"`
 	PrototypeId	int64			`orm:"" json:"prototype_id"`
-	Weight 		int8			`orm:"" json:"weight"`
+	Prototype	interface{}		`orm:"-" json:"prototype"`
+	Weight 		int64			`orm:"" json:"weight"`
 	Layer		*MapLayer		`orm:"rel(fk)" json:"layer"`
 	Map		*Map			`orm:"rel(fk)" json:"map"`
 	GraphSettings	string			`orm:"column(graph_settings)" json:"graph_settings"`
@@ -168,4 +169,21 @@ func DeleteMapElement(id int64) (err error) {
 
 func (m *MapElement) CompareWith(element *MapElement) bool {
 	return reflect.DeepEqual(m, element)
+}
+
+func (m *MapElement) GetPrototype() (*MapElement, error) {
+
+	var err error
+	switch m.PrototypeType {
+	case "image":
+		if m.Prototype, err = GetMapImageById(m.PrototypeId); err != nil {
+			return nil, err
+		}
+	case "device":
+	case "script":
+	default:
+
+	}
+
+	return m, nil
 }
