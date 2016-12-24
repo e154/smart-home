@@ -3,7 +3,7 @@ angular
 .controller 'mapEditCtrl', ['$scope', 'Map', '$state', 'Message', '$stateParams', 'mapConstructor', 'Notify'
 ($scope, Map, $state, Message, $stateParams, mapConstructor, Notify) ->
 
-  $scope.map = new mapConstructor($scope, $stateParams.id)
+  $scope.map = new mapConstructor($scope, parseInt($stateParams.id, 10))
 
   $scope.remove =->
     success =(data)->

@@ -168,10 +168,69 @@ func (c *MapController) GetFull() {
 
 func (c *MapController) PutFull() {
 	id, _ := c.GetInt(":id")
-	var _map models.Map
-	json.Unmarshal(c.Ctx.Input.RequestBody, &_map)
-	_map.Id = int64(id)
-	if err := models.UpdateMapById(&_map); err != nil {
+	var newMap models.Map
+	json.Unmarshal(c.Ctx.Input.RequestBody, &newMap)
+
+	// get old map model
+	// -----------------------------------
+	var err error
+	oldMap := &models.Map{Id:int64(id)}
+	o := orm.NewOrm()
+	if _, err = o.LoadRelated(oldMap, "Layers", false); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	for _, layer := range oldMap.Layers {
+		if _, err = o.LoadRelated(layer, "Elements", false); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
+	// and compare with new data
+	// -----------------------------------
+	var exist bool
+	for _, oldLayer := range oldMap.Layers {
+		exist = false
+		for _, newLayer := range newMap.Layers {
+			if oldLayer.Id == newLayer.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			// remove old layers
+			if err = models.DeleteMapLayer(oldLayer.Id); err != nil {
+				c.ErrHan(403, err.Error())
+				return
+			}
+		}
+	}
+
+	// crud operations
+	// -----------------------------------
+	for _, newLayer := range newMap.Layers {
+		if newLayer.Id == 0 {
+			// add new
+			if _, err = models.AddMapLayer(newLayer); err != nil {
+				c.ErrHan(403, err.Error())
+				return
+			}
+
+		} else {
+			// update old
+			if err = models.UpdateMapLayerById(newLayer); err != nil {
+				c.ErrHan(403, err.Error())
+				return
+			}
+		}
+	}
+
+	// update map
+	// -----------------------------------
+	newMap.Id = int64(id)
+	if err := models.UpdateMapById(&newMap); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}

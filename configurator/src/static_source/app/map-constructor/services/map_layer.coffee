@@ -23,18 +23,18 @@ angular
         angular.forEach @elements, (element)->
           elements.push element.serialize()
 
+        name: @name
         id: @id if @id
-        map_id: map_id if @map_id
-        name: @name || ''
-        status: @status || ''
-        description: @description || ''
+        map: {id: @map_id} if @map_id
+        status: @status
+        description: @description
         created_at: @created_at if @created_at
         update_at: @update_at if @update_at
-        elements: elements
+        elements: elements if elements.length
 
       deserialize: (layer)->
-        @id = layer?.id || null
-        @map_id = layer?.map_id || null
+        @id = layer.id || null
+        @map_id = layer.map.id || null
         @name = layer.name || ''
         @description = layer.description || ''
         @status = layer.status || ''

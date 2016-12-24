@@ -45,7 +45,9 @@ angular
         if !@model?.layers
           @model.layers = []
 
-        @model.layers.push new mapLayer(@scope)
+        layer = new mapLayer(@scope)
+        layer.map_id = @id
+        @model.layers.push layer
 
       removeLayer: (_layer)=>
         index = @model.layers.indexOf(_layer)

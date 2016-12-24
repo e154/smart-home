@@ -20,12 +20,12 @@ angular
       constructor: (@scope, @layer_id)->
 
       serialize: ()->
-        id: @id
-        map_id: @map_id
-        layer_id: @layer_id
         name: @name
+        id: @id if @id
+        map: {id: @map_id} if @map_id
+        layer: {id: @layer_id} if @layer_id
         status: @status
-        description: @description || ''
+        description: @description
         created_at: @created_at if @created_at
         update_at: @update_at if @update_at
 
