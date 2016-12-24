@@ -54,7 +54,7 @@ func (c *MapElementController) Post() {
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{"map_entity": entity}
+	c.Data["json"] = map[string]interface{}{"map_element": entity}
 	c.ServeJSON()
 }
 
@@ -73,7 +73,7 @@ func (c *MapElementController) GetOne() {
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{"map_entity": entity}
+	c.Data["json"] = map[string]interface{}{"map_element": entity}
 	c.ServeJSON()
 }
 

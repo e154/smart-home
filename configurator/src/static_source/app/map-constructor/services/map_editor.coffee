@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'mapLayer', 'mapElement'
-  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, mapLayer, mapElement) ->
+.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'mapLayer'
+  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, mapLayer) ->
     class mapEditor
 
       constructor: ()->
@@ -15,6 +15,7 @@ angular
         @scope.sortLayers = @sortLayers
         @scope.sortElements = @sortElements
         @scope.removeElement = @removeElement
+        @scope.updateElement = @updateElement
 
       loadEditor: (c)=>
         # container
@@ -81,14 +82,22 @@ angular
 
       addElement: ()=>
         return if !@scope.current_layer
-        @scope.current_layer.addElement new mapElement(@scope)
+        @scope.current_layer.addElement()
 
       removeElement: (_element)=>
+        return if !_element
+
         index = @scope.current_layer.elements.indexOf(_element)
-        if index > -1
-          @scope.current_layer.elements.splice(index, 1)
-          @scope.current_element = null
+        success =()=>
+          if index > -1
+            @scope.current_layer.elements.splice(index, 1)
+            @scope.current_element = null
+        _element.remove success
         return
+
+      updateElement: (_element)=>
+        return if !_element
+        _element.update()
 
       sortLayers: ()=>
         weight = 0

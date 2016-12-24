@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'mapElement', ['$rootScope', '$compile'
-  ($rootScope, $compile) ->
+.factory 'mapElement', ['$rootScope', '$compile', 'MapElement', 'Message', 'Notify'
+  ($rootScope, $compile, MapElement, Message, Notify) ->
     class mapElement
 
       scope: null
@@ -45,6 +45,37 @@ angular
         @update_at = element.update_at || ''
 
         return @
+
+      create: ()->
+        success =(data)=>
+          @id = data.id
+          Notify 'success', 'Элемент успешно создан', 3
+        error =(result)->
+          Message result.data.status, result.data.message
+
+        model = new MapElement(@serialize())
+        model.$create success, error
+
+      update: (cb)->
+        success =(data)=>
+          Notify 'success', 'Элемент успешно обновлён', 3
+        error =(result)->
+          Message result.data.status, result.data.message
+
+        model = new MapElement(@serialize())
+        model.$update success, error
+
+      remove: (cb)->
+        return if !confirm('Вы точно хотите удалить этот элемент?')
+        success =(data)=>
+          cb() if cb
+          Notify 'success', 'Элемент успешно удалён', 3
+        error =(result)->
+          Message result.data.status, result.data.message
+
+        model = new MapElement({id: @id})
+        model.$delete success, error
+
 
     mapElement
 ]

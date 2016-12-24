@@ -49,9 +49,11 @@ angular
 
         return @
 
-      addElement: (element)=>
+      addElement: ()=>
+        element = new mapElement(@scope)
         element.layer_id = @id
         element.map_id = @map_id
+        element.create()
         @elements.push element
 
       create: ()->
