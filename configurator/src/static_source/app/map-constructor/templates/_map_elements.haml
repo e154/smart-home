@@ -33,17 +33,6 @@
                     %input.form-control(ng-model="current_element.name")
                 .col-md-6
                   .form-group
-                    %laber {{'map.element.type' | translate}}
-                    %select.form-control(ng-model="current_element.type")
-                      %option(value="image")
-                        {{'map.element.image' | translate}}
-                      %option(value="device")
-                        {{'map.element.device' | translate}}
-                      %option(value="script")
-                        {{'map.element.script' | translate}}
-              .row
-                .col-md-6
-                  .form-group
                     %laber {{'map.element.status' | translate}}
                     %select.form-control(ng-model="current_element.status")
                       %option(value="enabled")
@@ -52,6 +41,17 @@
                         {{'map.element.disabled' | translate}}
                       %option(value="hidden")
                         {{'map.element.hidden' | translate}}
+              .row
+                .col-md-6
+                  .form-group
+                    %laber {{'map.element.type' | translate}}
+                    %select.form-control(ng-model="current_element.type")
+                      %option(value="image")
+                        {{'map.element.image' | translate}}
+                      %option(value="device")
+                        {{'map.element.device' | translate}}
+                      %option(value="script")
+                        {{'map.element.script' | translate}}
 
               .row
                 .col-md-12
