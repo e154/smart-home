@@ -73,6 +73,8 @@ angular
           id: @_model.id
           name: @_model.name
           description: @_model.description
+          created_at: @_model.created_at
+          update_at: @_model.update_at
           layers: []
 
         if @_model?.layers && @_model.layers.length != 0

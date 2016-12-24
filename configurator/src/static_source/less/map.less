@@ -110,6 +110,11 @@
     padding: 8px;
     margin: 0;
     float: left;
+    cursor: pointer;
+
+    +.list-group-item {
+      border-top: none;
+    }
 
     .map-layer-handler,
     .map-element-handler {
@@ -125,10 +130,12 @@
       }
     }
 
-    .map-element-subtitle {
+    .map-element-subtitle,
+    .map-layer-subtitle {
       float: left;
       width: 200px;
 
+      input.map-layer-title,
       input.map-element-title {
         margin: 0;
         padding-left: 7px;
@@ -149,7 +156,7 @@
         color: #d8d8d8;
       }
 
-      .map-layer-title,
+      input.map-layer-title,
       input.map-element-title {
         color: #d8d8d8;
       }

@@ -23,6 +23,8 @@ angular
         name: @name || ''
         status: @status || ''
         description: @description || ''
+        created_at: @created_at if @created_at
+        update_at: @update_at if @update_at
 
       deserialize: (layer)->
         @id = layer?.id || null
@@ -30,6 +32,8 @@ angular
         @name = layer.name || ''
         @description = layer.description || ''
         @status = layer.status || ''
+        @created_at = layer.created_at || ''
+        @update_at = layer.update_at || ''
 
         return @
 

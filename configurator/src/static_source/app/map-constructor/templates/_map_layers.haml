@@ -14,5 +14,4 @@
           %span.map-layer-handler
             ☰
           %span.map-layer-subtitle
-            .map-layer-title
-              {{layer.name}}
+            %input.map-layer-title(type="text" name="subtitle" ng-model="layer.name" ng-click="$event.stopPropagation()")

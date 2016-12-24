@@ -33,7 +33,6 @@ func testNode(command []byte) {
 		Device: st.Device,
 		Line: "",
 		StopBits: 2,
-		Time: time.Now(),
 		Timeout: st.Timeout,
 	}
 
