@@ -171,19 +171,42 @@ func (c *MapController) PutFull() {
 	var newMap models.Map
 	json.Unmarshal(c.Ctx.Input.RequestBody, &newMap)
 
+	oldMap := &models.Map{Id:int64(id)}
+	if err := updateMapLayers(&newMap, oldMap); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	// update map
+	// -----------------------------------
+	newMap.Id = int64(id)
+	if err := models.UpdateMapById(&newMap); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.ServeJSON()
+}
+
+func updateLayerElements(newLayer, oldLayer *models.MapLayer) (err error) {
+
+	err = models.UpdateMapLayerById(newLayer)
+
+
+	return
+}
+
+func updateMapLayers(newMap, oldMap *models.Map) (err error) {
+
 	// get old map model
 	// -----------------------------------
-	var err error
-	oldMap := &models.Map{Id:int64(id)}
 	o := orm.NewOrm()
 	if _, err = o.LoadRelated(oldMap, "Layers", false); err != nil {
-		c.ErrHan(403, err.Error())
 		return
 	}
 
 	for _, layer := range oldMap.Layers {
 		if _, err = o.LoadRelated(layer, "Elements", false); err != nil {
-			c.ErrHan(403, err.Error())
 			return
 		}
 	}
@@ -202,7 +225,6 @@ func (c *MapController) PutFull() {
 		if !exist {
 			// remove old layers
 			if err = models.DeleteMapLayer(oldLayer.Id); err != nil {
-				c.ErrHan(403, err.Error())
 				return
 			}
 		}
@@ -214,26 +236,23 @@ func (c *MapController) PutFull() {
 		if newLayer.Id == 0 {
 			// add new
 			if _, err = models.AddMapLayer(newLayer); err != nil {
-				c.ErrHan(403, err.Error())
 				return
 			}
 
 		} else {
-			// update old
-			if err = models.UpdateMapLayerById(newLayer); err != nil {
-				c.ErrHan(403, err.Error())
+			// update old layer model
+			oldLayer := &models.MapLayer{}
+			for _, layer := range oldMap.Layers {
+				if layer.Id == newLayer.Id {
+					*oldLayer = *layer
+				}
+			}
+
+			if err = updateLayerElements(newLayer, oldLayer); err != nil {
 				return
 			}
 		}
 	}
 
-	// update map
-	// -----------------------------------
-	newMap.Id = int64(id)
-	if err := models.UpdateMapById(&newMap); err != nil {
-		c.ErrHan(403, err.Error())
-		return
-	}
-
-	c.ServeJSON()
+	return
 }
