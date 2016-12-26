@@ -236,9 +236,7 @@ func removeImage(client *stream.Client, value interface{}) {
 	}
 
 	file_path := common.GetFullPath(image.Image)
-	if err = os.Remove(file_path); err != nil {
-		log.Warnf("remove image file:",err.Error())
-	}
+	os.Remove(file_path)
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
 	client.Send(string(msg))
