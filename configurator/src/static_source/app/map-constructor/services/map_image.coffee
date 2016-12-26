@@ -16,6 +16,7 @@ angular
         @image = null
 
       show_file_manager: ()->
+        console.log 'show_file_manager'
         FileManager.show().then (image)=>
           @image = image[0]
 
