@@ -1,6 +1,6 @@
 angular
 .module('appServices')
-.factory 'Map', ['$resource', ($resource) ->
+.factory 'MapResource', ['$resource', ($resource) ->
   $resource window.server_url + '/api/v1/map/:id', {id: '@id'},
     show:
       method: 'GET'

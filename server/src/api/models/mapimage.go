@@ -12,12 +12,8 @@ import (
 
 type MapImage struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
-	Thumb        	string			`orm:"" json:"thumb"`
-	Image        	string			`orm:"" json:"image"`
-	MimeType       	string			`orm:"" json:"mime_type"`
-	Title       	string			`orm:"" json:"title"`
-	Size       	int64			`orm:"" json:"size"`
-	Name        	string			`orm:"" json:"name"`
+	Image           *Image 			`orm:"rel(fk)" json:"image"`
+	Style        	string			`orm:"" json:"style"`
 }
 
 func (m *MapImage) TableName() string {

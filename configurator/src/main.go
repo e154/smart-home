@@ -20,7 +20,7 @@ func Initialize() {
 		beego.Info("Develment mode enabled")
 
 		beego.SetStaticPath("/static", "static_source")
-		beego.SetStaticPath("/attach", "../data")
+		beego.SetStaticPath("/attach", "../../data")
 	} else {
 		beego.Info("Product mode enabled")
 

@@ -35,6 +35,7 @@ app = angular.module('app', [
   'ui.tree'
   'angular-map'
   'ng-sortable'
+  'ngFileUpload'
 ])
 
 app.version =

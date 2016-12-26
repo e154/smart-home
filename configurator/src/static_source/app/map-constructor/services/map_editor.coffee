@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'mapLayer'
-  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, mapLayer) ->
+.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'MapLayer'
+  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, MapLayer) ->
     class mapEditor
 
       constructor: ()->
@@ -50,7 +50,7 @@ angular
         if !@model?.layers
           @model.layers = []
 
-        layer = new mapLayer(@scope)
+        layer = new MapLayer(@scope)
         layer.map_id = @id
         layer.create()
         @model.layers.push layer

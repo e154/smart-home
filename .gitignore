@@ -75,3 +75,4 @@ install_manifest.txt
 .git
 /tmp/
 /configurator/src/static_source/themes/
+/data/

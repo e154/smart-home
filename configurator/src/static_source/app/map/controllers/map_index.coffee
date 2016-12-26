@@ -1,12 +1,12 @@
 angular
 .module('appControllers')
-.controller 'mapIndexCtrl', ['$scope', 'Map', '$state', '$timeout', '$httpParamSerializer'
-($scope, Map, $state, $timeout, $httpParamSerializer) ->
+.controller 'mapIndexCtrl', ['$scope', 'MapResource', '$state', '$timeout', '$httpParamSerializer'
+($scope, MapResource, $state, $timeout, $httpParamSerializer) ->
 
   tableCallback = {}
   $scope.options =
     perPage: 100
-    resource: Map
+    resource: MapResource
     columns: [
       {
         name: '#'

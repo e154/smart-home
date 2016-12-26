@@ -1,9 +1,9 @@
 angular
 .module('appControllers')
-.controller 'mapNewCtrl', ['$scope', 'Map', 'Message', '$state'
-($scope, Map, Message, $state) ->
+.controller 'mapNewCtrl', ['$scope', 'MapResource', 'Message', '$state'
+($scope, MapResource, Message, $state) ->
 
-  $scope.map = new Map
+  $scope.map = new MapResource
 
   $scope.create =->
     success =(data)->

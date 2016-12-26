@@ -1,8 +1,8 @@
 angular
 .module('angular-map')
-.factory 'mapLayer', ['$rootScope', '$compile', 'mapElement', 'MapLayer', 'Notify', 'Message'
-  ($rootScope, $compile, mapElement, MapLayer, Notify, Message) ->
-    class mapLayer
+.factory 'MapLayer', ['$rootScope', '$compile', 'MapElement', 'MapLayerResource', 'Notify', 'Message'
+  ($rootScope, $compile, MapElement, MapLayerResource, Notify, Message) ->
+    class MapLayer
 
       scope: null
 
@@ -45,12 +45,12 @@ angular
         @weight = layer.weight || 0
 
         angular.forEach layer.elements, (element)=>
-          @elements.push new mapElement(@scope).deserialize(element)
+          @elements.push new MapElement(@scope).deserialize(element)
 
         return @
 
       addElement: ()=>
-        element = new mapElement(@scope)
+        element = new MapElement(@scope)
         element.layer_id = @id
         element.map_id = @map_id
         element.create()
@@ -63,7 +63,7 @@ angular
         error =(result)->
           Message result.data.status, result.data.message
 
-        model = new MapLayer(@serialize())
+        model = new MapLayerResource(@serialize())
         model.$create success, error
 
       update: (cb)->
@@ -72,7 +72,7 @@ angular
         error =(result)->
           Message result.data.status, result.data.message
 
-        model = new MapLayer(@serialize())
+        model = new MapLayerResource(@serialize())
         model.$update success, error
 
       remove: (cb)->
@@ -83,8 +83,8 @@ angular
         error =(result)->
           Message result.data.status, result.data.message
 
-        model = new MapLayer({id: @id})
+        model = new MapLayerResource({id: @id})
         model.$delete success, error
 
-    mapLayer
+    MapLayer
 ]

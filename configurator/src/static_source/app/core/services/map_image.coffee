@@ -1,18 +1,18 @@
 angular
 .module('appServices')
-.factory 'MapLayerResource', ['$resource', ($resource) ->
-  $resource window.server_url + '/api/v1/map_layer/:id', {id: '@id'},
+.factory 'MapImageResource', ['$resource', ($resource) ->
+  $resource window.server_url + '/api/v1/map_image/:id', {id: '@id'},
     show:
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
-        data?.map_layer || data
+        data?.map_image || data
 
     create:
       method: 'POST'
       responseType: 'json'
       transformResponse: (data) ->
-        data?.map_layer || data
+        data?.map_image || data
 
     update:
         method: 'PUT'
@@ -26,5 +26,5 @@ angular
       responseType: 'json'
       transformResponse: (data) ->
         meta: data?.meta || {}
-        items: data?.map_layers || []
+        items: data?.map_images || []
 ]

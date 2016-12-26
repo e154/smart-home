@@ -26,6 +26,7 @@
   "No data": "Нет данных",
   "loading...": "Загрузка...",
   "full screen": "Развернуть",
+  "set image": "Загрузить",
   "node": {
     "name": "Название",
     "description": "Описание",
@@ -209,7 +210,12 @@
       "script": "Скрипт",
       "created_at": "Дата создания",
       "updated_at": "Дата обновления",
-      "description": "Описание"
+      "description": "Описание",
+      "prototype": {
+        "name": "Название",
+        "style": "Стиль",
+        "image": "Изображение"
+      }
     }
   }
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 	"time"
+	"../../lib/common"
 )
 
 type MapElement struct {
@@ -18,7 +19,7 @@ type MapElement struct {
 	Status		string			`orm:"" json:"status"`
 	PrototypeType	string			`orm:"" json:"prototype_type"`
 	PrototypeId	int64			`orm:"" json:"prototype_id"`
-	Prototype	interface{}		`orm:"-" json:"prototype"`
+	Prototype	interface{}			`orm:"-" json:"prototype"`
 	Weight 		int64			`orm:"" json:"weight"`
 	Layer		*MapLayer		`orm:"rel(fk)" json:"layer"`
 	Map		*Map			`orm:"rel(fk)" json:"map"`
@@ -173,12 +174,20 @@ func (m *MapElement) CompareWith(element *MapElement) bool {
 
 func (m *MapElement) GetPrototype() (*MapElement, error) {
 
-	var err error
 	switch m.PrototypeType {
 	case "image":
-		if m.Prototype, err = GetMapImageById(m.PrototypeId); err != nil {
+		image, err := GetMapImageById(m.PrototypeId)
+		if err != nil {
 			return nil, err
 		}
+
+		o := orm.NewOrm()
+		if _, err := o.LoadRelated(image, "Image"); err != nil {
+			return nil, err
+		}
+
+		image.Image.Url = common.GetLinkPath(image.Image.Image)
+		m.Prototype = image
 	case "device":
 	case "script":
 	default:

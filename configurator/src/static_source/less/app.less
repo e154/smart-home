@@ -12,6 +12,8 @@
 @import "modals";
 @import "pikaday";
 @import "map";
+@import "cross";
+@import "file_manager";
 
 html,
 body {
@@ -26,6 +28,10 @@ a:active, a:focus {
 }
 
 textarea { resize:vertical }
+
+hr {
+  border-color: #bbbbbb;
+}
 
 #main-content {
   height: auto;
@@ -59,6 +65,10 @@ textarea { resize:vertical }
   + .btn {
     margin-left: 15px;
   }
+}
+
+.relative {
+  position: relative;
 }
 
 .date-info-block {
@@ -210,4 +220,18 @@ textarea { resize:vertical }
 }
 .log-debug {
   background-color: #82aeff;
+}
+
+.relative {
+  .delete.button{
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 16px 22px 0 0;
+    background-color: rgba(255, 255, 255, 0.57);
+    font-size: 30px;
+    font-weight: 100;
+    width: 30px;
+    height: 30px;
+  }
 }

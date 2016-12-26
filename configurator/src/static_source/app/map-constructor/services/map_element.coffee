@@ -1,20 +1,22 @@
 angular
 .module('angular-map')
-.factory 'mapElement', ['$rootScope', '$compile', 'MapElement', 'Message', 'Notify', 'MapImage'
-  ($rootScope, $compile, MapElement, Message, Notify, MapImage) ->
-    class mapElement
+.factory 'MapElement', ['$rootScope', '$compile', 'MapElementResource', 'Message', 'Notify', 'MapImage', 'MapDevice', 'MapScript'
+  ($rootScope, $compile, MapElementResource, Message, Notify, MapImage, MapDevice, MapScript) ->
+    class MapElement
 
       scope: null
 
       prototype: null
+      old_prototype: null
 
       id: null
       layer_id: null
       map_id: null
       name: 'Новый элемент'
       description: ''
-      prototype_type: 'image'
+      prototype_type: ''
       prototype_id: null
+      prototype: null
       status: 'enabled'
       selected: false
       created_at: null
@@ -28,11 +30,14 @@ angular
       constructor: (@scope, @layer_id)->
         @scope.$watch(()=>
             @prototype_type
-        , (prototype_type)=>
+        , (val, old_val)=>
+          return if val == old_val
           @get_prototype()
         )
+        @get_prototype()
 
       serialize: ()->
+        prototype = @prototype?.serialize() || null
         name: @name
         id: @id if @id
         map: {id: @map_id} if @map_id
@@ -45,6 +50,7 @@ angular
         prototype_type: @prototype_type
         prototype_id: @prototype_id if @prototype_id
         graph_settings: @graph_settings
+        prototype: prototype if prototype
 
       deserialize: (element)->
         @id = element.id || null
@@ -53,12 +59,15 @@ angular
         @name = element.name || ''
         @description = element.description || ''
         @status = element.status || ''
-        @prototype_type = element.prototype_type || 'image'
+        @prototype_type = element.prototype_type || ''
         @prototype_id = element.prototype_id || null
         @weight = element.weight || 0
         @created_at = element.created_at || ''
         @update_at = element.update_at || ''
         @graph_settings = element.graph_settings if element.graph_settings
+
+        if element.prototype
+          @get_prototype(element.prototype)
 
         return @
 
@@ -69,7 +78,7 @@ angular
         error =(result)->
           Message result.data.status, result.data.message
 
-        model = new MapElement(@serialize())
+        model = new MapElementResource(@serialize())
         model.$create success, error
 
       update: (cb)->
@@ -78,7 +87,7 @@ angular
         error =(result)->
           Message result.data.status, result.data.message
 
-        model = new MapElement(@serialize())
+        model = new MapElementResource(@serialize())
         model.$update success, error
 
       remove: (cb)->
@@ -89,14 +98,20 @@ angular
         error =(result)->
           Message result.data.status, result.data.message
 
-        model = new MapElement({id: @id})
+        model = new MapElementResource({id: @id})
         model.$delete success, error
 
-      get_prototype: ()->
-
+      get_prototype: (data)->
         switch @prototype_type
           when 'image'
             @prototype = new MapImage(@scope)
+          when 'device'
+            @prototype = new MapDevice(@scope)
+          when 'script'
+            @prototype = new MapScript(@scope)
 
-    mapElement
+        if data
+          @prototype.deserialize(data)
+
+    MapElement
 ]
