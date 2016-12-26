@@ -123,6 +123,17 @@ func (c *MapElementController) Put() {
 		return
 	}
 
+	// delete old map image
+	//
+	if oldMapElement.PrototypeId == 0 {
+		oldMapElement.PrototypeType = ""
+	}
+
+	switch oldMapElement.PrototypeType {
+	case "image":
+		models.DeleteMapImage(oldMapElement.PrototypeId)
+	}
+
 	//
 	switch mapElement.PrototypeType {
 	case "image":
@@ -157,17 +168,6 @@ func (c *MapElementController) Put() {
 	if err := models.UpdateMapElementById(&mapElement); err != nil {
 		c.ErrHan(403, err.Error())
 		return
-	}
-
-	// delete old map image
-	//
-	if oldMapElement.PrototypeId == 0 {
-		oldMapElement.PrototypeType = ""
-	}
-
-	switch oldMapElement.PrototypeType {
-	case "image":
-		models.DeleteMapImage(oldMapElement.PrototypeId)
 	}
 
 	c.ServeJSON()
