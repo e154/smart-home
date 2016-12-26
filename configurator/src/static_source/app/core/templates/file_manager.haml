@@ -1,6 +1,8 @@
 .file-manager-header
     %span.title
-    %a.cross(href="#" ng-click="closeThisDialog()") esc
+    %a.cross(href="#" ng-click="closeThisDialog()")
+        %span
+            esc
 .file-manager-body(perfect-scrollbar="true")
     %div(ng-show="mode == 'select'")
         .col-sm-2

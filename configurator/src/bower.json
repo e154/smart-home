@@ -48,7 +48,8 @@
     "angular-ui-tree": "^2.22.1",
     "Sortable": "^1.4.2",
     "ng-file-upload": "^12.2.13",
-    "fancybox": "^2.1.5"
+    "fancybox": "^2.1.5",
+    "perfect-scrollbar": "^0.6.15"
   },
   "overrides": {
     "jquery": {
@@ -122,6 +123,12 @@
       "main": [
         "source/jquery.fancybox.css",
         "source/jquery.fancybox.pack.js"
+      ]
+    },
+    "perfect-scrollbar": {
+      "main": [
+        "css/perfect-scrollbar.css",
+        "js/perfect-scrollbar.jquery.min.js"
       ]
     }
   }
