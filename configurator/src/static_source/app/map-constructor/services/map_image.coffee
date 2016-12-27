@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'MapImage', ['$rootScope', '$compile', 'Message', 'Notify', 'Image', 'FileManager'
-  ($rootScope, $compile, Message, Notify, Image, FileManager) ->
+.factory 'MapImage', ['$rootScope', '$compile', 'Message', 'Notify', 'Image'
+  ($rootScope, $compile, Message, Notify, Image) ->
     class MapImage
 
       id: null
@@ -14,11 +14,6 @@ angular
 
       remove_image: ()->
         @image = null
-
-      show_file_manager: ()->
-        console.log 'show_file_manager'
-        FileManager.show().then (image)=>
-          @image = image[0]
 
       serialize: ()->
         return null if !@image

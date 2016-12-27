@@ -36,6 +36,7 @@ app = angular.module('app', [
   'angular-map'
   'ng-sortable'
   'ngFileUpload'
+  'ngDragDrop'
 ])
 
 app.version =

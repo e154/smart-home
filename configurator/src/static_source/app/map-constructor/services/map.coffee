@@ -24,7 +24,7 @@ angular
         @scope.zoom = 1.0
         @scope.settings =
           movable: true
-          zoom: true
+          zoom: false
           grid: 5
           minHeight: 400
           minWidth: 400

@@ -5,6 +5,13 @@
         {{'map.main_window' | translate}}
       .map-wrapper
         .map-editor
+          -# map layer
+          %div(ng-repeat="layer in map.model.layers")
+
+            -# layer element
+            %map-entity(ng-repeat="element in layer.elements" element="element")
+              {{element.id}}
+
         .page-loader
           .spinner
             {{"loading..."| translate}}
@@ -26,7 +33,7 @@
             .col-sm-12
               .pull-right.date-info-block
                 .form-group
-                  %small
+                  -#%small
                     Создано {{current_layer.created_at | readableDateTime}}
                   %small
                     Редактировалось {{current_layer.update_at | readableDateTime}}

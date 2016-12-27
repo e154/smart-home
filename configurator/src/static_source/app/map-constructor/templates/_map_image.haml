@@ -12,7 +12,7 @@
         %a.delete.button(href="#" ng-click="current_element.prototype.file = null" ng-if="current_element.prototype.file")
           .cross
 
-        %button.btn.btn-default.custom-upload.full-width(ng-click="current_element.prototype.show_file_manager()" ng-if="!current_element.prototype.image.url")
+        %button.btn.btn-default.custom-upload.full-width(file-manager="true" ng-model="current_element.prototype.image" ng-if="!current_element.prototype.image.url")
           .fa.fa-upload
           &nbsp;
           {{'set image' | translate}}
