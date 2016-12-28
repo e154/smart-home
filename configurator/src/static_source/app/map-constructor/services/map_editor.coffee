@@ -67,12 +67,19 @@ angular
         layer.create()
         @model.layers.push layer
 
+        if @model.layers.length > 0
+          @selectLayer(@model.layers[@model.layers.length - 1])
+
       removeLayer: (_layer)=>
         index = @model.layers.indexOf(_layer)
         success =()=>
           if index > -1
             @model.layers.splice(index, 1)
             @scope.current_layer = null
+
+            if @model.layers.length > 0
+              @selectLayer(@model.layers[@model.layers.length - 1])
+
         _layer.remove success
         return
 
