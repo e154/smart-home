@@ -17,7 +17,6 @@ angular
         left: 0
 
     compile =->
-      console.log 'compile'
       if previousContent
         previousContent.remove()
         previousContent = null
@@ -25,7 +24,7 @@ angular
       template = ''
       switch $scope.element.prototype_type
         when 'image'
-          template = "<img class='draggable-entity' src=\"#{$scope.element.prototype.image.url}\">"
+          template = "<img class='draggable-entity' ng-src=\"{{element.prototype.image.url}}\">"
         when 'device'
           break
         when 'script'
@@ -81,7 +80,6 @@ angular
     addDraggable()
 
     $scope.$on 'entity_update', (e, data)->
-      console.log '_element',data
       if data.id == $scope.element.id
         compile()
 
