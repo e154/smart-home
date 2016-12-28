@@ -14,15 +14,7 @@ angular
         @init()
 
       init: ()->
-        # http://jsfiddle.net/X2PZP/3/
-        template = $compile('<div class="panning-cross">
-<svg>
- <g id="layer1" transform="translate(-291.18256,-337.29837)">
-   <path stroke-linejoin="miter" d="m331.14063,340.36763,0,29.99702" stroke="#7B7B7B" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="2"/>
-   <path stroke-linejoin="miter" d="m316.11461,355.29379,30.24144,0" stroke="#7B7B7B" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="2"/>
- </g>
-</svg>
-</div>')(@scope)
+        template = $compile('<div class="cross normal"></div>')(@scope)
         @container.append(template)
         $(template).css({
           position: 'absolute'

@@ -100,6 +100,7 @@ func Initialize() {
 			beego.NSRouter("/map_element", &controllers.MapElementController{}, "post:Post"),
 			beego.NSRouter("/map_element/:id([0-9]+)", &controllers.MapElementController{}, "put:Put"),
 			beego.NSRouter("/map_element/:id([0-9]+)", &controllers.MapElementController{}, "delete:Delete"),
+			beego.NSRouter("/map_element/:id([0-9]+)/element_only", &controllers.MapElementController{}, "put:PutElementOnly"),
 
 			beego.NSRouter("/device_state/:id([0-9]+)", &controllers.DeviceStateController{}, "get:GetOne"),
 			beego.NSRouter("/device_state", &controllers.DeviceStateController{}, "get:GetAll"),

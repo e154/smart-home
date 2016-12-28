@@ -18,6 +18,11 @@ angular
         method: 'PUT'
         responseType: 'json'
 
+    update_element_only:
+      url: window.server_url + '/api/v1/map_element/:id/element_only'
+      method: 'PUT'
+      responseType: 'json'
+
     delete:
       method: 'DELETE'
 

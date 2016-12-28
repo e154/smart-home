@@ -26,7 +26,7 @@ angular
           movable: true
           zoom: false
           grid: 5
-          minHeight: 400
+          minHeight: 100
           minWidth: 400
 
       update: (cb)->
@@ -78,7 +78,7 @@ angular
 
           #TODO remove
           @scope.current_layer = @model.layers[0]
-          @scope.current_element = @model.layers[0].elements[0]
+#          @scope.current_element = @model.layers[0].elements[0]
 
     mapConstructor
 ]

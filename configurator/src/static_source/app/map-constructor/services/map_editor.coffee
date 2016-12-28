@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'MapLayer'
-  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, MapLayer) ->
+.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'MapLayer', 'storage', '$timeout'
+  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, MapLayer, storage, $timeout) ->
     class mapEditor
 
       constructor: ()->
@@ -16,6 +16,9 @@ angular
         @scope.sortElements = @sortElements
         @scope.removeElement = @removeElement
         @scope.updateElement = @updateElement
+        @scope.current_element = {}
+
+        @map_editor = new storage('map-editor')
 
       loadEditor: (c)=>
         # container
@@ -33,6 +36,10 @@ angular
 
         # resizable
         # --------------------
+        window_height = @map_editor.getInt('window_height')
+        if window_height && window_height != 0
+          @wrapper.height(window_height)
+
         if @wrapper.resizable('instance')
           @wrapper.resizable('destroy')
         @wrapper.resizable
@@ -40,9 +47,14 @@ angular
           minWidth: @scope.settings.minWidth
           grid: @scope.settings.grid
           handles: 's'
+          stop: (e)=>
+            @map_editor.setItem('window_height', $(e.target).height())
 
         @panning = new mapPanning(@container, @scope, @wrapper)
         @wrapper.find(".page-loader").fadeOut("fast")
+
+        @scope.$on 'select_element', (e, data)=>
+          @selectElement(data)
 
         return
 
@@ -75,10 +87,20 @@ angular
           @scope.current_layer = layer
 
       selectElement: (element, $index)=>
-        if @scope.current_element == element
+        if @scope.current_element && @scope.current_element.id == element.id
           @scope.current_element = null
-        else
-          @scope.current_element = element
+          element.selected = false
+          $timeout ()=>
+            @scope.$apply()
+          return
+
+        angular.forEach @scope.current_layer.elements, (_element)=>
+          _element.selected = element.id == _element.id
+          if _element.selected
+            @scope.current_element = _element
+
+        $timeout ()=>
+          @scope.$apply()
 
       addElement: ()=>
         return if !@scope.current_layer
@@ -92,6 +114,10 @@ angular
           if index > -1
             @scope.current_layer.elements.splice(index, 1)
             @scope.current_element = null
+            # for remove from scheme
+            $timeout ()=>
+              @scope.$apply()
+
         _element.remove success
         return
 

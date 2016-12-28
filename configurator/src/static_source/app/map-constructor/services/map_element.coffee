@@ -23,9 +23,11 @@ angular
       update_at: null
       weight: 0
       graph_settings:
+        width: null
+        height: null
         position:
-          top:0
-          left:0
+          top: 0
+          left: 0
 
       constructor: (@scope, @layer_id)->
         @scope.$watch(()=>
@@ -49,7 +51,7 @@ angular
         weight: @weight
         prototype_type: @prototype_type
         prototype_id: @prototype_id if @prototype_id
-        graph_settings: @graph_settings
+        graph_settings: angular.toJson(@graph_settings)
         prototype: prototype if prototype
 
       deserialize: (element)->
@@ -64,7 +66,7 @@ angular
         @weight = element.weight || 0
         @created_at = element.created_at || ''
         @update_at = element.update_at || ''
-        @graph_settings = element.graph_settings if element.graph_settings
+        @graph_settings = angular.fromJson(element.graph_settings) if element.graph_settings
 
         if element.prototype
           @get_prototype(element.prototype)
@@ -81,9 +83,20 @@ angular
         model = new MapElementResource(@serialize())
         model.$create success, error
 
+      update_element_only: (cb)->
+        update: (cb)->
+        success =(data)=>
+          cb() if cb
+        error =(result)->
+          Message result.data.status, result.data.message
+
+        model = new MapElementResource(@serialize())
+        model.$update_element_only success, error
+
       update: (cb)->
         success =(data)=>
           Notify 'success', 'Элемент успешно обновлён', 3
+          cb() if cb
         error =(result)->
           Message result.data.status, result.data.message
 

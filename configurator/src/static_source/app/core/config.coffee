@@ -48,4 +48,6 @@ angular
     $('.fancybox').fancybox helpers:
       overlay:
         locked: false
+
+  preventSelection(document)
 ]

@@ -19,7 +19,7 @@ type MapElement struct {
 	Status		string			`orm:"" json:"status"`
 	PrototypeType	string			`orm:"" json:"prototype_type"`
 	PrototypeId	int64			`orm:"" json:"prototype_id"`
-	Prototype	interface{}			`orm:"-" json:"prototype"`
+	Prototype	interface{}		`orm:"-" json:"prototype"`
 	Weight 		int64			`orm:"" json:"weight"`
 	Layer		*MapLayer		`orm:"rel(fk)" json:"layer"`
 	Map		*Map			`orm:"rel(fk)" json:"map"`

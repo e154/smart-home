@@ -1,3 +1,4 @@
+@zMapDraggable: 30;
 @zMapPageLoader: 40;
 @zMapControls: 50;
 @zMapFullscreen: 60;
@@ -7,7 +8,7 @@
   margin: 0;
   outline: 1px solid #e2e2e2;
   overflow: hidden;
-  min-height: 400px;
+  min-height: 100px;
   background: rgba(245,245,245,0.88);
 
   > .ui-resizable-handle {
@@ -93,6 +94,24 @@
 
   .map-editor,
   .map-viewer {
+    .map-layer {
+      position: relative;
+      width: 0;
+      height: 0;
+
+      .draggable {
+        position: absolute;
+        z-index: @zMapDraggable;
+        background-color: rebeccapurple;
+        display: inline-block;
+        width: auto;
+
+        img {
+          width: auto !important;
+          height: 100% !important;
+        }
+      }
+    }
 
   }
 

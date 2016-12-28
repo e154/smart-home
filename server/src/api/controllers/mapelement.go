@@ -18,6 +18,7 @@ func (c *MapElementController) URLMapping() {
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
+	c.Mapping("PutElementOnly", c.PutElementOnly)
 	c.Mapping("Delete", c.Delete)
 }
 
@@ -100,6 +101,43 @@ func (c *MapElementController) GetAll() {
 	c.ServeJSON()
 }
 
+// PutElementOnly ...
+// @Title PutElementOnly
+// @Description update the MapElement
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.MapElement	true		"body for MapElement content"
+// @Success 200 {object} models.MapElement
+// @Failure 403 :id is not int
+// @router /:id [put]
+func (c *MapElementController) PutElementOnly() {
+
+	var mapElement, oldMapElement *models.MapElement
+	var err error
+
+	id, _ := c.GetInt(":id")
+
+	if mapElement, err = models.GetMapElementById(int64(id)); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+	oldMapElement = &models.MapElement{}
+	*oldMapElement = *mapElement
+
+	json.Unmarshal(c.Ctx.Input.RequestBody, &mapElement)
+	mapElement.Id = int64(id)
+	mapElement.PrototypeType = oldMapElement.PrototypeType
+	mapElement.PrototypeId = oldMapElement.PrototypeId
+
+	// update map element
+	//
+	if err := models.UpdateMapElementById(mapElement); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.ServeJSON()
+}
+
 // Put ...
 // @Title Put
 // @Description update the MapElement
@@ -167,7 +205,7 @@ func (c *MapElementController) Put() {
 
 	}
 
-	// update mam element
+	// update map element
 	//
 	if err := models.UpdateMapElementById(&mapElement); err != nil {
 		c.ErrHan(403, err.Error())

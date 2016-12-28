@@ -10,7 +10,7 @@
 
     .form-group
       %ul.list-group(ng-sortable="{ group: 'elements', animation: 0, handle: '.map-element-handler', onSort: sortElements}")
-        %li.list-group-item(ng-repeat="element in current_layer.elements | orderBy:'weight'" ng-click="selectElement(element, $index)" ng-class="{'selected': element == current_element}")
+        %li.list-group-item(ng-repeat="element in current_layer.elements | orderBy:'weight'" ng-click="selectElement(element, $index)" ng-class="{'selected': element.selected}")
           .map-element-header
             %span.map-element-handler
               ☰
@@ -18,23 +18,23 @@
               %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="$event.stopPropagation()")
           .panel.panel-default(ng-click="$event.stopPropagation()" )
             .panel-body
-              .row(ng-if="current_element.created_at && current_element.update_at")
+              .row(ng-if="element.created_at && element.update_at")
                 .col-sm-12
                   .pull-right.date-info-block
                     .form-group
                       -#%small
-                        Создано {{current_element.created_at | readableDateTime}}
+                        Создано {{element.created_at | readableDateTime}}
                       %small
-                        Редактировалось {{current_element.update_at | readableDateTime}}
+                        Редактировалось {{element.update_at | readableDateTime}}
               .row
                 .col-md-6
                   .form-group
                     %laber {{'map.element.name' | translate}}*
-                    %input.form-control(ng-model="current_element.name")
+                    %input.form-control(ng-model="element.name")
                 .col-md-6
                   .form-group
                     %laber {{'map.element.status' | translate}}
-                    %select.form-control(ng-model="current_element.status")
+                    %select.form-control(ng-model="element.status")
                       %option(value="enabled")
                         {{'map.element.enabled' | translate}}
                       %option(value="disabled")
@@ -45,7 +45,7 @@
                 .col-md-6
                   .form-group
                     %laber {{'map.element.type' | translate}}
-                    %select.form-control(ng-model="current_element.prototype_type")
+                    %select.form-control(ng-model="element.prototype_type")
                       %option(value="image")
                         {{'map.element.image' | translate}}
                       %option(value="device")
@@ -56,18 +56,18 @@
               %hr
 
               -#image
-              %div(ng-if="current_element.prototype_type == 'image'" ng-include="'/map-constructor/templates/_map_image.html'")
+              %div(ng-if="element.prototype_type == 'image'" ng-include="'/map-constructor/templates/_map_image.html'")
 
               -#device
-              %div(ng-if="current_element.prototype_type == 'device'" ng-include="'/map-constructor/templates/_map_device.html'")
+              %div(ng-if="element.prototype_type == 'device'" ng-include="'/map-constructor/templates/_map_device.html'")
 
               -#script
-              %div(ng-if="current_element.prototype_type == 'script'" ng-include="'/map-constructor/templates/_map_script.html'")
+              %div(ng-if="element.prototype_type == 'script'" ng-include="'/map-constructor/templates/_map_script.html'")
 
               .row
                 .col-md-12
-                  %a.btn.btn-default(href="" role="button" ng-click="removeElement(current_element)")
+                  %a.btn.btn-default(href="" role="button" ng-click="removeElement(element)")
                     {{'Delete' | translate}}
-                  %a.btn.btn-default(href="" role="button" ng-click="updateElement(current_element)")
+                  %a.btn.btn-default(href="" role="button" ng-click="updateElement(element)")
                     {{'Update' | translate}}
 

@@ -6,11 +6,10 @@
       .map-wrapper
         .map-editor
           -# map layer
-          %div(ng-repeat="layer in map.model.layers")
+          .map-layer(ng-repeat="layer in map.model.layers | orderBy:'-weight'" ng-if="layer.status == 'enabled'")
 
             -# layer element
-            %map-entity(ng-repeat="element in layer.elements" element="element")
-              {{element.id}}
+            .draggable(map-entity="element" ng-repeat="element in layer.elements | orderBy:'-weight'" ng-if="element.status == 'enabled'")
 
         .page-loader
           .spinner
