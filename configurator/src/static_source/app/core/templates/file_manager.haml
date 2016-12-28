@@ -6,8 +6,8 @@
 .file-manager-body(perfect-scrollbar="true")
     %div(ng-show="mode == 'select'")
         .col-sm-2
-            %ul.list-unstyled
-                %li(ng-repeat="filter in filter_list | orderBy: $index: true")
+            %ul.list-unstyled.filters
+                %li(ng-repeat="filter in filter_list | orderBy: $index: true" ng-class="{selected : filter.selected}")
                     %a(href="#" ng-click="getFileList(filter.date)")
                         {{filter.date | date : 'yyyy-MM-dd'}}
                         %span.badge

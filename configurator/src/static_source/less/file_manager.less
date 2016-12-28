@@ -45,6 +45,21 @@
       left: 0;
     }
 
+    ul.filters {
+      li {
+        position: relative;
+        .badge {
+          background-color: @base_color;
+          font-size: 10px;
+          position: absolute;
+          top:0;
+        }
+        &.selected {
+          font-weight: 600;
+        }
+      }
+
+    }
     ul.file-manager-items {
       margin: 0;
       padding: 0;

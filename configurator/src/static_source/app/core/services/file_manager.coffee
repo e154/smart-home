@@ -55,10 +55,12 @@ angular
       Stream.sendRequest("get_filter_list", {}).then (result)=>
         return if !result.filter_list
         @scope.filter_list = angular.copy(result.filter_list)
-        @getFileList(@scope.filter_list[0].date)
+        @getFileList(@scope.filter_list[@scope.filter_list.length - 1].date)
 
-    getFileList: (filter)=>
-      Stream.sendRequest("get_image_list", {filter: filter}).then (result)=>
+    getFileList: (_date)=>
+      angular.forEach @scope.filter_list, (f)->
+        f.selected = _date == f.date
+      Stream.sendRequest("get_image_list", {filter: _date}).then (result)=>
         return if !result.images
         @scope.file_list = angular.copy(result.images)
 
