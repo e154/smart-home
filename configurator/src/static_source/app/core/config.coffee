@@ -43,11 +43,5 @@ angular
   $rootScope.$on '$stateChangeSuccess', (event, toState, toParams, fromState, fromParams) ->
     document.getElementsByTagName('body')[0].classList.remove('loading')
 
-  # http://stackoverflow.com/questions/13547007/fancybox2-fancybox-causes-page-to-to-jump-to-the-top
-  $(document).ready ()->
-    $('.fancybox').fancybox helpers:
-      overlay:
-        locked: false
-
   preventSelection(document)
 ]

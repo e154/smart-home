@@ -3,7 +3,7 @@
     .form-group
       %laber {{'map.element.prototype.image' | translate}}*
       .map-preview-img.relative
-        %a.fancybox(ng-href="{{element.prototype.image.url}}" rel="gallery" title="original" ng-if="element.prototype.image.url")
+        %a(ng-href="{{element.prototype.image.url}}" rel="gallery" title="original" ng-if="element.prototype.image.url" fancybox="true")
           %img(ngf-thumbnail="element.prototype.image.url || '/thumb.jpg'" alt="" title="")
         %a.delete.button(href="#" ng-click="element.prototype.remove_image()" ng-if="element.prototype.image.url")
           .cross

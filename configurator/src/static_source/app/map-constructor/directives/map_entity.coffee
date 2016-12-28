@@ -4,9 +4,8 @@ angular
   restrict: 'EA'
   replace: true
   scope:
-    mapEntity: '=mapEntity'
+    element: '=mapEntity'
   link: ($scope, $element, $attrs) ->
-#    console.log 'start entity directive:',$scope.mapEntity
 
     previousContent = null
     container = $($element)
@@ -18,20 +17,19 @@ angular
         left: 0
 
     compile =->
+      console.log 'compile'
       if previousContent
         previousContent.remove()
         previousContent = null
 
       template = ''
-      switch $scope.mapEntity.prototype_type
+      switch $scope.element.prototype_type
         when 'image'
-          template = "<img class='draggable-entity' src=\"#{$scope.mapEntity.prototype.image.url}\">"
+          template = "<img class='draggable-entity' src=\"#{$scope.element.prototype.image.url}\">"
         when 'device'
           break
         when 'script'
           break
-        else
-          console.error 'map entity error, bad element type!'
 
       previousContent = $compile(template)($scope)
       $element.append(previousContent)
@@ -63,7 +61,7 @@ angular
         click()
 
     click =(e)->
-      $scope.$emit 'select_element', $scope.mapEntity
+      $scope.$emit 'select_element', $scope.element
 
     dragging =(e)->
       graph_settings.position.top = parseInt($(e.target).position().top, 10)
@@ -73,18 +71,19 @@ angular
       update()
 
     update =->
-      $scope.mapEntity.graph_settings = angular.copy(graph_settings)
-      $scope.mapEntity.update_element_only()
+      $scope.element.graph_settings = angular.copy(graph_settings)
+      $scope.element.update_element_only()
 
     # init
     #
-    graph_settings = angular.copy($scope.mapEntity.graph_settings)
+    graph_settings = angular.copy($scope.element.graph_settings)
     compile()
     addDraggable()
 
-    $scope.$watch 'mapEntity', (val, oldV)->
-      return if !val || val == oldV
-      compile()
+    $scope.$on 'entity_update', (e, data)->
+      console.log '_element',data
+      if data.id == $scope.element.id
+        compile()
 
     return
 ]

@@ -130,7 +130,10 @@ angular
 
       updateElement: (_element)=>
         return if !_element
-        _element.update()
+        success =()=>
+          @scope.$broadcast 'entity_update', _element
+
+        _element.update success
 
       sortLayers: ()=>
         weight = 0
