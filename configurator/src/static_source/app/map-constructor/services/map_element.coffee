@@ -1,7 +1,8 @@
 angular
 .module('angular-map')
-.factory 'MapElement', ['$rootScope', '$compile', 'MapElementResource', 'Message', 'Notify', 'MapImage', 'MapDevice', 'MapScript'
-  ($rootScope, $compile, MapElementResource, Message, Notify, MapImage, MapDevice, MapScript) ->
+.factory 'MapElement', ['$rootScope', '$compile', 'MapElementResource', 'Message'
+'Notify', 'MapImage', 'MapDevice', 'MapScript', 'MapText'
+  ($rootScope, $compile, MapElementResource, Message, Notify, MapImage, MapDevice, MapScript, MapText) ->
     class MapElement
 
       scope: null
@@ -117,8 +118,12 @@ angular
 
       get_prototype: (data)->
         switch @prototype_type
+          when 'text'
+            @prototype = new MapText(@scope)
+            console.log 'text'
           when 'image'
             @prototype = new MapImage(@scope)
+            console.log 'image'
           when 'device'
             @prototype = new MapDevice(@scope)
           when 'script'

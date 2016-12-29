@@ -23,8 +23,10 @@ angular
 
       template = ''
       switch $scope.element.prototype_type
+        when 'text'
+          template = "<div class='draggable-entity map-text' ng-style='{{element.prototype.style}}'>{{element.prototype.text}}</div>"
         when 'image'
-          template = "<img class='draggable-entity' ng-src=\"{{element.prototype.image.url}}\">"
+          template = "<img class='draggable-entity map-image' ng-src='{{element.prototype.image.url}}' ng-style='{{element.prototype.style}}'>"
         when 'device'
           break
         when 'script'

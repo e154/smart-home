@@ -21,7 +21,12 @@ angular
     defaultOptions =
       multiple: false
 
+    options = $.extend(true, defaultOptions, $scope.options)
+
     $scope.onHandleClick =->
-      FileManager.show($.extend(true, defaultOptions, options)).then (images)=>
-        $scope.ngModel = images
+      FileManager.show(options).then (images)=>
+        if options.multiple
+          $scope.ngModel = images
+        else
+          $scope.ngModel = images[0]
 ]

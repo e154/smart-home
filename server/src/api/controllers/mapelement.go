@@ -50,29 +50,6 @@ func (c *MapElementController) Post() {
 		return
 	}
 
-	switch element.PrototypeType {
-	case "text":
-	case "image":
-		prototype := &models.MapImage{}
-		b, _ := json.Marshal(element.Prototype)
-		json.Unmarshal(b, &prototype)
-		if prototype != nil {
-			if prototype.Id == 0 {
-				if _, err := models.AddMapImage(prototype); err != nil {
-					c.ErrHan(403, err.Error())
-					return
-				}
-
-				element.PrototypeId = prototype.Id
-				element.PrototypeType = "image"
-			}
-		}
-	case "device":
-	case "script":
-	default:
-
-	}
-
 	if _, err = models.AddMapElement(&element); err != nil {
 		c.ErrHan(403, err.Error())
 		return
@@ -175,63 +152,6 @@ func (c *MapElementController) Put() {
 	json.Unmarshal(c.Ctx.Input.RequestBody, &mapElement)
 	mapElement.Id = int64(id)
 
-	// load old data
-	//
-	var oldMapElement *models.MapElement
-	var err error
-	if oldMapElement, err = models.GetMapElementById(int64(id)); err != nil {
-		c.ErrHan(403, err.Error())
-		return
-	}
-
-	// delete old map image
-	//
-	if oldMapElement.PrototypeId == 0 {
-		oldMapElement.PrototypeType = ""
-	}
-
-	switch oldMapElement.PrototypeType {
-	case "text":
-	case "image":
-		models.DeleteMapImage(oldMapElement.PrototypeId)
-	case "device":
-	case "script":
-	}
-
-	//
-	switch mapElement.PrototypeType {
-	case "text":
-	case "image":
-
-		prototype := &models.MapImage{}
-		b, _ := json.Marshal(mapElement.Prototype)
-		json.Unmarshal(b, &prototype)
-		if prototype != nil {
-			if prototype.Id == 0 {
-				if _, err := models.AddMapImage(prototype); err != nil {
-					c.ErrHan(403, err.Error())
-					return
-				}
-			} else {
-				if err := models.UpdateMapImageById(prototype); err != nil {
-					c.ErrHan(403, err.Error())
-					return
-				}
-			}
-
-			mapElement.PrototypeId = prototype.Id
-			mapElement.PrototypeType = "image"
-		} else {
-			mapElement.PrototypeId = 0
-			mapElement.PrototypeType = ""
-		}
-	case "device":
-	case "script":
-
-	}
-
-	// update map element
-	//
 	if err := models.UpdateMapElementById(&mapElement); err != nil {
 		c.ErrHan(403, err.Error())
 		return
@@ -249,21 +169,6 @@ func (c *MapElementController) Put() {
 // @router /:id [delete]
 func (c *MapElementController) Delete() {
 	id, _ := c.GetInt(":id")
-
-	var err error
-	var oldMapElement *models.MapElement
-	if oldMapElement, err = models.GetMapElementById(int64(id)); err != nil {
-		c.ErrHan(403, err.Error())
-		return
-	}
-
-	switch oldMapElement.PrototypeType {
-	case "text":
-	case "image":
-		models.DeleteMapImage(oldMapElement.PrototypeId)
-	case "device":
-	case "script":
-	}
 
 	if err := models.DeleteMapElement(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())

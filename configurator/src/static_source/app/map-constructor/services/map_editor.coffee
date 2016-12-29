@@ -95,7 +95,7 @@ angular
       selectLayer: (layer, $index)=>
         @scope.current_layer = layer
 
-      selectElement: (element, $index)=>
+      selectElement: (element)=>
 
         for layer in @model.layers
           if layer.id == element.layer_id
@@ -120,7 +120,8 @@ angular
 
       addElement: ()=>
         return if !@scope.current_layer
-        @scope.current_layer.addElement()
+        element = @scope.current_layer.addElement()
+        @selectElement(element)
 
       removeElement: (_element)=>
         return if !_element
@@ -129,7 +130,8 @@ angular
         success =()=>
           if index > -1
             @scope.current_layer.elements.splice(index, 1)
-            @scope.current_element = null
+            if @scope.current_layer.elements.length > 0
+              @selectElement(@scope.current_layer.elements[@scope.current_layer.elements.length - 1])
             # for remove from scheme
             $timeout ()=>
               @scope.$apply()

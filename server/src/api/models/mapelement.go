@@ -10,6 +10,7 @@ import (
 	"github.com/astaxie/beego"
 	"time"
 	"../../lib/common"
+	"encoding/json"
 )
 
 type MapElement struct {
@@ -39,6 +40,42 @@ func init() {
 // AddMapElement insert a new MapElement into database and returns
 // last inserted Id on success.
 func AddMapElement(m *MapElement) (id int64, err error) {
+
+	switch m.PrototypeType {
+	case "text":
+		prototype := &MapText{}
+		b, _ := json.Marshal(m.Prototype)
+		json.Unmarshal(b, &prototype)
+		if prototype != nil {
+			if prototype.Id == 0 {
+				if _, err = AddMapText(prototype); err != nil {
+					return
+				}
+
+				m.PrototypeId = prototype.Id
+				m.PrototypeType = "text"
+			}
+		}
+	case "image":
+		prototype := &MapImage{}
+		b, _ := json.Marshal(m.Prototype)
+		json.Unmarshal(b, &prototype)
+		if prototype != nil {
+			if prototype.Id == 0 {
+				if _, err = AddMapImage(prototype); err != nil {
+					return
+				}
+
+				m.PrototypeId = prototype.Id
+				m.PrototypeType = "image"
+			}
+		}
+	case "device":
+	case "script":
+	default:
+
+	}
+
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
@@ -141,14 +178,92 @@ func GetAllMapElement(query map[string]string, fields []string, sortby []string,
 // UpdateMapElement updates MapElement by Id and returns error if
 // the record to be updated doesn't exist
 func UpdateMapElementById(m *MapElement) (err error) {
-	o := orm.NewOrm()
-	v := MapElement{Id: m.Id}
-	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
-		var num int64
-		if num, err = o.Update(m); err == nil {
-			fmt.Println("Number of records updated in database:", num)
+
+	// load old data
+	//
+	var oldMapElement *MapElement
+	if oldMapElement, err = GetMapElementById(m.Id); err != nil {
+		return
+	}
+
+	// delete old map image
+	//
+	if oldMapElement.PrototypeId == 0 {
+		oldMapElement.PrototypeType = ""
+	}
+
+	switch oldMapElement.PrototypeType {
+	case "text":
+		DeleteMapText(oldMapElement.PrototypeId)
+	case "image":
+		DeleteMapImage(oldMapElement.PrototypeId)
+	case "device":
+	case "script":
+	}
+
+	//
+	switch m.PrototypeType {
+	case "text":
+		prototype := &MapText{}
+		b, _ := json.Marshal(m.Prototype)
+		json.Unmarshal(b, &prototype)
+		if prototype != nil {
+			if prototype.Id == 0 {
+				if _, err = AddMapText(prototype); err != nil {
+					return
+				}
+			} else {
+				if err = UpdateMapTextById(prototype); err != nil {
+					return
+				}
+			}
+
+			m.PrototypeId = prototype.Id
+			m.PrototypeType = "text"
+		} else {
+			m.PrototypeId = 0
+			m.PrototypeType = ""
 		}
+	case "image":
+
+		fmt.Println(1)
+		prototype := &MapImage{}
+		b, _ := json.Marshal(m.Prototype)
+		json.Unmarshal(b, &prototype)
+		if prototype != nil {
+			fmt.Println(2)
+			if prototype.Id == 0 {
+				fmt.Println(3)
+				if _, err = AddMapImage(prototype); err != nil {
+					return
+				}
+			} else {
+				fmt.Println(4)
+				if err = UpdateMapImageById(prototype); err != nil {
+					return
+				}
+			}
+
+			fmt.Println(5)
+			m.PrototypeId = prototype.Id
+			m.PrototypeType = "image"
+		} else {
+			fmt.Println(6)
+			m.PrototypeId = 0
+			m.PrototypeType = ""
+		}
+	case "device":
+	case "script":
+
+	}
+	//-----------
+
+	fmt.Println(7)
+	// ascertain id exists in the database
+	o := orm.NewOrm()
+	var num int64
+	if num, err = o.Update(m); err == nil {
+		fmt.Println("Number of records updated in database:", num)
 	}
 	return
 }
@@ -156,6 +271,21 @@ func UpdateMapElementById(m *MapElement) (err error) {
 // DeleteMapElement deletes MapElement by Id and returns error if
 // the record to be deleted doesn't exist
 func DeleteMapElement(id int64) (err error) {
+
+	var oldMapElement *MapElement
+	if oldMapElement, err = GetMapElementById(int64(id)); err != nil {
+		return
+	}
+
+	switch oldMapElement.PrototypeType {
+	case "text":
+		DeleteMapText(oldMapElement.PrototypeId)
+	case "image":
+		DeleteMapImage(oldMapElement.PrototypeId)
+	case "device":
+	case "script":
+	}
+
 	o := orm.NewOrm()
 	v := MapElement{Id: id}
 	// ascertain id exists in the database
@@ -175,6 +305,13 @@ func (m *MapElement) CompareWith(element *MapElement) bool {
 func (m *MapElement) GetPrototype() (*MapElement, error) {
 
 	switch m.PrototypeType {
+	case "text":
+		text, err := GetMapTextById(m.PrototypeId)
+		if err != nil {
+			return nil, err
+		}
+
+		m.Prototype = text
 	case "image":
 		image, err := GetMapImageById(m.PrototypeId)
 		if err != nil {

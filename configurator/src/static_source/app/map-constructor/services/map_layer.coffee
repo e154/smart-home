@@ -106,6 +106,7 @@ angular
         element.prototype_type = 'image'
         element.get_prototype('image')
         FileManager.show({multiple: false}).then (images)=>
+          return if images.length == 0
           element.prototype.image = images[0]
           element.create()
           @elements.push element

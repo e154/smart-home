@@ -40,8 +40,6 @@
                         {{'map.element.enabled' | translate}}
                       %option(value="disabled")
                         {{'map.element.disabled' | translate}}
-                      %option(value="hidden")
-                        {{'map.element.hidden' | translate}}
               .row
                 .col-md-6
                   .form-group
@@ -49,6 +47,8 @@
                     %select.form-control(ng-model="element.prototype_type")
                       %option(value="image")
                         {{'map.element.image' | translate}}
+                      %option(value="text")
+                        {{'map.element.text' | translate}}
                       %option(value="device")
                         {{'map.element.device' | translate}}
                       %option(value="script")
@@ -56,13 +56,10 @@
 
               %hr
 
-              -#image
+              -#prototypes
               %div(ng-if="element.prototype_type == 'image'" ng-include="'/map-constructor/templates/_map_image.html'")
-
-              -#device
+              %div(ng-if="element.prototype_type == 'text'" ng-include="'/map-constructor/templates/_map_text.html'")
               %div(ng-if="element.prototype_type == 'device'" ng-include="'/map-constructor/templates/_map_device.html'")
-
-              -#script
               %div(ng-if="element.prototype_type == 'script'" ng-include="'/map-constructor/templates/_map_script.html'")
 
               .row
