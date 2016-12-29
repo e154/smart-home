@@ -112,6 +112,17 @@ angular
           @elements.push element
 
       addNewText: ()->
+        element = new MapElement(@scope)
+        element.layer_id = @id
+        element.map_id = @map_id
+        element.name = "New text"
+        element.prototype_type = 'text'
+        element.get_prototype('text')
+        element.prototype.text = "New text"
+        element.prototype.style = '{"font-size":"34px"}'
+        element.create()
+        @elements.push element
+
       addNewDevice: ()->
       addNewScript: ()->
 

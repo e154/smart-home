@@ -226,29 +226,23 @@ func UpdateMapElementById(m *MapElement) (err error) {
 		}
 	case "image":
 
-		fmt.Println(1)
 		prototype := &MapImage{}
 		b, _ := json.Marshal(m.Prototype)
 		json.Unmarshal(b, &prototype)
 		if prototype != nil {
-			fmt.Println(2)
 			if prototype.Id == 0 {
-				fmt.Println(3)
 				if _, err = AddMapImage(prototype); err != nil {
 					return
 				}
 			} else {
-				fmt.Println(4)
 				if err = UpdateMapImageById(prototype); err != nil {
 					return
 				}
 			}
 
-			fmt.Println(5)
 			m.PrototypeId = prototype.Id
 			m.PrototypeType = "image"
 		} else {
-			fmt.Println(6)
 			m.PrototypeId = 0
 			m.PrototypeType = ""
 		}
@@ -258,7 +252,6 @@ func UpdateMapElementById(m *MapElement) (err error) {
 	}
 	//-----------
 
-	fmt.Println(7)
 	// ascertain id exists in the database
 	o := orm.NewOrm()
 	var num int64

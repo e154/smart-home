@@ -120,10 +120,8 @@ angular
         switch @prototype_type
           when 'text'
             @prototype = new MapText(@scope)
-            console.log 'text'
           when 'image'
             @prototype = new MapImage(@scope)
-            console.log 'image'
           when 'device'
             @prototype = new MapDevice(@scope)
           when 'script'
