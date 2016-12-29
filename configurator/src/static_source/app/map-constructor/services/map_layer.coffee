@@ -61,15 +61,9 @@ angular
       copyElement: (_element, $event)=>
         $event.stopPropagation()
         $event.preventDefault()
-
-        console.log 'serialize', _element.serialize()
         element = new MapElement(@scope)
-        element.deserialize(_element.serialize())
-        element.id = null
-        element.prototype_id = null
-        element.name = "#{element.name} (copy)" if element.name.indexOf('(copy)') == -1
-        element.create ()->
-          element.update()
+        element.copy(_element)
+        element.create()
         @elements.push element
 
       create: ()->

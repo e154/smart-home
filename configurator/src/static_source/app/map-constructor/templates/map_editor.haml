@@ -22,6 +22,8 @@
     %div(ng-include="'/map-constructor/templates/_map_layers.html'")
   .col-md-9
     .form-group(ng-if="current_layer")
+      %div(ng-include="'/map-constructor/templates/_map_menu.html'")
+    .form-group(ng-if="current_layer")
       %div(ng-include="'/map-constructor/templates/_map_elements.html'")
     .form-group(ng-if="current_layer")
       .panel.panel-default

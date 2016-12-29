@@ -127,5 +127,13 @@ angular
         if data
           @prototype.deserialize(data)
 
+      copy: (_element)->
+        @deserialize(_element.serialize())
+        @id = null
+        @prototype_id = null
+        @name = "#{@name} (copy)" if @name.indexOf('(copy)') == -1
+
+        @
+
     MapElement
 ]

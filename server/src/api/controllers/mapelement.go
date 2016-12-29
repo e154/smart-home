@@ -30,12 +30,12 @@ func (c *MapElementController) URLMapping() {
 // @Failure 403 body is empty
 // @router / [post]
 func (c *MapElementController) Post() {
-	var entity models.MapElement
-	json.Unmarshal(c.Ctx.Input.RequestBody, &entity)
+	var element models.MapElement
+	json.Unmarshal(c.Ctx.Input.RequestBody, &element)
 
 	// validation
 	valid := validation.Validation{}
-	b, err := valid.Valid(&entity)
+	b, err := valid.Valid(&element)
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
@@ -50,12 +50,35 @@ func (c *MapElementController) Post() {
 		return
 	}
 
-	if _, err = models.AddMapElement(&entity); err != nil {
+	switch element.PrototypeType {
+	case "text":
+	case "image":
+		prototype := &models.MapImage{}
+		b, _ := json.Marshal(element.Prototype)
+		json.Unmarshal(b, &prototype)
+		if prototype != nil {
+			if prototype.Id == 0 {
+				if _, err := models.AddMapImage(prototype); err != nil {
+					c.ErrHan(403, err.Error())
+					return
+				}
+
+				element.PrototypeId = prototype.Id
+				element.PrototypeType = "image"
+			}
+		}
+	case "device":
+	case "script":
+	default:
+
+	}
+
+	if _, err = models.AddMapElement(&element); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{"map_element": entity}
+	c.Data["json"] = map[string]interface{}{"map_element": element}
 	c.ServeJSON()
 }
 
@@ -168,6 +191,7 @@ func (c *MapElementController) Put() {
 	}
 
 	switch oldMapElement.PrototypeType {
+	case "text":
 	case "image":
 		models.DeleteMapImage(oldMapElement.PrototypeId)
 	case "device":
@@ -176,6 +200,7 @@ func (c *MapElementController) Put() {
 
 	//
 	switch mapElement.PrototypeType {
+	case "text":
 	case "image":
 
 		prototype := &models.MapImage{}

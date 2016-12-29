@@ -16,6 +16,7 @@ angular
         @scope.sortElements = @sortElements
         @scope.removeElement = @removeElement
         @scope.updateElement = @updateElement
+        @scope.addNewImage = @addNewImage
         @scope.current_element = {}
 
         @map_editor = new storage('map-editor')
@@ -152,6 +153,8 @@ angular
           element.weight = weight
           weight++
 
+      addNewImage: ()=>
+        console.log 'add image'
 
     mapEditor
 ]
