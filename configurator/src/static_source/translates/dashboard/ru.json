@@ -188,6 +188,7 @@
     "main_window": "Основное окно",
     "callback": "Event callbacks",
     "update_at": "Дата обновления",
+    "file_manager": "Каталог файлов",
     "layer": {
       "name": "Название",
       "status": "Состояние",

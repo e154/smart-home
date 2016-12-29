@@ -17,6 +17,7 @@ angular
       weight: 0
 
       constructor: (@scope)->
+        @scope.copyElement = @copyElement
         @elements = []
 
       serialize: ()->
@@ -53,7 +54,22 @@ angular
         element = new MapElement(@scope)
         element.layer_id = @id
         element.map_id = @map_id
+        element.name += " №#{@elements.length + 1}"
         element.create()
+        @elements.push element
+
+      copyElement: (_element, $event)=>
+        $event.stopPropagation()
+        $event.preventDefault()
+
+        console.log 'serialize', _element.serialize()
+        element = new MapElement(@scope)
+        element.deserialize(_element.serialize())
+        element.id = null
+        element.prototype_id = null
+        element.name = "#{element.name} (copy)" if element.name.indexOf('(copy)') == -1
+        element.create ()->
+          element.update()
         @elements.push element
 
       create: ()->

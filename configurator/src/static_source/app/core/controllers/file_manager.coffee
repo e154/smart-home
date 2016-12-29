@@ -41,7 +41,8 @@ angular
           if file.$$hashKey == f.$$hashKey
             $scope.files_to_upload.splice(key, 1)
 
-      $scope.getFilterList()
+      if $scope.files_to_upload.length == 0
+        $scope.getFilterList()
 
     $scope.submit =->
       files = []

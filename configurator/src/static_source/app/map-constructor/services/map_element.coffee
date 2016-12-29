@@ -56,13 +56,13 @@ angular
 
       deserialize: (element)->
         @id = element.id || null
-        @map_id = element.map.id || null
-        @layer_id = element.layer.id || null
+        @map_id = element.map.id if element.map?.id
+        @layer_id = element.layer.id if element.layer?.id
         @name = element.name || ''
         @description = element.description || ''
         @status = element.status || ''
         @prototype_type = element.prototype_type || ''
-        @prototype_id = element.prototype_id || null
+        @prototype_id = element.prototype_id if element.prototype_id
         @weight = element.weight || 0
         @created_at = element.created_at || ''
         @update_at = element.update_at || ''
@@ -73,10 +73,11 @@ angular
 
         return @
 
-      create: ()->
+      create: (cb)->
         success =(data)=>
           @id = data.id
           Notify 'success', 'Элемент успешно создан', 3
+          cb() if cb
         error =(result)->
           Message result.data.status, result.data.message
 

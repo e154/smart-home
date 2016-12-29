@@ -11,6 +11,10 @@
   min-height: 100px;
   background: rgba(245,245,245,0.88);
 
+  i.fa {
+    color: @base_color;
+  }
+
   > .ui-resizable-handle {
     background: @base_color;
   }
@@ -102,7 +106,7 @@
       .draggable {
         position: absolute;
         z-index: @zMapDraggable;
-        background-color: rebeccapurple;
+        //background-color: rebeccapurple;
         display: inline-block;
         width: auto;
 
@@ -197,6 +201,11 @@
     &.selected {
       .panel {
         display: inherit;
+      }
+      .map-element-header {
+        i.fa {
+          color: #fff;
+        }
       }
     }
 

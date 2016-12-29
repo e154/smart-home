@@ -18,8 +18,7 @@ angular
       serialize: ()->
         return null if !@image
         id: @id if @id
-        image:
-          id: @image.id
+        image: @image
         style: @style
 
       deserialize: (m)->

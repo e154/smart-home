@@ -16,6 +16,9 @@
               ☰
             %span.map-element-subtitle
               %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="$event.stopPropagation()")
+            .pull-right
+              %a(href="#" ng-click="copyElement(element, $event)")
+                %i.fa.fa-copy
           .panel.panel-default(ng-click="$event.stopPropagation()" )
             .panel-body
               .row(ng-if="element.created_at && element.update_at")

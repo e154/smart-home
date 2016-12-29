@@ -88,12 +88,15 @@ angular
         _layer.update()
 
       selectLayer: (layer, $index)=>
-        if @scope.current_layer == layer
-          @scope.current_layer = null
-        else
-          @scope.current_layer = layer
+        @scope.current_layer = layer
 
       selectElement: (element, $index)=>
+
+        for layer in @model.layers
+          if layer.id == element.layer_id
+            @selectLayer(layer)
+            break
+
         if @scope.current_element && @scope.current_element.id == element.id
           @scope.current_element = null
           element.selected = false
@@ -101,10 +104,11 @@ angular
             @scope.$apply()
           return
 
-        angular.forEach @scope.current_layer.elements, (_element)=>
-          _element.selected = element.id == _element.id
-          if _element.selected
-            @scope.current_element = _element
+        if @scope.current_layer
+          angular.forEach @scope.current_layer.elements, (_element)=>
+            _element.selected = element.id == _element.id
+            if _element.selected
+              @scope.current_element = _element
 
         $timeout ()=>
           @scope.$apply()
