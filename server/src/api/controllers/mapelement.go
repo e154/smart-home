@@ -258,6 +258,7 @@ func (c *MapElementController) Delete() {
 	}
 
 	switch oldMapElement.PrototypeType {
+	case "text":
 	case "image":
 		models.DeleteMapImage(oldMapElement.PrototypeId)
 	case "device":

@@ -1,4 +1,17 @@
-.panel.panel-default.map-elements-editor
-  .panel-body
-    %a(href="#" ng-click="addNewImage()" data-help="{{\"add new image\" | translate}}")
-      .fa.fa-image
+.row
+  .col-md-12
+    .btn.btn-primary.btn-small(href="#" ng-click="addNewImage()" data-help="{{'add new image object to selected layer' | translate}}")
+      %strong Image
+    .btn.btn-primary.btn-small(href="#" ng-click="addNewText()" data-help="{{'add new text object to selected layer' | translate}}")
+      %strong Text
+    .btn.btn-primary.btn-small(href="#" ng-click="addNewDevice()" data-help="{{'add new device object to selected layer' | translate}}")
+      %strong Device
+    .btn.btn-primary.btn-small(href="#" ng-click="addNewScript()" data-help="{{'add new script object to selected layer' | translate}}")
+      %strong Script
+    .btn.btn-primary.btn-small(href="#" data-help="{{'image manager' | translate}}")
+      %strong(file-manager="true" )
+        {{'map.file_manager' | translate}}
+
+    .btn.btn-primary.btn-small.pull-right(href="#" ng-click="preview()" data-help="{{'preview' | translate}}")
+      %strong Preview
+    .clearfix

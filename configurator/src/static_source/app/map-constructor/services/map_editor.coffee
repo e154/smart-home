@@ -17,6 +17,10 @@ angular
         @scope.removeElement = @removeElement
         @scope.updateElement = @updateElement
         @scope.addNewImage = @addNewImage
+        @scope.addNewText = @addNewText
+        @scope.addNewDevice = @addNewDevice
+        @scope.addNewScript = @addNewScript
+        @scope.preview = @preview
         @scope.current_element = {}
 
         @map_editor = new storage('map-editor')
@@ -154,7 +158,23 @@ angular
           weight++
 
       addNewImage: ()=>
-        console.log 'add image'
+        return if !@scope.current_layer
+        @scope.current_layer.addNewImage()
+
+      addNewDevice: ()=>
+        return if !@scope.current_layer
+        @scope.current_layer.addNewDevice()
+
+      addNewText: ()=>
+        return if !@scope.current_layer
+        @scope.current_layer.addNewText()
+
+      addNewScript: ()=>
+        return if !@scope.current_layer
+        @scope.current_layer.addNewScript()
+
+      preview: ()=>
+        console.log 'preview'
 
     mapEditor
 ]

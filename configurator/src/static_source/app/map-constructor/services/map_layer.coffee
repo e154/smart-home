@@ -96,5 +96,10 @@ angular
         model = new MapLayerResource({id: @id})
         model.$delete success, error
 
+      addNewImage: ()->
+      addNewText: ()->
+      addNewDevice: ()->
+      addNewScript: ()->
+
     MapLayer
 ]
