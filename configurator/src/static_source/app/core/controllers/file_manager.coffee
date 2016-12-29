@@ -14,7 +14,7 @@ angular
       $event.preventDefault()
       index = $scope.selected_files.indexOf(file)
       if index == -1
-        if !$scope.multiple && $scope.selected_files.length
+        if !$scope.options.multiple && $scope.selected_files.length
           $scope.selected_files[0].selected = false
           $scope.selected_files.splice(0, 1)
 

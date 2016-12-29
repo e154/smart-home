@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'MapLayer', ['$rootScope', '$compile', 'MapElement', 'MapLayerResource', 'Notify', 'Message'
-  ($rootScope, $compile, MapElement, MapLayerResource, Notify, Message) ->
+.factory 'MapLayer', ['$rootScope', '$compile', 'MapElement', 'MapLayerResource', 'Notify', 'Message', 'FileManager'
+  ($rootScope, $compile, MapElement, MapLayerResource, Notify, Message, FileManager) ->
     class MapLayer
 
       scope: null
@@ -58,6 +58,8 @@ angular
         element.create()
         @elements.push element
 
+        element
+
       copyElement: (_element, $event)=>
         $event.stopPropagation()
         $event.preventDefault()
@@ -97,6 +99,17 @@ angular
         model.$delete success, error
 
       addNewImage: ()->
+        element = new MapElement(@scope)
+        element.layer_id = @id
+        element.map_id = @map_id
+        element.name = "Image"
+        element.prototype_type = 'image'
+        element.get_prototype('image')
+        FileManager.show({multiple: false}).then (images)=>
+          element.prototype.image = images[0]
+          element.create()
+          @elements.push element
+
       addNewText: ()->
       addNewDevice: ()->
       addNewScript: ()->

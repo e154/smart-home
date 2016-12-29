@@ -30,11 +30,12 @@ angular
         @getFilterList()
       , 2000
 
-    show: =>
+    show: (options)=>
       @getFilterList()
       @getFileList()
       defer = $q.defer()
       @scope.defer = defer
+      @scope.options = options
       @dialog = ngDialog.open
         template: '/core/templates/file_manager.html'
         controller: 'FileManagerCtrl'

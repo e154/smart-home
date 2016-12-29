@@ -23,7 +23,6 @@ angular
 
       template = ''
       switch $scope.element.prototype_type
-        when 'text'
         when 'image'
           template = "<img class='draggable-entity' ng-src=\"{{element.prototype.image.url}}\">"
         when 'device'

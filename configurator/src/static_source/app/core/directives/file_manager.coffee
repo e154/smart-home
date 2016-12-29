@@ -1,7 +1,7 @@
 #
 # example:
 # %file-manager(ng-model="model" multiple)
-# %div(file-manager="true" ng-model="model")
+# %div(file-manager="{}" ng-model="model")
 #
 
 angular
@@ -11,16 +11,17 @@ angular
   transclude: true
   replace: true
   scope:
-    fileManager: "="
+    options: "=fileManager"
     ngModel: "="
   template: '<div ng-click="onHandleClick($event)" ng-transclude></div>'
   link: ($scope, $element, $attrs) ->
 
-    $scope.onHandleClick =->
-      FileManager.show().then (images)=>
-        if $attrs.multiple
-          $scope.ngModel = images
-        else
-          $scope.ngModel = images[0]
+    $scope.options = {} if !$scope.options
 
+    defaultOptions =
+      multiple: false
+
+    $scope.onHandleClick =->
+      FileManager.show($.extend(true, defaultOptions, options)).then (images)=>
+        $scope.ngModel = images
 ]
