@@ -6,10 +6,10 @@
       .map-wrapper
         .map-editor
           -# map layer
-          .map-layer(ng-repeat="layer in map.model.layers | orderBy:'-weight'" ng-if="layer.status == 'enabled'")
+          .map-layer(ng-repeat="layer in map.model.layers | orderBy:'-weight'" ng-if="layer.status != 'disabled'")
 
             -# layer element
-            .draggable(map-entity="element" ng-repeat="element in layer.elements | orderBy:'-weight'" ng-if="element.status == 'enabled'")
+            .draggable(map-entity="element" ng-repeat="element in layer.elements | orderBy:'-weight'" ng-if="element.status != 'disabled'" ng-class="['map-'+element.prototype_type, {'selected': element.selected}]")
 
         .page-loader
           .spinner
@@ -23,6 +23,8 @@
   .col-md-9
     .form-group(ng-if="current_layer")
       %div(ng-include="'/map-constructor/templates/_map_menu.html'")
+    .form-group(ng-if="!map.model.layers.length")
+      {{'map.add_layer' | translate}}
     .form-group(ng-if="current_layer")
       %div(ng-include="'/map-constructor/templates/_map_elements.html'")
     .form-group(ng-if="current_layer")
@@ -51,6 +53,8 @@
                     {{'map.layer.enabled' | translate}}
                   %option(value="disabled")
                     {{'map.layer.disabled' | translate}}
+                  %option(value="frozen")
+                    {{'map.element.frozen' | translate}}
 
           .form-group
             %laber {{'map.layer.description' | translate}}

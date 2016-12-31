@@ -40,17 +40,6 @@ module.exports = {
         dest: source + '/css',
         watch: source + '/less/**/*.less'
     },
-    webserver: {
-        root: [ source + '/templates', source],
-        enabled: false,
-        livereload: true,
-        port: 8088,
-        fallback: 'static_source/index.html',
-        watch: [
-            'static_source/js/*.js',
-            'static_source/css/*.css'
-        ]
-    },
     build_haml: {
         source: 'static_source/app/**/*.haml',
         tmp: 'static_source/tmp/templates',

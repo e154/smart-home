@@ -17,12 +17,9 @@ gulp.task('watch', function() {
     gulp.watch(config.build_templates.watch, function() {
         gulp.run('build_templates');
     });
-    gulp.watch(config.webserver.watch, ['webserver_reload']);
-
     gulp.watch(config.redactor_theme_less.watch, function() {
         gulp.run('redactor_theme_less');
     });
-
     gulp.watch(config.redactor_theme_files.watch, function() {
         gulp.run('redactor_theme_files');
     });

@@ -8,15 +8,16 @@
 
     .form-group
       %ul.list-group(ng-sortable="{ group: 'elements', animation: 0, handle: '.map-element-handler', onSort: sortElements}")
-        %li.list-group-item(ng-repeat="element in current_layer.elements | orderBy:'weight'" ng-click="selectElement(element, $index)" ng-class="{'selected': element.selected}")
+        %li.list-group-item(ng-repeat="element in current_layer.elements | orderBy:'-weight'" ng-click="selectElement(element, $index)" ng-class="{'selected': element.selected}")
           .map-element-header
             %span.map-element-handler
               ☰
             %span.map-element-subtitle
-              %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="$event.stopPropagation()")
-            .pull-right
-              %a(href="#" ng-click="copyElement(element, $event)")
-                %i.fa.fa-copy
+              %span
+                %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="$event.stopPropagation()")
+              %span.label(ng-class="['label-'+ element.prototype_type]")
+                {{element.prototype_type}}
+
           .panel.panel-default(ng-click="$event.stopPropagation()" )
             .panel-body
               .row(ng-if="element.created_at && element.update_at")
@@ -40,6 +41,8 @@
                         {{'map.element.enabled' | translate}}
                       %option(value="disabled")
                         {{'map.element.disabled' | translate}}
+                      %option(value="frozen")
+                        {{'map.element.frozen' | translate}}
               .row
                 .col-md-6
                   .form-group
@@ -68,4 +71,6 @@
                     {{'Delete' | translate}}
                   %a.btn.btn-default(href="" role="button" ng-click="updateElement(element)")
                     {{'Update' | translate}}
+                  %a.btn.btn-default(href="#" ng-click="copyElement(element, $event)")
+                    {{'Copy' | translate}}
 

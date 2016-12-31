@@ -9,7 +9,6 @@ gulp.task('default', function(cb) {
         ['build_templates'],
         'build_lib_css',
         'build_less',
-        'webserver',
         'ace_themes',
         'redactor_theme_files', 'redactor_theme_less',
         'watch'

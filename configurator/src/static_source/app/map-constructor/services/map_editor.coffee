@@ -58,7 +58,7 @@ angular
         @panning = new mapPanning(@container, @scope, @wrapper)
         @wrapper.find(".page-loader").fadeOut("fast")
 
-        @scope.$on 'select_element', (e, data)=>
+        @scope.$on 'select_element_on_map', (e, data)=>
           @selectElement(data)
 
         return
@@ -70,10 +70,9 @@ angular
         layer = new MapLayer(@scope)
         layer.map_id = @id
         layer.create()
-        @model.layers.push layer
-
-        if @model.layers.length > 0
-          @selectLayer(@model.layers[@model.layers.length - 1])
+        @model.layers.unshift layer
+        @selectLayer(@model.layers[@model.layers.length - 1])
+        @sortLayers()
 
       removeLayer: (_layer)=>
         index = @model.layers.indexOf(_layer)
@@ -94,6 +93,10 @@ angular
 
       selectLayer: (layer, $index)=>
         @scope.current_layer = layer
+        @scope.current_element = null
+        angular.forEach @model.layers, (layer)=>
+          angular.forEach layer.elements, (element)=>
+            element.selected = false
 
       selectElement: (element)=>
 
@@ -109,8 +112,8 @@ angular
             @scope.$apply()
           return
 
-        if @scope.current_layer
-          angular.forEach @scope.current_layer.elements, (_element)=>
+        angular.forEach @model.layers, (layer)=>
+          angular.forEach layer.elements, (_element)=>
             _element.selected = element.id == _element.id
             if _element.selected
               @scope.current_element = _element
@@ -157,6 +160,7 @@ angular
         weight = 0
         for element in @scope.current_layer.elements
           element.weight = weight
+          element.update_element_only()
           weight++
 
       addNewImage: ()=>

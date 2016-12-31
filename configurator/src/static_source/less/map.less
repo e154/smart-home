@@ -156,6 +156,10 @@
       }
     }
 
+    .map-element-subtitle span {
+      display: inline-block;
+    }
+
     .map-element-subtitle,
     .map-layer-subtitle {
       float: left;
@@ -239,3 +243,42 @@
     opacity: 0;
   }
 }
+
+// labels for table elements
+//
+.label-device {
+  background-color: #6e7780;
+}
+.label-text {
+  background-color: #d26363;
+}
+.label-image {
+  background-color: #78b564;
+}
+.label-script {
+  background-color: #6f96ef;
+}
+
+// select map objects
+//
+div[map-entity] {
+  &.map-text {
+    display:inline-block;
+    &.selected {
+      border: 1px #37428f dashed;
+      margin: -1px;
+    }
+    span:first-child {
+      white-space: pre;
+    }
+  }
+
+  &.map-image {
+    padding: 1px;
+    &.selected {
+      border: 1px #37428f dashed;
+      padding: 0;
+    }
+  }
+}
+

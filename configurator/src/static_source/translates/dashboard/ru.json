@@ -11,6 +11,7 @@
   "Delete": "Удалить",
   "Update": "Обновить",
   "Close": "Закрыть",
+  "Copy": "Копировать",
   "Configurator": "Конфигуратор",
   "Nodes": "Узлы",
   "All nodes": "Все узлы",
@@ -189,6 +190,7 @@
     "callback": "Event callbacks",
     "update_at": "Дата обновления",
     "file_manager": "Каталог файлов",
+    "add_layer": "Добавите слой",
     "layer": {
       "name": "Название",
       "status": "Состояние",
@@ -204,6 +206,7 @@
       "status": "Состояние",
       "enabled": "Включен",
       "disabled": "Выключен",
+      "frozen": "Заморожен",
       "type": "Тип",
       "hidden": "Скрыт",
       "image": "Изображение",
