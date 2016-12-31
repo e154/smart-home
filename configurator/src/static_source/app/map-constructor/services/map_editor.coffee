@@ -93,7 +93,6 @@ angular
 
       selectLayer: (layer, $index)=>
         @scope.current_layer = layer
-        @scope.current_element = null
         angular.forEach @model.layers, (layer)=>
           angular.forEach layer.elements, (element)=>
             element.selected = false

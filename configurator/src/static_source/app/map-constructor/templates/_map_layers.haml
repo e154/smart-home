@@ -15,3 +15,6 @@
             ☰
           %span.map-layer-subtitle
             %input.map-layer-title(type="text" name="subtitle" ng-model="layer.name" ng-click="$event.stopPropagation()")
+          .pull-right(ng-if="layer.elements.length")
+            .label.label-total-element
+              {{layer.elements.length}}

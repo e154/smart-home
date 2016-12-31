@@ -102,7 +102,7 @@ angular
         element = new MapElement(@scope)
         element.layer_id = @id
         element.map_id = @map_id
-        element.name = "Image"
+        element.name += " №#{@elements.length + 1}"
         element.prototype_type = 'image'
         element.get_prototype('image')
         FileManager.show({multiple: false}).then (images)=>
