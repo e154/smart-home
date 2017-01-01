@@ -71,6 +71,21 @@ func AddMapElement(m *MapElement) (id int64, err error) {
 			}
 		}
 	case "device":
+		prototype := &MapDevice{}
+		b, _ := json.Marshal(m.Prototype)
+		json.Unmarshal(b, &prototype)
+		if prototype != nil {
+			if prototype.Id == 0 {
+				if _, err = AddMapDevice(prototype); err != nil {
+					return
+				}
+
+				AddMultipleMapDeviceState(prototype.States)
+
+				m.PrototypeId = prototype.Id
+				m.PrototypeType = "device"
+			}
+		}
 	case "script":
 	default:
 
@@ -186,8 +201,6 @@ func UpdateMapElementById(m *MapElement) (err error) {
 		return
 	}
 
-	// delete old map image
-	//
 	if oldMapElement.PrototypeId == 0 {
 		oldMapElement.PrototypeType = ""
 	}
@@ -198,55 +211,65 @@ func UpdateMapElementById(m *MapElement) (err error) {
 	case "image":
 		DeleteMapImage(oldMapElement.PrototypeId)
 	case "device":
+		DeleteMapDevice(oldMapElement.PrototypeId)
 	case "script":
 	}
 
 	//
 	switch m.PrototypeType {
 	case "text":
-		prototype := &MapText{}
+		map_text := &MapText{}
 		b, _ := json.Marshal(m.Prototype)
-		json.Unmarshal(b, &prototype)
-		if prototype != nil {
-			if prototype.Id == 0 {
-				if _, err = AddMapText(prototype); err != nil {
-					return
-				}
-			} else {
-				if err = UpdateMapTextById(prototype); err != nil {
-					return
-				}
+		json.Unmarshal(b, &map_text)
+		if map_text != nil {
+			if _, err = AddMapText(map_text); err != nil {
+				return
 			}
 
-			m.PrototypeId = prototype.Id
+			m.PrototypeId = map_text.Id
 			m.PrototypeType = "text"
 		} else {
 			m.PrototypeId = 0
 			m.PrototypeType = ""
 		}
 	case "image":
-
-		prototype := &MapImage{}
+		map_image := &MapImage{}
 		b, _ := json.Marshal(m.Prototype)
-		json.Unmarshal(b, &prototype)
-		if prototype != nil {
-			if prototype.Id == 0 {
-				if _, err = AddMapImage(prototype); err != nil {
-					return
-				}
-			} else {
-				if err = UpdateMapImageById(prototype); err != nil {
-					return
-				}
+		json.Unmarshal(b, &map_image)
+		if map_image != nil {
+			if _, err = AddMapImage(map_image); err != nil {
+				return
 			}
 
-			m.PrototypeId = prototype.Id
+			m.PrototypeId = map_image.Id
 			m.PrototypeType = "image"
 		} else {
 			m.PrototypeId = 0
 			m.PrototypeType = ""
 		}
 	case "device":
+		map_device := &MapDevice{}
+		b, _ := json.Marshal(m.Prototype)
+		json.Unmarshal(b, &map_device)
+		if map_device != nil {
+			if _, err = AddMapDevice(map_device); err != nil {
+				return
+			}
+
+			for _, state := range map_device.States {
+				fmt.Println(state)
+				state.MapDevice = map_device
+			}
+
+			AddMultipleMapDeviceState(map_device.States)
+
+			m.PrototypeId = map_device.Id
+			m.PrototypeType = "device"
+		} else {
+			m.PrototypeId = 0
+			m.PrototypeType = ""
+		}
+
 	case "script":
 
 	}
@@ -276,6 +299,7 @@ func DeleteMapElement(id int64) (err error) {
 	case "image":
 		DeleteMapImage(oldMapElement.PrototypeId)
 	case "device":
+		DeleteMapDevice(oldMapElement.PrototypeId)
 	case "script":
 	}
 
@@ -326,10 +350,10 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 
 		o := orm.NewOrm()
 		_, err = o.LoadRelated(device, "Device")
+		_, err = o.LoadRelated(device, "States", 2)
 		_, err = o.LoadRelated(device, "DeviceAction")
 		_, err = o.LoadRelated(device.Device, "States")
 		_, err = o.LoadRelated(device.Device, "Actions")
-		_, err = o.LoadRelated(device, "States", 2)
 		if err != nil {
 			return nil, err
 		}

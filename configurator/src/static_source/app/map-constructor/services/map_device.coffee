@@ -86,7 +86,7 @@ angular
           md_state = new MapDeviceState(@scope, device_state)
           def_exist = true if device_state.system_name == 'DEFAULT'
           angular.forEach m.states, (state)=>
-            if state.device_state.id == device_state.id
+            if state.device_state?.id && state.device_state.id == device_state.id
               md_state.deserialize state
           @states.push md_state
 

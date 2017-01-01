@@ -14,7 +14,7 @@ import (
 type MapDeviceState struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
 	MapDevice      	*MapDevice		`orm:"rel(fk)" json:"map_device"`
-	DeviceState    	*DeviceState		`orm:"rel(fk)" json:"device_state"`
+	DeviceState    	*DeviceState		`orm:"rel(fk);null" json:"device_state"`
 	Image		*Image			`orm:"rel(fk);null" json:"image"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
@@ -157,5 +157,29 @@ func DeleteMapDeviceState(id int64) (err error) {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
+	return
+}
+
+// AddMultipleMapDeviceState
+// Use a prepared statement to increase inserting speed with multiple inserts.
+func AddMultipleMapDeviceState(states []*MapDeviceState) (ids []int64, errs []error) {
+
+	o := orm.NewOrm()
+	qs := o.QueryTable(&MapDeviceState{})
+	i, _ := qs.PrepareInsert()
+	for _, state := range states {
+		id, err := i.Insert(state)
+		if err != nil {
+			errs = append(errs, err)
+		} else {
+			ids = append(ids, id)
+		}
+	}
+	// PREPARE INSERT INTO user (`name`, ...) VALUES (?, ...)
+	// EXECUTE INSERT INTO user (`name`, ...) VALUES ("slene", ...)
+	// EXECUTE ...
+	// ...
+	i.Close() // Don't forget to close the statement
+
 	return
 }

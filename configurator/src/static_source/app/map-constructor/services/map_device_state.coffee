@@ -19,6 +19,7 @@ angular
       }
 
     deserialize: (m)->
+      console.log 'deserialize',m
       @id = m.id if m.id
       @device_state = m.device_state if m.device_state
       @image = m.image if m.image
