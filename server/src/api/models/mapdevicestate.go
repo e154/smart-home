@@ -7,69 +7,54 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego/orm"
-	"time"
 	"github.com/astaxie/beego"
+	"time"
 )
 
-type Device struct {
-	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Device		*Device		`orm:"rel(fk);null" json:"device"`
-	Node		*Node		`orm:"rel(fk);null" json:"node"`
-	Address   	*int  		`orm:"" json:"address"`
-	Baud		int		`orm:"size(11)" json:"baud"`
-	Sleep		int		`orm:"size(32)" json:"sleep"`
-	Description 	string 		`orm:"size(254)" json:"description" valid:"MaxSize(254)"`
-	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	Status	 	string 		`orm:"size(254)" json:"status" valid:"MaxSize(254)"`
-	StopBite   	int64  		`orm:"size(11)" json:"stop_bite"`
-	Timeout   	time.Duration 	`orm:"" json:"timeout"`
-	Tty 		string 		`orm:"size(254)" json:"tty" valid:"MaxSize(254)"`
-	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
-	IsGroup		bool		`orm:"-" json:"is_group"`
+type MapDeviceState struct {
+	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
+	Name        	string			`orm:"" json:"name"`
+	Status		string			`orm:"" json:"status"`
+	MapDevice      	*MapDevice		`orm:"rel(fk)" json:"map_device"`
+	DeviceState    	*DeviceState		`orm:"rel(fk)" json:"device_state"`
+	Image		*Image			`orm:"rel(fk)" json:"image"`
+	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
-func (m *Device) TableName() string {
-	return beego.AppConfig.String("db_devices")
+func (m *MapDeviceState) TableName() string {
+	return beego.AppConfig.String("db_map_device_states")
 }
 
 func init() {
-	orm.RegisterModel(new(Device))
+	orm.RegisterModel(new(MapDeviceState))
 }
 
-// AddDevice insert a new Device into database and returns
+// AddMapDeviceState insert a new MapDeviceState into database and returns
 // last inserted Id on success.
-func AddDevice(m *Device) (id int64, err error) {
+func AddMapDeviceState(m *MapDeviceState) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetDeviceById retrieves Device by Id. Returns error if
+// GetMapDeviceStateById retrieves MapDeviceState by Id. Returns error if
 // Id doesn't exist
-func GetDeviceById(id int64) (v *Device, err error) {
+func GetMapDeviceStateById(id int64) (v *MapDeviceState, err error) {
 	o := orm.NewOrm()
-	v = &Device{Id: id}
-	if err = o.Read(v); err != nil {
-		return
+	v = &MapDeviceState{Id: id}
+	if err = o.Read(v); err == nil {
+		return v, nil
 	}
-
-	if v.Device != nil {
-		_, err = o.LoadRelated(v, "Device")
-	}
-	if v.Node != nil {
-		_, err = o.LoadRelated(v, "Node")
-	}
-
-	return
+	return nil, err
 }
 
-// GetAllDevice retrieves all Device matches certain condition. Returns empty list if
+// GetAllMapDeviceState retrieves all MapDeviceState matches certain condition. Returns empty list if
 // no records exist
-func GetAllDevice(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllMapDeviceState(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(Device))
+	qs := o.QueryTable(new(MapDeviceState))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -115,8 +100,8 @@ func GetAllDevice(query map[string]string, fields []string, sortby []string, ord
 		}
 	}
 
-	var l []Device
-	qs = qs.RelatedSel("Device", "Node").OrderBy(sortFields...)
+	var l []MapDeviceState
+	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
 		return
@@ -147,11 +132,11 @@ func GetAllDevice(query map[string]string, fields []string, sortby []string, ord
 	return nil, nil, err
 }
 
-// UpdateDevice updates Device by Id and returns error if
+// UpdateMapDeviceState updates MapDeviceState by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateDeviceById(m *Device) (err error) {
+func UpdateMapDeviceStateById(m *MapDeviceState) (err error) {
 	o := orm.NewOrm()
-	v := Device{Id: m.Id}
+	v := MapDeviceState{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -162,48 +147,17 @@ func UpdateDeviceById(m *Device) (err error) {
 	return
 }
 
-// DeleteDevice deletes Device by Id and returns error if
+// DeleteMapDeviceState deletes MapDeviceState by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteDevice(id int64) (err error) {
+func DeleteMapDeviceState(id int64) (err error) {
 	o := orm.NewOrm()
-	v := Device{Id: id}
+	v := MapDeviceState{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Device{Id: id}); err == nil {
+		if num, err = o.Delete(&MapDeviceState{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
 	return
-}
-
-func GetParentDeviceByChildId(id int64) (parent *Device, err error) {
-	o := orm.NewOrm()
-	err = o.Raw(fmt.Sprintf(`SELECT p2.*
-		FROM %s as p1
-		LEFT JOIn %[1]s as p2 on p2.id = p1.device_id
-		WHERE p1.id = %d
-		`, parent.TableName(), id)).QueryRow(&parent)
-
-	parent.Id = id
-
-	if parent.Device != nil {
-		_, err = o.LoadRelated(parent, "Device")
-	}
-
-	if parent.Node != nil {
-		_, err = o.LoadRelated(parent, "Node")
-	}
-
-	return
-}
-
-func (m *Device) GetChilds() (childs []*Device, all int64, err error) {
-	o := orm.NewOrm()
-	all, err = o.QueryTable(m).RelatedSel().Filter("device_id", m.Id).All(&childs)
-	return
-}
-
-func (m *Device) GetNode() (*Node, error) {
-	return GetNodeById(m.Node.Id)
 }

@@ -13,6 +13,7 @@ type Request struct {
 	Device		string		`json: "device"`
 	Baud		int		`json: "baud"`
 	StopBits	int		`json: "stop_bits"`
+	Sleep		int		`json: "sleep"`
 	Timeout		time.Duration	`json: "timeout"`
 	Command		[]byte		`json: "command"`
 	Result		bool		`json: "result"`
