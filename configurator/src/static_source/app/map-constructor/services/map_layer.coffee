@@ -17,7 +17,6 @@ angular
       weight: 0
 
       constructor: (@scope)->
-        @scope.copyElement = @copyElement
         @elements = []
 
       serialize: ()->

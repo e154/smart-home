@@ -70,7 +70,7 @@ angular
         layer = new MapLayer(@scope)
         layer.map_id = @id
         layer.create()
-        @model.layers.unshift layer
+        @model.layers.push layer
         @selectLayer(@model.layers[@model.layers.length - 1])
         @sortLayers()
 
@@ -93,6 +93,7 @@ angular
 
       selectLayer: (layer, $index)=>
         @scope.current_layer = layer
+#        @scope.current_element = null
         angular.forEach @model.layers, (layer)=>
           angular.forEach layer.elements, (element)=>
             element.selected = false
@@ -125,6 +126,10 @@ angular
         element = @scope.current_layer.addElement()
         @selectElement(element)
 
+      removeSelected: ()=>
+        return if !@scope.current_element
+        @removeElement(@scope.current_element)
+
       removeElement: (_element)=>
         return if !_element
 
@@ -134,6 +139,8 @@ angular
             @scope.current_layer.elements.splice(index, 1)
             if @scope.current_layer.elements.length > 0
               @selectElement(@scope.current_layer.elements[@scope.current_layer.elements.length - 1])
+            else
+              @scope.current_element = null
             # for remove from scheme
             $timeout ()=>
               @scope.$apply()
@@ -180,6 +187,14 @@ angular
 
       preview: ()=>
         console.log 'preview'
+
+      keyboard: ()=>
+        angular.forEach @scope.settings.keyboard, (button, key_id)=>
+          fn = this[button.callback] || window[button.callback]
+          if typeof fn != 'function'
+            return
+          key key_id, (event, handler)=>
+            fn.apply(null, [@scope])
 
     mapEditor
 ]

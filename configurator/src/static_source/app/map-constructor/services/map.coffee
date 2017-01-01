@@ -28,6 +28,12 @@ angular
           grid: 5
           minHeight: 100
           minWidth: 400
+          keyboard:
+            'delete':
+              name: 'delete'
+              callback: 'removeSelected'
+
+        @keyboard()
 
       update: (cb)->
         @fadeIn()
