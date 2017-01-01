@@ -131,7 +131,7 @@ angular
         @removeElement(@scope.current_element)
 
       removeElement: (_element)=>
-        return if !_element
+        return if !_element || $.isEmptyObject(_element)
 
         index = @scope.current_layer.elements.indexOf(_element)
         success =()=>
@@ -145,6 +145,7 @@ angular
             $timeout ()=>
               @scope.$apply()
 
+        console.log '_element',_element
         _element.remove success
         return
 
