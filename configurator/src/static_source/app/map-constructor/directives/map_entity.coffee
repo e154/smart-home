@@ -1,6 +1,6 @@
 angular
 .module('angular-map')
-.directive 'mapEntity', ['$compile', ($compile) ->
+.directive 'mapEntity', ['$compile', '$templateCache', ($compile, $templateCache) ->
   restrict: 'EA'
   replace: true
   scope:
@@ -39,12 +39,15 @@ angular
             width: graph_settings.width || 'auto'
             height: graph_settings.height || 'auto'
         when 'device'
-          break
+          template = $templateCache.get('/map-constructor/templates/_map_device_template.html')
+          $element.css
+            width: graph_settings.width || 'auto'
+            height: graph_settings.height || 'auto'
         when 'script'
           break
 
       previousContent = $compile(template)($scope)
-      $element.append(previousContent)
+      $element.html(previousContent)
 
       if ['device', 'image'].indexOf($scope.element.prototype_type) > -1
         # set resizable

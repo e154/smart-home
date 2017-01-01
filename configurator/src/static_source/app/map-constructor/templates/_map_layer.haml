@@ -2,14 +2,7 @@
   .panel-heading
     {{'current layer' | translate}}
   .panel-body
-    .row(ng-if="current_layer.created_at && current_layer.update_at")
-      .col-sm-12
-        .pull-right.date-info-block
-          .form-group
-            -#%small
-                  {{'Created at' | translate}} {{current_layer.created_at | readableDateTime}}
-            %small
-              {{'Updated at' | translate}} {{current_layer.update_at | readableDateTime}}
+
     .row
       .col-md-12
         .form-group
