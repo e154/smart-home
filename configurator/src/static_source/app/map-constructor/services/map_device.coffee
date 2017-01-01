@@ -61,10 +61,12 @@ angular
           @devices = response.data.devices
 
       serialize: ()->
+        return if !@device
+
         states = []
         angular.forEach @states, (_state)=>
           state = _state.serialize()
-          state.map_device = {id: @id}
+          state.map_device = {id: @id} if @id
           states.push state
 
         {
@@ -81,17 +83,25 @@ angular
         @status = m.status || 'enabled'
 
         @states = []
-        def_exist = false
+        default_state_exist = false
         angular.forEach @device.states, (device_state)=>
           md_state = new MapDeviceState(@scope, device_state)
-          def_exist = true if device_state.system_name == 'DEFAULT'
+          # check default state
+          default_state_exist = true if device_state.system_name == 'DEFAULT'
           angular.forEach m.states, (state)=>
             if state.device_state?.id && state.device_state.id == device_state.id
               md_state.deserialize state
           @states.push md_state
 
-        if !def_exist
+        # if default state not found from device action list
+        # add this
+        if !default_state_exist
           md_state = new MapDeviceState(@scope)
+          for state in m.states
+            if !state.device_state
+              md_state.deserialize state
+              break
+
           md_state.getDefault(@device)
           @states.push md_state
 

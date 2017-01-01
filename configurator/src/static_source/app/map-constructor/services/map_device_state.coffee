@@ -10,16 +10,15 @@ angular
     constructor: (@scope, @device_state)->
 
     serialize: ()->
-      return null if !@device_state
 
+      device_state = if @device_state.id then {id: @device_state.id} else null
       {
         id: @id if @id
         image: {id: @image.id} if @image
-        device_state: {id: @device_state.id}
+        device_state: device_state
       }
 
     deserialize: (m)->
-      console.log 'deserialize',m
       @id = m.id if m.id
       @device_state = m.device_state if m.device_state
       @image = m.image if m.image

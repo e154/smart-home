@@ -257,7 +257,6 @@ func UpdateMapElementById(m *MapElement) (err error) {
 			}
 
 			for _, state := range map_device.States {
-				fmt.Println(state)
 				state.MapDevice = map_device
 			}
 

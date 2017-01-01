@@ -2,7 +2,8 @@
   .col-md-6
     .form-group
       %laber.clearfix
-        {{'map.element.device' | translate}}
+        .pull-left
+          {{'map.element.device' | translate}}
         .pull-right(ng-if="element.prototype.device.id")
           %a(href="#" ui-sref="dashboard.device.show({id: element.prototype.device.id})")
             {{'go to' | translate}}
@@ -23,7 +24,7 @@
           {{'No data' | translate}}
 
 
-  .col-md-6
+  .col-md-6(ng-if="element.prototype.device.id")
     .form-group
       %laber {{'map.element.action' | translate}}
       %select.form-control(ng-model="element.prototype.device_action" ng-options="action as action.name for action in element.prototype.device.actions track by action.id" ng-if="element.prototype.device.actions.length")
@@ -32,7 +33,7 @@
         ,&nbsp;
         %a(href="#" ui-sref="dashboard.device.show({id: element.prototype.device.id})")
           {{'Add' | translate}}
-.row
+.row(ng-if="element.prototype.device.id")
   .col-md-6
     .form-group
       %strong {{'map.element.prototype.device.image' | translate}}
@@ -40,7 +41,7 @@
     .form-group
       %strong {{'map.element.prototype.device.state' | translate}}
 
-.row(ng-repeat="state in element.prototype.states")
+.row(ng-repeat="state in element.prototype.states" ng-if="element.prototype.device.id")
   .col-md-6
     .form-group
       .map-preview-img.relative
