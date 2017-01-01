@@ -24,6 +24,7 @@ type Device struct {
 	StopBite   	int64  		`orm:"size(11)" json:"stop_bite"`
 	Timeout   	time.Duration 	`orm:"" json:"timeout"`
 	Tty 		string 		`orm:"size(254)" json:"tty" valid:"MaxSize(254)"`
+	States		[]*DeviceState	`orm:"reverse(many)" json:"states"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 	IsGroup		bool		`orm:"-" json:"is_group"`

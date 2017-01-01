@@ -1,1 +1,56 @@
-device
+.row
+  .col-md-6
+    .form-group
+      %laber.clearfix
+        {{'map.element.device' | translate}}
+        .pull-right(ng-if="element.prototype.device.id")
+          %a(href="#" ui-sref="dashboard.device.show({id: element.prototype.device.id})")
+            {{'go to' | translate}}
+      -#
+      -#  select2
+      -#
+      %ui-select(ng-model="element.prototype.device" theme="bootstrap")
+        %ui-select-match(placeholder="{{'device.name' | translate}}")
+          %div
+            {{element.prototype.device.name}}
+            %small(ng-if="element.prototype.device.device")
+              ({{element.prototype.device.device.name}})
+        %ui-select-choices(repeat="item in element.prototype.devices | filter: $select.search" refresh="element.prototype.refreshDevices($select.search)" refresh-delay="0")
+          %span(ng-bind-html="item.name | highlight: $select.search")
+          %small(ng-if="item.device.name")
+            ({{item.device.name}})
+        %ui-select-no-choice
+          {{'No data' | translate}}
+
+.row
+  .col-md-6
+    .form-group
+      %strong {{'map.element.prototype.device.image' | translate}}
+  .col-md-6
+    .form-group
+      %strong {{'map.element.prototype.device.description' | translate}}
+
+.row(ng-repeat="state in element.prototype.states")
+  .col-md-6
+    .form-group
+      .map-preview-img.relative
+        %a(ng-href="{{state.image.url}}" rel="gallery" title="original" ng-if="state.image.url" fancybox="true")
+          %img(ngf-thumbnail="state.image.url || '/thumb.jpg'" alt="" title="")
+        %a.delete.button(href="#" ng-click="state.remove_image()" ng-if="state.image.url")
+          .cross
+
+        %img(ngf-thumbnail="state.file" alt="" title="" ng-if="state.file")
+        %a.delete.button(href="#" ng-click="state.file = null" ng-if="state.file")
+          .cross
+
+        %button.btn.btn-default.custom-upload.full-width(file-manager="{}" ng-model="state.image" ng-if="!state.image.url")
+          .fa.fa-upload
+          &nbsp;
+          {{'set image' | translate}}
+
+  .col-md-6
+    .form-group
+      %div
+        %strong {{state.device_state.system_name}}
+      %div
+        %small(ng-if="state.device_state.description") {{state.device_state.description}}

@@ -137,3 +137,22 @@ func (c *DeviceStateController) Delete() {
 
 	c.ServeJSON()
 }
+
+// GetByDevice ...
+// @Title GetByDevice
+// @Description get DeviceState by id
+// @Param	id		path 	string	true		"The key for staticblock"
+// @Success 200 {object} models.DeviceState
+// @Failure 403 :id is empty
+// @router /:id [get]
+func (c *DeviceStateController) GetByDevice() {
+	id, _ := c.GetInt(":id")
+	device_states, err := models.GetAllDeviceStateByDevice(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = map[string]interface{}{"device_states": device_states}
+	c.ServeJSON()
+}

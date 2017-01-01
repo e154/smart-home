@@ -325,9 +325,20 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 		}
 
 		o := orm.NewOrm()
-		if _, err := o.LoadRelated(device, "States", 2); err != nil {
+		_, err = o.LoadRelated(device, "Device")
+		_, err = o.LoadRelated(device.Device, "States")
+		_, err = o.LoadRelated(device, "States", 2)
+		if err != nil {
 			return nil, err
 		}
+
+		// update image url
+		for _, state := range device.States {
+			if state.Image != nil {
+				state.Image.Url = common.GetLinkPath(state.Image.Image)
+			}
+		}
+
 		m.Prototype = device
 
 	case "script":

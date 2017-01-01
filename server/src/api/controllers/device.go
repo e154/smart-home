@@ -7,6 +7,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"../models"
 	"../core"
+	"net/url"
 )
 
 // DeviceController operations for Device
@@ -254,5 +255,27 @@ func (c *DeviceController) GetActions() {
 	}
 
 	c.Data["json"] = &map[string]interface{}{"actions": actions}
+	c.ServeJSON()
+}
+
+func (c *DeviceController) Search() {
+
+	query, fields, sortby, order, offset, limit := c.pagination()
+	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
+	q := link.Query()
+
+	if val, ok := q["query"]; ok {
+		for _, v := range val {
+			query["name__icontains"] = v
+		}
+	}
+
+	ml, meta, err := models.GetAllDevice(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"devices": ml, "meta": meta}
 	c.ServeJSON()
 }

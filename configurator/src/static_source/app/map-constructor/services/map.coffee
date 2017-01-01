@@ -84,7 +84,8 @@ angular
 
           #TODO remove
           @scope.current_layer = @model.layers[0]
-#          @scope.current_element = @model.layers[0].elements[0]
+          @scope.current_element = @model.layers[0].elements[0]
+          @scope.current_element.selected = true
 
     mapConstructor
 ]

@@ -21,6 +21,14 @@ angular
     delete:
       method: 'DELETE'
 
+    get_by_device:
+      url: window.server_url + '/api/v1/device_state/get_by_device/:id'
+      method: 'GET'
+      isArray: true
+      responseType: 'json'
+      transformResponse: (data) ->
+        data?.device_states || data
+
     all:
       method: 'GET'
       responseType: 'json'

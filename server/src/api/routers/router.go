@@ -25,6 +25,7 @@ func Initialize() {
 			beego.NSRouter("/device/:id([0-9]+)", &controllers.DeviceController{}, "delete:Delete"),
 			beego.NSRouter("/device/group", &controllers.DeviceController{}, "get:GetGroup"),
 			beego.NSRouter("/device/:id([0-9]+)/actions", &controllers.DeviceController{}, "get:GetActions"),
+			beego.NSRouter("/device/search", &controllers.DeviceController{}, "get:Search"),
 
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "get:GetOne"),
 			beego.NSRouter("/workflow", &controllers.WorkflowController{}, "get:GetAll"),
@@ -107,6 +108,7 @@ func Initialize() {
 			beego.NSRouter("/device_state", &controllers.DeviceStateController{}, "post:Post"),
 			beego.NSRouter("/device_state/:id([0-9]+)", &controllers.DeviceStateController{}, "put:Put"),
 			beego.NSRouter("/device_state/:id([0-9]+)", &controllers.DeviceStateController{}, "delete:Delete"),
+			beego.NSRouter("/device_state/get_by_device/:id([0-9]+)", &controllers.DeviceStateController{}, "get:GetByDevice"),
 
 			beego.NSRouter("/image/:id([0-9]+)", &controllers.ImageController{}, "get:GetOne"),
 			beego.NSRouter("/image", &controllers.ImageController{}, "get:GetAll"),

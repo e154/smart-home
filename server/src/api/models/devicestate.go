@@ -159,3 +159,14 @@ func DeleteDeviceState(id int64) (err error) {
 	}
 	return
 }
+
+// DeleteDeviceState
+//
+func GetAllDeviceStateByDevice(id int64) (states []*DeviceState, err error) {
+	o := orm.NewOrm()
+	states = []*DeviceState{}
+
+	_, err = o.QueryTable(&DeviceState{}).Filter("device_id", id).All(&states)
+	return
+}
+
