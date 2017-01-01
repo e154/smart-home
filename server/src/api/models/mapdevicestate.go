@@ -13,6 +13,7 @@ import (
 
 type MapDeviceState struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
+	Style      	string			`orm:"" json:"style"`
 	MapDevice      	*MapDevice		`orm:"rel(fk)" json:"map_device"`
 	DeviceState    	*DeviceState		`orm:"rel(fk);null" json:"device_state"`
 	Image		*Image			`orm:"rel(fk);null" json:"image"`

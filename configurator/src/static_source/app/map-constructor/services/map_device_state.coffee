@@ -6,6 +6,7 @@ angular
     id: null
     device_state: null
     image: null
+    style: null
 
     constructor: (@scope, @device_state)->
 
@@ -16,12 +17,14 @@ angular
         id: @id if @id
         image: {id: @image.id} if @image
         device_state: device_state
+        style: @style
       }
 
     deserialize: (m)->
       @id = m.id if m.id
       @device_state = m.device_state if m.device_state
       @image = m.image if m.image
+      @style = m.style if m.style
 
       @
 
