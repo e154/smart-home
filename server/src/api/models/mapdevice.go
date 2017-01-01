@@ -17,6 +17,7 @@ type MapDevice struct {
 	Status		string			`orm:"" json:"status"`
 	Map        	*Map			`orm:"rel(fk)" json:"map"`
 	Device		*Device			`orm:"rel(fk)" json:"device"`
+	States		[]*MapDeviceState	`orm:"reverse(many)" json:"states"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
