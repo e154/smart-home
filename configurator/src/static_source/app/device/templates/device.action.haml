@@ -32,7 +32,7 @@
           %strong.list-group-item-heading
             {{act.name}}
           .pull-right.small
-            Редактировалось {{act.update_at | readableDateTime}}
+            {{'Updated at' | translate}} {{act.update_at | readableDateTime}}
           .clearfix
           .pull-right
             %button.btn.btn-success.btn-xs(ng-click="action.doAction(act, $event)" type="button")

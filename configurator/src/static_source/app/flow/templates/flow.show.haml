@@ -4,16 +4,16 @@
       %a(href="" ui-sref="dashboard.flow.index")
         %small.fa.fa-long-arrow-left
           &nbsp;
-      Процесс "{{flow.name}}"
+      {{'flow.show_form' | translate}} "{{flow.name}}"
       .edit-icon-link
         %a(ui-sref="dashboard.flow.edit({id:flow.id})")
           %span.fa.fa-pencil
 
     .pull-right.date-info-block
       %small
-        Создано {{flow.created_at | readableDateTime}}
+        {{'Created at' | translate}} {{flow.created_at | readableDateTime}}
       %small
-        Редактировалось {{flow.update_at | readableDateTime}}
+        {{'Updated at' | translate}} {{flow.update_at | readableDateTime}}
 
 .row
   .col-md-2

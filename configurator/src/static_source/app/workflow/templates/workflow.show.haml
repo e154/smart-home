@@ -4,16 +4,16 @@
       %a(href="" ui-sref="dashboard.workflow.index")
         %small.fa.fa-long-arrow-left
           &nbsp;
-      Узел №{{workflow.workflow.id}}
+      {{'node.show_form' | translate}} №{{workflow.workflow.id}}
       .edit-icon-link
         %a(ui-sref="dashboard.workflow.edit({id:workflow.workflow.id})")
           %span.fa.fa-pencil
 
     .pull-right.date-info-block
       %small
-        Создано {{workflow.workflow.created_at | readableDateTime}}
+        {{'Created at' | translate}} {{workflow.workflow.created_at | readableDateTime}}
       %small
-        Редактировалось {{workflow.workflow.update_at | readableDateTime}}
+        {{'Updated at' | translate}} {{workflow.workflow.update_at | readableDateTime}}
 
 .row
   .col-md-12

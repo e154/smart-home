@@ -145,7 +145,6 @@ angular
             $timeout ()=>
               @scope.$apply()
 
-        console.log '_element',_element
         _element.remove success
         return
 

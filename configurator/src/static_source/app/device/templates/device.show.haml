@@ -4,16 +4,16 @@
       %a(href="" ui-sref="dashboard.device.index")
         %small.fa.fa-long-arrow-left
           &nbsp;
-      Устройство №{{device.device.id}}
+      {{'device.show_form' | translate}} №{{device.device.id}}
       .edit-icon-link
         %a(ui-sref="dashboard.device.edit({id:device.device.id})")
           %span.fa.fa-pencil
 
     .pull-right.date-info-block
       %small
-        Создано {{device.device.created_at | readableDateTime}}
+        {{'Created at' | translate}} {{device.device.created_at | readableDateTime}}
       %small
-        Редактировалось {{device.device.update_at | readableDateTime}}
+        {{'Updated at' | translate}} {{device.device.update_at | readableDateTime}}
 
 .row
   .col-sm-2

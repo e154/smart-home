@@ -8,9 +8,9 @@
 
     .pull-right.date-info-block
       %small
-        Создано {{map.model.created_at | readableDateTime}}
+        {{'Created at' | translate}} {{map.model.created_at | readableDateTime}}
       %small
-        Редактировалось {{map.model.update_at | readableDateTime}}
+        {{'Updated at' | translate}} {{map.model.update_at | readableDateTime}}
 
 .row
   .col-sm-12

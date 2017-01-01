@@ -4,16 +4,16 @@
       %a(href="" ui-sref="dashboard.script.index")
         %small.fa.fa-long-arrow-left
           &nbsp;
-      Скрипт №{{script.script.id}}
+      {{'script.show_form' | translate}} №{{script.script.id}}
       .edit-icon-link
         %a(ui-sref="dashboard.script.edit({id:script.script.id})")
           %span.fa.fa-pencil
 
     .pull-right.date-info-block
       %small
-        Создано {{script.script.created_at | readableDateTime}}
+        {{'Created at' | translate}} {{script.script.created_at | readableDateTime}}
       %small
-        Редактировалось {{script.script.update_at | readableDateTime}}
+        {{'Updated at' | translate}} {{script.script.update_at | readableDateTime}}
 
 .row
   .col-md-2
