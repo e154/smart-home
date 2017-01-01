@@ -1,0 +1,37 @@
+.panel.panel-default
+  .panel-heading
+    {{'current layer' | translate}}
+  .panel-body
+    .row(ng-if="current_layer.created_at && current_layer.update_at")
+      .col-sm-12
+        .pull-right.date-info-block
+          .form-group
+            -#%small
+                  {{'Created at' | translate}} {{current_layer.created_at | readableDateTime}}
+            %small
+              {{'Updated at' | translate}} {{current_layer.update_at | readableDateTime}}
+    .row
+      .col-md-12
+        .form-group
+          %laber {{'map.layer.name' | translate}}*
+          %input.form-control(ng-model="current_layer.name")
+      .col-md-12
+        .form-group
+          %laber {{'map.layer.status' | translate}}
+          %select.form-control(ng-model="current_layer.status")
+            %option(value="enabled")
+              {{'map.layer.enabled' | translate}}
+            %option(value="disabled")
+              {{'map.layer.disabled' | translate}}
+            %option(value="frozen")
+              {{'map.element.frozen' | translate}}
+
+    .form-group
+      %laber {{'map.layer.description' | translate}}
+      %textarea.form-control(ng-model="current_layer.description" rows="2" )
+
+    .form-group
+      %a.btn.btn-default(href="" role="button" ng-click="removeLayer(current_layer)")
+        {{'Delete' | translate}}
+      %a.btn.btn-default(href="" role="button" ng-click="updateLayer(current_layer)")
+        {{'Update' | translate}}
