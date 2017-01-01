@@ -1,32 +1,30 @@
 angular
 .module('angular-map')
-.factory 'MapImage', ['$rootScope', '$compile', 'Message', 'Notify', 'Image'
-  ($rootScope, $compile, Message, Notify, Image) ->
-    class MapImage
+.factory 'MapImage', () ->
+  class MapImage
 
-      id: null
-      scope: null
-      style: ''
-      image: null
-      file: null
+    id: null
+    scope: null
+    style: ''
+    image: null
+    file: null
 
-      constructor: (@scope)->
+    constructor: (@scope)->
 
-      remove_image: ()->
-        @image = null
+    remove_image: ()->
+      @image = null
 
-      serialize: ()->
-        return null if !@image
-        id: @id if @id
-        image: @image
-        style: @style
+    serialize: ()->
+      return null if !@image
+      id: @id if @id
+      image: @image
+      style: @style
 
-      deserialize: (m)->
-        @id = m.id if m.id
-        @image = m.image if m.image
-        @style = m.style if m.style
+    deserialize: (m)->
+      @id = m.id if m.id
+      @image = m.image if m.image
+      @style = m.style if m.style
 
-        @
+      @
 
-    MapImage
-]
+  MapImage

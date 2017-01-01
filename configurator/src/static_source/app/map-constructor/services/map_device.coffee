@@ -6,12 +6,17 @@ angular
 
       id: null
       scope: null
+      device: null
 
       constructor: (@scope)->
 
       serialize: ()->
-      deserialize: (data)->
-        return @
+        id: @id if @id
+
+      deserialize: (m)->
+        @id = m.id if m.id
+
+        @
 
       create: ()->
       update: ()->
