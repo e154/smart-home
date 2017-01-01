@@ -17,7 +17,7 @@ type DeviceAction struct {
 	//Command 	string 		`orm:"" json:"command" valid:"Required"`
 	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
 	Description 	string 		`orm:"" json:"description"`
-	Script		*Script		`orm:"rel(fk)" json:"script"`
+	Script		*Script		`orm:"rel(fk);null" json:"script"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
@@ -187,5 +187,13 @@ func GetDeviceActionsByDeviceId(ids []int64) (actions []*DeviceAction, err error
 
 	actions = []*DeviceAction{}
 	_, err = o.QueryTable(&DeviceAction{}).Filter("device_id__in", ids).RelatedSel().All(&actions)
+	return
+}
+
+func GetAllDeviceActionByDevice(id int64) (actions []*DeviceAction, err error) {
+	o := orm.NewOrm()
+
+	actions = []*DeviceAction{}
+	_, err = o.QueryTable(&DeviceAction{}).Filter("device_id", id).RelatedSel().All(&actions)
 	return
 }

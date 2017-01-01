@@ -1,6 +1,6 @@
 angular
 .module('angular-map')
-.factory 'MapDeviceState', () ->
+.factory 'MapDeviceState', ['$filter',($filter) ->
   class MapDeviceState
 
     id: null
@@ -14,7 +14,7 @@ angular
 
       {
         id: @id if @id
-        image: {id: @image.id} || null
+        image: {id: @image.id} if @image
         device_state: {id: @device_state.id}
       }
 
@@ -25,7 +25,14 @@ angular
 
       @
 
-    remove_image: ()->
+    removeImage: ()->
       @image = null
 
+    getDefault: (device)->
+      @device_state =
+        system_name: 'DEFAULT'
+        device: device
+        description: $filter('translate')('Default state')
+
   MapDeviceState
+]

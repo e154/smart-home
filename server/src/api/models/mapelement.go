@@ -326,7 +326,9 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 
 		o := orm.NewOrm()
 		_, err = o.LoadRelated(device, "Device")
+		_, err = o.LoadRelated(device, "DeviceAction")
 		_, err = o.LoadRelated(device.Device, "States")
+		_, err = o.LoadRelated(device.Device, "Actions")
 		_, err = o.LoadRelated(device, "States", 2)
 		if err != nil {
 			return nil, err

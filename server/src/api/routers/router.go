@@ -50,6 +50,7 @@ func Initialize() {
 			beego.NSRouter("/device_action/:id([0-9]+)", &controllers.DeviceActionController{}, "put:Put"),
 			beego.NSRouter("/device_action/:id([0-9]+)", &controllers.DeviceActionController{}, "delete:Delete"),
 			beego.NSRouter("/device_action/search", &controllers.DeviceActionController{}, "get:Search"),
+			beego.NSRouter("/device_action/get_by_device/:id([0-9]+)", &controllers.DeviceActionController{}, "get:GetByDevice"),
 
 			beego.NSRouter("/worker/:id([0-9]+)", &controllers.WorkerController{}, "get:GetOne"),
 			beego.NSRouter("/worker", &controllers.WorkerController{}, "get:GetAll"),

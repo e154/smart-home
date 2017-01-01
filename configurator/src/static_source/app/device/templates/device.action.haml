@@ -34,7 +34,7 @@
           .pull-right.small
             {{'Updated at' | translate}} {{act.update_at | readableDateTime}}
           .clearfix
-          .pull-right
+          .pull-right(ng-if="act.script")
             %button.btn.btn-success.btn-xs(ng-click="action.doAction(act, $event)" type="button")
               .fa.fa-play
               &nbsp;
@@ -44,7 +44,7 @@
               {{'device.device' | translate}} {{act.device.name}}
             .small
               {{act.description}}
-            .small
+            .small(ng-if="act.script")
               %span
                 {{act.script.name}}
               (

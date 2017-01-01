@@ -1,12 +1,14 @@
 angular
 .module('angular-map')
-.factory 'MapDevice', [ '$http', 'Message', 'Notify', 'DeviceState', 'MapDeviceState'
-  ($http, Message, Notify, DeviceState, MapDeviceState) ->
+.factory 'MapDevice', [ '$http', 'Message', 'Notify', 'DeviceState', 'MapDeviceState', 'DeviceAction'
+  ($http, Message, Notify, DeviceState, MapDeviceState, DeviceAction) ->
     class MapDevice
 
       id: null
       scope: null
       device: null
+      device_action: null
+      device_actions: []
       devices: []
       states: []
 
@@ -14,16 +16,32 @@ angular
         @scope.$watch(()=>
           @device
         , (val, old_val)=>
-          return if val == old_val
+          return if !val || val == old_val
           @getDeviceStates(val)
+          @getDeviceActions(val)
         )
+
+      getDeviceActions: (device)->
+        success =(actions)=>
+          @device.actions = actions
+        error =(result)->
+          Message result.data.status, result.data.message
+
+        DeviceAction.get_by_device {id: device.id}, success, error
 
       getDeviceStates: (device)->
         success =(states)=>
           @device.states = states
           @states = []
+          def_exist = false
           angular.forEach @device.states, (device_state)=>
+            def_exist = true if device_state.system_name == 'DEFAULT'
             md_state = new MapDeviceState(@scope, device_state)
+            @states.push md_state
+
+          if !def_exist
+            md_state = new MapDeviceState(@scope)
+            md_state.getDefault(@device)
             @states.push md_state
 
         error =(result)->
@@ -42,8 +60,6 @@ angular
         ).then (response)=>
           @devices = response.data.devices
 
-      addMapDeviceState: (state)->
-
       serialize: ()->
         states = []
         angular.forEach @states, (_state)=>
@@ -55,19 +71,28 @@ angular
           id: @id if @id
           device: {id: @device.id} if @device
           states: states
+          device_action: {id: @device_action.id} if @device_action
         }
 
       deserialize: (m)=>
         @id = m.id if m.id
         @device = m.device if m.device
+        @device_action = m.device_action if m.device_action
         @status = m.status || 'enabled'
 
         @states = []
+        def_exist = false
         angular.forEach @device.states, (device_state)=>
           md_state = new MapDeviceState(@scope, device_state)
+          def_exist = true if device_state.system_name == 'DEFAULT'
           angular.forEach m.states, (state)=>
             if state.device_state.id == device_state.id
               md_state.deserialize state
+          @states.push md_state
+
+        if !def_exist
+          md_state = new MapDeviceState(@scope)
+          md_state.getDefault(@device)
           @states.push md_state
 
         @
