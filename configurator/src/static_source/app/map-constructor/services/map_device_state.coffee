@@ -31,11 +31,5 @@ angular
     removeImage: ()->
       @image = null
 
-    getDefault: (device)->
-      @device_state =
-        system_name: 'DEFAULT'
-        device: device
-        description: $filter('translate')('Default state')
-
   MapDeviceState
 ]

@@ -23,8 +23,79 @@
         %ui-select-no-choice
           {{'No data' | translate}}
 
+.row
+  .col-md-12
+    .form-group
+      %ul.nav.nav-tabs
+        %li(role="presentation" ng-click="element.current_tab = 'base'" ng-class="{'active' : element.current_tab == 'base'}" )
+          %a(href="#")
+            {{'base' | translate}}
+        %li(role="presentation" ng-click="element.current_tab = 'states'" ng-class="{'active' : element.current_tab == 'states'}" )
+          %a(href="#")
+            {{'states' | translate}}
+        %li(role="presentation" ng-click="element.current_tab = 'actions'" ng-class="{'active' : element.current_tab == 'actions'}" )
+          %a(href="#")
+            {{'actions' | translate}}
 
-  .col-md-6(ng-if="element.prototype.device.id")
+.row(ng-if="element.current_tab == 'base'")
+  .col-md-6
+    .form-group
+      .map-preview-img.relative
+        %a(ng-href="{{element.prototype.image.url}}" rel="gallery" title="original" ng-if="element.prototype.image.url" fancybox="true")
+          %img(ngf-thumbnail="element.prototype.image.url || '/thumb.jpg'" alt="" title="")
+        %a.delete.button(href="#" ng-click="element.prototype.removeImage()" ng-if="element.prototype.image.url")
+          .cross
+
+        %img(ngf-thumbnail="element.prototype.file" alt="" title="" ng-if="element.prototype.file")
+        %a.delete.button(href="#" ng-click="element.prototype.file = null" ng-if="element.prototype.file")
+          .cross
+
+        %button.btn.btn-default.custom-upload.full-width(file-manager="{}" ng-model="element.prototype.image" ng-if="!element.prototype.image.url")
+          .fa.fa-upload
+          &nbsp;
+          {{'set image' | translate}}
+
+%div(ng-if="element.current_tab == 'states'")
+
+  .row(ng-if="element.prototype.device.id")
+    .col-md-6
+      .form-group
+        %strong {{'map.element.prototype.device.image' | translate}}
+    .col-md-6
+      .form-group
+        %strong {{'map.element.prototype.device.state' | translate}}
+
+  .row(ng-repeat="state in element.prototype.states" ng-if="element.prototype.device.id")
+    .col-md-6
+      .form-group
+        .map-preview-img.relative
+          %a(ng-href="{{state.image.url}}" rel="gallery" title="original" ng-if="state.image.url" fancybox="true")
+            %img(ngf-thumbnail="state.image.url || '/thumb.jpg'" alt="" title="")
+          %a.delete.button(href="#" ng-click="state.removeImage()" ng-if="state.image.url")
+            .cross
+
+          %img(ngf-thumbnail="state.file" alt="" title="" ng-if="state.file")
+          %a.delete.button(href="#" ng-click="state.file = null" ng-if="state.file")
+            .cross
+
+          %button.btn.btn-default.custom-upload.full-width(file-manager="{}" ng-model="state.image" ng-if="!state.image.url")
+            .fa.fa-upload
+            &nbsp;
+            {{'set image' | translate}}
+
+      .form-group
+        %laber {{'map.element.prototype.style' | translate}}
+        %textarea.form-control(ng-model="state.style")
+
+    .col-md-6
+      .form-group
+        %div
+          %strong {{state.device_state.system_name}}
+        %div
+          %small(ng-if="state.device_state.description") {{state.device_state.description}}
+
+.row(ng-if="element.prototype.device.id && element.current_tab == 'actions'")
+  .col-md-6
     .form-group
       %laber {{'map.element.action' | translate}}
       %select.form-control(ng-model="element.prototype.device_action" ng-options="action as action.name for action in element.prototype.device.actions track by action.id" ng-if="element.prototype.device.actions.length")
@@ -33,39 +104,4 @@
         ,&nbsp;
         %a(href="#" ui-sref="dashboard.device.show({id: element.prototype.device.id})")
           {{'Add' | translate}}
-.row(ng-if="element.prototype.device.id")
-  .col-md-6
-    .form-group
-      %strong {{'map.element.prototype.device.image' | translate}}
-  .col-md-6
-    .form-group
-      %strong {{'map.element.prototype.device.state' | translate}}
 
-.row(ng-repeat="state in element.prototype.states" ng-if="element.prototype.device.id")
-  .col-md-6
-    .form-group
-      .map-preview-img.relative
-        %a(ng-href="{{state.image.url}}" rel="gallery" title="original" ng-if="state.image.url" fancybox="true")
-          %img(ngf-thumbnail="state.image.url || '/thumb.jpg'" alt="" title="")
-        %a.delete.button(href="#" ng-click="state.removeImage()" ng-if="state.image.url")
-          .cross
-
-        %img(ngf-thumbnail="state.file" alt="" title="" ng-if="state.file")
-        %a.delete.button(href="#" ng-click="state.file = null" ng-if="state.file")
-          .cross
-
-        %button.btn.btn-default.custom-upload.full-width(file-manager="{}" ng-model="state.image" ng-if="!state.image.url")
-          .fa.fa-upload
-          &nbsp;
-          {{'set image' | translate}}
-
-    .form-group
-      %laber {{'map.element.prototype.style' | translate}}
-      %textarea.form-control(ng-model="state.style")
-
-  .col-md-6
-    .form-group
-      %div
-        %strong {{state.device_state.system_name}}
-      %div
-        %small(ng-if="state.device_state.description") {{state.device_state.description}}

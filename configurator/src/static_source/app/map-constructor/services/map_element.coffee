@@ -10,6 +10,7 @@ angular
       prototype: null
       old_prototype: null
 
+      current_tab: 'base'
       id: null
       layer_id: null
       map_id: null

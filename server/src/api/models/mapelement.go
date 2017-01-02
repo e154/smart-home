@@ -9,7 +9,6 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 	"time"
-	"../../lib/common"
 	"encoding/json"
 )
 
@@ -345,7 +344,7 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 			return nil, err
 		}
 
-		image.Image.Url = common.GetLinkPath(image.Image.Image)
+		image.Image.GetUrl()
 		m.Prototype = image
 	case "device":
 		device, err := GetMapDeviceById(m.PrototypeId)
@@ -354,8 +353,14 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 		}
 
 		o := orm.NewOrm()
+
+		if device.Image != nil {
+			_, err = o.LoadRelated(device, "Image")
+			device.Image.GetUrl()
+		}
 		_, err = o.LoadRelated(device, "Device")
 		_, err = o.LoadRelated(device, "States", 2)
+		_, err = o.LoadRelated(device, "Actions", 2)
 		_, err = o.LoadRelated(device, "DeviceAction")
 		_, err = o.LoadRelated(device.Device, "States")
 		_, err = o.LoadRelated(device.Device, "Actions")
@@ -366,7 +371,7 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 		// update image url
 		for _, state := range device.States {
 			if state.Image != nil {
-				state.Image.Url = common.GetLinkPath(state.Image.Image)
+				state.Image.GetUrl()
 			}
 		}
 

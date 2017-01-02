@@ -11,6 +11,7 @@ angular
       device_actions: []
       devices: []
       states: []
+      image: null
 
       constructor: (@scope)->
         @scope.$watch(()=>
@@ -73,6 +74,7 @@ angular
           id: @id if @id
           device: {id: @device.id} if @device
           states: states
+          image: @image
           device_action: {id: @device_action.id} if @device_action
         }
 
@@ -81,31 +83,21 @@ angular
         @device = m.device if m.device
         @device_action = m.device_action if m.device_action
         @status = m.status || 'enabled'
+        @image = m.image || null
 
         @states = []
-        default_state_exist = false
         angular.forEach @device.states, (device_state)=>
           md_state = new MapDeviceState(@scope, device_state)
           # check default state
-          default_state_exist = true if device_state.system_name == 'DEFAULT'
           angular.forEach m.states, (state)=>
             if state.device_state?.id && state.device_state.id == device_state.id
               md_state.deserialize state
           @states.push md_state
 
-        # if default state not found from device action list
-        # add this
-        if !default_state_exist
-          md_state = new MapDeviceState(@scope)
-          for state in m.states
-            if !state.device_state
-              md_state.deserialize state
-              break
-
-          md_state.getDefault(@device)
-          @states.push md_state
-
         @
+
+      removeImage: ()->
+        @image = null
 
       create: ()->
       update: ()->

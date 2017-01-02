@@ -11,50 +11,49 @@ import (
 	"time"
 )
 
-type MapDevice struct {
+type MapDeviceAction struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
-	Device		*Device			`orm:"rel(fk)" json:"device"`
+	Type           	string  		`orm:"" json:"type"`
+	MapDevice      	*MapDevice		`orm:"rel(fk)" json:"map_device"`
+	DeviceAction    *DeviceAction		`orm:"rel(fk)" json:"device_action"`
 	Image		*Image			`orm:"rel(fk);null" json:"image"`
-	States		[]*MapDeviceState	`orm:"reverse(many)" json:"states"`
-	Actions		[]*MapDeviceAction	`orm:"reverse(many)" json:"actions"`
-	DeviceAction	*DeviceAction		`orm:"rel(fk);null" json:"device_action"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
-func (m *MapDevice) TableName() string {
-	return beego.AppConfig.String("db_map_devices")
+func (m *MapDeviceAction) TableName() string {
+	return beego.AppConfig.String("db_map_device_actions")
 }
 
 func init() {
-	orm.RegisterModel(new(MapDevice))
+	orm.RegisterModel(new(MapDeviceAction))
 }
 
-// AddMapDevice insert a new MapDevice into database and returns
+// AddMapDeviceAction insert a new MapDeviceAction into database and returns
 // last inserted Id on success.
-func AddMapDevice(m *MapDevice) (id int64, err error) {
+func AddMapDeviceAction(m *MapDeviceAction) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetMapDeviceById retrieves MapDevice by Id. Returns error if
+// GetMapDeviceActionById retrieves MapDeviceAction by Id. Returns error if
 // Id doesn't exist
-func GetMapDeviceById(id int64) (v *MapDevice, err error) {
+func GetMapDeviceActionById(id int64) (v *MapDeviceAction, err error) {
 	o := orm.NewOrm()
-	v = &MapDevice{Id: id}
+	v = &MapDeviceAction{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllMapDevice retrieves all MapDevice matches certain condition. Returns empty list if
+// GetAllMapDeviceAction retrieves all MapDeviceAction matches certain condition. Returns empty list if
 // no records exist
-func GetAllMapDevice(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllMapDeviceAction(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(MapDevice))
+	qs := o.QueryTable(new(MapDeviceAction))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -100,7 +99,7 @@ func GetAllMapDevice(query map[string]string, fields []string, sortby []string, 
 		}
 	}
 
-	var l []MapDevice
+	var l []MapDeviceAction
 	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
@@ -132,11 +131,11 @@ func GetAllMapDevice(query map[string]string, fields []string, sortby []string, 
 	return nil, nil, err
 }
 
-// UpdateMapDevice updates MapDevice by Id and returns error if
+// UpdateMapDeviceAction updates MapDeviceAction by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateMapDeviceById(m *MapDevice) (err error) {
+func UpdateMapDeviceActionById(m *MapDeviceAction) (err error) {
 	o := orm.NewOrm()
-	v := MapDevice{Id: m.Id}
+	v := MapDeviceAction{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -147,15 +146,15 @@ func UpdateMapDeviceById(m *MapDevice) (err error) {
 	return
 }
 
-// DeleteMapDevice deletes MapDevice by Id and returns error if
+// DeleteMapDeviceAction deletes MapDeviceAction by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteMapDevice(id int64) (err error) {
+func DeleteMapDeviceAction(id int64) (err error) {
 	o := orm.NewOrm()
-	v := MapDevice{Id: id}
+	v := MapDeviceAction{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&MapDevice{Id: id}); err == nil {
+		if num, err = o.Delete(&MapDeviceAction{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}

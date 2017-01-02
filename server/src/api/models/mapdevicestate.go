@@ -15,7 +15,7 @@ type MapDeviceState struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
 	Style      	string			`orm:"" json:"style"`
 	MapDevice      	*MapDevice		`orm:"rel(fk)" json:"map_device"`
-	DeviceState    	*DeviceState		`orm:"rel(fk);null" json:"device_state"`
+	DeviceState    	*DeviceState		`orm:"rel(fk)" json:"device_state"`
 	Image		*Image			`orm:"rel(fk);null" json:"image"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`

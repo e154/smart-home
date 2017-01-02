@@ -272,3 +272,7 @@ ORDER BY f.created_at`).QueryRows(&images)
 
 	return
 }
+
+func (m *Image) GetUrl() {
+	m.Url = common.GetLinkPath(m.Image)
+}
