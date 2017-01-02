@@ -7,10 +7,9 @@ angular
       id: null
       scope: null
       device: null
-      device_actions: []
       devices: []
       states: []
-      action: []
+      actions: []
       image: null
 
       constructor: (@scope)->
@@ -28,7 +27,7 @@ angular
           @action = []
           angular.forEach @device.actions, (device_action)=>
             md_action = new MapDeviceAction(@scope, device_action)
-            @action.push md_action
+            @actions.push md_action
         error =(result)->
           Message result.data.status, result.data.message
 
