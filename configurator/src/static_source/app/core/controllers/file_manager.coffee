@@ -35,14 +35,16 @@ angular
             index = $scope.file_list.indexOf(f)
             if index > -1
               $scope.file_list.splice(index, 1)
+          if $scope.file_list.length == 0
+            $scope.getFilterList()
 
       else if $scope.mode == "upload"
         angular.forEach $scope.files_to_upload, (file, key)=>
           if file.$$hashKey == f.$$hashKey
             $scope.files_to_upload.splice(key, 1)
 
-      if $scope.files_to_upload.length == 0
-        $scope.getFilterList()
+        if $scope.files_to_upload.length == 0
+          $scope.getFilterList()
 
     $scope.submit =->
       files = []
