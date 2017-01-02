@@ -64,10 +64,10 @@ angular
       $scope.$emit 'select_element_on_map', $scope.element
 
     dragging =(e)->
-      graph_settings.position.top = parseInt($(e.target).position().top, 10)
-      graph_settings.position.left = parseInt($(e.target).position().left, 10)
 
     stop =(e)->
+      graph_settings.position.top = parseInt($(e.target).position().top, 10)
+      graph_settings.position.left = parseInt($(e.target).position().left, 10)
       update()
 
     update =->

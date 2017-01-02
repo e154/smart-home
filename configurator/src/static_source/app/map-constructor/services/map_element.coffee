@@ -39,6 +39,17 @@ angular
         )
         @get_prototype()
 
+      resetPosition: ()->
+        @graph_settings.position =
+          top: 0
+          left: 0
+
+      inheritPosition: ()->
+        position = $(".map-editor").position()
+        @graph_settings.position =
+          top: parseInt(position.top, 10) * -1
+          left: parseInt(position.left, 10) * -1
+
       serialize: ()->
         prototype = @prototype?.serialize() || null
         name: @name

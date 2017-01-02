@@ -54,6 +54,7 @@ angular
         element.layer_id = @id
         element.map_id = @map_id
         element.name += " №#{@elements.length + 1}"
+        element.inheritPosition()
         element.create()
         @elements.push element
 
@@ -99,6 +100,7 @@ angular
 
       addNewImage: ()->
         element = new MapElement(@scope)
+        element.inheritPosition()
         element.layer_id = @id
         element.map_id = @map_id
         element.name += " №#{@elements.length + 1}"
@@ -112,6 +114,7 @@ angular
 
       addNewText: ()->
         element = new MapElement(@scope)
+        element.inheritPosition()
         element.layer_id = @id
         element.map_id = @map_id
         element.name = "New text"

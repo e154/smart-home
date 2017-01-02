@@ -2,7 +2,7 @@ angular
 .module('angular-map')
 .factory 'mapPanning', ['log', '$compile', '$timeout'
   (log, $compile, $timeout) ->
-    class bpmnPanning
+    class mapPanning
 
       container: null
       scope: null
@@ -88,9 +88,6 @@ angular
           else if @scope.zoom > 2
             @scope.zoom = 2
 
-#          @scope.instance.setZoom(@scope.zoom)
-#          @scope.instance.repaintEverything(@scope.zoom)
-
           $timeout ()=>
             @scope.$apply(
               @scope.zoom
@@ -116,5 +113,5 @@ angular
         @scope = null
         @wrapper = null
 
-    bpmnPanning
+    mapPanning
 ]
