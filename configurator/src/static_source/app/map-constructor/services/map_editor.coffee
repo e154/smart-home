@@ -59,6 +59,7 @@ angular
         @wrapper.find(".page-loader").fadeOut("fast")
 
         @scope.$on 'select_element_on_map', (e, data)=>
+          return if @scope.current_element && data.id == @scope.current_element.id
           @selectElement(data)
 
         return
