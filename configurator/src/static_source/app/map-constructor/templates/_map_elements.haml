@@ -7,8 +7,8 @@
         {{'Add element' | translate}}
 
     .form-group
-      %ul.list-group(ng-sortable="{ group: 'elements', animation: 0, handle: '.map-element-handler', onSort: sortElements}")
-        %li.list-group-item(ng-repeat="element in current_layer.elements | orderBy:'-weight'" ng-click="selectElement(element, $index)" ng-class="{'selected': element.selected}")
+      %ul.list-group(ng-sortable="{ group: 'elements', animation: 0, handle: '.map-element-handler', onSort: current_layer.sortElements}")
+        %li.list-group-item(ng-repeat="element in current_layer.elements | orderBy:'weight'" ng-click="selectElement(element, $index)" ng-class="{'selected': element.selected}")
           .map-element-header
             %span.map-element-handler
               ☰

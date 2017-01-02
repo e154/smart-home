@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'MapLayer', 'storage', '$timeout'
-  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, MapLayer, storage, $timeout) ->
+.factory 'mapEditor', ['$rootScope', '$compile', 'mapFullscreen', 'mapPanning', '$templateCache', 'MapLayer', 'storage', '$timeout', 'MapLayerResource'
+  ($rootScope, $compile, mapFullscreen, mapPanning, $templateCache, MapLayer, storage, $timeout, MapLayerResource) ->
     class mapEditor
 
       constructor: ()->
@@ -13,7 +13,6 @@ angular
         @scope.addElement = @addElement
         @scope.current_layer = null
         @scope.sortLayers = @sortLayers
-        @scope.sortElements = @sortElements
         @scope.removeElement = @removeElement
         @scope.updateElement = @updateElement
         @scope.addNewImage = @addNewImage
@@ -71,8 +70,8 @@ angular
         layer = new MapLayer(@scope)
         layer.map_id = @id
         layer.create()
-        @model.layers.push layer
-        @selectLayer(@model.layers[@model.layers.length - 1])
+        @model.layers.unshift layer
+        @selectLayer(layer)
         @sortLayers()
 
       removeLayer: (_layer)=>
@@ -83,7 +82,7 @@ angular
             @scope.current_layer = null
 
             if @model.layers.length > 0
-              @selectLayer(@model.layers[@model.layers.length - 1])
+              @selectLayer(@model.layers[0])
 
         _layer.remove success
         return
@@ -132,28 +131,24 @@ angular
         @removeElement(@scope.current_element)
 
       removeElement: (_element)=>
-        return if !_element || $.isEmptyObject(_element)
-
-        index = @scope.current_layer.elements.indexOf(_element)
-        success =()=>
+        return if !@scope.current_layer
+        cb =()=>
+          index = @scope.current_layer.elements.indexOf(_element)
           if index > -1
             @scope.current_layer.elements.splice(index, 1)
             if @scope.current_layer.elements.length > 0
-              @selectElement(@scope.current_layer.elements[@scope.current_layer.elements.length - 1])
+              @selectElement(@scope.current_layer.elements[0])
             else
               @scope.current_element = null
             # for remove from scheme
             $timeout ()=>
               @scope.$apply()
-
-        _element.remove success
-        return
+        @scope.current_layer.removeElement(_element, cb)
 
       updateElement: (_element)=>
         return if !_element
         success =()=>
           @scope.$broadcast 'entity_update', _element
-
         _element.update success
 
       sortLayers: ()=>
@@ -161,14 +156,10 @@ angular
         for layer in @model.layers
           layer.weight = weight
           weight++
-
-      sortElements: ()=>
-        return if !@scope.current_layer
-        weight = 0
-        for element in @scope.current_layer.elements
-          element.weight = weight
-          element.update_element_only()
-          weight++
+        success =(data)->
+        error =(result)->
+          Message result.data.status, result.data.message
+        MapLayerResource.sort @model.layers, success, error
 
       addNewImage: ()=>
         return if !@scope.current_layer

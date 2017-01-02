@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"../models"
 	"github.com/astaxie/beego/orm"
+	"sort"
 )
 
 // MapController operations for Map
@@ -154,11 +155,15 @@ func (c *MapController) GetFull() {
 		return
 	}
 
+	sort.Sort(models.SortMapLayersByWeight(_map.Layers))
+
 	for _, layer := range _map.Layers {
 		if _, err = o.LoadRelated(layer, "Elements", false); err != nil {
 			c.ErrHan(403, err.Error())
 			return
 		}
+
+		sort.Sort(models.SortMapElementByWeight(layer.Elements))
 
 		for _, element := range layer.Elements {
 			if _, err = element.GetPrototype(); err != nil {

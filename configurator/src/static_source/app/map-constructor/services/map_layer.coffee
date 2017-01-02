@@ -1,7 +1,7 @@
 angular
 .module('angular-map')
-.factory 'MapLayer', ['$rootScope', '$compile', 'MapElement', 'MapLayerResource', 'Notify', 'Message', 'FileManager'
-  ($rootScope, $compile, MapElement, MapLayerResource, Notify, Message, FileManager) ->
+.factory 'MapLayer', ['$rootScope', '$compile', 'MapElement', 'MapLayerResource', 'Notify', 'Message', 'FileManager', 'MapElementResource'
+  ($rootScope, $compile, MapElement, MapLayerResource, Notify, Message, FileManager, MapElementResource) ->
     class MapLayer
 
       scope: null
@@ -56,7 +56,7 @@ angular
         element.name += " №#{@elements.length + 1}"
         element.inheritPosition()
         element.create()
-        @elements.push element
+        @addToLayer(element)
 
         element
 
@@ -66,7 +66,14 @@ angular
         element = new MapElement(@scope)
         element.copy(_element)
         element.create()
-        @elements.push element
+        @addToLayer(element)
+
+      removeElement: (_element, cb)->
+        return if !_element || $.isEmptyObject(_element)
+        success =()=>
+          cb() if cb
+        _element.remove success
+        return
 
       create: ()->
         success =(data)=>
@@ -110,7 +117,7 @@ angular
           return if images.length == 0
           element.prototype.image = images[0]
           element.create()
-          @elements.push element
+          @addToLayer(element)
 
       addNewText: ()->
         element = new MapElement(@scope)
@@ -123,10 +130,24 @@ angular
         element.prototype.text = "New text"
         element.prototype.style = '{"font-size":"34px"}'
         element.create()
-        @elements.push element
+        @addToLayer(element)
 
       addNewDevice: ()->
       addNewScript: ()->
+
+      addToLayer: (element)->
+        @elements.unshift element
+        @sortElements()
+
+      sortElements: ()=>
+        weight = 0
+        for element in @elements
+          element.weight = weight
+          weight++
+        success =(data)->
+        error =(result)->
+          Message result.data.status, result.data.message
+        MapElementResource.sort @elements, success, error
 
     MapLayer
 ]

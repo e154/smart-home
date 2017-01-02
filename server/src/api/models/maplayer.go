@@ -23,6 +23,8 @@ type MapLayer struct {
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
+type SortMapLayersByWeight []*MapLayer
+
 func (m *MapLayer) TableName() string {
 	return beego.AppConfig.String("db_map_layers")
 }
@@ -30,6 +32,10 @@ func (m *MapLayer) TableName() string {
 func init() {
 	orm.RegisterModel(new(MapLayer))
 }
+
+func (l SortMapLayersByWeight) Len() int           { return len(l) }
+func (l SortMapLayersByWeight) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+func (l SortMapLayersByWeight) Less(i, j int) bool { return l[i].Weight < l[j].Weight }
 
 // AddMapLayer insert a new MapLayer into database and returns
 // last inserted Id on success.
@@ -160,5 +166,17 @@ func DeleteMapLayer(id int64) (err error) {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
+	return
+}
+
+func SortMapLayers(m []*MapLayer) (err error) {
+
+	o := orm.NewOrm()
+	for _, l := range m {
+		o.QueryTable(&MapLayer{}).Filter("Id", l.Id).Update(orm.Params{
+				"weight": l.Weight,
+			})
+	}
+
 	return
 }

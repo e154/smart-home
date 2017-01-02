@@ -18,6 +18,11 @@ angular
         method: 'PUT'
         responseType: 'json'
 
+    sort:
+      url: window.server_url + '/api/v1/map_layer/sort'
+      method: 'PUT'
+      responseType: 'json'
+
     delete:
       method: 'DELETE'
 

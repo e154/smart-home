@@ -29,6 +29,8 @@ type MapElement struct {
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
+type SortMapElementByWeight []*MapElement
+
 func (m *MapElement) TableName() string {
 	return beego.AppConfig.String("db_map_elements")
 }
@@ -36,6 +38,10 @@ func (m *MapElement) TableName() string {
 func init() {
 	orm.RegisterModel(new(MapElement))
 }
+
+func (l SortMapElementByWeight) Len() int           { return len(l) }
+func (l SortMapElementByWeight) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+func (l SortMapElementByWeight) Less(i, j int) bool { return l[i].Weight < l[j].Weight }
 
 // AddMapElement insert a new MapElement into database and returns
 // last inserted Id on success.
@@ -372,4 +378,16 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 	}
 
 	return m, nil
+}
+
+func SortMapElements(m []*MapElement) (err error) {
+
+	o := orm.NewOrm()
+	for _, l := range m {
+		o.QueryTable(&MapElement{}).Filter("Id", l.Id).Update(orm.Params{
+			"weight": l.Weight,
+		})
+	}
+
+	return
 }

@@ -20,6 +20,7 @@ func (c *MapElementController) URLMapping() {
 	c.Mapping("Put", c.Put)
 	c.Mapping("PutElementOnly", c.PutElementOnly)
 	c.Mapping("Delete", c.Delete)
+	c.Mapping("Sort", c.Sort)
 }
 
 // Post ...
@@ -171,6 +172,18 @@ func (c *MapElementController) Delete() {
 	id, _ := c.GetInt(":id")
 
 	if err := models.DeleteMapElement(int64(id)); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.ServeJSON()
+}
+
+func (c *MapElementController) Sort() {
+
+	var map_elements []*models.MapElement
+	json.Unmarshal(c.Ctx.Input.RequestBody, &map_elements)
+	if err := models.SortMapElements(map_elements); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}

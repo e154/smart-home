@@ -139,3 +139,15 @@ func (c *MapLayerController) Delete() {
 
 	c.ServeJSON()
 }
+
+func (c *MapLayerController) Sort() {
+
+	var map_layers []*models.MapLayer
+	json.Unmarshal(c.Ctx.Input.RequestBody, &map_layers)
+	if err := models.SortMapLayers(map_layers); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.ServeJSON()
+}
