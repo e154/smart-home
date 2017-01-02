@@ -1,1 +1,2 @@
-%img.unselectable( ng-src="{{state.image.url}}" ng-repeat="state in element.prototype.states" ng-if="state.device_state.system_name == 'DEFAULT'" ng-style="{{state.style}}" ng-class="{'draggable-entity' : element.status !='frozen'}")
+%img.unselectable( ng-src="{{element.prototype.image.url}}" ng-style="{{state.style}}" ng-class="{'draggable-entity' : element.status !='frozen'}")
+-#%img.unselectable( ng-src="{{state.image.url}}" ng-repeat="state in element.prototype.states"  ng-style="{{state.style}}" ng-class="{'draggable-entity' : element.status !='frozen'}")

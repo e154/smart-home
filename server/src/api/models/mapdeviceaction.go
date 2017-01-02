@@ -160,3 +160,27 @@ func DeleteMapDeviceAction(id int64) (err error) {
 	}
 	return
 }
+
+// AddMultipleMapDeviceAction
+// Use a prepared statement to increase inserting speed with multiple inserts.
+func AddMultipleMapDeviceAction(actions []*MapDeviceAction) (ids []int64, errs []error) {
+
+	o := orm.NewOrm()
+	qs := o.QueryTable(&MapDeviceAction{})
+	i, _ := qs.PrepareInsert()
+	for _, action := range actions {
+		id, err := i.Insert(action)
+		if err != nil {
+			errs = append(errs, err)
+		} else {
+			ids = append(ids, id)
+		}
+	}
+	// PREPARE INSERT INTO user (`name`, ...) VALUES (?, ...)
+	// EXECUTE INSERT INTO user (`name`, ...) VALUES ("slene", ...)
+	// EXECUTE ...
+	// ...
+	i.Close() // Don't forget to close the statement
+
+	return
+}

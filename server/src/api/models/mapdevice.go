@@ -17,7 +17,6 @@ type MapDevice struct {
 	Image		*Image			`orm:"rel(fk);null" json:"image"`
 	States		[]*MapDeviceState	`orm:"reverse(many)" json:"states"`
 	Actions		[]*MapDeviceAction	`orm:"reverse(many)" json:"actions"`
-	DeviceAction	*DeviceAction		`orm:"rel(fk);null" json:"device_action"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }

@@ -86,6 +86,7 @@ func AddMapElement(m *MapElement) (id int64, err error) {
 				}
 
 				AddMultipleMapDeviceState(prototype.States)
+				AddMultipleMapDeviceAction(prototype.Actions)
 
 				m.PrototypeId = prototype.Id
 				m.PrototypeType = "device"
@@ -264,8 +265,12 @@ func UpdateMapElementById(m *MapElement) (err error) {
 			for _, state := range map_device.States {
 				state.MapDevice = map_device
 			}
+			for _, action := range map_device.Actions {
+				action.MapDevice = map_device
+			}
 
 			AddMultipleMapDeviceState(map_device.States)
+			AddMultipleMapDeviceAction(map_device.Actions)
 
 			m.PrototypeId = map_device.Id
 			m.PrototypeType = "device"
@@ -361,7 +366,6 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 		_, err = o.LoadRelated(device, "Device")
 		_, err = o.LoadRelated(device, "States", 2)
 		_, err = o.LoadRelated(device, "Actions", 2)
-		_, err = o.LoadRelated(device, "DeviceAction")
 		_, err = o.LoadRelated(device.Device, "States")
 		_, err = o.LoadRelated(device.Device, "Actions")
 		if err != nil {
@@ -372,6 +376,12 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 		for _, state := range device.States {
 			if state.Image != nil {
 				state.Image.GetUrl()
+			}
+		}
+
+		for _, action := range device.Actions {
+			if action.Image != nil {
+				action.Image.GetUrl()
 			}
 		}
 
