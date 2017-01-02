@@ -34,8 +34,17 @@ angular
     )
 
     .state(
-      name: "dashboard.map.edit"
+      name: "dashboard.map.show"
       url: "/:id"
+      views:
+        '@dashboard.map':
+          templateUrl: '/map/templates/map.show.html'
+          controller: 'mapShowCtrl'
+    )
+
+    .state(
+      name: "dashboard.map.edit"
+      url: "/:id/edit"
       abstract: true
       views:
         '@dashboard.map':

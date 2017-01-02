@@ -20,14 +20,6 @@
 
           .panel.panel-default(ng-click="$event.stopPropagation()" )
             .panel-body
-              .row(ng-if="element.created_at && element.update_at")
-                .col-sm-12
-                  .pull-right.date-info-block
-                    .form-group
-                      -#%small
-                        {{'Created at' | translate}} {{element.created_at | readableDateTime}}
-                      %small
-                        {{'Updated at' | translate}} {{element.update_at | readableDateTime}}
               .row
                 .col-md-6
                   .form-group
@@ -71,6 +63,6 @@
                     {{'Delete' | translate}}
                   %a.btn.btn-default(href="" role="button" ng-click="updateElement(element)")
                     {{'Update' | translate}}
-                  %a.btn.btn-default(href="#" ng-click="current_layer.copyElement(element, $event)")
+                  %a.btn.btn-default(href="#" ng-click="current_layer.copyElement(element, $event)" ng-if="element.prototype_type != 'device'")
                     {{'Copy' | translate}}
 

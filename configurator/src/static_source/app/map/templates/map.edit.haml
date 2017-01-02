@@ -1,7 +1,7 @@
 .row
   .col-sm-12
     %h3
-      %a(href="" ui-sref="dashboard.map.index")
+      %a(href="" ui-sref="dashboard.map.show({id: map.id})")
         %small.fa.fa-long-arrow-left
           &nbsp;
       Редактирование карты №{{map.model.id}} - {{map.model.name}}

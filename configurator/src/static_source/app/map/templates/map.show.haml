@@ -1,0 +1,20 @@
+.row
+  .col-md-12
+    %h3
+      %a(href="" ui-sref="dashboard.map.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      {{'map.show_form' | translate}} "{{map.name}}"
+      .edit-icon-link
+        %a(ui-sref="dashboard.map.edit.main({id:map.id})")
+          %span.fa.fa-pencil
+
+    .pull-right.date-info-block
+      %small
+        {{'Created at' | translate}} {{map.created_at | readableDateTime}}
+      %small
+        {{'Updated at' | translate}} {{map.update_at | readableDateTime}}
+
+.row
+  .col-lg-12
+    %div(map-viewer="options" map="map")

@@ -34,7 +34,7 @@ angular
             height: 'auto'
           template = "<span class='draggable-entity' ng-style='{{element.prototype.style}}'>{{element.prototype.text}}</span>"
         when 'image'
-          template = "<img class='draggable-entity' ng-src='{{element.prototype.image.url}}' ng-style='{{element.prototype.style}}'>"
+          template = $templateCache.get('/map-constructor/templates/_map_image_template.html')
           $element.css
             width: graph_settings.width || 'auto'
             height: graph_settings.height || 'auto'

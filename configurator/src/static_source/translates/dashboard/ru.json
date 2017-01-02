@@ -203,6 +203,7 @@
   },
   "map": {
     "name": "Название",
+    "show_form": "Карта",
     "description": "Описание",
     "created_at": "Дата создания",
     "settings": "Настройки",

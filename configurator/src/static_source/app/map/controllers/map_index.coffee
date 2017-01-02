@@ -18,7 +18,7 @@ angular
         field: 'name'
         clickCallback: ($event, item)->
           $event.preventDefault()
-          $state.go('dashboard.map.edit.main', {id: item.id})
+          $state.go('dashboard.map.show', {id: item.id})
           false
       }
       {
