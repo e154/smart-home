@@ -114,6 +114,6 @@
       .form-group
         %div
           %a(ui-sref="dashboard.device.show({id: element.prototype.device.id})" target="_blank")
-            {{action.device_actions.name}}
+            {{action.device_action.name}}
         %div
-          %small(ng-if="action.device_actions.description") {{action.device_actions.description}}
+          %small(ng-if="action.device_action.description") {{action.device_action.description}}
