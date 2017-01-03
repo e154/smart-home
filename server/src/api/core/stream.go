@@ -117,6 +117,11 @@ func streamDoAction(client *stream.Client, value interface{}) {
 	if device.Address != nil {
 		devices = append(devices, device)
 	} else {
+		if device.Device == nil {
+			client.Notify("error", "no address and device is nil")
+			return
+		}
+
 		// значит тут группа устройств
 		var childs []*models.Device
 		if childs, _, err = device_action.Device.GetChilds(); err != nil {

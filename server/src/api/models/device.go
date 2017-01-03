@@ -13,7 +13,7 @@ import (
 
 type Device struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Device		*Device		`orm:"rel(fk);null" json:"parent_device"`
+	Device		*Device		`orm:"rel(fk);null" json:"device"`
 	Node		*Node		`orm:"rel(fk);null" json:"node"`
 	Address   	*int  		`orm:"" json:"address"`
 	Baud		int		`orm:"size(11)" json:"baud"`
