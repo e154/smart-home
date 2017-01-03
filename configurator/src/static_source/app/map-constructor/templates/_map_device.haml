@@ -14,8 +14,8 @@
         %ui-select-match(placeholder="{{'device.name' | translate}}")
           %div
             {{element.prototype.device.name}}
-            %small(ng-if="element.prototype.device.device")
-              ({{element.prototype.device.device.name}})
+            %small(ng-if="element.prototype.device.parent_device")
+              ({{element.prototype.device.parent_device.name}})
         %ui-select-choices(repeat="item in element.prototype.devices | filter: $select.search" refresh="element.prototype.refreshDevices($select.search)" refresh-delay="0")
           %span(ng-bind-html="item.name | highlight: $select.search")
           %small(ng-if="item.device.name")

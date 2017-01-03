@@ -7,10 +7,11 @@
       Редактирование карты №{{map.id}} - {{map.name}}
 
     .pull-right.date-info-block
-      %small
-        {{'Created at' | translate}} {{map.created_at | readableDateTime}}
-      %small
-        {{'Updated at' | translate}} {{map.update_at | readableDateTime}}
+      .form-group
+        %small
+          {{'Created at' | translate}} {{map.created_at | readableDateTime}}
+        %small
+          {{'Updated at' | translate}} {{map.update_at | readableDateTime}}
 
 .row
   .col-sm-12

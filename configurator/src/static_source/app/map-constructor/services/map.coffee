@@ -18,8 +18,8 @@ angular
       constructor: (@scope, @id)->
         super
 
-        @scope.zoom = 1.0
         @scope.settings =
+          cross: true
           movable: true
           zoom: false
           grid: 5

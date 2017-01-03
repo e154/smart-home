@@ -1,10 +1,10 @@
 angular
 .module('angular-map')
-.directive 'mapEntity', ['$compile', '$templateCache', ($compile, $templateCache) ->
+.directive 'mapEditorElement', ['$compile', '$templateCache', ($compile, $templateCache) ->
   restrict: 'EA'
   replace: true
   scope:
-    element: '=mapEntity'
+    element: '=mapEditorElement'
   link: ($scope, $element, $attrs) ->
 
     previousContent = null

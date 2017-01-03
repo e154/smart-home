@@ -33,6 +33,7 @@ angular
 
         @container = _container.find(".map-editor")
         @wrapper = _container.find(".map-wrapper")
+        preventSelection(document.querySelector('.map-wrapper'))
 
         # fullscreen
         # --------------------

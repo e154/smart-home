@@ -24,14 +24,14 @@ angular
       getDeviceActions: (device)->
         success =(actions)=>
           @device.actions = actions
-          @action = []
+          @actions = []
           angular.forEach @device.actions, (device_action)=>
             md_action = new MapDeviceAction(@scope, device_action)
             @actions.push md_action
         error =(result)->
           Message result.data.status, result.data.message
 
-        DeviceAction.get_by_device {id: device.id}, success, error
+        DeviceAction.get_by_device {id: device.device?.id || device.id}, success, error
 
       getDeviceStates: (device)->
         success =(states)=>
@@ -43,7 +43,7 @@ angular
 
         error =(result)->
           Message result.data.status, result.data.message
-        DeviceState.get_by_device {id: device.id}, success, error
+        DeviceState.get_by_device {id: device.device?.id || device.id}, success, error
 
       # get devices (select2)
       refreshDevices: (query)=>
@@ -52,10 +52,14 @@ angular
           url: window.server_url + "/api/v1/device/search"
           params:
             query: query
-            limit: 5
+            limit: 15
             offset: 0
         ).then (response)=>
-          @devices = response.data.devices
+          devices = angular.copy(response.data.devices)
+          angular.forEach devices, (device, index)->
+            if !device.device_id? && !device.address?
+              devices.splice(index, 1)
+          @devices = devices
 
       serialize: ()->
         return if !@device

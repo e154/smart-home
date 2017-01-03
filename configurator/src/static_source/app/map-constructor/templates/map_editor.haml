@@ -9,7 +9,7 @@
           .map-layer(ng-repeat="layer in map.layers | orderBy:'-weight'" ng-if="layer.status != 'disabled'")
 
             -# layer element
-            .draggable(map-entity="element" ng-repeat="element in layer.elements | orderBy:'-weight'" ng-if="element.status != 'disabled'" ng-class="['map-'+element.prototype_type, {'selected': element.selected}]")
+            .draggable(map-editor-element="element" ng-repeat="element in layer.elements | orderBy:'-weight'" ng-if="element.status != 'disabled'" ng-class="['map-'+element.prototype_type, {'selected': element.selected}]")
 
         .page-loader
           .spinner

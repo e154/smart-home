@@ -12,15 +12,21 @@ angular
         @init()
 
       init: ()->
-        template = $compile('<div class="cross normal"></div>')(@scope)
-        @container.append(template)
+        @scope.zoom = 1.0 if !@scope.zoom
+        @setZoom(@scope.zoom)
+
+        if @scope.settings.cross?
+          template = $compile('<div class="cross normal"></div>')(@scope)
+          @container.append(template)
+
         $(template).css({
           position: 'absolute'
           top: -23
           left: -45
         })
 
-        @wrapper.append($compile('<div class="zoom-info" data-help="zoom">x{{zoom}}</div>')(@scope))
+        if @scope.settings.zoom
+          @wrapper.append($compile('<div class="zoom-info" data-help="zoom">x{{zoom}}</div>')(@scope))
 
         drag =
           x: 0
@@ -75,8 +81,8 @@ angular
         # zoom
         #-----------------------------------
         @wrapper.on 'mousewheel', (e)=>
-          shift = key.getPressedKeyCodes().indexOf(16) > -1
-          if !@scope.settings.zoom || !shift
+#          shift = key.getPressedKeyCodes().indexOf(16) > -1
+          if !@scope.settings.zoom #|| !shift
             return
 
           e.preventDefault()
@@ -85,8 +91,8 @@ angular
           @scope.zoom = parseFloat(@scope.zoom.toFixed(1))
           if @scope.zoom < 0.1
             @scope.zoom = 0.1
-          else if @scope.zoom > 2
-            @scope.zoom = 2
+          else if @scope.zoom > 4
+            @scope.zoom = 4
 
           $timeout ()=>
             @scope.$apply(
@@ -94,13 +100,16 @@ angular
             )
           , 0
 
-          @container.css({
-            '-webkit-transform':@scope.zoom
-            '-moz-transform':'scale('+@scope.zoom+')'
-            '-ms-transform':'scale('+@scope.zoom+')'
-            '-o-transform':'scale('+@scope.zoom+')'
-            'transform':'scale('+@scope.zoom+')'
-          })
+          @setZoom(@scope.zoom)
+
+      setZoom: (zoom)->
+        @container.css({
+          '-webkit-transform':zoom
+          '-moz-transform':'scale('+zoom+')'
+          '-ms-transform':'scale('+zoom+')'
+          '-o-transform':'scale('+zoom+')'
+          'transform':'scale('+zoom+')'
+        })
 
       destroy: ()->
         @wrapper.off 'mousedown'
