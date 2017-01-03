@@ -352,40 +352,41 @@ func (m *MapElement) GetPrototype() (*MapElement, error) {
 		image.Image.GetUrl()
 		m.Prototype = image
 	case "device":
-		device, err := GetMapDeviceById(m.PrototypeId)
+		map_device, err := GetMapDeviceById(m.PrototypeId)
 		if err != nil {
 			return nil, err
 		}
 
 		o := orm.NewOrm()
 
-		if device.Image != nil {
-			_, err = o.LoadRelated(device, "Image")
-			device.Image.GetUrl()
+		if map_device.Image != nil {
+			_, err = o.LoadRelated(map_device, "Image")
+			map_device.Image.GetUrl()
 		}
-		_, err = o.LoadRelated(device, "Device")
-		_, err = o.LoadRelated(device, "States", 2)
-		_, err = o.LoadRelated(device, "Actions", 2)
-		_, err = o.LoadRelated(device.Device, "States")
-		_, err = o.LoadRelated(device.Device, "Actions")
+		_, err = o.LoadRelated(map_device, "States", 2)
+		_, err = o.LoadRelated(map_device, "Actions", 2)
+		_, err = o.LoadRelated(map_device, "Device")
+		err = map_device.Device.GetInheritedData()
+		//_, err = o.LoadRelated(map_device.Device, "States")
+		//_, err = o.LoadRelated(map_device.Device, "Actions")
 		if err != nil {
 			return nil, err
 		}
 
 		// update image url
-		for _, state := range device.States {
+		for _, state := range map_device.States {
 			if state.Image != nil {
 				state.Image.GetUrl()
 			}
 		}
 
-		for _, action := range device.Actions {
+		for _, action := range map_device.Actions {
 			if action.Image != nil {
 				action.Image.GetUrl()
 			}
 		}
 
-		m.Prototype = device
+		m.Prototype = map_device
 
 	case "script":
 	default:
