@@ -29,13 +29,13 @@
       %ul.nav.nav-tabs
         %li(role="presentation" ng-click="element.current_tab = 'base'" ng-class="{'active' : element.current_tab == 'base'}" )
           %a(href="#")
-            {{'base' | translate}}
+            {{'map.element.prototype.device.tab.base' | translate}}
         %li(role="presentation" ng-click="element.current_tab = 'states'" ng-class="{'active' : element.current_tab == 'states'}" )
           %a(href="#")
-            {{'states' | translate}}
+            {{'map.element.prototype.device.tab.states' | translate}}
         %li(role="presentation" ng-click="element.current_tab = 'actions'" ng-class="{'active' : element.current_tab == 'actions'}" )
           %a(href="#")
-            {{'actions' | translate}}
+            {{'map.element.prototype.device.tab.actions' | translate}}
 
 .row(ng-if="element.current_tab == 'base'")
   .col-md-6

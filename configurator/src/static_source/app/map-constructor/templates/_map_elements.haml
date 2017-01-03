@@ -4,7 +4,7 @@
       %a(href="#" ng-click="addElement()")
         .fa.fa-plus
         &nbsp;
-        {{'Add element' | translate}}
+        {{'map.add_element' | translate}}
 
     .form-group
       %ul.list-group(ng-sortable="{ group: 'elements', animation: 0, handle: '.map-element-handler', onSort: current_layer.sortElements}")
@@ -15,8 +15,8 @@
             %span.map-element-subtitle
               %span
                 %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="$event.stopPropagation()")
-              %span.label(ng-class="['label-'+ element.prototype_type]")
-                {{element.prototype_type}}
+              %span.label(ng-class="['label-'+ element.prototype_type]" translate="map.element.{{element.prototype_type}}")
+
 
           .panel.panel-default(ng-click="$event.stopPropagation()" )
             .panel-body
