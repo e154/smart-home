@@ -10,7 +10,7 @@
 
     .form-group
       %ul.list-group(ng-sortable="{ group: 'layers', animation: 0, handle: '.map-layer-handler', onSort: sortLayers}")
-        %li.list-group-item(ng-repeat="layer in map.model.layers | orderBy:'weight'" ng-click="selectLayer(layer, $index)" ng-class="{'selected': layer == current_layer}")
+        %li.list-group-item(ng-repeat="layer in map.layers | orderBy:'weight'" ng-click="selectLayer(layer, $index)" ng-class="{'selected': layer == current_layer}")
           %span.map-layer-handler
             ☰
           %span.map-layer-subtitle

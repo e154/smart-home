@@ -15,7 +15,7 @@
             %span.map-element-subtitle
               %span
                 %input.map-element-title(type="text" name="subtitle" ng-model="element.name" ng-click="$event.stopPropagation()")
-              %span.label(ng-class="['label-'+ element.prototype_type]" translate="map.element.{{element.prototype_type}}")
+              %span.label(ng-class="['label-'+ element.prototype_type]" translate="map.element.{{element.prototype_type}}" ng-if="element.prototype_type")
 
 
           .panel.panel-default(ng-click="$event.stopPropagation()" )

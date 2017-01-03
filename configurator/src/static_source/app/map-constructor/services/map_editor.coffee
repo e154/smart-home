@@ -64,25 +64,25 @@ angular
         return
 
       addLayer: ()=>
-        if !@model?.layers
-          @model.layers = []
+        if !@layers
+          @layers = []
 
         layer = new MapLayer(@scope)
         layer.map_id = @id
         layer.create()
-        @model.layers.unshift layer
+        @layers.unshift layer
         @selectLayer(layer)
         @sortLayers()
 
       removeLayer: (_layer)=>
-        index = @model.layers.indexOf(_layer)
+        index = @layers.indexOf(_layer)
         success =()=>
           if index > -1
-            @model.layers.splice(index, 1)
+            @layers.splice(index, 1)
             @scope.current_layer = null
 
-            if @model.layers.length > 0
-              @selectLayer(@model.layers[0])
+            if @layers.length > 0
+              @selectLayer(@layers[0])
 
         _layer.remove success
         return
@@ -94,13 +94,13 @@ angular
       selectLayer: (layer, $index)=>
         @scope.current_layer = layer
 #        @scope.current_element = null
-        angular.forEach @model.layers, (layer)=>
+        angular.forEach @layers, (layer)=>
           angular.forEach layer.elements, (element)=>
             element.selected = false
 
       selectElement: (element)=>
 
-        for layer in @model.layers
+        for layer in @layers
           if layer.id == element.layer_id
             @selectLayer(layer)
             break
@@ -112,7 +112,7 @@ angular
             @scope.$apply()
           return
 
-        angular.forEach @model.layers, (layer)=>
+        angular.forEach @layers, (layer)=>
           angular.forEach layer.elements, (_element)=>
             _element.selected = element.id == _element.id
             if _element.selected
@@ -153,13 +153,13 @@ angular
 
       sortLayers: ()=>
         weight = 0
-        for layer in @model.layers
+        for layer in @layers
           layer.weight = weight
           weight++
         success =(data)->
         error =(result)->
           Message result.data.status, result.data.message
-        MapLayerResource.sort @model.layers, success, error
+        MapLayerResource.sort @layers, success, error
 
       addNewImage: ()=>
         return if !@scope.current_layer

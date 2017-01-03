@@ -5,22 +5,19 @@ angular
     class mapConstructor extends mapEditor
 
       id: null
+      name: ''
+      description: ''
+      layers: null
+
       settings: null
       scope: null
       panning: null
       container: null
       wrapper: null
-      model: null
-      _model: null
 
       constructor: (@scope, @id)->
         super
 
-        @model = {}
-        @_model = new MapResource({
-          id: @id
-          layers: []
-        })
         @scope.zoom = 1.0
         @scope.settings =
           movable: true
@@ -44,16 +41,17 @@ angular
         error =(result)->
           Message result.data.status, result.data.message
 
-        @_model.layers = []
-        @_model.$update success, error
+        map = new MapResource(@serialize())
+        map.$update success, error
 
       load: ()->
-        success =()=>
-          @deserialize()
+        success =(map)=>
+          @deserialize(map)
         error =(result)->
           Message result.data.status, result.data.message
 
-        @_model.$showFull success, error
+        map = new MapResource({id: @id})
+        map.$showFull success, error
 
       remove: (cb)->
         return if !confirm('Вы точно хотите удалить эту карту?')
@@ -61,30 +59,36 @@ angular
           cb(data)
         error =(result)->
           Message result.data.status, result.data.message
-        @_model.$delete success, error
+        MapResource.$delete {id: @id}, success, error
 
       fadeIn: ()->
+        return if !@wrapper
         @wrapper.find(".page-loader").fadeIn("fast")
 
       fadeOut: ()->
+        return if !@wrapper
         @wrapper.find(".page-loader").fadeOut("fast")
 
-      deserialize: ()=>
-        @model =
-          id: @_model.id
-          name: @_model.name
-          description: @_model.description
-          created_at: @_model.created_at
-          update_at: @_model.update_at
-          layers: []
+      serialize: ()=>
+        id: @id
+        name: @name
+        description: @description
 
-        if @_model?.layers && @_model.layers.length != 0
-          angular.forEach @_model.layers, (layer)=>
-            @model.layers.push new MapLayer(@scope).deserialize(layer)
+      deserialize: (model)=>
+        @id = model.id
+        @name = model.name
+        @description = model.description
+        @created_at = model.created_at
+        @update_at = model.update_at
+        @layers = []
+
+        if model?.layers && model.layers.length != 0
+          angular.forEach model.layers, (layer)=>
+            @layers.push new MapLayer(@scope).deserialize(layer)
 
           #TODO remove
-          @scope.current_layer = @model.layers[0]
-#          @scope.current_element = @model.layers[0].elements[0]
+          @scope.current_layer = @layers[0]
+#          @scope.current_element = @layers[0].elements[0]
 #          @scope.current_element.selected = true if @scope.current_element
 
     mapConstructor

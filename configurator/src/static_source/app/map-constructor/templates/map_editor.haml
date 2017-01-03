@@ -6,7 +6,7 @@
       .map-wrapper
         .map-editor
           -# map layer
-          .map-layer(ng-repeat="layer in map.model.layers | orderBy:'-weight'" ng-if="layer.status != 'disabled'")
+          .map-layer(ng-repeat="layer in map.layers | orderBy:'-weight'" ng-if="layer.status != 'disabled'")
 
             -# layer element
             .draggable(map-entity="element" ng-repeat="element in layer.elements | orderBy:'-weight'" ng-if="element.status != 'disabled'" ng-class="['map-'+element.prototype_type, {'selected': element.selected}]")
@@ -26,7 +26,7 @@
   .col-md-9
     .form-group(ng-if="current_layer")
       %div(ng-include="'/map-constructor/templates/_map_menu.html'")
-    .form-group(ng-if="!map.model.layers.length")
+    .form-group(ng-if="!map.layers.length")
       {{'map.add_layer' | translate}}
     .form-group(ng-if="current_layer")
       %div(ng-include="'/map-constructor/templates/_map_elements.html'")
