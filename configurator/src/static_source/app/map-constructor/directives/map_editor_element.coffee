@@ -7,14 +7,14 @@ angular
     element: '=mapEditorElement'
   link: ($scope, $element, $attrs) ->
 
+
+    $element.on 'click', (e)->
+      $scope.$emit 'select_element_on_map', $scope.element
+
+    isDraggable = false
     previousContent = null
     container = $($element)
-    graph_settings =
-      width: null
-      height: null
-      position:
-        top: 0
-        left: 0
+    graph_settings = angular.copy($scope.element.graph_settings)
 
     compile =->
       if previousContent
@@ -49,20 +49,6 @@ angular
       previousContent = $compile(template)($scope)
       $element.html(previousContent)
 
-      if ['device', 'image'].indexOf($scope.element.prototype_type) > -1
-        # set resizable
-        if container.resizable('instance')
-          container.resizable('destroy')
-        container.resizable
-          aspectRatio: true
-          stop: (e)=>
-            graph_settings.height = container.height()
-            graph_settings.width = container.width()
-            update()
-
-    click =(e)->
-      $scope.$emit 'select_element_on_map', $scope.element
-
     dragging =(e)->
 
     stop =(e)->
@@ -79,40 +65,49 @@ angular
     # enable/disable/frozen
     #
 
-    isDraggable = false
-    addDraggable =->
+    defrost =->
+      return if $scope.element.status == 'frozen'
+
+      if ['device', 'image'].indexOf($scope.element.prototype_type) > -1
+        container.resizable
+          aspectRatio: true
+          stop: (e)=>
+            graph_settings.height = container.height()
+            graph_settings.width = container.width()
+            update()
+
       if isDraggable
         container.draggable('enable')
         return
+
       isDraggable = true
-      container.draggable(
+      container.draggable
         drag: (e)->
           dragging(e)
         stop: (e)->
           stop(e)
-      ).on 'click', (e)->
-        click()
 
-    delDraggable =->
-      container.draggable('disable')
-
-    $scope.$watch 'element.status', (status)->
-      return if !status || status == ''
-      if status == 'frozen'
-        delDraggable()
-      else if status == 'enabled'
-        addDraggable()
+    freezing =->
+      container.draggable('disable') if isDraggable
+      if ['device', 'image'].indexOf($scope.element.prototype_type) > -1 && container.resizable('instance')
+        container.resizable('destroy')
 
     # --------------------
     # init
     #
-    graph_settings = angular.copy($scope.element.graph_settings)
-    compile()
-    addDraggable()
+    $scope.$watch 'element.status', (status)->
+      return if !status || status == ''
+      if status == 'frozen'
+        freezing()
+      else if status == 'enabled'
+        defrost()
 
     $scope.$on 'entity_update', (e, data)->
       if data.id == $scope.element.id
         compile()
+
+    compile()
+    defrost()
 
     return
 ]
