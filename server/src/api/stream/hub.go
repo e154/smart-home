@@ -2,7 +2,7 @@ package stream
 
 import (
 	"encoding/json"
-	"github.com/astaxie/beego"
+	"../log"
 )
 
 const (
@@ -13,6 +13,7 @@ type Hub interface {
 	Broadcast(message string)
 	Subscribe(command string, f func(client *Client, value interface{}))
 	UnSubscribe(command string)
+	AddClient(client *Client)
 }
 
 var instantiated *hub
@@ -24,7 +25,7 @@ type hub struct {
 }
 
 func (h *hub) AddClient(client *Client) {
-	beego.Info("new sockjs session established")
+	log.Infof("new sockjs session established, from ip: %s", client.Ip)
 
 	h.sessions[client] = true
 	var closedSession = make(chan struct{})
@@ -38,7 +39,7 @@ func (h *hub) AddClient(client *Client) {
 
 	delete(h.sessions, client)
 	close(closedSession)
-	beego.Info("sockjs session closed")
+	log.Infof("sockjs session from ip: %s closed", client.Ip)
 }
 
 func (h *hub) Run() {
@@ -108,7 +109,7 @@ func (h *hub) UnSubscribe(command string) {
 	}
 }
 
-func GetHub() *hub {
+func GetHub() Hub {
 	if instantiated == nil {
 		instantiated = &hub{
 			sessions: make(map[*Client]bool),

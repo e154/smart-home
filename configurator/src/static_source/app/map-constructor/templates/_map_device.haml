@@ -53,6 +53,11 @@
 
 %div(ng-if="element.current_tab == 'states'")
 
+  .row(ng-if="!element.prototype.states.length")
+    .col-md-6
+      .form-group.text-center
+        {{'No states' | translate}}
+
   .row(ng-if="element.prototype.device.id")
     .col-md-6
       .form-group
@@ -88,7 +93,12 @@
           %small(ng-if="state.device_state.description") {{state.device_state.description}}
 
 %div(ng-if="element.prototype.device.id && element.current_tab == 'actions'")
-  .row(ng-if="element.prototype.device.id")
+  .row(ng-if="!element.prototype.actions.length")
+    .col-md-6
+      .form-group.text-center
+        {{'No actions' | translate}}
+
+  .row(ng-if="element.prototype.actions.length")
     .col-md-6
       .form-group
         %strong {{'map.element.prototype.device.image' | translate}}
@@ -96,7 +106,7 @@
       .form-group
         %strong {{'map.element.prototype.device.action' | translate}}
 
-  .row(ng-repeat="action in element.prototype.actions" ng-if="element.prototype.device.id")
+  .row(ng-repeat="action in element.prototype.actions")
     .col-md-6
       .form-group
         .map-preview-img.relative
