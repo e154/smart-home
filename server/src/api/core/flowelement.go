@@ -3,7 +3,6 @@ package core
 import (
 	"../models"
 	"../scripts"
-	r "../../lib/rpc"
 )
 
 func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (flowElement *FlowElement, err error) {
@@ -26,26 +25,6 @@ func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (
 	if flowElement.Script, err = scripts.New(script); err != nil {
 		return
 	}
-
-	flowElement.Script.PushStruct("request", &r.Request{})
-	flowElement.Script.PushFunction("modbus_send", func(args *r.Request) (result r.Result) {
-
-		if args == nil {
-			return
-		}
-
-		if flow.Node == nil {
-			result.Error = "Node is nil pointer"
-			return
-		}
-
-		if err := flow.Node.ModbusSend(args, &result); err != nil {
-			result.Error = err.Error()
-		}
-
-		return
-	})
-
 
 	return
 }

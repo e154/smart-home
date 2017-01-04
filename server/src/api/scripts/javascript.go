@@ -6,6 +6,7 @@ import (
 	"strings"
 	"errors"
 	"../models"
+	r "../../lib/rpc"
 )
 
 const (
@@ -38,6 +39,7 @@ func (j *Javascript) pushGlobalCandyJSObject() {
 	})
 
 	// etc
+	j.PushStruct("request", &r.Request{})
 	j.PushStruct("device", &models.Device{})
 	j.PushStruct("flow", &models.Flow{})
 	j.PushStruct("node", &models.Node{})
@@ -50,6 +52,27 @@ func (j *Javascript) pushGlobalCandyJSObject() {
    }
    return result;
 }`)
+
+	j.PushFunction("node_send", func(protocol string, node *models.Node, args *r.Request,) (result r.Result) {
+		if args == nil {
+			return
+		}
+
+		if node == nil {
+			result.Error = "Node is nil pointer"
+			return
+		}
+
+		switch protocol {
+		case "modbus":
+			if err := node.ModbusSend(args, &result); err != nil {
+				result.Error = err.Error()
+			}
+			return
+		}
+
+		return
+	})
 }
 
 func (j *Javascript) Close() {

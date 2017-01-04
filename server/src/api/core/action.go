@@ -3,7 +3,6 @@ package core
 import (
 	"../models"
 	"../scripts"
-	r "../../lib/rpc"
 )
 
 func NewAction(device *models.Device, script *models.Script, node *models.Node) (action *Action, err error) {
@@ -19,16 +18,16 @@ func NewAction(device *models.Device, script *models.Script, node *models.Node) 
 		return
 	}
 
-	action.Script.PushStruct("device", device)
-	action.Script.PushStruct("node", action.Node)
-	action.Script.PushStruct("request", &r.Request{})
+	action.Device.GetInheritedData()
 
-	action.Script.PushFunction("modbus_send", func(args *r.Request) (result r.Result) {
-		if err := action.Node.ModbusSend(args, &result); err != nil {
-			result.Error = err.Error()
-		}
+	message := &Message{
+		Device: device,
+		Node: action.Node,
+	}
 
-		return
+	action.Script.PushStruct("message", message)
+	action.Script.PushFunction("set_device_state", func(state string) {
+		action.SetDeviceState(state)
 	})
 
 	return
@@ -42,4 +41,13 @@ type Action struct {
 
 func (a *Action) Do() (string, error) {
 	return a.Script.Do()
+}
+
+func (a *Action) SetDeviceState(_state string) {
+	for _, state := range a.Device.States {
+		if state.SystemName == _state {
+			CorePtr().SetDeviceState(a.Device.Id, state)
+			break
+		}
+	}
 }

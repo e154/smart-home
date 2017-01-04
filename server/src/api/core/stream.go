@@ -7,7 +7,6 @@ import (
 	"../models"
 	"../log"
 	"github.com/astaxie/beego/orm"
-	"fmt"
 )
 
 // ------------------------------------------------
@@ -93,7 +92,6 @@ func streamDoAction(client *stream.Client, value interface{}) {
 		return
 	}
 
-	fmt.Println(reflect.TypeOf(v["device_id"]))
 	if device_id, ok = v["device_id"].(float64); !ok {
 		log.Warn("bad device_id param")
 		return
@@ -117,11 +115,6 @@ func streamDoAction(client *stream.Client, value interface{}) {
 	if device.Address != nil {
 		devices = append(devices, device)
 	} else {
-		if device.Device == nil {
-			client.Notify("error", "no address and device is nil")
-			return
-		}
-
 		// значит тут группа устройств
 		var childs []*models.Device
 		if childs, _, err = device_action.Device.GetChilds(); err != nil {
@@ -147,6 +140,11 @@ func streamDoAction(client *stream.Client, value interface{}) {
 
 	// get node
 	// ------------------------------------------------
+	if device_action.Device.Node == nil {
+		client.Notify("error", "device node is nil")
+		return
+	}
+
 	nodes := corePtr.GetNodes()
 	var node *models.Node
 	if _, ok := nodes[device_action.Device.Node.Id]; ok {
@@ -185,5 +183,27 @@ func streamDoAction(client *stream.Client, value interface{}) {
 	}
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
+	client.Send(string(msg))
+}
+
+// ------------------------------------------------
+// device state broadcast
+// ------------------------------------------------
+func BroadcastDeviceState(id int64, state *models.DeviceState) {
+	msg, _ := json.Marshal(
+		map[string]interface{}{"type": "broadcast",
+			"value": map[string]interface{}{"type": "change_device_state",
+				"body": map[string]interface{}{"id": id, "state": state}}})
+	Hub.Broadcast(string(msg))
+}
+
+func streamGetDevicesStates(client *stream.Client, value interface{}) {
+	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
+	if !ok {
+		return
+	}
+
+	states := corePtr.GetDevicesStates()
+	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "states": states})
 	client.Send(string(msg))
 }

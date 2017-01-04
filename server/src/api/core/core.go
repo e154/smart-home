@@ -6,6 +6,7 @@ import (
 	"../models"
 	"../stream"
 	cr "github.com/e154/cron"
+	"sync"
 )
 
 var (
@@ -19,9 +20,11 @@ func CorePtr() *Core {
 }
 
 type Core struct {
-	nodes      map[int64]*models.Node
-	nodes_chan map[int64]chan string
-	workflows  map[int64]*Workflow
+	nodes      	map[int64]*models.Node
+	nodes_chan 	map[int64]chan string
+	workflows  	map[int64]*Workflow
+	mu		sync.Mutex
+	deviceStates	map[int64]*models.DeviceState
 }
 
 func (b *Core) Run() (err error) {
@@ -44,7 +47,6 @@ func (b *Core) Run() (err error) {
 // дочерни подпроцессов
 func (b *Core) InitWorkflows() (err error) {
 
-	b.workflows = make(map[int64]*Workflow)
 	workflows, err := models.GetAllEnabledWorkflow()
 	if err != nil {
 		return
@@ -222,9 +224,6 @@ func (b *Core) RemoveFlow(flow *models.Flow) (err error) {
 func (b *Core) InitNodes() (err error) {
 
 	var nodes []*models.Node
-	b.nodes = make(map[int64]*models.Node)
-	b.nodes_chan = make(map[int64]chan string)
-
 	if nodes, err = models.GetAllEnabledNodes(); err != nil {
 		return
 	}
@@ -389,6 +388,22 @@ func (b *Core) GetNodes() (map[int64]*models.Node) {
 }
 
 // ------------------------------------------------
+// Device states
+// ------------------------------------------------
+func (b *Core) SetDeviceState(id int64, state *models.DeviceState) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.deviceStates[id] = state
+	BroadcastDeviceState(id, state)
+}
+
+func (b *Core) GetDevicesStates() map[int64]*models.DeviceState {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.deviceStates
+}
+
+// ------------------------------------------------
 // Script
 // ------------------------------------------------
 func (b *Core) UpdateScript(script *models.Script) (err error) {
@@ -425,7 +440,12 @@ func Initialize() (err error) {
 		cron.Run()
 	}
 
-	corePtr = &Core{}
+	corePtr = &Core{
+		nodes: make(map[int64]*models.Node),
+		nodes_chan: make(map[int64]chan string),
+		workflows: make(map[int64]*Workflow),
+		deviceStates: make(map[int64]*models.DeviceState),
+	}
 	if err = corePtr.Run(); err != nil {
 		return
 	}
@@ -436,6 +456,7 @@ func Initialize() (err error) {
 	Hub.Subscribe("get.flows.status", streamWorkflowsStatus)
 	Hub.Subscribe("do.worker", streamDoWorker)
 	Hub.Subscribe("do.action", streamDoAction)
+	Hub.Subscribe("get.devices.states", streamGetDevicesStates)
 
 	return
 }

@@ -40,6 +40,12 @@ func (w *Worker) RemoveTask() (err error) {
 	return
 }
 
+func (w *Worker) Actions() map[int64]*Action {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.actions
+}
+
 func (w *Worker) AddAction(action *Action) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
@@ -78,6 +84,5 @@ func (w *Worker) Do() {
 		if err = w.flow.NewMessage(message); err != nil {
 			log.Error(err.Error())
 		}
-
 	}
 }
