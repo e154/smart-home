@@ -55,21 +55,16 @@ func (j *Javascript) pushGlobalCandyJSObject() {
 
 	j.PushFunction("node_send", func(protocol string, node *models.Node, args *r.Request,) (result r.Result) {
 		if args == nil {
+			result.Error = "args is nil pointer"
 			return
 		}
 
 		if node == nil {
-			result.Error = "Node is nil pointer"
+			result.Error = "node is nil pointer"
 			return
 		}
 
-		switch protocol {
-		case "modbus":
-			if err := node.ModbusSend(args, &result); err != nil {
-				result.Error = err.Error()
-			}
-			return
-		}
+		result = node.Send(protocol, args)
 
 		return
 	})

@@ -13,6 +13,7 @@ import (
 	"net/rpc"
 	"net"
 	"sync"
+	r "../../lib/rpc"
 )
 
 type Node struct {
@@ -281,6 +282,12 @@ func (n *Node) SetConnectStatus(st string) {
 	n.connStatus = st
 }
 
-func ModbusSend(node *Node, args interface{}, reply interface{}) error {
-	return node.ModbusSend(args, reply)
+func (n *Node) Send(protocol string, args *r.Request) (result r.Result) {
+	switch protocol {
+	case "modbus":
+		if err := n.ModbusSend(args, &result); err != nil {
+			result.Error = err.Error()
+		}
+	}
+	return
 }
