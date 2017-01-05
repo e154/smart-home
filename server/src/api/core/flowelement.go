@@ -3,6 +3,7 @@ package core
 import (
 	"../models"
 	"../scripts"
+	"errors"
 )
 
 func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (flowElement *FlowElement, err error) {
@@ -71,6 +72,12 @@ func (m *FlowElement) Run(message *Message) (b bool, return_message *Message, er
 
 		var ok string
 		if ok, err = m.Script.Do(); err != nil {
+			m.status = ERROR
+			return
+		}
+		//TODO refactor message system
+		if message.Error != "" {
+			err = errors.New(message.Error)
 			m.status = ERROR
 			return
 		}

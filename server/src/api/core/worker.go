@@ -69,23 +69,24 @@ func (w *Worker) Do() {
 	defer w.mu.Unlock()
 
 	for _, action := range w.actions {
-		res, err := action.Do()
-		if err != nil {
-			log.Error(err.Error())
-			return
+		//TODO refactor message system
+		if _, err := action.Do(); err != nil {
+			log.Errorf("node: %s, device: %s error: %s", action.Node.Name, action.Device.Name, err.Error())
+			continue
+		}
+		//TODO refactor message system
+		if action.Message.Error != "" {
+			continue
+		}
+		//TODO refactor message system
+		message := NewMessage()
+		*message = *action.Message
+		message.Flow = w.flow.Model
+		message.Device_state = func(state string) {
+			action.SetDeviceState(state)
 		}
 
-		message := &Message{
-			Result: res,
-			Flow: w.flow.Model,
-			Device: action.Device,
-			Node: action.Node,
-			Device_state: func(state string) {
-				action.SetDeviceState(state)
-			},
-		}
-
-		if err = w.flow.NewMessage(message); err != nil {
+		if err := w.flow.NewMessage(message); err != nil {
 			log.Error(err.Error())
 		}
 	}
