@@ -79,6 +79,9 @@ func (w *Worker) Do() {
 			Flow: w.flow.Model,
 			Device: action.Device,
 			Node: action.Node,
+			Device_state: func(state string) {
+				action.SetDeviceState(state)
+			},
 		}
 
 		if err = w.flow.NewMessage(message); err != nil {

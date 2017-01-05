@@ -23,12 +23,12 @@ func NewAction(device *models.Device, script *models.Script, node *models.Node) 
 	message := &Message{
 		Device: device,
 		Node: action.Node,
+		Device_state: func(state string) {
+			action.SetDeviceState(state)
+		},
 	}
 
 	action.Script.PushStruct("message", message)
-	action.Script.PushFunction("set_device_state", func(state string) {
-		action.SetDeviceState(state)
-	})
 
 	return
 }

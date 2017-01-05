@@ -1,1 +1,8 @@
-%img.unselectable( ng-src="{{element.prototype.image.url}}" ng-style="{{element.prototype.style}}" )
+%span.device-menu(ng-mouseleave="mouseLive()" ng-mouseover="mouseOver()")
+
+  .device-menu-circle(ng-class="{'show' : show_menu}" )
+    %a(ng-repeat="action in element.prototype.actions" ng-click="doAction(action, $event)" ng-if="action.image" )
+      %img.unselectable(ng-src="{{action.image.url}}")
+
+  %a.device-menu-button(ng-click="showMenu()")
+    %img.unselectable( ng-src="{{element.prototype.current_state.image.url || element.prototype.image.url}}" ng-style="{{element.prototype.current_state.style ||element.prototype.style}}")

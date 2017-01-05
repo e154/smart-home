@@ -35,11 +35,12 @@ angular
         socket: new SockJS("#{window.server_url}/api/v1/ws")
       })
 
-      @socket.setHandler "message", @onmessage
-      @socket.setHandler "open", @onopen
-      @socket.setHandler "close", @onclose
+      @setHandler "message", @onmessage
+      @setHandler "open", @onopen
+      @setHandler "close", @onclose
 
     setHandler: (event, callback)->
+      @connect() if !@socket
       @socket.setHandler event, callback
 
     onmessage: (e)=>

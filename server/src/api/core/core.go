@@ -393,6 +393,12 @@ func (b *Core) GetNodes() (map[int64]*models.Node) {
 func (b *Core) SetDeviceState(id int64, state *models.DeviceState) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
+	if old_state, ok := b.deviceStates[id]; ok {
+		if old_state.Id == state.Id {
+			return
+		}
+	}
+
 	b.deviceStates[id] = state
 	BroadcastDeviceState(id, state)
 }

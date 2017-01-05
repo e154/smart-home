@@ -178,8 +178,9 @@ func streamDoAction(client *stream.Client, value interface{}) {
 			continue
 		}
 
-		body, _ := action.Do()
-		client.Notify("success", body)
+		action.Do()
+		//body, _ := action.Do()
+		//client.Notify("success", body)
 	}
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})

@@ -4,8 +4,8 @@
 
 angular
 .module('angular-map')
-.directive 'mapViewer', ['$compile', 'mapPanning', 'mapFullscreen'
-($compile, mapPanning, mapFullscreen) ->
+.directive 'mapViewer', ['$compile', 'mapPanning', 'mapFullscreen', 'Stream', '$timeout'
+($compile, mapPanning, mapFullscreen, Stream, $timeout) ->
   restrict: 'A'
   templateUrl: '/map-viewer/templates/map_viewer.html'
   scope:
@@ -14,6 +14,7 @@ angular
   link: ($scope, $element, $attrs) ->
 
     # set default options
+    # --------------------
     options = {}
     defaultOptions =
       zoom: true
@@ -30,6 +31,28 @@ angular
     panning = new mapPanning(container, $scope, wrapper)
     fullscreen = new mapFullscreen(wrapper, $scope)
 
+    $scope.devices = {}
+
+    # stream
+    # --------------------
+    $timeout ()->
+      Stream.sendRequest("get.devices.states", {}).then (data)->
+        return if !data.states
+        broadcastDeviceState(data.states)
+    , 1000
+
+    Stream.subscribe 'change_device_state', (data)->
+      state = {}
+      state[data.id] = data.state
+      broadcastDeviceState(state)
+
+    broadcastDeviceState =(states)->
+      angular.forEach states, (state, id)->
+        id = parseInt(id, 10) if typeof id == 'string'
+        $scope.$broadcast 'broadcast_device_state', {id: id, state: state}
+
+    # etc
+    # --------------------
     getOptions =->
       $scope.options = {} if !$scope.options
       options = $.extend true, defaultOptions, $scope.options
