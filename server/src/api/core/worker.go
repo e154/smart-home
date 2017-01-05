@@ -72,6 +72,7 @@ func (w *Worker) Do() {
 		res, err := action.Do()
 		if err != nil {
 			log.Error(err.Error())
+			return
 		}
 
 		message := &Message{

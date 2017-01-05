@@ -5,6 +5,8 @@
         %small.fa.fa-long-arrow-left
           &nbsp;
       {{'script.show_form' | translate}} №{{script.script.id}}
+      &nbsp;
+      ("{{script.script.name}}")
       .edit-icon-link
         %a(ui-sref="dashboard.script.edit({id:script.script.id})")
           %span.fa.fa-pencil
