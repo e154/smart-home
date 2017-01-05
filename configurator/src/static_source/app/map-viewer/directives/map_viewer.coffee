@@ -16,10 +16,8 @@ angular
     # set default options
     # --------------------
     options = {}
-    defaultOptions =
-      zoom: true
 
-    $scope.zoom = 0.4
+    $scope.zoom = 1.0
     $scope.settings =
       movable: true
       zoom: true
@@ -55,13 +53,16 @@ angular
     # --------------------
     getOptions =->
       $scope.options = {} if !$scope.options
-      options = $.extend true, defaultOptions, $scope.options
+      options = $.extend true, $scope.settings, $scope.options
 
     $scope.$watch 'options', (val, oldVal)->
       return if !val || val == oldVal
       getOptions()
 
     $scope.$watch 'map', (val, oldVal)->
+      return if !val
+      $scope.zoom = $scope.map.options?.zoom || 1.2
+      panning.setZoom($scope.zoom)
       return if !$scope.map.layers
       angular.forEach $scope.map.layers, (layer)->
         angular.forEach layer.elements, (element)->

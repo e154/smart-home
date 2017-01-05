@@ -17,6 +17,10 @@ angular
     update:
         method: 'PUT'
         responseType: 'json'
+        transformRequest: (data)->
+          data.options = angular.toJson(data.options)
+          result = angular.toJson(data);
+          result
 
     delete:
       method: 'DELETE'
@@ -33,5 +37,8 @@ angular
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
-        data?.map || data
+        map = data?.map || data
+        map.options = angular.fromJson(map.options || "{}") || {}
+        map.options.zoom ||= 1.2
+        map
 ]

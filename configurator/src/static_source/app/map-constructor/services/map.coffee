@@ -59,7 +59,7 @@ angular
           cb(data)
         error =(result)->
           Message result.data.status, result.data.message
-        MapResource.$delete {id: @id}, success, error
+        MapResource.delete {id: @id}, success, error
 
       fadeIn: ()->
         return if !@wrapper
@@ -73,6 +73,7 @@ angular
         id: @id
         name: @name
         description: @description
+        options: @options
 
       deserialize: (model)=>
         @id = model.id
@@ -80,13 +81,13 @@ angular
         @description = model.description
         @created_at = model.created_at
         @update_at = model.update_at
+        @options = model.options
         @layers = []
 
         if model?.layers && model.layers.length != 0
           angular.forEach model.layers, (layer)=>
             @layers.push new MapLayer(@scope).deserialize(layer)
 
-          #TODO remove
           @scope.current_layer = @layers[0]
 #          @scope.current_element = @layers[0].elements[0]
 #          @scope.current_element.selected = true if @scope.current_element

@@ -16,6 +16,7 @@ type Map struct {
 	Name        	string			`orm:"" json:"name" valid:"MaxSize(254);Required"`
 	Description 	string			`orm:"" json:"description"`
 	Layers		[]*MapLayer		`orm:"reverse(many)" json:"layers"`
+	Options		string			`orm:"" json:"options"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }

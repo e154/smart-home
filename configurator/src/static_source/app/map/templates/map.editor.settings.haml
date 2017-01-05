@@ -12,6 +12,12 @@
 
 .row
   .col-md-6
+    .form-group
+      %laber {{'map.zoom' | translate}}
+      %input.form-control(ng-model="map.options.zoom" type="number" step="0.1" min="1" max="4")
+
+.row
+  .col-md-6
     .pull-right
       %a.btn.btn-danger(href="" role="button" ng-click="remove()")
         {{'Delete' | translate}}

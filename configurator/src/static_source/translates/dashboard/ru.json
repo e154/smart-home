@@ -204,6 +204,7 @@
   "map": {
     "name": "Название",
     "show_form": "Карта",
+    "zoom": "Масштаб",
     "preview": "Просмотр",
     "current_layer": "Слой",
     "layers": "Слои",
