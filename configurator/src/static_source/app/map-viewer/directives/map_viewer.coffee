@@ -59,7 +59,7 @@ angular
       return if !val || val == oldVal
       getOptions()
 
-    $scope.$watch 'map', (val, oldVal)->
+    $scope.$watch 'map.layers', (val, oldVal)->
       return if !val
       $scope.zoom = $scope.map.options?.zoom || 1.2
       panning.setZoom($scope.zoom)
@@ -67,7 +67,6 @@ angular
       angular.forEach $scope.map.layers, (layer)->
         angular.forEach layer.elements, (element)->
           element.graph_settings = angular.fromJson(element.graph_settings)
-    , true
 
     #init
     getOptions()
