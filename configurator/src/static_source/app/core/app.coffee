@@ -37,6 +37,7 @@ app = angular.module('app', [
   'ng-sortable'
   'ngFileUpload'
   'ngDragDrop'
+  'gridster'
 ])
 
 app.version =

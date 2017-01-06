@@ -14,6 +14,7 @@ import (
 	"./cron"
 	"../api/log"
 	"../api/notifr"
+	"./telemetry"
 )
 
 func Initialize() {
@@ -84,4 +85,7 @@ func Initialize() {
 
 	// notifr
 	notifr.Initialize()
+
+	// telemetry
+	telemetry.Initialize()
 }
