@@ -4,29 +4,28 @@ package telemetry
 
 import (
 	linuxproc "github.com/c9s/goprocinfo/linux"
+	"../log"
 )
 
 func NewCpu() (cpu *Cpu) {
 
-	stat, err := linuxproc.ReadStat("/proc/stat")
+	cpuinfo, err := linuxproc.ReadCPUInfo("/proc/cpuinfo")
 	if err != nil {
-		return
+		log.Error("telemetry cpu:", err.Error())
 	}
 
 	cpu = &Cpu{
-		Total: len(stat.CPUStats),
+		Cpuinfo: cpuinfo,
 	}
 
 	return
 }
 
 type Cpu struct {
-	Name		string			`json:"name"`
-	Total          int			`json:"total"`
-	Usage          float64			`json:"usage"`
-
-	cpu_prev_total uint64
-	cpu_prev_idle  uint64
+	Cpuinfo		*linuxproc.CPUInfo	`json:"cpuinfo"`
+	Usage		float64			`json:"usage"`
+	cpu_prev_total	uint64
+	cpu_prev_idle	uint64
 }
 
 func (m *Cpu) Update() {

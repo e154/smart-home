@@ -5,13 +5,11 @@ import (
 	"../stream"
 	"../log"
 	"encoding/json"
-)
-
-const (
-	SLEEP  = 3
+	"github.com/astaxie/beego"
 )
 
 var (
+	telemetry_time	int
 	Hub		stream.Hub
 	Telemetry        *telemetry = nil
 )
@@ -21,6 +19,7 @@ type telemetry struct {
 	memory	*Memory
 	cpu	*Cpu
 	uptime	*Uptime
+	disk	*Disk
 }
 
 func (t *telemetry) Run()  {
@@ -35,7 +34,7 @@ func (t *telemetry) Run()  {
 
 		t.Update()
 
-		time.Sleep(time.Second * SLEEP)
+		time.Sleep(time.Second * time.Duration(telemetry_time))
 	}
 }
 
@@ -48,6 +47,7 @@ func (t *telemetry) Update() {
 	t.memory.Update()
 	t.cpu.Update()
 	t.uptime.Update()
+	t.disk.Update()
 
 	msg, _ := json.Marshal(
 		map[string]interface{}{"type": "broadcast",
@@ -56,6 +56,7 @@ func (t *telemetry) Update() {
 				"cpu": t.cpu,
 				"time": time.Now(),
 				"uptime": t.uptime,
+				"disk": t.disk,
 			}}},
 	)
 
@@ -69,10 +70,16 @@ func Initialize() {
 		return
 	}
 
+	var err error
+	if telemetry_time, err =  beego.AppConfig.Int("telemetry_time"); err != nil {
+		telemetry_time = 3
+	}
+
 	Telemetry = &telemetry{
 		cpu: NewCpu(),
 		memory:	&Memory{},
 		uptime: &Uptime{},
+		disk: NewDisk(),
 		quit: make(chan bool),
 	}
 
