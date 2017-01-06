@@ -32,7 +32,7 @@ func (t *telemetry) Run()  {
 
 		}
 
-		t.Update()
+		t.update()
 
 		time.Sleep(time.Second * time.Duration(telemetry_time))
 	}
@@ -42,25 +42,44 @@ func (t *telemetry) Stop() {
 	t.quit <- true
 }
 
-func (t *telemetry) Update() {
+func (t *telemetry) update() {
+
+	t.memory.Update()
+	t.cpu.Update()
+	t.uptime.Update()
+
+	msg, _ := json.Marshal(
+		map[string]interface{}{"type": "broadcast",
+			"value": map[string]interface{}{"type": "telemetry", "body": map[string]interface{}{
+				"memory": t.memory,
+				"cpu": map[string]interface{}{"usage":t.cpu.Usage},
+				"time": time.Now(),
+				"uptime": t.uptime,
+			}}},
+	)
+
+	Hub.Broadcast(string(msg))
+}
+
+func (t *telemetry) GetStates() (msg []byte, err error) {
 
 	t.memory.Update()
 	t.cpu.Update()
 	t.uptime.Update()
 	t.disk.Update()
 
-	msg, _ := json.Marshal(
+	msg, err = json.Marshal(
 		map[string]interface{}{"type": "broadcast",
 			"value": map[string]interface{}{"type": "telemetry", "body": map[string]interface{}{
 				"memory": t.memory,
-				"cpu": t.cpu,
+				"cpu": map[string]interface{}{"usage":t.cpu.Usage},
 				"time": time.Now(),
 				"uptime": t.uptime,
 				"disk": t.disk,
 			}}},
 	)
 
-	Hub.Broadcast(string(msg))
+	return
 }
 
 func Initialize() {
