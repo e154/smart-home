@@ -1,0 +1,30 @@
+.widget-header
+  %i.fa.fa-dot-circle-o.status-icon
+  .title
+    %strong(translate="widget.name.{{widget.name}}")
+  .widget-header-btns
+    %a(title="settings" ng-click="openSettings()" href="#" )
+      %i.fa.fa-cog
+    %a(title="remove widget" ng-click="removeWidget()" href="#" )
+      %i.fa.fa-trash
+  .clearfix
+
+  .widget-container
+
+    .widget-content
+      .counter {{usage}}%
+      {{total_cpu}}
+      {{cpu_name}}
+  %ul.widget-footer
+    %li
+      .label {{'widget.cpu.mhz' | translate}}
+      .counter {{mhz}}
+    %li
+      .label {{'widget.cpu.cores' | translate}}
+      .counter {{cores}}
+    %li
+      .label {{'widget.cpu.max' | translate}}
+      .counter {{max}}%
+
+
+

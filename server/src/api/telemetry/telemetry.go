@@ -61,23 +61,20 @@ func (t *telemetry) update() {
 	Hub.Broadcast(string(msg))
 }
 
-func (t *telemetry) GetStates() (msg []byte, err error) {
+func (t *telemetry) GetStates() (msg map[string]interface{}, err error) {
 
 	t.memory.Update()
 	t.cpu.Update()
 	t.uptime.Update()
 	t.disk.Update()
 
-	msg, err = json.Marshal(
-		map[string]interface{}{"type": "broadcast",
-			"value": map[string]interface{}{"type": "telemetry", "body": map[string]interface{}{
-				"memory": t.memory,
-				"cpu": map[string]interface{}{"usage":t.cpu.Usage},
-				"time": time.Now(),
-				"uptime": t.uptime,
-				"disk": t.disk,
-			}}},
-	)
+	msg =  map[string]interface{}{
+			"memory": t.memory,
+			"cpu": map[string]interface{}{"usage":t.cpu.Usage, "info": t.cpu.Cpuinfo},
+			"time": time.Now(),
+			"uptime": t.uptime,
+			"disk": t.disk,
+	}
 
 	return
 }

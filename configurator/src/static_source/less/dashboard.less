@@ -1,0 +1,114 @@
+body.dashboard {
+  .main-body, .main-body-wrapper {
+    background-color: #131416 !important;
+  }
+
+  .uptime {
+    color: #f1f1ec;
+  }
+
+  .widget-box {
+    background-color: #1d2023;
+
+    .widget-header {
+      padding: 7px;
+      clear: both;
+
+      .status-icon {
+        color: #51ce85;
+        padding: 3px;
+        float: left;
+      }
+      .title {
+        color: #f1f1ec;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 50%;
+        float: left;
+        padding-left: 5px;
+      }
+      .widget-header-btns {
+        float: right;
+        a {
+          color: #51ce85;
+          padding-right: 7px;
+          &:last-child {
+            padding-right: 0;
+          }
+        }
+      }
+    }
+    .widget-container {
+      .widget-content {
+        position: absolute;
+        top: 33px;
+        bottom: 50px;
+        left: 0;
+        right: 0;
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .counter {
+          text-align: center;
+          color: #51ce85;
+          font-size: 3.5vw;
+          font-weight: 600;
+          &.danger {
+            color: #d48714;
+          }
+        }
+      }
+    }//widget-container
+    ul.widget-footer {
+      position: absolute;
+      height: 50px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0;
+      margin: 0;
+
+
+      li {
+        text-align: center;
+        list-style: none;
+        border-left: dashed gray 1px;
+        width: 33%;
+        height: 100%;
+        display: inline-block;
+
+        &:first-child {
+          border-left: none;
+        }
+      }
+      .label {
+        color: #4d4e50;
+        font-size: 0.6vw;
+      }
+      .counter {
+        color: #f1f1ec;
+        text-align: center;
+        font-size: 1.2vw;
+        font-weight: 600;
+        margin: 3px 0;
+        &.danger {
+          color: #ffb84f;
+        }
+      }
+    }//widget-footer
+
+    .gridster-item-resizable-handler {
+      &.handle-e {
+        width: 6px;
+        right: -2px;
+      }
+    }
+  }//widget-box
+}

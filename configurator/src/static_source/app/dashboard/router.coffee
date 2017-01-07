@@ -17,6 +17,11 @@ angular
     .state(
       name: "dashboard.index"
       url: ""
+      controller: 'dashboardIndexCtrl'
       templateUrl: '/dashboard/templates/dashboard.index.html'
+      onExit: ()->
+        angular.element(document).find('body').removeClass('dashboard')
+
+
     )
 ]

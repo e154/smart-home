@@ -1,0 +1,30 @@
+.widget-header
+  %i.fa.fa-dot-circle-o.status-icon
+  .title
+    %strong(translate="widget.name.{{widget.name}}")
+  .widget-header-btns
+    %a(title="settings" ng-click="openSettings(widget)" href="#" )
+      %i.fa.fa-cog
+    %a(title="remove widget" ng-click="removeWidget(widget)" href="#" )
+      %i.fa.fa-trash
+  .clearfix
+
+  .widget-container
+
+    .widget-content
+      .counter(ng-class="{'danger' : percent >= 80}")
+        {{usage | readableBytes}}
+
+  %ul.widget-footer
+    %li
+      .label {{'widget.memory.total' | translate}}
+      .counter {{mem_total | readableBytes}}
+    %li
+      .label {{'widget.memory.free' | translate}}
+      .counter {{mem_free | readableBytes}}
+    %li
+      .label {{'widget.memory.percent' | translate}}
+      .counter {{percent}}%
+
+
+

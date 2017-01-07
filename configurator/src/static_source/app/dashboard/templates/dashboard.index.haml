@@ -1,1 +1,11 @@
-index
+.row
+  .col-lg-12
+    %h3.uptime.text-center
+      {{total_uptime | uptime}}
+
+.row
+  .col-lg-12
+    .widgets-grid(gridster="gridsterOptions")
+      %ul
+        %li.widget-box(gridster-item="widget" ng-repeat="widget in dashboard.widgets")
+          %div(dashboard-widget="widget")

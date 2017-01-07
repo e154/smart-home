@@ -5,12 +5,12 @@ import (
 )
 
 // TelementryController operations for Telementry
-type TelementryController struct {
+type TelemetryController struct {
 	CommonController
 }
 
 // URLMapping ...
-func (c *TelementryController) URLMapping() {
+func (c *TelemetryController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
@@ -25,7 +25,7 @@ func (c *TelementryController) URLMapping() {
 // @Success 201 {object} models.Telementry
 // @Failure 403 body is empty
 // @router / [post]
-func (c *TelementryController) Post() {
+func (c *TelemetryController) Post() {
 
 }
 
@@ -36,7 +36,7 @@ func (c *TelementryController) Post() {
 // @Success 200 {object} models.Telementry
 // @Failure 403 :id is empty
 // @router /:id [get]
-func (c *TelementryController) GetOne() {
+func (c *TelemetryController) GetOne() {
 
 	msg, err := telemetry.Telemetry.GetStates()
 	if err != nil {
@@ -60,7 +60,7 @@ func (c *TelementryController) GetOne() {
 // @Success 200 {object} models.Telementry
 // @Failure 403
 // @router / [get]
-func (c *TelementryController) GetAll() {
+func (c *TelemetryController) GetAll() {
 
 }
 
@@ -72,7 +72,7 @@ func (c *TelementryController) GetAll() {
 // @Success 200 {object} models.Telementry
 // @Failure 403 :id is not int
 // @router /:id [put]
-func (c *TelementryController) Put() {
+func (c *TelemetryController) Put() {
 
 }
 
@@ -83,6 +83,6 @@ func (c *TelementryController) Put() {
 // @Success 200 {string} delete success!
 // @Failure 403 id is empty
 // @router /:id [delete]
-func (c *TelementryController) Delete() {
+func (c *TelemetryController) Delete() {
 
 }

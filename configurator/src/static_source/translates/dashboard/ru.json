@@ -262,5 +262,34 @@
         }
       }
     }
+  },
+  "widget": {
+    "name": {
+      "swap": "swap",
+      "memory": "Оперативная память",
+      "cpu": "Процессор",
+      "uptime": "uptime"
+    },
+    "memory": {
+      "total": "Всего",
+      "free": "Свободно",
+      "percent": "В прцентах"
+    },
+    "cpu": {
+      "mhz": "mhz",
+      "cores": "Ядра",
+      "max": "Максимальная"
+    },
+    "uptime": {
+      "total": "Всего",
+      "idle": "Простой"
+    }
+  },
+  "uptime": {
+    "days": "дней",
+    "hours": "часов",
+    "minutes": "минут",
+    "seconds": "секунд",
+    "online_for": "в сети"
   }
 }
