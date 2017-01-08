@@ -6,7 +6,7 @@ angular
   replace: true
   scope:
     widget: '=dashboardWidgetCpu'
-  templateUrl: '/dashboard/templates/_widget_cpu_dig.html'
+  templateUrl: '/core/templates/_widget_cpu_dig.html'
   link: ($scope, $element, $attrs) ->
 
     $scope.processors = {}

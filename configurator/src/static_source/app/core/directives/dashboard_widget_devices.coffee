@@ -1,12 +1,12 @@
 angular
 .module('appDirectives')
-.directive 'dashboardWidgetNodes', ['$compile', '$templateCache'
+.directive 'dashboardWidgetDevices', ['$compile', '$templateCache'
 ($compile, $templateCache) ->
   restrict: 'A'
   replace: true
   scope:
-    widget: '=dashboardWidgetNodes'
-  templateUrl: '/dashboard/templates/_widget_nodes.html'
+    widget: '=dashboardWidgetDevices'
+  templateUrl: '/core/templates/_widget_devices.html'
   link: ($scope, $element, $attrs) ->
 
     $scope.total = 0
@@ -15,19 +15,22 @@ angular
     $scope.error = 0
 
     $scope.$on 'telemetry_update', (e, data)->
-      return if !data.nodes?.status
+      return if !data.devices
       $scope.online = 0
       $scope.disabled = 0
       $scope.error = 0
-      $scope.total = data.nodes.total if data.nodes.total
-      angular.forEach data.nodes.status, (status, node)->
-        switch status
-          when 'connected'
+      $scope.total = data.devices.total if data.devices.total
+      angular.forEach data.devices.status, (status, device)->
+        switch status.system_name
+          when 'ENABLED'
             $scope.online++
-          when 'error'
+          when 'DISABLED'
+            break
+          when 'ERROR'
             $scope.error++
 
-      $scope.disabled = $scope.total - ($scope.online + $scope.error)
+        $scope.disabled = $scope.total - ($scope.online + $scope.error)
+
 
     $scope.openSettings =()->
       console.log 'open settings', widget
