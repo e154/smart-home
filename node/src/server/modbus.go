@@ -63,7 +63,7 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 			cache_exist := cache_ptr.IsExist(cache_key)
 			if cache_exist {
 				conn.Dev = cache_ptr.Get(cache_key).(string)
-				result.Result, err, result.ErrorCode = m.exec(conn, request.Command)
+				result.Result, err, result.ErrorCode = m.exec(conn, request)
 				if err == nil {
 					result.Device = conn.Dev
 					return nil
@@ -74,7 +74,7 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 				devices := serial.FindSerials()
 				for _, device := range devices {
 					conn.Dev = device
-					result.Result, err, result.ErrorCode = m.exec(conn, request.Command)
+					result.Result, err, result.ErrorCode = m.exec(conn, request)
 					if err == nil {
 						result.Device = device
 						return nil
@@ -85,7 +85,7 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 		//}
 	} else {
 		for i := 0; i<5; i++ {
-			result.Result, err, result.ErrorCode = m.exec(conn, request.Command)
+			result.Result, err, result.ErrorCode = m.exec(conn, request)
 			if err == nil {
 				result.Device = conn.Dev
 				return nil
@@ -100,11 +100,11 @@ func (m *Modbus) Send(request *rpc.Request, result *rpc.Result) error {
 	return nil
 }
 
-func (m *Modbus) exec(conn *serial.Serial, command []byte) (result string, err error, errcode string) {
+func (m *Modbus) exec(conn *serial.Serial, request *rpc.Request) (result string, err error, errcode string) {
 
 	// get cache
 	cache_ptr := cache.CachePtr()
-	cache_key := cache_ptr.GetKey(fmt.Sprintf("%d_dev", command[ADDRESS]))
+	cache_key := cache_ptr.GetKey(fmt.Sprintf("%d_dev", request.Command[ADDRESS]))
 
 	if _, err = conn.Open(); err != nil {
 		//cache_ptr.Delete(cache_key)
@@ -116,7 +116,7 @@ func (m *Modbus) exec(conn *serial.Serial, command []byte) (result string, err e
 
 	modbus := &serial.Modbus{Serial: conn}
 	var b []byte
-	if b, err = modbus.Send(command); err != nil {
+	if b, err = modbus.Send(request.Command); err != nil {
 		//cache_ptr.Delete(cache_key)
 		errcode = "MODBUS_LINE_ERROR"
 		//log.Printf("error: %s - %s\r\n",conn.Dev, err.Error())
@@ -127,7 +127,9 @@ func (m *Modbus) exec(conn *serial.Serial, command []byte) (result string, err e
 	cache_ptr.Put("node", cache_key, conn.Dev)
 
 	// bug in the devices need timeout, need fix!!!
-	time.Sleep(time.Millisecond * 100)
+	if request.Sleep != 0 {
+		time.Sleep(time.Millisecond * time.Duration(request.Sleep))
+	}
 
 	return
 }

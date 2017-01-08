@@ -35,6 +35,10 @@
                 %input.form-control(ng-model="device.device.timeout" type="number" )
 
             .form-group
+                %laber {{'device.sleep' | translate}}
+                %input.form-control(ng-model="device.device.sleep" type="number" )
+
+            .form-group
                 %laber {{'device.stop_bite' | translate}}
                 %select.form-control(ng-model="device.device.stop_bite")
                     %option(value=0)
@@ -75,6 +79,7 @@
         .form-group(ng-if="device.device.device.timeout")
             %laber {{'device.timeout' | translate}}
             %div {{device.device.device.timeout}}
+
         .form-group(ng-if="device.device.device.sleep")
             %laber {{'device.sleep' | translate}}
             %div {{device.device.device.sleep}}

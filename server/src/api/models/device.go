@@ -17,7 +17,7 @@ type Device struct {
 	Node		*Node		`orm:"rel(fk);null" json:"node"`
 	Address   	*int  		`orm:"" json:"address"`
 	Baud		int		`orm:"size(11)" json:"baud"`
-	Sleep		int		`orm:"size(32)" json:"sleep"`
+	Sleep		int64		`orm:"size(32)" json:"sleep"`
 	Description 	string 		`orm:"size(254)" json:"description" valid:"MaxSize(254)"`
 	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
 	Status	 	string 		`orm:"size(254)" json:"status" valid:"MaxSize(254)"`

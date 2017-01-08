@@ -247,6 +247,7 @@ func (f *Flow) AddWorker(model *models.Worker) (err error) {
 			*device.Address = *child.Address
 			device.Device = &models.Device{Id:model.DeviceAction.Device.Id}
 			device.Tty = child.Tty
+			device.Sleep = model.DeviceAction.Device.Sleep
 			devices = append(devices, device)
 		}
 	}

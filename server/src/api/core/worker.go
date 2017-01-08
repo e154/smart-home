@@ -60,6 +60,13 @@ func (w *Worker) AddAction(action *Action) {
 	w.actions[action.Device.Id] = action
 }
 
+func (w *Worker) RemoveActions() {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
+	w.actions = nil
+}
+
 func (w *Worker) RegTask() {
 	w.CronTask = cron.NewTask(w.Model.Time, func() {
 		w.Do()

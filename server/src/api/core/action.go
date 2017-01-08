@@ -121,6 +121,7 @@ func streamDoAction(client *stream.Client, value interface{}) {
 			*device.Address = *child.Address
 			device.Device = &models.Device{Id:int64(device_id)}
 			device.Tty = child.Tty
+			device.Sleep = device_action.Device.Sleep
 			devices = append(devices, device)
 		}
 	}

@@ -103,27 +103,45 @@ func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
 
 func (b *Core) UpdateFlowFromDevice(device *models.Device) (err error) {
 
+	var flows map[int64]*models.Flow
+	flows = make(map[int64]*models.Flow)
+	childs, _, _ := device.GetChilds()
+
 	for _, workflow := range b.workflows {
 		for _, flow := range workflow.Flows {
 			for _, worker := range flow.Workers {
 				for _, action := range worker.actions {
-					if action.Device.Id == device.Id {
-						workflow.UpdateFlow(flow.Model)
+					//if action.Device.Id == device.Id {
+					//	workflow.UpdateFlow(flow.Model)
+					//	continue
+					//}
+
+					if action.Device != nil && action.Device.Id == device.Id {
+						//workflow.UpdateFlow(flow.Model)
+						flows[flow.Model.Id] = flow.Model
 						continue
 					}
 
-					if action.Device != nil && action.Device.Id == device.Id {
-						workflow.UpdateFlow(flow.Model)
-						continue
+					for _, child := range childs {
+						if action.Device != nil && action.Device.Id == child.Id {
+							flows[flow.Model.Id] = flow.Model
+						}
 					}
 				}
 
 				if device.Device != nil && worker.Model.DeviceAction.Device.Id == device.Device.Id {
-					workflow.UpdateFlow(flow.Model)
+					//workflow.UpdateFlow(flow.Model)
+					flows[flow.Model.Id] = flow.Model
 					continue
 				}
 			}
 		}
+
+		for _, flow := range flows {
+			workflow.UpdateFlow(flow)
+		}
+
+		flows = make(map[int64]*models.Flow)
 	}
 
 	return

@@ -157,6 +157,11 @@ func (c *DeviceActionController) Delete() {
 			c.ErrHan(403, err.Error())
 			return
 		}
+
+		if err = models.DeleteWorker(worker.Id); err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
 	}
 
 	if err := models.DeleteDeviceAction(int64(id)); err != nil {
