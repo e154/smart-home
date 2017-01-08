@@ -39,9 +39,10 @@ angular
         broadcastDeviceState(data.states)
     , 1000
 
-    Stream.subscribe 'change_device_state', (data)->
+    Stream.subscribe 'telemetry', (data)->
+      return if !data.device
       state = {}
-      state[data.id] = data.state
+      state[data.device.id] = data.device.state
       broadcastDeviceState(state)
 
     broadcastDeviceState =(states)->

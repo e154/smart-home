@@ -8,4 +8,8 @@
     .widgets-grid(gridster="gridsterOptions")
       %ul
         %li.widget-box(gridster-item="widget" ng-repeat="widget in dashboard.widgets")
-          %div(dashboard-widget="widget")
+          %div(dashboard-widget-memory="widget" ng-if="widget.type == 'memory'")
+          %div(dashboard-widget-swap="widget" ng-if="widget.type == 'swap'")
+          %div(dashboard-widget-cpu="widget" ng-if="widget.type == 'cpu_dig'")
+          %div(dashboard-widget-nodes="widget" ng-if="widget.type == 'nodes'")
+          %div(dashboard-widget-devices="widget" ng-if="widget.type == 'devices'")

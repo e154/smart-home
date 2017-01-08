@@ -5,6 +5,9 @@ import (
 	cr "github.com/e154/cron"
 	"sync"
 	"../log"
+	"reflect"
+	"encoding/json"
+	"../stream"
 )
 
 func NewWorker(model *models.Worker, flow *Flow) (worker *Worker) {
@@ -90,4 +93,36 @@ func (w *Worker) Do() {
 			log.Error(err.Error())
 		}
 	}
+}
+
+// ------------------------------------------------
+// stream
+// ------------------------------------------------
+func streamDoWorker(client *stream.Client, value interface{}) {
+	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
+	if !ok {
+		return
+	}
+
+	var worker_id float64
+	var err error
+
+	if worker_id, ok = v["worker_id"].(float64); !ok {
+		log.Warn("bad id param")
+		return
+	}
+
+	var worker *models.Worker
+	if worker, err = models.GetWorkerById(int64(worker_id)); err != nil {
+		client.Notify("error", err.Error())
+		return
+	}
+
+	if err = corePtr.DoWorker(worker); err != nil {
+		client.Notify("error", err.Error())
+		return
+	}
+
+	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
+	client.Send(string(msg))
 }

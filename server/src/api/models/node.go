@@ -199,6 +199,12 @@ func (n *Node) Valid(v *validation.Validation)  {
 	return
 }
 
+func GetNodesCount() (total int64, err error) {
+	o := orm.NewOrm()
+	total, err = o.QueryTable(&Node{}).Count()
+	return
+}
+
 func GetAllEnabledNodes() (nodes []*Node, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(&Node{}).Filter("status", "enabled").All(&nodes)
@@ -259,11 +265,6 @@ func (n *Node) ModbusSend(args interface{}, reply interface{}) error {
 	}
 
 	return nil
-}
-
-//TODO remove
-func (n *Node) IsConnected() bool {
-	return n.netConn != nil
 }
 
 func (n *Node) GetConn() net.Conn {

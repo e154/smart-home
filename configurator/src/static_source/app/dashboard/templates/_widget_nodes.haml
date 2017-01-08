@@ -10,20 +10,17 @@
   .clearfix
 
   .widget-container
-
-    .widget-content(ng-class="{'danger' : usage >= 80}")
-      .counter {{usage}}%
+    .widget-content
+      .counter {{online}}
 
   %ul.widget-footer
     %li
-      .label {{'widget.cpu.cores' | translate}}
-      .counter x{{cores}}
+      .label {{'widget.nodes.total' | translate}}
+      .counter {{total}}
     %li
-      .label {{'widget.cpu.mhz' | translate}}
-      .counter {{mhz}}
+      .label {{'widget.nodes.disabled' | translate}}
+      .counter {{disabled}}
     %li
-      .label {{'widget.cpu.max' | translate}}
-      .counter {{max}}%
-
-
-
+      .label {{'widget.nodes.error' | translate}}
+      .counter(ng-class="{'danger' : error > 0}" )
+        {{error}}

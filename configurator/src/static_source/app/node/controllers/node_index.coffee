@@ -57,7 +57,7 @@ angular
     onLoad: (result)->
       $timeout ()->
         $scope.getStatus().then (result)->
-          $scope.nodes = result.nodes
+          $scope.nodes = result.nodes.status
       , 500
 
   vm

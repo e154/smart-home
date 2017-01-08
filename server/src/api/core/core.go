@@ -25,6 +25,7 @@ type Core struct {
 	workflows  	map[int64]*Workflow
 	mu		sync.Mutex
 	deviceStates	map[int64]*models.DeviceState
+	telemetry	Telemetry
 }
 
 func (b *Core) Run() (err error) {
@@ -309,6 +310,8 @@ func (b *Core) AddNode(node *models.Node) (err error) {
 		}
 	}(b.nodes_chan[node.Id])
 
+	b.telemetry.Broadcast("nodes")
+
 	return
 }
 
@@ -327,8 +330,9 @@ func (b *Core) RemoveNode(node *models.Node) (err error) {
 		delete(b.nodes, node.Id)
 	}
 
-	BroadcastNodesStatus()
+	delete(b.nodes, node.Id)
 
+	b.telemetry.Broadcast("nodes")
 
 	return
 }
@@ -352,7 +356,7 @@ func (b *Core) ReloadNode(node *models.Node) (err error) {
 		b.nodes_chan[node.Id] <- "connect"
 	}
 
-	BroadcastNodesStatus()
+	b.telemetry.Broadcast("nodes")
 
 	return
 }
@@ -365,7 +369,7 @@ func (b *Core) ConnectNode(node *models.Node) (err error) {
 		b.nodes_chan[node.Id] <- "connect"
 	}
 
-	BroadcastNodesStatus()
+	b.telemetry.Broadcast("nodes")
 
 	return
 }
@@ -378,7 +382,7 @@ func (b *Core) DisconnectNode(node *models.Node) (err error) {
 		b.nodes_chan[node.Id] <- "disconnect"
 	}
 
-	BroadcastNodesStatus()
+	b.telemetry.Broadcast("nodes")
 
 	return
 }
@@ -392,15 +396,18 @@ func (b *Core) GetNodes() (map[int64]*models.Node) {
 // ------------------------------------------------
 func (b *Core) SetDeviceState(id int64, state *models.DeviceState) {
 	b.mu.Lock()
-	defer b.mu.Unlock()
+
 	if old_state, ok := b.deviceStates[id]; ok {
 		if old_state.Id == state.Id {
+			b.mu.Unlock()
 			return
 		}
 	}
 
 	b.deviceStates[id] = state
-	BroadcastDeviceState(id, state)
+	b.mu.Unlock()
+
+	b.telemetry.BroadcastOne("devices", id)
 }
 
 func (b *Core) GetDevicesStates() map[int64]*models.DeviceState {
@@ -438,7 +445,7 @@ func (b *Core) UpdateScript(script *models.Script) (err error) {
 	return
 }
 
-func Initialize() (err error) {
+func Initialize(telemetry Telemetry) (err error) {
 	log.Info("Core initialize...")
 
 	if cron == nil {
@@ -451,18 +458,15 @@ func Initialize() (err error) {
 		nodes_chan: make(map[int64]chan string),
 		workflows: make(map[int64]*Workflow),
 		deviceStates: make(map[int64]*models.DeviceState),
+		telemetry: telemetry,
 	}
 	if err = corePtr.Run(); err != nil {
 		return
 	}
 
 	Hub = stream.GetHub()
-	Hub.Subscribe("get.nodes.status", streamNodesStatus)
-	Hub.Subscribe("get.workflow.status", streamWorkflowsStatus)
-	Hub.Subscribe("get.flows.status", streamWorkflowsStatus)
 	Hub.Subscribe("do.worker", streamDoWorker)
 	Hub.Subscribe("do.action", streamDoAction)
-	Hub.Subscribe("get.devices.states", streamGetDevicesStates)
 
 	return
 }

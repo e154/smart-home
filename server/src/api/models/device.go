@@ -223,3 +223,9 @@ func (m *Device) GetInheritedData() (err error) {
 	}
 	return
 }
+
+func GetDevicesCount() (total int64, err error) {
+	o := orm.NewOrm()
+	total, err = o.QueryTable(&Device{}).Count()
+	return
+}

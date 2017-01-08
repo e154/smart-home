@@ -268,6 +268,8 @@
       "swap": "swap",
       "memory": "Оперативная память",
       "cpu": "Процессор",
+      "nodes": "Ноды",
+      "devices": "Устройства",
       "uptime": "uptime"
     },
     "memory": {
@@ -283,7 +285,20 @@
     "uptime": {
       "total": "Всего",
       "idle": "Простой"
+    },
+    "nodes": {
+      "total": "Всего",
+      "error": "Ошибка",
+      "online": "В сети",
+      "disabled": "Отключены"
+    },
+    "devices": {
+      "total": "Всего",
+      "error": "Ошибка",
+      "online": "В сети",
+      "disabled": "Отключены"
     }
+
   },
   "uptime": {
     "days": "дней",

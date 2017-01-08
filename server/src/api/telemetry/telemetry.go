@@ -2,10 +2,11 @@ package telemetry
 
 import (
 	"time"
+	"github.com/astaxie/beego"
+	"encoding/json"
 	"../stream"
 	"../log"
-	"encoding/json"
-	"github.com/astaxie/beego"
+	"reflect"
 )
 
 var (
@@ -15,11 +16,13 @@ var (
 )
 
 type telemetry struct {
-	quit chan bool
-	memory	*Memory
-	cpu	*Cpu
-	uptime	*Uptime
-	disk	*Disk
+	quit    chan bool
+	Memory  *Memory
+	Cpu     *Cpu
+	Uptime  *Uptime
+	Disk    *Disk
+	Nodes   *Nodes
+	Devices *Devices
 }
 
 func (t *telemetry) Run()  {
@@ -32,7 +35,7 @@ func (t *telemetry) Run()  {
 
 		}
 
-		t.update()
+		t.broadcastAll()
 
 		time.Sleep(time.Second * time.Duration(telemetry_time))
 	}
@@ -42,48 +45,84 @@ func (t *telemetry) Stop() {
 	t.quit <- true
 }
 
-func (t *telemetry) update() {
+func (t *telemetry) BroadcastOne(pack string, id int64) {
+	switch pack {
 
-	t.memory.Update()
-	t.cpu.Update()
-	t.uptime.Update()
+	case "devices":
+		go t.Devices.BroadcastOne(id)
+	}
+}
+
+func (t *telemetry) Broadcast(pack string) {
+	switch pack {
+	case "nodes":
+		go t.Nodes.Broadcast()
+	case "devices":
+		go t.Devices.Broadcast()
+	}
+}
+
+// every time send:
+// memory, swap, cpu, uptime
+//
+func (t *telemetry) broadcastAll() {
+
+	t.Memory.Update()
+	t.Cpu.Update()
+	t.Uptime.Update()
 
 	msg, _ := json.Marshal(
 		map[string]interface{}{"type": "broadcast",
 			"value": map[string]interface{}{"type": "telemetry", "body": map[string]interface{}{
-				"memory": t.memory,
-				"cpu": map[string]interface{}{"usage":t.cpu.Usage},
+				"memory": t.Memory,
+				"cpu": map[string]interface{}{"usage":t.Cpu.Usage, "all": t.Cpu.All},
 				"time": time.Now(),
-				"uptime": t.uptime,
+				"uptime": t.Uptime,
 			}}},
 	)
 
 	Hub.Broadcast(string(msg))
 }
 
-func (t *telemetry) GetStates() (msg map[string]interface{}, err error) {
+func (t *telemetry) GetStates() *telemetry {
 
-	t.memory.Update()
-	t.cpu.Update()
-	t.uptime.Update()
-	t.disk.Update()
+	t.Memory.Update()
+	t.Cpu.Update()
+	t.Uptime.Update()
+	t.Disk.Update()
+	t.Nodes.Update()
+	t.Devices.Update()
 
-	msg =  map[string]interface{}{
-			"memory": t.memory,
-			"cpu": map[string]interface{}{"usage":t.cpu.Usage, "info": t.cpu.Cpuinfo},
-			"time": time.Now(),
-			"uptime": t.uptime,
-			"disk": t.disk,
-	}
-
-	return
+	return t
 }
 
-func Initialize() {
+// only on request: 'get.telemetry'
+//
+func streamTelemetry(client *stream.Client, value interface{}) {
+	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
+	if !ok {
+		return
+	}
+
+	t := Telemetry.GetStates()
+	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "telemetry":
+	map[string]interface{}{
+		"memory": t.Memory,
+		"cpu": map[string]interface{}{"usage":t.Cpu.Usage, "info": t.Cpu.Cpuinfo, "all": t.Cpu.All},
+		"time": time.Now(),
+		"uptime": t.Uptime,
+		"disk": t.Disk,
+		"nodes": t.Nodes,
+		"devices": t.Devices,
+	}})
+	client.Send(string(msg))
+}
+
+func Initialize() *telemetry {
 	log.Info("Telemetry initialize...")
 
 	if Telemetry != nil {
-		return
+		return Telemetry
 	}
 
 	var err error
@@ -92,14 +131,22 @@ func Initialize() {
 	}
 
 	Telemetry = &telemetry{
-		cpu: NewCpu(),
-		memory:	&Memory{},
-		uptime: &Uptime{},
-		disk: NewDisk(),
+		Cpu: NewCpu(),
+		Memory:	&Memory{},
+		Uptime: &Uptime{},
+		Disk: NewDisk(),
+		Nodes: NewNode(),
+		Devices: &Devices{},
 		quit: make(chan bool),
 	}
 
 	Hub = stream.GetHub()
+	Hub.Subscribe("get.nodes.status", streamNodesStatus)
+	Hub.Subscribe("get.flows.status", streamFlowsStatus)
+	Hub.Subscribe("get.devices.states", streamGetDevicesStates)
+	Hub.Subscribe("get.telemetry", streamTelemetry)
 
 	go Telemetry.Run()
+
+	return Telemetry
 }

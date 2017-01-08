@@ -17,7 +17,7 @@ import (
 	"./telemetry"
 )
 
-func Initialize() {
+func configuration() {
 
 	// site base
 	db_user := beego.AppConfig.String("db_user")
@@ -30,8 +30,6 @@ func Initialize() {
 	orm.RegisterDataBase("default", "mysql", db, 30, 30)
 	// Timezone http://beego.me/docs/mvc/model/orm.md#timezone-config
 	orm.DefaultTimeLoc, _ = time.LoadLocation("Asia/Novosibirsk")
-
-	routers.Initialize()
 
 	log.Info("AppPath:", beego.AppPath)
 	if(beego.BConfig.RunMode == "dev") {
@@ -48,9 +46,6 @@ func Initialize() {
 		log.Info("Product mode enabled")
 		//beego.SetStaticPath("/admin/static", "www/admin")
 	}
-
-	// register access filters
-	filters.RegisterFilters()
 
 	validation.SetDefaultMessage(map[string]string{
 		"Required":     "Должно быть заполнено",
@@ -74,18 +69,34 @@ func Initialize() {
 		"Phone":        "Должно быть правильным номером телефона или мобильного телефона",
 		"ZipCode":      "Должно быть правильным почтовым индексом",
 	})
+}
+
+func Initialize() {
+
+	configuration()
+
+	// routes
+	routers.Initialize()
+
+	// register access filters
+	filters.RegisterFilters()
 
 	// cron
 	cron.Initialize()
-
-	// core
-	if err := core.Initialize(); err != nil {
-		log.Error(err.Error())
-	}
 
 	// notifr
 	notifr.Initialize()
 
 	// telemetry
-	telemetry.Initialize()
+	t := telemetry.Initialize()
+
+	// core
+	if err := core.Initialize(t); err != nil {
+		log.Error(err.Error())
+	}
+
+	log.Info("Starting....")
+
+	// beego
+	go beego.Run()
 }
