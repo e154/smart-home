@@ -10,10 +10,11 @@
           %span.fa.fa-pencil
 
     .pull-right.date-info-block
-      %small
-        {{'Created at' | translate}} {{node.node.created_at | readableDateTime}}
-      %small
-        {{'Updated at' | translate}} {{node.node.update_at | readableDateTime}}
+      .form-group
+        %small
+          {{'Created at' | translate}} {{node.node.created_at | readableDateTime}}
+        %small
+          {{'Updated at' | translate}} {{node.node.update_at | readableDateTime}}
 
 .row
   .col-md-12

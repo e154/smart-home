@@ -10,10 +10,11 @@
           %span.fa.fa-pencil
 
     .pull-right.date-info-block
-      %small
-        {{'Created at' | translate}} {{workflow.workflow.created_at | readableDateTime}}
-      %small
-        {{'Updated at' | translate}} {{workflow.workflow.update_at | readableDateTime}}
+      .form-group
+        %small
+          {{'Created at' | translate}} {{workflow.workflow.created_at | readableDateTime}}
+        %small
+          {{'Updated at' | translate}} {{workflow.workflow.update_at | readableDateTime}}
 
 .row
   .col-md-12

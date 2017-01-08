@@ -2,10 +2,11 @@
   .col-md-12
 
     .pull-right.date-info-block
-      %small
-        {{'Created at' | translate}} {{script.script.created_at | readableDateTime}}
-      %small
-        {{'Updated at' | translate}} {{script.script.update_at | readableDateTime}}
+      .form-group
+        %small
+          {{'Created at' | translate}} {{script.script.created_at | readableDateTime}}
+        %small
+          {{'Updated at' | translate}} {{script.script.update_at | readableDateTime}}
 
 .row
   .col-md-2

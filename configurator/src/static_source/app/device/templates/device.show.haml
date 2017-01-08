@@ -10,10 +10,11 @@
           %span.fa.fa-pencil
 
     .pull-right.date-info-block
-      %small
-        {{'Created at' | translate}} {{device.device.created_at | readableDateTime}}
-      %small
-        {{'Updated at' | translate}} {{device.device.update_at | readableDateTime}}
+      .form-group
+        %small
+          {{'Created at' | translate}} {{device.device.created_at | readableDateTime}}
+        %small
+          {{'Updated at' | translate}} {{device.device.update_at | readableDateTime}}
 
 .row
   .col-sm-2

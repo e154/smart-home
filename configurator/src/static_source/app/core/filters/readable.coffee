@@ -7,22 +7,22 @@ angular
 
   .filter 'readableDate', ->
     (date) ->
-      return '' if date
+      return '' if !date
       moment(date).format("DD MM YYYY")
 
   .filter 'readableDateTime', ->
     (datetime) ->
-      return '' if datetime
+      return '' if !datetime
       moment(datetime).format("DD.MM.YYYY HH:mm")
 
   .filter 'readableTime', ->
     (time) ->
-      return '' if time
+      return '' if !time
       Date.create(time.replace('.000Z', '')).format('HH:mm')
 
   .filter 'readableTimeTZ', ->
     (time) ->
-      return '' if time
+      return '' if !time
       Date.create(time.replace('.000Z', '')).format('{HH}:{mm}')
       Date.create(time.slice(0, '1970-01-01T00:00:00.000'.length)).format('HH:mm')
 
