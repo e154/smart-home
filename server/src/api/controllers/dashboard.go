@@ -1,5 +1,12 @@
 package controllers
 
+import (
+	"encoding/json"
+	"github.com/astaxie/beego/validation"
+	"fmt"
+	"../models"
+)
+
 // DashboardController operations for Dashboard
 type DashboardController struct {
 	CommonController
@@ -22,7 +29,35 @@ func (c *DashboardController) URLMapping() {
 // @Failure 403 body is empty
 // @router / [post]
 func (c *DashboardController) Post() {
+	var board models.Dashboard
+	json.Unmarshal(c.Ctx.Input.RequestBody, &board)
 
+	// validation
+	valid := validation.Validation{}
+	b, err := valid.Valid(&board)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if !b {
+		var msg string
+		for _, err := range valid.Errors {
+			msg += fmt.Sprintf("%s: %s\r", err.Key, err.Message)
+		}
+		c.ErrHan(403, msg)
+		return
+	}
+	//....
+
+	_, err = models.AddDashboard(&board)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = map[string]interface{}{"dashboard": board}
+	c.ServeJSON()
 }
 
 // GetOne ...
@@ -33,7 +68,15 @@ func (c *DashboardController) Post() {
 // @Failure 403 :id is empty
 // @router /:id [get]
 func (c *DashboardController) GetOne() {
+	id, _ := c.GetInt(":id")
+	board, err := models.GetDashboardById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
+	c.Data["json"] = map[string]interface{}{"dashboard": board}
+	c.ServeJSON()
 }
 
 // GetAll ...
@@ -49,7 +92,14 @@ func (c *DashboardController) GetOne() {
 // @Failure 403
 // @router / [get]
 func (c *DashboardController) GetAll() {
+	boards, meta, err := models.GetAllDashboard(c.pagination())
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
+	c.Data["json"] = &map[string]interface{}{"dashboards": boards, "meta": meta}
+	c.ServeJSON()
 }
 
 // Put ...
@@ -61,7 +111,16 @@ func (c *DashboardController) GetAll() {
 // @Failure 403 :id is not int
 // @router /:id [put]
 func (c *DashboardController) Put() {
+	id, _ := c.GetInt(":id")
+	var board models.Dashboard
+	json.Unmarshal(c.Ctx.Input.RequestBody, &board)
+	board.Id = int64(id)
+	if err := models.UpdateDashboardById(&board); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
+	c.ServeJSON()
 }
 
 // Delete ...
@@ -72,5 +131,11 @@ func (c *DashboardController) Put() {
 // @Failure 403 id is empty
 // @router /:id [delete]
 func (c *DashboardController) Delete() {
+	id, _ := c.GetInt(":id")
+	if err := models.DeleteDashboard(int64(id)); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
 
+	c.ServeJSON()
 }

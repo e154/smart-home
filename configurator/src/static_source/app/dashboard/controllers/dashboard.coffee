@@ -8,7 +8,7 @@ angular
     'name': 'Main Menu'
     'items': [
       {
-        'label': 'Dashboard'
+        'label': 'dashboard.name'
         'route': 'dashboard.index'
         'icon': 'fa fa-home'
       }

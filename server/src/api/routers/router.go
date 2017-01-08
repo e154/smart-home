@@ -120,6 +120,11 @@ func Initialize() {
 			beego.NSRouter("/image/:id([0-9]+)", &controllers.ImageController{}, "put:Put"),
 			beego.NSRouter("/image/:id([0-9]+)", &controllers.ImageController{}, "delete:Delete"),
 
+			beego.NSRouter("/dashboard/:id([0-9]+)", &controllers.DashboardController{}, "get:GetOne"),
+			beego.NSRouter("/dashboard", &controllers.DashboardController{}, "get:GetAll"),
+			beego.NSRouter("/dashboard", &controllers.DashboardController{}, "post:Post"),
+			beego.NSRouter("/dashboard/:id([0-9]+)", &controllers.DashboardController{}, "put:Put"),
+			beego.NSRouter("/dashboard/:id([0-9]+)", &controllers.DashboardController{}, "delete:Delete"),
 	),
 	)
 	beego.AddNamespace(ns)
