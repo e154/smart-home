@@ -130,6 +130,7 @@ func Initialize() {
 			beego.NSRouter("/user", &controllers.UserController{}, "get:GetAll"),
 			beego.NSRouter("/user", &controllers.UserController{}, "post:Post"),
 			beego.NSRouter("/user/:id([0-9]+)", &controllers.UserController{}, "put:Put"),
+			beego.NSRouter("/user/:id([0-9]+)/update_status", &controllers.UserController{}, "put:UpdateStatus"),
 			beego.NSRouter("/user/:id([0-9]+)", &controllers.UserController{}, "delete:Delete"),
 			beego.NSRouter("/role/:id([0-9]+)", &controllers.RoleController{}, "get:GetOne"),
 			beego.NSRouter("/role", &controllers.RoleController{}, "get:GetAll"),

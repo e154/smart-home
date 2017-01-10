@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'userIndexCtrl', ['$scope', 'User', '$state', '$filter'
-($scope, User, $state, $filter) ->
+.controller 'userIndexCtrl', ['$scope', 'User', '$state', '$filter', 'Notify', 'Message'
+($scope, User, $state, $filter, Notify, Message) ->
 
   tableCallback = {}
   $scope.options =
@@ -71,27 +71,27 @@ angular
 
           clickCallback: ($event, user)->
             $event.preventDefault()
-            changeStatus(user, 'blocked')
+            updateStatus(user, 'blocked')
             false
         }
         {
-          name: 'unblock'
+          name: $filter('translate')('user.menu.unblock')
           showIf: (user)->
             user.status == 'blocked'
 
           clickCallback: ($event, user)->
             $event.preventDefault()
-            changeStatus(user, 'active')
+            updateStatus(user, 'active')
             false
         }
         {
-          name: 'remove'
+          name: $filter('translate')('user.menu.remove')
           showIf: (user)->
             user.status == 'blocked'
 
           clickCallback: ($event, user)->
             $event.preventDefault()
-            deleteUser(user.id)
+            remove(user.id)
             false
         }
       ]
@@ -99,9 +99,22 @@ angular
     onLoad: (result)->
     rows: (item)->
 
-  deleteUser =(user)->
-    console.log 'delete user', user
+  remove =(id)->
+    return if !confirm('точно удалить пользователя?')
+    success =->
+      tableCallback.update()
+      return
+    error =(result)->
+      Message result.data.status, result.data.message
+    User.delete {id: id}, success, error
+    return
 
-  changeStatus =(user)->
-    console.log 'change status', user
+  updateStatus =(user, status)->
+    return if !status || status == ''
+    user.status = status
+    success =->
+      Notify 'success', 'Пользователь успешно обновлён', 3
+    error =(result)->
+      Message result.data.status, result.data.message
+    User.update_status user, success, error
 ]

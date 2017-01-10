@@ -16,9 +16,14 @@ angular
       transformResponse: (data) ->
         data?.user || data
 
+    update_status:
+      url: window.server_url + '/api/v1/user/:id/update_status'
+      method: 'PUT'
+      responseType: 'json'
+
     update:
-        method: 'PUT'
-        responseType: 'json'
+      method: 'PUT'
+      responseType: 'json'
 
     delete:
       method: 'DELETE'

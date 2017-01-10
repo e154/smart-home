@@ -22,7 +22,7 @@ angular
     $scope.user.$update success, error
 
   $scope.remove =->
-    return if confirm('точно удалить пользователя?')
+    return if !confirm('точно удалить пользователя?')
     success =->
       $state.go 'dashboard.user.index'
     error =(result)->

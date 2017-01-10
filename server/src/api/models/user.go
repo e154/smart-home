@@ -182,6 +182,8 @@ func DeleteUser(id int64) (err error) {
 func (u *User) LoadRelated() (err error) {
 	o := orm.NewOrm()
 
+	_, err = o.LoadRelated(u, "Role")
+
 	if u.Avatar != nil {
 		_, err = o.LoadRelated(u, "Avatar")
 		u.Avatar.GetUrl()

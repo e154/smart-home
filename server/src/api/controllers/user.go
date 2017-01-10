@@ -18,6 +18,7 @@ func (c *UserController) URLMapping() {
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
+	c.Mapping("UpdateStatus", c.UpdateStatus)
 	c.Mapping("Delete", c.Delete)
 }
 
@@ -131,6 +132,35 @@ func (c *UserController) Put() {
 		return
 	}
 
+	c.ServeJSON()
+}
+
+func (c *UserController) UpdateStatus() {
+	var user, _user *models.User
+	var err error
+
+	user = &models.User{}
+
+	id, _ := c.GetInt(":id")
+	json.Unmarshal(c.Ctx.Input.RequestBody, user)
+
+	if _user, err = models.GetUserById(int64(id)); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	_user.Status = user.Status
+	if err = models.UpdateUserById(_user); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if err = _user.LoadRelated(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"user": _user}
 	c.ServeJSON()
 }
 
