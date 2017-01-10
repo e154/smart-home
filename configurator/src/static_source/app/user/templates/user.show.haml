@@ -1,0 +1,35 @@
+.row
+  .col-md-12
+    %h3
+      %a(href="" ui-sref="dashboard.user.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      {{'user.show_form' | translate}} - {{user.full_name}}
+      .edit-icon-link
+        %a(ui-sref="dashboard.user.edit({id:user.id})")
+          %span.fa.fa-pencil
+
+    .pull-right.date-info-block
+      .form-group
+        %small
+          {{'Created at' | translate}} {{user.created_at | readableDateTime}}
+        %small
+          {{'Updated at' | translate}} {{user.update_at | readableDateTime}}
+
+.row
+  .col-md-2
+    .form-group
+      .text-muted {{'user.nickname' | translate}}
+      %div {{::user.nickname}}
+    .form-group(ng-if="user.first_name")
+      .text-muted {{'user.first_name' | translate}}
+      %div {{::user.first_name}}
+    .form-group(ng-if="user.last_name")
+      .text-muted {{'user.last_name' | translate}}
+      %div {{::user.last_name}}
+    .form-group
+      .text-muted {{'user.email' | translate}}
+      %div {{::user.email}}
+    .form-group
+      .text-muted {{'user.role' | translate}}
+      %div {{::user.role.name}}

@@ -38,6 +38,7 @@ app = angular.module('app', [
   'ngFileUpload'
   'ngDragDrop'
   'gridster'
+  'passwordCheck'
 ])
 
 app.version =

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"time"
 	"./settings"
 	"log"
 	"fmt"
@@ -33,6 +32,7 @@ func testNode(command []byte) {
 		Device: st.Device,
 		Line: "",
 		StopBits: 2,
+		Sleep: 10,
 		Timeout: st.Timeout,
 	}
 

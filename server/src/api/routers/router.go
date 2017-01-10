@@ -125,6 +125,17 @@ func Initialize() {
 			beego.NSRouter("/dashboard", &controllers.DashboardController{}, "post:Post"),
 			beego.NSRouter("/dashboard/:id([0-9]+)", &controllers.DashboardController{}, "put:Put"),
 			beego.NSRouter("/dashboard/:id([0-9]+)", &controllers.DashboardController{}, "delete:Delete"),
+
+			beego.NSRouter("/user/:id([0-9]+)", &controllers.UserController{}, "get:GetOne"),
+			beego.NSRouter("/user", &controllers.UserController{}, "get:GetAll"),
+			beego.NSRouter("/user", &controllers.UserController{}, "post:Post"),
+			beego.NSRouter("/user/:id([0-9]+)", &controllers.UserController{}, "put:Put"),
+			beego.NSRouter("/user/:id([0-9]+)", &controllers.UserController{}, "delete:Delete"),
+			beego.NSRouter("/role/:id([0-9]+)", &controllers.RoleController{}, "get:GetOne"),
+			beego.NSRouter("/role", &controllers.RoleController{}, "get:GetAll"),
+			beego.NSRouter("/role", &controllers.RoleController{}, "post:Post"),
+			beego.NSRouter("/role/:id([0-9]+)", &controllers.RoleController{}, "put:Put"),
+			beego.NSRouter("/role/:id([0-9]+)", &controllers.RoleController{}, "delete:Delete"),
 	),
 	)
 	beego.AddNamespace(ns)

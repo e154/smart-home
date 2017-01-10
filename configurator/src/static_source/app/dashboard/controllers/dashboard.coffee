@@ -133,6 +133,21 @@ angular
           }
         ]
       }
+      {
+        'label': 'Users'
+        'route': 'dashboard.user.index'
+        'icon': 'fa fa-users'
+        'items': [
+          {
+            'label': 'All users'
+            'route': 'dashboard.user.index'
+          }
+          {
+            'label': 'Add user'
+            'route': 'dashboard.user.new'
+          }
+        ]
+      }
     ]
 
 

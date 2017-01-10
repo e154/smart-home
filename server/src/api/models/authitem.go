@@ -16,7 +16,7 @@ type AuthItem struct {
 	Method			string		`orm:"size(255)" valid:"MaxSize(255)" json:"method"`
 	Description		string		`orm:"size(255)" valid:"MaxSize(255)" json:"description"`
 	Active			int		`orm:"-" json:"active"`
-	Role			*Role		`orm:"rel(fk)" json:"role"`
+	Role			*Role		`orm:"rel(fk);null" json:"role"`
 	Package			string		`orm:"size(255)" json:"package"`
 	Frontend		int		`orm:"size(1);default(0)" json:"frontend"`
 }
