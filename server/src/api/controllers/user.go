@@ -5,6 +5,8 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"../models"
+	"../../lib/common"
+	"net/url"
 )
 
 // UserController operations for User
@@ -30,12 +32,31 @@ func (c *UserController) URLMapping() {
 // @Failure 403 body is empty
 // @router / [post]
 func (c *UserController) Post() {
-	var user models.User
-	json.Unmarshal(c.Ctx.Input.RequestBody, &user)
+
+	user := &models.User{}
+	json.Unmarshal(c.Ctx.Input.RequestBody, user)
+
+	incoming := map[string]string{}
+	json.Unmarshal(c.Ctx.Input.RequestBody, &incoming)
+
+	// construct user data
+	//---------------------------------------------------------
+	status := incoming["status"]
+	if len(status) > 0 && (status == "active" || status == "blocked") {
+		user.Status = status
+	} else {
+		user.Status = "blocked"
+	}
+
+	password := incoming["password"]
+	if len(password) >= 6 && password == incoming["password_repeat"] {
+		user.EncryptedPassword = common.Pwdhash(password)
+	}
 
 	// validation
+	//---------------------------------------------------------
 	valid := validation.Validation{}
-	b, err := valid.Valid(&user)
+	b, err := valid.Valid(user)
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
@@ -51,12 +72,17 @@ func (c *UserController) Post() {
 	}
 	//....
 
-	_, err = models.AddUser(&user)
+	// create user
+	//---------------------------------------------------------
+	_, err = models.AddUser(user)
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
+	for _, meta := range user.Meta {
+		user.SetMeta(meta.Key, meta.Value)
+	}
 
 	if err = user.LoadRelated(); err != nil {
 		c.ErrHan(403, err.Error())
@@ -132,6 +158,10 @@ func (c *UserController) Put() {
 		return
 	}
 
+	for _, meta := range user.Meta {
+		user.SetMeta(meta.Key, meta.Value)
+	}
+
 	c.ServeJSON()
 }
 
@@ -178,5 +208,27 @@ func (c *UserController) Delete() {
 		return
 	}
 
+	c.ServeJSON()
+}
+
+func (c *UserController) Search() {
+
+	query, fields, sortby, order, offset, limit := c.pagination()
+	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
+	q := link.Query()
+
+	if val, ok := q["query"]; ok {
+		for _, v := range val {
+			query["nickname__icontains"] = v
+		}
+	}
+
+	ml, meta, err := models.GetAllUser(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"users": ml, "meta": meta}
 	c.ServeJSON()
 }

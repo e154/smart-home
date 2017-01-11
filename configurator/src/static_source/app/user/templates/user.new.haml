@@ -1,0 +1,19 @@
+.row
+  .col-md-12
+    %h3
+      %a(href="" ui-sref="dashboard.user.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      {{'user.new_form' | translate}}
+
+.row
+  .col-md-6
+    %div(ng-include="'/user/templates/_user_form.html'")
+
+.row
+  .col-md-6
+    .pull-right
+      %a.btn.btn-default(href="" role="button" ui-sref="dashboard.user.index")
+        {{'Cancel' | translate}}
+      %a.btn.btn-primary(href="" role="button" ng-click="create()")
+        {{'Create' | translate}}

@@ -32,11 +32,11 @@ type User struct {
 	Meta			[]*UserMeta		`orm:"reverse(many);null" json:"meta"`
 
 	ResetPasswordSentAt 	time.Time        	`orm:"type(datetime)" json:"-"`
-	CurrentSignInAt     	time.Time        	`orm:"type(datetime)" json:"current_sign_in_at"`
-	LastSignInAt        	time.Time        	`orm:"type(datetime)" json:"last_sign_in_at"`
+	CurrentSignInAt     	time.Time        	`orm:"type(datetime);null;default(null)" json:"current_sign_in_at"`
+	LastSignInAt        	time.Time        	`orm:"type(datetime);null;default(null)" json:"last_sign_in_at"`
 	Created_at            	time.Time        	`orm:"auto_now_add;type(datetime)" json:"created_at"`
 	Update_at            	time.Time       	`orm:"auto_now;type(datetime)" json:"update_at"`
-	Deleted           	time.Time        	`orm:"type(datetime);null" json:"deleted"`
+	Deleted           	time.Time        	`orm:"type(datetime);null;default(null)" json:"deleted"`
 }
 
 func (m *User) TableName() string {
@@ -183,6 +183,11 @@ func (u *User) LoadRelated() (err error) {
 	o := orm.NewOrm()
 
 	_, err = o.LoadRelated(u, "Role")
+	_, err = o.LoadRelated(u, "Meta")
+
+	if u.CreatedBy != nil {
+		_, err = o.LoadRelated(u, "CreatedBy")
+	}
 
 	if u.Avatar != nil {
 		_, err = o.LoadRelated(u, "Avatar")
@@ -190,4 +195,17 @@ func (u *User) LoadRelated() (err error) {
 	}
 
 	return
+}
+
+// SetMeta
+//
+func (u *User) SetMeta(key, value string) (err error) {
+	err = SetUserMeta(u, key, value)
+	return
+}
+
+// GetMeta
+//
+func (u *User) GetMeta(key string) string {
+	return GetUserMeta(u, key)
 }

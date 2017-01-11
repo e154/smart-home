@@ -41,7 +41,7 @@ func AddRole(m *Role) (id int64, err error) {
 func GetRoleByName(name string) (v *Role, err error) {
 	o := orm.NewOrm()
 	v = &Role{Name: name}
-	if err = o.Read(v); err == nil {
+	if err = o.Read(v, "Name"); err == nil {
 		return v, nil
 	}
 	return nil, err

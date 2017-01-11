@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego/validation"
 	"fmt"
+	"net/url"
 )
 
 // RoleController operations for Role
@@ -137,5 +138,27 @@ func (c *RoleController) Delete() {
 		return
 	}
 
+	c.ServeJSON()
+}
+
+func (c *RoleController) Search() {
+
+	query, fields, sortby, order, offset, limit := c.pagination()
+	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
+	q := link.Query()
+
+	if val, ok := q["query"]; ok {
+		for _, v := range val {
+			query["name__icontains"] = v
+		}
+	}
+
+	ml, meta, err := models.GetAllRole(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"roles": ml, "meta": meta}
 	c.ServeJSON()
 }

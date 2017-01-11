@@ -4,9 +4,29 @@ angular
 ($scope, Notify, User, $stateParams, Message, $state) ->
 
   $scope.user = new User {id: $stateParams.id}
+  meta = [
+    {
+      key: 'phone1'
+      value: ''
+    }
+    {
+      key: 'phone2'
+      value: ''
+    }
+    {
+      key: 'phone3'
+      value: ''
+    }
+    {
+      key: 'autograph'
+      value: ''
+    }
+  ]
 
   show =->
-    success =->
+    success =(user)->
+      if user.meta.length == 0
+        $scope.user.meta = meta
     error =->
       $state.go 'dashboard.user.index'
     $scope.user.$show success, error

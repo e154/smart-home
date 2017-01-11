@@ -4,7 +4,7 @@
       %a(href="" ui-sref="dashboard.user.index")
         %small.fa.fa-long-arrow-left
           &nbsp;
-      {{'user.show_form' | translate}} - {{user.full_name}}
+      {{'user.show_form' | translate}} - {{user.full_name || user.nickname}}
       .edit-icon-link
         %a(ui-sref="dashboard.user.edit({id:user.id})")
           %span.fa.fa-pencil
@@ -21,6 +21,13 @@
     .form-group
       .text-muted {{'user.nickname' | translate}}
       %div {{::user.nickname}}
+    .form-group
+      .text-muted {{'user.status' | translate}}
+      %div(translate="user.{{user.status}}")
+    .form-group
+      .text-muted {{'user.role' | translate}}
+      %div {{::user.role.name}}
+
     .form-group(ng-if="user.first_name")
       .text-muted {{'user.first_name' | translate}}
       %div {{::user.first_name}}
@@ -29,7 +36,15 @@
       %div {{::user.last_name}}
     .form-group
       .text-muted {{'user.email' | translate}}
-      %div {{::user.email}}
+      %a(href="mailto:{{user.email}}") {{::user.email}}
+
+    .form-group(ng-repeat="meta in user.meta" ng-if="meta.value != ''")
+      .text-muted(translate="user.{{meta.key}}")
+      %div {{::meta.value}}
+
+  .col-md-10
     .form-group
-      .text-muted {{'user.role' | translate}}
-      %div {{::user.role.name}}
+      .avatar.lg(ng-if="user.avatar.url != ''")
+        %img(ng-src="{{user.avatar.url}}" alt="")
+
+

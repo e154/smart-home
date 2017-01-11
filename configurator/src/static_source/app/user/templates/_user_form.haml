@@ -1,18 +1,39 @@
 .form-group
   %laber {{'user.nickname' | translate}}*
-  %input#nickname.form-control(ng-model="user.nickname")
+  %input#nickname.form-control(ng-model="user.nickname" type="text")
+
+.form-group
+  %laber {{'user.role' | translate}}*
+  -#
+  -#  select2
+  -#
+  %ui-select(ng-model="user.role" theme="bootstrap")
+    %ui-select-match(placeholder="{{'user.role' | translate}}")
+      {{user.role.name}}
+    %ui-select-choices(repeat="item in roles | filter: $select.search" refresh="refreshRoles($select.search)" refresh-delay="0")
+      %div(ng-bind-html="item.name | highlight: $select.search")
+    %ui-select-no-choice
+      {{'No data' | translate}}
+
+.form-group
+  %laber {{'user.status' | translate}}*
+  %select.form-control(ng-model="user.status")
+    %option(value="active")
+      {{'user.active' | translate}}
+    %option(value="blocked")
+      {{'user.blocked' | translate}}
 
 .form-group
   %laber {{'user.first_name' | translate}}*
-  %input.form-control(ng-model="user.first_name")
+  %input.form-control(ng-model="user.first_name" type="text")
 
 .form-group
   %laber {{'user.last_name' | translate}}*
-  %input.form-control(ng-model="user.last_name")
+  %input.form-control(ng-model="user.last_name" type="text" )
 
 .form-group
   %laber {{'user.email' | translate}}*
-  %input.form-control(ng-model="user.email")
+  %input.form-control(ng-model="user.email" type="email" )
 
 .form-group
   %laber {{'user.avatar' | translate}}*
@@ -27,21 +48,24 @@
       &nbsp;
       {{'set image' | translate}}
 
-.form-group
-  %laber {{'user.email' | translate}}*
-  %input.form-control(ng-model="user.email")
-
 .row
   .col-lg-12
     .form-group
       {{'user.set_password' | translate}}
 
+.form-group(ng-repeat="meta in user.meta" )
+  %laber(translate="user.{{meta.key}}")
+  %input.form-control(ng-model="meta.value" type="text")
+
+-#
+-# password
+-#
 .row
   %password-check(nickname="input#nickname" password-input="input#password" confirm-input="input#password_repeat" password-recommendation="#pass-recommendation" password-confirm-recommendation="#pass-confirm-recommendation" strength-recommendation="#strength-recommendation" auto_disable="user.isNew" submit_button="button.submit_button")
   .col-lg-6
     .form-group
       %laber {{'user.password' | translate}}*
-      %input#password.form-control(ng-model="user.password")
+      %input#password.form-control(ng-model="user.password" type="password" )
 
   .col-lg-6
     .form-group
@@ -52,7 +76,7 @@
   .col-lg-6
     .form-group
       %laber {{'user.password_repeat' | translate}}*
-      %input#password_repeat.form-control(ng-model="user.password_repeat")
+      %input#password_repeat.form-control(ng-model="user.password_repeat" type="password" )
 
   .col-lg-6
     .form-group

@@ -156,3 +156,44 @@ func DeleteUserMeta(id int64) (err error) {
 	}
 	return
 }
+
+func SetUserMeta(u *User, key, value string) (err error) {
+
+	o := orm.NewOrm()
+
+	meta := new(UserMeta)
+	qs := o.QueryTable(meta).Filter("user_id", u.Id).Filter("key", key)
+
+	if exist := qs.Exist(); exist {
+
+		if _, err = qs.Update(orm.Params{"value": value}); err != nil {
+			return
+		}
+
+	} else {
+		meta.Key = key
+		meta.Value = value
+		meta.User = u
+
+		if _, err = o.Insert(meta); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func GetUserMeta(u *User, key string) string {
+
+	o := orm.NewOrm()
+
+	meta := UserMeta{}
+	if err := o.QueryTable(&meta).Filter("user_id", u.Id).Filter("key", key).One(&meta); err != nil {
+		meta.Key = key
+		meta.Value = ""
+		meta.User = u
+		o.Insert(&meta)
+	}
+
+	return meta.Value
+}

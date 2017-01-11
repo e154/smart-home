@@ -12,6 +12,7 @@ angular
       views:
         '@dashboard':
           templateUrl: '/user/templates/user.html'
+          controller: 'userCtrl'
     )
 
     .state(
