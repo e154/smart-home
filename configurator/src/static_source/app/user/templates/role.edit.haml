@@ -1,0 +1,28 @@
+.row
+  .col-md-12
+    %h3
+      %a(href="" ui-sref="dashboard.role.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      {{'role.edit_form' | translate}} - {{role.name}}
+
+    .pull-right.date-info-block
+      .form-group
+        %small
+          {{'Created at' | translate}} {{role.created_at | readableDateTime}}
+        %small
+          {{'Updated at' | translate}} {{role.update_at | readableDateTime}}
+
+.row
+  .col-md-6
+    %div(ng-include="'/user/templates/_role_form.html'")
+
+.row
+  .col-md-6
+    .pull-right
+      %a.btn.btn-danger(href="" role="button" ng-click="remove()")
+        {{'Delete' | translate}}
+      %a.btn.btn-default(href="" role="button" ui-sref="dashboard.role.index")
+        {{'Cancel' | translate}}
+      %a.btn.btn-primary(href="" role="button" ng-click="update()")
+        {{'Update' | translate}}

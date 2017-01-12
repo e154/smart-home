@@ -76,6 +76,8 @@ func (c *RoleController) GetOne() {
 		return
 	}
 
+	role.LoadRelated()
+
 	c.Data["json"] = map[string]interface{}{"role": role}
 	c.ServeJSON()
 }

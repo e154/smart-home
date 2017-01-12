@@ -1,0 +1,21 @@
+.form-group
+  %laber {{'role.name' | translate}}*
+  %input.form-control(ng-model="role.name" type="text")
+
+.form-group
+  %laber {{'role.parent' | translate}}
+  -#
+  -#  select2
+  -#
+  %ui-select(ng-model="role.parent" theme="bootstrap")
+    %ui-select-match(placeholder="{{'role.parent' | translate}}")
+      {{role.parent.name}}
+    %ui-select-choices(repeat="item in roles | filter: $select.search" refresh="refreshRoles($select.search)" refresh-delay="0")
+      %div(ng-bind-html="item.name | highlight: $select.search")
+    %ui-select-no-choice
+      {{'No data' | translate}}
+
+.form-group
+  %laber {{'role.description' | translate}}
+  %input.form-control(ng-model="role.description" type="text")
+

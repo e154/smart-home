@@ -45,4 +45,43 @@ angular
       controller: 'userEditCtrl'
     )
 
+    .state(
+      name: "dashboard.role"
+      url: "role"
+      abstract: true
+      views:
+        '@dashboard':
+          templateUrl: '/user/templates/role.html'
+          controller: 'roleCtrl'
+    )
+
+    .state(
+      name: "dashboard.role.index"
+      url: ""
+      views:
+        '@dashboard.role':
+            templateUrl: '/user/templates/role.index.html'
+            controller: 'roleIndexCtrl'
+    )
+
+    .state(
+      name: "dashboard.role.new"
+      url: "/new"
+      templateUrl: '/user/templates/role.new.html'
+      controller: 'roleNewCtrl'
+    )
+
+    .state(
+      name: "dashboard.role.show"
+      url: "/:name"
+      templateUrl: '/user/templates/role.show.html'
+      controller: 'roleShowCtrl'
+    )
+
+    .state(
+      name: "dashboard.role.edit"
+      url: "/:name/edit"
+      templateUrl: '/user/templates/role.edit.html'
+      controller: 'roleEditCtrl'
+    )
 ]

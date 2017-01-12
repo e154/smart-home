@@ -8,16 +8,20 @@ import (
 
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
+	"time"
 )
 
 type Role struct {
 	Name		string		`orm:"pk;unique;size(255);index" valid:"Required;MaxSize(255)" json:"name"`
 	Description	string		`orm:"size(255)" json:"description"`
 	Parent		*Role		`orm:"rel(fk);column(parent);null" json:"parent"`
-	Child		int64		`orm:"size(11)" json:"child"`
-	Width		int		`orm:"size(11)" json:"width"`
+	Children	[]*Role		`orm:"reverse(many)" json:"children"`
+	Child		int64		`orm:"size(11)" json:"child"`	//TODO remove
+	Width		int		`orm:"size(11)" json:"width"`	//TODO remove
 	Status		int		`orm:"-" json:"status"`
 	Roles		[]*Role		`orm:"-" json:"roles"`
+	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
 func (m *Role) TableName() string {
@@ -149,13 +153,16 @@ func UpdateRoleByName(m *Role) (err error) {
 // the record to be deleted doesn't exist
 func DeleteRole(name string) (err error) {
 	o := orm.NewOrm()
-	v := Role{Name: name}
-	// ascertain id exists in the database
-	if err = o.Read(&v); err == nil {
-		var num int64
-		if num, err = o.Delete(&Role{Name: name}); err == nil {
-			fmt.Println("Number of records deleted in database:", num)
-		}
-	}
+	_, err = o.QueryTable(&Role{}).Filter("name", name).Delete()
+	return
+}
+
+func (r *Role) LoadRelated() (err error) {
+	o := orm.NewOrm()
+
+	_, err = o.LoadRelated(r, "Parent", 3)
+	_, err = o.LoadRelated(r, "Children", 3)
+
+
 	return
 }

@@ -143,8 +143,16 @@ angular
             'route': 'dashboard.user.index'
           }
           {
+            'label': 'All roles'
+            'route': 'dashboard.role.index'
+          }
+          {
             'label': 'Add user'
             'route': 'dashboard.user.new'
+          }
+          {
+            'label': 'Add role'
+            'route': 'dashboard.role.new'
           }
         ]
       }

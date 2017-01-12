@@ -1,0 +1,19 @@
+.row
+  .col-md-12
+    %h3
+      %a(href="" ui-sref="dashboard.role.index")
+        %small.fa.fa-long-arrow-left
+          &nbsp;
+      {{'role.new_form' | translate}}
+
+.row
+  .col-md-6
+    %div(ng-include="'/user/templates/_role_form.html'")
+
+.row
+  .col-md-6
+    .pull-right
+      %a.btn.btn-default(href="" role="button" ui-sref="dashboard.role.index")
+        {{'Cancel' | translate}}
+      %a.btn.btn-primary(href="" role="button" ng-click="create()")
+        {{'Create' | translate}}
