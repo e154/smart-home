@@ -204,6 +204,7 @@
   "notifr": {
     "email_system": "Система уведомлений",
     "refrash_list": "Обновить список",
+    "add_template": "Добавить шаблон",
     "email_template": "Шаблон сообщения",
     "element_of_template": "Элементы шаблона",
     "name": "Название",

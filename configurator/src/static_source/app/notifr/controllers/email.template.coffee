@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'emailTemplateCtrl', ['$scope','Message', 'EmailTemplate','$http', 'EmailItem', '$stateParams', '$state'
-($scope, Message, EmailTemplate, $http, EmailItem, $stateParams, $state) ->
+.controller 'emailTemplateCtrl', ['$scope','Message', 'EmailTemplate','$http', 'EmailItem', '$stateParams', '$state', 'Notify'
+($scope, Message, EmailTemplate, $http, EmailItem, $stateParams, $state, Notify) ->
 
   vm = this
 
@@ -79,6 +79,7 @@ angular
     serialize()
 
     success =(template)->
+      Notify 'success', 'Шаблон успешно создан', 3
       vm.isNew = false
       vm.template_name = vm.template.name
       $state.go 'dashboard.notifr.template', {name: template.name}
@@ -92,6 +93,7 @@ angular
     serialize()
 
     success =->
+      Notify 'success', 'Шаблон успешно обновлен', 3
       vm.getTemplate()
 
     error =(response)->
