@@ -66,6 +66,11 @@ func (c *CommonController) Prepare() {
 
 }
 
+func (c *CommonController) UpdateTemplate() {
+	beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
+	c.Render()
+}
+
 func init() {
 	beego.AddFuncMap("safeHtml", func(s string) template.HTML {return template.HTML(s)})
 	beego.AddFuncMap("safeCss", func(s string) template.CSS {return template.CSS(s)})

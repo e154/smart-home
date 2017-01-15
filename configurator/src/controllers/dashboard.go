@@ -1,16 +1,40 @@
 package controllers
 
-import (
-	"github.com/astaxie/beego"
-)
-
 type DashboardController struct {
 	BaseController
 }
 
-func (h *DashboardController) Index() {
-	h.Layout = h.GetTemplate() + "/base.tpl.html"
-	h.TplName = h.GetTemplate() + "/index.tpl.html"
-	beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
-	h.Render()
+// URLMapping ...
+func (c *DashboardController) URLMapping() {
+	c.Mapping("Index", c.Index)
+	c.Mapping("Login", c.Login)
+	c.Mapping("Logout", c.Logout)
+	c.Mapping("Recovery", c.Recovery)
+	c.Mapping("Reset", c.Reset)
+	c.Mapping("ResetPost", c.ResetPost)
 }
+
+func (h *DashboardController) Index() {
+
+	h.Ctx.Redirect(302, "/login")
+	return
+
+	h.Layout = h.GetTemplate() + "/private/base.tpl.html"
+	h.TplName = h.GetTemplate() + "/private/index.tpl.html"
+	h.UpdateTemplate()
+}
+
+func (h *DashboardController) Login() {
+
+	h.Layout = h.GetTemplate() + "/public/base.tpl.html"
+	h.TplName = h.GetTemplate() + "/public/login.tpl.html"
+	h.UpdateTemplate()
+}
+
+func (h *DashboardController) Logout() {}
+
+func (h *DashboardController) Recovery() {}
+
+func (h *DashboardController) Reset() {}
+
+func (h *DashboardController) ResetPost() {}
