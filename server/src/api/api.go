@@ -15,6 +15,7 @@ import (
 	"../api/log"
 	"../api/notifr"
 	"./telemetry"
+	"./rbac"
 )
 
 func configuration() {
@@ -77,6 +78,9 @@ func Initialize() {
 
 	// routes
 	routers.Initialize()
+
+	// rbac
+	rbac.Initialize()
 
 	// register access filters
 	filters.RegisterFilters()

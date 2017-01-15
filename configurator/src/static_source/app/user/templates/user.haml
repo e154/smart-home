@@ -12,6 +12,9 @@
         %li.presentation(ng-class="{ active: $state.includes('dashboard.role') }")
           %a(ui-sref="dashboard.role.index")
             {{'Roles' | translate}}
+        %li.presentation(ng-class="{ active: $state.includes('dashboard.permissions') }")
+          %a(ui-sref="dashboard.permissions")
+            {{'Permissions' | translate}}
 
   .col-md-10.col-sm-9
     %ui-view

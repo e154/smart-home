@@ -28,4 +28,17 @@ angular
       transformResponse: (data) ->
         meta: data?.meta || {}
         items: data?.roles || []
+
+    get_access_list:
+      url: window.server_url + '/api/v1/role/:name/access_list'
+      method: 'GET'
+      responseType: 'json'
+      transformResponse: (data) ->
+        data?.access_list || data
+
+    update_access_list:
+      url: window.server_url + '/api/v1/role/:name/access_list'
+      method: 'PUT'
+      responseType: 'json'
+
 ]

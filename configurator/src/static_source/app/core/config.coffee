@@ -42,4 +42,7 @@ angular
 .run ['$rootScope', '$state',($rootScope, $state) ->
   $rootScope.$on '$stateChangeSuccess', (event, toState, toParams, fromState, fromParams) ->
     document.getElementsByTagName('body')[0].classList.remove('loading')
+
+#    http://stackoverflow.com/questions/24764764/conditionally-set-angulars-ng-class-based-on-state
+  $rootScope.$state = $state;
 ]

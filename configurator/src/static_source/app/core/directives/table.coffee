@@ -130,7 +130,7 @@ angular
   ($log, Message)->
     restrict: 'A'
     template: '
-<div class="clearfix">
+<div class="clearfix" ng-if="pagination.objects_count >= perPage">
     <div class="pull-left">
         <pagination boundary-links="true" total-items="pagination.objects_count" items-per-page="perPage"
 max-size="maxSize" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;"
@@ -143,13 +143,13 @@ ng-change="tableUpdate()"></select>
     </div>
 </div>
 
-<div ng-if="!items || !table.columns">
+<div ng-if="!items.length || !table.columns.length">
   Данные отсутствуют
 </div>
 
-<div ng-if="items && table.columns" class="form-group clearfix">{{"total items" | translate}} ({{pagination.objects_count}})</div>
+<div ng-if="items.length && table.columns.length" class="form-group clearfix">{{"total items" | translate}} ({{pagination.objects_count}})</div>
 
-<table ng-if="items && table.columns" class="table list-table with-menu">
+<table ng-if="items.length && table.columns.length" class="table list-table with-menu">
 
 <!--head-->
 <thead>

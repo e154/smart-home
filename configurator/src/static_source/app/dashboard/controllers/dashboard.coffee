@@ -116,7 +116,8 @@ angular
       }
       {
         'label': 'Notifr'
-        'route': 'dashboard.notifr.index'
+        'link': 'dashboard.notifr.index'
+        'route': 'dashboard.notifr'
         'icon': 'fa fa-envelope'
         'items': [
           {
@@ -135,7 +136,8 @@ angular
       }
       {
         'label': 'Users'
-        'route': 'dashboard.user.index'
+        'link': 'dashboard.user.index'
+        'route': 'dashboard.user'
         'icon': 'fa fa-users'
         'items': [
           {

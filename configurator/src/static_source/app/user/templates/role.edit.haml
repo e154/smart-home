@@ -5,6 +5,9 @@
         %small.fa.fa-long-arrow-left
           &nbsp;
       {{'role.edit_form' | translate}} - {{role.name}}
+      .edit-icon-link
+        %a(href="" ui-sref="dashboard.role.permission({name: role.name})")
+          %small.fa.fa-key
 
     .pull-right.date-info-block
       .form-group

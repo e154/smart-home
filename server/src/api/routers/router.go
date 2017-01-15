@@ -139,6 +139,10 @@ func Initialize() {
 			beego.NSRouter("/role/:name([\\w]+)", &controllers.RoleController{}, "put:Put"),
 			beego.NSRouter("/role/:name([\\w]+)", &controllers.RoleController{}, "delete:Delete"),
 			beego.NSRouter("/role/search", &controllers.RoleController{}, "get:Search"),
+			beego.NSRouter("/role/:name([\\w]+)/access_list", &controllers.RoleController{}, "get:GetAccessList"),
+			beego.NSRouter("/role/:name([\\w]+)/access_list", &controllers.RoleController{}, "put:PutAccessList"),
+
+			beego.NSRouter("/access_list", &controllers.AccessController{}, "get:Get"),
 	),
 	)
 	beego.AddNamespace(ns)

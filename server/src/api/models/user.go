@@ -9,6 +9,9 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 	"time"
+	"unicode/utf8"
+	"../../lib/common"
+	"encoding/json"
 )
 
 type User struct {
@@ -208,4 +211,191 @@ func (u *User) SetMeta(key, value string) (err error) {
 //
 func (u *User) GetMeta(key string) string {
 	return GetUserMeta(u, key)
+}
+
+//
+// etc
+//
+func (u *User) UpdateHistory(t time.Time, ipv4 string) {
+
+	history := []*UserHistory{}
+	json.Unmarshal([]byte(u.History), &history)
+	l := len(history)
+	// max 128 records
+	if l > 128 {
+		// удаление элемента из начала среза
+		history = history[l - 128:]
+	}
+
+	history = append(history, &UserHistory{Ip: ipv4, Time: t})
+	b, _ := json.Marshal(history)
+	u.History = string(b)
+}
+
+func (u *User) GetHistory() (history []*UserHistory, err error) {
+
+	err = json.Unmarshal([]byte(u.History), &history)
+
+	return
+}
+
+func (u *User) SignIn(ipv4 string) {
+
+	// update count
+	u.SignInCount += 1
+
+	// update time
+	last_t := u.CurrentSignInAt
+	current_t := time.Now()
+
+	u.LastSignInAt = last_t
+	u.CurrentSignInAt = current_t
+
+	// update ipv4
+	last_ip := u.CurrentSignInIp
+	current_ip := ipv4
+	u.LastSignInIp = last_ip
+	u.CurrentSignInIp = current_ip
+
+	u.UpdateHistory(current_t, current_ip)
+
+	o := orm.NewOrm()
+	o.Update(u)
+}
+
+func (u *User) NewToken() (token string, err error) {
+
+	num, err := beego.AppConfig.Int("auth_token_size")
+	if err != nil {
+		num = 50
+	}
+
+	o := orm.NewOrm()
+	qs := o.QueryTable(u)
+
+	// check token unique
+	for {
+		token = common.RandStr(num, "alphanum")
+		u.AuthenticationToken = token
+
+		if exist := qs.Filter("authentication_token", token).Exist(); !exist {
+			break
+		}
+	}
+
+	_, err = o.Update(u, "authentication_token")
+
+	return
+}
+
+func (u *User) SetToken(token string) error {
+
+	o := orm.NewOrm()
+	table := new(User)
+	qs := o.QueryTable(table)
+	if len(token) != 0 {
+		if exist := qs.Filter("authentication_token", token).Exist(); exist {
+			return errors.New("Token not unique");
+		}
+	}
+
+	u.AuthenticationToken = token
+	_ , err := o.Update(u, "authentication_token")
+
+	return err
+}
+
+func UserGetByAuthenticationToken(token string) (user *User, err error) {
+
+	if utf8.RuneCountInString(token) > 255 {
+		return
+	}
+
+	o := orm.NewOrm()
+	user = new(User)
+	user.AuthenticationToken = token
+	if err = o.Read(user, "authentication_token"); err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (u *User) GenResetPassToken() (token string, err error) {
+
+	o := orm.NewOrm()
+	qs := o.QueryTable(u)
+
+	for {
+		token = common.RandStr(50, "alphanum")
+		u.ResetPasswordToken = token
+
+		if exist := qs.Filter("reset_password_token", token).Exist(); !exist {
+			break
+		}
+	}
+
+	t := time.Now()
+	u.ResetPasswordSentAt = t
+	_ , err = qs.Filter("id", u.Id).Update(orm.Params{"reset_password_token": token, "reset_password_sent_at": t,})
+
+	return
+}
+
+func (u *User) ClearResetPassToken() error {
+
+	o := orm.NewOrm()
+	qs := o.QueryTable(u)
+
+	t := time.Now()
+	u.ResetPasswordSentAt = t
+	_ , err := qs.Filter("id", u.Id).Update(orm.Params{"reset_password_token": "", "reset_password_sent_at": t,})
+
+	return err
+}
+
+func (u *User) UpdatePassword(password string) (err error) {
+
+	o := orm.NewOrm()
+
+	if len(password) >= 6 {
+		u.EncryptedPassword = common.Pwdhash(password)
+	}
+
+	o.Update(u, "encrypted_password")
+
+	return
+}
+
+func UserGetByEmail(email string) (user *User, err error) {
+
+	o := orm.NewOrm()
+	user = new(User)
+	user.Email = email
+	err = o.Read(user, "Email")
+
+	return
+}
+
+func UserGetByResetPassToken(token string) (user *User, err error) {
+
+	o := orm.NewOrm()
+
+	if utf8.RuneCountInString(token) > 255 {
+		return
+	}
+
+	user = new(User)
+	user.ResetPasswordToken = token
+	if err = o.QueryTable(user).Filter("reset_password_token", token).One(user); err != nil {
+		return
+	}
+
+	t := time.Now()
+	sub := t.Sub(user.ResetPasswordSentAt.Add(time.Hour * 24)).String()
+	if !strings.Contains(sub, "-") {
+		err = errors.New("max 24 hour")
+	}
+
+	return
 }

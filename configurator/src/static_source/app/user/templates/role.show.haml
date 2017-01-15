@@ -8,6 +8,9 @@
       .edit-icon-link
         %a(ui-sref="dashboard.role.edit({name:role.name})")
           %span.fa.fa-pencil
+        &nbsp;
+        %a(href="" ui-sref="dashboard.permissions.show({name: role.name})")
+          %small.fa.fa-key
 
     .pull-right.date-info-block
       .form-group

@@ -1,0 +1,50 @@
+.row
+  .col-md-12
+    %h3
+      %a(href="" ui-sref="dashboard.role.show({name: role.name})")
+      {{'role.permissions_form' | translate}} - {{role.name}}
+
+    .pull-right.date-info-block
+      .form-group
+        %small
+          {{'Created at' | translate}} {{role.created_at | readableDateTime}}
+        %small
+          {{'Updated at' | translate}} {{role.update_at | readableDateTime}}
+
+.row
+  .col-md-12
+    .form-group
+      .alert.alert-danger(role="alert")
+        %h5
+          %i.fa.fa-exclamation-triangle
+          &nbsp;
+          {{'permission.warning_message' | translate}}
+
+.row
+  .col-md-6
+    .form-group
+      .panel.panel-danger(ng-repeat="(pack_name, pack) in access_list")
+        .panel-heading(translate="{{::pack_name}}.package_name")
+        .panel-body
+          .checkbox(ng-repeat="(level_name, level) in pack")
+            %label
+              %input(type="checkbox" ng-model="level.checked" ng-click="checked(pack_name, level_name, level)" ng-checked="role.access_list[pack_name].indexOf(level_name) > -1" ng-disabled="role_access_list[pack_name][level_name]['role_name'] && role_access_list[pack_name][level_name]['role_name'] != role.name")
+              %span(translate="permission.{{level_name}}")
+              %span(ng-if="level.description")
+                (
+                %span(translate="{{::pack_name}}.access_list.{{::level.description}}" )
+                )
+              %a(ng-if="role_access_list[pack_name][level_name]['role_name'] && role_access_list[pack_name][level_name]['role_name'] != role.name" ui-sref="dashboard.permissions.show({name: role_access_list[pack_name][level_name]['role_name']})" )
+                (
+                {{::role_access_list[pack_name][level_name]['role_name']}}
+                &nbsp;
+                .fa.fa-external-link-square
+                )
+
+.row
+  .col-md-6
+    .pull-right
+      %a.btn.btn-default(href="" role="button" ng-click="cancel()")
+        {{'Cancel' | translate}}
+      %a.btn.btn-danger(href="" role="button" ng-click="update()")
+        {{'Update' | translate}}

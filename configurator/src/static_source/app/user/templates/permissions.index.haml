@@ -1,3 +1,5 @@
+
+
 .row
   .col-md-2.col-sm-3
     .row
@@ -15,6 +17,15 @@
         %li.presentation(ng-class="{ active: $state.includes('dashboard.permissions') }")
           %a(ui-sref="dashboard.permissions")
             {{'Permissions' | translate}}
+
+    .row
+      .col-md-12
+        %h3 {{'Roles' | translate}}
+    .form-group
+      %ul.nav.nav-pills.nav-stacked
+        %li.presentation(ng-repeat="role in roles.items" ui-sref-active="active" )
+          %a(ui-sref="dashboard.permissions.show({name: role.name})")
+            {{role.name}}
 
   .col-md-10.col-sm-9
     %ui-view

@@ -84,4 +84,20 @@ angular
       templateUrl: '/user/templates/role.edit.html'
       controller: 'roleEditCtrl'
     )
+
+    .state(
+      name: "dashboard.permissions"
+      url: "permissions"
+      views:
+        '@dashboard':
+          templateUrl: '/user/templates/permissions.index.html'
+          controller: 'permissionsIndexCtrl'
+    )
+
+    .state(
+      name: "dashboard.permissions.show"
+      url: "/permissions/:name"
+      templateUrl: '/user/templates/permissions.show.html'
+      controller: 'permissionsShowCtrl'
+    )
 ]

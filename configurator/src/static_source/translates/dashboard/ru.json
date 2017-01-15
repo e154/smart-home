@@ -31,6 +31,7 @@
   "full screen": "Развернуть",
   "set image": "Загрузить",
   "node": {
+    "package_name": "Работа с устройствами связи",
     "name": "Название",
     "show_form": "Узел",
     "new_form": "Новый узел",
@@ -52,6 +53,7 @@
     }
   },
   "device": {
+    "package_name": "Работа с устройствами",
     "device": "Устройство",
     "name": "Название",
     "sleep": "Спать",
@@ -107,6 +109,12 @@
       "add": "Добавить статус"
     }
   },
+  "device_action": {
+    "package_name": "Действия устройств"
+  },
+  "device_state": {
+    "package_name": "Состояние устройства"
+  },
   "total items": "всего",
   "workflow": {
     "name": "Название",
@@ -115,7 +123,8 @@
     "enabled": "Включен",
     "disabled": "Выключен",
     "created_at": "Дата создания",
-    "update_at": "Дата обновления"
+    "update_at": "Дата обновления",
+    "package_name": "Действия над корневыми БП"
   },
   "flow": {
     "edit": "Редактирование процесса",
@@ -154,7 +163,8 @@
         "task": "Задача",
         "connector": "Связь"
       }
-    }
+    },
+    "package_name": "Работа с процессами"
   },
   "worker": {
     "action_name": "Действие",
@@ -162,9 +172,11 @@
     "time": "Время срабатывания",
     "enabled": "Включен",
     "disabled": "Выключен",
-    "status": "Состояние"
+    "status": "Состояние",
+    "package_name": "Действия над рабочими процессами"
   },
   "script": {
+    "package_name": "Работа со скриптами",
     "name": "Название",
     "description": "Описание",
     "source": "Исходный код",
@@ -175,7 +187,10 @@
     "show_form": "Скрипт",
     "edit_form": "Редактирование скрипта",
     "new_form": "Новый скрипт",
-    "index_form": "Список скриптов"
+    "index_form": "Список скриптов",
+    "access_list": {
+      "execute script": "Выполнить скрипт один раз"
+    }
   },
   "log": {
     "level": "Уровень",
@@ -183,7 +198,8 @@
     "start_date": "От",
     "end_date": "По",
     "created_at": "Дата создания",
-    "index_form": "Логи"
+    "index_form": "Логи",
+    "package_name": "Логи"
   },
   "notifr": {
     "email_system": "Система уведомлений",
@@ -198,7 +214,8 @@
     "title": "Заголовок",
     "items": "Элементы",
     "preview": "Просмотр",
-    "source_code": "Исходный код"
+    "source_code": "Исходный код",
+    "package_name": "Управление уведомлениями"
   },
   "map": {
     "name": "Название",
@@ -260,7 +277,8 @@
           }
         }
       }
-    }
+    },
+    "package_name": "Работа с картой"
   },
   "widget": {
     "name": {
@@ -308,7 +326,8 @@
   },
   "dashboard": {
     "name": "Панель управления",
-    "add_widget": "Добавить виджет"
+    "add_widget": "Добавить виджет",
+    "package_name": "Панель управления"
   },
   "user": {
     "new_form": "Новый пользователей",
@@ -340,6 +359,11 @@
       "block": "Блокировать",
       "unblock": "Разблокировать",
       "remove": "Удалить"
+    },
+    "package_name": "Пользователи",
+    "access_list": {
+      "view role access list": "Расширенный список",
+      "update role access list info": "Расширенный список"
     }
   },
   "role": {
@@ -348,14 +372,73 @@
     "index_form": "Список ролей",
     "show_form": "Просмотр роли",
     "edit_form": "Редактирование роли",
+    "permissions_form": "Права доступа",
     "description": "Описание",
     "created_at": "Создан",
     "update_at": "Обновлён",
     "parent": "Родитель",
     "children": "Дочерние роли",
-    "name": "Название"
+    "name": "Название",
+    "package_name": "Роли"
   },
   "Users": "Пользователи",
   "Roles": "Роли",
-  "Menu": "Меню"
+  "Menu": "Меню",
+  "Permissions": "Правила доступа",
+  "permission": {
+    "warning_message": "Внимание настройки связанные с безопасностью",
+    "read": "Чтение",
+    "create": "Создание",
+    "update": "Обновление",
+    "delete": "Удаление",
+    "manage": "Управление",
+    "upload": "Загрузить",
+    "package_name": "Правила доступа",
+    "read_map": "Просмотр карты",
+    "create_map": "Создание карты",
+    "update_map": "Обновление карты",
+    "delete_map": "Удаление карты",
+    "manage_map": "Управление картой",
+    "read_map_element": "Просмотр элемента карты",
+    "create_map_element": "Создание элемента карты",
+    "update_map_element": "Обновление элемента карты",
+    "delete_map_element": "Удаление элемента карты",
+    "manage_map_element": "Управление элемента карты",
+    "read_map_layer": "Просмотр уровня карты",
+    "create_map_layer": "Создание уровня карты",
+    "update_map_layer": "Обновление уровня карты",
+    "delete_map_layer": "Удаление уровня карты",
+    "manage_map_layer": "Управление уровня карты",
+    "read_notifr_template": "Просмотр шаблона",
+    "create_notifr_template": "Создание шаблона",
+    "update_notifr_template": "Обновление шаблона",
+    "delete_notifr_template": "Удаление шаблона",
+    "manage_notifr_template": "Управление шаблона",
+    "preview_notifr": "Предпросмотр",
+    "read_notifr_item": "Просмотр элемента",
+    "create_notifr_item": "Создание элемента уведомления",
+    "update_notifr_item": "Обновление элемента уведомления",
+    "delete_notifr_item": "Удаление элемента уведомления",
+    "manage_notifr_item": "Управление элемента уведомления",
+    "exec_script": "Исполнить скрипт",
+    "read_role": "Просмотр ролей",
+    "create_role": "Создание роли",
+    "update_role": "Обновление роли",
+    "delete_role": "Удаление роли",
+    "read_role_access_list": "Просморт правил доступа",
+    "update_role_access_list": "Обновление правил доступа",
+    "update_status": "Обновление статуса"
+  },
+  "access_list": {
+    "package_name": "Список правил доступа"
+  },
+  "image": {
+    "package_name": "Работа с изображениями"
+  },
+  "ws": {
+    "package_name": "Веб сокеты",
+    "access_list": {
+      "stream access": "Доступ к системе информирования"
+    }
+  }
 }

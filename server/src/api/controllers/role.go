@@ -164,3 +164,43 @@ func (c *RoleController) Search() {
 	c.Data["json"] = &map[string]interface{}{"roles": ml, "meta": meta}
 	c.ServeJSON()
 }
+
+func (c *RoleController) GetAccessList() {
+
+	name := c.GetString(":name")
+	role, err := models.GetRoleByName(name)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	access_list := role.GetFullAccessList()
+
+	c.Data["json"] = map[string]interface{}{"access_list": access_list}
+	c.ServeJSON()
+}
+
+func (c *RoleController) PutAccessList() {
+
+	name := c.GetString(":name")
+	role, err := models.GetRoleByName(name)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	var access_list  map[string]map[string]bool
+	access_list = make(map[string]map[string]bool)
+
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &access_list);err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if err = role.UpdateAccessList(access_list); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.ServeJSON()
+}

@@ -12,16 +12,16 @@ import (
 )
 
 type Role struct {
-	Name		string		`orm:"pk;unique;size(255);index" valid:"Required;MaxSize(255)" json:"name"`
-	Description	string		`orm:"size(255)" json:"description"`
-	Parent		*Role		`orm:"rel(fk);column(parent);null" json:"parent"`
-	Children	[]*Role		`orm:"reverse(many)" json:"children"`
-	Child		int64		`orm:"size(11)" json:"child"`	//TODO remove
-	Width		int		`orm:"size(11)" json:"width"`	//TODO remove
-	Status		int		`orm:"-" json:"status"`
-	Roles		[]*Role		`orm:"-" json:"roles"`
-	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	Name		string			`orm:"pk;unique;size(255);index" valid:"Required;MaxSize(255)" json:"name"`
+	Description	string			`orm:"size(255)" json:"description"`
+	Parent		*Role			`orm:"rel(fk);column(parent);null" json:"parent"`
+	Children	[]*Role			`orm:"reverse(many)" json:"children"`
+	Status		int			`orm:"-" json:"status"`
+	Roles		[]*Role			`orm:"-" json:"roles"`
+	Permissions	[]*Permission		`orm:"reverse(many)" json:"-"`
+	AccessList	map[string][]string	`orm:"-" json:"access_list"`
+	Created_at	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
 func (m *Role) TableName() string {
@@ -163,6 +163,133 @@ func (r *Role) LoadRelated() (err error) {
 	_, err = o.LoadRelated(r, "Parent", 3)
 	_, err = o.LoadRelated(r, "Children", 3)
 
+	r.GetAccessList()
 
 	return
+}
+
+func (r *Role) GetFullAccessList() (access_list AccessList) {
+
+	var item AccessItem
+	var levels AccessLevels
+	var ok bool
+	roleList := []*Role{}
+	roles := []*Role{}
+	access_list = NewAccessList()
+
+	// получим полный список ролей
+	o := orm.NewOrm()
+	if _, err := o.QueryTable(r).All(&roles); err != nil {
+		return
+	}
+
+	getRoleParentList(&roles, r.Name, &roleList)
+
+	//
+	for _, role := range roleList {
+		if _, err := o.LoadRelated(role, "Permissions"); err != nil {
+			break
+		}
+
+		if role.Permissions == nil {
+			continue
+		}
+
+		for _, perm := range role.Permissions {
+			if levels, ok = AccessConfigList[perm.PackageName]; !ok {
+				continue
+			}
+
+			if item, ok = levels[perm.LevelName]; !ok {
+				continue
+			}
+
+
+			if access_list[perm.PackageName] == nil {
+				access_list[perm.PackageName] = NewAccessLevels()
+			}
+
+			//fmt.Println(perm.PackageName, item)
+			item.RoleName = role.Name
+			access_list[perm.PackageName][perm.LevelName] = item
+		}
+	}
+
+	//fmt.Println(permissions)
+
+	return
+}
+
+func (r *Role) GetAccessList() {
+	access_list := r.GetFullAccessList()
+
+	r.AccessList = make(map[string][]string)
+	for pack_name, pack := range access_list {
+		levels := []string{}
+		for level_name, _ := range pack {
+			levels = append(levels, level_name)
+		}
+
+		r.AccessList[pack_name] = levels
+	}
+}
+
+func (r *Role) UpdateAccessList(access_list map[string]map[string]bool) (err error) {
+
+
+	o := orm.NewOrm()
+	add_perms := []*Permission{}
+	del_perms := []string{}
+	for pack_name, pack := range access_list {
+		for level_name, dir := range pack {
+			if dir {
+				add_perms = append(add_perms, &Permission{
+					Role: r,
+					PackageName: pack_name,
+					LevelName: level_name,
+				})
+			} else {
+				del_perms = append(del_perms, level_name)
+			}
+
+			if len(del_perms) > 0 {
+				if _, err = o.QueryTable(&Permission{}).Filter("package_name", pack_name).Filter("level_name__in", del_perms).Delete(); err != nil {
+					return
+				}
+				del_perms = []string{}
+			}
+		}
+
+	}
+
+	if len(add_perms) == 0 {
+		return
+	}
+
+	for _, perm := range add_perms {
+		if _, _, err = o.ReadOrCreate(perm, "PackageName", "LevelName", "Role"); err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+
+	return
+}
+
+// Поиск всех родителей по ребенку
+func getRoleParentList(items *[]*Role, name string, list *[]*Role) {
+
+	PARENT:
+	for _, item := range *items {
+		if item.Name == name {
+			*list = append(*list, item)
+			name = ""
+			if item.Parent != nil {
+				name = item.Parent.Name
+			}
+
+			goto PARENT
+			break
+		}
+
+	}
 }

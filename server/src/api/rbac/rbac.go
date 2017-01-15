@@ -1,2 +1,6 @@
 package rbac
 
+func Initialize() {
+
+
+}

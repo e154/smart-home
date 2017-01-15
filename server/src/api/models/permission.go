@@ -12,8 +12,9 @@ import (
 
 type Permission struct {
 	Id		int64		`orm:"pk;auto" json:"id"`
-	Parent		*Role		`orm:"rel(one)" json:"parent"`
-	Child		*AuthItem	`orm:"rel(one)" json:"child"`
+	Role		*Role		`orm:"rel(fk);column(role_name)" json:"-"`
+	PackageName	string		`orm:"" json:"package_name"`
+	LevelName	string		`orm:"" json:"level_name"`
 }
 
 func (m *Permission) TableName() string {
