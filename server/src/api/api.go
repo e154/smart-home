@@ -70,6 +70,9 @@ func configuration() {
 		"Phone":        "Должно быть правильным номером телефона или мобильного телефона",
 		"ZipCode":      "Должно быть правильным почтовым индексом",
 	})
+
+	// register access filters
+	filters.RegisterFilters()
 }
 
 func Initialize() {
@@ -81,9 +84,6 @@ func Initialize() {
 
 	// rbac
 	rbac.Initialize()
-
-	// register access filters
-	filters.RegisterFilters()
 
 	// cron
 	cron.Initialize()

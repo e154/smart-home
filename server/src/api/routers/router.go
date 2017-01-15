@@ -7,6 +7,8 @@ import (
 )
 
 func Initialize() {
+	beego.ErrorController(&controllers.ErrorController{})
+
 	ns := beego.NewNamespace("/api",
 		beego.NSNamespace("/v1",
 			beego.NSRouter("/ws)", &stream.StreamCotroller{}, "get:Get"),

@@ -2,19 +2,18 @@ package main
 
 import (
 	"github.com/astaxie/beego"
-	"./controllers"
+	"./router"
 )
 
 func main() {
 	Initialize()
-	beego.Info("Starting....")
 	beego.Run()
 }
 
 func Initialize() {
-	beego.Router("/", &controllers.DashboardController{}, "get:Index")
-	beego.Router("/*", &controllers.DashboardController{}, "get:Index")
+	router.Initialize()
 
+	beego.Info("Starting....")
 	beego.Info("AppPath:", beego.AppPath)
 	if(beego.AppConfig.String("runmode") == "dev") {
 		beego.Info("Develment mode enabled")
