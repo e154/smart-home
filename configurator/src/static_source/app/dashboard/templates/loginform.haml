@@ -1,0 +1,30 @@
+.ngdialog-post-preview
+    .row.section
+        .col-lg-12
+            .form-group
+                %h4.modal-title {{'Sign in'|translate}}
+        
+    .row.section(ng-if="error")
+        .col-lg-12
+            .alert.alert-danger {{error}}
+
+    .row.section
+        .col-lg-12
+            .form-group
+                .input-group
+                    %label.sr-only(for="email")
+                        {{'Email'|translate}}
+                    #email.input-group-addon
+                        %span.fa.fa-envelope(aria-hidden="true")
+                    %input(ng-model="user.email" type="email" required="true" name="email" class="form-control" id="email" placeholder="{{'email'|translate}}" required)
+            .form-group
+                .input-group
+                    %label.sr-only(for="password") {{'Password'|translate}}
+                    #password.input-group-addon
+                        %span.fa.fa-user(aria-hidden="true")
+                    %input(ng-model="user.password" type="password" required="true" name="password" class="form-control" id="password" placeholder="{{'password'|translate}}" required)
+
+    %button#loginButton.btn.btn-primary.full-width(ng-click="auth()"  type="button")
+        {{'Sign in'|translate}}
+
+.ngdialog-close

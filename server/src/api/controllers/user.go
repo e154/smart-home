@@ -150,10 +150,36 @@ func (c *UserController) GetAll() {
 // @router /:id [put]
 func (c *UserController) Put() {
 	id, _ := c.GetInt(":id")
-	var user models.User
-	json.Unmarshal(c.Ctx.Input.RequestBody, &user)
+	var user *models.User
+	var err error
+
+	if user, err = models.GetUserById(int64(id)); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, user); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	incoming := map[string]interface{}{}
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &incoming); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	// construct user data
+	//---------------------------------------------------------
 	user.Id = int64(id)
-	if err := models.UpdateUserById(&user); err != nil {
+	password, ok := incoming["password"].(string)
+	if ok && len(password) >= 6 && password == incoming["password_repeat"] {
+		user.EncryptedPassword = common.Pwdhash(password)
+	}
+
+	// update user
+	//---------------------------------------------------------
+	if err := models.UpdateUserById(user); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}

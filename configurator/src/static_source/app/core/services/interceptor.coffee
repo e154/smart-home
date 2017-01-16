@@ -1,8 +1,9 @@
 angular
 .module('appServices')
-.factory('myHttpInterceptor', ['$q','$injector', ($q, $injector) ->
+.factory('myHttpInterceptor', ['$q','$injector', '$rootScope', ($q, $injector, $rootScope) ->
   'request': (config) ->
 #    config.headers['X-Requested-With'] = 'XMLHttpRequest'
+    config.headers['Authorization'] = $rootScope.token if $rootScope.token
     config
 
   'requestError': (rejection) ->

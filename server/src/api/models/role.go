@@ -16,8 +16,6 @@ type Role struct {
 	Description	string			`orm:"size(255)" json:"description"`
 	Parent		*Role			`orm:"rel(fk);column(parent);null" json:"parent"`
 	Children	[]*Role			`orm:"reverse(many)" json:"children"`
-	Status		int			`orm:"-" json:"status"`
-	Roles		[]*Role			`orm:"-" json:"roles"`
 	Permissions	[]*Permission		`orm:"reverse(many)" json:"-"`
 	AccessList	map[string][]string	`orm:"-" json:"access_list"`
 	Created_at	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`

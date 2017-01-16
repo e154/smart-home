@@ -39,6 +39,7 @@ app = angular.module('app', [
   'ngDragDrop'
   'gridster'
   'passwordCheck'
+  'http-auth-interceptor'
 ])
 
 app.version =

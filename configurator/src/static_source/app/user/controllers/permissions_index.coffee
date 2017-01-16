@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'permissionsIndexCtrl', ['$scope', '$stateParams', 'Role', 'AccessList', 'Notify', 'Message', '$q'
-($scope, $stateParams, Role, AccessList, Notify, Message, $q) ->
+.controller 'permissionsIndexCtrl', ['$scope', '$stateParams', 'Role', 'Auth', 'Notify', 'Message', '$q'
+($scope, $stateParams, Role, Auth, Notify, Message, $q) ->
 
   $scope.roles = new Role {
     limit:100
@@ -11,7 +11,7 @@ angular
     sortby:'created_at'
   }
   $scope.roles.$all()
-  $scope.access_list = new AccessList {}
+  $scope.access_list = new Auth {}
   $scope.getAccessList =->
     success =()->
     error =(result)->

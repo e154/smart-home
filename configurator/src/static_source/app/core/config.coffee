@@ -39,10 +39,23 @@ angular
 
 angular
 .module('app')
-.run ['$rootScope', '$state',($rootScope, $state) ->
+.run ['$rootScope', '$state', 'storage', 'authForm', '$http'
+($rootScope, $state, storage, authForm, $http) ->
   $rootScope.$on '$stateChangeSuccess', (event, toState, toParams, fromState, fromParams) ->
     document.getElementsByTagName('body')[0].classList.remove('loading')
 
 #    http://stackoverflow.com/questions/24764764/conditionally-set-angulars-ng-class-based-on-state
   $rootScope.$state = $state;
+
+#  TODO remove
+  auth = new storage('')
+  $rootScope.token = auth.getItem('token') || null
+  $rootScope.current_user = auth.getObject('current_user') || null
+
+  if !$rootScope.token || !$rootScope.current_user
+    authForm.show()
+
+  $http.defaults.headers.common['Authorization'] = $rootScope.token
+
+  return
 ]

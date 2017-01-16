@@ -354,6 +354,7 @@
     "set_password": "Укажите пароль в обоих полях.",
     "created_at": "Создан",
     "update_at": "Обновлён",
+    "Sign in": "Авторизация",
     "menu": {
       "show": "Просмотр",
       "edit": "Редактировать",
@@ -428,7 +429,11 @@
     "delete_role": "Удаление роли",
     "read_role_access_list": "Просморт правил доступа",
     "update_role_access_list": "Обновление правил доступа",
-    "update_status": "Обновление статуса"
+    "update_status": "Обновление статуса",
+    "signin": "Вход",
+    "signout": "Выход",
+    "recovery": "Восстановление пароля",
+    "reset": "Сброс пароля"
   },
   "access_list": {
     "package_name": "Список правил доступа"
@@ -441,5 +446,8 @@
     "access_list": {
       "stream access": "Доступ к системе информирования"
     }
+  },
+  "auth": {
+    "package_name": "Авторизация"
   }
 }

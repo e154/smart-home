@@ -42,6 +42,8 @@ type User struct {
 	Deleted           	time.Time        	`orm:"type(datetime);null;default(null)" json:"deleted"`
 }
 
+const HISTORY_MAX = 8
+
 func (m *User) TableName() string {
 	return beego.AppConfig.String("db_users")
 }
@@ -185,6 +187,7 @@ func DeleteUser(id int64) (err error) {
 func (u *User) LoadRelated() (err error) {
 	o := orm.NewOrm()
 
+	_, err = o.LoadRelated(u, "CreatedBy")
 	_, err = o.LoadRelated(u, "Role")
 	_, err = o.LoadRelated(u, "Meta")
 
@@ -221,10 +224,10 @@ func (u *User) UpdateHistory(t time.Time, ipv4 string) {
 	history := []*UserHistory{}
 	json.Unmarshal([]byte(u.History), &history)
 	l := len(history)
-	// max 128 records
-	if l > 128 {
+	// max HISTORY_MAX records
+	if l > HISTORY_MAX {
 		// удаление элемента из начала среза
-		history = history[l - 128:]
+		history = history[l - HISTORY_MAX:]
 	}
 
 	history = append(history, &UserHistory{Ip: ipv4, Time: t})
@@ -372,7 +375,11 @@ func UserGetByEmail(email string) (user *User, err error) {
 	o := orm.NewOrm()
 	user = new(User)
 	user.Email = email
-	err = o.Read(user, "Email")
+	if err = o.Read(user, "Email"); err != nil {
+		return
+	}
+
+	err = user.LoadRelated()
 
 	return
 }

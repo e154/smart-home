@@ -1,7 +1,7 @@
 angular
 .module('appControllers')
-.controller 'permissionsShowCtrl', ['$scope', '$stateParams', 'Role', 'AccessList', 'Notify', 'Message', '$q'
-($scope, $stateParams, Role, AccessList, Notify, Message, $q) ->
+.controller 'permissionsShowCtrl', ['$scope', '$stateParams', 'Role', 'Notify', 'Message', '$q'
+($scope, $stateParams, Role, Notify, Message, $q) ->
 
   return if !$stateParams.name
 

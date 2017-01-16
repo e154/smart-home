@@ -16,9 +16,6 @@ func (c *DashboardController) URLMapping() {
 
 func (h *DashboardController) Index() {
 
-	h.Ctx.Redirect(302, "/login")
-	return
-
 	h.Layout = h.GetTemplate() + "/private/base.tpl.html"
 	h.TplName = h.GetTemplate() + "/private/index.tpl.html"
 	h.UpdateTemplate()

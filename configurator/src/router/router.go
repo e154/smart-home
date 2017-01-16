@@ -14,5 +14,5 @@ func Initialize() {
 	beego.Router("/recovery", &controllers.DashboardController{}, "get:Recovery")
 	beego.Router("/reset", &controllers.DashboardController{}, "get:Reset")
 	beego.Router("/reset", &controllers.DashboardController{}, "post:ResetPost")
-	beego.Router("/*", &controllers.DashboardController{}, "post:Index")
+	beego.Router("/*", &controllers.DashboardController{}, "*:Index")
 }

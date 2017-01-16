@@ -11,6 +11,12 @@ func Initialize() {
 
 	ns := beego.NewNamespace("/api",
 		beego.NSNamespace("/v1",
+			beego.NSRouter("/signin", &controllers.AuthController{}, "post:SignIn"),
+			beego.NSRouter("/signout", &controllers.AuthController{}, "post:SignOut"),
+			beego.NSRouter("/recovery", &controllers.AuthController{}, "post:Recovery"),
+			beego.NSRouter("/reset", &controllers.AuthController{}, "post:Reset"),
+			beego.NSRouter("/access_list", &controllers.AuthController{}, "get:AccessList"),
+
 			beego.NSRouter("/ws)", &stream.StreamCotroller{}, "get:Get"),
 			beego.NSRouter("/ws/*)", &stream.StreamCotroller{}, "get:Get"),
 
@@ -143,8 +149,6 @@ func Initialize() {
 			beego.NSRouter("/role/search", &controllers.RoleController{}, "get:Search"),
 			beego.NSRouter("/role/:name([\\w]+)/access_list", &controllers.RoleController{}, "get:GetAccessList"),
 			beego.NSRouter("/role/:name([\\w]+)/access_list", &controllers.RoleController{}, "put:PutAccessList"),
-
-			beego.NSRouter("/access_list", &controllers.AccessController{}, "get:Get"),
 	),
 	)
 	beego.AddNamespace(ns)
