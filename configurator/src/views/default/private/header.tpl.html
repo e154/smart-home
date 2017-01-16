@@ -4,8 +4,8 @@
 <meta name="author" content="Delta54 <support@e154.ru>">
 <meta name="_xsrf" content="{{{.xsrf_token}}}" />
 
-{{{safeHtml "<!-- app:css -->"}}}{{{if .Styles}}}{{{range $style := .Styles}}}
-<link rel="stylesheet" href="{{{$style}}}">{{{end}}}{{{end}}}
+<link rel="stylesheet" href="/static/css/lib.min.css">
+<link rel="stylesheet" href="/static/css/app.min.css">
 
 <link rel="apple-touch-icon" sizes="180x180" href="/static/images/logo/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="/static/images/logo/favicon-32x32.png" sizes="32x32">
@@ -112,6 +112,8 @@
 </style>
 
 <script type="text/javascript">
+window.token = {{{.token}}};
+window.current_user = {{{.current_user}}};
 window.server_url={{{.server_url}}};
 window.debug={{{.debug}}};
 </script>

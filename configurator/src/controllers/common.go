@@ -6,6 +6,10 @@ import  (
 	"strconv"
 	"reflect"
 	"html/template"
+	"fmt"
+	"net/http"
+	"bytes"
+	"io/ioutil"
 )
 
 type CommonController struct {
@@ -69,6 +73,25 @@ func (c *CommonController) Prepare() {
 func (c *CommonController) UpdateTemplate() {
 	beego.BuildTemplate(beego.BConfig.WebConfig.ViewsPath)
 	c.Render()
+}
+
+func (c *CommonController) SendRequest(method, url string, jsonStr []byte) (result []byte, err error) {
+	fmt.Println("URL:>", url)
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonStr))
+	req.Header.Set("X-Custom-Header", "myvalue")
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	var resp *http.Response
+	if resp, err = client.Do(req); err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+	result, _ = ioutil.ReadAll(resp.Body)
+
+	return
 }
 
 func init() {
