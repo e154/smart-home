@@ -127,10 +127,6 @@ module.exports = {
             dest: private_dest + '/js'
         }
     },
-    ace_themes: {
-        source: private_bower + '/ace-builds/**/*',
-        dest: private_dest + '/js/ace-builds'
-    },
     redactor_theme_less: {
         filename: 'style.css',
         watch: private_src + '/app/constructor/themes/**/*',
@@ -138,7 +134,7 @@ module.exports = {
             source: [
                 private_src + '/app/constructor/themes/minimal/**/*.less'
             ],
-            dest: private_dest + '/css/themes/minimal'
+            dest: private_dest + '/themes/minimal'
         }
     },
     redactor_theme_files: {
@@ -147,7 +143,26 @@ module.exports = {
             source: [
                 private_src + '/app/constructor/themes/minimal/**/*.svg'
             ],
-            dest: private_dest + '/css/themes/minimal'
+            dest: private_dest + '/themes/minimal'
+        }
+    },
+    copy: {
+        ace: {
+            source: private_bower + '/ace-builds/**/*',
+            dest: private_dest + '/js/ace-builds'
+        },
+        translate: {
+            source: private_src + '/translates/**/*',
+            dest: private_dest + '/translates'
+        },
+        'font-awesome': {
+            source: private_bower + '/font-awesome/fonts/**/*',
+            dest: private_dest + '/fonts'
+        },
+        'bpmn-font': {
+            source: private_bower + '/bpmn-font/dist/font/**/*',
+            dest: private_dest + '/font'
         }
     }
+
 };

@@ -9,7 +9,7 @@ gulp.task('default', function(cb) {
         ['haml'],
         ['template'],
         'less',
-        'ace_themes',
+        'copy',
         'redactor_theme_files', 'redactor_theme_less',
         'watch'
     );
@@ -24,6 +24,6 @@ gulp.task('pack', function(cb) {
         ['template'],
         'less',
         ['redactor_theme_files', 'redactor_theme_less'],
-        'ace_themes'
+        'copy'
     );
 });
