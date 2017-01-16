@@ -1,0 +1,20 @@
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="92" width="112" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+<!-- cause actions -->
+  <!-- /cause actions -->
+
+  <!-- transaction -->
+  <!-- /transaction -->
+
+<!-- base -->
+ <rect style="" display="block" rx="10" ry="0" height="80" width="100" ng-class="{dashed: data.type['status'] == 'event'}" y="6" x="6" class="base"/>
+<!-- /base -->
+ <g>
+  <div class="inner">
+   <span ng-bind="data.title" class="title" ng-if="data.title"/>
+  </div>
+  <span ng-bind="data.label" class="label label-default" ng-if="data.label"/>
+  <div class="ep"/>
+  <div ng-bind="data.info" class="info" ng-if="data.info"/>
+ </g>
+</svg>
