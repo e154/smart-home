@@ -81,3 +81,4 @@ src/static_source/js
 src/static_source/bower_components
 .idea
 src/src
+/static_source/public/bower_components/

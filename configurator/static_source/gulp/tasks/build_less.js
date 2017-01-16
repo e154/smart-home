@@ -4,13 +4,27 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     gutil = require('gulp-util');
 
-gulp.task('build_less', function(done) {
-    return gulp.src(conf.source)
-        .pipe(concat(conf.filename))
-        .pipe(less())
-        .on('error', function(err){
-            gutil.log(err);
-            this.emit('end');
-        })
-        .pipe(gulp.dest(conf.dest));
-});
+for (var key in conf) {
+
+    (function (_task, _source, _filename, _dest) {
+
+        var task = 'less:' + _task,
+            source = _source,
+            filename = _filename,
+            dest = _dest;
+
+        gulp.task(task, function(done) {
+            return gulp.src(source)
+                .pipe(concat(filename))
+                .pipe(less())
+                .on('error', function(err){
+                    gutil.log(err);
+                    this.emit('end');
+                })
+                .pipe(gulp.dest(dest));
+        });
+
+    })(key, conf[key].source, conf[key].filename, conf[key].dest)
+}
+
+gulp.task('less', ['less:public', 'less:private']);

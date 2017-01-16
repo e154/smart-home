@@ -1,82 +1,153 @@
-var source = "static_source";
-var tmp = "tmp";
-var assets = "assets";
+var source = "./",
+    tmp = "tmp",
+    public_dest = "../build/public",
+    private_dest = "../build/private",
+    public_src = "public",
+    private_src = "private",
+    public_bower = public_src + "/bower_components",
+    private_bower = private_src + "/bower_components";
 
 module.exports = {
     build_lib_js: {
-        filename: 'lib.min.js',
-        paths: {
-            bowerDirectory: source + '/bower_components',
-            bowerrc: '.bowerrc',
-            bowerJson: 'bower.json'
+        public: {
+            filename: 'lib.min.js',
+            paths: {
+                bowerDirectory: public_bower,
+                bowerrc: public_src + '/.bowerrc',
+                bowerJson: public_src + '/bower.json'
+            },
+            dest: public_dest + '/js'
         },
-        dest: source + '/js'
-    },
-    build_coffee_js: {
-        filename: 'app.min.js',
-        source: [
-            source + "/app/app.coffee",
-            source + "/app/**/*.coffee"
-        ],
-        watch: source + "/app/**/*.coffee",
-        dest: source + '/js'
+        private: {
+            filename: 'lib.min.js',
+            paths: {
+                bowerDirectory: private_bower,
+                bowerrc: private_src + '/.bowerrc',
+                bowerJson: private_src + '/bower.json'
+            },
+            dest: private_dest + '/js'
+        }
     },
     build_lib_css: {
-        filename: 'lib.min.css',
-        paths: {
-            bowerDirectory: source + '/bower_components',
-            bowerrc: '.bowerrc',
-            bowerJson: 'bower.json'
+        public: {
+            filename: 'lib.min.css',
+            paths: {
+                bowerDirectory: public_bower,
+                bowerrc: public_src + '/.bowerrc',
+                bowerJson: public_src + '/bower.json'
+            },
+            dest: public_dest + '/css'
         },
-        dest: source + '/css'
+        private: {
+            filename: 'lib.min.css',
+            paths: {
+                bowerDirectory: private_bower,
+                bowerrc: private_src + '/.bowerrc',
+                bowerJson: private_src + '/bower.json'
+            },
+            dest: private_dest + '/css'
+        }
+    },
+    build_coffee_js: {
+        public: {
+            filename: 'app.min.js',
+            source: [
+                public_src + "/app/app.coffee",
+                public_src + "/app/**/*.coffee"
+            ],
+            watch: public_src + "/app/**/*.coffee",
+            dest: public_dest + '/js'
+        },
+        private: {
+            filename: 'app.min.js',
+            source: [
+                private_src + "/app/app.coffee",
+                private_src + "/app/**/*.coffee"
+            ],
+            watch: private_src + "/app/**/*.coffee",
+            dest: private_dest + '/js'
+        }
     },
     build_less: {
-        filename: 'app.min.css',
-        source: [
-            source + '/less/bootstrap.less',
-            source + '/less/bootstrap-theme.less',
-            source + '/less/app.less'
-        ],
-        dest: source + '/css',
-        watch: source + '/less/**/*.less'
+        public: {
+            filename: 'app.min.css',
+            source: [
+                public_src + '/less/bootstrap.less',
+                public_src + '/less/bootstrap-theme.less',
+                public_src + '/less/app.less'
+            ],
+            dest: public_dest + '/css',
+            watch: public_src + '/less/**/*.less'
+        },
+        private: {
+            filename: 'app.min.css',
+            source: [
+                private_src + '/less/bootstrap.less',
+                private_src + '/less/bootstrap-theme.less',
+                private_src + '/less/app.less'
+            ],
+            dest: private_dest + '/css',
+            watch: private_src + '/less/**/*.less'
+        }
+
     },
     build_haml: {
-        source: 'static_source/app/**/*.haml',
-        tmp: 'static_source/tmp/templates',
-        watch: [
-            "static_source/app/**/*.haml"
-        ]
+        public: {
+            source: public_src + '/app/**/*.haml',
+            dest: public_src + '/tmp/templates',
+            watch: [
+                public_src + '/app/**/*.haml'
+            ]
+        },
+        private: {
+            source: private_src + '/app/**/*.haml',
+            dest: private_src + '/tmp/templates',
+            watch: [
+                private_src + '/app/**/*.haml'
+            ]
+        }
     },
     build_templates: {
-        filename: "templates.min.js",
-        prefix: '/',
-        source: 'static_source/tmp/templates/**/*.html',
-        watch: [
-            'static_source/tmp/templates/**/*'
-        ],
-        dest: 'static_source/js'
+       public: {
+           filename: "templates.min.js",
+           prefix: '/',
+           source: public_src + '/tmp/templates/**/*.html',
+           watch: [
+               public_src + '/tmp/templates/**/*'
+           ],
+           dest: public_dest + '/js'
+        },
+        private: {
+            filename: "templates.min.js",
+            prefix: '/',
+            source: private_src + '/tmp/templates/**/*.html',
+            watch: [
+                private_src + '/tmp/templates/**/*'
+            ],
+            dest: private_dest + '/js'
+        }
     },
     ace_themes: {
-        source: source + '/bower_components/ace-builds/**/*',
-        dest: source + '/js/ace-builds'
+        source: private_bower + '/ace-builds/**/*',
+        dest: private_dest + '/js/ace-builds'
     },
     redactor_theme_less: {
         filename: 'style.css',
-        watch: 'static_source/app/constructor/themes/**/*',
+        watch: private_src + '/app/constructor/themes/**/*',
         minimal: {
             source: [
-                'static_source/app/constructor/themes/minimal/**/*.less'
+                private_src + '/app/constructor/themes/minimal/**/*.less'
             ],
-            dest: 'static_source/themes/minimal'
+            dest: private_dest + '/css/themes/minimal'
         }
     },
     redactor_theme_files: {
-        watch: 'static_source/app/constructor/themes/**/*',
+        watch: private_src + '/app/constructor/themes/**/*',
         minimal: {
             source: [
-                'static_source/app/constructor/themes/minimal/**/*.svg'
+                private_src + '/app/constructor/themes/minimal/**/*.svg'
             ],
-            dest: 'static_source/themes/minimal'
+            dest: private_dest + '/css/themes/minimal'
         }
     }
 };

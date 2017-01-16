@@ -3,12 +3,12 @@ var gulp = require('gulp'),
 
 gulp.task('default', function(cb) {
     runSequence(
-        'build_lib_js',
-        'build_coffee_js',
-        ['build_haml'],
-        ['build_templates'],
-        'build_lib_css',
-        'build_less',
+        'bower:css',
+        'bower:js',
+        'coffee',
+        ['haml'],
+        ['template'],
+        'less',
         'ace_themes',
         'redactor_theme_files', 'redactor_theme_less',
         'watch'
@@ -17,12 +17,12 @@ gulp.task('default', function(cb) {
 
 gulp.task('pack', function(cb) {
     runSequence(
-        'build_lib_js',
-        'build_coffee_js',
-        ['build_haml'],
-        ['build_templates'],
-        'build_lib_css',
-        'build_less',
+        'bower:css',
+        'bower:js',
+        'coffee',
+        ['haml'],
+        ['template'],
+        'less',
         ['redactor_theme_files', 'redactor_theme_less'],
         'ace_themes'
     );
