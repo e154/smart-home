@@ -15,7 +15,13 @@ angular.module('appFilters', [])
 angular.module('appControllers', [])
 angular.module('appServices', ['ngResource'])
 app = angular.module('app', [
-
+  'templates'
+  'appDirectives'
+  'appControllers'
+  'appFilters'
+  'appServices'
+  'ngRoute'
+  'ui.router'
 ])
 
 app.version =

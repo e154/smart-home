@@ -8,16 +8,13 @@ angular
       responseType: 'json'
       timeout: 60000
 
-    signout:
-      url: '/signout'
+    recovery:
+      url: '/recovery'
       method: 'POST'
       responseType: 'json'
 
-    show:
-      url: '/access_list'
-      method: 'GET'
+    reset:
+      url: '/reset'
+      method: 'POST'
       responseType: 'json'
-      transformResponse: (data) ->
-        data?.access_list || data
-
 ]

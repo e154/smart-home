@@ -10,8 +10,8 @@ func Initialize() {
 
 	beego.Router("/", &controllers.DashboardController{}, "*:Index")
 	beego.Router("/signin", &controllers.DashboardController{}, "*:Signin")
-	beego.Router("/signout", &controllers.DashboardController{}, "*:Signout")
-	beego.Router("/recovery", &controllers.DashboardController{}, "*:Recovery")
-	beego.Router("/reset", &controllers.DashboardController{}, "*:Reset")
+	beego.Router("/signout", &controllers.DashboardController{}, "post:Signout")
+	beego.Router("/recovery", &controllers.DashboardController{}, "post:Recovery")
+	beego.Router("/reset", &controllers.DashboardController{}, "post:Reset")
 	beego.Router("/*", &controllers.DashboardController{}, "*:Index")
 }

@@ -82,3 +82,4 @@ src/static_source/bower_components
 .idea
 src/src
 /static_source/public/bower_components/
+/static_source/public/tmp/

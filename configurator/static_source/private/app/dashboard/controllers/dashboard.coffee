@@ -159,6 +159,13 @@ angular
         ]
       }
     ]
+    'down_items': [
+      {
+        'label': 'Signout'
+        'link': '/signout'
+        'icon': 'fa fa-sign-out'
+      }
+    ]
 
 
   $scope.nodes = {}

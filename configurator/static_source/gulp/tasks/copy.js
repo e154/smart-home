@@ -17,4 +17,4 @@ for (var key in conf) {
     })(key, conf[key].source, conf[key].dest)
 }
 
-gulp.task('copy', ['copy:ace', 'copy:translate', 'copy:font-awesome', 'copy:bpmn-font']);
+gulp.task('copy', ['copy:ace', 'copy:translate', 'copy:font-awesome', 'copy:bpmn-font', 'copy:images']);

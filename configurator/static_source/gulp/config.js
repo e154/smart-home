@@ -162,6 +162,10 @@ module.exports = {
         'bpmn-font': {
             source: private_bower + '/bpmn-font/dist/font/**/*',
             dest: private_dest + '/font'
+        },
+        images: {
+            source: public_src + '/images/**/*',
+            dest: public_dest + '/images'
         }
     }
 

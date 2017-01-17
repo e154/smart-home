@@ -115,22 +115,22 @@
 window.app_settings = Object.create(Object.prototype, {
     server_url: {
         get: function(){
-            return {{{.server_url}}}
+            return {{{.server_url}}};
         }
     },
     current_user: {
         get: function(){
-            return {{{.current_user}}}
+            return {{{safeJs .current_user}}};
         }
     },
     token: {
         get: function(){
-            return {{{.token}}}
+            return {{{.token}}};
         }
     },
     debug: {
         get: function(){
-            return {{{.debug}}}
+            return {{{.debug}}};
         }
     }
 });

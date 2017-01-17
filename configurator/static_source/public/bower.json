@@ -15,6 +15,10 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "^1.6.1"
+    "angular": "^1.6.1",
+    "bootstrap": "boostrap#^3.3.7",
+    "angular-resource": "^1.6.1",
+    "angular-ui-router": "^0.3.2",
+    "angular-route": "^1.6.1"
   }
 }

@@ -79,3 +79,5 @@ install_manifest.txt
 /configurator/static_source/private/bower_components/
 /configurator/static_source/node_modules/
 /configurator/build/
+/configurator/src/tmp/
+/configurator/static_source/private/tmp/

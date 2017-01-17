@@ -16,7 +16,7 @@ angular
     show: ->
       return if @ngDialogInstance
       @ngDialogInstance = ngDialog.open
-        template: '/dashboard/templates/loginform.html'
+        template: '/core/templates/loginform.html'
         controller: 'loginFormCtrl'
         className: 'ngdialog-theme-default dashboard-login-form'
         scope: @scope

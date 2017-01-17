@@ -1,0 +1,53 @@
+@base_color: rgba(48, 62, 77, 0.9);
+@base_color2: #ccc;
+
+html,
+body {
+  height: 100% !important;
+  min-height: 100% !important;
+  font-size: 13px;
+
+  background: url(../images/bg.jpg) #fff no-repeat;
+  background-size: cover;
+}
+
+a, a:hover,
+a:active, a:focus {
+  text-decoration: none;
+}
+
+.signin-form,
+.reset-form,
+.recovery-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding-top: 130px;
+  color: @base_color2;
+
+  a {
+    color: @base_color2;
+    &:hover {
+      color: @base_color2;
+    }
+  }
+
+  .panel {
+    background-color: @base_color;
+    .panel-heading {
+      background: none;
+    }
+  }
+
+  input {
+    background: none;
+    color: @base_color2;
+  }
+
+  .btn {
+    width: 100%;
+    &.btn-default {
+      background: none;
+      color: @base_color2;
+    }
+  }
+}

@@ -47,15 +47,7 @@ angular
 #    http://stackoverflow.com/questions/24764764/conditionally-set-angulars-ng-class-based-on-state
   $rootScope.$state = $state;
 
-#  TODO remove
-  auth = new storage('')
-  $rootScope.token = auth.getItem('token') || null
-  $rootScope.current_user = auth.getObject('current_user') || null
-
-  if !$rootScope.token || !$rootScope.current_user
-    authForm.show()
-
-  $http.defaults.headers.common['Authorization'] = $rootScope.token
+  $http.defaults.headers.common['Authorization'] = window.app_settings.token
 
   return
 ]

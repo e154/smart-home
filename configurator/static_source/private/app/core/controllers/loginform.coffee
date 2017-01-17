@@ -12,15 +12,8 @@ angular
     password: ''
   }
 
-  auth = new storage('')
   $scope.auth = ->
     success =(result)->
-#      TODO remove
-      $rootScope.token = result.token
-      $rootScope.current_user = result.current_user
-      auth.setItem('token', result.token)
-      auth.setObject('current_user', result.current_user)
-      $http.defaults.headers.common['Authorization'] = $rootScope.token
       authService.loginConfirmed()
       $scope.closeThisDialog()
 

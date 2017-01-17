@@ -1,0 +1,18 @@
+.reset-form
+  .panel.panel-primary
+    .panel-heading
+      Revocery access
+    .panel-body
+      .form-group(ng-if="error")
+        .alert.alert-danger
+          {{error}}
+
+      .form-group
+        %input.form-control(ng-model="password" type="password" placeholder="Password")
+      .form-group
+        %input.form-control(ng-model="password" type="password" placeholder="Password")
+      .form-group.clearfix
+        %a.pull-right(href="#" ui-sref="signin")
+          login form
+      .btn.btn-default(ng-click="signin()")
+        Send password

@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"time"
+	"encoding/gob"
+)
 
 type User struct {
 	Id                     	int64                  	`json:"id"`
@@ -27,4 +30,8 @@ type User struct {
 	Update_at            	time.Time       	`json:"update_at"`
 
 
+}
+
+func init() {
+	gob.Register(new(User))
 }
