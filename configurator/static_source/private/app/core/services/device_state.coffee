@@ -1,7 +1,7 @@
 angular
 .module('appServices')
 .factory 'DeviceState', ['$resource', ($resource) ->
-  $resource window.server_url + '/api/v1/device_state/:id', {id: '@id'},
+  $resource window.app_settings.server_url + '/api/v1/device_state/:id', {id: '@id'},
     show:
       method: 'GET'
       responseType: 'json'
@@ -22,7 +22,7 @@ angular
       method: 'DELETE'
 
     get_by_device:
-      url: window.server_url + '/api/v1/device_state/get_by_device/:id'
+      url: window.app_settings.server_url + '/api/v1/device_state/get_by_device/:id'
       method: 'GET'
       isArray: true
       responseType: 'json'

@@ -112,10 +112,28 @@
 </style>
 
 <script type="text/javascript">
-window.token = {{{.token}}};
-window.current_user = {{{.current_user}}};
-window.server_url={{{.server_url}}};
-window.debug={{{.debug}}};
+window.app_settings = Object.create(Object.prototype, {
+    server_url: {
+        get: function(){
+            return {{{.server_url}}}
+        }
+    },
+    current_user: {
+        get: function(){
+            return {{{.current_user}}}
+        }
+    },
+    token: {
+        get: function(){
+            return {{{.token}}}
+        }
+    },
+    debug: {
+        get: function(){
+            return {{{.debug}}}
+        }
+    }
+});
 </script>
 
-<title>Конфигуратор</title>
+<title>Сonfigurator</title>

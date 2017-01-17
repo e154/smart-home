@@ -1,7 +1,7 @@
 angular
 .module('appServices')
 .factory 'WidgetResource', ['$resource', ($resource) ->
-  $resource window.server_url + '/api/v1/widget/:id', {id: '@id'},
+  $resource window.app_settings.server_url + '/api/v1/widget/:id', {id: '@id'},
     show:
       method: 'GET'
       responseType: 'json'

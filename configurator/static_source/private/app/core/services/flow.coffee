@@ -1,7 +1,7 @@
 angular
 .module('appServices')
 .factory 'Flow', ['$resource', ($resource) ->
-  $resource window.server_url + '/api/v1/flow/:id', {id: '@id'},
+  $resource window.app_settings.server_url + '/api/v1/flow/:id', {id: '@id'},
     show:
       method: 'GET'
       responseType: 'json'
@@ -9,25 +9,25 @@ angular
         data?.flow || data
 
     full:
-      url: window.server_url + '/api/v1/flow/:id/full'
+      url: window.app_settings.server_url + '/api/v1/flow/:id/full'
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
         data?.flow || data
 
     get_redactor:
-      url: window.server_url + '/api/v1/flow/:id/redactor'
+      url: window.app_settings.server_url + '/api/v1/flow/:id/redactor'
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
         data?.flow || data
 
     update_redactor:
-      url: window.server_url + '/api/v1/flow/:id/redactor'
+      url: window.app_settings.server_url + '/api/v1/flow/:id/redactor'
       method: 'PUT'
 
     workers:
-      url: window.server_url + '/api/v1/flow/:id/workers'
+      url: window.app_settings.server_url + '/api/v1/flow/:id/workers'
       method: 'GET'
       transformResponse: (data) ->
         data?.workers || []

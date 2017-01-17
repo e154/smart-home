@@ -1,7 +1,7 @@
 angular
 .module('appServices')
 .factory 'User', ['$resource', ($resource) ->
-  $resource window.server_url + '/api/v1/user/:id', {id: '@id'},
+  $resource window.app_settings.server_url + '/api/v1/user/:id', {id: '@id'},
     show:
       method: 'GET'
       responseType: 'json'
@@ -17,7 +17,7 @@ angular
         data?.user || data
 
     update_status:
-      url: window.server_url + '/api/v1/user/:id/update_status'
+      url: window.app_settings.server_url + '/api/v1/user/:id/update_status'
       method: 'PUT'
       responseType: 'json'
 

@@ -31,8 +31,8 @@ angular
 
     connect: ->
       @socket = socketFactory({
-        url: "#{window.server_url}/api/v1/ws"
-        socket: new SockJS("#{window.server_url}/api/v1/ws")
+        url: "#{window.app_settings.server_url}/api/v1/ws"
+        socket: new SockJS("#{window.app_settings.server_url}/api/v1/ws")
       })
 
       @setHandler "message", @onmessage

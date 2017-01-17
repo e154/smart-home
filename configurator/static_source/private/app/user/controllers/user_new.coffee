@@ -32,7 +32,7 @@ angular
   $scope.refreshRoles = (query)->
     $http(
       method: 'GET'
-      url: window.server_url + "/api/v1/role/search"
+      url: window.app_settings.server_url + "/api/v1/role/search"
       params:
         query: query
         limit: 5

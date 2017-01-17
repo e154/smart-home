@@ -217,7 +217,7 @@ log, Worker, ngDialog, $filter, Stream) ->
   $scope.refreshActions = (query)->
     $http(
       method: 'GET'
-      url: window.server_url + "/api/v1/device_action/search"
+      url: window.app_settings.server_url + "/api/v1/device_action/search"
       params:
         query: query
         limit: 5
@@ -230,7 +230,7 @@ log, Worker, ngDialog, $filter, Stream) ->
   $scope.refreshScripts = (query)->
     $http(
       method: 'GET'
-      url: window.server_url + "/api/v1/script/search"
+      url: window.app_settings.server_url + "/api/v1/script/search"
       params:
         query: query
         limit: 5
@@ -302,7 +302,7 @@ log, Worker, ngDialog, $filter, Stream) ->
   $scope.refreshFlows = (query)->
     $http(
       method: 'GET'
-      url: window.server_url + "/api/v1/flow/search"
+      url: window.app_settings.server_url + "/api/v1/flow/search"
       params:
         query: query
         limit: 5

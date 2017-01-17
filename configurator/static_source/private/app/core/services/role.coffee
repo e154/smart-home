@@ -1,7 +1,7 @@
 angular
 .module('appServices')
 .factory 'Role', ['$resource', ($resource) ->
-  $resource window.server_url + '/api/v1/role/:name', {name: '@name'},
+  $resource window.app_settings.server_url + '/api/v1/role/:name', {name: '@name'},
     show:
       method: 'GET'
       responseType: 'json'
@@ -9,7 +9,7 @@ angular
         data?.role || data
 
     create:
-      url: window.server_url + '/api/v1/role'
+      url: window.app_settings.server_url + '/api/v1/role'
       method: 'POST'
       responseType: 'json'
       transformResponse: (data) ->
@@ -30,14 +30,14 @@ angular
         items: data?.roles || []
 
     get_access_list:
-      url: window.server_url + '/api/v1/role/:name/access_list'
+      url: window.app_settings.server_url + '/api/v1/role/:name/access_list'
       method: 'GET'
       responseType: 'json'
       transformResponse: (data) ->
         data?.access_list || data
 
     update_access_list:
-      url: window.server_url + '/api/v1/role/:name/access_list'
+      url: window.app_settings.server_url + '/api/v1/role/:name/access_list'
       method: 'PUT'
       responseType: 'json'
 

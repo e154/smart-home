@@ -59,7 +59,7 @@ angular
         return
 
       upload = Upload.upload(
-        url: window.server_url + "/api/v1/image/upload"
+        url: window.app_settings.server_url + "/api/v1/image/upload"
         data: files: $scope.files_to_upload
       )
 

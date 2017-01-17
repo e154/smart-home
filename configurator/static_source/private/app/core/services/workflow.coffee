@@ -1,7 +1,7 @@
 angular
 .module('appServices')
 .factory 'Workflow', ['$resource', ($resource) ->
-  $resource window.server_url + '/api/v1/workflow/:id', {id: '@id'},
+  $resource window.app_settings.server_url + '/api/v1/workflow/:id', {id: '@id'},
     show:
       method: 'GET'
       responseType: 'json'

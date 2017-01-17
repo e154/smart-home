@@ -49,7 +49,7 @@ angular
       refreshDevices: (query)=>
         $http(
           method: 'GET'
-          url: window.server_url + "/api/v1/device/search"
+          url: window.app_settings.server_url + "/api/v1/device/search"
           params:
             query: query
             limit: 15

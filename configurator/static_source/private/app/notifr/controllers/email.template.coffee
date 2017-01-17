@@ -50,7 +50,7 @@ angular
     if typeof vm.content == 'undefined'
       return
     vm.content.items = $scope.selectedItems
-    $http.post(window.server_url + '/api/v1/email/preview', vm.content)
+    $http.post(window.app_settings.server_url + '/api/v1/email/preview', vm.content)
 
     .success (data) ->
       frame = getFrame().html(data)
