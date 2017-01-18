@@ -29,4 +29,11 @@ angular
       controller: 'accountCtrl'
       templateUrl: '/dashboard/templates/dashboard.account.html'
     )
+
+    .state(
+      name: "dashboard.signout"
+      url: "signout"
+      onEnter: ()->
+        window.location = "#{window.location.origin}/signout"
+    )
 ]

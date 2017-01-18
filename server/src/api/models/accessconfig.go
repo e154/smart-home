@@ -587,33 +587,6 @@ const access_config_list = `{
    		"method": "put",
    		"description": "update role access list info"
    	}
-   },
-   "auth": {
-   	"signin": {
-   		"actions": ["/api/v1/signin"],
-   		"method": "post",
-   		"description": ""
-	},
-	"signout": {
-   		"actions": ["/api/v1/signout"],
-   		"method": "get",
-   		"description": ""
-	},
-	"recovery": {
-   		"actions": ["/api/v1/recovery"],
-   		"method": "post",
-   		"description": ""
-	},
-	"reset": {
-   		"actions": ["/api/v1/reset"],
-   		"method": "post",
-   		"description": ""
-	},
-	"access_list": {
-   		"actions": ["/api/v1/access_list"],
-   		"method": "get",
-   		"description": ""
-	}
    }
 }
 `

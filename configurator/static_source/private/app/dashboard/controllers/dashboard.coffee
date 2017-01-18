@@ -14,7 +14,7 @@ angular
         'items': [
           {
             'label': 'Sign out'
-            'route': 'signout'
+            'route': 'dashboard.signout'
           }
         ]
       }

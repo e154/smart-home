@@ -59,6 +59,17 @@ func (h *DashboardController) Signin() {
 			return
 		}
 
+		message := &models.Message{}
+		if err = json.Unmarshal(result, message); err != nil {
+			h.ErrHan(403, err.Error())
+			return
+		}
+
+		if message.Status != "" && message.Status == "error" {
+			h.ErrHan(403, message.Message)
+			return
+		}
+
 		signin := &models.Signin{}
 		if err = json.Unmarshal(result, signin); err != nil {
 			h.ErrHan(403, err.Error())
