@@ -21,7 +21,12 @@ angular
       templateUrl: '/dashboard/templates/dashboard.index.html'
       onExit: ()->
         angular.element(document).find('body').removeClass('dashboard')
+    )
 
-
+    .state(
+      name: "dashboard.account"
+      url: "account"
+      controller: 'accountCtrl'
+      templateUrl: '/dashboard/templates/dashboard.account.html'
     )
 ]

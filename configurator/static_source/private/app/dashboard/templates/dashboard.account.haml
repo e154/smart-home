@@ -1,0 +1,72 @@
+.row
+    .col-md-12
+        %h3
+            {{'user.show_form' | translate}} - {{user.full_name || user.nickname}}
+            .edit-icon-link
+                %a(ui-sref="dashboard.user.edit({id:user.id})")
+                    %span.fa.fa-pencil
+
+        .pull-right.date-info-block
+            .form-group
+                %small
+                    {{'Created at' | translate}} {{user.created_at | readableDateTime}}
+                %small
+                    {{'Updated at' | translate}} {{user.update_at | readableDateTime}}
+
+.row
+    .col-md-2
+        .form-group
+            .text-muted {{'user.nickname' | translate}}
+            %div {{::user.nickname}}
+        .form-group(ng-if="user.status")
+            .text-muted {{'user.status' | translate}}
+            %div(translate="user.{{user.status}}")
+        .form-group
+            .text-muted {{'user.role' | translate}}
+            %div {{::user.role.name}}
+
+        .form-group(ng-if="user.first_name")
+            .text-muted {{'user.first_name' | translate}}
+            %div {{::user.first_name}}
+        .form-group(ng-if="user.last_name")
+            .text-muted {{'user.last_name' | translate}}
+            %div {{::user.last_name}}
+        .form-group
+            .text-muted {{'user.email' | translate}}
+            %a(href="mailto:{{user.email}}") {{::user.email}}
+
+        .form-group(ng-repeat="meta in user.meta" ng-if="meta.value != ''")
+            .text-muted(translate="user.{{meta.key}}")
+            %div {{::meta.value}}
+
+    .col-md-2
+        .form-group
+            .avatar.lg(ng-if="user.avatar.url != ''")
+                %img(ng-src="{{user.avatar.url}}" alt="")
+    .col-md-2
+        .form-group(ng-if="user.sign_in_count")
+            .text-muted {{'user.sign_in_count' | translate}}
+            %div {{::user.sign_in_count}}
+        .form-group(ng-if="user.last_sign_in_at")
+            .text-muted {{'user.last_sign_in_at' | translate}}
+            %div {{::user.last_sign_in_at | readableDateTime}}
+        .form-group(ng-if="user.last_sign_in_ip")
+            .text-muted {{'user.last_sign_in_ip' | translate}}
+            %div {{::user.last_sign_in_ip}}
+        .form-group(ng-if="user.current_sign_in_at")
+            .text-muted {{'user.current_sign_in_at' | translate}}
+            %div {{::user.current_sign_in_at | readableDateTime}}
+        .form-group(ng-if="user.current_sign_in_ip")
+            .text-muted current_sign_in_ip
+            %div {{::user.current_sign_in_ip}}
+
+    .col-md-3
+        .form-group
+            .text-muted
+                {{'user.history' | translate}}
+
+
+            %dl(compact="true" )
+                .clearfix(ng-repeat="item in user.history track by $index")
+                    %dt {{item.ip}}
+                    %dd {{item.time | readableDateTime}}

@@ -67,6 +67,9 @@ gulp.task('watch', function() {
         })(key, config.build_templates[key].watch)
     }
 
+    gulp.watch(config.copy.translate.watch, function() {
+        gulp.run('copy:translate');
+    });
     gulp.watch(config.redactor_theme_less.watch, function() {
         gulp.run('redactor_theme_less');
     });

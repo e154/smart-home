@@ -153,7 +153,10 @@ module.exports = {
         },
         translate: {
             source: private_src + '/translates/**/*',
-            dest: private_dest + '/translates'
+            dest: private_dest + '/translates',
+            watch: [
+                private_src + '/translates/**/*'
+            ]
         },
         'font-awesome': {
             source: private_bower + '/font-awesome/fonts/**/*',

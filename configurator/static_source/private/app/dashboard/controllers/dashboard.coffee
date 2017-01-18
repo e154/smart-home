@@ -8,6 +8,17 @@ angular
     'name': 'Main Menu'
     'items': [
       {
+        'label': 'Account'
+        'route': 'dashboard.account'
+        'icon': 'fa fa-user'
+        'items': [
+          {
+            'label': 'Sign out'
+            'route': 'signout'
+          }
+        ]
+      }
+      {
         'label': 'dashboard.name'
         'route': 'dashboard.index'
         'icon': 'fa fa-home'
