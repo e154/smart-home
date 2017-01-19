@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego/cache"
 	"fmt"
 	"time"
-	"../log"
 )
 
 type Cache struct {
@@ -142,5 +141,5 @@ func (c *Cache) Get(key string) interface {} {
 }
 
 func (c *Cache) log(format string, a ...interface{}) {
-	log.Debug("Cache: ", fmt.Sprintf(format, a...))
+	//log.Debug("Cache: ", fmt.Sprintf(format, a...))
 }

@@ -30,9 +30,9 @@ angular
       @connect()
 
     connect: ->
+      url = "#{window.app_settings.server_url}/api/v1/ws?token=#{window.app_settings.token}"
       @socket = socketFactory({
-        url: "#{window.app_settings.server_url}/api/v1/ws"
-        socket: new SockJS("#{window.app_settings.server_url}/api/v1/ws")
+        socket: new SockJS(url)
       })
 
       @setHandler "message", @onmessage

@@ -38,6 +38,7 @@ angular
             'route': 'dashboard.map.new'
           }
         ]
+        permission: ''
       }
       {
         'label': 'Devices'

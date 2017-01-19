@@ -23,6 +23,10 @@ angular
         plain: false
         overlay: true
         showClose: false
+        preCloseCallback: ()=>
+          @ngDialogInstance = null
+          return
+
       return
 
   new authForm()

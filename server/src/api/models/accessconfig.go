@@ -575,7 +575,8 @@ const access_config_list = `{
 	},
 	"read_role_access_list": {
    		"actions": [
-   			"/api/v1/role/[\\w]+/access_list"
+   			"/api/v1/role/[\\w]+/access_list",
+   			"/api/v1/access_list"
    		],
    		"method": "get",
    		"description": "view role access list"

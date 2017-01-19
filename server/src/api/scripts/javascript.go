@@ -7,6 +7,7 @@ import (
 	"errors"
 	"../models"
 	r "../../lib/rpc"
+	"../../lib/common"
 )
 
 const (
@@ -101,7 +102,10 @@ func (j *Javascript) Compile() (err error) {
 
 func (j *Javascript) coffeeCompile() (result string, err error) {
 
-	if err = j.ctx.PevalFile(coffescript); err != nil {
+	//TODO cache file
+	file := common.GetScript(coffescript)
+	if err = j.ctx.PevalString(string(file)); err != nil {
+	//if err = j.ctx.PevalFile(coffescript); err != nil {
 		return
 	}
 

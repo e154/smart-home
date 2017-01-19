@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"net/url"
+	"../rbac"
 )
 
 // RoleController operations for Role
@@ -56,6 +57,8 @@ func (c *RoleController) Post() {
 		c.ErrHan(403, err.Error())
 		return
 	}
+
+	rbac.UpdateCache()
 
 	c.Data["json"] = map[string]interface{}{"role": role}
 	c.ServeJSON()
@@ -123,6 +126,8 @@ func (c *RoleController) Put() {
 		return
 	}
 
+	rbac.UpdateCache()
+
 	c.ServeJSON()
 }
 
@@ -139,6 +144,8 @@ func (c *RoleController) Delete() {
 		c.ErrHan(403, err.Error())
 		return
 	}
+
+	rbac.UpdateCache()
 
 	c.ServeJSON()
 }
@@ -201,6 +208,8 @@ func (c *RoleController) PutAccessList() {
 		c.ErrHan(403, err.Error())
 		return
 	}
+
+	rbac.UpdateCache()
 
 	c.ServeJSON()
 }

@@ -75,7 +75,7 @@ install_manifest.txt
 .git
 /tmp/
 /configurator/src/static_source/themes/
-/data/
+/data/file_storage
 /configurator/static_source/private/bower_components/
 /configurator/static_source/node_modules/
 /configurator/build/

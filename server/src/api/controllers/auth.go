@@ -4,13 +4,9 @@ import (
 	"encoding/json"
 	"../models"
 	"../../lib/common"
-	"github.com/dgrijalva/jwt-go"
-	"io/ioutil"
-	"fmt"
 	"time"
 )
 
-var hmacSampleSecret []byte
 const ADMIN_ID = 1
 
 // AuthController operations for Auth
@@ -76,7 +72,17 @@ func (h *AuthController) SignIn() {
 		"role": user.Role,
 	}
 
-	token := h.getHmacToken(user)
+	key := common.GetKey("hmacKey")
+	data := map[string]interface{}{
+		"auth": user.AuthenticationToken,
+		"nbf": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
+	}
+
+	var token string
+	if token, err = common.GetHmacToken(data, key); err != nil {
+		h.ErrHan(403, err.Error())
+		return
+	}
 
 	h.Data["json"] = &map[string]interface{}{"token": token, "current_user": current_user}
 	h.ServeJSON()
@@ -106,60 +112,8 @@ func (h *AuthController) Recovery() {}
 // @router /reset [post]
 func (h *AuthController) Reset() {}
 
-func (h *AuthController) getHmacToken(user *models.User) (tokenString string){
-
-	// Create a new token object, specifying signing method and the claims
-	// you would like it to contain.
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"auth": user.AuthenticationToken,
-		"nbf": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
-	})
-
-	var err error
-
-	// Sign and get the complete encoded token as a string using the secret
-	if tokenString, err = token.SignedString(hmacSampleSecret); err != nil {
-		h.ErrHan(401, err.Error())
-		return
-	}
-
-	return
-}
-
-func (h *AuthController) parseHmacToken(tokenString string) (jwt.MapClaims, error) {
-
-	// Parse takes the token string and a function for looking up the key. The latter is especially
-	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
-	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
-	// to the callback, providing flexibility.
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
-
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return hmacSampleSecret, nil
-	})
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims, nil
-	} else {
-		return nil, err
-	}
-}
-
 func (c *AuthController) AccessList() {
 
 	c.Data["json"] = &map[string]interface{}{"access_list": models.AccessConfigList}
 	c.ServeJSON()
-}
-
-func init() {
-	// Load sample key data
-	if keyData, e := ioutil.ReadFile("keys/hmacKey"); e == nil {
-		hmacSampleSecret = keyData
-	} else {
-		panic(e)
-	}
 }
