@@ -16,6 +16,7 @@ type brush func(string) string
 type logger struct {
 	Level    int  `json:"level"`
 	Colorful bool `json:"color"`
+	oldLog	*models.Log
 }
 
 // newBrush return a fix color Brush
@@ -106,11 +107,19 @@ func (c *logger) story(when time.Time, msg string, l int) (err error) {
 		level = "Debug"
 	}
 
+	if c.oldLog != nil {
+		if c.oldLog.Body == msg && c.oldLog.Level == level {
+			return
+		}
+	}
+
 	log := &models.Log{
 		Level: level,
 		Created_at: when,
 		Body: msg,
 	}
+
+	c.oldLog = log
 
 	if _, err = models.AddLog(log); err != nil {
 		beego.Error("error", err.Error())

@@ -75,7 +75,7 @@ func (h *AuthController) SignIn() {
 	key := common.GetKey("hmacKey")
 	data := map[string]interface{}{
 		"auth": user.AuthenticationToken,
-		"nbf": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
+		"nbf": time.Now().Unix(),
 	}
 
 	var token string

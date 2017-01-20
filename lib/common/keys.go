@@ -52,11 +52,10 @@ func ParseHmacToken(tokenString string, key []byte) (jwt.MapClaims, error) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		// key is a []byte containing your secret, e.g. []byte("my_secret_key")
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		return key, nil
 	})
 
-	fmt.Println(1)
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
 	} else {

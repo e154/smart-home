@@ -12,6 +12,7 @@ import (
 	"../../lib/common"
 	"github.com/dgrijalva/jwt-go"
 	"regexp"
+	"../log"
 )
 
 var (
@@ -142,16 +143,18 @@ func getAccessList(token string) (user *models.User, access_list models.AccessLi
 	key := common.GetKey("hmacKey")
 	var claims jwt.MapClaims
 	if claims, err = common.ParseHmacToken(token, key); err != nil {
+		log.Warnf("rbac: %s", err.Error())
 		return
 	}
 
 	var ok bool
 	if token, ok = claims["auth"].(string); !ok {
-		beego.Error("no auth var in token", claims)
+		log.Warnf("rbac: no auth var in token")
 		return
 	}
 
 	if user, err = models.UserGetByAuthenticationToken(token); err != nil {
+		log.Warnf("rbac: %s", err.Error())
 		return
 	}
 
