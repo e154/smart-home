@@ -14,5 +14,5 @@
       .form-group.clearfix
         %a.pull-right(href="#" ui-sref="recovery" )
           forgot password?
-      .btn.btn-default(ng-click="signin()")
+      .btn.btn-default(ng-click="signin()" ng-disabled="!email || !password")
         Sign in

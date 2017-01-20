@@ -8,6 +8,7 @@ angular
   $scope.error = null
 
   $scope.recovery =->
+    return if $scope.email == '' || $scope.password == ''
     success =()->
       console.log 'ok'
     error =(error)->

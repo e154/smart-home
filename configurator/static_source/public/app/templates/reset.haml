@@ -14,5 +14,5 @@
       .form-group.clearfix
         %a.pull-right(href="#" ui-sref="signin")
           login form
-      .btn.btn-default(ng-click="signin()")
+      .btn.btn-default(ng-click="signin()" ng-disabled="!password")
         Send password

@@ -8,6 +8,7 @@ angular
   $scope.error = null
 
   $scope.signin =->
+    return if $scope.email == '' || $scope.password == ''
     success =()->
       window.location.reload()
     error =(error)->

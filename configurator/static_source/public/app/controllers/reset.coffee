@@ -7,6 +7,7 @@ angular
   $scope.error = null
 
   $scope.reset =->
+    return if $scope.email == ''
     success =()->
       console.log 'ok'
     error =(error)->
