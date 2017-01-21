@@ -19,8 +19,9 @@ angular
 
   # dashboard
   # --------------------
+  $scope.dashboard = {}
   $scope.current_widget = null
-  $scope.widgets = [
+  $scope.dashboard.widgets = [
     {id: 1, col: 0, row: 0, sizeY: 1, sizeX: 1, name: 'swap', type: 'swap' }
     {id: 2, col: 1, row: 0, sizeY: 1, sizeX: 2, name: 'memory', type: 'memory' }
     {id: 3, col: 3, row: 0, sizeY: 1, sizeX: 1, name: 'cpu', type: 'cpu_dig' }
@@ -29,12 +30,12 @@ angular
   ]
 
   #TODO remove hard code
-  $scope.dashboard = new Dashboard({id:1})
-  success =(dashboard)->
-    dashboard.widgets = $scope.widgets
-  error = (result)->
-    Message result.data.status, result.data.message
-  $scope.dashboard.$show success, error
+#  $scope.dashboard = new Dashboard({id:1})
+#  success =(dashboard)->
+#    dashboard.widgets = $scope.widgets
+#  error = (result)->
+#    Message result.data.status, result.data.message
+#  $scope.dashboard.$show success, error
 
   # stream
   # --------------------
