@@ -4,4 +4,12 @@
 
 .row
   .col-md-12
+    .form-group
+      %a(ui-sref="dashboard.device.new")
+        %i.fa.fa-plus
+        &nbsp;
+        {{'Add new' | translate}}
+
+.row
+  .col-md-12
     .table(table="device.options")
