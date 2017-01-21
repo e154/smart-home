@@ -8,9 +8,7 @@ angular
     vm.node = node
     $timeout ()->
       $scope.getStatus().then (result)->
-        $scope.nodes = result.nodes
-
-        angular.forEach $scope.nodes, (value, id)->
+        angular.forEach result.nodes.status, (value, id)->
           if node.id == parseInt(id, 10)
             vm.node.state = value
     , 500
