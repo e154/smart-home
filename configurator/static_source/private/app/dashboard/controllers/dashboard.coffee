@@ -30,7 +30,7 @@ angular
         'icon': 'fa fa-map-o'
         'items': [
           {
-            'label': 'All devices'
+            'label': 'All maps'
             'route': 'dashboard.map.index'
           }
           {
