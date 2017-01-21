@@ -48,7 +48,6 @@ angular
       vm.device.baud = null
       vm.device.tty = ""
       vm.device.timeout = null
-      vm.device.address = null
     else
       vm.device.device = null
 
