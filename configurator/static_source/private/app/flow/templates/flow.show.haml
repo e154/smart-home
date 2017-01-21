@@ -45,6 +45,10 @@
             %small
               {{'worker.action_name' | translate}}:
               {{worker.device_action.name}}
+          %div
+            %small
+              {{'worker.cron' | translate}}:
+              {{worker.time}}
 
     .form-group(ng-if="flow.description")
       .text-muted
