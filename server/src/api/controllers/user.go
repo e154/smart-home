@@ -7,6 +7,7 @@ import (
 	"../models"
 	"../../lib/common"
 	"net/url"
+	"../log"
 )
 
 // UserController operations for User
@@ -173,8 +174,18 @@ func (c *UserController) Put() {
 	//---------------------------------------------------------
 	user.Id = int64(id)
 	password, ok := incoming["password"].(string)
-	if ok && len(password) >= 6 && password == incoming["password_repeat"] {
+	password_repeat, ok := incoming["password_repeat"].(string)
+	if ok &&  password != "" && len(password) < 6  {
+		c.ErrHan(403, "The password should be at least six characters.")
+		return
+	}
+
+	if ok && password == password_repeat {
+		log.Warnf("account: updated password for '%s'", user.Email)
 		user.EncryptedPassword = common.Pwdhash(password)
+	} else {
+		c.ErrHan(403, "Passwords do not match.")
+		return
 	}
 
 	// update user
@@ -233,6 +244,8 @@ func (c *UserController) Delete() {
 		c.ErrHan(403, err.Error())
 		return
 	}
+
+	log.Warnf("account: removed user with id %d", id)
 
 	c.ServeJSON()
 }
