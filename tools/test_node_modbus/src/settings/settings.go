@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	CONF_NAME string = "modbus_tester.conf"
+	CONF_NAME string = "node_modbus.conf"
 	APP_NAME string = "modbus_tester"
 	APP_MAJOR = 0
 	APP_MINOR = 1

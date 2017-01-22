@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	CONF_NAME string = "modbus_tester.conf"
-	APP_NAME string = "modbus_tester"
+	CONF_NAME string = "node_serial.conf"
+	APP_NAME string = "serial_tester"
 	APP_MAJOR = 0
 	APP_MINOR = 1
 	APP_PATCH = 0
