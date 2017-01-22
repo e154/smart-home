@@ -1,0 +1,22 @@
+sudo: false
+language: go
+go:
+  - 1.7.x
+addons:
+  apt:
+    packages:
+      - git
+
+cache:
+  directories:
+    - $MYSQL_ROOT
+
+before_cache:
+
+env:
+  global:
+    - MYSQL_FLAVOR=MariaDB
+    - MYSQL_ROOT=$HOME/mysql
+
+before_install:
+  - travis/download_mariadb.sh
