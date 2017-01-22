@@ -7,7 +7,9 @@ cache:
   directories:
     - node_modules # NPM packages
 
-before_cache:
+env:
+  global:
+    - GO15VENDOREXPERIMENT='0'
 
 before_install:
   - npm install -g bower
