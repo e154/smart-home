@@ -11,11 +11,8 @@ import (
 func GetKey(name string) (keyData []byte) {
 
 	keys_path := beego.AppConfig.String("keys_path")
-	dir := filepath.Join("data", keys_path, name)
-
-	if(beego.BConfig.RunMode == "dev") {
-		dir = filepath.Join("../../", dir)
-	}
+	data_dir := beego.AppConfig.String("data_dir")
+	dir := filepath.Join(data_dir, keys_path, name)
 
 	// Load sample key data
 	var err error
