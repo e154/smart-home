@@ -4,10 +4,12 @@ set -o errexit
 
 CONFIGURATOR="/tmp"
 TMP_DIR="/tmp"
+GOBUILD_LDFLAGS=""
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 common=${BASEDIR}/common.sh ; source "$common" ; if [ $? -ne 0 ] ; then echo "Error - no settings functions $common" 1>&2 ; exit 1 ; fi
 GOPATH="${CONFIGURATOR}/vendor"
 TMP_DIR="${TMP_DIR}/configurator"
+EXEC=configurator
 
 main() {
 
@@ -35,6 +37,9 @@ main() {
     ;;
     --build-front)
     __build_front
+    ;;
+    --build-back)
+    __build_back
     ;;
     *)
     echo "Error: Invalid argument '$1'" >&2
@@ -72,6 +77,7 @@ __init() {
 __clean() {
 
     rm -rf ${CONFIGURATOR}/build
+    rm -rf ${CONFIGURATOR}/src/tmp
     rm -rf ${CONFIGURATOR}/static_source/node_modules
     rm -rf ${CONFIGURATOR}/static_source/private/bower_components
     rm -rf ${CONFIGURATOR}/static_source/private/tmp
@@ -85,8 +91,18 @@ __clean() {
 
 __build_front() {
 
-    cd ${BASEDIR}/static_source
+    cd ${CONFIGURATOR}/static_source
     gulp pack
+    cp -r ${CONFIGURATOR}/build ${TMP_DIR}
+}
+
+__build_back() {
+
+    cd ${CONFIGURATOR}/src
+    env GOPATH=${GOPATH} go build -ldflags "${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}
+    cp -r ${CONFIGURATOR}/src/views ${TMP_DIR}
+    cp -r ${CONFIGURATOR}/src/conf ${TMP_DIR}
+    sed 's/dev\/app.conf/prod\/app.conf/' ${CONFIGURATOR}/src/conf/app.conf > ${TMP_DIR}/conf/app.conf
 }
 
 __help() {
@@ -99,6 +115,8 @@ OPTIONS:
 
   --init - initialize the development environment
   --clean - cleaning of temporary directories
+  --build-front - build frontend
+  --build-back - build backend
 
   -h / --help - show this help text and exit 0
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"../models"
 	"encoding/json"
+	"os"
 )
 
 type BaseController struct {
@@ -21,6 +22,15 @@ func (b *BaseController) Prepare() {
 
 	if token := b.Ctx.Input.Session("token"); token != nil {
 		b.Data["token"] = token.(string)
+	}
+
+	b.Data["version"] = map[string]string{
+		"version": os.Getenv("VERSION"),
+		"revision": os.Getenv("REVISION"),
+		"revision_url": os.Getenv("REVISION_URL"),
+		"generated": os.Getenv("GENERATED"),
+		"developers": os.Getenv("DEVELOPERS"),
+		"build_number": os.Getenv("BUILD_NUMBER"),
 	}
 
 	//b.Data["xsrf_token"] = template.HTML(b.XSRFToken())

@@ -132,6 +132,11 @@ window.app_settings = Object.create(Object.prototype, {
         get: function(){
             return {{{.debug}}};
         }
+    },
+    version: {
+        get: function () {
+            return {{{.version}}}
+        }
     }
 });
 </script>

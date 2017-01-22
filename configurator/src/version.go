@@ -5,26 +5,19 @@ import (
 )
 
 var (
-	// VersionString is the git describe version set at build time
 	VersionString = "?"
-	// RevisionString is the git revision set at build time
 	RevisionString = "?"
-	// RevisionURLString is the full URL to the revision set at build time
 	RevisionURLString = "?"
-	// GeneratedString is the build date set at build time
 	GeneratedString = "?"
-	// CopyrightString is the copyright set at build time
-	CopyrightString = "?"
+	DevelopersString = "?"
+	BuildNumString = "?"
 )
 
 func init() {
-	//cli.VersionPrinter = customVersionPrinter
 	_ = os.Setenv("VERSION", VersionString)
 	_ = os.Setenv("REVISION", RevisionString)
+	_ = os.Setenv("REVISION_URL", RevisionURLString)
 	_ = os.Setenv("GENERATED", GeneratedString)
+	_ = os.Setenv("DEVELOPERS", DevelopersString)
+	_ = os.Setenv("BUILD_NUMBER", BuildNumString)
 }
-
-//func customVersionPrinter(c *cli.Context) {
-//	fmt.Printf("%v v=%v rev=%v d=%v\n", filepath.Base(c.App.Name),
-//		VersionString, RevisionString, GeneratedString)
-//}
