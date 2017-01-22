@@ -9,6 +9,7 @@ cache:
 
 before_install:
   - npm install -g bower
+  - npm install -g gulp
   - go env && pwd
 
 install:

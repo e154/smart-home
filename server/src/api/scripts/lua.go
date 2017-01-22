@@ -7,7 +7,7 @@ import (
 
 type Lua struct {
 	//state  *lua.State
-	//engine *Engine
+	engine *Engine
 }
 
 func (l *Lua) Init() (err error)  {
