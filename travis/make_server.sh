@@ -82,7 +82,6 @@ __build() {
 
     cd ${SERVER}/src
     env GOPATH=${GOPATH} go build -ldflags "${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}
-    cp -r ${SERVER}/src/views ${TMP_DIR}
     cp -r ${SERVER}/src/conf ${TMP_DIR}
     sed 's/dev\/app.conf/prod\/app.conf/' ${SERVER}/src/conf/app.conf > ${TMP_DIR}/conf/app.conf
 }
