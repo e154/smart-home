@@ -13,7 +13,6 @@ env:
 
 before_install:
   - npm install -g bower
-  - go env && pwd
 
 script:
   - go get github.com/FiloSottile/gvt
