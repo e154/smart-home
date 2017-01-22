@@ -1,3 +1,5 @@
 performance/src/src
 test_node_modbus/src/src
 test_node_serial/src/src
+vendor/*
+!vendor/manifest

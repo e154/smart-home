@@ -7,6 +7,7 @@ BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CONFIGURATOR="${BASEDIR}/../configurator"
 NODE="${BASEDIR}/../node"
 SERVER="${BASEDIR}/../server"
+TOOLS="${BASEDIR}/../tools"
 TMP_DIR="${BASEDIR}/../tmp"
 
 #

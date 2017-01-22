@@ -65,11 +65,17 @@ __test() {
 __init() {
 
     mkdir -p ${TMP_DIR}
+    env GOPATH=${GOPATH} go get github.com/FiloSottile/gvt
+    cd ${TOOLS}
+    gvt rebuild
 }
 
 __clean() {
 
     rm -rf ${TMP_DIR}
+    rm -rf ${TOOLS}/vendor/bin
+    rm -rf ${TOOLS}/vendor/pkg
+    rm -rf ${TOOLS}/vendor/src
 }
 
 __build() {
