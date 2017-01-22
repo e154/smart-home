@@ -1,23 +1,23 @@
 package scripts
 
 import (
-	"github.com/aarzilli/golua/lua"
-	"github.com/stevedonovan/luar"
+	//"github.com/aarzilli/golua/lua"
+	//"github.com/stevedonovan/luar"
 )
 
 type Lua struct {
-	state  *lua.State
-	engine *Engine
+	//state  *lua.State
+	//engine *Engine
 }
 
 func (l *Lua) Init() (err error)  {
-	l.state = luar.Init()
-	l.state.OpenLibs();
+	//l.state = luar.Init()
+	//l.state.OpenLibs();
 	return
 }
 
 func (l *Lua) Close() {
-	l.state.Close()
+	//l.state.Close()
 }
 
 func (j *Lua) Compile() (err error) {
