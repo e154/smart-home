@@ -8,6 +8,14 @@
 			"revision": "90999717dda6193c6f970eec52e289b0a9e74998",
 			"branch": "master",
 			"notests": true
+		},
+		{
+			"importpath": "src/github.com/tarm/serial",
+			"repository": "https://github.com/tarm/serial",
+			"vcs": "git",
+			"revision": "37be519d49878d0098e34fb614136b81e6c87861",
+			"branch": "master",
+			"notests": true
 		}
 	]
 }
