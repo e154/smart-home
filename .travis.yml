@@ -22,7 +22,6 @@ env:
     - GOPATH="$HOME/gopath"
     - PATH="bin:$HOME/gopath/bin:$HOME/bin:$PATH"
     - CHECKOUT_ROOT="$HOME/gopath/src/github.com/e154/smart-home"
-    - GO15VENDOREXPERIMENT='1'
 
 before_install:
   - npm install -g bower
@@ -30,3 +29,6 @@ before_install:
 script:
   - go get github.com/FiloSottile/gvt
   - ./travis/make_all.sh
+
+notifications:
+  email: false
