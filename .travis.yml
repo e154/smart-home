@@ -19,4 +19,4 @@ env:
     - MYSQL_ROOT=$HOME/mysql
 
 before_install:
-  - travis/download_mariadb.sh
+  - travis/make_all.sh
