@@ -66,7 +66,6 @@ __test() {
 __init() {
 
     mkdir -p ${TMP_DIR}
-    env GOPATH=${GOPATH} go get github.com/FiloSottile/gvt
     cd ${NODE}
     gvt rebuild   
 }

@@ -24,4 +24,6 @@ env:
 
 install:
   - go get github.com/FiloSottile/gvt
+  - npm install -g bower
+  - bower install
   - travis/make_all.sh
