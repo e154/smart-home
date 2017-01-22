@@ -22,7 +22,7 @@ env:
     - CHECKOUT_ROOT="$HOME/gopath/src/github.com/e154/smart-home"
     - GO15VENDOREXPERIMENT='1'
 
-before_script:
+before_install:
   - npm install -g bower
   - bower install
 
