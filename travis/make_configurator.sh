@@ -23,7 +23,7 @@ main() {
   : ${INSTALL_MODE:=stable}
 
   case "$1" in
-    test)
+    --test)
     __test
     ;;
     --init)
@@ -51,6 +51,12 @@ main() {
 }
 
 __test() {
+
+    DIRS=(
+        "${CONFIGURATOR}/src/controllers"
+        "${CONFIGURATOR}/src/models"
+        "${CONFIGURATOR}/src/router"
+    )
 
     for dir in ${DIRS};
     do
@@ -113,6 +119,7 @@ Bootstrap Debian 8.0 host with mysql installation.
 
 OPTIONS:
 
+  --test - testing package
   --init - initialize the development environment
   --clean - cleaning of temporary directories
   --build-front - build frontend

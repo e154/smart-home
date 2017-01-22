@@ -1,2 +1,4 @@
 /src/node.conf
 /src/src
+vendor/*
+!vendor/manifest
