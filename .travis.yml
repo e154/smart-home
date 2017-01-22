@@ -23,5 +23,4 @@ env:
     - GO15VENDOREXPERIMENT='1'
 
 install:
-  - go get github.com/FiloSottile/gvt
   - travis/make_all.sh
