@@ -1,9 +1,0 @@
-static_source/node_modules
-static_source/private/bower_components
-static_source/private/tmp
-static_source/public/bower_components
-static_source/public/tmp
-vendor/*
-!vendor/manifest
-build
-src/src

@@ -1,6 +1,0 @@
-.map-wrapper(ng-style="{'height':'600px'}" )
-  .map-viewer
-    .map-layer(ng-repeat="layer in map.layers | orderBy:'-weight'" ng-if="layer.status != 'disabled'")
-      .draggable(map-viewer-element="element" ng-repeat="element in layer.elements | orderBy:'-weight'" ng-if="element.status != 'disabled'" ng-class="['map-'+element.prototype_type]")
-  .fullscreen.entry(ng-click="resize()" data-help="resize editor window")
-    {{"full screen" | translate}}

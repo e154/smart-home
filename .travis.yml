@@ -3,18 +3,17 @@ language: go
 go:
   - 1.7.x
 
-cache:
-  directories:
-    - node_modules # NPM packages
+env:
+  global:
+    - UNAME="$(uname | tr '[:upper:]' '[:lower:]')"
 
 before_install:
-  - npm install -g bower
-  - npm install -g gulp
+  - go get github.com/FiloSottile/gvt
   - go env && pwd
 
-install:
-  - go get github.com/FiloSottile/gvt
-  - ./travis/make_all.sh
+script:
+  - ./make --init
+  - ./make --build
 
 notifications:
   email: false

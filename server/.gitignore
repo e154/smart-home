@@ -1,4 +1,0 @@
-bin/settings.sh
-src/src
-vendor/*
-!vendor/manifest
