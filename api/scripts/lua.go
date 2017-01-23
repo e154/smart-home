@@ -1,10 +1,5 @@
 package scripts
 
-import (
-	//"github.com/aarzilli/golua/lua"
-	//"github.com/stevedonovan/luar"
-)
-
 type Lua struct {
 	//state  *lua.State
 	engine *Engine
