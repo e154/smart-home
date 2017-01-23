@@ -17,14 +17,6 @@
 			"branch": "master",
 			"notests": true
 		},
-		{
-            "importpath": "github.com/aarzilli/golua",
-            "repository": "https://github.com/aarzilli/golua",
-            "vcs": "git",
-            "revision": "13f31dc0f4053bfc918fcf7a7a07c77c6c8bb933",
-            "branch": "master",
-            "notests": true
-        },
         {
             "importpath": "github.com/c9s/goprocinfo",
             "repository": "https://github.com/c9s/goprocinfo",

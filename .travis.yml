@@ -8,10 +8,12 @@ env:
     - UNAME="$(uname | tr '[:upper:]' '[:lower:]')"
 
 before_install:
-  - go get github.com/FiloSottile/gvt
   - go env && pwd
 
 install:
+  - go get github.com/FiloSottile/gvt
+
+script:
   - ./make --init
   - ./make --build
 
