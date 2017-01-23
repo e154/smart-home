@@ -11,7 +11,7 @@ before_install:
   - go get github.com/FiloSottile/gvt
   - go env && pwd
 
-script:
+install:
   - ./make --init
   - ./make --build
 
