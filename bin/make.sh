@@ -114,8 +114,7 @@ __build() {
     cp ${ROOT}/contributors.txt ${TMP_DIR}
     sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
     cd ${TMP_DIR}
-    echo "create damp"
-#    mysqldump -u travis smarthome > ${TMP_DIR}/dump.sql
+    mysqldump -u travis smarthome > ${TMP_DIR}/dump.sql
     echo "tar: ${ARCHIVE} copy to ${HOME}"
     cd ${HOME}/
     tar -zcf ${ARCHIVE} ${TMP_DIR}

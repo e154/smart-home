@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-#if [ "$TRAVIS_BRANCH" != "master" ]; then
-#  echo "This commit was made against the $TRAVIS_BRANCH and not the master! No deploy!"
-#  exit 0
-#fi
-#
-#if [ "$TRAVIS_PULL_REQUEST" != false ]; then
-#  exit 0
-#fi
+if [ "$TRAVIS_BRANCH" != "master" ]; then
+  echo "This commit was made against the $TRAVIS_BRANCH and not the master! No deploy!"
+  exit 0
+fi
+
+if [ "$TRAVIS_PULL_REQUEST" != false ]; then
+  exit 0
+fi
 
 # Is this not a build which was triggered by setting a new tag?
 if [ -z "$TRAVIS_TAG" ]; then
