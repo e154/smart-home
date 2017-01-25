@@ -25,7 +25,7 @@ after_success:
 
 script:
   - ./bin/make.sh --init
-#  - ./bin/migrate.sh --up
+  - ./bin/migrate.sh --up
   - ./bin/make.sh --build
 
 deploy:
@@ -35,7 +35,7 @@ deploy:
   file: $HOME/server-release.tar.gz
   skip_cleanup: true
   on:
-    branch: develop
+    branch: master
     repo: e154/smart-home
 
 notifications:
