@@ -117,7 +117,8 @@ __build() {
     echo "create damp"
 #    mysqldump -u travis smarthome > ${TMP_DIR}/dump.sql
     echo "tar: ${ARCHIVE} copy to ${HOME}"
-    tar zxvf ${ARCHIVE} ${HOME}/
+    cd ${HOME}/
+    tar -zcf ${ARCHIVE} ${TMP_DIR}
 }
 
 __help() {
