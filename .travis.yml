@@ -17,14 +17,15 @@ before_install:
 install:
   - go get github.com/FiloSottile/gvt
   - go get github.com/lib/pq
+  - go get github.com/astaxie/beego/migration
   - go get github.com/beego/bee
 
 after_success:
   - sh ./bin/set_tags.sh
 
 script:
-  - ./bin/migrate.sh --up
   - ./bin/make.sh --init
+  - ./bin/migrate.sh --up
   - ./bin/make.sh --build
 
 deploy:
