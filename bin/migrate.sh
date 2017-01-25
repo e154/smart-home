@@ -1,55 +1,86 @@
 #!/usr/bin/env bash
 
+set -o errexit
+
+main() {
+
+    case "${COMMAND}" in
+        --new)
+        __new
+        ;;
+        --up)
+        __up
+        ;;
+        --down)
+        __down
+        ;;
+        --reset)
+        __reset
+        ;;
+        --refresh)
+        __refresh
+        ;;
+        --help)
+        __help
+        ;;
+        *)
+        __help
+        exit 1
+        ;;
+    esac
+
+}
+
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# settings include
-settings=${BASEDIR}/settings.sh ; source "$settings" ; if [ $? -ne 0 ] ; then echo "Error - no settings functions $settings" 1>&2 ; exit 1 ; fi
-
-conn="${user}:${password}@tcp(${server})/${base}?charset=utf8&parseTime=true"
-export PATH=$PATH:$GOPATH/src/github.com/beego/bee
+if [ "$TRAVIS" != "true" ]
+then
+    settings=${BASEDIR}/settings.sh ; source "$settings" ; if [ $? -ne 0 ] ; then echo "Error - no settings functions $settings" 1>&2 ; exit 1 ; fi
+    conn="${user}:${password}@tcp(${server})/${base}?charset=utf8&parseTime=true"
+else
+    settings=${BASEDIR}/settings.travis.sh ; source "$settings" ; if [ $? -ne 0 ] ; then echo "Error - no settings functions $settings" 1>&2 ; exit 1 ; fi
+    conn="${user}@tcp(${server})/${base}?charset=utf8&parseTime=true"
+fi
 
 MIGRATION_NAME=$2
 COMMAND=$1
 
-function do_new() {
+__new() {
     echo $MIGRATION_NAME
     bee generate migration $MIGRATION_NAME -fields=""
 }
 
-function do_up() {
+__up() {
     bee migrate -driver=${driver} -conn=${conn}
 }
 
-function do_down() {
+__down() {
     bee migrate rollback -driver=${driver} -conn=${conn}
 }
 
-function do_reset() {
+__reset() {
     bee migrate reset -driver=${driver} -conn=${conn}
 }
 
-function do_refresh() {
+__refresh() {
     bee migrate refresh -driver=${driver} -conn=${conn}
 }
 
-case "${COMMAND}" in
-    new)
-    do_new
-    ;;
-    up)
-    do_up
-    ;;
-    down)
-    do_down
-    ;;
-    reset)
-    do_reset
-    ;;
-    refresh)
-    do_refresh
-    ;;
-    *)
-    echo "Usage: $0 new|up|down|reset|refresh" >&2
-    exit 3
-    ;;
-esac
+__help() {
+  cat <<EOF
+Usage: migrate.sh [options]
+
+OPTIONS:
+
+  --new - new migration
+  --up - up migration
+  --down - down migration
+  --reset - reset migration
+  --refresh - refresh migration
+
+  -h / --help - show this help text and exit 0
+
+EOF
+}
+
+main "$@"
