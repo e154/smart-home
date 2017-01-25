@@ -2,7 +2,6 @@ language: go
 
 go:
   - 1.7.x
-  - master
 
 env:
   global:
@@ -17,6 +16,7 @@ before_install:
 
 install:
   - go get github.com/FiloSottile/gvt
+  - go get github.com/lib/pq
   - go get github.com/beego/bee
 
 script:
