@@ -5,9 +5,11 @@ set -o errexit
 #
 # base variables
 #
-BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-TMP_DIR="${BASEDIR}/tmp/server"
+bindir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT="${bindir}/.."
+TMP_DIR="${ROOT}/tmp/server"
 EXEC=server
+ARCHIVE="${EXEC}-release.tar.gz"
 
 #
 # build version variables
@@ -74,14 +76,14 @@ main() {
 __test() {
 
     DIRS=(
-        "${BASEDIR}/controllers"
-        "${BASEDIR}/models"
-        "${BASEDIR}/router"
+        "/api/controllers"
+        "/api/models"
+        "/api/router"
     )
 
     for dir in ${DIRS};
     do
-        pushd ${BASEDIR}${dir}
+        pushd ${ROOT}${dir}
         go test -v
         popd
     done
@@ -90,24 +92,30 @@ __test() {
 __init() {
 
     mkdir -p ${TMP_DIR}
-    cd ${BASEDIR}
+    cd ${ROOT}
     gvt rebuild
 }
 
 __clean() {
 
-    rm -rf ${BASEDIR}/vendor/bin
-    rm -rf ${BASEDIR}/vendor/pkg
-    rm -rf ${BASEDIR}/vendor/src
+    rm -rf ${ROOT}/vendor/bin
+    rm -rf ${ROOT}/vendor/pkg
+    rm -rf ${ROOT}/vendor/src
     rm -rf ${TMP_DIR}
 }
 
 __build() {
 
-    cd ${BASEDIR}
+    cd ${ROOT}
     go build -ldflags "${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}
-    cp -r ${BASEDIR}/conf ${TMP_DIR}
-    sed 's/dev\/app.conf/prod\/app.conf/' ${BASEDIR}/conf/app.conf > ${TMP_DIR}/conf/app.conf
+    cp -r ${ROOT}/conf ${TMP_DIR}
+    cp ${ROOT}/LICENSE ${TMP_DIR}
+    cp ${ROOT}/README.md ${TMP_DIR}
+    cp ${ROOT}/contributors.txt ${TMP_DIR}
+    sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
+    cd ${TMP_DIR}
+    mysqldump -u travis smarthome > ${TMP_DIR}/dump.sql
+    tar zxvf ${ARCHIVE} ${HOME}/
 }
 
 __help() {
