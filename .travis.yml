@@ -2,20 +2,27 @@ language: go
 
 go:
   - 1.7.x
+  - master
 
 env:
   global:
     - UNAME="$(uname | tr '[:upper:]' '[:lower:]')"
 
+services:
+  - mysql
+
 before_install:
   - go env && pwd
+  - mysql -e 'CREATE DATABASE smarthome;'
 
 install:
   - go get github.com/FiloSottile/gvt
+  - go get github.com/beego/bee
 
 script:
   - ./make --init
   - ./make --build
+  - ./bin/migrate.sh up
 
 notifications:
   email: false
