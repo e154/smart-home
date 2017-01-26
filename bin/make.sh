@@ -5,10 +5,9 @@ set -o errexit
 #
 # base variables
 #
-bindir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT="${bindir}/.."
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}")" && cd ../ && pwd)"
 TMP_DIR="${ROOT}/tmp/server"
-EXEC=server
+EXEC="server"
 ARCHIVE="${EXEC}-release.tar.gz"
 
 #
@@ -102,6 +101,7 @@ __clean() {
     rm -rf ${ROOT}/vendor/pkg
     rm -rf ${ROOT}/vendor/src
     rm -rf ${TMP_DIR}
+    rm -rf ${HOME}/${ARCHIVE}
 }
 
 __build() {
@@ -116,13 +116,13 @@ __build() {
     cd ${TMP_DIR}
     mysqldump -u travis smarthome > ${TMP_DIR}/dump.sql
     echo "tar: ${ARCHIVE} copy to ${HOME}"
-    cd ${HOME}/
-    tar -zcf ${ARCHIVE} ${TMP_DIR}
+    cd ${ROOT}/tmp/node
+    tar -zcf ${HOME}/${ARCHIVE} .
 }
 
 __help() {
   cat <<EOF
-Usage: make [options]
+Usage: make.sh [options]
 
 Bootstrap Debian 8.0 host with mysql installation.
 
