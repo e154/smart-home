@@ -116,7 +116,6 @@ __build() {
     cd ${TMP_DIR}
     mysqldump -u travis smarthome > ${TMP_DIR}/dump.sql
     echo "tar: ${ARCHIVE} copy to ${HOME}"
-    cd ${ROOT}/tmp/node
     tar -zcf ${HOME}/${ARCHIVE} .
 }
 
