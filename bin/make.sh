@@ -6,9 +6,9 @@ set -o errexit
 # base variables
 #
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}")" && cd ../ && pwd)"
-TMP_DIR="${ROOT}/tmp/server"
 EXEC="server"
-ARCHIVE="${EXEC}-release.tar.gz"
+TMP_DIR="${ROOT}/tmp/${EXEC}"
+ARCHIVE="smart-home-${EXEC}.tar.gz"
 
 #
 # build version variables
