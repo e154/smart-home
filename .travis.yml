@@ -28,7 +28,7 @@ after_success:
 
 script:
   - ./bin/make.sh --init
-  - $HOME/gopath/bin/goveralls -service=travis-ci -repotoken $COVERALLS_TOKEN
+#  - $HOME/gopath/bin/goveralls -service=travis-ci -repotoken $COVERALLS_TOKEN
   - ./bin/migrate.sh --up
   - ./bin/make.sh --build
 
