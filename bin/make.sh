@@ -74,18 +74,8 @@ main() {
 
 __test() {
 
-    DIRS=(
-        "/api/controllers"
-        "/api/models"
-        "/api/router"
-    )
-
-    for dir in ${DIRS};
-    do
-        pushd ${ROOT}${dir}
-        go test -v
-        popd
-    done
+   cd ${ROOT}
+   goveralls
 }
 
 __init() {
