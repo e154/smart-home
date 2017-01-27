@@ -109,6 +109,7 @@ __build() {
     cd ${ROOT}
     go build -ldflags "${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}
     cp -r ${ROOT}/conf ${TMP_DIR}
+    cp -r ${ROOT}/data ${TMP_DIR}
     cp ${ROOT}/LICENSE ${TMP_DIR}
     cp ${ROOT}/README.md ${TMP_DIR}
     cp ${ROOT}/contributors.txt ${TMP_DIR}
