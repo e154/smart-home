@@ -10,11 +10,13 @@ env:
 
 services:
   - mysql
+  - docker
 
 before_install:
   - mysql -e 'CREATE DATABASE smarthome;'
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
+  - go get github.com/karalabe/xgo
   - go env && pwd
 
 install:

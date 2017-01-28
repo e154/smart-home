@@ -96,17 +96,7 @@ __clean() {
 
 __build() {
 
-    cd ${ROOT}
-    GOOS=windows GOARCH=amd64 go build -ldflags "${GOBUILD_LDFLAGS}" -o "${TMP_DIR}/${EXEC}-amd64-windows.exe"
-    GOOS=windows GOARCH=386 go build -ldflags "${GOBUILD_LDFLAGS}" -o "${TMP_DIR}/${EXEC}-386-windows.exe"
-    GOOS=linux GOARCH=amd64 go build -ldflags "${GOBUILD_LDFLAGS}" -o "${TMP_DIR}/${EXEC}-amd64-linux"
-    GOOS=linux GOARCH=386 go build -ldflags "${GOBUILD_LDFLAGS}" -o "${TMP_DIR}/${EXEC}-386-linux"
-    GOOS=linux GOARCH=arm64 go build -ldflags "${GOBUILD_LDFLAGS}" -o "${TMP_DIR}/${EXEC}-arm64-linux"
-    GOOS=linux GOARCH=arm go build -ldflags "${GOBUILD_LDFLAGS}" -o "${TMP_DIR}/${EXEC}-arm-linux"
-#    GOOS=freebsd GOARCH=amd64 go build -ldflags "${GOBUILD_LDFLAGS}" -o "${TMP_DIR}/${EXEC}-amd64-freebsd"
-#    GOOS=freebsd GOARCH=386 go build -ldflags "${GOBUILD_LDFLAGS}" -o "${TMP_DIR}/${EXEC}-386-freebsd"
-#    GOOS=freebsd GOARCH=arm go build -ldflags "${GOBUILD_LDFLAGS}" -o "${TMP_DIR}/${EXEC}-arm-freebsd"
-
+    xgo --out=${EXEC} --targets=linux/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
     cp -r ${ROOT}/conf ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}
     cp ${ROOT}/LICENSE ${TMP_DIR}
