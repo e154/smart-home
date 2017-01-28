@@ -96,10 +96,8 @@ __clean() {
 
 __build() {
 
-    cd ${ROOT}
-    go build -ldflags "${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}
-#    cd ${TMP_DIR}
-#    xgo --out=${EXEC} --targets=linux/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
+    cd ${TMP_DIR}
+    xgo --out=${EXEC} --targets=linux/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
     cp -r ${ROOT}/conf ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}
     cp ${ROOT}/LICENSE ${TMP_DIR}
