@@ -74,18 +74,8 @@ main() {
 
 __test() {
 
-    DIRS=(
-        "/api/controllers"
-        "/api/models"
-        "/api/router"
-    )
-
-    for dir in ${DIRS};
-    do
-        pushd ${ROOT}${dir}
-        go test -v
-        popd
-    done
+   cd ${ROOT}
+   goveralls
 }
 
 __init() {
@@ -106,8 +96,8 @@ __clean() {
 
 __build() {
 
-    cd ${ROOT}
-    go build -ldflags "${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}
+    cd ${TMP_DIR}
+    xgo --out=${EXEC} --targets=linux/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
     cp -r ${ROOT}/conf ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}
     cp ${ROOT}/LICENSE ${TMP_DIR}
