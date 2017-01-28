@@ -96,6 +96,7 @@ __clean() {
 
 __build() {
 
+    cd ${TMP_DIR}
     xgo --out=${EXEC} --targets=linux/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
     cp -r ${ROOT}/conf ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}
