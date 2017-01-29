@@ -105,7 +105,7 @@ __build() {
     cp ${ROOT}/contributors.txt ${TMP_DIR}
     sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
     cd ${TMP_DIR}
-    mysqldump -u travis smarthome > ${TMP_DIR}/dump.sql
+    mysqldump -u root smarthome > ${TMP_DIR}/dump.sql
     echo "tar: ${ARCHIVE} copy to ${HOME}"
     tar -zcf ${HOME}/${ARCHIVE} .
 }

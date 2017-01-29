@@ -2,6 +2,6 @@
 
 driver="mysql"
 base="smarthome"
-user="travis"
+user="root"
 password=""
 server="127.0.0.1:3306"

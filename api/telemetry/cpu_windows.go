@@ -14,7 +14,7 @@ func NewCpu() (cpu *Cpu) {
 }
 
 type Cpu struct {
-	Cpuinfo			*linuxproc.CPUInfo	`json:"cpuinfo"`
+	Cpuinfo			string			`json:"cpuinfo"`
 	All			float64			`json:"all"`
 	Usage			map[int]float64		`json:"usage"`
 	cpu_prev_total		map[int]uint64

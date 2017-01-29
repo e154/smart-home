@@ -8,7 +8,7 @@ func NewDisk() (disk *Disk) {
 }
 
 type Disk struct {
-	DiskStats	[]linuxproc.DiskStat	`json:"disk_stat"`
+	DiskStats	string	`json:"disk_stat"`
 }
 
 func (d *Disk) Update() {
