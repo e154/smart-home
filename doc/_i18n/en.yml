@@ -1,0 +1,10 @@
+global:
+  english: en
+  russian: рус
+menu:
+  button: Menu
+  smart_home: Smart home
+  home: Home
+  docs: Docs
+  toggle_navigation: Toggle navigation
+  api: API
