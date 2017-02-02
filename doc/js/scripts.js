@@ -1,6 +1,30 @@
 (function($) {
     "use strict"; // Start of use strict
 
+    var owner = 'e154';
+
+    $(document).ready(function () {
+        $('#smart-home-server').release({repo: 'smart-home'});
+        $('#smart-home-configurator').release({repo: 'smart-home-configurator'});
+        $('#smart-home-node').release({repo: 'smart-home-node'})
+    });
+
+    //===============================================================
+    // LATEST RELEASE
+    //===============================================================
+
+    $.fn.release = function(opt) {
+        var href = 'https://github.com/e154/'+opt.repo;
+        $.getJSON("https://api.github.com/repos/"+owner+"/"+opt.repo+"/releases/latest").done(function (release) {
+            href = release.assets[0].browser_download_url;
+        });
+        $(this).attr('href', href);
+    };
+
+    //===============================================================
+    // ETC
+    //===============================================================
+
     // jQuery for page scrolling feature - requires jQuery Easing plugin
     $('a.page-scroll').bind('click', function(event) {
         var $anchor = $(this);

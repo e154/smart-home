@@ -1,8 +1,20 @@
 <li>
-    <a class="page-scroll" href="/">{% t menu.home %}</a>
+    {% if site.lang == "ru" %}
+    {% capture link1 %}{{ site.baseurl_root }}{% endcapture %}
+    <a class="page-scroll" href="/{{ link1 }}" >{% t menu.home %}</a>
+    {% elsif site.lang == "en" %}
+    {% capture link2 %}{{ site.baseurl_root }}/en/{% endcapture %}
+    <a href="{{ link2 }}" >{% t menu.home %}</a>
+    {% endif %}
 </li>
 <li>
-    <a class="page-scroll" href="/docs">{% t menu.docs %}</a>
+    {% if site.lang == "ru" %}
+    {% capture link1 %}{{ site.baseurl_root }}getting-started{% endcapture %}
+    <a class="page-scroll" href="/{{ link1 }}" >{% t menu.getting_started %}</a>
+    {% elsif site.lang == "en" %}
+    {% capture link2 %}{{ site.baseurl_root }}/en/getting-started{% endcapture %}
+    <a href="{{ link2 }}" >{% t menu.getting_started %}</a>
+    {% endif %}
 </li>
 <li>
     <a class="page-scroll" href="/api">{% t menu.api %}</a>
@@ -10,7 +22,7 @@
 <li>
     {% if site.lang == "ru" %}
     {% capture link1 %}{{ site.baseurl_root }}en{{ page.url}}{% endcapture %}
-    <a href="{{ link1 }}" >{% t global.english %}</a>
+    <a href="/{{ link1 }}" >{% t global.english %}</a>
     {% elsif site.lang == "en" %}
     {% capture link2 %}{{ site.baseurl_root }}{{ page.url  }}{% endcapture %}
     <a href="{{ link2 }}" >{% t global.russian %}</a>

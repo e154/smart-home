@@ -1,10 +1,49 @@
 global:
   english: en
   russian: рус
+more: Find Out More
 menu:
   button: Menu
   smart_home: Smart home
   home: Home
   docs: Docs
+  getting_started: Getting started
   toggle_navigation: Toggle navigation
   api: API
+smart-home: Smart home
+header:
+  t1: System for making of a modern Smart Home
+  t2: Suitable for both lovers - electronics and professionals in their field
+feature:
+  t1: We've got what you need!
+  t2: Smart Home - an open source system that can be downloaded free of charge, without registration and SMS. A large number of already present functionality of the box, and expanding well served. Smart home system allows you to get the result as soon as possible.
+  t3: Get Started!
+services:
+  t1: At Your Service
+  t2: Role based access controll
+  t3: It allows flexibility to control access to equipment and system components.
+  t4: Operator dashboard
+  t5: Easy to use control panel and configure hardware.
+  t6: Ready to Ship
+  t7: You can use this as is, or you can make changes!
+  t8: Scalable
+  t9: The system is expandable as much as it requires a set task
+  t10: Advanced reporting
+  t11: Flexible awareness will keep you informed of all developments
+  t12: Microservices architecture
+  t13: The system is divided into mikroservisy to improve performance and scalability
+  t14: Javascript scripting
+  t15: Scripting system allows you to write scripts directly in the browser window
+  t16: Made with Love
+  t17: All Smart Home system code written with love and attention to detail
+source:
+  t1: Download the source code for the project
+  t2: Source code!
+download:
+  download: Download
+  server: Server
+  server_description:
+  configurator: Configurator
+  configurator_description:
+  node: Node
+  node_description:

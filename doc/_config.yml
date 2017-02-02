@@ -36,7 +36,10 @@ exclude:
   - Gemfile.lock
   - node_modules
   - api_v1
+  - bootstrap
 
 exclude_from_localizations: ["javascript", "images", "css"]
 languages: ["ru", "en"]
 language_default:   'ru'
+
+include: ["_getting-started"]
