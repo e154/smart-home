@@ -15,6 +15,12 @@ menu:
   download: Загрузка
   whats-included: Что входит в пакеты
   requirements: Системные требования
+  server: Сервер
+  configurator: Конфигуратор
+  node: Нода
+  install: Установка
+  install-from-package: Установка из архива
+  install-from-package: Установка из исходников
 
 smart-home: Умный дом
 header:

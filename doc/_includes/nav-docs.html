@@ -27,7 +27,7 @@
 
           <li class="{{ active }}">
             <a href="#{{ doc_slug }}">
-              {{ doc.title }}
+              {% t menu.{{doc.title | slugify}} %}
             </a>
 
             {% comment %}
@@ -36,7 +36,7 @@
                 {% for section in doc.sections %}
                   <li>
                     <a href="#{{ section.title | downcase | replace: ' ', '-' }}">
-                      {{ section.title }}
+                      {% t menu.{{section.title | slugify}} %}
                     </a>
                   </li>
                 {% endfor %}

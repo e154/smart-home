@@ -83,10 +83,11 @@
 <div class="docs-section">
     <h2 id="whats-included">Что входит в пакеты</h2>
 
-    <h3>Сервер</h3>
+    <h3 id="server">Сервер</h3>
 
-{% example bash %}
+    <p>Список файлов в корне архива.</p>
 
+{% highlight bash %}
 ├── conf
 ├── contributors.txt
 ├── data
@@ -105,8 +106,7 @@
 ├── server-linux-mips64le
 ├── server-windows-4.0-386.exe
 └── server-windows-4.0-amd64.exe
-
-{% endexample %}
+{% endhighlight %}
 
     <ul class="list-unstyled">
         <li><strong>conf</strong> - директория конфигурационных файлов</li>
@@ -118,12 +118,146 @@
         <li><strong>server-*</strong> - Платформо зависимый исполняемый файл</li>
     </ul>
 
+    <h3 id="configurator">Конфигуратор</h3>
+
+    <p>Список файлов в корне архива.</p>
+
+{% highlight bash %}
+├── build
+├── conf
+├── views
+├── configurator-darwin-10.6-386
+├── configurator-darwin-10.6-amd64
+├── configurator-linux-386
+├── configurator-linux-amd64
+├── configurator-linux-arm-5
+├── configurator-linux-arm-6
+├── configurator-linux-arm64
+├── configurator-linux-arm-7
+├── configurator-linux-mips64
+├── configurator-linux-mips64le
+├── configurator-windows-4.0-386.exe
+├── configurator-windows-4.0-amd64.exe
+├── contributors.txt
+├── LICENSE
+└── README.md
+{% endhighlight %}
+
+    <ul class="list-unstyled">
+        <li><strong>build</strong> - директория фронтенд приложения</li>
+        <li><strong>conf</strong> - директория конфигурационных файлов</li>
+        <li><strong>views</strong> - директория html шаблонов страниц входа,выхода,восстановления пароля</li>
+        <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
+        <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
+        <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
+        <li><strong>configurator-*</strong> - Платформо зависимый исполняемый файл</li>
+    </ul>
+
+    <h3 id="node">Нода</h3>
+
+    <p>Список файлов в корне архива.</p>
+
+{% highlight bash %}
+├── conf
+├── contributors.txt
+├── LICENSE
+├── node-darwin-10.6-386
+├── node-darwin-10.6-amd64
+├── node-linux-386
+├── node-linux-amd64
+├── node-linux-arm-5
+├── node-linux-arm-6
+├── node-linux-arm64
+├── node-linux-arm-7
+├── node-linux-mips64
+├── node-linux-mips64le
+├── node-windows-4.0-386.exe
+├── node-windows-4.0-amd64.exe
+└── README.md
+{% endhighlight %}
+
+    <ul class="list-unstyled">
+        <li><strong>conf</strong> - директория конфигурационных файлов</li>
+        <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
+        <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
+        <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
+        <li><strong>node-*</strong> - Платформо зависимый исполняемый файл</li>
+    </ul>
 </div>
 
+<div class="docs-section">
+    <h2 id="install">Установка</h2>
+
+    <p>Будет продемонстрированна базовая установка системы <strong>Умный дом</strong> на сервер под операционной системой linux Debian.
+    С не большими изменениями установка будет схожа и для других операционных систем.</p>
+
+    <p>Информация о системе на которой производилось тестовое развёртывание:</p>
+
+{% highlight bash %}
+delta54@darkstar:tmp$ uname -a
+Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux
+{% endhighlight %}
+
+{% highlight bash %}
+delta54@darkstar:tmp$ cat /etc/*release*
+PRETTY_NAME="Debian GNU/Linux 8 (jessie)"
+NAME="Debian GNU/Linux"
+VERSION_ID="8"
+VERSION="8 (jessie)"
+ID=debian
+HOME_URL="http://www.debian.org/"
+SUPPORT_URL="http://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+{% endhighlight %}
+
+    <p>План действий:</p>
+
+    <ul>
+        <li>Создание директорий</li>
+        <li>Скачивание и распаковка</li>
+        <li>Правка конфигурационных файлов</li>
+        <li>База mysql</li>
+    </ul>
+
+    <p>Рекомендуемая директория установки сервера /opt/smart-home. Подготовьте директорию, укажите требуемые права доступа на директорию
+        /opt/smart-home
+    </p>
+
+{% highlight bash %}
+sudo mkdir -p /opt/smart-home
+sudo chown $USER:$USER /opt/smart-home -R
+mkdir -p /opt/smart-home/server
+mkdir -p /opt/smart-home/configurator
+mkdir -p /opt/smart-home/node
+{% endhighlight %}
+
+    <p>Скачаем последний релиз сервер, и распакуем в директории <strong>server</strong></p>
+
+{% highlight bash %}
+cd /opt/smart-home/server
+wget https://github.com/e154/smart-home/releases/download/v75/smart-home-server.tar.gz
+tar -zxvf smart-home-server.tar.gz
+mv data ../
+{% endhighlight %}
+
+    <p>Тоже самое сделаем для конфигуратора, и ноды</p>
+
+{% highlight bash %}
+cd /opt/smart-home/configurator
+wget https://github.com/e154/smart-home-configurator/releases/download/v22/smart-home-configurator.tar.gz
+tar -zxvf smart-home-configurator.tar.gz
+cd /opt/smart-home/node
+wget https://github.com/e154/smart-home-node/releases/download/v45/smart-home-node.tar.gz
+tar -zxvf smart-home-node.tar.gz
+cd ..
+{% endhighlight %}
+
+</div>
 
 <div class="docs-section">
-    <h2 id="introduction">Установка</h2>
 
-
+{% callout danger %}
+#### Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы
+{% endcallout %}
 
 </div>

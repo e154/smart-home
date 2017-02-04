@@ -1,14 +1,20 @@
 - title: Overview
-  pages:
-    - title: Requirements
+- title: Requirements
 - title: Download
+- title: Whats included
   pages:
-    - title: Whats included
-    - title: Introduction
-    - title: Contents
-    - title: Browsers & devices
-    - title: JavaScript
-    - title: Options
-    - title: Build tools
-    - title: Best practices
-    - title: Accessibility
+    - title: Server
+    - title: Configurator
+    - title: Node
+- title: Install
+  pages:
+    - title: Install from package
+    - title: Install from source
+- title: Introduction
+- title: Contents
+- title: Browsers & devices
+- title: JavaScript
+- title: Options
+- title: Build tools
+- title: Best practices
+- title: Accessibility
