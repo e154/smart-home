@@ -2,7 +2,7 @@ global:
   english: en
   russian: рус
 more: Find Out More
-menu:
+main_menu:
   button: Menu
   smart_home: Smart home
   home: Home
@@ -10,6 +10,11 @@ menu:
   getting_started: Getting started
   toggle_navigation: Toggle navigation
   api: API
+menu:
+  overview: Overview
+  download: Download
+  whats-included: Whats included
+
 smart-home: Smart home
 header:
   t1: System for making of a modern Smart Home
@@ -42,8 +47,8 @@ source:
 download:
   download: Download
   server: Server
-  server_description:
+  server_description: The core of the system Smart Home, the server managing the logic and business processes of the system, is the heart of a smart home.
   configurator: Configurator
-  configurator_description:
-  node: Node
-  node_description:
+  configurator_description: Client application to configure smart home systems, for tasks.
+  node: Noda
+  node_description: The system component responsible for the connection to the server active devices of the smart home system.

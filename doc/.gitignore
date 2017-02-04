@@ -1,7 +1,7 @@
 node_modules
 bower_components
 /_site/
-/js/*.min.js
+/js/scripts.min.js
 /css/
 /vendor/
 /.sass-cache/

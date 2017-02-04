@@ -1,15 +1,19 @@
 @import "variables.less";
 @import "mixins.less";
+@import "navigation";
+@import "callout";
 
 // Global Components
 html,
 body {
     height: 100%;
     width: 100%;
+    position: relative;
 }
 
 body {
-    .serif-font;
+    .sans-serif-font;
+    webkit-tap-highlight-color: @gray-darker;
 }
 
 hr {
@@ -29,6 +33,11 @@ a {
     &:focus {
         color: darken(@theme-primary, 10%);
     }
+}
+
+img {
+    width: 100%;
+    height: auto;
 }
 
 h1,
@@ -71,90 +80,8 @@ aside {
     padding: 0;
 }
 
-// Navigation
-
-.navbar-default {
-    background-color: white;
-    border-color: fade(@gray-darker, 5%);
-    .sans-serif-font;
-    .transition-all;
-    .navbar-header .navbar-brand {
-        color: @theme-primary;
-        .sans-serif-font;
-        font-weight: 700;
-        text-transform: uppercase;
-        &:hover,
-        &:focus {
-            color: darken(@theme-primary, 10%);
-        }
-    }
-    .navbar-header .navbar-toggle {
-        font-weight: 700;
-        font-size: 12px;
-        color: @gray-darker;
-        text-transform: uppercase;
-    }
-    .nav {
-        > li {
-            > a,
-            > a:focus {
-                text-transform: uppercase;
-                font-weight: 700;
-                font-size: 13px;
-                color: @gray-darker;
-                &:hover {
-                    color: @theme-primary;
-                }
-            }
-            &.active {
-                > a,
-                > a:focus {
-                    color: @theme-primary !important;
-                    background-color: transparent;
-                    &:hover {
-                        background-color: transparent;
-                    }
-                }
-            }
-        }
-    }
-    @media (min-width: 768px) {
-        background-color: transparent;
-        border-color: fade(white, 30%);
-        .navbar-header .navbar-brand {
-            color: fade(white, 70%);
-            &:hover,
-            &:focus {
-                color: white;
-            }
-        }
-        .nav > li > a,
-        .nav > li > a:focus {
-            color: fade(white, 70%);
-            &:hover {
-                color: white;
-            }
-        }
-        &.affix {
-            background-color: white;
-            border-color: fade(@gray-darker, 5%);
-            .navbar-header .navbar-brand {
-                color: @theme-primary;
-                font-size: 14px;
-                &:hover,
-                &:focus {
-                    color: darken(@theme-primary, 10%);
-                }
-            }
-            .nav > li > a,
-            .nav > li > a:focus {
-                color: @gray-darker;
-                &:hover {
-                    color: @theme-primary;
-                }
-            }
-        }
-    }
+.docs-section {
+    margin-bottom: 100px;
 }
 
 // Homepage Header
@@ -222,6 +149,30 @@ header {
         min-height: inherit;
         height: 200px;
     }
+
+    &.getting-started {
+        min-height: inherit;
+        height: 250px;
+        .header-content {
+            text-align: left;
+            p {
+                padding: 0;
+                margin: 0;
+            }
+        }
+    }
+
+    &.api {
+        min-height: inherit;
+        height: 250px;
+        .header-content {
+            text-align: left;
+            p {
+                padding: 0;
+                margin: 0;
+            }
+        }
+    }
 }
 
 // Sections
@@ -233,6 +184,9 @@ header {
 .service-box {
     max-width: 400px;
     margin: 50px auto 0;
+    h3 {
+        min-height: 50px;
+    }
     @media (min-width: 992px) {
         margin: 20px auto 0;
     }
@@ -361,13 +315,9 @@ img::-moz-selection {
     background: transparent;
 }
 
-body {
-    webkit-tap-highlight-color: @gray-darker;
-}
-
 #mainNav {
     .container-fluid {
-        max-width: 1024px;
+        max-width: 1170px;
         margin: 0 auto;
     }
 }
@@ -407,4 +357,32 @@ footer.footer {
     p {
         font-size: 18px;
     }
+}
+
+.download-block {
+    margin-top:50px;
+    .download-item {
+        margin-bottom: 50px;
+        h3 {
+        }
+        p {
+            min-height: 85px;
+        }
+        a {
+
+        }
+    }
+}
+
+.bs-docs-sidebar {
+    &.affix {
+        position: fixed;
+        top: 100px;
+    }
+}
+
+.page-header {
+    padding-bottom: 9px;
+    margin: 40px 0 20px;
+    border-bottom: 1px solid #eee;
 }

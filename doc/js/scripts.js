@@ -14,16 +14,22 @@
     //===============================================================
 
     $.fn.release = function(opt) {
-        var href = 'https://github.com/e154/'+opt.repo;
-        $.getJSON("https://api.github.com/repos/"+owner+"/"+opt.repo+"/releases/latest").done(function (release) {
-            href = release.assets[0].browser_download_url;
-        });
+        var href = 'https://github.com/'+owner+'/'+opt.repo+'/releases';
+        //TODO complite idea
+        // $.getJSON("https://api.github.com/repos/"+owner+"/"+opt.repo+"/releases/latest").done(function (release) {
+        //     href = release.assets[0].browser_download_url;
+        // });
         $(this).attr('href', href);
     };
 
     //===============================================================
     // ETC
     //===============================================================
+
+    // Disable empty links in docs examples
+    $('[href="#"]').click(function (e) {
+        e.preventDefault()
+    });
 
     // jQuery for page scrolling feature - requires jQuery Easing plugin
     $('a.page-scroll').bind('click', function(event) {
@@ -34,10 +40,9 @@
         event.preventDefault();
     });
 
-    // Highlight the top nav as scrolling occurs
     $('body').scrollspy({
-        target: '.navbar-fixed-top',
-        offset: 51
+        target: '#docsNavbarContent',
+        offset: 150
     });
 
     // Closes the Responsive Menu on Menu Item Click
@@ -50,7 +55,13 @@
         offset: {
             top: 100
         }
-    })
+    });
+
+    $('#docsNavbarContent').affix({
+        offset: {
+            top: 200
+        }
+    });
 
     // Initialize and Configure Scroll Reveal Animation
     window.sr = ScrollReveal();
@@ -86,3 +97,10 @@
     });
 
 })(jQuery); // End of use strict
+
+(function () {
+    'use strict';
+
+    anchors.options.placement = 'left';
+    anchors.add('.docs-section > h1, .docs-section > h2, .docs-section > h3, .docs-section > h4, .docs-section > h5')
+}());

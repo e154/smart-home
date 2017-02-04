@@ -42,4 +42,5 @@ exclude_from_localizations: ["javascript", "images", "css"]
 languages: ["ru", "en"]
 language_default:   'ru'
 
-include: ["_getting-started"]
+include: ["_getting-started", "_api_v1"]
+plugins_dir: ["_plugins"]

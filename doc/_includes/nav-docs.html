@@ -1,0 +1,52 @@
+<nav class="bs-docs-sidebar bd-sidebar" id="docsNavbarContent">
+  <ul class="nav">
+  {% assign page_slug = page.url | split: '/' | last %}
+  {% for group in include.content %}
+  {% assign link = group.pages | first %}
+  {% assign link_slug = group.title | slugify %}
+  {% assign group_slug = group.title | slugify %}
+  {% assign active = nil %}
+
+  {% if page.group == group_slug %}
+    {% assign active = 'active' %}
+  {% endif %}
+
+  <li class="bd-toc-item {{ active }}">
+      <a class="bd-toc-link" href="#{{ link_slug }}">
+        {% t menu.{{group.title | slugify}} %}
+      </a>
+
+      <ul class="nav bd-sidenav">
+        {% for doc in group.pages %}
+          {% assign doc_slug = doc.title | slugify %}
+          {% assign active = nil %}
+
+          {% if page.group == group_slug and page_slug == doc_slug %}
+            {% assign active = 'active bd-sidenav-active' %}
+          {% endif %}
+
+          <li class="{{ active }}">
+            <a href="#{{ doc_slug }}">
+              {{ doc.title }}
+            </a>
+
+            {% comment %}
+            {% unless doc.sections == nil %}
+              <ul class="nav">
+                {% for section in doc.sections %}
+                  <li>
+                    <a href="#{{ section.title | downcase | replace: ' ', '-' }}">
+                      {{ section.title }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endunless %}
+            {% endcomment %}
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+  </ul>
+</nav>

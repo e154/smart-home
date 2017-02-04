@@ -2,7 +2,7 @@ global:
   english: en
   russian: рус
 more: Подробнее
-menu:
+main_menu:
   button: Меню
   smart_home: Умный дом
   home: Домой
@@ -10,6 +10,12 @@ menu:
   getting_started: С чего начать
   toggle_navigation: Показать
   api: API
+menu:
+  overview: Обзор
+  download: Загрузка
+  whats-included: Что входит в пакеты
+  requirements: Системные требования
+
 smart-home: Умный дом
 header:
   t1: Система для создания современного умного дома
@@ -42,8 +48,8 @@ source:
 download:
   download: Скачать
   server: Сервер
-  server_description:
+  server_description: Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.
   configurator: Конфигуратор
-  configurator_description:
+  configurator_description: Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.
   node: Нода
-  node_description:
+  node_description: Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.

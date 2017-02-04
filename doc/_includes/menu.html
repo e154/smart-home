@@ -1,23 +1,23 @@
 <li>
     {% if site.lang == "ru" %}
     {% capture link1 %}{{ site.baseurl_root }}{% endcapture %}
-    <a class="page-scroll" href="/{{ link1 }}" >{% t menu.home %}</a>
+    <a class="page-scroll" href="/{{ link1 }}" >{% t main_menu.home %}</a>
     {% elsif site.lang == "en" %}
     {% capture link2 %}{{ site.baseurl_root }}/en/{% endcapture %}
-    <a href="{{ link2 }}" >{% t menu.home %}</a>
+    <a href="{{ link2 }}" >{% t main_menu.home %}</a>
     {% endif %}
 </li>
 <li>
     {% if site.lang == "ru" %}
     {% capture link1 %}{{ site.baseurl_root }}getting-started{% endcapture %}
-    <a class="page-scroll" href="/{{ link1 }}" >{% t menu.getting_started %}</a>
+    <a class="page-scroll" href="/{{ link1 }}" >{% t main_menu.getting_started %}</a>
     {% elsif site.lang == "en" %}
     {% capture link2 %}{{ site.baseurl_root }}/en/getting-started{% endcapture %}
-    <a href="{{ link2 }}" >{% t menu.getting_started %}</a>
+    <a href="{{ link2 }}" >{% t main_menu.getting_started %}</a>
     {% endif %}
 </li>
 <li>
-    <a class="page-scroll" href="/api">{% t menu.api %}</a>
+    <a class="page-scroll" href="/api-v1">{% t main_menu.api %}</a>
 </li>
 <li>
     {% if site.lang == "ru" %}
