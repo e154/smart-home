@@ -113,6 +113,8 @@ __docs_deploy() {
 
 __build() {
 
+    __docs_deploy
+
     cd ${TMP_DIR}
     xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
     cp -r ${ROOT}/conf ${TMP_DIR}
@@ -125,7 +127,6 @@ __build() {
     mysqldump -u root smarthome > ${TMP_DIR}/dump.sql
     echo "tar: ${ARCHIVE} copy to ${HOME}"
     tar -zcf ${HOME}/${ARCHIVE} .
-    __docs_deploy
 }
 
 __help() {
