@@ -8,13 +8,10 @@
     - title: Node
 - title: Install
   pages:
-    - title: Install from package
-    - title: Install from source
-- title: Introduction
-- title: Contents
-- title: Browsers & devices
-- title: JavaScript
-- title: Options
-- title: Build tools
-- title: Best practices
-- title: Accessibility
+    - title: Install mkdir
+    - title: Install download and unpack
+    - title: Install server conf
+    - title: Install configuration conf
+    - title: Install node conf
+    - title: Install mysql
+- title: Install from source

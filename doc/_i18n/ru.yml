@@ -19,8 +19,13 @@ menu:
   configurator: Конфигуратор
   node: Нода
   install: Установка
-  install-from-package: Установка из архива
-  install-from-package: Установка из исходников
+  install-mkdir: Создание директорий
+  install-download-and-unpack: Скачивание и распаковка
+  install-server-conf: Настройка сервера
+  install-configuration-conf: Настройка конфигуратора
+  install-node-conf: Настройка ноды
+  install-mysql: База mysql
+  install-from-source: Сборка из исходников
 
 smart-home: Умный дом
 header:

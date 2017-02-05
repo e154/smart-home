@@ -8,16 +8,27 @@
         <li><strong>Конфигуратор</strong> - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
             систему под свои нужды, требуется как првило на этапе конфигурации.</li>
         <li><strong>Нода</strong> - посредник связи сервера с активными устройствами, позволяет связать один сервер с
-            множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям</li>
-        <li><strong>Монитор</strong> - мобильное клиентское приложение android, ios</li>
+            множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
+        Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
+        по требованию сценария, либо доступности последней.</li>
+        <li><strong>Монитор</strong>(в разработке) - мобильное клиентское приложение android, ios.</li>
     </ul>
 
     <p>Для работы <strong>системы умного дома</strong> требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
         нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.</p>
 
+    <p>На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
+        В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
+        создайте реквест с предложением в репозиторий <a href="https://github.com/e154/smart-home">Сервер</a>, <a href="https://github.com/e154/smart-home-node">Нода</a>.
+
+        Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
+        со схемой и программой прошивки для <strong>AVR mega 168pu</strong> управляющего розетой, легко поддающееся модификации под более сложные задачи можно
+        посмотреть в репозитории - <a href="https://github.com/e154/smart-home-socket">пример устройства управления розеткой</a>.
+    </p>
+
     <p>Схематичная сеть <strong>системы умного дома</strong>:</p>
 
-    <img src="/img/default_network.png" title="Схематичная сеть умного дома" alt="Схематичная сеть умного дома">
+    <img src="/img/default_network.svg" title="Схематичная сеть умного дома" alt="Схематичная сеть умного дома">
 </div>
 
 <div class="docs-section">
@@ -188,8 +199,28 @@
 <div class="docs-section">
     <h2 id="install">Установка</h2>
 
-    <p>Будет продемонстрированна базовая установка системы <strong>Умный дом</strong> на сервер под операционной системой linux Debian.
+    <p>Будет произведена базовая установка системы <strong>Умный дом</strong> на сервер под операционной системой linux Debian.
     С не большими изменениями установка будет схожа и для других операционных систем.</p>
+
+    <p>План действий:</p>
+
+    <ul>
+        <li><a href="#install-mkdir">Создание директорий</a></li>
+        <li><a href="#install-download-and-unpack">Скачивание и распаковка</a></li>
+        <li><a href="#install-server-conf">Настройка сервера</a></li>
+        <li><a href="#install-configuration-conf">Настройка конфигуратора</a></li>
+        <li><a href="#install-node-conf">Настройка ноды</a></li>
+        <li><a href="#install-mysql">База mysql</a></li>
+    </ul>
+
+    <p></p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <img src="/img/default_network2.svg" title="Схематичная сеть умного дома" alt="Схематичная сеть умного дома">
+        </div>
+    </div>
+
 
     <p>Информация о системе на которой производилось тестовое развёртывание:</p>
 
@@ -201,23 +232,9 @@ Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64
 {% highlight bash %}
 delta54@darkstar:tmp$ cat /etc/*release*
 PRETTY_NAME="Debian GNU/Linux 8 (jessie)"
-NAME="Debian GNU/Linux"
-VERSION_ID="8"
-VERSION="8 (jessie)"
-ID=debian
-HOME_URL="http://www.debian.org/"
-SUPPORT_URL="http://www.debian.org/support"
-BUG_REPORT_URL="https://bugs.debian.org/"
 {% endhighlight %}
 
-    <p>План действий:</p>
-
-    <ul>
-        <li>Создание директорий</li>
-        <li>Скачивание и распаковка</li>
-        <li>Правка конфигурационных файлов</li>
-        <li>База mysql</li>
-    </ul>
+    <h3 id="install-mkdir">Создание директорий</h3>
 
     <p>Рекомендуемая директория установки сервера /opt/smart-home. Подготовьте директорию, укажите требуемые права доступа на директорию
         /opt/smart-home
@@ -231,12 +248,21 @@ mkdir -p /opt/smart-home/configurator
 mkdir -p /opt/smart-home/node
 {% endhighlight %}
 
+    <h3 id="install-download-and-unpack">Скачивание и распаковка</h3>
+
     <p>Скачаем последний релиз сервер, и распакуем в директории <strong>server</strong></p>
 
 {% highlight bash %}
 cd /opt/smart-home/server
 wget https://github.com/e154/smart-home/releases/download/v75/smart-home-server.tar.gz
 tar -zxvf smart-home-server.tar.gz
+{% endhighlight %}
+
+    <p>В директории <strong>data</strong> хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
+        Вынесите директорию <strong>data</strong> на один уровень выше.</p>
+
+{% highlight bash %}
+cd /opt/smart-home/server
 mv data ../
 {% endhighlight %}
 
@@ -249,8 +275,99 @@ tar -zxvf smart-home-configurator.tar.gz
 cd /opt/smart-home/node
 wget https://github.com/e154/smart-home-node/releases/download/v45/smart-home-node.tar.gz
 tar -zxvf smart-home-node.tar.gz
-cd ..
 {% endhighlight %}
+
+    <p>В итоге мы должны получит следующую корневую структуру:</p>
+
+{% highlight bash %}
+cd /opt/smart-home
+├── data
+├── node
+├── configurator
+└── server
+{% endhighlight %}
+
+    <h3 id="install-server-conf">Настройка сервера</h3>
+
+    <p>Важные переменные в конфигурационном файле серевера:</p>
+    <ul>
+        <li><strong>httpaddr</strong> - адрес сервера REST API</li>
+        <li><strong>httpport</strong> - порт сервера REST API</li>
+        <li><strong>data_dir</strong> - директория хранения общих файлов</li>
+        <li><strong>db_user</strong> - пользователь для соединени mysql</li>
+        <li><strong>db_pass</strong> - пароль доступка к mysql</li>
+        <li><strong>db_host</strong> - адрес сервера mysql</li>
+        <li><strong>db_name</strong> - название базы mysql</li>
+        <li><strong>db_port</strong> - порт сервера mysql</li>
+    </ul>
+    <p>Отредактируйте переменную <strong>httpaddr</strong> в /opt/smart-home/server/conf/app.conf,
+    адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.</p>
+
+{% highlight bash %}
+httpaddr = "0.0.0.0"
+{% endhighlight %}
+
+    <p>По желанию отредактируйте переменную <strong>httpport</strong> в /opt/smart-home/server/conf/prod/app.conf,
+    или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
+    приложений.</p>
+
+{% highlight bash %}
+httpport = 3000
+{% endhighlight %}
+
+    <p>Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
+        или оставьте без изменений, и настройте базу в соответствии с установленными значениями.</p>
+
+{% highlight bash %}
+db_user = smarthome
+db_pass = smarthome
+db_host = "127.0.0.1"
+db_name = smarthome
+db_port = "3306"
+db_type = mysql
+{% endhighlight %}
+
+    <h3 id="install-configuration-conf">Настройка конфигуратора</h3>
+
+    <p>Конфиг файлы конфигуратора лежат в директории /opt/smart-home/configurator/conf/
+        Важные переменные:</p>
+    <ul>
+        <li><strong>httpaddr</strong> - адрес веб интерфеса конфигуратора</li>
+        <li><strong>httpport</strong> - порт веб интерфеса конфигуратора</li>
+        <li><strong>serveraddr</strong> - порт сервера REST API</li>
+        <li><strong>serverport</strong> - порт сервера REST API</li>
+        <li><strong>data_dir</strong> - директория хранения общих файлов</li>
+    </ul>
+
+    <h3 id="install-node-conf">Настройка ноды</h3>
+
+    <p>Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:</p>
+
+{% highlight bash %}
+cp /opt/smart-home/node/conf/node.sample.conf node.conf
+{% endhighlight %}
+
+{% highlight bash %}
+cat /opt/smart-home/node/conf/node.conf
+app_version=0.1.0
+ip=127.0.0.1
+port=3001
+baud=19200
+timeout=2
+stopbits=2
+{% endhighlight %}
+
+    <ul>
+        <li><strong>app_version</strong> - версия внутреннего api ноды</li>
+        <li><strong>ip</strong> - адрес ожидания соединения от сервера</li>
+        <li><strong>port</strong> - порт ожидания соединения от сервера</li>
+        <li><strong>baud</strong> - скорость работы порта ввода вывода, используется если с сервера пришёл запрос на
+        обращение к устройству, но baud не был указан</li>
+        <li><strong>timeout</strong> - используется при обработке ошибок связи с устройствами</li>
+        <li><strong>stopbits</strong> - стоп бит, используется в общении с устройствами</li>
+    </ul>
+
+    <h3 id="install-mysql">База mysql</h3>
 
 </div>
 
@@ -259,5 +376,12 @@ cd ..
 {% callout danger %}
 #### Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы
 {% endcallout %}
+
+</div>
+
+<div class="docs-section">
+
+    <h2 id="install-from-source">Сборка из исходного кода</h2>
+
 
 </div>
