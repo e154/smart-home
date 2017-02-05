@@ -94,6 +94,23 @@ __clean() {
     rm -rf ${HOME}/${ARCHIVE}
 }
 
+__docs_deploy() {
+    cd ${ROOT}/doc
+    jekyll build --config _config.yml
+    #htmlproofer ./_site
+
+    cd ${ROOT}/doc/_site
+    remote_repo=${GITHUB_URL:-`git config remote.origin.url`}
+    remote_branch="gh-pages"
+    git init
+    git config user.name "Travis CI"
+    git config user.email "nobody@nobody.org"
+    git add .
+    git commit -m'build'
+    git push --force --quiet $remote_repo master:$remote_branch > /dev/null 2>&1
+    rm -fr .git
+}
+
 __build() {
 
     cd ${TMP_DIR}
@@ -108,6 +125,7 @@ __build() {
     mysqldump -u root smarthome > ${TMP_DIR}/dump.sql
     echo "tar: ${ARCHIVE} copy to ${HOME}"
     tar -zcf ${HOME}/${ARCHIVE} .
+    __docs_deploy
 }
 
 __help() {

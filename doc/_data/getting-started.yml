@@ -14,4 +14,5 @@
     - title: Install configuration conf
     - title: Install node conf
     - title: Install mysql
+    - title: Install exec
 - title: Install from source

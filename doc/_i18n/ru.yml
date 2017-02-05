@@ -25,6 +25,7 @@ menu:
   install-configuration-conf: Настройка конфигуратора
   install-node-conf: Настройка ноды
   install-mysql: База mysql
+  install-exec: Запуск
   install-from-source: Сборка из исходников
 
 smart-home: Умный дом
@@ -55,7 +56,9 @@ services:
   t17: Весь код системы Умного дома написан с любовью и вниманием к квждой мелочи
 source:
   t1: Скачайте исходный код проекта!
-  t2: Перейти
+  t2: Сервер
+  t3: Конфигуратор
+  t4: Нода
 download:
   download: Скачать
   server: Сервер

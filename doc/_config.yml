@@ -44,3 +44,4 @@ language_default:   'ru'
 
 include: ["_getting-started", "_api_v1"]
 plugins_dir: ["_plugins"]
+highlighter: rouge

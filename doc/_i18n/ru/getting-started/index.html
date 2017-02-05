@@ -254,7 +254,7 @@ mkdir -p /opt/smart-home/node
 
 {% highlight bash %}
 cd /opt/smart-home/server
-wget https://github.com/e154/smart-home/releases/download/v75/smart-home-server.tar.gz
+wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
 tar -zxvf smart-home-server.tar.gz
 {% endhighlight %}
 
@@ -270,10 +270,10 @@ mv data ../
 
 {% highlight bash %}
 cd /opt/smart-home/configurator
-wget https://github.com/e154/smart-home-configurator/releases/download/v22/smart-home-configurator.tar.gz
+wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
 tar -zxvf smart-home-configurator.tar.gz
 cd /opt/smart-home/node
-wget https://github.com/e154/smart-home-node/releases/download/v45/smart-home-node.tar.gz
+wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
 tar -zxvf smart-home-node.tar.gz
 {% endhighlight %}
 
@@ -369,6 +369,54 @@ stopbits=2
 
     <h3 id="install-mysql">База mysql</h3>
 
+    <p>Подключимся к консоли mysql, приготовьте пароль для рута:</p>
+
+{% highlight bash %}
+mysql -u root -p
+{% endhighlight %}
+
+    <p>Создадим базу для сервера <strong>умного дома</strong>:</p>
+
+{% highlight bash %}
+CREATE DATABASE smarthome;
+{% endhighlight %}
+
+    <p>Создадим нового пользователя, и дадим права на доступ к базе <strong>smarthome</strong> из консоли mysql</p>
+    <ul>
+        <li><strong>smarthome</strong> - пользователь</li>
+        <li><strong>smarthome</strong> - пароль</li>
+    </ul>
+
+{% highlight bash %}
+CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
+GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
+FLUSH PRIVILEGES;
+{% endhighlight %}
+
+    <p>осталось импортировать базу</p>
+
+{% highlight bash %}
+use smarthome
+source /opt/smart-home/server/dump.sql
+{% endhighlight %}
+
+    <h3 id="install-exec">Запуск</h3>
+
+    <p>Осталось запустить сервера в фоновом режиме</p>
+
+{% highlight bash %}
+/opt/smart-home/server/server-linux-amd64 > /dev/null 2>&1 &
+/opt/smart-home/configurator/configurator-linux-amd64 > /dev/null 2>&1 &
+/opt/smart-home/node/node-linux-amd64 > /dev/null 2>&1 &
+{% endhighlight %}
+
+    <ul>
+        <li><strong>nohup</strong> - команда будет продолжать выполняться в фоновом режиме и после того, как пользователь выйдет из системы</li>
+        <li><strong>> /dev/null</strong> - выводить все сообщения в данное устройство</li>
+        <li><strong>2>&1</strong> - вывод ошибок в стандартный поток</li>
+        <li><strong>&</strong> - запуск в фоновом режиме</li>
+    </ul>
+
 </div>
 
 <div class="docs-section">
@@ -382,6 +430,5 @@ stopbits=2
 <div class="docs-section">
 
     <h2 id="install-from-source">Сборка из исходного кода</h2>
-
 
 </div>
