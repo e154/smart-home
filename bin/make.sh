@@ -104,11 +104,13 @@ __docs_deploy() {
     remote_repo=${GITHUB_URL:-`git config remote.origin.url`}
     remote_branch="gh-pages"
     git init
-    git config user.name "Travis CI"
-    git config user.email "nobody@nobody.org"
+    echo -e "Starting to documentation commit.\n"
+    git config --global user.email "support@e154.ru"
+    git config --global user.name "delta54"
     git add .
     git commit -m'build'
     git push --force --quiet $remote_repo master:$remote_branch > /dev/null 2>&1
+    echo -e "Done documentation deploy.\n"
     rm -fr .git
 }
 
