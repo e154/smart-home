@@ -96,6 +96,7 @@ __clean() {
 
 __docs_deploy() {
     cd ${ROOT}/doc
+    bundle install --jobs=3 --retry=3
     jekyll build --config _config.yml
     #htmlproofer ./_site
 

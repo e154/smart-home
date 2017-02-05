@@ -25,7 +25,7 @@ install:
   - go get github.com/lib/pq
   - go get github.com/astaxie/beego/migration
   - go get github.com/beego/bee
-  - gem install jekyll html-proofer jekyll-feed
+  - gem install jekyll html-proofer
 
 #after_success:
 #  - sh ./bin/set_tags.sh
