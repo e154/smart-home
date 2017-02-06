@@ -1,0 +1,21 @@
+{{ "<!-- feature -->" | safeHTML }}
+<section class="bg-primary" id="feature">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                {{ with .Site.Params.feature.headline }}
+                    <h2 class="section-heading">{{ . }}</h2>
+                {{ end }}
+                {{ if and .Site.Params.feature.headline .Site.Params.feature.description }}
+                    <hr class="light">
+                {{ end }}
+                {{ with .Site.Params.feature.description }}
+                    <p class="text-faded">{{ . | markdownify }}</p>
+                {{ end }}
+                {{ with .Site.Params.feature.buttonText }}
+                    <a href="getting-started" class="btn btn-default btn-xl">{{ . }}</a>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+</section>

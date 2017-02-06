@@ -1,4 +1,0 @@
-type: CNAME
-host: www.yourdomainname.com
-answer: yourusername.github.io
-TTL: 300

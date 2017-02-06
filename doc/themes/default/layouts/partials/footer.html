@@ -1,0 +1,12 @@
+{{ "<!-- footer -->" | safeHTML }}
+<footer class="footer">
+    <div class="container">
+        <ul>
+            <li>menu</li>
+        </ul>
+        {{ if .Site.Params.footer }}
+        <p>{{ .Site.Params.footer.licensed | safeHTML}}</p>
+        {{ end }}
+
+    </div>
+</footer>
