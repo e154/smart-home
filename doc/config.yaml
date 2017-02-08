@@ -1,4 +1,4 @@
-baseurl: "https://e154.github.io"
+baseurl: "https://e154.github.io/smart-home"
 title: "Smart home"
 theme: "default"
 contentDir: "content"
@@ -18,78 +18,78 @@ Languages:
       brand: "Smart home"
       links:
         - title: "Home"
-          url : ""
+          url : "/smart-home/en"
         - title : "Getting started"
-          url : "getting-started"
+          url : "/smart-home/en/getting-started"
         - title : "api"
-          url : "api_v1"
+          url : "/smart-home/en/api-v1"
 
     hero:
-      slogan    : "Система для создания современного умного дома"
-      subtitle  : "Подойдёт как для любителей - электронщиков, так и профессионалам своего дела"
-      buttonText: "Подробнее"
+      slogan    : "System for making of a modern Smart Home"
+      subtitle  : "Suitable for both lovers - electronics and professionals in their field"
+      buttonText: "Find Out More"
 
     feature:
-      headline   : "Это то, что Вы искали!"
-      description: "Smart Home - Система с открытым исходным кодом, которую можно скачать бесплатно, без регистраций, и смс. Безвоздмездно! Большое количество функционала уже присутствует из коробки, и хорошо подаётся расширению. Smart Home система позволяет получить результат в кратчайшие сроки."
-      buttonText : "С чего начать"
+      headline   : "We've got what you need!"
+      description: "Smart Home - an open source system that can be downloaded free of charge, without registration and SMS. A large number of already present functionality of the box, and expanding well served. Smart home system allows you to get the result as soon as possible."
+      buttonText : "Get Started!"
 
     services:
-      headline: "Сервисы"
+      headline: "At Your Service"
 
       row1:
         - icon: "fa-users"
-          title: "Система доступа основанная на ролях"
-          description: "Позволяет гибко управлять доступом к оборудованию, и системным компонентам."
+          title: "Role based access controll"
+          description: "It allows flexibility to control access to equipment and system components."
         - icon: "fa-cogs"
-          title: "Панель управления"
-          description: "Удобная панель управления, и конфигурирования оборудования."
+          title: "Operator dashboard"
+          description: "Easy to use control panel and configure hardware."
         - icon: "fa-paper-plane"
-          title: "Готов к использования"
-          description: "Вы можете использовать Smart home как есть, или Вы можете изменять его под свои нужды!"
+          title: "Ready to Ship"
+          description: "You can use this as is, or you can make changes!"
         - icon: "fa-line-chart"
-          title: "Расширяемость"
-          description: "Система расширяема настолько, насколько это требут поставленная задача"
+          title: "Scalable"
+          description: "The system is expandable as much as it requires a set task"
 
       row2:
         - icon: "fa-paper-plane-o"
-          title: "Информирование"
-          description: "Гибкая система информирование будет держать Вас в курсе всех событий"
+          title: "Advanced reporting"
+          description: "Flexible awareness will keep you informed of all developments"
         - icon: "fa-server"
-          title: "Микросервисная архитектура"
-          description: "Система разбита на микросервисы для улучшения производительности и расширяемости"
+          title: "Microservices architecture"
+          description: "The system is divided into mikroservisy to improve performance and scalability"
         - icon: "fa-file-text-o"
-          title: "Javascript скрипты"
-          description: "Система скриптов позволяет писать сценарии прямо в окне браузера"
+          title: "Javascript scripting"
+          description: "Scripting system allows you to write scripts directly in the browser window"
         - icon: "fa-heart"
-          title: "Сделано с любовью"
-          description: "Весь код системы Умного дома написан с любовью и вниманием к квждой мелочи"
+          title: "Made with Love"
+          description: "All Smart Home system code written with love and attention to detail"
 
     source:
-      headline: "Скачайте исходный код проекта!"
+      headline: "Download the source code for the project"
       server:
-        text: "Сервер"
+        text: "Server"
         link: "//github.com/e154/smart-home"
       configurator:
-        text: "Конфигуратор"
+        text: "Configurator"
         link: "//github.com/e154/smart-home-configurator"
       node:
-        text: "Нода"
+        text: "Node"
         link: "//github.com/e154/smart-home-node"
 
     download:
-      button: "Скачать"
+      button: "Download"
       server:
-        text: "Сервер"
-        description: "Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома."
+        text: "Server"
+        description: "The core of the system Smart Home, the server managing the logic and business processes of the system, is the heart of a smart home."
         link: "//github.com/e154/smart-home"
       configurator:
-        text: "Конфигуратор"
-        description: "Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи."
+        text: "Configurator"
+        description: "Client application to configure smart home systems, for tasks."
         link: "//github.com/e154/smart-home-configurator"
       node:
-        text: "Нода"
-        description: "Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом."
+        text: "Node"
+        description: "The system component responsible for the connection to the server active devices of the smart home system."
         link: "//github.com/e154/smart-home-node"
 
     footer:
@@ -97,22 +97,22 @@ Languages:
 
     getting-started:
       links:
-        - title: "Обзор"
+        - title: "Overview"
           url: "#overview"
-        - title: "Системные требования"
+        - title: "Requirements"
           url: "#requirements"
-        - title: "Загрузка"
+        - title: "Download"
           url: "#download"
-        - title: "Что входит в пакеты"
+        - title: "Whats included"
           url: "whats-included"
           pages:
-            - title: "Сервер"
+            - title: "Server"
               url: "#server"
-            - title: "Конфигуратор"
+            - title: "Configurator"
               url: "#configurator"
-            - title: "Нода"
+            - title: "Node"
               url: "Нода"
-        - title: "Установка"
+        - title: "Install"
           url: "#install"
           pages:
             - title: Install mkdir
@@ -142,11 +142,11 @@ Languages:
       brand: "Умный дом"
       links:
         - title: "Домой"
-          url : "/"
+          url : "/smart-home/"
         - title : "С чего начать"
-          url : "/getting-started"
+          url : "/smart-home/getting-started"
         - title : "api"
-          url : "/api_v1"
+          url : "/smart-home/api-v1"
 
     hero:
       slogan    : "Система для создания современного умного дома"

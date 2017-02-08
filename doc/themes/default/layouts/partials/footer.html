@@ -1,9 +1,26 @@
 {{ "<!-- footer -->" | safeHTML }}
 <footer class="footer">
     <div class="container">
+
         <ul>
-            <li>menu</li>
+
+            {{ range .Site.Params.main_menu.links }}
+
+            <li>
+                <a class="page-scroll" href="{{ .url | absLangURL }}">{{.title}}</a>
+            </li>
+            {{ end }}
+
+            {{ if .IsTranslated }}
+            {{ range .Translations }}
+            <li>
+                <a href="{{ .Permalink }}">{{ .Lang }}</a>
+            </li>
+            {{ end}}
+            {{ end }}
+
         </ul>
+
         {{ if .Site.Params.footer }}
         <p>{{ .Site.Params.footer.licensed | safeHTML}}</p>
         {{ end }}

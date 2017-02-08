@@ -1,1 +1,11 @@
-404 page
+{{ define "main" }}
+<main class="main-content" role="main">
+    <article class="post" role="article">
+        <div class="post-content">
+            <h1>{{ i18n "page-not-found" }}</h1>
+
+            <p>{{ i18n "page-not-found-description" .Site.BaseURL | markdownify }}</p>
+        </div>
+    </article>
+</main>
+{{ end }}

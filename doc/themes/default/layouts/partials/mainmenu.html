@@ -19,19 +19,17 @@
 
                 {{ range .Site.Params.main_menu.links }}
                 <li>
-                    <a class="page-scroll" href="{{.url | relLangURL}}">{{.title}}</a>
+                    <a class="page-scroll" href="{{ .url | absLangURL }}">{{.title}}</a>
                 </li>
                 {{ end }}
 
-                {{ if .IsTranslated }}
+                <!--{{ if .IsTranslated }}-->
                 {{ range .Translations }}
                 <li>
                     <a href="{{ .Permalink }}">{{ .Lang }}</a>
                 </li>
                 {{ end}}
-                {{ end }}
-
-
+                <!--{{ end }}-->
             </ul>
         </div>
         {{ "<!-- /.navbar-collapse -->" | safeHTML }}
