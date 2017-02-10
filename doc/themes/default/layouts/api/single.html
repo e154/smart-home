@@ -12,30 +12,25 @@
             {{ partial "api-header.html" . }}
         {{ end }}
 
+        <aside class="api clearfix">
+                <div class="col-lg-2 col-md-3 hidden-sm hidden-xs">
+                    {{ if .Site.Params.api_menu }}
+                        {{ partial "api-menu.html" . }}
+                    {{ end }}
+                </div>
 
-        <aside class="getting-started">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-2 col-md-3 hidden-sm hidden-xs">
-                        {{ if .Site.Params.api_menu }}
-                            {{ partial "api-menu.html" . }}
-                        {{ end }}
-                    </div>
+                <div class="col-lg-10 col-md-9 docs-section" role="main">
 
-                    <div class="col-lg-10 col-md-9 docs-section" role="main">
-
-                        {{ if .Params.listing }}
-                            {{ range .Site.Taxonomies.groups.api.Pages.ByWeight }}
-                                {{ .Content }}
-                            {{ end }}
-                        {{ else }}
+                    {{ if .Params.listing }}
+                        {{ range .Site.Taxonomies.groups.api.Pages.ByWeight }}
                             {{ .Content }}
                         {{ end }}
-
-                    </div>
+                    {{ else }}
+                        {{ .Content }}
+                    {{ end }}
 
                 </div>
-            </div>
+
         </aside>
 
         {{ if .Site.Params.footer }}

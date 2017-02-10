@@ -1,8 +1,8 @@
 <header class="getting-started">
     <div class="header-content">
         <div class="header-content-inner">
-            <h1>API</h1>
-            <p>...</p>
+            {{if .Title}}<h1>{{.Title}}</h1>{{end}}
+            {{if .Description}}<p>{{.Description}}</p>{{end}}
         </div>
     </div>
 </header>
