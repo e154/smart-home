@@ -17,6 +17,7 @@ Languages:
       name: "Your name"
       description: "Your description"
       favicon: "favicon.ico"
+
     main_menu:
       brand: "Умный дом"
       links:
@@ -26,6 +27,7 @@ Languages:
           url : "/smart-home/getting-started"
         - title : "api"
           url : "/smart-home/api"
+
     api_menu:
       links:
         - title: "Обзор"
@@ -46,6 +48,7 @@ Languages:
               url : '#signin'
             - title: "Выход"
               url : '#signout'
+
     getting_started_menu:
       links:
         - title: "Обзор"
@@ -154,41 +157,6 @@ Languages:
     footer:
       licensed: "Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>."
 
-    getting-started:
-      links:
-        - title: "Обзор"
-          url: "#overview"
-        - title: "Системные требования"
-          url: "#requirements"
-        - title: "Загрузка"
-          url: "#download"
-        - title: "Что входит в пакеты"
-          url: "whats-included"
-          pages:
-            - title: "Сервер"
-              url: "#server"
-            - title: "Конфигуратор"
-              url: "#configurator"
-            - title: "Нода"
-              url: "Нода"
-        - title: "Установка"
-          url: "#install"
-          pages:
-            - title: Install mkdir
-              url: ""
-            - title: Install download and unpack
-              url: ""
-            - title: Install server conf
-              url: ""
-            - title: Install configuration conf
-              url: ""
-            - title: Install node conf
-              url: ""
-            - title: Install mysql
-              url: ""
-            - title: Install exec
-              url: ""
-        - title: Install from source
   en:
     languageName: "English"
     params:
@@ -333,39 +301,3 @@ Languages:
 
     footer:
       licensed: "Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>."
-
-    getting-started:
-      links:
-        - title: "Overview"
-          url: "#overview"
-        - title: "Requirements"
-          url: "#requirements"
-        - title: "Download"
-          url: "#download"
-        - title: "Whats included"
-          url: "whats-included"
-          pages:
-            - title: "Server"
-              url: "#server"
-            - title: "Configurator"
-              url: "#configurator"
-            - title: "Node"
-              url: "Нода"
-        - title: "Install"
-          url: "#install"
-          pages:
-            - title: Install mkdir
-              url: ""
-            - title: Install download and unpack
-              url: ""
-            - title: Install server conf
-              url: ""
-            - title: Install configuration conf
-              url: ""
-            - title: Install node conf
-              url: ""
-            - title: Install mysql
-              url: ""
-            - title: Install exec
-              url: ""
-        - title: Install from source

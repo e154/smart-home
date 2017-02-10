@@ -26,22 +26,22 @@ groups:
 
     <div class="row">
         <div class="col-md-6">
-            <img src="/img/default_network2.svg" title="Схематичная сеть умного дома" alt="Схематичная сеть умного дома">
+            <img src="/smart-home/img/default_network2.png" title="Схематичная сеть умного дома" alt="Схематичная сеть умного дома">
         </div>
     </div>
 
 
     <p>Информация о системе на которой производилось тестовое развёртывание:</p>
 
-    {% highlight bash %}
-    delta54@darkstar:tmp$ uname -a
-    Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux
-    {% endhighlight %}
+{{< highlight bash >}}
+delta54@darkstar:tmp$ uname -a
+Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux
+{{< /highlight >}}
 
-    {% highlight bash %}
-    delta54@darkstar:tmp$ cat /etc/*release*
-    PRETTY_NAME="Debian GNU/Linux 8 (jessie)"
-    {% endhighlight %}
+{{< highlight bash >}}
+delta54@darkstar:tmp$ cat /etc/*release*
+PRETTY_NAME="Debian GNU/Linux 8 (jessie)"
+{{< /highlight >}}
 
     <h3 id="install-mkdir">Создание директорий</h3>
 
@@ -49,52 +49,52 @@ groups:
         /opt/smart-home
     </p>
 
-    {% highlight bash %}
-    sudo mkdir -p /opt/smart-home
-    sudo chown $USER:$USER /opt/smart-home -R
-    mkdir -p /opt/smart-home/server
-    mkdir -p /opt/smart-home/configurator
-    mkdir -p /opt/smart-home/node
-    {% endhighlight %}
+{{< highlight bash >}}
+sudo mkdir -p /opt/smart-home
+sudo chown $USER:$USER /opt/smart-home -R
+mkdir -p /opt/smart-home/server
+mkdir -p /opt/smart-home/configurator
+mkdir -p /opt/smart-home/node
+{{< /highlight >}}
 
     <h3 id="install-download-and-unpack">Скачивание и распаковка</h3>
 
     <p>Скачаем последний релиз сервер, и распакуем в директории <strong>server</strong></p>
 
-    {% highlight bash %}
-    cd /opt/smart-home/server
-    wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
-    tar -zxvf smart-home-server.tar.gz
-    {% endhighlight %}
+{{< highlight bash >}}
+cd /opt/smart-home/server
+wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
+tar -zxvf smart-home-server.tar.gz
+{{< /highlight >}}
 
     <p>В директории <strong>data</strong> хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
         Вынесите директорию <strong>data</strong> на один уровень выше.</p>
 
-    {% highlight bash %}
-    cd /opt/smart-home/server
-    mv data ../
-    {% endhighlight %}
+{{< highlight bash >}}
+cd /opt/smart-home/server
+mv data ../
+{{< /highlight >}}
 
     <p>Тоже самое сделаем для конфигуратора, и ноды</p>
 
-    {% highlight bash %}
-    cd /opt/smart-home/configurator
-    wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
-    tar -zxvf smart-home-configurator.tar.gz
-    cd /opt/smart-home/node
-    wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
-    tar -zxvf smart-home-node.tar.gz
-    {% endhighlight %}
+{{< highlight bash >}}
+cd /opt/smart-home/configurator
+wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
+tar -zxvf smart-home-configurator.tar.gz
+cd /opt/smart-home/node
+wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
+tar -zxvf smart-home-node.tar.gz
+{{< /highlight >}}
 
     <p>В итоге мы должны получит следующую корневую структуру:</p>
 
-    {% highlight bash %}
-    cd /opt/smart-home
-    ├── data
-    ├── node
-    ├── configurator
-    └── server
-    {% endhighlight %}
+{{< highlight bash >}}
+cd /opt/smart-home
+├── data
+├── node
+├── configurator
+└── server
+{{< /highlight >}}
 
     <h3 id="install-server-conf">Настройка сервера</h3>
 
@@ -112,29 +112,29 @@ groups:
     <p>Отредактируйте переменную <strong>httpaddr</strong> в /opt/smart-home/server/conf/app.conf,
         адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.</p>
 
-    {% highlight bash %}
-    httpaddr = "0.0.0.0"
-    {% endhighlight %}
+{{< highlight bash >}}
+httpaddr = "0.0.0.0"
+{{< /highlight >}}
 
     <p>По желанию отредактируйте переменную <strong>httpport</strong> в /opt/smart-home/server/conf/prod/app.conf,
         или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
         приложений.</p>
 
-    {% highlight bash %}
-    httpport = 3000
-    {% endhighlight %}
+{{< highlight bash >}}
+httpport = 3000
+{{< /highlight >}}
 
     <p>Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
         или оставьте без изменений, и настройте базу в соответствии с установленными значениями.</p>
 
-    {% highlight bash %}
-    db_user = smarthome
-    db_pass = smarthome
-    db_host = "127.0.0.1"
-    db_name = smarthome
-    db_port = "3306"
-    db_type = mysql
-    {% endhighlight %}
+{{< highlight bash >}}
+db_user = smarthome
+db_pass = smarthome
+db_host = "127.0.0.1"
+db_name = smarthome
+db_port = "3306"
+db_type = mysql
+{{< /highlight >}}
 
     <h3 id="install-configuration-conf">Настройка конфигуратора</h3>
 
@@ -152,19 +152,19 @@ groups:
 
     <p>Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:</p>
 
-    {% highlight bash %}
-    cp /opt/smart-home/node/conf/node.sample.conf node.conf
-    {% endhighlight %}
+{{< highlight bash >}}
+cp /opt/smart-home/node/conf/node.sample.conf node.conf
+{{< /highlight >}}
 
-    {% highlight bash %}
-    cat /opt/smart-home/node/conf/node.conf
-    app_version=0.1.0
-    ip=127.0.0.1
-    port=3001
-    baud=19200
-    timeout=2
-    stopbits=2
-    {% endhighlight %}
+{{< highlight bash >}}
+cat /opt/smart-home/node/conf/node.conf
+app_version=0.1.0
+ip=127.0.0.1
+port=3001
+baud=19200
+timeout=2
+stopbits=2
+{{< /highlight >}}
 
     <ul>
         <li><strong>app_version</strong> - версия внутреннего api ноды</li>
@@ -180,15 +180,15 @@ groups:
 
     <p>Подключимся к консоли mysql, приготовьте пароль для рута:</p>
 
-    {% highlight bash %}
-    mysql -u root -p
-    {% endhighlight %}
+{{< highlight bash >}}
+mysql -u root -p
+{{< /highlight >}}
 
     <p>Создадим базу для сервера <strong>умного дома</strong>:</p>
 
-    {% highlight bash %}
-    CREATE DATABASE smarthome;
-    {% endhighlight %}
+{{< highlight bash >}}
+CREATE DATABASE smarthome;
+{{< /highlight >}}
 
     <p>Создадим нового пользователя, и дадим права на доступ к базе <strong>smarthome</strong> из консоли mysql</p>
     <ul>
@@ -196,28 +196,28 @@ groups:
         <li><strong>smarthome</strong> - пароль</li>
     </ul>
 
-    {% highlight bash %}
-    CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
-    GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
-    FLUSH PRIVILEGES;
-    {% endhighlight %}
+{{< highlight bash >}}
+CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
+GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
+FLUSH PRIVILEGES;
+{{< /highlight >}}
 
     <p>осталось импортировать базу</p>
 
-    {% highlight bash %}
-    use smarthome
-    source /opt/smart-home/server/dump.sql
-    {% endhighlight %}
+{{< highlight bash >}}
+use smarthome
+source /opt/smart-home/server/dump.sql
+{{< /highlight >}}
 
     <h3 id="install-exec">Запуск</h3>
 
     <p>Осталось запустить сервера в фоновом режиме</p>
 
-    {% highlight bash %}
-    /opt/smart-home/server/server-linux-amd64 > /dev/null 2>&1 &
-    /opt/smart-home/configurator/configurator-linux-amd64 > /dev/null 2>&1 &
-    /opt/smart-home/node/node-linux-amd64 > /dev/null 2>&1 &
-    {% endhighlight %}
+{{< highlight bash >}}
+/opt/smart-home/server/server-linux-amd64 > /dev/null 2>&1 &
+/opt/smart-home/configurator/configurator-linux-amd64 > /dev/null 2>&1 &
+/opt/smart-home/node/node-linux-amd64 > /dev/null 2>&1 &
+{{< /highlight >}}
 
     <ul>
         <li><strong>nohup</strong> - команда будет продолжать выполняться в фоновом режиме и после того, как пользователь выйдет из системы</li>
@@ -230,14 +230,19 @@ groups:
 
 <div class="docs-section">
 
-    {% callout danger %}
-    #### Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы
-    {% endcallout %}
+    <div class="boc-callout boc-callout-danger">
+        <h4>Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы</h4>
+    </div>
 
 </div>
 
 <div class="docs-section">
 
     <h2 id="install-from-source">Сборка из исходного кода</h2>
+
+    <div class="boc-callout boc-callout-info">
+        <h4>Извините Раздел в разработке</h4>
+    </div>
+
 
 </div>
