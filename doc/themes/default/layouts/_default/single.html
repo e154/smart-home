@@ -8,10 +8,6 @@
             {{ partial "mainmenu.html" . }}
         {{ end }}
 
-        {{ if .Site.Params.hero }}
-            {{ partial "hero.html" . }}
-        {{ end }}
-
         {{ .Content }}
 
         {{ if .Site.Params.footer }}

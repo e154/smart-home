@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+    <html lang="{{ with .Site.LanguageCode }}{{ . }}{{ else }}en-US{{ end }}">
+    <head>
+        {{ partial "head.html" . }}
+    </head>
+    <body id="page-top">
+        {{ if .Site.Params.main_menu }}
+        {{ partial "mainmenu.html" . }}
+        {{ end }}
+
+        {{ if .Site.Params.header }}
+        {{ partial "getting-started-header.html" . }}
+        {{ end }}
+
+        <aside class="getting-started">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9" role="main">
+                        {{ if .Params.listing }}
+                            {{ range .Site.Taxonomies.groups.getting_started.Pages.ByWeight }}
+                                {{ .Content }}
+                            {{ end }}
+                        {{ else }}
+                            {{ .Content }}
+                        {{ end }}
+                    </div>
+
+                    <div class="col-md-3 hidden-sm hidden-xs">
+                        {{ if .Site.Params.getting_started_menu }}
+                            {{ partial "getting-started-menu.html" . }}
+                        {{ end }}
+                    </div>
+
+                </div>
+            </div>
+        </aside>
+
+        {{ if .Site.Params.footer }}
+        {{ partial "footer.html" . }}
+        {{ end }}
+
+        {{ partial "js.html" . }}
+
+        {{ template "_internal/google_analytics.html" . }}
+    </body>
+</html>

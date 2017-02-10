@@ -23,13 +23,13 @@
                 </li>
                 {{ end }}
 
-                <!--{{ if .IsTranslated }}-->
-                {{ range .Translations }}
+                {{ if .IsTranslated }}
+                {{ range $i, $e := .Translations }}
                 <li>
-                    <a href="{{ .Permalink }}">{{ .Lang }}</a>
+                    <a href="{{ .Permalink }}">{{ $e.Language.LanguageName }}</a>
                 </li>
                 {{ end}}
-                <!--{{ end }}-->
+                {{ end }}
             </ul>
         </div>
         {{ "<!-- /.navbar-collapse -->" | safeHTML }}
