@@ -104,9 +104,12 @@ __docs_deploy() {
     npm install
     gulp
 
+    echo 'marker 1'
+
     cd ${ROOT}/doc
     hugo
 
+    echo 'marker 2'
     cd ${ROOT}/doc/public
 
     git init
@@ -115,7 +118,10 @@ __docs_deploy() {
     git config --global user.name "delta54"
     git add .
     git commit -m'build'
-    git push --force --quiet "${GH_TOKEN}@github.com:e154/smart-home.git" master:"gh-pages" > /dev/null 2>&1
+
+    echo 'marker 3'
+
+    git push --force --quiet "$GH_TOKEN@github.com/e154/smart-home.git" master:"gh-pages" > /dev/null 2>&1
     echo -e "Done documentation deploy.\n"
     rm -fr .git
 }
