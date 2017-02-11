@@ -1,0 +1,303 @@
+baseurl: "https://e154.github.io/smart-home"
+title: "Smart home"
+theme: "default"
+contentDir: "content"
+publishDir: "public"
+googleAnalytics: ""
+DefaultContentLanguage: "ru"
+languageCode: "ru"
+enableMissingTranslationPlaceholders: true
+taxonomies:
+  group: "groups"
+
+Languages:
+  ru:
+    languageName: "Русский"
+    params:
+      name: "Your name"
+      description: "Your description"
+      favicon: "favicon.ico"
+
+    main_menu:
+      brand: "Умный дом"
+      links:
+        - title: "Домой"
+          url : "/smart-home/"
+        - title : "С чего начать"
+          url : "/smart-home/getting-started"
+        - title : "api"
+          url : "/smart-home/api"
+
+    api_menu:
+      links:
+        - title: "Обзор"
+          url : '#overview'
+          pages:
+            - title: "Безопасность"
+              url : '#security'
+            - title: "Ошибки"
+              url : '#errors'
+            - title: "HTTP методы"
+              url : '#http-methods'
+            - title: "CORS"
+              url : '#cors'
+        - title: "Авторизация"
+          url : '#authorization'
+          pages:
+            - title: "Вход"
+              url : '#signin'
+            - title: "Выход"
+              url : '#signout'
+
+    getting_started_menu:
+      links:
+        - title: "Обзор"
+          url: "#overview"
+        - title: "Системные требования"
+          url: "#requirements"
+        - title: "Загрузка"
+          url: "#download"
+        - title: "Что входит в пакеты"
+          url: "#whats-included"
+          pages:
+            - title: "Сервер"
+              url: "#server"
+            - title: "Конфигуратор"
+              url: "#configurator"
+            - title: "Нода"
+              url: "#node"
+        - title: "Установка"
+          url: "#install"
+          pages:
+            - title: "Создание директорий"
+              url: "#install-mkdir"
+            - title: "Скачивание и распаковка"
+              url: "#install-download-and-unpack"
+            - title: "Настройка сервера"
+              url: "#install-server-conf"
+            - title: "Настройка конфигуратора"
+              url: "#install-configuration-conf"
+            - title: "Настройка ноды"
+              url: "#install-node-conf"
+            - title: "База mysql"
+              url: "#install-mysql"
+            - title: "Запуск"
+              url: "#install-exec"
+        - title: "Сборка из исходного кода"
+          url: "#install-from-source"
+
+    header:
+      slogan    : "Система для создания современного умного дома"
+      subtitle  : "Подойдёт как для любителей - электронщиков, так и профессионалам своего дела"
+      buttonText: "Подробнее"
+
+    feature:
+      headline   : "Это то, что Вы искали!"
+      description: "Smart Home - Система с открытым исходным кодом, которую можно скачать бесплатно, без регистраций, и смс. Безвоздмездно! Большое количество функционала уже присутствует из коробки, и хорошо подаётся расширению. Smart Home система позволяет получить результат в кратчайшие сроки."
+      buttonText : "С чего начать"
+
+    services:
+      headline: "Сервисы"
+
+      row1:
+        - icon: "fa-users"
+          title: "Система доступа основанная на ролях"
+          description: "Позволяет гибко управлять доступом к оборудованию, и системным компонентам."
+        - icon: "fa-cogs"
+          title: "Панель управления"
+          description: "Удобная панель управления, и конфигурирования оборудования."
+        - icon: "fa-paper-plane"
+          title: "Готов к использования"
+          description: "Вы можете использовать Smart home как есть, или Вы можете изменять его под свои нужды!"
+        - icon: "fa-line-chart"
+          title: "Расширяемость"
+          description: "Система расширяема настолько, насколько это требут поставленная задача"
+
+      row2:
+        - icon: "fa-paper-plane-o"
+          title: "Информирование"
+          description: "Гибкая система информирование будет держать Вас в курсе всех событий"
+        - icon: "fa-server"
+          title: "Микросервисная архитектура"
+          description: "Система разбита на микросервисы для улучшения производительности и расширяемости"
+        - icon: "fa-file-text-o"
+          title: "Javascript скрипты"
+          description: "Система скриптов позволяет писать сценарии прямо в окне браузера"
+        - icon: "fa-heart"
+          title: "Сделано с любовью"
+          description: "Весь код системы Умного дома написан с любовью и вниманием к квждой мелочи"
+
+    source:
+      headline: "Скачайте исходный код проекта!"
+      server:
+        text: "Сервер"
+        link: "//github.com/e154/smart-home"
+      configurator:
+        text: "Конфигуратор"
+        link: "//github.com/e154/smart-home-configurator"
+      node:
+        text: "Нода"
+        link: "//github.com/e154/smart-home-node"
+
+    download:
+      button: "Скачать"
+      server:
+        text: "Сервер"
+        description: "Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома."
+        link: "//github.com/e154/smart-home"
+      configurator:
+        text: "Конфигуратор"
+        description: "Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи."
+        link: "//github.com/e154/smart-home-configurator"
+      node:
+        text: "Нода"
+        description: "Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом."
+        link: "//github.com/e154/smart-home-node"
+
+    footer:
+      licensed: "Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>."
+
+  en:
+    languageName: "English"
+    params:
+      name: "Smart home"
+      description: "Smart home system"
+      favicon: "favicon.ico"
+    main_menu:
+      brand: "Smart home"
+      links:
+        - title: "Home"
+          url : "/smart-home/en"
+        - title : "Getting started"
+          url : "/smart-home/en/getting-started"
+        - title : "api"
+          url : "/smart-home/en/api"
+
+    api_menu:
+      links:
+        - title: "Overview"
+          url: "#overview"
+          pages:
+            - title: "Security"
+              url: "#security"
+            - title: "Errors"
+              url: "#error"
+            - title: "HTTP methods"
+              url: "#http-methods"
+            - title: "Cross Origin Resource Sharing (CORS)"
+              url: "#cors"
+        - title: "Autorisation"
+          url: "#authorization"
+          pages:
+            - title: "Signin"
+              url: "#signin"
+            - title: "Signout"
+              url: "#signout"
+
+    getting_started_menu:
+      links:
+        - title: "Overview"
+          url: "#overview"
+        - title: "Requirements"
+          url: "#requirements"
+        - title: "Download"
+          url: "#download"
+        - title: "Whats included"
+          url: "#whats-included"
+          pages:
+            - title: "Server"
+              url: "#server"
+            - title: "Configurator"
+              url: "configurator"
+            - title: "Node"
+              url: "#node"
+        - title: "Install"
+          url: "#install"
+          pages:
+            - title: "Install mkdir"
+              url: "#install-mkdir"
+            - title: "Install download and unpack"
+              url: "install-download-and-unpack"
+            - title: "Install server conf"
+              url: "install-server-conf"
+            - title: "Install configuration conf"
+              url: "install-configuration-conf"
+            - title: "Install node conf"
+              url: "install-node-conf"
+            - title: "Install mysql"
+              url: "install-mysql"
+            - title: "Install exec"
+              url: "install-exec"
+        - title: "Install from source"
+          url: "install-from-source"
+
+    header:
+      slogan    : "System for making of a modern Smart Home"
+      subtitle  : "Suitable for both lovers - electronics and professionals in their field"
+      buttonText: "Find Out More"
+
+    feature:
+      headline   : "We've got what you need!"
+      description: "Smart Home - an open source system that can be downloaded free of charge, without registration and SMS. A large number of already present functionality of the box, and expanding well served. Smart home system allows you to get the result as soon as possible."
+      buttonText : "Get Started!"
+
+    services:
+      headline: "At Your Service"
+
+      row1:
+        - icon: "fa-users"
+          title: "Role based access controll"
+          description: "It allows flexibility to control access to equipment and system components."
+        - icon: "fa-cogs"
+          title: "Operator dashboard"
+          description: "Easy to use control panel and configure hardware."
+        - icon: "fa-paper-plane"
+          title: "Ready to Ship"
+          description: "You can use this as is, or you can make changes!"
+        - icon: "fa-line-chart"
+          title: "Scalable"
+          description: "The system is expandable as much as it requires a set task"
+
+      row2:
+        - icon: "fa-paper-plane-o"
+          title: "Advanced reporting"
+          description: "Flexible awareness will keep you informed of all developments"
+        - icon: "fa-server"
+          title: "Microservices architecture"
+          description: "The system is divided into mikroservisy to improve performance and scalability"
+        - icon: "fa-file-text-o"
+          title: "Javascript scripting"
+          description: "Scripting system allows you to write scripts directly in the browser window"
+        - icon: "fa-heart"
+          title: "Made with Love"
+          description: "All Smart Home system code written with love and attention to detail"
+
+    source:
+      headline: "Download the source code for the project"
+      server:
+        text: "Server"
+        link: "//github.com/e154/smart-home"
+      configurator:
+        text: "Configurator"
+        link: "//github.com/e154/smart-home-configurator"
+      node:
+        text: "Node"
+        link: "//github.com/e154/smart-home-node"
+
+    download:
+      button: "Download"
+      server:
+        text: "Server"
+        description: "The core of the system Smart Home, the server managing the logic and business processes of the system, is the heart of a smart home."
+        link: "//github.com/e154/smart-home"
+      configurator:
+        text: "Configurator"
+        description: "Client application to configure smart home systems, for tasks."
+        link: "//github.com/e154/smart-home-configurator"
+      node:
+        text: "Node"
+        description: "The system component responsible for the connection to the server active devices of the smart home system."
+        link: "//github.com/e154/smart-home-node"
+
+    footer:
+      licensed: "Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>."

@@ -1,0 +1,51 @@
+// Color variables (appears count calculates by raw css)
+@color0: #7f7f7f; // Appears 3 times
+@color1: #a8a8a2; // Appears 2 times
+@color2: #a6e22e; // Appears 2 times
+
+
+
+.hljs {
+  background: #2b2b2b;
+  color: #bababa;
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+}
+.hljs-strong {
+  color: @color1;
+}
+.hljs-emphasis {
+  color: @color1;
+  font-style: italic;
+}
+.hljs-bullet, .hljs-quote, .hljs-link, .hljs-number, .hljs-regexp, .hljs-literal  {
+  color: #6896ba;
+}
+.hljs-code {
+  color: @color2;
+}
+.hljs-selector-class {
+  color: @color2;
+}
+.hljs-keyword, .hljs-selector-tag, .hljs-section, .hljs-attribute, .hljs-name, .hljs-variable  {
+  color: #cb7832;
+}
+.hljs-params {
+  color: #b9b9b9;
+}
+.hljs-string {
+  color: #6a8759;
+}
+.hljs-subst, .hljs-type, .hljs-built_in, .hljs-builtin-name, .hljs-symbol, .hljs-selector-id, .hljs-selector-attr, .hljs-selector-pseudo, .hljs-template-tag, .hljs-template-variable, .hljs-addition  {
+  color: #e0c46c;
+}
+.hljs-comment {
+  color: @color0;
+}
+.hljs-deletion {
+  color: @color0;
+}
+.hljs-meta {
+  color: @color0;
+}

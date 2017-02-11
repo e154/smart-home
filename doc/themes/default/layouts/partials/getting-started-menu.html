@@ -1,0 +1,21 @@
+{{ "<!-- getting_started_menu menu -->" | safeHTML }}
+<nav class="bs-docs-sidebar bd-sidebar" id="docsNavbarContent">
+    <ul class="nav">
+        {{ range  $i, $link := .Site.Params.getting_started_menu.links }}
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="{{ $link.url }}">
+                {{ $link.title }}
+            </a>
+            <ul class="nav bd-sidenav">
+                {{ range $link.pages }}
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="{{ .url }}">
+                        {{ .title }}
+                    </a>
+                </li>
+                {{ end }}
+            </ul>
+        </li>
+        {{ end }}
+    </ul>
+</nav>

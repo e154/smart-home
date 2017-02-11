@@ -1,0 +1,142 @@
+.right-panel-background {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  background: #202022;
+  right: 0;
+  width: 50%;
+}
+
+.method {
+  &.post {
+    color: #8cc63f;
+  }
+  &.get {
+    color: #29abe2;
+  }
+  &.put {
+    color: #fbb03b;
+  }
+  &.delete {
+    color: #c1272d;
+  }
+}
+
+table {
+  .method {
+    padding: 6px 12px;
+    margin-right: 12px;
+    border-radius: 3px;
+  }
+}
+
+aside.api {
+
+  h1, h2, h3 {
+    margin-top: 50px;
+  }
+
+  h1, h2, h3,
+  p, table, ul {
+    padding-right: 15px;
+    float: left;
+    clear: left;
+    width: 50%;
+  }
+
+  ul.nav {
+    padding-right: 0;
+    float: none;
+    clear: both;
+    width: 100%;
+  }
+
+  blockquote {
+    background-color: #2b2b2e;
+    padding: 1em 15px;
+    margin: 0;
+    width: 45%;
+    float: right;
+    clear: right;
+    box-sizing: border-box;
+    border-color: @theme-primary;
+
+    & + pre {
+      margin-top: 5px;
+    }
+
+    > p {
+      color: #c5c8c6;
+      code {
+        margin: 0 4px;
+      }
+    }
+
+    > h1,
+    > h2,
+    > h3,
+    > h4 {
+      color: @theme-primary;
+      font-weight: 600;
+    }
+  }
+
+  blockquote, pre {
+    float: right;
+    clear: right;
+    width: 50%;
+    padding-left: 15px;
+  }
+
+  table {
+    width: 49%;
+    margin-bottom: 20px;
+
+    >thead>tr>th {
+      vertical-align: bottom;
+      border-bottom: 2px solid #ddd;
+    }
+
+    >tbody>tr:nth-of-type(odd) {
+      background-color: #f9f9f9;
+    }
+
+    >tbody>tr>td,
+    >tbody>tr>th,
+    >tfoot>tr>td,
+    >tfoot>tr>th,
+    >thead>tr>td,
+    >thead>tr>th {
+      padding: 8px;
+      line-height: 1.42857143;
+      vertical-align: top;
+      border-top: 1px solid #ddd;
+    }
+  }//table
+
+  p code,
+  table code {
+    color: #e6e6e6;
+    background-color: #18a3fa;
+    padding: 3px 4px;
+  }
+}//api
+
+@media (max-width: 768px) {
+  .right-panel-background {
+    display: none;
+  }
+
+  aside.api {
+    h1, h2, h3,
+    p, table, ul {
+      width: 100%;
+    }
+
+    blockquote, pre {
+      width: 100%;
+    }
+  }
+}
+

@@ -6,3 +6,4 @@ src/src
 vendor/*
 !vendor/manifest
 /smart-home
+doc_

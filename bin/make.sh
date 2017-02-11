@@ -60,6 +60,9 @@ main() {
     --help)
     __help
     ;;
+    --docs-deploy)
+    __docs_deploy
+    ;;
     --build)
     __build
     ;;
@@ -94,7 +97,39 @@ __clean() {
     rm -rf ${HOME}/${ARCHIVE}
 }
 
+__docs_deploy() {
+
+    cd ${ROOT}/doc/themes/default
+
+    npm install
+    gulp
+
+    cd ${ROOT}/doc
+    hugo
+
+    cd ${ROOT}/doc/public
+
+    git init
+    echo -e "Starting to documentation commit.\n"
+    git config --global user.email "support@e154.ru"
+    git config --global user.name "delta54"
+
+    git remote add upstream "https://$GH_TOKEN@github.com/e154/smart-home.git"
+    git fetch upstream
+    git reset upstream/gh-pages
+
+    rev=$(git rev-parse --short HEAD)
+
+    git add -A .
+    git commit -m "rebuild pages at ${rev}"
+    git push -q upstream HEAD:gh-pages
+
+    echo -e "Done documentation deploy.\n"
+}
+
 __build() {
+
+    __docs_deploy
 
     cd ${TMP_DIR}
     xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
