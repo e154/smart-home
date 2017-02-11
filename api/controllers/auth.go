@@ -35,13 +35,11 @@ func (h *AuthController) SignIn() {
 
 	auth := strings.SplitN(h.Ctx.Input.Header("Authorization"), " ", 2)
 	if len(auth) != 2 || auth[0] != "Basic" {
-		h.ErrHan(403, "bad syntax")
 		return
 	}
 
 	payload, err := base64.StdEncoding.DecodeString(auth[1])
 	if err != nil {
-		fmt.Println("error:", err)
 		return
 	}
 
