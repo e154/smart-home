@@ -104,6 +104,7 @@ __docs_deploy() {
     npm install
     gulp
 
+    cd ${ROOT}/doc
     hugo
 
     cd ${ROOT}/doc/public
