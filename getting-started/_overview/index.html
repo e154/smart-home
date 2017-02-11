@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.19-DEV" />
+<title>Smart home</title>
+
+<!-- Favicon -->
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/bootstrap.min.css" type="text/css">
+<!-- Custom Fonts -->
+<link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+<link href='//fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://e154.github.io/smart-home/font-awesome/css/font-awesome.min.css" type="text/css">
+<!-- Plugin CSS -->
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/animate.min.css" type="text/css">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/style.css" type="text/css">
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/modals.css" type="text/css">
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/magnific-popup.css" type="text/css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+    </head>
+    <body id="page-top">
+        
+        <!-- main menu -->
+<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
+            
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+
+                
+                <li>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
+                </li>
+                
+                <li>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+                </li>
+                
+                <li>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/api">api</a>
+                </li>
+                
+
+                
+                
+                <li>
+                    <a href="https://e154.github.io/smart-home/en/getting-started/_overview/">English</a>
+                </li>
+                
+                <li>
+                    <a href="https://e154.github.io/smart-home/api/_overview/">Русский</a>
+                </li>
+                
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+        
+
+        
+        <header class="getting-started">
+    <div class="header-content">
+        <div class="header-content-inner">
+            <h1>overview</h1>
+            
+        </div>
+    </div>
+</header>
+
+        
+
+        <aside class="getting-started">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9" role="main">
+                        
+                            <div class="docs-section">
+    <h2 id="overview" class="page-header">Обзор</h2>
+
+    <p><strong>Система умного дома</strong> имеет модульную структуру, и состоит из следующих частей:</p>
+    <ul class="list-unstyled">
+        <li><strong>Сервер</strong> - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
+            исполнение процессов, логирование, оповещенние, реагирование на события по заложенному сценарию.</li>
+        <li><strong>Конфигуратор</strong> - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
+            систему под свои нужды, требуется как првило на этапе конфигурации.</li>
+        <li><strong>Нода</strong> - посредник связи сервера с активными устройствами, позволяет связать один сервер с
+            множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
+            Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
+            по требованию сценария, либо доступности последней.</li>
+        <li><strong>Монитор</strong>(в разработке) - мобильное клиентское приложение android, ios.</li>
+    </ul>
+
+    <p>Для работы <strong>системы умного дома</strong> требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
+        нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.</p>
+
+    <p>На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
+        В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
+        создайте реквест с предложением в репозиторий <a href="https://github.com/e154/smart-home">Сервер</a>, <a href="https://github.com/e154/smart-home-node">Нода</a>.
+
+        Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
+        со схемой и программой прошивки для <strong>AVR mega 168pu</strong> управляющего розетой, легко поддающееся модификации под более сложные задачи можно
+        посмотреть в репозитории - <a href="https://github.com/e154/smart-home-socket">пример устройства управления розеткой</a>.
+    </p>
+
+    <p>Схематичная сеть <strong>системы умного дома</strong>:</p>
+
+    <img src="/smart-home/img/default_network.png" title="Схематичная сеть умного дома" alt="Схематичная сеть умного дома">
+</div>
+
+                        
+                    </div>
+
+                    <div class="col-md-3 hidden-sm hidden-xs">
+                        
+                            <!-- getting_started_menu menu -->
+<nav class="bs-docs-sidebar bd-sidebar" id="docsNavbarContent">
+    <ul class="nav">
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#overview">
+                Обзор
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#requirements">
+                Системные требования
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#download">
+                Загрузка
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#whats-included">
+                Что входит в пакеты
+            </a>
+            <ul class="nav bd-sidenav">
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#server">
+                        Сервер
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#configurator">
+                        Конфигуратор
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#node">
+                        Нода
+                    </a>
+                </li>
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#install">
+                Установка
+            </a>
+            <ul class="nav bd-sidenav">
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-mkdir">
+                        Создание директорий
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-download-and-unpack">
+                        Скачивание и распаковка
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-server-conf">
+                        Настройка сервера
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-configuration-conf">
+                        Настройка конфигуратора
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-node-conf">
+                        Настройка ноды
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-mysql">
+                        База mysql
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-exec">
+                        Запуск
+                    </a>
+                </li>
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#install-from-source">
+                Сборка из исходного кода
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+    </ul>
+</nav>
+
+                        
+                    </div>
+
+                </div>
+            </div>
+        </aside>
+
+        
+        <!-- footer -->
+<footer class="footer">
+    <div class="container">
+
+        <ul>
+
+            
+
+            <li>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
+            </li>
+            
+
+            <li>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+            </li>
+            
+
+            <li>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/api">api</a>
+            </li>
+            
+
+            
+            
+            <li>
+                <a href="https://e154.github.io/smart-home/en/getting-started/_overview/">en</a>
+            </li>
+            
+            <li>
+                <a href="https://e154.github.io/smart-home/api/_overview/">ru</a>
+            </li>
+            
+            
+
+        </ul>
+
+        
+        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        
+
+    </div>
+</footer>
+        
+
+        <!-- jQuery -->
+<script src="https://e154.github.io/smart-home/js/jquery.min.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="https://e154.github.io/smart-home/js/bootstrap.min.js"></script>
+<!-- Plugin JavaScript -->
+<script src="https://e154.github.io/smart-home/js/jquery.easing.min.js"></script>
+<script src="https://e154.github.io/smart-home/js/jquery.fittext.js"></script>
+<script src="https://e154.github.io/smart-home/js/scrollreveal.min.js"></script>
+<script src="https://e154.github.io/smart-home/js/wow.min.js"></script>
+<script src="https://e154.github.io/smart-home/js/jquery.magnific-popup.js"></script>
+<script src="https://e154.github.io/smart-home/js/anchor.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="https://e154.github.io/smart-home/js/scripts.min.js"></script>
+
+
+        
+    </body>
+</html>

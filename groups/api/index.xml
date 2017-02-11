@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Api on Smart home</title>
+    <link>https://e154.github.io/smart-home/groups/api/index.xml</link>
+    <description>Recent content in Api on Smart home</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ru</language>
+    <atom:link href="https://e154.github.io/smart-home/groups/api/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Авторизация</title>
+      <link>https://e154.github.io/smart-home/api/_authorize/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/api/_authorize/</guid>
+      <description>&lt;h2 id=&#34;authorization&#34;&gt;Авторизация&lt;/h2&gt;
+
+&lt;p&gt;Авторизация - получения JWT токена, происходит &lt;code&gt;POST&lt;/code&gt; запросом по паре email/пароль.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;пример запроса на авторизацию&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+    &amp;quot;email&amp;quot;: &amp;quot;user@server.name&amp;quot;,
+    &amp;quot;password&amp;quot;: &amp;quot;******&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация.&lt;/li&gt;
+&lt;li&gt;Пароль должен состоять не менне чем из 6 символов.&lt;/li&gt;
+&lt;li&gt;Первоночальная регистрация возможна только, по одной из двух учетных записей&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Учетные записи существующие после установки сервера&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;email: demo@e154.ru
+password: demodemo
+
+email: admin@e154.ru
+password: adminadmin
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;signin&#34;&gt;Вход&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;POST&lt;/code&gt; &lt;a href=&#34;http://localhost/api/v1/signin&#34;&gt;http://localhost/api/v1/signin&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;#!/usr/bin/env bash
+
+EMAIL=&amp;quot;admin@e154.ru&amp;quot;
+PASSWORD=&amp;quot;adminadmin&amp;quot;
+URL=http://localhost:3000/api/v1/signin
+
+curl -i -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &amp;quot;{\&amp;quot;email\&amp;quot;:\&amp;quot;${EMAIL}\&amp;quot;,\&amp;quot;password\&amp;quot;:\&amp;quot;${PASSWORD}\&amp;quot;}&amp;quot; ${URL}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Значение полей в результате положительного ответа&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Поле&lt;/th&gt;
+&lt;th&gt;Тип&lt;/th&gt;
+&lt;th&gt;Значение&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;token&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;строка&lt;/td&gt;
+&lt;td&gt;JWT токен&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;current_user&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;объект&lt;/td&gt;
+&lt;td&gt;Параметры текущеко пользователя&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;200&lt;/code&gt; положительный ответ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+  &amp;quot;token&amp;quot;: &amp;quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&amp;quot;,
+  &amp;quot;current_user&amp;quot;: {
+    &amp;quot;avatar&amp;quot;: null,
+    &amp;quot;email&amp;quot;: &amp;quot;admin@e154.ru&amp;quot;,
+    &amp;quot;first_name&amp;quot;: &amp;quot;&amp;quot;,
+    &amp;quot;history&amp;quot;: &amp;quot;[{\&amp;quot;ip\&amp;quot;:\&amp;quot;127.0.0.1\&amp;quot;,\&amp;quot;time\&amp;quot;:\&amp;quot;2017-01-27T11:40:59.018428538+07:00\&amp;quot;},
+    {\&amp;quot;ip\&amp;quot;:\&amp;quot;127.0.0.1\&amp;quot;,\&amp;quot;time\&amp;quot;:\&amp;quot;2017-01-29T16:50:25.846523732+07:00\&amp;quot;}    
+    &amp;quot;id&amp;quot;: 1,
+    &amp;quot;last_name&amp;quot;: &amp;quot;&amp;quot;,
+    &amp;quot;meta&amp;quot;: [
+      {
+        &amp;quot;id&amp;quot;: 49,
+        &amp;quot;key&amp;quot;: &amp;quot;phone1&amp;quot;,
+        &amp;quot;value&amp;quot;: &amp;quot;&amp;quot;
+      },
+      {
+        &amp;quot;id&amp;quot;: 50,
+        &amp;quot;key&amp;quot;: &amp;quot;phone2&amp;quot;,
+        &amp;quot;value&amp;quot;: &amp;quot;&amp;quot;
+      },
+      {
+        &amp;quot;id&amp;quot;: 51,
+        &amp;quot;key&amp;quot;: &amp;quot;phone3&amp;quot;,
+        &amp;quot;value&amp;quot;: &amp;quot;&amp;quot;
+      },
+      {
+        &amp;quot;id&amp;quot;: 52,
+        &amp;quot;key&amp;quot;: &amp;quot;autograph&amp;quot;,
+        &amp;quot;value&amp;quot;: &amp;quot;&amp;quot;
+      }
+    ],
+    &amp;quot;nickname&amp;quot;: &amp;quot;admin&amp;quot;,
+    &amp;quot;role&amp;quot;: {
+      &amp;quot;name&amp;quot;: &amp;quot;admin&amp;quot;,
+      &amp;quot;description&amp;quot;: &amp;quot;&amp;quot;,
+      &amp;quot;parent&amp;quot;: {
+        &amp;quot;name&amp;quot;: &amp;quot;user&amp;quot;,
+        &amp;quot;description&amp;quot;: &amp;quot;&amp;quot;,
+        &amp;quot;parent&amp;quot;: null,
+        &amp;quot;children&amp;quot;: null,
+        &amp;quot;access_list&amp;quot;: null,
+        &amp;quot;created_at&amp;quot;: &amp;quot;0001-01-01T00:00:00Z&amp;quot;,
+        &amp;quot;update_at&amp;quot;: &amp;quot;0001-01-01T00:00:00Z&amp;quot;
+      },
+      &amp;quot;children&amp;quot;: null,
+      &amp;quot;access_list&amp;quot;: {
+        &amp;quot;dashboard&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;update&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;device&amp;quot;: [
+          &amp;quot;update&amp;quot;,
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;device_action&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;read&amp;quot;,
+          &amp;quot;delete&amp;quot;
+        ],
+        &amp;quot;device_state&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;update&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;flow&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;update&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;image&amp;quot;: [
+          &amp;quot;read&amp;quot;,
+          &amp;quot;upload&amp;quot;,
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;update&amp;quot;
+        ],
+        &amp;quot;log&amp;quot;: [
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;map&amp;quot;: [
+          &amp;quot;read_map_layer&amp;quot;,
+          &amp;quot;read_map&amp;quot;,
+          &amp;quot;read_map_element&amp;quot;
+        ],
+        &amp;quot;node&amp;quot;: [
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;notifr&amp;quot;: [
+          &amp;quot;preview_notifr&amp;quot;,
+          &amp;quot;read_notifr_item&amp;quot;,
+          &amp;quot;read_notifr_template&amp;quot;
+        ],
+        &amp;quot;script&amp;quot;: [
+          &amp;quot;update&amp;quot;,
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;exec_script&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;user&amp;quot;: [
+          &amp;quot;read_role&amp;quot;,
+          &amp;quot;read_role_access_list&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;worker&amp;quot;: [
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;create&amp;quot;,
+          &amp;quot;update&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;workflow&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;read&amp;quot;,
+          &amp;quot;update&amp;quot;
+        ],
+        &amp;quot;ws&amp;quot;: [
+          &amp;quot;read&amp;quot;
+        ]
+      },
+      &amp;quot;created_at&amp;quot;: &amp;quot;2017-01-15T12:20:58+07:00&amp;quot;,
+      &amp;quot;update_at&amp;quot;: &amp;quot;2017-01-15T12:21:29+07:00&amp;quot;
+    },
+    &amp;quot;sign_in_count&amp;quot;: 121
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;401&lt;/code&gt; ошибка&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+  &amp;quot;message&amp;quot;: &amp;quot;Пользователь не найден&amp;quot;,
+  &amp;quot;status&amp;quot;: &amp;quot;error&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;signout&#34;&gt;Выход&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;POST&lt;/code&gt; &lt;a href=&#34;http://localhost/api/v1/signout&#34;&gt;http://localhost/api/v1/signout&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Обзор</title>
+      <link>https://e154.github.io/smart-home/api/_overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/api/_overview/</guid>
+      <description>&lt;div class=&#34;right&#34;&gt;
+
+&lt;pre&gt;
+&lt;code class=&#34;language-json hljs&#34;&gt;
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;overview&#34;&gt;Обзор&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Smart home&lt;/strong&gt; &lt;strong&gt;API&lt;/strong&gt; позволяет управлять системой &lt;strong&gt;Smart home&lt;/strong&gt;, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.
+&lt;strong&gt;Smart home&lt;/strong&gt; &lt;strong&gt;API&lt;/strong&gt; организован на основе &lt;strong&gt;REST&lt;/strong&gt; запросов по верх HTTP протокола. 
+Такая связка была выбрана исключительно из простоты поддержания, и разработки нового функционала. 
+Все запросы должны быть в формате JSON и кодировке UTF-8 *(Content-Type: application/json; charset=utf-8)*. 
+Заголовок Accept будут игнорироваться для всех запросов.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code class=&#34;language-bash&#34;&gt;
+&gt; $ curl -i https://localhost/api/v1/action..
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;right&#34;&gt;
+&gt; Пример токена авторизации
+&lt;/div&gt;
+
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;security&#34;&gt;Безопасность&lt;/h2&gt;
+
+Сервер &lt;strong&gt;Smart home&lt;/strong&gt; имеет систему контроля доступа основанную на ролях. Любое действие или команда по &lt;strong&gt;API&lt;/strong&gt; будут проходить проверку на право доступа
+Идентификация пользователя и роли происходит по &lt;a href=&#34;https://jwt.io&#34; target=&#34;_blank&#34;&gt;JWT&lt;/a&gt; токену указанному в &lt;strong&gt;Authorization&lt;/strong&gt; заголовке запроса.
+Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок &lt;strong&gt;Authorization&lt;/strong&gt;:
+
+&lt;/div&gt;
+
+&lt;div class=&#34;right&#34;&gt;
+&lt;pre&gt;
+&lt;code class=&#34;language-bash&#34;&gt;
+HTTP/1.1 404 Not Found
+Date: Mon, 21 Apr 2014 13:26:48 GMT
+Content-Type: application/json; charset=utf-8:
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre&gt;
+&lt;code class=&#34;language-json&#34;&gt;
+{
+    &#34;message&#34;: &#34;Описание ошибки&#34;,
+    &#34;status&#34;: &#34;error&#34;
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;errors&#34;&gt;Ошибки&lt;/h2&gt;
+
+При возникновении ошибки Вы получите её код в теле ответа. 
+
+&lt;table class=&#34;table&#34;&gt;
+    &lt;thead&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Поле&lt;/th&gt;
+        &lt;th&gt;Тип&lt;/th&gt;
+        &lt;th&gt;Значение&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+    &lt;tr&gt;
+        &lt;td&gt;message&lt;/td&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;строка&lt;/div&gt; &lt;/td&gt;
+        &lt;td&gt;Текст ошибки&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;status&lt;/td&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;строка&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Системное название&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table class=&#34;table&#34;&gt;
+    &lt;thead&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Код ошибки&lt;/th&gt;
+        &lt;th&gt;Описание&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;400&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Bad Request -- Плохой запрос&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;401&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Unauthorized -- &lt;strong&gt;API&lt;/strong&gt; токен не верный&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;403&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Forbidden -- Доступ запрещен, возможно не хватает прав&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;404&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Not Found -- Контент не найден&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;500&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Internal Server Error -- Ошибка на сервере&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;right&#34;&gt;
+&lt;pre&gt;
+&lt;code class=&#34;language-bash&#34;&gt;
+&gt; $ curl -i https://localhost/api/v1/action..
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;pre&gt;
+&lt;code class=&#34;language-json&#34;&gt;
+{
+&#34;message&#34;: &#34;Описание ошибки&#34;,
+&#34;status&#34;: &#34;error&#34;
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;/div&gt;
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;http-methods&#34;&gt;HTTP методы&lt;/h2&gt;
+
+Сервер &lt;strong&gt;Smart home&lt;/strong&gt; &lt;strong&gt;REST API&lt;/strong&gt; поддерживает данный список HTTP методов для каждого действия:
+
+&lt;table class=&#34;table&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+    &lt;th&gt;Метод&lt;/th&gt;
+    &lt;th&gt;Действие&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+    &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;GET&lt;/div&gt;&lt;/td&gt;
+    &lt;td&gt;Получить ресурс&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;POST&lt;/div&gt;&lt;/td&gt;
+    &lt;td&gt;Создать ресурс&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;PUT&lt;/div&gt;&lt;/td&gt;
+    &lt;td&gt;Обновить ресурс&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;DELETE&lt;/div&gt;&lt;/td&gt;
+    &lt;td&gt;Удалить ресурс&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;right&#34;&gt;&lt;/div&gt;
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;cors&#34;&gt;Cross Origin Resource Sharing (CORS)&lt;/h2&gt;
+
+Сервер &lt;strong&gt;Smart home&lt;/strong&gt; API version 1.0 поддерживает Cross Origin Resource Sharing (CORS) запросы для AJAX.
+
+&lt;/div&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

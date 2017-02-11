@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/getting-started/_overview/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/api/_overview/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/getting-started/_requirements/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/api/_authorize/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/getting-started/_install/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/groups/api/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/api</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/api/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/getting-started/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/groups/getting_started/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/groups/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/getting-started</loc>
+  </url>
+  
+</urlset>

@@ -1,0 +1,922 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Smart home</title>
+    <link>https://e154.github.io/smart-home/index.xml</link>
+    <description>Recent content on Smart home</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ru</language>
+    <atom:link href="https://e154.github.io/smart-home/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/getting-started/_overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_overview/</guid>
+      <description>&lt;div class=&#34;docs-section&#34;&gt;
+    &lt;h2 id=&#34;overview&#34; class=&#34;page-header&#34;&gt;Обзор&lt;/h2&gt;
+
+    &lt;p&gt;&lt;strong&gt;Система умного дома&lt;/strong&gt; имеет модульную структуру, и состоит из следующих частей:&lt;/p&gt;
+    &lt;ul class=&#34;list-unstyled&#34;&gt;
+        &lt;li&gt;&lt;strong&gt;Сервер&lt;/strong&gt; - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
+            исполнение процессов, логирование, оповещенние, реагирование на события по заложенному сценарию.&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Конфигуратор&lt;/strong&gt; - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
+            систему под свои нужды, требуется как првило на этапе конфигурации.&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Нода&lt;/strong&gt; - посредник связи сервера с активными устройствами, позволяет связать один сервер с
+            множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
+            Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
+            по требованию сценария, либо доступности последней.&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Монитор&lt;/strong&gt;(в разработке) - мобильное клиентское приложение android, ios.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;Для работы &lt;strong&gt;системы умного дома&lt;/strong&gt; требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
+        нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.&lt;/p&gt;
+
+    &lt;p&gt;На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
+        В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
+        создайте реквест с предложением в репозиторий &lt;a href=&#34;https://github.com/e154/smart-home&#34;&gt;Сервер&lt;/a&gt;, &lt;a href=&#34;https://github.com/e154/smart-home-node&#34;&gt;Нода&lt;/a&gt;.
+
+        Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
+        со схемой и программой прошивки для &lt;strong&gt;AVR mega 168pu&lt;/strong&gt; управляющего розетой, легко поддающееся модификации под более сложные задачи можно
+        посмотреть в репозитории - &lt;a href=&#34;https://github.com/e154/smart-home-socket&#34;&gt;пример устройства управления розеткой&lt;/a&gt;.
+    &lt;/p&gt;
+
+    &lt;p&gt;Схематичная сеть &lt;strong&gt;системы умного дома&lt;/strong&gt;:&lt;/p&gt;
+
+    &lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/default_network.png&#34; title=&#34;Схематичная сеть умного дома&#34; alt=&#34;Схематичная сеть умного дома&#34;&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Обзор</title>
+      <link>https://e154.github.io/smart-home/api/_overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/api/_overview/</guid>
+      <description>&lt;div class=&#34;right&#34;&gt;
+
+&lt;pre&gt;
+&lt;code class=&#34;language-json hljs&#34;&gt;
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;overview&#34;&gt;Обзор&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Smart home&lt;/strong&gt; &lt;strong&gt;API&lt;/strong&gt; позволяет управлять системой &lt;strong&gt;Smart home&lt;/strong&gt;, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.
+&lt;strong&gt;Smart home&lt;/strong&gt; &lt;strong&gt;API&lt;/strong&gt; организован на основе &lt;strong&gt;REST&lt;/strong&gt; запросов по верх HTTP протокола. 
+Такая связка была выбрана исключительно из простоты поддержания, и разработки нового функционала. 
+Все запросы должны быть в формате JSON и кодировке UTF-8 *(Content-Type: application/json; charset=utf-8)*. 
+Заголовок Accept будут игнорироваться для всех запросов.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code class=&#34;language-bash&#34;&gt;
+&gt; $ curl -i https://localhost/api/v1/action..
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;right&#34;&gt;
+&gt; Пример токена авторизации
+&lt;/div&gt;
+
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;security&#34;&gt;Безопасность&lt;/h2&gt;
+
+Сервер &lt;strong&gt;Smart home&lt;/strong&gt; имеет систему контроля доступа основанную на ролях. Любое действие или команда по &lt;strong&gt;API&lt;/strong&gt; будут проходить проверку на право доступа
+Идентификация пользователя и роли происходит по &lt;a href=&#34;https://jwt.io&#34; target=&#34;_blank&#34;&gt;JWT&lt;/a&gt; токену указанному в &lt;strong&gt;Authorization&lt;/strong&gt; заголовке запроса.
+Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок &lt;strong&gt;Authorization&lt;/strong&gt;:
+
+&lt;/div&gt;
+
+&lt;div class=&#34;right&#34;&gt;
+&lt;pre&gt;
+&lt;code class=&#34;language-bash&#34;&gt;
+HTTP/1.1 404 Not Found
+Date: Mon, 21 Apr 2014 13:26:48 GMT
+Content-Type: application/json; charset=utf-8:
+&lt;/code&gt;
+&lt;/pre&gt;
+&lt;pre&gt;
+&lt;code class=&#34;language-json&#34;&gt;
+{
+    &#34;message&#34;: &#34;Описание ошибки&#34;,
+    &#34;status&#34;: &#34;error&#34;
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;errors&#34;&gt;Ошибки&lt;/h2&gt;
+
+При возникновении ошибки Вы получите её код в теле ответа. 
+
+&lt;table class=&#34;table&#34;&gt;
+    &lt;thead&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Поле&lt;/th&gt;
+        &lt;th&gt;Тип&lt;/th&gt;
+        &lt;th&gt;Значение&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+    &lt;tr&gt;
+        &lt;td&gt;message&lt;/td&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;строка&lt;/div&gt; &lt;/td&gt;
+        &lt;td&gt;Текст ошибки&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;status&lt;/td&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;строка&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Системное название&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table class=&#34;table&#34;&gt;
+    &lt;thead&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Код ошибки&lt;/th&gt;
+        &lt;th&gt;Описание&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;400&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Bad Request -- Плохой запрос&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;401&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Unauthorized -- &lt;strong&gt;API&lt;/strong&gt; токен не верный&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;403&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Forbidden -- Доступ запрещен, возможно не хватает прав&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;404&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Not Found -- Контент не найден&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;500&lt;/div&gt;&lt;/td&gt;
+        &lt;td&gt;Internal Server Error -- Ошибка на сервере&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;right&#34;&gt;
+&lt;pre&gt;
+&lt;code class=&#34;language-bash&#34;&gt;
+&gt; $ curl -i https://localhost/api/v1/action..
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;pre&gt;
+&lt;code class=&#34;language-json&#34;&gt;
+{
+&#34;message&#34;: &#34;Описание ошибки&#34;,
+&#34;status&#34;: &#34;error&#34;
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+&lt;/div&gt;
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;http-methods&#34;&gt;HTTP методы&lt;/h2&gt;
+
+Сервер &lt;strong&gt;Smart home&lt;/strong&gt; &lt;strong&gt;REST API&lt;/strong&gt; поддерживает данный список HTTP методов для каждого действия:
+
+&lt;table class=&#34;table&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+    &lt;th&gt;Метод&lt;/th&gt;
+    &lt;th&gt;Действие&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+    &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;GET&lt;/div&gt;&lt;/td&gt;
+    &lt;td&gt;Получить ресурс&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;POST&lt;/div&gt;&lt;/td&gt;
+    &lt;td&gt;Создать ресурс&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;PUT&lt;/div&gt;&lt;/td&gt;
+    &lt;td&gt;Обновить ресурс&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;&lt;div class=&#34;label label-default&#34;&gt;DELETE&lt;/div&gt;&lt;/td&gt;
+    &lt;td&gt;Удалить ресурс&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;right&#34;&gt;&lt;/div&gt;
+&lt;div class=&#34;middle&#34;&gt;
+
+&lt;h2 id=&#34;cors&#34;&gt;Cross Origin Resource Sharing (CORS)&lt;/h2&gt;
+
+Сервер &lt;strong&gt;Smart home&lt;/strong&gt; API version 1.0 поддерживает Cross Origin Resource Sharing (CORS) запросы для AJAX.
+
+&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/getting-started/_requirements/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_requirements/</guid>
+      <description>&lt;div class=&#34;docs-section&#34;&gt;
+    &lt;h2 id=&#34;requirements&#34; class=&#34;page-header&#34;&gt;Системные требования&lt;/h2&gt;
+
+    &lt;p&gt;Поддерживаемые операционные системы:&lt;/p&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;strong&gt;macOS&lt;/strong&gt; 386 10.6&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;macOS&lt;/strong&gt; amd64 10.6&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; 386&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; amd64&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; arm-5&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; arm-6&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; arm-7&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; arm-64&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; mips64&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; mips64le&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;windows&lt;/strong&gt; 386&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;windows&lt;/strong&gt; amd64&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;Системные требования:&lt;/p&gt;
+    &lt;ul&gt;
+        &lt;li&gt;50 MB RAM Минимальные&lt;/li&gt;
+        &lt;li&gt;100 MB RAM Рекомендуемые&lt;/li&gt;
+    &lt;/ul&gt;
+
+&lt;/div&gt;
+
+
+&lt;div class=&#34;docs-section&#34;&gt;
+
+    &lt;div class=&#34;boc-callout boc-callout-info&#34;&gt;
+        &lt;h4&gt;Для работы серверов не требуется запуск графической оболочки&lt;/h4&gt;
+    &lt;/div&gt;
+
+
+&lt;/div&gt;
+
+&lt;div class=&#34;docs-section&#34;&gt;
+    &lt;h2 id=&#34;download&#34; class=&#34;page-header&#34;&gt;Загрузка&lt;/h2&gt;
+
+    &lt;p&gt;Готовые архиве содержат все исполняемые фйлы под все поддерживаемые архитектуры и операционные системы.&lt;/p&gt;
+
+    &lt;div class=&#34;row download-block&#34;&gt;
+        &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
+            &lt;h3&gt;Сервер&lt;/h3&gt;
+            &lt;p class=&#34;text-muted&#34;&gt;Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.&lt;/p&gt;
+            &lt;a id=&#34;smart-home-server&#34; href=&#34;https://github.com/e154/smart-home/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
+            &lt;h3&gt;Конфигуратор&lt;/h3&gt;
+            &lt;p class=&#34;text-muted&#34;&gt;Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.&lt;/p&gt;
+            &lt;a id=&#34;smart-home-configurator&#34; href=&#34;https://github.com/e154/smart-home-configurator/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
+            &lt;h3&gt;Нода&lt;/h3&gt;
+            &lt;p class=&#34;text-muted&#34;&gt;Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.&lt;/p&gt;
+            &lt;a id=&#34;smart-home-node&#34; href=&#34;https://github.com/e154/smart-home-node/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&#34;docs-section&#34;&gt;
+    &lt;h2 id=&#34;whats-included&#34;&gt;Что входит в пакеты&lt;/h2&gt;
+
+    &lt;h3 id=&#34;server&#34;&gt;Сервер&lt;/h3&gt;
+
+    &lt;p&gt;Список файлов в корне архива.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;├── conf
+├── contributors.txt
+├── data
+├── dump.sql
+├── LICENSE
+├── README.md
+├── server-darwin-10.6-386
+├── server-darwin-10.6-amd64
+├── server-linux-386
+├── server-linux-amd64
+├── server-linux-arm-5
+├── server-linux-arm-6
+├── server-linux-arm64
+├── server-linux-arm-7
+├── server-linux-mips64
+├── server-linux-mips64le
+├── server-windows-4.0-386.exe
+└── server-windows-4.0-amd64.exe
+&lt;/pre&gt;&lt;/div&gt;
+
+
+
+    &lt;ul class=&#34;list-unstyled&#34;&gt;
+        &lt;li&gt;&lt;strong&gt;conf&lt;/strong&gt; - директория конфигурационных файлов&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;contributors.txt&lt;/strong&gt; - текстовый файл, список разработчиков системы умный дом&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;data&lt;/strong&gt; - директория хранения рабочих файлов иконки, изображения&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;dump.sql&lt;/strong&gt; - дамп sql базы данных&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;LICENSE&lt;/strong&gt; - текстовый файл лицензионного соглашения&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;README.md&lt;/strong&gt; - текстовый файл краткой вводной информации&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;server-*&lt;/strong&gt; - Платформо зависимый исполняемый файл&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;h3 id=&#34;configurator&#34;&gt;Конфигуратор&lt;/h3&gt;
+
+    &lt;p&gt;Список файлов в корне архива.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;├── build
+├── conf
+├── views
+├── configurator-darwin-10.6-386
+├── configurator-darwin-10.6-amd64
+├── configurator-linux-386
+├── configurator-linux-amd64
+├── configurator-linux-arm-5
+├── configurator-linux-arm-6
+├── configurator-linux-arm64
+├── configurator-linux-arm-7
+├── configurator-linux-mips64
+├── configurator-linux-mips64le
+├── configurator-windows-4.0-386.exe
+├── configurator-windows-4.0-amd64.exe
+├── contributors.txt
+├── LICENSE
+└── README.md
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;ul class=&#34;list-unstyled&#34;&gt;
+        &lt;li&gt;&lt;strong&gt;build&lt;/strong&gt; - директория фронтенд приложения&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;conf&lt;/strong&gt; - директория конфигурационных файлов&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;views&lt;/strong&gt; - директория html шаблонов страниц входа,выхода,восстановления пароля&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;LICENSE&lt;/strong&gt; - текстовый файл лицензионного соглашения&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;README.md&lt;/strong&gt; - текстовый файл краткой вводной информации&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;contributors.txt&lt;/strong&gt; - текстовый файл, список разработчиков системы умный дом&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;configurator-*&lt;/strong&gt; - Платформо зависимый исполняемый файл&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;h3 id=&#34;node&#34;&gt;Нода&lt;/h3&gt;
+
+    &lt;p&gt;Список файлов в корне архива.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;├── conf
+├── contributors.txt
+├── LICENSE
+├── node-darwin-10.6-386
+├── node-darwin-10.6-amd64
+├── node-linux-386
+├── node-linux-amd64
+├── node-linux-arm-5
+├── node-linux-arm-6
+├── node-linux-arm64
+├── node-linux-arm-7
+├── node-linux-mips64
+├── node-linux-mips64le
+├── node-windows-4.0-386.exe
+├── node-windows-4.0-amd64.exe
+└── README.md
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;ul class=&#34;list-unstyled&#34;&gt;
+        &lt;li&gt;&lt;strong&gt;conf&lt;/strong&gt; - директория конфигурационных файлов&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;LICENSE&lt;/strong&gt; - текстовый файл лицензионного соглашения&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;README.md&lt;/strong&gt; - текстовый файл краткой вводной информации&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;contributors.txt&lt;/strong&gt; - текстовый файл, список разработчиков системы умный дом&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;node-*&lt;/strong&gt; - Платформо зависимый исполняемый файл&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
+
+</description>
+    </item>
+    
+    <item>
+      <title>Авторизация</title>
+      <link>https://e154.github.io/smart-home/api/_authorize/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/api/_authorize/</guid>
+      <description>&lt;h2 id=&#34;authorization&#34;&gt;Авторизация&lt;/h2&gt;
+
+&lt;p&gt;Авторизация - получения JWT токена, происходит &lt;code&gt;POST&lt;/code&gt; запросом по паре email/пароль.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;пример запроса на авторизацию&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+    &amp;quot;email&amp;quot;: &amp;quot;user@server.name&amp;quot;,
+    &amp;quot;password&amp;quot;: &amp;quot;******&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация.&lt;/li&gt;
+&lt;li&gt;Пароль должен состоять не менне чем из 6 символов.&lt;/li&gt;
+&lt;li&gt;Первоночальная регистрация возможна только, по одной из двух учетных записей&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Учетные записи существующие после установки сервера&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;email: demo@e154.ru
+password: demodemo
+
+email: admin@e154.ru
+password: adminadmin
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;signin&#34;&gt;Вход&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;POST&lt;/code&gt; &lt;a href=&#34;http://localhost/api/v1/signin&#34;&gt;http://localhost/api/v1/signin&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;#!/usr/bin/env bash
+
+EMAIL=&amp;quot;admin@e154.ru&amp;quot;
+PASSWORD=&amp;quot;adminadmin&amp;quot;
+URL=http://localhost:3000/api/v1/signin
+
+curl -i -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &amp;quot;{\&amp;quot;email\&amp;quot;:\&amp;quot;${EMAIL}\&amp;quot;,\&amp;quot;password\&amp;quot;:\&amp;quot;${PASSWORD}\&amp;quot;}&amp;quot; ${URL}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Значение полей в результате положительного ответа&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Поле&lt;/th&gt;
+&lt;th&gt;Тип&lt;/th&gt;
+&lt;th&gt;Значение&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;token&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;строка&lt;/td&gt;
+&lt;td&gt;JWT токен&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;current_user&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;объект&lt;/td&gt;
+&lt;td&gt;Параметры текущеко пользователя&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;200&lt;/code&gt; положительный ответ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+  &amp;quot;token&amp;quot;: &amp;quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&amp;quot;,
+  &amp;quot;current_user&amp;quot;: {
+    &amp;quot;avatar&amp;quot;: null,
+    &amp;quot;email&amp;quot;: &amp;quot;admin@e154.ru&amp;quot;,
+    &amp;quot;first_name&amp;quot;: &amp;quot;&amp;quot;,
+    &amp;quot;history&amp;quot;: &amp;quot;[{\&amp;quot;ip\&amp;quot;:\&amp;quot;127.0.0.1\&amp;quot;,\&amp;quot;time\&amp;quot;:\&amp;quot;2017-01-27T11:40:59.018428538+07:00\&amp;quot;},
+    {\&amp;quot;ip\&amp;quot;:\&amp;quot;127.0.0.1\&amp;quot;,\&amp;quot;time\&amp;quot;:\&amp;quot;2017-01-29T16:50:25.846523732+07:00\&amp;quot;}    
+    &amp;quot;id&amp;quot;: 1,
+    &amp;quot;last_name&amp;quot;: &amp;quot;&amp;quot;,
+    &amp;quot;meta&amp;quot;: [
+      {
+        &amp;quot;id&amp;quot;: 49,
+        &amp;quot;key&amp;quot;: &amp;quot;phone1&amp;quot;,
+        &amp;quot;value&amp;quot;: &amp;quot;&amp;quot;
+      },
+      {
+        &amp;quot;id&amp;quot;: 50,
+        &amp;quot;key&amp;quot;: &amp;quot;phone2&amp;quot;,
+        &amp;quot;value&amp;quot;: &amp;quot;&amp;quot;
+      },
+      {
+        &amp;quot;id&amp;quot;: 51,
+        &amp;quot;key&amp;quot;: &amp;quot;phone3&amp;quot;,
+        &amp;quot;value&amp;quot;: &amp;quot;&amp;quot;
+      },
+      {
+        &amp;quot;id&amp;quot;: 52,
+        &amp;quot;key&amp;quot;: &amp;quot;autograph&amp;quot;,
+        &amp;quot;value&amp;quot;: &amp;quot;&amp;quot;
+      }
+    ],
+    &amp;quot;nickname&amp;quot;: &amp;quot;admin&amp;quot;,
+    &amp;quot;role&amp;quot;: {
+      &amp;quot;name&amp;quot;: &amp;quot;admin&amp;quot;,
+      &amp;quot;description&amp;quot;: &amp;quot;&amp;quot;,
+      &amp;quot;parent&amp;quot;: {
+        &amp;quot;name&amp;quot;: &amp;quot;user&amp;quot;,
+        &amp;quot;description&amp;quot;: &amp;quot;&amp;quot;,
+        &amp;quot;parent&amp;quot;: null,
+        &amp;quot;children&amp;quot;: null,
+        &amp;quot;access_list&amp;quot;: null,
+        &amp;quot;created_at&amp;quot;: &amp;quot;0001-01-01T00:00:00Z&amp;quot;,
+        &amp;quot;update_at&amp;quot;: &amp;quot;0001-01-01T00:00:00Z&amp;quot;
+      },
+      &amp;quot;children&amp;quot;: null,
+      &amp;quot;access_list&amp;quot;: {
+        &amp;quot;dashboard&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;update&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;device&amp;quot;: [
+          &amp;quot;update&amp;quot;,
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;device_action&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;read&amp;quot;,
+          &amp;quot;delete&amp;quot;
+        ],
+        &amp;quot;device_state&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;update&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;flow&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;update&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;image&amp;quot;: [
+          &amp;quot;read&amp;quot;,
+          &amp;quot;upload&amp;quot;,
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;update&amp;quot;
+        ],
+        &amp;quot;log&amp;quot;: [
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;map&amp;quot;: [
+          &amp;quot;read_map_layer&amp;quot;,
+          &amp;quot;read_map&amp;quot;,
+          &amp;quot;read_map_element&amp;quot;
+        ],
+        &amp;quot;node&amp;quot;: [
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;notifr&amp;quot;: [
+          &amp;quot;preview_notifr&amp;quot;,
+          &amp;quot;read_notifr_item&amp;quot;,
+          &amp;quot;read_notifr_template&amp;quot;
+        ],
+        &amp;quot;script&amp;quot;: [
+          &amp;quot;update&amp;quot;,
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;exec_script&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;user&amp;quot;: [
+          &amp;quot;read_role&amp;quot;,
+          &amp;quot;read_role_access_list&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;worker&amp;quot;: [
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;create&amp;quot;,
+          &amp;quot;update&amp;quot;,
+          &amp;quot;read&amp;quot;
+        ],
+        &amp;quot;workflow&amp;quot;: [
+          &amp;quot;create&amp;quot;,
+          &amp;quot;delete&amp;quot;,
+          &amp;quot;read&amp;quot;,
+          &amp;quot;update&amp;quot;
+        ],
+        &amp;quot;ws&amp;quot;: [
+          &amp;quot;read&amp;quot;
+        ]
+      },
+      &amp;quot;created_at&amp;quot;: &amp;quot;2017-01-15T12:20:58+07:00&amp;quot;,
+      &amp;quot;update_at&amp;quot;: &amp;quot;2017-01-15T12:21:29+07:00&amp;quot;
+    },
+    &amp;quot;sign_in_count&amp;quot;: 121
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;401&lt;/code&gt; ошибка&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+  &amp;quot;message&amp;quot;: &amp;quot;Пользователь не найден&amp;quot;,
+  &amp;quot;status&amp;quot;: &amp;quot;error&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;signout&#34;&gt;Выход&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;POST&lt;/code&gt; &lt;a href=&#34;http://localhost/api/v1/signout&#34;&gt;http://localhost/api/v1/signout&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/getting-started/_install/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_install/</guid>
+      <description>&lt;div class=&#34;docs-section&#34;&gt;
+    &lt;h2 id=&#34;install&#34;&gt;Установка&lt;/h2&gt;
+
+    &lt;p&gt;Будет произведена базовая установка системы &lt;strong&gt;Умный дом&lt;/strong&gt; на сервер под операционной системой linux Debian.
+        С не большими изменениями установка будет схожа и для других операционных систем.&lt;/p&gt;
+
+    &lt;p&gt;План действий:&lt;/p&gt;
+
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href=&#34;#install-mkdir&#34;&gt;Создание директорий&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#install-download-and-unpack&#34;&gt;Скачивание и распаковка&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#install-server-conf&#34;&gt;Настройка сервера&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#install-configuration-conf&#34;&gt;Настройка конфигуратора&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#install-node-conf&#34;&gt;Настройка ноды&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&#34;#install-mysql&#34;&gt;База mysql&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;/p&gt;
+
+    &lt;div class=&#34;row&#34;&gt;
+        &lt;div class=&#34;col-md-6&#34;&gt;
+            &lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/default_network2.png&#34; title=&#34;Схематичная сеть умного дома&#34; alt=&#34;Схематичная сеть умного дома&#34;&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+
+    &lt;p&gt;Информация о системе на которой производилось тестовое развёртывание:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;delta54@darkstar:tmp&lt;span style=&#34;color: #f8f8f2&#34;&gt;$ &lt;/span&gt;uname -a
+Linux darkstar 3.16.0-4-amd64 &lt;span style=&#34;color: #75715e&#34;&gt;#1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;delta54@darkstar:tmp&lt;span style=&#34;color: #f8f8f2&#34;&gt;$ &lt;/span&gt;cat /etc/*release*
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;PRETTY_NAME&lt;/span&gt;&lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #e6db74&#34;&gt;&amp;quot;Debian GNU/Linux 8 (jessie)&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;h3 id=&#34;install-mkdir&#34;&gt;Создание директорий&lt;/h3&gt;
+
+    &lt;p&gt;Рекомендуемая директория установки сервера /opt/smart-home. Подготовьте директорию, укажите требуемые права доступа на директорию
+        /opt/smart-home
+    &lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;sudo mkdir -p /opt/smart-home
+sudo chown &lt;span style=&#34;color: #f8f8f2&#34;&gt;$USER&lt;/span&gt;:&lt;span style=&#34;color: #f8f8f2&#34;&gt;$USER&lt;/span&gt; /opt/smart-home -R
+mkdir -p /opt/smart-home/server
+mkdir -p /opt/smart-home/configurator
+mkdir -p /opt/smart-home/node
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;h3 id=&#34;install-download-and-unpack&#34;&gt;Скачивание и распаковка&lt;/h3&gt;
+
+    &lt;p&gt;Скачаем последний релиз сервер, и распакуем в директории &lt;strong&gt;server&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;cd&lt;/span&gt; /opt/smart-home/server
+wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
+tar -zxvf smart-home-server.tar.gz
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;p&gt;В директории &lt;strong&gt;data&lt;/strong&gt; хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
+        Вынесите директорию &lt;strong&gt;data&lt;/strong&gt; на один уровень выше.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;cd&lt;/span&gt; /opt/smart-home/server
+mv data ../
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;p&gt;Тоже самое сделаем для конфигуратора, и ноды&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;cd&lt;/span&gt; /opt/smart-home/configurator
+wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
+tar -zxvf smart-home-configurator.tar.gz
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;cd&lt;/span&gt; /opt/smart-home/node
+wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
+tar -zxvf smart-home-node.tar.gz
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;p&gt;В итоге мы должны получит следующую корневую структуру:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;cd&lt;/span&gt; /opt/smart-home
+├── data
+├── node
+├── configurator
+└── server
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;h3 id=&#34;install-server-conf&#34;&gt;Настройка сервера&lt;/h3&gt;
+
+    &lt;p&gt;Важные переменные в конфигурационном файле серевера:&lt;/p&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;strong&gt;httpaddr&lt;/strong&gt; - адрес сервера REST API&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;httpport&lt;/strong&gt; - порт сервера REST API&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;data_dir&lt;/strong&gt; - директория хранения общих файлов&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;db_user&lt;/strong&gt; - пользователь для соединени mysql&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;db_pass&lt;/strong&gt; - пароль доступка к mysql&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;db_host&lt;/strong&gt; - адрес сервера mysql&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;db_name&lt;/strong&gt; - название базы mysql&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;db_port&lt;/strong&gt; - порт сервера mysql&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;p&gt;Отредактируйте переменную &lt;strong&gt;httpaddr&lt;/strong&gt; в /opt/smart-home/server/conf/app.conf,
+        адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;httpaddr&lt;/span&gt; &lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #e6db74&#34;&gt;&amp;quot;0.0.0.0&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;p&gt;По желанию отредактируйте переменную &lt;strong&gt;httpport&lt;/strong&gt; в /opt/smart-home/server/conf/prod/app.conf,
+        или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
+        приложений.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;httpport&lt;/span&gt; &lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt; 3000
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;p&gt;Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
+        или оставьте без изменений, и настройте базу в соответствии с установленными значениями.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;db_user&lt;/span&gt; &lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt; smarthome
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;db_pass&lt;/span&gt; &lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt; smarthome
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;db_host&lt;/span&gt; &lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #e6db74&#34;&gt;&amp;quot;127.0.0.1&amp;quot;&lt;/span&gt;
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;db_name&lt;/span&gt; &lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt; smarthome
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;db_port&lt;/span&gt; &lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #e6db74&#34;&gt;&amp;quot;3306&amp;quot;&lt;/span&gt;
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;db_type&lt;/span&gt; &lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt; mysql
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;h3 id=&#34;install-configuration-conf&#34;&gt;Настройка конфигуратора&lt;/h3&gt;
+
+    &lt;p&gt;Конфиг файлы конфигуратора лежат в директории /opt/smart-home/configurator/conf/
+        Важные переменные:&lt;/p&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;strong&gt;httpaddr&lt;/strong&gt; - адрес веб интерфеса конфигуратора&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;httpport&lt;/strong&gt; - порт веб интерфеса конфигуратора&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;serveraddr&lt;/strong&gt; - порт сервера REST API&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;serverport&lt;/strong&gt; - порт сервера REST API&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;data_dir&lt;/strong&gt; - директория хранения общих файлов&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;h3 id=&#34;install-node-conf&#34;&gt;Настройка ноды&lt;/h3&gt;
+
+    &lt;p&gt;Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;cp /opt/smart-home/node/conf/node.sample.conf node.conf
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;cat /opt/smart-home/node/conf/node.conf
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;app_version&lt;/span&gt;&lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt;0.1.0
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;ip&lt;/span&gt;&lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt;127.0.0.1
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;port&lt;/span&gt;&lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt;3001
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;baud&lt;/span&gt;&lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt;19200
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;timeout&lt;/span&gt;&lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt;2
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;stopbits&lt;/span&gt;&lt;span style=&#34;color: #f92672&#34;&gt;=&lt;/span&gt;2
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;ul&gt;
+        &lt;li&gt;&lt;strong&gt;app_version&lt;/strong&gt; - версия внутреннего api ноды&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;ip&lt;/strong&gt; - адрес ожидания соединения от сервера&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;port&lt;/strong&gt; - порт ожидания соединения от сервера&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;baud&lt;/strong&gt; - скорость работы порта ввода вывода, используется если с сервера пришёл запрос на
+            обращение к устройству, но baud не был указан&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;timeout&lt;/strong&gt; - используется при обработке ошибок связи с устройствами&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;stopbits&lt;/strong&gt; - стоп бит, используется в общении с устройствами&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;h3 id=&#34;install-mysql&#34;&gt;База mysql&lt;/h3&gt;
+
+    &lt;p&gt;Подключимся к консоли mysql, приготовьте пароль для рута:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;mysql -u root -p
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;p&gt;Создадим базу для сервера &lt;strong&gt;умного дома&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;CREATE DATABASE smarthome&lt;span style=&#34;color: #f8f8f2&#34;&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;p&gt;Создадим нового пользователя, и дадим права на доступ к базе &lt;strong&gt;smarthome&lt;/strong&gt; из консоли mysql&lt;/p&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;strong&gt;smarthome&lt;/strong&gt; - пользователь&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;smarthome&lt;/strong&gt; - пароль&lt;/li&gt;
+    &lt;/ul&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;CREATE USER &lt;span style=&#34;color: #e6db74&#34;&gt;&amp;#39;smarthome&amp;#39;&lt;/span&gt;@&lt;span style=&#34;color: #e6db74&#34;&gt;&amp;#39;localhost&amp;#39;&lt;/span&gt; IDENTIFIED BY &lt;span style=&#34;color: #e6db74&#34;&gt;&amp;#39;smarthome&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;;&lt;/span&gt;
+GRANT ALL PRIVILEGES ON smarthome . * TO &lt;span style=&#34;color: #e6db74&#34;&gt;&amp;#39;smarthome&amp;#39;&lt;/span&gt;@&lt;span style=&#34;color: #e6db74&#34;&gt;&amp;#39;localhost&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;;&lt;/span&gt;
+FLUSH PRIVILEGES&lt;span style=&#34;color: #f8f8f2&#34;&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;p&gt;осталось импортировать базу&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;use smarthome
+&lt;span style=&#34;color: #f8f8f2&#34;&gt;source&lt;/span&gt; /opt/smart-home/server/dump.sql
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;h3 id=&#34;install-exec&#34;&gt;Запуск&lt;/h3&gt;
+
+    &lt;p&gt;Осталось запустить сервера в фоновом режиме&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #272822&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;/opt/smart-home/server/server-linux-amd64 &amp;gt; /dev/null 2&amp;gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color: #ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color: #f8f8f2&#34;&gt;&amp;amp;&lt;/span&gt;
+/opt/smart-home/configurator/configurator-linux-amd64 &amp;gt; /dev/null 2&amp;gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color: #ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color: #f8f8f2&#34;&gt;&amp;amp;&lt;/span&gt;
+/opt/smart-home/node/node-linux-amd64 &amp;gt; /dev/null 2&amp;gt;&lt;span style=&#34;color: #f8f8f2&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color: #ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color: #f8f8f2&#34;&gt;&amp;amp;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+    &lt;ul&gt;
+        &lt;li&gt;&lt;strong&gt;nohup&lt;/strong&gt; - команда будет продолжать выполняться в фоновом режиме и после того, как пользователь выйдет из системы&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;&gt; /dev/null&lt;/strong&gt; - выводить все сообщения в данное устройство&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;2&gt;&amp;1&lt;/strong&gt; - вывод ошибок в стандартный поток&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;&amp;&lt;/strong&gt; - запуск в фоновом режиме&lt;/li&gt;
+    &lt;/ul&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;docs-section&#34;&gt;
+
+    &lt;div class=&#34;boc-callout boc-callout-danger&#34;&gt;
+        &lt;h4&gt;Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы&lt;/h4&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;div class=&#34;docs-section&#34;&gt;
+
+    &lt;h2 id=&#34;install-from-source&#34;&gt;Сборка из исходного кода&lt;/h2&gt;
+
+    &lt;div class=&#34;boc-callout boc-callout-info&#34;&gt;
+        &lt;h4&gt;Извините Раздел в разработке&lt;/h4&gt;
+    &lt;/div&gt;
+
+
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Api</title>
+      <link>https://e154.github.io/smart-home/api</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/api</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>С чего начать</title>
+      <link>https://e154.github.io/smart-home/getting-started</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

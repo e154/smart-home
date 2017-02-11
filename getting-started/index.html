@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.19-DEV" />
+<title>Smart home</title>
+
+<!-- Favicon -->
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/bootstrap.min.css" type="text/css">
+<!-- Custom Fonts -->
+<link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+<link href='//fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://e154.github.io/smart-home/font-awesome/css/font-awesome.min.css" type="text/css">
+<!-- Plugin CSS -->
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/animate.min.css" type="text/css">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/style.css" type="text/css">
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/modals.css" type="text/css">
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/magnific-popup.css" type="text/css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+    </head>
+    <body id="page-top">
+        
+        <!-- main menu -->
+<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
+            
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+
+                
+                <li>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
+                </li>
+                
+                <li>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+                </li>
+                
+                <li>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/api">api</a>
+                </li>
+                
+
+                
+                
+                <li>
+                    <a href="https://e154.github.io/smart-home/en/getting-started">English</a>
+                </li>
+                
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+        
+
+        
+        <header class="getting-started">
+    <div class="header-content">
+        <div class="header-content-inner">
+            <h1>С чего начать</h1>
+            <p>Обзор систем умного дома, как загрузить и начать работу, основные принципы, примеры и многое другое.</p>
+        </div>
+    </div>
+</header>
+
+        
+
+        <aside class="getting-started">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9" role="main">
+                        
+                            
+                                <div class="docs-section">
+    <h2 id="overview" class="page-header">Обзор</h2>
+
+    <p><strong>Система умного дома</strong> имеет модульную структуру, и состоит из следующих частей:</p>
+    <ul class="list-unstyled">
+        <li><strong>Сервер</strong> - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
+            исполнение процессов, логирование, оповещенние, реагирование на события по заложенному сценарию.</li>
+        <li><strong>Конфигуратор</strong> - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
+            систему под свои нужды, требуется как првило на этапе конфигурации.</li>
+        <li><strong>Нода</strong> - посредник связи сервера с активными устройствами, позволяет связать один сервер с
+            множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
+            Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
+            по требованию сценария, либо доступности последней.</li>
+        <li><strong>Монитор</strong>(в разработке) - мобильное клиентское приложение android, ios.</li>
+    </ul>
+
+    <p>Для работы <strong>системы умного дома</strong> требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
+        нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.</p>
+
+    <p>На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
+        В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
+        создайте реквест с предложением в репозиторий <a href="https://github.com/e154/smart-home">Сервер</a>, <a href="https://github.com/e154/smart-home-node">Нода</a>.
+
+        Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
+        со схемой и программой прошивки для <strong>AVR mega 168pu</strong> управляющего розетой, легко поддающееся модификации под более сложные задачи можно
+        посмотреть в репозитории - <a href="https://github.com/e154/smart-home-socket">пример устройства управления розеткой</a>.
+    </p>
+
+    <p>Схематичная сеть <strong>системы умного дома</strong>:</p>
+
+    <img src="/smart-home/img/default_network.png" title="Схематичная сеть умного дома" alt="Схематичная сеть умного дома">
+</div>
+
+                            
+                                <div class="docs-section">
+    <h2 id="requirements" class="page-header">Системные требования</h2>
+
+    <p>Поддерживаемые операционные системы:</p>
+    <ul>
+        <li><strong>macOS</strong> 386 10.6</li>
+        <li><strong>macOS</strong> amd64 10.6</li>
+        <li><strong>linux</strong> 386</li>
+        <li><strong>linux</strong> amd64</li>
+        <li><strong>linux</strong> arm-5</li>
+        <li><strong>linux</strong> arm-6</li>
+        <li><strong>linux</strong> arm-7</li>
+        <li><strong>linux</strong> arm-64</li>
+        <li><strong>linux</strong> mips64</li>
+        <li><strong>linux</strong> mips64le</li>
+        <li><strong>windows</strong> 386</li>
+        <li><strong>windows</strong> amd64</li>
+    </ul>
+
+    <p>Системные требования:</p>
+    <ul>
+        <li>50 MB RAM Минимальные</li>
+        <li>100 MB RAM Рекомендуемые</li>
+    </ul>
+
+</div>
+
+
+<div class="docs-section">
+
+    <div class="boc-callout boc-callout-info">
+        <h4>Для работы серверов не требуется запуск графической оболочки</h4>
+    </div>
+
+
+</div>
+
+<div class="docs-section">
+    <h2 id="download" class="page-header">Загрузка</h2>
+
+    <p>Готовые архиве содержат все исполняемые фйлы под все поддерживаемые архитектуры и операционные системы.</p>
+
+    <div class="row download-block">
+        <div class="col-md-4 download-item text-center">
+            <h3>Сервер</h3>
+            <p class="text-muted">Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.</p>
+            <a id="smart-home-server" href="https://github.com/e154/smart-home/releases" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+        </div>
+        <div class="col-md-4 download-item text-center">
+            <h3>Конфигуратор</h3>
+            <p class="text-muted">Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.</p>
+            <a id="smart-home-configurator" href="https://github.com/e154/smart-home-configurator/releases" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+        </div>
+        <div class="col-md-4 download-item text-center">
+            <h3>Нода</h3>
+            <p class="text-muted">Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.</p>
+            <a id="smart-home-node" href="https://github.com/e154/smart-home-node/releases" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+        </div>
+    </div>
+</div>
+
+<div class="docs-section">
+    <h2 id="whats-included">Что входит в пакеты</h2>
+
+    <h3 id="server">Сервер</h3>
+
+    <p>Список файлов в корне архива.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">├── conf
+├── contributors.txt
+├── data
+├── dump.sql
+├── LICENSE
+├── README.md
+├── server-darwin-10.6-386
+├── server-darwin-10.6-amd64
+├── server-linux-386
+├── server-linux-amd64
+├── server-linux-arm-5
+├── server-linux-arm-6
+├── server-linux-arm64
+├── server-linux-arm-7
+├── server-linux-mips64
+├── server-linux-mips64le
+├── server-windows-4.0-386.exe
+└── server-windows-4.0-amd64.exe
+</pre></div>
+
+
+
+    <ul class="list-unstyled">
+        <li><strong>conf</strong> - директория конфигурационных файлов</li>
+        <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
+        <li><strong>data</strong> - директория хранения рабочих файлов иконки, изображения</li>
+        <li><strong>dump.sql</strong> - дамп sql базы данных</li>
+        <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
+        <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
+        <li><strong>server-*</strong> - Платформо зависимый исполняемый файл</li>
+    </ul>
+
+    <h3 id="configurator">Конфигуратор</h3>
+
+    <p>Список файлов в корне архива.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">├── build
+├── conf
+├── views
+├── configurator-darwin-10.6-386
+├── configurator-darwin-10.6-amd64
+├── configurator-linux-386
+├── configurator-linux-amd64
+├── configurator-linux-arm-5
+├── configurator-linux-arm-6
+├── configurator-linux-arm64
+├── configurator-linux-arm-7
+├── configurator-linux-mips64
+├── configurator-linux-mips64le
+├── configurator-windows-4.0-386.exe
+├── configurator-windows-4.0-amd64.exe
+├── contributors.txt
+├── LICENSE
+└── README.md
+</pre></div>
+
+
+    <ul class="list-unstyled">
+        <li><strong>build</strong> - директория фронтенд приложения</li>
+        <li><strong>conf</strong> - директория конфигурационных файлов</li>
+        <li><strong>views</strong> - директория html шаблонов страниц входа,выхода,восстановления пароля</li>
+        <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
+        <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
+        <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
+        <li><strong>configurator-*</strong> - Платформо зависимый исполняемый файл</li>
+    </ul>
+
+    <h3 id="node">Нода</h3>
+
+    <p>Список файлов в корне архива.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">├── conf
+├── contributors.txt
+├── LICENSE
+├── node-darwin-10.6-386
+├── node-darwin-10.6-amd64
+├── node-linux-386
+├── node-linux-amd64
+├── node-linux-arm-5
+├── node-linux-arm-6
+├── node-linux-arm64
+├── node-linux-arm-7
+├── node-linux-mips64
+├── node-linux-mips64le
+├── node-windows-4.0-386.exe
+├── node-windows-4.0-amd64.exe
+└── README.md
+</pre></div>
+
+
+    <ul class="list-unstyled">
+        <li><strong>conf</strong> - директория конфигурационных файлов</li>
+        <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
+        <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
+        <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
+        <li><strong>node-*</strong> - Платформо зависимый исполняемый файл</li>
+    </ul>
+</div>
+
+
+                            
+                                <div class="docs-section">
+    <h2 id="install">Установка</h2>
+
+    <p>Будет произведена базовая установка системы <strong>Умный дом</strong> на сервер под операционной системой linux Debian.
+        С не большими изменениями установка будет схожа и для других операционных систем.</p>
+
+    <p>План действий:</p>
+
+    <ul>
+        <li><a href="#install-mkdir">Создание директорий</a></li>
+        <li><a href="#install-download-and-unpack">Скачивание и распаковка</a></li>
+        <li><a href="#install-server-conf">Настройка сервера</a></li>
+        <li><a href="#install-configuration-conf">Настройка конфигуратора</a></li>
+        <li><a href="#install-node-conf">Настройка ноды</a></li>
+        <li><a href="#install-mysql">База mysql</a></li>
+    </ul>
+
+    <p></p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <img src="/smart-home/img/default_network2.png" title="Схематичная сеть умного дома" alt="Схематичная сеть умного дома">
+        </div>
+    </div>
+
+
+    <p>Информация о системе на которой производилось тестовое развёртывание:</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">delta54@darkstar:tmp<span style="color: #f8f8f2">$ </span>uname -a
+Linux darkstar 3.16.0-4-amd64 <span style="color: #75715e">#1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux</span>
+</pre></div>
+
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">delta54@darkstar:tmp<span style="color: #f8f8f2">$ </span>cat /etc/*release*
+<span style="color: #f8f8f2">PRETTY_NAME</span><span style="color: #f92672">=</span><span style="color: #e6db74">&quot;Debian GNU/Linux 8 (jessie)&quot;</span>
+</pre></div>
+
+
+    <h3 id="install-mkdir">Создание директорий</h3>
+
+    <p>Рекомендуемая директория установки сервера /opt/smart-home. Подготовьте директорию, укажите требуемые права доступа на директорию
+        /opt/smart-home
+    </p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">sudo mkdir -p /opt/smart-home
+sudo chown <span style="color: #f8f8f2">$USER</span>:<span style="color: #f8f8f2">$USER</span> /opt/smart-home -R
+mkdir -p /opt/smart-home/server
+mkdir -p /opt/smart-home/configurator
+mkdir -p /opt/smart-home/node
+</pre></div>
+
+
+    <h3 id="install-download-and-unpack">Скачивание и распаковка</h3>
+
+    <p>Скачаем последний релиз сервер, и распакуем в директории <strong>server</strong></p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">cd</span> /opt/smart-home/server
+wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
+tar -zxvf smart-home-server.tar.gz
+</pre></div>
+
+
+    <p>В директории <strong>data</strong> хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
+        Вынесите директорию <strong>data</strong> на один уровень выше.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">cd</span> /opt/smart-home/server
+mv data ../
+</pre></div>
+
+
+    <p>Тоже самое сделаем для конфигуратора, и ноды</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">cd</span> /opt/smart-home/configurator
+wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
+tar -zxvf smart-home-configurator.tar.gz
+<span style="color: #f8f8f2">cd</span> /opt/smart-home/node
+wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
+tar -zxvf smart-home-node.tar.gz
+</pre></div>
+
+
+    <p>В итоге мы должны получит следующую корневую структуру:</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">cd</span> /opt/smart-home
+├── data
+├── node
+├── configurator
+└── server
+</pre></div>
+
+
+    <h3 id="install-server-conf">Настройка сервера</h3>
+
+    <p>Важные переменные в конфигурационном файле серевера:</p>
+    <ul>
+        <li><strong>httpaddr</strong> - адрес сервера REST API</li>
+        <li><strong>httpport</strong> - порт сервера REST API</li>
+        <li><strong>data_dir</strong> - директория хранения общих файлов</li>
+        <li><strong>db_user</strong> - пользователь для соединени mysql</li>
+        <li><strong>db_pass</strong> - пароль доступка к mysql</li>
+        <li><strong>db_host</strong> - адрес сервера mysql</li>
+        <li><strong>db_name</strong> - название базы mysql</li>
+        <li><strong>db_port</strong> - порт сервера mysql</li>
+    </ul>
+    <p>Отредактируйте переменную <strong>httpaddr</strong> в /opt/smart-home/server/conf/app.conf,
+        адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">httpaddr</span> <span style="color: #f92672">=</span> <span style="color: #e6db74">&quot;0.0.0.0&quot;</span>
+</pre></div>
+
+
+    <p>По желанию отредактируйте переменную <strong>httpport</strong> в /opt/smart-home/server/conf/prod/app.conf,
+        или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
+        приложений.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">httpport</span> <span style="color: #f92672">=</span> 3000
+</pre></div>
+
+
+    <p>Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
+        или оставьте без изменений, и настройте базу в соответствии с установленными значениями.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">db_user</span> <span style="color: #f92672">=</span> smarthome
+<span style="color: #f8f8f2">db_pass</span> <span style="color: #f92672">=</span> smarthome
+<span style="color: #f8f8f2">db_host</span> <span style="color: #f92672">=</span> <span style="color: #e6db74">&quot;127.0.0.1&quot;</span>
+<span style="color: #f8f8f2">db_name</span> <span style="color: #f92672">=</span> smarthome
+<span style="color: #f8f8f2">db_port</span> <span style="color: #f92672">=</span> <span style="color: #e6db74">&quot;3306&quot;</span>
+<span style="color: #f8f8f2">db_type</span> <span style="color: #f92672">=</span> mysql
+</pre></div>
+
+
+    <h3 id="install-configuration-conf">Настройка конфигуратора</h3>
+
+    <p>Конфиг файлы конфигуратора лежат в директории /opt/smart-home/configurator/conf/
+        Важные переменные:</p>
+    <ul>
+        <li><strong>httpaddr</strong> - адрес веб интерфеса конфигуратора</li>
+        <li><strong>httpport</strong> - порт веб интерфеса конфигуратора</li>
+        <li><strong>serveraddr</strong> - порт сервера REST API</li>
+        <li><strong>serverport</strong> - порт сервера REST API</li>
+        <li><strong>data_dir</strong> - директория хранения общих файлов</li>
+    </ul>
+
+    <h3 id="install-node-conf">Настройка ноды</h3>
+
+    <p>Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">cp /opt/smart-home/node/conf/node.sample.conf node.conf
+</pre></div>
+
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">cat /opt/smart-home/node/conf/node.conf
+<span style="color: #f8f8f2">app_version</span><span style="color: #f92672">=</span>0.1.0
+<span style="color: #f8f8f2">ip</span><span style="color: #f92672">=</span>127.0.0.1
+<span style="color: #f8f8f2">port</span><span style="color: #f92672">=</span>3001
+<span style="color: #f8f8f2">baud</span><span style="color: #f92672">=</span>19200
+<span style="color: #f8f8f2">timeout</span><span style="color: #f92672">=</span>2
+<span style="color: #f8f8f2">stopbits</span><span style="color: #f92672">=</span>2
+</pre></div>
+
+
+    <ul>
+        <li><strong>app_version</strong> - версия внутреннего api ноды</li>
+        <li><strong>ip</strong> - адрес ожидания соединения от сервера</li>
+        <li><strong>port</strong> - порт ожидания соединения от сервера</li>
+        <li><strong>baud</strong> - скорость работы порта ввода вывода, используется если с сервера пришёл запрос на
+            обращение к устройству, но baud не был указан</li>
+        <li><strong>timeout</strong> - используется при обработке ошибок связи с устройствами</li>
+        <li><strong>stopbits</strong> - стоп бит, используется в общении с устройствами</li>
+    </ul>
+
+    <h3 id="install-mysql">База mysql</h3>
+
+    <p>Подключимся к консоли mysql, приготовьте пароль для рута:</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">mysql -u root -p
+</pre></div>
+
+
+    <p>Создадим базу для сервера <strong>умного дома</strong>:</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">CREATE DATABASE smarthome<span style="color: #f8f8f2">;</span>
+</pre></div>
+
+
+    <p>Создадим нового пользователя, и дадим права на доступ к базе <strong>smarthome</strong> из консоли mysql</p>
+    <ul>
+        <li><strong>smarthome</strong> - пользователь</li>
+        <li><strong>smarthome</strong> - пароль</li>
+    </ul>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">CREATE USER <span style="color: #e6db74">&#39;smarthome&#39;</span>@<span style="color: #e6db74">&#39;localhost&#39;</span> IDENTIFIED BY <span style="color: #e6db74">&#39;smarthome&#39;</span><span style="color: #f8f8f2">;</span>
+GRANT ALL PRIVILEGES ON smarthome . * TO <span style="color: #e6db74">&#39;smarthome&#39;</span>@<span style="color: #e6db74">&#39;localhost&#39;</span><span style="color: #f8f8f2">;</span>
+FLUSH PRIVILEGES<span style="color: #f8f8f2">;</span>
+</pre></div>
+
+
+    <p>осталось импортировать базу</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">use smarthome
+<span style="color: #f8f8f2">source</span> /opt/smart-home/server/dump.sql
+</pre></div>
+
+
+    <h3 id="install-exec">Запуск</h3>
+
+    <p>Осталось запустить сервера в фоновом режиме</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">/opt/smart-home/server/server-linux-amd64 &gt; /dev/null 2&gt;<span style="color: #f8f8f2">&amp;</span><span style="color: #ae81ff">1</span> <span style="color: #f8f8f2">&amp;</span>
+/opt/smart-home/configurator/configurator-linux-amd64 &gt; /dev/null 2&gt;<span style="color: #f8f8f2">&amp;</span><span style="color: #ae81ff">1</span> <span style="color: #f8f8f2">&amp;</span>
+/opt/smart-home/node/node-linux-amd64 &gt; /dev/null 2&gt;<span style="color: #f8f8f2">&amp;</span><span style="color: #ae81ff">1</span> <span style="color: #f8f8f2">&amp;</span>
+</pre></div>
+
+
+    <ul>
+        <li><strong>nohup</strong> - команда будет продолжать выполняться в фоновом режиме и после того, как пользователь выйдет из системы</li>
+        <li><strong>> /dev/null</strong> - выводить все сообщения в данное устройство</li>
+        <li><strong>2>&1</strong> - вывод ошибок в стандартный поток</li>
+        <li><strong>&</strong> - запуск в фоновом режиме</li>
+    </ul>
+
+</div>
+
+<div class="docs-section">
+
+    <div class="boc-callout boc-callout-danger">
+        <h4>Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы</h4>
+    </div>
+
+</div>
+
+<div class="docs-section">
+
+    <h2 id="install-from-source">Сборка из исходного кода</h2>
+
+    <div class="boc-callout boc-callout-info">
+        <h4>Извините Раздел в разработке</h4>
+    </div>
+
+
+</div>
+
+                            
+                        
+                    </div>
+
+                    <div class="col-md-3 hidden-sm hidden-xs">
+                        
+                            <!-- getting_started_menu menu -->
+<nav class="bs-docs-sidebar bd-sidebar" id="docsNavbarContent">
+    <ul class="nav">
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#overview">
+                Обзор
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#requirements">
+                Системные требования
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#download">
+                Загрузка
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#whats-included">
+                Что входит в пакеты
+            </a>
+            <ul class="nav bd-sidenav">
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#server">
+                        Сервер
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#configurator">
+                        Конфигуратор
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#node">
+                        Нода
+                    </a>
+                </li>
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#install">
+                Установка
+            </a>
+            <ul class="nav bd-sidenav">
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-mkdir">
+                        Создание директорий
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-download-and-unpack">
+                        Скачивание и распаковка
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-server-conf">
+                        Настройка сервера
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-configuration-conf">
+                        Настройка конфигуратора
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-node-conf">
+                        Настройка ноды
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-mysql">
+                        База mysql
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-exec">
+                        Запуск
+                    </a>
+                </li>
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#install-from-source">
+                Сборка из исходного кода
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+    </ul>
+</nav>
+
+                        
+                    </div>
+
+                </div>
+            </div>
+        </aside>
+
+        
+        <!-- footer -->
+<footer class="footer">
+    <div class="container">
+
+        <ul>
+
+            
+
+            <li>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
+            </li>
+            
+
+            <li>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+            </li>
+            
+
+            <li>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/api">api</a>
+            </li>
+            
+
+            
+            
+            <li>
+                <a href="https://e154.github.io/smart-home/en/getting-started">en</a>
+            </li>
+            
+            
+
+        </ul>
+
+        
+        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        
+
+    </div>
+</footer>
+        
+
+        <!-- jQuery -->
+<script src="https://e154.github.io/smart-home/js/jquery.min.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="https://e154.github.io/smart-home/js/bootstrap.min.js"></script>
+<!-- Plugin JavaScript -->
+<script src="https://e154.github.io/smart-home/js/jquery.easing.min.js"></script>
+<script src="https://e154.github.io/smart-home/js/jquery.fittext.js"></script>
+<script src="https://e154.github.io/smart-home/js/scrollreveal.min.js"></script>
+<script src="https://e154.github.io/smart-home/js/wow.min.js"></script>
+<script src="https://e154.github.io/smart-home/js/jquery.magnific-popup.js"></script>
+<script src="https://e154.github.io/smart-home/js/anchor.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="https://e154.github.io/smart-home/js/scripts.min.js"></script>
+
+
+        
+    </body>
+</html>

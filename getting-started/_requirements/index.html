@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.19-DEV" />
+<title>Smart home</title>
+
+<!-- Favicon -->
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/bootstrap.min.css" type="text/css">
+<!-- Custom Fonts -->
+<link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+<link href='//fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://e154.github.io/smart-home/font-awesome/css/font-awesome.min.css" type="text/css">
+<!-- Plugin CSS -->
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/animate.min.css" type="text/css">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/style.css" type="text/css">
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/modals.css" type="text/css">
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/magnific-popup.css" type="text/css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+    </head>
+    <body id="page-top">
+        
+        <!-- main menu -->
+<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
+            
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+
+                
+                <li>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
+                </li>
+                
+                <li>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+                </li>
+                
+                <li>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/api">api</a>
+                </li>
+                
+
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+        
+
+        
+        <header class="getting-started">
+    <div class="header-content">
+        <div class="header-content-inner">
+            <h1>overview</h1>
+            
+        </div>
+    </div>
+</header>
+
+        
+
+        <aside class="getting-started">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9" role="main">
+                        
+                            <div class="docs-section">
+    <h2 id="requirements" class="page-header">Системные требования</h2>
+
+    <p>Поддерживаемые операционные системы:</p>
+    <ul>
+        <li><strong>macOS</strong> 386 10.6</li>
+        <li><strong>macOS</strong> amd64 10.6</li>
+        <li><strong>linux</strong> 386</li>
+        <li><strong>linux</strong> amd64</li>
+        <li><strong>linux</strong> arm-5</li>
+        <li><strong>linux</strong> arm-6</li>
+        <li><strong>linux</strong> arm-7</li>
+        <li><strong>linux</strong> arm-64</li>
+        <li><strong>linux</strong> mips64</li>
+        <li><strong>linux</strong> mips64le</li>
+        <li><strong>windows</strong> 386</li>
+        <li><strong>windows</strong> amd64</li>
+    </ul>
+
+    <p>Системные требования:</p>
+    <ul>
+        <li>50 MB RAM Минимальные</li>
+        <li>100 MB RAM Рекомендуемые</li>
+    </ul>
+
+</div>
+
+
+<div class="docs-section">
+
+    <div class="boc-callout boc-callout-info">
+        <h4>Для работы серверов не требуется запуск графической оболочки</h4>
+    </div>
+
+
+</div>
+
+<div class="docs-section">
+    <h2 id="download" class="page-header">Загрузка</h2>
+
+    <p>Готовые архиве содержат все исполняемые фйлы под все поддерживаемые архитектуры и операционные системы.</p>
+
+    <div class="row download-block">
+        <div class="col-md-4 download-item text-center">
+            <h3>Сервер</h3>
+            <p class="text-muted">Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.</p>
+            <a id="smart-home-server" href="https://github.com/e154/smart-home/releases" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+        </div>
+        <div class="col-md-4 download-item text-center">
+            <h3>Конфигуратор</h3>
+            <p class="text-muted">Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.</p>
+            <a id="smart-home-configurator" href="https://github.com/e154/smart-home-configurator/releases" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+        </div>
+        <div class="col-md-4 download-item text-center">
+            <h3>Нода</h3>
+            <p class="text-muted">Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.</p>
+            <a id="smart-home-node" href="https://github.com/e154/smart-home-node/releases" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+        </div>
+    </div>
+</div>
+
+<div class="docs-section">
+    <h2 id="whats-included">Что входит в пакеты</h2>
+
+    <h3 id="server">Сервер</h3>
+
+    <p>Список файлов в корне архива.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">├── conf
+├── contributors.txt
+├── data
+├── dump.sql
+├── LICENSE
+├── README.md
+├── server-darwin-10.6-386
+├── server-darwin-10.6-amd64
+├── server-linux-386
+├── server-linux-amd64
+├── server-linux-arm-5
+├── server-linux-arm-6
+├── server-linux-arm64
+├── server-linux-arm-7
+├── server-linux-mips64
+├── server-linux-mips64le
+├── server-windows-4.0-386.exe
+└── server-windows-4.0-amd64.exe
+</pre></div>
+
+
+
+    <ul class="list-unstyled">
+        <li><strong>conf</strong> - директория конфигурационных файлов</li>
+        <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
+        <li><strong>data</strong> - директория хранения рабочих файлов иконки, изображения</li>
+        <li><strong>dump.sql</strong> - дамп sql базы данных</li>
+        <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
+        <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
+        <li><strong>server-*</strong> - Платформо зависимый исполняемый файл</li>
+    </ul>
+
+    <h3 id="configurator">Конфигуратор</h3>
+
+    <p>Список файлов в корне архива.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">├── build
+├── conf
+├── views
+├── configurator-darwin-10.6-386
+├── configurator-darwin-10.6-amd64
+├── configurator-linux-386
+├── configurator-linux-amd64
+├── configurator-linux-arm-5
+├── configurator-linux-arm-6
+├── configurator-linux-arm64
+├── configurator-linux-arm-7
+├── configurator-linux-mips64
+├── configurator-linux-mips64le
+├── configurator-windows-4.0-386.exe
+├── configurator-windows-4.0-amd64.exe
+├── contributors.txt
+├── LICENSE
+└── README.md
+</pre></div>
+
+
+    <ul class="list-unstyled">
+        <li><strong>build</strong> - директория фронтенд приложения</li>
+        <li><strong>conf</strong> - директория конфигурационных файлов</li>
+        <li><strong>views</strong> - директория html шаблонов страниц входа,выхода,восстановления пароля</li>
+        <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
+        <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
+        <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
+        <li><strong>configurator-*</strong> - Платформо зависимый исполняемый файл</li>
+    </ul>
+
+    <h3 id="node">Нода</h3>
+
+    <p>Список файлов в корне архива.</p>
+
+<div class="highlight" style="background: #272822"><pre style="line-height: 125%">├── conf
+├── contributors.txt
+├── LICENSE
+├── node-darwin-10.6-386
+├── node-darwin-10.6-amd64
+├── node-linux-386
+├── node-linux-amd64
+├── node-linux-arm-5
+├── node-linux-arm-6
+├── node-linux-arm64
+├── node-linux-arm-7
+├── node-linux-mips64
+├── node-linux-mips64le
+├── node-windows-4.0-386.exe
+├── node-windows-4.0-amd64.exe
+└── README.md
+</pre></div>
+
+
+    <ul class="list-unstyled">
+        <li><strong>conf</strong> - директория конфигурационных файлов</li>
+        <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
+        <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
+        <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
+        <li><strong>node-*</strong> - Платформо зависимый исполняемый файл</li>
+    </ul>
+</div>
+
+
+                        
+                    </div>
+
+                    <div class="col-md-3 hidden-sm hidden-xs">
+                        
+                            <!-- getting_started_menu menu -->
+<nav class="bs-docs-sidebar bd-sidebar" id="docsNavbarContent">
+    <ul class="nav">
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#overview">
+                Обзор
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#requirements">
+                Системные требования
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#download">
+                Загрузка
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#whats-included">
+                Что входит в пакеты
+            </a>
+            <ul class="nav bd-sidenav">
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#server">
+                        Сервер
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#configurator">
+                        Конфигуратор
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#node">
+                        Нода
+                    </a>
+                </li>
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#install">
+                Установка
+            </a>
+            <ul class="nav bd-sidenav">
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-mkdir">
+                        Создание директорий
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-download-and-unpack">
+                        Скачивание и распаковка
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-server-conf">
+                        Настройка сервера
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-configuration-conf">
+                        Настройка конфигуратора
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-node-conf">
+                        Настройка ноды
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-mysql">
+                        База mysql
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-exec">
+                        Запуск
+                    </a>
+                </li>
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#install-from-source">
+                Сборка из исходного кода
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+    </ul>
+</nav>
+
+                        
+                    </div>
+
+                </div>
+            </div>
+        </aside>
+
+        
+        <!-- footer -->
+<footer class="footer">
+    <div class="container">
+
+        <ul>
+
+            
+
+            <li>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
+            </li>
+            
+
+            <li>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+            </li>
+            
+
+            <li>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/api">api</a>
+            </li>
+            
+
+            
+
+        </ul>
+
+        
+        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        
+
+    </div>
+</footer>
+        
+
+        <!-- jQuery -->
+<script src="https://e154.github.io/smart-home/js/jquery.min.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="https://e154.github.io/smart-home/js/bootstrap.min.js"></script>
+<!-- Plugin JavaScript -->
+<script src="https://e154.github.io/smart-home/js/jquery.easing.min.js"></script>
+<script src="https://e154.github.io/smart-home/js/jquery.fittext.js"></script>
+<script src="https://e154.github.io/smart-home/js/scrollreveal.min.js"></script>
+<script src="https://e154.github.io/smart-home/js/wow.min.js"></script>
+<script src="https://e154.github.io/smart-home/js/jquery.magnific-popup.js"></script>
+<script src="https://e154.github.io/smart-home/js/anchor.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="https://e154.github.io/smart-home/js/scripts.min.js"></script>
+
+
+        
+    </body>
+</html>

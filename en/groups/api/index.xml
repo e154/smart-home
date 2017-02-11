@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Api on Smart home</title>
+    <link>https://e154.github.io/smart-home/en/groups/api/index.xml</link>
+    <description>Recent content in Api on Smart home</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ru</language>
+    <atom:link href="https://e154.github.io/smart-home/en/groups/api/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/en/api/_overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/api/_overview/</guid>
+      <description>&lt;p&gt;section is at the stage of translation&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
