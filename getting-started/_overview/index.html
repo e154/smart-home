@@ -23,11 +23,6 @@
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/style.css" type="text/css">
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/modals.css" type="text/css">
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/magnific-popup.css" type="text/css">
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css">
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-
-
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -106,45 +101,44 @@
         <aside class="getting-started">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-9" role="main">
+                    <div class="col-md-9 docs-section" role="main">
                         
-                            <div class="docs-section">
-    <h2 id="overview" class="page-header">Обзор</h2>
+                            <h2 id="overview" class="page-header">Обзор</h2>
 
-    <p><strong>Система умного дома</strong> имеет модульную структуру, и состоит из следующих частей:</p>
-    <ul class="list-unstyled">
-        <li><strong>Сервер</strong> - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
-            исполнение процессов, логирование, оповещенние, реагирование на события по заложенному сценарию.</li>
-        <li><strong>Конфигуратор</strong> - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
-            систему под свои нужды, требуется как првило на этапе конфигурации.</li>
-        <li><strong>Нода</strong> - посредник связи сервера с активными устройствами, позволяет связать один сервер с
-            множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
-            Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
-            по требованию сценария, либо доступности последней.</li>
-        <li><strong>Монитор</strong>(в разработке) - мобильное клиентское приложение android, ios.</li>
-    </ul>
+<p><strong>Система умного дома</strong> имеет модульную структуру, и состоит из следующих частей:</p>
 
-    <p>Для работы <strong>системы умного дома</strong> требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
-        нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.</p>
+<p><strong>Сервер</strong> - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
+        исполнение процессов, логирование, оповещенние, реагирование на события по заложенному сценарию.</p>
 
-    <p>На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
-        В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
-        создайте реквест с предложением в репозиторий <a href="https://github.com/e154/smart-home">Сервер</a>, <a href="https://github.com/e154/smart-home-node">Нода</a>.
+<p><strong>Конфигуратор</strong> - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
+        систему под свои нужды, требуется как првило на этапе конфигурации.</p>
 
-        Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
-        со схемой и программой прошивки для <strong>AVR mega 168pu</strong> управляющего розетой, легко поддающееся модификации под более сложные задачи можно
-        посмотреть в репозитории - <a href="https://github.com/e154/smart-home-socket">пример устройства управления розеткой</a>.
-    </p>
+<p><strong>Нода</strong> - посредник связи сервера с активными устройствами, позволяет связать один сервер с
+        множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
+        Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
+        по требованию сценария, либо доступности последней.</p>
 
-    <p>Схематичная сеть <strong>системы умного дома</strong>:</p>
+<p><strong>Монитор</strong>(в разработке) - мобильное клиентское приложение android, ios.</p>
 
-    <img src="/smart-home/img/default_network.png" title="Схематичная сеть умного дома" alt="Схематичная сеть умного дома">
-</div>
+<p>Для работы <strong>системы умного дома</strong> требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
+нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.</p>
+
+<p>На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
+В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
+создайте реквест с предложением в репозиторий <a href="https://github.com/e154/smart-home">Сервер</a>, <a href="https://github.com/e154/smart-home-node">Нода</a>.</p>
+
+<p>Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
+со схемой и программой прошивки для <strong>AVR mega 168pu</strong> управляющего розетой, легко поддающееся модификации под более сложные задачи можно
+посмотреть в репозитории - <a href="https://github.com/e154/smart-home-socket">пример устройства управления розеткой</a>.</p>
+
+<p>Схематичная сеть <strong>системы умного дома</strong>:</p>
+
+<p><img src="/smart-home/img/default_network.png" alt="Схематичная сеть умного дома" title="Схематичная сеть умного дома" /></p>
 
                         
                     </div>
 
-                    <div class="col-md-3 hidden-sm hidden-xs">
+                    <div class="col-md-3 hidden-sm hidden-xs nav-bar-column">
                         
                             <!-- getting_started_menu menu -->
 <nav class="bs-docs-sidebar bd-sidebar" id="docsNavbarContent">
@@ -331,6 +325,8 @@
 <script src="https://e154.github.io/smart-home/js/wow.min.js"></script>
 <script src="https://e154.github.io/smart-home/js/jquery.magnific-popup.js"></script>
 <script src="https://e154.github.io/smart-home/js/anchor.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 
 <!-- Custom Theme JavaScript -->
 <script src="https://e154.github.io/smart-home/js/scripts.min.js"></script>

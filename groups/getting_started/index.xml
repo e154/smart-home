@@ -14,38 +14,37 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/getting-started/_overview/</guid>
-      <description>&lt;div class=&#34;docs-section&#34;&gt;
-    &lt;h2 id=&#34;overview&#34; class=&#34;page-header&#34;&gt;Обзор&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;overview&#34; class=&#34;page-header&#34;&gt;Обзор&lt;/h2&gt;
 
-    &lt;p&gt;&lt;strong&gt;Система умного дома&lt;/strong&gt; имеет модульную структуру, и состоит из следующих частей:&lt;/p&gt;
-    &lt;ul class=&#34;list-unstyled&#34;&gt;
-        &lt;li&gt;&lt;strong&gt;Сервер&lt;/strong&gt; - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
-            исполнение процессов, логирование, оповещенние, реагирование на события по заложенному сценарию.&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;Конфигуратор&lt;/strong&gt; - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
-            систему под свои нужды, требуется как првило на этапе конфигурации.&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;Нода&lt;/strong&gt; - посредник связи сервера с активными устройствами, позволяет связать один сервер с
-            множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
-            Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
-            по требованию сценария, либо доступности последней.&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;Монитор&lt;/strong&gt;(в разработке) - мобильное клиентское приложение android, ios.&lt;/li&gt;
-    &lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Система умного дома&lt;/strong&gt; имеет модульную структуру, и состоит из следующих частей:&lt;/p&gt;
 
-    &lt;p&gt;Для работы &lt;strong&gt;системы умного дома&lt;/strong&gt; требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
-        нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Сервер&lt;/strong&gt; - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
+        исполнение процессов, логирование, оповещенние, реагирование на события по заложенному сценарию.&lt;/p&gt;
 
-    &lt;p&gt;На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
-        В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
-        создайте реквест с предложением в репозиторий &lt;a href=&#34;https://github.com/e154/smart-home&#34;&gt;Сервер&lt;/a&gt;, &lt;a href=&#34;https://github.com/e154/smart-home-node&#34;&gt;Нода&lt;/a&gt;.
+&lt;p&gt;&lt;strong&gt;Конфигуратор&lt;/strong&gt; - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
+        систему под свои нужды, требуется как првило на этапе конфигурации.&lt;/p&gt;
 
-        Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
-        со схемой и программой прошивки для &lt;strong&gt;AVR mega 168pu&lt;/strong&gt; управляющего розетой, легко поддающееся модификации под более сложные задачи можно
-        посмотреть в репозитории - &lt;a href=&#34;https://github.com/e154/smart-home-socket&#34;&gt;пример устройства управления розеткой&lt;/a&gt;.
-    &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Нода&lt;/strong&gt; - посредник связи сервера с активными устройствами, позволяет связать один сервер с
+        множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
+        Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
+        по требованию сценария, либо доступности последней.&lt;/p&gt;
 
-    &lt;p&gt;Схематичная сеть &lt;strong&gt;системы умного дома&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Монитор&lt;/strong&gt;(в разработке) - мобильное клиентское приложение android, ios.&lt;/p&gt;
 
-    &lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/default_network.png&#34; title=&#34;Схематичная сеть умного дома&#34; alt=&#34;Схематичная сеть умного дома&#34;&gt;
-&lt;/div&gt;
+&lt;p&gt;Для работы &lt;strong&gt;системы умного дома&lt;/strong&gt; требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
+нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.&lt;/p&gt;
+
+&lt;p&gt;На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
+В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
+создайте реквест с предложением в репозиторий &lt;a href=&#34;https://github.com/e154/smart-home&#34;&gt;Сервер&lt;/a&gt;, &lt;a href=&#34;https://github.com/e154/smart-home-node&#34;&gt;Нода&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
+со схемой и программой прошивки для &lt;strong&gt;AVR mega 168pu&lt;/strong&gt; управляющего розетой, легко поддающееся модификации под более сложные задачи можно
+посмотреть в репозитории - &lt;a href=&#34;https://github.com/e154/smart-home-socket&#34;&gt;пример устройства управления розеткой&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Схематичная сеть &lt;strong&gt;системы умного дома&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/default_network.png&#34; alt=&#34;Схематичная сеть умного дома&#34; title=&#34;Схематичная сеть умного дома&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     
@@ -55,76 +54,66 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/getting-started/_requirements/</guid>
-      <description>&lt;div class=&#34;docs-section&#34;&gt;
-    &lt;h2 id=&#34;requirements&#34; class=&#34;page-header&#34;&gt;Системные требования&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;requirements&#34; class=&#34;page-header&#34;&gt;Системные требования&lt;/h2&gt;
 
-    &lt;p&gt;Поддерживаемые операционные системы:&lt;/p&gt;
-    &lt;ul&gt;
-        &lt;li&gt;&lt;strong&gt;macOS&lt;/strong&gt; 386 10.6&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;macOS&lt;/strong&gt; amd64 10.6&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; 386&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; amd64&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; arm-5&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; arm-6&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; arm-7&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; arm-64&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; mips64&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;linux&lt;/strong&gt; mips64le&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;windows&lt;/strong&gt; 386&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;windows&lt;/strong&gt; amd64&lt;/li&gt;
-    &lt;/ul&gt;
+&lt;p&gt;Поддерживаемые операционные системы:&lt;/p&gt;
 
-    &lt;p&gt;Системные требования:&lt;/p&gt;
-    &lt;ul&gt;
-        &lt;li&gt;50 MB RAM Минимальные&lt;/li&gt;
-        &lt;li&gt;100 MB RAM Рекомендуемые&lt;/li&gt;
-    &lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;qwe&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;macOS 386 10.6&lt;/li&gt;
+&lt;li&gt;macOS amd64 10.6&lt;/li&gt;
+&lt;li&gt;linux 386&lt;/li&gt;
+&lt;li&gt;linux amd64&lt;/li&gt;
+&lt;li&gt;linux arm-5&lt;/li&gt;
+&lt;li&gt;linux arm-6&lt;/li&gt;
+&lt;li&gt;linux arm-7&lt;/li&gt;
+&lt;li&gt;linux arm-64&lt;/li&gt;
+&lt;li&gt;linux mips64&lt;/li&gt;
+&lt;li&gt;linux mips64le&lt;/li&gt;
+&lt;li&gt;windows 386&lt;/li&gt;
+&lt;li&gt;windows amd64&lt;/li&gt;
+&lt;/ul&gt;
 
+&lt;p&gt;Системные требования:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;50 MB RAM Минимальные&lt;/li&gt;
+&lt;li&gt;100 MB RAM Рекомендуемые&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&#34;boc-callout boc-callout-info&#34;&gt;
+    &lt;h4&gt;Для работы серверов не требуется запуск графической оболочки&lt;/h4&gt;
 &lt;/div&gt;
 
+&lt;h2 id=&#34;download&#34; class=&#34;page-header&#34;&gt;Загрузка&lt;/h2&gt;
 
-&lt;div class=&#34;docs-section&#34;&gt;
+&lt;p&gt;Готовые архиве содержат все исполняемые фйлы под все поддерживаемые архитектуры и операционные системы.&lt;/p&gt;
 
-    &lt;div class=&#34;boc-callout boc-callout-info&#34;&gt;
-        &lt;h4&gt;Для работы серверов не требуется запуск графической оболочки&lt;/h4&gt;
+&lt;div class=&#34;row download-block&#34;&gt;
+    &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
+        &lt;h3&gt;Сервер&lt;/h3&gt;
+        &lt;p class=&#34;text-muted&#34;&gt;Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.&lt;/p&gt;
+        &lt;a id=&#34;smart-home-server&#34; href=&#34;https://github.com/e154/smart-home/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
     &lt;/div&gt;
-
-
-&lt;/div&gt;
-
-&lt;div class=&#34;docs-section&#34;&gt;
-    &lt;h2 id=&#34;download&#34; class=&#34;page-header&#34;&gt;Загрузка&lt;/h2&gt;
-
-    &lt;p&gt;Готовые архиве содержат все исполняемые фйлы под все поддерживаемые архитектуры и операционные системы.&lt;/p&gt;
-
-    &lt;div class=&#34;row download-block&#34;&gt;
-        &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
-            &lt;h3&gt;Сервер&lt;/h3&gt;
-            &lt;p class=&#34;text-muted&#34;&gt;Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.&lt;/p&gt;
-            &lt;a id=&#34;smart-home-server&#34; href=&#34;https://github.com/e154/smart-home/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
-        &lt;/div&gt;
-        &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
-            &lt;h3&gt;Конфигуратор&lt;/h3&gt;
-            &lt;p class=&#34;text-muted&#34;&gt;Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.&lt;/p&gt;
-            &lt;a id=&#34;smart-home-configurator&#34; href=&#34;https://github.com/e154/smart-home-configurator/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
-        &lt;/div&gt;
-        &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
-            &lt;h3&gt;Нода&lt;/h3&gt;
-            &lt;p class=&#34;text-muted&#34;&gt;Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.&lt;/p&gt;
-            &lt;a id=&#34;smart-home-node&#34; href=&#34;https://github.com/e154/smart-home-node/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
-        &lt;/div&gt;
+    &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
+        &lt;h3&gt;Конфигуратор&lt;/h3&gt;
+        &lt;p class=&#34;text-muted&#34;&gt;Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.&lt;/p&gt;
+        &lt;a id=&#34;smart-home-configurator&#34; href=&#34;https://github.com/e154/smart-home-configurator/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
+        &lt;h3&gt;Нода&lt;/h3&gt;
+        &lt;p class=&#34;text-muted&#34;&gt;Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.&lt;/p&gt;
+        &lt;a id=&#34;smart-home-node&#34; href=&#34;https://github.com/e154/smart-home-node/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 
-&lt;div class=&#34;docs-section&#34;&gt;
-    &lt;h2 id=&#34;whats-included&#34;&gt;Что входит в пакеты&lt;/h2&gt;
+&lt;h2 id=&#34;whats-included&#34;&gt;Что входит в пакеты&lt;/h2&gt;
 
-    &lt;h3 id=&#34;server&#34;&gt;Сервер&lt;/h3&gt;
+&lt;h3 id=&#34;server&#34;&gt;Сервер&lt;/h3&gt;
 
-    &lt;p&gt;Список файлов в корне архива.&lt;/p&gt;
+&lt;p&gt;Список файлов в корне архива.&lt;/p&gt;
 
-
-├── conf
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;├── conf
 ├── contributors.txt
 ├── data
 ├── dump.sql
@@ -142,25 +131,23 @@
 ├── server-linux-mips64le
 ├── server-windows-4.0-386.exe
 └── server-windows-4.0-amd64.exe
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;conf&lt;/strong&gt; - директория конфигурационных файлов&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;contributors.txt&lt;/strong&gt; - текстовый файл, список разработчиков системы умный дом&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;data&lt;/strong&gt; - директория хранения рабочих файлов иконки, изображения&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;dump.sql&lt;/strong&gt; - дамп sql базы данных&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LICENSE&lt;/strong&gt; - текстовый файл лицензионного соглашения&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;README.md&lt;/strong&gt; - текстовый файл краткой вводной информации&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;server-&lt;/strong&gt; - Платформо зависимый исполняемый файл&lt;/li&gt;
+&lt;/ul&gt;
 
+&lt;h3 id=&#34;configurator&#34;&gt;Конфигуратор&lt;/h3&gt;
 
-    &lt;ul class=&#34;list-unstyled&#34;&gt;
-        &lt;li&gt;&lt;strong&gt;conf&lt;/strong&gt; - директория конфигурационных файлов&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;contributors.txt&lt;/strong&gt; - текстовый файл, список разработчиков системы умный дом&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;data&lt;/strong&gt; - директория хранения рабочих файлов иконки, изображения&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;dump.sql&lt;/strong&gt; - дамп sql базы данных&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;LICENSE&lt;/strong&gt; - текстовый файл лицензионного соглашения&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;README.md&lt;/strong&gt; - текстовый файл краткой вводной информации&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;server-*&lt;/strong&gt; - Платформо зависимый исполняемый файл&lt;/li&gt;
-    &lt;/ul&gt;
+&lt;p&gt;Список файлов в корне архива.&lt;/p&gt;
 
-    &lt;h3 id=&#34;configurator&#34;&gt;Конфигуратор&lt;/h3&gt;
-
-    &lt;p&gt;Список файлов в корне архива.&lt;/p&gt;
-
-
-├── build
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;├── build
 ├── conf
 ├── views
 ├── configurator-darwin-10.6-386
@@ -178,24 +165,23 @@
 ├── contributors.txt
 ├── LICENSE
 └── README.md
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;build&lt;/strong&gt; - директория фронтенд приложения&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;conf&lt;/strong&gt; - директория конфигурационных файлов&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;views&lt;/strong&gt; - директория html шаблонов страниц входа,выхода,восстановления пароля&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LICENSE&lt;/strong&gt; - текстовый файл лицензионного соглашения&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;README.md&lt;/strong&gt; - текстовый файл краткой вводной информации&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;contributors.txt&lt;/strong&gt; - текстовый файл, список разработчиков системы умный дом&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;configurator-&lt;/strong&gt; - Платформо зависимый исполняемый файл&lt;/li&gt;
+&lt;/ul&gt;
 
-    &lt;ul class=&#34;list-unstyled&#34;&gt;
-        &lt;li&gt;&lt;strong&gt;build&lt;/strong&gt; - директория фронтенд приложения&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;conf&lt;/strong&gt; - директория конфигурационных файлов&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;views&lt;/strong&gt; - директория html шаблонов страниц входа,выхода,восстановления пароля&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;LICENSE&lt;/strong&gt; - текстовый файл лицензионного соглашения&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;README.md&lt;/strong&gt; - текстовый файл краткой вводной информации&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;contributors.txt&lt;/strong&gt; - текстовый файл, список разработчиков системы умный дом&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;configurator-*&lt;/strong&gt; - Платформо зависимый исполняемый файл&lt;/li&gt;
-    &lt;/ul&gt;
+&lt;h3 id=&#34;node&#34;&gt;Нода&lt;/h3&gt;
 
-    &lt;h3 id=&#34;node&#34;&gt;Нода&lt;/h3&gt;
+&lt;p&gt;Список файлов в корне архива.&lt;/p&gt;
 
-    &lt;p&gt;Список файлов в корне архива.&lt;/p&gt;
-
-
-├── conf
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;├── conf
 ├── contributors.txt
 ├── LICENSE
 ├── node-darwin-10.6-386
@@ -211,17 +197,16 @@
 ├── node-windows-4.0-386.exe
 ├── node-windows-4.0-amd64.exe
 └── README.md
+&lt;/code&gt;&lt;/pre&gt;
 
-
-    &lt;ul class=&#34;list-unstyled&#34;&gt;
-        &lt;li&gt;&lt;strong&gt;conf&lt;/strong&gt; - директория конфигурационных файлов&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;LICENSE&lt;/strong&gt; - текстовый файл лицензионного соглашения&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;README.md&lt;/strong&gt; - текстовый файл краткой вводной информации&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;contributors.txt&lt;/strong&gt; - текстовый файл, список разработчиков системы умный дом&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;node-*&lt;/strong&gt; - Платформо зависимый исполняемый файл&lt;/li&gt;
-    &lt;/ul&gt;
-&lt;/div&gt;
-
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;conf&lt;/strong&gt; - директория конфигурационных файлов&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LICENSE&lt;/strong&gt; - текстовый файл лицензионного соглашения&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;README.md&lt;/strong&gt; - текстовый файл краткой вводной информации&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;contributors.txt&lt;/strong&gt; - текстовый файл, список разработчиков системы умный дом&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;node-&lt;/strong&gt; - Платформо зависимый исполняемый файл
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
@@ -231,246 +216,223 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/getting-started/_install/</guid>
-      <description>&lt;div class=&#34;docs-section&#34;&gt;
-    &lt;h2 id=&#34;install&#34;&gt;Установка&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;install&#34;&gt;Установка&lt;/h2&gt;
 
-    &lt;p&gt;Будет произведена базовая установка системы &lt;strong&gt;Умный дом&lt;/strong&gt; на сервер под операционной системой linux Debian.
-        С не большими изменениями установка будет схожа и для других операционных систем.&lt;/p&gt;
+&lt;p&gt;Будет произведена базовая установка системы &lt;strong&gt;Умный дом&lt;/strong&gt; на сервер под операционной системой linux Debian.
+    С не большими изменениями установка будет схожа и для других операционных систем.&lt;/p&gt;
 
-    &lt;p&gt;План действий:&lt;/p&gt;
+&lt;p&gt;План действий:&lt;/p&gt;
 
-    &lt;ul&gt;
-        &lt;li&gt;&lt;a href=&#34;#install-mkdir&#34;&gt;Создание директорий&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&#34;#install-download-and-unpack&#34;&gt;Скачивание и распаковка&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&#34;#install-server-conf&#34;&gt;Настройка сервера&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&#34;#install-configuration-conf&#34;&gt;Настройка конфигуратора&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&#34;#install-node-conf&#34;&gt;Настройка ноды&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&#34;#install-mysql&#34;&gt;База mysql&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#install-mkdir&#34;&gt;Создание директорий&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#install-download-and-unpack&#34;&gt;Скачивание и распаковка&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#install-server-conf&#34;&gt;Настройка сервера&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#install-configuration-conf&#34;&gt;Настройка конфигуратора&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#install-node-conf&#34;&gt;Настройка ноды&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#install-mysql&#34;&gt;База mysql&lt;/a&gt;
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-    &lt;p&gt;&lt;/p&gt;
-
-    &lt;div class=&#34;row&#34;&gt;
-        &lt;div class=&#34;col-md-6&#34;&gt;
-            &lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/default_network2.png&#34; title=&#34;Схематичная сеть умного дома&#34; alt=&#34;Схематичная сеть умного дома&#34;&gt;
-        &lt;/div&gt;
+&lt;div class=&#34;row&#34;&gt;
+    &lt;div class=&#34;col-md-6&#34;&gt;
+        ![Схематичная сеть умного дома](/smart-home/img/default_network2.png &#34;Схематичная сеть умного дома&#34;)
     &lt;/div&gt;
+&lt;/div&gt;
 
+&lt;p&gt;Информация о системе на которой производилось тестовое развёртывание:&lt;/p&gt;
 
-    &lt;p&gt;Информация о системе на которой производилось тестовое развёртывание:&lt;/p&gt;
-
-
-delta54@darkstar:tmp$ uname -a
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;delta54@darkstar:tmp$ uname -a
 Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;delta54@darkstar:tmp$ cat /etc/*release*
+PRETTY_NAME=&amp;quot;Debian GNU/Linux 8 (jessie)&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;h3 id=&#34;install-mkdir&#34;&gt;Создание директорий&lt;/h3&gt;
 
-delta54@darkstar:tmp$ cat /etc/*release*
-PRETTY_NAME=&#34;Debian GNU/Linux 8 (jessie)&#34;
+&lt;p&gt;Рекомендуемая директория установки сервера /opt/smart-home. Подготовьте директорию, укажите требуемые права доступа на директорию
+/opt/smart-home&lt;/p&gt;
 
-
-    &lt;h3 id=&#34;install-mkdir&#34;&gt;Создание директорий&lt;/h3&gt;
-
-    &lt;p&gt;Рекомендуемая директория установки сервера /opt/smart-home. Подготовьте директорию, укажите требуемые права доступа на директорию
-        /opt/smart-home
-    &lt;/p&gt;
-
-
-sudo mkdir -p /opt/smart-home
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo mkdir -p /opt/smart-home
 sudo chown $USER:$USER /opt/smart-home -R
 mkdir -p /opt/smart-home/server
 mkdir -p /opt/smart-home/configurator
 mkdir -p /opt/smart-home/node
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;h3 id=&#34;install-download-and-unpack&#34;&gt;Скачивание и распаковка&lt;/h3&gt;
 
-    &lt;h3 id=&#34;install-download-and-unpack&#34;&gt;Скачивание и распаковка&lt;/h3&gt;
+&lt;p&gt;Скачаем последний релиз сервер, и распакуем в директории &lt;strong&gt;server&lt;/strong&gt;&lt;/p&gt;
 
-    &lt;p&gt;Скачаем последний релиз сервер, и распакуем в директории &lt;strong&gt;server&lt;/strong&gt;&lt;/p&gt;
-
-
-cd /opt/smart-home/server
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/server
 wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
 tar -zxvf smart-home-server.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;В директории &lt;strong&gt;data&lt;/strong&gt; хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
+Вынесите директорию &lt;strong&gt;data&lt;/strong&gt; на один уровень выше.&lt;/p&gt;
 
-    &lt;p&gt;В директории &lt;strong&gt;data&lt;/strong&gt; хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
-        Вынесите директорию &lt;strong&gt;data&lt;/strong&gt; на один уровень выше.&lt;/p&gt;
-
-
-cd /opt/smart-home/server
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/server
 mv data ../
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;Тоже самое сделаем для конфигуратора, и ноды&lt;/p&gt;
 
-    &lt;p&gt;Тоже самое сделаем для конфигуратора, и ноды&lt;/p&gt;
-
-
-cd /opt/smart-home/configurator
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/configurator
 wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
 tar -zxvf smart-home-configurator.tar.gz
 cd /opt/smart-home/node
 wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
 tar -zxvf smart-home-node.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;В итоге мы должны получит следующую корневую структуру:&lt;/p&gt;
 
-    &lt;p&gt;В итоге мы должны получит следующую корневую структуру:&lt;/p&gt;
-
-
-cd /opt/smart-home
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home
+tree
 ├── data
 ├── node
 ├── configurator
 └── server
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;h3 id=&#34;install-server-conf&#34;&gt;Настройка сервера&lt;/h3&gt;
 
-    &lt;h3 id=&#34;install-server-conf&#34;&gt;Настройка сервера&lt;/h3&gt;
+&lt;p&gt;Важные переменные в конфигурационном файле серевера:&lt;/p&gt;
 
-    &lt;p&gt;Важные переменные в конфигурационном файле серевера:&lt;/p&gt;
-    &lt;ul&gt;
-        &lt;li&gt;&lt;strong&gt;httpaddr&lt;/strong&gt; - адрес сервера REST API&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;httpport&lt;/strong&gt; - порт сервера REST API&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;data_dir&lt;/strong&gt; - директория хранения общих файлов&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;db_user&lt;/strong&gt; - пользователь для соединени mysql&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;db_pass&lt;/strong&gt; - пароль доступка к mysql&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;db_host&lt;/strong&gt; - адрес сервера mysql&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;db_name&lt;/strong&gt; - название базы mysql&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;db_port&lt;/strong&gt; - порт сервера mysql&lt;/li&gt;
-    &lt;/ul&gt;
-    &lt;p&gt;Отредактируйте переменную &lt;strong&gt;httpaddr&lt;/strong&gt; в /opt/smart-home/server/conf/app.conf,
-        адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;httpaddr&lt;/strong&gt; - адрес сервера REST API&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;httpport&lt;/strong&gt; - порт сервера REST API&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;data_dir&lt;/strong&gt; - директория хранения общих файлов&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;db_user&lt;/strong&gt; - пользователь для соединени mysql&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;db_pass&lt;/strong&gt; - пароль доступка к mysql&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;db_host&lt;/strong&gt; - адрес сервера mysql&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;db_name&lt;/strong&gt; - название базы mysql&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;db_port&lt;/strong&gt; - порт сервера mysql
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
+&lt;p&gt;Отредактируйте переменную &lt;strong&gt;httpaddr&lt;/strong&gt; в /opt/smart-home/server/conf/app.conf,
+адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.&lt;/p&gt;
 
-httpaddr = &#34;0.0.0.0&#34;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;httpaddr = &amp;quot;0.0.0.0&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;По желанию отредактируйте переменную &lt;strong&gt;httpport&lt;/strong&gt; в /opt/smart-home/server/conf/prod/app.conf,
+или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
+приложений.&lt;/p&gt;
 
-    &lt;p&gt;По желанию отредактируйте переменную &lt;strong&gt;httpport&lt;/strong&gt; в /opt/smart-home/server/conf/prod/app.conf,
-        или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
-        приложений.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;httpport = 3000
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
+или оставьте без изменений, и настройте базу в соответствии с установленными значениями.&lt;/p&gt;
 
-httpport = 3000
-
-
-    &lt;p&gt;Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
-        или оставьте без изменений, и настройте базу в соответствии с установленными значениями.&lt;/p&gt;
-
-
-db_user = smarthome
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;db_user = smarthome
 db_pass = smarthome
-db_host = &#34;127.0.0.1&#34;
+db_host = &amp;quot;127.0.0.1&amp;quot;
 db_name = smarthome
-db_port = &#34;3306&#34;
+db_port = &amp;quot;3306&amp;quot;
 db_type = mysql
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;h3 id=&#34;install-configuration-conf&#34;&gt;Настройка конфигуратора&lt;/h3&gt;
 
-    &lt;h3 id=&#34;install-configuration-conf&#34;&gt;Настройка конфигуратора&lt;/h3&gt;
+&lt;p&gt;Конфиг файлы конфигуратора лежат в директории /opt/smart-home/configurator/conf/
+Важные переменные:&lt;/p&gt;
 
-    &lt;p&gt;Конфиг файлы конфигуратора лежат в директории /opt/smart-home/configurator/conf/
-        Важные переменные:&lt;/p&gt;
-    &lt;ul&gt;
-        &lt;li&gt;&lt;strong&gt;httpaddr&lt;/strong&gt; - адрес веб интерфеса конфигуратора&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;httpport&lt;/strong&gt; - порт веб интерфеса конфигуратора&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;serveraddr&lt;/strong&gt; - порт сервера REST API&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;serverport&lt;/strong&gt; - порт сервера REST API&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;data_dir&lt;/strong&gt; - директория хранения общих файлов&lt;/li&gt;
-    &lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;httpaddr&lt;/strong&gt; - адрес веб интерфеса конфигуратора&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;httpport&lt;/strong&gt; - порт веб интерфеса конфигуратора&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;serveraddr&lt;/strong&gt; - порт сервера REST API&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;serverport&lt;/strong&gt; - порт сервера REST API&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;data_dir&lt;/strong&gt; - директория хранения общих файлов
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-    &lt;h3 id=&#34;install-node-conf&#34;&gt;Настройка ноды&lt;/h3&gt;
+&lt;h3 id=&#34;install-node-conf&#34;&gt;Настройка ноды&lt;/h3&gt;
 
-    &lt;p&gt;Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:&lt;/p&gt;
+&lt;p&gt;Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:&lt;/p&gt;
 
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cp /opt/smart-home/node/conf/node.sample.conf node.conf
+&lt;/code&gt;&lt;/pre&gt;
 
-cp /opt/smart-home/node/conf/node.sample.conf node.conf
-
-
-
-cat /opt/smart-home/node/conf/node.conf
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cat /opt/smart-home/node/conf/node.conf
 app_version=0.1.0
 ip=127.0.0.1
 port=3001
 baud=19200
 timeout=2
 stopbits=2
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;app_version&lt;/strong&gt; - версия внутреннего api ноды&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ip&lt;/strong&gt; - адрес ожидания соединения от сервера&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;port&lt;/strong&gt; - порт ожидания соединения от сервера&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;baud&lt;/strong&gt; - скорость работы порта ввода вывода, используется если с сервера пришёл запрос на
+        обращение к устройству, но baud не был указан&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;timeout&lt;/strong&gt; - используется при обработке ошибок связи с устройствами&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;stopbits&lt;/strong&gt; - стоп бит, используется в общении с устройствами
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-    &lt;ul&gt;
-        &lt;li&gt;&lt;strong&gt;app_version&lt;/strong&gt; - версия внутреннего api ноды&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;ip&lt;/strong&gt; - адрес ожидания соединения от сервера&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;port&lt;/strong&gt; - порт ожидания соединения от сервера&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;baud&lt;/strong&gt; - скорость работы порта ввода вывода, используется если с сервера пришёл запрос на
-            обращение к устройству, но baud не был указан&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;timeout&lt;/strong&gt; - используется при обработке ошибок связи с устройствами&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;stopbits&lt;/strong&gt; - стоп бит, используется в общении с устройствами&lt;/li&gt;
-    &lt;/ul&gt;
+&lt;h3 id=&#34;install-mysql&#34;&gt;База mysql&lt;/h3&gt;
 
-    &lt;h3 id=&#34;install-mysql&#34;&gt;База mysql&lt;/h3&gt;
+&lt;p&gt;Подключимся к консоли mysql, приготовьте пароль для рута:&lt;/p&gt;
 
-    &lt;p&gt;Подключимся к консоли mysql, приготовьте пароль для рута:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;mysql -u root -p
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;Создадим базу для сервера &lt;strong&gt;умного дома&lt;/strong&gt;:&lt;/p&gt;
 
-mysql -u root -p
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;CREATE DATABASE smarthome;
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;Создадим нового пользователя, и дадим права на доступ к базе &lt;strong&gt;smarthome&lt;/strong&gt; из консоли mysql&lt;/p&gt;
 
-    &lt;p&gt;Создадим базу для сервера &lt;strong&gt;умного дома&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;smarthome&lt;/strong&gt; - пользователь&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;smarthome&lt;/strong&gt; - пароль
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-
-CREATE DATABASE smarthome;
-
-
-    &lt;p&gt;Создадим нового пользователя, и дадим права на доступ к базе &lt;strong&gt;smarthome&lt;/strong&gt; из консоли mysql&lt;/p&gt;
-    &lt;ul&gt;
-        &lt;li&gt;&lt;strong&gt;smarthome&lt;/strong&gt; - пользователь&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;smarthome&lt;/strong&gt; - пароль&lt;/li&gt;
-    &lt;/ul&gt;
-
-
-CREATE USER &#39;smarthome&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;smarthome&#39;;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;CREATE USER &#39;smarthome&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;smarthome&#39;;
 GRANT ALL PRIVILEGES ON smarthome . * TO &#39;smarthome&#39;@&#39;localhost&#39;;
 FLUSH PRIVILEGES;
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;осталось импортировать базу&lt;/p&gt;
 
-    &lt;p&gt;осталось импортировать базу&lt;/p&gt;
-
-
-use smarthome
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;use smarthome
 source /opt/smart-home/server/dump.sql
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;h3 id=&#34;install-exec&#34;&gt;Запуск&lt;/h3&gt;
 
-    &lt;h3 id=&#34;install-exec&#34;&gt;Запуск&lt;/h3&gt;
+&lt;p&gt;Осталось запустить сервера в фоновом режиме&lt;/p&gt;
 
-    &lt;p&gt;Осталось запустить сервера в фоновом режиме&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;/opt/smart-home/server/server-linux-amd64 &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
+/opt/smart-home/configurator/configurator-linux-amd64 &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
+/opt/smart-home/node/node-linux-amd64 &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
 
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;nohup&lt;/strong&gt; - команда будет продолжать выполняться в фоновом режиме и после того, как пользователь выйдет из системы&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&amp;gt; /dev/null&lt;/strong&gt; - выводить все сообщения в данное устройство&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;2&amp;gt;&amp;amp;1&lt;/strong&gt; - вывод ошибок в стандартный поток&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&amp;amp;&lt;/strong&gt; - запуск в фоновом режиме&lt;/li&gt;
+&lt;/ul&gt;
 
-/opt/smart-home/server/server-linux-amd64 &gt; /dev/null 2&gt;&amp;1 &amp;
-/opt/smart-home/configurator/configurator-linux-amd64 &gt; /dev/null 2&gt;&amp;1 &amp;
-/opt/smart-home/node/node-linux-amd64 &gt; /dev/null 2&gt;&amp;1 &amp;
-
-
-    &lt;ul&gt;
-        &lt;li&gt;&lt;strong&gt;nohup&lt;/strong&gt; - команда будет продолжать выполняться в фоновом режиме и после того, как пользователь выйдет из системы&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;&gt; /dev/null&lt;/strong&gt; - выводить все сообщения в данное устройство&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;2&gt;&amp;1&lt;/strong&gt; - вывод ошибок в стандартный поток&lt;/li&gt;
-        &lt;li&gt;&lt;strong&gt;&amp;&lt;/strong&gt; - запуск в фоновом режиме&lt;/li&gt;
-    &lt;/ul&gt;
-
+&lt;div class=&#34;boc-callout boc-callout-danger&#34;&gt;
+    &lt;h4&gt;Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы&lt;/h4&gt;
 &lt;/div&gt;
 
-&lt;div class=&#34;docs-section&#34;&gt;
+&lt;h2 id=&#34;install-from-source&#34;&gt;Сборка из исходного кода&lt;/h2&gt;
 
-    &lt;div class=&#34;boc-callout boc-callout-danger&#34;&gt;
-        &lt;h4&gt;Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы&lt;/h4&gt;
-    &lt;/div&gt;
-
-&lt;/div&gt;
-
-&lt;div class=&#34;docs-section&#34;&gt;
-
-    &lt;h2 id=&#34;install-from-source&#34;&gt;Сборка из исходного кода&lt;/h2&gt;
-
-    &lt;div class=&#34;boc-callout boc-callout-info&#34;&gt;
-        &lt;h4&gt;Извините Раздел в разработке&lt;/h4&gt;
-    &lt;/div&gt;
-
-
+&lt;div class=&#34;boc-callout boc-callout-info&#34;&gt;
+    &lt;h4&gt;Извините Раздел в разработке&lt;/h4&gt;
 &lt;/div&gt;
 </description>
     </item>

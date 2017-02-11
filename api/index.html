@@ -23,11 +23,6 @@
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/style.css" type="text/css">
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/modals.css" type="text/css">
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/magnific-popup.css" type="text/css">
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css">
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-
-
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -171,188 +166,156 @@
 
                     
                         
-                            <div class="right">
+                            <h2 id="overview">Обзор</h2>
 
-<pre>
-<code class="language-json hljs">
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-</code>
-</pre>
+<p><strong>Smart home</strong> <strong>API</strong> позволяет управлять системой <strong>Smart home</strong>, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.</p>
 
-</div>
-
-<div class="middle">
-
-<h2 id="overview">Обзор</h2>
-
-<p><strong>Smart home</strong> <strong>API</strong> позволяет управлять системой <strong>Smart home</strong>, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.
-<strong>Smart home</strong> <strong>API</strong> организован на основе <strong>REST</strong> запросов по верх HTTP протокола. 
-Такая связка была выбрана исключительно из простоты поддержания, и разработки нового функционала. 
-Все запросы должны быть в формате JSON и кодировке UTF-8 *(Content-Type: application/json; charset=utf-8)*. 
+<p><strong>Smart home</strong> <strong>API</strong> организован на основе <strong>REST</strong> запросов по верх HTTP протокола.
+Такая связка была выбрана исключительно из простоты поддержания, и разработки нового функционала.
+Все запросы должны быть в формате JSON и кодировке UTF-8 <em>(Content-Type: application/json; charset=utf-8)</em>.
 Заголовок Accept будут игнорироваться для всех запросов.</p>
 
-<pre>
-<code class="language-bash">
-> $ curl -i https://localhost/api/v1/action..
-</code>
-</pre>
-
-</div>
-
-<div class="right">
-> Пример токена авторизации
-</div>
-
-<div class="middle">
+<pre><code class="language-bash">$ curl -i https://localhost/api/v1/action..
+</code></pre>
 
 <h2 id="security">Безопасность</h2>
 
-Сервер <strong>Smart home</strong> имеет систему контроля доступа основанную на ролях. Любое действие или команда по <strong>API</strong> будут проходить проверку на право доступа
-Идентификация пользователя и роли происходит по <a href="https://jwt.io" target="_blank">JWT</a> токену указанному в <strong>Authorization</strong> заголовке запроса.
-Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок <strong>Authorization</strong>:
+<p>Сервер <strong>Smart home</strong> имеет систему контроля доступа основанную на ролях. Любое действие или команда по <strong>API</strong> будут проходить проверку на право доступа
+Идентификация пользователя и роли происходит по <a href="https://jwt.io">JWT</a> токену указанному в <strong>Authorization</strong> заголовке запроса.
+Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок <strong>Authorization</strong>:</p>
 
-</div>
+<blockquote>
+<p>Пример токена авторизации</p>
+</blockquote>
 
-<div class="right">
-<pre>
-<code class="language-bash">
-HTTP/1.1 404 Not Found
-Date: Mon, 21 Apr 2014 13:26:48 GMT
-Content-Type: application/json; charset=utf-8:
-</code>
-</pre>
-<pre>
-<code class="language-json">
-{
-    "message": "Описание ошибки",
-    "status": "error"
-}
-</code>
-</pre>
-
-</div>
-
-<div class="middle">
+<pre><code class="language-json">Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+</code></pre>
 
 <h2 id="errors">Ошибки</h2>
 
-При возникновении ошибки Вы получите её код в теле ответа. 
+<p>При возникновении ошибки Вы получите её код в теле ответа.</p>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>Поле</th>
-        <th>Тип</th>
-        <th>Значение</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>message</td>
-        <td><div class="label label-default">строка</div> </td>
-        <td>Текст ошибки</td>
-    </tr>
-    <tr>
-        <td>status</td>
-        <td><div class="label label-default">строка</div></td>
-        <td>Системное название</td>
-    </tr>
-    </tbody>
-</table>
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>Код ошибки</th>
-        <th>Описание</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td><div class="label label-default">400</div></td>
-        <td>Bad Request -- Плохой запрос</td>
-    </tr>
-    <tr>
-        <td><div class="label label-default">401</div></td>
-        <td>Unauthorized -- <strong>API</strong> токен не верный</td>
-    </tr>
-    <tr>
-        <td><div class="label label-default">403</div></td>
-        <td>Forbidden -- Доступ запрещен, возможно не хватает прав</td>
-    </tr>
-    <tr>
-        <td><div class="label label-default">404</div></td>
-        <td>Not Found -- Контент не найден</td>
-    </tr>
-    <tr>
-        <td><div class="label label-default">500</div></td>
-        <td>Internal Server Error -- Ошибка на сервере</td>
-    </tr>
-    </tbody>
-</table>
-
-</div>
-
-<div class="right">
-<pre>
-<code class="language-bash">
-> $ curl -i https://localhost/api/v1/action..
-</code>
-</pre>
-
-<pre>
-<code class="language-json">
-{
-"message": "Описание ошибки",
-"status": "error"
-}
-</code>
-</pre>
-
-</div>
-<div class="middle">
-
-<h2 id="http-methods">HTTP методы</h2>
-
-Сервер <strong>Smart home</strong> <strong>REST API</strong> поддерживает данный список HTTP методов для каждого действия:
-
-<table class="table">
+<table>
 <thead>
 <tr>
-    <th>Метод</th>
-    <th>Действие</th>
+<th>Поле</th>
+<th>Тип</th>
+<th>Значение</th>
 </tr>
 </thead>
+
 <tbody>
 <tr>
-    <td><div class="label label-default">GET</div></td>
-    <td>Получить ресурс</td>
+<td><code>message</code></td>
+<td>строка</td>
+<td>Текст ошибки</td>
 </tr>
+
 <tr>
-    <td><div class="label label-default">POST</div></td>
-    <td>Создать ресурс</td>
-</tr>
-<tr>
-    <td><div class="label label-default">PUT</div></td>
-    <td>Обновить ресурс</td>
-</tr>
-<tr>
-    <td><div class="label label-default">DELETE</div></td>
-    <td>Удалить ресурс</td>
+<td><code>status</code></td>
+<td>строка</td>
+<td>Системное название</td>
 </tr>
 </tbody>
 </table>
 
-</div>
+<pre><code class="language-bash">HTTP/1.1 404 Not Found
+Date: Mon, 21 Apr 2014 13:26:48 GMT
+Content-Type: application/json; charset=utf-8:
+</code></pre>
 
-<div class="right"></div>
-<div class="middle">
+<pre><code class="language-json">
+    &quot;message&quot;: &quot;Описание ошибки&quot;,
+    &quot;status&quot;: &quot;error&quot;
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Код ошибки</th>
+<th>Описание</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>400</code></td>
+<td>Bad Request &ndash; Плохой запрос</td>
+</tr>
+
+<tr>
+<td><code>401</code></td>
+<td>Unauthorized &ndash; <strong>API</strong> токен не верный</td>
+</tr>
+
+<tr>
+<td><code>403</code></td>
+<td>Forbidden &ndash; Доступ запрещен, возможно не хватает прав</td>
+</tr>
+
+<tr>
+<td><code>404</code></td>
+<td>Not Found &ndash; Контент не найден</td>
+</tr>
+
+<tr>
+<td><code>500</code></td>
+<td>Internal Server Error &ndash; Ошибка на сервере</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="http-methods">HTTP методы</h2>
+
+<p>Сервер <strong>Smart home</strong> <strong>REST API</strong> поддерживает данный список HTTP методов для каждого действия:</p>
+
+<table>
+<thead>
+<tr>
+<th>Метод</th>
+<th>Действие</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td>Получить ресурс</td>
+</tr>
+
+<tr>
+<td><code>POST</code></td>
+<td>Создать ресурс</td>
+</tr>
+
+<tr>
+<td><code>PUT</code></td>
+<td>Обновить ресурс</td>
+</tr>
+
+<tr>
+<td><code>DELETE</code></td>
+<td>Удалить ресурс</td>
+</tr>
+</tbody>
+</table>
 
 <h2 id="cors">Cross Origin Resource Sharing (CORS)</h2>
 
-Сервер <strong>Smart home</strong> API version 1.0 поддерживает Cross Origin Resource Sharing (CORS) запросы для AJAX.
+<p>Сервер <strong>Smart home</strong> API version 1.0 поддерживает Cross Origin Resource Sharing (CORS) запросы для AJAX.</p>
 
-</div>
+<blockquote>
+<p>$ curl -i <a href="https://localhost/api/v1/action.">https://localhost/api/v1/action.</a>.</p>
+</blockquote>
+
+<pre><code class="language-bash">HTTP/1.1 200 OK
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: Origin,Accept,Content-Type,Authorization
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,UPDATE
+Access-Control-Allow-Origin: *
+</code></pre>
+
                         
                             <h2 id="authorization">Авторизация</h2>
 
@@ -378,7 +341,7 @@ Content-Type: application/json; charset=utf-8:
 <p>Учетные записи существующие после установки сервера</p>
 </blockquote>
 
-<pre><code class="language-shell">email: demo@e154.ru
+<pre><code class="language-bash">email: demo@e154.ru
 password: demodemo
 
 email: admin@e154.ru
@@ -388,10 +351,10 @@ password: adminadmin
 <h2 id="signin">Вход</h2>
 
 <blockquote>
-<p><code>POST</code> <a href="http://localhost/api/v1/signin">http://localhost/api/v1/signin</a></p>
+<p><span class="method post">POST</span> <a href="http://localhost/api/v1/signin">http://localhost/api/v1/signin</a></p>
 </blockquote>
 
-<pre><code class="language-shell">#!/usr/bin/env bash
+<pre><code class="language-bash">#!/usr/bin/env bash
 
 EMAIL=&quot;admin@e154.ru&quot;
 PASSWORD=&quot;adminadmin&quot;
@@ -641,6 +604,8 @@ curl -i -H &quot;Content-Type: application/json&quot; -X POST -d &quot;{\&quot;e
 <script src="https://e154.github.io/smart-home/js/wow.min.js"></script>
 <script src="https://e154.github.io/smart-home/js/jquery.magnific-popup.js"></script>
 <script src="https://e154.github.io/smart-home/js/anchor.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 
 <!-- Custom Theme JavaScript -->
 <script src="https://e154.github.io/smart-home/js/scripts.min.js"></script>
