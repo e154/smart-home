@@ -104,31 +104,35 @@ __docs_deploy() {
     npm install
     gulp
 
-    echo 'marker 1'
-
     cd ${ROOT}/doc
     hugo
 
-    echo 'marker 2'
     cd ${ROOT}/doc/public
 
     git init
     echo -e "Starting to documentation commit.\n"
     git config --global user.email "support@e154.ru"
     git config --global user.name "delta54"
-    git add .
-    git commit -m'build'
 
-    echo 'marker 3'
+#    git push --force --quiet "https://$GH_TOKEN@github.com/e154/smart-home.git" master:"gh-pages" > /dev/null 2>&1
+    git remote add upstream "https://$GH_TOKEN@github.com/e154/smart-home.git"
+    git fetch upstream
+    git reset upstream/gh-pages
 
-    git push --force --quiet "$GH_TOKEN@github.com/e154/smart-home.git" master:"gh-pages" > /dev/null 2>&1
+    rev=$(git rev-parse --short HEAD)
+
+    git add -A .
+    git commit -m "rebuild pages at ${rev}"
+    git push -q upstream HEAD:gh-pages
+
     echo -e "Done documentation deploy.\n"
-    rm -fr .git
 }
 
 __build() {
 
     __docs_deploy
+
+    return
 
     cd ${TMP_DIR}
     xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}

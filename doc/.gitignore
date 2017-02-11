@@ -2,3 +2,4 @@ public/
 /themes/default/static/css/style.css
 /themes/default/static/css/style.min.css
 /themes/default/static/js/scripts.min.js
+/themes/default/node_modules/

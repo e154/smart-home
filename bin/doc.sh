@@ -40,7 +40,7 @@ __dev() {
 
 __help() {
   cat <<EOF
-Usage: make.sh [options]
+Usage: doc.sh [options]
 
 Bootstrap Debian 8.0 host
 
