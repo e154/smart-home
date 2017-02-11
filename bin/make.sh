@@ -120,16 +120,16 @@ __docs_deploy() {
 
     rev=$(git rev-parse --short HEAD)
 
-    echo "marker 0"
     git add -A .
-    echo "marker 1"
+
+    set +o errexit
+
     git commit -m "rebuild pages at ${rev}"
-
-    echo "marker 2"
-
-    git push -q upstream HEAD:gh-pages  > /dev/null 2>&1
+    git push -q upstream HEAD:gh-pages
 
     echo -e "Done documentation deploy.\n"
+
+    set -o errexit
 }
 
 __build() {
