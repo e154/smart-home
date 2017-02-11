@@ -352,7 +352,8 @@ aside.api table code {
   aside.api h2,
   aside.api h3,
   aside.api p,
-  aside.api table {
+  aside.api table,
+  aside.api ul {
     width: 100%;
   }
   aside.api blockquote,
