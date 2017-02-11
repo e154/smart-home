@@ -47,7 +47,7 @@ Content-Type: application/json; charset=utf-8:
 ```
 
 ```json
-
+{
     "message": "Описание ошибки",
     "status": "error"
 }
