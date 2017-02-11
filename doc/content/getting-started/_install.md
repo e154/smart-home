@@ -23,7 +23,7 @@ groups:
 
 <div class="row">
     <div class="col-md-6">
-        ![Схематичная сеть умного дома](/smart-home/img/default_network2.png "Схематичная сеть умного дома")
+        <img src="/smart-home/img/default_network2.png" alt="Схематичная сеть умного дома" title="Схематичная сеть умного дома">
     </div>
 </div>
 
