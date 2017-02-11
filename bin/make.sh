@@ -114,7 +114,6 @@ __docs_deploy() {
     git config --global user.email "support@e154.ru"
     git config --global user.name "delta54"
 
-#    git push --force --quiet "https://$GH_TOKEN@github.com/e154/smart-home.git" master:"gh-pages" > /dev/null 2>&1
     git remote add upstream "https://$GH_TOKEN@github.com/e154/smart-home.git"
     git fetch upstream
     git reset upstream/gh-pages
@@ -131,8 +130,6 @@ __docs_deploy() {
 __build() {
 
     __docs_deploy
-
-    return
 
     cd ${TMP_DIR}
     xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
