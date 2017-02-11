@@ -1,26 +1,14 @@
 (function($) {
     "use strict"; // Start of use strict
 
-    var owner = 'e154';
-
-    $(document).ready(function () {
-        $('#smart-home-server').release({repo: 'smart-home'});
-        $('#smart-home-configurator').release({repo: 'smart-home-configurator'});
-        $('#smart-home-node').release({repo: 'smart-home-node'})
+    //===============================================================
+    // HIGHLIGHT
+    //===============================================================
+    $(document).ready(function() {
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
     });
-
-    //===============================================================
-    // LATEST RELEASE
-    //===============================================================
-
-    $.fn.release = function(opt) {
-        var href = 'https://github.com/'+owner+'/'+opt.repo+'/releases';
-        //TODO complite idea
-        // $.getJSON("https://api.github.com/repos/"+owner+"/"+opt.repo+"/releases/latest").done(function (release) {
-        //     href = release.assets[0].browser_download_url;
-        // });
-        $(this).attr('href', href);
-    };
 
     //===============================================================
     // ETC

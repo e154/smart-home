@@ -5,12 +5,4 @@ groups:
     - api
 ---
 
-<div class="right">
-
-</div>
-
-<div class="middle">
-
 section is at the stage of translation
-
-</div>

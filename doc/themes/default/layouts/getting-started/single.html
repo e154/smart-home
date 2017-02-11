@@ -15,7 +15,7 @@
         <aside class="getting-started">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-9" role="main">
+                    <div class="col-md-9 docs-section" role="main">
                         {{ if .Params.listing }}
                             {{ range .Site.Taxonomies.groups.getting_started.Pages.ByWeight }}
                                 {{ .Content }}
@@ -25,7 +25,7 @@
                         {{ end }}
                     </div>
 
-                    <div class="col-md-3 hidden-sm hidden-xs">
+                    <div class="col-md-3 hidden-sm hidden-xs nav-bar-column">
                         {{ if .Site.Params.getting_started_menu }}
                             {{ partial "getting-started-menu.html" . }}
                         {{ end }}

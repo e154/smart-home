@@ -1,6 +1,6 @@
 ---
 weight: 2
-title: Авторизация
+title: overview
 groups:
     - api
 ---
@@ -24,7 +24,7 @@ groups:
 
 > Учетные записи существующие после установки сервера  
 
-```shell
+```bash
 email: demo@e154.ru
 password: demodemo
 
@@ -34,9 +34,9 @@ password: adminadmin
 
 <h2 id="signin">Вход</h2>
 
-> `POST` http://localhost/api/v1/signin
+> <span class="method post">POST</span> http://localhost/api/v1/signin
 
-```shell
+```bash
 #!/usr/bin/env bash
 
 EMAIL="admin@e154.ru"

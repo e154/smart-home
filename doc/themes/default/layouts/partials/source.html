@@ -7,17 +7,17 @@
             <br>
             <br>
            <div class="row">
-               <div class="col-md-4">
+               <div class="col-md-4 form-group">
                    {{ if and .Site.Params.source.server.link .Site.Params.source.server.text }}
                    <a href="{{ .Site.Params.source.server.link }}" class="btn btn-default btn-xl wow tada">{{ .Site.Params.source.server.text }}</a>
                    {{ end }}
                </div>
-               <div class="col-md-4">
+               <div class="col-md-4 form-group">
                    {{ if and .Site.Params.source.configurator.link .Site.Params.source.configurator.text }}
                    <a href="{{ .Site.Params.source.configurator.link }}" class="btn btn-default btn-xl wow tada">{{ .Site.Params.source.configurator.text }}</a>
                    {{ end }}
                </div>
-               <div class="col-md-4">
+               <div class="col-md-4 form-group">
                    {{ if and .Site.Params.source.node.link .Site.Params.source.node.text }}
                    <a href="{{ .Site.Params.source.node.link }}" class="btn btn-default btn-xl wow tada">{{ .Site.Params.source.node.text }}</a>
                    {{ end }}

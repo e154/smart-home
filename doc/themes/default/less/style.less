@@ -2,7 +2,7 @@
 @import "mixins.less";
 @import "navigation";
 @import "callout";
-@import "highlight";
+@import "darcula";
 @import "api";
 
 // Global Components
@@ -74,11 +74,8 @@ section {
     padding: 100px 0;
 }
 
-aside {
-    padding: 50px 0;
-    &.api {
-        padding: 0;
-    }
+.nav-bar-column {
+    padding-top: 50px;
 }
 
 .no-padding {
@@ -86,7 +83,7 @@ aside {
 }
 
 .docs-section {
-    margin-bottom: 100px;
+    margin-bottom: 50px;
 }
 
 // Homepage Header
@@ -392,9 +389,17 @@ footer.footer {
     border-bottom: 1px solid #eee;
 }
 
-.highlight {
-    pre {
-        background-color: #3a3a3a;
-        color: #eee;
-    }
+pre {
+    background: #2b2b2e;
+    border-radius: 0;
+    position: relative;
+    border: none;
+    //padding: 0;
+}
+
+.hljs {
+    color: #c5c8c6;
+    background-color: transparent;
+    border: none;
+    padding: 0 15px;
 }
