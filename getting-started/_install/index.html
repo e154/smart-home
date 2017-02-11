@@ -126,14 +126,14 @@
 
     <p>Информация о системе на которой производилось тестовое развёртывание:</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">delta54@darkstar:tmp<span style="color: #f8f8f2">$ </span>uname -a
-Linux darkstar 3.16.0-4-amd64 <span style="color: #75715e">#1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux</span>
-</pre></div>
+
+delta54@darkstar:tmp$ uname -a
+Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux
 
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">delta54@darkstar:tmp<span style="color: #f8f8f2">$ </span>cat /etc/*release*
-<span style="color: #f8f8f2">PRETTY_NAME</span><span style="color: #f92672">=</span><span style="color: #e6db74">&quot;Debian GNU/Linux 8 (jessie)&quot;</span>
-</pre></div>
+
+delta54@darkstar:tmp$ cat /etc/*release*
+PRETTY_NAME="Debian GNU/Linux 8 (jessie)"
 
 
     <h3 id="install-mkdir">Создание директорий</h3>
@@ -142,51 +142,51 @@ Linux darkstar 3.16.0-4-amd64 <span style="color: #75715e">#1 SMP Debian 3.16.36
         /opt/smart-home
     </p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">sudo mkdir -p /opt/smart-home
-sudo chown <span style="color: #f8f8f2">$USER</span>:<span style="color: #f8f8f2">$USER</span> /opt/smart-home -R
+
+sudo mkdir -p /opt/smart-home
+sudo chown $USER:$USER /opt/smart-home -R
 mkdir -p /opt/smart-home/server
 mkdir -p /opt/smart-home/configurator
 mkdir -p /opt/smart-home/node
-</pre></div>
 
 
     <h3 id="install-download-and-unpack">Скачивание и распаковка</h3>
 
     <p>Скачаем последний релиз сервер, и распакуем в директории <strong>server</strong></p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">cd</span> /opt/smart-home/server
+
+cd /opt/smart-home/server
 wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
 tar -zxvf smart-home-server.tar.gz
-</pre></div>
 
 
     <p>В директории <strong>data</strong> хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
         Вынесите директорию <strong>data</strong> на один уровень выше.</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">cd</span> /opt/smart-home/server
+
+cd /opt/smart-home/server
 mv data ../
-</pre></div>
 
 
     <p>Тоже самое сделаем для конфигуратора, и ноды</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">cd</span> /opt/smart-home/configurator
+
+cd /opt/smart-home/configurator
 wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
 tar -zxvf smart-home-configurator.tar.gz
-<span style="color: #f8f8f2">cd</span> /opt/smart-home/node
+cd /opt/smart-home/node
 wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
 tar -zxvf smart-home-node.tar.gz
-</pre></div>
 
 
     <p>В итоге мы должны получит следующую корневую структуру:</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">cd</span> /opt/smart-home
+
+cd /opt/smart-home
 ├── data
 ├── node
 ├── configurator
 └── server
-</pre></div>
 
 
     <h3 id="install-server-conf">Настройка сервера</h3>
@@ -205,28 +205,28 @@ tar -zxvf smart-home-node.tar.gz
     <p>Отредактируйте переменную <strong>httpaddr</strong> в /opt/smart-home/server/conf/app.conf,
         адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">httpaddr</span> <span style="color: #f92672">=</span> <span style="color: #e6db74">&quot;0.0.0.0&quot;</span>
-</pre></div>
+
+httpaddr = "0.0.0.0"
 
 
     <p>По желанию отредактируйте переменную <strong>httpport</strong> в /opt/smart-home/server/conf/prod/app.conf,
         или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
         приложений.</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">httpport</span> <span style="color: #f92672">=</span> 3000
-</pre></div>
+
+httpport = 3000
 
 
     <p>Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
         или оставьте без изменений, и настройте базу в соответствии с установленными значениями.</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%"><span style="color: #f8f8f2">db_user</span> <span style="color: #f92672">=</span> smarthome
-<span style="color: #f8f8f2">db_pass</span> <span style="color: #f92672">=</span> smarthome
-<span style="color: #f8f8f2">db_host</span> <span style="color: #f92672">=</span> <span style="color: #e6db74">&quot;127.0.0.1&quot;</span>
-<span style="color: #f8f8f2">db_name</span> <span style="color: #f92672">=</span> smarthome
-<span style="color: #f8f8f2">db_port</span> <span style="color: #f92672">=</span> <span style="color: #e6db74">&quot;3306&quot;</span>
-<span style="color: #f8f8f2">db_type</span> <span style="color: #f92672">=</span> mysql
-</pre></div>
+
+db_user = smarthome
+db_pass = smarthome
+db_host = "127.0.0.1"
+db_name = smarthome
+db_port = "3306"
+db_type = mysql
 
 
     <h3 id="install-configuration-conf">Настройка конфигуратора</h3>
@@ -245,18 +245,18 @@ tar -zxvf smart-home-node.tar.gz
 
     <p>Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">cp /opt/smart-home/node/conf/node.sample.conf node.conf
-</pre></div>
+
+cp /opt/smart-home/node/conf/node.sample.conf node.conf
 
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">cat /opt/smart-home/node/conf/node.conf
-<span style="color: #f8f8f2">app_version</span><span style="color: #f92672">=</span>0.1.0
-<span style="color: #f8f8f2">ip</span><span style="color: #f92672">=</span>127.0.0.1
-<span style="color: #f8f8f2">port</span><span style="color: #f92672">=</span>3001
-<span style="color: #f8f8f2">baud</span><span style="color: #f92672">=</span>19200
-<span style="color: #f8f8f2">timeout</span><span style="color: #f92672">=</span>2
-<span style="color: #f8f8f2">stopbits</span><span style="color: #f92672">=</span>2
-</pre></div>
+
+cat /opt/smart-home/node/conf/node.conf
+app_version=0.1.0
+ip=127.0.0.1
+port=3001
+baud=19200
+timeout=2
+stopbits=2
 
 
     <ul>
@@ -273,14 +273,14 @@ tar -zxvf smart-home-node.tar.gz
 
     <p>Подключимся к консоли mysql, приготовьте пароль для рута:</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">mysql -u root -p
-</pre></div>
+
+mysql -u root -p
 
 
     <p>Создадим базу для сервера <strong>умного дома</strong>:</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">CREATE DATABASE smarthome<span style="color: #f8f8f2">;</span>
-</pre></div>
+
+CREATE DATABASE smarthome;
 
 
     <p>Создадим нового пользователя, и дадим права на доступ к базе <strong>smarthome</strong> из консоли mysql</p>
@@ -289,27 +289,27 @@ tar -zxvf smart-home-node.tar.gz
         <li><strong>smarthome</strong> - пароль</li>
     </ul>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">CREATE USER <span style="color: #e6db74">&#39;smarthome&#39;</span>@<span style="color: #e6db74">&#39;localhost&#39;</span> IDENTIFIED BY <span style="color: #e6db74">&#39;smarthome&#39;</span><span style="color: #f8f8f2">;</span>
-GRANT ALL PRIVILEGES ON smarthome . * TO <span style="color: #e6db74">&#39;smarthome&#39;</span>@<span style="color: #e6db74">&#39;localhost&#39;</span><span style="color: #f8f8f2">;</span>
-FLUSH PRIVILEGES<span style="color: #f8f8f2">;</span>
-</pre></div>
+
+CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
+GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
+FLUSH PRIVILEGES;
 
 
     <p>осталось импортировать базу</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">use smarthome
-<span style="color: #f8f8f2">source</span> /opt/smart-home/server/dump.sql
-</pre></div>
+
+use smarthome
+source /opt/smart-home/server/dump.sql
 
 
     <h3 id="install-exec">Запуск</h3>
 
     <p>Осталось запустить сервера в фоновом режиме</p>
 
-<div class="highlight" style="background: #272822"><pre style="line-height: 125%">/opt/smart-home/server/server-linux-amd64 &gt; /dev/null 2&gt;<span style="color: #f8f8f2">&amp;</span><span style="color: #ae81ff">1</span> <span style="color: #f8f8f2">&amp;</span>
-/opt/smart-home/configurator/configurator-linux-amd64 &gt; /dev/null 2&gt;<span style="color: #f8f8f2">&amp;</span><span style="color: #ae81ff">1</span> <span style="color: #f8f8f2">&amp;</span>
-/opt/smart-home/node/node-linux-amd64 &gt; /dev/null 2&gt;<span style="color: #f8f8f2">&amp;</span><span style="color: #ae81ff">1</span> <span style="color: #f8f8f2">&amp;</span>
-</pre></div>
+
+/opt/smart-home/server/server-linux-amd64 > /dev/null 2>&1 &
+/opt/smart-home/configurator/configurator-linux-amd64 > /dev/null 2>&1 &
+/opt/smart-home/node/node-linux-amd64 > /dev/null 2>&1 &
 
 
     <ul>
