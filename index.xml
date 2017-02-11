@@ -112,7 +112,7 @@ Date: Mon, 21 Apr 2014 13:26:48 GMT
 Content-Type: application/json; charset=utf-8:
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
     &amp;quot;message&amp;quot;: &amp;quot;Описание ошибки&amp;quot;,
     &amp;quot;status&amp;quot;: &amp;quot;error&amp;quot;
 }
@@ -628,7 +628,7 @@ curl -i -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &amp;qu
 
 &lt;div class=&#34;row&#34;&gt;
     &lt;div class=&#34;col-md-6&#34;&gt;
-        ![Схематичная сеть умного дома](/smart-home/img/default_network2.png &#34;Схематичная сеть умного дома&#34;)
+        &lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/default_network2.png&#34; alt=&#34;Схематичная сеть умного дома&#34; title=&#34;Схематичная сеть умного дома&#34;&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 

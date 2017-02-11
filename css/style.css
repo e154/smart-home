@@ -277,6 +277,12 @@ aside.api ul {
   clear: left;
   width: 50%;
 }
+aside.api ul.nav {
+  padding-right: 0;
+  float: none;
+  clear: both;
+  width: 100%;
+}
 aside.api blockquote {
   background-color: #2b2b2e;
   padding: 1em 15px;
