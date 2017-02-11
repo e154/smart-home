@@ -11,7 +11,7 @@ func Initialize() {
 
 	ns := beego.NewNamespace("/api",
 		beego.NSNamespace("/v1",
-			beego.NSRouter("/signin", &controllers.AuthController{}, "post:SignIn"),
+			beego.NSRouter("/signin", &controllers.AuthController{}, "get:SignIn"),
 			beego.NSRouter("/signout", &controllers.AuthController{}, "post:SignOut"),
 			beego.NSRouter("/recovery", &controllers.AuthController{}, "post:Recovery"),
 			beego.NSRouter("/reset", &controllers.AuthController{}, "post:Reset"),
