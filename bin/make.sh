@@ -60,6 +60,9 @@ main() {
     --help)
     __help
     ;;
+    --docs-deploy)
+    __docs_deploy
+    ;;
     --build)
     __build
     ;;
@@ -95,19 +98,23 @@ __clean() {
 }
 
 __docs_deploy() {
-    cd ${ROOT}/doc
-    bundle install --jobs=3 --retry=3
-    jekyll build --config _config.yml
-    #htmlproofer ./_site
 
-    cd ${ROOT}/doc/_site
+    cd ${ROOT}/doc/theme/default
+
+    npm install
+    gulp
+
+    cd ${ROOT}/doc/public
+
+    hugo
+
     git init
     echo -e "Starting to documentation commit.\n"
     git config --global user.email "support@e154.ru"
     git config --global user.name "delta54"
     git add .
     git commit -m'build'
-    git push --force --quiet "git@github.com:e154/smart-home.git" master:"gh-pages" > /dev/null 2>&1
+    git push --force --quiet "${GH_TOKEN}@github.com:e154/smart-home.git" master:"gh-pages" > /dev/null 2>&1
     echo -e "Done documentation deploy.\n"
     rm -fr .git
 }
