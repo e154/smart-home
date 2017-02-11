@@ -99,7 +99,7 @@ __clean() {
 
 __docs_deploy() {
 
-    cd ${ROOT}/doc/theme/default
+    cd ${ROOT}/doc/themes/default
 
     npm install
     gulp
