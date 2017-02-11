@@ -104,9 +104,9 @@ __docs_deploy() {
     npm install
     gulp
 
-    cd ${ROOT}/doc/public
-
     hugo
+
+    cd ${ROOT}/doc/public
 
     git init
     echo -e "Starting to documentation commit.\n"
