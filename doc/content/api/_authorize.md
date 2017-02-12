@@ -5,59 +5,66 @@ groups:
     - api
 ---
 
-<h2 id="authorization">Авторизация</h2>
+## Авторизация {#authorization}
 
-Авторизация - получения JWT токена, происходит `POST` запросом по паре email/пароль.
-
-> пример запроса на авторизацию
-
-```json
-{
-    "email": "user@server.name",
-    "password": "******"
-}
-```
-
-* Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация.
-* Пароль должен состоять не менне чем из 6 символов.
-* Первоночальная регистрация возможна только, по одной из двух учетных записей
-
-> Учетные записи существующие после установки сервера  
+Все запросы к серверу должны сопровождаться авторизационным токеном.
 
 ```bash
-email: demo@e154.ru
-password: demodemo
+#!/usr/bin/env bash
+URL=http://localhost:3000/api/v1
+TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
-email: admin@e154.ru
-password: adminadmin
+curl -H "access_token:${TOKEN}" -X GET -s ${URL}/user/1
 ```
 
-<h2 id="signin">Вход</h2>
+- Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация.
+- Пароль должен состоять не менне чем из 6 символов.
+- Авторизация в только что установленной системе возможна только, по одной из двух учетных записей
 
-> <span class="method post">POST</span> http://localhost/api/v1/signin
+Учетные записи существующие после установки сервера
+
+- **email**: demo@e154.ru
+- **password**: demodemo
+- **email**: admin@e154.ru
+- **password**: adminadmin
+
+## Вход {#signin}
+
+Вход - генерация JWT токена, происходит `GET` запросом.
+
+> Генерация токена
+
+> <span class="method get">GET</span> http\://localhost:3000/api/v1/signin
+
+> Заголовки запроса
+
+```bash
+Content-Type: application/json
+Authorization: Basic [basic token]
+```
 
 ```bash
 #!/usr/bin/env bash
 
 EMAIL="admin@e154.ru"
 PASSWORD="adminadmin"
-URL=http://localhost:3000/api/v1/signin
+URL=http://localhost:3000/api/v1
 
-curl -i -H "Content-Type: application/json" -X POST -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}" ${URL}
+curl -H "Content-Type: application/json; charset=utf-8" -u "${EMAIL}:${PASSWORD}" -s ${URL}/signin
 ```
 
 Значение полей в результате положительного ответа 
 
 Поле | Тип | Значение
 -----|-----|---------
-`token` | строка | JWT токен
+`access_token` | строка | JWT токен
 `current_user` | объект | Параметры текущеко пользователя
 
 > `200` положительный ответ
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "current_user": {
     "avatar": null,
     "email": "admin@e154.ru",
@@ -200,7 +207,7 @@ curl -i -H "Content-Type: application/json" -X POST -d "{\"email\":\"${EMAIL}\",
 }
 ```
 
-<h2 id="signout">Выход</h2>
+## Выход {#signout}
 
 > `POST` http://localhost/api/v1/signout
 

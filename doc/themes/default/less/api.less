@@ -35,6 +35,11 @@ aside.api {
 
   h1, h2, h3 {
     margin-top: 50px;
+
+    & + blockquote,
+    & + pre {
+      margin-top: 40px;
+    }
   }
 
   h1, h2, h3,
@@ -87,6 +92,14 @@ aside.api {
     clear: right;
     width: 50%;
     padding-left: 15px;
+
+    & + h1,
+    & + h2,
+    & + h3,
+    & + h4,
+    & + h5 {
+      clear: both;
+    }
   }
 
   table {

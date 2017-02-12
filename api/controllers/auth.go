@@ -4,7 +4,6 @@ import (
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/lib/common"
 	"time"
-	"fmt"
 	"encoding/base64"
 	"strings"
 )
@@ -92,7 +91,7 @@ func (h *AuthController) SignIn() {
 		return
 	}
 
-	h.Data["json"] = &map[string]interface{}{"token": token, "current_user": current_user}
+	h.Data["json"] = &map[string]interface{}{"access_token": token, "current_user": current_user}
 	h.ServeJSON()
 }
 
