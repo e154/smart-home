@@ -45,6 +45,7 @@ func configuration() {
 		//beego.SetStaticPath("/admin/static", "static_source/admin")
 	} else {
 		log.Info("Product mode enabled")
+		beego.BConfig.ServerName = "smart-home"
 		//beego.SetStaticPath("/admin/static", "www/admin")
 	}
 

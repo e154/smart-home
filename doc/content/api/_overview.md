@@ -5,7 +5,7 @@ groups:
     - api
 ---
 
-<h2 id="overview">Обзор</h2>
+## Обзор {#overview}
 
 **Smart home** **API** позволяет управлять системой **Smart home**, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.
 
@@ -15,22 +15,22 @@ groups:
 Заголовок Accept будут игнорироваться для всех запросов.
 
 ```bash
-$ curl -i https://localhost/api/v1/action..
+$ curl -i http://localhost:3000/api/v1/signin
 ```
 
-<h2 id="security">Безопасность</h2>
+## Безопасность {#security}
 
 Сервер **Smart home** имеет систему контроля доступа основанную на ролях. Любое действие или команда по **API** будут проходить проверку на право доступа
-Идентификация пользователя и роли происходит по [JWT](https://jwt.io) токену указанному в **Authorization** заголовке запроса.
-Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок **Authorization**:
+Идентификация пользователя и роли происходит по [JWT](https://jwt.io) токену указанному в **access_token** заголовке запроса.
+Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок **access_token**:
 
 > Пример токена авторизации
 
-```json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```bash
+access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-<h2 id="errors">Ошибки</h2>
+# Ошибки {#errors}
 
 При возникновении ошибки Вы получите её код в теле ответа. 
 
@@ -61,7 +61,7 @@ Content-Type: application/json; charset=utf-8:
 `404` | Not Found -- Контент не найден                                                                                                                                                                     
 `500` | Internal Server Error -- Ошибка на сервере                                                                                                                                                         
                                                                                                                                                                                                            
-<h2 id="http-methods">HTTP методы</h2>
+## HTTP методы {#http-methods}
 
 Сервер **Smart home** **REST API** поддерживает данный список HTTP методов для каждого действия:
 
@@ -72,16 +72,15 @@ Content-Type: application/json; charset=utf-8:
 `PUT`| Обновить ресурс
 `DELETE`| Удалить ресурс
 
-<h2 id="cors">Cross Origin Resource Sharing (CORS)</h2>
+## Cross Origin Resource Sharing (CORS) {#cors}
 
 Сервер **Smart home** API version 1.0 поддерживает Cross Origin Resource Sharing (CORS) запросы для AJAX.
 
-> $ curl -i https://localhost/api/v1/action..
-
 ```bash
+$ curl -i http://localhost:3000/api/v1/signin
 HTTP/1.1 200 OK
 Access-Control-Allow-Credentials: true
-Access-Control-Allow-Headers: Origin,Accept,Content-Type,Authorization
+Access-Control-Allow-Headers: Content-Type,access_token
 Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,UPDATE
 Access-Control-Allow-Origin: *
 ```

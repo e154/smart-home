@@ -40,9 +40,9 @@ func AccessFilter() {
 		}
 
 
-		// get token
-		var token string
-		if token, err = getToken(ctx); err != nil || token == "" {
+		// get access_token
+		var access_token string
+		if access_token, err = getToken(ctx); err != nil || access_token == "" {
 			ctx.ResponseWriter.WriteHeader(401)
 			ctx.Output.JSON(&map[string]interface{}{"status": "error", "message": "Unauthorized access"}, true, false)
 			return
@@ -51,7 +51,7 @@ func AccessFilter() {
 		// get access list
 		var access_list models.AccessList
 		var user *models.User
-		if user, access_list, err = getAccessList(token); err != nil {
+		if user, access_list, err = getAccessList(access_token); err != nil {
 			ctx.ResponseWriter.WriteHeader(401)
 			ctx.Output.JSON(&map[string]interface{}{"status": "error", "message": "Unauthorized access"}, true, false)
 			return
@@ -95,10 +95,10 @@ func accessDecision(params, method string, access_list models.AccessList) bool {
 	return false
 }
 
-// token
-func getToken(ctx *context.Context) (token string, err error) {
+// access_token
+func getToken(ctx *context.Context) (access_token string, err error) {
 
-	if token = ctx.Input.Header("token"); token != "" {
+	if access_token = ctx.Input.Header("access_token"); access_token != "" {
 		return
 	}
 
@@ -112,12 +112,12 @@ func getToken(ctx *context.Context) (token string, err error) {
 		return
 	}
 
-	if len(m["token"]) == 0 || m["token"][0] == "" {
+	if len(m["access_token"]) == 0 || m["access_token"][0] == "" {
 		err = errors.New("")
 		return
 	}
 
-	token = m["token"][0]
+	access_token = m["access_token"][0]
 
 	return
 }

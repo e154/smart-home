@@ -24,7 +24,7 @@ get_user() {
         echo Message: ${MESSAGE}
     }
 
-    RESULT="$( curl -H "Authorization:${TOKEN}" -X GET -s ${URL}/user/{$1} )"
+    RESULT="$( curl -H "access_token:${TOKEN}" -X GET -s ${URL}/user/{$1} )"
     STATUS="$( echo ${RESULT} | jq -r ".status" )"
 
     case ${STATUS} in
@@ -56,7 +56,9 @@ get_token() {
         echo Message: ${MESSAGE}
     }
 
-    RESULT="$( curl -H "Content-Type: application/json" -X POST -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}" -s ${URL}/signin )"
+    # https://curl.haxx.se/docs/manpage.html#-u
+    RESULT="$( curl -H "Content-Type: application/json; charset=utf-8" -u "${EMAIL}:${PASSWORD}" -s ${URL}/signin )"
+
     STATUS="$( echo ${RESULT} | jq -r ".status" )"
 
     case ${STATUS} in
