@@ -45,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             
-                <a class="navbar-brand page-scroll" href="#page-top">Smart home</a>
+                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
             
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -54,24 +54,18 @@
 
                 
                 <li>
-                    <a class="page-scroll" href="https://e154.github.io/smart-home/en">Home</a>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
                 </li>
                 
                 <li>
-                    <a class="page-scroll" href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
                 </li>
                 
                 <li>
-                    <a class="page-scroll" href="https://e154.github.io/smart-home/en/api">api</a>
+                    <a class="page-scroll" href="https://e154.github.io/smart-home/api">api</a>
                 </li>
                 
 
-                
-                
-                <li>
-                    <a href="https://e154.github.io/smart-home/api/_overview/">Русский</a>
-                </li>
-                
                 
             </ul>
         </div>
@@ -99,7 +93,78 @@
                 <div class="row">
                     <div class="col-md-9" role="main">
                         
-                            <p>section is at the stage of translation</p>
+                            
+
+<h2 id="install-from-source">Сборка из исходного кода</h2>
+
+<p>Все микросервисы написаны на языке <a href="golang.org">Golang</a>. Прежде чем продолжить разверните у себя последнюю стабильную
+версию языка <a href="https://golang.org/dl/">download</a>.</p>
+
+<p>Установка будет производиться в операционной системе Debian GNU/Linux 8 (jessie). Сборка в корне домашней директории,
+в папке <strong>smart-home</strong></p>
+
+<pre><code class="language-bash">sudo mkdir -p /opt/smart-home
+sudo chown $USER:$USER /opt/smart-home -R
+mkdir -p /opt/smart-home/server
+mkdir -p /opt/smart-home/configurator
+mkdir -p /opt/smart-home/node
+mkdir ~/smart-home
+go get github.com/FiloSottile/gvt
+go get github.com/beego/bee
+sudo npm install -g bower
+sudo npm install -g hulp
+</code></pre>
+
+<h3 id="install-from-source-server">Сборка сервера</h3>
+
+<pre><code class="language-bash">cd ~/smart-home    
+git clone git@github.com:e154/smart-home.git
+cd smart-home
+gvt restore
+go build -o server
+cp -r conf /opt/smart-home/server
+cp -r data /opt/smart-home
+cp server /opt/smart-home/server
+sed 's/dev\/app.conf/prod\/app.conf/' conf/app.conf &gt; /opt/smart-home/server/conf/app.conf
+</code></pre>
+
+<h3 id="install-from-source-configurator">Сборка конфигуратора</h3>
+
+<pre><code class="language-bash">cd ~/smart-home    
+git clone git@github.com:e154/smart-home-configurator.git
+cd smart-home-configurator
+gvt restore
+go build -o configurator
+cp configurator /opt/smart-home/configurator
+cp -r conf /opt/smart-home/configurator
+sed 's/dev\/app.conf/prod\/app.conf/' conf/app.conf &gt; /opt/smart-home/configurator/conf/app.conf
+
+cd static_source
+npm install
+
+cd private
+bower install
+
+cd ../public
+bower install
+
+cd ../
+gulp pack
+
+cd ../
+cp -r build /opt/smart-home/configurator
+</code></pre>
+
+<h3 id="install-from-source-node">Сборка ноды</h3>
+
+<pre><code class="language-bash">cd ~/smart-home    
+git clone git@github.com:e154/smart-home-node.git
+cd smart-home-node
+gvt restore
+go build -o node
+cp node /opt/smart-home/node
+cp -r conf /opt/smart-home/node
+</code></pre>
 
                         
                     </div>
@@ -112,7 +177,7 @@
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#overview">
-                Overview
+                Обзор
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -121,7 +186,7 @@
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#requirements">
-                Requirements
+                Системные требования
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -130,7 +195,7 @@
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#download">
-                Download
+                Загрузка
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -139,25 +204,25 @@
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#whats-included">
-                Whats included
+                Что входит в пакеты
             </a>
             <ul class="nav bd-sidenav">
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#server">
-                        Server
+                        Сервер
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="configurator">
-                        Configurator
+                    <a class="bd-toc-link" href="#configurator">
+                        Конфигуратор
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#node">
-                        Node
+                        Нода
                     </a>
                 </li>
                 
@@ -166,49 +231,49 @@
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#install">
-                Install
+                Установка
             </a>
             <ul class="nav bd-sidenav">
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#install-mkdir">
-                        Install mkdir
+                        Создание директорий
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-download-and-unpack">
-                        Install download and unpack
+                    <a class="bd-toc-link" href="#install-download-and-unpack">
+                        Скачивание и распаковка
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-server-conf">
-                        Install server conf
+                    <a class="bd-toc-link" href="#install-server-conf">
+                        Настройка сервера
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-configuration-conf">
-                        Install configuration conf
+                    <a class="bd-toc-link" href="#install-configuration-conf">
+                        Настройка конфигуратора
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-node-conf">
-                        Install node conf
+                    <a class="bd-toc-link" href="#install-node-conf">
+                        Настройка ноды
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-mysql">
-                        Install mysql
+                    <a class="bd-toc-link" href="#install-mysql">
+                        База mysql
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-exec">
-                        Install exec
+                    <a class="bd-toc-link" href="#install-exec">
+                        Запуск
                     </a>
                 </li>
                 
@@ -216,26 +281,26 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="install-from-source">
-                Install from source
+            <a class="bd-toc-link" href="#install-from-source">
+                Сборка из исходного кода
             </a>
             <ul class="nav bd-sidenav">
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#install-from-source-server">
-                        Server
+                        Сервер
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#install-from-source-configurator">
-                        Configurator
+                        Конфигуратор
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#install-from-source-node">
-                        Node
+                        Нода
                     </a>
                 </li>
                 
@@ -262,26 +327,20 @@
             
 
             <li>
-                <a class="page-scroll" href="https://e154.github.io/smart-home/en">Home</a>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
             </li>
             
 
             <li>
-                <a class="page-scroll" href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
             </li>
             
 
             <li>
-                <a class="page-scroll" href="https://e154.github.io/smart-home/en/api">api</a>
+                <a class="page-scroll" href="https://e154.github.io/smart-home/api">api</a>
             </li>
             
 
-            
-            
-            <li>
-                <a href="https://e154.github.io/smart-home/api/_overview/">ru</a>
-            </li>
-            
             
 
         </ul>

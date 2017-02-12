@@ -22,6 +22,10 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/getting-started/_install_from_source/</loc>
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/groups/api/</loc>
     <priority>0</priority>
   </url>

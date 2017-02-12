@@ -16,20 +16,33 @@
       <guid>https://e154.github.io/smart-home/getting-started/_overview/</guid>
       <description>&lt;h2 id=&#34;overview&#34; class=&#34;page-header&#34;&gt;Обзор&lt;/h2&gt;
 
-&lt;p&gt;&lt;strong&gt;Система умного дома&lt;/strong&gt; имеет модульную структуру, и состоит из следующих частей:&lt;/p&gt;
+&lt;p&gt;Система &lt;strong&gt;Умный дом&lt;/strong&gt; начала свое своё развитие с не большого домашнего проекта, начатого осенью 2016 года. Основные принципы
+лежащие в основе разрабатываемой системы, это дешевизна, и доступность компонентной базы.&lt;/p&gt;
+
+&lt;p&gt;Так Вы без проблем сможете управлять несколькими устройствами на базе AVR микроконтроллеров, подключенными в одну линию
+связи. Сеть устройств не связанна границей физического дома, или длинной кабеля, можно подключиться к устройству на другой
+стороне планеты, за что отвечает микросервис &lt;a href=&#34;https://github.com/e154/smart-home-node&#34;&gt;нода&lt;/a&gt;. И Вы сможете взаимодействовать
+с этим устройством так, как буд-то оно в локальной сети. Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора.
+Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.&lt;/p&gt;
+
+&lt;p&gt;Пример простого устройства &lt;a href=&#34;https://github.com/e154/smart-home-socket&#34;&gt;розетка&lt;/a&gt;, позволяет управлять нагрузкой 220в 14А ампер.
+На базе которого легко построить решение для управления светом, рольставнями, воротами, датчики протечки, утечки газа, и много
+другого&lt;/p&gt;
+
+&lt;p&gt;Система &lt;strong&gt;Умный дом&lt;/strong&gt; имеет модульную структуру, и состоит из следующих частей:&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Сервер&lt;/strong&gt; - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
-        исполнение процессов, логирование, оповещенние, реагирование на события по заложенному сценарию.&lt;/p&gt;
+исполнение процессов, логирование, оповещенние, реакция на события, исполнени сценариев.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Конфигуратор&lt;/strong&gt; - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
-        систему под свои нужды, требуется как првило на этапе конфигурации.&lt;/p&gt;
+систему под свои нужды, требуется как првило на этапе конфигурации.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Нода&lt;/strong&gt; - посредник связи сервера с активными устройствами, позволяет связать один сервер с
-        множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
-        Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
-        по требованию сценария, либо доступности последней.&lt;/p&gt;
+множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
+Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
+по требованию сценария, либо доступности последней.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;Монитор&lt;/strong&gt;(в разработке) - мобильное клиентское приложение android, ios.&lt;/p&gt;
+&lt;p&gt;&lt;del&gt;&lt;strong&gt;Монитор&lt;/strong&gt; - мобильное клиентское приложение android, ios.&lt;/del&gt;(в разработке)&lt;/p&gt;
 
 &lt;p&gt;Для работы &lt;strong&gt;системы умного дома&lt;/strong&gt; требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
 нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.&lt;/p&gt;
@@ -617,7 +630,7 @@ curl -H &amp;quot;Content-Type: application/json; charset=utf-8&amp;quot; -u &am
       <description>&lt;h2 id=&#34;install&#34;&gt;Установка&lt;/h2&gt;
 
 &lt;p&gt;Будет произведена базовая установка системы &lt;strong&gt;Умный дом&lt;/strong&gt; на сервер под операционной системой linux Debian.
-    С не большими изменениями установка будет схожа и для других операционных систем.&lt;/p&gt;
+С не значительными изменениями установка будет подобна в других операционных систем.&lt;/p&gt;
 
 &lt;p&gt;План действий:&lt;/p&gt;
 
@@ -826,12 +839,87 @@ source /opt/smart-home/server/dump.sql
 &lt;div class=&#34;boc-callout boc-callout-danger&#34;&gt;
     &lt;h4&gt;Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы&lt;/h4&gt;
 &lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/getting-started/_install_from_source/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_install_from_source/</guid>
+      <description>
 
 &lt;h2 id=&#34;install-from-source&#34;&gt;Сборка из исходного кода&lt;/h2&gt;
 
-&lt;div class=&#34;boc-callout boc-callout-info&#34;&gt;
-    &lt;h4&gt;Извините Раздел в разработке&lt;/h4&gt;
-&lt;/div&gt;
+&lt;p&gt;Все микросервисы написаны на языке &lt;a href=&#34;golang.org&#34;&gt;Golang&lt;/a&gt;. Прежде чем продолжить разверните у себя последнюю стабильную
+версию языка &lt;a href=&#34;https://golang.org/dl/&#34;&gt;download&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Установка будет производиться в операционной системе Debian GNU/Linux 8 (jessie). Сборка в корне домашней директории,
+в папке &lt;strong&gt;smart-home&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo mkdir -p /opt/smart-home
+sudo chown $USER:$USER /opt/smart-home -R
+mkdir -p /opt/smart-home/server
+mkdir -p /opt/smart-home/configurator
+mkdir -p /opt/smart-home/node
+mkdir ~/smart-home
+go get github.com/FiloSottile/gvt
+go get github.com/beego/bee
+sudo npm install -g bower
+sudo npm install -g hulp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;install-from-source-server&#34;&gt;Сборка сервера&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd ~/smart-home    
+git clone git@github.com:e154/smart-home.git
+cd smart-home
+gvt restore
+go build -o server
+cp -r conf /opt/smart-home/server
+cp -r data /opt/smart-home
+cp server /opt/smart-home/server
+sed &#39;s/dev\/app.conf/prod\/app.conf/&#39; conf/app.conf &amp;gt; /opt/smart-home/server/conf/app.conf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;install-from-source-configurator&#34;&gt;Сборка конфигуратора&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd ~/smart-home    
+git clone git@github.com:e154/smart-home-configurator.git
+cd smart-home-configurator
+gvt restore
+go build -o configurator
+cp configurator /opt/smart-home/configurator
+cp -r conf /opt/smart-home/configurator
+sed &#39;s/dev\/app.conf/prod\/app.conf/&#39; conf/app.conf &amp;gt; /opt/smart-home/configurator/conf/app.conf
+
+cd static_source
+npm install
+
+cd private
+bower install
+
+cd ../public
+bower install
+
+cd ../
+gulp pack
+
+cd ../
+cp -r build /opt/smart-home/configurator
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;install-from-source-node&#34;&gt;Сборка ноды&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd ~/smart-home    
+git clone git@github.com:e154/smart-home-node.git
+cd smart-home-node
+gvt restore
+go build -o node
+cp node /opt/smart-home/node
+cp -r conf /opt/smart-home/node
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
