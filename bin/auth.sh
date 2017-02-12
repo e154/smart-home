@@ -9,7 +9,7 @@ set -o errexit
 EMAIL="admin@e154.ru"
 PASSWORD="adminadmin"
 URL="http://localhost:3000/api/v1"
-TOKEN=""
+ACCESS_TOKEN=""
 CURRENT_USER=""
 
 get_user() {
@@ -24,7 +24,7 @@ get_user() {
         echo Message: ${MESSAGE}
     }
 
-    RESULT="$( curl -H "access_token:${TOKEN}" -X GET -s ${URL}/user/{$1} )"
+    RESULT="$( curl -H "access_token:${ACCESS_TOKEN}" -X GET -s ${URL}/user/{$1} )"
     STATUS="$( echo ${RESULT} | jq -r ".status" )"
 
     case ${STATUS} in
@@ -45,9 +45,9 @@ get_user() {
 get_token() {
 
     __success() {
-        TOKEN="$( echo ${RESULT} | jq -r ".token" )"
+        ACCESS_TOKEN="$( echo ${RESULT} | jq -r ".access_token" )"
         USER_ID="$( echo ${RESULT} | jq -r ".current_user.id" )"
-        echo Your token: ${TOKEN}
+        echo Your token: ${ACCESS_TOKEN}
         get_user ${USER_ID}
     }
 

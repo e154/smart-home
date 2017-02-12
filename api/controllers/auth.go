@@ -91,7 +91,7 @@ func (h *AuthController) SignIn() {
 		return
 	}
 
-	h.Data["json"] = &map[string]interface{}{"token": token, "current_user": current_user}
+	h.Data["json"] = &map[string]interface{}{"access_token": token, "current_user": current_user}
 	h.ServeJSON()
 }
 
