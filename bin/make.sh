@@ -121,10 +121,15 @@ __docs_deploy() {
     rev=$(git rev-parse --short HEAD)
 
     git add -A .
+
+    set +o errexit
+
     git commit -m "rebuild pages at ${rev}"
     git push -q upstream HEAD:gh-pages
 
     echo -e "Done documentation deploy.\n"
+
+    set -o errexit
 }
 
 __build() {

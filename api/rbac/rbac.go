@@ -98,7 +98,7 @@ func accessDecision(params, method string, access_list models.AccessList) bool {
 // token
 func getToken(ctx *context.Context) (token string, err error) {
 
-	if token = ctx.Input.Header("Authorization"); token != "" {
+	if token = ctx.Input.Header("token"); token != "" {
 		return
 	}
 

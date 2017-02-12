@@ -1,10 +1,12 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/lib/common"
 	"time"
+	"fmt"
+	"encoding/base64"
+	"strings"
 )
 
 const ADMIN_ID = 1
@@ -28,22 +30,28 @@ func (c *AuthController) URLMapping() {
 // @Param	body
 // @Success 201 {object}
 // @Failure 403
-// @router /signin [post]
+// @router /signin [get]
 func (h *AuthController) SignIn() {
 
-	input := map[string]string{}
-	if err := json.Unmarshal(h.Ctx.Input.RequestBody, &input); err != nil {
-		h.ErrHan(403, err.Error())
+	auth := strings.SplitN(h.Ctx.Input.Header("Authorization"), " ", 2)
+	if len(auth) != 2 || auth[0] != "Basic" {
 		return
 	}
 
-	var user *models.User
-	var err error
+	payload, err := base64.StdEncoding.DecodeString(auth[1])
+	if err != nil {
+		return
+	}
 
-	if user, err = models.UserGetByEmail(input["email"]); err != nil {
+	var email, password string
+	email = strings.Split(string(payload), ":")[0]
+	password = strings.Split(string(payload), ":")[1]
+	var user *models.User
+
+	if user, err = models.UserGetByEmail(email); err != nil {
 		h.ErrHan(401, "Пользователь не найден")
 		return
-	} else if user.EncryptedPassword != common.Pwdhash(input["password"]) {
+	} else if user.EncryptedPassword != common.Pwdhash(password) {
 		h.ErrHan(403, "Не верный пароль")
 		return
 	} else if user.Status == "blocked" && user.Id != ADMIN_ID {
