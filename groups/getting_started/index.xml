@@ -453,7 +453,7 @@ source /opt/smart-home/server/dump.sql
 
 &lt;h2 id=&#34;install-from-source&#34;&gt;Сборка из исходного кода&lt;/h2&gt;
 
-&lt;p&gt;Все микросервисы написаны на языке &lt;a href=&#34;golang.org&#34;&gt;Golang&lt;/a&gt;. Прежде чем продолжить разверните у себя последнюю стабильную
+&lt;p&gt;Все микросервисы написаны на языке &lt;a href=&#34;http://golang.org&#34;&gt;Golang&lt;/a&gt;. Прежде чем продолжить разверните у себя последнюю стабильную
 версию языка &lt;a href=&#34;https://golang.org/dl/&#34;&gt;download&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Установка будет производиться в операционной системе Debian GNU/Linux 8 (jessie). Сборка в корне домашней директории,
