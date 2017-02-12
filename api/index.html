@@ -161,12 +161,14 @@
                     
                 </div>
 
-                <div class="col-lg-10 col-md-9 docs-section" role="main">
+                <div class="col-lg-10 col-md-9" role="main">
                     <div class="right-panel-background"></div>
 
                     
                         
-                            <h2 id="overview">Обзор</h2>
+                            
+
+<h2 id="overview">Обзор</h2>
 
 <p><strong>Smart home</strong> <strong>API</strong> позволяет управлять системой <strong>Smart home</strong>, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.</p>
 
@@ -175,23 +177,23 @@
 Все запросы должны быть в формате JSON и кодировке UTF-8 <em>(Content-Type: application/json; charset=utf-8)</em>.
 Заголовок Accept будут игнорироваться для всех запросов.</p>
 
-<pre><code class="language-bash">$ curl -i https://localhost/api/v1/action..
+<pre><code class="language-bash">$ curl -i http://localhost:3000/api/v1/signin
 </code></pre>
 
 <h2 id="security">Безопасность</h2>
 
 <p>Сервер <strong>Smart home</strong> имеет систему контроля доступа основанную на ролях. Любое действие или команда по <strong>API</strong> будут проходить проверку на право доступа
-Идентификация пользователя и роли происходит по <a href="https://jwt.io">JWT</a> токену указанному в <strong>Authorization</strong> заголовке запроса.
-Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок <strong>Authorization</strong>:</p>
+Идентификация пользователя и роли происходит по <a href="https://jwt.io">JWT</a> токену указанному в <strong>access_token</strong> заголовке запроса.
+Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок <strong>access_token</strong>:</p>
 
 <blockquote>
 <p>Пример токена авторизации</p>
 </blockquote>
 
-<pre><code class="language-json">Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+<pre><code class="language-bash">access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 </code></pre>
 
-<h2 id="errors">Ошибки</h2>
+<h1 id="errors">Ошибки</h1>
 
 <p>При возникновении ошибки Вы получите её код в теле ответа.</p>
 
@@ -305,62 +307,66 @@ Content-Type: application/json; charset=utf-8:
 
 <p>Сервер <strong>Smart home</strong> API version 1.0 поддерживает Cross Origin Resource Sharing (CORS) запросы для AJAX.</p>
 
-<blockquote>
-<p>$ curl -i <a href="https://localhost/api/v1/action.">https://localhost/api/v1/action.</a>.</p>
-</blockquote>
-
-<pre><code class="language-bash">HTTP/1.1 200 OK
+<pre><code class="language-bash">$ curl -i http://localhost:3000/api/v1/signin
+HTTP/1.1 200 OK
 Access-Control-Allow-Credentials: true
-Access-Control-Allow-Headers: Origin,Accept,Content-Type,Authorization
+Access-Control-Allow-Headers: Content-Type,access_token
 Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,UPDATE
 Access-Control-Allow-Origin: *
 </code></pre>
 
                         
-                            <h2 id="authorization">Авторизация</h2>
+                            
 
-<p>Авторизация - получения JWT токена, происходит <code>POST</code> запросом по паре email/пароль.</p>
+<h2 id="authorization">Авторизация</h2>
 
-<blockquote>
-<p>пример запроса на авторизацию</p>
-</blockquote>
+<p>Все запросы к серверу должны сопровождаться авторизационным токеном.</p>
 
-<pre><code class="language-json">{
-    &quot;email&quot;: &quot;user@server.name&quot;,
-    &quot;password&quot;: &quot;******&quot;
-}
+<pre><code class="language-bash">#!/usr/bin/env bash
+URL=http://localhost:3000/api/v1
+TOKEN=&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;
+
+curl -H &quot;access_token:${TOKEN}&quot; -X GET -s ${URL}/user/1
 </code></pre>
 
 <ul>
 <li>Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация.</li>
 <li>Пароль должен состоять не менне чем из 6 символов.</li>
-<li>Первоночальная регистрация возможна только, по одной из двух учетных записей</li>
+<li>Авторизация в только что установленной системе возможна только, по одной из двух учетных записей</li>
 </ul>
 
-<blockquote>
 <p>Учетные записи существующие после установки сервера</p>
-</blockquote>
 
-<pre><code class="language-bash">email: demo@e154.ru
-password: demodemo
-
-email: admin@e154.ru
-password: adminadmin
-</code></pre>
+<ul>
+<li><strong>email</strong>: demo@e154.ru</li>
+<li><strong>password</strong>: demodemo</li>
+<li><strong>email</strong>: admin@e154.ru</li>
+<li><strong>password</strong>: adminadmin</li>
+</ul>
 
 <h2 id="signin">Вход</h2>
 
+<p>Вход - генерация JWT токена, происходит <code>GET</code> запросом.</p>
+
 <blockquote>
-<p><span class="method post">POST</span> <a href="http://localhost/api/v1/signin">http://localhost/api/v1/signin</a></p>
+<p>Генерация токена</p>
+
+<p><span class="method get">GET</span> http://localhost:3000/api/v1/signin</p>
+
+<p>Заголовки запроса</p>
 </blockquote>
+
+<pre><code class="language-bash">Content-Type: application/json
+Authorization: Basic [basic token]
+</code></pre>
 
 <pre><code class="language-bash">#!/usr/bin/env bash
 
 EMAIL=&quot;admin@e154.ru&quot;
 PASSWORD=&quot;adminadmin&quot;
-URL=http://localhost:3000/api/v1/signin
+URL=http://localhost:3000/api/v1
 
-curl -i -H &quot;Content-Type: application/json&quot; -X POST -d &quot;{\&quot;email\&quot;:\&quot;${EMAIL}\&quot;,\&quot;password\&quot;:\&quot;${PASSWORD}\&quot;}&quot; ${URL}
+curl -H &quot;Content-Type: application/json; charset=utf-8&quot; -u &quot;${EMAIL}:${PASSWORD}&quot; -s ${URL}/signin
 </code></pre>
 
 <p>Значение полей в результате положительного ответа</p>
@@ -376,7 +382,7 @@ curl -i -H &quot;Content-Type: application/json&quot; -X POST -d &quot;{\&quot;e
 
 <tbody>
 <tr>
-<td><code>token</code></td>
+<td><code>access_token</code></td>
 <td>строка</td>
 <td>JWT токен</td>
 </tr>
@@ -394,7 +400,7 @@ curl -i -H &quot;Content-Type: application/json&quot; -X POST -d &quot;{\&quot;e
 </blockquote>
 
 <pre><code class="language-json">{
-  &quot;token&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;,
+  &quot;access_token&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;,
   &quot;current_user&quot;: {
     &quot;avatar&quot;: null,
     &quot;email&quot;: &quot;admin@e154.ru&quot;,

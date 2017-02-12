@@ -266,6 +266,14 @@ aside.api h2,
 aside.api h3 {
   margin-top: 50px;
 }
+aside.api h1 + blockquote,
+aside.api h2 + blockquote,
+aside.api h3 + blockquote,
+aside.api h1 + pre,
+aside.api h2 + pre,
+aside.api h3 + pre {
+  margin-top: 40px;
+}
 aside.api h1,
 aside.api h2,
 aside.api h3,
@@ -315,6 +323,18 @@ aside.api pre {
   clear: right;
   width: 50%;
   padding-left: 15px;
+}
+aside.api blockquote + h1,
+aside.api pre + h1,
+aside.api blockquote + h2,
+aside.api pre + h2,
+aside.api blockquote + h3,
+aside.api pre + h3,
+aside.api blockquote + h4,
+aside.api pre + h4,
+aside.api blockquote + h5,
+aside.api pre + h5 {
+  clear: both;
 }
 aside.api table {
   width: 49%;

@@ -54,7 +54,9 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/api/_overview/</guid>
-      <description>&lt;h2 id=&#34;overview&#34;&gt;Обзор&lt;/h2&gt;
+      <description>
+
+&lt;h2 id=&#34;overview&#34;&gt;Обзор&lt;/h2&gt;
 
 &lt;p&gt;&lt;strong&gt;Smart home&lt;/strong&gt; &lt;strong&gt;API&lt;/strong&gt; позволяет управлять системой &lt;strong&gt;Smart home&lt;/strong&gt;, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.&lt;/p&gt;
 
@@ -63,23 +65,23 @@
 Все запросы должны быть в формате JSON и кодировке UTF-8 &lt;em&gt;(Content-Type: application/json; charset=utf-8)&lt;/em&gt;.
 Заголовок Accept будут игнорироваться для всех запросов.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ curl -i https://localhost/api/v1/action..
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ curl -i http://localhost:3000/api/v1/signin
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;security&#34;&gt;Безопасность&lt;/h2&gt;
 
 &lt;p&gt;Сервер &lt;strong&gt;Smart home&lt;/strong&gt; имеет систему контроля доступа основанную на ролях. Любое действие или команда по &lt;strong&gt;API&lt;/strong&gt; будут проходить проверку на право доступа
-Идентификация пользователя и роли происходит по &lt;a href=&#34;https://jwt.io&#34;&gt;JWT&lt;/a&gt; токену указанному в &lt;strong&gt;Authorization&lt;/strong&gt; заголовке запроса.
-Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок &lt;strong&gt;Authorization&lt;/strong&gt;:&lt;/p&gt;
+Идентификация пользователя и роли происходит по &lt;a href=&#34;https://jwt.io&#34;&gt;JWT&lt;/a&gt; токену указанному в &lt;strong&gt;access_token&lt;/strong&gt; заголовке запроса.
+Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок &lt;strong&gt;access_token&lt;/strong&gt;:&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;Пример токена авторизации&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;errors&#34;&gt;Ошибки&lt;/h2&gt;
+&lt;h1 id=&#34;errors&#34;&gt;Ошибки&lt;/h1&gt;
 
 &lt;p&gt;При возникновении ошибки Вы получите её код в теле ответа.&lt;/p&gt;
 
@@ -193,13 +195,10 @@ Content-Type: application/json; charset=utf-8:
 
 &lt;p&gt;Сервер &lt;strong&gt;Smart home&lt;/strong&gt; API version 1.0 поддерживает Cross Origin Resource Sharing (CORS) запросы для AJAX.&lt;/p&gt;
 
-&lt;blockquote&gt;
-&lt;p&gt;$ curl -i &lt;a href=&#34;https://localhost/api/v1/action.&#34;&gt;https://localhost/api/v1/action.&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;HTTP/1.1 200 OK
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ curl -i http://localhost:3000/api/v1/signin
+HTTP/1.1 200 OK
 Access-Control-Allow-Credentials: true
-Access-Control-Allow-Headers: Origin,Accept,Content-Type,Authorization
+Access-Control-Allow-Headers: Content-Type,access_token
 Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,UPDATE
 Access-Control-Allow-Origin: *
 &lt;/code&gt;&lt;/pre&gt;
@@ -212,50 +211,57 @@ Access-Control-Allow-Origin: *
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/api/_authorize/</guid>
-      <description>&lt;h2 id=&#34;authorization&#34;&gt;Авторизация&lt;/h2&gt;
+      <description>
 
-&lt;p&gt;Авторизация - получения JWT токена, происходит &lt;code&gt;POST&lt;/code&gt; запросом по паре email/пароль.&lt;/p&gt;
+&lt;h2 id=&#34;authorization&#34;&gt;Авторизация&lt;/h2&gt;
 
-&lt;blockquote&gt;
-&lt;p&gt;пример запроса на авторизацию&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;Все запросы к серверу должны сопровождаться авторизационным токеном.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
-    &amp;quot;email&amp;quot;: &amp;quot;user@server.name&amp;quot;,
-    &amp;quot;password&amp;quot;: &amp;quot;******&amp;quot;
-}
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/usr/bin/env bash
+URL=http://localhost:3000/api/v1
+TOKEN=&amp;quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&amp;quot;
+
+curl -H &amp;quot;access_token:${TOKEN}&amp;quot; -X GET -s ${URL}/user/1
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация.&lt;/li&gt;
 &lt;li&gt;Пароль должен состоять не менне чем из 6 символов.&lt;/li&gt;
-&lt;li&gt;Первоночальная регистрация возможна только, по одной из двух учетных записей&lt;/li&gt;
+&lt;li&gt;Авторизация в только что установленной системе возможна только, по одной из двух учетных записей&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;blockquote&gt;
 &lt;p&gt;Учетные записи существующие после установки сервера&lt;/p&gt;
-&lt;/blockquote&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;email: demo@e154.ru
-password: demodemo
-
-email: admin@e154.ru
-password: adminadmin
-&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;email&lt;/strong&gt;: demo@e154.ru&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;password&lt;/strong&gt;: demodemo&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;email&lt;/strong&gt;: admin@e154.ru&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;password&lt;/strong&gt;: adminadmin&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h2 id=&#34;signin&#34;&gt;Вход&lt;/h2&gt;
 
+&lt;p&gt;Вход - генерация JWT токена, происходит &lt;code&gt;GET&lt;/code&gt; запросом.&lt;/p&gt;
+
 &lt;blockquote&gt;
-&lt;p&gt;&lt;span class=&#34;method post&#34;&gt;POST&lt;/span&gt; &lt;a href=&#34;http://localhost/api/v1/signin&#34;&gt;http://localhost/api/v1/signin&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Генерация токена&lt;/p&gt;
+
+&lt;p&gt;&lt;span class=&#34;method get&#34;&gt;GET&lt;/span&gt; http://localhost:3000/api/v1/signin&lt;/p&gt;
+
+&lt;p&gt;Заголовки запроса&lt;/p&gt;
 &lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Content-Type: application/json
+Authorization: Basic [basic token]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/usr/bin/env bash
 
 EMAIL=&amp;quot;admin@e154.ru&amp;quot;
 PASSWORD=&amp;quot;adminadmin&amp;quot;
-URL=http://localhost:3000/api/v1/signin
+URL=http://localhost:3000/api/v1
 
-curl -i -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &amp;quot;{\&amp;quot;email\&amp;quot;:\&amp;quot;${EMAIL}\&amp;quot;,\&amp;quot;password\&amp;quot;:\&amp;quot;${PASSWORD}\&amp;quot;}&amp;quot; ${URL}
+curl -H &amp;quot;Content-Type: application/json; charset=utf-8&amp;quot; -u &amp;quot;${EMAIL}:${PASSWORD}&amp;quot; -s ${URL}/signin
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Значение полей в результате положительного ответа&lt;/p&gt;
@@ -271,7 +277,7 @@ curl -i -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &amp;qu
 
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td&gt;&lt;code&gt;token&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;access_token&lt;/code&gt;&lt;/td&gt;
 &lt;td&gt;строка&lt;/td&gt;
 &lt;td&gt;JWT токен&lt;/td&gt;
 &lt;/tr&gt;
@@ -289,7 +295,7 @@ curl -i -H &amp;quot;Content-Type: application/json&amp;quot; -X POST -d &amp;qu
 &lt;/blockquote&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
-  &amp;quot;token&amp;quot;: &amp;quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&amp;quot;,
+  &amp;quot;access_token&amp;quot;: &amp;quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&amp;quot;,
   &amp;quot;current_user&amp;quot;: {
     &amp;quot;avatar&amp;quot;: null,
     &amp;quot;email&amp;quot;: &amp;quot;admin@e154.ru&amp;quot;,
