@@ -1,0 +1,13 @@
+[Unit]
+Description=Smart home server
+Requires=
+After=
+
+[Service]
+PIDFile=/var/run/smart-home-server.pid
+ExecStartPre=/bin/rm -f /var/run/smart-home-server.pid
+ExecStart=/opt/smart-home/server/server
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

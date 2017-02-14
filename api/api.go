@@ -16,9 +16,17 @@ import (
 	"github.com/e154/smart-home/api/notifr"
 	"github.com/e154/smart-home/api/telemetry"
 	"github.com/e154/smart-home/api/rbac"
+	"io/ioutil"
 )
 
 func configuration() {
+
+	// check if exist data dir
+	data_dir := beego.AppConfig.String("data_dir")
+	if _, err := ioutil.ReadDir(data_dir); err != nil {
+		panic("data directory not found")
+		return
+	}
 
 	// site base
 	db_user := beego.AppConfig.String("db_user")
@@ -102,6 +110,6 @@ func Initialize() {
 
 	log.Info("Starting....")
 
-	// beego
+	// rest api
 	go beego.Run()
 }
