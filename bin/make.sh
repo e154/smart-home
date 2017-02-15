@@ -136,6 +136,10 @@ __build() {
 
     __docs_deploy
 
+    cd $GOPATH/src/github.com/jteeuwen/go-bindata/go-bindata
+    go build
+    cp go-bindata $GOPATH/bin
+
     cd ${ROOT}
     go-bindata -pkg main -o migrations.go database/migrations
     cd ${TMP_DIR}
