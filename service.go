@@ -1,8 +1,7 @@
-package service
+package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,7 +16,6 @@ const (
 )
 
 var dependencies = []string{}
-var stdlog, errlog *log.Logger
 
 type Service struct {
 	daemon.Daemon
@@ -37,9 +35,6 @@ func (service *Service) Manage() (string, error) {
 			return service.Stop()
 		case "status":
 			return service.Status()
-		default:
-			help := fmt.Sprintf("Usage: %s install | remove | start | stop | status", os.Args[0])
-			return help, nil
 		}
 	}
 
@@ -57,14 +52,14 @@ func (service *Service) Manage() (string, error) {
 			stdlog.Println("Stoping listening on ", port)
 
 			if killSignal == os.Interrupt {
-				return "Daemon was interruped by system signal", nil
+				return "Server was interruped by system signal", nil
 			}
-			return "Daemon was killed", nil
+			return "Server was killed", nil
 		}
 	}
 }
 
-func Initialize() {
+func ServiceInitialize() {
 	srv, err := daemon.New(name, description, dependencies...)
 	if err != nil {
 		errlog.Println("Error: ", err)
@@ -77,9 +72,4 @@ func Initialize() {
 		os.Exit(1)
 	}
 	fmt.Println(status)
-}
-
-func init() {
-	stdlog = log.New(os.Stdout, "", 0)
-	errlog = log.New(os.Stderr, "", 0)
 }
