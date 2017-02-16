@@ -33,14 +33,8 @@ main() {
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if [ "$TRAVIS" != "true" ]
-then
-    settings=${BASEDIR}/settings.sh ; source "$settings" ; if [ $? -ne 0 ] ; then echo "Error - no settings functions $settings" 1>&2 ; exit 1 ; fi
-    conn="${user}:${password}@tcp(${server})/${base}?charset=utf8&parseTime=true"
-else
-    settings=${BASEDIR}/settings.travis.sh ; source "$settings" ; if [ $? -ne 0 ] ; then echo "Error - no settings functions $settings" 1>&2 ; exit 1 ; fi
-    conn="${user}@tcp(${server})/${base}?charset=utf8&parseTime=true"
-fi
+settings=${BASEDIR}/settings.sh ; source "$settings" ; if [ $? -ne 0 ] ; then echo "Error - no settings functions $settings" 1>&2 ; exit 1 ; fi
+conn="${user}:${password}@tcp(${server})/${base}?charset=utf8&parseTime=true"
 
 MIGRATION_NAME=$2
 COMMAND=$1

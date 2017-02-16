@@ -85,6 +85,13 @@ Languages:
               url: "#install-exec"
         - title: "Сборка из исходного кода"
           url: "#install-from-source"
+          pages:
+            - title: "Сервер"
+              url: "#install-from-source-server"
+            - title: "Конфигуратор"
+              url: "#install-from-source-configurator"
+            - title: "Нода"
+              url: "#install-from-source-node"
 
     header:
       slogan    : "Система для создания современного умного дома"
@@ -230,6 +237,13 @@ Languages:
               url: "install-exec"
         - title: "Install from source"
           url: "install-from-source"
+          pages:
+            - title: "Server"
+              url: "#install-from-source-server"
+            - title: "Configurator"
+              url: "#install-from-source-configurator"
+            - title: "Node"
+              url: "#install-from-source-node"
 
     header:
       slogan    : "System for making of a modern Smart Home"
