@@ -10,6 +10,11 @@ EXEC="server"
 TMP_DIR="${ROOT}/tmp/${EXEC}"
 ARCHIVE="smart-home-${EXEC}.tar.gz"
 
+db_driver="mysql"
+db_base="smarthome"
+db_user="root"
+db_server="127.0.0.1:3306"
+
 #
 # build version variables
 #
@@ -60,6 +65,9 @@ main() {
     --help)
     __help
     ;;
+    --migrate)
+    __migrate
+    ;;
     --docs-deploy)
     __docs_deploy
     ;;
@@ -95,6 +103,13 @@ __clean() {
     rm -rf ${ROOT}/vendor/src
     rm -rf ${TMP_DIR}
     rm -rf ${HOME}/${ARCHIVE}
+}
+
+__migrate() {
+
+    conn="${db_user}@tcp(${db_server})/${db_base}?charset=utf8&parseTime=true"
+
+    bee migrate -driver=${db_driver} -conn=${conn}
 }
 
 __docs_deploy() {
@@ -140,19 +155,31 @@ __build() {
     go build
     cp go-bindata $GOPATH/bin
 
+    # pack migrations
     cd ${ROOT}
     go-bindata -pkg main -o migrations.go database/migrations
+
+    # build
     cd ${TMP_DIR}
     xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
+
+    # copy configs
     cp -r ${ROOT}/conf ${TMP_DIR}
+    sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
+
+    # etc
+    cp -r ${ROOT}/examples ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}
     cp ${ROOT}/LICENSE ${TMP_DIR}
     cp ${ROOT}/README.md ${TMP_DIR}
     cp ${ROOT}/contributors.txt ${TMP_DIR}
-    sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
+
+    # sql dump
     cd ${TMP_DIR}
     mysqldump -u root smarthome > ${TMP_DIR}/dump.sql
     echo "tar: ${ARCHIVE} copy to ${HOME}"
+
+    # create arch
     tar -zcf ${HOME}/${ARCHIVE} .
 }
 
