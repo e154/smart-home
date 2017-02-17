@@ -151,14 +151,6 @@ __build() {
 
     __docs_deploy
 
-    cd $GOPATH/src/github.com/jteeuwen/go-bindata/go-bindata
-    go build
-    cp go-bindata $GOPATH/bin
-
-    # pack migrations
-    cd ${ROOT}
-    go-bindata -pkg main -o migrations.go database/migrations
-
     # build
     cd ${TMP_DIR}
     xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
