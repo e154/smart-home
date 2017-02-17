@@ -27,6 +27,7 @@ import (
 	"github.com/astaxie/beego"
 	"fmt"
 	"path/filepath"
+	"github.com/e154/smart-home/database"
 )
 
 const tmp_dir string = "tmp"
@@ -41,7 +42,7 @@ func unpackMigrations() ( err error) {
 		return err
 	}
 
-	if err = RestoreAssets(tmp_dir, ""); err != nil {
+	if err = database.RestoreAssets(tmp_dir, ""); err != nil {
 		return err
 	}
 

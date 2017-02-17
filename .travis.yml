@@ -21,7 +21,6 @@ before_install:
   - go get github.com/karalabe/xgo
   - go env && pwd
   - go get github.com/spf13/hugo
-  - go get github.com/jteeuwen/go-bindata
   - npm install -g gulp
 
 install:

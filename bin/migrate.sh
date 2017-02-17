@@ -20,6 +20,9 @@ main() {
         --refresh)
         __refresh
         ;;
+        --gen)
+        __gen
+        ;;
         --help)
         __help
         ;;
@@ -60,6 +63,11 @@ __refresh() {
     bee migrate refresh -driver=${driver} -conn=${conn}
 }
 
+__gen() {
+    # go get -u github.com/jteeuwen/go-bindata/...
+    go-bindata -pkg database -o ${BASEDIR}/../database/migrations.go database/migrations
+}
+
 __help() {
   cat <<EOF
 Usage: migrate.sh [options]
@@ -71,6 +79,7 @@ OPTIONS:
   --down - down migration
   --reset - reset migration
   --refresh - refresh migration
+  --gen - generate migration sources
 
   -h / --help - show this help text and exit 0
 
