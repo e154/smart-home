@@ -1,12 +1,12 @@
 [Unit]
 Description=Smart home server
-Requires=
-After=
+Requires=mysql.service
+After=mysql.service
 
 [Service]
 PIDFile=/var/run/smart-home-server.pid
 ExecStartPre=/bin/rm -f /var/run/smart-home-server.pid
-ExecStart=/opt/smart-home/server/server
+ExecStart=/opt/smart-home/server/server-linux-amd64
 Restart=on-abort
 
 [Install]
