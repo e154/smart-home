@@ -177,7 +177,7 @@ __build() {
 
 __help() {
   cat <<EOF
-Usage: make.sh [options]
+Usage: travis.sh [options]
 
 Bootstrap Debian 8.0 host with mysql installation.
 
@@ -186,6 +186,7 @@ OPTIONS:
   --test - testing package
   --init - initialize the development environment
   --clean - cleaning of temporary directories
+  --docs-deploy - deploy documentation
   --build - build backend
 
   -h / --help - show this help text and exit 0
