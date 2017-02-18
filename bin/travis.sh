@@ -157,7 +157,7 @@ __build() {
 
     # copy configs
     cp -r ${ROOT}/conf ${TMP_DIR}
-    sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
+    #sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
 
     # etc
     cp -r ${ROOT}/examples ${TMP_DIR}
