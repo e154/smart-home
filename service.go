@@ -15,7 +15,7 @@ const (
 	description = "Smart Home Server"
 )
 
-var dependencies = []string{}
+var dependencies = []string{"mysql.service"}
 
 type Service struct {
 	daemon.Daemon

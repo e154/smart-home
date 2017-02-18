@@ -7,3 +7,8 @@ vendor/*
 !vendor/manifest
 /smart-home
 server
+/conf/prod/db.conf
+/conf/dev/db.conf
+/conf/prod/app.conf
+/conf/dev/app.conf
+/conf/app.conf

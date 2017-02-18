@@ -157,7 +157,7 @@ __build() {
 
     # copy configs
     cp -r ${ROOT}/conf ${TMP_DIR}
-    sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
+    #sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
 
     # etc
     cp -r ${ROOT}/examples ${TMP_DIR}
@@ -177,7 +177,7 @@ __build() {
 
 __help() {
   cat <<EOF
-Usage: make.sh [options]
+Usage: travis.sh [options]
 
 Bootstrap Debian 8.0 host with mysql installation.
 
@@ -186,6 +186,7 @@ OPTIONS:
   --test - testing package
   --init - initialize the development environment
   --clean - cleaning of temporary directories
+  --docs-deploy - deploy documentation
   --build - build backend
 
   -h / --help - show this help text and exit 0
