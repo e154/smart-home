@@ -11,7 +11,7 @@
             {{ range .Site.Params.main_menu.links }}
 
             <li>
-                <a class="page-scroll" href="{{ .url | absLangURL }}">{{.title}}</a>
+                <a href="{{ .url | absURL }}">{{.title}}</a>
             </li>
             {{ end }}
 
