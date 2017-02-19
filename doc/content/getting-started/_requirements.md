@@ -39,17 +39,17 @@ groups:
     <div class="col-md-4 download-item text-center">
         <h3>Сервер</h3>
         <p class="text-muted">Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.</p>
-        <a id="smart-home-server" href="https://github.com/e154/smart-home/releases" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+        <a id="smart-home-server" href="https://github.com/e154/smart-home/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
     </div>
     <div class="col-md-4 download-item text-center">
         <h3>Конфигуратор</h3>
         <p class="text-muted">Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.</p>
-        <a id="smart-home-configurator" href="https://github.com/e154/smart-home-configurator/releases" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+        <a id="smart-home-configurator" href="https://github.com/e154/smart-home-configurator/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
     </div>
     <div class="col-md-4 download-item text-center">
         <h3>Нода</h3>
         <p class="text-muted">Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.</p>
-        <a id="smart-home-node" href="https://github.com/e154/smart-home-node/releases" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+        <a id="smart-home-node" href="https://github.com/e154/smart-home-node/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
     </div>
 </div>
 

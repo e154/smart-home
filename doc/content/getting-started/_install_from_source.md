@@ -1,5 +1,5 @@
 ---
-weight: 4
+weight: 6
 title: overview
 groups:
     - "getting_started"
@@ -37,7 +37,7 @@ go build -o server
 cp -r conf /opt/smart-home/server
 cp -r data /opt/smart-home
 cp server /opt/smart-home/server
-sed 's/dev\/app.conf/prod\/app.conf/' conf/app.conf > /opt/smart-home/server/conf/app.conf
+sed 's/dev\/app.sample.conf/prod\/app.sample.conf/' conf/app.sample.conf > /opt/smart-home/server/conf/app.sample.conf
 ```
 
 ### Сборка конфигуратора {#install-from-source-configurator}
@@ -50,7 +50,7 @@ gvt restore
 go build -o configurator
 cp configurator /opt/smart-home/configurator
 cp -r conf /opt/smart-home/configurator
-sed 's/dev\/app.conf/prod\/app.conf/' conf/app.conf > /opt/smart-home/configurator/conf/app.conf
+sed 's/dev\/app.sample.conf/prod\/app.sample.conf/' conf/app.sample.conf > /opt/smart-home/configurator/conf/app.sample.conf
 
 cd static_source
 npm install

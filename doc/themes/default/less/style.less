@@ -4,6 +4,7 @@
 @import "callout";
 @import "darcula";
 @import "api";
+@import "opensans";
 
 // Global Components
 html,
@@ -100,7 +101,7 @@ header {
     .header-content {
         position: relative;
         text-align: center;
-        padding: 100px 15px 100px;
+        padding: 100px 0;
         width: 100%;
         .header-content-inner {
             h1 {
@@ -129,9 +130,8 @@ header {
             -webkit-transform: translateY(-50%);
             -ms-transform: translateY(-50%);
             transform: translateY(-50%);
-            padding: 0 50px;
             .header-content-inner {
-                max-width: 1000px;
+
                 margin-left: auto;
                 margin-right: auto;
                 h1 {
@@ -348,7 +348,7 @@ footer.footer {
                 color: rgba(255,255,255,.7);
                 &:hover {
                     text-decoration: none;
-                    color: #F05F40;
+                    color: white;
                 }
             }
         }
@@ -395,11 +395,19 @@ pre {
     position: relative;
     border: none;
     //padding: 0;
+    code {
+        color: #c5c8c6;
+        background-color: transparent;
+        border: none;
+    }
 }
 
 .hljs {
     color: #c5c8c6;
     background-color: transparent;
     border: none;
-    padding: 0 15px;
+}
+
+.call-to-action {
+    padding: 50px 0;
 }

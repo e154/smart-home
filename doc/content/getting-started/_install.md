@@ -8,10 +8,9 @@ groups:
 <h2 id="install">Установка</h2>
 
 Будет произведена базовая установка системы **Умный дом** на сервер под операционной системой linux Debian.
-С не значительными изменениями установка будет подобна в других операционных систем.
+С не значительными изменениями установка будет подобна для других операционных систем.
 
 План действий:
-
     
 *   <a href="#install-mkdir">Создание директорий</a>
 *   <a href="#install-download-and-unpack">Скачивание и распаковка</a>
@@ -28,7 +27,7 @@ groups:
 </div>
 
 
-Информация о системе на которой производилось тестовое развёртывание:
+Информация о системе на которой производилось развёртывание:
 
 ```bash
 delta54@darkstar:tmp$ uname -a
@@ -42,8 +41,8 @@ PRETTY_NAME="Debian GNU/Linux 8 (jessie)"
 
 <h3 id="install-mkdir">Создание директорий</h3>
 
-Рекомендуемая директория установки сервера /opt/smart-home. Подготовьте директорию, укажите требуемые права доступа на директорию
-/opt/smart-home
+Рекомендуемая директория установки сервера */opt/smart-home*, в неё и будет производиться дальнейшая установка. 
+Подготовка директорий, выставляются требуемые права доступа для */opt/smart-home*
     
 
 ```bash
@@ -54,36 +53,27 @@ mkdir -p /opt/smart-home/configurator
 mkdir -p /opt/smart-home/node
 ```
 
-<h3 id="install-download-and-unpack">Скачивание и распаковка</h3>
-
-Скачаем последний релиз сервер, и распакуем в директории **server**
+<h3 id="install-download-and-unpack">Скачивание</h3>
 
 ```bash
 cd /opt/smart-home/server
+
 wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
 tar -zxvf smart-home-server.tar.gz
-```
 
-В директории **data** хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
-Вынесите директорию **data** на один уровень выше.
-
-```bash
 cd /opt/smart-home/server
 mv data ../
-```
 
-Тоже самое сделаем для конфигуратора, и ноды
-
-```bash
 cd /opt/smart-home/configurator
 wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
 tar -zxvf smart-home-configurator.tar.gz
+
 cd /opt/smart-home/node
 wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
 tar -zxvf smart-home-node.tar.gz
 ```
 
-В итоге мы должны получит следующую корневую структуру:
+Корень директории */opt/smart-home*:
 
 ```bash
 cd /opt/smart-home
@@ -96,7 +86,14 @@ tree
 
 <h3 id="install-server-conf">Настройка сервера</h3>
 
-Важные переменные в конфигурационном файле серевера:
+```bash
+cd /opt/smart-home/server
+sed 's/dev\/app.conf/prod\/app.conf/' conf/app.sample.conf > conf/app.conf
+cp conf/prod/app.sample.conf conf/prod/app.conf
+cp conf/prod/db.sample.conf conf/prod/db.conf
+```
+
+Основные значения:
     
 *   **httpaddr** - адрес сервера REST API
 *   **httpport** - порт сервера REST API
@@ -105,25 +102,9 @@ tree
 *   **db_pass** - пароль доступка к mysql
 *   **db_host** - адрес сервера mysql
 *   **db_name** - название базы mysql
-*   **db_port** - порт сервера mysql
-    
-Отредактируйте переменную **httpaddr** в /opt/smart-home/server/conf/app.conf,
-адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.
+*   **db_port** - порт сервера mysql    
 
-```bash
-httpaddr = "0.0.0.0"
-```
-
-По желанию отредактируйте переменную **httpport** в /opt/smart-home/server/conf/prod/app.conf,
-или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
-приложений.
-
-```bash
-httpport = 3000
-```
-
-Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
-или оставьте без изменений, и настройте базу в соответствии с установленными значениями.
+Для работы сервера требуется подключение к базе mysql. Отредактируйте файл */opt/smart-home/server/conf/prod/db.conf*
 
 ```bash
 db_user = smarthome
@@ -136,8 +117,14 @@ db_type = mysql
 
 <h3 id="install-configuration-conf">Настройка конфигуратора</h3>
 
-Конфиг файлы конфигуратора лежат в директории /opt/smart-home/configurator/conf/
-Важные переменные:
+```bash
+cd /opt/smart-home/configurator
+sed 's/dev\/app.conf/prod\/app.conf/' conf/app.sample.conf > conf/app.conf
+cp conf/prod/app.sample.conf conf/prod/app.conf
+cp conf/prod/db.sample.conf conf/prod/db.conf
+```
+
+Основные значения:
     
 *   **httpaddr** - адрес веб интерфеса конфигуратора
 *   **httpport** - порт веб интерфеса конфигуратора
@@ -148,22 +135,12 @@ db_type = mysql
 
 <h3 id="install-node-conf">Настройка ноды</h3>
 
-Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:
-
 ```bash
-cp /opt/smart-home/node/conf/node.sample.conf node.conf
+cd /opt/smart-home/node
+cp conf/node.sample.conf conf/node.conf
 ```
 
-```bash
-cat /opt/smart-home/node/conf/node.conf
-app_version=0.1.0
-ip=127.0.0.1
-port=3001
-baud=19200
-timeout=2
-stopbits=2
-```
-
+Основные значения:
     
 *   **app_version** - версия внутреннего api ноды
 *   **ip** - адрес ожидания соединения от сервера
@@ -176,19 +153,19 @@ stopbits=2
 
 <h3 id="install-mysql">База mysql</h3>
 
-Подключимся к консоли mysql, приготовьте пароль для рута:
+Подключение к консоли mysql, потребуется пароль рута:
 
 ```bash
 mysql -u root -p
 ```
 
-Создадим базу для сервера **умного дома**:
+Создание базы сервера **умный дом**:
 
 ```bash
 CREATE DATABASE smarthome;
 ```
 
-Создадим нового пользователя, и дадим права на доступ к базе **smarthome** из консоли mysql
+Создание нового пользователя, с соответствующими правами **smarthome** из консоли mysql
     
 *   **smarthome** - пользователь
 *   **smarthome** - пароль
@@ -200,7 +177,7 @@ GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-осталось импортировать базу
+импорт базы
 
 ```bash
 use smarthome
@@ -209,7 +186,7 @@ source /opt/smart-home/server/dump.sql
 
 <h3 id="install-exec">Запуск</h3>
 
-Осталось запустить сервера в фоновом режиме
+Запуск сервера в фоновом режиме:
 
 ```bash
 /opt/smart-home/server/server-linux-amd64 > /dev/null 2>&1 &
@@ -223,8 +200,5 @@ source /opt/smart-home/server/dump.sql
 *   **&** - запуск в фоновом режиме
 
 
-<div class="boc-callout boc-callout-danger">
-    <h4>Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы</h4>
-</div>
 
 
