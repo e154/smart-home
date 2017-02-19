@@ -8,10 +8,12 @@ The project is in active development stage
 
 [Documentation](https://e154.github.io/smart-home/)
 
-[Configurator](https://e154.github.io/smart-home-configurator/)
-[Node](https://e154.github.io/smart-home-node/)
-[Tools](https://e154.github.io/smart-home-tools/)
-[Socket](https://e154.github.io/smart-home-socket/)
+Smart home parts:
+
+* [Configurator](https://e154.github.io/smart-home-configurator/)
+* [Node](https://e154.github.io/smart-home-node/)
+* [Tools](https://e154.github.io/smart-home-tools/)
+* [Socket](https://e154.github.io/smart-home-socket/)
 
 #### Supported system
     
@@ -27,6 +29,8 @@ The project is in active development stage
 *   linux mips64le
 *   windows 386
 *   windows amd64
+
+Schematic smart home map
 
 <img src="doc/static/img/default_network.png" alt="smart-home map" width="630">
 
