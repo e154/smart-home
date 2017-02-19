@@ -2,26 +2,26 @@
 // Navigation
 //
 
-.navbar-default {
+.navbar-fixed-top {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1;
 
-  background-color: white;
+  //background-color: white;
   border-color: fade(@gray-darker, 5%);
   .sans-serif-font;
   .transition-all;
   .navbar-header .navbar-brand {
-    color: @theme-primary;
+    //color: @theme-primary;
     .sans-serif-font;
     font-weight: 700;
     text-transform: uppercase;
-    &:hover,
-    &:focus {
-      color: darken(@theme-primary, 10%);
-    }
+  //  &:hover,
+  //  &:focus {
+  //    color: darken(@theme-primary, 10%);
+  //  }
   }
   .navbar-header .navbar-toggle {
     font-weight: 700;
@@ -36,9 +36,9 @@
         text-transform: uppercase;
         font-weight: 700;
         font-size: 13px;
-        color: @gray-darker;
+        color: fade(white, 70%);
         &:hover {
-          color: @theme-primary;
+           color: white;
         }
       }
       &.active {
