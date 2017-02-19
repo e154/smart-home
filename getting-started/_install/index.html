@@ -14,8 +14,6 @@
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/bootstrap.min.css" type="text/css">
 <!-- Custom Fonts -->
-<link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-<link href='//fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="https://e154.github.io/smart-home/font-awesome/css/font-awesome.min.css" type="text/css">
 <!-- Plugin CSS -->
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/animate.min.css" type="text/css">
@@ -34,7 +32,7 @@
     <body id="page-top">
         
         <!-- main menu -->
-<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+<nav id="mainNav" class="navbar  navbar-fixed-top navbar-inverse">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -79,7 +77,7 @@
         
         <header class="getting-started">
     <div class="header-content">
-        <div class="header-content-inner">
+        <div class="header-content-inner container">
             <h1>overview</h1>
             
         </div>
@@ -96,7 +94,7 @@
                             <h2 id="install">Установка</h2>
 
 <p>Будет произведена базовая установка системы <strong>Умный дом</strong> на сервер под операционной системой linux Debian.
-С не значительными изменениями установка будет подобна в других операционных систем.</p>
+С не значительными изменениями установка будет подобна для других операционных систем.</p>
 
 <p>План действий:</p>
 
@@ -116,7 +114,7 @@
     </div>
 </div>
 
-<p>Информация о системе на которой производилось тестовое развёртывание:</p>
+<p>Информация о системе на которой производилось развёртывание:</p>
 
 <pre><code class="language-bash">delta54@darkstar:tmp$ uname -a
 Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux
@@ -128,8 +126,8 @@ PRETTY_NAME=&quot;Debian GNU/Linux 8 (jessie)&quot;
 
 <h3 id="install-mkdir">Создание директорий</h3>
 
-<p>Рекомендуемая директория установки сервера /opt/smart-home. Подготовьте директорию, укажите требуемые права доступа на директорию
-/opt/smart-home</p>
+<p>Рекомендуемая директория установки сервера <em>/opt/smart-home</em>, в неё и будет производиться дальнейшая установка.
+Подготовка директорий, выставляются требуемые права доступа для <em>/opt/smart-home</em></p>
 
 <pre><code class="language-bash">sudo mkdir -p /opt/smart-home
 sudo chown $USER:$USER /opt/smart-home -R
@@ -138,33 +136,26 @@ mkdir -p /opt/smart-home/configurator
 mkdir -p /opt/smart-home/node
 </code></pre>
 
-<h3 id="install-download-and-unpack">Скачивание и распаковка</h3>
-
-<p>Скачаем последний релиз сервер, и распакуем в директории <strong>server</strong></p>
+<h3 id="install-download-and-unpack">Скачивание</h3>
 
 <pre><code class="language-bash">cd /opt/smart-home/server
+
 wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
 tar -zxvf smart-home-server.tar.gz
-</code></pre>
 
-<p>В директории <strong>data</strong> хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
-Вынесите директорию <strong>data</strong> на один уровень выше.</p>
-
-<pre><code class="language-bash">cd /opt/smart-home/server
+cd /opt/smart-home/server
 mv data ../
-</code></pre>
 
-<p>Тоже самое сделаем для конфигуратора, и ноды</p>
-
-<pre><code class="language-bash">cd /opt/smart-home/configurator
+cd /opt/smart-home/configurator
 wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
 tar -zxvf smart-home-configurator.tar.gz
+
 cd /opt/smart-home/node
 wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
 tar -zxvf smart-home-node.tar.gz
 </code></pre>
 
-<p>В итоге мы должны получит следующую корневую структуру:</p>
+<p>Корень директории <em>/opt/smart-home</em>:</p>
 
 <pre><code class="language-bash">cd /opt/smart-home
 tree
@@ -176,7 +167,13 @@ tree
 
 <h3 id="install-server-conf">Настройка сервера</h3>
 
-<p>Важные переменные в конфигурационном файле серевера:</p>
+<pre><code class="language-bash">cd /opt/smart-home/server
+sed 's/dev\/app.conf/prod\/app.conf/' conf/app.sample.conf &gt; conf/app.conf
+cp conf/prod/app.sample.conf conf/prod/app.conf
+cp conf/prod/db.sample.conf conf/prod/db.conf
+</code></pre>
+
+<p>Основные значения:</p>
 
 <ul>
 <li><strong>httpaddr</strong> - адрес сервера REST API</li>
@@ -186,25 +183,10 @@ tree
 <li><strong>db_pass</strong> - пароль доступка к mysql</li>
 <li><strong>db_host</strong> - адрес сервера mysql</li>
 <li><strong>db_name</strong> - название базы mysql</li>
-<li><strong>db_port</strong> - порт сервера mysql
-<br /></li>
+<li><strong>db_port</strong> - порт сервера mysql<br /></li>
 </ul>
 
-<p>Отредактируйте переменную <strong>httpaddr</strong> в /opt/smart-home/server/conf/app.conf,
-адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.</p>
-
-<pre><code class="language-bash">httpaddr = &quot;0.0.0.0&quot;
-</code></pre>
-
-<p>По желанию отредактируйте переменную <strong>httpport</strong> в /opt/smart-home/server/conf/prod/app.conf,
-или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
-приложений.</p>
-
-<pre><code class="language-bash">httpport = 3000
-</code></pre>
-
-<p>Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
-или оставьте без изменений, и настройте базу в соответствии с установленными значениями.</p>
+<p>Для работы сервера требуется подключение к базе mysql. Отредактируйте файл <em>/opt/smart-home/server/conf/prod/db.conf</em></p>
 
 <pre><code class="language-bash">db_user = smarthome
 db_pass = smarthome
@@ -216,8 +198,13 @@ db_type = mysql
 
 <h3 id="install-configuration-conf">Настройка конфигуратора</h3>
 
-<p>Конфиг файлы конфигуратора лежат в директории /opt/smart-home/configurator/conf/
-Важные переменные:</p>
+<pre><code class="language-bash">cd /opt/smart-home/configurator
+sed 's/dev\/app.conf/prod\/app.conf/' conf/app.sample.conf &gt; conf/app.conf
+cp conf/prod/app.sample.conf conf/prod/app.conf
+cp conf/prod/db.sample.conf conf/prod/db.conf
+</code></pre>
+
+<p>Основные значения:</p>
 
 <ul>
 <li><strong>httpaddr</strong> - адрес веб интерфеса конфигуратора</li>
@@ -230,19 +217,11 @@ db_type = mysql
 
 <h3 id="install-node-conf">Настройка ноды</h3>
 
-<p>Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:</p>
-
-<pre><code class="language-bash">cp /opt/smart-home/node/conf/node.sample.conf node.conf
+<pre><code class="language-bash">cd /opt/smart-home/node
+cp conf/node.sample.conf conf/node.conf
 </code></pre>
 
-<pre><code class="language-bash">cat /opt/smart-home/node/conf/node.conf
-app_version=0.1.0
-ip=127.0.0.1
-port=3001
-baud=19200
-timeout=2
-stopbits=2
-</code></pre>
+<p>Основные значения:</p>
 
 <ul>
 <li><strong>app_version</strong> - версия внутреннего api ноды</li>
@@ -257,17 +236,17 @@ stopbits=2
 
 <h3 id="install-mysql">База mysql</h3>
 
-<p>Подключимся к консоли mysql, приготовьте пароль для рута:</p>
+<p>Подключение к консоли mysql, потребуется пароль рута:</p>
 
 <pre><code class="language-bash">mysql -u root -p
 </code></pre>
 
-<p>Создадим базу для сервера <strong>умного дома</strong>:</p>
+<p>Создание базы сервера <strong>умный дом</strong>:</p>
 
 <pre><code class="language-bash">CREATE DATABASE smarthome;
 </code></pre>
 
-<p>Создадим нового пользователя, и дадим права на доступ к базе <strong>smarthome</strong> из консоли mysql</p>
+<p>Создание нового пользователя, с соответствующими правами <strong>smarthome</strong> из консоли mysql</p>
 
 <ul>
 <li><strong>smarthome</strong> - пользователь</li>
@@ -280,7 +259,7 @@ GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
 FLUSH PRIVILEGES;
 </code></pre>
 
-<p>осталось импортировать базу</p>
+<p>импорт базы</p>
 
 <pre><code class="language-bash">use smarthome
 source /opt/smart-home/server/dump.sql
@@ -288,7 +267,7 @@ source /opt/smart-home/server/dump.sql
 
 <h3 id="install-exec">Запуск</h3>
 
-<p>Осталось запустить сервера в фоновом режиме</p>
+<p>Запуск сервера в фоновом режиме:</p>
 
 <pre><code class="language-bash">/opt/smart-home/server/server-linux-amd64 &gt; /dev/null 2&gt;&amp;1 &amp;
 /opt/smart-home/configurator/configurator-linux-amd64 &gt; /dev/null 2&gt;&amp;1 &amp;
@@ -301,10 +280,6 @@ source /opt/smart-home/server/dump.sql
 <li><strong>2&gt;&amp;1</strong> - вывод ошибок в стандартный поток</li>
 <li><strong>&amp;</strong> - запуск в фоновом режиме</li>
 </ul>
-
-<div class="boc-callout boc-callout-danger">
-    <h4>Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы</h4>
-</div>
 
                         
                     </div>
@@ -421,6 +396,33 @@ source /opt/smart-home/server/dump.sql
         </li>
         
         <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#update">
+                Обновление
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#migrate-mysql">
+                Обновление базы mysql
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#service">
+                Автозапуск
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#install-from-source">
                 Сборка из исходного кода
             </a>
@@ -465,6 +467,10 @@ source /opt/smart-home/server/dump.sql
         <ul>
 
             
+            <li><a href='https://github.com/e154/smart-home'>GitHub</a></li>
+            
+
+            
 
             <li>
                 <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
@@ -486,7 +492,10 @@ source /opt/smart-home/server/dump.sql
         </ul>
 
         
-        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        <div>Разработано при поддержке <a href='http://e154.ru'>e154.ru</a></div>
+        
+        
+        <p>Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
         
 
     </div>
@@ -505,7 +514,6 @@ source /opt/smart-home/server/dump.sql
 <script src="https://e154.github.io/smart-home/js/jquery.magnific-popup.js"></script>
 <script src="https://e154.github.io/smart-home/js/anchor.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
 
 <!-- Custom Theme JavaScript -->
 <script src="https://e154.github.io/smart-home/js/scripts.min.js"></script>

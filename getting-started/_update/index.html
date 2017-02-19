@@ -91,158 +91,42 @@
                 <div class="row">
                     <div class="col-md-9" role="main">
                         
-                            <h2 id="requirements" class="page-header">Системные требования</h2>
+                            <h2 id="update">Обновление</h2>
 
-<p>Поддерживаемые операционные системы:</p>
+<p>Обновление системных компонентов заключается в полной замене всех исполняемых файлов, и возмножно частичной
+коррекции конфигурационных файлов.</p>
 
-<ul>
-<li>macOS 386 10.6</li>
-<li>macOS amd64 10.6</li>
-<li>linux 386</li>
-<li>linux amd64</li>
-<li>linux arm-5</li>
-<li>linux arm-6</li>
-<li>linux arm-7</li>
-<li>linux arm-64</li>
-<li>linux mips64</li>
-<li>linux mips64le</li>
-<li>windows 386</li>
-<li>windows amd64</li>
-</ul>
-
-<p>Системные требования:</p>
+<p>Правило замены справедливо для следующих компонентов:</p>
 
 <ul>
-<li>50 MB RAM Минимальные</li>
-<li>100 MB RAM Рекомендуемые</li>
+<li>Сервер</li>
+<li>Конфигуратор</li>
+<li>Нода</li>
 </ul>
 
-<div class="boc-callout boc-callout-info">
-    <h4>Для работы серверов не требуется запуск графической оболочки</h4>
-</div>
+<h2 id="migrate-mysql">Обновление базы mysql</h2>
 
-<h2 id="download" class="page-header">Загрузка</h2>
+<p>База поддерживает версионирование, перед обновление структуры нужно создать резервную копию</p>
 
-<p>Готовые архиве содержат все исполняемые фйлы под все поддерживаемые архитектуры и операционные системы.</p>
-
-<div class="row download-block">
-    <div class="col-md-4 download-item text-center">
-        <h3>Сервер</h3>
-        <p class="text-muted">Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.</p>
-        <a id="smart-home-server" href="https://github.com/e154/smart-home/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
-    </div>
-    <div class="col-md-4 download-item text-center">
-        <h3>Конфигуратор</h3>
-        <p class="text-muted">Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.</p>
-        <a id="smart-home-configurator" href="https://github.com/e154/smart-home-configurator/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
-    </div>
-    <div class="col-md-4 download-item text-center">
-        <h3>Нода</h3>
-        <p class="text-muted">Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.</p>
-        <a id="smart-home-node" href="https://github.com/e154/smart-home-node/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
-    </div>
-</div>
-
-<h2 id="whats-included">Что входит в пакеты</h2>
-
-<h3 id="server">Сервер</h3>
-
-<p>Список файлов в корне архива.</p>
-
-<pre><code class="language-bash">├── conf
-├── contributors.txt
-├── data
-├── dump.sql
-├── LICENSE
-├── README.md
-├── server-darwin-10.6-386
-├── server-darwin-10.6-amd64
-├── server-linux-386
-├── server-linux-amd64
-├── server-linux-arm-5
-├── server-linux-arm-6
-├── server-linux-arm64
-├── server-linux-arm-7
-├── server-linux-mips64
-├── server-linux-mips64le
-├── server-windows-4.0-386.exe
-└── server-windows-4.0-amd64.exe
+<pre><code class="language-bash">./opt/smart-home/server/examples/scripts/backup.sh
+Starting backup to 19-02-2017-22-06-30-dump.sql...
 </code></pre>
 
-<ul>
-<li><strong>conf</strong> - директория конфигурационных файлов</li>
-<li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
-<li><strong>data</strong> - директория хранения рабочих файлов иконки, изображения</li>
-<li><strong>dump.sql</strong> - дамп sql базы данных</li>
-<li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
-<li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
-<li><strong>server-</strong> - Платформо зависимый исполняемый файл</li>
-</ul>
+<p>Скрипт создаст копию действующей базы в <em>/opt/smart-home/backup</em></p>
 
-<h3 id="configurator">Конфигуратор</h3>
+<p>Запуск обновления базы:</p>
 
-<p>Список файлов в корне архива.</p>
-
-<pre><code class="language-bash">├── build
-├── conf
-├── views
-├── configurator-darwin-10.6-386
-├── configurator-darwin-10.6-amd64
-├── configurator-linux-386
-├── configurator-linux-amd64
-├── configurator-linux-arm-5
-├── configurator-linux-arm-6
-├── configurator-linux-arm64
-├── configurator-linux-arm-7
-├── configurator-linux-mips64
-├── configurator-linux-mips64le
-├── configurator-windows-4.0-386.exe
-├── configurator-windows-4.0-amd64.exe
-├── contributors.txt
-├── LICENSE
-└── README.md
+<pre><code class="language-bash">cd /opt/smart-home/server/
+./server-linux-amd64 migrate
+2017/02/19 01:59:37 GOPATH: /home/delta54/workspace/golang/src/github.com/e154/smart-home/migrate.go 81 /home/delta54/workspace/golang
+2017/02/19 01:59:37 Using 'mysql' as 'driver'
+2017/02/19 01:59:37 Using 'smarthome:smarthome@tcp(127.0.0.1:3306)/smarthome_dev?charset=utf8' as 'conn'
+2017/02/19 01:59:37 Running all outstanding migrations
+2017/02/19 01:59:40 |&gt; 2017/02/19 01:59:38 [I] total success upgrade: 0  migration
+2017/02/19 01:59:40 Migration successful!
 </code></pre>
 
-<ul>
-<li><strong>build</strong> - директория фронтенд приложения</li>
-<li><strong>conf</strong> - директория конфигурационных файлов</li>
-<li><strong>views</strong> - директория html шаблонов страниц входа,выхода,восстановления пароля</li>
-<li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
-<li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
-<li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
-<li><strong>configurator-</strong> - Платформо зависимый исполняемый файл</li>
-</ul>
-
-<h3 id="node">Нода</h3>
-
-<p>Список файлов в корне архива.</p>
-
-<pre><code class="language-bash">├── conf
-├── contributors.txt
-├── LICENSE
-├── node-darwin-10.6-386
-├── node-darwin-10.6-amd64
-├── node-linux-386
-├── node-linux-amd64
-├── node-linux-arm-5
-├── node-linux-arm-6
-├── node-linux-arm64
-├── node-linux-arm-7
-├── node-linux-mips64
-├── node-linux-mips64le
-├── node-windows-4.0-386.exe
-├── node-windows-4.0-amd64.exe
-└── README.md
-</code></pre>
-
-<ul>
-<li><strong>conf</strong> - директория конфигурационных файлов</li>
-<li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
-<li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
-<li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
-<li><strong>node-</strong> - Платформо зависимый исполняемый файл
-<br /></li>
-</ul>
+<p>Сообщение <em>Migration successful</em> говорит о успешно выполненной миграции</p>
 
                         
                     </div>

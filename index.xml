@@ -17,10 +17,10 @@
       <description>&lt;h2 id=&#34;overview&#34; class=&#34;page-header&#34;&gt;Обзор&lt;/h2&gt;
 
 &lt;p&gt;Система &lt;strong&gt;Умный дом&lt;/strong&gt; начала своё развитие с не большого домашнего проекта, начатого осенью 2016 года. Основные принципы
-лежащие в основе разрабатываемой системы, это дешевизна, и доступность компонентной базы.&lt;/p&gt;
+лежащие в основе разрабатываемой системы, это дешевизна и доступность компонентной базы.&lt;/p&gt;
 
 &lt;p&gt;Так Вы без проблем сможете управлять несколькими устройствами на базе AVR микроконтроллеров, подключенными в одну линию
-связи. Сеть устройств не связанна границей физического дома, или длинной кабеля, можно подключиться к устройству на другой
+связи. Сеть устройств не связанна границей физического дома, или длиной кабеля, можно подключиться к устройству на другой
 стороне планеты, за что отвечает микросервис &lt;a href=&#34;https://github.com/e154/smart-home-node&#34;&gt;нода&lt;/a&gt;. И Вы сможете взаимодействовать
 с этим устройством так, как буд-то оно в локальной сети. Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора.
 Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.&lt;/p&gt;
@@ -504,17 +504,17 @@ curl -H &amp;quot;Content-Type: application/json; charset=utf-8&amp;quot; -u &am
     &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
         &lt;h3&gt;Сервер&lt;/h3&gt;
         &lt;p class=&#34;text-muted&#34;&gt;Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.&lt;/p&gt;
-        &lt;a id=&#34;smart-home-server&#34; href=&#34;https://github.com/e154/smart-home/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
+        &lt;a id=&#34;smart-home-server&#34; href=&#34;https://github.com/e154/smart-home/releases/latest&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
     &lt;/div&gt;
     &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
         &lt;h3&gt;Конфигуратор&lt;/h3&gt;
         &lt;p class=&#34;text-muted&#34;&gt;Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.&lt;/p&gt;
-        &lt;a id=&#34;smart-home-configurator&#34; href=&#34;https://github.com/e154/smart-home-configurator/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
+        &lt;a id=&#34;smart-home-configurator&#34; href=&#34;https://github.com/e154/smart-home-configurator/releases/latest&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
     &lt;/div&gt;
     &lt;div class=&#34;col-md-4 download-item text-center&#34;&gt;
         &lt;h3&gt;Нода&lt;/h3&gt;
         &lt;p class=&#34;text-muted&#34;&gt;Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.&lt;/p&gt;
-        &lt;a id=&#34;smart-home-node&#34; href=&#34;https://github.com/e154/smart-home-node/releases&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
+        &lt;a id=&#34;smart-home-node&#34; href=&#34;https://github.com/e154/smart-home-node/releases/latest&#34; target=&#34;_blank&#34; class=&#34;btn btn-primary btn-xl sr-button&#34;&gt;Скачать&lt;/a&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 
@@ -630,7 +630,7 @@ curl -H &amp;quot;Content-Type: application/json; charset=utf-8&amp;quot; -u &am
       <description>&lt;h2 id=&#34;install&#34;&gt;Установка&lt;/h2&gt;
 
 &lt;p&gt;Будет произведена базовая установка системы &lt;strong&gt;Умный дом&lt;/strong&gt; на сервер под операционной системой linux Debian.
-С не значительными изменениями установка будет подобна в других операционных систем.&lt;/p&gt;
+С не значительными изменениями установка будет подобна для других операционных систем.&lt;/p&gt;
 
 &lt;p&gt;План действий:&lt;/p&gt;
 
@@ -650,7 +650,7 @@ curl -H &amp;quot;Content-Type: application/json; charset=utf-8&amp;quot; -u &am
     &lt;/div&gt;
 &lt;/div&gt;
 
-&lt;p&gt;Информация о системе на которой производилось тестовое развёртывание:&lt;/p&gt;
+&lt;p&gt;Информация о системе на которой производилось развёртывание:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;delta54@darkstar:tmp$ uname -a
 Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux
@@ -662,8 +662,8 @@ PRETTY_NAME=&amp;quot;Debian GNU/Linux 8 (jessie)&amp;quot;
 
 &lt;h3 id=&#34;install-mkdir&#34;&gt;Создание директорий&lt;/h3&gt;
 
-&lt;p&gt;Рекомендуемая директория установки сервера /opt/smart-home. Подготовьте директорию, укажите требуемые права доступа на директорию
-/opt/smart-home&lt;/p&gt;
+&lt;p&gt;Рекомендуемая директория установки сервера &lt;em&gt;/opt/smart-home&lt;/em&gt;, в неё и будет производиться дальнейшая установка.
+Подготовка директорий, выставляются требуемые права доступа для &lt;em&gt;/opt/smart-home&lt;/em&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo mkdir -p /opt/smart-home
 sudo chown $USER:$USER /opt/smart-home -R
@@ -672,33 +672,26 @@ mkdir -p /opt/smart-home/configurator
 mkdir -p /opt/smart-home/node
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;install-download-and-unpack&#34;&gt;Скачивание и распаковка&lt;/h3&gt;
-
-&lt;p&gt;Скачаем последний релиз сервер, и распакуем в директории &lt;strong&gt;server&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;install-download-and-unpack&#34;&gt;Скачивание&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/server
+
 wget https://github.com/e154/smart-home/releases/download/.../smart-home-server.tar.gz
 tar -zxvf smart-home-server.tar.gz
-&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;В директории &lt;strong&gt;data&lt;/strong&gt; хранятся файлы изображений, ключи шифрования, требуемые как серверу, так и коиентским приложения.
-Вынесите директорию &lt;strong&gt;data&lt;/strong&gt; на один уровень выше.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/server
+cd /opt/smart-home/server
 mv data ../
-&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Тоже самое сделаем для конфигуратора, и ноды&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/configurator
+cd /opt/smart-home/configurator
 wget https://github.com/e154/smart-home-configurator/releases/download/.../smart-home-configurator.tar.gz
 tar -zxvf smart-home-configurator.tar.gz
+
 cd /opt/smart-home/node
 wget https://github.com/e154/smart-home-node/releases/download/.../smart-home-node.tar.gz
 tar -zxvf smart-home-node.tar.gz
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;В итоге мы должны получит следующую корневую структуру:&lt;/p&gt;
+&lt;p&gt;Корень директории &lt;em&gt;/opt/smart-home&lt;/em&gt;:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home
 tree
@@ -710,7 +703,13 @@ tree
 
 &lt;h3 id=&#34;install-server-conf&#34;&gt;Настройка сервера&lt;/h3&gt;
 
-&lt;p&gt;Важные переменные в конфигурационном файле серевера:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/server
+sed &#39;s/dev\/app.conf/prod\/app.conf/&#39; conf/app.sample.conf &amp;gt; conf/app.conf
+cp conf/prod/app.sample.conf conf/prod/app.conf
+cp conf/prod/db.sample.conf conf/prod/db.conf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Основные значения:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;httpaddr&lt;/strong&gt; - адрес сервера REST API&lt;/li&gt;
@@ -720,25 +719,10 @@ tree
 &lt;li&gt;&lt;strong&gt;db_pass&lt;/strong&gt; - пароль доступка к mysql&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;db_host&lt;/strong&gt; - адрес сервера mysql&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;db_name&lt;/strong&gt; - название базы mysql&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;db_port&lt;/strong&gt; - порт сервера mysql
-&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;db_port&lt;/strong&gt; - порт сервера mysql&lt;br /&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Отредактируйте переменную &lt;strong&gt;httpaddr&lt;/strong&gt; в /opt/smart-home/server/conf/app.conf,
-адресс 0.0.0.0 - означает, что сервер будет принимать соединение со всех сетевых интерфейсов.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;httpaddr = &amp;quot;0.0.0.0&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;По желанию отредактируйте переменную &lt;strong&gt;httpport&lt;/strong&gt; в /opt/smart-home/server/conf/prod/app.conf,
-или оставьте без изменений, это порт на котором сервер ожидает REST API соединения, со всех клиентских
-приложений.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;httpport = 3000
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Для работы сервера требуется подключение к базе mysql. По желанию отредактируйте файл /opt/smart-home/server/conf/prod/db.conf,
-или оставьте без изменений, и настройте базу в соответствии с установленными значениями.&lt;/p&gt;
+&lt;p&gt;Для работы сервера требуется подключение к базе mysql. Отредактируйте файл &lt;em&gt;/opt/smart-home/server/conf/prod/db.conf&lt;/em&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;db_user = smarthome
 db_pass = smarthome
@@ -750,8 +734,13 @@ db_type = mysql
 
 &lt;h3 id=&#34;install-configuration-conf&#34;&gt;Настройка конфигуратора&lt;/h3&gt;
 
-&lt;p&gt;Конфиг файлы конфигуратора лежат в директории /opt/smart-home/configurator/conf/
-Важные переменные:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/configurator
+sed &#39;s/dev\/app.conf/prod\/app.conf/&#39; conf/app.sample.conf &amp;gt; conf/app.conf
+cp conf/prod/app.sample.conf conf/prod/app.conf
+cp conf/prod/db.sample.conf conf/prod/db.conf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Основные значения:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;httpaddr&lt;/strong&gt; - адрес веб интерфеса конфигуратора&lt;/li&gt;
@@ -764,19 +753,11 @@ db_type = mysql
 
 &lt;h3 id=&#34;install-node-conf&#34;&gt;Настройка ноды&lt;/h3&gt;
 
-&lt;p&gt;Конфигурационный файл ноды лежит в директории /opt/smart-home/node/conf/  Если файл node.conf, создайте его из файла примера:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cp /opt/smart-home/node/conf/node.sample.conf node.conf
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/node
+cp conf/node.sample.conf conf/node.conf
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cat /opt/smart-home/node/conf/node.conf
-app_version=0.1.0
-ip=127.0.0.1
-port=3001
-baud=19200
-timeout=2
-stopbits=2
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Основные значения:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;app_version&lt;/strong&gt; - версия внутреннего api ноды&lt;/li&gt;
@@ -791,17 +772,17 @@ stopbits=2
 
 &lt;h3 id=&#34;install-mysql&#34;&gt;База mysql&lt;/h3&gt;
 
-&lt;p&gt;Подключимся к консоли mysql, приготовьте пароль для рута:&lt;/p&gt;
+&lt;p&gt;Подключение к консоли mysql, потребуется пароль рута:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;mysql -u root -p
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Создадим базу для сервера &lt;strong&gt;умного дома&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;Создание базы сервера &lt;strong&gt;умный дом&lt;/strong&gt;:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;CREATE DATABASE smarthome;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Создадим нового пользователя, и дадим права на доступ к базе &lt;strong&gt;smarthome&lt;/strong&gt; из консоли mysql&lt;/p&gt;
+&lt;p&gt;Создание нового пользователя, с соответствующими правами &lt;strong&gt;smarthome&lt;/strong&gt; из консоли mysql&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;smarthome&lt;/strong&gt; - пользователь&lt;/li&gt;
@@ -814,7 +795,7 @@ GRANT ALL PRIVILEGES ON smarthome . * TO &#39;smarthome&#39;@&#39;localhost&#39;
 FLUSH PRIVILEGES;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;осталось импортировать базу&lt;/p&gt;
+&lt;p&gt;импорт базы&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;use smarthome
 source /opt/smart-home/server/dump.sql
@@ -822,7 +803,7 @@ source /opt/smart-home/server/dump.sql
 
 &lt;h3 id=&#34;install-exec&#34;&gt;Запуск&lt;/h3&gt;
 
-&lt;p&gt;Осталось запустить сервера в фоновом режиме&lt;/p&gt;
+&lt;p&gt;Запуск сервера в фоновом режиме:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;/opt/smart-home/server/server-linux-amd64 &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
 /opt/smart-home/configurator/configurator-linux-amd64 &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
@@ -835,10 +816,73 @@ source /opt/smart-home/server/dump.sql
 &lt;li&gt;&lt;strong&gt;2&amp;gt;&amp;amp;1&lt;/strong&gt; - вывод ошибок в стандартный поток&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;&amp;amp;&lt;/strong&gt; - запуск в фоновом режиме&lt;/li&gt;
 &lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/getting-started/_update/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_update/</guid>
+      <description>&lt;h2 id=&#34;update&#34;&gt;Обновление&lt;/h2&gt;
 
-&lt;div class=&#34;boc-callout boc-callout-danger&#34;&gt;
-    &lt;h4&gt;Не запускайте сервера от пользователя root, это ограничение накладывается требованиями безопасности эксплуатации системы&lt;/h4&gt;
-&lt;/div&gt;
+&lt;p&gt;Обновление системных компонентов заключается в полной замене всех исполняемых файлов, и возмножно частичной
+коррекции конфигурационных файлов.&lt;/p&gt;
+
+&lt;p&gt;Правило замены справедливо для следующих компонентов:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Сервер&lt;/li&gt;
+&lt;li&gt;Конфигуратор&lt;/li&gt;
+&lt;li&gt;Нода&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;migrate-mysql&#34;&gt;Обновление базы mysql&lt;/h2&gt;
+
+&lt;p&gt;База поддерживает версионирование, перед обновление структуры нужно создать резервную копию&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;./opt/smart-home/server/examples/scripts/backup.sh
+Starting backup to 19-02-2017-22-06-30-dump.sql...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Скрипт создаст копию действующей базы в &lt;em&gt;/opt/smart-home/backup&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Запуск обновления базы:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/server/
+./server-linux-amd64 migrate
+2017/02/19 01:59:37 GOPATH: /home/delta54/workspace/golang/src/github.com/e154/smart-home/migrate.go 81 /home/delta54/workspace/golang
+2017/02/19 01:59:37 Using &#39;mysql&#39; as &#39;driver&#39;
+2017/02/19 01:59:37 Using &#39;smarthome:smarthome@tcp(127.0.0.1:3306)/smarthome_dev?charset=utf8&#39; as &#39;conn&#39;
+2017/02/19 01:59:37 Running all outstanding migrations
+2017/02/19 01:59:40 |&amp;gt; 2017/02/19 01:59:38 [I] total success upgrade: 0  migration
+2017/02/19 01:59:40 Migration successful!
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Сообщение &lt;em&gt;Migration successful&lt;/em&gt; говорит о успешно выполненной миграции&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/getting-started/_service/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_service/</guid>
+      <description>&lt;h2 id=&#34;service&#34;&gt;Автозапуск&lt;/h2&gt;
+
+&lt;p&gt;Чтобы прописать сервис в автозагрузку запустить исполняемый файл с флагом &lt;em&gt;install&lt;/em&gt;, к примеру:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/server/
+sudo ./server-linux-amd64 install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Для удаления сервиса из автозагрузки запустить файл с флагом &lt;em&gt;remove&lt;/em&gt;, к примеру:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /opt/smart-home/server/
+sudo ./server-linux-amd64 remove
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
@@ -880,7 +924,7 @@ go build -o server
 cp -r conf /opt/smart-home/server
 cp -r data /opt/smart-home
 cp server /opt/smart-home/server
-sed &#39;s/dev\/app.conf/prod\/app.conf/&#39; conf/app.conf &amp;gt; /opt/smart-home/server/conf/app.conf
+sed &#39;s/dev\/app.sample.conf/prod\/app.sample.conf/&#39; conf/app.sample.conf &amp;gt; /opt/smart-home/server/conf/app.sample.conf
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&#34;install-from-source-configurator&#34;&gt;Сборка конфигуратора&lt;/h3&gt;
@@ -892,7 +936,7 @@ gvt restore
 go build -o configurator
 cp configurator /opt/smart-home/configurator
 cp -r conf /opt/smart-home/configurator
-sed &#39;s/dev\/app.conf/prod\/app.conf/&#39; conf/app.conf &amp;gt; /opt/smart-home/configurator/conf/app.conf
+sed &#39;s/dev\/app.sample.conf/prod\/app.sample.conf/&#39; conf/app.sample.conf &amp;gt; /opt/smart-home/configurator/conf/app.sample.conf
 
 cd static_source
 npm install

@@ -14,8 +14,6 @@
 <!-- Bootstrap Core CSS -->
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/bootstrap.min.css" type="text/css">
 <!-- Custom Fonts -->
-<link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-<link href='//fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="https://e154.github.io/smart-home/font-awesome/css/font-awesome.min.css" type="text/css">
 <!-- Plugin CSS -->
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/animate.min.css" type="text/css">
@@ -34,7 +32,7 @@
     <body id="page-top">
         
         <!-- main menu -->
-<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+<nav id="mainNav" class="navbar  navbar-fixed-top navbar-inverse">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -72,10 +70,6 @@
                     <a href="https://e154.github.io/smart-home/en/getting-started/_overview/">English</a>
                 </li>
                 
-                <li>
-                    <a href="https://e154.github.io/smart-home/api/_overview/">Русский</a>
-                </li>
-                
                 
             </ul>
         </div>
@@ -89,7 +83,7 @@
         
         <header class="getting-started">
     <div class="header-content">
-        <div class="header-content-inner">
+        <div class="header-content-inner container">
             <h1>overview</h1>
             
         </div>
@@ -106,10 +100,10 @@
                             <h2 id="overview" class="page-header">Обзор</h2>
 
 <p>Система <strong>Умный дом</strong> начала своё развитие с не большого домашнего проекта, начатого осенью 2016 года. Основные принципы
-лежащие в основе разрабатываемой системы, это дешевизна, и доступность компонентной базы.</p>
+лежащие в основе разрабатываемой системы, это дешевизна и доступность компонентной базы.</p>
 
 <p>Так Вы без проблем сможете управлять несколькими устройствами на базе AVR микроконтроллеров, подключенными в одну линию
-связи. Сеть устройств не связанна границей физического дома, или длинной кабеля, можно подключиться к устройству на другой
+связи. Сеть устройств не связанна границей физического дома, или длиной кабеля, можно подключиться к устройству на другой
 стороне планеты, за что отвечает микросервис <a href="https://github.com/e154/smart-home-node">нода</a>. И Вы сможете взаимодействовать
 с этим устройством так, как буд-то оно в локальной сети. Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора.
 Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.</p>
@@ -263,6 +257,33 @@
         </li>
         
         <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#update">
+                Обновление
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#migrate-mysql">
+                Обновление базы mysql
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#service">
+                Автозапуск
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#install-from-source">
                 Сборка из исходного кода
             </a>
@@ -307,6 +328,10 @@
         <ul>
 
             
+            <li><a href='https://github.com/e154/smart-home'>GitHub</a></li>
+            
+
+            
 
             <li>
                 <a class="page-scroll" href="https://e154.github.io/smart-home/">Домой</a>
@@ -329,16 +354,15 @@
                 <a href="https://e154.github.io/smart-home/en/getting-started/_overview/">en</a>
             </li>
             
-            <li>
-                <a href="https://e154.github.io/smart-home/api/_overview/">ru</a>
-            </li>
-            
             
 
         </ul>
 
         
-        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        <div>Разработано при поддержке <a href='http://e154.ru'>e154.ru</a></div>
+        
+        
+        <p>Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
         
 
     </div>
@@ -357,7 +381,6 @@
 <script src="https://e154.github.io/smart-home/js/jquery.magnific-popup.js"></script>
 <script src="https://e154.github.io/smart-home/js/anchor.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
 
 <!-- Custom Theme JavaScript -->
 <script src="https://e154.github.io/smart-home/js/scripts.min.js"></script>
