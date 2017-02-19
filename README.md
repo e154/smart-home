@@ -1,19 +1,18 @@
 Smart home system
 ------------------
 
+[Documentation](https://e154.github.io/smart-home/) |
+[Configurator](https://github.com/e154/smart-home-configurator/) |
+[Node](https://github.com/e154/smart-home-node/) |
+[Tools](https://github.com/e154/smart-home-tools/) |
+[Socket](https://github.com/e154/smart-home-socket/)
+
 [![Build Status](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
 [![Coverage Status](https://coveralls.io/repos/github/e154/smart-home/badge.svg?branch=master)](https://coveralls.io/github/e154/smart-home?branch=master)
 
+#### Overview
+
 The project is in active development stage
-
-[Documentation](https://e154.github.io/smart-home/)
-
-Smart home parts:
-
-* [Configurator](https://e154.github.io/smart-home-configurator/)
-* [Node](https://e154.github.io/smart-home-node/)
-* [Tools](https://e154.github.io/smart-home-tools/)
-* [Socket](https://e154.github.io/smart-home-socket/)
 
 #### Supported system
     
