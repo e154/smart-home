@@ -61,7 +61,7 @@ func (c *DeviceActionController) Post() {
 		c.Data["json"] = map[string]interface{}{"id": nid}
 
 	}
-
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

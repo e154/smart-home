@@ -61,6 +61,7 @@ func (c *RoleController) Post() {
 	rbac.UpdateCache()
 
 	c.Data["json"] = map[string]interface{}{"role": role}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

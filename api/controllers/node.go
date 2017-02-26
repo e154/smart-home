@@ -65,6 +65,7 @@ func (c *NodeController) Post() {
 	node.Id = nid
 	pm.AddNode(&node)
 
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

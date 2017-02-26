@@ -57,6 +57,7 @@ func (c *MapElementController) Post() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"map_element": element}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

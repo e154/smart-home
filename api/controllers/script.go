@@ -73,6 +73,7 @@ func (c *ScriptController) Post() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"script": script}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

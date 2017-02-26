@@ -26,6 +26,8 @@ func (i *EmailItemController) Post() {
 		return
 	}
 
+	i.Ctx.Output.SetStatus(201)
+	i.ServeJSON()
 }
 
 func (i *EmailItemController) GetOne() {

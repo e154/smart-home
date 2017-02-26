@@ -57,6 +57,7 @@ func (c *LogController) Post() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"log": log}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

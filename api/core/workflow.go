@@ -1,8 +1,8 @@
 package core
 
 import (
-	"github.com/e154/smart-home/api/log"
 	"sync"
+	"github.com/e154/smart-home/api/log"
 	"github.com/e154/smart-home/api/models"
 )
 

@@ -128,7 +128,7 @@ func (j *Javascript) Do() (result string, err error) {
 
 	j.ctx.PushGlobalObject()
 	if b := j.ctx.GetPropString(-1, "main"); !b {
-		err = errors.New("main not found")
+		err = errors.New("main function not found!")
 		return
 	}
 
@@ -152,4 +152,8 @@ func (j *Javascript) PushStruct(name string, s interface{}) (int, error) {
 
 func (j *Javascript) PushFunction(name string, s interface{}) (int, error) {
 	return j.ctx.PushGlobalGoFunction(name, s)
+}
+
+func (j *Javascript) EvalString(str string) error {
+	return j.ctx.PevalString(str)
 }
