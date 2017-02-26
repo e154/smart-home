@@ -7,7 +7,6 @@ import (
 	"github.com/e154/smart-home/api/stream"
 	cr "github.com/e154/cron"
 	"sync"
-	"github.com/astaxie/beego/orm"
 )
 
 var (
@@ -72,7 +71,6 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 	}
 
 	wf := NewWorkflow(workflow, b.nodes)
-	b.updateWorkflowScenario(wf)
 
 	if err = wf.Run(); err != nil {
 		return
@@ -99,34 +97,13 @@ func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
 	return
 }
 
-func (b *Core) updateWorkflowScenario(workflow *Workflow) (err error) {
-
-	log.Infof("Workflow %s: update scenario", workflow.model.Name)
-
-	// load related scenario and his scripts
-	o := orm.NewOrm()
-	if workflow.model.Scenario != nil {
-		if _, err = o.LoadRelated(workflow.model, "Scenario"); err != nil {
-			log.Errorf("load workflow: %s", err.Error())
-			return
-		}
-
-		if _, err = o.LoadRelated(workflow.model.Scenario, "Scripts"); err != nil {
-			log.Errorf("load workflow: %s", err.Error())
-			return
-		}
-	}
-
-	return
-}
-
 func (b *Core) UpdateWorkflowScenario(workflow *models.Workflow) (err error) {
 
 	if _, ok := b.workflows[workflow.Id]; !ok {
 		return
 	}
 
-	err = b.updateWorkflowScenario(b.workflows[workflow.Id])
+	err = b.workflows[workflow.Id].UpdateScenario()
 
 	return
 }

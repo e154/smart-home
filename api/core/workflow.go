@@ -4,6 +4,7 @@ import (
 	"sync"
 	"github.com/e154/smart-home/api/log"
 	"github.com/e154/smart-home/api/models"
+	"github.com/astaxie/beego/orm"
 )
 
 func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow *Workflow) {
@@ -14,6 +15,8 @@ func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow
 		Flows: make(map[int64]*Flow),
 		mutex: &sync.Mutex{},
 	}
+
+	workflow.UpdateScenario()
 
 	return
 }
@@ -129,6 +132,27 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 
 	wf.Flows[flow.Id].Remove()
 	delete(wf.Flows, flow.Id)
+
+	return
+}
+
+func (wf *Workflow) UpdateScenario() (err error) {
+
+	log.Infof("Workflow '%s': update scenario", wf.model.Name)
+
+	// load related scenario and his scripts
+	o := orm.NewOrm()
+	if wf.model.Scenario != nil {
+		if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
+			log.Errorf("load workflow: %s", err.Error())
+			return
+		}
+
+		if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
+			log.Errorf("load workflow: %s", err.Error())
+			return
+		}
+	}
 
 	return
 }
