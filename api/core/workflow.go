@@ -138,11 +138,11 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 
 func (wf *Workflow) UpdateScenario() (err error) {
 
-	log.Infof("Workflow '%s': update scenario", wf.model.Name)
-
 	// load related scenario and his scripts
 	o := orm.NewOrm()
 	if wf.model.Scenario != nil {
+		log.Infof("Workflow '%s': update scenario", wf.model.Name)
+
 		if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
 			log.Errorf("load workflow: %s", err.Error())
 			return
