@@ -97,6 +97,17 @@ func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
 	return
 }
 
+func (b *Core) UpdateWorkflowScenario(workflow *models.Workflow) (err error) {
+
+	if _, ok := b.workflows[workflow.Id]; !ok {
+		return
+	}
+
+	err = b.workflows[workflow.Id].UpdateScenario()
+
+	return
+}
+
 // ------------------------------------------------
 // Workers
 // ------------------------------------------------

@@ -4,10 +4,14 @@
 
         <ul>
 
+            {{ if .Site.Params.footer }}
+            <li>{{ .Site.Params.footer.github | safeHTML}}</li>
+            {{ end }}
+
             {{ range .Site.Params.main_menu.links }}
 
             <li>
-                <a class="page-scroll" href="{{ .url | absLangURL }}">{{.title}}</a>
+                <a href="{{ .url | absURL }}">{{.title}}</a>
             </li>
             {{ end }}
 
@@ -21,6 +25,9 @@
 
         </ul>
 
+        {{ if .Site.Params.footer }}
+        <div>{{ .Site.Params.footer.contrubutor | safeHTML}}</div>
+        {{ end }}
         {{ if .Site.Params.footer }}
         <p>{{ .Site.Params.footer.licensed | safeHTML}}</p>
         {{ end }}

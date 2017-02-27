@@ -7,54 +7,49 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego/orm"
-	"time"
 	"github.com/astaxie/beego"
 )
 
-type Workflow struct {
-	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Name		string		`orm:"" json:"name"`
-	Description	string		`orm:"" json:"description"`
-	Status		string		`orm:"" json:"status"`
-	Scenario	*Scenario	`orm:"rel(fk);null" json:"scenario"`
-	Flows		[]*Flow		`orm:"-" json:"flows"`
-	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+type ScenarioScript struct {
+	Id    		int64 		`orm:"auto" json:"id"`
+	Scenario	*Scenario	`orm:"rel(fk)" json:"scenario"`
+	Script		*Script		`orm:"rel(fk)" json:"script"`
+	State		string		`orm:"size(255)" json:"state"`
 }
 
-func (m *Workflow) TableName() string {
-	return beego.AppConfig.String("db_workflows")
+func (m *ScenarioScript) TableName() string {
+	return beego.AppConfig.String("db_scenario_scripts")
 }
 
 func init() {
-	orm.RegisterModel(new(Workflow))
+	orm.RegisterModel(new(ScenarioScript))
 }
 
-// AddWorkflow insert a new Workflow into database and returns
+// AddScenarioScript insert a new ScenarioScript into database and returns
 // last inserted Id on success.
-func AddWorkflow(m *Workflow) (id int64, err error) {
+func AddScenarioScript(m *ScenarioScript) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
 }
 
-// GetWorkflowById retrieves Workflow by Id. Returns error if
+// GetScenarioScriptById retrieves ScenarioScript by Id. Returns error if
 // Id doesn't exist
-func GetWorkflowById(id int64) (v *Workflow, err error) {
+func GetScenarioScriptById(id int64) (v *ScenarioScript, err error) {
 	o := orm.NewOrm()
-	v = &Workflow{Id: id}
+	v = &ScenarioScript{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
 	return nil, err
 }
 
-// GetAllWorkflow retrieves all Workflow matches certain condition. Returns empty list if
+// GetAllScenarioScript retrieves all ScenarioScript matches certain condition. Returns empty list if
 // no records exist
-func GetAllWorkflow(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllScenarioScript(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(Workflow))
+	qs := o.QueryTable(new(ScenarioScript))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -100,7 +95,7 @@ func GetAllWorkflow(query map[string]string, fields []string, sortby []string, o
 		}
 	}
 
-	var l []Workflow
+	var l []ScenarioScript
 	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
@@ -132,11 +127,11 @@ func GetAllWorkflow(query map[string]string, fields []string, sortby []string, o
 	return nil, nil, err
 }
 
-// UpdateWorkflow updates Workflow by Id and returns error if
+// UpdateScenarioScript updates ScenarioScript by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateWorkflowById(m *Workflow) (err error) {
+func UpdateScenarioScriptById(m *ScenarioScript) (err error) {
 	o := orm.NewOrm()
-	v := Workflow{Id: m.Id}
+	v := ScenarioScript{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -147,33 +142,17 @@ func UpdateWorkflowById(m *Workflow) (err error) {
 	return
 }
 
-// DeleteWorkflow deletes Workflow by Id and returns error if
+// DeleteScenarioScript deletes ScenarioScript by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteWorkflow(id int64) (err error) {
+func DeleteScenarioScript(id int64) (err error) {
 	o := orm.NewOrm()
-	v := Workflow{Id: id}
+	v := ScenarioScript{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Workflow{Id: id}); err == nil {
+		if num, err = o.Delete(&ScenarioScript{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
 	return
-}
-
-func GetAllEnabledWorkflow() (wfs []*Workflow, err error) {
-	o := orm.NewOrm()
-	wfs = []*Workflow{}
-	_, err = o.QueryTable(&Workflow{}).Filter("status", "enabled").All(&wfs)
-
-	return
-}
-
-func (wf *Workflow) GetAllEnabledWorkers() ([]*Worker, error) {
-	return GetAllEnabledWorkersByWorkflow(&Workflow{Id:wf.Id})
-}
-
-func (wf *Workflow) GetAllEnabledFlows() ([]*Flow, error) {
-	return GetAllEnabledFlowsByWf(wf)
 }

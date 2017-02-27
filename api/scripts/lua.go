@@ -35,3 +35,8 @@ func (j *Lua) PushFunction(name string, i interface{}) (int, error) {
 
 	return 0, nil
 }
+
+func (j *Lua) EvalString(str string) error {
+
+	return nil
+}

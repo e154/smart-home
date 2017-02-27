@@ -66,7 +66,7 @@ func (c *DeviceController) Post() {
 	}
 
 	core.CorePtr().UpdateFlowFromDevice(&device)
-
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

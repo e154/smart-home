@@ -13,6 +13,7 @@ type Magic interface {
 	Compile() error
 	PushStruct(string, interface{}) (int, error)
 	PushFunction(string, interface{}) (int, error)
+	EvalString(string) (error)
 	Close()
 }
 
@@ -70,6 +71,10 @@ func (s *Engine) PushStruct(name string, i interface{}) (int, error) {
 
 func (s *Engine) PushFunction(name string, i interface{}) (int, error) {
 	return s.script.PushFunction(name, i)
+}
+
+func (s *Engine) EvalString(str string) error {
+	return s.script.EvalString(str)
 }
 
 func (s *Engine) Close() {

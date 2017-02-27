@@ -57,6 +57,7 @@ func (c *DashboardController) Post() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"dashboard": board}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

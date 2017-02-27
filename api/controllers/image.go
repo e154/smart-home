@@ -63,6 +63,7 @@ func (c *ImageController) Post() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"image": image}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

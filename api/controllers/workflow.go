@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/core"
+	"github.com/astaxie/beego/orm"
 )
 
 // WorkflowController operations for Workflow
@@ -63,6 +64,7 @@ func (c *WorkflowController) Post() {
 
 	core.CorePtr().AddWorkflow(&workflow)
 
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 
@@ -79,10 +81,17 @@ func (c *WorkflowController) GetOne() {
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
-	} else {
-		c.Data["json"] = map[string]interface{}{"workflow": workflow}
 	}
 
+	o := orm.NewOrm()
+	if workflow.Scenario != nil {
+		if _, err = o.LoadRelated(workflow, "Scenario");err != nil {
+			c.ErrHan(403, err.Error())
+			return
+		}
+	}
+
+	c.Data["json"] = map[string]interface{}{"workflow": workflow}
 	c.ServeJSON()
 }
 
@@ -105,7 +114,20 @@ func (c *WorkflowController) GetAll() {
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"workflows": ml, "meta": meta}
+	var workflows []models.Workflow
+	o := orm.NewOrm()
+	for _, bp := range ml {
+		workflow := bp.(models.Workflow)
+		if workflow.Scenario != nil {
+			if _, err = o.LoadRelated(&workflow, "Scenario");err != nil {
+				c.ErrHan(403, err.Error())
+				return
+			}
+		}
+		workflows = append(workflows, workflow)
+	}
+
+	c.Data["json"] = &map[string]interface{}{"workflows": workflows, "meta": meta}
 	c.ServeJSON()
 }
 
@@ -126,6 +148,8 @@ func (c *WorkflowController) Put() {
 		c.ErrHan(403, err.Error())
 		return
 	}
+
+	core.CorePtr().UpdateWorkflowScenario(&workflow)
 
 	c.ServeJSON()
 }
@@ -153,6 +177,40 @@ func (c *WorkflowController) Delete() {
 		c.ErrHan(403, err.Error())
 		return
 	}
+
+	c.ServeJSON()
+}
+
+// UpdateScenario ...
+// @Title UpdateScenario
+// @Description update the Workflow
+// @Param	id		path 	string	true		"The id you want to update"
+// @Param	body		body 	models.Workflow	true		"body for Workflow content"
+// @Success 200 {object} models.Workflow
+// @Failure 403 :id is not int
+// @router /:id [put]
+func (c *WorkflowController) UpdateScenario() {
+
+	id, _ := c.GetInt(":id")
+	workflow, err := models.GetWorkflowById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	var scenario *models.Scenario
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &scenario); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	workflow.Scenario = scenario
+	if err := models.UpdateWorkflowById(workflow); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	core.CorePtr().UpdateWorkflowScenario(workflow)
 
 	c.ServeJSON()
 }

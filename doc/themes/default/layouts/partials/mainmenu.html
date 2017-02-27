@@ -1,5 +1,5 @@
 {{ "<!-- main menu -->" | safeHTML }}
-<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+<nav id="mainNav" class="navbar  navbar-fixed-top navbar-inverse">
     <div class="container-fluid">
         {{ "<!-- Brand and toggle get grouped for better mobile display -->" | safeHTML }}
         <div class="navbar-header">
@@ -19,7 +19,7 @@
 
                 {{ range .Site.Params.main_menu.links }}
                 <li>
-                    <a class="page-scroll" href="{{ .url | absLangURL }}">{{.title}}</a>
+                    <a href="{{ .url | absURL }}">{{.title}}</a>
                 </li>
                 {{ end }}
 

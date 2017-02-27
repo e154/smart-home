@@ -83,6 +83,12 @@ Languages:
               url: "#install-mysql"
             - title: "Запуск"
               url: "#install-exec"
+        - title: "Обновление"
+          url: "#update"
+        - title: "Обновление базы mysql"
+          url: "#migrate-mysql"
+        - title: "Автозапуск"
+          url: "#service"
         - title: "Сборка из исходного кода"
           url: "#install-from-source"
           pages:
@@ -100,7 +106,7 @@ Languages:
 
     feature:
       headline   : "Это то, что Вы искали!"
-      description: "Smart Home - Система с открытым исходным кодом, которую можно скачать бесплатно, без регистраций, и смс. Безвоздмездно! Большое количество функционала уже присутствует из коробки, и хорошо подаётся расширению. Smart Home система позволяет получить результат в кратчайшие сроки."
+      description: "Smart Home - Система с открытым исходным кодом которую можно скачать бесплатно без регистраций и смс. Безвоздмездно! Большое количество функционала уже присутствует из коробки и хорошо подаётся расширению. Smart Home система позволяет получить результат в кратчайшие сроки."
       buttonText : "С чего начать"
 
     services:
@@ -109,10 +115,10 @@ Languages:
       row1:
         - icon: "fa-users"
           title: "Система доступа основанная на ролях"
-          description: "Позволяет гибко управлять доступом к оборудованию, и системным компонентам."
+          description: "Позволяет гибко управлять доступом к оборудованию и системным компонентам."
         - icon: "fa-cogs"
           title: "Панель управления"
-          description: "Удобная панель управления, и конфигурирования оборудования."
+          description: "Удобная панель управления и конфигурирования оборудования."
         - icon: "fa-paper-plane"
           title: "Готов к использования"
           description: "Вы можете использовать Smart home как есть, или Вы можете изменять его под свои нужды!"
@@ -151,18 +157,20 @@ Languages:
       server:
         text: "Сервер"
         description: "Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома."
-        link: "//github.com/e154/smart-home"
+        link: "//github.com/e154/smart-home/releases/latest"
       configurator:
         text: "Конфигуратор"
         description: "Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи."
-        link: "//github.com/e154/smart-home-configurator"
+        link: "//github.com/e154/smart-home-configurator/releases/latest"
       node:
         text: "Нода"
         description: "Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом."
-        link: "//github.com/e154/smart-home-node"
+        link: "//github.com/e154/smart-home-node/releases/latest"
 
     footer:
-      licensed: "Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>."
+      github: "<a href='https://github.com/e154/smart-home'>GitHub</a>"
+      contrubutor: "Разработано при поддержке <a href='http://e154.ru'>e154.ru</a>"
+      licensed: "Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>."
 
   en:
     languageName: "English"
@@ -235,6 +243,12 @@ Languages:
               url: "install-mysql"
             - title: "Install exec"
               url: "install-exec"
+        - title: "Update"
+          url: "#update"
+        - title: "Migrate mysql"
+          url: "#migrate-mysql"
+        - title: "Run as service"
+          url: "#service"
         - title: "Install from source"
           url: "install-from-source"
           pages:
@@ -314,4 +328,6 @@ Languages:
         link: "//github.com/e154/smart-home-node"
 
     footer:
+      github: "<a href='https://github.com/e154/smart-home'>GitHub</a>"
+      contrubutor: "Developed with the support of <a href='http://e154.ru'>e154.ru</a>"
       licensed: "Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>."
