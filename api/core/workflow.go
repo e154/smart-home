@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/api/log"
 	"github.com/e154/smart-home/api/models"
 	"github.com/astaxie/beego/orm"
+	"github.com/e154/smart-home/api/scripts"
 )
 
 func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow *Workflow) {
@@ -141,16 +142,53 @@ func (wf *Workflow) UpdateScenario() (err error) {
 	// load related scenario and his scripts
 	o := orm.NewOrm()
 	if wf.model.Scenario != nil {
+
 		log.Infof("Workflow '%s': update scenario", wf.model.Name)
 
+		var old_scenario *models.Scenario
+		old_scenario = wf.model.Scenario
+
 		if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
-			log.Errorf("load workflow: %s", err.Error())
+			log.Errorf("on update scenario, message: %s", err.Error())
 			return
 		}
 
 		if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
-			log.Errorf("load workflow: %s", err.Error())
+			log.Errorf("on update scenario, message: %s", err.Error())
 			return
+		}
+
+		wf.runScenarioScript(old_scenario, "on_exit")
+		wf.runScenarioScript(wf.model.Scenario, "on_enter")
+	}
+
+	return
+}
+
+func (wf *Workflow) runScenarioScript(scenario *models.Scenario, state string) (err error) {
+
+	var _script *scripts.Engine
+	for _, scenario_script := range scenario.Scripts {
+		if scenario_script.State != state {
+			continue
+		}
+
+		// load script
+		o := orm.NewOrm()
+		if _, err = o.LoadRelated(scenario_script, "Script"); err != nil {
+			log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
+			return
+		}
+
+		// compile script
+		if _script, err = scripts.New(scenario_script.Script); err != nil {
+			log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
+			continue
+		}
+
+		// do script
+		if _, err = _script.Do(); err != nil {
+			log.Errorf("on run script %s scenario, message: %s", state, err.Error())
 		}
 	}
 
