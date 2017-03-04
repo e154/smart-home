@@ -20,25 +20,23 @@
             {{ partial "services.html" . }}
         {{ end }}
 
-        {{ if .Site.Data.projects }}
-            {{ partial "portfolio.html" . }}
-        {{ end }}
+        {{ partial "projects.html" . }}
 
         {{ if .Site.Params.location }}
             {{ partial "location.html" . }}
-        {{ end }}
-
-        {{ if .Site.Params.source }}
-            {{ partial "source.html" . }}
         {{ end }}
 
         {{ if .Site.Params.download }}
             {{ partial "download.html" . }}
         {{ end }}
 
+        {{ partial "screenshots.html" . }}
+
         {{ if .Site.Params.footer }}
             {{ partial "footer.html" . }}
         {{ end }}
+
+        {{ partial "projects-modals.html" . }}
 
         {{ partial "js.html" . }}
 
