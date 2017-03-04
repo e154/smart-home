@@ -63,12 +63,46 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/groups/project/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/projects/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/</loc>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/projects/project-5/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/projects/project-3/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/projects/project-4/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/projects/project-6/</loc>
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/getting-started</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/projects/project-2/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/projects/project-1/</loc>
   </url>
   
 </urlset>

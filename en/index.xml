@@ -46,5 +46,17 @@
       <description></description>
     </item>
     
+    <item>
+      <title>Smart home</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-1/</guid>
+      <description>
+
+&lt;h3 id=&#34;an-example-of-a-typical-project-smart-house&#34;&gt;An example of a typical project Smart House&lt;/h3&gt;
+</description>
+    </item>
+    
   </channel>
 </rss>

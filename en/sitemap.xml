@@ -43,8 +43,22 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/en/groups/project/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/projects/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/en/</loc>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/projects/project-1/</loc>
   </url>
   
 </urlset>
