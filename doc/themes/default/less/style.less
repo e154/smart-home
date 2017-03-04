@@ -5,6 +5,7 @@
 @import "darcula";
 @import "api";
 @import "opensans";
+@import "screenshots";
 
 // Global Components
 html,
@@ -197,12 +198,12 @@ header {
     }
 }
 
-.portfolio-box {
+.projects-box {
     position: relative;
     display: block;
     max-width: 650px;
     margin: 0 auto;
-    .portfolio-box-caption {
+    .projects-box-caption {
         color: white;
         opacity: 0;
         display: block;
@@ -213,7 +214,7 @@ header {
         width: 100%;
         height: 100%;
         .transition-all;
-        .portfolio-box-caption-content {
+        .projects-box-caption-content {
             width: 100%;
             text-align: center;
             position: absolute;
@@ -235,7 +236,7 @@ header {
         }
     }
     &:hover {
-        .portfolio-box-caption {
+        .projects-box-caption {
             opacity: 1;
         }
     }
@@ -243,8 +244,8 @@ header {
         outline: none;
     }
     @media (min-width: 768px) {
-        .portfolio-box-caption {
-            .portfolio-box-caption-content {
+        .projects-box-caption {
+            .projects-box-caption-content {
                 .project-category {
                     font-size: 16px;
                 }
