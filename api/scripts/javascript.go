@@ -5,8 +5,6 @@ import (
 	"github.com/e154/go-candyjs"
 	"strings"
 	"errors"
-	"github.com/e154/smart-home/api/models"
-	r "github.com/e154/smart-home/lib/rpc"
 	"github.com/e154/smart-home/lib/common"
 )
 
@@ -16,8 +14,9 @@ const (
 
 
 type Javascript struct {
-	engine	*Engine
-	ctx	*candyjs.Context
+	engine *Engine
+	ctx    *candyjs.Context
+	bind  *JavascriptBinding
 }
 
 func (j *Javascript) Init() (err error) {
@@ -27,48 +26,9 @@ func (j *Javascript) Init() (err error) {
 		return
 	}
 
-	j.pushGlobalCandyJSObject()
+	j.bind = initJsBinds(j)
 
 	return
-}
-
-func (j *Javascript) pushGlobalCandyJSObject() {
-
-	// print
-	j.ctx.PushGlobalGoFunction("print", func(a ...interface{}){
-		j.engine.Print(a...)
-	})
-
-	// etc
-	j.PushStruct("request", &r.Request{})
-	j.PushStruct("device", &models.Device{})
-	j.PushStruct("flow", &models.Flow{})
-	j.PushStruct("node", &models.Node{})
-	j.ctx.PevalString(`SmartJs = {}`)
-	j.ctx.PevalString(`SmartJs.hex2arr = function (hexString) {
-   var result = [];
-   while (hexString.length >= 2) {
-       result.push(parseInt(hexString.substring(0, 2), 16));
-       hexString = hexString.substring(2, hexString.length);
-   }
-   return result;
-}`)
-
-	j.PushFunction("node_send", func(protocol string, node *models.Node, args *r.Request,) (result r.Result) {
-		if args == nil {
-			result.Error = "args is nil pointer"
-			return
-		}
-
-		if node == nil {
-			result.Error = "node is nil pointer"
-			return
-		}
-
-		result = node.Send(protocol, args)
-
-		return
-	})
 }
 
 func (j *Javascript) Close() {
@@ -133,6 +93,12 @@ func (j *Javascript) Do() (result string, err error) {
 	}
 
 	j.ctx.PushTimers()
+
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+		}
+	}()
 
 	// call(arg)
 	// arg = stack - num args

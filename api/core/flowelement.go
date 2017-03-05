@@ -77,7 +77,7 @@ func (m *FlowElement) Run(message *Message) (b bool, return_message *Message, er
 		}
 
 		m.Script.PushStruct("message", message)
-		if err := m.Script.EvalString(fmt.Sprintf(`SmartJs.scenario_name = '%s';`, m.ScenarioName)); err != nil {
+		if err := m.Script.EvalString(fmt.Sprintf(`smart.scenario_name = '%s';`, m.ScenarioName)); err != nil {
 			log.Error(err.Error())
 		}
 
