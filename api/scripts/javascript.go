@@ -2,9 +2,9 @@ package scripts
 
 import (
 	"fmt"
-	"github.com/e154/go-candyjs"
 	"strings"
 	"errors"
+	"github.com/e154/go-candyjs"
 	"github.com/e154/smart-home/lib/common"
 )
 
@@ -16,7 +16,6 @@ const (
 type Javascript struct {
 	engine *Engine
 	ctx    *candyjs.Context
-	bind  *JavascriptBinding
 }
 
 func (j *Javascript) Init() (err error) {
@@ -26,7 +25,7 @@ func (j *Javascript) Init() (err error) {
 		return
 	}
 
-	j.bind = initJsBinds(j)
+	j.bind()
 
 	return
 }
@@ -124,14 +123,35 @@ func (j *Javascript) EvalString(str string) error {
 	return j.ctx.PevalString(str)
 }
 
-func (j *Javascript) SetVariable(key string, value interface{}) {
-	j.bind.SetVariable(key, value)
+func (j *Javascript) Ctx() *candyjs.Context {
+	return j.ctx
 }
 
-func (j *Javascript) GetVariable(key string) interface{} {
-	return j.bind.GetVariable(key)
-}
+func (j *Javascript) bind() {
 
-func (j *Javascript) SetVariablePool(pool map[string]interface{}) {
-	j.bind.setVariablePool(pool)
+	// print
+	j.PushFunction("print", func(a ...interface{}){
+		j.engine.Print(a...)
+	})
+
+	j.EvalString(`run_mode = 'basic'`)
+	j.PushStruct("log", &Log{})
+	j.PushStruct("model", &Model{})
+	j.PushStruct("node", &Node{})
+	//j.PushFunction("to_time", func(i int64) time.Duration {
+	//	return time.Duration(i)
+	//})
+
+	// etc
+	j.EvalString(`helper = {}`)
+	j.EvalString(`helper.hex2arr = function (hexString) {
+   var result = [];
+   while (hexString.length >= 2) {
+       result.push(parseInt(hexString.substring(0, 2), 16));
+       hexString = hexString.substring(2, hexString.length);
+   }
+   return result;
+}`)
+
+	return
 }

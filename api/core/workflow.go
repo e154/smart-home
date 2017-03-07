@@ -203,7 +203,9 @@ func (wf *Workflow) NewScript(model *models.Script) (script *scripts.Engine, err
 		return
 	}
 
-	script.SetVariablePool(wf.variables.pool)
+	javascript := script.Get().(*scripts.Javascript)
+	javascript.Ctx().EvalString(`run_mode = 'core'`)
+	javascript.PushStruct("core", &JavascriptCore{workflow:wf})
 
 	return
 }
