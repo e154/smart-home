@@ -123,3 +123,15 @@ func (j *Javascript) PushFunction(name string, s interface{}) (int, error) {
 func (j *Javascript) EvalString(str string) error {
 	return j.ctx.PevalString(str)
 }
+
+func (j *Javascript) SetVariable(key string, value interface{}) {
+	j.bind.SetVariable(key, value)
+}
+
+func (j *Javascript) GetVariable(key string) interface{} {
+	return j.bind.GetVariable(key)
+}
+
+func (j *Javascript) SetVariablePool(pool map[string]interface{}) {
+	j.bind.setVariablePool(pool)
+}

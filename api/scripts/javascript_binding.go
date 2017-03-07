@@ -5,10 +5,12 @@ import (
 	r "github.com/e154/smart-home/lib/rpc"
 	"github.com/e154/smart-home/api/log"
 	"time"
+	"sync"
 )
 
 type JavascriptBinding struct {
-
+	mu	sync.Mutex
+	pool	map[string]interface{}
 }
 
 // Logging
@@ -84,7 +86,9 @@ func initJsBinds(j *Javascript) (jsBinds *JavascriptBinding) {
 	})
 
 	// global main object
-	jsBinds = &JavascriptBinding{}
+	jsBinds = &JavascriptBinding{
+		pool: make(map[string]interface{}),
+	}
 	j.PushStruct("smart", jsBinds)
 	j.PushStruct("device", &models.Device{})
 	j.PushFunction("to_time", func(i int64) time.Duration {

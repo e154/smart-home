@@ -15,6 +15,9 @@ type Magic interface {
 	PushFunction(string, interface{}) (int, error)
 	EvalString(string) (error)
 	Close()
+	SetVariablePool(map[string]interface{})
+	SetVariable(string, interface{})
+	GetVariable(string) interface{}
 }
 
 func New(s *models.Script) (engine *Engine, err error) {
@@ -26,7 +29,7 @@ func New(s *models.Script) (engine *Engine, err error) {
 
 	switch s.Lang {
 	case "lua":
-		engine.script = &Lua{engine:engine}
+		//engine.script = &Lua{engine:engine}
 	case "javascript":
 		engine.script = &Javascript{engine:engine}
 	case "coffeescript":
@@ -124,4 +127,16 @@ func (s *Engine) Print(v ...interface{}) {
 
 func (s *Engine) Get() Magic {
 	return s.script
+}
+
+func (j *Engine) SetVariablePool(pool map[string]interface{}) {
+	j.script.SetVariablePool(pool)
+}
+
+func (j *Engine) SetVariable(key string, value interface{}) {
+	j.script.SetVariable(key, value)
+}
+
+func (j *Engine) GetVariable(key string) interface{} {
+	return j.script.GetVariable(key)
 }

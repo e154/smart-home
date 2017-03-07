@@ -15,6 +15,7 @@ func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow
 		Nodes: nodes,
 		Flows: make(map[int64]*Flow),
 		mutex: &sync.Mutex{},
+		variables: NewVariablePool(),
 	}
 
 	workflow.UpdateScenario()
@@ -23,6 +24,7 @@ func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow
 }
 
 type Workflow struct {
+	variables	*Variables
 	model   	*models.Workflow
 	Nodes   	map[int64]*models.Node
 	mutex   	*sync.Mutex
@@ -181,7 +183,7 @@ func (wf *Workflow) runScenarioScript(scenario *models.Scenario, state string) (
 		}
 
 		// compile script
-		if _script, err = scripts.New(scenario_script.Script); err != nil {
+		if _script, err = wf.NewScript(scenario_script.Script); err != nil {
 			log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
 			continue
 		}
@@ -191,6 +193,17 @@ func (wf *Workflow) runScenarioScript(scenario *models.Scenario, state string) (
 			log.Errorf("on run script %s scenario, message: %s", state, err.Error())
 		}
 	}
+
+	return
+}
+
+func (wf *Workflow) NewScript(model *models.Script) (script *scripts.Engine, err error) {
+
+	if script, err = scripts.New(model); err != nil {
+		return
+	}
+
+	script.SetVariablePool(wf.variables.pool)
 
 	return
 }
