@@ -116,7 +116,4 @@ func Initialize() {
 
 	// rest api
 	go beego.Run()
-
-	//TODO remove
-	NotifrTest()
 }
