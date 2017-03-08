@@ -137,8 +137,7 @@ func GetFullPath(name string) string {
 
 func GetLinkPath(name string) string {
 
-	file_storage_path := beego.AppConfig.String("file_storage_path")
-	dir := filepath.Join("/attach", file_storage_path)
+	dir := "/static"
 
 	count := utf8.RuneCountInString(name)
 	if count < 9 {
