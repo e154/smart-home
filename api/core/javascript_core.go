@@ -5,9 +5,9 @@ type JavascriptCore struct {
 }
 
 func (j *JavascriptCore) SetVariable(key string, value interface{}) {
-	j.workflow.variables.SetVariable(key, value)
+	j.workflow.SetVariable(key, value)
 }
 
 func (j *JavascriptCore) GetVariable(key string) interface{} {
-	return j.workflow.variables.GetVariable(key)
+	return j.workflow.GetVariable(key)
 }

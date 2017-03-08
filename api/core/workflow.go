@@ -13,9 +13,9 @@ func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow
 	workflow = &Workflow{
 		model: model,
 		Nodes: nodes,
-		Flows: make(map[int64]*Flow),
 		mutex: &sync.Mutex{},
-		variables: NewVariablePool(),
+		Flows: make(map[int64]*Flow),
+		variables: make(map[string]interface{}),
 	}
 
 	workflow.UpdateScenario()
@@ -24,7 +24,7 @@ func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow
 }
 
 type Workflow struct {
-	variables	*Variables
+	variables	map[string]interface{}
 	model   	*models.Workflow
 	Nodes   	map[int64]*models.Node
 	mutex   	*sync.Mutex
@@ -197,6 +197,26 @@ func (wf *Workflow) runScenarioScript(scenario *models.Scenario, state string) (
 	return
 }
 
+func (wf *Workflow) GetVariable(key string) interface{} {
+
+	wf.mutex.Lock()
+	defer wf.mutex.Unlock()
+
+	if v, ok := wf.variables[key]; ok {
+		return v
+	}
+
+	return nil
+}
+
+func (wf *Workflow) SetVariable(key string, value interface{}) {
+
+	wf.mutex.Lock()
+	defer wf.mutex.Unlock()
+
+	wf.variables[key] = value
+}
+
 func (wf *Workflow) NewScript(model *models.Script) (script *scripts.Engine, err error) {
 
 	if script, err = scripts.New(model); err != nil {
@@ -204,7 +224,6 @@ func (wf *Workflow) NewScript(model *models.Script) (script *scripts.Engine, err
 	}
 
 	javascript := script.Get().(*scripts.Javascript)
-	javascript.Ctx().EvalString(`run_mode = 'core'`)
 	javascript.PushStruct("core", &JavascriptCore{workflow:wf})
 
 	return

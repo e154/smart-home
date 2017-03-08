@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/e154/go-candyjs"
 	"github.com/e154/smart-home/lib/common"
+	"github.com/astaxie/beego"
 )
 
 const (
@@ -134,7 +135,7 @@ func (j *Javascript) bind() {
 		j.engine.Print(a...)
 	})
 
-	j.EvalString(`run_mode = 'basic'`)
+	j.EvalString(fmt.Sprintf(`run_mode = '%s'`, beego.BConfig.RunMode))
 	j.PushStruct("log", &Log{})
 	j.PushStruct("model", &Model{})
 	j.PushStruct("node", &Node{})
