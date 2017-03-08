@@ -1,42 +1,33 @@
 package notifr
 
-import "github.com/e154/smart-home/api/log"
+import (
+	"github.com/e154/smart-home/api/log"
+)
 
 var (
-	notifr *Notifr
+	instantiated *Notifr = nil
 )
 
 type Notifr struct {
 
 }
 
-func NewNotifr() (notifr *Notifr) {
-
-	notifr = &Notifr{}
-
-	return
+func (n *Notifr) send(msg Message) error {
+	return msg.send()
 }
 
-func (n *Notifr) SendEmail() {
-
-}
-
-func (n *Notifr) SendSMS() {
-
-}
-
-func (n *Notifr) SendPush() {
-
+func Send(msg Message) error {
+	return instantiated.send(msg)
 }
 
 func Initialize() {
 	log.Info("Notifr initialize...")
 
-	if notifr != nil {
+	if instantiated != nil {
 		return
 	}
 
-	notifr = NewNotifr()
+	instantiated = &Notifr{}
 
 	return
 }
