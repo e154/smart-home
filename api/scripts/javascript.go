@@ -2,12 +2,11 @@ package scripts
 
 import (
 	"fmt"
-	"github.com/e154/go-candyjs"
 	"strings"
 	"errors"
-	"github.com/e154/smart-home/api/models"
-	r "github.com/e154/smart-home/lib/rpc"
+	"github.com/e154/go-candyjs"
 	"github.com/e154/smart-home/lib/common"
+	"github.com/astaxie/beego"
 )
 
 const (
@@ -16,8 +15,8 @@ const (
 
 
 type Javascript struct {
-	engine	*Engine
-	ctx	*candyjs.Context
+	engine *Engine
+	ctx    *candyjs.Context
 }
 
 func (j *Javascript) Init() (err error) {
@@ -27,48 +26,9 @@ func (j *Javascript) Init() (err error) {
 		return
 	}
 
-	j.pushGlobalCandyJSObject()
+	j.bind()
 
 	return
-}
-
-func (j *Javascript) pushGlobalCandyJSObject() {
-
-	// print
-	j.ctx.PushGlobalGoFunction("print", func(a ...interface{}){
-		j.engine.Print(a...)
-	})
-
-	// etc
-	j.PushStruct("request", &r.Request{})
-	j.PushStruct("device", &models.Device{})
-	j.PushStruct("flow", &models.Flow{})
-	j.PushStruct("node", &models.Node{})
-	j.ctx.PevalString(`SmartJs = {}`)
-	j.ctx.PevalString(`SmartJs.hex2arr = function (hexString) {
-   var result = [];
-   while (hexString.length >= 2) {
-       result.push(parseInt(hexString.substring(0, 2), 16));
-       hexString = hexString.substring(2, hexString.length);
-   }
-   return result;
-}`)
-
-	j.PushFunction("node_send", func(protocol string, node *models.Node, args *r.Request,) (result r.Result) {
-		if args == nil {
-			result.Error = "args is nil pointer"
-			return
-		}
-
-		if node == nil {
-			result.Error = "node is nil pointer"
-			return
-		}
-
-		result = node.Send(protocol, args)
-
-		return
-	})
 }
 
 func (j *Javascript) Close() {
@@ -134,6 +94,12 @@ func (j *Javascript) Do() (result string, err error) {
 
 	j.ctx.PushTimers()
 
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+		}
+	}()
+
 	// call(arg)
 	// arg = stack - num args
 	if r := j.ctx.Pcall(0); r != 0 {
@@ -156,4 +122,37 @@ func (j *Javascript) PushFunction(name string, s interface{}) (int, error) {
 
 func (j *Javascript) EvalString(str string) error {
 	return j.ctx.PevalString(str)
+}
+
+func (j *Javascript) Ctx() *candyjs.Context {
+	return j.ctx
+}
+
+func (j *Javascript) bind() {
+
+	// print
+	j.PushFunction("print", func(a ...interface{}){
+		j.engine.Print(a...)
+	})
+
+	j.EvalString(fmt.Sprintf(`run_mode = '%s'`, beego.BConfig.RunMode))
+	j.PushStruct("log", &Log{})
+	j.PushStruct("model", &Model{})
+	j.PushStruct("node", &Node{})
+	//j.PushFunction("to_time", func(i int64) time.Duration {
+	//	return time.Duration(i)
+	//})
+
+	// etc
+	j.EvalString(`helper = {}`)
+	j.EvalString(`helper.hex2arr = function (hexString) {
+   var result = [];
+   while (hexString.length >= 2) {
+       result.push(parseInt(hexString.substring(0, 2), 16));
+       hexString = hexString.substring(2, hexString.length);
+   }
+   return result;
+}`)
+
+	return
 }

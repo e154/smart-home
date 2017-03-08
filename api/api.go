@@ -17,6 +17,7 @@ import (
 	"github.com/e154/smart-home/api/telemetry"
 	"github.com/e154/smart-home/api/rbac"
 	"io/ioutil"
+	"path/filepath"
 )
 
 func configuration() {
@@ -56,6 +57,9 @@ func configuration() {
 		beego.BConfig.ServerName = "smart-home"
 		//beego.SetStaticPath("/admin/static", "www/admin")
 	}
+
+	file_storage_path := beego.AppConfig.String("file_storage_path")
+	beego.SetStaticPath("/static", filepath.Join(data_dir, file_storage_path))
 
 	validation.SetDefaultMessage(map[string]string{
 		"Required":     "Должно быть заполнено",
