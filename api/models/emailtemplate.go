@@ -235,18 +235,19 @@ func EmailTemplateDelete(name string) (err error) {
 
 func EmailTemplateRender(name string, params map[string]interface {}) (r *EmailRender, err error) {
 
-	item, err := EmailItemGet(name)
-	if err != nil {
+	var item *EmailItem
+	var template *EmailTemplate
+	var items Items
+
+	if item, err = EmailItemGet(name); err != nil {
 		return
 	}
 
-	template, err := item.GetTemplate()
-	if err != nil {
+	if template, err = item.GetTemplate(); err != nil {
 		return
 	}
 
-	_, items, err := EmailItemGetList()
-	if err != nil {
+	if _, items, err = EmailItemGetList(); err != nil {
 		return
 	}
 

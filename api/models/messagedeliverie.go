@@ -13,7 +13,7 @@ import (
 
 type MessageDeliverie struct {
 	Id    			int64  		`orm:"pk;auto;column(id)" json:"id"`
-	MessageId    		*Message	`orm:"rel(fk)" json:"message_id"`
+	Message    		*Message	`orm:"rel(fk)" json:"message_id"`
 	State 			string 		`orm:"size(254)" json:"state"`
 	Error_system_code 	string 		`orm:"size(254)" json:"error_system_code"`
 	Error_system_message 	string 		`orm:"size(254)" json:"error_system_message"`
@@ -158,5 +158,13 @@ func DeleteMessageDeliverie(id int64) (err error) {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
+	return
+}
+
+func GetAllMessageDeliveriesInProgress() (messages []*MessageDeliverie, count int64, err error) {
+
+	o := orm.NewOrm()
+	count, err = o.QueryTable(&MessageDeliverie{}).RelatedSel().Filter("state", "in_progress").All(&messages)
+
 	return
 }
