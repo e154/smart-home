@@ -63,7 +63,13 @@ func (n *Notifr) send(md *models.MessageDeliverie) (err error) {
 		email.load(md)
 		err = email.send()
 	case "sms":
+		sms := NewSms()
+		sms.load(md)
+		err = sms.send()
 	case "push":
+		push := NewPush()
+		push.load(md)
+		err = push.send()
 	default:
 		err = errors.New("Notifr: unknown message type")
 	}
