@@ -91,7 +91,7 @@ func (e *Email) load(md *models.MessageDeliverie) {
 		Body: md.Message.EmailBody,
 	}
 
-	e.To = md.To
+	e.To = md.Address
 }
 
 func (e *Email) send() (err error) {

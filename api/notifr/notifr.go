@@ -33,7 +33,7 @@ func (n *Notifr) save(msg Message) (err error) {
 		md := &models.MessageDeliverie{}
 		md.Message = message
 		md.State = "in_progress"
-		md.To = strings.TrimSpace(address)
+		md.Address = strings.TrimSpace(address)
 		mds = append(mds, md)
 	}
 
