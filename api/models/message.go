@@ -18,7 +18,6 @@ type Message struct {
 	EmailBody	string		`orm:"" json:"email_body"`
 	Sms_text	string		`orm:"" json:"sms_text"`
 	Ui_text		string		`orm:"" json:"ui_text"`
-	To		string		`orm:"" json:"to"`
 	Scheduled_at	time.Time	`orm:"auto_now_add;type(datetime);column(scheduled_at)" json:"scheduled_at"`
 	Created_at  	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at   	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`

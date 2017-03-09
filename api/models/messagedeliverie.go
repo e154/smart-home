@@ -15,6 +15,7 @@ type MessageDeliverie struct {
 	Id    			int64  		`orm:"pk;auto;column(id)" json:"id"`
 	Message    		*Message	`orm:"rel(fk)" json:"message_id"`
 	State 			string 		`orm:"size(254)" json:"state"`
+	To			string		`orm:"" json:"to"`
 	Error_system_code 	string 		`orm:"size(254)" json:"error_system_code"`
 	Error_system_message 	string 		`orm:"size(254)" json:"error_system_message"`
 	Created_at  		time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
@@ -165,6 +166,24 @@ func GetAllMessageDeliveriesInProgress() (messages []*MessageDeliverie, count in
 
 	o := orm.NewOrm()
 	count, err = o.QueryTable(&MessageDeliverie{}).RelatedSel().Filter("state", "in_progress").All(&messages)
+
+	return
+}
+
+func AddMessageDeliverieMultiple(mds []*MessageDeliverie) (count int64, _errors []error) {
+
+	o := orm.NewOrm()
+	qs := o.QueryTable(&MessageDeliverie{})
+	i, _ := qs.PrepareInsert()
+
+	for _, m := range mds {
+		if _, err := i.Insert(m); err != nil {
+			_errors = append(_errors, err)
+		}
+		count++
+	}
+
+	i.Close()
 
 	return
 }

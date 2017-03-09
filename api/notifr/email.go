@@ -1,16 +1,15 @@
 package notifr
 
 import (
-	"github.com/e154/smart-home/api/models"
-	"errors"
 	"net/mail"
-	"strings"
-	"github.com/astaxie/beego"
-	"fmt"
 	"encoding/base64"
 	"net/smtp"
 	"bytes"
+	"mime"
+	"fmt"
 	"io"
+	"github.com/e154/smart-home/api/models"
+	"github.com/astaxie/beego"
 )
 
 var (
@@ -41,7 +40,10 @@ func NewEmail() (email *Email) {
 func (e *Email) render() (err error) {
 
 	if e.Template == "" {
-		err = errors.New("template field is nil")
+		e.rendered = &models.EmailRender{
+			Subject: e.Subject,
+			Body: e.Body,
+		}
 		return
 	}
 
@@ -63,7 +65,7 @@ func (e *Email) render() (err error) {
 	return
 }
 
-func (e *Email) save() (msg *models.Message, err error) {
+func (e *Email) save() (to string, msg *models.Message, err error) {
 
 	if e.rendered == nil {
 		if err = e.render(); err != nil {
@@ -75,21 +77,21 @@ func (e *Email) save() (msg *models.Message, err error) {
 	msg.Type = "email"
 	msg.EmailBody = e.rendered.Body
 	msg.EmailTitle = e.rendered.Subject
-	msg.To = e.To
+	to = e.To
 
 	_, err = models.AddMessage(msg)
 
 	return
 }
 
-func (e *Email) load(msg *models.Message) {
+func (e *Email) load(md *models.MessageDeliverie) {
 
 	e.rendered = &models.EmailRender{
-		Subject:msg.EmailTitle,
-		Body:msg.EmailBody,
+		Subject: md.Message.EmailTitle,
+		Body: md.Message.EmailBody,
 	}
 
-	e.To = msg.To
+	e.To = md.To
 }
 
 func (e *Email) send() (err error) {
@@ -106,16 +108,10 @@ func (e *Email) send() (err error) {
 		return
 	}
 
-	encodeRFC2047 := func(String string) string{
-		// use mail's rfc2047 to encode any string
-		addr := mail.Address{String, ""}
-		return strings.Trim(addr.String(), " <>")
-	}
-
 	header := make(map[string]string)
 	header["From"] = from.String()
 	header["To"] = e.To
-	header["Subject"] = encodeRFC2047(e.rendered.Subject)
+	header["Subject"] = mime.BEncoding.Encode("utf-8", e.rendered.Subject)
 	header["MIME-Version"] = "1.0"
 	header["Content-Type"] = "text/html; charset=\"utf-8\""
 	header["Content-Transfer-Encoding"] = "base64"

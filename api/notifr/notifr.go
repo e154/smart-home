@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/api/models"
 	"sync"
 	"github.com/pkg/errors"
+	"strings"
 )
 
 var (
@@ -19,23 +20,34 @@ type Notifr struct {
 func (n *Notifr) save(msg Message) (err error) {
 
 	var message *models.Message
-	if message, err = msg.save(); err != nil {
+	var to string
+	if to, message, err = msg.save(); err != nil {
 		log.Error("Notifr:", err.Error())
 		return
 	}
 
 	// add Message Deliveries
-	md := &models.MessageDeliverie{}
-	md.Message = message
-	md.State = "in_progress"
+	var mds []*models.MessageDeliverie
+	addresses := strings.Split(to, ",")
+	for _, address := range addresses {
+		md := &models.MessageDeliverie{}
+		md.Message = message
+		md.State = "in_progress"
+		md.To = strings.TrimSpace(address)
+		mds = append(mds, md)
+	}
 
-	if _, err = models.AddMessageDeliverie(md); err != nil {
-		log.Error("Notifr:", err.Error())
+	if _, _errors := models.AddMessageDeliverieMultiple(mds); len(_errors) != 0 {
+		for _, err := range _errors {
+			log.Error("Notifr:", err.Error())
+		}
 		return
 	}
 
 	n.mu.Lock()
-	n.message_queue = append(n.message_queue, md)
+	for _, md := range mds {
+		n.message_queue = append(n.message_queue, md)
+	}
 	n.mu.Unlock()
 
 	err = n.worker()
@@ -43,12 +55,12 @@ func (n *Notifr) save(msg Message) (err error) {
 	return
 }
 
-func (n *Notifr) send(msg *models.Message) (err error) {
+func (n *Notifr) send(md *models.MessageDeliverie) (err error) {
 
-	switch msg.Type {
+	switch md.Message.Type {
 	case "email":
 		email := NewEmail()
-		email.load(msg)
+		email.load(md)
 		err = email.send()
 	case "sms":
 	case "push":
@@ -65,8 +77,9 @@ func (n *Notifr) worker() (err error) {
 	defer n.mu.Unlock()
 
 	for _, md := range n.message_queue {
-		if err = n.send(md.Message); err != nil {
+		if err = n.send(md); err != nil {
 			md.Error_system_message = err.Error()
+			md.State = "error"
 		} else {
 			md.State = "succeed"
 			md.Error_system_code = ""
