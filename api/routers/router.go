@@ -94,6 +94,10 @@ func Initialize() {
 			beego.NSRouter("/email/item/:name([\\w]+)", &controllers.EmailItemController{}, "delete:Delete"),
 			beego.NSRouter("/email/items/tree", &controllers.EmailItemController{}, "get:GetTree"),
 			beego.NSRouter("/email/items/tree", &controllers.EmailItemController{}, "post:UpdateTree"),
+			beego.NSRouter("/notifr/:id([0-9]+)", &controllers.NotifrController{}, "get:GetOne"),
+			beego.NSRouter("/notifr", &controllers.NotifrController{}, "get:GetAll"),
+			beego.NSRouter("/notifr", &controllers.NotifrController{}, "post:Post"),
+			beego.NSRouter("/notifr/:id([0-9]+)", &controllers.NotifrController{}, "delete:Delete"),
 
 			beego.NSRouter("/map/:id([0-9]+)", &controllers.MapController{}, "get:GetOne"),
 			beego.NSRouter("/map/:id([0-9]+)/full", &controllers.MapController{}, "get:GetFull"),

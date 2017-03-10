@@ -13,7 +13,7 @@ import (
 
 type Message struct {
 	Id    		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Type 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
+	Type 		string 		`orm:"size(254)" json:"type" valid:"Required"`
 	EmailTitle	string		`orm:"" json:"email_title"`
 	EmailBody	string		`orm:"" json:"email_body"`
 	Sms_text	string		`orm:"" json:"sms_text"`

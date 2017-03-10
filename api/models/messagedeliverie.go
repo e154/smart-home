@@ -13,7 +13,7 @@ import (
 
 type MessageDeliverie struct {
 	Id    			int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Message    		*Message	`orm:"rel(fk)" json:"message_id"`
+	Message    		*Message	`orm:"rel(fk)" json:"message"`
 	State 			string 		`orm:"size(254)" json:"state"`
 	Address			string		`orm:"" json:"address"`
 	Error_system_code 	string 		`orm:"size(254)" json:"error_system_code"`
