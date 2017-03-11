@@ -41,7 +41,9 @@ func (e *EmailTemplateController) GetOne() {
 		return
 	}
 
-	e.Data["json"] = &map[string]interface {}{"status": "success", "template": template}
+	template.GetMarkers()
+
+	e.Data["json"] = &map[string]interface {}{"template": template}
 	e.ServeJSON()
 }
 
@@ -57,10 +59,17 @@ func (e *EmailTemplateController) GetOne() {
 // @Failure 403
 // @router / [get]
 func (e *EmailTemplateController) GetAll() {
-	templates, meta, err := models.GetAllEmailTemplate(e.pagination())
+	ml, meta, err := models.GetAllEmailTemplate(e.pagination())
 	if err != nil {
 		e.ErrHan(403, err.Error())
 		return
+	}
+
+	templates := []models.EmailItem{}
+	for _, m := range ml {
+		item := m.(models.EmailItem)
+		item.GetMarkers()
+		templates = append(templates, item)
 	}
 
 	e.Data["json"] = &map[string]interface{}{"templates": templates, "meta":meta}
