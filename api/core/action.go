@@ -10,7 +10,7 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-func NewAction(device *models.Device, script *models.Script, node *models.Node) (action *Action, err error) {
+func NewAction(device *models.Device, script *models.Script, node *models.Node, workflow *Workflow) (action *Action, err error) {
 
 	action = &Action{
 		Device: 	device,
@@ -19,8 +19,14 @@ func NewAction(device *models.Device, script *models.Script, node *models.Node) 
 
 	// add script
 	// ------------------------------------------------
-	if action.Script, err = scripts.New(script); err != nil {
-		return
+	if workflow != nil {
+		if action.Script, err = workflow.NewScript(script); err != nil {
+			return
+		}
+	} else {
+		if action.Script, err = scripts.New(script); err != nil {
+			return
+		}
 	}
 
 	action.Device.GetInheritedData()
@@ -160,7 +166,7 @@ func streamDoAction(client *stream.Client, value interface{}) {
 
 	for _, device := range devices {
 		var action *Action
-		if action, err = NewAction(device, device_action.Script, node); err != nil {
+		if action, err = NewAction(device, device_action.Script, node, nil); err != nil {
 			log.Error(err.Error())
 			client.Notify("error", err.Error())
 			continue

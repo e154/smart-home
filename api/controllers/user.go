@@ -91,6 +91,7 @@ func (c *UserController) Post() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"user": user}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

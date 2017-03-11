@@ -1,9 +1,11 @@
 package core
 
 import (
-	"github.com/e154/smart-home/api/log"
 	"sync"
+	"github.com/e154/smart-home/api/log"
 	"github.com/e154/smart-home/api/models"
+	"github.com/astaxie/beego/orm"
+	"github.com/e154/smart-home/api/scripts"
 )
 
 func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow *Workflow) {
@@ -11,14 +13,18 @@ func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow
 	workflow = &Workflow{
 		model: model,
 		Nodes: nodes,
-		Flows: make(map[int64]*Flow),
 		mutex: &sync.Mutex{},
+		Flows: make(map[int64]*Flow),
+		variables: make(map[string]interface{}),
 	}
+
+	workflow.UpdateScenario()
 
 	return
 }
 
 type Workflow struct {
+	variables	map[string]interface{}
 	model   	*models.Workflow
 	Nodes   	map[int64]*models.Node
 	mutex   	*sync.Mutex
@@ -129,6 +135,96 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 
 	wf.Flows[flow.Id].Remove()
 	delete(wf.Flows, flow.Id)
+
+	return
+}
+
+func (wf *Workflow) UpdateScenario() (err error) {
+
+	// load related scenario and his scripts
+	o := orm.NewOrm()
+	if wf.model.Scenario != nil {
+
+		log.Infof("Workflow '%s': update scenario", wf.model.Name)
+
+		var old_scenario *models.Scenario
+		old_scenario = wf.model.Scenario
+
+		if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
+			log.Errorf("on update scenario, message: %s", err.Error())
+			return
+		}
+
+		if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
+			log.Errorf("on update scenario, message: %s", err.Error())
+			return
+		}
+
+		wf.runScenarioScript(old_scenario, "on_exit")
+		wf.runScenarioScript(wf.model.Scenario, "on_enter")
+	}
+
+	return
+}
+
+func (wf *Workflow) runScenarioScript(scenario *models.Scenario, state string) (err error) {
+
+	var _script *scripts.Engine
+	for _, scenario_script := range scenario.Scripts {
+		if scenario_script.State != state {
+			continue
+		}
+
+		// load script
+		o := orm.NewOrm()
+		if _, err = o.LoadRelated(scenario_script, "Script"); err != nil {
+			log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
+			return
+		}
+
+		// compile script
+		if _script, err = wf.NewScript(scenario_script.Script); err != nil {
+			log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
+			continue
+		}
+
+		// do script
+		if _, err = _script.Do(); err != nil {
+			log.Errorf("on run script %s scenario, message: %s", state, err.Error())
+		}
+	}
+
+	return
+}
+
+func (wf *Workflow) GetVariable(key string) interface{} {
+
+	wf.mutex.Lock()
+	defer wf.mutex.Unlock()
+
+	if v, ok := wf.variables[key]; ok {
+		return v
+	}
+
+	return nil
+}
+
+func (wf *Workflow) SetVariable(key string, value interface{}) {
+
+	wf.mutex.Lock()
+	defer wf.mutex.Unlock()
+
+	wf.variables[key] = value
+}
+
+func (wf *Workflow) NewScript(model *models.Script) (script *scripts.Engine, err error) {
+
+	if script, err = scripts.New(model); err != nil {
+		return
+	}
+
+	javascript := script.Get().(*scripts.Javascript)
+	javascript.PushStruct("core", &JavascriptCore{workflow:wf})
 
 	return
 }

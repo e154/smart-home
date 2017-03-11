@@ -13,6 +13,7 @@ type Magic interface {
 	Compile() error
 	PushStruct(string, interface{}) (int, error)
 	PushFunction(string, interface{}) (int, error)
+	EvalString(string) (error)
 	Close()
 }
 
@@ -25,7 +26,7 @@ func New(s *models.Script) (engine *Engine, err error) {
 
 	switch s.Lang {
 	case "lua":
-		engine.script = &Lua{engine:engine}
+		//engine.script = &Lua{engine:engine}
 	case "javascript":
 		engine.script = &Javascript{engine:engine}
 	case "coffeescript":
@@ -70,6 +71,10 @@ func (s *Engine) PushStruct(name string, i interface{}) (int, error) {
 
 func (s *Engine) PushFunction(name string, i interface{}) (int, error) {
 	return s.script.PushFunction(name, i)
+}
+
+func (s *Engine) EvalString(str string) error {
+	return s.script.EvalString(str)
 }
 
 func (s *Engine) Close() {

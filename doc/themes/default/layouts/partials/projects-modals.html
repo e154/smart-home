@@ -1,0 +1,30 @@
+{{ "<!-- projects Modals -->" | safeHTML }}
+{{ range where .Data.Pages "Section" "projects" }}
+<div class="projects-modal modal fade" id="projectsModal{{ .Params.modalID }}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+        <div class="close-modal" data-dismiss="modal">
+            <div class="lr">
+                <div class="rl">
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <div class="modal-body">
+                        <h2>{{ .Title }}</h2>
+
+                        <hr class="star-primary">
+
+                        <img src="img/projects/{{ .Params.img }}" class="img-responsive img-centered" alt="">
+
+
+                        {{ .Content }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}

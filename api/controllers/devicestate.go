@@ -55,6 +55,7 @@ func (c *DeviceStateController) Post() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"device_state": device_state}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

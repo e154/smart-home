@@ -57,6 +57,7 @@ func (c *MapLayerController) Post() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"map_layer": map_layer}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

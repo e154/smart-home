@@ -16,6 +16,7 @@ type Workflow struct {
 	Name		string		`orm:"" json:"name"`
 	Description	string		`orm:"" json:"description"`
 	Status		string		`orm:"" json:"status"`
+	Scenario	*Scenario	`orm:"rel(fk);null" json:"scenario"`
 	Flows		[]*Flow		`orm:"-" json:"flows"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`

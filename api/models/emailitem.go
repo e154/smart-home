@@ -4,6 +4,8 @@ import (
 	"time"
 	"encoding/json"
 	"errors"
+	"regexp"
+	"strings"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
@@ -23,6 +25,7 @@ type EmailItem struct {
 	Status			string		`orm:"size(64)" valid:"Required;MaxSize(64)" json:"status"`	//active, inactive
 	Type			string		`orm:"size(64)" valid:"Required;MaxSize(64)" json:"type"`		//item, template
 	Parent			string		`orm:"size(64)" valid:"MaxSize(64)" json:"parent"`
+	Markers			[]string	`orm:"-" json:"markers"`
 	Created_at		time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Updated_at		time.Time	`orm:"auto_now;type(datetime);column(updated_at)" json:"updated_at"`
 }
@@ -268,4 +271,48 @@ func getItemParents(items Items, result *Items, s string){
 			getItemParents(items, result, item.Parent)
 		}
 	}
+}
+
+func (i *EmailItem) GetMarkers() (markers []string, err error) {
+
+	if i.Type != "template" {
+		return
+	}
+
+	tpl := &EmailTemplate{}
+	if err = json.Unmarshal([]byte(i.Content), tpl); err != nil {
+		return
+	}
+
+	reg, _ := regexp.CompilePOSIX(`\[{1}([a-zA-Z\-_:]*)\]{1}`)
+	var find_markers func(string)
+	find_markers = func(s string) {
+		ms := reg.FindAllStringSubmatch(s, -1)
+		for _, m := range ms {
+			if strings.Contains(m[1], "content") || strings.Contains(m[1], "block") {
+				continue
+			}
+
+			var exist bool
+			for _, _m := range markers {
+				if _m == m[1] {
+					exist = true
+				}
+			}
+
+			if !exist {
+				markers = append(markers, m[1])
+			}
+		}
+	}
+
+	for _, field := range tpl.Fields {
+		find_markers(field.Value)
+	}
+
+	find_markers(tpl.Title)
+
+	i.Markers = markers
+
+	return
 }

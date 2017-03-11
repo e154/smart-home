@@ -57,6 +57,7 @@ func (c *WorkerController) Post() {
 	}
 
 	c.Data["json"] = map[string]interface{}{"worker": worker}
+	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
 }
 

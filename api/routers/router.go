@@ -40,6 +40,7 @@ func Initialize() {
 			beego.NSRouter("/workflow", &controllers.WorkflowController{}, "post:Post"),
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "put:Put"),
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "delete:Delete"),
+			beego.NSRouter("/workflow/:id([0-9]+)/update_scenario", &controllers.WorkflowController{}, "put:UpdateScenario"),
 
 			beego.NSRouter("/flow/:id([0-9]+)", &controllers.FlowController{}, "get:GetOne"),
 			beego.NSRouter("/flow/:id([0-9]+)/full", &controllers.FlowController{}, "get:GetOneFull"),
@@ -85,6 +86,7 @@ func Initialize() {
 			beego.NSRouter("/email/template", &controllers.EmailTemplateController{}, "post:Post"),
 			beego.NSRouter("/email/template/:name([\\w]+)", &controllers.EmailTemplateController{}, "put:Put"),
 			beego.NSRouter("/email/template/:name([\\w]+)", &controllers.EmailTemplateController{}, "delete:Delete"),
+			beego.NSRouter("/email/template/search", &controllers.EmailTemplateController{}, "get:Search"),
 			beego.NSRouter("/email/preview", &controllers.EmailTemplateController{}, "post:Preview")		,
 			beego.NSRouter("/email/item/:name([\\w]+)", &controllers.EmailItemController{}, "get:GetOne"),
 			beego.NSRouter("/email/items", &controllers.EmailItemController{}, "get:GetAll"),
@@ -93,6 +95,11 @@ func Initialize() {
 			beego.NSRouter("/email/item/:name([\\w]+)", &controllers.EmailItemController{}, "delete:Delete"),
 			beego.NSRouter("/email/items/tree", &controllers.EmailItemController{}, "get:GetTree"),
 			beego.NSRouter("/email/items/tree", &controllers.EmailItemController{}, "post:UpdateTree"),
+			beego.NSRouter("/notifr/:id([0-9]+)", &controllers.NotifrController{}, "get:GetOne"),
+			beego.NSRouter("/notifr", &controllers.NotifrController{}, "get:GetAll"),
+			beego.NSRouter("/notifr", &controllers.NotifrController{}, "post:Post"),
+			beego.NSRouter("/notifr/:id([0-9]+)", &controllers.NotifrController{}, "delete:Delete"),
+			beego.NSRouter("/notifr/:id([0-9]+)/repeat", &controllers.NotifrController{}, "post:Repeat"),
 
 			beego.NSRouter("/map/:id([0-9]+)", &controllers.MapController{}, "get:GetOne"),
 			beego.NSRouter("/map/:id([0-9]+)/full", &controllers.MapController{}, "get:GetFull"),
@@ -149,6 +156,18 @@ func Initialize() {
 			beego.NSRouter("/role/search", &controllers.RoleController{}, "get:Search"),
 			beego.NSRouter("/role/:name([\\w]+)/access_list", &controllers.RoleController{}, "get:GetAccessList"),
 			beego.NSRouter("/role/:name([\\w]+)/access_list", &controllers.RoleController{}, "put:PutAccessList"),
+
+			beego.NSRouter("/scenario/:id([0-9]+)", &controllers.ScenarioController{}, "get:GetOne"),
+			beego.NSRouter("/scenario", &controllers.ScenarioController{}, "get:GetAll"),
+			beego.NSRouter("/scenario", &controllers.ScenarioController{}, "post:Post"),
+			beego.NSRouter("/scenario/:id([0-9]+)", &controllers.ScenarioController{}, "put:Put"),
+			beego.NSRouter("/scenario/:id([0-9]+)", &controllers.ScenarioController{}, "delete:Delete"),
+			beego.NSRouter("/scenario/search", &controllers.ScenarioController{}, "get:Search"),
+			beego.NSRouter("/scenario_script/:id([0-9]+)", &controllers.ScenarioScriptController{}, "get:GetOne"),
+			beego.NSRouter("/scenario_script", &controllers.ScenarioScriptController{}, "get:GetAll"),
+			beego.NSRouter("/scenario_script", &controllers.ScenarioScriptController{}, "post:Post"),
+			beego.NSRouter("/scenario_script/:id([0-9]+)", &controllers.ScenarioScriptController{}, "put:Put"),
+			beego.NSRouter("/scenario_script/:id([0-9]+)", &controllers.ScenarioScriptController{}, "delete:Delete"),
 	),
 	)
 	beego.AddNamespace(ns)

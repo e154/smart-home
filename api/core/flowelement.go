@@ -1,9 +1,9 @@
 package core
 
 import (
+	"errors"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/scripts"
-	"errors"
 )
 
 func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (flowElement *FlowElement, err error) {
@@ -12,6 +12,7 @@ func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (
 		Model:model,
 		Flow: flow,
 		Workflow: workflow,
+		//ScenarioName: "default",
 	}
 
 	if model.Script == nil {
@@ -23,7 +24,7 @@ func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (
 		return
 	}
 
-	if flowElement.Script, err = scripts.New(script); err != nil {
+	if flowElement.Script, err = workflow.NewScript(script); err != nil {
 		return
 	}
 
@@ -38,6 +39,7 @@ type FlowElement struct {
 	Prototype	ActionPrototypes
 	status		Status
 	Action		*Action
+	ScenarioName	string
 }
 
 func (m *FlowElement) Before(message *Message) error {
@@ -68,7 +70,12 @@ func (m *FlowElement) Run(message *Message) (b bool, return_message *Message, er
 	//run script if exist
 	if m.Script != nil {
 
+		//if m.Workflow.model.Scenario != nil {
+		//	m.ScenarioName = m.Workflow.model.Scenario.SystemName
+		//}
+
 		m.Script.PushStruct("message", message)
+		//m.Script.SetVariable("scenario_name", m.ScenarioName)
 
 		var ok string
 		if ok, err = m.Script.Do(); err != nil {
