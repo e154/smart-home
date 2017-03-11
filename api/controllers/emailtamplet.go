@@ -143,6 +143,13 @@ func (c *EmailTemplateController) Search() {
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"templates": ml, "meta": meta}
+	templates := []models.EmailItem{}
+	for _, m := range ml {
+		item := m.(models.EmailItem)
+		item.GetMarkers()
+		templates = append(templates, item)
+	}
+
+	c.Data["json"] = &map[string]interface{}{"templates": templates, "meta":meta}
 	c.ServeJSON()
 }
