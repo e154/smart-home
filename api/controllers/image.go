@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/api/log"
 	"os"
-	"github.com/e154/smart-home/lib/common"
+	"github.com/e154/smart-home/api/common"
 )
 
 // ImageController operations for Image

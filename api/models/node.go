@@ -13,7 +13,7 @@ import (
 	"net/rpc"
 	"net"
 	"sync"
-	r "github.com/e154/smart-home/lib/rpc"
+	"github.com/e154/smart-home/api/common"
 )
 
 type Node struct {
@@ -283,7 +283,7 @@ func (n *Node) SetConnectStatus(st string) {
 	n.connStatus = st
 }
 
-func (n *Node) Send(protocol string, args *r.Request) (result r.Result) {
+func (n *Node) Send(protocol string, args *common.Request) (result common.Result) {
 	switch protocol {
 	case "modbus":
 		if err := n.ModbusSend(args, &result); err != nil {

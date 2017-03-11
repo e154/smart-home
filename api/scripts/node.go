@@ -2,7 +2,7 @@ package scripts
 
 import (
 	"github.com/e154/smart-home/api/models"
-	r "github.com/e154/smart-home/lib/rpc"
+	"github.com/e154/smart-home/api/common"
 )
 
 type Node struct {
@@ -12,10 +12,10 @@ type Node struct {
 // send date to node
 // method: node.send
 //
-func (m *Node) Send(protocol string, node *models.Node, device *models.Device, command []byte,) (result r.Result) {
+func (m *Node) Send(protocol string, node *models.Node, device *models.Device, command []byte,) (result common.Result) {
 
-	var request *r.Request
-	request = &r.Request{}
+	var request *common.Request
+	request = &common.Request{}
 	request.Baud = device.Baud
 	request.Result = true
 	request.Device = device.Tty

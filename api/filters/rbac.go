@@ -1,4 +1,4 @@
-package rbac
+package filters
 
 import (
 	"github.com/astaxie/beego"
@@ -9,7 +9,7 @@ import (
 	"github.com/e154/smart-home/api/models"
 	"net/url"
 	"errors"
-	"github.com/e154/smart-home/lib/common"
+	"github.com/e154/smart-home/api/common"
 	"github.com/dgrijalva/jwt-go"
 	"regexp"
 	"github.com/e154/smart-home/api/log"
