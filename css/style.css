@@ -28,6 +28,7 @@
 }
 .navbar-fixed-top .nav > li > a,
 .navbar-fixed-top .nav > li > a:focus {
+  background: none;
   text-transform: uppercase;
   font-weight: 700;
   font-size: 13px;
@@ -939,12 +940,12 @@ aside.api table code {
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
 section.screenshots {
-  background-color: #18a3fa;
+  background-color: #cecece;
   padding: 50px 0;
 }
 section.screenshots ul li {
   width: 100%;
-  max-width: 250px;
+  max-width: 350px;
   float: left;
   margin: 14px;
 }
@@ -1336,12 +1337,14 @@ footer.footer ul li {
   margin-right: 18px;
 }
 footer.footer ul li a {
+  background: none;
   text-transform: uppercase;
   font-weight: 700;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.7);
 }
 footer.footer ul li a:hover {
+  background: none;
   text-decoration: none;
   color: white;
 }
