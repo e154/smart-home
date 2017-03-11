@@ -10,40 +10,17 @@ import (
 )
 
 // email := notifr.NewEmail()
-// email.To = "Alice <support@e154.ru>, Алексей <alll80@mail.ru>"
+// email.To = "john doe <john_doe@example.net>, jeyn doe <jeyn_doe@example.net>"
 // email.Template = "password_reset"
-// email.Params["user:name:last"] = "last"
-// email.Params["user:name:first"] = "first"
-// email.Params["site:name"] = "Smart home"
+// email.Params["user:name:last"] = "doe"
+// email.Params["user:name:first"] = "john"
 // email.Params["user:one-time-login-url"] = ""
 // notifr.Send(email)
-//
+
 // email = notifr.NewEmail()
+// email.To = "john doe <john_doe@example.net>"
 // email.Subject = "test message"
 // email.Body = "test message body"
-// email.To = "Alice <support@e154.ru>"
-// email.Params["user:name:last"] = "last"
-// email.Params["user:name:first"] = "first"
-// email.Params["site:name"] = "Smart home"
-// email.Params["user:one-time-login-url"] = ""
-// notifr.Send(email)
-// email := notifr.NewEmail()
-// email.To = "Alice <support@e154.ru>, Алексей <alll80@mail.ru>"
-// email.Template = "password_reset"
-// email.Params["user:name:last"] = "last"
-// email.Params["user:name:first"] = "first"
-// email.Params["site:name"] = "Smart home"
-// email.Params["user:one-time-login-url"] = ""
-// notifr.Send(email)
-//
-// email = notifr.NewEmail()
-// email.Subject = "test message"
-// email.Body = "test message body"
-// email.To = "Alice <support@e154.ru>"
-// email.Params["user:name:last"] = "last"
-// email.Params["user:name:first"] = "first"
-// email.Params["site:name"] = "Smart home"
-// email.Params["user:one-time-login-url"] = ""
 // notifr.Send(email)
 
 var (
