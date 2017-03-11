@@ -655,7 +655,7 @@ const access_config_list = `{
    	},
    	"create_script": {
    		"actions": [
-   			 "/api/v1/scenario"
+   			 "/api/v1/scenario_script"
    		],
    		"method": "post",
    		"description": ""
