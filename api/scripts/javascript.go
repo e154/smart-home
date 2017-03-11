@@ -7,6 +7,7 @@ import (
 	"github.com/e154/go-candyjs"
 	"github.com/e154/smart-home/lib/common"
 	"github.com/astaxie/beego"
+	"github.com/e154/smart-home/api/log"
 )
 
 const (
@@ -96,7 +97,7 @@ func (j *Javascript) Do() (result string, err error) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in f", r)
+			log.Critical("Script: Recovered in f", r)
 		}
 	}()
 

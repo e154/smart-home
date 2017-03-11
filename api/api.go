@@ -84,8 +84,6 @@ func configuration() {
 		"ZipCode":      "Должно быть правильным почтовым индексом",
 	})
 
-	// register access filters
-	filters.RegisterFilters()
 }
 
 func Initialize() {
@@ -116,4 +114,7 @@ func Initialize() {
 
 	// rest api
 	go beego.Run()
+
+	//TODO remove
+	NotifrTest()
 }
