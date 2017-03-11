@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"github.com/e154/smart-home/api/models"
 	"github.com/astaxie/beego/orm"
+	"encoding/json"
+	"github.com/e154/smart-home/api/notifr"
 )
 
 // NotifrController operations for Notifr
@@ -28,6 +30,47 @@ func (c *NotifrController) URLMapping() {
 // @router / [post]
 func (c *NotifrController) Post() {
 
+	type NewMessage struct {
+		Address		string	`json:"address"`
+		Title		string	`json:"title"`
+		Body		string	`json:"body"`
+		Template	*models.EmailItem	`json:"template"`
+		Params		map[string]interface{}	`json:"params"`
+		Type		string	`json:"type"`
+	}
+
+	message := &NewMessage{}
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, message); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	switch message.Type {
+	case "email":
+		email := notifr.NewEmail()
+		email.To = message.Address
+		email.Body = message.Body
+		email.Params = message.Params
+		email.Subject = message.Title
+		if message.Template != nil {
+			email.Template = message.Template.Name
+		}
+		notifr.Send(email)
+
+	case "sms":
+		sms := notifr.NewSms()
+		sms.Body = message.Body
+		sms.To = message.Address
+		notifr.Send(sms)
+	case "push":
+		push := notifr.NewPush()
+		push.Body = message.Body
+		push.To = message.Address
+		notifr.Send(push)
+	}
+
+	c.Ctx.Output.SetStatus(201)
+	c.ServeJSON()
 }
 
 // GetOne ...
