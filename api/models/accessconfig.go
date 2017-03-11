@@ -96,7 +96,7 @@ const access_config_list = `{
    	},
    	"update": {
    		"actions": [
-   			"/api/v1/workflow/[0-9]+"
+   			"/api/v1/workflow/[0-9]+", "/api/v1/workflow/[0-9]+/update_scenario"
    		],
    		"method": "put",
    		"description": ""
@@ -252,7 +252,7 @@ const access_config_list = `{
    "notifr": {
    	"read_notifr_template": {
    		"actions": [
-   			"/api/v1/email/template/[\\w]+", "/api/v1/email/template"
+   			"/api/v1/email/template/[\\w]+", "/api/v1/email/template", "/api/v1/email/template/search"
    		],
    		"method": "get",
    		"description": ""
@@ -312,6 +312,34 @@ const access_config_list = `{
    			"/api/v1/email/item/[\\w]+"
    		],
    		"method": "delete",
+   		"description": ""
+	},
+	"show_notify": {
+		"actions": [
+			"/api/v1/notifr/[0-9]+", "/api/v1/notifr"
+		],
+		"method": "get",
+   		"description": ""
+	},
+	"create_notify": {
+		"actions": [
+			"/api/v1/notifr"
+		],
+		"method": "post",
+   		"description": ""
+	},
+	"repeat_notify": {
+		"actions": [
+			"/api/v1/notifr/[0-9]+/repeat"
+		],
+		"method": "post",
+   		"description": ""
+	},
+	"delete_notify": {
+		"actions": [
+			"/api/v1/notifr/[0-9]+"
+		],
+		"method": "delete",
    		"description": ""
 	}
    },
@@ -588,7 +616,65 @@ const access_config_list = `{
    		"method": "put",
    		"description": "update role access list info"
    	}
-   }
+   },
+   "scenarios": {
+   	"read": {
+   		"actions": [
+   			"/api/v1/scenario", "/api/v1/scenario/[0-9]+"
+   		],
+   		"method": "get",
+   		"description": ""
+   	},
+   	"create": {
+   		"actions": [
+   			"/api/v1/scenario"
+   		],
+   		"method": "post",
+   		"description": ""
+   	},
+	"update": {
+   		"actions": [
+   			 "/api/v1/scenario/[0-9]+"
+   		],
+   		"method": "put",
+   		"description": ""
+   	},
+   	"delete": {
+   		"actions": [
+   			 "/api/v1/scenario/[0-9]+"
+   		],
+   		"method": "delete",
+   		"description": ""
+   	},
+   	"read_script": {
+   		"actions": [
+   			 "/api/v1/scenario_script/[0-9]+", "/api/v1/scenario_script"
+   		],
+   		"method": "get",
+   		"description": ""
+   	},
+   	"create_script": {
+   		"actions": [
+   			 "/api/v1/scenario"
+   		],
+   		"method": "post",
+   		"description": ""
+   	},
+   	"update_script": {
+   		"actions": [
+   			  "/api/v1/scenario_script/[0-9]+"
+   		],
+   		"method": "put",
+   		"description": ""
+   	},
+   	"delete_script": {
+   		"actions": [
+   			  "/api/v1/scenario_script/[0-9]+"
+   		],
+   		"method": "delete",
+   		"description": ""
+   	}
+	}
 }
 `
 
