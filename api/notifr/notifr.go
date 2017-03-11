@@ -6,7 +6,45 @@ import (
 	"sync"
 	"github.com/pkg/errors"
 	"strings"
+	"github.com/astaxie/beego/orm"
 )
+
+// email := notifr.NewEmail()
+// email.To = "Alice <support@e154.ru>, Алексей <alll80@mail.ru>"
+// email.Template = "password_reset"
+// email.Params["user:name:last"] = "last"
+// email.Params["user:name:first"] = "first"
+// email.Params["site:name"] = "Smart home"
+// email.Params["user:one-time-login-url"] = ""
+// notifr.Send(email)
+//
+// email = notifr.NewEmail()
+// email.Subject = "test message"
+// email.Body = "test message body"
+// email.To = "Alice <support@e154.ru>"
+// email.Params["user:name:last"] = "last"
+// email.Params["user:name:first"] = "first"
+// email.Params["site:name"] = "Smart home"
+// email.Params["user:one-time-login-url"] = ""
+// notifr.Send(email)
+// email := notifr.NewEmail()
+// email.To = "Alice <support@e154.ru>, Алексей <alll80@mail.ru>"
+// email.Template = "password_reset"
+// email.Params["user:name:last"] = "last"
+// email.Params["user:name:first"] = "first"
+// email.Params["site:name"] = "Smart home"
+// email.Params["user:one-time-login-url"] = ""
+// notifr.Send(email)
+//
+// email = notifr.NewEmail()
+// email.Subject = "test message"
+// email.Body = "test message body"
+// email.To = "Alice <support@e154.ru>"
+// email.Params["user:name:last"] = "last"
+// email.Params["user:name:first"] = "first"
+// email.Params["site:name"] = "Smart home"
+// email.Params["user:one-time-login-url"] = ""
+// notifr.Send(email)
 
 var (
 	instantiated *Notifr = nil
@@ -77,6 +115,30 @@ func (n *Notifr) send(md *models.MessageDeliverie) (err error) {
 	return
 }
 
+func (n *Notifr) repeat(id int64) (err error) {
+
+	var md *models.MessageDeliverie
+	if md, err = models.GetMessageDeliverieById(id); err != nil {
+		return
+	}
+
+	o := orm.NewOrm()
+	if _, err = o.LoadRelated(md, "Message"); err != nil {
+		return
+	}
+
+	if err = n.send(md); err != nil {
+		md.Error_system_message = err.Error()
+		md.State = "error"
+	}
+
+	if err = models.UpdateMessageDeliverieById(md); err != nil {
+		return
+	}
+
+	return
+}
+
 func (n *Notifr) worker() (err error) {
 
 	n.mu.Lock()
@@ -102,8 +164,12 @@ func (n *Notifr) worker() (err error) {
 	return
 }
 
-func Repeat(id int64) {
-
+func RepeatById(id int64) {
+	go func() {
+		if err := instantiated.repeat(id); err != nil {
+			log.Error("Notifr:", err.Error())
+		}
+	}()
 }
 
 func Send(msg Message) {

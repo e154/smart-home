@@ -78,7 +78,7 @@ func (c NotifrController) Repeat() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
 
-	notifr.Repeat(id)
+	notifr.RepeatById(id)
 
 	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()

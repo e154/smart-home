@@ -84,8 +84,6 @@ func configuration() {
 		"ZipCode":      "Должно быть правильным почтовым индексом",
 	})
 
-	// register access filters
-	filters.RegisterFilters()
 }
 
 func Initialize() {
