@@ -102,6 +102,10 @@ func (n *Notifr) worker() (err error) {
 	return
 }
 
+func Repeat(id int64) {
+
+}
+
 func Send(msg Message) {
 	go instantiated.save(msg)
 }

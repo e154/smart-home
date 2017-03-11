@@ -99,6 +99,7 @@ func Initialize() {
 			beego.NSRouter("/notifr", &controllers.NotifrController{}, "get:GetAll"),
 			beego.NSRouter("/notifr", &controllers.NotifrController{}, "post:Post"),
 			beego.NSRouter("/notifr/:id([0-9]+)", &controllers.NotifrController{}, "delete:Delete"),
+			beego.NSRouter("/notifr/:id([0-9]+)/repeat", &controllers.NotifrController{}, "post:Repeat"),
 
 			beego.NSRouter("/map/:id([0-9]+)", &controllers.MapController{}, "get:GetOne"),
 			beego.NSRouter("/map/:id([0-9]+)/full", &controllers.MapController{}, "get:GetFull"),

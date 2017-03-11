@@ -19,6 +19,7 @@ func (c *NotifrController) URLMapping() {
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Delete", c.Delete)
+	c.Mapping("Repeat", c.Repeat)
 }
 
 // Post ...
@@ -68,6 +69,16 @@ func (c *NotifrController) Post() {
 		push.To = message.Address
 		notifr.Send(push)
 	}
+
+	c.Ctx.Output.SetStatus(201)
+	c.ServeJSON()
+}
+
+func (c NotifrController) Repeat() {
+	idStr := c.Ctx.Input.Param(":id")
+	id, _ := strconv.ParseInt(idStr, 0, 64)
+
+	notifr.Repeat(id)
 
 	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
