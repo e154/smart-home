@@ -31,7 +31,7 @@ type EmailRender struct {
 
 // GetAllEmailTemplates retrieves all EmailItem matches certain condition. Returns empty list if
 // no records exist
-func GetAllEmailItem(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllEmailTemplate(query map[string]string, fields []string, sortby []string, order []string,
 offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(EmailItem))

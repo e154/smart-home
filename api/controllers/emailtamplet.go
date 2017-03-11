@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/e154/smart-home/api/models"
+	"net/url"
 )
 
 type EmailTemplateController struct {
@@ -56,7 +57,7 @@ func (e *EmailTemplateController) GetOne() {
 // @Failure 403
 // @router / [get]
 func (e *EmailTemplateController) GetAll() {
-	templates, meta, err := models.GetAllEmailItem(e.pagination())
+	templates, meta, err := models.GetAllEmailTemplate(e.pagination())
 	if err != nil {
 		e.ErrHan(403, err.Error())
 		return
@@ -113,4 +114,26 @@ func (e *EmailTemplateController) Preview() {
 	}
 
 	e.Ctx.Output.Body([]byte(buf))
+}
+
+func (c *EmailTemplateController) Search() {
+
+	query, fields, sortby, order, offset, limit := c.pagination()
+	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
+	q := link.Query()
+
+	if val, ok := q["query"]; ok {
+		for _, v := range val {
+			query["name__icontains"] = v
+		}
+	}
+
+	ml, meta, err := models.GetAllEmailTemplate(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"templates": ml, "meta": meta}
+	c.ServeJSON()
 }

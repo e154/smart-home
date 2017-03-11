@@ -86,6 +86,7 @@ func Initialize() {
 			beego.NSRouter("/email/template", &controllers.EmailTemplateController{}, "post:Post"),
 			beego.NSRouter("/email/template/:name([\\w]+)", &controllers.EmailTemplateController{}, "put:Put"),
 			beego.NSRouter("/email/template/:name([\\w]+)", &controllers.EmailTemplateController{}, "delete:Delete"),
+			beego.NSRouter("/email/template/search", &controllers.EmailTemplateController{}, "get:Search"),
 			beego.NSRouter("/email/preview", &controllers.EmailTemplateController{}, "post:Preview")		,
 			beego.NSRouter("/email/item/:name([\\w]+)", &controllers.EmailItemController{}, "get:GetOne"),
 			beego.NSRouter("/email/items", &controllers.EmailItemController{}, "get:GetAll"),

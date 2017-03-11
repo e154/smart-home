@@ -23,6 +23,7 @@ type EmailItem struct {
 	Status			string		`orm:"size(64)" valid:"Required;MaxSize(64)" json:"status"`	//active, inactive
 	Type			string		`orm:"size(64)" valid:"Required;MaxSize(64)" json:"type"`		//item, template
 	Parent			string		`orm:"size(64)" valid:"MaxSize(64)" json:"parent"`
+	Markers			[]string	`orm:"-" json:"markers"`
 	Created_at		time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Updated_at		time.Time	`orm:"auto_now;type(datetime);column(updated_at)" json:"updated_at"`
 }
