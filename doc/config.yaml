@@ -20,6 +20,7 @@ Languages:
 
     main_menu:
       brand: "Умный дом"
+      github: "https://github.com/e154/smart-home"
       links:
         - title: "Домой"
           url : "/smart-home/"
@@ -168,7 +169,7 @@ Languages:
         link: "//github.com/e154/smart-home-node/releases/latest"
 
     footer:
-      github: "<a href='https://github.com/e154/smart-home'>GitHub</a>"
+      github: "https://github.com/e154/smart-home"
       contrubutor: "Разработано при поддержке <a href='http://e154.ru'>e154.ru</a>"
       licensed: "Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>."
 
@@ -180,6 +181,7 @@ Languages:
       favicon: "favicon.ico"
     main_menu:
       brand: "Smart home"
+      github: "https://github.com/e154/smart-home"
       links:
         - title: "Home"
           url : "/smart-home/en"
@@ -328,6 +330,6 @@ Languages:
         link: "//github.com/e154/smart-home-node"
 
     footer:
-      github: "<a href='https://github.com/e154/smart-home'>GitHub</a>"
+      github: "https://github.com/e154/smart-home"
       contrubutor: "Developed with the support of <a href='http://e154.ru'>e154.ru</a>"
       licensed: "Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>."
