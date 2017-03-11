@@ -1045,5 +1045,17 @@ cp -r conf /opt/smart-home/node
 </description>
     </item>
     
+    <item>
+      <title>Умный Дом</title>
+      <link>https://e154.github.io/smart-home/projects/project-1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/projects/project-1/</guid>
+      <description>
+
+&lt;h3 id=&#34;пример-типового-проекта-умного-дома&#34;&gt;Пример типового проекта Умного дома&lt;/h3&gt;
+</description>
+    </item>
+    
   </channel>
 </rss>
