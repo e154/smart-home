@@ -140,6 +140,7 @@ func (j *Javascript) bind() {
 	j.PushStruct("log", &Log{})
 	j.PushStruct("model", &Model{})
 	j.PushStruct("node", &Node{})
+	j.PushStruct("notifr", &Notifr{})
 	//j.PushFunction("to_time", func(i int64) time.Duration {
 	//	return time.Duration(i)
 	//})
