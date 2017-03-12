@@ -12,10 +12,10 @@
 # Author: Filippov Alex <filippov.a@e154.ru>
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC="Description of the service"
+DESC="Smart Home server auto start script"
 NAME=smart-home-server
 FOLDER=/opt/smart-home/server
-DAEMON=${FOLDER}/server-linux-amd64
+DAEMON=${FOLDER}/server
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 

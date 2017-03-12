@@ -6,7 +6,7 @@ src/src
 vendor/*
 !vendor/manifest
 /smart-home
-server
+/server
 /conf/prod/db.conf
 /conf/dev/db.conf
 /conf/prod/app.conf
