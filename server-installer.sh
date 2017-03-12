@@ -30,6 +30,9 @@ main() {
         --update)
         __update
         ;;
+        --remove)
+        __remove
+        ;;
         *)
         __help
         exit 1
@@ -128,6 +131,22 @@ __update() {
     mv data ../
 }
 
+__remove() {
+
+    log "Remove Smart home server"
+
+    log "Stop service"
+    sudo ${INSTALL_DIR}/server/server stop
+
+    log "Remove service"
+    sudo ${INSTALL_DIR}/server/server remove
+
+    log "Remove server directory"
+    rm -rf ${INSTALL_DIR}/server
+
+    return 0
+}
+
 __help() {
   cat <<EOF
 Usage: server-installer.sh [options]
@@ -136,6 +155,7 @@ OPTIONS:
 
   --install - install server
   --update - update server
+  --remove - remove server
 
   -h / --help - show this help text and exit 0
 

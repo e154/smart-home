@@ -30,6 +30,9 @@ main() {
         --update)
         __update
         ;;
+        --remove)
+        __remove
+        ;;
         *)
         __help
         exit 1
@@ -115,6 +118,22 @@ __update() {
 
 }
 
+__remove() {
+
+    log "Remove Smart home configurator"
+
+    log "Stop service"
+    sudo ${INSTALL_DIR}/server/configurator stop
+
+    log "Remove service"
+    sudo ${INSTALL_DIR}/server/configurator remove
+
+    log "Remove configurator directory"
+    rm -rf ${INSTALL_DIR}/configurator
+
+    return 0
+}
+
 __help() {
   cat <<EOF
 Usage: configurator-installer.sh [options]
@@ -123,6 +142,7 @@ OPTIONS:
 
   --install - install configurator
   --update - update configurator
+  --remove - remove configurator
 
   -h / --help - show this help text and exit 0
 

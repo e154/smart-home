@@ -30,6 +30,9 @@ main() {
         --update)
         __update
         ;;
+        --node)
+        __node
+        ;;
         *)
         __help
         exit 1
@@ -109,6 +112,22 @@ __update() {
 
 }
 
+__remove() {
+
+    log "Remove Smart home node"
+
+    log "Stop service"
+    sudo ${INSTALL_DIR}/server/node stop
+
+    log "Remove service"
+    sudo ${INSTALL_DIR}/server/node remove
+
+    log "Remove node directory"
+    rm -rf ${INSTALL_DIR}/node
+
+    return 0
+}
+
 __help() {
   cat <<EOF
 Usage: node-installer.sh [options]
@@ -117,6 +136,7 @@ OPTIONS:
 
   --install - install node
   --update - update node
+  --node - node node
 
   -h / --help - show this help text and exit 0
 
