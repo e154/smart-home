@@ -22,10 +22,32 @@ groups:
 *   windows 386
 *   windows amd64
 
-Системные требования:
+### Сервера
 
-*   50 MB RAM Минимальные
-*   100 MB RAM Рекомендуемые
+<div class="row">
+<div class="col-lg-6 server-preview">
+    <img src="/smart-home/img/orange-pi-pc-box.jpg" title="orange pi pc"/>
+    <h3>Orange Pi</h3>
+    <div class="description">
+    Средние и крупные инсталляции:
+    <ul>
+    <li>Коттедж, Таунхаус</li>
+    <li>Офис (более пяти контроллеров на этаж), Гостиница</li>
+    </ul>
+    </div>    
+</div>
+<div class="col-lg-6 server-preview">   
+    <img src="/smart-home/img/raspberry-pi-3.jpg" title="orange pi pc"/>
+     <h3>Raspberry Pi</h3>
+     <div class="description">
+     Средние и крупные инсталляции:
+     <ul>
+     <li>Коттедж, Таунхаус</li>
+     <li>Офис (более пяти контроллеров на этаж), Гостиница</li>
+     </ul>
+     </div>    
+</div>
+</div>
 
 <div class="boc-callout boc-callout-info">
     <h4>Для работы серверов не требуется запуск графической оболочки</h4>
