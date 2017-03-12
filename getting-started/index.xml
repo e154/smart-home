@@ -77,7 +77,9 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/getting-started/_requirements/</guid>
-      <description>&lt;h2 id=&#34;requirements&#34; class=&#34;page-header&#34;&gt;Системные требования&lt;/h2&gt;
+      <description>
+
+&lt;h2 id=&#34;requirements&#34; class=&#34;page-header&#34;&gt;Системные требования&lt;/h2&gt;
 
 &lt;p&gt;Поддерживаемые операционные системы:&lt;/p&gt;
 
@@ -96,12 +98,32 @@
 &lt;li&gt;windows amd64&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Системные требования:&lt;/p&gt;
+&lt;h3 id=&#34;сервера&#34;&gt;Сервера&lt;/h3&gt;
 
-&lt;ul&gt;
-&lt;li&gt;50 MB RAM Минимальные&lt;/li&gt;
-&lt;li&gt;100 MB RAM Рекомендуемые&lt;/li&gt;
-&lt;/ul&gt;
+&lt;div class=&#34;row&#34;&gt;
+&lt;div class=&#34;col-lg-6 server-preview&#34;&gt;
+    &lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/orange-pi-pc-box.jpg&#34; title=&#34;orange pi pc&#34;/&gt;
+    &lt;h3&gt;Orange Pi&lt;/h3&gt;
+    &lt;div class=&#34;description&#34;&gt;
+    Средние и крупные инсталляции:
+    &lt;ul&gt;
+    &lt;li&gt;Коттедж, Таунхаус&lt;/li&gt;
+    &lt;li&gt;Офис (более пяти контроллеров на этаж), Гостиница&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;/div&gt;    
+&lt;/div&gt;
+&lt;div class=&#34;col-lg-6 server-preview&#34;&gt;   
+    &lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/raspberry-pi-3.jpg&#34; title=&#34;orange pi pc&#34;/&gt;
+     &lt;h3&gt;Raspberry Pi&lt;/h3&gt;
+     &lt;div class=&#34;description&#34;&gt;
+     Средние и крупные инсталляции:
+     &lt;ul&gt;
+     &lt;li&gt;Коттедж, Таунхаус&lt;/li&gt;
+     &lt;li&gt;Офис (более пяти контроллеров на этаж), Гостиница&lt;/li&gt;
+     &lt;/ul&gt;
+     &lt;/div&gt;    
+&lt;/div&gt;
+&lt;/div&gt;
 
 &lt;div class=&#34;boc-callout boc-callout-info&#34;&gt;
     &lt;h4&gt;Для работы серверов не требуется запуск графической оболочки&lt;/h4&gt;
@@ -242,7 +264,6 @@
 
 &lt;ul&gt;
 &lt;li&gt;Подразумевается что у это первая установка в систему&lt;/li&gt;
-&lt;li&gt;По командам Ниже&lt;/li&gt;
 &lt;li&gt;Установка будет проходить в автоматическом режиме&lt;/li&gt;
 &lt;li&gt;Директория установки /opt/smart-home&lt;/li&gt;
 &lt;li&gt;После установки потребуется настроить подключение к серверу баз данных mysql&lt;/li&gt;

@@ -1086,25 +1086,20 @@ header.default {
   min-height: inherit;
   height: 200px;
 }
-header.getting-started {
+header.getting-started,
+header.api,
+header.javascript {
   min-height: inherit;
   height: 250px;
 }
-header.getting-started .header-content {
+header.getting-started .header-content,
+header.api .header-content,
+header.javascript .header-content {
   text-align: left;
 }
-header.getting-started .header-content p {
-  padding: 0;
-  margin: 0;
-}
-header.api {
-  min-height: inherit;
-  height: 250px;
-}
-header.api .header-content {
-  text-align: left;
-}
-header.api .header-content p {
+header.getting-started .header-content p,
+header.api .header-content p,
+header.javascript .header-content p {
   padding: 0;
   margin: 0;
 }
@@ -1387,4 +1382,8 @@ pre code {
 }
 .call-to-action {
   padding: 50px 0;
+}
+.server-preview img {
+  width: auto;
+  max-height: 200px;
 }

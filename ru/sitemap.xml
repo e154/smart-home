@@ -67,6 +67,20 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/javascript</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/groups/javascript/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/javascript/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/groups/project/</loc>
     <priority>0</priority>
   </url>
@@ -79,6 +93,10 @@
   <url>
     <loc>https://e154.github.io/smart-home/</loc>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/javascript/_overview/</loc>
   </url>
   
   <url>
