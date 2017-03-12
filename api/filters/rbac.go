@@ -5,18 +5,17 @@ import (
 	"github.com/astaxie/beego/context"
 	"strings"
 	"fmt"
-	c "github.com/e154/smart-home/api/cache"
+	"github.com/e154/smart-home/api/common"
 	"github.com/e154/smart-home/api/models"
 	"net/url"
 	"errors"
-	"github.com/e154/smart-home/api/common"
 	"github.com/dgrijalva/jwt-go"
 	"regexp"
 	"github.com/e154/smart-home/api/log"
 )
 
 var (
-	cache c.Cache
+	cache common.Cache
 	err error
 	auth_urls []string = []string{"/api/v1/signin", "/api/v1/signout", "/api/v1/reset", "/api/v1/recovery"}
 )
@@ -181,7 +180,7 @@ func Initialize() {}
 
 func init() {
 	var err error
-	cache = c.Cache{}
+	cache = common.Cache{}
 	cache.Name = "rbac"
 	if cache.Cachetime, err = beego.AppConfig.Int64("cachetime"); err != nil {
 		cache.Cachetime = 360000

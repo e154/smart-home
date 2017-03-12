@@ -1,4 +1,4 @@
-package cache
+package common
 
 import (
 	"github.com/astaxie/beego/cache"

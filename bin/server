@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+FILENAME=$0
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+COMMAND=$*
+OS_TYPE="unknown"
+OS_ARCH="unknown"
+
+UNAME=`which uname`
+
+if [ -z "$UNAME" ]; then
+  message "Required tools are missing - check beginning of \"$0\" file for details."
+  exit 1
+fi
+
+cd $BASEDIR
+
+main() {
+
+    __check_os
+
+    exec ${FILENAME}-${OS_TYPE}-${OS_ARCH} ${COMMAND}
+}
+
+__check_os() {
+
+    # get os type
+    case `${UNAME} -s` in
+        (Linux)
+            OS_TYPE="linux"
+        ;;
+        (Darwin)
+            OS_TYPE="darwin"
+        ;;
+    esac
+
+    # get os arch
+    case `${UNAME} -m` in
+        (x86_64)
+            OS_ARCH="amd64"
+        ;;
+        (386)
+            OS_ARCH="386"
+        ;;
+        (armv7l)
+            OS_ARCH="arm-7"
+        ;;
+        (armv64l)
+            OS_ARCH="arm-64"
+        ;;
+        (armv6l)
+            OS_ARCH="arm-6"
+        ;;
+        (armv5l)
+            OS_ARCH="arm-5"
+        ;;
+        (mip64)
+            OS_ARCH="mip64"
+        ;;
+        (mip64le)
+            OS_ARCH="mip64le"
+        ;;
+    esac
+}
+
+main

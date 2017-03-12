@@ -166,6 +166,9 @@ __build() {
     cp ${ROOT}/README.md ${TMP_DIR}
     cp ${ROOT}/contributors.txt ${TMP_DIR}
 
+    cp ${ROOT}/bin/server ${TMP_DIR}
+    cp ${ROOT}/bin/server-installer.sh ${TMP_DIR}
+
     # sql dump
     cd ${TMP_DIR}
     mysqldump -u root smarthome > ${TMP_DIR}/dump.sql
