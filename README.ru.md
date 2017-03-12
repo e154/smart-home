@@ -10,7 +10,7 @@
 [![Статус сборки](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
 [![Статус покрытия тестами](https://coveralls.io/repos/github/e154/smart-home/badge.svg?branch=master)](https://coveralls.io/github/e154/smart-home?branch=master)
 
-#### Overview
+### Описаниа
 
 Программный комплекс **Умный дом** начал своё развитие с не большого домашнего проекта осенью 2016 года. Основные принципы 
 лежащие в основе разрабатываемой системы, простота настройки и содержания, дешевизна и доступность компонентной базы.
@@ -22,7 +22,7 @@
 
 Проект находится в стадии активной разработке.
 
-#### Поддерживаемые системы
+### Поддерживаемые системы
     
 *   macOS 386 10.6
 *   macOS amd64 10.6
@@ -41,7 +41,7 @@
 
 <img src="doc/static/img/default_network.png" alt="smart-home map" width="630">
 
-#### Быстрая установка
+### Быстрая установка
 
 [Помощь по установке](https://e154.github.io/smart-home/getting-started/#install)
 
@@ -109,13 +109,13 @@ source /opt/smart-home/server/dump.sql
 
 PS совсем скоро добавится пример hello world
 
-#### Поддержка
+### Поддержка
 
 Сайт поддержки и накопления знаний: [https://e154.github.io/smart-home](https://e154.github.io/smart-home/)
 
 Все исправления и улучшения через: GitHub issues
 
-#### Разработчики
+### Разработчики
 
 - [Алексей Филиппов](https://github.com/e154)
 
@@ -125,11 +125,11 @@ PS совсем скоро добавится пример hello world
 
 Спасибо за понимание
 
-#### Коммерческие аналоги
+### Коммерческие аналоги
 
 * [iridiummobile](http://www.iridiummobile.net) 
 * [amx](https://www.amx.com/en-US)
 
-#### Лицензия
+### Лицензия
 
 [MIT Public License](https://github.com/e154/smart-home/blob/master/LICENSE)

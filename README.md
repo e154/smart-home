@@ -10,7 +10,7 @@ Smart home system
 [![Build Status](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
 [![Coverage Status](https://coveralls.io/repos/github/e154/smart-home/badge.svg?branch=master)](https://coveralls.io/github/e154/smart-home?branch=master)
 
-#### Overview
+### Overview
 
 The program complex ** Smart House ** began its development with a small home project in the fall of 2016. Basic principles
 Underlying the system being developed, ease of configuration and content, cheapness and availability of the component base.
@@ -22,7 +22,7 @@ Manage the state of devices from any subnet where the management server is avail
 
 The project is in active development stage.
 
-#### Supported system
+### Supported system
     
 *   macOS 386 10.6
 *   macOS amd64 10.6
@@ -41,7 +41,7 @@ Schematic smart home map
 
 <img src="doc/static/img/default_network.png" alt="smart-home map" width="630">
 
-#### Quick installation
+### Quick installation
 
 [Installation help](https://e154.github.io/smart-home/getting-started/#install)
 
@@ -109,12 +109,12 @@ It's all:)
 
 PS very soon an example will be added hello world
 
-#### Support 
+### Support 
 
 Smart home Wiki: [e154.github.io/smart-home](https://e154.github.io/smart-home/)
 Bugs and feature requests: GitHub issues
 
-#### Contributors
+### Contributors
 
 - [Alex Filippov](https://github.com/e154)
 
@@ -124,11 +124,11 @@ All the contributors are welcome. If you would like to be the contributor please
 
 Thank you for your understanding!
 
-#### See also
+### See also
 
 * [iridiummobile](http://www.iridiummobile.net) 
 * [amx](https://www.amx.com/en-US)
 
-#### LICENSE
+### LICENSE
 
 [MIT Public License](https://github.com/e154/smart-home/blob/master/LICENSE)
