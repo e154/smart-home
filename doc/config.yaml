@@ -67,6 +67,8 @@ Languages:
               url: "#configurator"
             - title: "Нода"
               url: "#node"
+        - title: "Быстрая Установка"
+          url: "#quick-install"
         - title: "Установка"
           url: "#install"
           pages:
@@ -228,6 +230,8 @@ Languages:
               url: "configurator"
             - title: "Node"
               url: "#node"
+        - title: "Quick install"
+          url: "#quick-install"
         - title: "Install"
           url: "#install"
           pages:
