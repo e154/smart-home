@@ -15,7 +15,6 @@ import (
 	"github.com/e154/smart-home/api/log"
 	"github.com/e154/smart-home/api/notifr"
 	"github.com/e154/smart-home/api/telemetry"
-	"github.com/e154/smart-home/api/rbac"
 	"io/ioutil"
 	"path/filepath"
 )
@@ -94,9 +93,6 @@ func Initialize() {
 
 	// routes
 	routers.Initialize()
-
-	// rbac
-	rbac.Initialize()
 
 	// cron
 	cron.Initialize()

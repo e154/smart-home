@@ -4,8 +4,12 @@
 
         <ul>
 
-            {{ if .Site.Params.footer }}
-            <li>{{ .Site.Params.footer.github | safeHTML}}</li>
+            {{ if .Site.Params.footer.github }}
+            <li>
+                <a class='btn btn-xs btn-default' href='{{ .Site.Params.footer.github}}' target='_blank'>
+                    <i class='fa fa-github'></i><span class='gh-text'> GitHub</span>
+                </a>
+            </li>
             {{ end }}
 
             {{ range .Site.Params.main_menu.links }}

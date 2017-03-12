@@ -10,7 +10,7 @@ import (
 	"github.com/astaxie/beego"
 	"time"
 	"unicode/utf8"
-	"github.com/e154/smart-home/lib/common"
+	"github.com/e154/smart-home/api/common"
 	"encoding/json"
 )
 

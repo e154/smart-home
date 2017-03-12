@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/e154/smart-home/api/models"
-	"github.com/e154/smart-home/lib/common"
+	"github.com/e154/smart-home/api/common"
 	"time"
 	"encoding/base64"
 	"strings"

@@ -6,7 +6,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"net/url"
-	"github.com/e154/smart-home/api/rbac"
+	rbac "github.com/e154/smart-home/api/filters"
 )
 
 // RoleController operations for Role

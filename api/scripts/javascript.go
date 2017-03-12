@@ -5,7 +5,7 @@ import (
 	"strings"
 	"errors"
 	"github.com/e154/go-candyjs"
-	"github.com/e154/smart-home/lib/common"
+	"github.com/e154/smart-home/api/common"
 	"github.com/astaxie/beego"
 	"github.com/e154/smart-home/api/log"
 )

@@ -8,7 +8,7 @@ import (
 	"time"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
-	UUID "github.com/e154/smart-home/lib/uuid"
+	UUID "github.com/e154/smart-home/api/common/uuid"
 	"database/sql"
 )
 

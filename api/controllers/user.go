@@ -5,7 +5,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"fmt"
 	"github.com/e154/smart-home/api/models"
-	"github.com/e154/smart-home/lib/common"
+	"github.com/e154/smart-home/api/common"
 	"net/url"
 	"github.com/e154/smart-home/api/log"
 )

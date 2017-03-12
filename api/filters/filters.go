@@ -4,7 +4,6 @@ import (
 	"github.com/e154/smart-home/api/log"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/plugins/cors"
-	"github.com/e154/smart-home/api/rbac"
 )
 
 func RegisterFilters() {
@@ -18,6 +17,6 @@ func RegisterFilters() {
 		AllowHeaders:     []string{"Content-Type", "access_token"},
 	}))
 
-	// register rbac access filter
-	rbac.AccessFilter()
+	// register access filter
+	AccessFilter()
 }

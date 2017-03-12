@@ -17,6 +17,14 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
 
+                {{ if .Site.Params.main_menu.github }}
+                <li>
+                    <a class='btn btn-xs btn-default' href='{{ .Site.Params.main_menu.github}}' target='_blank'>
+                        <i class='fa fa-github'></i><span class='gh-text'> GitHub</span>
+                    </a>
+                </li>
+                {{ end }}
+
                 {{ range .Site.Params.main_menu.links }}
                 <li>
                     <a href="{{ .url | absURL }}">{{.title}}</a>

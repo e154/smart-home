@@ -14,7 +14,7 @@ import (
 
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
-	"github.com/e154/smart-home/lib/common"
+	"github.com/e154/smart-home/api/common"
 )
 
 type Image struct {
