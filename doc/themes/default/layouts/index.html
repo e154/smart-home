@@ -12,6 +12,8 @@
             {{ partial "header.html" . }}
         {{ end }}
 
+        {{ partial "screenshots.html" . }}
+
         {{ if .Site.Params.feature }}
             {{ partial "feature.html" . }}
         {{ end }}
@@ -29,8 +31,6 @@
         {{ if .Site.Params.download }}
             {{ partial "download.html" . }}
         {{ end }}
-
-        {{ partial "screenshots.html" . }}
 
         {{ if .Site.Params.footer }}
             {{ partial "footer.html" . }}
