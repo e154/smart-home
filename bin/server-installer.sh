@@ -98,11 +98,11 @@ __install_default_settings() {
 
 __install_main() {
 
-    log "Install server as service"
-    sudo server --install
+#    log "Install server as service"
+#    sudo /opt/smart-home/server/server install
 
     log "Server installed"
-    exec ./opt/smart-home/server/server --help
+    exec ./opt/smart-home/server/server help
 
     return 0
 }
