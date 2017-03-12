@@ -153,19 +153,9 @@ header {
         height: 200px;
     }
 
-    &.getting-started {
-        min-height: inherit;
-        height: 250px;
-        .header-content {
-            text-align: left;
-            p {
-                padding: 0;
-                margin: 0;
-            }
-        }
-    }
-
-    &.api {
+    &.getting-started,
+    &.api,
+    &.javascript {
         min-height: inherit;
         height: 250px;
         .header-content {
@@ -413,4 +403,15 @@ pre {
 
 .call-to-action {
     padding: 50px 0;
+}
+
+.server-preview {
+    img {
+        width: auto;
+        max-height: 200px;
+    }
+
+    .description {
+
+    }
 }

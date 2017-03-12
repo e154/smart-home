@@ -12,7 +12,7 @@ Smart home system
 
 ### Overview
 
-The program complex ** Smart House ** began its development with a small home project in the fall of 2016. Basic principles
+The program complex **Smart House** began its development with a small home project in the fall of 2016. Basic principles
 Underlying the system being developed, ease of configuration and content, cheapness and availability of the component base.
 So you can manage a lot of devices based on AVR microcontrollers and not only.
 A distributed network does not have geographic boundaries and allows you to manage devices anywhere in the Internet through

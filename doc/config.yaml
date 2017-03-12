@@ -23,11 +23,13 @@ Languages:
       github: "https://github.com/e154/smart-home"
       links:
         - title: "Домой"
-          url : "/smart-home/"
+          url: "/smart-home/"
         - title : "С чего начать"
-          url : "/smart-home/getting-started"
+          url: "/smart-home/getting-started"
         - title : "api"
-          url : "/smart-home/api"
+          url: "/smart-home/api"
+        - title: "Javascript"
+          url: "/smart-home/javascript"
 
     api_menu:
       links:
@@ -50,6 +52,11 @@ Languages:
             - title: "Выход"
               url : '#signout'
 
+    javascript_menu:
+      links:
+        - title: "Обзор"
+          url: "#overview"
+
     getting_started_menu:
       links:
         - title: "Обзор"
@@ -67,6 +74,8 @@ Languages:
               url: "#configurator"
             - title: "Нода"
               url: "#node"
+        - title: "Быстрая Установка"
+          url: "#quick-install"
         - title: "Установка"
           url: "#install"
           pages:
@@ -189,6 +198,8 @@ Languages:
           url : "/smart-home/en/getting-started"
         - title : "api"
           url : "/smart-home/en/api"
+        - title: "Javascript"
+          url: "/smart-home/en/javascript"
 
     api_menu:
       links:
@@ -211,6 +222,11 @@ Languages:
             - title: "Signout"
               url: "#signout"
 
+    javascript_menu:
+      links:
+        - title: "Overview"
+          url: "#overview"
+
     getting_started_menu:
       links:
         - title: "Overview"
@@ -228,6 +244,8 @@ Languages:
               url: "configurator"
             - title: "Node"
               url: "#node"
+        - title: "Quick install"
+          url: "#quick-install"
         - title: "Install"
           url: "#install"
           pages:

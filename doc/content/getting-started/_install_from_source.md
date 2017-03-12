@@ -1,5 +1,5 @@
 ---
-weight: 6
+weight: 60
 title: overview
 groups:
     - "getting_started"
