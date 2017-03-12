@@ -2,10 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://e154.github.io/smart-home/getting-started/_overview/</loc>
-  </url>
-  
-  <url>
     <loc>https://e154.github.io/smart-home/api/_overview/</loc>
   </url>
   
@@ -14,7 +10,15 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/getting-started/_overview/</loc>
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/getting-started/_requirements/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/getting-started/_quick_install/</loc>
   </url>
   
   <url>

@@ -109,20 +109,21 @@
                             
                                 <h2 id="overview" class="page-header">Обзор</h2>
 
-<p>Програмный комплекс <strong>Умный дом</strong> начала своё развитие с не большого домашнего проекта осенью 2016 года. Основные принципы
-лежащие в основе разрабатываемой системы, это дешевизна и доступность компонентной базы.</p>
+<p>Программный комплекс <strong>Умный дом</strong> начал своё развитие с не большого домашнего проекта осенью 2016 года. Основные принципы
+лежащие в основе разрабатываемой системы - простота настройки и содержания, дешевизна и доступность компонентной базы.</p>
 
-<p>Так Вы без проблем сможете управлять несколькими устройствами на базе AVR микроконтроллеров, подключенными в одну линию
-связи. Сеть устройств не связанна границей физического дома, или длиной кабеля, можно подключиться к устройству на другой
-стороне планеты, за что отвечает микросервис <a href="https://github.com/e154/smart-home-node">нода</a>. И Вы сможете взаимодействовать
-с этим устройством так, как буд-то оно в локальной сети. Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора.
+<p>С помощью программного комплекса <strong>Умный дом</strong> Вы сможете управлять множеством устройствами на базе AVR микроконтроллеров и не только.
+Распределённая сеть устройств на основе програмного комплекса <strong>Умный дом</strong> не имеег географических границ и позволяет
+управлять устройствами в любой точке сети интернет через систему узлов - микросервисов.
+Вы сможете взаимодействовать с этим устройствами так, как буд-то они в Вашей локальной сети.
+Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора через гибкую систему скриптов.
 Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.</p>
 
-<p>Пример простого устройства <a href="https://github.com/e154/smart-home-socket">розетка</a>, позволяет управлять нагрузкой 220в 14А ампер.
+<p>Пример простого устройства <a href="https://github.com/e154/smart-home-socket">умная розетка</a>, позволяет управлять нагрузкой 220в 14А ампер.
 На базе которого легко построить решение для управления светом, рольставнями, воротами, датчики протечки, утечки газа, и много
 другого</p>
 
-<p>Система <strong>Умный дом</strong> имеет модульную структуру, и состоит из следующих частей:</p>
+<p>Программный комплекс <strong>Умный дом</strong> имеет модульную структуру, и состоит из следующих частей:</p>
 
 <p><strong>Сервер</strong> - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
 исполнение процессов, логирование, оповещенние, реакция на события, исполнени сценариев.</p>
@@ -305,6 +306,69 @@
 <li><strong>node-</strong> - Платформо зависимый исполняемый файл
 <br /></li>
 </ul>
+
+                            
+                                <h2 id="quick-install" class="page-header">Быстрая установка</h2>
+
+<ul>
+<li>Подразумевается что у это первая установка в систему</li>
+<li>По командам Ниже</li>
+<li>Установка будет проходить в автоматическом режиме</li>
+<li>Директория установки /opt/smart-home</li>
+<li>После установки потребуется настроить подключение к серверу баз данных mysql</li>
+</ul>
+
+<p>Установка сервера</p>
+
+<pre><code class="language-bash">curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install
+</code></pre>
+
+<p>Установка конфигуратор</p>
+
+<pre><code class="language-bash">curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev/stdin --install
+</code></pre>
+
+<p>Установка узла связи</p>
+
+<pre><code class="language-bash">curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
+</code></pre>
+
+<p>Нвстройка сервера баз данных mysql</p>
+
+<pre><code class="language-bash">mysql -u root -p
+CREATE DATABASE smarthome;
+CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
+GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
+FLUSH PRIVILEGES;
+use smarthome
+source /opt/smart-home/server/dump.sql
+</code></pre>
+
+<p>Запуск сервера</p>
+
+<pre><code class="language-bash">/opt/smart-home/server/server
+</code></pre>
+
+<p>сервер запустится на порту <strong>3000</strong></p>
+
+<p>Запуск конфигуратора</p>
+
+<pre><code class="language-bash">/opt/smart-home/configurator/configurator
+</code></pre>
+
+<p>консоль конфигуратора будет доступа в браузере по адресу <a href="http://localhost:8080">http://localhost:8080</a></p>
+
+<p>Запуск узла связи с устройствами</p>
+
+<pre><code class="language-bash">/opt/smart-home/node/node
+</code></pre>
+
+<p>Те же команды, но без привязки к консоли</p>
+
+<pre><code class="language-bash">/opt/smart-home/server/server &gt; /dev/null 2&gt;&amp;1 &amp;
+/opt/smart-home/configurator/configurator &gt; /dev/null 2&gt;&amp;1 &amp;
+/opt/smart-home/node/node &gt; /dev/null 2&gt;&amp;1 &amp;
+</code></pre>
 
                             
                                 <h2 id="install">Установка</h2>
@@ -684,6 +748,15 @@ cp -r conf /opt/smart-home/node
                         Нода
                     </a>
                 </li>
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#quick-install">
+                Быстрая Установка
+            </a>
+            <ul class="nav bd-sidenav">
                 
             </ul>
         </li>

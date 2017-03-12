@@ -74,12 +74,6 @@
                 
 
                 
-                
-                <li>
-                    <a href="https://e154.github.io/smart-home/en/getting-started/_overview/">English</a>
-                </li>
-                
-                
             </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -93,7 +87,7 @@
         <header class="getting-started">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>overview</h1>
+            <h1>quick install</h1>
             
         </div>
     </div>
@@ -106,51 +100,67 @@
                 <div class="row">
                     <div class="col-md-9" role="main">
                         
-                            <h2 id="overview" class="page-header">Обзор</h2>
+                            <h2 id="quick-install" class="page-header">Быстрая установка</h2>
 
-<p>Программный комплекс <strong>Умный дом</strong> начал своё развитие с не большого домашнего проекта осенью 2016 года. Основные принципы
-лежащие в основе разрабатываемой системы - простота настройки и содержания, дешевизна и доступность компонентной базы.</p>
+<ul>
+<li>Подразумевается что у это первая установка в систему</li>
+<li>По командам Ниже</li>
+<li>Установка будет проходить в автоматическом режиме</li>
+<li>Директория установки /opt/smart-home</li>
+<li>После установки потребуется настроить подключение к серверу баз данных mysql</li>
+</ul>
 
-<p>С помощью программного комплекса <strong>Умный дом</strong> Вы сможете управлять множеством устройствами на базе AVR микроконтроллеров и не только.
-Распределённая сеть устройств на основе програмного комплекса <strong>Умный дом</strong> не имеег географических границ и позволяет
-управлять устройствами в любой точке сети интернет через систему узлов - микросервисов.
-Вы сможете взаимодействовать с этим устройствами так, как буд-то они в Вашей локальной сети.
-Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора через гибкую систему скриптов.
-Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.</p>
+<p>Установка сервера</p>
 
-<p>Пример простого устройства <a href="https://github.com/e154/smart-home-socket">умная розетка</a>, позволяет управлять нагрузкой 220в 14А ампер.
-На базе которого легко построить решение для управления светом, рольставнями, воротами, датчики протечки, утечки газа, и много
-другого</p>
+<pre><code class="language-bash">curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install
+</code></pre>
 
-<p>Программный комплекс <strong>Умный дом</strong> имеет модульную структуру, и состоит из следующих частей:</p>
+<p>Установка конфигуратор</p>
 
-<p><strong>Сервер</strong> - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
-исполнение процессов, логирование, оповещенние, реакция на события, исполнени сценариев.</p>
+<pre><code class="language-bash">curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev/stdin --install
+</code></pre>
 
-<p><strong>Конфигуратор</strong> - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
-систему под свои нужды, требуется как првило на этапе конфигурации.</p>
+<p>Установка узла связи</p>
 
-<p><strong>Нода</strong> - посредник связи сервера с активными устройствами, позволяет связать один сервер с
-множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
-Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
-по требованию сценария, либо доступности последней.</p>
+<pre><code class="language-bash">curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
+</code></pre>
 
-<p><del><strong>Монитор</strong> - мобильное клиентское приложение android, ios.</del>(в разработке)</p>
+<p>Нвстройка сервера баз данных mysql</p>
 
-<p>Для работы <strong>системы умного дома</strong> требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
-нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.</p>
+<pre><code class="language-bash">mysql -u root -p
+CREATE DATABASE smarthome;
+CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
+GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
+FLUSH PRIVILEGES;
+use smarthome
+source /opt/smart-home/server/dump.sql
+</code></pre>
 
-<p>На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
-В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
-создайте реквест с предложением в репозиторий <a href="https://github.com/e154/smart-home">Сервер</a>, <a href="https://github.com/e154/smart-home-node">Нода</a>.</p>
+<p>Запуск сервера</p>
 
-<p>Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
-со схемой и программой прошивки для <strong>AVR mega 168pu</strong> управляющего розетой, легко поддающееся модификации под более сложные задачи можно
-посмотреть в репозитории - <a href="https://github.com/e154/smart-home-socket">пример устройства управления розеткой</a>.</p>
+<pre><code class="language-bash">/opt/smart-home/server/server
+</code></pre>
 
-<p>Схематичная сеть <strong>системы умного дома</strong>:</p>
+<p>сервер запустится на порту <strong>3000</strong></p>
 
-<p><img src="/smart-home/img/default_network.png" alt="Схематичная сеть умного дома" title="Схематичная сеть умного дома" /></p>
+<p>Запуск конфигуратора</p>
+
+<pre><code class="language-bash">/opt/smart-home/configurator/configurator
+</code></pre>
+
+<p>консоль конфигуратора будет доступа в браузере по адресу <a href="http://localhost:8080">http://localhost:8080</a></p>
+
+<p>Запуск узла связи с устройствами</p>
+
+<pre><code class="language-bash">/opt/smart-home/node/node
+</code></pre>
+
+<p>Те же команды, но без привязки к консоли</p>
+
+<pre><code class="language-bash">/opt/smart-home/server/server &gt; /dev/null 2&gt;&amp;1 &amp;
+/opt/smart-home/configurator/configurator &gt; /dev/null 2&gt;&amp;1 &amp;
+/opt/smart-home/node/node &gt; /dev/null 2&gt;&amp;1 &amp;
+</code></pre>
 
                         
                     </div>
@@ -371,12 +381,6 @@
             </li>
             
 
-            
-            
-            <li>
-                <a href="https://e154.github.io/smart-home/en/getting-started/_overview/">en</a>
-            </li>
-            
             
 
         </ul>

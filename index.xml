@@ -9,59 +9,6 @@
     <atom:link href="https://e154.github.io/smart-home/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>overview</title>
-      <link>https://e154.github.io/smart-home/getting-started/_overview/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://e154.github.io/smart-home/getting-started/_overview/</guid>
-      <description>&lt;h2 id=&#34;overview&#34; class=&#34;page-header&#34;&gt;Обзор&lt;/h2&gt;
-
-&lt;p&gt;Програмный комплекс &lt;strong&gt;Умный дом&lt;/strong&gt; начала своё развитие с не большого домашнего проекта осенью 2016 года. Основные принципы
-лежащие в основе разрабатываемой системы, это дешевизна и доступность компонентной базы.&lt;/p&gt;
-
-&lt;p&gt;Так Вы без проблем сможете управлять несколькими устройствами на базе AVR микроконтроллеров, подключенными в одну линию
-связи. Сеть устройств не связанна границей физического дома, или длиной кабеля, можно подключиться к устройству на другой
-стороне планеты, за что отвечает микросервис &lt;a href=&#34;https://github.com/e154/smart-home-node&#34;&gt;нода&lt;/a&gt;. И Вы сможете взаимодействовать
-с этим устройством так, как буд-то оно в локальной сети. Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора.
-Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.&lt;/p&gt;
-
-&lt;p&gt;Пример простого устройства &lt;a href=&#34;https://github.com/e154/smart-home-socket&#34;&gt;розетка&lt;/a&gt;, позволяет управлять нагрузкой 220в 14А ампер.
-На базе которого легко построить решение для управления светом, рольставнями, воротами, датчики протечки, утечки газа, и много
-другого&lt;/p&gt;
-
-&lt;p&gt;Система &lt;strong&gt;Умный дом&lt;/strong&gt; имеет модульную структуру, и состоит из следующих частей:&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Сервер&lt;/strong&gt; - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
-исполнение процессов, логирование, оповещенние, реакция на события, исполнени сценариев.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Конфигуратор&lt;/strong&gt; - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
-систему под свои нужды, требуется как првило на этапе конфигурации.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Нода&lt;/strong&gt; - посредник связи сервера с активными устройствами, позволяет связать один сервер с
-множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
-Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
-по требованию сценария, либо доступности последней.&lt;/p&gt;
-
-&lt;p&gt;&lt;del&gt;&lt;strong&gt;Монитор&lt;/strong&gt; - мобильное клиентское приложение android, ios.&lt;/del&gt;(в разработке)&lt;/p&gt;
-
-&lt;p&gt;Для работы &lt;strong&gt;системы умного дома&lt;/strong&gt; требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
-нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.&lt;/p&gt;
-
-&lt;p&gt;На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
-В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
-создайте реквест с предложением в репозиторий &lt;a href=&#34;https://github.com/e154/smart-home&#34;&gt;Сервер&lt;/a&gt;, &lt;a href=&#34;https://github.com/e154/smart-home-node&#34;&gt;Нода&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
-со схемой и программой прошивки для &lt;strong&gt;AVR mega 168pu&lt;/strong&gt; управляющего розетой, легко поддающееся модификации под более сложные задачи можно
-посмотреть в репозитории - &lt;a href=&#34;https://github.com/e154/smart-home-socket&#34;&gt;пример устройства управления розеткой&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Схематичная сеть &lt;strong&gt;системы умного дома&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/default_network.png&#34; alt=&#34;Схематичная сеть умного дома&#34; title=&#34;Схематичная сеть умного дома&#34; /&gt;&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
       <title>Обзор</title>
       <link>https://e154.github.io/smart-home/api/_overview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -462,6 +409,60 @@ curl -H &amp;quot;Content-Type: application/json; charset=utf-8&amp;quot; -u &am
     
     <item>
       <title>overview</title>
+      <link>https://e154.github.io/smart-home/getting-started/_overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_overview/</guid>
+      <description>&lt;h2 id=&#34;overview&#34; class=&#34;page-header&#34;&gt;Обзор&lt;/h2&gt;
+
+&lt;p&gt;Программный комплекс &lt;strong&gt;Умный дом&lt;/strong&gt; начал своё развитие с не большого домашнего проекта осенью 2016 года. Основные принципы
+лежащие в основе разрабатываемой системы - простота настройки и содержания, дешевизна и доступность компонентной базы.&lt;/p&gt;
+
+&lt;p&gt;С помощью программного комплекса &lt;strong&gt;Умный дом&lt;/strong&gt; Вы сможете управлять множеством устройствами на базе AVR микроконтроллеров и не только.
+Распределённая сеть устройств на основе програмного комплекса &lt;strong&gt;Умный дом&lt;/strong&gt; не имеег географических границ и позволяет
+управлять устройствами в любой точке сети интернет через систему узлов - микросервисов.
+Вы сможете взаимодействовать с этим устройствами так, как буд-то они в Вашей локальной сети.
+Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора через гибкую систему скриптов.
+Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.&lt;/p&gt;
+
+&lt;p&gt;Пример простого устройства &lt;a href=&#34;https://github.com/e154/smart-home-socket&#34;&gt;умная розетка&lt;/a&gt;, позволяет управлять нагрузкой 220в 14А ампер.
+На базе которого легко построить решение для управления светом, рольставнями, воротами, датчики протечки, утечки газа, и много
+другого&lt;/p&gt;
+
+&lt;p&gt;Программный комплекс &lt;strong&gt;Умный дом&lt;/strong&gt; имеет модульную структуру, и состоит из следующих частей:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Сервер&lt;/strong&gt; - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
+исполнение процессов, логирование, оповещенние, реакция на события, исполнени сценариев.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Конфигуратор&lt;/strong&gt; - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
+систему под свои нужды, требуется как првило на этапе конфигурации.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Нода&lt;/strong&gt; - посредник связи сервера с активными устройствами, позволяет связать один сервер с
+множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
+Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
+по требованию сценария, либо доступности последней.&lt;/p&gt;
+
+&lt;p&gt;&lt;del&gt;&lt;strong&gt;Монитор&lt;/strong&gt; - мобильное клиентское приложение android, ios.&lt;/del&gt;(в разработке)&lt;/p&gt;
+
+&lt;p&gt;Для работы &lt;strong&gt;системы умного дома&lt;/strong&gt; требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
+нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.&lt;/p&gt;
+
+&lt;p&gt;На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
+В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
+создайте реквест с предложением в репозиторий &lt;a href=&#34;https://github.com/e154/smart-home&#34;&gt;Сервер&lt;/a&gt;, &lt;a href=&#34;https://github.com/e154/smart-home-node&#34;&gt;Нода&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
+со схемой и программой прошивки для &lt;strong&gt;AVR mega 168pu&lt;/strong&gt; управляющего розетой, легко поддающееся модификации под более сложные задачи можно
+посмотреть в репозитории - &lt;a href=&#34;https://github.com/e154/smart-home-socket&#34;&gt;пример устройства управления розеткой&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Схематичная сеть &lt;strong&gt;системы умного дома&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://e154.github.io/smart-home/smart-home/img/default_network.png&#34; alt=&#34;Схематичная сеть умного дома&#34; title=&#34;Схематичная сеть умного дома&#34; /&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>overview</title>
       <link>https://e154.github.io/smart-home/getting-started/_requirements/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -618,6 +619,76 @@ curl -H &amp;quot;Content-Type: application/json; charset=utf-8&amp;quot; -u &am
 &lt;li&gt;&lt;strong&gt;node-&lt;/strong&gt; - Платформо зависимый исполняемый файл
 &lt;br /&gt;&lt;/li&gt;
 &lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>quick install</title>
+      <link>https://e154.github.io/smart-home/getting-started/_quick_install/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_quick_install/</guid>
+      <description>&lt;h2 id=&#34;quick-install&#34; class=&#34;page-header&#34;&gt;Быстрая установка&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Подразумевается что у это первая установка в систему&lt;/li&gt;
+&lt;li&gt;По командам Ниже&lt;/li&gt;
+&lt;li&gt;Установка будет проходить в автоматическом режиме&lt;/li&gt;
+&lt;li&gt;Директория установки /opt/smart-home&lt;/li&gt;
+&lt;li&gt;После установки потребуется настроить подключение к серверу баз данных mysql&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Установка сервера&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Установка конфигуратор&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev/stdin --install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Установка узла связи&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Нвстройка сервера баз данных mysql&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;mysql -u root -p
+CREATE DATABASE smarthome;
+CREATE USER &#39;smarthome&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;smarthome&#39;;
+GRANT ALL PRIVILEGES ON smarthome . * TO &#39;smarthome&#39;@&#39;localhost&#39;;
+FLUSH PRIVILEGES;
+use smarthome
+source /opt/smart-home/server/dump.sql
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Запуск сервера&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;/opt/smart-home/server/server
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;сервер запустится на порту &lt;strong&gt;3000&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Запуск конфигуратора&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;/opt/smart-home/configurator/configurator
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;консоль конфигуратора будет доступа в браузере по адресу &lt;a href=&#34;http://localhost:8080&#34;&gt;http://localhost:8080&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Запуск узла связи с устройствами&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;/opt/smart-home/node/node
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Те же команды, но без привязки к консоли&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;/opt/smart-home/server/server &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
+/opt/smart-home/configurator/configurator &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
+/opt/smart-home/node/node &amp;gt; /dev/null 2&amp;gt;&amp;amp;1 &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
