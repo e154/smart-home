@@ -48,7 +48,7 @@
 Сервер
 
 ```bash
-curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install
+    curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install
 ```
 
 Конфигуратор
