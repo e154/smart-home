@@ -1,0 +1,1 @@
+../../bin/configurator-installer.sh
