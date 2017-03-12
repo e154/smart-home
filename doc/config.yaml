@@ -23,11 +23,13 @@ Languages:
       github: "https://github.com/e154/smart-home"
       links:
         - title: "Домой"
-          url : "/smart-home/"
+          url: "/smart-home/"
         - title : "С чего начать"
-          url : "/smart-home/getting-started"
+          url: "/smart-home/getting-started"
         - title : "api"
-          url : "/smart-home/api"
+          url: "/smart-home/api"
+        - title: "Javascript"
+          url: "/smart-home/javascript"
 
     api_menu:
       links:
@@ -49,6 +51,11 @@ Languages:
               url : '#signin'
             - title: "Выход"
               url : '#signout'
+
+    javascript_menu:
+      links:
+        - title: "Обзор"
+          url: "#overview"
 
     getting_started_menu:
       links:
@@ -191,6 +198,8 @@ Languages:
           url : "/smart-home/en/getting-started"
         - title : "api"
           url : "/smart-home/en/api"
+        - title: "Javascript"
+          url: "/smart-home/en/javascript"
 
     api_menu:
       links:
@@ -212,6 +221,11 @@ Languages:
               url: "#signin"
             - title: "Signout"
               url: "#signout"
+
+    javascript_menu:
+      links:
+        - title: "Overview"
+          url: "#overview"
 
     getting_started_menu:
       links:
