@@ -141,6 +141,7 @@ func (j *Javascript) bind() {
 	j.PushStruct("model", &Model{})
 	j.PushStruct("node", &Node{})
 	j.PushStruct("notifr", &Notifr{})
+	j.PushStruct("exec", &Exec{})
 	//j.PushFunction("to_time", func(i int64) time.Duration {
 	//	return time.Duration(i)
 	//})
