@@ -92,6 +92,11 @@ func (c *WorkflowController) GetOne() {
 		return
 	}
 
+	if _, err = workflow.GetScenarios(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
 	c.Data["json"] = map[string]interface{}{"workflow": workflow}
 	c.ServeJSON()
 }

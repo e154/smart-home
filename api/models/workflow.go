@@ -17,6 +17,7 @@ type Workflow struct {
 	Description	string			`orm:"" json:"description"`
 	Status		string			`orm:"" json:"status"`
 	Scenario	*WorkflowScenario       `orm:"rel(fk);column(workflow_scenario_id);null" json:"scenario"`
+	Scenarios	[]*WorkflowScenario	`orm:"reverse(many)" json:"scenarios"`
 	Scripts		[]*Script		`orm:"rel(m2m);rel_through(github.com/e154/smart-home/api/models.WorkflowScript)" json:"scripts"`
 	Flows		[]*Flow			`orm:"-" json:"flows"`
 	Created_at	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
@@ -192,4 +193,21 @@ func (wf *Workflow) GetScenario() (int64, error) {
 	}
 
 	return 0, nil
+}
+
+func (wf *Workflow) GetScenarios() (int64, error) {
+	o := orm.NewOrm()
+	return o.LoadRelated(wf, "Scenarios")
+}
+
+func (wf *Workflow) GetScenarioById(id int64) (scenario *WorkflowScenario, err error) {
+	o := orm.NewOrm()
+	scenario = &WorkflowScenario{
+		Workflow: wf,
+		Id: id,
+	}
+
+	err = o.Read(scenario, "Id", "Workflow")
+
+	return
 }

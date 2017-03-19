@@ -153,7 +153,6 @@ func getAccessList(token string) (user *models.User, access_list models.AccessLi
 	}
 
 	if user, err = models.UserGetByAuthenticationToken(token); err != nil {
-		log.Warnf("rbac: %s", err.Error())
 		return
 	}
 

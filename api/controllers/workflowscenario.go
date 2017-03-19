@@ -29,14 +29,18 @@ func (c *WorkflowScenarioController) URLMapping() {
 // @Failure 403 body is empty
 // @router / [post]
 func (c *WorkflowScenarioController) Post() {
+	workflow_id, _ := c.GetInt(":workflow_id")
 	var v models.WorkflowScenario
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
+	v.Workflow = &models.Workflow{Id: int64(workflow_id)}
 	if _, err := models.AddWorkflowScenario(&v); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
 	c.Ctx.Output.SetStatus(201)
+
+	c.Data["json"] = map[string]interface{}{"workflow_scenario": v}
 	c.ServeJSON()
 }
 
@@ -48,15 +52,21 @@ func (c *WorkflowScenarioController) Post() {
 // @Failure 403 :id is empty
 // @router /:id [get]
 func (c *WorkflowScenarioController) GetOne() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v, err := models.GetWorkflowScenarioById(id)
+	workflow_id, _ := c.GetInt(":workflow_id")
+	workflow, err := models.GetWorkflowById(int64(workflow_id))
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{"workflow_scenario": v}
+	id, _ := c.GetInt(":id")
+	workflow_scenario, err := workflow.GetScenarioById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = map[string]interface{}{"workflow_scenario": workflow_scenario}
 	c.ServeJSON()
 }
 
@@ -73,13 +83,19 @@ func (c *WorkflowScenarioController) GetOne() {
 // @Failure 403
 // @router / [get]
 func (c *WorkflowScenarioController) GetAll() {
-	ml, meta, err := models.GetAllWorkflowScenario(c.pagination())
+	workflow_id, _ := c.GetInt(":workflow_id")
+	workflow, err := models.GetWorkflowById(int64(workflow_id))
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"workflow_scenarios": ml, "meta": meta}
+	if _, err = workflow.GetScenarios(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"workflow_scenarios": workflow.Scenarios}
 	c.ServeJSON()
 }
 
@@ -124,6 +140,7 @@ func (c *WorkflowScenarioController) Delete() {
 
 func (c *WorkflowScenarioController) Search() {
 
+	workflow_id, _ := c.GetInt(":workflow_id")
 	query, fields, sortby, order, offset, limit := c.pagination()
 	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
 	q := link.Query()
@@ -131,7 +148,7 @@ func (c *WorkflowScenarioController) Search() {
 	if val, ok := q["query"]; ok {
 		for _, v := range val {
 			query["name__icontains"] = v
-			//query["description__icontains"] = v
+			query["workflow_id__exact"] = strconv.Itoa(workflow_id)
 		}
 	}
 
