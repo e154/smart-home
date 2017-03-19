@@ -191,5 +191,5 @@ func (wf *Workflow) GetScenario() (int64, error) {
 		return o.LoadRelated(wf, "Scenario")
 	}
 
-	return 0, errors.New("scenario_id is nil")
+	return 0, nil
 }
