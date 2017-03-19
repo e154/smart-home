@@ -4,7 +4,6 @@ import (
 	"sync"
 	"github.com/e154/smart-home/api/log"
 	"github.com/e154/smart-home/api/models"
-	"github.com/astaxie/beego/orm"
 	"github.com/e154/smart-home/api/scripts"
 )
 
@@ -142,32 +141,32 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 func (wf *Workflow) UpdateScenario() (err error) {
 
 	// load related scenario and his scripts
-	o := orm.NewOrm()
-	if wf.model.Scenario != nil {
-
-		log.Infof("Workflow '%s': update scenario", wf.model.Name)
-
-		var old_scenario *models.Scenario
-		old_scenario = wf.model.Scenario
-
-		if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
-			log.Errorf("on update scenario, message: %s", err.Error())
-			return
-		}
-
-		//if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
-		//	log.Errorf("on update scenario, message: %s", err.Error())
-		//	return
-		//}
-
-		wf.runScenarioScript(old_scenario, "on_exit")
-		wf.runScenarioScript(wf.model.Scenario, "on_enter")
-	}
+	//o := orm.NewOrm()
+	//if wf.model.Scenario != nil {
+	//
+	//	log.Infof("Workflow '%s': update scenario", wf.model.Name)
+	//
+	//	var old_scenario *models.WorkflowScenario
+	//	old_scenario = wf.model.Scenario
+	//
+	//	if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
+	//		log.Errorf("on update scenario, message: %s", err.Error())
+	//		return
+	//	}
+	//
+	//	//if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
+	//	//	log.Errorf("on update scenario, message: %s", err.Error())
+	//	//	return
+	//	//}
+	//
+	//	wf.runScenarioScript(old_scenario, "on_exit")
+	//	wf.runScenarioScript(wf.model.Scenario, "on_enter")
+	//}
 
 	return
 }
 
-func (wf *Workflow) runScenarioScript(scenario *models.Scenario, state string) (err error) {
+func (wf *Workflow) runScenarioScript(state string) (err error) {
 
 	//var _script *scripts.Engine
 	//for _, scenario_script := range scenario.Scripts {

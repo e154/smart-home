@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/core"
-	"github.com/astaxie/beego/orm"
 )
 
 // WorkflowController operations for Workflow
@@ -83,12 +82,14 @@ func (c *WorkflowController) GetOne() {
 		return
 	}
 
-	o := orm.NewOrm()
-	if workflow.Scenario != nil {
-		if _, err = o.LoadRelated(workflow, "Scenario");err != nil {
-			c.ErrHan(403, err.Error())
-			return
-		}
+	if _, err = workflow.GetScenario(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if _, err = workflow.GetScripts(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
 	}
 
 	c.Data["json"] = map[string]interface{}{"workflow": workflow}
@@ -115,15 +116,13 @@ func (c *WorkflowController) GetAll() {
 	}
 
 	var workflows []models.Workflow
-	o := orm.NewOrm()
 	for _, bp := range ml {
 		workflow := bp.(models.Workflow)
-		if workflow.Scenario != nil {
-			if _, err = o.LoadRelated(&workflow, "Scenario");err != nil {
-				c.ErrHan(403, err.Error())
-				return
-			}
+		if _, err = workflow.GetScenario(); err != nil {
+			c.ErrHan(403, err.Error())
+			continue
 		}
+
 		workflows = append(workflows, workflow)
 	}
 
@@ -198,7 +197,7 @@ func (c *WorkflowController) UpdateScenario() {
 		return
 	}
 
-	var scenario *models.Scenario
+	var scenario *models.WorkflowScenario
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &scenario); err != nil {
 		c.ErrHan(403, err.Error())
 		return

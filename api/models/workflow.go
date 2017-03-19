@@ -12,14 +12,15 @@ import (
 )
 
 type Workflow struct {
-	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Name		string		`orm:"" json:"name"`
-	Description	string		`orm:"" json:"description"`
-	Status		string		`orm:"" json:"status"`
-	Scenario	*Scenario	`orm:"rel(fk);null" json:"scenario"`
-	Flows		[]*Flow		`orm:"-" json:"flows"`
-	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	Id   		int64  			`orm:"pk;auto;column(id)" json:"id"`
+	Name		string			`orm:"" json:"name"`
+	Description	string			`orm:"" json:"description"`
+	Status		string			`orm:"" json:"status"`
+	Scenario	*WorkflowScenario       `orm:"rel(fk);column(workflow_scenario_id);null" json:"scenario"`
+	Scripts		[]*Script		`orm:"rel(m2m);rel_through(github.com/e154/smart-home/api/models.WorkflowScript)" json:"scripts"`
+	Flows		[]*Flow			`orm:"-" json:"flows"`
+	Created_at	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
 func (m *Workflow) TableName() string {
@@ -176,4 +177,19 @@ func (wf *Workflow) GetAllEnabledWorkers() ([]*Worker, error) {
 
 func (wf *Workflow) GetAllEnabledFlows() ([]*Flow, error) {
 	return GetAllEnabledFlowsByWf(wf)
+}
+
+func (wf *Workflow) GetScripts() (int64, error) {
+	o := orm.NewOrm()
+	return o.LoadRelated(wf, "Scripts")
+}
+
+func (wf *Workflow) GetScenario() (int64, error) {
+
+	o := orm.NewOrm()
+	if wf.Scenario != nil {
+		return o.LoadRelated(wf, "Scenario")
+	}
+
+	return 0, errors.New("scenario_id is nil")
 }

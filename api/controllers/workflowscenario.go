@@ -7,98 +7,96 @@ import (
 	"net/url"
 )
 
-//  ScenarioController oprations for Scenario
-type ScenarioController struct {
+//  WorkflowScenarioController oprations for WorkflowScenario
+type WorkflowScenarioController struct {
 	CommonController
 }
 
 // URLMapping ...
-func (c *ScenarioController) URLMapping() {
+func (c *WorkflowScenarioController) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
-	c.Mapping("Search", c.Search)
 }
 
 // Post ...
 // @Title Post
-// @Description create Scenario
-// @Param	body		body 	models.Scenario	true		"body for Scenario content"
-// @Success 201 {int} models.Scenario
+// @Description create WorkflowScenario
+// @Param	body		body 	models.WorkflowScenario	true		"body for WorkflowScenario content"
+// @Success 201 {int} models.WorkflowScenario
 // @Failure 403 body is empty
 // @router / [post]
-func (c *ScenarioController) Post() {
-	var v models.Scenario
+func (c *WorkflowScenarioController) Post() {
+	var v models.WorkflowScenario
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if _, err := models.AddScenario(&v); err != nil {
+	if _, err := models.AddWorkflowScenario(&v); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
 	c.Ctx.Output.SetStatus(201)
-	c.Data["json"] = map[string]interface{}{"scenario": v}
 	c.ServeJSON()
 }
 
 // GetOne ...
 // @Title Get One
-// @Description get Scenario by id
+// @Description get WorkflowScenario by id
 // @Param	id		path 	string	true		"The key for staticblock"
-// @Success 200 {object} models.Scenario
+// @Success 200 {object} models.WorkflowScenario
 // @Failure 403 :id is empty
 // @router /:id [get]
-func (c *ScenarioController) GetOne() {
+func (c *WorkflowScenarioController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	scenario, err := models.GetScenarioById(id)
+	v, err := models.GetWorkflowScenarioById(id)
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{"scenario": scenario}
+	c.Data["json"] = map[string]interface{}{"workflow_scenario": v}
 	c.ServeJSON()
 }
 
 // GetAll ...
 // @Title Get All
-// @Description get Scenario
+// @Description get WorkflowScenario
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
 // @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
 // @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
 // @Param	offset	query	string	false	"Start position of result set. Must be an integer"
-// @Success 200 {object} models.Scenario
+// @Success 200 {object} models.WorkflowScenario
 // @Failure 403
 // @router / [get]
-func (c *ScenarioController) GetAll() {
-	ml, meta, err := models.GetAllScenario(c.pagination())
+func (c *WorkflowScenarioController) GetAll() {
+	ml, meta, err := models.GetAllWorkflowScenario(c.pagination())
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"scenarios": ml, "meta": meta}
+	c.Data["json"] = &map[string]interface{}{"workflow_scenarios": ml, "meta": meta}
 	c.ServeJSON()
 }
 
 // Put ...
 // @Title Put
-// @Description update the Scenario
+// @Description update the WorkflowScenario
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	models.Scenario	true		"body for Scenario content"
-// @Success 200 {object} models.Scenario
+// @Param	body		body 	models.WorkflowScenario	true		"body for WorkflowScenario content"
+// @Success 200 {object} models.WorkflowScenario
 // @Failure 403 :id is not int
 // @router /:id [put]
-func (c *ScenarioController) Put() {
+func (c *WorkflowScenarioController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v := models.Scenario{Id: id}
+	v := models.WorkflowScenario{Id: id}
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if err := models.UpdateScenarioById(&v); err != nil {
+	if err := models.UpdateWorkflowScenarioById(&v); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
@@ -108,23 +106,23 @@ func (c *ScenarioController) Put() {
 
 // Delete ...
 // @Title Delete
-// @Description delete the Scenario
+// @Description delete the WorkflowScenario
 // @Param	id		path 	string	true		"The id you want to delete"
 // @Success 200 {string} delete success!
 // @Failure 403 id is empty
 // @router /:id [delete]
-func (c *ScenarioController) Delete() {
+func (c *WorkflowScenarioController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	if err := models.DeleteScenario(id); err != nil {
-		c.ErrHan(403, err.Error())
-		return
+	if err := models.DeleteWorkflowScenario(id); err == nil {
+		c.Data["json"] = "OK"
+	} else {
+		c.Data["json"] = err.Error()
 	}
-
 	c.ServeJSON()
 }
 
-func (c *ScenarioController) Search() {
+func (c *WorkflowScenarioController) Search() {
 
 	query, fields, sortby, order, offset, limit := c.pagination()
 	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
@@ -133,15 +131,16 @@ func (c *ScenarioController) Search() {
 	if val, ok := q["query"]; ok {
 		for _, v := range val {
 			query["name__icontains"] = v
+			//query["description__icontains"] = v
 		}
 	}
 
-	ml, meta, err := models.GetAllScenario(query, fields, sortby, order, offset, limit)
+	ml, meta, err := models.GetAllWorkflowScenario(query, fields, sortby, order, offset, limit)
 	if err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"scenarios": ml, "meta": meta}
+	c.Data["json"] = &map[string]interface{}{"workflow_scenarios": ml, "meta": meta}
 	c.ServeJSON()
 }
