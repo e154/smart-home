@@ -130,11 +130,11 @@ func (c *WorkflowScenarioController) Put() {
 func (c *WorkflowScenarioController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.ParseInt(idStr, 0, 64)
-	if err := models.DeleteWorkflowScenario(id); err == nil {
-		c.Data["json"] = "OK"
-	} else {
-		c.Data["json"] = err.Error()
+	if err := models.DeleteWorkflowScenario(id); err != nil {
+		c.ErrHan(403, err.Error())
+		return
 	}
+
 	c.ServeJSON()
 }
 
