@@ -5,7 +5,6 @@ import (
 	"github.com/e154/smart-home/api/models"
 	"strconv"
 	"net/url"
-	"github.com/astaxie/beego/orm"
 )
 
 //  ScenarioController oprations for Scenario
@@ -59,12 +58,6 @@ func (c *ScenarioController) GetOne() {
 		return
 	}
 
-	o := orm.NewOrm()
-	if _, err = o.LoadRelated(scenario, "Scripts", 2);err != nil {
-		c.ErrHan(403, err.Error())
-		return
-	}
-
 	c.Data["json"] = map[string]interface{}{"scenario": scenario}
 	c.ServeJSON()
 }
@@ -88,18 +81,7 @@ func (c *ScenarioController) GetAll() {
 		return
 	}
 
-	var scenarios []models.Scenario
-	o := orm.NewOrm()
-	for _, bp := range ml {
-		scenario := bp.(models.Scenario)
-		if _, err = o.LoadRelated(&scenario, "Scripts", 2);err != nil {
-			c.ErrHan(403, err.Error())
-			continue
-		}
-		scenarios = append(scenarios, scenario)
-	}
-
-	c.Data["json"] = &map[string]interface{}{"scenarios": scenarios, "meta": meta}
+	c.Data["json"] = &map[string]interface{}{"scenarios": ml, "meta": meta}
 	c.ServeJSON()
 }
 

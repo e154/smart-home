@@ -163,11 +163,7 @@ func Initialize() {
 			beego.NSRouter("/scenario/:id([0-9]+)", &controllers.ScenarioController{}, "put:Put"),
 			beego.NSRouter("/scenario/:id([0-9]+)", &controllers.ScenarioController{}, "delete:Delete"),
 			beego.NSRouter("/scenario/search", &controllers.ScenarioController{}, "get:Search"),
-			beego.NSRouter("/scenario_script/:id([0-9]+)", &controllers.ScenarioScriptController{}, "get:GetOne"),
-			beego.NSRouter("/scenario_script", &controllers.ScenarioScriptController{}, "get:GetAll"),
-			beego.NSRouter("/scenario_script", &controllers.ScenarioScriptController{}, "post:Post"),
-			beego.NSRouter("/scenario_script/:id([0-9]+)", &controllers.ScenarioScriptController{}, "put:Put"),
-			beego.NSRouter("/scenario_script/:id([0-9]+)", &controllers.ScenarioScriptController{}, "delete:Delete"),
+
 	),
 	)
 	beego.AddNamespace(ns)

@@ -155,10 +155,10 @@ func (wf *Workflow) UpdateScenario() (err error) {
 			return
 		}
 
-		if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
-			log.Errorf("on update scenario, message: %s", err.Error())
-			return
-		}
+		//if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
+		//	log.Errorf("on update scenario, message: %s", err.Error())
+		//	return
+		//}
 
 		wf.runScenarioScript(old_scenario, "on_exit")
 		wf.runScenarioScript(wf.model.Scenario, "on_enter")
@@ -169,30 +169,30 @@ func (wf *Workflow) UpdateScenario() (err error) {
 
 func (wf *Workflow) runScenarioScript(scenario *models.Scenario, state string) (err error) {
 
-	var _script *scripts.Engine
-	for _, scenario_script := range scenario.Scripts {
-		if scenario_script.State != state {
-			continue
-		}
-
-		// load script
-		o := orm.NewOrm()
-		if _, err = o.LoadRelated(scenario_script, "Script"); err != nil {
-			log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
-			return
-		}
-
-		// compile script
-		if _script, err = wf.NewScript(scenario_script.Script); err != nil {
-			log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
-			continue
-		}
-
-		// do script
-		if _, err = _script.Do(); err != nil {
-			log.Errorf("on run script %s scenario, message: %s", state, err.Error())
-		}
-	}
+	//var _script *scripts.Engine
+	//for _, scenario_script := range scenario.Scripts {
+	//	if scenario_script.State != state {
+	//		continue
+	//	}
+	//
+	//	// load script
+	//	o := orm.NewOrm()
+	//	if _, err = o.LoadRelated(scenario_script, "Script"); err != nil {
+	//		log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
+	//		return
+	//	}
+	//
+	//	// compile script
+	//	if _script, err = wf.NewScript(scenario_script.Script); err != nil {
+	//		log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
+	//		continue
+	//	}
+	//
+	//	// do script
+	//	if _, err = _script.Do(); err != nil {
+	//		log.Errorf("on run script %s scenario, message: %s", state, err.Error())
+	//	}
+	//}
 
 	return
 }

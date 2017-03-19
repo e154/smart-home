@@ -15,7 +15,6 @@ type Scenario struct {
 	Id    		int64 			`orm:"auto" json:"id"`
 	Name 		string			`orm:"size(255)" json:"name"`
 	SystemName  	string			`orm:"size(255)" json:"system_name"`
-	Scripts		[]*ScenarioScript	`orm:"reverse(many)" json:"scripts"`
 	Created_at	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
