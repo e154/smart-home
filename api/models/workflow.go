@@ -207,7 +207,11 @@ func (wf *Workflow) GetScenarioById(id int64) (scenario *WorkflowScenario, err e
 		Id: id,
 	}
 
-	err = o.Read(scenario, "Id", "Workflow")
+	if err = o.Read(scenario, "Id", "Workflow"); err != nil {
+		return
+	}
+
+	_, err = o.LoadRelated(scenario, "Scripts")
 
 	return
 }

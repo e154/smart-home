@@ -7,10 +7,8 @@ import (
 
 type WorkflowScenarioScript struct {
 	Id   		int64  			`orm:"pk;auto" json:"id"`
-
 	Scenario	*WorkflowScenario       `orm:"rel(fk);column(workflow_scenario_id)" json:"scenario"`
 	Script		*Script			`orm:"rel(fk);column(script_id)" json:"script"`
-	State		string			`orm:"size(255)" json:"state"`
 }
 
 func (m *WorkflowScenarioScript) TableName() string {

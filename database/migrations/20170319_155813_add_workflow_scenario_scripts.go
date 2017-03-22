@@ -24,7 +24,6 @@ func (m *AddWorkflowScenarioScripts_20170319_155813) Up() {
 	workflow_id Int( 22 ) NOT NULL,
 	workflow_scenario_id Int( 22 ) NOT NULL,
 	script_id Int( 22 ) NOT NULL,
-	state VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	PRIMARY KEY ( id ),
 	CONSTRAINT unique_id UNIQUE( id ) )
 	ENGINE = InnoDB;`)
