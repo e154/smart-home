@@ -66,6 +66,10 @@ func (c *WorkflowScenarioController) GetOne() {
 		return
 	}
 
+	if _, err = workflow_scenario.GetScripts(); err != nil {
+		return
+	}
+
 	c.Data["json"] = map[string]interface{}{"workflow_scenario": workflow_scenario}
 	c.ServeJSON()
 }
@@ -108,11 +112,34 @@ func (c *WorkflowScenarioController) GetAll() {
 // @Failure 403 :id is not int
 // @router /:id [put]
 func (c *WorkflowScenarioController) Put() {
-	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.ParseInt(idStr, 0, 64)
-	v := models.WorkflowScenario{Id: id}
-	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	if err := models.UpdateWorkflowScenarioById(&v); err != nil {
+	workflow_id, _ := c.GetInt(":workflow_id")
+	workflow, err := models.GetWorkflowById(int64(workflow_id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	id, _ := c.GetInt(":id")
+	scenario, err := workflow.GetScenarioById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	json.Unmarshal(c.Ctx.Input.RequestBody, scenario)
+	if err := models.UpdateWorkflowScenarioById(scenario); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	_scripts := scenario.Scripts
+	scenario, err = workflow.GetScenarioById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if _, err := scenario.UpdateScripts(_scripts); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
