@@ -221,6 +221,8 @@ func (wf *Workflow) AddScripts(scripts []*Script) (num int64, err error) {
 		return
 	}
 
+	fmt.Println("scripts",scripts)
+
 	o := orm.NewOrm()
 	m2m := o.QueryM2M(wf, "Scripts")
 	num, err = m2m.Add(scripts)

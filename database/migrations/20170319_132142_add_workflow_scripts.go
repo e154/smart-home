@@ -21,10 +21,10 @@ func (m *AddWorkflowScripts_20170319_132142) Up() {
 	// use m.SQL("CREATE TABLE ...") to make schema update
 	m.SQL(`
 	CREATE TABLE workflow_scripts (
-	id Int( 22 ) NOT NULL,
+	id Int( 22 ) AUTO_INCREMENT NOT NULL,
 	workflow_id Int( 2 ) NOT NULL,
 	script_id Int( 22 ) NOT NULL,
-	weight Int( 10 ) NOT NULL,
+	weight Int( 10 ) NOT NULL DEFAULT '0'
 	PRIMARY KEY ( id ),
 	CONSTRAINT unique_id UNIQUE( id ) )
 	ENGINE = InnoDB;`)
