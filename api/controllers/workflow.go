@@ -97,6 +97,10 @@ func (c *WorkflowController) GetOne() {
 		return
 	}
 
+	for _, scenario := range workflow.Scenarios {
+		scenario.GetScripts()
+	}
+
 	c.Data["json"] = map[string]interface{}{"workflow": workflow}
 	c.ServeJSON()
 }
@@ -153,6 +157,10 @@ func (c *WorkflowController) Put() {
 		c.ErrHan(403, err.Error())
 		return
 	}
+
+	//b, _ := json.MarshalIndent(workflow, "", " ")
+	//fmt.Println(string(b))
+
 
 	_scripts := workflow.Scripts
 	workflow, _ = models.GetWorkflowById(workflow.Id)
