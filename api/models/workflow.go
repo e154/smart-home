@@ -215,3 +215,74 @@ func (wf *Workflow) GetScenarioById(id int64) (scenario *WorkflowScenario, err e
 
 	return
 }
+
+func (wf *Workflow) AddScripts(scripts []*Script) (num int64, err error) {
+	if len(scripts) == 0 {
+		return
+	}
+
+	o := orm.NewOrm()
+	m2m := o.QueryM2M(wf, "Scripts")
+	num, err = m2m.Add(scripts)
+	if err == nil {
+		fmt.Println("Added nums: ", num)
+	}
+
+	return
+}
+
+func (wf *Workflow) RemoveScripts(scripts []*Script) (num int64, err error) {
+	if len(scripts) == 0 {
+		return
+	}
+
+	o := orm.NewOrm()
+	m2m := o.QueryM2M(wf, "Scripts")
+	num, err = m2m.Remove(scripts)
+	if err == nil {
+		fmt.Println("Removed nums: ", num)
+	}
+
+	return
+}
+
+func (wf *Workflow) UpdateScripts(scripts []*Script) (num int64, err error) {
+	var add, rem []*Script
+	var exist bool
+
+	for _, s1 := range wf.Scripts {
+		exist = false
+		for _, s2 := range scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			rem = append(rem, s1)
+		}
+	}
+
+	for _, s1 := range scripts {
+		exist = false
+		for _, s2 := range wf.Scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			add = append(add, s1)
+		}
+	}
+
+	if _, err = wf.RemoveScripts(rem); err != nil {
+		return
+	}
+
+	if _, err = wf.AddScripts(add); err != nil {
+		return
+	}
+
+	return
+}

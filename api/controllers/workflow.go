@@ -145,15 +145,28 @@ func (c *WorkflowController) GetAll() {
 // @router /:id [put]
 func (c *WorkflowController) Put() {
 	id, _ := c.GetInt(":id")
-	var workflow models.Workflow
-	json.Unmarshal(c.Ctx.Input.RequestBody, &workflow)
+	var workflow *models.Workflow
+	workflow = &models.Workflow{}
+	json.Unmarshal(c.Ctx.Input.RequestBody, workflow)
 	workflow.Id = int64(id)
-	if err := models.UpdateWorkflowById(&workflow); err != nil {
+	if err := models.UpdateWorkflowById(workflow); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	core.CorePtr().UpdateWorkflowScenario(&workflow)
+	_scripts := workflow.Scripts
+	workflow, _ = models.GetWorkflowById(workflow.Id)
+	if _, err := workflow.GetScripts(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if _, err := workflow.UpdateScripts(_scripts); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	core.CorePtr().UpdateWorkflowScenario(workflow)
 
 	c.ServeJSON()
 }
