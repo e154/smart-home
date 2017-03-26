@@ -41,6 +41,7 @@ func Initialize() {
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "put:Put"),
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "delete:Delete"),
 			beego.NSRouter("/workflow/:id([0-9]+)/update_scenario", &controllers.WorkflowController{}, "put:UpdateScenario"),
+			beego.NSRouter("/workflow/search", &controllers.WorkflowController{}, "get:Search"),
 			beego.NSRouter("/workflow/:workflow_id([0-9]+)/scenario/:id([0-9]+)", &controllers.WorkflowScenarioController{}, "get:GetOne"),
 			beego.NSRouter("/workflow/:workflow_id([0-9]+)/scenarios", &controllers.WorkflowScenarioController{}, "get:GetAll"),
 			beego.NSRouter("/workflow/:workflow_id([0-9]+)/scenario", &controllers.WorkflowScenarioController{}, "post:Post"),

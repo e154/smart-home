@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/core"
+	"net/url"
 )
 
 // WorkflowController operations for Workflow
@@ -237,5 +238,27 @@ func (c *WorkflowController) UpdateScenario() {
 
 	core.CorePtr().UpdateWorkflowScenario(workflow)
 
+	c.ServeJSON()
+}
+
+func (c *WorkflowController) Search() {
+
+	query, fields, sortby, order, offset, limit := c.pagination()
+	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
+	q := link.Query()
+
+	if val, ok := q["query"]; ok {
+		for _, v := range val {
+			query["name__icontains"] = v
+		}
+	}
+
+	ml, meta, err := models.GetAllWorkflow(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"workflows": ml, "meta": meta}
 	c.ServeJSON()
 }

@@ -40,7 +40,7 @@ func (c *WorkflowScenarioController) Post() {
 
 	c.Ctx.Output.SetStatus(201)
 
-	c.Data["json"] = map[string]interface{}{"workflow_scenario": v}
+	c.Data["json"] = map[string]interface{}{"scenario": v}
 	c.ServeJSON()
 }
 
@@ -70,7 +70,7 @@ func (c *WorkflowScenarioController) GetOne() {
 		return
 	}
 
-	c.Data["json"] = map[string]interface{}{"workflow_scenario": workflow_scenario}
+	c.Data["json"] = map[string]interface{}{"scenario": workflow_scenario}
 	c.ServeJSON()
 }
 
@@ -99,7 +99,7 @@ func (c *WorkflowScenarioController) GetAll() {
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"workflow_scenarios": workflow.Scenarios}
+	c.Data["json"] = &map[string]interface{}{"scenarios": workflow.Scenarios}
 	c.ServeJSON()
 }
 
@@ -185,6 +185,6 @@ func (c *WorkflowScenarioController) Search() {
 		return
 	}
 
-	c.Data["json"] = &map[string]interface{}{"workflow_scenarios": ml, "meta": meta}
+	c.Data["json"] = &map[string]interface{}{"scenarios": ml, "meta": meta}
 	c.ServeJSON()
 }
