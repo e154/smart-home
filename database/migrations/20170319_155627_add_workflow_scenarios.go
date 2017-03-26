@@ -29,7 +29,7 @@ func (m *AddWorkflowScenarios_20170319_155627) Up() {
 	PRIMARY KEY ( id ) )
 	ENGINE = InnoDB;`)
 
-	m.SQL("ALTER TABLE `workflow_scenarios` ADD CONSTRAINT `lnk_workflows_workflow_scenarios` FOREIGN KEY ( `workflow_id` ) REFERENCES `workflows`( `id` ) ON DELETE Restrict ON UPDATE Cascade;")
+	m.SQL("ALTER TABLE `workflow_scenarios` ADD CONSTRAINT `lnk_workflows_workflow_scenarios` FOREIGN KEY ( `workflow_id` ) REFERENCES `workflows`( `id` ) ON DELETE Cascade ON UPDATE Cascade;")
 	m.SQL("ALTER TABLE `workflow_scenarios` ADD CONSTRAINT `unique` UNIQUE( `workflow_id`, `system_name` );")
 }
 
