@@ -251,7 +251,10 @@ func (c *FlowController) UpdateRedactor() {
 		Description: flow.Description,
 		Status: flow.Status,
 		Workflow: &models.Workflow{Id:flow.Workflow.Id},
+		Scenario: flow.Scenario,
+		Created_at: flow.Created_at,
 	}
+
 	if err := models.UpdateFlowById(newFlow); err != nil {
 		c.ErrHan(403, err.Error())
 		return
