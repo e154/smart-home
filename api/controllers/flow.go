@@ -209,7 +209,7 @@ func (c *FlowController) GetOneRedactor() {
 		return
 	}
 
-	if err != nil {
+	if _, err = flow.GetScenario(); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
@@ -475,6 +475,7 @@ func ExportToRedactor(f *models.Flow) (flow *models.RedactorFlow, err error) {
 		Status: f.Status,
 		Description: f.Description,
 		Workflow: f.Workflow,
+		Scenario: f.Scenario,
 		Objects: make([]*models.RedactorObject, 0),
 		Connectors: make([]*models.RedactorConnector, 0),
 		Created_at: f.Created_at,

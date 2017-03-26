@@ -17,7 +17,7 @@ type Flow struct {
 	Description 	string				`orm:"" json:"description"`
 	Status      	string				`orm:"" json:"status"`
 	Workflow    	*Workflow			`orm:"rel(fk)" json:"workflow"`
-	Scenario    	*WorkflowScenario		`orm:"rel(fk);column(workflow_scenario_id);null" json:"scenario"`
+	Scenario    	*WorkflowScenario		`orm:"rel(fk);column(workflow_scenario_id)" json:"scenario"`
 	Created_at  	time.Time			`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at   	time.Time			`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 	Connections 	[]*Connection			`orm:"-" json:"connections"`
@@ -246,3 +246,11 @@ func (f *Flow) GetWorkers() (workers []*Worker, err error) {
 	return
 }
 
+func (f *Flow) GetScenario() (int64, error) {
+	if f.Scenario != nil {
+		o := orm.NewOrm()
+		return  o.LoadRelated(f, "Scenario")
+	}
+
+	return 0, nil
+}

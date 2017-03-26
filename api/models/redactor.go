@@ -59,5 +59,6 @@ type RedactorFlow struct {
 	Created_at	time.Time			`json:"created_at"`
 	Update_at	time.Time			`json:"update_at"`
 	Workflow	*Workflow                   	`json:"workflow"`
+	Scenario	*WorkflowScenario		`json:"scenario"`
 	Workers		[]*Worker			`json:"workers"`
 }
