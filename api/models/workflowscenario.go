@@ -9,28 +9,30 @@ import (
 
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
+	"encoding/json"
 )
 
-type Scenario struct {
-	Id    		int64 			`orm:"auto" json:"id"`
-	Name 		string			`orm:"size(255)" json:"name"`
-	SystemName  	string			`orm:"size(255)" json:"system_name"`
-	Scripts		[]*ScenarioScript	`orm:"reverse(many)" json:"scripts"`
-	Created_at	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+type WorkflowScenario struct {
+	Id    		int64 				`orm:"auto" json:"id"`
+	Name 		string				`orm:"size(255)" json:"name"`
+	Workflow	*Workflow			`orm:"rel(fk)" json:"workflow"`
+	Scripts		[]*Script			`orm:"rel(m2m);rel_through(github.com/e154/smart-home/api/models.WorkflowScenarioScript)" json:"scripts"`
+	SystemName  	string				`orm:"size(255)" json:"system_name"`
+	Created_at	time.Time			`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at	time.Time			`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
-func (m *Scenario) TableName() string {
-	return beego.AppConfig.String("db_scenarios")
+func (m *WorkflowScenario) TableName() string {
+	return beego.AppConfig.String("db_workflow_scenarios")
 }
 
 func init() {
-	orm.RegisterModel(new(Scenario))
+	orm.RegisterModel(new(WorkflowScenario))
 }
 
 // AddScenario insert a new Scenario into database and returns
 // last inserted Id on success.
-func AddScenario(m *Scenario) (id int64, err error) {
+func AddWorkflowScenario(m *WorkflowScenario) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	return
@@ -38,9 +40,9 @@ func AddScenario(m *Scenario) (id int64, err error) {
 
 // GetScenarioById retrieves Scenario by Id. Returns error if
 // Id doesn't exist
-func GetScenarioById(id int64) (v *Scenario, err error) {
+func GetWorkflowScenarioById(id int64) (v *WorkflowScenario, err error) {
 	o := orm.NewOrm()
-	v = &Scenario{Id: id}
+	v = &WorkflowScenario{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
@@ -49,10 +51,10 @@ func GetScenarioById(id int64) (v *Scenario, err error) {
 
 // GetAllScenario retrieves all Scenario matches certain condition. Returns empty list if
 // no records exist
-func GetAllScenario(query map[string]string, fields []string, sortby []string, order []string,
+func GetAllWorkflowScenario(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, meta *map[string]int64, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(Scenario))
+	qs := o.QueryTable(new(WorkflowScenario))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -98,7 +100,7 @@ func GetAllScenario(query map[string]string, fields []string, sortby []string, o
 		}
 	}
 
-	var l []Scenario
+	var l []WorkflowScenario
 	qs = qs.OrderBy(sortFields...)
 	objects_count, err := qs.Count()
 	if err != nil {
@@ -132,9 +134,9 @@ func GetAllScenario(query map[string]string, fields []string, sortby []string, o
 
 // UpdateScenario updates Scenario by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateScenarioById(m *Scenario) (err error) {
+func UpdateWorkflowScenarioById(m *WorkflowScenario) (err error) {
 	o := orm.NewOrm()
-	v := Scenario{Id: m.Id}
+	v := WorkflowScenario{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -147,15 +149,96 @@ func UpdateScenarioById(m *Scenario) (err error) {
 
 // DeleteScenario deletes Scenario by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteScenario(id int64) (err error) {
+func DeleteWorkflowScenario(id int64) (err error) {
 	o := orm.NewOrm()
-	v := Scenario{Id: id}
+	v := WorkflowScenario{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&Scenario{Id: id}); err == nil {
+		if num, err = o.Delete(&WorkflowScenario{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}
+	return
+}
+
+func (ws *WorkflowScenario) GetScripts() (int64, error) {
+
+	o := orm.NewOrm()
+	return  o.LoadRelated(ws, "Scripts")
+
+}
+
+func (wf *WorkflowScenario) AddScripts(scripts []*Script) (num int64, err error) {
+	if len(scripts) == 0 {
+		return
+	}
+
+	b, _ := json.MarshalIndent(scripts, "", " ")
+	fmt.Println("scripts",string(b))
+
+	o := orm.NewOrm()
+	m2m := o.QueryM2M(wf, "Scripts")
+	num, err = m2m.Add(scripts)
+	if err == nil {
+		fmt.Println("Added nums: ", num)
+	}
+
+	return
+}
+
+func (wf *WorkflowScenario) RemoveScripts(scripts []*Script) (num int64, err error) {
+	if len(scripts) == 0 {
+		return
+	}
+
+	o := orm.NewOrm()
+	m2m := o.QueryM2M(wf, "Scripts")
+	num, err = m2m.Remove(scripts)
+	if err == nil {
+		fmt.Println("Removed nums: ", num)
+	}
+
+	return
+}
+
+func (wf *WorkflowScenario) UpdateScripts(scripts []*Script) (num int64, err error) {
+	var add, rem []*Script
+	var exist bool
+
+	for _, s1 := range wf.Scripts {
+		exist = false
+		for _, s2 := range scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			rem = append(rem, s1)
+		}
+	}
+
+	for _, s1 := range scripts {
+		exist = false
+		for _, s2 := range wf.Scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			add = append(add, s1)
+		}
+	}
+
+	if _, err = wf.RemoveScripts(rem); err != nil {
+		return
+	}
+
+	if _, err = wf.AddScripts(add); err != nil {
+		return
+	}
+
 	return
 }

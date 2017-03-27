@@ -41,6 +41,13 @@ func Initialize() {
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "put:Put"),
 			beego.NSRouter("/workflow/:id([0-9]+)", &controllers.WorkflowController{}, "delete:Delete"),
 			beego.NSRouter("/workflow/:id([0-9]+)/update_scenario", &controllers.WorkflowController{}, "put:UpdateScenario"),
+			beego.NSRouter("/workflow/search", &controllers.WorkflowController{}, "get:Search"),
+			beego.NSRouter("/workflow/:workflow_id([0-9]+)/scenario/:id([0-9]+)", &controllers.WorkflowScenarioController{}, "get:GetOne"),
+			beego.NSRouter("/workflow/:workflow_id([0-9]+)/scenarios", &controllers.WorkflowScenarioController{}, "get:GetAll"),
+			beego.NSRouter("/workflow/:workflow_id([0-9]+)/scenario", &controllers.WorkflowScenarioController{}, "post:Post"),
+			beego.NSRouter("/workflow/:workflow_id([0-9]+)/scenario/:id([0-9]+)", &controllers.WorkflowScenarioController{}, "put:Put"),
+			beego.NSRouter("/workflow/:workflow_id([0-9]+)/scenario/:id([0-9]+)", &controllers.WorkflowScenarioController{}, "delete:Delete"),
+			beego.NSRouter("/workflow/:workflow_id([0-9]+)/scenario/search", &controllers.WorkflowScenarioController{}, "get:Search"),
 
 			beego.NSRouter("/flow/:id([0-9]+)", &controllers.FlowController{}, "get:GetOne"),
 			beego.NSRouter("/flow/:id([0-9]+)/full", &controllers.FlowController{}, "get:GetOneFull"),
@@ -157,17 +164,6 @@ func Initialize() {
 			beego.NSRouter("/role/:name([\\w]+)/access_list", &controllers.RoleController{}, "get:GetAccessList"),
 			beego.NSRouter("/role/:name([\\w]+)/access_list", &controllers.RoleController{}, "put:PutAccessList"),
 
-			beego.NSRouter("/scenario/:id([0-9]+)", &controllers.ScenarioController{}, "get:GetOne"),
-			beego.NSRouter("/scenario", &controllers.ScenarioController{}, "get:GetAll"),
-			beego.NSRouter("/scenario", &controllers.ScenarioController{}, "post:Post"),
-			beego.NSRouter("/scenario/:id([0-9]+)", &controllers.ScenarioController{}, "put:Put"),
-			beego.NSRouter("/scenario/:id([0-9]+)", &controllers.ScenarioController{}, "delete:Delete"),
-			beego.NSRouter("/scenario/search", &controllers.ScenarioController{}, "get:Search"),
-			beego.NSRouter("/scenario_script/:id([0-9]+)", &controllers.ScenarioScriptController{}, "get:GetOne"),
-			beego.NSRouter("/scenario_script", &controllers.ScenarioScriptController{}, "get:GetAll"),
-			beego.NSRouter("/scenario_script", &controllers.ScenarioScriptController{}, "post:Post"),
-			beego.NSRouter("/scenario_script/:id([0-9]+)", &controllers.ScenarioScriptController{}, "put:Put"),
-			beego.NSRouter("/scenario_script/:id([0-9]+)", &controllers.ScenarioScriptController{}, "delete:Delete"),
 	),
 	)
 	beego.AddNamespace(ns)
