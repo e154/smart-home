@@ -2,11 +2,13 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Smart home</title>
-    <link>https://e154.github.io/smart-home/index.xml</link>
+    <link>https://e154.github.io/smart-home/</link>
     <description>Recent content on Smart home</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ru</language>
-    <atom:link href="https://e154.github.io/smart-home/index.xml" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://e154.github.io/smart-home/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Обзор</title>
@@ -113,19 +115,19 @@ sudo mkdir -p /opt/smart-home sudo chown $USER:$USER /opt/smart-home -R mkdir -p
     
     <item>
       <title>Api</title>
-      <link>https://e154.github.io/smart-home/api</link>
+      <link>https://e154.github.io/smart-home/api/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://e154.github.io/smart-home/api</guid>
+      <guid>https://e154.github.io/smart-home/api/</guid>
       <description></description>
     </item>
     
     <item>
       <title>JavaScript</title>
-      <link>https://e154.github.io/smart-home/javascript</link>
+      <link>https://e154.github.io/smart-home/javascript/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://e154.github.io/smart-home/javascript</guid>
+      <guid>https://e154.github.io/smart-home/javascript/</guid>
       <description></description>
     </item>
     
@@ -176,10 +178,10 @@ sudo mkdir -p /opt/smart-home sudo chown $USER:$USER /opt/smart-home -R mkdir -p
     
     <item>
       <title>С чего начать</title>
-      <link>https://e154.github.io/smart-home/getting-started</link>
+      <link>https://e154.github.io/smart-home/getting-started/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://e154.github.io/smart-home/getting-started</guid>
+      <guid>https://e154.github.io/smart-home/getting-started/</guid>
       <description></description>
     </item>
     
