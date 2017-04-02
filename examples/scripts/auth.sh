@@ -15,8 +15,8 @@ CURRENT_USER=""
 JQ=`which jq`
 
 if [ -z "$JQ" ]; then
-  message "Required tools are missing - check beginning of \"$0\" file for details."
-  message "run command: sudo apt-get install jq"
+  echo "Required tools are missing - check beginning of \"$0\" file for details."
+  echo "run command: sudo apt-get install jq"
   exit 1
 fi
 
@@ -65,7 +65,7 @@ get_token() {
     }
 
     # https://curl.haxx.se/docs/manpage.html#-u
-    RESULT="$( curl -H "Content-Type: application/json; charset=utf-8" -u "${EMAIL}:${PASSWORD}" -s ${URL}/signin )"
+    RESULT="$( curl -v -H "Content-Type: application/json; charset=utf-8" -u "${EMAIL}:${PASSWORD}" -s ${URL}/signin )"
 
     STATUS="$( echo ${RESULT} | ${JQ} -r ".status" )"
 

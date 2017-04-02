@@ -7,6 +7,7 @@ import  (
 	"reflect"
 	"html/template"
 	"encoding/json"
+	"github.com/e154/smart-home/api/log"
 )
 
 type Request struct {
@@ -23,6 +24,12 @@ type CommonController struct {
 }
 
 func (c *CommonController) ErrHan(code int, message string) {
+
+	switch code {
+	case 401, 403:
+		log.Warn("error:", message)
+	}
+
 	c.Ctx.ResponseWriter.WriteHeader(code)
 	c.Data["json"] = &map[string]interface{}{"status":"error", "message": message}
 	c.ServeJSON()
