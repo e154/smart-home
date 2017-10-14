@@ -45,7 +45,7 @@
             "importpath": "github.com/e154/go-candyjs",
             "repository": "https://github.com/e154/go-candyjs",
             "vcs": "git",
-            "revision": "0ac43cf19840e2ea7b7cc54cdb0b754ae4151be2",
+            "revision": "df57e16beacdf3a5ba61339bdf677d336dc124f8",
             "branch": "master",
             "notests": true
         },
@@ -82,10 +82,10 @@
             "notests": true
         },
         {
-             "importpath": "gopkg.in/e154/go-duktape.v2",
-             "repository": "https://gopkg.in/e154/go-duktape.v2",
+             "importpath": "gopkg.in/e154/go-duktape.v3",
+             "repository": "https://gopkg.in/e154/go-duktape.v3",
              "vcs": "git",
-             "revision": "77156b6449d0fbec75deb243b23dcd030d5510ac",
+             "revision": "b7199e85785bf79b5e2614bb49d14ff862af1070",
              "branch": "master",
              "notests": true
         },
@@ -94,6 +94,22 @@
              "repository": "https://github.com/gorilla/websocket",
              "vcs": "git",
              "revision": "2257eda00b2084c1351cd672aa5476daa9f5e463",
+             "branch": "master",
+             "notests": true
+        },
+        {
+             "importpath": "github.com/pkg/errors",
+             "repository": "https://github.com/pkg/errors",
+             "vcs": "git",
+             "revision": "2b3a18b5f0fb6b4f9190549597d3f962c02bc5eb",
+             "branch": "master",
+             "notests": true
+        },
+        {
+             "importpath": "github.com/takama/daemon",
+             "repository": "https://github.com/takama/daemon",
+             "vcs": "git",
+             "revision": "ac5a22749fceffb2bc7aba49c19787751f4b34f7",
              "branch": "master",
              "notests": true
         }
