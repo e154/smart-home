@@ -11,15 +11,6 @@
     
     
     <item>
-      <title>Api</title>
-      <link>https://e154.github.io/smart-home/api/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://e154.github.io/smart-home/api/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Обзор</title>
       <link>https://e154.github.io/smart-home/api/_overview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -39,6 +30,15 @@ $ curl -i http://localhost:3000/api/v1/signin  Безопасность Серв
       <description>Авторизация Все запросы к серверу должны сопровождаться авторизационным токеном.
 #!/usr/bin/env bash URL=http://localhost:3000/api/v1 TOKEN=&amp;quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&amp;quot; curl -H &amp;quot;access_token:${TOKEN}&amp;quot; -X GET -s ${URL}/user/1   Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация. Пароль должен состоять не менне чем из 6 символов. Авторизация в только что установленной системе возможна только, по одной из двух учетных записей  Учетные записи существующие после установки сервера
  email: demo@e154.</description>
+    </item>
+    
+    <item>
+      <title>Api</title>
+      <link>https://e154.github.io/smart-home/api/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/api/</guid>
+      <description></description>
     </item>
     
   </channel>
