@@ -122,7 +122,7 @@ func databaseMigrations20170121_004649_nodesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_004649_nodes.go", size: 1225, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_004649_nodes.go", size: 1225, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -142,7 +142,7 @@ func databaseMigrations20170121_005244_workflowsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_005244_workflows.go", size: 1117, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_005244_workflows.go", size: 1117, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -162,7 +162,7 @@ func databaseMigrations20170121_005734_flowsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_005734_flows.go", size: 1117, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_005734_flows.go", size: 1117, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -182,7 +182,7 @@ func databaseMigrations20170121_010456_flow_elementsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_010456_flow_elements.go", size: 1427, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_010456_flow_elements.go", size: 1427, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -202,7 +202,7 @@ func databaseMigrations20170121_011406_connectionsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_011406_connections.go", size: 1387, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_011406_connections.go", size: 1387, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -222,7 +222,7 @@ func databaseMigrations20170121_011938_dashboardsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_011938_dashboards.go", size: 1081, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_011938_dashboards.go", size: 1081, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -242,7 +242,7 @@ func databaseMigrations20170121_012048_device_actionsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012048_device_actions.go", size: 1097, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012048_device_actions.go", size: 1097, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -262,7 +262,7 @@ func databaseMigrations20170121_012150_device_statesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012150_device_states.go", size: 1088, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012150_device_states.go", size: 1088, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -282,7 +282,7 @@ func databaseMigrations20170121_012242_devicesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012242_devices.go", size: 1464, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012242_devices.go", size: 1464, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -302,7 +302,7 @@ func databaseMigrations20170121_012357_email_templatesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012357_email_templates.go", size: 1461, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012357_email_templates.go", size: 1461, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -322,7 +322,7 @@ func databaseMigrations20170121_012702_imagesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012702_images.go", size: 1208, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012702_images.go", size: 1208, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -342,7 +342,7 @@ func databaseMigrations20170121_012936_logsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012936_logs.go", size: 1024, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012936_logs.go", size: 1024, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -362,7 +362,7 @@ func databaseMigrations20170121_013100_map_device_actionsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013100_map_device_actions.go", size: 1087, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013100_map_device_actions.go", size: 1087, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -382,7 +382,7 @@ func databaseMigrations20170121_013247_map_device_statesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013247_map_device_states.go", size: 1035, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013247_map_device_states.go", size: 1035, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -402,7 +402,7 @@ func databaseMigrations20170121_013341_map_devicesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013341_map_devices.go", size: 935, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013341_map_devices.go", size: 935, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -422,7 +422,7 @@ func databaseMigrations20170121_013436_map_elementsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013436_map_elements.go", size: 1389, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013436_map_elements.go", size: 1389, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -442,7 +442,7 @@ func databaseMigrations20170121_013529_map_imagesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013529_map_images.go", size: 898, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013529_map_images.go", size: 898, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -462,7 +462,7 @@ func databaseMigrations20170121_013637_map_layersGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013637_map_layers.go", size: 1153, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013637_map_layers.go", size: 1153, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -482,7 +482,7 @@ func databaseMigrations20170121_013724_map_textsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013724_map_texts.go", size: 925, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013724_map_texts.go", size: 925, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -502,7 +502,7 @@ func databaseMigrations20170121_013814_mapsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013814_maps.go", size: 1036, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013814_maps.go", size: 1036, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -522,7 +522,7 @@ func databaseMigrations20170121_013906_permissionsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013906_permissions.go", size: 1020, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013906_permissions.go", size: 1020, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -542,7 +542,7 @@ func databaseMigrations20170121_013956_rolesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013956_roles.go", size: 1028, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013956_roles.go", size: 1028, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -562,7 +562,7 @@ func databaseMigrations20170121_014057_scriptsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_014057_scripts.go", size: 1272, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_014057_scripts.go", size: 1272, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -582,7 +582,7 @@ func databaseMigrations20170121_014145_user_metasGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_014145_user_metas.go", size: 1062, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_014145_user_metas.go", size: 1062, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -602,7 +602,7 @@ func databaseMigrations20170121_014234_usersGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_014234_users.go", size: 2112, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_014234_users.go", size: 2112, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -622,7 +622,7 @@ func databaseMigrations20170121_014331_workersGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_014331_workers.go", size: 1169, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_014331_workers.go", size: 1169, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -642,7 +642,7 @@ func databaseMigrations20170121_021812_indexGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_021812_index.go", size: 5538, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_021812_index.go", size: 5538, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -662,7 +662,7 @@ func databaseMigrations20170121_023351_linksGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_023351_links.go", size: 8918, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_023351_links.go", size: 8918, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -682,7 +682,7 @@ func databaseMigrations20170121_175235_add_usersGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_175235_add_users.go", size: 10378, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_175235_add_users.go", size: 10378, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -702,7 +702,7 @@ func databaseMigrations20170121_200137_email_templatesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_200137_email_templates.go", size: 31152, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_200137_email_templates.go", size: 31152, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -722,7 +722,7 @@ func databaseMigrations20170225_233757_scenariosGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170225_233757_scenarios.go", size: 1633, mode: os.FileMode(420), modTime: time.Unix(1489837393, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170225_233757_scenarios.go", size: 1633, mode: os.FileMode(420), modTime: time.Unix(1507980492, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -742,7 +742,7 @@ func databaseMigrations20170225_233820_scenario_scriptsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170225_233820_scenario_scripts.go", size: 1735, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170225_233820_scenario_scripts.go", size: 1735, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -762,7 +762,7 @@ func databaseMigrations20170309_235610_add_messagesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170309_235610_add_messages.go", size: 1205, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170309_235610_add_messages.go", size: 1205, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -782,12 +782,12 @@ func databaseMigrations20170309_235626_add_message_deliveriesGo() (*asset, error
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170309_235626_add_message_deliveries.go", size: 1557, mode: os.FileMode(420), modTime: time.Unix(1489675135, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170309_235626_add_message_deliveries.go", size: 1557, mode: os.FileMode(420), modTime: time.Unix(1507974368, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _databaseMigrations20170319_132142_add_workflow_scriptsGo = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xa4\x53\x4b\x6f\x9b\x4a\x14\x5e\x33\xbf\xe2\x13\x8b\x1b\xb8\xb2\xfc\xca\x95\xae\xda\x28\x0b\x02\xe3\x08\x15\x0f\x09\x0f\x35\x59\x19\x02\x13\x7b\xe4\x00\x2e\x0c\x4d\xab\x28\xff\xbd\xc2\xd8\x16\x76\xac\xb8\x51\x76\x68\xce\x39\xdf\xeb\x70\x56\x71\xb2\x8c\xe7\x1c\x59\x2c\x72\x42\x44\xb6\x2a\x4a\x09\x8d\x28\xea\x5c\xc8\x45\xfd\xd0\x4f\x8a\x6c\x10\x57\x32\xfe\x25\xf8\xe0\x81\xf3\x79\x31\xc8\xc4\xbc\x8c\xa5\x28\x72\x95\xe8\x84\x0c\x06\xb0\x5c\x30\x37\xc0\xd4\xb5\xec\xc9\x3d\x91\xbf\x57\x1c\x46\x9a\x7e\x2f\xca\xe5\xe3\x53\xf1\xec\x27\xa5\x58\xc9\x6a\x36\x1e\x8e\xfe\x1f\x9e\x8f\xbe\xcc\x46\xe7\xe3\xd1\x7f\x63\x54\xb2\xac\x13\x89\x17\xa2\xec\x00\xfb\xd3\xed\x17\x79\x3d\x82\xfc\x58\xe7\x09\x44\x2e\xa4\xa6\xaf\xc7\xf0\xf5\x12\xff\x9c\x66\x7a\x79\x25\x4a\xd6\x37\x4b\x1e\x4b\x9e\xe2\x12\xea\x41\x5d\xed\x2a\xf0\xf8\x5c\x54\x92\x97\x9a\x7a\x1a\x58\xed\x21\xd3\x37\x4a\xbd\x3a\x87\x5c\x70\xec\x90\xaa\x56\xae\x96\xe1\xdf\xd3\x48\x3a\xc2\x55\x6b\x6a\x30\x40\x5d\x71\x64\x7d\xff\xd6\xd1\x54\xd3\xa3\x46\x40\x11\x18\x57\x0e\x45\xbf\xdf\x57\x75\xc8\x02\x59\xbc\xe4\xa8\x92\x05\xcf\x62\xd4\xab\x34\x96\xbc\x31\xd8\x0c\x44\x44\xd9\x1b\x79\xde\xd0\xce\xaa\x96\xb7\x59\xac\x48\x61\xe7\x52\xc3\x78\x0c\x1d\x46\x18\xb8\x33\x9b\x99\x1e\x9d\x52\x16\xac\xc3\x66\xa1\xe3\xf4\x88\xb2\x1b\xdd\xf5\x43\xef\xd6\x5b\xc4\xd9\x1e\x5a\x77\x9c\x8b\xf9\x42\xb6\xb5\xd1\xb0\x53\x83\x45\x27\x46\xe8\x04\x38\x1b\x9e\x11\xe5\xc6\xb3\xa7\x86\x77\x8f\x6f\xf4\x1e\x1a\x44\x0a\xbd\x47\x14\xd3\x65\x7e\xe0\x19\x36\x0b\x50\xe7\xe2\x47\xcd\x1b\x96\x90\xd9\xb7\x21\x6d\x7b\xa0\x13\x85\xb2\x6b\x9b\x51\x5c\xc2\xce\xf3\xc2\xba\xba\x88\x74\xb2\x4d\x61\x1b\x5b\x3b\x02\x9b\x59\xf4\x0e\x51\x0b\x15\xc1\x65\x88\x0e\x73\x89\xb4\xce\x9b\x48\xa3\x1e\xa2\x9d\xbf\x08\xfa\x85\xda\x01\x37\x9c\x80\x7a\x9b\x7c\xdf\x02\xc1\xb0\x2c\x74\x0c\x44\x4f\xf9\x72\x5b\x9c\xbd\xed\x9e\xb8\x1e\xb5\xaf\xd9\xc6\xff\x1e\x29\x3c\x3a\xa1\x1e\x65\x26\xf5\xb7\x85\xb5\xce\xb6\xe8\x32\x58\xd4\xa1\x01\x85\xc7\x2b\x59\x8a\x44\x36\x4f\xe1\x8d\xd5\x18\x37\xe3\x2a\x89\x53\xde\xc8\xfe\x84\xea\x6d\xd7\x5f\xe8\xee\x66\x77\xa0\x7c\x87\xf2\x71\xed\x9b\xcb\xe2\x3f\x79\x59\xf1\x4f\x5d\x97\x55\x3c\xe7\xc7\xee\xcb\xf2\xdc\x9b\xc3\xeb\x2a\x37\x7c\x47\x0f\xec\x54\x8e\x6b\xc0\x6e\x38\xef\xef\xff\x03\x1b\x3a\x8e\xfc\xce\x8e\xf6\x7e\xda\x8e\x51\x7b\x02\x7a\x67\xfb\x81\x7f\x8c\xc5\x34\x7c\xd3\xb0\xe8\x3a\xfc\x3f\x01\x00\x00\xff\xff\xae\x91\x75\x67\x1a\x06\x00\x00")
+var _databaseMigrations20170319_132142_add_workflow_scriptsGo = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xa4\x53\x5f\x6f\xa2\x4a\x14\x7f\x76\x3e\xc5\x2f\x3c\xdc\xc2\x8d\x11\xb5\x37\xb9\xd9\x6d\xfa\x40\x61\x6c\xc8\xe2\xd0\xf2\x27\xdb\x3e\x09\x85\xa9\x4e\x2c\xe0\xc2\xb0\xdd\x4d\xd3\xef\xbe\x41\xd4\xa0\x35\x75\x9b\xbe\x91\x39\xe7\xfc\xfe\x1d\xce\x2a\x4e\x96\xf1\x9c\x23\x8b\x45\x4e\x88\xc8\x56\x45\x29\xa1\x92\x9e\x32\x17\x72\x51\x3f\x0c\x92\x22\xd3\xe3\x4a\xc6\xbf\x04\xd7\x1f\x38\x9f\x17\x7a\x26\xe6\x65\x2c\x45\x91\x2b\x44\x23\x44\xd7\x61\xb9\x60\x6e\x80\xa9\x6b\xd9\x93\x7b\x22\x7f\xaf\x38\x8c\x34\xfd\x5e\x94\xcb\xc7\xa7\xe2\xd9\x4f\x4a\xb1\x92\xd5\x6c\x3c\x1c\xfd\x3f\x3c\x1f\x7d\x99\x8d\xce\xc7\xa3\xff\xc6\xa8\x64\x59\x27\x12\x2f\xa4\xb7\x03\x1c\x4c\xb7\x5f\xe4\xf5\x08\xf2\x63\x9d\x27\x10\xb9\x90\xaa\xb6\x1e\xc3\xd7\x4b\xfc\x73\x9a\xe9\xe5\x95\xf4\xb2\x81\x59\xf2\x58\xf2\x14\x97\x50\x0e\xea\x4a\x57\x81\xc7\xe7\xa2\x92\xbc\x54\x95\xd3\xc0\x4a\x1f\x99\xb6\x51\xea\xd5\x39\xe4\x82\x63\x87\x54\xb5\x72\xd5\x0c\xff\x9e\x46\xd2\x10\xae\x5a\x53\xba\x8e\xba\xe2\xc8\x06\xfe\xad\xa3\x2a\xa6\x47\x8d\x80\x22\x30\xae\x1c\x8a\xc1\x60\xa0\x68\x90\x05\xb2\x78\xc9\x51\x25\x0b\x9e\xc5\xa8\x57\x69\x2c\x79\x63\xb0\x19\x88\xf6\x06\x9e\x37\xa4\xb3\xaa\x65\x6d\xd6\x2a\x52\xd8\xb9\x54\x31\x1e\x43\x83\x11\x06\xee\xcc\x66\xa6\x47\xa7\x94\x05\xeb\xa8\x59\xe8\x38\x7d\xd2\xdb\x8d\xee\xfa\xa1\x75\xeb\x2d\xe2\x6c\x0f\xad\x3b\xce\xc5\x7c\x21\xdb\xda\x68\xd8\xa9\xc1\xa2\x13\x23\x74\x02\x9c\x0d\xcf\xfa\xa4\x77\xe3\xd9\x53\xc3\xbb\xc7\x37\x7a\x0f\x15\x22\x85\xd6\x27\x3d\xd3\x65\x7e\xe0\x19\x36\x0b\x50\xe7\xe2\x47\xcd\x1b\x9a\x90\xd9\xb7\x21\x6d\x7b\xa0\x91\x1e\x65\xd7\x36\xa3\xb8\x84\x9d\xe7\x85\x75\x75\x11\x69\x64\x1b\xc2\x36\xb5\x76\x04\x36\xb3\xe8\x1d\xa2\x16\x2a\x82\xcb\x10\x1d\x06\x13\xa9\x9d\x37\x91\x46\x7d\x44\x3b\x83\x11\xb4\x0b\xa5\x03\x6e\x38\x01\xf5\x36\x01\xbf\x05\x82\x61\x59\xe8\x18\x88\x9e\xf2\xe5\xb6\x38\x7b\xdb\x3d\x71\x3d\x6a\x5f\xb3\x8d\xff\x3d\x52\x78\x74\x42\x3d\xca\x4c\xea\x6f\x0b\x6b\x9d\x6d\xd1\x65\xb0\xa8\x43\x03\x0a\x8f\x57\xb2\x14\x89\x6c\x9e\xc2\x1b\xab\x31\x6e\xc6\x55\x12\xa7\xbc\x91\xfd\x09\xd5\xdb\xae\xbf\xd0\xdd\xcd\xee\x40\xf9\x0e\xe5\xe3\xda\x37\x87\xc5\x7f\xf2\xb2\xe2\x9f\x3a\x2e\xab\x78\xce\x8f\x9d\x97\xe5\xb9\x37\x87\xc7\x55\x6e\xf8\x8e\xde\xd7\xa9\x1c\xd7\x80\xdd\x70\xde\xdf\xff\x07\x36\x74\x1c\xf9\x9d\x1d\xed\xfd\xb4\x1d\xa3\xf6\x04\xf4\xce\xf6\x03\xff\x18\x8b\x69\xf8\xa6\x61\xd1\x75\xf8\x7f\x02\x00\x00\xff\xff\xc4\x36\xc7\x2c\x19\x06\x00\x00")
 
 func databaseMigrations20170319_132142_add_workflow_scriptsGoBytes() ([]byte, error) {
 	return bindataRead(
@@ -802,7 +802,7 @@ func databaseMigrations20170319_132142_add_workflow_scriptsGo() (*asset, error) 
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_132142_add_workflow_scripts.go", size: 1562, mode: os.FileMode(420), modTime: time.Unix(1490455356, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_132142_add_workflow_scripts.go", size: 1561, mode: os.FileMode(420), modTime: time.Unix(1508050622, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -822,7 +822,7 @@ func databaseMigrations20170319_155434_drop_scenariosGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_155434_drop_scenarios.go", size: 2806, mode: os.FileMode(420), modTime: time.Unix(1490449240, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_155434_drop_scenarios.go", size: 2806, mode: os.FileMode(420), modTime: time.Unix(1507980492, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -842,7 +842,7 @@ func databaseMigrations20170319_155627_add_workflow_scenariosGo() (*asset, error
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_155627_add_workflow_scenarios.go", size: 1347, mode: os.FileMode(420), modTime: time.Unix(1490505415, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_155627_add_workflow_scenarios.go", size: 1347, mode: os.FileMode(420), modTime: time.Unix(1507980492, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -862,7 +862,7 @@ func databaseMigrations20170319_155813_add_workflow_scenario_scriptsGo() (*asset
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_155813_add_workflow_scenario_scripts.go", size: 1252, mode: os.FileMode(420), modTime: time.Unix(1490465624, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_155813_add_workflow_scenario_scripts.go", size: 1252, mode: os.FileMode(420), modTime: time.Unix(1507980492, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -882,7 +882,7 @@ func databaseMigrations20170319_171720_update_workflowGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_171720_update_workflow.go", size: 1017, mode: os.FileMode(420), modTime: time.Unix(1490449240, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_171720_update_workflow.go", size: 1017, mode: os.FileMode(420), modTime: time.Unix(1507980492, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -902,7 +902,7 @@ func databaseMigrations20170326_122728_flow_add_scenarioGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170326_122728_flow_add_scenario.go", size: 727, mode: os.FileMode(420), modTime: time.Unix(1490506354, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170326_122728_flow_add_scenario.go", size: 727, mode: os.FileMode(420), modTime: time.Unix(1507980492, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
