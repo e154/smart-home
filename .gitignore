@@ -12,3 +12,4 @@ vendor/*
 /conf/prod/app.conf
 /conf/dev/app.conf
 /conf/app.conf
+migrate.log

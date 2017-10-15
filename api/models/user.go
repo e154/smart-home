@@ -21,7 +21,8 @@ type User struct {
 	LastName              	string                	`orm:"size(255)" valid:"MaxSize(255)" json:"last_name"`
 	EncryptedPassword	string                	`orm:"size(255)" valid:"Required;MaxSize(255)" json:"-"`
 	Email                  	string                	`orm:"size(255)" valid:"Required;Email" json:"email"`
-	History                	string                	`orm:"" json:"history"`
+	HistoryStr              string                	`orm:"column(history)" json:"-"`
+	History                	[]*UserHistory          `orm:"-" json:"history"`
 	Status                 	string                	`orm:"size(255);default(blocked)" valid:"MaxSize(255)" json:"status"` //active, blocked
 	ResetPasswordToken   	string                	`orm:"size(255)" json:"-"`
 	AuthenticationToken   	string                	`orm:"size(255)" valid:"MaxSize(255)" json:"-"`
@@ -65,10 +66,13 @@ func AddUser(m *User) (id int64, err error) {
 func GetUserById(id int64) (v *User, err error) {
 	o := orm.NewOrm()
 	v = &User{Id: id}
-	if err = o.Read(v); err == nil {
-		return v, nil
+	if err = o.Read(v); err != nil {
+		return
 	}
-	return nil, err
+
+	err = v.GetHistory()
+
+	return
 }
 
 // GetAllUser retrieves all User matches certain condition. Returns empty list if
@@ -222,7 +226,7 @@ func (u *User) GetMeta(key string) string {
 func (u *User) UpdateHistory(t time.Time, ipv4 string) {
 
 	history := []*UserHistory{}
-	json.Unmarshal([]byte(u.History), &history)
+	json.Unmarshal([]byte(u.HistoryStr), &history)
 	l := len(history)
 	// max HISTORY_MAX records
 	if l > HISTORY_MAX {
@@ -232,12 +236,12 @@ func (u *User) UpdateHistory(t time.Time, ipv4 string) {
 
 	history = append(history, &UserHistory{Ip: ipv4, Time: t})
 	b, _ := json.Marshal(history)
-	u.History = string(b)
+	u.HistoryStr = string(b)
 }
 
-func (u *User) GetHistory() (history []*UserHistory, err error) {
+func (u *User) GetHistory() (err error) {
 
-	err = json.Unmarshal([]byte(u.History), &history)
+	err = json.Unmarshal([]byte(u.HistoryStr), &u.History)
 
 	return
 }
@@ -376,6 +380,10 @@ func UserGetByEmail(email string) (user *User, err error) {
 	user = new(User)
 	user.Email = email
 	if err = o.Read(user, "Email"); err != nil {
+		return
+	}
+
+	if err = user.GetHistory(); err != nil {
 		return
 	}
 

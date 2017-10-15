@@ -32,7 +32,7 @@ func (m *Scenarios_20170225_233757) Up() {
 	COLLATE = utf8_general_ci
 	ENGINE = InnoDB`)
 
-	m.SQL("INSERT INTO `scenarios` ( `created_at`, `id`, `name`, `system_name`, `update_at`) VALUES ( '', 1, 'default', 'default', '' );")
+	m.SQL("INSERT INTO `scenarios` ( `created_at`, `id`, `name`, `system_name`, `update_at`) VALUES ( '2014-06-15 17:50:15', 1, 'default', 'default', '2014-06-15 17:50:15' );")
 	m.SQL("ALTER TABLE `workflows` ADD COLUMN `scenario_id` Int( 32 ) NULL;")
 	m.SQL("ALTER TABLE `workflows` ADD CONSTRAINT `lnk_scenarios_workflows` FOREIGN KEY ( `scenario_id` ) REFERENCES `scenarios`( `id` ) ON DELETE Restrict ON UPDATE Cascade;")
 }

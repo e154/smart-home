@@ -12,14 +12,16 @@ import (
 )
 
 type Workflow struct {
-	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Name		string		`orm:"" json:"name"`
-	Description	string		`orm:"" json:"description"`
-	Status		string		`orm:"" json:"status"`
-	Scenario	*Scenario	`orm:"rel(fk);null" json:"scenario"`
-	Flows		[]*Flow		`orm:"-" json:"flows"`
-	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
-	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
+	Id   		int64  			`orm:"pk;auto;column(id)" json:"id"`
+	Name		string			`orm:"" json:"name"`
+	Description	string			`orm:"" json:"description"`
+	Status		string			`orm:"" json:"status"`
+	Scenario	*WorkflowScenario       `orm:"rel(fk);column(workflow_scenario_id);null" json:"scenario"`
+	Scenarios	[]*WorkflowScenario	`orm:"reverse(many)" json:"scenarios"`
+	Scripts		[]*Script		`orm:"rel(m2m);rel_through(github.com/e154/smart-home/api/models.WorkflowScript)" json:"scripts"`
+	Flows		[]*Flow			`orm:"-" json:"flows"`
+	Created_at	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
+	Update_at	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
 
 func (m *Workflow) TableName() string {
@@ -176,4 +178,111 @@ func (wf *Workflow) GetAllEnabledWorkers() ([]*Worker, error) {
 
 func (wf *Workflow) GetAllEnabledFlows() ([]*Flow, error) {
 	return GetAllEnabledFlowsByWf(wf)
+}
+
+func (wf *Workflow) GetScripts() (int64, error) {
+	o := orm.NewOrm()
+	return o.LoadRelated(wf, "Scripts")
+}
+
+func (wf *Workflow) GetScenario() (int64, error) {
+
+	o := orm.NewOrm()
+	if wf.Scenario != nil {
+		return o.LoadRelated(wf, "Scenario")
+	}
+
+	return 0, nil
+}
+
+func (wf *Workflow) GetScenarios() (int64, error) {
+	o := orm.NewOrm()
+	return o.LoadRelated(wf, "Scenarios")
+}
+
+func (wf *Workflow) GetScenarioById(id int64) (scenario *WorkflowScenario, err error) {
+	o := orm.NewOrm()
+	scenario = &WorkflowScenario{
+		Workflow: wf,
+		Id: id,
+	}
+
+	if err = o.Read(scenario, "Id", "Workflow"); err != nil {
+		return
+	}
+
+	_, err = o.LoadRelated(scenario, "Scripts")
+
+	return
+}
+
+func (wf *Workflow) AddScripts(scripts []*Script) (num int64, err error) {
+	if len(scripts) == 0 {
+		return
+	}
+
+	o := orm.NewOrm()
+	m2m := o.QueryM2M(wf, "Scripts")
+	num, err = m2m.Add(scripts)
+	if err == nil {
+		fmt.Println("Added nums: ", num)
+	}
+
+	return
+}
+
+func (wf *Workflow) RemoveScripts(scripts []*Script) (num int64, err error) {
+	if len(scripts) == 0 {
+		return
+	}
+
+	o := orm.NewOrm()
+	m2m := o.QueryM2M(wf, "Scripts")
+	num, err = m2m.Remove(scripts)
+	if err == nil {
+		fmt.Println("Removed nums: ", num)
+	}
+
+	return
+}
+
+func (wf *Workflow) UpdateScripts(scripts []*Script) (num int64, err error) {
+	var add, rem []*Script
+	var exist bool
+
+	for _, s1 := range wf.Scripts {
+		exist = false
+		for _, s2 := range scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			rem = append(rem, s1)
+		}
+	}
+
+	for _, s1 := range scripts {
+		exist = false
+		for _, s2 := range wf.Scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			add = append(add, s1)
+		}
+	}
+
+	if _, err = wf.RemoveScripts(rem); err != nil {
+		return
+	}
+
+	if _, err = wf.AddScripts(add); err != nil {
+		return
+	}
+
+	return
 }

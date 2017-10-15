@@ -109,6 +109,52 @@ It's all:)
 
 PS very soon an example will be added hello world
 
+### Installation for development
+
+#### main server install 
+
+```bash
+go get -u github.com/FiloSottile/gvt
+
+git clone https://github.com/e154/smart-home $GOPATH/src/github.com/e154/smart-home
+
+cd $GOPATH/src/github.com/e154/smart-home
+
+gvt restore
+
+go build
+```
+
+editing configuration files
+
+```bash
+cp conf/app.sample.conf conf/api.conf
+cp conf/dev/app.sample.conf conf/dev/app.conf
+cp conf/dev/db.sample.conf conf/dev/db.conf
+cp conf/prod/app.sample.conf conf/prod/app.conf
+cp conf/prod/db.sample.conf conf/prod/db.conf
+```
+
+manually create the database and run the command
+
+```bash
+./smart-home migrate
+```
+
+run server
+
+```bash
+./smart-home
+```
+
+for test
+
+```bash
+./examples/scripts/auth.sh
+```
+
+It's all
+
 ### Support 
 
 Smart home Wiki: [e154.github.io/smart-home](https://e154.github.io/smart-home/)

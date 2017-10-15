@@ -64,8 +64,17 @@ __refresh() {
 }
 
 __gen() {
+
+    BD=`which go-bindata`
+
+    if [ -z "$BD" ]; then
+      echo "Required tools are missing - check beginning of \"$0\" file for details."
+      echo "wait for installing go-bindta"
+      go get -u github.com/jteeuwen/go-bindata/...
+    fi
+
     # go get -u github.com/jteeuwen/go-bindata/...
-    go-bindata -pkg database -o ${BASEDIR}/../database/migrations.go database/migrations
+    ${BD} -pkg database -o ${BASEDIR}/../database/migrations.go database/migrations
 }
 
 __help() {

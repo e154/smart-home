@@ -6,6 +6,7 @@ import (
 	"time"
 	"encoding/base64"
 	"strings"
+	"github.com/e154/smart-home/api/log"
 )
 
 const ADMIN_ID = 1
@@ -90,6 +91,8 @@ func (h *AuthController) SignIn() {
 		h.ErrHan(403, err.Error())
 		return
 	}
+
+	log.Infof("Successful login, user: %s", user.Email)
 
 	h.Data["json"] = &map[string]interface{}{"access_token": token, "current_user": current_user}
 	h.ServeJSON()

@@ -250,10 +250,10 @@ func GetImageFilterList() (ml []orm.Params, err error) {
 	image := &Image{}
 	o.Raw(`
 SELECT
-	DATE_FORMAT(f.created_at, '%Y-%m-%d') as date, COUNT( f.created_at) as count
-FROM `+ image.TableName()+` f
-GROUP BY date(f.created_at)
-ORDER BY f.created_at`).Values(&ml)
+	DATE_FORMAT(created_at, '%Y-%m-%d') as date, COUNT( created_at) as count
+FROM `+ image.TableName()+`
+GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+ORDER BY date`).Values(&ml)
 
 	return
 }
@@ -266,9 +266,9 @@ func GetAllImagesByDate(filter string) (images []Image, err error) {
 	image := &Image{}
 	o.Raw(`
 SELECT *
-FROM `+ image.TableName()+` f
-WHERE DATE_FORMAT(f.created_at, '%Y %m %d') = DATE_FORMAT('`+filter+`', '%Y %m %d')
-ORDER BY f.created_at`).QueryRows(&images)
+FROM `+ image.TableName()+`
+WHERE DATE_FORMAT(created_at, '%Y %m %d') = DATE_FORMAT('`+filter+`', '%Y %m %d')
+ORDER BY created_at`).QueryRows(&images)
 
 	return
 }

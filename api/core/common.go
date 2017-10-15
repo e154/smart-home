@@ -6,6 +6,6 @@ import (
 )
 
 func debug(v interface{}) {
-	j, _ := json.Marshal(v)
+	j, _ := json.MarshalIndent(v, "", " ")
 	log.Println(string(j))
 }

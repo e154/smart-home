@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/core"
-	"github.com/astaxie/beego/orm"
+	"net/url"
 )
 
 // WorkflowController operations for Workflow
@@ -83,12 +83,23 @@ func (c *WorkflowController) GetOne() {
 		return
 	}
 
-	o := orm.NewOrm()
-	if workflow.Scenario != nil {
-		if _, err = o.LoadRelated(workflow, "Scenario");err != nil {
-			c.ErrHan(403, err.Error())
-			return
-		}
+	if _, err = workflow.GetScenario(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if _, err = workflow.GetScripts(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if _, err = workflow.GetScenarios(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	for _, scenario := range workflow.Scenarios {
+		scenario.GetScripts()
 	}
 
 	c.Data["json"] = map[string]interface{}{"workflow": workflow}
@@ -115,15 +126,13 @@ func (c *WorkflowController) GetAll() {
 	}
 
 	var workflows []models.Workflow
-	o := orm.NewOrm()
 	for _, bp := range ml {
 		workflow := bp.(models.Workflow)
-		if workflow.Scenario != nil {
-			if _, err = o.LoadRelated(&workflow, "Scenario");err != nil {
-				c.ErrHan(403, err.Error())
-				return
-			}
+		if _, err = workflow.GetScenario(); err != nil {
+			c.ErrHan(403, err.Error())
+			continue
 		}
+
 		workflows = append(workflows, workflow)
 	}
 
@@ -141,15 +150,32 @@ func (c *WorkflowController) GetAll() {
 // @router /:id [put]
 func (c *WorkflowController) Put() {
 	id, _ := c.GetInt(":id")
-	var workflow models.Workflow
-	json.Unmarshal(c.Ctx.Input.RequestBody, &workflow)
+	var workflow *models.Workflow
+	workflow = &models.Workflow{}
+	json.Unmarshal(c.Ctx.Input.RequestBody, workflow)
 	workflow.Id = int64(id)
-	if err := models.UpdateWorkflowById(&workflow); err != nil {
+	if err := models.UpdateWorkflowById(workflow); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
 
-	core.CorePtr().UpdateWorkflowScenario(&workflow)
+	//b, _ := json.MarshalIndent(workflow, "", " ")
+	//fmt.Println(string(b))
+
+
+	_scripts := workflow.Scripts
+	workflow, _ = models.GetWorkflowById(workflow.Id)
+	if _, err := workflow.GetScripts(); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	if _, err := workflow.UpdateScripts(_scripts); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	core.CorePtr().UpdateWorkflowScenario(workflow)
 
 	c.ServeJSON()
 }
@@ -198,7 +224,7 @@ func (c *WorkflowController) UpdateScenario() {
 		return
 	}
 
-	var scenario *models.Scenario
+	var scenario *models.WorkflowScenario
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, &scenario); err != nil {
 		c.ErrHan(403, err.Error())
 		return
@@ -212,5 +238,27 @@ func (c *WorkflowController) UpdateScenario() {
 
 	core.CorePtr().UpdateWorkflowScenario(workflow)
 
+	c.ServeJSON()
+}
+
+func (c *WorkflowController) Search() {
+
+	query, fields, sortby, order, offset, limit := c.pagination()
+	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
+	q := link.Query()
+
+	if val, ok := q["query"]; ok {
+		for _, v := range val {
+			query["name__icontains"] = v
+		}
+	}
+
+	ml, meta, err := models.GetAllWorkflow(query, fields, sortby, order, offset, limit)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"workflows": ml, "meta": meta}
 	c.ServeJSON()
 }

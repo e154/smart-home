@@ -111,6 +111,53 @@ source /opt/smart-home/server/dump.sql
 
 PS совсем скоро добавится пример hello world
 
+### Установка для разработки
+
+#### Сервер
+
+```bash
+go get -u github.com/FiloSottile/gvt
+
+git clone https://github.com/e154/smart-home $GOPATH/src/github.com/e154/smart-home
+
+cd $GOPATH/src/github.com/e154/smart-home
+
+gvt restore
+
+go build
+```
+
+Редактируем файлы конфигурации
+
+```bash
+cp conf/app.sample.conf conf/api.conf
+cp conf/dev/app.sample.conf conf/dev/app.conf
+cp conf/dev/db.sample.conf conf/dev/db.conf
+cp conf/prod/app.sample.conf conf/prod/app.conf
+cp conf/prod/db.sample.conf conf/prod/db.conf
+```
+
+вручную создадим базу smart_home, и запустим команду миграции
+
+```bash
+./smart-home migrate
+```
+
+Запус сервера
+
+```bash
+./smart-home
+```
+
+для проверки, что сервер установился корректно можно выполнить скрип авторизации,
+в консоле должно отобразиться ирформация о текущем пользователе
+
+```bash
+./examples/scripts/auth.sh
+```
+
+Это все.
+
 ### Поддержка
 
 Сайт поддержки и накопления знаний: [https://e154.github.io/smart-home](https://e154.github.io/smart-home/)
