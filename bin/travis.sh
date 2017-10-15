@@ -155,7 +155,7 @@ __build() {
 
     # build
     cd ${TMP_DIR}
-    xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
+    xgo --out=${EXEC} --branch=${TRAVIS_BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
 
     # copy configs
     cp -r ${ROOT}/conf ${TMP_DIR}
