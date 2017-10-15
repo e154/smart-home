@@ -85,7 +85,7 @@
              "importpath": "gopkg.in/e154/go-duktape.v3",
              "repository": "https://gopkg.in/e154/go-duktape.v3",
              "vcs": "git",
-             "revision": "b7199e85785bf79b5e2614bb49d14ff862af1070",
+             "revision": "4f7041e2de473562693d11ff52b68128648cdb65",
              "branch": "master",
              "notests": true
         },
