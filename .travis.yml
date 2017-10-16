@@ -44,6 +44,10 @@ deploy:
     tags: true
     branch: master
     repo: e154/smart-home
+  branches:
+    only:
+    - master
+    - /^v\d+(\.\d+)+$/
 
 notifications:
   email:
