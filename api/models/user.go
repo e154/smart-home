@@ -15,32 +15,33 @@ import (
 )
 
 type User struct {
-	Id                     	int64                  	`orm:"pk;auto" json:"id"`
-	Nickname               	string                	`orm:"size(255)" valid:"Required;MinSize(3);MaxSize(255)" json:"nickname"`
-	FirstName             	string                	`orm:"size(255)" valid:"MaxSize(255)" json:"first_name"`
-	LastName              	string                	`orm:"size(255)" valid:"MaxSize(255)" json:"last_name"`
-	EncryptedPassword	string                	`orm:"size(255)" valid:"Required;MaxSize(255)" json:"-"`
-	Email                  	string                	`orm:"size(255)" valid:"Required;Email" json:"email"`
-	HistoryStr              string                	`orm:"column(history)" json:"-"`
-	History                	[]*UserHistory          `orm:"-" json:"history"`
-	Status                 	string                	`orm:"size(255);default(blocked)" valid:"MaxSize(255)" json:"status"` //active, blocked
-	ResetPasswordToken   	string                	`orm:"size(255)" json:"-"`
-	AuthenticationToken   	string                	`orm:"size(255)" valid:"MaxSize(255)" json:"-"`
-	Avatar                 	*Image                	`orm:"rel(fk);null;column(image_id)" json:"avatar"`
-	SignInCount          	int64                   `orm:"size(11)" json:"sign_in_count"`
-	CurrentSignInIp     	string                	`orm:"size(255);default(null)" json:"current_sign_in_ip"`
-	LastSignInIp        	string                	`orm:"size(255);default(null)" json:"last_sign_in_ip"`
+	Id                     	int64               `orm:"pk;auto" json:"id"`
+	Nickname               	string              `orm:"size(255)" valid:"Required;MinSize(3);MaxSize(255)" json:"nickname"`
+	FirstName             	string              `orm:"size(255)" valid:"MaxSize(255)" json:"first_name"`
+	LastName              	string              `orm:"size(255)" valid:"MaxSize(255)" json:"last_name"`
+	EncryptedPassword		string              `orm:"size(255)" valid:"Required;MaxSize(255)" json:"-"`
+	Email                  	string              `orm:"size(255)" valid:"Required;Email" json:"email"`
+	HistoryStr              string              `orm:"column(history)" json:"-"`
+	History                	[]*UserHistory      `orm:"-" json:"history"`
+	Status                 	string              `orm:"size(255);default(blocked)" valid:"MaxSize(255)" json:"status"` //active, blocked
+	ResetPasswordToken   	string              `orm:"size(255)" json:"-"`
+	AuthenticationToken   	string              `orm:"size(255)" valid:"MaxSize(255)" json:"-"`
+	Avatar                 	*Image              `orm:"rel(fk);null;column(image_id)" json:"avatar"`
+	SignInCount          	int64               `orm:"size(11)" json:"sign_in_count"`
+	CurrentSignInIp     	string              `orm:"size(255);default(null)" json:"current_sign_in_ip"`
+	LastSignInIp        	string              `orm:"size(255);default(null)" json:"last_sign_in_ip"`
+	Lang		        	string              `orm:"size(255);default(en)" json:"lang"`
 
-	CreatedBy	       	*User                   `orm:"rel(fk);null;column(user_id)" json:"created_by"`
-	Role                   	*Role                	`orm:"rel(fk);null;column(role_name)" json:"role"`
-	Meta			[]*UserMeta		`orm:"reverse(many);null" json:"meta"`
+	CreatedBy	       		*User               `orm:"rel(fk);null;column(user_id)" json:"created_by"`
+	Role                   	*Role               `orm:"rel(fk);null;column(role_name)" json:"role"`
+	Meta					[]*UserMeta			`orm:"reverse(many);null" json:"meta"`
 
 	ResetPasswordSentAt 	time.Time        	`orm:"type(datetime)" json:"-"`
 	CurrentSignInAt     	time.Time        	`orm:"type(datetime);null;default(null)" json:"current_sign_in_at"`
 	LastSignInAt        	time.Time        	`orm:"type(datetime);null;default(null)" json:"last_sign_in_at"`
 	Created_at            	time.Time        	`orm:"auto_now_add;type(datetime)" json:"created_at"`
 	Update_at            	time.Time       	`orm:"auto_now;type(datetime)" json:"update_at"`
-	Deleted           	time.Time        	`orm:"type(datetime);null;default(null)" json:"deleted"`
+	Deleted           		time.Time        	`orm:"type(datetime);null;default(null)" json:"deleted"`
 }
 
 const HISTORY_MAX = 8

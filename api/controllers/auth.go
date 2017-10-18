@@ -78,6 +78,7 @@ func (h *AuthController) SignIn() {
 		"sign_in_count": user.SignInCount,
 		"meta": user.Meta,
 		"role": user.Role,
+		"lang": user.Lang,
 	}
 
 	key := common.GetKey("hmacKey")
