@@ -26,7 +26,7 @@ before_install:
 install:
   - go get github.com/FiloSottile/gvt
   - go get github.com/lib/pq
-  - go get github.com/rubenv/sql-migrate
+  - go get github.com/rubenv/sql-migrate/...
 
 script:
   - ./bin/travis.sh --init
