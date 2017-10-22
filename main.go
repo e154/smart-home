@@ -22,8 +22,6 @@ func main() {
 	switch args[1] {
 	case "install", "remove", "start", "stop", "status":
 		ServiceInitialize()
-	case "migrate":
-		RunMigration()
 	default:
 		stdlog.Printf(verboseVersionBanner, "", args[0])
 	}

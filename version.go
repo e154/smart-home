@@ -27,7 +27,6 @@ stop	- [sudo] Stop the service
 install	- [sudo] Install the service into the system
 remove	- [sudo] Remove the service and all corresponding files from the system
 status	- [sudo] Check the service status
-migrate	- Update database version
 help	- show this help text
 
 `
