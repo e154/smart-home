@@ -107,11 +107,8 @@ __clean() {
 
 __migrate() {
 
-    conn="${db_user}@tcp(${db_server})/${db_base}?charset=utf8&parseTime=true"
+    sql-migrate up -config=bin/dbconfig.yml -env="development"
 
-    bee migrate -driver=${db_driver} -conn=${conn} > ${ROOT}/database/migrate.log
-
-    cp ${ROOT}/database/migrate.log ${TMP_DIR}
 }
 
 __docs_deploy() {
