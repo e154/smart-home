@@ -10,11 +10,6 @@ EXEC="server"
 TMP_DIR="${ROOT}/tmp/${EXEC}"
 ARCHIVE="smart-home-${EXEC}.tar.gz"
 
-db_driver="mysql"
-db_base="smarthome"
-db_user="root"
-db_server="127.0.0.1:3306"
-
 #
 # build version variables
 #
