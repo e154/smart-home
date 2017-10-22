@@ -107,7 +107,7 @@ __clean() {
 
 __migrate() {
 
-    sql-migrate up -config=bin/dbconfig.yml -env="development"
+    sql-migrate up -config=./bin/dbconfig.yml -env="development"
 
 }
 
