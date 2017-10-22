@@ -45,11 +45,6 @@ main() {
 
   export DEBIAN_FRONTEND=noninteractive
 
-  if [[ $# = 0 ]] ; then
-    echo 'No arguments provided, installing with'
-    echo 'default configuration values.'
-  fi
-
   : ${INSTALL_MODE:=stable}
 
   case "$1" in
@@ -62,9 +57,6 @@ main() {
     --clean)
     __clean
     ;;
-    --help)
-    __help
-    ;;
     --migrate)
     __migrate
     ;;
@@ -76,7 +68,6 @@ main() {
     ;;
     *)
     echo "Error: Invalid argument '$1'" >&2
-    __help
     exit 1
     ;;
   esac
@@ -175,25 +166,6 @@ __build() {
 
     # create arch
     tar -zcf ${HOME}/${ARCHIVE} .
-}
-
-__help() {
-  cat <<EOF
-Usage: travis.sh [options]
-
-Bootstrap Debian 8.0 host with mysql installation.
-
-OPTIONS:
-
-  --test - testing package
-  --init - initialize the development environment
-  --clean - cleaning of temporary directories
-  --docs-deploy - deploy documentation
-  --build - build backend
-
-  -h / --help - show this help text and exit 0
-
-EOF
 }
 
 main "$@"
