@@ -14,11 +14,8 @@ main() {
         --down)
         __down
         ;;
-        --reset)
-        __reset
-        ;;
-        --refresh)
-        __refresh
+        --status)
+        __status
         ;;
         --gen)
         __gen
@@ -35,32 +32,27 @@ main() {
 }
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-settings=${BASEDIR}/settings.sh ; source "$settings" ; if [ $? -ne 0 ] ; then echo "Error - no settings functions $settings" 1>&2 ; exit 1 ; fi
-conn="${user}:${password}@tcp(${server})/${base}?charset=utf8&parseTime=true"
+ENV=development
+CONFIG=./bin/dbconfig.yml
 
 MIGRATION_NAME=$2
 COMMAND=$1
 
 __new() {
     echo $MIGRATION_NAME
-    bee generate migration $MIGRATION_NAME -fields=""
+    sql-migrate new -config=$CONFIG -env=$ENV $MIGRATION_NAME
 }
 
 __up() {
-    bee migrate -driver=${driver} -conn=${conn}
+    sql-migrate up -config=$CONFIG -env=$ENV
 }
 
 __down() {
-    bee migrate rollback -driver=${driver} -conn=${conn}
+    sql-migrate down -config=$CONFIG -env=$ENV
 }
 
-__reset() {
-    bee migrate reset -driver=${driver} -conn=${conn}
-}
-
-__refresh() {
-    bee migrate refresh -driver=${driver} -conn=${conn}
+__status() {
+    sql-migrate status -config=$CONFIG -env=$ENV
 }
 
 __gen() {
@@ -86,8 +78,7 @@ OPTIONS:
   --new - new migration
   --up - up migration
   --down - down migration
-  --reset - reset migration
-  --refresh - refresh migration
+  --status - reset migration
   --gen - generate migration sources
 
   -h / --help - show this help text and exit 0

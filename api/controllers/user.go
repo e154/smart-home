@@ -181,12 +181,14 @@ func (c *UserController) Put() {
 		return
 	}
 
-	if ok && password == password_repeat {
-		log.Warnf("account: updated password for '%s'", user.Email)
-		user.EncryptedPassword = common.Pwdhash(password)
-	} else {
-		c.ErrHan(403, "Passwords do not match.")
-		return
+	if password != "" {
+		if password == password_repeat {
+			log.Warnf("account: updated password for '%s'", user.Email)
+			user.EncryptedPassword = common.Pwdhash(password)
+		} else {
+			c.ErrHan(403, "Passwords do not match.")
+			return
+		}
 	}
 
 	// update user

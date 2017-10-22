@@ -10,11 +10,6 @@ EXEC="server"
 TMP_DIR="${ROOT}/tmp/${EXEC}"
 ARCHIVE="smart-home-${EXEC}.tar.gz"
 
-db_driver="mysql"
-db_base="smarthome"
-db_user="root"
-db_server="127.0.0.1:3306"
-
 #
 # build version variables
 #
@@ -45,11 +40,6 @@ main() {
 
   export DEBIAN_FRONTEND=noninteractive
 
-  if [[ $# = 0 ]] ; then
-    echo 'No arguments provided, installing with'
-    echo 'default configuration values.'
-  fi
-
   : ${INSTALL_MODE:=stable}
 
   case "$1" in
@@ -62,9 +52,6 @@ main() {
     --clean)
     __clean
     ;;
-    --help)
-    __help
-    ;;
     --migrate)
     __migrate
     ;;
@@ -76,7 +63,6 @@ main() {
     ;;
     *)
     echo "Error: Invalid argument '$1'" >&2
-    __help
     exit 1
     ;;
   esac
@@ -107,11 +93,8 @@ __clean() {
 
 __migrate() {
 
-    conn="${db_user}@tcp(${db_server})/${db_base}?charset=utf8&parseTime=true"
+    sql-migrate up -config=./bin/dbconfig-travis.yml -env="development"
 
-    bee migrate -driver=${db_driver} -conn=${conn} > ${ROOT}/database/migrate.log
-
-    cp ${ROOT}/database/migrate.log ${TMP_DIR}
 }
 
 __docs_deploy() {
@@ -190,25 +173,6 @@ __build() {
 
     # create arch
     tar -zcf ${HOME}/${ARCHIVE} .
-}
-
-__help() {
-  cat <<EOF
-Usage: travis.sh [options]
-
-Bootstrap Debian 8.0 host with mysql installation.
-
-OPTIONS:
-
-  --test - testing package
-  --init - initialize the development environment
-  --clean - cleaning of temporary directories
-  --docs-deploy - deploy documentation
-  --build - build backend
-
-  -h / --help - show this help text and exit 0
-
-EOF
 }
 
 main "$@"

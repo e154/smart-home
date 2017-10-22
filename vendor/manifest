@@ -112,6 +112,14 @@
              "revision": "ac5a22749fceffb2bc7aba49c19787751f4b34f7",
              "branch": "master",
              "notests": true
+        },
+        {
+             "importpath": "github.com/rubenv/sql-migrate",
+             "repository": "https://github.com/rubenv/sql-migrate",
+             "vcs": "git",
+             "revision": "79fe99e24311fa42469fb2ca23eb3f8f065e6155",
+             "branch": "master",
+             "notests": true
         }
 	]
 }

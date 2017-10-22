@@ -40,6 +40,9 @@ func configuration() {
 	// Timezone http://beego.me/docs/mvc/model/orm.md#timezone-config
 	orm.DefaultTimeLoc, _ = time.LoadLocation("Asia/Novosibirsk")
 
+	// run migration
+	Migration(db)
+
 	log.Info("AppPath:", beego.AppPath)
 	if(beego.BConfig.RunMode == "dev") {
 		log.Info("Development mode enabled")
