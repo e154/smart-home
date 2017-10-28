@@ -205,6 +205,8 @@ func (u *User) LoadRelated() (err error) {
 		u.Avatar.GetUrl()
 	}
 
+	u.Role.GetAccessList()
+
 	return
 }
 
