@@ -63,6 +63,10 @@ func configuration() {
 	file_storage_path := beego.AppConfig.String("file_storage_path")
 	beego.SetStaticPath("/static", filepath.Join(data_dir, file_storage_path))
 
+	beego.BConfig.WebConfig.AutoRender = false
+	beego.BConfig.WebConfig.EnableXSRF = false
+	beego.BConfig.CopyRequestBody = true
+
 	validation.SetDefaultMessage(map[string]string{
 		"Required":     "Должно быть заполнено",
 		"Min":          "Минимально допустимое значение %d",
