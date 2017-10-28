@@ -123,18 +123,18 @@ func getToken(ctx *context.Context) (access_token string, err error) {
 func getAccessList(token string) (user *models.User, access_list models.AccessList, err error) {
 
 	// cache init
-	cacheKey := cache.GetKey(token)
-	if bc := cache.IsExist(cacheKey); bc {
-		if r := cache.Get(cacheKey); r != nil {
-			// load data from cache
-			data := r.(cacheData)
-			user = data.user
-			access_list = data.access_list
-			err = nil
-
-			return
-		}
-	}
+	//cacheKey := cache.GetKey(token)
+	//if bc := cache.IsExist(cacheKey); bc {
+	//	if r := cache.Get(cacheKey); r != nil {
+	//		// load data from cache
+	//		data := r.(cacheData)
+	//		user = data.user
+	//		access_list = data.access_list
+	//		err = nil
+	//
+	//		return
+	//	}
+	//}
 
 	// load user info
 	key := common.GetKey("hmacKey")
@@ -161,10 +161,10 @@ func getAccessList(token string) (user *models.User, access_list models.AccessLi
 	access_list = user.Role.GetFullAccessList()
 
 	// save info to cache
-	cache.Put("rbac", cacheKey, cacheData{
-		user: user,
-		access_list: access_list,
-	})
+	//cache.Put("rbac", cacheKey, cacheData{
+	//	user: user,
+	//	access_list: access_list,
+	//})
 
 	return
 }
