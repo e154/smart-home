@@ -23,11 +23,9 @@ var (
 func AccessFilter() {
 	beego.InsertFilter("/*", beego.BeforeRouter, func(ctx *context.Context) {
 
-		//TODO uncomment
-		// for dev
-		if beego.BConfig.RunMode == "dev" {
-			//return
-		}
+		//if beego.BConfig.RunMode == "dev" {
+		//	return
+		//}
 
 		requestURI := strings.ToLower(ctx.Request.RequestURI)
 		method := strings.ToLower(ctx.Request.Method)
