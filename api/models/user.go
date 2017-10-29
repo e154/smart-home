@@ -244,6 +244,10 @@ func (u *User) UpdateHistory(t time.Time, ipv4 string) {
 
 func (u *User) GetHistory() (err error) {
 
+	if(u.HistoryStr == "") {
+		u.HistoryStr = "[]"
+	}
+
 	err = json.Unmarshal([]byte(u.HistoryStr), &u.History)
 
 	return
