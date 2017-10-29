@@ -14,11 +14,11 @@ import (
 type MapLayer struct {
 	Id           	int64  			`orm:"pk;auto;column(id)" json:"id"`
 	Name        	string			`orm:"" json:"name"`
-	Status		string			`orm:"" json:"status"`
+	Status			string			`orm:"" json:"status"`
 	Description 	string			`orm:"" json:"description"`
-	Weight 		int64			`orm:"" json:"weight"`
-	Map	 	*Map			`orm:"rel(fk)" json:"map"`
-	Elements	[]*MapElement		`orm:"reverse(many)" json:"elements"`
+	Weight 			int64			`orm:"" json:"weight"`
+	Map	 			*Map			`orm:"rel(fk)" json:"map"`
+	Elements		[]*MapElement	`orm:"reverse(many)" json:"elements"`
 	Created_at   	time.Time		`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at    	time.Time		`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
 }
@@ -147,7 +147,7 @@ func UpdateMapLayerById(m *MapLayer) (err error) {
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Update(m); err == nil {
+		if num, err = o.Update(m, "Name", "Status", "Description", "Weight", "Map", "Elements"); err == nil {
 			fmt.Println("Number of records updated in database:", num)
 		}
 	}
