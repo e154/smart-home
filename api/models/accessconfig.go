@@ -420,7 +420,7 @@ const access_config_list = `{
    		"actions": [
    			"/api/v1/map_element/[0-9]+",
    			"/api/v1/map_element/[0-9]+/element_only",
-   			"/api/v1/map_element/Sort"
+   			"/api/v1/map_element/sort"
    		],
    		"method": "put",
    		"description": ""
