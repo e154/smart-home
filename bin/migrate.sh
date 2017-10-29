@@ -40,7 +40,18 @@ COMMAND=$1
 
 __new() {
     echo $MIGRATION_NAME
-    sql-migrate new -config=$CONFIG -env=$ENV $MIGRATION_NAME
+
+    NOW=$(date +"%Y%m%d_%H%M%S")
+
+    cat  > $BASEDIR/../database/migrations/"${NOW}_${MIGRATION_NAME}.sql" <<EOF
+-- +migrate Up
+-- SQL in section 'Up' is executed when this migration is applied
+
+-- +migrate Down
+-- SQL section 'Down' is executed when this migration is rolled back
+
+
+EOF
 }
 
 __up() {
