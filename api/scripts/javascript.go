@@ -5,19 +5,15 @@ import (
 	"strings"
 	"errors"
 	"github.com/e154/go-candyjs"
-	"github.com/e154/smart-home/api/common"
 	"github.com/astaxie/beego"
 	"github.com/e154/smart-home/api/log"
-)
-
-const (
-	coffescript = "coffee-script.js"
 )
 
 
 type Javascript struct {
 	engine *Engine
 	ctx    *candyjs.Context
+	compiler string
 }
 
 func (j *Javascript) Init() (err error) {
@@ -26,6 +22,8 @@ func (j *Javascript) Init() (err error) {
 	if err = j.ctx.PevalString(j.engine.model.Compiled); err != nil {
 		return
 	}
+
+	j.GetCompiler()
 
 	j.bind()
 
@@ -61,12 +59,28 @@ func (j *Javascript) Compile() (err error) {
 	return
 }
 
+func (j *Javascript) GetCompiler() error {
+
+	switch j.engine.model.Lang {
+	case "coffeescript": {
+		data, err := Asset("scripts/coffee-script.js")
+		if err != nil {
+			fmt.Println(err.Error())
+			return err
+		}
+
+		j.compiler = string(data)
+	}
+	default:
+
+	}
+
+	return nil
+}
+
 func (j *Javascript) coffeeCompile() (result string, err error) {
 
-	//TODO cache file
-	file := common.GetScript(coffescript)
-	if err = j.ctx.PevalString(string(file)); err != nil {
-	//if err = j.ctx.PevalFile(coffescript); err != nil {
+	if err = j.ctx.PevalString( j.compiler ); err != nil {
 		return
 	}
 
