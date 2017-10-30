@@ -41,6 +41,7 @@
 // database/migrations/20170319_171720_update_workflow.sql
 // database/migrations/20170326_122728_flow_add_scenario.sql
 // database/migrations/20171018_191650_add_user_language.sql
+// database/migrations/20171030_214306_demo_node.sql
 // DO NOT EDIT!
 
 package database
@@ -123,7 +124,7 @@ func databaseMigrations20170121_004649_nodesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_004649_nodes.sql", size: 830, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_004649_nodes.sql", size: 830, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -143,7 +144,7 @@ func databaseMigrations20170121_005244_workflowsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_005244_workflows.sql", size: 706, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_005244_workflows.sql", size: 706, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -163,7 +164,7 @@ func databaseMigrations20170121_005734_flowsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_005734_flows.sql", size: 588, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_005734_flows.sql", size: 588, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -183,7 +184,7 @@ func databaseMigrations20170121_010456_flow_elementsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_010456_flow_elements.sql", size: 858, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_010456_flow_elements.sql", size: 858, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -203,7 +204,7 @@ func databaseMigrations20170121_011406_connectionsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_011406_connections.sql", size: 824, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_011406_connections.sql", size: 824, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -223,7 +224,7 @@ func databaseMigrations20170121_011938_dashboardsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_011938_dashboards.sql", size: 528, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_011938_dashboards.sql", size: 528, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -243,7 +244,7 @@ func databaseMigrations20170121_012048_device_actionsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012048_device_actions.sql", size: 528, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012048_device_actions.sql", size: 528, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -263,7 +264,7 @@ func databaseMigrations20170121_012150_device_statesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012150_device_states.sql", size: 525, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012150_device_states.sql", size: 525, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -283,7 +284,7 @@ func databaseMigrations20170121_012242_devicesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012242_devices.sql", size: 916, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012242_devices.sql", size: 916, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -303,7 +304,7 @@ func databaseMigrations20170121_012357_email_templatesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012357_email_templates.sql", size: 886, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012357_email_templates.sql", size: 886, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -323,7 +324,7 @@ func databaseMigrations20170121_012702_imagesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012702_images.sql", size: 673, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012702_images.sql", size: 673, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -343,7 +344,7 @@ func databaseMigrations20170121_012936_logsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_012936_logs.sql", size: 503, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_012936_logs.sql", size: 503, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -363,7 +364,7 @@ func databaseMigrations20170121_013100_map_device_actionsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013100_map_device_actions.sql", size: 503, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013100_map_device_actions.sql", size: 503, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -383,7 +384,7 @@ func databaseMigrations20170121_013247_map_device_statesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013247_map_device_states.sql", size: 457, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013247_map_device_states.sql", size: 457, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -403,7 +404,7 @@ func databaseMigrations20170121_013341_map_devicesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013341_map_devices.sql", size: 383, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013341_map_devices.sql", size: 383, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -423,7 +424,7 @@ func databaseMigrations20170121_013436_map_elementsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013436_map_elements.sql", size: 825, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013436_map_elements.sql", size: 825, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -443,7 +444,7 @@ func databaseMigrations20170121_013529_map_imagesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013529_map_images.sql", size: 353, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013529_map_images.sql", size: 353, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -463,7 +464,7 @@ func databaseMigrations20170121_013637_map_layersSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013637_map_layers.sql", size: 603, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013637_map_layers.sql", size: 603, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -483,7 +484,7 @@ func databaseMigrations20170121_013724_map_textsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013724_map_texts.sql", size: 385, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013724_map_texts.sql", size: 385, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -503,7 +504,7 @@ func databaseMigrations20170121_013814_mapsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013814_maps.sql", size: 513, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013814_maps.sql", size: 513, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -523,7 +524,7 @@ func databaseMigrations20170121_013906_permissionsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013906_permissions.sql", size: 465, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013906_permissions.sql", size: 465, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -543,7 +544,7 @@ func databaseMigrations20170121_013956_rolesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_013956_roles.sql", size: 501, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_013956_roles.sql", size: 501, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -563,7 +564,7 @@ func databaseMigrations20170121_014057_scriptsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_014057_scripts.sql", size: 731, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_014057_scripts.sql", size: 731, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -583,7 +584,7 @@ func databaseMigrations20170121_014145_user_metasSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_014145_user_metas.sql", size: 495, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_014145_user_metas.sql", size: 495, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -603,7 +604,7 @@ func databaseMigrations20170121_014234_usersSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_014234_users.sql", size: 1566, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_014234_users.sql", size: 1566, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -623,7 +624,7 @@ func databaseMigrations20170121_014331_workersSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_014331_workers.sql", size: 629, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_014331_workers.sql", size: 629, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -643,7 +644,7 @@ func databaseMigrations20170121_021812_indexSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_021812_index.sql", size: 4421, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_021812_index.sql", size: 4421, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -663,12 +664,12 @@ func databaseMigrations20170121_023351_linksSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_023351_links.sql", size: 7760, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_023351_links.sql", size: 7760, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _databaseMigrations20170121_175235_add_usersSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xec\x9a\xdf\x6f\xe2\x46\x10\xc7\xdf\xf3\x57\xac\xf2\xc2\x9d\x4a\xa2\xdd\xb5\x0d\xb6\xef\xa5\x77\x3d\x4e\x97\x36\x25\xd2\x5d\x72\xf4\x5a\x55\xf6\x62\x0f\xb0\xc5\xbf\x64\x1b\x48\xf2\xd7\x57\x6b\x30\x78\xc1\x70\x51\xc5\xe4\xa9\x0f\x51\xec\xd5\xee\x7c\x66\xbe\x3b\x9e\xf5\x00\x57\x57\xe4\xa7\x58\x4e\x73\x51\x02\x79\xc8\x2e\x2e\x6e\x86\x5f\x07\x5f\xee\xc9\xcd\xf0\xfe\x8e\xf8\x79\x1a\x41\xe1\xbf\xf1\x13\x11\x83\xdf\xf5\x43\x28\x82\x5c\x66\xa5\x4c\x13\xbf\xeb\x67\x22\x87\xa4\xf4\xbb\x7e\x90\x83\x28\x21\xf4\x84\xba\x59\x64\xa1\x28\x41\x5d\xbf\x25\xdf\xde\xdf\x3e\x0c\xbe\x92\x37\xa4\x13\x42\x9c\x76\xba\xa4\xd3\xe9\x92\xe1\xc3\xed\x6d\x97\x74\x38\x65\xfd\x2b\xca\xae\x98\x45\xa8\xe5\xb2\xbe\x4b\x9d\xce\x91\x61\xf2\xf6\x1d\x92\x5b\x8b\x02\xf2\x8d\x5b\x5b\x17\x0f\x3c\x30\x7a\xda\xb0\x43\x98\xe3\x1a\x8e\x6b\x99\x88\x8e\x89\x30\x96\x49\xed\x59\xed\xa5\xee\x19\xa7\xae\x65\xb7\x0c\x33\x97\xaf\x25\xd3\x5d\x53\x46\x94\x6b\x32\xf4\xbb\x7e\x22\x83\xf9\xc6\xc7\x89\xcc\x8b\xd2\xdb\xdc\x44\x62\x77\x0d\x49\x90\x3f\x65\xca\xcf\x4c\x14\xc5\x2a\xcd\xd5\x42\x88\x85\x8c\xfc\xae\x3f\x93\x45\x99\xe6\x4f\x7e\xd7\x2f\x4a\x51\x2e\x0a\xbf\xeb\xe7\x50\x40\xb9\x9d\xeb\x95\xe9\x1c\x54\xd4\x62\x51\xce\x20\x29\x65\x20\x94\x0c\xdb\x61\x19\x8b\x29\x78\x95\x33\x85\x9c\x26\x9e\x4c\xbc\x20\x5d\xac\xe5\x59\xe4\x4a\x28\xaf\x1e\x97\x59\xed\x99\x36\xa2\x02\x5a\x1b\x50\xaa\xd7\x5e\xef\x79\x51\x28\x43\xa2\xcd\x6a\x35\xa8\x59\x15\x27\xf6\x46\xed\x65\x04\x25\x84\xda\x2e\x31\x25\xbf\xb6\x55\xea\x6f\xd2\x9b\x84\x93\x09\x98\x76\xe0\x50\x3b\x84\x31\x9d\x98\x81\x31\x0e\x8d\x5e\x40\x0d\x0e\x7d\xbe\x5d\xf4\x33\x30\xcb\xbc\xce\x17\x6a\xe0\xaf\xbf\xab\xe1\xa0\x94\x4b\xa8\x0d\x3d\x46\xcf\x03\xf1\x79\xf8\x61\x9c\xd8\xf4\x2e\xbe\x9f\x8c\x42\xf6\xcc\xec\x3f\xb2\xe1\x43\xf4\xa7\x9c\x87\x63\xf3\xd9\x9a\xa4\xd6\xf7\xf7\x8f\xd1\x70\x69\xfc\x32\x19\x3d\x16\xbb\xc7\x8b\xb1\xca\x39\xc6\xfb\xd7\xf4\x9a\x5e\x1f\xdc\x6c\xa6\xd5\xce\xef\x3d\x94\x9c\x11\xc6\x5c\xc6\x5c\xae\xe5\xbe\x1a\xa6\xae\x65\xba\xd4\x68\x49\x3c\xcb\xa5\xfd\xfd\xd9\x3b\x23\x8a\x70\xf0\xbc\xfc\x9f\x94\xe7\x4f\x4a\xde\x2c\x66\xf5\x5f\x60\x31\x33\x70\x18\x98\x10\x1a\x26\x9b\xf0\x9e\x01\xa6\x65\x87\xa6\x39\x36\xc6\x63\x2a\xfa\xf5\x9a\x1f\xa5\xa4\xf5\xf5\xf6\xfe\xf3\xdd\xf3\x90\xcd\x46\xab\xde\x3f\xb3\xe9\x60\x45\x9f\x9c\x5f\xc7\xe5\x2a\xfc\x70\xf3\x9b\x15\x4f\x47\xc6\xc7\xdb\xd2\xfa\xf4\xfd\x89\x1b\xcf\xc3\xf9\xb7\x64\x39\xda\x25\x97\xfd\x92\x84\xdc\x38\x7e\x2c\x1f\x4d\x2d\xf1\x38\x25\xac\xef\x72\xdb\xe5\x7a\x3e\xda\x6a\x98\x19\x2e\xb7\x5b\xf3\xb1\x32\x52\xe7\xe3\x61\x42\x7a\x31\x94\x62\x9b\x95\xbb\x1d\x9d\x83\x4a\xad\xa5\x88\x16\xa0\x09\x6e\x56\x07\x57\x15\x50\x36\x4b\x13\xa8\xae\x0e\xcf\x86\xff\x62\xda\xa2\xba\x69\x7e\x46\xd3\x4c\x37\x6d\x9c\xd1\x34\xdf\x9a\x16\x8b\x32\x9d\xe6\x22\x9b\x9d\xd1\xfa\x7a\xaf\x51\xe4\x36\x75\xd3\xe7\x94\xdb\xd2\x4d\x9f\x53\xee\xde\xd6\xf4\xa1\xdc\xba\xf9\x0c\xf2\x58\x16\x85\x4c\x93\xad\xfd\x66\x9d\xca\x44\x30\x57\x15\xb0\x2e\xbc\xb0\x84\x68\x7d\xd3\xe4\xd9\xfa\xb1\xb7\x52\xa7\x4e\x27\x07\x11\x1e\x86\x73\x1e\x1e\xd7\x79\x69\x3e\x9f\x44\xe9\xaa\x2a\x6b\x55\x61\xc4\xe2\x1a\x47\xb9\xeb\xba\x8b\xc5\x35\x8f\x72\x31\x55\xee\x35\xcf\x0d\xfc\x4d\xb5\x9b\xb8\x58\x64\x35\xcf\x53\xd7\x48\x4c\xa7\xc9\x0c\x61\x29\x03\x40\x0e\xd3\xa1\x4d\x64\x92\x86\xe8\x40\xa6\xc5\x28\x8a\xd9\x38\x15\x79\x88\x4d\xe5\x7a\x98\xa5\x9c\x54\x1d\x4b\x96\xc3\x52\xc2\xca\xdb\x8c\x20\xc1\x8d\x76\x78\x95\x4d\xeb\x5b\x4f\x96\x10\x63\xe1\xcd\x1f\xe3\x4b\x88\xb3\x08\xaf\x52\x39\x56\xd3\x85\x75\xcf\xa9\xae\xe0\x11\x02\x6f\x73\x8b\x44\xee\xb5\x93\x31\x73\xad\xdf\x44\xd6\xbd\x31\x26\xd0\x3e\x06\xf4\x94\x31\x2c\xaa\x73\x92\xea\x89\x20\x80\xa2\xf0\x22\x59\x60\xed\x2d\xa3\x5a\xf1\x52\xe7\x10\xba\xd6\x8c\xb2\xc3\x1a\xed\xa9\x1e\x24\x4d\xd0\xd1\xbc\x05\xad\x3a\x49\xec\x9a\xcd\xa8\x56\xc1\x5e\xe1\xb0\x67\x54\x2b\x5a\x55\xdf\x8b\x8e\xb4\xf6\xb3\xe9\x55\x02\xd5\x0a\x54\x94\x4e\xd1\x81\xfd\x13\x2f\x36\x1e\x44\x10\x43\x82\xf7\xc4\x9e\x7a\xab\xf2\x22\xf1\x04\x58\x87\x30\x5b\x7f\x7c\x5b\xd7\xa9\x6d\x46\x2d\xb2\x28\xc5\x13\x9b\xd1\x56\x28\x6a\x5b\xb0\xf9\x64\xed\x00\x8a\xda\x13\x30\xc6\x8f\xc8\x1b\x62\x46\x6a\x34\xa1\xaf\xd2\x74\x31\x66\xb6\x31\x91\xc5\xb5\xda\x98\xc8\xda\xf6\x9a\xcc\xfd\xd3\x06\x59\xe3\xfe\x29\x36\xb2\xd6\xf6\x29\x36\xb2\xe6\x4e\x0b\x7b\xf7\x72\x81\x1b\x38\xa7\x27\xe1\xb8\x3b\xce\xd9\x21\x1c\x5f\x6f\xce\xdb\xa9\xc8\xb1\x1a\xed\x54\xe4\xed\xd5\xea\x96\xd6\x78\x23\x87\x6b\x1d\x05\x23\xef\x6e\xef\x28\x18\x59\x6a\xad\x7c\xed\x9a\x4e\xe4\x70\xed\x76\x2a\xf2\xee\x3a\xed\x54\x5c\x85\x0d\xad\x56\xed\x3a\x3f\x64\x2a\x6b\xa7\xe2\x2a\x6c\xf0\x76\x2a\x6e\x36\x19\xc6\x3e\xf5\x75\x5e\xaf\x0c\xf3\x18\x17\x79\x6f\xad\x63\xdc\x86\xce\x17\xcd\x1f\xa3\x7c\x4c\x57\xc9\xc5\xc7\xc1\xed\xe0\x7e\x40\x3e\x7d\xb9\xfb\x5d\xfb\x72\x84\x8c\x3e\x43\x0e\x64\xf3\xe5\x08\xb9\x19\x92\x37\xac\xcb\xdf\xbe\x3b\x5c\x50\xcd\x1d\x7c\x19\x10\x22\x43\x22\x93\xb6\x79\x8d\x08\x37\x73\xb7\x01\x56\x96\x2f\xab\xcf\xe2\x2f\xbb\xe4\x52\x19\x54\xff\x55\x87\x75\xb9\x67\xa5\xfa\xed\x47\xcd\xaa\xd6\x2a\xda\x66\xed\xcb\xe6\x56\xe6\x5f\x36\xb5\xf6\xe0\xe2\xdf\x00\x00\x00\xff\xff\xdd\x63\xe5\x2a\xc0\x23\x00\x00")
+var _databaseMigrations20170121_175235_add_usersSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xec\x9a\x5b\x6f\xdb\x36\x14\xc7\xdf\xf3\x29\x84\xbc\xb8\xc5\x9c\x40\xa4\xae\x76\x5f\xd6\xae\x2e\x9a\x2d\x73\x80\x26\x69\xd6\x0d\x83\x44\x4b\xc7\x36\x67\xdd\x40\xc9\x76\x92\x4f\x3f\x50\xbe\x49\x16\xa5\x04\x83\x4f\x9e\xf6\x10\xd4\x22\xa8\xf3\x3b\x97\xbf\x0e\xc9\x4a\x17\x17\xda\x4f\x31\x9f\x09\x56\x80\x76\x9f\x9d\x9d\x5d\x8d\x6f\x47\xdf\xee\xb4\xab\xf1\xdd\x8d\xe6\x8b\x34\x82\xdc\x7f\xe7\x27\x2c\x06\xbf\xef\x87\x90\x07\x82\x67\x05\x4f\x13\xbf\xef\x67\x4c\x40\x52\xf8\x7d\x3f\x10\xc0\x0a\x08\x3d\x26\x2f\x96\x59\xc8\x0a\x90\xbf\xdf\x6b\xdf\x3f\x5e\xdf\x8f\x6e\xb5\x77\x5a\x2f\x84\x38\xed\xf5\xb5\x5e\xaf\xaf\x8d\xef\xaf\xaf\xfb\x5a\x8f\xea\xc4\xb9\xd0\xc9\x05\xb1\x34\xdd\x1a\x12\x67\xa8\x0f\x7a\x2d\xc3\xda\xfb\x0f\x48\x6e\xb1\x30\xe6\x49\x97\x5f\x54\x1f\x5a\x6e\xd3\x2f\x4a\x86\x74\xe3\x57\xdd\xb1\x65\x0e\x42\x3a\xc6\x43\xbf\xef\x27\x3c\x58\x6c\x3d\x9c\x72\x91\x17\xde\xf6\x22\x62\x87\xdf\x90\x04\xe2\x29\x93\x5e\x66\x2c\xcf\xd7\xa9\x90\x37\x42\xcc\x78\xe4\xf7\xfd\x39\xcf\x8b\x54\x3c\xf9\x7d\x3f\x2f\x58\xb1\xcc\xfd\xbe\x2f\x20\x87\x62\x3f\xd7\x2b\xd2\x05\xc8\x98\xd9\xb2\x98\x43\x52\xf0\x80\xc9\x24\xec\x87\x79\xcc\x66\xe0\x95\xce\xe4\x7c\x96\x78\x3c\xf1\x82\x74\xb9\x49\xce\x52\xc8\x34\x79\xbb\x71\x9e\xed\x3c\xab\x8d\xc8\x80\x36\x06\x64\xce\x77\x5e\x1f\x79\x91\x4b\x43\x4c\x65\xb5\x1c\xac\x59\x65\x1d\x95\x91\x95\x8c\xa0\x80\xb0\x56\x23\x22\xd3\x5f\x2d\x54\xf9\x37\xb5\xa7\xe1\x74\x0a\xa6\x1b\x0c\x74\x37\x84\x89\x3e\x35\x03\x63\x12\x1a\x76\xa0\x1b\x14\x1c\xba\xbf\xe9\x67\x20\x96\x79\x29\x96\x72\xe0\xaf\xbf\xcb\xe1\xa0\xe0\x2b\xd8\x19\x7a\x8c\x9e\x47\xec\xeb\xf8\xd3\x24\x71\xf5\x9b\xf8\x6e\xfa\x10\x92\x67\xe2\xfe\x91\x8d\xef\xa3\x3f\xf9\x22\x9c\x98\xcf\xd6\x34\xb5\x7e\x7c\x7c\x8c\xc6\x2b\xe3\x97\xe9\xc3\x63\x7e\xd0\x0a\x21\xa5\x73\x84\x3a\x97\xfa\xa5\x7e\xd9\xb8\xd8\x4e\xdb\x39\x7f\xa4\x30\x4a\x34\x42\x86\x84\x0c\xa9\xdd\x3b\x1a\xd6\x87\x96\x39\xd4\x0d\x85\xf0\xac\xa1\xee\x1c\xcf\x3e\x18\x91\x84\xc6\xd3\xf2\xbf\x28\x4f\x2f\xca\x52\x5f\x95\xa6\x56\xfe\x05\x16\x31\x83\x01\x01\x13\x42\xc3\x24\x53\x6a\x1b\x60\x5a\x6e\x68\x9a\x13\x63\x32\xd1\x99\xb3\xbb\xe7\x25\x49\x5a\xb7\xd7\x77\x5f\x6f\x9e\xc7\x64\xfe\xb0\xb6\xff\x99\xcf\x46\x6b\xfd\x69\xf0\xeb\xa4\x58\x87\x9f\xae\x7e\xb3\xe2\xd9\x83\xf1\xf9\xba\xb0\xbe\xfc\x78\xa2\xc6\xf3\x78\xf1\x3d\x59\x3d\x1c\xc4\xe5\xbe\x46\x90\x5b\xc7\xdb\xf4\x68\xd6\x84\x47\x75\x8d\x38\x43\xea\x0e\x69\x5d\x8f\xae\x1c\x26\xc6\x90\xba\x4a\x3d\x96\x46\x76\x7a\x6c\x0a\xd2\x8b\xa1\x60\x7b\x55\x1e\x2a\xba\x00\x29\xad\x15\x8b\x96\x50\x4b\xb8\x59\xae\x0e\x65\x40\xd9\x3c\x4d\xa0\xfc\xd5\x5c\x19\xfe\x8b\x69\x4b\xaf\x9b\xa6\x27\x34\x4d\xea\xa6\x8d\x13\x9a\xa6\x7b\xd3\x6c\x59\xa4\x33\xc1\xb2\xf9\x09\xad\x6f\x6a\x8d\x92\x6e\xb3\x6e\xfa\x94\xe9\xb6\xea\xa6\x4f\x99\x6e\x7b\x6f\xba\x99\xee\xba\xf9\x0c\x44\xcc\xf3\x9c\xa7\xc9\xde\x7e\xb5\x4f\x65\x2c\x58\xc8\x0e\xb8\x6b\xbc\xb0\x82\x68\x73\xd1\x58\xf5\x76\x0d\x26\x64\xf9\x7c\x92\x32\x11\x96\x5d\xa6\xec\x53\xcd\xa8\x4e\x82\xa5\xad\xd8\x4d\x17\x44\xc2\x1a\xad\x58\x01\x2c\x44\x82\x9a\xad\xd0\x4d\xf7\x47\xc2\x5a\x55\xec\x34\x4a\xd7\xe8\x45\xb5\x55\x44\xd4\x7a\x3a\x2a\x22\x62\x29\x5d\x15\x0f\xb5\x8a\x83\x9a\x78\x60\xc5\x03\x40\xaf\x23\xd1\xd5\x50\xd4\x52\x12\xa2\x86\x22\x56\x93\x50\x35\x12\xb5\xa0\xa4\xd6\x83\xf2\x00\x12\x26\x78\x9a\xe3\x17\xd5\x7c\x81\xeb\x6d\x0e\xb7\x58\x78\xab\x15\x8f\x2b\x2b\xfb\x05\x2e\x72\xd8\x4e\x2b\x1e\x53\xd8\x6e\x27\x15\x39\xe4\x41\x2b\x1c\xf5\xc1\xa2\xfa\x0b\x5c\xdc\xb0\x69\xad\x7f\xad\xb1\x4b\x4c\x6b\xbd\x6b\x9d\x8a\xc5\x9b\x2c\xb8\xd4\x68\xc3\x62\xc6\x6a\xb6\x41\x71\x05\x65\xb5\x61\x71\xb7\xc6\x76\x73\x55\xf2\xe4\xc1\x3d\x4d\xb0\xf3\xec\x74\x92\x71\x93\xed\x76\xb2\x71\x33\xae\xd8\x64\x55\xd8\xb8\x27\x12\xc5\x5e\xcb\xcb\x0b\x19\x2c\x3a\x5a\xb1\xe3\x3a\xa0\x51\x33\x6e\x28\x76\x5e\x07\x34\xaa\xd0\x0c\xa3\x0b\x8d\xf8\x74\x19\xb5\x2e\x16\xa5\x33\x6c\x5e\xad\x7d\x25\x69\xc1\xa7\xa2\xb2\xdb\xdb\x0c\x78\x05\xc4\x59\x84\x98\x6d\x5b\xed\x44\xb9\x0d\x79\x23\x17\x9c\x36\x17\x32\x60\xc5\xc6\x89\x27\x2c\xb6\xab\x66\xe7\xf3\x74\x8d\x4c\x1e\xa8\xc9\xdb\xad\xd0\xdb\xa4\xde\xd4\x5f\x23\x41\x5e\x40\x8c\xe5\x00\x51\x3b\xb0\xdd\xfa\xbf\x81\x03\xf4\x35\x0e\x60\x97\xc1\x78\xd9\x09\x2c\x1d\x9a\xa6\x9a\x9d\x09\x58\x71\xd8\x3e\x04\x02\x0b\xde\xd2\x02\xab\xdd\x07\xb3\xf8\x2d\xcd\xaf\xfe\x0c\x62\x3a\xd0\xd2\xfa\xaa\xcf\x1f\x5a\xe1\x6b\xad\x6f\x99\x83\x40\x5e\xef\xcc\x41\x1b\xd0\x93\xc6\xb0\xfe\x97\x55\xef\xa4\x7a\x2c\x08\x20\xcf\xbd\x88\xe7\x58\x07\x4f\x8b\x1c\x1f\x53\x40\xa0\x6f\xe0\xac\xc6\xf1\x13\x04\xfa\x86\xd5\x6a\x1c\x3e\xd1\x45\x65\x35\x8e\x9e\x20\xd0\xb7\xa8\x56\xad\x6d\x95\xef\xb1\xf1\x73\x6b\x2b\x99\x98\xa9\x75\x94\x44\xdc\xcc\xba\x2d\xcc\x28\xc5\x8b\x73\xa0\x64\xe2\xbe\x89\xa9\x75\xa5\x98\x65\x95\xe5\x5e\x5e\x21\x51\x49\x27\xd5\x8b\xd8\x13\x60\x2d\xf5\x36\x55\xb0\xcb\x36\x8c\x18\xaf\xd1\xc1\xf4\x20\x82\x18\x12\xac\xae\x6f\x9b\x0a\xf6\x76\x63\x81\x9e\x6b\x4b\xc1\xde\xee\x29\xde\x20\x72\xbb\x9b\x8e\x1a\xb9\xd3\xad\x70\xe4\xc8\xdd\x2e\xbd\xa1\xc6\x3d\xe8\x54\x1b\xd6\xdb\x5d\x55\x17\xab\x68\x1c\x37\xdb\x8e\xaa\x9b\x1d\x74\x86\x45\x3d\x3a\x30\x86\xf8\x8b\x85\x63\xa8\x90\xb8\xef\xed\x4d\x15\x12\x71\xb3\xe1\x58\x2a\x20\xea\x5e\xc3\x39\x7a\xf3\x58\xbe\x7b\x42\xaf\xa5\xa3\x86\xe2\x56\xd3\x55\x43\xe1\x11\x02\xdc\x97\x6e\xce\x40\x4d\xc6\xfc\x04\x44\x57\x23\x2b\x5a\x3a\xab\x7e\xeb\xfe\x39\x5d\x27\x67\x9f\x47\xd7\xa3\xbb\x91\xf6\xe5\xdb\xcd\xef\xb5\xcf\xc2\xb4\x87\xaf\x20\x40\xdb\x7e\x16\xa6\x5d\x8d\xb5\x77\xa4\x4f\xdf\x7f\x68\xde\x50\xce\x1d\x7d\x1b\x69\x1a\x0f\x35\x9e\xa8\xe6\x55\xc2\xdb\xce\xdd\x47\x57\x5a\x3e\x2f\xbf\x0f\x3e\xef\x6b\xe7\xd2\xa0\xfc\x57\x46\x71\x7e\x64\xa5\xfc\xe6\x7d\xc7\x2a\xef\x95\xb4\xed\xbd\xaf\x9b\x5b\x9a\x7f\xdd\xd4\x9d\x07\x67\xff\x06\x00\x00\xff\xff\xee\x4a\x5d\xe5\x1f\x30\x00\x00")
 
 func databaseMigrations20170121_175235_add_usersSqlBytes() ([]byte, error) {
 	return bindataRead(
@@ -683,7 +684,7 @@ func databaseMigrations20170121_175235_add_usersSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_175235_add_users.sql", size: 9152, mode: os.FileMode(420), modTime: time.Unix(1508680043, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_175235_add_users.sql", size: 12319, mode: os.FileMode(420), modTime: time.Unix(1509373926, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -703,7 +704,7 @@ func databaseMigrations20170121_200137_email_templatesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170121_200137_email_templates.sql", size: 30508, mode: os.FileMode(420), modTime: time.Unix(1508686665, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170121_200137_email_templates.sql", size: 30508, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -723,7 +724,7 @@ func databaseMigrations20170225_233757_scenariosSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170225_233757_scenarios.sql", size: 1037, mode: os.FileMode(420), modTime: time.Unix(1508686865, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170225_233757_scenarios.sql", size: 1037, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -743,7 +744,7 @@ func databaseMigrations20170225_233820_scenario_scriptsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170225_233820_scenario_scripts.sql", size: 1100, mode: os.FileMode(420), modTime: time.Unix(1508686963, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170225_233820_scenario_scripts.sql", size: 1100, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -763,7 +764,7 @@ func databaseMigrations20170309_235610_add_messagesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170309_235610_add_messages.sql", size: 756, mode: os.FileMode(420), modTime: time.Unix(1508687099, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170309_235610_add_messages.sql", size: 756, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -783,7 +784,7 @@ func databaseMigrations20170309_235626_add_message_deliveriesSql() (*asset, erro
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170309_235626_add_message_deliveries.sql", size: 1035, mode: os.FileMode(420), modTime: time.Unix(1508687099, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170309_235626_add_message_deliveries.sql", size: 1035, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -803,7 +804,7 @@ func databaseMigrations20170319_132142_add_workflow_scriptsSql() (*asset, error)
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_132142_add_workflow_scripts.sql", size: 922, mode: os.FileMode(420), modTime: time.Unix(1508687268, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_132142_add_workflow_scripts.sql", size: 922, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -823,7 +824,7 @@ func databaseMigrations20170319_155434_drop_scenariosSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_155434_drop_scenarios.sql", size: 2105, mode: os.FileMode(420), modTime: time.Unix(1508687501, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_155434_drop_scenarios.sql", size: 2105, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -843,7 +844,7 @@ func databaseMigrations20170319_155627_add_workflow_scenariosSql() (*asset, erro
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_155627_add_workflow_scenarios.sql", size: 716, mode: os.FileMode(420), modTime: time.Unix(1508687668, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_155627_add_workflow_scenarios.sql", size: 716, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -863,7 +864,7 @@ func databaseMigrations20170319_155813_add_workflow_scenario_scriptsSql() (*asse
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_155813_add_workflow_scenario_scripts.sql", size: 604, mode: os.FileMode(420), modTime: time.Unix(1508687594, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_155813_add_workflow_scenario_scripts.sql", size: 604, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -883,7 +884,7 @@ func databaseMigrations20170319_171720_update_workflowSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170319_171720_update_workflow.sql", size: 435, mode: os.FileMode(420), modTime: time.Unix(1508687754, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170319_171720_update_workflow.sql", size: 435, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -903,7 +904,7 @@ func databaseMigrations20170326_122728_flow_add_scenarioSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20170326_122728_flow_add_scenario.sql", size: 159, mode: os.FileMode(420), modTime: time.Unix(1508687790, 0)}
+	info := bindataFileInfo{name: "database/migrations/20170326_122728_flow_add_scenario.sql", size: 159, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -923,7 +924,27 @@ func databaseMigrations20171018_191650_add_user_languageSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "database/migrations/20171018_191650_add_user_language.sql", size: 150, mode: os.FileMode(420), modTime: time.Unix(1508688301, 0)}
+	info := bindataFileInfo{name: "database/migrations/20171018_191650_add_user_language.sql", size: 150, mode: os.FileMode(420), modTime: time.Unix(1508695981, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _databaseMigrations20171030_214306_demo_nodeSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x90\x4f\x4b\xc3\x40\x10\xc5\xef\xfb\x29\xde\x6d\x2b\xba\x61\x37\x29\x14\xea\x49\xe8\x8a\x85\x98\x62\xfe\xe8\xb5\x69\x76\xb0\x8b\x71\x13\xba\x91\xf8\xf1\x65\x14\x8b\x27\xe9\x61\x98\x99\xc7\x1b\x86\xdf\x53\x0a\xd7\xef\xfe\xf5\xd4\x4e\x84\x66\x14\x4a\xa1\x7a\xca\xe1\x03\x22\x75\x93\x1f\x02\x64\x33\x4a\xf8\x08\xfa\xa4\xee\x63\x22\x87\xf9\x48\x01\xd3\xd1\x47\xfc\xdc\xb1\xc9\x47\xb4\xe3\xd8\x7b\x72\x62\x5b\x54\xb6\xac\xb1\x2d\xea\x1d\xf6\x61\x70\x14\xf7\x78\xbe\xcb\x1b\x5b\x61\x21\x8d\xbc\x81\x34\xe9\x2a\xd1\x89\x4e\xbe\x97\x4c\x6b\xcd\xbd\xa0\x19\xec\xe6\x99\x2b\xd5\x66\xa5\x8c\x56\x99\x86\x59\xae\x97\xe9\x3a\x4b\xff\x91\x29\xb4\x87\x9e\x9c\xbc\xba\x15\xe2\x2f\xd1\x66\x98\xc3\x2f\xd3\x19\x88\xc5\x8b\x90\x4e\x43\xdf\x93\xc3\xa1\xed\xde\xc4\xc6\xe6\xb6\xb6\xb8\x2f\x77\x8f\x67\xac\x97\x07\x5b\x5a\xc0\x3b\xce\x6b\x61\xf8\xf9\x57\x00\x00\x00\xff\xff\x58\xc2\x56\xd3\x4f\x01\x00\x00")
+
+func databaseMigrations20171030_214306_demo_nodeSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_databaseMigrations20171030_214306_demo_nodeSql,
+		"database/migrations/20171030_214306_demo_node.sql",
+	)
+}
+
+func databaseMigrations20171030_214306_demo_nodeSql() (*asset, error) {
+	bytes, err := databaseMigrations20171030_214306_demo_nodeSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "database/migrations/20171030_214306_demo_node.sql", size: 335, mode: os.FileMode(420), modTime: time.Unix(1509374826, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -1021,6 +1042,7 @@ var _bindata = map[string]func() (*asset, error){
 	"database/migrations/20170319_171720_update_workflow.sql": databaseMigrations20170319_171720_update_workflowSql,
 	"database/migrations/20170326_122728_flow_add_scenario.sql": databaseMigrations20170326_122728_flow_add_scenarioSql,
 	"database/migrations/20171018_191650_add_user_language.sql": databaseMigrations20171018_191650_add_user_languageSql,
+	"database/migrations/20171030_214306_demo_node.sql": databaseMigrations20171030_214306_demo_nodeSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -1106,6 +1128,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"20170319_171720_update_workflow.sql": &bintree{databaseMigrations20170319_171720_update_workflowSql, map[string]*bintree{}},
 			"20170326_122728_flow_add_scenario.sql": &bintree{databaseMigrations20170326_122728_flow_add_scenarioSql, map[string]*bintree{}},
 			"20171018_191650_add_user_language.sql": &bintree{databaseMigrations20171018_191650_add_user_languageSql, map[string]*bintree{}},
+			"20171030_214306_demo_node.sql": &bintree{databaseMigrations20171030_214306_demo_nodeSql, map[string]*bintree{}},
 		}},
 	}},
 }}
