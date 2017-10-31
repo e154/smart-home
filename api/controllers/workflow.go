@@ -150,9 +150,14 @@ func (c *WorkflowController) GetAll() {
 // @router /:id [put]
 func (c *WorkflowController) Put() {
 	id, _ := c.GetInt(":id")
+
 	var workflow *models.Workflow
 	workflow = &models.Workflow{}
-	json.Unmarshal(c.Ctx.Input.RequestBody, workflow)
+	if err := json.Unmarshal(c.Ctx.Input.RequestBody, workflow); err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
 	workflow.Id = int64(id)
 	if err := models.UpdateWorkflowById(workflow); err != nil {
 		c.ErrHan(403, err.Error())
