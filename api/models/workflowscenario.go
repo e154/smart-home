@@ -9,7 +9,6 @@ import (
 
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
-	"encoding/json"
 )
 
 type WorkflowScenario struct {
@@ -165,7 +164,7 @@ func DeleteWorkflowScenario(id int64) (err error) {
 func (ws *WorkflowScenario) GetScripts() (int64, error) {
 
 	o := orm.NewOrm()
-	return  o.LoadRelated(ws, "Scripts")
+	return  o.LoadRelated(ws, "Scripts", 3)
 
 }
 
@@ -173,9 +172,6 @@ func (wf *WorkflowScenario) AddScripts(scripts []*Script) (num int64, err error)
 	if len(scripts) == 0 {
 		return
 	}
-
-	b, _ := json.MarshalIndent(scripts, "", " ")
-	fmt.Println("scripts",string(b))
 
 	o := orm.NewOrm()
 	m2m := o.QueryM2M(wf, "Scripts")

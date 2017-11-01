@@ -99,6 +99,10 @@ func (c *WorkflowScenarioController) GetAll() {
 		return
 	}
 
+	for _, scenario := range workflow.Scenarios {
+		scenario.GetScripts()
+	}
+
 	c.Data["json"] = &map[string]interface{}{"scenarios": workflow.Scenarios}
 	c.ServeJSON()
 }
