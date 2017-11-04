@@ -11,9 +11,9 @@ import (
 
 
 type Javascript struct {
-	engine *Engine
-	ctx    *candyjs.Context
-	compiler string
+	engine			*Engine
+	ctx				*candyjs.Context
+	compiler		string
 }
 
 func (j *Javascript) Init() (err error) {
@@ -22,8 +22,6 @@ func (j *Javascript) Init() (err error) {
 	if err = j.ctx.PevalString(j.engine.model.Compiled); err != nil {
 		return
 	}
-
-	j.GetCompiler()
 
 	j.bind()
 
@@ -37,7 +35,18 @@ func (j *Javascript) Close() {
 
 func (j *Javascript) Compile() (err error) {
 
+	j.GetCompiler()
+
 	switch j.engine.model.Lang {
+	case "ts":
+		var result string
+		result, err = j.tsCompile()
+		if err != nil {
+			return
+		}
+
+		j.engine.model.Compiled = result
+
 	case "coffeescript":
 		var result string
 		result, err = j.coffeeCompile()
@@ -62,20 +71,52 @@ func (j *Javascript) Compile() (err error) {
 func (j *Javascript) GetCompiler() error {
 
 	switch j.engine.model.Lang {
-	case "coffeescript": {
-		data, err := Asset("scripts/coffee-script.js")
+	case "ts":
+		data, err := Asset("scripts/typescriptServices.js")
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Error(err.Error())
 			return err
 		}
 
 		j.compiler = string(data)
-	}
+
+	case "coffeescript":
+		data, err := Asset("scripts/coffee-script.js")
+		if err != nil {
+			log.Error(err.Error())
+			return err
+		}
+
+		j.compiler = string(data)
+
 	default:
 
 	}
 
 	return nil
+}
+
+func (j *Javascript) tsCompile() (result string, err error) {
+
+	if err = j.ctx.PevalString(j.compiler); err != nil {
+		return
+	}
+
+	const options = `{ target: ts.ScriptTarget.ES5, newLine: 1 }`
+
+	// prepare script to inline
+	doc := strings.Join(strings.Split(j.engine.model.Source, "\n"), `\n`)
+	doc = strings.Replace(doc, `"`, `\"`, -1)
+
+	// compile from coffee to native script
+	if err = j.ctx.PevalString(fmt.Sprintf(`ts.transpile("%s", %s);`, doc, options)); err != nil {
+		return
+	}
+
+	// return native javascript code
+	result = j.ctx.GetString(-1)
+
+	return
 }
 
 func (j *Javascript) coffeeCompile() (result string, err error) {
