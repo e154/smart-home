@@ -1387,3 +1387,13 @@ pre code {
   width: auto;
   max-height: 200px;
 }
+#site-dummy-github {
+  position: fixed;
+  top: 0;
+  right: 0;
+  border: 0;
+}
+#site-dummy-github img {
+  width: 149px;
+  height: auto;
+}
