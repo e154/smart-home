@@ -25,8 +25,8 @@ func New(s *models.Script) (engine *Engine, err error) {
 	}
 
 	switch s.Lang {
-	case "lua":
-		//engine.script = &Lua{engine:engine}
+	case "ts":
+		engine.script = &Javascript{engine:engine}
 	case "javascript":
 		engine.script = &Javascript{engine:engine}
 	case "coffeescript":
