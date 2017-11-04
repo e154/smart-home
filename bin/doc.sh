@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}")" && cd ../ && pwd)"
+HUGO=`which hugo`
 
 main() {
   case "$1" in
@@ -35,7 +36,7 @@ __clean() {
 
 __dev() {
   cd ${ROOT}/doc
-  hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.yaml" --port=1377
+  hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.yaml" --port=1377 --disableFastRender
 }
 
 __help() {
@@ -54,5 +55,9 @@ OPTIONS:
 
 EOF
 }
+
+if [ -z "$HUGO" ]; then
+  go get -u -v github.com/gohugoio/hugo
+fi
 
 main "$@"
