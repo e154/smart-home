@@ -42,6 +42,7 @@
 // database/migrations/20170326_122728_flow_add_scenario.sql
 // database/migrations/20171018_191650_add_user_language.sql
 // database/migrations/20171030_214306_demo_node.sql
+// database/migrations/20171105_124444_add_typescript.sql
 // DO NOT EDIT!
 
 package database
@@ -949,6 +950,26 @@ func databaseMigrations20171030_214306_demo_nodeSql() (*asset, error) {
 	return a, nil
 }
 
+var _databaseMigrations20171105_124444_add_typescriptSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xac\x90\x31\x4f\xfb\x30\x10\xc5\xf7\x7c\x8a\xb7\xb9\xd5\xbf\xf9\x0f\x48\x95\x90\x3a\x85\xd6\xc0\x60\x52\xd1\x26\x73\x6d\x9c\x6b\x63\x70\x9c\xc8\x76\x5a\x3e\x3e\x32\xa5\x08\x24\x06\x06\xa6\xd3\x9d\xee\xde\x7b\xbf\xcb\x73\xfc\xeb\xcc\xc1\xab\x48\xa8\x87\x2c\xcf\xb1\x7d\x14\x30\x0e\x81\x74\x34\xbd\x03\xab\x07\x06\x13\x40\xaf\xa4\xc7\x48\x0d\x4e\x2d\x39\xc4\xd6\x04\x9c\xef\xd2\x92\x09\x50\xc3\x60\x0d\x35\x59\x21\x2a\xbe\x41\x55\xdc\x08\x0e\x19\x3a\xe5\x63\xdb\x77\xb4\x6b\xe8\x28\xff\xcb\xa0\xbd\x19\x62\x90\x58\xde\x17\xe5\x1d\xc7\x72\x2d\xea\x87\x12\xd2\x2a\x77\x90\x97\x72\x54\x5e\xb7\xca\x4f\xae\xe6\xf3\x29\xca\x75\x85\xb2\x16\x02\x2b\x7e\x5b\xd4\xa2\x02\x7b\x56\x47\x75\xd6\x61\x8b\x2c\xfb\x9a\x7f\xd5\x9f\xdc\x85\xe0\x33\x7e\x1a\xfe\x0a\xc0\xf7\xd6\x52\x83\x27\xa5\x5f\xfe\x00\x82\xbb\xb1\x9b\x80\xd9\x51\xb1\x19\x98\xee\xf7\x7b\xa2\x8f\xd4\xb3\x6f\x0c\x98\x26\x9d\x4d\xb1\x4c\x8e\x5b\x5e\x61\x8c\xfb\xeb\xa4\x29\x8a\x8a\xbf\x37\xbb\x03\x39\xf2\xca\xee\xb4\xf9\xe1\x1d\xc9\x61\x91\xbd\x05\x00\x00\xff\xff\x8a\xfb\xc8\x24\xc7\x01\x00\x00")
+
+func databaseMigrations20171105_124444_add_typescriptSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_databaseMigrations20171105_124444_add_typescriptSql,
+		"database/migrations/20171105_124444_add_typescript.sql",
+	)
+}
+
+func databaseMigrations20171105_124444_add_typescriptSql() (*asset, error) {
+	bytes, err := databaseMigrations20171105_124444_add_typescriptSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "database/migrations/20171105_124444_add_typescript.sql", size: 455, mode: os.FileMode(420), modTime: time.Unix(1509860917, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -1043,6 +1064,7 @@ var _bindata = map[string]func() (*asset, error){
 	"database/migrations/20170326_122728_flow_add_scenario.sql": databaseMigrations20170326_122728_flow_add_scenarioSql,
 	"database/migrations/20171018_191650_add_user_language.sql": databaseMigrations20171018_191650_add_user_languageSql,
 	"database/migrations/20171030_214306_demo_node.sql": databaseMigrations20171030_214306_demo_nodeSql,
+	"database/migrations/20171105_124444_add_typescript.sql": databaseMigrations20171105_124444_add_typescriptSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -1129,6 +1151,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"20170326_122728_flow_add_scenario.sql": &bintree{databaseMigrations20170326_122728_flow_add_scenarioSql, map[string]*bintree{}},
 			"20171018_191650_add_user_language.sql": &bintree{databaseMigrations20171018_191650_add_user_languageSql, map[string]*bintree{}},
 			"20171030_214306_demo_node.sql": &bintree{databaseMigrations20171030_214306_demo_nodeSql, map[string]*bintree{}},
+			"20171105_124444_add_typescript.sql": &bintree{databaseMigrations20171105_124444_add_typescriptSql, map[string]*bintree{}},
 		}},
 	}},
 }}
