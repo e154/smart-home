@@ -8,7 +8,7 @@ import (
 
 type Variable struct {
 	Name			string		`orm:"pk;size(128);unique;column(name)" json:"name"`
-	Value			string		`orm:"column(value);not null" json:"value"`
+	Value			string		`orm:"column(value)" json:"value"`
 	Autoload		string		`orm:"default(yes);column(autoload)" json:"autoload"`
 }
 
