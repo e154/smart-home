@@ -3,6 +3,8 @@ package api
 import (
 	"fmt"
 	"time"
+	"io/ioutil"
+	"path/filepath"
 	"github.com/astaxie/beego/validation"
 	_ "github.com/astaxie/beego/session/mysql"
 	_ "github.com/go-sql-driver/mysql"
@@ -15,8 +17,7 @@ import (
 	"github.com/e154/smart-home/api/log"
 	"github.com/e154/smart-home/api/notifr"
 	"github.com/e154/smart-home/api/telemetry"
-	"io/ioutil"
-	"path/filepath"
+	"github.com/e154/smart-home/api/variable"
 )
 
 func configuration() {
@@ -97,6 +98,9 @@ func configuration() {
 func Initialize() {
 
 	configuration()
+
+	// init settings
+	variable.Initialize()
 
 	// routes
 	routers.Initialize()
