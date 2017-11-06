@@ -66,14 +66,6 @@
             "notests": true
         },
         {
-            "importpath": "github.com/stevedonovan/luar",
-            "repository": "https://github.com/stevedonovan/luar",
-            "vcs": "git",
-            "revision": "da23c2b6a4763cacc4e280df6f0f44da78c28afa",
-            "branch": "master",
-            "notests": true
-        },
-        {
             "importpath": "gopkg.in/igm/sockjs-go.v2",
             "repository": "https://gopkg.in/igm/sockjs-go.v2",
             "vcs": "git",
