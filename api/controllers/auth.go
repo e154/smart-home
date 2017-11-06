@@ -7,6 +7,9 @@ import (
 	"encoding/base64"
 	"strings"
 	"github.com/e154/smart-home/api/log"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/e154/smart-home/api/variable"
+	"encoding/hex"
 )
 
 const ADMIN_ID = 1
@@ -81,14 +84,28 @@ func (h *AuthController) SignIn() {
 		"lang": user.Lang,
 	}
 
-	key := common.GetKey("hmacKey")
+	// ger hmac key
+	key, ok := variable.Get("hmacKey")
+	if !ok {
+		key = common.ComputeHmac256()
+		if err = variable.Set("hmacKey", key); err != nil {
+			log.Error(err.Error())
+		}
+	}
+
+	hmacKey, err := hex.DecodeString(key)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	//key := common.GetKey("hmacKey")
 	data := map[string]interface{}{
 		"auth": user.AuthenticationToken,
 		"nbf": time.Now().Unix(),
 	}
 
 	var token string
-	if token, err = common.GetHmacToken(data, key); err != nil {
+	if token, err = GetHmacToken(data, hmacKey); err != nil {
 		h.ErrHan(403, err.Error())
 		return
 	}
@@ -127,4 +144,18 @@ func (c *AuthController) AccessList() {
 
 	c.Data["json"] = &map[string]interface{}{"access_list": models.AccessConfigList}
 	c.ServeJSON()
+}
+
+func GetHmacToken(data map[string]interface{}, key []byte) (tokenString string, err error){
+
+	// Create a new token object, specifying signing method and the claims
+	// you would like it to contain.
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(data))
+
+	// Sign and get the complete encoded token as a string using the secret
+	if tokenString, err = token.SignedString(key); err != nil {
+		return
+	}
+
+	return
 }
