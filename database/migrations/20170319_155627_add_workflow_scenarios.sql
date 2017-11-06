@@ -9,7 +9,7 @@ workflow_id Int( 22 ) NOT NULL,
 PRIMARY KEY ( id ) )
 ENGINE = InnoDB;
 
-ALTER TABLE `workflow_scenarios` ADD CONSTRAINT `lnk_workflows_workflow_scenarios` FOREIGN KEY ( `workflow_id` ) REFERENCES `workflows`( `id` ) ON DELETE Cascade ON UPDATE Cascade;
+ALTER TABLE `workflow_scenarios` ADD CONSTRAINT `lnk_workflows_workflow_scenarios` FOREIGN KEY ( `workflow_id` ) REFERENCES `workflows`( `id` ) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `workflow_scenarios` ADD CONSTRAINT `unique` UNIQUE( `workflow_id`, `system_name` );
 
 -- +migrate Down
