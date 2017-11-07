@@ -178,10 +178,11 @@ func (c *DeviceActionController) Search() {
 	link, _ := url.ParseRequestURI(c.Ctx.Request.URL.String())
 	q := link.Query()
 
+	//TODO fix search by description
 	if val, ok := q["query"]; ok {
 		for _, v := range val {
 			query["name__icontains"] = v
-			query["description__icontains"] = v
+			//query["description__icontains"] = v
 		}
 	}
 
