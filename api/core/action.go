@@ -1,44 +1,27 @@
 package core
 
 import (
+	"reflect"
+	"encoding/json"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/scripts"
 	"github.com/e154/smart-home/api/stream"
-	"encoding/json"
-	"reflect"
 	"github.com/e154/smart-home/api/log"
 	"github.com/astaxie/beego/orm"
 )
 
-func NewAction(device *models.Device, script *models.Script, node *models.Node, workflow *Workflow) (action *Action, err error) {
+func NewAction(device *models.Device, script *models.Script, node *models.Node, flow *Flow) (action *Action, err error) {
 
 	action = &Action{
 		Device: 	device,
 		Node:		node,
 	}
 
-	// add script
-	// ------------------------------------------------
-	if workflow != nil {
-		if action.Script, err = workflow.NewScript(script); err != nil {
-			return
-		}
-	} else {
-		if action.Script, err = scripts.New(script); err != nil {
-			return
-		}
+	if err = action.Device.GetInheritedData(); err != nil {
+		return
 	}
 
-	action.Device.GetInheritedData()
-	//TODO refactor message system
-	action.Message = NewMessage()
-	action.Message.Device = device
-	action.Message.Node = action.Node
-	action.Message.Device_state = func(state string) {
-		action.SetDeviceState(state)
-	}
-
-	action.Script.PushStruct("message", action.Message)
+	err = action.NewScript(flow, script)
 
 	return
 }
@@ -52,20 +35,49 @@ type Action struct {
 
 func (a *Action) Do() (res string, err error) {
 	//TODO refactor message system
-	a.Message.Error = ""
-	a.Message.Data = make(map[string]interface{})
+	a.Message.Clear()
 	res, err = a.Script.Do()
-	a.Message.Data["result"] = res
+	a.Message.SetVar("result", res)
 	return
 }
 
-func (a *Action) SetDeviceState(_state string) {
-	for _, state := range a.Device.States {
-		if state.SystemName == _state {
-			CorePtr().SetDeviceState(a.Device.Id, state)
-			break
+func (a *Action) NewScript(flow *Flow, script *models.Script) (err error) {
+
+	if flow != nil {
+		if a.Script, err = flow.NewScript(script); err != nil {
+			return
+		}
+	} else {
+		if a.Script, err = scripts.New(script); err != nil {
+			return
 		}
 	}
+
+	a.Message = NewMessage()
+	a.Script.PushStruct("message", a.Message)
+
+	// bind
+	javascript := a.Script.Get().(*scripts.Javascript)
+	ctx := javascript.Ctx()
+	if b := ctx.GetGlobalString("IC"); !b {
+		return
+	}
+	ctx.PushObject()
+	ctx.PushGoFunction(func() *ActionBind {
+		return &ActionBind{action: a}
+	})
+	ctx.PutPropString(-3, "Action")
+	ctx.Pop()
+
+	return nil
+}
+
+func (a *Action) GetDevice() *models.Device {
+	return a.Device
+}
+
+func (a *Action) GetNode() *models.Node {
+	return a.Node
 }
 
 // ------------------------------------------------

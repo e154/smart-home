@@ -1,10 +1,11 @@
 package scripts
 
 import (
-	"github.com/e154/smart-home/api/models"
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/e154/smart-home/api/models"
+	"github.com/e154/smart-home/api/log"
 )
 
 type Magic interface {
@@ -34,6 +35,10 @@ func New(s *models.Script) (engine *Engine, err error) {
 	default:
 		err = errors.New("undefined language")
 
+	}
+
+	if err == nil {
+		log.Infof("Add script: %s (%s)", s.Name, s.Lang)
 	}
 
 	engine.script.Init()

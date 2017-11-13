@@ -1,4 +1,4 @@
-package scripts
+package bind
 
 import (
 	"os/exec"
@@ -8,12 +8,9 @@ import (
 	"fmt"
 )
 
-type Exec struct {
-
-}
 
 // exec.command "sh", "-c", "echo stdout; echo 1>&2 stderr"
-func (e *Exec) Command(name string, arg ...string) {
+func Execute(name string, arg ...string) {
 
 	go func() {
 		log.Infof("Execute command: %s %s", name, strings.Trim(fmt.Sprint(arg), "[]"))

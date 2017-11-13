@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/astaxie/beego/orm"
 	"github.com/e154/smart-home/api/models"
+	"github.com/e154/smart-home/api/scripts"
 )
 
 func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
@@ -17,6 +18,8 @@ func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
 		quit: make(chan bool),
 		Workers: make(map[int64]*Worker),
 	}
+
+	flow.pull = make(map[string]interface{})
 
 	// get flow elements
 	var flowelements []*models.FlowElement
@@ -72,10 +75,11 @@ type Flow struct {
 	workflow     	*Workflow
 	Connections  	[]*models.Connection
 	FlowElements 	[]*FlowElement
-	Node		*models.Node
+	Node			*models.Node
 	Workers     	map[int64]*Worker
 	cursor       	[]*FlowElement
 	quit         	chan bool
+	Storage
 }
 
 func (f *Flow) Remove() {
@@ -278,7 +282,7 @@ func (f *Flow) AddWorker(model *models.Worker) (err error) {
 	for _, device := range devices {
 
 		var action *Action
-		if action, err = NewAction(device, model.DeviceAction.Script, f.Node, f.workflow); err != nil {
+		if action, err = NewAction(device, model.DeviceAction.Script, f.Node, f); err != nil {
 			log.Error(err.Error())
 			continue
 		}
@@ -323,6 +327,27 @@ func (f *Flow) RemoveWorker(worker *models.Worker) (err error) {
 
 	// delete worker
 	delete(f.Workers, worker.Id)
+
+	return
+}
+
+func (f *Flow) NewScript(model *models.Script) (script *scripts.Engine, err error) {
+
+	if script, err = f.workflow.NewScript(model); err != nil {
+		return
+	}
+
+	javascript := script.Get().(*scripts.Javascript)
+	ctx := javascript.Ctx()
+	if b := ctx.GetGlobalString("IC"); !b {
+		return
+	}
+	ctx.PushObject()
+	ctx.PushGoFunction(func() *FlowBind {
+		return &FlowBind{flow:f}
+	})
+	ctx.PutPropString(-3, "Flow")
+	ctx.Pop()
 
 	return
 }

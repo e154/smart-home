@@ -1,22 +1,14 @@
 package core
 
-import (
-	"github.com/e154/smart-home/api/models"
-)
-
 func NewMessage() *Message {
 	return &Message{
-		Data: make(map[string]interface{}),
+		Pull: make(map[string]interface{}),
 	}
 }
 //TODO refactor message system
 type Message struct {
-	Device      	*models.Device
-	Flow        	*models.Flow
-	Node        	*models.Node
 	Error       	string
-	Device_state	func(state string)
-	Data		map[string]interface{}
+	Pull			map[string]interface{}
 }
 //TODO refactor message system
 func (m *Message) clearError() {
@@ -25,4 +17,21 @@ func (m *Message) clearError() {
 //TODO refactor message system
 func (m *Message) SetError(err string) {
 	m.Error = err
+}
+
+func (m *Message) SetVar(key string, val interface{}) {
+	m.Pull[key] = val
+}
+
+func (m *Message) GetVar(key string) interface{} {
+	if value, ok := m.Pull[key]; ok {
+		return value
+	}
+
+	return nil
+}
+
+func (m *Message) Clear() {
+	m.Pull = make(map[string]interface{})
+	m.Error = ""
 }

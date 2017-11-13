@@ -37,7 +37,7 @@
             "importpath": "github.com/e154/cron",
             "repository": "https://github.com/e154/cron",
             "vcs": "git",
-            "revision": "dbb2f3c95480fe58bee58bc444a88e2384a61649",
+            "revision": "915a8d1f58cda2608470a87537e2014012585ed7",
             "branch": "master",
             "notests": true
         },
