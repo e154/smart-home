@@ -24,7 +24,7 @@ func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (
 		return
 	}
 
-	if flowElement.Script, err = workflow.NewScript(script); err != nil {
+	if flowElement.Script, err = flow.NewScript(script); err != nil {
 		return
 	}
 

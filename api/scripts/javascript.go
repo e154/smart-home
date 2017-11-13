@@ -142,13 +142,15 @@ func (j *Javascript) coffeeCompile() (result string, err error) {
 
 func (j *Javascript) Do() (result string, err error) {
 
-	j.ctx.PushGlobalObject()
-	if b := j.ctx.GetPropString(-1, "main"); !b {
+	//j.ctx.PushGlobalObject()
+	//if err = j.ctx.PushTimers(); err != nil {
+	//	return
+	//}
+
+	if b := j.ctx.GetGlobalString("main"); !b {
 		err = errors.New("main function not found!")
 		return
 	}
-
-	j.ctx.PushTimers()
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -163,7 +165,9 @@ func (j *Javascript) Do() (result string, err error) {
 		return
 	}
 
-	result = j.ctx.SafeToString(-1)
+	if res := j.ctx.SafeToString(-1); res != "undefined" {
+		result = res
+	}
 
 	return
 }
@@ -186,31 +190,87 @@ func (j *Javascript) Ctx() *candyjs.Context {
 
 func (j *Javascript) bind() {
 
+	// base
+	j.ctx.PevalString(fmt.Sprintf(`
+	IC = {};
+	IC.Runmode = '%s';
+	IC.hex2arr = function (hexString) {
+	   var result = [];
+	   while (hexString.length >= 2) {
+		   result.push(parseInt(hexString.substring(0, 2), 16));
+		   hexString = hexString.substring(2, hexString.length);
+	   }
+	   return result;
+	};
+
+	IC.CurrentNode = function(){
+
+		var action, flow, node;
+		node = null;
+
+		if ((typeof IC !== "undefined" && IC !== null ? IC.Flow : void 0) != null) {
+			flow = IC.Flow();
+			node = flow.node();
+		}
+		if (!node && ((typeof IC !== "undefined" && IC !== null ? IC.Action : void 0) != null)) {
+			action = IC.Action();
+			node = action.node();
+		}
+
+		if (!node) {
+			//IC.warn('node not found');
+			return null;
+		}
+
+		return node;
+	};
+
+	IC.CurrentDevice = function(){
+
+		var action, dev;
+		dev = null;
+
+		if (!dev && ((typeof IC !== "undefined" && IC !== null ? IC.Action : void 0) != null)) {
+			action = IC.Action();
+			dev = action.device();
+		}
+
+		if (!dev) {
+			//IC.warn('device not found');
+			return null;
+		}
+
+		return dev;
+	};
+
+	`, beego.BConfig.RunMode))
+
+	// push structures
+	for name, structure := range pull.GetStruct() {
+		if b := j.ctx.GetGlobalString("IC"); !b {
+			return
+		}
+		j.ctx.PushObject()
+		j.ctx.PushStruct(structure)
+		j.ctx.PutPropString(-3, name)
+		j.ctx.Pop()
+	}
+
+	// push functions
+	for name, function := range pull.Getfunctions() {
+		if b := j.ctx.GetGlobalString("IC"); !b {
+			return
+		}
+		j.ctx.PushObject()
+		j.ctx.PushGoFunction(function)
+		j.ctx.PutPropString(-3, name)
+		j.ctx.Pop()
+	}
+
 	// print
 	j.PushFunction("print", func(a ...interface{}){
 		j.engine.Print(a...)
 	})
-
-	j.EvalString(fmt.Sprintf(`run_mode = '%s'`, beego.BConfig.RunMode))
-	j.PushStruct("log", &Log{})
-	j.PushStruct("model", &Model{})
-	j.PushStruct("node", &Node{})
-	j.PushStruct("notifr", &Notifr{})
-	j.PushStruct("exec", &Exec{})
-	//j.PushFunction("to_time", func(i int64) time.Duration {
-	//	return time.Duration(i)
-	//})
-
-	// etc
-	j.EvalString(`helper = {}`)
-	j.EvalString(`helper.hex2arr = function (hexString) {
-   var result = [];
-   while (hexString.length >= 2) {
-       result.push(parseInt(hexString.substring(0, 2), 16));
-       hexString = hexString.substring(2, hexString.length);
-   }
-   return result;
-}`)
 
 	return
 }

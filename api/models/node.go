@@ -248,25 +248,6 @@ func (n *Node) GetVersion() (version string, err error) {
 	return
 }
 
-func (n *Node) ModbusSend(args interface{}, reply interface{}) error {
-
-	if n.rpcClient == nil {
-		return errors.New("rpc.client is nil")
-	}
-
-	if n.netConn == nil {
-		n.Errors++
-		return errors.New("node not connected")
-	}
-
-	if err := n.rpcClient.Call("Modbus.Send", args, reply); err != nil {
-		n.Errors++
-		return err
-	}
-
-	return nil
-}
-
 func (n *Node) GetConn() net.Conn {
 	return n.netConn
 }
@@ -283,12 +264,60 @@ func (n *Node) SetConnectStatus(st string) {
 	n.connStatus = st
 }
 
-func (n *Node) Send(protocol string, args *common.Request) (result common.Result) {
+func (n *Node) ModbusSend(device *Device, return_result bool, command []byte, reply interface{}) error {
+
+	if n.rpcClient == nil {
+		return errors.New("rpc.client is nil")
+	}
+
+	if n.netConn == nil {
+		n.Errors++
+		return errors.New("node not connected")
+	}
+
+	request := &common.Request{
+		Baud: device.Baud,
+		Device: device.Tty,
+		Timeout: device.Timeout,
+		StopBits: device.StopBite,
+		Sleep: device.Sleep,
+		Result: return_result,
+		Command: command,
+	}
+
+	if err := n.rpcClient.Call("Modbus.Send", request, reply); err != nil {
+		n.Errors++
+		return err
+	}
+
+	return nil
+}
+
+func (n *Node) Send(protocol string, device *Device, return_result bool, command []byte) (result common.Result) {
 	switch protocol {
 	case "modbus":
-		if err := n.ModbusSend(args, &result); err != nil {
+		if err := n.ModbusSend(device, return_result, command, &result); err != nil {
 			result.Error = err.Error()
 		}
 	}
 	return
+}
+
+func (n *Node) RpcCall(method string, request interface{}, reply interface{}) error {
+
+	if n.rpcClient == nil {
+		return errors.New("rpc.client is nil")
+	}
+
+	if n.netConn == nil {
+		n.Errors++
+		return errors.New("node not connected")
+	}
+
+	if err := n.rpcClient.Call(method, request, reply); err != nil {
+		n.Errors++
+		return err
+	}
+
+	return nil
 }

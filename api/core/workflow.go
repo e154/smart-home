@@ -12,10 +12,10 @@ func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow
 	workflow = &Workflow{
 		model: model,
 		Nodes: nodes,
-		mutex: &sync.Mutex{},
 		Flows: make(map[int64]*Flow),
-		variables: make(map[string]interface{}),
 	}
+
+	workflow.pull = make(map[string]interface{})
 
 	workflow.UpdateScenario()
 
@@ -23,11 +23,11 @@ func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow
 }
 
 type Workflow struct {
-	variables	map[string]interface{}
-	model   	*models.Workflow
-	Nodes   	map[int64]*models.Node
-	mutex   	*sync.Mutex
-	Flows   	map[int64]*Flow
+	Storage
+	model   *models.Workflow
+	sync.Mutex
+	Nodes   map[int64]*models.Node
+	Flows   map[int64]*Flow
 }
 
 func (wf *Workflow) Run() (err error) {
@@ -90,20 +90,20 @@ func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
 
 	log.Info("Add flow:", flow.Name)
 
-	wf.mutex.Lock()
+	wf.Lock()
 	if _, ok := wf.Flows[flow.Id]; ok {
 		return
 	}
-	wf.mutex.Unlock()
+	wf.Unlock()
 
 	var model *Flow
 	if model, err = NewFlow(flow, wf); err != nil {
 		return
 	}
 
-	wf.mutex.Lock()
+	wf.Lock()
 	wf.Flows[flow.Id] = model
-	wf.mutex.Unlock()
+	wf.Unlock()
 
 
 	return
@@ -125,8 +125,8 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 
 	log.Info("Remove flow:", flow.Name)
 
-	wf.mutex.Lock()
-	defer wf.mutex.Unlock()
+	wf.Lock()
+	defer wf.Unlock()
 
 	if _, ok := wf.Flows[flow.Id]; !ok {
 		return
@@ -196,26 +196,6 @@ func (wf *Workflow) runScenarioScript(state string) (err error) {
 	return
 }
 
-func (wf *Workflow) GetVariable(key string) interface{} {
-
-	wf.mutex.Lock()
-	defer wf.mutex.Unlock()
-
-	if v, ok := wf.variables[key]; ok {
-		return v
-	}
-
-	return nil
-}
-
-func (wf *Workflow) SetVariable(key string, value interface{}) {
-
-	wf.mutex.Lock()
-	defer wf.mutex.Unlock()
-
-	wf.variables[key] = value
-}
-
 func (wf *Workflow) NewScript(model *models.Script) (script *scripts.Engine, err error) {
 
 	if script, err = scripts.New(model); err != nil {
@@ -223,7 +203,16 @@ func (wf *Workflow) NewScript(model *models.Script) (script *scripts.Engine, err
 	}
 
 	javascript := script.Get().(*scripts.Javascript)
-	javascript.PushStruct("core", &JavascriptCore{workflow:wf})
+	ctx := javascript.Ctx()
+	if b := ctx.GetGlobalString("IC"); !b {
+		return
+	}
+	ctx.PushObject()
+	ctx.PushGoFunction(func() *WorkflowBind {
+		return &WorkflowBind{wf:wf}
+	})
+	ctx.PutPropString(-3, "Workflow")
+	ctx.Pop()
 
 	return
 }

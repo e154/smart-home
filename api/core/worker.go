@@ -91,10 +91,6 @@ func (w *Worker) Do() {
 		//TODO refactor message system
 		message := NewMessage()
 		*message = *action.Message
-		message.Flow = w.flow.Model
-		message.Device_state = func(state string) {
-			action.SetDeviceState(state)
-		}
 
 		if err := w.flow.NewMessage(message); err != nil {
 			log.Error(err.Error())

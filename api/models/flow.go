@@ -17,11 +17,11 @@ type Flow struct {
 	Description 	string				`orm:"" json:"description"`
 	Status      	string				`orm:"" json:"status"`
 	Workflow    	*Workflow			`orm:"rel(fk)" json:"workflow"`
-	Scenario    	*WorkflowScenario		`orm:"rel(fk);column(workflow_scenario_id);null" json:"scenario"`
+	Scenario    	*WorkflowScenario	`orm:"rel(fk);column(workflow_scenario_id);null" json:"scenario"`
 	Created_at  	time.Time			`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at   	time.Time			`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
-	Connections 	[]*Connection			`orm:"-" json:"connections"`
-	FlowElements	[]*FlowElement			`orm:"-" json:"flow_elements"`
+	Connections 	[]*Connection		`orm:"-" json:"connections"`
+	FlowElements	[]*FlowElement		`orm:"-" json:"flow_elements"`
 	Workers     	[]*Worker			`orm:"-" json:"workers"`
 }
 

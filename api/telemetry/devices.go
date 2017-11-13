@@ -20,7 +20,7 @@ func (d *Devices) Update() {
 		log.Error(err.Error())
 	}
 
-	d.Status = core.CorePtr().GetDevicesStates()
+	d.Status = core.CorePtr().Map.GetDevicesStates()
 }
 
 func (d *Devices) Broadcast() {
@@ -37,7 +37,7 @@ func (d *Devices) Broadcast() {
 
 func (d *Devices) BroadcastOne(id int64) {
 
-	d.Status = core.CorePtr().GetDevicesStates()
+	d.Status = core.CorePtr().Map.GetDevicesStates()
 	state, ok := d.Status[id]
 	if !ok {
 		return

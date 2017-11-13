@@ -6,13 +6,13 @@ import (
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/stream"
 	cr "github.com/e154/cron"
-	"sync"
+	"github.com/e154/smart-home/api/scripts"
 )
 
 var (
-	Hub		stream.Hub
+	Hub				stream.Hub
 	corePtr         *Core = nil
-	cron		*cr.Cron = nil
+	cron			*cr.Cron = nil
 )
 
 func CorePtr() *Core {
@@ -20,12 +20,11 @@ func CorePtr() *Core {
 }
 
 type Core struct {
-	nodes      	map[int64]*models.Node
-	nodes_chan 	map[int64]chan string
-	workflows  	map[int64]*Workflow
-	mu		sync.Mutex
-	deviceStates	map[int64]*models.DeviceState
-	telemetry	Telemetry
+	nodes      		map[int64]*models.Node
+	nodes_chan 		map[int64]chan string
+	workflows  		map[int64]*Workflow
+	telemetry		Telemetry
+	Map				*Map
 }
 
 func (b *Core) Run() (err error) {
@@ -219,6 +218,25 @@ func (b *Core) AddFlow(flow *models.Flow) (err error) {
 	}
 
 	return
+}
+
+func (b *Core) GetFlow(id int64) (*Flow, error) {
+
+	var flow *models.Flow
+	var err error
+	if flow, err = models.GetFlowById(id); err != nil {
+		return nil, err
+	}
+
+	if _, ok := b.workflows[flow.Workflow.Id]; !ok {
+		return nil, nil
+	}
+
+	if flow, ok := b.workflows[flow.Workflow.Id].Flows[id]; ok {
+		return flow, nil
+	}
+
+	return nil, nil
 }
 
 func (b *Core) UpdateFlow(flow *models.Flow) (err error) {
@@ -421,31 +439,6 @@ func (b *Core) GetNodes() (map[int64]*models.Node) {
 }
 
 // ------------------------------------------------
-// Device states
-// ------------------------------------------------
-func (b *Core) SetDeviceState(id int64, state *models.DeviceState) {
-	b.mu.Lock()
-
-	if old_state, ok := b.deviceStates[id]; ok {
-		if old_state.Id == state.Id {
-			b.mu.Unlock()
-			return
-		}
-	}
-
-	b.deviceStates[id] = state
-	b.mu.Unlock()
-
-	b.telemetry.BroadcastOne("devices", id)
-}
-
-func (b *Core) GetDevicesStates() map[int64]*models.DeviceState {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	return b.deviceStates
-}
-
-// ------------------------------------------------
 // Script
 // ------------------------------------------------
 func (b *Core) UpdateScript(script *models.Script) (err error) {
@@ -486,9 +479,19 @@ func Initialize(telemetry Telemetry) (err error) {
 		nodes: make(map[int64]*models.Node),
 		nodes_chan: make(map[int64]chan string),
 		workflows: make(map[int64]*Workflow),
-		deviceStates: make(map[int64]*models.DeviceState),
 		telemetry: telemetry,
+
+		//TODO refactor map system
+		Map: &Map{
+			telemetry: telemetry,
+			deviceStates: make(map[int64]*models.DeviceState),
+		},
 	}
+
+	scripts.PushStruct("Map", &MapBind{_map: corePtr.Map})
+	scripts.PushFunctions("GetNode", GetNode)
+	scripts.PushFunctions("GetFlow", GetFlow)
+
 	if err = corePtr.Run(); err != nil {
 		return
 	}
