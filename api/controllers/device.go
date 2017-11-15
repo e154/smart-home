@@ -23,6 +23,7 @@ func (c *DeviceController) URLMapping() {
 	c.Mapping("GetAll", c.GetAll)
 	c.Mapping("Get", c.GetAll)
 	c.Mapping("Get", c.GetActions)
+	c.Mapping("Get", c.GetStatuses)
 	c.Mapping("Put", c.Put)
 	c.Mapping("Delete", c.Delete)
 }
@@ -255,6 +256,29 @@ func (c *DeviceController) GetActions() {
 	}
 
 	c.Data["json"] = &map[string]interface{}{"actions": actions}
+	c.ServeJSON()
+}
+
+func (c *DeviceController) GetStatuses() {
+	id, _ := c.GetInt(":id")
+	device, err := models.GetDeviceById(int64(id))
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	ids := []int64{int64(id)}
+	if device.Device != nil {
+		ids = append(ids, device.Device.Id)
+	}
+
+	actions, err := models.GetDeviceStatusesByDeviceId(ids)
+	if err != nil {
+		c.ErrHan(403, err.Error())
+		return
+	}
+
+	c.Data["json"] = &map[string]interface{}{"statuses": actions}
 	c.ServeJSON()
 }
 
