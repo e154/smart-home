@@ -11,6 +11,7 @@ import (
 type Magic interface {
 	Init() error
 	Do() (string, error)
+	DoCustom(string) (string, error)
 	Compile() error
 	PushStruct(string, interface{}) (int, error)
 	PushFunction(string, interface{}) (int, error)
@@ -107,13 +108,18 @@ func (s *Engine) DoFull() (res string, err error) {
 	return
 }
 
-func (s *Engine) Do() (result string, err error) {
+func (s *Engine) Do() (string, error) {
+	return s.script.DoCustom("main")
+}
+
+func (s *Engine) DoCustom(f string) (result string, err error) {
+
 	if s.IsRun {
 		return
 	}
 
 	s.IsRun = true
-	result, err = s.script.Do()
+	result, err = s.script.DoCustom(f)
 
 	// reset buffer
 	s.buf = []string{}
