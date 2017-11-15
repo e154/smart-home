@@ -1,17 +1,19 @@
 package core
 
+import "github.com/e154/smart-home/api/models"
+
 type MapBind struct {
 	_map		*Map
 }
 
-func (m *MapBind) SetDeviceState(devId int64, _state string) {
+func (m *MapBind) SetDeviceState(dev *models.Device, _state string) {
 
-	m._map.SetDeviceState(devId, _state)
+	m._map.SetDeviceState(dev, _state)
 }
 
-func (m *MapBind) GetDeviceState(id int64) interface{} {
+func (m *MapBind) GetDeviceState(dev *models.Device) interface{} {
 
-	state, ok := m._map.GetDevicesStates()[id]
+	state, ok := m._map.GetDevicesStates()[dev.Id]
 	if ok {
 		return state.SystemName
 	} else {

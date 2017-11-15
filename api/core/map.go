@@ -12,37 +12,28 @@ type Map struct {
 	deviceStates	map[int64]*models.DeviceState
 }
 
-// ------------------------------------------------
-// Device states
-// ------------------------------------------------
-func (b *Map) SetDeviceState(devId int64, _state string) {
-
-	//TODO add cache
-	states, err := models.GetAllDeviceStateByDevice(devId)
-	if err != nil {
-		return
-	}
+func (b *Map) SetDeviceState(dev *models.Device, _state string) {
 
 	b.Lock()
 	defer b.Unlock()
 
-	for _, state := range states {
+	for _, state := range dev.States {
 		if state.SystemName == _state {
 			//..
-			if old_state, ok := b.deviceStates[devId]; ok {
+			if old_state, ok := b.deviceStates[dev.Id]; ok {
 				if old_state.Id == state.Id {
 					return
 				}
 			}
 
-			b.deviceStates[devId] = state
+			b.deviceStates[dev.Id] = state
 			//..
 			break
 		}
 	}
 
 
-	b.telemetry.BroadcastOne("devices", devId)
+	b.telemetry.BroadcastOne("devices", dev.Id)
 }
 
 func (b *Map) GetDevicesStates() map[int64]*models.DeviceState {
