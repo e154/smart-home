@@ -32,6 +32,16 @@ func init() {
 // last inserted Id on success.
 func AddDeviceState(m *DeviceState) (id int64, err error) {
 	o := orm.NewOrm()
+
+	device := &Device{}
+	if device, err = GetDeviceById(m.Device.Id); err != nil {
+		return
+	}
+
+	if device.Device != nil {
+		m.Device = device.Device
+	}
+
 	id, err = o.Insert(m)
 	return
 }

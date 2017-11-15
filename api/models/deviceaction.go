@@ -190,6 +190,15 @@ func GetDeviceActionsByDeviceId(ids []int64) (actions []*DeviceAction, err error
 	return
 }
 
+func GetDeviceStatusesByDeviceId(ids []int64) (actions []*DeviceState, err error) {
+
+	o := orm.NewOrm()
+
+	actions = []*DeviceState{}
+	_, err = o.QueryTable(&DeviceState{}).Filter("device_id__in", ids).RelatedSel().All(&actions)
+	return
+}
+
 func GetAllDeviceActionByDevice(id int64) (actions []*DeviceAction, err error) {
 	o := orm.NewOrm()
 

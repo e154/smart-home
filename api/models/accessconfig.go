@@ -52,7 +52,7 @@ const access_config_list = `{
    		"actions": [
    			"/api/v1/device", "/api/v1/device/[0-9]+",
    			"/api/v1/device/group", "/api/v1/device/[0-9]+/actions",
-   			"/api/v1/device/search"
+   			"/api/v1/device/search", "/api/v1/device/[0-9]+/statuses"
    		],
    		"method": "get",
    		"description": ""
