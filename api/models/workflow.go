@@ -176,8 +176,11 @@ func (wf *Workflow) GetAllEnabledWorkers() ([]*Worker, error) {
 	return GetAllEnabledWorkersByWorkflow(&Workflow{Id:wf.Id})
 }
 
-func (wf *Workflow) GetAllEnabledFlows() ([]*Flow, error) {
-	return GetAllEnabledFlowsByWf(wf)
+func (wf *Workflow) GetAllEnabledFlows() (flows []*Flow, err error) {
+	o := orm.NewOrm()
+	flows = []*Flow{}
+	_, err = o.QueryTable(&Flow{}).Filter("status", "enabled").Filter("workflow_id", wf.Id).Filter("workflow_scenario_id", wf.Scenario.Id).All(&flows)
+	return
 }
 
 func (wf *Workflow) GetScripts() (int64, error) {

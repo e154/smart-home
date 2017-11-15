@@ -141,13 +141,17 @@ func (j *Javascript) coffeeCompile() (result string, err error) {
 }
 
 func (j *Javascript) Do() (result string, err error) {
+	return j.DoCustom("main")
+}
+
+func (j *Javascript) DoCustom(f string) (result string, err error) {
 
 	//j.ctx.PushGlobalObject()
 	//if err = j.ctx.PushTimers(); err != nil {
 	//	return
 	//}
 
-	if b := j.ctx.GetGlobalString("main"); !b {
+	if b := j.ctx.GetGlobalString(f); !b {
 		err = errors.New("main function not found!")
 		return
 	}

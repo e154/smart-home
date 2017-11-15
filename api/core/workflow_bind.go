@@ -19,3 +19,11 @@ func (w *WorkflowBind) SetVar(key string, value interface{}) {
 func (w *WorkflowBind) GetVar(key string) interface{} {
 	return w.wf.GetVar(key)
 }
+
+func (w *WorkflowBind) GetScenario() string {
+	return w.wf.model.Scenario.SystemName
+}
+
+func (w *WorkflowBind) SetScenario(system_name string) {
+	w.wf.SetScenario(system_name)
+}

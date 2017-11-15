@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/api/log"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/scripts"
+	"github.com/astaxie/beego/orm"
 )
 
 func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow *Workflow) {
@@ -16,8 +17,6 @@ func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow
 	}
 
 	workflow.pull = make(map[string]interface{})
-
-	workflow.UpdateScenario()
 
 	return
 }
@@ -31,6 +30,8 @@ type Workflow struct {
 }
 
 func (wf *Workflow) Run() (err error) {
+
+	wf.EnterScenario()
 
 	err = wf.InitFlows()
 
@@ -138,60 +139,104 @@ func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
 	return
 }
 
-func (wf *Workflow) UpdateScenario() (err error) {
+// ------------------------------------------------
+// Scenarios
+// ------------------------------------------------
 
-	// load related scenario and his scripts
-	//o := orm.NewOrm()
-	//if wf.model.Scenario != nil {
-	//
-	//	log.Infof("Workflow '%s': update scenario", wf.model.Name)
-	//
-	//	var old_scenario *models.WorkflowScenario
-	//	old_scenario = wf.model.Scenario
-	//
-	//	if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
-	//		log.Errorf("on update scenario, message: %s", err.Error())
-	//		return
-	//	}
-	//
-	//	//if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
-	//	//	log.Errorf("on update scenario, message: %s", err.Error())
-	//	//	return
-	//	//}
-	//
-	//	wf.runScenarioScript(old_scenario, "on_exit")
-	//	wf.runScenarioScript(wf.model.Scenario, "on_enter")
-	//}
+func (wf *Workflow) SetScenario(system_name string) (err error) {
+
+	if _, err = wf.model.GetScenarios(); err != nil {
+		return
+	}
+
+	var scenario *models.WorkflowScenario
+	for _, scenario = range wf.model.Scenarios {
+		if scenario.SystemName != system_name {
+			continue
+		}
+
+		workflow := &models.Workflow{}
+		*workflow = *wf.model
+		workflow.Scenario = scenario
+
+		if err = models.UpdateWorkflowById(workflow); err != nil {
+			return
+		}
+
+		wf.UpdateScenario()
+	}
 
 	return
 }
 
-func (wf *Workflow) runScenarioScript(state string) (err error) {
+func (wf *Workflow) EnterScenario() (err error) {
 
-	//var _script *scripts.Engine
-	//for _, scenario_script := range scenario.Scripts {
-	//	if scenario_script.State != state {
-	//		continue
-	//	}
-	//
-	//	// load script
-	//	o := orm.NewOrm()
-	//	if _, err = o.LoadRelated(scenario_script, "Script"); err != nil {
-	//		log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
-	//		return
-	//	}
-	//
-	//	// compile script
-	//	if _script, err = wf.NewScript(scenario_script.Script); err != nil {
-	//		log.Errorf("compile script %d, message: %s", scenario_script.Script.Id, err.Error())
-	//		continue
-	//	}
-	//
-	//	// do script
-	//	if _, err = _script.Do(); err != nil {
-	//		log.Errorf("on run script %s scenario, message: %s", state, err.Error())
-	//	}
-	//}
+	if wf.model.Scenario == nil {
+		return
+	}
+
+	log.Infof("Workflow '%s': enter scenario", wf.model.Name)
+
+	o := orm.NewOrm()
+	if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
+		log.Errorf("on update scenario, message: %s", err.Error())
+		return
+	}
+
+	if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
+		log.Errorf("on update scenario, message: %s", err.Error())
+		return
+	}
+
+	wf.runScenarioScript(wf.model.Scenario, "on_enter")
+
+	return
+}
+
+func (wf *Workflow) UpdateScenario() (err error) {
+
+	log.Infof("Workflow '%s': update scenario", wf.model.Name)
+
+	if wf.model.Scenario != nil {
+		wf.runScenarioScript(wf.model.Scenario, "on_exit")
+	}
+
+	var model *models.Workflow
+	if model, err = models.GetWorkflowById(wf.model.Id); err != nil {
+		return
+	}
+
+	*wf.model = *model
+
+	o := orm.NewOrm()
+	if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
+		log.Errorf("on update scenario, message: %s", err.Error())
+		return
+	}
+
+	if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
+		log.Errorf("on update scenario, message: %s", err.Error())
+		return
+	}
+
+	wf.Restart()
+
+	return
+}
+
+func (wf *Workflow) runScenarioScript(scenario *models.WorkflowScenario, f string) (err error) {
+
+	var script *scripts.Engine
+	for _, scenario_script := range scenario.Scripts {
+
+		if script, err = wf.NewScript(scenario_script); err != nil {
+			log.Errorf("compile script %d, message: %s", scenario_script.Id, err.Error())
+		}
+
+		if _, err = script.DoCustom(f); err != nil {
+			log.Errorf("on run script %s scenario, message: %s", f, err.Error())
+		}
+	}
 
 	return
 }
