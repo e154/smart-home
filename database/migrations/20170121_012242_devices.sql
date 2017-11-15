@@ -15,7 +15,7 @@ address Int( 11 ) NULL,
 status VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'enabled',
 sleep Int( 32 ) NOT NULL DEFAULT '0',
 PRIMARY KEY ( id ),
-CONSTRAINT unique3 UNIQUE( name, device_id ),
+CONSTRAINT unique3 UNIQUE( name, device_id, address ),
 CONSTRAINT unique2 UNIQUE( node_id, address ),
 CONSTRAINT unique1 UNIQUE( device_id, address ) )
 CHARACTER SET = utf8
