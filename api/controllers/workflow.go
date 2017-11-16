@@ -180,7 +180,7 @@ func (c *WorkflowController) Put() {
 		return
 	}
 
-	core.CorePtr().UpdateWorkflowScenario(workflow)
+	core.CorePtr().UpdateWorkflow(workflow)
 
 	c.ServeJSON()
 }
@@ -202,7 +202,7 @@ func (c *WorkflowController) Delete() {
 	}
 
 	// update core
-	core.CorePtr().RemoveWorkflow(workflow)
+	core.CorePtr().DeleteWorkflow(workflow)
 
 	if err := models.DeleteWorkflow(int64(id)); err != nil {
 		c.ErrHan(403, err.Error())

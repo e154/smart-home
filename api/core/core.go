@@ -69,7 +69,7 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow, b.nodes)
+	wf := NewWorkflow(workflow)
 
 	if err = wf.Run(); err != nil {
 		return
@@ -81,7 +81,7 @@ func (b *Core) AddWorkflow(workflow *models.Workflow) (err error) {
 }
 
 // нельзя удалить workflow, если присутствуют связанные сущности
-func (b *Core) RemoveWorkflow(workflow *models.Workflow) (err error) {
+func (b *Core) DeleteWorkflow(workflow *models.Workflow) (err error) {
 
 	log.Info("Remove workflow:", workflow.Name)
 
@@ -103,6 +103,21 @@ func (b *Core) UpdateWorkflowScenario(workflow *models.Workflow) (err error) {
 	}
 
 	err = b.workflows[workflow.Id].UpdateScenario()
+
+	return
+}
+
+func (b *Core) UpdateWorkflow(workflow *models.Workflow) (err error) {
+
+	if workflow.Status == "enabled" {
+		if _, ok := b.workflows[workflow.Id]; !ok {
+			err = b.AddWorkflow(workflow)
+		}
+	} else {
+		if _, ok := b.workflows[workflow.Id]; ok {
+			err = b.DeleteWorkflow(workflow)
+		}
+	}
 
 	return
 }

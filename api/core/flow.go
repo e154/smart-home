@@ -258,8 +258,11 @@ func (f *Flow) AddWorker(model *models.Worker) (err error) {
 
 	// get node
 	// ------------------------------------------------
-	if _, ok := f.workflow.Nodes[model.DeviceAction.Device.Node.Id]; ok {
-		f.Node = f.workflow.Nodes[model.DeviceAction.Device.Node.Id]
+	var nodes map[int64]*models.Node
+	nodes = corePtr.GetNodes()
+
+	if _, ok := nodes[model.DeviceAction.Device.Node.Id]; ok {
+		f.Node = nodes[model.DeviceAction.Device.Node.Id]
 	} else {
 		// autoload nodes
 		f.Node, err = models.GetNodeById(model.DeviceAction.Device.Node.Id)
