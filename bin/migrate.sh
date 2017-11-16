@@ -97,9 +97,7 @@ OPTIONS:
 EOF
 }
 
-SQLM=`which sql-migrate`
-
-if [ -z "$SQLM" ]; then
+if [ -z `which sql-migrate` ]; then
   echo "Required tools are missing - check beginning of \"$0\" file for details."
   echo "wait for installing sql-migrate"
   go get github.com/rubenv/sql-migrate/...
