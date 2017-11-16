@@ -8,11 +8,10 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-func NewWorkflow(model *models.Workflow, nodes map[int64]*models.Node) (workflow *Workflow) {
+func NewWorkflow(model *models.Workflow) (workflow *Workflow) {
 
 	workflow = &Workflow{
 		model: model,
-		Nodes: nodes,
 		Flows: make(map[int64]*Flow),
 	}
 
@@ -25,15 +24,16 @@ type Workflow struct {
 	Storage
 	model   *models.Workflow
 	sync.Mutex
-	Nodes   map[int64]*models.Node
 	Flows   map[int64]*Flow
 }
 
 func (wf *Workflow) Run() (err error) {
 
-	wf.EnterScenario()
+	wf.enterScenario()
 
-	err = wf.InitFlows()
+	wf.runScripts()
+
+	err = wf.initFlows()
 
 	if err != nil {
 		return
@@ -64,7 +64,7 @@ func (wf *Workflow) Restart() (err error) {
 // ------------------------------------------------
 
 // получаем все связанные процессы
-func (wf *Workflow) InitFlows() (err error) {
+func (wf *Workflow) initFlows() (err error) {
 
 	var flows []*models.Flow
 	if flows, err = wf.model.GetAllEnabledFlows(); err != nil {
@@ -169,7 +169,7 @@ func (wf *Workflow) SetScenario(system_name string) (err error) {
 	return
 }
 
-func (wf *Workflow) EnterScenario() (err error) {
+func (wf *Workflow) enterScenario() (err error) {
 
 	if wf.model.Scenario == nil {
 		return
@@ -188,7 +188,7 @@ func (wf *Workflow) EnterScenario() (err error) {
 		return
 	}
 
-	wf.runScenarioScript(wf.model.Scenario, "on_enter")
+	wf.runScenarioScripts(wf.model.Scenario, "on_enter")
 
 	return
 }
@@ -198,7 +198,7 @@ func (wf *Workflow) UpdateScenario() (err error) {
 	log.Infof("Workflow '%s': update scenario", wf.model.Name)
 
 	if wf.model.Scenario != nil {
-		wf.runScenarioScript(wf.model.Scenario, "on_exit")
+		wf.runScenarioScripts(wf.model.Scenario, "on_exit")
 	}
 
 	var model *models.Workflow
@@ -224,7 +224,7 @@ func (wf *Workflow) UpdateScenario() (err error) {
 	return
 }
 
-func (wf *Workflow) runScenarioScript(scenario *models.WorkflowScenario, f string) (err error) {
+func (wf *Workflow) runScenarioScripts(scenario *models.WorkflowScenario, f string) (err error) {
 
 	var script *scripts.Engine
 	for _, scenario_script := range scenario.Scripts {
@@ -235,6 +235,31 @@ func (wf *Workflow) runScenarioScript(scenario *models.WorkflowScenario, f strin
 
 		if _, err = script.DoCustom(f); err != nil {
 			log.Errorf("on run script %s scenario, message: %s", f, err.Error())
+		}
+	}
+
+	return
+}
+
+
+// ------------------------------------------------
+// Scripts
+// ------------------------------------------------
+
+func (wf *Workflow) runScripts() (err error) {
+	if _, err = wf.model.GetScripts(); err != nil {
+		return
+	}
+
+	var script *scripts.Engine
+	for _, scenario_script := range wf.model.Scripts {
+
+		if script, err = wf.NewScript(scenario_script); err != nil {
+			log.Errorf("compile script %d, message: %s", scenario_script.Id, err.Error())
+		}
+
+		if _, err = script.Do(); err != nil {
+			log.Errorf("on run script %s", err.Error())
 		}
 	}
 
