@@ -112,6 +112,14 @@
              "revision": "79fe99e24311fa42469fb2ca23eb3f8f065e6155",
              "branch": "master",
              "notests": true
+        },
+        {
+             "importpath": "gopkg.in/gorp.v1",
+             "repository": "https://gopkg.in/gorp.v1",
+             "vcs": "git",
+             "revision": "c87af80f3cc5036b55b83d77171e156791085e2e",
+             "branch": "master",
+             "notests": true
         }
 	]
 }
