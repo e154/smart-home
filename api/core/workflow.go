@@ -5,7 +5,6 @@ import (
 	"github.com/e154/smart-home/api/log"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/scripts"
-	"github.com/astaxie/beego/orm"
 )
 
 func NewWorkflow(model *models.Workflow) (workflow *Workflow) {
@@ -177,13 +176,12 @@ func (wf *Workflow) enterScenario() (err error) {
 
 	log.Infof("Workflow '%s': enter scenario", wf.model.Name)
 
-	o := orm.NewOrm()
-	if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
+	if _, err = wf.model.GetScenario(); err != nil {
 		log.Errorf("on update scenario, message: %s", err.Error())
 		return
 	}
 
-	if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
+	if _, err = wf.model.Scenario.GetScripts(); err != nil {
 		log.Errorf("on update scenario, message: %s", err.Error())
 		return
 	}
@@ -195,26 +193,36 @@ func (wf *Workflow) enterScenario() (err error) {
 
 func (wf *Workflow) UpdateScenario() (err error) {
 
+	// get workflow from base
+	var model *models.Workflow
+	if model, err = models.GetWorkflowById(wf.model.Id); err != nil {
+		return
+	}
+
+	if _, err = model.GetScenario(); err != nil {
+		log.Errorf("on update scenario, message: %s", err.Error())
+		return
+	}
+
+	// exit if scenario is loaded
+	if wf.model.Scenario.SystemName == model.Scenario.SystemName {
+		return
+	}
+
 	log.Infof("Workflow '%s': update scenario", wf.model.Name)
 
 	if wf.model.Scenario != nil {
 		wf.runScenarioScripts(wf.model.Scenario, "on_exit")
 	}
 
-	var model *models.Workflow
-	if model, err = models.GetWorkflowById(wf.model.Id); err != nil {
-		return
-	}
-
 	*wf.model = *model
 
-	o := orm.NewOrm()
-	if _, err = o.LoadRelated(wf.model, "Scenario"); err != nil {
+	if _, err = wf.model.GetScenario(); err != nil {
 		log.Errorf("on update scenario, message: %s", err.Error())
 		return
 	}
 
-	if _, err = o.LoadRelated(wf.model.Scenario, "Scripts"); err != nil {
+	if _, err = wf.model.Scenario.GetScripts(); err != nil {
 		log.Errorf("on update scenario, message: %s", err.Error())
 		return
 	}
