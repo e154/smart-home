@@ -81,18 +81,18 @@ func (w *Worker) Do() {
 	for _, action := range w.actions {
 		//TODO refactor message system
 		if _, err := action.Do(); err != nil {
-			log.Errorf("node: %s, device: %s error: %s", action.Node.Name, action.Device.Name, err.Error())
+			//log.Errorf("node: %s, device: %s error: %s", action.Node.Name, action.Device.Name, err.Error())
 			continue
 		}
-		//TODO refactor message system
+
 		if action.Message.Error != "" {
 			continue
 		}
-		//TODO refactor message system
+
 		message := NewMessage()
 		*message = *action.Message
 
-		if err := w.flow.NewMessage(message); err != nil {
+		if err := w.flow.NewMessage(action.Message); err != nil {
 			log.Error(err.Error())
 		}
 	}

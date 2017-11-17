@@ -2,6 +2,7 @@ package scripts
 
 import (
 	"sync"
+	"github.com/e154/smart-home/api/scripts/bind"
 )
 
 var pull *Pull
@@ -45,4 +46,8 @@ func init() {
 		functions: make(map[string]interface{}),
 		structures: make(map[string]interface{}),
 	}
+
+	PushStruct("Notifr", &bind.NotifrBind{})
+	PushStruct("Log", &bind.LogBind{})
+	PushFunctions("Execute", bind.Execute)
 }
