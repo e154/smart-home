@@ -22,6 +22,11 @@ var (
 	auth_urls []string = []string{"/api/v1/signin", "/api/v1/signout", "/api/v1/reset", "/api/v1/recovery"}
 )
 
+type cacheData struct {
+	user	*models.User
+	access_list	models.AccessList
+}
+
 func AccessFilter() {
 	beego.InsertFilter("/*", beego.BeforeRouter, func(ctx *context.Context) {
 

@@ -44,21 +44,18 @@ func configuration() {
 	// run migration
 	Migration(db)
 
-	log.Info("AppPath:", beego.AppPath)
 	if(beego.BConfig.RunMode == "dev") {
-		log.Info("Development mode enabled")
-		// orm debug mode
 		if orm_debug, _ := beego.AppConfig.Bool("orm_debug"); orm_debug {
 			orm.Debug = true
 		}
+	}
 
-		//beego.BConfig.WebConfig.DirectoryIndex = true
-		//beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
-		//beego.SetStaticPath("/admin/static", "static_source/admin")
+	log.Info("AppPath:", beego.AppPath)
+	if(beego.BConfig.RunMode == "dev") {
+		log.Info("Development mode enabled")
 	} else {
 		log.Info("Product mode enabled")
 		beego.BConfig.ServerName = "smart-home"
-		//beego.SetStaticPath("/admin/static", "www/admin")
 	}
 
 	file_storage_path := beego.AppConfig.String("file_storage_path")
