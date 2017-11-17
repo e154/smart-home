@@ -496,14 +496,13 @@ func Initialize(telemetry Telemetry) (err error) {
 		workflows: make(map[int64]*Workflow),
 		telemetry: telemetry,
 
-		//TODO refactor map system
 		Map: &Map{
 			telemetry: telemetry,
-			deviceStates: make(map[int64]*models.DeviceState),
+			elements: make(map[int64]*MapElement),
 		},
 	}
 
-	scripts.PushStruct("Map", &MapBind{_map: corePtr.Map})
+	scripts.PushStruct("Map", &MapBind{Map: corePtr.Map})
 	scripts.PushFunctions("GetNode", GetNode)
 	scripts.PushFunctions("GetFlow", GetFlow)
 

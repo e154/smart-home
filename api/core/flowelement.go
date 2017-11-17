@@ -12,7 +12,6 @@ func NewFlowElement(model *models.FlowElement, flow *Flow, workflow *Workflow) (
 		Model:model,
 		Flow: flow,
 		Workflow: workflow,
-		//ScenarioName: "default",
 	}
 
 	if model.Script == nil {
@@ -39,7 +38,6 @@ type FlowElement struct {
 	Prototype	ActionPrototypes
 	status		Status
 	Action		*Action
-	ScenarioName	string
 }
 
 func (m *FlowElement) Before(message *Message) error {
@@ -70,12 +68,7 @@ func (m *FlowElement) Run(message *Message) (b bool, return_message *Message, er
 	//run script if exist
 	if m.Script != nil {
 
-		//if m.Workflow.model.Scenario != nil {
-		//	m.ScenarioName = m.Workflow.model.Scenario.SystemName
-		//}
-
 		m.Script.PushStruct("message", message)
-		//m.Script.SetVariable("scenario_name", m.ScenarioName)
 
 		var ok string
 		if ok, err = m.Script.Do(); err != nil {

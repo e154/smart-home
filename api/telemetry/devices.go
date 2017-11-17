@@ -10,7 +10,7 @@ import (
 )
 
 type Devices struct {
-	Total  int64				`json:"total"`
+	Total  int64							`json:"total"`
 	Status map[int64]*models.DeviceState	`json:"status"`
 }
 

@@ -14,7 +14,7 @@ import (
 type DeviceState struct {
 	Id   		int64  		`orm:"pk;auto;column(id)" json:"id"`
 	Device		*Device		`orm:"rel(fk);null" json:"device"`
-	Description 	string 		`orm:"size(254)" json:"description" valid:"MaxSize(254)"`
+	Description string 		`orm:"size(254)" json:"description" valid:"MaxSize(254)"`
 	SystemName 	string 		`orm:"size(254)" json:"system_name" valid:"MaxSize(254);Required"`
 	Created_at	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
