@@ -62,9 +62,9 @@ func (c *logger) WriteMsg(when time.Time, msg string, level int) (err error) {
 		return err
 	}
 
-	if(beego.BConfig.RunMode != "dev") {
-		return
-	}
+	//if(beego.BConfig.RunMode != "dev") {
+	//	return
+	//}
 
 	if c.Colorful {
 		msg = colors[level](msg)

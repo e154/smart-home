@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"log"
+	"strings"
 )
 
 var (
@@ -10,6 +11,10 @@ var (
 )
 
 func main() {
+
+	cwd := os.Getenv("PWD")
+	rootDir := strings.Split(cwd, "tests/")
+	os.Args[0] = rootDir[0]
 
 	// just start
 	args := os.Args
