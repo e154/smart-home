@@ -18,6 +18,10 @@ func (e *MapElement) SetState(systemName string) {
 			continue
 		}
 
+		if e.State != nil && e.State.SystemName == state.SystemName {
+			return
+		}
+
 		e.State = state
 
 		e.Map.telemetry.BroadcastOne("devices", e.Device.Id)
