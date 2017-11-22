@@ -1,6 +1,6 @@
 // +build darwin
 
-package telemetry
+package dasboard
 
 func NewCpu() (cpu *Cpu) {
 

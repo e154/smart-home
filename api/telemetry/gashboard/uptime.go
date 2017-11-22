@@ -1,4 +1,4 @@
-package telemetry
+package dasboard
 
 import (
 	"io/ioutil"

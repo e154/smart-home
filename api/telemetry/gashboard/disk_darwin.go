@@ -1,6 +1,6 @@
-// +build windows
+// +build darwin
 
-package telemetry
+package dasboard
 
 func NewDisk() (disk *Disk) {
 
