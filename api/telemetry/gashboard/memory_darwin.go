@@ -1,6 +1,6 @@
 // +build darwin
 
-package telemetry
+package dasboard
 
 //http://markelov.blogspot.ru/2009/01/linux-procmeminfo.html
 type Memory struct {

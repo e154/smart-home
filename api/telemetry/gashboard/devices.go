@@ -1,4 +1,4 @@
-package telemetry
+package dasboard
 
 import (
 	"encoding/json"
@@ -54,17 +54,18 @@ func (d *Devices) BroadcastOne(id int64) {
 	Hub.Broadcast(string(msg))
 }
 
-// only on request: 'get.devices.states'
+// only on request: 'dashboard.get.devices.states'
 //
-func streamGetDevicesStates(client *stream.Client, value interface{}) {
+func (d *Devices) streamGetDevicesStates(client *stream.Client, value interface{}) {
 
 	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
 	if !ok {
 		return
 	}
 
-	Telemetry.Devices.Update()
+	d.Update()
 
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "states": Telemetry.Devices.Status})
+	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "states": d.Status})
+
 	client.Send(string(msg))
 }

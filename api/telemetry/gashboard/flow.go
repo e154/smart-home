@@ -1,4 +1,4 @@
-package telemetry
+package dasboard
 
 import (
 	"github.com/e154/smart-home/api/stream"

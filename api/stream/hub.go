@@ -3,6 +3,7 @@ package stream
 import (
 	"encoding/json"
 	"github.com/e154/smart-home/api/log"
+	"sync"
 )
 
 const (
@@ -20,8 +21,9 @@ var instantiated *hub
 
 type hub struct {
 	sessions map[*Client]bool
-	broadcast chan string
 	subscribers map[string]func(client *Client, value interface{})
+	sync.Mutex
+	broadcast chan string
 }
 
 func (h *hub) AddClient(client *Client) {
@@ -82,8 +84,9 @@ func (h *hub) Send(client *Client, message string) {
 }
 
 func (h *hub) Broadcast(message string) {
-
+	h.Lock()
 	h.broadcast <- message
+	h.Unlock()
 }
 
 func (h *hub) Clients() (clients []*Client) {

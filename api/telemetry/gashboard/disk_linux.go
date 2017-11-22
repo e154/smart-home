@@ -1,6 +1,6 @@
 // +build linux
 
-package telemetry
+package dasboard
 
 import (
 	linuxproc "github.com/c9s/goprocinfo/linux"

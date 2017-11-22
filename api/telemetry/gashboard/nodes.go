@@ -1,4 +1,4 @@
-package telemetry
+package dasboard
 
 import (
 	"reflect"
@@ -47,16 +47,16 @@ func (n *Nodes) Broadcast() {
 	Hub.Broadcast(string(msg))
 }
 
-// only on request: 'get.nodes.status'
+// only on request: 'dashboard.get.nodes.status'
 //
-func streamNodesStatus(client *stream.Client, value interface{}) {
+func (n *Nodes) streamNodesStatus(client *stream.Client, value interface{}) {
 	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
 	if !ok {
 		return
 	}
 
-	Telemetry.Nodes.Update()
+	n.Update()
 
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "nodes": Telemetry.Nodes})
+	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "nodes": n})
 	client.Send(string(msg))
 }
