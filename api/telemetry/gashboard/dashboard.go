@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/e154/smart-home/api/stream"
 	"github.com/astaxie/beego"
+	"github.com/e154/smart-home/api/models"
 )
 
 var (
@@ -28,13 +29,14 @@ func NewDashboard() *Dashboard {
 		Uptime: &Uptime{},
 		Disk: NewDisk(),
 		Nodes: NewNode(),
-		Devices: &Devices{},
+		Devices: &Devices{
+			Status: make(map[int64]*models.DeviceState),
+		},
 		quit: make(chan bool),
 	}
 
 	Hub.Subscribe("dashboard.get.nodes.status", dashboard.Nodes.streamNodesStatus)
 	Hub.Subscribe("dashboard.get.flows.status", streamFlowsStatus)
-	Hub.Subscribe("dashboard.get.devices.states", dashboard.Devices.streamGetDevicesStates)
 	Hub.Subscribe("dashboard.get.telemetry", dashboard.streamTelemetry)
 
 	return dashboard
@@ -73,20 +75,48 @@ func (t *Dashboard) Stop() {
 }
 
 func (t *Dashboard) BroadcastOne(pack string, id int64) {
-	switch pack {
 
+	var body interface{}
+	var ok bool
+
+	switch pack {
 	case "devices":
-		go t.Devices.BroadcastOne(id)
+		body, ok = t.Devices.BroadcastOne(id)
+	}
+
+	if ok {
+		t.sendMsg(body)
 	}
 }
 
 func (t *Dashboard) Broadcast(pack string) {
+
+	var body interface{}
+	var ok bool
+
 	switch pack {
 	case "nodes":
-		go t.Nodes.Broadcast()
+		body, ok = t.Nodes.Broadcast()
 	case "devices":
-		go t.Devices.Broadcast()
+		body, ok = t.Devices.Broadcast()
 	}
+
+	if (ok) {
+		t.sendMsg(body)
+	}
+}
+
+func (t *Dashboard) sendMsg (body interface{}) {
+
+	msg, _ := json.Marshal(map[string]interface{}{
+		"type": "broadcast",
+		"value": map[string]interface{}{
+			"type": "dashboard.telemetry",
+			"body": body,
+		},
+	})
+
+	Hub.Broadcast(string(msg))
 }
 
 // every time send:
@@ -98,17 +128,12 @@ func (t *Dashboard) broadcastAll() {
 	t.Cpu.Update()
 	t.Uptime.Update()
 
-	msg, _ := json.Marshal(
-		map[string]interface{}{"type": "broadcast",
-			"value": map[string]interface{}{"type": "telemetry", "body": map[string]interface{}{
-				"memory": t.Memory,
-				"cpu": map[string]interface{}{"usage":t.Cpu.Usage, "all": t.Cpu.All},
-				"time": time.Now(),
-				"uptime": t.Uptime,
-			}}},
-	)
-
-	Hub.Broadcast(string(msg))
+	t.sendMsg(map[string]interface{}{
+		"memory": t.Memory,
+		"cpu": map[string]interface{}{"usage":t.Cpu.Usage, "all": t.Cpu.All},
+		"time": time.Now(),
+		"uptime": t.Uptime,
+	})
 }
 
 func (t *Dashboard) GetStates() *Dashboard {
@@ -132,7 +157,7 @@ func (t *Dashboard) streamTelemetry(client *stream.Client, value interface{}) {
 	}
 
 	states := t.GetStates()
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "telemetry":
+	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "dashboard.telemetry":
 	map[string]interface{}{
 		"memory": states.Memory,
 		"cpu": map[string]interface{}{"usage":t.Cpu.Usage, "info": t.Cpu.Cpuinfo, "all": t.Cpu.All},
