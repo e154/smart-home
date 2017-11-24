@@ -6,7 +6,6 @@ import (
 	"github.com/e154/smart-home/api/core"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/stream"
-	"time"
 )
 
 func NewNode() (node *Nodes) {
@@ -33,18 +32,13 @@ func (n *Nodes) Update() {
 	}
 }
 
-func (n *Nodes) Broadcast() {
-
-	time.Sleep(time.Second)
+func (n *Nodes) Broadcast() (interface{}, bool) {
 
 	n.Update()
 
-	msg, _ := json.Marshal(map[string]interface{}{"type": "broadcast",
-		"value": map[string]interface{}{"type": "telemetry", "body": map[string]interface{}{
-			"nodes": n,
-		}}},
-	)
-	Hub.Broadcast(string(msg))
+	return map[string]interface{}{
+		"nodes": n,
+	}, true
 }
 
 // only on request: 'dashboard.get.nodes.status'

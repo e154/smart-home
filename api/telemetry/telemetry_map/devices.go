@@ -1,4 +1,4 @@
-package dasboard
+package telemetry_map
 
 import (
 	"encoding/json"
