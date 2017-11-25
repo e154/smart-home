@@ -16,15 +16,7 @@
 			"revision": "37be519d49878d0098e34fb614136b81e6c87861",
 			"branch": "master",
 			"notests": true
-		},
-        {
-            "importpath": "github.com/c9s/goprocinfo",
-            "repository": "https://github.com/c9s/goprocinfo",
-            "vcs": "git",
-            "revision": "19cb9f127a9c8d2034cf59ccb683cdb94b9deb6c",
-            "branch": "master",
-            "notests": true
-        },
+		}
         {
             "importpath": "github.com/dgrijalva/jwt-go",
             "repository": "https://github.com/dgrijalva/jwt-go",
