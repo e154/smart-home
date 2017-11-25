@@ -120,6 +120,14 @@
              "revision": "c87af80f3cc5036b55b83d77171e156791085e2e",
              "branch": "master",
              "notests": true
+        },
+        {
+             "importpath": "github.com/shirou/gopsutil",
+             "repository": "https://github.com/shirou/gopsutil",
+             "vcs": "git",
+             "revision": "bfe3c2e8f406bf352bc8df81f98c752224867349",
+             "branch": "master",
+             "notests": true
         }
 	]
 }
