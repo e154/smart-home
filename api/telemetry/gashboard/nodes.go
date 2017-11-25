@@ -6,6 +6,7 @@ import (
 	"github.com/e154/smart-home/api/core"
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/stream"
+	"sync"
 )
 
 func NewNode() (node *Nodes) {
@@ -18,13 +19,17 @@ func NewNode() (node *Nodes) {
 }
 
 type Nodes struct {
-	Total	int64			`json:"total"`
+	sync.Mutex
+	Total	int64				`json:"total"`
 	Status	map[int64]string	`json:"status"`
 }
 
 func (n *Nodes) Update() {
 	n.Total, _ = models.GetNodesCount()
 	nodes := core.CorePtr().GetNodes()
+
+	n.Lock()
+	defer n.Unlock()
 
 	n.Status = make(map[int64]string)
 	for _, node := range nodes {

@@ -70,12 +70,14 @@ func (b *Map) GetElement(device *models.Device) *MapElement {
 
 func (b *Map) NewMapElement(device *models.Device, state *models.DeviceState) *MapElement {
 
+	b.Lock()
 	b.elements[device.Id] = &MapElement{
 		Map: b,
 		Device: device,
 		State: state,
 		Options: nil,
 	}
+	b.Unlock()
 
 	return b.elements[device.Id]
 }
