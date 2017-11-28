@@ -1,4 +1,4 @@
-// +build linux,mips64,mips64le
+// +build mips64,mips64le
 
 package dasboard
 
