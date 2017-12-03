@@ -26,10 +26,6 @@ func (m *Worker) TableName() string {
 	return beego.AppConfig.String("db_workers")
 }
 
-func init() {
-	orm.RegisterModel(new(Worker))
-}
-
 // AddWorker insert a new Worker into database and returns
 // last inserted Id on success.
 func AddWorker(m *Worker) (id int64, err error) {

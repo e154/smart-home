@@ -21,10 +21,6 @@ func (m *Permission) TableName() string {
 	return beego.AppConfig.String("db_permissions")
 }
 
-func init() {
-	orm.RegisterModel(new(Permission))
-}
-
 // AddPermission insert a new Permission into database and returns
 // last inserted Id on success.
 func AddPermission(m *Permission) (id int64, err error) {

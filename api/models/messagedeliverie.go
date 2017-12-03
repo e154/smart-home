@@ -26,10 +26,6 @@ func (m *MessageDeliverie) TableName() string {
 	return beego.AppConfig.String("db_message_deliveries")
 }
 
-func init() {
-	orm.RegisterModel(new(MessageDeliverie))
-}
-
 // AddMessageDeliverie insert a new MessageDeliverie into database and returns
 // last inserted Id on success.
 func AddMessageDeliverie(m *MessageDeliverie) (id int64, err error) {

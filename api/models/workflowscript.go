@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 )
 
 type WorkflowScript struct {
@@ -13,8 +12,4 @@ type WorkflowScript struct {
 
 func (m *WorkflowScript) TableName() string {
 	return beego.AppConfig.String("db_workflow_scripts")
-}
-
-func init() {
-	orm.RegisterModel(new(WorkflowScript))
 }

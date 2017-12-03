@@ -20,10 +20,6 @@ func (m *MapImage) TableName() string {
 	return beego.AppConfig.String("db_map_images")
 }
 
-func init() {
-	orm.RegisterModel(new(MapImage))
-}
-
 // AddMapImage insert a new MapImage into database and returns
 // last inserted Id on success.
 func AddMapImage(m *MapImage) (id int64, err error) {

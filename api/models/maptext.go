@@ -20,10 +20,6 @@ func (m *MapText) TableName() string {
 	return beego.AppConfig.String("db_map_text")
 }
 
-func init() {
-	orm.RegisterModel(new(MapText))
-}
-
 // AddMapText insert a new MapText into database and returns
 // last inserted Id on success.
 func AddMapText(m *MapText) (id int64, err error) {

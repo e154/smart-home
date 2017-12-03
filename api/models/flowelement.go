@@ -30,10 +30,6 @@ func (m *FlowElement) TableName() string {
 	return beego.AppConfig.String("db_flow_elements")
 }
 
-func init() {
-	orm.RegisterModel(new(FlowElement))
-}
-
 // AddFlowElement insert a new FlowElement into database and returns
 // last inserted Id on success.
 func AddFlowElement(m *FlowElement) (id int64, err error) {

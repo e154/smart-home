@@ -25,10 +25,6 @@ func (m *WorkflowScenario) TableName() string {
 	return beego.AppConfig.String("db_workflow_scenarios")
 }
 
-func init() {
-	orm.RegisterModel(new(WorkflowScenario))
-}
-
 // AddScenario insert a new Scenario into database and returns
 // last inserted Id on success.
 func AddWorkflowScenario(m *WorkflowScenario) (id int64, err error) {

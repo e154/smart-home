@@ -29,10 +29,6 @@ func (m *MapLayer) TableName() string {
 	return beego.AppConfig.String("db_map_layers")
 }
 
-func init() {
-	orm.RegisterModel(new(MapLayer))
-}
-
 func (l SortMapLayersByWeight) Len() int           { return len(l) }
 func (l SortMapLayersByWeight) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 func (l SortMapLayersByWeight) Less(i, j int) bool { return l[i].Weight < l[j].Weight }

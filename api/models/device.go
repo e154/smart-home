@@ -35,10 +35,6 @@ func (m *Device) TableName() string {
 	return beego.AppConfig.String("db_devices")
 }
 
-func init() {
-	orm.RegisterModel(new(Device))
-}
-
 // AddDevice insert a new Device into database and returns
 // last inserted Id on success.
 func AddDevice(m *Device) (id int64, err error) {

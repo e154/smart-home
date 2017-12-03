@@ -26,10 +26,6 @@ func (m *Role) TableName() string {
 	return beego.AppConfig.String("db_roles")
 }
 
-func init() {
-	orm.RegisterModel(new(Role))
-}
-
 // AddRole insert a new Role into database and returns
 // last inserted Name on success.
 func AddRole(m *Role) (id int64, err error) {

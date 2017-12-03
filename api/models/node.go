@@ -36,10 +36,6 @@ func (m *Node) TableName() string {
 	return beego.AppConfig.String("db_nodes")
 }
 
-func init() {
-	orm.RegisterModel(new(Node))
-}
-
 // AddNode insert a new Node into database and returns
 // last inserted Id on success.
 func AddNode(m *Node) (id int64, err error) {

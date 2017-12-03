@@ -1,15 +1,10 @@
 package api
 
 import (
-	"fmt"
-	"time"
 	"io/ioutil"
 	"path/filepath"
 	"github.com/astaxie/beego/validation"
-	_ "github.com/astaxie/beego/session/mysql"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"github.com/e154/smart-home/api/routers"
 	"github.com/e154/smart-home/api/filters"
 	"github.com/e154/smart-home/api/core"
@@ -18,9 +13,10 @@ import (
 	"github.com/e154/smart-home/api/notifr"
 	"github.com/e154/smart-home/api/telemetry"
 	"github.com/e154/smart-home/api/variable"
+	"github.com/e154/smart-home/database"
 )
 
-func configuration() {
+func configuration(testMode bool) {
 
 	// check if exist data dir
 	data_dir := beego.AppConfig.String("data_dir")
@@ -29,25 +25,12 @@ func configuration() {
 		return
 	}
 
-	// site base
-	db_user := beego.AppConfig.String("db_user")
-	db_pass := beego.AppConfig.String("db_pass")
-	db_host := beego.AppConfig.String("db_host")
-	db_name := beego.AppConfig.String("db_name")
-	db_port := beego.AppConfig.String("db_port")
-	// parseTime https://github.com/go-sql-driver/mysql#parsetime
-	db := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", db_user, db_pass, db_host, db_port, db_name)
-	orm.RegisterDataBase("default", "mysql", db, 30, 30)
-	// Timezone http://beego.me/docs/mvc/model/orm.md#timezone-config
-	orm.DefaultTimeLoc, _ = time.LoadLocation("Asia/Novosibirsk")
+	if !testMode {
+		// run database
+		db := database.Initialize(false)
 
-	// run migration
-	Migration(db)
-
-	if(beego.BConfig.RunMode == "dev") {
-		if orm_debug, _ := beego.AppConfig.Bool("orm_debug"); orm_debug {
-			orm.Debug = true
-		}
+		// run migration
+		database.Migration(db)
 	}
 
 	log.Info("AppPath:", beego.AppPath)
@@ -92,9 +75,9 @@ func configuration() {
 	filters.RegisterFilters()
 }
 
-func Initialize() {
+func Initialize(testMode bool) {
 
-	configuration()
+	configuration(testMode)
 
 	// init settings
 	variable.Initialize()
@@ -114,6 +97,10 @@ func Initialize() {
 	// core
 	if err := core.Initialize(t); err != nil {
 		log.Error(err.Error())
+	}
+
+	if testMode {
+		return
 	}
 
 	log.Info("Starting....")

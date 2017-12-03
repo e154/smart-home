@@ -158,6 +158,14 @@ cp conf/prod/db.sample.conf conf/prod/db.conf
 
 Это все.
 
+### Тестирование
+
+Система поддерживает самотестирование внутренних компонентов, и запускается командой
+
+```bash
+go test ./tests -v
+```
+
 ### Поддержка
 
 Сайт поддержки и накопления знаний: [https://e154.github.io/smart-home](https://e154.github.io/smart-home/)

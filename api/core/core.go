@@ -39,6 +39,28 @@ func (b *Core) Run() (err error) {
 	return
 }
 
+func (b *Core) Stop() (err error) {
+
+	for _, workflow := range b.workflows {
+		b.DeleteWorkflow(workflow.model)
+	}
+
+	for _, node := range b.nodes {
+		b.RemoveNode(node)
+	}
+
+	return
+}
+
+func (b *Core) Restart() (err error) {
+
+	b.Stop()
+
+	b.Run()
+
+	return
+}
+
 // ------------------------------------------------
 // Workflows
 // ------------------------------------------------

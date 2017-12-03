@@ -155,6 +155,14 @@ for test
 
 It's all
 
+### Testing
+
+The system supports self-testing of internal components, and is started by the command
+
+```bash
+go test ./tests -v
+```
+
 ### Support 
 
 Smart home Wiki: [e154.github.io/smart-home](https://e154.github.io/smart-home/)

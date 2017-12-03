@@ -120,6 +120,14 @@
              "revision": "bfe3c2e8f406bf352bc8df81f98c752224867349",
              "branch": "master",
              "notests": true
+        },
+        {
+            "importpath": "github.com/DATA-DOG/godog",
+            "repository": "https://github.com/DATA-DOG/godog",
+            "vcs": "git",
+            "revision": "272624afcc2fc5f818ce069e2e417e7b4fa8bb6c",
+            "branch": "master",
+            "notests": true
         }
 	]
 }

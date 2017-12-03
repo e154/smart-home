@@ -26,10 +26,6 @@ func (m *DeviceAction) TableName() string {
 	return beego.AppConfig.String("db_device_actions")
 }
 
-func init() {
-	orm.RegisterModel(new(DeviceAction))
-}
-
 // AddDeviceAction insert a new DeviceAction into database and returns
 // last inserted Id on success.
 func AddDeviceAction(m *DeviceAction) (id int64, err error) {

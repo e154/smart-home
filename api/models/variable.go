@@ -16,10 +16,6 @@ func (m *Variable) TableName() string {
 	return beego.AppConfig.String("db_variables")
 }
 
-func init() {
-	orm.RegisterModel(new(Variable))
-}
-
 // GetVariableByName retrieves Variable by Name. Returns error if
 // Name doesn't exist
 func GetVariableByName(name string) (v *Variable, err error) {

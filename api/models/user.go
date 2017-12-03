@@ -50,10 +50,6 @@ func (m *User) TableName() string {
 	return beego.AppConfig.String("db_users")
 }
 
-func init() {
-	orm.RegisterModel(new(User))
-}
-
 // AddUser insert a new User into database and returns
 // last inserted Id on success.
 func AddUser(m *User) (id int64, err error) {

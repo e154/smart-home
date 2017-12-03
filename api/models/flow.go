@@ -29,10 +29,6 @@ func (m *Flow) TableName() string {
 	return beego.AppConfig.String("db_flows")
 }
 
-func init() {
-	orm.RegisterModel(new(Flow))
-}
-
 // AddFlow insert a new Flow into database and returns
 // last inserted Id on success.
 func AddFlow(m *Flow) (id int64, err error) {

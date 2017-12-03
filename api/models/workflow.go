@@ -28,10 +28,6 @@ func (m *Workflow) TableName() string {
 	return beego.AppConfig.String("db_workflows")
 }
 
-func init() {
-	orm.RegisterModel(new(Workflow))
-}
-
 // AddWorkflow insert a new Workflow into database and returns
 // last inserted Id on success.
 func AddWorkflow(m *Workflow) (id int64, err error) {
