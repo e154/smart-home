@@ -1,5 +1,3 @@
-// +build mips64,mips64le
-
 package dasboard
 
 type Uptime struct {

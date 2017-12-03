@@ -1,3 +1,5 @@
+//+build linux windows darwin,!386
+
 package dasboard
 
 import (
