@@ -4,6 +4,7 @@ import (
 	"os"
 	"log"
 	"strings"
+	"runtime/trace"
 )
 
 var (
@@ -16,17 +17,37 @@ func main() {
 	rootDir := strings.Split(cwd, "tests/")
 	os.Args[0] = rootDir[0]
 
-	// just start
 	args := os.Args
-	if len(args) == 1 {
+	switch len(args) {
+	case 1:
 		stdlog.Printf(shortVersionBanner, "")
 		ServiceInitialize()
-		return
-	}
+	case 2:
+		switch args[1] {
+		case "trace":
+			stdlog.Println("Trace mode enabled")
+			f, err := os.Create("trace.out")
+			if err != nil {
+				panic(err)
+			}
 
-	switch args[1] {
-	case "install", "remove", "start", "stop", "status":
-		ServiceInitialize()
+			defer f.Close()
+
+			if err = trace.Start(f); err != nil {
+				panic(err)
+			}
+
+			defer trace.Stop()
+
+			ServiceInitialize()
+
+		case "install", "remove", "start", "stop", "status":
+			ServiceInitialize()
+
+		default:
+			stdlog.Printf(verboseVersionBanner, "", args[0])
+		}
+
 	default:
 		stdlog.Printf(verboseVersionBanner, "", args[0])
 	}
