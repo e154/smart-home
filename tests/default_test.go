@@ -3,10 +3,12 @@ package test
 import (
 	"os"
 	"fmt"
+	"bytes"
 	"testing"
 	"net/http"
 	"encoding/json"
 	"path/filepath"
+	"encoding/base64"
 	"net/http/httptest"
 	"github.com/astaxie/beego"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -14,6 +16,7 @@ import (
 	"github.com/e154/smart-home/database"
 	server "github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/api/core"
+	"github.com/astaxie/beego/orm"
 )
 
 var (
@@ -63,7 +66,10 @@ func TestMain(m *testing.M) {
 
 
 type apiFeature struct {
-	resp 	*httptest.ResponseRecorder
+	resp 			*httptest.ResponseRecorder
+	headParams 		map[string]string
+	jsonStr 		[]byte
+	access_token	string
 }
 
 func (a *apiFeature) resetResponse(interface{}) {
@@ -73,11 +79,20 @@ func (a *apiFeature) resetResponse(interface{}) {
 func (a *apiFeature) iSendrequestTo(method, endpoint string) (err error) {
 
 	uri := fmt.Sprintf("%s%s",a.basePath(), endpoint)
-	//fmt.Println("url:", u)
+	//fmt.Println("url:", uri)
 
-	req, err := http.NewRequest(method, uri, nil)
-	if err != nil {
-		return
+	req, _ := http.NewRequest(method, uri, bytes.NewBuffer(a.jsonStr))
+	req.Header.Set("Content-Type", "application/json")
+	req.RequestURI = endpoint
+
+	if a.headParams != nil {
+		for k, v := range a.headParams {
+			req.Header.Set(k, v)
+		}
+	}
+
+	if a.access_token != "" {
+		req.Header.Set("access_token", a.access_token)
 	}
 
 	// handle panic
@@ -149,6 +164,41 @@ func (a *apiFeature) theResponseShouldMatchJSON(body *gherkin.DocString) (err er
 	return
 }
 
+func (a *apiFeature) Authorization(name, password string) (err error) {
+
+	var auth string = base64.StdEncoding.EncodeToString([]byte(name + ":" + password))
+
+	a.headParams["Authorization"] = "Basic " + auth
+
+	a.jsonStr = []byte{}
+
+	if err = a.iSendrequestTo("GET", "/api/v1/signin"); err != nil {
+		return
+	}
+
+	act := make(map[string]interface{})
+	if err = json.Unmarshal(a.resp.Body.Bytes(), &act); err != nil {
+		return
+	}
+
+	if _, ok := act["access_token"]; ok {
+		a.access_token = act["access_token"].(string)
+	}
+
+	return
+}
+
+func (a *apiFeature) iFinishingTheSession() (err error) {
+
+	if a.access_token == "" {
+		return
+	}
+
+	err = a.iSendrequestTo("POST", "/api/v1/signout")
+
+	return
+}
+
 func (a *apiFeature) DropDb() error {
 
 	// stop server
@@ -163,11 +213,28 @@ func (a *apiFeature) DropDb() error {
 	// run server
 	core.CorePtr().Run()
 
+	a.DbPrepare()
+
 	return nil
 }
 
+func (a *apiFeature) DbPrepare() {
+
+	o := orm.NewOrm()
+
+	o.Raw(`INSERT INTO users ( created_at, update_at, email, encrypted_password, first_name,
+	id, lang, last_name, nickname, role_name, status, history, reset_password_token, authentication_token, sign_in_count, current_sign_in_ip)
+	VALUES ( '2017-12-04 15:08:56', '2017-12-04 15:08:56', 'test@e154.ru', '05a671c66aefea124cc08b76ea6d30bb',
+	 'John', 3, 'en', 'Doe', 'test', 'demo', 'active', '[]', '', '', 0, '');`).Exec()
+
+}
+
 func FeatureContext(s *godog.Suite) {
-	api = &apiFeature{}
+	api = &apiFeature{
+		headParams: make(map[string]string),
+	}
+
+	api.DbPrepare()
 
 	s.BeforeScenario(func(interface{}) {
 		api.resetResponse(nil)
@@ -177,4 +244,6 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^database is clean`, api.DropDb)
 	s.Step(`^the response code should be (\d+)$`, api.theResponseCodeShouldBe)
 	s.Step(`^the response should match json:$`, api.theResponseShouldMatchJSON)
+	s.Step(`^I authorization with user "([^"]*)" and password "([^"]*)"$`, api.Authorization)
+	s.Step(`^I finishing the session$`, api.iFinishingTheSession)
 }

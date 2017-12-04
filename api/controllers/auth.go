@@ -112,6 +112,8 @@ func (h *AuthController) SignIn() {
 
 	log.Infof("Successful login, user: %s", user.Email)
 
+	h.Ctx.ResponseWriter.WriteHeader(201)
+
 	h.Data["json"] = &map[string]interface{}{"access_token": token, "current_user": current_user}
 	h.ServeJSON()
 }
@@ -122,7 +124,28 @@ func (h *AuthController) SignIn() {
 // @Success 201 {object}
 // @Failure 403
 // @router /signout [post]
-func (h *AuthController) SignOut() {}
+func (h *AuthController) SignOut() {
+
+	access_token := h.Ctx.Input.Header("access_token")
+	if access_token == "" {
+		h.ErrHan(403, "access_token is empty")
+		return
+	}
+
+	user, err := h.GetCurrentUser()
+	if err != nil {
+		h.ErrHan(403, err.Error())
+		return
+	}
+
+	if err = user.SetToken(""); err != nil {
+		h.ErrHan(403, err.Error())
+		return
+	}
+
+	h.Ctx.ResponseWriter.WriteHeader(201)
+	h.ServeJSON()
+}
 
 // @Title Recovery
 // @Description user account page
