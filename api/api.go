@@ -42,7 +42,7 @@ func configuration(testMode bool) {
 	}
 
 	file_storage_path := beego.AppConfig.String("file_storage_path")
-	beego.SetStaticPath("/static", filepath.Join(data_dir, file_storage_path))
+	beego.SetStaticPath("/upload", filepath.Join(data_dir, file_storage_path))
 
 	beego.BConfig.WebConfig.AutoRender = false
 	beego.BConfig.WebConfig.EnableXSRF = false

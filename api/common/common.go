@@ -137,7 +137,7 @@ func GetFullPath(name string) string {
 
 func GetLinkPath(name string) string {
 
-	dir := "/static"
+	dir := "/upload"
 
 	count := utf8.RuneCountInString(name)
 	if count < 9 {
