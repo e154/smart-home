@@ -59,5 +59,5 @@ func (d *Devices) streamGetDevicesStates(client *stream.Client, value interface{
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "states": d.Status})
 
-	client.Send(string(msg))
+	client.Send <- msg
 }

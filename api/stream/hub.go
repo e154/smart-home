@@ -4,61 +4,110 @@ import (
 	"encoding/json"
 	"github.com/e154/smart-home/api/log"
 	"sync"
+	"time"
+	"github.com/gorilla/websocket"
+	"io/ioutil"
+	"os"
+	"os/signal"
 )
 
 const (
+	writeWait = 10 * time.Second
 	maxMessageSize = 512
+	pongWait = 60 * time.Second
+	pingPeriod = (pongWait * 9) / 10
 )
 
 type Hub interface {
-	Broadcast(message string)
+	Broadcast(message []byte)
 	Subscribe(command string, f func(client *Client, value interface{}))
 	UnSubscribe(command string)
 	AddClient(client *Client)
 }
 
-var instantiated *hub
-
 type hub struct {
-	sessions map[*Client]bool
+	sessions    map[*Client]bool
 	subscribers map[string]func(client *Client, value interface{})
 	sync.Mutex
-	broadcast chan string
+	broadcast   chan []byte
+	interrupt	chan os.Signal
 }
 
+var (
+	instantiated *hub
+)
+
 func (h *hub) AddClient(client *Client) {
-	log.Infof("new sockjs session established, from ip: %s", client.Ip)
+
+	defer func(){
+		delete(h.sessions, client)
+		log.Infof("websocket session from ip: %s closed", client.Ip)
+	}()
 
 	h.sessions[client] = true
-	var closedSession = make(chan struct{})
-	for {
-		if msg, err := client.Session.Recv(); err == nil {
-			h.Recv(client, msg)
-			continue
-		}
-		break
-	}
+	switch client.ConnType {
+	case SOCKJS:
+		log.Infof("new sockjs session established, from ip: %s", client.Ip)
 
-	delete(h.sessions, client)
-	close(closedSession)
-	log.Infof("sockjs session from ip: %s closed", client.Ip)
+		for {
+			if msg, err := client.Session.Recv(); err == nil {
+				h.Recv(client, []byte(msg))
+				continue
+			}
+			break
+		}
+	case WEBSOCK:
+		log.Infof("new websocket xsession established, from ip: %s", client.Ip)
+
+		//client.Connect.SetReadLimit(maxMessageSize)
+		client.Connect.SetReadDeadline(time.Now().Add(pongWait))
+		client.Connect.SetPongHandler(func(string) error {
+			client.Connect.SetReadDeadline(time.Now().Add(pongWait)); return nil
+		})
+		for {
+			op, r, err := client.Connect.NextReader()
+			if err != nil {
+				break
+			}
+			switch op {
+			case websocket.TextMessage:
+				message, err := ioutil.ReadAll(r)
+				if err != nil {
+					break
+				}
+				h.Recv(client, message)
+			}
+		}
+	default:
+
+	}
 }
 
 func (h *hub) Run() {
+
+
 
 	for {
 		select {
 		case m := <-h.broadcast:
 			for client := range h.sessions {
-				client.Session.Send(m)
+				client.Send <- m
+			}
+		case <- h.interrupt:
+			//fmt.Println("Close websocket client session")
+			for client := range h.sessions {
+				client.Close()
+				delete(h.sessions, client)
 			}
 		}
+
 	}
 }
 
-func (h *hub) Recv(client *Client, message string) {
+func (h *hub) Recv(client *Client, message []byte) {
+
 	re := map[string]interface{}{}
-	if err := json.Unmarshal([]byte(message), &re); err != nil {
+	if err := json.Unmarshal(message, &re); err != nil {
 		client.Notify("error", err.Error())
 		return
 	}
@@ -79,11 +128,11 @@ func (h *hub) Recv(client *Client, message string) {
 	}
 }
 
-func (h *hub) Send(client *Client, message string) {
-	client.Session.Send(message)
+func (h *hub) Send(client *Client, message []byte) {
+	client.Send <- message
 }
 
-func (h *hub) Broadcast(message string) {
+func (h *hub) Broadcast(message []byte) {
 	h.Lock()
 	h.broadcast <- message
 	h.Unlock()
@@ -113,11 +162,16 @@ func (h *hub) UnSubscribe(command string) {
 }
 
 func GetHub() Hub {
+
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+
 	if instantiated == nil {
 		instantiated = &hub{
 			sessions: make(map[*Client]bool),
-			broadcast: make(chan string, maxMessageSize),
+			broadcast: make(chan []byte, maxMessageSize),
 			subscribers: make(map[string]func(client *Client, value interface{})),
+			interrupt: interrupt,
 		}
 
 		go instantiated.Run()

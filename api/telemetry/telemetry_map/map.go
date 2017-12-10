@@ -78,7 +78,7 @@ func (t *Map) sendMsg (body interface{}) {
 		},
 	})
 
-	Hub.Broadcast(string(msg))
+	Hub.Broadcast(msg)
 }
 
 // only on request: 'map.get.telemetry'

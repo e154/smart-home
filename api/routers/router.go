@@ -17,8 +17,10 @@ func Initialize() {
 			beego.NSRouter("/reset", &controllers.AuthController{}, "post:Reset"),
 			beego.NSRouter("/access_list", &controllers.AuthController{}, "get:AccessList"),
 
-			beego.NSRouter("/ws)", &stream.StreamCotroller{}, "get:Get"),
-			beego.NSRouter("/ws/*)", &stream.StreamCotroller{}, "get:Get"),
+			beego.NSRouter("/ws", &stream.StreamCotroller{}, "get:Ws"),
+			beego.NSRouter("/ws*", &stream.StreamCotroller{}, "get:Ws"),
+			beego.NSRouter("/sockjs", &stream.StreamCotroller{}, "get:SockJs"),
+			beego.NSRouter("/sockjs/*", &stream.StreamCotroller{}, "get:SockJs"),
 
 			beego.NSRouter("/node/:id([0-9]+)", &controllers.NodeController{}, "get:GetOne"),
 			beego.NSRouter("/node", &controllers.NodeController{}, "get:GetAll"),
