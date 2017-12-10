@@ -16,6 +16,7 @@ const (
 
 var (
 	h http.Handler
+	upgrader = websocket.Upgrader{} // use default options
 )
 
 type StreamCotroller struct {
@@ -36,6 +37,7 @@ func (w *StreamCotroller) Ws() {
 	w.Ctx.ResponseWriter.Header().Del("Access-Control-Allow-Credentials")
 
 	conn, err := websocket.Upgrade(w.Ctx.ResponseWriter, w.Ctx.Request, nil, 1024, 1024)
+	//conn, err := upgrader.Upgrade(w.Ctx.ResponseWriter, w.Ctx.Request, nil)
 	if _, ok := err.(websocket.HandshakeError); ok {
 		http.Error(w.Ctx.ResponseWriter, "Not a websocket handshake", 400)
 		return
