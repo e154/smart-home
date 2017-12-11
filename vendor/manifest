@@ -77,7 +77,7 @@
              "importpath": "github.com/gorilla/websocket",
              "repository": "https://github.com/gorilla/websocket",
              "vcs": "git",
-             "revision": "2257eda00b2084c1351cd672aa5476daa9f5e463",
+             "revision": "c55883f97322b4bcbf48f734e23d6ab3af1ea488",
              "branch": "master",
              "notests": true
         },
@@ -126,14 +126,6 @@
             "repository": "https://github.com/DATA-DOG/godog",
             "vcs": "git",
             "revision": "272624afcc2fc5f818ce069e2e417e7b4fa8bb6c",
-            "branch": "master",
-            "notests": true
-        },
-        {
-            "importpath": "github.com/gorilla/websocket",
-            "repository": "https://github.com/gorilla/websocket",
-            "vcs": "git",
-            "revision": "c55883f97322b4bcbf48f734e23d6ab3af1ea488",
             "branch": "master",
             "notests": true
         }
