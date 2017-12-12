@@ -36,6 +36,8 @@ func (e *MapElement) GetState() interface{} {
 func (e *MapElement) SetOptions(options interface{}) {
 
 	e.Options = options
+
+	e.Map.telemetry.BroadcastOne("devices", e.Device.Id)
 }
 
 func (e *MapElement) GetOptions() interface{} {

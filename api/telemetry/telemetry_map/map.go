@@ -2,7 +2,6 @@ package telemetry_map
 
 import (
 	"github.com/e154/smart-home/api/stream"
-	"github.com/e154/smart-home/api/models"
 	"encoding/json"
 )
 
@@ -16,7 +15,7 @@ func NewMap() *Map {
 
 	_map := &Map{
 		Devices: &Devices{
-			Status: make(map[int64]*models.DeviceState),
+			DeviceStats: make(map[int64]*DeviceState),
 		},
 	}
 
