@@ -11,17 +11,7 @@
     
     
     <item>
-      <title>overview</title>
-      <link>https://e154.github.io/smart-home/javascript/_overview/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://e154.github.io/smart-home/javascript/_overview/</guid>
-      <description>Обзор API SmartHome. Объекты и функции, методы, свойства объектов, используемых для управления устройствами &amp;ldquo;умного дома&amp;rdquo;
-Методы Объект IC - глобальный объект, содержащий в себе все функции и константы API SmartHome.</description>
-    </item>
-    
-    <item>
-      <title>overview</title>
+      <title>flow</title>
       <link>https://e154.github.io/smart-home/javascript/_flow/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -32,6 +22,30 @@ flow = IC.Flow() return if !flow  На выходе
 .getName() Получить наименование текущего Flow процесса.
 flow = IC.Flow() if flow name = flow.getName() print &#39;flow name&#39;, name  На выходе
    Значение Описание     name type: string    .</description>
+    </item>
+    
+    <item>
+      <title>log</title>
+      <link>https://e154.github.io/smart-home/javascript/_log/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_log/</guid>
+      <description> IC.Log Логирование состояния.
+log = IC.Log  На выходе
+   Значение Описание     log type: Object, ссылка на экземпляр *Log    Доступные методы приведены далее:
+.info() IC.Log.info(&#39;Info message&#39;)  .warn() IC.Log.warn(&#39;Warning message&#39;)  .error() IC.Log.error(&#39;Error message&#39;)  .debug() IC.Log.debug(&#39;Debug message&#39;)  </description>
+    </item>
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/javascript/_overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_overview/</guid>
+      <description>Обзор API SmartHome. Объекты и функции, методы, свойства объектов, используемых для управления устройствами &amp;ldquo;умного дома&amp;rdquo;
+Методы Объект IC - глобальный объект, содержащий в себе все функции и константы API SmartHome.
+пример скрипта
+# Контекст применения: # action (действие) # # Описание: # Проверка состояния устройства. (частное) # Не имеет зависимостей, и ни чего не передает наружу # Должен вызываться в рамках воркера, или действия устройства, # иначе выдаст ошибку, так как контекст выполнения накладывает # некоторые ограничения fetchStatus =(node, dev)-&amp;gt; # номер комманнды # 3 - проверка состояния # 4 - выполнить комманду FUNCTION = 3 # получим адрес устройства из контекста запуска DEVICE_ADDR = dev.</description>
     </item>
     
     <item>

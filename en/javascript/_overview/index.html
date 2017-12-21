@@ -110,7 +110,20 @@
                 <div class="row">
                     <div class="col-md-9" role="main">
                         
-                            <h2 id="overview" class="page-header">Overview</h2>
+                            
+
+<h2 id="overview">Обзор</h2>
+
+<p><strong>API SmartHome</strong>. Объекты и функции, методы, свойства объектов, используемых для управления
+устройствами &ldquo;умного дома&rdquo;</p>
+
+<h2 id="методы">Методы</h2>
+
+<p>Объект IC - глобальный объект, содержащий в себе все функции и константы API SmartHome.</p>
+
+<p><img src="/smart-home/img/schematic/workflow.svg" alt="smart-home workflow schematic map"></p>
+
+<p><img src="/smart-home/img/schematic/flow.svg" alt="smart-home flow schematic map"></p>
 
                         
                     </div>
@@ -122,8 +135,152 @@
     <ul class="nav">
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#overview">
-                Overview
+            <a class="bd-toc-link" href="#ic_workflow">
+                IC.Workflow()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_workflow_get_name">
+                -&gt; getName()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_workflow_get_description">
+                -&gt; getDescription()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_workflow_set_var">
+                -&gt; setVar(key, value)
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_workflow_get_var">
+                -&gt; getVar(key)
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_workflow_get_scenario">
+                -&gt; getScenario(name)
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_workflow_set_scenario">
+                -&gt; setScenario(name)
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_flow">
+                IC.Flow()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_flow_get_name">
+                -&gt; getName()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_flow_set_var">
+                -&gt; setVar(key, value)
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_flow_get_var">
+                -&gt; getVar(key)
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_flow_node">
+                -&gt; node()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log">
+                IC.Log
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log_info">
+                -&gt; info()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log_warn">
+                -&gt; warn()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log_error">
+                -&gt; error()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log_debug">
+                -&gt; debug()
             </a>
             <ul class="nav bd-sidenav">
                 

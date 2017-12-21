@@ -80,7 +80,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript/_flow/">English</a>
+                    <a href="https://e154.github.io/smart-home/en/javascript/_log/">English</a>
                 </li>
                 
                 
@@ -97,7 +97,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>flow</h1>
+            <h1>log</h1>
             
         </div>
     </div>
@@ -112,13 +112,11 @@
                         
                             
 
-<h2 id="ic_flow">IC.Flow()</h2>
+<h2 id="ic_log">IC.Log</h2>
 
-<p>Получить текущий процесс. Может вырнуть <em>null</em> если скрипт запускается
-вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Логирование состояния.</p>
 
-<pre><code class="language-coffeescript">flow = IC.Flow()
-return if !flow
+<pre><code class="language-coffeescript">log = IC.Log
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -133,128 +131,32 @@ return if !flow
 
 <tbody>
 <tr>
-<td><code>flow</code></td>
-<td>type: Object, ссылка на экземпляр *Flow</td>
+<td><code>log</code></td>
+<td>type: Object, ссылка на экземпляр *Log</td>
 </tr>
 </tbody>
 </table>
 
 <p>Доступные методы приведены далее:</p>
 
-<h3 id="ic_flow_get_name">.getName()</h3>
+<h3 id="ic_log_info">.info()</h3>
 
-<p>Получить наименование текущего Flow процесса.</p>
-
-<pre><code class="language-coffeescript">flow = IC.Flow()
-if flow
- name = flow.getName()
- print 'flow name', name
+<pre><code class="language-coffeescript">IC.Log.info('Info message')
 </code></pre>
 
-<p><strong>На выходе</strong></p>
+<h3 id="ic_log_warn">.warn()</h3>
 
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>name</code></td>
-<td>type: string</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="ic_flow_set_var">.setVar(key, value)</h3>
-
-<p>Запомнить переменнную в хранилище <a href="#ic_flow">Flow</a>. Хранилище позволяет
-сохранять состояния на время жизни <a href="#ic_flow">Flow</a></p>
-
-<pre><code class="language-coffeescript">flow = IC.Flow()
-if flow
- flow.setVar(&quot;key&quot;, &quot;value&quot;)
+<pre><code class="language-coffeescript">IC.Log.warn('Warning message')
 </code></pre>
 
-<p><strong>На входе</strong></p>
+<h3 id="ic_log_warn-1">.error()</h3>
 
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>key</code></td>
-<td>type: string</td>
-</tr>
-
-<tr>
-<td><code>value</code></td>
-<td>type: interface</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="ic_flow_get_var">.getVar(key)</h3>
-
-<p>Получить ранее записанную переменную</p>
-
-<pre><code class="language-coffeescript">wf = IC.Flow()
-if wf
-  variable = wf.getVar(key)
+<pre><code class="language-coffeescript">IC.Log.error('Error message')
 </code></pre>
 
-<p><strong>На входе</strong></p>
+<h3 id="ic_log_debug">.debug()</h3>
 
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>key</code></td>
-<td>type: string</td>
-</tr>
-</tbody>
-</table>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>variable</code></td>
-<td>type: interface</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="ic_flow_node">.node()</h3>
-
-<p>Получить ноду</p>
-
-<pre><code class="language-coffeescript">flow = IC.Flow()
-if flow
- node = flow.node()
- print 'flow node', node
+<pre><code class="language-coffeescript">IC.Log.debug('Debug message')
 </code></pre>
 
                         
@@ -469,7 +371,7 @@ if flow
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/en/javascript/_flow/">en</a>
+                <a href="https://e154.github.io/smart-home/en/javascript/_log/">en</a>
             </li>
             
             

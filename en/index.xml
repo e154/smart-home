@@ -21,20 +21,63 @@
     
     <item>
       <title>overview</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_overview/</guid>
+      <description>Обзор API SmartHome. Объекты и функции, методы, свойства объектов, используемых для управления устройствами &amp;ldquo;умного дома&amp;rdquo;
+Методы Объект IC - глобальный объект, содержащий в себе все функции и константы API SmartHome.</description>
+    </item>
+    
+    <item>
+      <title>workflow</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_workflow/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_workflow/</guid>
+      <description>IC.Workflow() Получить текущий Workflow. Выражение может вырнуть null если скрипт исполняется вне контекста Workflow
+Синтаксис
+workflow = IC.Workflow()  На выходе
+   Значение Описание     workflow type: Object, ссылка на экземпляр *Workflow    Доступные методы приведены далее:
+.getName() Получить наименование текущего Workflow
+Синтаксис
+wf = IC.Workflow() if wf name = wf.getName() print &#39;wf name&#39;, name  .getDescription() Получить описание текущего Workflow
+wf = IC.</description>
+    </item>
+    
+    <item>
+      <title>flow</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_flow/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_flow/</guid>
+      <description>IC.Flow() Получить текущий процесс. Может вырнуть null если скрипт запускается вне контекста Workflow
+flow = IC.Flow() return if !flow  На выходе
+   Значение Описание     flow type: Object, ссылка на экземпляр *Flow    Доступные методы приведены далее:
+.getName() Получить наименование текущего Flow процесса.
+flow = IC.Flow() if flow name = flow.getName() print &#39;flow name&#39;, name  На выходе
+   Значение Описание     name type: string    .</description>
+    </item>
+    
+    <item>
+      <title>log</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_log/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_log/</guid>
+      <description> IC.Log Логирование состояния.
+log = IC.Log  На выходе
+   Значение Описание     log type: Object, ссылка на экземпляр *Log    Доступные методы приведены далее:
+.info() IC.Log.info(&#39;Info message&#39;)  .warn() IC.Log.warn(&#39;Warning message&#39;)  .error() IC.Log.error(&#39;Error message&#39;)  .debug() IC.Log.debug(&#39;Debug message&#39;)  </description>
+    </item>
+    
+    <item>
+      <title>overview</title>
       <link>https://e154.github.io/smart-home/en/getting-started/_overview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/en/getting-started/_overview/</guid>
       <description>section is at the stage of translation</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>https://e154.github.io/smart-home/en/javascript/_workflow/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://e154.github.io/smart-home/en/javascript/_workflow/</guid>
-      <description></description>
     </item>
     
     <item>
@@ -71,15 +114,6 @@
       
       <guid>https://e154.github.io/smart-home/en/projects/project-1/</guid>
       <description> An example of a typical project Smart House </description>
-    </item>
-    
-    <item>
-      <title>overview</title>
-      <link>https://e154.github.io/smart-home/en/javascript/_overview/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://e154.github.io/smart-home/en/javascript/_overview/</guid>
-      <description>Overview </description>
     </item>
     
   </channel>

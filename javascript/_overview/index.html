@@ -125,6 +125,83 @@
 
 <p><img src="/smart-home/img/schematic/flow.svg" alt="smart-home flow schematic map"></p>
 
+<p><strong>пример скрипта</strong></p>
+
+<pre><code class="language-coffeescript"># Контекст применения: 
+# action (действие)
+#
+# Описание:
+# Проверка состояния устройства. (частное)
+# Не имеет зависимостей, и ни чего не передает наружу
+# Должен вызываться в рамках воркера, или действия устройства,
+# иначе выдаст ошибку, так как контекст выполнения накладывает 
+# некоторые ограничения
+
+fetchStatus =(node, dev)-&gt;
+
+    # номер комманнды 
+    # 3 - проверка состояния
+    # 4 - выполнить комманду
+    FUNCTION = 3
+
+    # получим адрес устройства из контекста запуска
+    DEVICE_ADDR = dev.address
+    
+    COMMAND = [DEVICE_ADDR, FUNCTION, 0, 0, 0, 5]
+    
+    # получить инстанс элемента на карте
+    element = IC.Map.getElement dev
+    
+    # можно вывести произвольный текст под элементом
+    # для отображения актуального состояния
+    element.setOptions {text: 'some state'}
+    
+    # запрос состояния устройства
+    from_node = node.send 'modbus', dev, true, COMMAND
+    
+    # запрос завершился c ошибкой    
+    if from_node.error
+        message.setError from_node.error
+        
+        # указать состояние, элемент автоматически изменит внешний вид
+        # в зависимости от настроек состояний
+        element.setState 'ERROR'
+        
+        # IC.Log.error &quot;#{dev.name} - error: #{from_node.error}&quot;
+        return false
+       
+    # запрос отработал без ошибок, и что-то вернул
+    if from_node.result != &quot;&quot;
+    
+        # так как тип запроса был modbus 
+        # для работы с ответом нужно преобразовать его к массиву 
+        result = IC.hex2arr(from_node.result)
+        
+        # в данном случае 1 означает что устройство включено
+        # и функционирует, соответствунно сотоянию выставим 
+        # состояние элемента карты
+        if result[2] == 1
+            element.setState 'ENABLED'
+        else
+            element.setState 'DISABLED'
+    
+    # print 'dev:', DEVICE_ADDR, 'state', element.getState().systemName
+    
+    from_node.result
+
+main =-&gt;
+    
+    node = IC.CurrentNode()
+    dev = IC.CurrentDevice()
+    
+    return if !node || !dev
+    
+    fetchStatus(node, dev)
+    
+</code></pre>
+
+<p><img src="/smart-home/img/schematic/screenshot.png" alt="smart-home scripts"></p>
+
                         
                     </div>
 
@@ -236,6 +313,51 @@
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#ic_flow_node">
                 -&gt; node()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log">
+                IC.Log
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log_info">
+                -&gt; info()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log_warn">
+                -&gt; warn()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log_error">
+                -&gt; error()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_log_debug">
+                -&gt; debug()
             </a>
             <ul class="nav bd-sidenav">
                 

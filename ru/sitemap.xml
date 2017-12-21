@@ -50,6 +50,30 @@
   
   <url>
     <loc>https://e154.github.io/smart-home/javascript/_flow/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_flow/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_flow/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/javascript/_log/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_log/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_log/"
+                />
   </url>
   
   <url>
