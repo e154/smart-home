@@ -2,6 +2,15 @@ package core
 
 import "github.com/e154/smart-home/api/models"
 
+// Javascript Binding
+//
+// IC.Flow()
+//	 .getName()
+//	 .getDescription()
+//	 .setVar(string, interface)
+//	 .getVar(string)
+//	 .node()
+//
 type FlowBind struct {
 	flow *Flow
 }

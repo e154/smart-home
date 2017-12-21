@@ -54,8 +54,31 @@ Languages:
 
     javascript_menu:
       links:
-        - title: "Обзор"
-          url: "#overview"
+        - title: "IC.Workflow()"
+          url: "#ic_workflow"
+        - title: "-> getName()"
+          url: "#ic_workflow_get_name"
+        - title: "-> getDescription()"
+          url: "#ic_workflow_get_description"
+        - title: "-> setVar(key, value)"
+          url: "#ic_workflow_set_var"
+        - title: "-> getVar(key)"
+          url: "#ic_workflow_get_var"
+        - title: "-> getScenario(name)"
+          url: "#ic_workflow_get_scenario"
+        - title: "-> setScenario(name)"
+          url: "#ic_workflow_set_scenario"
+
+        - title: "IC.Flow()"
+          url: "#ic_flow"
+        - title: "-> getName()"
+          url: "#ic_flow_get_name"
+        - title: "-> setVar(key, value)"
+          url: "#ic_flow_set_var"
+        - title: "-> getVar(key)"
+          url: "#ic_flow_get_var"
+        - title: "-> node()"
+          url: "#ic_flow_node"
 
     getting_started_menu:
       links:
