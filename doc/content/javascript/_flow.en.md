@@ -91,3 +91,9 @@ if flow
  node = flow.node()
  print 'flow node', node
 ```
+
+**На выходе**
+
+**Значение** | **Описание**
+-------------|--------------
+  `node`     | type: Object, ссылка на экземпляр [Node](#ic_node) 

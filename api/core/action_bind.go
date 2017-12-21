@@ -11,6 +11,6 @@ type ActionBind struct {
 func (a *ActionBind) Device() *models.Device {
 	return a.action.GetDevice()
 }
-func (a *ActionBind) Node() *models.Node {
-	return a.action.GetNode()
+func (a *ActionBind) Node() *NodeBind {
+	return &NodeBind{node:a.action.GetNode()}
 }

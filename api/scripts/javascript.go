@@ -194,6 +194,14 @@ func (j *Javascript) Ctx() *candyjs.Context {
 
 func (j *Javascript) bind() {
 
+	// Javascript Binding
+	//
+	// IC.Runmode
+	// IC.hex2arr
+	// IC.CurrentNode()
+	// IC.CurrentDevice()
+	//
+
 	// base
 	j.ctx.PevalString(fmt.Sprintf(`
 	IC = {};

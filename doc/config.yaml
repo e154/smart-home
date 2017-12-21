@@ -92,6 +92,12 @@ Languages:
           url: "#ic_log_error"
         - title: "-> debug()"
           url: "#ic_log_debug"
+        - title: "IC.CurrentNode()"
+          url: "#ic_current_node"
+        - title: "IC.CurrentDevice()"
+          url: "#ic_current_device"
+        - title: "IC.Runmode"
+          url: "#ic_runmode"
 
     getting_started_menu:
       links:
