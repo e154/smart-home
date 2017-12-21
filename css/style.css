@@ -379,6 +379,100 @@ aside.api table code {
     width: 100%;
   }
 }
+aside.javascript h1,
+aside.javascript h2,
+aside.javascript h3 {
+  margin-top: 50px;
+}
+aside.javascript h1 + blockquote,
+aside.javascript h2 + blockquote,
+aside.javascript h3 + blockquote,
+aside.javascript h1 + pre,
+aside.javascript h2 + pre,
+aside.javascript h3 + pre {
+  margin-top: 40px;
+}
+aside.javascript ul.nav {
+  padding-right: 0;
+  float: none;
+  clear: both;
+  width: 100%;
+}
+aside.javascript blockquote {
+  background-color: #2b2b2e;
+  padding: 1em 15px;
+  margin: 0;
+  width: 45%;
+  float: right;
+  clear: right;
+  box-sizing: border-box;
+  border-color: #18a3fa;
+}
+aside.javascript blockquote + pre {
+  margin-top: 5px;
+}
+aside.javascript blockquote > p {
+  color: #c5c8c6;
+}
+aside.javascript blockquote > p code {
+  margin: 0 4px;
+}
+aside.javascript blockquote > h1,
+aside.javascript blockquote > h2,
+aside.javascript blockquote > h3,
+aside.javascript blockquote > h4 {
+  color: #18a3fa;
+  font-weight: 600;
+}
+aside.javascript blockquote,
+aside.javascript pre {
+  padding-left: 15px;
+}
+aside.javascript blockquote + h1,
+aside.javascript pre + h1,
+aside.javascript blockquote + h2,
+aside.javascript pre + h2,
+aside.javascript blockquote + h3,
+aside.javascript pre + h3,
+aside.javascript blockquote + h4,
+aside.javascript pre + h4,
+aside.javascript blockquote + h5,
+aside.javascript pre + h5 {
+  clear: both;
+}
+aside.javascript table {
+  width: 100%;
+  margin-bottom: 20px;
+}
+aside.javascript table > thead > tr > th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #ddd;
+}
+aside.javascript table > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+aside.javascript table > tbody > tr > td,
+aside.javascript table > tbody > tr > th,
+aside.javascript table > tfoot > tr > td,
+aside.javascript table > tfoot > tr > th,
+aside.javascript table > thead > tr > td,
+aside.javascript table > thead > tr > th {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+}
+aside.javascript p code,
+aside.javascript table code {
+  color: #e6e6e6;
+  background-color: #18a3fa;
+  padding: 3px 4px;
+}
+aside.javascript img {
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 15px;
+}
 /* cyrillic-ext */
 @font-face {
   font-family: 'Open Sans';

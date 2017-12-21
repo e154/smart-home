@@ -78,12 +78,6 @@
                 
 
                 
-                
-                <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript/_overview/">English</a>
-                </li>
-                
-                
             </ul>
         </div>
         <!-- /.navbar-collapse -->
@@ -112,18 +106,150 @@
                         
                             
 
-<h2 id="overview">Обзор</h2>
+<h2 id="ic_flow">IC.Flow()</h2>
 
-<p><strong>API SmartHome</strong>. Объекты и функции, методы, свойства объектов, используемых для управления
-устройствами &ldquo;умного дома&rdquo;</p>
+<p>Получить текущий процесс. Может вырнуть <em>null</em> если скрипт запускается
+вне контекста <a href="#ic_workflow">Workflow</a></p>
 
-<h2 id="методы">Методы</h2>
+<pre><code class="language-coffeescript">flow = IC.Flow()
+return if !flow
+</code></pre>
 
-<p>Объект IC - глобальный объект, содержащий в себе все функции и константы API SmartHome.</p>
+<p><strong>На выходе</strong></p>
 
-<p><img src="/smart-home/img/schematic/workflow.svg" alt="smart-home workflow schematic map"></p>
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
 
-<p><img src="/smart-home/img/schematic/flow.svg" alt="smart-home flow schematic map"></p>
+<tbody>
+<tr>
+<td><code>flow</code></td>
+<td>type: Object, ссылка на экземпляр *Flow</td>
+</tr>
+</tbody>
+</table>
+
+<p>Доступные методы приведены далее:</p>
+
+<h3 id="ic_flow_get_name">.getName()</h3>
+
+<p>Получить наименование текущего Flow процесса.</p>
+
+<pre><code class="language-coffeescript">flow = IC.Flow()
+if flow
+ name = flow.getName()
+ print 'flow name', name
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_flow_set_var">.setVar(key, value)</h3>
+
+<p>Запомнить переменнную в хранилище <a href="#ic_flow">Flow</a>. Хранилище позволяет
+сохранять состояния на время жизни <a href="#ic_flow">Flow</a></p>
+
+<pre><code class="language-coffeescript">flow = IC.Flow()
+if flow
+ flow.setVar(&quot;key&quot;, &quot;value&quot;)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>key</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>value</code></td>
+<td>type: interface</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_flow_get_var">.getVar(key)</h3>
+
+<p>Получить ранее записанную переменную</p>
+
+<pre><code class="language-coffeescript">wf = IC.Flow()
+if wf
+  variable = wf.getVar(key)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>key</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>variable</code></td>
+<td>type: interface</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_flow_node">.node()</h3>
+
+<p>Получить ноду</p>
+
+<pre><code class="language-coffeescript">flow = IC.Flow()
+if flow
+ node = flow.node()
+ print 'flow node', node
+</code></pre>
 
                         
                     </div>
@@ -289,12 +415,6 @@
             </li>
             
 
-            
-            
-            <li>
-                <a href="https://e154.github.io/smart-home/en/javascript/_overview/">en</a>
-            </li>
-            
             
 
         </ul>

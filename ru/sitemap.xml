@@ -3,6 +3,20 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://e154.github.io/smart-home/javascript/_overview/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_overview/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_overview/"
+                />
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/api/_overview/</loc>
     <xhtml:link
                 rel="alternate"
@@ -18,6 +32,24 @@
   
   <url>
     <loc>https://e154.github.io/smart-home/api/_authorize/</loc>
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/javascript/_workflow/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_workflow/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_workflow/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/javascript/_flow/</loc>
   </url>
   
   <url>
@@ -233,20 +265,6 @@
                 rel="alternate"
                 hreflang="ru"
                 href="https://e154.github.io/smart-home/"
-                />
-  </url>
-  
-  <url>
-    <loc>https://e154.github.io/smart-home/javascript/_overview/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://e154.github.io/smart-home/en/javascript/_overview/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://e154.github.io/smart-home/javascript/_overview/"
                 />
   </url>
   

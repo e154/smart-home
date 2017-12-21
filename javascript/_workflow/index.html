@@ -80,7 +80,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript/_overview/">English</a>
+                    <a href="https://e154.github.io/smart-home/en/javascript/_workflow/">English</a>
                 </li>
                 
                 
@@ -97,7 +97,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>overview</h1>
+            <h1>workflow</h1>
             
         </div>
     </div>
@@ -112,18 +112,186 @@
                         
                             
 
-<h2 id="overview">Обзор</h2>
+<h2 id="ic_workflow">IC.Workflow()</h2>
 
-<p><strong>API SmartHome</strong>. Объекты и функции, методы, свойства объектов, используемых для управления
-устройствами &ldquo;умного дома&rdquo;</p>
+<p>Получить текущий Workflow. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста Workflow</p>
 
-<h2 id="методы">Методы</h2>
+<p><strong>Синтаксис</strong></p>
 
-<p>Объект IC - глобальный объект, содержащий в себе все функции и константы API SmartHome.</p>
+<pre><code class="language-coffeescript">workflow = IC.Workflow()
+</code></pre>
 
-<p><img src="/smart-home/img/schematic/workflow.svg" alt="smart-home workflow schematic map"></p>
+<p><strong>На выходе</strong></p>
 
-<p><img src="/smart-home/img/schematic/flow.svg" alt="smart-home flow schematic map"></p>
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>workflow</code></td>
+<td>type: Object, ссылка на экземпляр *Workflow</td>
+</tr>
+</tbody>
+</table>
+
+<p>Доступные методы приведены далее:</p>
+
+<h3 id="ic_workflow_get_name">.getName()</h3>
+
+<p>Получить наименование текущего Workflow</p>
+
+<p><strong>Синтаксис</strong></p>
+
+<pre><code class="language-coffeescript">wf = IC.Workflow()
+if wf
+ name = wf.getName()
+ print 'wf name', name
+</code></pre>
+
+<h3 id="ic_workflow_get_description">.getDescription()</h3>
+
+<p>Получить описание текущего <a href="#ic_workflow">Workflow</a></p>
+
+<pre><code class="language-coffeescript">wf = IC.Workflow()
+if wf
+ descr = wf.getDescription()
+ print 'wf descr', descr
+</code></pre>
+
+<h3 id="ic_workflow_set_var">.setVar(key, value)</h3>
+
+<p>Запомнить переменнную в хранилище <a href="#ic_workflow">Workflow</a>. Хранилище позволяет
+сохрянять состояния на время жизни <a href="#ic_workflow">Workflow</a></p>
+
+<pre><code class="language-coffeescript">description = IC.Workflow().setVar(key, value)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>key</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>value</code></td>
+<td>type: interface</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_workflow_get_var">.getVar(key)</h3>
+
+<p>Получить ранее записанную переменную</p>
+
+<pre><code class="language-coffeescript">wf = IC.Workflow()
+if wf
+  variable = wf.getVar(key)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>key</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>variable</code></td>
+<td>type: interface</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_workflow_get_scenario">.getScenario()</h3>
+
+<p>Получить активный сценарий для текущего <a href="#ic_workflow">Workflow</a></p>
+
+<pre><code class="language-coffeescript">wf = IC.Workflow()
+if wf
+  scenario = wf.getScenario()
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>scenario</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_workflow_set_scenario">.setScenario(name)</h3>
+
+<p>Переключить сценарий для текущего <a href="#ic_workflow">Workflow</a></p>
+
+<pre><code class="language-coffeescript">wf = IC.Workflow()
+if wf
+  scenario = wf.setScenario(name)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
 
                         
                     </div>
@@ -292,7 +460,7 @@
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/en/javascript/_overview/">en</a>
+                <a href="https://e154.github.io/smart-home/en/javascript/_workflow/">en</a>
             </li>
             
             
