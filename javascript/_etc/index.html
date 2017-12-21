@@ -44,7 +44,7 @@
                 <span class="icon-bar"></span>
             </button>
             
-                <a class="navbar-brand page-scroll" href="#page-top">Smart home</a>
+                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
             
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -61,28 +61,22 @@
 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en">Home</a>
+                    <a href="https://e154.github.io/smart-home/">Домой</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
+                    <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/api">api</a>
+                    <a href="https://e154.github.io/smart-home/api">api</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
+                    <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
                 </li>
                 
 
-                
-                
-                <li>
-                    <a href="https://e154.github.io/smart-home/javascript/_workflow/">Русский</a>
-                </li>
-                
                 
             </ul>
         </div>
@@ -97,7 +91,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>workflow</h1>
+            <h1>etc</h1>
             
         </div>
     </div>
@@ -112,13 +106,12 @@
                         
                             
 
-<h2 id="ic_workflow">IC.Workflow()</h2>
+<h2 id="ic_current_node">IC.CurrentNode()</h2>
 
-<p>Получить текущий Workflow. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста Workflow</p>
+<p>Получить текущую ноду. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
 
-<p><strong>Синтаксис</strong></p>
-
-<pre><code class="language-coffeescript">workflow = IC.Workflow()
+<pre><code class="language-coffeescript">node = IC.CurrentNode()
+print 'current node', node
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -133,119 +126,18 @@
 
 <tbody>
 <tr>
-<td><code>workflow</code></td>
-<td>type: Object, ссылка на экземпляр *Workflow</td>
+<td><code>node</code></td>
+<td>type: Object, ссылка на экземпляр <a href="#ic_node">Node</a></td>
 </tr>
 </tbody>
 </table>
 
-<p>Доступные методы приведены далее:</p>
+<h2 id="ic_current_device">IC.CurrentDevice()</h2>
 
-<h3 id="ic_workflow_get_name">.getName()</h3>
+<p>Получить текущее утройство.</p>
 
-<p>Получить наименование текущего Workflow</p>
-
-<p><strong>Синтаксис</strong></p>
-
-<pre><code class="language-coffeescript">wf = IC.Workflow()
-if wf
- name = wf.getName()
- print 'wf name', name
-</code></pre>
-
-<h3 id="ic_workflow_get_description">.getDescription()</h3>
-
-<p>Получить описание текущего <a href="#ic_workflow">Workflow</a></p>
-
-<pre><code class="language-coffeescript">wf = IC.Workflow()
-if wf
- descr = wf.getDescription()
- print 'wf descr', descr
-</code></pre>
-
-<h3 id="ic_workflow_set_var">.setVar(key, value)</h3>
-
-<p>Запомнить переменнную в хранилище <a href="#ic_workflow">Workflow</a>. Хранилище позволяет
-сохрянять состояния на время жизни <a href="#ic_workflow">Workflow</a></p>
-
-<pre><code class="language-coffeescript">description = IC.Workflow().setVar(key, value)
-</code></pre>
-
-<p><strong>На входе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>key</code></td>
-<td>type: string</td>
-</tr>
-
-<tr>
-<td><code>value</code></td>
-<td>type: interface</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="ic_workflow_get_var">.getVar(key)</h3>
-
-<p>Получить ранее записанную переменную</p>
-
-<pre><code class="language-coffeescript">wf = IC.Workflow()
-if wf
-  variable = wf.getVar(key)
-</code></pre>
-
-<p><strong>На входе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>key</code></td>
-<td>type: string</td>
-</tr>
-</tbody>
-</table>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>variable</code></td>
-<td>type: interface</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="ic_workflow_get_scenario">.getScenario()</h3>
-
-<p>Получить активный сценарий для текущего <a href="#ic_workflow">Workflow</a></p>
-
-<pre><code class="language-coffeescript">wf = IC.Workflow()
-if wf
-  scenario = wf.getScenario()
+<pre><code class="language-coffeescript">device = IC.CurrentDevice()
+print 'current device', device
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -260,22 +152,21 @@ if wf
 
 <tbody>
 <tr>
-<td><code>scenario</code></td>
-<td>type: string</td>
+<td><code>device</code></td>
+<td>type: Object, ссылка на экземпляр <a href="#ic_device">Device</a></td>
 </tr>
 </tbody>
 </table>
 
-<h3 id="ic_workflow_set_scenario">.setScenario(name)</h3>
+<h2 id="ic_runmode">IC.Runmode</h2>
 
-<p>Переключить сценарий для текущего <a href="#ic_workflow">Workflow</a></p>
+<p>Текущий режим, <em>prod</em> | <em>dev</em></p>
 
-<pre><code class="language-coffeescript">wf = IC.Workflow()
-if wf
-  scenario = wf.setScenario(name)
+<pre><code class="language-coffeescript">runmode = IC.Runmode
+print 'runmode', runmode
 </code></pre>
 
-<p><strong>На входе</strong></p>
+<p><strong>На выходе</strong></p>
 
 <table>
 <thead>
@@ -287,7 +178,7 @@ if wf
 
 <tbody>
 <tr>
-<td><code>name</code></td>
+<td><code>runmode</code></td>
 <td>type: string</td>
 </tr>
 </tbody>
@@ -304,7 +195,7 @@ if wf
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#overview">
-                Overview
+                Обзор
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -464,6 +355,33 @@ if wf
             </ul>
         </li>
         
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_current_node">
+                IC.CurrentNode()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_current_device">
+                IC.CurrentDevice()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_runmode">
+                IC.Runmode
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
     </ul>
 </nav>
 
@@ -492,40 +410,34 @@ if wf
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en">Home</a>
+                <a href="https://e154.github.io/smart-home/">Домой</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
+                <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en/api">api</a>
+                <a href="https://e154.github.io/smart-home/api">api</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
+                <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
             </li>
             
 
-            
-            
-            <li>
-                <a href="https://e154.github.io/smart-home/javascript/_workflow/">ru</a>
-            </li>
-            
             
 
         </ul>
 
         
-        <div>Developed with the support of <a href='http://e154.ru'>e154.ru</a></div>
+        <div>Разработано при поддержке <a href='http://e154.ru'>e154.ru</a></div>
         
         
-        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        <p>Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
         
 
     </div>

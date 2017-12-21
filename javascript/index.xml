@@ -65,6 +65,19 @@ log = IC.Log  На выходе
     </item>
     
     <item>
+      <title>etc</title>
+      <link>https://e154.github.io/smart-home/javascript/_etc/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_etc/</guid>
+      <description>IC.CurrentNode() Получить текущую ноду. Выражение может вырнуть null если скрипт исполняется вне контекста Workflow
+node = IC.CurrentNode() print &#39;current node&#39;, node  На выходе
+   Значение Описание     node type: Object, ссылка на экземпляр Node    IC.CurrentDevice() Получить текущее утройство.
+device = IC.CurrentDevice() print &#39;current device&#39;, device  На выходе
+   Значение Описание     device type: Object, ссылка на экземпляр Device    IC.</description>
+    </item>
+    
+    <item>
       <title>JavaScript</title>
       <link>https://e154.github.io/smart-home/javascript/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
