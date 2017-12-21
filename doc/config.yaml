@@ -54,6 +54,8 @@ Languages:
 
     javascript_menu:
       links:
+        - title: "Обзор"
+          url: "#overview"
         - title: "IC.Workflow()"
           url: "#ic_workflow"
         - title: "-> getName()"
@@ -258,6 +260,8 @@ Languages:
 
     javascript_menu:
       links:
+        - title: "Overview"
+          url: "#overview"
         - title: "IC.Workflow()"
           url: "#ic_workflow"
         - title: "-> getName()"
