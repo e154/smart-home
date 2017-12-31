@@ -146,7 +146,7 @@ fetchStatus =(node, dev)-&gt;
     FUNCTION = 3
 
     # получим адрес устройства из контекста запуска
-    DEVICE_ADDR = dev.address
+    DEVICE_ADDR = dev.getAddress()
     
     COMMAND = [DEVICE_ADDR, FUNCTION, 0, 0, 0, 5]
     
@@ -548,7 +548,88 @@ if flow
 <tbody>
 <tr>
 <td><code>node</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#ic_node">Node</a></td>
+<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
+</tr>
+</tbody>
+</table>
+
+                            
+                                
+
+<h2 id="ic_map">IC.Map*</h2>
+
+<p>Возвращает объект карты</p>
+
+<pre><code class="language-coffeescript">map = IC.Map
+</code></pre>
+
+<p>Доступные методы приведены далее:</p>
+
+<h3 id="ic_map_set_element_state">.SetElementState(element, state)</h3>
+
+<pre><code class="language-coffeescript">IC.Map.SetElementState(device, state)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>element</code></td>
+<td>type: Object, ссылка на объект карты</td>
+</tr>
+
+<tr>
+<td><code>state</code></td>
+<td>type: string, системное наименование состояния</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_map_get_element">.GetElement(device)</h3>
+
+<pre><code class="language-coffeescript">element = IC.Map.GetElement(device)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>device</code></td>
+<td>type: Object, ссылка на объект <a href="#device">Device{}</a></td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>element</code></td>
+<td>type: Object, ссылка на объект <a href="#map_element">MapElement{}</a></td>
 </tr>
 </tbody>
 </table>
@@ -593,7 +674,7 @@ if flow
 <pre><code class="language-coffeescript">IC.Log.warn('Warning message')
 </code></pre>
 
-<h3 id="ic_log_warn-1">.error()</h3>
+<h3 id="ic_log_error">.error()</h3>
 
 <pre><code class="language-coffeescript">IC.Log.error('Error message')
 </code></pre>
@@ -627,14 +708,14 @@ print 'current node', node
 <tbody>
 <tr>
 <td><code>node</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#ic_node">Node</a></td>
+<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
 </tr>
 </tbody>
 </table>
 
 <h2 id="ic_current_device">IC.CurrentDevice()</h2>
 
-<p>Получить текущее утройство.</p>
+<p>Получить текущее утройство. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
 
 <pre><code class="language-coffeescript">device = IC.CurrentDevice()
 print 'current device', device
@@ -653,7 +734,7 @@ print 'current device', device
 <tbody>
 <tr>
 <td><code>device</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#ic_device">Device</a></td>
+<td>type: Object, ссылка на экземпляр <a href="#device">Device</a></td>
 </tr>
 </tbody>
 </table>
@@ -680,6 +761,110 @@ print 'runmode', runmode
 <tr>
 <td><code>runmode</code></td>
 <td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+                            
+                                
+
+<h1 id="список-объектов">Список объектов</h1>
+
+<h2 id="device">Device{}</h2>
+
+<table>
+<thead>
+<tr>
+<th><strong>Свойство</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>getName</code></td>
+<td>type: method, именование устройства</td>
+</tr>
+
+<tr>
+<td><code>getDescription</code></td>
+<td>type: method, описание устройства</td>
+</tr>
+
+<tr>
+<td><code>getAddress</code></td>
+<td>type: method, адрес устройства</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="node">Node{}</h2>
+
+<table>
+<thead>
+<tr>
+<th><strong>Свойство</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>Send</code></td>
+<td>type: method, послать сообщение</td>
+</tr>
+
+<tr>
+<td><code>Name</code></td>
+<td>type: method, наименование ноды</td>
+</tr>
+
+<tr>
+<td><code>Description</code></td>
+<td>type: method, описание ноды</td>
+</tr>
+
+<tr>
+<td><code>Ip</code></td>
+<td>type: method, IP адрес ноды</td>
+</tr>
+
+<tr>
+<td><code>Status</code></td>
+<td>type: method, состояние ноды</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="map_element">MapElement{}</h2>
+
+<table>
+<thead>
+<tr>
+<th><strong>Свойство</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>setState</code></td>
+<td>type: method, выставить состояние</td>
+</tr>
+
+<tr>
+<td><code>getState</code></td>
+<td>type: method, получить состояние</td>
+</tr>
+
+<tr>
+<td><code>setOptions</code></td>
+<td>type: method, указать список опций</td>
+</tr>
+
+<tr>
+<td><code>getOptions</code></td>
+<td>type: method, получить список опций</td>
 </tr>
 </tbody>
 </table>
@@ -812,6 +997,33 @@ print 'runmode', runmode
         </li>
         
         <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_map">
+                IC.Map()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_map_set_element_state">
+                -&gt; SetElementState(obj, state)
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_map_get_element">
+                -&gt; GetElement(device)
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#ic_log">
                 IC.Log
             </a>
@@ -877,6 +1089,51 @@ print 'runmode', runmode
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#ic_runmode">
                 IC.Runmode
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#device">
+                
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#device">
+                Список объектов
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#device">
+                Device{}
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#node">
+                Node{}
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#map_element">
+                MapElement{}
             </a>
             <ul class="nav bd-sidenav">
                 

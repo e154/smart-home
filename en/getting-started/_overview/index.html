@@ -110,7 +110,51 @@
                 <div class="row">
                     <div class="col-md-9" role="main">
                         
-                            <p>section is at the stage of translation</p>
+                            <h2 id="overview" class="page-header">Обзор</h2>
+
+<p>Программный комплекс <strong>Умный дом</strong> начал своё развитие с не большого домашнего проекта осенью 2016 года. Основные принципы
+лежащие в основе разрабатываемой системы - простота настройки и содержания, дешевизна и доступность компонентной базы.</p>
+
+<p>С помощью программного комплекса <strong>Умный дом</strong> Вы сможете управлять множеством устройствами на базе AVR микроконтроллеров и не только.
+Распределённая сеть устройств на основе програмного комплекса <strong>Умный дом</strong> не имеег географических границ и позволяет
+управлять устройствами в любой точке сети интернет через систему узлов - микросервисов.
+Вы сможете взаимодействовать с этим устройствами так, как буд-то они в Вашей локальной сети.
+Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора через гибкую систему скриптов.
+Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.</p>
+
+<p>Пример простого устройства <a href="https://github.com/e154/smart-home-socket">умная розетка</a>, позволяет управлять нагрузкой 220в 14А ампер.
+На базе которого легко построить решение для управления светом, рольставнями, воротами, датчики протечки, утечки газа, и много
+другого</p>
+
+<p>Программный комплекс <strong>Умный дом</strong> имеет модульную структуру, и состоит из следующих частей:</p>
+
+<p><strong>Сервер</strong> - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
+исполнение процессов, логирование, оповещенние, реакция на события, исполнени сценариев.</p>
+
+<p><strong>Конфигуратор</strong> - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
+систему под свои нужды, требуется как првило на этапе конфигурации.</p>
+
+<p><strong>Нода</strong> - посредник связи сервера с активными устройствами, позволяет связать один сервер с
+множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
+Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
+по требованию сценария, либо доступности последней.</p>
+
+<p><del><strong>Монитор</strong> - мобильное клиентское приложение android, ios.</del>(в разработке)</p>
+
+<p>Для работы <strong>системы умного дома</strong> требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
+нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.</p>
+
+<p>На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
+В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
+создайте реквест с предложением в репозиторий <a href="https://github.com/e154/smart-home">Сервер</a>, <a href="https://github.com/e154/smart-home-node">Нода</a>.</p>
+
+<p>Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
+со схемой и программой прошивки для <strong>AVR mega 168pu</strong> управляющего розетой, легко поддающееся модификации под более сложные задачи можно
+посмотреть в репозитории - <a href="https://github.com/e154/smart-home-socket">пример устройства управления розеткой</a>.</p>
+
+<p>Схематичная сеть <strong>системы умного дома</strong>:</p>
+
+<p><img src="/smart-home/img/default_network.png" alt="Схематичная сеть умного дома" title="Схематичная сеть умного дома" /></p>
 
                         
                     </div>
@@ -161,7 +205,7 @@
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="configurator">
+                    <a class="bd-toc-link" href="#configurator">
                         Configurator
                     </a>
                 </li>
@@ -197,37 +241,37 @@
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-download-and-unpack">
+                    <a class="bd-toc-link" href="#install-download-and-unpack">
                         Install download and unpack
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-server-conf">
+                    <a class="bd-toc-link" href="#install-server-conf">
                         Install server conf
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-configuration-conf">
+                    <a class="bd-toc-link" href="#install-configuration-conf">
                         Install configuration conf
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-node-conf">
+                    <a class="bd-toc-link" href="#install-node-conf">
                         Install node conf
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-mysql">
+                    <a class="bd-toc-link" href="#install-mysql">
                         Install mysql
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="install-exec">
+                    <a class="bd-toc-link" href="#install-exec">
                         Install exec
                     </a>
                 </li>
@@ -263,7 +307,7 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="install-from-source">
+            <a class="bd-toc-link" href="#install-from-source">
                 Install from source
             </a>
             <ul class="nav bd-sidenav">

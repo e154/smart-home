@@ -23,25 +23,23 @@
     </item>
     
     <item>
-      <title>Обзор</title>
-      <link>https://e154.github.io/smart-home/api/_overview/</link>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/getting-started/_overview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://e154.github.io/smart-home/api/_overview/</guid>
-      <description>Обзор Smart home API позволяет управлять системой Smart home, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.
-Smart home API организован на основе REST запросов по верх HTTP протокола. Такая связка была выбрана исключительно из простоты поддержания, и разработки нового функционала. Все запросы должны быть в формате JSON и кодировке UTF-8 (Content-Type: application/json; charset=utf-8). Заголовок Accept будут игнорироваться для всех запросов.
-$ curl -i http://localhost:3000/api/v1/signin  Безопасность Сервер Smart home имеет систему контроля доступа основанную на ролях.</description>
+      <guid>https://e154.github.io/smart-home/getting-started/_overview/</guid>
+      <description>Обзор Программный комплекс Умный дом начал своё развитие с не большого домашнего проекта осенью 2016 года. Основные принципы лежащие в основе разрабатываемой системы - простота настройки и содержания, дешевизна и доступность компонентной базы.
+С помощью программного комплекса Умный дом Вы сможете управлять множеством устройствами на базе AVR микроконтроллеров и не только. Распределённая сеть устройств на основе програмного комплекса Умный дом не имеег географических границ и позволяет управлять устройствами в любой точке сети интернет через систему узлов - микросервисов.</description>
     </item>
     
     <item>
       <title>overview</title>
-      <link>https://e154.github.io/smart-home/api/_authorize/</link>
+      <link>https://e154.github.io/smart-home/getting-started/_requirements/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://e154.github.io/smart-home/api/_authorize/</guid>
-      <description>Авторизация Все запросы к серверу должны сопровождаться авторизационным токеном.
-#!/usr/bin/env bash URL=http://localhost:3000/api/v1 TOKEN=&amp;quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&amp;quot; curl -H &amp;quot;access_token:${TOKEN}&amp;quot; -X GET -s ${URL}/user/1   Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация. Пароль должен состоять не менне чем из 6 символов. Авторизация в только что установленной системе возможна только, по одной из двух учетных записей  Учетные записи существующие после установки сервера
- email: demo@e154.</description>
+      <guid>https://e154.github.io/smart-home/getting-started/_requirements/</guid>
+      <description>Системные требования Поддерживаемые операционные системы:
+ macOS 386 10.6 macOS amd64 10.6 linux 386 linux amd64 linux arm-5 linux arm-6 linux arm-7 linux arm-64 linux mips64 linux mips64le windows 386 windows amd64  Сервера Orange Pi Средние и крупные инсталляции:  Коттедж, Таунхаус Офис (более пяти контроллеров на этаж), Гостиница    Raspberry Pi Средние и крупные инсталляции:  Коттедж, Таунхаус Офис (более пяти контроллеров на этаж), Гостиница     Для работы серверов не требуется запуск графической оболочки  Загрузка Готовые архиве содержат все исполняемые фйлы под все поддерживаемые архитектуры и операционные системы.</description>
     </item>
     
     <item>
@@ -61,6 +59,19 @@ wf = IC.</description>
     </item>
     
     <item>
+      <title>quick install</title>
+      <link>https://e154.github.io/smart-home/getting-started/_quick_install/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_quick_install/</guid>
+      <description>Быстрая установка  Подразумевается что у это первая установка в систему Установка будет проходить в автоматическом режиме Директория установки /opt/smart-home После установки потребуется настроить подключение к серверу баз данных mysql  Установка сервера
+curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install  Установка конфигуратор
+curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev/stdin --install  Установка узла связи
+curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install  Нвстройка сервера баз данных mysql
+mysql -u root -p CREATE DATABASE smarthome; CREATE USER &#39;smarthome&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;smarthome&#39;; GRANT ALL PRIVILEGES ON smarthome .</description>
+    </item>
+    
+    <item>
       <title>flow</title>
       <link>https://e154.github.io/smart-home/javascript/_flow/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -72,6 +83,31 @@ flow = IC.Flow() return if !flow  На выходе
 .getName() Получить наименование текущего Flow процесса.
 flow = IC.Flow() if flow name = flow.getName() print &#39;flow name&#39;, name  На выходе
    Значение Описание     name type: string    .</description>
+    </item>
+    
+    <item>
+      <title>log</title>
+      <link>https://e154.github.io/smart-home/javascript/_map/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_map/</guid>
+      <description>IC.Map* Возвращает объект карты
+map = IC.Map  Доступные методы приведены далее:
+.SetElementState(element, state) IC.Map.SetElementState(device, state)  На входе
+   Значение Описание     element type: Object, ссылка на объект карты   state type: string, системное наименование состояния    .GetElement(device) element = IC.Map.GetElement(device)  На входе
+   Значение Описание     device type: Object, ссылка на объект Device{}    На выходе</description>
+    </item>
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/getting-started/_install/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/getting-started/_install/</guid>
+      <description>Установка Будет произведена базовая установка системы Умный дом на сервер под операционной системой linux Debian. С не значительными изменениями установка будет подобна для других операционных систем.
+План действий:
+ Создание директорий Скачивание и распаковка Настройка сервера Настройка конфигуратора Настройка ноды База mysql     Информация о системе на которой производилось развёртывание:
+delta54@darkstar:tmp$ uname -a Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux  delta54@darkstar:tmp$ cat /etc/*release* PRETTY_NAME=&amp;quot;Debian GNU/Linux 8 (jessie)&amp;quot;  Создание директорий Рекомендуемая директория установки сервера /opt/smart-home, в неё и будет производиться дальнейшая установка.</description>
     </item>
     
     <item>
@@ -94,54 +130,9 @@ log = IC.Log  На выходе
       <guid>https://e154.github.io/smart-home/javascript/_etc/</guid>
       <description>IC.CurrentNode() Получить текущую ноду. Выражение может вырнуть null если скрипт исполняется вне контекста Workflow
 node = IC.CurrentNode() print &#39;current node&#39;, node  На выходе
-   Значение Описание     node type: Object, ссылка на экземпляр Node    IC.CurrentDevice() Получить текущее утройство.
+   Значение Описание     node type: Object, ссылка на экземпляр Node    IC.CurrentDevice() Получить текущее утройство. Выражение может вырнуть null если скрипт исполняется вне контекста Workflow
 device = IC.CurrentDevice() print &#39;current device&#39;, device  На выходе
    Значение Описание     device type: Object, ссылка на экземпляр Device    IC.</description>
-    </item>
-    
-    <item>
-      <title>overview</title>
-      <link>https://e154.github.io/smart-home/getting-started/_overview/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://e154.github.io/smart-home/getting-started/_overview/</guid>
-      <description>Обзор Программный комплекс Умный дом начал своё развитие с не большого домашнего проекта осенью 2016 года. Основные принципы лежащие в основе разрабатываемой системы - простота настройки и содержания, дешевизна и доступность компонентной базы.
-С помощью программного комплекса Умный дом Вы сможете управлять множеством устройствами на базе AVR микроконтроллеров и не только. Распределённая сеть устройств на основе програмного комплекса Умный дом не имеег географических границ и позволяет управлять устройствами в любой точке сети интернет через систему узлов - микросервисов.</description>
-    </item>
-    
-    <item>
-      <title>overview</title>
-      <link>https://e154.github.io/smart-home/getting-started/_requirements/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://e154.github.io/smart-home/getting-started/_requirements/</guid>
-      <description>Системные требования Поддерживаемые операционные системы:
- macOS 386 10.6 macOS amd64 10.6 linux 386 linux amd64 linux arm-5 linux arm-6 linux arm-7 linux arm-64 linux mips64 linux mips64le windows 386 windows amd64  Сервера Orange Pi Средние и крупные инсталляции:  Коттедж, Таунхаус Офис (более пяти контроллеров на этаж), Гостиница    Raspberry Pi Средние и крупные инсталляции:  Коттедж, Таунхаус Офис (более пяти контроллеров на этаж), Гостиница     Для работы серверов не требуется запуск графической оболочки  Загрузка Готовые архиве содержат все исполняемые фйлы под все поддерживаемые архитектуры и операционные системы.</description>
-    </item>
-    
-    <item>
-      <title>quick install</title>
-      <link>https://e154.github.io/smart-home/getting-started/_quick_install/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://e154.github.io/smart-home/getting-started/_quick_install/</guid>
-      <description>Быстрая установка  Подразумевается что у это первая установка в систему Установка будет проходить в автоматическом режиме Директория установки /opt/smart-home После установки потребуется настроить подключение к серверу баз данных mysql  Установка сервера
-curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install  Установка конфигуратор
-curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev/stdin --install  Установка узла связи
-curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install  Нвстройка сервера баз данных mysql
-mysql -u root -p CREATE DATABASE smarthome; CREATE USER &#39;smarthome&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;smarthome&#39;; GRANT ALL PRIVILEGES ON smarthome .</description>
-    </item>
-    
-    <item>
-      <title>overview</title>
-      <link>https://e154.github.io/smart-home/getting-started/_install/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://e154.github.io/smart-home/getting-started/_install/</guid>
-      <description>Установка Будет произведена базовая установка системы Умный дом на сервер под операционной системой linux Debian. С не значительными изменениями установка будет подобна для других операционных систем.
-План действий:
- Создание директорий Скачивание и распаковка Настройка сервера Настройка конфигуратора Настройка ноды База mysql     Информация о системе на которой производилось развёртывание:
-delta54@darkstar:tmp$ uname -a Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux  delta54@darkstar:tmp$ cat /etc/*release* PRETTY_NAME=&amp;quot;Debian GNU/Linux 8 (jessie)&amp;quot;  Создание директорий Рекомендуемая директория установки сервера /opt/smart-home, в неё и будет производиться дальнейшая установка.</description>
     </item>
     
     <item>
@@ -156,6 +147,15 @@ delta54@darkstar:tmp$ uname -a Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.
 ./opt/smart-home/server/examples/scripts/backup.sh Starting backup to 19-02-2017-22-06-30-dump.sql...  Скрипт создаст копию действующей базы в /opt/smart-home/backup
 Запуск обновления базы:
 cd /opt/smart-home/server/ ./server-linux-amd64 migrate 2017/02/19 01:59:37 GOPATH: /home/delta54/workspace/golang/src/github.com/e154/smart-home/migrate.go 81 /home/delta54/workspace/golang 2017/02/19 01:59:37 Using &#39;mysql&#39; as &#39;driver&#39; 2017/02/19 01:59:37 Using &#39;smarthome:smarthome@tcp(127.</description>
+    </item>
+    
+    <item>
+      <title>objects</title>
+      <link>https://e154.github.io/smart-home/javascript/_objects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_objects/</guid>
+      <description> Список объектов Device{}    Свойство Описание     getName type: method, именование устройства   getDescription type: method, описание устройства   getAddress type: method, адрес устройства    Node{}    Свойство Описание     Send type: method, послать сообщение   Name type: method, наименование ноды   Description type: method, описание ноды   Ip type: method, IP адрес ноды   Status type: method, состояние ноды    MapElement{}    Свойство Описание     setState type: method, выставить состояние   getState type: method, получить состояние   setOptions type: method, указать список опций   getOptions type: method, получить список опций    </description>
     </item>
     
     <item>

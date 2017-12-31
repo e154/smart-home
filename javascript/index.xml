@@ -54,6 +54,19 @@ flow = IC.Flow() if flow name = flow.getName() print &#39;flow name&#39;, name  
     
     <item>
       <title>log</title>
+      <link>https://e154.github.io/smart-home/javascript/_map/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_map/</guid>
+      <description>IC.Map* Возвращает объект карты
+map = IC.Map  Доступные методы приведены далее:
+.SetElementState(element, state) IC.Map.SetElementState(device, state)  На входе
+   Значение Описание     element type: Object, ссылка на объект карты   state type: string, системное наименование состояния    .GetElement(device) element = IC.Map.GetElement(device)  На входе
+   Значение Описание     device type: Object, ссылка на объект Device{}    На выходе</description>
+    </item>
+    
+    <item>
+      <title>log</title>
       <link>https://e154.github.io/smart-home/javascript/_log/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -72,9 +85,18 @@ log = IC.Log  На выходе
       <guid>https://e154.github.io/smart-home/javascript/_etc/</guid>
       <description>IC.CurrentNode() Получить текущую ноду. Выражение может вырнуть null если скрипт исполняется вне контекста Workflow
 node = IC.CurrentNode() print &#39;current node&#39;, node  На выходе
-   Значение Описание     node type: Object, ссылка на экземпляр Node    IC.CurrentDevice() Получить текущее утройство.
+   Значение Описание     node type: Object, ссылка на экземпляр Node    IC.CurrentDevice() Получить текущее утройство. Выражение может вырнуть null если скрипт исполняется вне контекста Workflow
 device = IC.CurrentDevice() print &#39;current device&#39;, device  На выходе
    Значение Описание     device type: Object, ссылка на экземпляр Device    IC.</description>
+    </item>
+    
+    <item>
+      <title>objects</title>
+      <link>https://e154.github.io/smart-home/javascript/_objects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_objects/</guid>
+      <description> Список объектов Device{}    Свойство Описание     getName type: method, именование устройства   getDescription type: method, описание устройства   getAddress type: method, адрес устройства    Node{}    Свойство Описание     Send type: method, послать сообщение   Name type: method, наименование ноды   Description type: method, описание ноды   Ip type: method, IP адрес ноды   Status type: method, состояние ноды    MapElement{}    Свойство Описание     setState type: method, выставить состояние   getState type: method, получить состояние   setOptions type: method, указать список опций   getOptions type: method, получить список опций    </description>
     </item>
     
     <item>

@@ -44,7 +44,7 @@
                 <span class="icon-bar"></span>
             </button>
             
-                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
+                <a class="navbar-brand page-scroll" href="#page-top">Smart home</a>
             
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -61,26 +61,26 @@
 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/">Домой</a>
+                    <a href="https://e154.github.io/smart-home/en">Home</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+                    <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/api">api</a>
+                    <a href="https://e154.github.io/smart-home/en/api">api</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
+                    <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
                 </li>
                 
 
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript/_flow/">English</a>
+                    <a href="https://e154.github.io/smart-home/javascript/_etc/">Русский</a>
                 </li>
                 
                 
@@ -97,7 +97,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>flow</h1>
+            <h1>etc</h1>
             
         </div>
     </div>
@@ -112,149 +112,12 @@
                         
                             
 
-<h2 id="ic_flow">IC.Flow()</h2>
+<h2 id="ic_current_node">IC.CurrentNode()</h2>
 
-<p>Получить текущий процесс. Может вырнуть <em>null</em> если скрипт запускается
-вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Получить текущую ноду. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
 
-<pre><code class="language-coffeescript">flow = IC.Flow()
-return if !flow
-</code></pre>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>flow</code></td>
-<td>type: Object, ссылка на экземпляр *Flow</td>
-</tr>
-</tbody>
-</table>
-
-<p>Доступные методы приведены далее:</p>
-
-<h3 id="ic_flow_get_name">.getName()</h3>
-
-<p>Получить наименование текущего Flow процесса.</p>
-
-<pre><code class="language-coffeescript">flow = IC.Flow()
-if flow
- name = flow.getName()
- print 'flow name', name
-</code></pre>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>name</code></td>
-<td>type: string</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="ic_flow_set_var">.setVar(key, value)</h3>
-
-<p>Запомнить переменнную в хранилище <a href="#ic_flow">Flow</a>. Хранилище позволяет
-сохранять состояния на время жизни <a href="#ic_flow">Flow</a></p>
-
-<pre><code class="language-coffeescript">flow = IC.Flow()
-if flow
- flow.setVar(&quot;key&quot;, &quot;value&quot;)
-</code></pre>
-
-<p><strong>На входе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>key</code></td>
-<td>type: string</td>
-</tr>
-
-<tr>
-<td><code>value</code></td>
-<td>type: interface</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="ic_flow_get_var">.getVar(key)</h3>
-
-<p>Получить ранее записанную переменную</p>
-
-<pre><code class="language-coffeescript">wf = IC.Flow()
-if wf
-  variable = wf.getVar(key)
-</code></pre>
-
-<p><strong>На входе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>key</code></td>
-<td>type: string</td>
-</tr>
-</tbody>
-</table>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>variable</code></td>
-<td>type: interface</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="ic_flow_node">.node()</h3>
-
-<p>Получить ноду</p>
-
-<pre><code class="language-coffeescript">flow = IC.Flow()
-if flow
- node = flow.node()
- print 'flow node', node
+<pre><code class="language-coffeescript">node = IC.CurrentNode()
+print 'current node', node
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -275,6 +138,58 @@ if flow
 </tbody>
 </table>
 
+<h2 id="ic_current_device">IC.CurrentDevice()</h2>
+
+<p>Получить текущее утройство. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
+
+<pre><code class="language-coffeescript">device = IC.CurrentDevice()
+print 'current device', device
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>device</code></td>
+<td>type: Object, ссылка на экземпляр <a href="#device">Device</a></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="ic_runmode">IC.Runmode</h2>
+
+<p>Текущий режим, <em>prod</em> | <em>dev</em></p>
+
+<pre><code class="language-coffeescript">runmode = IC.Runmode
+print 'runmode', runmode
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>runmode</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
                         
                     </div>
 
@@ -286,7 +201,7 @@ if flow
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#overview">
-                Обзор
+                Overview
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -511,7 +426,7 @@ if flow
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#device">
-                Список объектов
+                Object list
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -573,29 +488,29 @@ if flow
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/">Домой</a>
+                <a href="https://e154.github.io/smart-home/en">Home</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+                <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/api">api</a>
+                <a href="https://e154.github.io/smart-home/en/api">api</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
+                <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
             </li>
             
 
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/en/javascript/_flow/">en</a>
+                <a href="https://e154.github.io/smart-home/javascript/_etc/">ru</a>
             </li>
             
             
@@ -603,10 +518,10 @@ if flow
         </ul>
 
         
-        <div>Разработано при поддержке <a href='http://e154.ru'>e154.ru</a></div>
+        <div>Developed with the support of <a href='http://e154.ru'>e154.ru</a></div>
         
         
-        <p>Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
         
 
     </div>

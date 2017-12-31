@@ -32,7 +32,7 @@
     </head>
     <body id="page-top">
         
-            <!-- main menu -->
+        <!-- main menu -->
 <nav id="mainNav" class="navbar  navbar-fixed-top navbar-inverse">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -80,7 +80,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/api/_overview/">Русский</a>
+                    <a href="https://e154.github.io/smart-home/getting-started/_service/">Русский</a>
                 </li>
                 
                 
@@ -94,7 +94,7 @@
         
 
         
-            <header class="getting-started">
+        <header class="getting-started">
     <div class="header-content">
         <div class="header-content-inner container">
             <h1>overview</h1>
@@ -105,10 +105,31 @@
 
         
 
-        <aside class="api clearfix">
-                <div class="col-lg-2 col-md-3 hidden-sm hidden-xs nav-bar-column">
-                    
-                        <!-- api menu -->
+        <aside class="getting-started">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9" role="main">
+                        
+                            <h2 id="service">Автозапуск</h2>
+
+<p>Чтобы прописать сервис в автозагрузку запустить исполняемый файл с флагом <em>install</em>, к примеру:</p>
+
+<pre><code class="language-bash">cd /opt/smart-home/server/
+sudo ./server-linux-amd64 install
+</code></pre>
+
+<p>Для удаления сервиса из автозагрузки запустить файл с флагом <em>remove</em>, к примеру:</p>
+
+<pre><code class="language-bash">cd /opt/smart-home/server/
+sudo ./server-linux-amd64 remove
+</code></pre>
+
+                        
+                    </div>
+
+                    <div class="col-md-3 hidden-sm hidden-xs nav-bar-column">
+                        
+                            <!-- getting_started_menu menu -->
 <nav class="bs-docs-sidebar bd-sidebar" id="docsNavbarContent">
     <ul class="nav">
         
@@ -118,27 +139,48 @@
             </a>
             <ul class="nav bd-sidenav">
                 
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#requirements">
+                Requirements
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#download">
+                Download
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#whats-included">
+                Whats included
+            </a>
+            <ul class="nav bd-sidenav">
+                
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#security">
-                        Security
+                    <a class="bd-toc-link" href="#server">
+                        Server
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#error">
-                        Errors
+                    <a class="bd-toc-link" href="#configurator">
+                        Configurator
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#http-methods">
-                        HTTP methods
-                    </a>
-                </li>
-                
-                <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#cors">
-                        Cross Origin Resource Sharing (CORS)
+                    <a class="bd-toc-link" href="#node">
+                        Node
                     </a>
                 </li>
                 
@@ -146,20 +188,113 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#authorization">
-                Autorisation
+            <a class="bd-toc-link" href="#quick-install">
+                Quick install
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#install">
+                Install
             </a>
             <ul class="nav bd-sidenav">
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#signin">
-                        Signin
+                    <a class="bd-toc-link" href="#install-mkdir">
+                        Install mkdir
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#signout">
-                        Signout
+                    <a class="bd-toc-link" href="#install-download-and-unpack">
+                        Install download and unpack
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-server-conf">
+                        Install server conf
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-configuration-conf">
+                        Install configuration conf
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-node-conf">
+                        Install node conf
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-mysql">
+                        Install mysql
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-exec">
+                        Install exec
+                    </a>
+                </li>
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#update">
+                Update
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#migrate-mysql">
+                Migrate mysql
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#service">
+                Run as service
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#install-from-source">
+                Install from source
+            </a>
+            <ul class="nav bd-sidenav">
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-from-source-server">
+                        Server
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-from-source-configurator">
+                        Configurator
+                    </a>
+                </li>
+                
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#install-from-source-node">
+                        Node
                     </a>
                 </li>
                 
@@ -169,23 +304,15 @@
     </ul>
 </nav>
 
-                    
-                </div>
-
-                <div class="col-lg-10 col-md-9" role="main">
-                    <div class="right-panel-background"></div>
-
-                    
-                        <p>section is at the stage of translation</p>
-
-                    
+                        
+                    </div>
 
                 </div>
-
+            </div>
         </aside>
 
         
-            <!-- footer -->
+        <!-- footer -->
 <footer class="footer">
     <div class="container">
 
@@ -224,7 +351,7 @@
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/api/_overview/">ru</a>
+                <a href="https://e154.github.io/smart-home/getting-started/_service/">ru</a>
             </li>
             
             

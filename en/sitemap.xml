@@ -3,20 +3,6 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://e154.github.io/smart-home/en/api/_overview/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://e154.github.io/smart-home/api/_overview/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://e154.github.io/smart-home/en/api/_overview/"
-                />
-  </url>
-  
-  <url>
     <loc>https://e154.github.io/smart-home/en/javascript/_overview/</loc>
     <xhtml:link
                 rel="alternate"
@@ -27,48 +13,6 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://e154.github.io/smart-home/en/javascript/_overview/"
-                />
-  </url>
-  
-  <url>
-    <loc>https://e154.github.io/smart-home/en/javascript/_workflow/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://e154.github.io/smart-home/javascript/_workflow/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://e154.github.io/smart-home/en/javascript/_workflow/"
-                />
-  </url>
-  
-  <url>
-    <loc>https://e154.github.io/smart-home/en/javascript/_flow/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://e154.github.io/smart-home/javascript/_flow/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://e154.github.io/smart-home/en/javascript/_flow/"
-                />
-  </url>
-  
-  <url>
-    <loc>https://e154.github.io/smart-home/en/javascript/_log/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="ru"
-                href="https://e154.github.io/smart-home/javascript/_log/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://e154.github.io/smart-home/en/javascript/_log/"
                 />
   </url>
   
@@ -87,17 +31,170 @@
   </url>
   
   <url>
-    <loc>https://e154.github.io/smart-home/en/groups/api/</loc>
-    <priority>0</priority>
+    <loc>https://e154.github.io/smart-home/en/getting-started/_requirements/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="ru"
-                href="https://e154.github.io/smart-home/groups/api/"
+                href="https://e154.github.io/smart-home/getting-started/_requirements/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://e154.github.io/smart-home/en/groups/api/"
+                href="https://e154.github.io/smart-home/en/getting-started/_requirements/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_workflow/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_workflow/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_workflow/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/getting-started/_quick_install/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/getting-started/_quick_install/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/getting-started/_quick_install/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_flow/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_flow/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_flow/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_map/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_map/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_map/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/getting-started/_install/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/getting-started/_install/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/getting-started/_install/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_log/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_log/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_log/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_etc/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_etc/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_etc/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/getting-started/_update/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/getting-started/_update/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/getting-started/_update/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_objects/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_objects/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_objects/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/getting-started/_service/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/getting-started/_service/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/getting-started/_service/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/getting-started/_install_from_source/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/getting-started/_install_from_source/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/getting-started/_install_from_source/"
                 />
   </url>
   
