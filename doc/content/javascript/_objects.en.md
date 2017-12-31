@@ -25,3 +25,13 @@ groups:
   `Description` | type: method, описание ноды
   `Ip`          | type: method, IP адрес ноды
   `Status`      | type: method, состояние ноды
+
+
+## MapElement{} {#map_element}
+
+**Свойство**    | **Описание**
+----------------|--------------
+  `setState`    | type: method, выставить состояние
+  `getState`    | type: method, получить состояние
+  `setOptions`  | type: method, указать список опций
+  `getOptions`  | type: method, получить список опций

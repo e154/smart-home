@@ -38,11 +38,11 @@ element = IC.Map.GetElement(device)
 
 **Значение**    | **Описание**
 ----------------|--------------
-  `device`      | type: Object, ссылка на объект [device](#device)
+  `device`      | type: Object, ссылка на объект [Device{}](#device)
 
 
 **На выходе**
 
 **Значение**    | **Описание**
 ----------------|--------------
- `element`      | type: Object, ссылка на объект [карты](#mapElement)
+ `element`      | type: Object, ссылка на объект [MapElement{}](#map_element)

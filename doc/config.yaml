@@ -107,12 +107,16 @@ Languages:
         - title: "IC.Runmode"
           url: "#ic_runmode"
 
+        - title: ""
+          url: "#device"
         - title: "Список объектов"
           url: "#device"
         - title: "Device{}"
           url: "#device"
         - title: "Node{}"
           url: "#node"
+        - title: "MapElement{}"
+          url: "#map_element"
 
     getting_started_menu:
       links:
@@ -334,12 +338,16 @@ Languages:
         - title: "IC.Runmode"
           url: "#ic_runmode"
 
+        - title: ""
+          url: "#device"
         - title: "Object list"
           url: "#device"
         - title: "Device{}"
           url: "#device"
         - title: "Node{}"
           url: "#node"
+        - title: "MapElement{}"
+          url: "#map_element"
 
     getting_started_menu:
       links:
