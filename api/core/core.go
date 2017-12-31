@@ -526,6 +526,7 @@ func Initialize(telemetry Telemetry) (err error) {
 
 	scripts.PushStruct("Map", &MapBind{Map: corePtr.Map})
 	scripts.PushFunctions("GetNode", GetNode)
+	scripts.PushFunctions("GetNodeList", GetNodeList)
 	scripts.PushFunctions("GetFlow", GetFlow)
 
 	if err = corePtr.Run(); err != nil {

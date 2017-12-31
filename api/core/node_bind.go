@@ -8,12 +8,32 @@ import (
 // Javascript Binding
 //
 // node
-//	 .Send()
+//	 .send()
+//	 .name()
+//	 .description()
+//	 .ip()
+//	 .status()
 //
 type NodeBind struct {
 	node *models.Node
 }
 
-func (n *NodeBind) Send(protocol string, device *models.Device, return_result bool, command []byte) common.Result {
-	return n.node.Send(protocol, device, return_result, command)
+func (n *NodeBind) Send(protocol string, device *DeviceBind, return_result bool, command []byte) common.Result {
+	return n.node.Send(protocol, device.model, return_result, command)
+}
+
+func (n *NodeBind) Name() string {
+	return n.node.Name
+}
+
+func (n *NodeBind) Ip() string {
+	return n.node.Ip
+}
+
+func (n *NodeBind) Status() string {
+	return n.node.Status
+}
+
+func (n *NodeBind) Description() string {
+	return n.node.Description
 }

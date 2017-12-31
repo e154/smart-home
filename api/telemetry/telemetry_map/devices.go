@@ -67,7 +67,7 @@ func (d *Devices) BroadcastOne(id int64) (interface{}, bool) {
 	}, true
 }
 
-// only on request: 'dashboard.get.devices.states'
+// only on request: 'map.get.devices.states'
 //
 func (d *Devices) streamGetDevicesStates(client *stream.Client, value interface{}) {
 
