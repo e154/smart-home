@@ -26,10 +26,6 @@ func (m *Script) TableName() string {
 	return beego.AppConfig.String("db_scripts")
 }
 
-func init() {
-	orm.RegisterModel(new(Script))
-}
-
 // AddScript insert a new Script into database and returns
 // last inserted Id on success.
 func AddScript(m *Script) (id int64, err error) {

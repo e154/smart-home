@@ -24,10 +24,6 @@ func (m *Dashboard) TableName() string {
 	return beego.AppConfig.String("db_dashboards")
 }
 
-func init() {
-	orm.RegisterModel(new(Dashboard))
-}
-
 // AddDashboard insert a new Dashboard into database and returns
 // last inserted Id on success.
 func AddDashboard(m *Dashboard) (id int64, err error) {

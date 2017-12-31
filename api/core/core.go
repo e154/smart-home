@@ -39,6 +39,28 @@ func (b *Core) Run() (err error) {
 	return
 }
 
+func (b *Core) Stop() (err error) {
+
+	for _, workflow := range b.workflows {
+		b.DeleteWorkflow(workflow.model)
+	}
+
+	for _, node := range b.nodes {
+		b.RemoveNode(node)
+	}
+
+	return
+}
+
+func (b *Core) Restart() (err error) {
+
+	b.Stop()
+
+	b.Run()
+
+	return
+}
+
 // ------------------------------------------------
 // Workflows
 // ------------------------------------------------
@@ -504,6 +526,7 @@ func Initialize(telemetry Telemetry) (err error) {
 
 	scripts.PushStruct("Map", &MapBind{Map: corePtr.Map})
 	scripts.PushFunctions("GetNode", GetNode)
+	scripts.PushFunctions("GetNodeList", GetNodeList)
 	scripts.PushFunctions("GetFlow", GetFlow)
 
 	if err = corePtr.Run(); err != nil {

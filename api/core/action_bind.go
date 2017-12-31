@@ -1,16 +1,19 @@
 package core
 
-import (
-	"github.com/e154/smart-home/api/models"
-)
-
+// Javascript Binding
+//
+// IC.Action()
+//	 .device()
+//	 .node()
+//
 type ActionBind struct {
 	action *Action
 }
 
-func (a *ActionBind) Device() *models.Device {
-	return a.action.GetDevice()
+func (a *ActionBind) Device() *DeviceBind {
+	return &DeviceBind{model: a.action.GetDevice()}
 }
-func (a *ActionBind) Node() *models.Node {
-	return a.action.GetNode()
+
+func (a *ActionBind) Node() *NodeBind {
+	return &NodeBind{node:a.action.GetNode()}
 }

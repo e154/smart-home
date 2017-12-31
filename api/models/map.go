@@ -25,10 +25,6 @@ func (m *Map) TableName() string {
 	return beego.AppConfig.String("db_maps")
 }
 
-func init() {
-	orm.RegisterModel(new(Map))
-}
-
 // AddMap insert a new Map into database and returns
 // last inserted Id on success.
 func AddMap(m *Map) (id int64, err error) {

@@ -25,10 +25,6 @@ func (m *MapDeviceState) TableName() string {
 	return beego.AppConfig.String("db_map_device_states")
 }
 
-func init() {
-	orm.RegisterModel(new(MapDeviceState))
-}
-
 // AddMapDeviceState insert a new MapDeviceState into database and returns
 // last inserted Id on success.
 func AddMapDeviceState(m *MapDeviceState) (id int64, err error) {

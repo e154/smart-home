@@ -191,7 +191,7 @@ func getImageList(client *stream.Client, value interface{}) {
 
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "images": images})
-	client.Send(string(msg))
+	client.Send <- msg
 }
 
 func getFilterList(client *stream.Client, value interface{}) {
@@ -208,7 +208,7 @@ func getFilterList(client *stream.Client, value interface{}) {
 	}
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "filter_list": filter_list})
-	client.Send(string(msg))
+	client.Send <- msg
 }
 
 func removeImage(client *stream.Client, value interface{}) {
@@ -240,7 +240,7 @@ func removeImage(client *stream.Client, value interface{}) {
 	os.Remove(file_path)
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
-	client.Send(string(msg))
+	client.Send <- msg
 }
 
 func init() {

@@ -34,10 +34,6 @@ func (i *Image) TableName() string {
 	return beego.AppConfig.String("db_images")
 }
 
-func init() {
-	orm.RegisterModel(new(Image))
-}
-
 // AddImage insert a new Image into database and returns
 // last inserted Id on success.
 func AddImage(m *Image) (id int64, err error) {

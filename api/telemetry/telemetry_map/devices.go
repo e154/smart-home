@@ -7,11 +7,19 @@ import (
 	"github.com/e154/smart-home/api/stream"
 	"github.com/e154/smart-home/api/core"
 	"github.com/e154/smart-home/api/log"
+	"sync"
 )
 
+type DeviceState struct {
+	Id      int64                              `json:"id"`
+	Status  *models.DeviceState                `json:"status"`
+	Options interface{}                        `json:"options"`
+}
+
 type Devices struct {
-	Total  int64							`json:"total"`
-	Status map[int64]*models.DeviceState	`json:"status"`
+	sync.Mutex
+	Total       int64                          `json:"total"`
+	DeviceStats map[int64]*DeviceState         `json:"device_stats"`
 }
 
 func (d *Devices) Update() {
@@ -20,7 +28,18 @@ func (d *Devices) Update() {
 		log.Error(err.Error())
 	}
 
-	d.Status = core.CorePtr().Map.GetDevicesStates()
+	mapElemets := core.CorePtr().Map.GetAllElements()
+
+	d.Lock()
+	defer d.Unlock()
+	d.DeviceStats = make(map[int64]*DeviceState)
+	for id, mapElement := range mapElemets {
+		d.DeviceStats[id] = &DeviceState{
+			Id: id,
+			Status: mapElement.State,
+			Options: mapElement.Options,
+		}
+	}
 }
 
 func (d *Devices) Broadcast() (interface{}, bool) {
@@ -34,19 +53,21 @@ func (d *Devices) Broadcast() (interface{}, bool) {
 
 func (d *Devices) BroadcastOne(id int64) (interface{}, bool) {
 
-	d.Status = core.CorePtr().Map.GetDevicesStates()
-	state, ok := d.Status[id]
+	d.Update()
+
+	d.Lock()
+	state, ok := d.DeviceStats[id]
 	if !ok {
 		return nil, false
 	}
+	d.Unlock()
 
 	return map[string]interface{}{
-		"device": map[string]interface{}{"id": id, "state": state},
-		"devices": d,
+		"device": state,
 	}, true
 }
 
-// only on request: 'dashboard.get.devices.states'
+// only on request: 'map.get.devices.states'
 //
 func (d *Devices) streamGetDevicesStates(client *stream.Client, value interface{}) {
 
@@ -57,7 +78,10 @@ func (d *Devices) streamGetDevicesStates(client *stream.Client, value interface{
 
 	d.Update()
 
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "states": d.Status})
+	msg, _ := json.Marshal(map[string]interface{}{
+		"id": v["id"],
+		"states": d,
+	})
 
-	client.Send(string(msg))
+	client.Send <- msg
 }

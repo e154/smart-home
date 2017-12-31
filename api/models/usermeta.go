@@ -21,10 +21,6 @@ func (m *UserMeta) TableName() string {
 	return beego.AppConfig.String("db_user_metas")
 }
 
-func init() {
-	orm.RegisterModel(new(UserMeta))
-}
-
 // AddUserMeta insert a new UserMeta into database and returns
 // last inserted Id on success.
 func AddUserMeta(m *UserMeta) (id int64, err error) {

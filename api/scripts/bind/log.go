@@ -2,6 +2,14 @@ package bind
 
 import "github.com/e154/smart-home/api/log"
 
+// Javascript Binding
+//
+// IC.Log
+// 	 .info()
+// 	 .warn()
+// 	 .error()
+// 	 .debug()
+//
 type LogBind struct {}
 
 func (b *LogBind) Info(v ...interface{}) { log.Info(v) }

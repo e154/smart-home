@@ -3,21 +3,28 @@ package stream
 import (
 	"encoding/json"
 	"gopkg.in/igm/sockjs-go.v2/sockjs"
+	"github.com/gorilla/websocket"
+	"time"
 )
 
 type Client struct {
-	Session  sockjs.Session
+	ConnType  ConnectType
+	Session   sockjs.Session
+	Connect   *websocket.Conn
 	//User *rbac.User
-	Ip string
-	Referer string
+	Ip        string
+	Referer   string
 	UserAgent string
-	Width int
-	Height int
-	Cookie bool
-	Language string
-	Platform string
-	Location string
-	Href string
+	Width     int
+	Height    int
+	Cookie    bool
+	Language  string
+	Platform  string
+	Location  string
+	Href      string
+
+	// message buffered channel
+	Send chan []byte
 }
 
 func (c *Client) UpdateInfo(info interface{}) {
@@ -57,10 +64,62 @@ func (c *Client) UpdateInfo(info interface{}) {
 }
 
 func (c *Client) Notify(t, b string) {
+
 	msg, _ := json.Marshal(&map[string]interface{}{"type": "notify", "value": &map[string]interface{}{"type": t, "body": b}})
-	c.Session.Send(string(msg))
+
+	c.Send <- msg
+
 }
 
-func (c *Client) Send(msg string) {
-	c.Session.Send(msg)
+func (c *Client) Write(opCode int, payload []byte) error {
+	c.Connect.SetWriteDeadline(time.Now().Add(writeWait))
+	return c.Connect.WriteMessage(opCode, payload)
+}
+
+// send message to client
+//
+func (c *Client) WritePump() {
+
+	ticker := time.NewTicker(pingPeriod)
+
+	defer func() {
+		ticker.Stop()
+		if c.Connect != nil {
+			c.Connect.Close()
+		}
+	}()
+
+	for {
+		select {
+		case message, ok := <-c.Send:
+
+			switch c.ConnType {
+			case SOCKJS:
+				c.Session.Send(string(message))
+			case WEBSOCK:
+				if !ok {
+					c.Write(websocket.CloseMessage, []byte{})
+					return
+				}
+				if err := c.Write(websocket.TextMessage, message); err != nil {
+					return
+				}
+			default:
+
+			}
+
+		case <-ticker.C:
+			if err := c.Write(websocket.PingMessage, []byte{}); err != nil {
+				return
+			}
+		}
+	}
+}
+
+func (c *Client) Close() {
+
+	err := c.Write(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+	if err != nil {
+		return
+	}
 }

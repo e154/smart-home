@@ -57,5 +57,5 @@ func (n *Nodes) streamNodesStatus(client *stream.Client, value interface{}) {
 	n.Update()
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "nodes": n})
-	client.Send(string(msg))
+	client.Send <- msg
 }

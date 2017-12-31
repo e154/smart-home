@@ -62,12 +62,6 @@ func (i Items) Less(a, b int) bool {
 	return len(result_a) < len(result_b)
 }
 
-func init() {
-	orm.RegisterModel(
-	new(EmailItem),
-	)
-}
-
 func EmailItemAddNew(body []byte) (id int64, b bool, valid validation.Validation, err error) {
 
 	item := new(EmailItem)

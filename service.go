@@ -41,7 +41,7 @@ func (service *Service) Manage() (string, error) {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, os.Kill, syscall.SIGTERM)
 
-	api.Initialize()
+	api.Initialize(false)
 	var port int
 	port = beego.BConfig.Listen.HTTPPort
 

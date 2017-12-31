@@ -11,3 +11,4 @@ vendor/*
 /conf/app.conf
 /bin/dbconfig.yml
 data/scripts
+trace.out

@@ -19,10 +19,6 @@ func (m *Log) TableName() string {
 	return beego.AppConfig.String("db_logs")
 }
 
-func init() {
-	orm.RegisterModel(new(Log))
-}
-
 // AddLog insert a new Log into database and returns
 // last inserted Id on success.
 func AddLog(m *Log) (id int64, err error) {

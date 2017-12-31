@@ -31,10 +31,6 @@ func (m *Connection) TableName() string {
 	return beego.AppConfig.String("db_connections")
 }
 
-func init() {
-	orm.RegisterModel(new(Connection))
-}
-
 // AddConnection insert a new Connection into database and returns
 // last inserted Id on success.
 func AddConnection(m *Connection) (id int64, err error) {

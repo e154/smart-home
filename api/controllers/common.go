@@ -8,6 +8,12 @@ import  (
 	"html/template"
 	"encoding/json"
 	"github.com/e154/smart-home/api/log"
+	"github.com/e154/smart-home/api/models"
+	"github.com/pkg/errors"
+	"github.com/e154/smart-home/api/variable"
+	"github.com/e154/smart-home/api/common"
+	"encoding/hex"
+	"github.com/dgrijalva/jwt-go"
 )
 
 type Request struct {
@@ -90,6 +96,47 @@ func (c *CommonController) GetTemplate() string {
 	}
 	return templatetype
 }
+
+func (c *CommonController) GetCurrentUser() (user *models.User, err error) {
+
+	token := c.Ctx.Input.Header("access_token")
+	if token == "" {
+		err = errors.New("access_token is empty")
+		return
+	}
+
+	key, ok := variable.Get("hmacKey")
+	if !ok {
+		key = common.ComputeHmac256()
+		if err = variable.Set("hmacKey", key); err != nil {
+			return
+		}
+	}
+
+	hmacKey, err := hex.DecodeString(key)
+	if err != nil {
+		return
+	}
+
+	// load user info
+	var claims jwt.MapClaims
+	if claims, err = common.ParseHmacToken(token, hmacKey); err != nil {
+		//log.Warnf("rbac: %s", err.Error())
+		return
+	}
+
+	if token, ok = claims["auth"].(string); !ok {
+		//log.Warnf("rbac: no auth var in token")
+		return
+	}
+
+	if user, err = models.UserGetByAuthenticationToken(token); err != nil {
+		return
+	}
+
+	return
+}
+
 
 func (c *CommonController) Prepare() {
 

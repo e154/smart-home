@@ -190,5 +190,5 @@ func streamDoAction(client *stream.Client, value interface{}) {
 	}
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
-	client.Send(string(msg))
+	client.Send <- msg
 }

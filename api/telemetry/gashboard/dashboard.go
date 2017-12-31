@@ -116,7 +116,7 @@ func (t *Dashboard) sendMsg (body interface{}) {
 		},
 	})
 
-	Hub.Broadcast(string(msg))
+	Hub.Broadcast(msg)
 }
 
 // every time send:
@@ -167,5 +167,5 @@ func (t *Dashboard) streamTelemetry(client *stream.Client, value interface{}) {
 		"nodes": states.Nodes,
 		"devices": states.Devices,
 	}})
-	client.Send(string(msg))
+	client.Send <- msg
 }

@@ -1,5 +1,4 @@
-Smart home system
-------------------
+# The program complex **Smart House**
 
 [Project site](https://e154.github.io/smart-home/) |
 [Configurator](https://github.com/e154/smart-home-configurator/) |
@@ -10,17 +9,32 @@ Smart home system
 [![Build Status](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
 [![Coverage Status](https://coveralls.io/repos/github/e154/smart-home/badge.svg?branch=master)](https://coveralls.io/github/e154/smart-home?branch=master)
 
+<img align="right" width="220" height="auto" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
+
 ### Overview
 
-The program complex **Smart House** began its development with a small home project in the fall of 2016. Basic principles
-Underlying the system being developed, ease of configuration and content, cheapness and availability of the component base.
+Basic principles Underlying the system being developed, ease of configuration and content, cheapness and availability of the component base.
 So you can manage a lot of devices based on AVR microcontrollers and not only.
 A distributed network does not have geographic boundaries and allows you to manage devices anywhere in the Internet through
 System of nodes - microservices. And you will be able to interact with these devices in the way that they are
 In your local network. Create scripts, and respond to events in the web interface of the configurator through a flexible scripting system.
 Manage the state of devices from any subnet where the management server is available.
 
-The project is in active development stage.
+> The project is in active development stage.
+
+- [Supported system](#supported-system)
+- [Quick installation](#quick-installation)
+    - [Server](#server)
+    - [Configurator](#configurator)
+    - [Node](#node)
+    - [Mysql](#database-mysql)
+- [Installation for development](#installation-for-development)
+    - [Server](#main-server-install)
+- [Testing](#testing)
+- [Support](#support)
+- [Contributors](#contributors)
+- [See also](#see-also)
+- [License](#license)
 
 ### Supported system
     
@@ -45,25 +59,25 @@ Schematic smart home map
 
 [Installation help](https://e154.github.io/smart-home/getting-started/#install)
 
-Server
+#### Server
 
 ```bash
 curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install
 ```
 
-Configurator
+#### Configurator
 
 ```bash
 curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev/stdin --install
 ```
 
-Node
+#### Node
 
 ```bash
 curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
 ```
 
-Database mysql
+#### Database mysql
 
 ```bash
 mysql -u root -p
@@ -111,7 +125,7 @@ PS very soon an example will be added hello world
 
 ### Installation for development
 
-#### main server install 
+#### main server install
 
 ```bash
 go get -u github.com/FiloSottile/gvt
@@ -154,6 +168,14 @@ for test
 ```
 
 It's all
+
+### Testing
+
+The system supports self-testing of internal components, and is started by the command
+
+```bash
+go test ./tests -v
+```
 
 ### Support 
 

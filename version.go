@@ -22,6 +22,7 @@ const verboseVersionBanner string = `
 Usage: %s [option]
 
 options:
+trace	- trace mode for debug
 start	- [sudo] Start the service
 stop	- [sudo] Stop the service
 install	- [sudo] Install the service into the system
