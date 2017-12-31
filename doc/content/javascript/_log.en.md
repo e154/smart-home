@@ -1,5 +1,5 @@
 ---
-weight: 3
+weight: 39
 title: log
 groups:
     - javascript

@@ -1,5 +1,5 @@
 ---
-weight: 3
+weight: 30
 title: flow
 groups:
     - javascript
@@ -96,4 +96,4 @@ if flow
 
 **Значение** | **Описание**
 -------------|--------------
-  `node`     | type: Object, ссылка на экземпляр [Node](#ic_node) 
+  `node`     | type: Object, ссылка на экземпляр [Node](#node) 

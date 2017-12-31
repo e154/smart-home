@@ -39,7 +39,7 @@ fetchStatus =(node, dev)->
     FUNCTION = 3
 
     # получим адрес устройства из контекста запуска
-    DEVICE_ADDR = dev.address
+    DEVICE_ADDR = dev.getAddress()
     
     COMMAND = [DEVICE_ADDR, FUNCTION, 0, 0, 0, 5]
     

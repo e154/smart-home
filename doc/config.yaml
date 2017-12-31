@@ -82,6 +82,13 @@ Languages:
         - title: "-> node()"
           url: "#ic_flow_node"
 
+        - title: "IC.Map()"
+          url: "#ic_map"
+        - title: "-> SetElementState(obj, state)"
+          url: "#ic_map_set_element_state"
+        - title: "-> GetElement(device)"
+          url: "#ic_map_get_element"
+
         - title: "IC.Log"
           url: "#ic_log"
         - title: "-> info()"
@@ -92,12 +99,20 @@ Languages:
           url: "#ic_log_error"
         - title: "-> debug()"
           url: "#ic_log_debug"
+
         - title: "IC.CurrentNode()"
           url: "#ic_current_node"
         - title: "IC.CurrentDevice()"
           url: "#ic_current_device"
         - title: "IC.Runmode"
           url: "#ic_runmode"
+
+        - title: "Список объектов"
+          url: "#device"
+        - title: "Device{}"
+          url: "#device"
+        - title: "Node{}"
+          url: "#node"
 
     getting_started_menu:
       links:
@@ -294,6 +309,13 @@ Languages:
         - title: "-> node()"
           url: "#ic_flow_node"
 
+        - title: "IC.Map()"
+          url: "#ic_map"
+        - title: "-> SetElementState(obj, state)"
+          url: "#ic_map_set_element_state"
+        - title: "-> GetElement(device)"
+          url: "#ic_map_get_element"
+
         - title: "IC.Log"
           url: "#ic_log"
         - title: "-> info()"
@@ -304,6 +326,20 @@ Languages:
           url: "#ic_log_error"
         - title: "-> debug()"
           url: "#ic_log_debug"
+
+        - title: "IC.CurrentNode()"
+          url: "#ic_current_node"
+        - title: "IC.CurrentDevice()"
+          url: "#ic_current_device"
+        - title: "IC.Runmode"
+          url: "#ic_runmode"
+
+        - title: "Object list"
+          url: "#device"
+        - title: "Device{}"
+          url: "#device"
+        - title: "Node{}"
+          url: "#node"
 
     getting_started_menu:
       links:

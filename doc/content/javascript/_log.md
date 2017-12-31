@@ -1,5 +1,5 @@
 ---
-weight: 3
+weight: 39
 title: log
 groups:
     - javascript
@@ -33,7 +33,7 @@ IC.Log.info('Info message')
 IC.Log.warn('Warning message')
 ```
 
-### .error() {#ic_log_warn}
+### .error() {#ic_log_error}
 
 ```coffeescript
 IC.Log.error('Error message')
