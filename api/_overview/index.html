@@ -32,7 +32,7 @@
     </head>
     <body id="page-top">
         
-        <!-- main menu -->
+            <!-- main menu -->
 <nav id="mainNav" class="navbar  navbar-fixed-top navbar-inverse">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -80,7 +80,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript/_objects/">English</a>
+                    <a href="https://e154.github.io/smart-home/en/api/_overview/">English</a>
                 </li>
                 
                 
@@ -94,10 +94,10 @@
         
 
         
-        <header class="javascript">
+            <header class="getting-started">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>objects</h1>
+            <h1>Обзор</h1>
             
         </div>
     </div>
@@ -105,120 +105,10 @@
 
         
 
-        <aside class="javascript">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-9" role="main">
-                        
-                            
-
-<h1 id="список-объектов">Список объектов</h1>
-
-<h2 id="device">Device{}</h2>
-
-<table>
-<thead>
-<tr>
-<th><strong>Свойство</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>getName</code></td>
-<td>type: method, именование устройства</td>
-</tr>
-
-<tr>
-<td><code>getDescription</code></td>
-<td>type: method, описание устройства</td>
-</tr>
-
-<tr>
-<td><code>getAddress</code></td>
-<td>type: method, адрес устройства</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="node">Node{}</h2>
-
-<table>
-<thead>
-<tr>
-<th><strong>Свойство</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>Send</code></td>
-<td>type: method, послать сообщение</td>
-</tr>
-
-<tr>
-<td><code>Name</code></td>
-<td>type: method, наименование ноды</td>
-</tr>
-
-<tr>
-<td><code>Description</code></td>
-<td>type: method, описание ноды</td>
-</tr>
-
-<tr>
-<td><code>Ip</code></td>
-<td>type: method, IP адрес ноды</td>
-</tr>
-
-<tr>
-<td><code>Status</code></td>
-<td>type: method, состояние ноды</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="map_element">MapElement{}</h2>
-
-<table>
-<thead>
-<tr>
-<th><strong>Свойство</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>setState</code></td>
-<td>type: method, выставить состояние</td>
-</tr>
-
-<tr>
-<td><code>getState</code></td>
-<td>type: method, получить состояние</td>
-</tr>
-
-<tr>
-<td><code>setOptions</code></td>
-<td>type: method, указать список опций</td>
-</tr>
-
-<tr>
-<td><code>getOptions</code></td>
-<td>type: method, получить список опций</td>
-</tr>
-</tbody>
-</table>
-
-                        
-                    </div>
-
-                    <div class="col-md-3 hidden-sm hidden-xs nav-bar-column">
-                        
-                            <!-- javascript_menu menu -->
+        <aside class="api clearfix">
+                <div class="col-lg-2 col-md-3 hidden-sm hidden-xs nav-bar-column">
+                    
+                        <!-- api menu -->
 <nav class="bs-docs-sidebar bd-sidebar" id="docsNavbarContent">
     <ul class="nav">
         
@@ -228,149 +118,50 @@
             </a>
             <ul class="nav bd-sidenav">
                 
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_workflow">
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#security">
+                        Безопасность
+                    </a>
+                </li>
                 
-            </a>
-            <ul class="nav bd-sidenav">
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#errors">
+                        Ошибки
+                    </a>
+                </li>
                 
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_workflow">
-                Функции
-            </a>
-            <ul class="nav bd-sidenav">
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#http-methods">
+                        HTTP методы
+                    </a>
+                </li>
                 
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_workflow">
-                IC.Workflow()
-            </a>
-            <ul class="nav bd-sidenav">
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#cors">
+                        CORS
+                    </a>
+                </li>
                 
             </ul>
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_flow">
-                IC.Flow()
+            <a class="bd-toc-link" href="#authorization">
+                Авторизация
             </a>
             <ul class="nav bd-sidenav">
                 
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_map">
-                IC.Map()
-            </a>
-            <ul class="nav bd-sidenav">
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#signin">
+                        Вход
+                    </a>
+                </li>
                 
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_log">
-                IC.Log
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_current_node">
-                IC.CurrentNode()
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_current_device">
-                IC.CurrentDevice()
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_runmode">
-                
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_runmode">
-                Константы
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_runmode">
-                IC.Runmode
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#device">
-                
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#device">
-                Список объектов
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#device">
-                Device{}
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#node">
-                Node{}
-            </a>
-            <ul class="nav bd-sidenav">
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#map_element">
-                MapElement{}
-            </a>
-            <ul class="nav bd-sidenav">
+                <li class="bd-toc-item ">
+                    <a class="bd-toc-link" href="#signout">
+                        Выход
+                    </a>
+                </li>
                 
             </ul>
         </li>
@@ -378,15 +169,170 @@
     </ul>
 </nav>
 
+                    
+                </div>
+
+                <div class="col-lg-10 col-md-9" role="main">
+                    <div class="right-panel-background"></div>
+
+                    
                         
-                    </div>
+
+<h2 id="overview">Обзор</h2>
+
+<p><strong>Smart home</strong> <strong>API</strong> позволяет управлять системой <strong>Smart home</strong>, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.</p>
+
+<p><strong>Smart home</strong> <strong>API</strong> организован на основе <strong>REST</strong> запросов по верх HTTP протокола.
+Такая связка была выбрана исключительно из простоты поддержания, и разработки нового функционала.
+Все запросы должны быть в формате JSON и кодировке UTF-8 <em>(Content-Type: application/json; charset=utf-8)</em>.
+Заголовок Accept будут игнорироваться для всех запросов.</p>
+
+<pre><code class="language-bash">$ curl -i http://localhost:3000/api/v1/signin
+</code></pre>
+
+<h2 id="security">Безопасность</h2>
+
+<p>Сервер <strong>Smart home</strong> имеет систему контроля доступа основанную на ролях. Любое действие или команда по <strong>API</strong> будут проходить проверку на право доступа
+Идентификация пользователя и роли происходит по <a href="https://jwt.io">JWT</a> токену указанному в <strong>access_token</strong> заголовке запроса.
+Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок <strong>access_token</strong>:</p>
+
+<blockquote>
+<p>Пример токена авторизации</p>
+</blockquote>
+
+<pre><code class="language-bash">access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+</code></pre>
+
+<h1 id="errors">Ошибки</h1>
+
+<p>При возникновении ошибки Вы получите её код в теле ответа.</p>
+
+<table>
+<thead>
+<tr>
+<th>Поле</th>
+<th>Тип</th>
+<th>Значение</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>message</code></td>
+<td>строка</td>
+<td>Текст ошибки</td>
+</tr>
+
+<tr>
+<td><code>status</code></td>
+<td>строка</td>
+<td>Системное название</td>
+</tr>
+</tbody>
+</table>
+
+<pre><code class="language-bash">HTTP/1.1 404 Not Found
+Date: Mon, 21 Apr 2014 13:26:48 GMT
+Content-Type: application/json; charset=utf-8:
+</code></pre>
+
+<pre><code class="language-json">{
+    &quot;message&quot;: &quot;Описание ошибки&quot;,
+    &quot;status&quot;: &quot;error&quot;
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Код ошибки</th>
+<th>Описание</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>400</code></td>
+<td>Bad Request &ndash; Плохой запрос</td>
+</tr>
+
+<tr>
+<td><code>401</code></td>
+<td>Unauthorized &ndash; <strong>API</strong> токен не верный</td>
+</tr>
+
+<tr>
+<td><code>403</code></td>
+<td>Forbidden &ndash; Доступ запрещен, возможно не хватает прав</td>
+</tr>
+
+<tr>
+<td><code>404</code></td>
+<td>Not Found &ndash; Контент не найден</td>
+</tr>
+
+<tr>
+<td><code>500</code></td>
+<td>Internal Server Error &ndash; Ошибка на сервере</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="http-methods">HTTP методы</h2>
+
+<p>Сервер <strong>Smart home</strong> <strong>REST API</strong> поддерживает данный список HTTP методов для каждого действия:</p>
+
+<table>
+<thead>
+<tr>
+<th>Метод</th>
+<th>Действие</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td>Получить ресурс</td>
+</tr>
+
+<tr>
+<td><code>POST</code></td>
+<td>Создать ресурс</td>
+</tr>
+
+<tr>
+<td><code>PUT</code></td>
+<td>Обновить ресурс</td>
+</tr>
+
+<tr>
+<td><code>DELETE</code></td>
+<td>Удалить ресурс</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="cors">Cross Origin Resource Sharing (CORS)</h2>
+
+<p>Сервер <strong>Smart home</strong> API version 1.0 поддерживает Cross Origin Resource Sharing (CORS) запросы для AJAX.</p>
+
+<pre><code class="language-bash">$ curl -i http://localhost:3000/api/v1/signin
+HTTP/1.1 200 OK
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: Content-Type,access_token
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,UPDATE
+Access-Control-Allow-Origin: *
+</code></pre>
+
+                    
 
                 </div>
-            </div>
+
         </aside>
 
         
-        <!-- footer -->
+            <!-- footer -->
 <footer class="footer">
     <div class="container">
 
@@ -425,7 +371,7 @@
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/en/javascript/_objects/">en</a>
+                <a href="https://e154.github.io/smart-home/en/api/_overview/">en</a>
             </li>
             
             

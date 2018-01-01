@@ -12,6 +12,17 @@
     
     <item>
       <title>overview</title>
+      <link>https://e154.github.io/smart-home/en/api/_overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/api/_overview/</guid>
+      <description>Обзор Smart home API позволяет управлять системой Smart home, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.
+Smart home API организован на основе REST запросов по верх HTTP протокола. Такая связка была выбрана исключительно из простоты поддержания, и разработки нового функционала. Все запросы должны быть в формате JSON и кодировке UTF-8 (Content-Type: application/json; charset=utf-8). Заголовок Accept будут игнорироваться для всех запросов.
+$ curl -i http://localhost:3000/api/v1/signin  Безопасность Сервер Smart home имеет систему контроля доступа основанную на ролях.</description>
+    </item>
+    
+    <item>
+      <title>overview</title>
       <link>https://e154.github.io/smart-home/en/javascript/_overview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -20,6 +31,17 @@
 Методы Объект IC - глобальный объект, содержащий в себе все функции и константы API SmartHome.
 пример скрипта
 # Контекст применения: # action (действие) # # Описание: # Проверка состояния устройства. (частное) # Не имеет зависимостей, и ни чего не передает наружу # Должен вызываться в рамках воркера, или действия устройства, # иначе выдаст ошибку, так как контекст выполнения накладывает # некоторые ограничения fetchStatus =(node, dev)-&amp;gt; # номер комманнды # 3 - проверка состояния # 4 - выполнить комманду FUNCTION = 3 # получим адрес устройства из контекста запуска DEVICE_ADDR = dev.</description>
+    </item>
+    
+    <item>
+      <title>overview</title>
+      <link>https://e154.github.io/smart-home/en/api/_authorize/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/api/_authorize/</guid>
+      <description>Авторизация Все запросы к серверу должны сопровождаться авторизационным токеном.
+#!/usr/bin/env bash URL=http://localhost:3000/api/v1 TOKEN=&amp;quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&amp;quot; curl -H &amp;quot;access_token:${TOKEN}&amp;quot; -X GET -s ${URL}/user/1   Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация. Пароль должен состоять не менне чем из 6 символов. Авторизация в только что установленной системе возможна только, по одной из двух учетных записей  Учетные записи существующие после установки сервера
+ email: demo@e154.</description>
     </item>
     
     <item>
@@ -214,6 +236,51 @@ sudo mkdir -p /opt/smart-home sudo chown $USER:$USER /opt/smart-home -R mkdir -p
       
       <guid>https://e154.github.io/smart-home/en/projects/project-1/</guid>
       <description> An example of a typical project Smart House </description>
+    </item>
+    
+    <item>
+      <title>Гостиница</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-5/</guid>
+      <description> Гостиница </description>
+    </item>
+    
+    <item>
+      <title>Квартира</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-3/</guid>
+      <description> Квартира в многоквартирном доме </description>
+    </item>
+    
+    <item>
+      <title>Многоквартирный дом</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-4/</guid>
+      <description> Многоквартирный дом </description>
+    </item>
+    
+    <item>
+      <title>Музыка, свет, домофон</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-6/</guid>
+      <description> Управление музыкой, светом, домофоном </description>
+    </item>
+    
+    <item>
+      <title>Система отопления</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-2/</guid>
+      <description> Система отопления в доме </description>
     </item>
     
   </channel>

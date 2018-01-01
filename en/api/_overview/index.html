@@ -44,7 +44,7 @@
                 <span class="icon-bar"></span>
             </button>
             
-                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
+                <a class="navbar-brand page-scroll" href="#page-top">Smart home</a>
             
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -61,26 +61,26 @@
 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/">Домой</a>
+                    <a href="https://e154.github.io/smart-home/en">Home</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+                    <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/api">api</a>
+                    <a href="https://e154.github.io/smart-home/en/api">api</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
+                    <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
                 </li>
                 
 
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/api/">English</a>
+                    <a href="https://e154.github.io/smart-home/api/_overview/">Русский</a>
                 </li>
                 
                 
@@ -97,7 +97,7 @@
             <header class="getting-started">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>Api</h1>
+            <h1>overview</h1>
             
         </div>
     </div>
@@ -114,31 +114,31 @@
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#overview">
-                Обзор
+                Overview
             </a>
             <ul class="nav bd-sidenav">
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#security">
-                        Безопасность
+                        Security
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#errors">
-                        Ошибки
+                    <a class="bd-toc-link" href="#error">
+                        Errors
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#http-methods">
-                        HTTP методы
+                        HTTP methods
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#cors">
-                        CORS
+                        Cross Origin Resource Sharing (CORS)
                     </a>
                 </li>
                 
@@ -147,19 +147,19 @@
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#authorization">
-                Авторизация
+                Autorisation
             </a>
             <ul class="nav bd-sidenav">
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#signin">
-                        Вход
+                        Signin
                     </a>
                 </li>
                 
                 <li class="bd-toc-item ">
                     <a class="bd-toc-link" href="#signout">
-                        Выход
+                        Signout
                     </a>
                 </li>
                 
@@ -177,7 +177,6 @@
 
                     
                         
-                            
 
 <h2 id="overview">Обзор</h2>
 
@@ -326,242 +325,6 @@ Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,UPDATE
 Access-Control-Allow-Origin: *
 </code></pre>
 
-                        
-                            
-
-<h2 id="authorization">Авторизация</h2>
-
-<p>Все запросы к серверу должны сопровождаться авторизационным токеном.</p>
-
-<pre><code class="language-bash">#!/usr/bin/env bash
-URL=http://localhost:3000/api/v1
-TOKEN=&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;
-
-curl -H &quot;access_token:${TOKEN}&quot; -X GET -s ${URL}/user/1
-</code></pre>
-
-<ul>
-<li>Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация.</li>
-<li>Пароль должен состоять не менне чем из 6 символов.</li>
-<li>Авторизация в только что установленной системе возможна только, по одной из двух учетных записей</li>
-</ul>
-
-<p>Учетные записи существующие после установки сервера</p>
-
-<ul>
-<li><strong>email</strong>: demo@e154.ru</li>
-<li><strong>password</strong>: demodemo</li>
-<li><strong>email</strong>: admin@e154.ru</li>
-<li><strong>password</strong>: adminadmin</li>
-</ul>
-
-<h2 id="signin">Вход</h2>
-
-<p>Вход - генерация JWT токена, происходит <code>GET</code> запросом.</p>
-
-<blockquote>
-<p>Генерация токена</p>
-
-<p><span class="method get">GET</span> http://localhost:3000/api/v1/signin</p>
-
-<p>Заголовки запроса</p>
-</blockquote>
-
-<pre><code class="language-bash">Content-Type: application/json
-Authorization: Basic [basic token]
-</code></pre>
-
-<pre><code class="language-bash">#!/usr/bin/env bash
-
-EMAIL=&quot;admin@e154.ru&quot;
-PASSWORD=&quot;adminadmin&quot;
-URL=http://localhost:3000/api/v1
-
-curl -H &quot;Content-Type: application/json; charset=utf-8&quot; -u &quot;${EMAIL}:${PASSWORD}&quot; -s ${URL}/signin
-</code></pre>
-
-<p>Значение полей в результате положительного ответа</p>
-
-<table>
-<thead>
-<tr>
-<th>Поле</th>
-<th>Тип</th>
-<th>Значение</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>access_token</code></td>
-<td>строка</td>
-<td>JWT токен</td>
-</tr>
-
-<tr>
-<td><code>current_user</code></td>
-<td>объект</td>
-<td>Параметры текущеко пользователя</td>
-</tr>
-</tbody>
-</table>
-
-<blockquote>
-<p><code>200</code> положительный ответ</p>
-</blockquote>
-
-<pre><code class="language-json">{
-  &quot;access_token&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;,
-  &quot;current_user&quot;: {
-    &quot;avatar&quot;: null,
-    &quot;email&quot;: &quot;admin@e154.ru&quot;,
-    &quot;first_name&quot;: &quot;&quot;,
-    &quot;history&quot;: &quot;[{\&quot;ip\&quot;:\&quot;127.0.0.1\&quot;,\&quot;time\&quot;:\&quot;2017-01-27T11:40:59.018428538+07:00\&quot;},
-    {\&quot;ip\&quot;:\&quot;127.0.0.1\&quot;,\&quot;time\&quot;:\&quot;2017-01-29T16:50:25.846523732+07:00\&quot;}    
-    &quot;id&quot;: 1,
-    &quot;last_name&quot;: &quot;&quot;,
-    &quot;meta&quot;: [
-      {
-        &quot;id&quot;: 49,
-        &quot;key&quot;: &quot;phone1&quot;,
-        &quot;value&quot;: &quot;&quot;
-      },
-      {
-        &quot;id&quot;: 50,
-        &quot;key&quot;: &quot;phone2&quot;,
-        &quot;value&quot;: &quot;&quot;
-      },
-      {
-        &quot;id&quot;: 51,
-        &quot;key&quot;: &quot;phone3&quot;,
-        &quot;value&quot;: &quot;&quot;
-      },
-      {
-        &quot;id&quot;: 52,
-        &quot;key&quot;: &quot;autograph&quot;,
-        &quot;value&quot;: &quot;&quot;
-      }
-    ],
-    &quot;nickname&quot;: &quot;admin&quot;,
-    &quot;role&quot;: {
-      &quot;name&quot;: &quot;admin&quot;,
-      &quot;description&quot;: &quot;&quot;,
-      &quot;parent&quot;: {
-        &quot;name&quot;: &quot;user&quot;,
-        &quot;description&quot;: &quot;&quot;,
-        &quot;parent&quot;: null,
-        &quot;children&quot;: null,
-        &quot;access_list&quot;: null,
-        &quot;created_at&quot;: &quot;0001-01-01T00:00:00Z&quot;,
-        &quot;update_at&quot;: &quot;0001-01-01T00:00:00Z&quot;
-      },
-      &quot;children&quot;: null,
-      &quot;access_list&quot;: {
-        &quot;dashboard&quot;: [
-          &quot;create&quot;,
-          &quot;update&quot;,
-          &quot;delete&quot;,
-          &quot;read&quot;
-        ],
-        &quot;device&quot;: [
-          &quot;update&quot;,
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;read&quot;
-        ],
-        &quot;device_action&quot;: [
-          &quot;create&quot;,
-          &quot;read&quot;,
-          &quot;delete&quot;
-        ],
-        &quot;device_state&quot;: [
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;update&quot;,
-          &quot;read&quot;
-        ],
-        &quot;flow&quot;: [
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;update&quot;,
-          &quot;read&quot;
-        ],
-        &quot;image&quot;: [
-          &quot;read&quot;,
-          &quot;upload&quot;,
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;update&quot;
-        ],
-        &quot;log&quot;: [
-          &quot;read&quot;
-        ],
-        &quot;map&quot;: [
-          &quot;read_map_layer&quot;,
-          &quot;read_map&quot;,
-          &quot;read_map_element&quot;
-        ],
-        &quot;node&quot;: [
-          &quot;read&quot;
-        ],
-        &quot;notifr&quot;: [
-          &quot;preview_notifr&quot;,
-          &quot;read_notifr_item&quot;,
-          &quot;read_notifr_template&quot;
-        ],
-        &quot;script&quot;: [
-          &quot;update&quot;,
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;exec_script&quot;,
-          &quot;read&quot;
-        ],
-        &quot;user&quot;: [
-          &quot;read_role&quot;,
-          &quot;read_role_access_list&quot;,
-          &quot;read&quot;
-        ],
-        &quot;worker&quot;: [
-          &quot;delete&quot;,
-          &quot;create&quot;,
-          &quot;update&quot;,
-          &quot;read&quot;
-        ],
-        &quot;workflow&quot;: [
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;read&quot;,
-          &quot;update&quot;
-        ],
-        &quot;ws&quot;: [
-          &quot;read&quot;
-        ]
-      },
-      &quot;created_at&quot;: &quot;2017-01-15T12:20:58+07:00&quot;,
-      &quot;update_at&quot;: &quot;2017-01-15T12:21:29+07:00&quot;
-    },
-    &quot;sign_in_count&quot;: 121
-  }
-}
-</code></pre>
-
-<blockquote>
-<p><code>401</code> ошибка</p>
-</blockquote>
-
-<pre><code class="language-json">{
-  &quot;message&quot;: &quot;Пользователь не найден&quot;,
-  &quot;status&quot;: &quot;error&quot;
-}
-</code></pre>
-
-<h2 id="signout">Выход</h2>
-
-<blockquote>
-<p><code>POST</code> <a href="http://localhost/api/v1/signout">http://localhost/api/v1/signout</a></p>
-</blockquote>
-
-                        
                     
 
                 </div>
@@ -586,29 +349,29 @@ curl -H &quot;Content-Type: application/json; charset=utf-8&quot; -u &quot;${EMA
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/">Домой</a>
+                <a href="https://e154.github.io/smart-home/en">Home</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
+                <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/api">api</a>
+                <a href="https://e154.github.io/smart-home/en/api">api</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
+                <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
             </li>
             
 
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/en/api/">en</a>
+                <a href="https://e154.github.io/smart-home/api/_overview/">ru</a>
             </li>
             
             
@@ -616,10 +379,10 @@ curl -H &quot;Content-Type: application/json; charset=utf-8&quot; -u &quot;${EMA
         </ul>
 
         
-        <div>Разработано при поддержке <a href='http://e154.ru'>e154.ru</a></div>
+        <div>Developed with the support of <a href='http://e154.ru'>e154.ru</a></div>
         
         
-        <p>Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
         
 
     </div>

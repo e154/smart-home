@@ -19,5 +19,50 @@
       <description> An example of a typical project Smart House </description>
     </item>
     
+    <item>
+      <title>Гостиница</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-5/</guid>
+      <description> Гостиница </description>
+    </item>
+    
+    <item>
+      <title>Квартира</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-3/</guid>
+      <description> Квартира в многоквартирном доме </description>
+    </item>
+    
+    <item>
+      <title>Многоквартирный дом</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-4/</guid>
+      <description> Многоквартирный дом </description>
+    </item>
+    
+    <item>
+      <title>Музыка, свет, домофон</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-6/</guid>
+      <description> Управление музыкой, светом, домофоном </description>
+    </item>
+    
+    <item>
+      <title>Система отопления</title>
+      <link>https://e154.github.io/smart-home/en/projects/project-2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/projects/project-2/</guid>
+      <description> Система отопления в доме </description>
+    </item>
+    
   </channel>
 </rss>

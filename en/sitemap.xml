@@ -3,6 +3,20 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://e154.github.io/smart-home/en/api/_overview/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/api/_overview/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/api/_overview/"
+                />
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/en/javascript/_overview/</loc>
     <xhtml:link
                 rel="alternate"
@@ -13,6 +27,20 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://e154.github.io/smart-home/en/javascript/_overview/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/api/_authorize/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/api/_authorize/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/api/_authorize/"
                 />
   </url>
   
@@ -195,6 +223,21 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://e154.github.io/smart-home/en/getting-started/_install_from_source/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/groups/api/</loc>
+    <priority>0</priority>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/groups/api/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/groups/api/"
                 />
   </url>
   
@@ -386,6 +429,76 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://e154.github.io/smart-home/en/projects/project-1/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/projects/project-5/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/projects/project-5/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/projects/project-5/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/projects/project-3/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/projects/project-3/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/projects/project-3/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/projects/project-4/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/projects/project-4/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/projects/project-4/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/projects/project-6/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/projects/project-6/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/projects/project-6/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/projects/project-2/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/projects/project-2/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/projects/project-2/"
                 />
   </url>
   
