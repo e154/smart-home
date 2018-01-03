@@ -92,7 +92,7 @@ func (n *Node) run() {
 
 		if connect {
 			disconnect = false
-			//n.TcpClose()
+			n.TcpClose()
 
 			if _, err := n.RpcDial(); err == nil {
 				n.errors = 0
@@ -179,8 +179,7 @@ func (n *Node) Smartbus(device *models.Device, return_result bool, command []byt
 		Command: command,
 	}
 
-	//TODO rename call method to Smartbus.Send
-	if err := n.RpcCall("Modbus.Send", request, &result); err != nil {
+	if err := n.RpcCall("Smartbus.Send", request, &result); err != nil {
 		result.Error = err.Error()
 	}
 
