@@ -75,7 +75,7 @@ type Flow struct {
 	workflow     	*Workflow
 	Connections  	[]*models.Connection
 	FlowElements 	[]*FlowElement
-	Node			*models.Node
+	Node			*Node
 	Workers     	map[int64]*Worker
 	cursor       	[]*FlowElement
 	quit         	chan bool
@@ -258,15 +258,17 @@ func (f *Flow) AddWorker(model *models.Worker) (err error) {
 
 	// get node
 	// ------------------------------------------------
-	var nodes map[int64]*models.Node
+	var nodes map[int64]*Node
 	nodes = corePtr.GetNodes()
 
 	if _, ok := nodes[model.DeviceAction.Device.Node.Id]; ok {
 		f.Node = nodes[model.DeviceAction.Device.Node.Id]
 	} else {
 		// autoload nodes
-		f.Node, err = models.GetNodeById(model.DeviceAction.Device.Node.Id)
-		if err != nil {
+		var node *models.Node
+		if node, err = models.GetNodeById(model.DeviceAction.Device.Node.Id); err == nil {
+			f.Node = NewNode(node)
+		} else {
 			return
 		}
 

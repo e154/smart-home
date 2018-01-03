@@ -10,26 +10,17 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 	"github.com/astaxie/beego"
-	"net/rpc"
-	"net"
-	"sync"
-	"github.com/e154/smart-home/api/common"
 )
 
 type Node struct {
-	Id    		int64  		`orm:"pk;auto;column(id)" json:"id"`
-	Name 		string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
-	Ip		string		`orm:"size(128)" json:"ip" valid:"IP;Required"`			// Must be a valid IPv4 address
+	Id    			int64  		`orm:"pk;auto;column(id)" json:"id"`
+	Name 			string 		`orm:"size(254)" json:"name" valid:"MaxSize(254);Required"`
+	Ip				string		`orm:"size(128)" json:"ip" valid:"IP;Required"`			// Must be a valid IPv4 address
 	Port        	int 		`orm:"size(11)" json:"port" valid:"Range(1, 65535);Required"`
 	Status      	string 		`orm:"size(254)" json:"status"`
 	Description 	string 		`orm:"type(longtext)" json:"description"`
 	Created_at  	time.Time	`orm:"auto_now_add;type(datetime);column(created_at)" json:"created_at"`
 	Update_at   	time.Time	`orm:"auto_now;type(datetime);column(update_at)" json:"update_at"`
-	rpcClient   	*rpc.Client	`orm:"-" json:"-"`
-	netConn     	net.Conn	`orm:"-" json:"-"`
-	Errors      	int64		`orm:"-" json:"-"`
-	connStatus  	string		`orm:"-" json:"-"`
-	mutex       	sync.Mutex
 }
 
 func (m *Node) TableName() string {
@@ -205,115 +196,4 @@ func GetAllEnabledNodes() (nodes []*Node, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(&Node{}).Filter("status", "enabled").All(&nodes)
 	return
-}
-
-func (n *Node) RpcDial() (*rpc.Client, error) {
-	var err error
-	if _ , err = n.TcpDial(); err != nil {return nil, err}
-	if n.rpcClient == nil { n.rpcClient = rpc.NewClient(n.netConn) }
-	return n.rpcClient, err
-}
-
-func (n *Node) TcpDial() (net.Conn, error) {
-	var err error
-	if n.netConn == nil {
-		n.netConn, err = net.DialTimeout("tcp", fmt.Sprintf("%s:%d", n.Ip, n.Port), time.Second * 2)
-		if err != nil {
-			return nil, err
-		}
-	}
-	//defer n.netConn.Close()
-	return n.netConn, err
-}
-
-func (n *Node) TcpClose() {
-	if n.netConn == nil {
-		return
-	}
-	n.netConn.Close()
-	n.netConn = nil
-	n.rpcClient = nil
-}
-
-func (n *Node) GetVersion() (version string, err error) {
-	if n.rpcClient == nil {
-		err = errors.New("rpc.client is nil")
-		return
-	}
-	err = n.rpcClient.Call("Node.Version", "", &version)
-	return
-}
-
-func (n *Node) GetConn() net.Conn {
-	return n.netConn
-}
-
-func (n *Node) GetConnectStatus() string {
-	if n.Status == "disabled" {
-		n.connStatus = "disabled"
-	}
-
-	return n.connStatus
-}
-
-func (n *Node) SetConnectStatus(st string) {
-	n.connStatus = st
-}
-
-func (n *Node) ModbusSend(device *Device, return_result bool, command []byte, reply interface{}) error {
-
-	if n.rpcClient == nil {
-		return errors.New("rpc.client is nil")
-	}
-
-	if n.netConn == nil {
-		n.Errors++
-		return errors.New("node not connected")
-	}
-
-	request := &common.Request{
-		Baud: device.Baud,
-		Device: device.Tty,
-		Timeout: device.Timeout,
-		StopBits: device.StopBite,
-		Sleep: device.Sleep,
-		Result: return_result,
-		Command: command,
-	}
-
-	if err := n.rpcClient.Call("Modbus.Send", request, reply); err != nil {
-		n.Errors++
-		return err
-	}
-
-	return nil
-}
-
-func (n *Node) Send(protocol string, device *Device, return_result bool, command []byte) (result common.Result) {
-	switch protocol {
-	case "modbus":
-		if err := n.ModbusSend(device, return_result, command, &result); err != nil {
-			result.Error = err.Error()
-		}
-	}
-	return
-}
-
-func (n *Node) RpcCall(method string, request interface{}, reply interface{}) error {
-
-	if n.rpcClient == nil {
-		return errors.New("rpc.client is nil")
-	}
-
-	if n.netConn == nil {
-		n.Errors++
-		return errors.New("node not connected")
-	}
-
-	if err := n.rpcClient.Call(method, request, reply); err != nil {
-		n.Errors++
-		return err
-	}
-
-	return nil
 }

@@ -1,10 +1,5 @@
 package core
 
-import (
-	"github.com/e154/smart-home/api/models"
-	"github.com/e154/smart-home/api/common"
-)
-
 // Javascript Binding
 //
 // node
@@ -15,10 +10,10 @@ import (
 //	 .status()
 //
 type NodeBind struct {
-	node *models.Node
+	node *Node
 }
 
-func (n *NodeBind) Send(protocol string, device *DeviceBind, return_result bool, command []byte) common.Result {
+func (n *NodeBind) Send(protocol string, device *DeviceBind, return_result bool, command []byte) SmartbusResult {
 	return n.node.Send(protocol, device.model, return_result, command)
 }
 

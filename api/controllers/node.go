@@ -63,7 +63,7 @@ func (c *NodeController) Post() {
 
 	pm := core.CorePtr()
 	node.Id = nid
-	pm.AddNode(&node)
+	pm.AddNode(core.NewNode(&node))
 
 	c.Ctx.Output.SetStatus(201)
 	c.ServeJSON()
@@ -131,7 +131,7 @@ func (c *NodeController) Put() {
 		return
 	}
 
-	if err := core.CorePtr().ReloadNode(&node); err != nil {
+	if err := core.CorePtr().ReloadNode(core.NewNode(&node)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}
@@ -157,7 +157,7 @@ func (c *NodeController) Delete() {
 	}
 
 	// remove from process
-	if err := core.CorePtr().RemoveNode(node); err != nil {
+	if err := core.CorePtr().RemoveNode(core.NewNode(node)); err != nil {
 		c.ErrHan(403, err.Error())
 		return
 	}

@@ -10,7 +10,7 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-func NewAction(device *models.Device, script *models.Script, node *models.Node, flow *Flow) (action *Action, err error) {
+func NewAction(device *models.Device, script *models.Script, node *Node, flow *Flow) (action *Action, err error) {
 
 	action = &Action{
 		Device: 	device,
@@ -28,7 +28,7 @@ func NewAction(device *models.Device, script *models.Script, node *models.Node, 
 
 type Action struct {
 	Device  *models.Device
-	Node    *models.Node
+	Node    *Node
 	Script  *scripts.Engine
 	Message *Message
 }
@@ -76,7 +76,7 @@ func (a *Action) GetDevice() *models.Device {
 	return a.Device
 }
 
-func (a *Action) GetNode() *models.Node {
+func (a *Action) GetNode() *Node {
 	return a.Node
 }
 
@@ -152,17 +152,19 @@ func streamDoAction(client *stream.Client, value interface{}) {
 	}
 
 	nodes := corePtr.GetNodes()
-	var node *models.Node
+	var node *Node
 	if _, ok := nodes[device_action.Device.Node.Id]; ok {
 		node = nodes[device_action.Device.Node.Id]
 	} else {
 		// autoload nodes
-		if node, err = models.GetNodeById(device_action.Device.Node.Id); err != nil {
+		var model_node *models.Node
+		model_node, err = models.GetNodeById(device_action.Device.Node.Id)
+		if err != nil {
 			client.Notify("error", err.Error())
 			return
 		}
 
-		if err = CorePtr().AddNode(node); err != nil {
+		if err = CorePtr().AddNode(NewNode(model_node)); err != nil {
 			client.Notify("error", err.Error())
 			return
 		}
