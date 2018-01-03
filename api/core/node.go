@@ -53,8 +53,8 @@ func NewNode(model *models.Node) *Node {
 
 func (n *Node) run() {
 
-	var quit, disconnect bool
-	connect := true
+	var quit, disconnect, connect bool
+
 	for ;; {
 
 		select {
@@ -92,7 +92,7 @@ func (n *Node) run() {
 
 		if connect {
 			disconnect = false
-			n.TcpClose()
+			//n.TcpClose()
 
 			if _, err := n.RpcDial(); err == nil {
 				n.errors = 0
