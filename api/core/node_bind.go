@@ -13,8 +13,12 @@ type NodeBind struct {
 	node *Node
 }
 
-func (n *NodeBind) Send(protocol string, device *DeviceBind, return_result bool, command []byte) SmartbusResult {
-	return n.node.Send(protocol, device.model, return_result, command)
+func (n *NodeBind) Smartbus(device *DeviceBind, return_result bool, command []byte) SmartbusResult {
+	return n.node.Smartbus(device.model, return_result, command)
+}
+
+func (n *NodeBind) Modbus(device *DeviceBind, return_result bool, command []byte) SmartbusResult {
+	return n.node.Modbus(device.model, return_result, command)
 }
 
 func (n *NodeBind) Name() string {

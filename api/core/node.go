@@ -154,19 +154,6 @@ func (n *Node) TcpClose() {
 	n.rpcClient = nil
 }
 
-func (n *Node) GetVersion() (version string, err error) {
-	if n.rpcClient == nil {
-		err = errors.New("rpc.client is nil")
-		return
-	}
-	err = n.rpcClient.Call("Node.Version", "", &version)
-	return
-}
-
-func (n *Node) GetConn() net.Conn {
-	return n.netConn
-}
-
 func (n *Node) GetConnectStatus() string {
 	if n.Status == "disabled" {
 		n.connStatus = "disabled"
@@ -180,16 +167,7 @@ func (n *Node) SetConnectStatus(st string) {
 	CorePtr().telemetry.Broadcast("nodes")
 }
 
-func (n *Node) Smartbus(device *models.Device, return_result bool, command []byte, reply interface{}) error {
-
-	if n.rpcClient == nil {
-		return errors.New("rpc.client is nil")
-	}
-
-	if n.netConn == nil {
-		n.errors++
-		return errors.New("node not connected")
-	}
+func (n *Node) Smartbus(device *models.Device, return_result bool, command []byte) (result SmartbusResult) {
 
 	request := &SmartbusRequest{
 		Baud: device.Baud,
@@ -202,23 +180,22 @@ func (n *Node) Smartbus(device *models.Device, return_result bool, command []byt
 	}
 
 	//TODO rename call method to Smartbus.Send
-	if err := n.rpcClient.Call("Modbus.Send", request, reply); err != nil {
-		n.errors++
-		return err
+	if err := n.RpcCall("Modbus.Send", request, &result); err != nil {
+		result.Error = err.Error()
 	}
 
-	return nil
+	return
 }
 
-func (n *Node) Send(protocol string, device *models.Device, return_result bool, command []byte) (result SmartbusResult) {
-	switch protocol {
-	//TODO add modbus method
-	case "modbus":
-	case "smartbus":
-		if err := n.Smartbus(device, return_result, command, &result); err != nil {
-			result.Error = err.Error()
-		}
+//TODO update modbus method
+func (n *Node) Modbus(device *models.Device, return_result bool, command []byte) (result SmartbusResult) {
+
+	request := &SmartbusRequest{}
+
+	if err := n.RpcCall("Modbus.Send", request, &result); err != nil {
+		result.Error = err.Error()
 	}
+
 	return
 }
 
