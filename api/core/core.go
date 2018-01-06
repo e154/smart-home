@@ -454,7 +454,6 @@ func Initialize(telemetry Telemetry) (err error) {
 
 		Map: &Map{
 			telemetry: telemetry,
-			elements: make(map[int64]*MapElement),
 		},
 	}
 

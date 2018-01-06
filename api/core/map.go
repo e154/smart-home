@@ -5,11 +5,9 @@ import (
 	"sync"
 )
 
-//TODO refactor map system
 type Map struct {
 	telemetry Telemetry
-	sync.Mutex
-	elements  map[int64]*MapElement
+	elements  sync.Map
 }
 
 func (b *Map) SetElementState(device *models.Device, systemName string) {
@@ -18,11 +16,8 @@ func (b *Map) SetElementState(device *models.Device, systemName string) {
 		return
 	}
 
-	b.Lock()
-	defer b.Unlock()
-
-	if _, ok := b.elements[device.Id]; ok {
-		b.elements[device.Id].SetState(systemName)
+	if v, ok := b.elements.Load(device.Id); ok {
+		v.(*MapElement).SetState(systemName)
 	} else {
 		for _, state := range device.States {
 			if state.SystemName != systemName {
@@ -39,18 +34,26 @@ func (b *Map) SetElementState(device *models.Device, systemName string) {
 func (b *Map) GetDevicesStates() (states map[int64]*models.DeviceState) {
 	states = make(map[int64]*models.DeviceState)
 
-	for _, element := range b.elements {
+	b.elements.Range(func(key, value interface{}) bool {
+		element := value.(*MapElement)
 		states[element.Device.Id] = element.State
-	}
+		return true
+	})
 
 	return
 }
 
 func (b *Map) GetAllElements() map[int64]*MapElement {
-	b.Lock()
-	defer b.Unlock()
 
-	return b.elements
+	elements := make(map[int64]*MapElement)
+
+	b.elements.Range(func(key, value interface{}) bool {
+		element := value.(*MapElement)
+		elements[element.Device.Id] = element
+		return true
+	})
+
+	return elements
 }
 
 func (b *Map) GetElement(device *models.Device) *MapElement {
@@ -59,8 +62,8 @@ func (b *Map) GetElement(device *models.Device) *MapElement {
 		return nil
 	}
 
-	if element, ok := b.elements[device.Id]; ok {
-		return element
+	if v, ok := b.elements.Load(device.Id); ok {
+		return v.(*MapElement)
 	}
 
 	return b.NewMapElement(device, nil)
@@ -70,14 +73,14 @@ func (b *Map) GetElement(device *models.Device) *MapElement {
 
 func (b *Map) NewMapElement(device *models.Device, state *models.DeviceState) *MapElement {
 
-	b.Lock()
-	b.elements[device.Id] = &MapElement{
-		Map: b,
-		Device: device,
-		State: state,
+	element := &MapElement{
+		Map:     b,
+		Device:  device,
+		State:   state,
 		Options: nil,
 	}
-	b.Unlock()
 
-	return b.elements[device.Id]
+	b.elements.Store(device.Id, element)
+
+	return element
 }
