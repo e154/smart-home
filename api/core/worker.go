@@ -22,11 +22,12 @@ func NewWorker(model *models.Worker, flow *Flow) (worker *Worker) {
 }
 
 type Worker struct {
-	Model    *models.Worker
-	flow     *Flow
-	CronTask *cr.Task
-	mu       sync.Mutex
-	actions  map[int64]*Action
+	Model    	*models.Worker
+	flow     	*Flow
+	CronTask 	*cr.Task
+	sync.Mutex
+	isRuning	bool
+	actions  	map[int64]*Action
 }
 
 func (w *Worker) RemoveTask() (err error) {
@@ -44,14 +45,14 @@ func (w *Worker) RemoveTask() (err error) {
 }
 
 func (w *Worker) Actions() map[int64]*Action {
-	w.mu.Lock()
-	defer w.mu.Unlock()
+	w.Lock()
+	defer w.Unlock()
 	return w.actions
 }
 
 func (w *Worker) AddAction(action *Action) {
-	w.mu.Lock()
-	defer w.mu.Unlock()
+	w.Lock()
+	defer w.Unlock()
 
 	if _, ok := w.actions[action.Device.Id]; ok {
 		return
@@ -61,10 +62,9 @@ func (w *Worker) AddAction(action *Action) {
 }
 
 func (w *Worker) RemoveActions() {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-
+	w.Lock()
 	w.actions = nil
+	w.Unlock()
 }
 
 func (w *Worker) RegTask() {
@@ -75,8 +75,18 @@ func (w *Worker) RegTask() {
 
 // Run worker script, and send result to flow as message struct
 func (w *Worker) Do() {
-	w.mu.Lock()
-	defer w.mu.Unlock()
+
+	if w.isRuning {
+		return
+	}
+
+	w.Lock()
+	defer func() {
+		w.isRuning = false
+		w.Unlock()
+	}()
+
+	w.isRuning = true
 
 	for _, action := range w.actions {
 		//TODO refactor message system

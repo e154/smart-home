@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/e154/smart-home/api/models"
+	"fmt"
 )
 
 type MapElement struct {
@@ -34,6 +35,10 @@ func (e *MapElement) GetState() interface{} {
 }
 
 func (e *MapElement) SetOptions(options interface{}) {
+
+	if fmt.Sprint(e.Options) == fmt.Sprint(options) {
+		return
+	}
 
 	e.Options = options
 
