@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 	"errors"
+	"sync"
 )
 
 type SmartbusRequest struct {
@@ -38,6 +39,7 @@ type Node struct {
 	errors     	int64
 	connStatus 	string
 	ch         	chan string
+	sync.Mutex
 }
 
 func NewNode(model *models.Node) *Node {
@@ -155,15 +157,19 @@ func (n *Node) TcpClose() {
 }
 
 func (n *Node) GetConnectStatus() string {
+	n.Lock()
 	if n.Status == "disabled" {
 		n.connStatus = "disabled"
 	}
+	n.Unlock()
 
 	return n.connStatus
 }
 
 func (n *Node) SetConnectStatus(st string) {
+	n.Lock()
 	n.connStatus = st
+	n.Unlock()
 	CorePtr().telemetry.Broadcast("nodes")
 }
 

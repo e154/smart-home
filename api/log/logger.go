@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"fmt"
 	"github.com/e154/smart-home/api/models"
+	"sync"
 )
 
 // brush is a color join function
@@ -17,6 +18,7 @@ type logger struct {
 	Level    int  `json:"level"`
 	Colorful bool `json:"color"`
 	oldLog	*models.Log
+	sync.Mutex
 }
 
 // newBrush return a fix color Brush
@@ -57,10 +59,14 @@ func (c *logger) Init(jsonConfig string) error {
 // WriteMsg write message in console.
 func (c *logger) WriteMsg(when time.Time, msg string, level int) (err error) {
 
+	c.Lock()
+
 	//...
 	if err = c.story(when, msg, level); err != nil {
 		return err
 	}
+
+	c.Unlock()
 
 	//if(beego.BConfig.RunMode != "dev") {
 	//	return
