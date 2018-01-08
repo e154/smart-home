@@ -158,10 +158,11 @@ func (n *Node) TcpClose() {
 
 func (n *Node) GetConnectStatus() string {
 	n.Lock()
+	defer n.Unlock()
+
 	if n.Status == "disabled" {
 		n.connStatus = "disabled"
 	}
-	n.Unlock()
 
 	return n.connStatus
 }
@@ -170,6 +171,7 @@ func (n *Node) SetConnectStatus(st string) {
 	n.Lock()
 	n.connStatus = st
 	n.Unlock()
+
 	CorePtr().telemetry.Broadcast("nodes")
 }
 

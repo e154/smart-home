@@ -6,6 +6,7 @@ import (
 	"github.com/e154/smart-home/api/stream"
 	cr "github.com/e154/cron"
 	"github.com/e154/smart-home/api/scripts"
+	"sync"
 )
 
 var (
@@ -23,6 +24,7 @@ type Core struct {
 	workflows  		map[int64]*Workflow
 	telemetry		Telemetry
 	Map				*Map
+	sync.Mutex
 }
 
 func (b *Core) Run() (err error) {
@@ -43,9 +45,11 @@ func (b *Core) Stop() (err error) {
 		b.DeleteWorkflow(workflow.model)
 	}
 
+	b.Lock()
 	for _, node := range b.nodes {
 		b.RemoveNode(node)
 	}
+	b.Unlock()
 
 	return
 }
@@ -330,7 +334,9 @@ func (b *Core) AddNode(node *Node) (err error) {
 		return
 	}
 
+	b.Lock()
 	b.nodes[node.Id] = node.Connect()
+	b.Unlock()
 
 	b.telemetry.Broadcast("nodes")
 
@@ -345,12 +351,14 @@ func (b *Core) RemoveNode(node *Node) (err error) {
 		return
 	}
 
+	b.Lock()
 	if _, ok := b.nodes[node.Id]; ok {
 		node.Disconnect()
 		delete(b.nodes, node.Id)
 	}
 
 	delete(b.nodes, node.Id)
+	b.Unlock()
 
 	b.telemetry.Broadcast("nodes")
 
@@ -366,10 +374,12 @@ func (b *Core) ReloadNode(node *Node) (err error) {
 		return
 	}
 
+	b.Lock()
 	b.nodes[node.Id].Status = node.Status
 	b.nodes[node.Id].Ip = node.Ip
 	b.nodes[node.Id].Port = node.Port
 	b.nodes[node.Id].SetConnectStatus("wait")
+	b.Unlock()
 
 	if node.Status == "disabled" {
 		node.Disconnect()
@@ -406,8 +416,17 @@ func (b *Core) DisconnectNode(node *Node) (err error) {
 	return
 }
 
-func (b *Core) GetNodes() (map[int64]*Node) {
-	return b.nodes
+func (b *Core) GetNodes() (nodes map[int64]*Node) {
+
+	nodes = make(map[int64]*Node)
+
+	b.Lock()
+	for id, node := range b.nodes {
+		nodes[id] = node
+	}
+	b.Unlock()
+
+	return
 }
 
 // ------------------------------------------------

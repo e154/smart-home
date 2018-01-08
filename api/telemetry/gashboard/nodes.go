@@ -7,6 +7,7 @@ import (
 	"github.com/e154/smart-home/api/models"
 	"github.com/e154/smart-home/api/stream"
 	"sync"
+	"time"
 )
 
 func NewNode() (node *Nodes) {
@@ -20,18 +21,27 @@ func NewNode() (node *Nodes) {
 
 type Nodes struct {
 	sync.Mutex
-	Total	int64				`json:"total"`
-	Status	map[int64]string	`json:"status"`
+	Total      int64            `json:"total"`
+	Status     map[int64]string `json:"status"`
+	lastUpdate time.Time
 }
 
-func (n *Nodes) Update() {
-	n.Total, _ = models.GetNodesCount()
-	nodes := core.CorePtr().GetNodes()
+func (n *Nodes) Update()  {
 
 	n.Lock()
 	defer n.Unlock()
 
+	if time.Now().Sub(n.lastUpdate).Seconds() < 15 {
+		return
+	}
+
+	n.lastUpdate = time.Now()
+
+	n.Total, _ = models.GetNodesCount()
+	nodes := core.CorePtr().GetNodes()
+
 	n.Status = make(map[int64]string)
+
 	for _, node := range nodes {
 		n.Status[node.Id] = node.GetConnectStatus()
 	}
