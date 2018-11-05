@@ -1,0 +1,4 @@
+development:
+    dialect: postgres
+    datasource: dbname=smart_home user=delta54 password=qwe123 host=127.0.0.1 port=5432 sslmode=disable
+    dir: migrations

@@ -4,6 +4,10 @@ import (
 	"os"
 	"github.com/e154/smart-home/api/server_v1"
 	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/sirupsen/logrus"
+	l "github.com/e154/smart-home/system/logging"
 )
 
 var (
@@ -26,7 +30,15 @@ func main() {
 func start() {
 
 	container := BuildContainer()
-	container.Invoke(func(server *server.Server) {
-		server.Start()
+	container.Invoke(func(server *server.Server,
+		core *core.Core,
+		graceful *graceful_service.GracefulService,
+		lx *logrus.Logger) {
+
+		l.Initialize(lx)
+		go server.Start()
+		go core.Start()
+
+		graceful.Wait()
 	})
 }

@@ -15,7 +15,7 @@ var (
 	)
 )
 
-func Initialize(client *elastic.Client, log *logrus.Logger) {
+func Initialize(log *logrus.Logger) {
 
 	log.Out = os.Stdout
 

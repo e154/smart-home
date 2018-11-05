@@ -5,3 +5,4 @@ vendor/*
 /smart-home
 data/scripts
 /conf/config.json
+/conf/dbconfig.yml

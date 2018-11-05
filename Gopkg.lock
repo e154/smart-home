@@ -26,7 +26,7 @@
   version = "v9"
 
 [[projects]]
-  digest = "1:9b0261ef82784b4d49429d9a2ba3654217c021c5d8958293f94628c646880e9a"
+  digest = "1:a3bcc898f453d7238c708ac468849796bdf6ca33fc540195a271fd7a3b360d2b"
   name = "github.com/astaxie/beego"
   packages = [
     ".",
@@ -35,9 +35,7 @@
     "context/param",
     "grace",
     "logs",
-    "orm",
     "session",
-    "session/mysql",
     "toolbox",
     "utils",
   ]
@@ -157,14 +155,6 @@
   version = "v0.17.2"
 
 [[projects]]
-  digest = "1:adea5a94903eb4384abef30f3d878dc9ff6b6b5b0722da25b82e5169216dfb61"
-  name = "github.com/go-sql-driver/mysql"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "d523deb1b23d913de5bdada721a6071e71283618"
-  version = "v1.4.0"
-
-[[projects]]
   digest = "1:a2cff208d4759f6ba1b1cd228587b0a1869f95f22542ec9cd17fff64430113c7"
   name = "github.com/jessevdk/go-flags"
   packages = ["."]
@@ -173,12 +163,39 @@
   version = "v1.4.0"
 
 [[projects]]
+  digest = "1:235ae01f32fb5f12c5f6d2e0e05ab48e651ab31c126e45a4efc4f510810941ac"
+  name = "github.com/jinzhu/gorm"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6ed508ec6a4ecb3531899a69cbc746ccf65a4166"
+  version = "v1.9.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:fd97437fbb6b7dce04132cf06775bd258cce305c44add58eb55ca86c6c325160"
+  name = "github.com/jinzhu/inflection"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "04140366298a54a039076d798123ffa108fff46c"
+
+[[projects]]
   digest = "1:0a69a1c0db3591fcefb47f115b224592c8dfa4368b7ba9fae509d5e16cdc95c8"
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
   pruneopts = "UT"
   revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
   version = "v1.0.1"
+
+[[projects]]
+  digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid",
+  ]
+  pruneopts = "UT"
+  revision = "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -311,14 +328,6 @@
   version = "v0.3.0"
 
 [[projects]]
-  digest = "1:c25289f43ac4a68d88b02245742347c94f1e108c534dda442188015ff80669b3"
-  name = "google.golang.org/appengine"
-  packages = ["cloudsql"]
-  pruneopts = "UT"
-  revision = "4a4468ece617fc8205e99368fa2200e9d1fad421"
-  version = "v1.3.0"
-
-[[projects]]
   digest = "1:fa9a7c0ef59217bd22f32eb7cc027894d73f340a5633258cc079dec025db6a7f"
   name = "gopkg.in/gorp.v1"
   packages = ["."]
@@ -339,8 +348,6 @@
   analyzer-version = 1
   input-imports = [
     "github.com/astaxie/beego",
-    "github.com/astaxie/beego/orm",
-    "github.com/astaxie/beego/session/mysql",
     "github.com/go-openapi/errors",
     "github.com/go-openapi/loads",
     "github.com/go-openapi/runtime",
@@ -351,8 +358,9 @@
     "github.com/go-openapi/strfmt",
     "github.com/go-openapi/swag",
     "github.com/go-openapi/validate",
-    "github.com/go-sql-driver/mysql",
     "github.com/jessevdk/go-flags",
+    "github.com/jinzhu/gorm",
+    "github.com/lib/pq",
     "github.com/olivere/elastic",
     "github.com/op/go-logging",
     "github.com/rubenv/sql-migrate",

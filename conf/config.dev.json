@@ -1,4 +1,14 @@
 {
   "server_host": "0.0.0.0",
-  "server_port": 3000
+  "server_port": 3000,
+  "pg_user": "postgres",
+  "pg_pass": "postgres",
+  "pg_host": "127.0.0.1",
+  "pg_name": "smart_home",
+  "pg_port": "5432",
+  "pg_debug": false,
+  "pg_logger": false,
+  "pg_max_idle_conns": 10,
+  "pg_max_open_conns": 50,
+  "pg_conn_max_life_time": 30
 }

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/op/go-logging"
+	"github.com/e154/smart-home/adaptors"
 )
 
 var (
@@ -9,10 +10,9 @@ var (
 )
 
 type ControllerCommon struct {
-
+	adaptors *adaptors.Adaptors
 }
 
-func NewControllerCommon() *ControllerCommon {
-	return &ControllerCommon{}
+func NewControllerCommon(adaptors *adaptors.Adaptors) *ControllerCommon {
+	return &ControllerCommon{adaptors: adaptors}
 }
-
