@@ -102,13 +102,13 @@ func (n *Node) run() {
 
 			if _, err := n.RpcDial(); err == nil {
 				n.errors = 0
-				fmt.Printf("Node dial tcp %s:%d ... ok", n.Ip, n.Port)
+				log.Warningf("Node dial tcp %s:%d ... ok", n.Ip, n.Port)
 				connect = false
 				n.SetConnectStatus("connected")
 			} else {
 				n.errors++
 				if n.errors == 7 {
-					fmt.Printf("Node error %s", err.Error())
+					log.Errorf("Node error %s", err.Error())
 				}
 				n.SetConnectStatus("error")
 			}
