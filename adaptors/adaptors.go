@@ -11,12 +11,6 @@ var (
 	log = logging.MustGetLogger("adaptors")
 )
 
-// DEPRECATED: будет удалена
-type BaseAdaptor struct {
-	pgBase string
-	gorm   *gorm.DB
-}
-
 type Adaptors struct {
 	Node *Node
 }
