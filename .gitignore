@@ -4,4 +4,4 @@ data/file_storage/*
 vendor/*
 /smart-home
 data/scripts
-trace.out
+/conf/config.json

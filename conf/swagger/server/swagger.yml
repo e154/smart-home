@@ -1,0 +1,73 @@
+swagger: "2.0"
+info:
+  title: Server API
+  description: Server API
+  version: 0.0.1
+  termsOfService: https://e154.ru/
+  contact:
+    email: filippov.a@e154.ru
+basePath: /api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: access_token
+
+paths:
+  /:
+    get:
+      tags:
+      - index
+      operationId: index
+      produces:
+        - text/html
+      responses:
+        "200":
+          description: "server api"
+
+        default:
+          description: "какая-то ошибка"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+
+definitions:
+  ErrorModel:
+    type: "object"
+    properties:
+      code:
+        $ref: "#/definitions/ResponseType"
+      message:
+        type: "string"
+        description: "описание ошибки"
+      errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                description: "тип ишибки"
+              message:
+                type: string
+                description: "описание"
+              field:
+                type: string
+                description: "поле вызвавшее ошибку"
+
+  ResponseType:
+    description: "Тип ответов"
+    type: string
+    enum:
+      - success
+      - business_conflict
+      - unprocessable_entity
+      - bad_parameters
+      - internal_error
+      - not_found
+      - security_error
+      - permission_error
+

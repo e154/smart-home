@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"fmt"
 )
 
 var (
@@ -11,6 +12,7 @@ var (
 	GeneratedString = "?"
 	DevelopersString = "?"
 	BuildNumString = "?"
+	DockerImageString = "?"
 )
 
 const verboseVersionBanner string = `
@@ -47,4 +49,38 @@ func init() {
 	_ = os.Setenv("GENERATED", GeneratedString)
 	_ = os.Setenv("DEVELOPERS", DevelopersString)
 	_ = os.Setenv("BUILD_NUMBER", BuildNumString)
+}
+
+func GetHumanVersion() string {
+	version := ""
+
+	if DevelopersString != "" {
+		version = fmt.Sprintf("Generated: %s\n", GeneratedString)
+	}
+
+	if RevisionString != "" {
+		version += fmt.Sprintf("Revision: %s\n", RevisionString)
+	}
+
+	if RevisionURLString != "" {
+		version += fmt.Sprintf("Revision url: %s\n", RevisionURLString)
+	}
+
+	if VersionString != "" {
+		version += fmt.Sprintf("Version: %s\n", VersionString)
+	}
+
+	if DockerImageString != "" {
+		version += fmt.Sprintf("Docker image: %s\n", DockerImageString)
+	}
+
+	if DevelopersString != "" {
+		version += fmt.Sprintf("Developers: %s\n", DevelopersString)
+	}
+
+	if BuildNumString != "" {
+		version += fmt.Sprintf("Build: %s\n", BuildNumString)
+	}
+
+	return version
 }
