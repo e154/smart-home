@@ -1,9 +1,0 @@
-development:
-    dialect: mysql
-    datasource: root:smarthome@tcp(127.0.0.1:3306)/smarthome?parseTime=true&charset=utf8
-    dir: database/migrations
-
-production:
-    dialect: mysql
-    datasource: root:smarthome@tcp(127.0.0.1:3306)/smarthome?parseTime=true&charset=utf8
-    dir: database/migrations
