@@ -53,6 +53,225 @@ func init() {
           }
         }
       }
+    },
+    "/node": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "node"
+        ],
+        "summary": "get node list",
+        "operationId": "getNodeList",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "type": "number",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "sortby",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "order",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "$ref": "#/definitions/ResponseType"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "node": {
+                      "$ref": "#/definitions/NodeModel"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "node"
+        ],
+        "summary": "add new node",
+        "operationId": "addNode",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "description": "request params",
+            "name": "postNodeParams",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/NodeModel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "$ref": "#/definitions/ResponseType"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "description": "node id",
+                      "type": "number",
+                      "format": "int64"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      }
+    },
+    "/node/{id}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "node"
+        ],
+        "summary": "get node by id",
+        "operationId": "getNodeById",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "type": "number",
+            "description": "Node ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "$ref": "#/definitions/ResponseType"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "node": {
+                      "$ref": "#/definitions/NodeModel"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      },
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "node"
+        ],
+        "summary": "delete node by id",
+        "operationId": "deleteNodeById",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "type": "number",
+            "description": "Node ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "$ref": "#/definitions/ResponseType"
+                },
+                "data": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -85,6 +304,43 @@ func init() {
         "message": {
           "description": "описание ошибки",
           "type": "string"
+        }
+      }
+    },
+    "NodeModel": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "number",
+          "format": "int64"
+        },
+        "ip": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "port": {
+          "type": "number",
+          "format": "int64"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        "update_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

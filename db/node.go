@@ -24,6 +24,14 @@ func (d *Node) TableName() string {
 	return "nodes"
 }
 
+func (n Nodes) Add(node *Node) (id int64, err error) {
+	if err = n.Db.Create(&node).Error; err != nil {
+		return
+	}
+	id = node.Id
+	return
+}
+
 func (n Nodes) GetAllEnabled() (list []*Node, err error) {
 	list = make([]*Node, 0)
 	err = n.Db.Where("status = ?", "enabled").

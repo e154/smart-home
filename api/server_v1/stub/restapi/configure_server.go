@@ -39,6 +39,11 @@ func configureAPI(api *operations.ServerAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
+	// Applies when the "access_token" header is set
+	api.APIKeyAuthAuth = func(token string) (interface{}, error) {
+		return token, nil
+	}
+
 	api.HTMLProducer = runtime.ProducerFunc(func(w io.Writer, data interface{}) (err error) {
 		_, err = fmt.Fprint(w, data)
 		return

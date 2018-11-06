@@ -34,6 +34,154 @@ paths:
           schema:
             $ref: "#/definitions/ErrorModel"
 
+  /node:
+    post:
+      tags:
+      - node
+      security:
+      - ApiKeyAuth: []
+      summary: "add new node"
+      consumes:
+      - application/json
+      operationId: "addNode"
+      parameters:
+      - in: body
+        name: postNodeParams
+        description: "request params"
+        schema:
+          $ref: "#/definitions/NodeModel"
+
+      responses:
+        "200":
+          description: "success"
+          schema:
+            type: object
+            properties:
+              code:
+                $ref: "#/definitions/ResponseType"
+              data:
+                type: object
+                properties:
+                  id:
+                    type: number
+                    format: int64
+                    description: "node id"
+
+        default:
+          description: "error"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+
+    get:
+      tags:
+      - node
+      security:
+      - ApiKeyAuth: []
+      summary: "get node list"
+      consumes:
+      - application/json
+      operationId: "getNodeList"
+      parameters:
+      - name: "limit"
+        in: query
+        type: number
+      - name: "offset"
+        in: query
+        type: number
+      - name: "sortby"
+        in: query
+        type: string
+      - name: "order"
+        in: query
+        type: string
+
+      responses:
+        "200":
+          description: "success"
+          schema:
+            type: object
+            properties:
+              code:
+                $ref: "#/definitions/ResponseType"
+              data:
+                type: object
+                properties:
+                  node:
+                    $ref: "#/definitions/NodeModel"
+
+        default:
+          description: "error"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+
+  /node/{id}:
+    get:
+      tags:
+      - node
+      security:
+      - ApiKeyAuth: []
+      summary: "get node by id"
+      consumes:
+      - application/json
+      operationId: "getNodeById"
+      parameters:
+      - in: "path"
+        name: "id"
+        type: number
+        required: true
+        description: "Node ID"
+
+      responses:
+        "200":
+          description: "success"
+          schema:
+            type: object
+            properties:
+              code:
+                $ref: "#/definitions/ResponseType"
+              data:
+                type: object
+                properties:
+                  node:
+                    $ref: "#/definitions/NodeModel"
+
+        default:
+          description: "error"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+
+    delete:
+      tags:
+      - node
+      security:
+      - ApiKeyAuth: []
+      summary: "delete node by id"
+      consumes:
+      - application/json
+      operationId: "deleteNodeById"
+      parameters:
+      - in: "path"
+        name: "id"
+        type: number
+        required: true
+        description: "Node ID"
+
+      responses:
+        "200":
+          description: "success"
+          schema:
+            type: object
+            properties:
+              code:
+                $ref: "#/definitions/ResponseType"
+              data:
+                type: object
+
+        default:
+          description: "error"
+          schema:
+            $ref: "#/definitions/ErrorModel"
+
 definitions:
   ErrorModel:
     type: "object"
@@ -70,4 +218,31 @@ definitions:
       - not_found
       - security_error
       - permission_error
+
+  NodeModel:
+    type: object
+    properties:
+      id:
+        type: number
+        format: int64
+      name:
+        type: string
+      ip:
+        type: string
+      port:
+        type: number
+        format: int64
+      status:
+        type: string
+        enum:
+          - enabled
+          - disabled
+      description:
+        type: string
+      created_at:
+        type: string
+        format: 'date-time'
+      update_at:
+        type: string
+        format: 'date-time'
 

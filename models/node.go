@@ -7,6 +7,7 @@ import (
 	"net/rpc"
 	"fmt"
 	"errors"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type SmartbusRequest struct {
@@ -51,6 +52,16 @@ func NewNode() (node *Node) {
 	node = &Node{
 		ch: make(chan string),
 	}
+	return
+}
+
+func (d *Node) Valid() (ok bool, errs []*validation.Error) {
+
+	valid := validation.Validation{}
+	if ok, _ = valid.Valid(d); !ok {
+		errs = valid.Errors
+	}
+
 	return
 }
 

@@ -21,6 +21,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/e154/smart-home/api/server_v1/stub/restapi/operations/index"
+	"github.com/e154/smart-home/api/server_v1/stub/restapi/operations/node"
 )
 
 // NewServerAPI creates a new Server instance
@@ -41,9 +42,29 @@ func NewServerAPI(spec *loads.Document) *ServerAPI {
 		HTMLProducer: runtime.ProducerFunc(func(w io.Writer, data interface{}) error {
 			return errors.NotImplemented("html producer has not yet been implemented")
 		}),
+		NodeAddNodeHandler: node.AddNodeHandlerFunc(func(params node.AddNodeParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation NodeAddNode has not yet been implemented")
+		}),
+		NodeDeleteNodeByIDHandler: node.DeleteNodeByIDHandlerFunc(func(params node.DeleteNodeByIDParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation NodeDeleteNodeByID has not yet been implemented")
+		}),
+		NodeGetNodeByIDHandler: node.GetNodeByIDHandlerFunc(func(params node.GetNodeByIDParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation NodeGetNodeByID has not yet been implemented")
+		}),
+		NodeGetNodeListHandler: node.GetNodeListHandlerFunc(func(params node.GetNodeListParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation NodeGetNodeList has not yet been implemented")
+		}),
 		IndexIndexHandler: index.IndexHandlerFunc(func(params index.IndexParams) middleware.Responder {
 			return middleware.NotImplemented("operation IndexIndex has not yet been implemented")
 		}),
+
+		// Applies when the "access_token" header is set
+		APIKeyAuthAuth: func(token string) (interface{}, error) {
+			return nil, errors.NotImplemented("api key auth (ApiKeyAuth) access_token from header param [access_token] has not yet been implemented")
+		},
+
+		// default authorizer is authorized meaning no requests are blocked
+		APIAuthorizer: security.Authorized(),
 	}
 }
 
@@ -75,6 +96,21 @@ type ServerAPI struct {
 	// HTMLProducer registers a producer for a "text/html" mime type
 	HTMLProducer runtime.Producer
 
+	// APIKeyAuthAuth registers a function that takes a token and returns a principal
+	// it performs authentication based on an api key access_token provided in the header
+	APIKeyAuthAuth func(string) (interface{}, error)
+
+	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
+	APIAuthorizer runtime.Authorizer
+
+	// NodeAddNodeHandler sets the operation handler for the add node operation
+	NodeAddNodeHandler node.AddNodeHandler
+	// NodeDeleteNodeByIDHandler sets the operation handler for the delete node by Id operation
+	NodeDeleteNodeByIDHandler node.DeleteNodeByIDHandler
+	// NodeGetNodeByIDHandler sets the operation handler for the get node by Id operation
+	NodeGetNodeByIDHandler node.GetNodeByIDHandler
+	// NodeGetNodeListHandler sets the operation handler for the get node list operation
+	NodeGetNodeListHandler node.GetNodeListHandler
 	// IndexIndexHandler sets the operation handler for the index operation
 	IndexIndexHandler index.IndexHandler
 
@@ -144,6 +180,26 @@ func (o *ServerAPI) Validate() error {
 		unregistered = append(unregistered, "HTMLProducer")
 	}
 
+	if o.APIKeyAuthAuth == nil {
+		unregistered = append(unregistered, "AccessTokenAuth")
+	}
+
+	if o.NodeAddNodeHandler == nil {
+		unregistered = append(unregistered, "node.AddNodeHandler")
+	}
+
+	if o.NodeDeleteNodeByIDHandler == nil {
+		unregistered = append(unregistered, "node.DeleteNodeByIDHandler")
+	}
+
+	if o.NodeGetNodeByIDHandler == nil {
+		unregistered = append(unregistered, "node.GetNodeByIDHandler")
+	}
+
+	if o.NodeGetNodeListHandler == nil {
+		unregistered = append(unregistered, "node.GetNodeListHandler")
+	}
+
 	if o.IndexIndexHandler == nil {
 		unregistered = append(unregistered, "index.IndexHandler")
 	}
@@ -163,14 +219,24 @@ func (o *ServerAPI) ServeErrorFor(operationID string) func(http.ResponseWriter, 
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *ServerAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 
-	return nil
+	result := make(map[string]runtime.Authenticator)
+	for name, scheme := range schemes {
+		switch name {
+
+		case "ApiKeyAuth":
+
+			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, o.APIKeyAuthAuth)
+
+		}
+	}
+	return result
 
 }
 
 // Authorizer returns the registered authorizer
 func (o *ServerAPI) Authorizer() runtime.Authorizer {
 
-	return nil
+	return o.APIAuthorizer
 
 }
 
@@ -240,6 +306,26 @@ func (o *ServerAPI) initHandlerCache() {
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/node"] = node.NewAddNode(o.context, o.NodeAddNodeHandler)
+
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/node/{id}"] = node.NewDeleteNodeByID(o.context, o.NodeDeleteNodeByIDHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/node/{id}"] = node.NewGetNodeByID(o.context, o.NodeGetNodeByIDHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/node"] = node.NewGetNodeList(o.context, o.NodeGetNodeListHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

@@ -8,6 +8,7 @@ import (
 	"github.com/e154/smart-home/api/server_v1/controllers"
 	"github.com/e154/smart-home/api/server_v1/stub/restapi/operations"
 	"github.com/e154/smart-home/api/server_v1/stub/restapi/operations/index"
+	"github.com/e154/smart-home/api/server_v1/stub/restapi/operations/node"
 )
 
 var (
@@ -84,4 +85,11 @@ func (s *Server) setControllers() {
 	// index
 	s.api.IndexIndexHandler = index.IndexHandlerFunc(s.Controllers.Index.ControllerIndex)
 
+	// node
+	s.api.NodeAddNodeHandler = node.AddNodeHandlerFunc(s.Controllers.Node.AddNode)
+	s.api.NodeGetNodeByIDHandler = node.GetNodeByIDHandlerFunc(s.Controllers.Node.GetNodeById)
+	s.api.NodeGetNodeListHandler = node.GetNodeListHandlerFunc(s.Controllers.Node.GetNodeList)
+	s.api.NodeDeleteNodeByIDHandler = node.DeleteNodeByIDHandlerFunc(s.Controllers.Node.DeleteNodeById)
+
+	//
 }

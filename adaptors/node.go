@@ -18,6 +18,16 @@ func GetNodeAdaptor(d *gorm.DB) *Node {
 	}
 }
 
+func (n *Node) Add(node *m.Node) (id int64, err error) {
+
+	dbNode := n.toDb(node)
+	if id, err = n.table.Add(dbNode); err != nil {
+		return
+	}
+
+	return
+}
+
 func (n *Node) GetAllEnabled() (list []*m.Node, err error) {
 
 	var dbList []*db.Node
