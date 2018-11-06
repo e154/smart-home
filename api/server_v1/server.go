@@ -57,8 +57,8 @@ func NewServer(cfg *ServerConfig, ctrls *controllers.Controllers) (newServer *Se
 
 	//defer server.Shutdown()
 	parser := flags.NewParser(server, flags.Default)
-	parser.ShortDescription = "Mobile API"
-	parser.LongDescription = "Mobile API"
+	parser.ShortDescription = "Server API"
+	parser.LongDescription = "Server API"
 
 	server.ConfigureFlags()
 
@@ -89,6 +89,7 @@ func (s *Server) setControllers() {
 	s.api.NodeAddNodeHandler = node.AddNodeHandlerFunc(s.Controllers.Node.AddNode)
 	s.api.NodeGetNodeByIDHandler = node.GetNodeByIDHandlerFunc(s.Controllers.Node.GetNodeById)
 	s.api.NodeGetNodeListHandler = node.GetNodeListHandlerFunc(s.Controllers.Node.GetNodeList)
+	s.api.NodeUpdateNodeHandler = node.UpdateNodeHandlerFunc(s.Controllers.Node.UpdateNode)
 	s.api.NodeDeleteNodeByIDHandler = node.DeleteNodeByIDHandlerFunc(s.Controllers.Node.DeleteNodeById)
 
 	//

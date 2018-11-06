@@ -85,7 +85,7 @@ func (b *Core) RemoveNode(node *m.Node) (err error) {
 
 	b.Lock()
 	if _, ok := b.nodes[node.Id]; ok {
-		node.Disconnect()
+		b.nodes[node.Id].Disconnect()
 		delete(b.nodes, node.Id)
 	}
 
@@ -114,10 +114,10 @@ func (b *Core) ReloadNode(node *m.Node) (err error) {
 	b.nodes[node.Id].SetConnectStatus("wait")
 	b.Unlock()
 
-	if node.Status == "disabled" {
-		node.Disconnect()
+	if b.nodes[node.Id].Status == "disabled" {
+		b.nodes[node.Id].Disconnect()
 	} else {
-		node.Connect()
+		b.nodes[node.Id].Connect()
 	}
 
 	return
@@ -128,7 +128,7 @@ func (b *Core) ConnectNode(node *m.Node) (err error) {
 	log.Infof("Connect to node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; ok {
-		node.Connect()
+		b.nodes[node.Id].Connect()
 	}
 
 	//TODO add telemetry
@@ -142,7 +142,7 @@ func (b *Core) DisconnectNode(node *m.Node) (err error) {
 	log.Infof("Disconnect from node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; ok {
-		node.Disconnect()
+		b.nodes[node.Id].Disconnect()
 	}
 
 	//TODO add telemetry

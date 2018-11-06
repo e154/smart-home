@@ -40,14 +40,14 @@ func (r *Response) Success() *Response {
 	return r
 }
 
-func (r *Response) Page(page, page_size, total int64, items interface{}) *Response {
+func (r *Response) Page(limit, offset, total int64, items interface{}) *Response {
 	r.Payload = map[string]interface{}{
 		"code": "success",
 		"data": map[string]interface{}{
-			"page": page,
-			"page_size": page_size,
-			"total": total,
 			"items": items,
+			"limit": limit,
+			"offset": offset,
+			"total": total,
 		},
 	}
 	return r

@@ -35,11 +35,11 @@ type GetNodeListParams struct {
 	/*
 	  In: query
 	*/
-	Limit *float64
+	Limit *int64
 	/*
 	  In: query
 	*/
-	Offset *float64
+	Offset *int64
 	/*
 	  In: query
 	*/
@@ -93,9 +93,9 @@ func (o *GetNodeListParams) bindLimit(rawData []string, hasKey bool, formats str
 		return nil
 	}
 
-	value, err := swag.ConvertFloat64(raw)
+	value, err := swag.ConvertInt64(raw)
 	if err != nil {
-		return errors.InvalidType("limit", "query", "float64", raw)
+		return errors.InvalidType("limit", "query", "int64", raw)
 	}
 	o.Limit = &value
 
@@ -111,9 +111,9 @@ func (o *GetNodeListParams) bindOffset(rawData []string, hasKey bool, formats st
 		return nil
 	}
 
-	value, err := swag.ConvertFloat64(raw)
+	value, err := swag.ConvertInt64(raw)
 	if err != nil {
-		return errors.InvalidType("offset", "query", "float64", raw)
+		return errors.InvalidType("offset", "query", "int64", raw)
 	}
 	o.Offset = &value
 

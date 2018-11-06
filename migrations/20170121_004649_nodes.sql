@@ -9,11 +9,12 @@ CREATE TABLE nodes (
   name        VarChar(255)             NOT NULL,
   description Text                     NOT NULL,
   created_at  timestamp with time zone,
-  update_at   timestamp with time zone null,
+  updated_at  timestamp with time zone null,
   status      nodes_status             NOT NULL DEFAULT 'enabled'
 );
 
-CREATE UNIQUE INDEX port_ip_2_nodes_unq ON nodes(port, ip);
+CREATE UNIQUE INDEX port_ip_2_nodes_unq
+  ON nodes (port, ip);
 
 -- +migrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

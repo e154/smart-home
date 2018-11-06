@@ -9,16 +9,14 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
+	"strings"
 
 	"github.com/go-openapi/swag"
 )
 
-// GetNodeListURL generates an URL for the get node list operation
-type GetNodeListURL struct {
-	Limit  *int64
-	Offset *int64
-	Order  *string
-	Sortby *string
+// UpdateNodeURL generates an URL for the update node operation
+type UpdateNodeURL struct {
+	ID int64
 
 	_basePath string
 	// avoid unkeyed usage
@@ -28,7 +26,7 @@ type GetNodeListURL struct {
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *GetNodeListURL) WithBasePath(bp string) *GetNodeListURL {
+func (o *UpdateNodeURL) WithBasePath(bp string) *UpdateNodeURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -36,63 +34,33 @@ func (o *GetNodeListURL) WithBasePath(bp string) *GetNodeListURL {
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *GetNodeListURL) SetBasePath(bp string) {
+func (o *UpdateNodeURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *GetNodeListURL) Build() (*url.URL, error) {
+func (o *UpdateNodeURL) Build() (*url.URL, error) {
 	var result url.URL
 
-	var _path = "/node"
+	var _path = "/node/{id}"
 
+	id := swag.FormatInt64(o.ID)
+	if id != "" {
+		_path = strings.Replace(_path, "{id}", id, -1)
+	} else {
+		return nil, errors.New("ID is required on UpdateNodeURL")
+	}
 	_basePath := o._basePath
 	if _basePath == "" {
 		_basePath = "/api/v1"
 	}
 	result.Path = golangswaggerpaths.Join(_basePath, _path)
 
-	qs := make(url.Values)
-
-	var limit string
-	if o.Limit != nil {
-		limit = swag.FormatInt64(*o.Limit)
-	}
-	if limit != "" {
-		qs.Set("limit", limit)
-	}
-
-	var offset string
-	if o.Offset != nil {
-		offset = swag.FormatInt64(*o.Offset)
-	}
-	if offset != "" {
-		qs.Set("offset", offset)
-	}
-
-	var order string
-	if o.Order != nil {
-		order = *o.Order
-	}
-	if order != "" {
-		qs.Set("order", order)
-	}
-
-	var sortby string
-	if o.Sortby != nil {
-		sortby = *o.Sortby
-	}
-	if sortby != "" {
-		qs.Set("sortby", sortby)
-	}
-
-	result.RawQuery = qs.Encode()
-
 	return &result, nil
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *GetNodeListURL) Must(u *url.URL, err error) *url.URL {
+func (o *UpdateNodeURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -103,17 +71,17 @@ func (o *GetNodeListURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *GetNodeListURL) String() string {
+func (o *UpdateNodeURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *GetNodeListURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *UpdateNodeURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on GetNodeListURL")
+		return nil, errors.New("scheme is required for a full url on UpdateNodeURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on GetNodeListURL")
+		return nil, errors.New("host is required for a full url on UpdateNodeURL")
 	}
 
 	base, err := o.Build()
@@ -127,6 +95,6 @@ func (o *GetNodeListURL) BuildFull(scheme, host string) (*url.URL, error) {
 }
 
 // StringFull returns the string representation of a complete url
-func (o *GetNodeListURL) StringFull(scheme, host string) string {
+func (o *UpdateNodeURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }

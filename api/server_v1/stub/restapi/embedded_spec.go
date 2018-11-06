@@ -72,11 +72,13 @@ func init() {
         "parameters": [
           {
             "type": "number",
+            "format": "int64",
             "name": "limit",
             "in": "query"
           },
           {
             "type": "number",
+            "format": "int64",
             "name": "offset",
             "in": "query"
           },
@@ -103,8 +105,23 @@ func init() {
                 "data": {
                   "type": "object",
                   "properties": {
-                    "node": {
-                      "$ref": "#/definitions/NodeModel"
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/NodeModel"
+                      }
+                    },
+                    "limit": {
+                      "type": "number",
+                      "format": "int64"
+                    },
+                    "offset": {
+                      "type": "number",
+                      "format": "int64"
+                    },
+                    "total": {
+                      "type": "number",
+                      "format": "int64"
                     }
                   }
                 }
@@ -192,6 +209,7 @@ func init() {
         "parameters": [
           {
             "type": "number",
+            "format": "int64",
             "description": "Node ID",
             "name": "id",
             "in": "path",
@@ -226,6 +244,60 @@ func init() {
           }
         }
       },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "tags": [
+          "node"
+        ],
+        "summary": "update node",
+        "operationId": "updateNode",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "type": "number",
+            "format": "int64",
+            "description": "Node ID",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "putNodeParams",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/NodeModel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "$ref": "#/definitions/ResponseType"
+                },
+                "data": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/ErrorModel"
+            }
+          }
+        }
+      },
       "delete": {
         "consumes": [
           "application/json"
@@ -243,6 +315,7 @@ func init() {
         "parameters": [
           {
             "type": "number",
+            "format": "int64",
             "description": "Node ID",
             "name": "id",
             "in": "path",

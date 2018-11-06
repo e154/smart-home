@@ -16,7 +16,7 @@ import (
 
 // DeleteNodeByIDURL generates an URL for the delete node by Id operation
 type DeleteNodeByIDURL struct {
-	ID float64
+	ID int64
 
 	_basePath string
 	// avoid unkeyed usage
@@ -44,7 +44,7 @@ func (o *DeleteNodeByIDURL) Build() (*url.URL, error) {
 
 	var _path = "/node/{id}"
 
-	id := swag.FormatFloat64(o.ID)
+	id := swag.FormatInt64(o.ID)
 	if id != "" {
 		_path = strings.Replace(_path, "{id}", id, -1)
 	} else {

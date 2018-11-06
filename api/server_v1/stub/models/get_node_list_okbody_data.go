@@ -16,41 +16,26 @@ import (
 // swagger:model getNodeListOKBodyData
 type GetNodeListOKBodyData struct {
 
-	// node
-	Node *NodeModel `json:"node,omitempty"`
+	// items
+	Items GetNodeListOKBodyDataItems `json:"items"`
+
+	// limit
+	Limit int64 `json:"limit,omitempty"`
+
+	// offset
+	Offset int64 `json:"offset,omitempty"`
+
+	// total
+	Total int64 `json:"total,omitempty"`
 }
 
 // Validate validates this get node list o k body data
 func (m *GetNodeListOKBodyData) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateNode(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *GetNodeListOKBodyData) validateNode(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.Node) { // not required
-		return nil
-	}
-
-	if m.Node != nil {
-
-		if err := m.Node.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("node")
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 

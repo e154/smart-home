@@ -85,9 +85,11 @@ paths:
       - name: "limit"
         in: query
         type: number
+        format: int64
       - name: "offset"
         in: query
         type: number
+        format: int64
       - name: "sortby"
         in: query
         type: string
@@ -106,8 +108,19 @@ paths:
               data:
                 type: object
                 properties:
-                  node:
-                    $ref: "#/definitions/NodeModel"
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/definitions/NodeModel"
+                  total:
+                    type: number
+                    format: int64
+                  limit:
+                    type: number
+                    format: int64
+                  offset:
+                    type: number
+                    format: int64
 
         default:
           description: "error"
@@ -128,6 +141,7 @@ paths:
       - in: "path"
         name: "id"
         type: number
+        format: int64
         required: true
         description: "Node ID"
 
@@ -149,6 +163,42 @@ paths:
           description: "error"
           schema:
             $ref: "#/definitions/ErrorModel"
+    put:
+      tags:
+      - node
+      security:
+      - ApiKeyAuth: []
+      summary: "update node"
+      consumes:
+      - application/json
+      operationId: "updateNode"
+      parameters:
+      - in: "path"
+        name: "id"
+        type: number
+        format: int64
+        required: true
+        description: "Node ID"
+      - in: body
+        name: putNodeParams
+        schema:
+          $ref: "#/definitions/NodeModel"
+
+      responses:
+        "200":
+          description: "success"
+          schema:
+            type: object
+            properties:
+              code:
+                $ref: "#/definitions/ResponseType"
+              data:
+                type: object
+
+        default:
+          description: "error"
+          schema:
+            $ref: "#/definitions/ErrorModel"
 
     delete:
       tags:
@@ -163,6 +213,7 @@ paths:
       - in: "path"
         name: "id"
         type: number
+        format: int64
         required: true
         description: "Node ID"
 
@@ -242,7 +293,7 @@ definitions:
       created_at:
         type: string
         format: 'date-time'
-      update_at:
+      updated_at:
         type: string
         format: 'date-time'
 

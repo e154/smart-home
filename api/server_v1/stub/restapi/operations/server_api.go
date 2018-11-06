@@ -57,6 +57,9 @@ func NewServerAPI(spec *loads.Document) *ServerAPI {
 		IndexIndexHandler: index.IndexHandlerFunc(func(params index.IndexParams) middleware.Responder {
 			return middleware.NotImplemented("operation IndexIndex has not yet been implemented")
 		}),
+		NodeUpdateNodeHandler: node.UpdateNodeHandlerFunc(func(params node.UpdateNodeParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation NodeUpdateNode has not yet been implemented")
+		}),
 
 		// Applies when the "access_token" header is set
 		APIKeyAuthAuth: func(token string) (interface{}, error) {
@@ -113,6 +116,8 @@ type ServerAPI struct {
 	NodeGetNodeListHandler node.GetNodeListHandler
 	// IndexIndexHandler sets the operation handler for the index operation
 	IndexIndexHandler index.IndexHandler
+	// NodeUpdateNodeHandler sets the operation handler for the update node operation
+	NodeUpdateNodeHandler node.UpdateNodeHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -202,6 +207,10 @@ func (o *ServerAPI) Validate() error {
 
 	if o.IndexIndexHandler == nil {
 		unregistered = append(unregistered, "index.IndexHandler")
+	}
+
+	if o.NodeUpdateNodeHandler == nil {
+		unregistered = append(unregistered, "node.UpdateNodeHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -331,6 +340,11 @@ func (o *ServerAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"][""] = index.NewIndex(o.context, o.IndexIndexHandler)
+
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/node/{id}"] = node.NewUpdateNode(o.context, o.NodeUpdateNodeHandler)
 
 }
 
