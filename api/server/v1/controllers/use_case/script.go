@@ -7,6 +7,8 @@ import (
 	"github.com/e154/smart-home/system/validation"
 	"errors"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/jinzhu/copier"
 )
 
 func AddScript(script *m.Script, adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.ScriptService) (ok bool, id int64, errs []*validation.Error, err error) {
@@ -35,9 +37,15 @@ func AddScript(script *m.Script, adaptors *adaptors.Adaptors, core *core.Core, s
 	return
 }
 
-func GetScriptById(scriptId int64, adaptors *adaptors.Adaptors) (script *m.Script, err error) {
+func GetScriptById(scriptId int64, adaptors *adaptors.Adaptors) (script *models.Script, err error) {
 
-	script, err = adaptors.Script.GetById(scriptId)
+	var mScript *m.Script
+	if mScript, err = adaptors.Script.GetById(scriptId); err != nil {
+		return
+	}
+
+	script = &models.Script{}
+	err = copier.Copy(&script, &mScript)
 
 	return
 }
@@ -66,9 +74,23 @@ func UpdateScript(script *m.Script, adaptors *adaptors.Adaptors, core *core.Core
 	return
 }
 
-func GetScriptList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (items []*m.Script, total int64, err error) {
+func GetScriptList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (items []*models.Script, total int64, err error) {
 
-	items, total, err = adaptors.Script.List(limit, offset, order, sortBy)
+	var mScripts []*m.Script
+	if mScripts, total, err = adaptors.Script.List(limit, offset, order, sortBy); err != nil {
+		return
+	}
+
+	items = make([]*models.Script, 0)
+
+	for _, script := range mScripts {
+		item := &models.Script{}
+		if err = copier.Copy(&item, &script); err != nil {
+			log.Error(err.Error())
+			continue
+		}
+		items = append(items, item)
+	}
 
 	return
 }

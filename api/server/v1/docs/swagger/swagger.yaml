@@ -145,8 +145,6 @@ definitions:
     type: object
   models.Script:
     properties:
-      compiled:
-        type: string
       created_at:
         type: string
       description:

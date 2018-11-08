@@ -26,7 +26,6 @@ type Script struct {
 	Name        string     `json:"name"`
 	Source      string     `json:"source"`
 	Description string     `json:"description"`
-	Compiled    string     `json:"compiled"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 }

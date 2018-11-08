@@ -897,9 +897,6 @@
         "models.Script": {
             "type": "object",
             "properties": {
-                "compiled": {
-                    "type": "string"
-                },
                 "created_at": {
                     "type": "string"
                 },
