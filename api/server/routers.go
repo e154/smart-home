@@ -30,4 +30,5 @@ func (s *Server) setControllers() {
 	v1.PUT("/script/:id", s.ControllersV1.Script.UpdateScript)
 	v1.DELETE("/script/:id", s.ControllersV1.Script.DeleteScriptById)
 	v1.GET("/script", s.ControllersV1.Script.GetScriptList)
+	v1.GET("/script/:id/exec", s.ControllersV1.Script.Exec)
 }

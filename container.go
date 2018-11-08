@@ -11,6 +11,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/api/server/v1/controllers"
+	"github.com/e154/smart-home/system/scripts"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -30,6 +31,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(migrations.NewMigrationsConfig)
 	container.Provide(adaptors.NewAdaptors)
 	container.Provide(logging.NewLogrus)
+	container.Provide(scripts.NewScriptService)
 
 	return
 }

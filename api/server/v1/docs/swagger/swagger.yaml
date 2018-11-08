@@ -108,6 +108,16 @@ definitions:
             type: object
         type: object
     type: object
+  models.ResponseScriptExec:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          result:
+            type: string
+        type: object
+    type: object
   models.ResponseScriptList:
     properties:
       code:
@@ -602,6 +612,43 @@ paths:
             $ref: '#/definitions/models.ErrorModel'
             type: object
       summary: Update script
+      tags:
+      - script
+  /script/{id}/exec:
+    post:
+      consumes:
+      - application/json
+      description: Execute script by id
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseScriptExec'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Execute script
       tags:
       - script
 swagger: "2.0"

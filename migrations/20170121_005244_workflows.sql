@@ -1,10 +1,10 @@
 -- +migrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-create type scripts_lang as enum ('lua', 'coffeescript', 'javascript');
+create type scripts_lang as enum ('ts', 'coffeescript', 'javascript');
 
 CREATE TABLE scripts (
   id          bigserial not null constraint scripts_pkey primary key,
-  lang        scripts_lang NOT NULL DEFAULT 'lua',
+  lang        scripts_lang NOT NULL DEFAULT 'javascript',
   name        VarChar(255) NOT NULL,
   source      Text NULL,
   description Text NULL,

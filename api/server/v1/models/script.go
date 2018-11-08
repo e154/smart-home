@@ -6,12 +6,6 @@ import (
 
 type ScriptLang string
 
-const (
-	ScriptLangLua        = ScriptLang("lua")
-	ScriptLangCoffee     = ScriptLang("coffeescript")
-	ScriptLangJavascript = ScriptLang("javascript")
-)
-
 type NewScript struct {
 	Lang        ScriptLang `json:"lang"`
 	Name        string     `json:"name"`
@@ -53,5 +47,12 @@ type ResponseScriptList struct {
 		Limit  int64     `json:"limit"`
 		Offset int64     `json:"offset"`
 		Total  int64     `json:"total"`
+	} `json:"data"`
+}
+
+type ResponseScriptExec struct {
+	Code ResponseType `json:"code"`
+	Data struct {
+		Result string `json:"result"`
 	} `json:"data"`
 }

@@ -7,14 +7,20 @@ import (
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/scripts"
 )
 
 type ControllerScript struct {
 	*ControllerCommon
+	scriptService *scripts.ScriptService
 }
 
-func NewControllerScript(common *ControllerCommon) *ControllerScript {
-	return &ControllerScript{ControllerCommon: common}
+func NewControllerScript(common *ControllerCommon,
+	scriptService *scripts.ScriptService) *ControllerScript {
+	return &ControllerScript{
+		ControllerCommon: common,
+		scriptService:    scriptService,
+	}
 }
 
 // Script godoc
@@ -38,12 +44,12 @@ func (c ControllerScript) AddScript(ctx *gin.Context) {
 	}
 
 	s := &m.Script{
-		Lang: common.ScriptLang(params.Lang),
-		Name: params.Name,
-		Source: params.Source,
+		Lang:        common.ScriptLang(params.Lang),
+		Name:        params.Name,
+		Source:      params.Source,
 		Description: params.Description,
 	}
-	_, id, errs, err := AddScript(s, c.adaptors, c.core)
+	_, id, errs, err := AddScript(s, c.adaptors, c.core, c.scriptService)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -126,7 +132,7 @@ func (c ControllerScript) UpdateScript(ctx *gin.Context) {
 
 	script.Id = int64(aid)
 
-	_, errs, err := UpdateScript(script, c.adaptors, c.core)
+	_, errs, err := UpdateScript(script, c.adaptors, c.core, c.scriptService)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -229,4 +235,37 @@ func (c ControllerScript) DeleteScriptById(ctx *gin.Context) {
 
 	resp := NewSuccess()
 	resp.Send(ctx)
+}
+
+// Script godoc
+// @tags script
+// @Summary Execute script
+// @Description Execute script by id
+// @Produce json
+// @Accept  json
+// @Param  id path int true "Script ID"
+// @Success 200 {object} models.ResponseScriptExec
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Router /script/{id}/exec [Post]
+func (c ControllerScript) Exec(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	result, err := ExecuteScript(int64(aid), c.adaptors, c.core, c.scriptService)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Item("result", result).Send(ctx)
 }

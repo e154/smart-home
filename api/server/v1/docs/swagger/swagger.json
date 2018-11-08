@@ -617,6 +617,60 @@
                     }
                 }
             }
+        },
+        "/script/{id}/exec": {
+            "post": {
+                "description": "Execute script by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "script"
+                ],
+                "summary": "Execute script",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Script ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseScriptExec"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -780,6 +834,22 @@
                         "script": {
                             "type": "object",
                             "$ref": "#/definitions/models.Script"
+                        }
+                    }
+                }
+            }
+        },
+        "models.ResponseScriptExec": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "result": {
+                            "type": "string"
                         }
                     }
                 }

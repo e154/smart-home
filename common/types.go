@@ -3,7 +3,7 @@ package common
 type ScriptLang string
 
 const (
-	ScriptLangLua = ScriptLang("lua")
+	ScriptLangTs = ScriptLang("ts")
 	ScriptLangCoffee = ScriptLang("coffeescript")
 	ScriptLangJavascript = ScriptLang("javascript")
 )
