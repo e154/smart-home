@@ -261,8 +261,11 @@ func (c ControllerScript) Exec(ctx *gin.Context) {
 
 	result, err := ExecuteScript(int64(aid), c.adaptors, c.core, c.scriptService)
 	if err != nil {
-		log.Error(err.Error())
-		NewError(500, err).Send(ctx)
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
 		return
 	}
 

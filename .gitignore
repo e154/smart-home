@@ -6,3 +6,5 @@ vendor/*
 data/scripts
 /conf/config.json
 /conf/dbconfig.yml
+/api/server/v1/docs/docs.go
+/api/server/v1/docs/swagger/swagger.json
