@@ -47,7 +47,7 @@ func (n Nodes) GetById(nodeId int64) (node *Node, err error) {
 }
 
 func (n Nodes) Update(m *Node) (err error) {
-	err = n.Db.Model(&Node{Id: m.Id}).Updates(&map[string]interface{}{
+	err = n.Db.Model(&Node{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
 		"ip":          m.Ip,

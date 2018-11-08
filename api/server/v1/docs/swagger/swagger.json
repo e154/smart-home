@@ -1,0 +1,452 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Smart Home System",
+        "title": "Smart home API",
+        "contact": {
+            "name": "Alex Filippov",
+            "url": "https://e154.github.io/smart-home/",
+            "email": "support@e154.ru"
+        },
+        "license": {
+            "name": "MIT License",
+            "url": "https://raw.githubusercontent.com/e154/smart-home/master/LICENSE"
+        },
+        "version": "0.0.1"
+    },
+    "host": "{{.Host}}",
+    "basePath": "/api/v1",
+    "paths": {
+        "/": {
+            "get": {
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "index"
+                ],
+                "summary": "index page",
+                "responses": {
+                    "200": {}
+                }
+            }
+        },
+        "/node": {
+            "get": {
+                "description": "Get node list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "node"
+                ],
+                "summary": "Node list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "DESC",
+                        "description": "order",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "sort_by",
+                        "name": "sort_by",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.Nodes"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "node"
+                ],
+                "summary": "Add new node",
+                "parameters": [
+                    {
+                        "description": "node params",
+                        "name": "node",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.NewNode"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.NewObjectSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/node/{id}": {
+            "get": {
+                "description": "Get node by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "node"
+                ],
+                "summary": "Show node",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Node ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.Node"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update node by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "node"
+                ],
+                "summary": "Update node",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Node ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update node",
+                        "name": "node",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.UpdateNode"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete node by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "node"
+                ],
+                "summary": "Delete node",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Node ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.ErrorModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "code",
+                    "type": "string"
+                },
+                "errors": {
+                    "description": "errors",
+                    "type": "object",
+                    "$ref": "#/definitions/models.ErrorModelErrors"
+                },
+                "message": {
+                    "description": "описание ошибки",
+                    "type": "string"
+                }
+            }
+        },
+        "models.ErrorModelErrors": {
+            "type": "object"
+        },
+        "models.NewNode": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.NewObjectSuccess": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "models.Node": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Nodes": {
+            "type": "object"
+        },
+        "models.ResponseSuccess": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object"
+                }
+            }
+        },
+        "models.UpdateNode": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

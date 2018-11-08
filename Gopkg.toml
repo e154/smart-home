@@ -83,3 +83,15 @@
 [[constraint]]
   branch = "master"
   name = "github.com/iancoleman/strcase"
+
+[[constraint]]
+  name = "github.com/gin-gonic/gin"
+  version = "1.3.0"
+
+[[constraint]]
+  name = "github.com/swaggo/gin-swagger"
+  version = "1.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gin-gonic/contrib"

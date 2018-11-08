@@ -1,0 +1,26 @@
+basePath: /api/v2
+host: '{{.Host}}'
+info:
+  contact:
+    email: support@e154.ru
+    name: Alex Filippov
+    url: https://e154.github.io/smart-home/
+  description: Smart Home System
+  license:
+    name: MIT License
+    url: https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
+  title: Smart home API
+  version: 0.0.2
+paths:
+  /:
+    get:
+      consumes:
+      - text/plain
+      produces:
+      - text/plain
+      responses:
+        "200": {}
+      summary: index page
+      tags:
+      - index
+swagger: "2.0"

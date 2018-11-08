@@ -1,0 +1,308 @@
+basePath: /api/v1
+definitions:
+  models.ErrorModel:
+    properties:
+      code:
+        description: code
+        type: string
+      errors:
+        $ref: '#/definitions/models.ErrorModelErrors'
+        description: errors
+        type: object
+      message:
+        description: описание ошибки
+        type: string
+    type: object
+  models.ErrorModelErrors:
+    type: object
+  models.NewNode:
+    properties:
+      description:
+        type: string
+      ip:
+        type: string
+      name:
+        type: string
+      port:
+        type: integer
+      status:
+        type: string
+    type: object
+  models.NewObjectSuccess:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          id:
+            type: integer
+        type: object
+    type: object
+  models.Node:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      ip:
+        type: string
+      name:
+        type: string
+      port:
+        type: integer
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Nodes:
+    type: object
+  models.ResponseSuccess:
+    properties:
+      code:
+        type: string
+      data:
+        type: object
+    type: object
+  models.UpdateNode:
+    properties:
+      description:
+        type: string
+      ip:
+        type: string
+      name:
+        type: string
+      port:
+        type: integer
+      status:
+        type: string
+    type: object
+host: '{{.Host}}'
+info:
+  contact:
+    email: support@e154.ru
+    name: Alex Filippov
+    url: https://e154.github.io/smart-home/
+  description: Smart Home System
+  license:
+    name: MIT License
+    url: https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
+  title: Smart home API
+  version: 0.0.1
+paths:
+  /:
+    get:
+      consumes:
+      - text/plain
+      produces:
+      - text/plain
+      responses:
+        "200": {}
+      summary: index page
+      tags:
+      - index
+  /node:
+    get:
+      consumes:
+      - application/json
+      description: Get node list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Nodes'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Node list
+      tags:
+      - node
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: node params
+        in: body
+        name: node
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewNode'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Add new node
+      tags:
+      - node
+  /node/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete node by id
+      parameters:
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Delete node
+      tags:
+      - node
+    get:
+      consumes:
+      - application/json
+      description: Get node by id
+      parameters:
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Node'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Show node
+      tags:
+      - node
+    put:
+      consumes:
+      - application/json
+      description: Update node by id
+      parameters:
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update node
+        in: body
+        name: node
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateNode'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Update node
+      tags:
+      - node
+swagger: "2.0"

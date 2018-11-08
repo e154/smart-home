@@ -2,12 +2,12 @@ package main
 
 import (
 	"os"
-	"github.com/e154/smart-home/api/server_v1"
 	"github.com/op/go-logging"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/sirupsen/logrus"
 	l "github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/api/server"
 )
 
 var (
