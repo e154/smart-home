@@ -8,3 +8,5 @@ data/scripts
 /conf/dbconfig.yml
 /api/server/v1/docs/docs.go
 /api/server/v1/docs/swagger/swagger.json
+/api/server/v2/docs/docs.go
+/api/server/v2/docs/swagger/swagger.json
