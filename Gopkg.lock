@@ -55,14 +55,6 @@
   revision = "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
 
 [[projects]]
-  branch = "master"
-  digest = "1:555fef7420c108d88754e41e02299fd10f67dc6602d643944611a4100132d3cf"
-  name = "github.com/gin-gonic/contrib"
-  packages = ["static"]
-  pruneopts = "UT"
-  revision = "54170a7b0b4b2f9219c79599b1b03830a5a7d68d"
-
-[[projects]]
   digest = "1:d5083934eb25e45d17f72ffa86cae3814f4a9d6c073c4f16b64147169b245606"
   name = "github.com/gin-gonic/gin"
   packages = [
@@ -122,6 +114,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "3605ed457bf7f8caa1371b4fafadadc026673479"
+
+[[projects]]
+  branch = "master"
+  digest = "1:5c3444689562053b027ef3b96372e306adbe0d7d109b6cdd48d01eb80f8bab14"
+  name = "github.com/jinzhu/copier"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "7e38e58719c33e0d44d585c4ab477a30f8cb82dd"
 
 [[projects]]
   digest = "1:235ae01f32fb5f12c5f6d2e0e05ab48e651ab31c126e45a4efc4f510810941ac"
@@ -355,9 +355,9 @@
   input-imports = [
     "github.com/alecthomas/template",
     "github.com/astaxie/beego",
-    "github.com/gin-gonic/contrib/static",
     "github.com/gin-gonic/gin",
     "github.com/iancoleman/strcase",
+    "github.com/jinzhu/copier",
     "github.com/jinzhu/gorm",
     "github.com/lib/pq",
     "github.com/olivere/elastic",
