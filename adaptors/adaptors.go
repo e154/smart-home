@@ -12,7 +12,8 @@ var (
 )
 
 type Adaptors struct {
-	Node *Node
+	Node   *Node
+	Script *Script
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -26,7 +27,8 @@ func NewAdaptors(db *gorm.DB,
 	}
 
 	adaptors = &Adaptors{
-		Node: GetNodeAdaptor(db),
+		Node:   GetNodeAdaptor(db),
+		Script: GetScriptAdaptor(db),
 	}
 
 	return

@@ -9,6 +9,7 @@ type ControllersV1 struct {
 	Index   *ControllerIndex
 	Node    *ControllerNode
 	Swagger *ControllerSwagger
+	Script  *ControllerScript
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -18,5 +19,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Index:   NewControllerIndex(common),
 		Node:    NewControllerNode(common),
 		Swagger: NewControllerSwagger(common),
+		Script:  NewControllerScript(common),
 	}
 }
