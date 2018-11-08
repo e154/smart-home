@@ -66,7 +66,7 @@ func (c ControllerNode) AddNode(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Node ID"
-// @Success 200 {object} models.Node
+// @Success 200 {object} models.ResponseNode
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -152,7 +152,7 @@ func (c ControllerNode) UpdateNode(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Param order query string false "order" default(DESC)
 // @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.Nodes
+// @Success 200 {object} models.ResponseNodeList
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"

@@ -30,3 +30,20 @@ type Node struct {
 }
 
 type Nodes []*Node
+
+type ResponseNode struct {
+	Code ResponseType `json:"code"`
+	Data struct {
+		Node *Node `json:"node"`
+	} `json:"data"`
+}
+
+type ResponseNodeList struct {
+	Code ResponseType `json:"code"`
+	Data struct {
+		Items  []*Node `json:"items"`
+		Limit  int64   `json:"limit"`
+		Offset int64   `json:"offset"`
+		Total  int64   `json:"total"`
+	} `json:"data"`
+}

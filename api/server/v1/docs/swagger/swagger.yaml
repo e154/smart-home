@@ -38,6 +38,17 @@ definitions:
             type: integer
         type: object
     type: object
+  models.NewScript:
+    properties:
+      description:
+        type: string
+      lang:
+        type: string
+      name:
+        type: string
+      source:
+        type: string
+    type: object
   models.Node:
     properties:
       created_at:
@@ -57,7 +68,63 @@ definitions:
       updated_at:
         type: string
     type: object
-  models.Nodes:
+  models.ResponseNode:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          node:
+            $ref: '#/definitions/models.Node'
+            type: object
+        type: object
+    type: object
+  models.ResponseNodeList:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          items:
+            items:
+              $ref: '#/definitions/models.Node'
+            type: array
+          limit:
+            type: integer
+          offset:
+            type: integer
+          total:
+            type: integer
+        type: object
+    type: object
+  models.ResponseScript:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          script:
+            $ref: '#/definitions/models.Script'
+            type: object
+        type: object
+    type: object
+  models.ResponseScriptList:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          items:
+            items:
+              $ref: '#/definitions/models.Script'
+            type: array
+          limit:
+            type: integer
+          offset:
+            type: integer
+          total:
+            type: integer
+        type: object
     type: object
   models.ResponseSuccess:
     properties:
@@ -65,6 +132,25 @@ definitions:
         type: string
       data:
         type: object
+    type: object
+  models.Script:
+    properties:
+      compiled:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      lang:
+        type: string
+      name:
+        type: string
+      source:
+        type: string
+      updated_at:
+        type: string
     type: object
   models.UpdateNode:
     properties:
@@ -79,6 +165,17 @@ definitions:
       status:
         type: string
     type: object
+  models.UpdateScript:
+    properties:
+      description:
+        type: string
+      lang:
+        type: string
+      name:
+        type: string
+      source:
+        type: string
+    type: object
 host: '{{.Host}}'
 info:
   contact:
@@ -90,7 +187,7 @@ info:
     name: MIT License
     url: https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
   title: Smart home API
-  version: 0.0.1
+  version: "1"
 paths:
   /:
     get:
@@ -137,7 +234,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Nodes'
+            $ref: '#/definitions/models.ResponseNodeList'
             type: object
         "400":
           description: some error
@@ -242,7 +339,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Node'
+            $ref: '#/definitions/models.ResponseNode'
             type: object
         "400":
           description: some error
@@ -305,4 +402,206 @@ paths:
       summary: Update node
       tags:
       - node
+  /script:
+    get:
+      consumes:
+      - application/json
+      description: Get script list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseScriptList'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Script list
+      tags:
+      - script
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: script params
+        in: body
+        name: script
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewScript'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Add new script
+      tags:
+      - script
+  /script/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete script by id
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Delete script
+      tags:
+      - script
+    get:
+      consumes:
+      - application/json
+      description: Get script by id
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseScript'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Show script
+      tags:
+      - script
+    put:
+      consumes:
+      - application/json
+      description: Update script by id
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update script
+        in: body
+        name: script
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateScript'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Update script
+      tags:
+      - script
 swagger: "2.0"
