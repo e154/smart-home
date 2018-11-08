@@ -10,7 +10,7 @@ info:
     name: MIT License
     url: https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
   title: Smart home API
-  version: 0.0.2
+  version: "2"
 paths:
   /:
     get:
