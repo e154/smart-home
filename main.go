@@ -37,7 +37,7 @@ func start() {
 
 		l.Initialize(lx)
 		go server.Start()
-		go core.Start()
+		go core.Run()
 
 		graceful.Wait()
 	})

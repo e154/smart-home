@@ -49,6 +49,15 @@ definitions:
       source:
         type: string
     type: object
+  models.NewWorkflow:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+    type: object
   models.Node:
     properties:
       created_at:
@@ -143,6 +152,35 @@ definitions:
       data:
         type: object
     type: object
+  models.ResponseWorkflow:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          workflow:
+            $ref: '#/definitions/models.Workflow'
+            type: object
+        type: object
+    type: object
+  models.ResponseWorkflowList:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          items:
+            items:
+              $ref: '#/definitions/models.Workflow'
+            type: array
+          limit:
+            type: integer
+          offset:
+            type: integer
+          total:
+            type: integer
+        type: object
+    type: object
   models.Script:
     properties:
       created_at:
@@ -183,6 +221,60 @@ definitions:
         type: string
       source:
         type: string
+    type: object
+  models.UpdateWorkflow:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+    type: object
+  models.Workflow:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      scenario:
+        $ref: '#/definitions/models.WorkflowScenario'
+        type: object
+      scenarios:
+        items:
+          $ref: '#/definitions/models.WorkflowScenario'
+        type: array
+      scripts:
+        items:
+          $ref: '#/definitions/models.Script'
+        type: array
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.WorkflowScenario:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      scripts:
+        items:
+          $ref: '#/definitions/models.Script'
+        type: array
+      system_name:
+        type: string
+      updated_at:
+        type: string
+      workflow_id:
+        type: integer
     type: object
 host: '{{.Host}}'
 info:
@@ -649,4 +741,206 @@ paths:
       summary: Execute script
       tags:
       - script
+  /workflow:
+    get:
+      consumes:
+      - application/json
+      description: Get workflow list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseWorkflowList'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Workflow list
+      tags:
+      - workflow
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: workflow params
+        in: body
+        name: workflow
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewWorkflow'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Add new workflow
+      tags:
+      - workflow
+  /workflow/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete workflow by id
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Delete workflow
+      tags:
+      - workflow
+    get:
+      consumes:
+      - application/json
+      description: Get workflow by id
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseWorkflow'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Show workflow
+      tags:
+      - workflow
+    put:
+      consumes:
+      - application/json
+      description: Update workflow by id
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update workflow
+        in: body
+        name: workflow
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateWorkflow'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Update workflow
+      tags:
+      - workflow
 swagger: "2.0"

@@ -7,10 +7,11 @@ import (
 )
 
 type ControllersV1 struct {
-	Index   *ControllerIndex
-	Node    *ControllerNode
-	Swagger *ControllerSwagger
-	Script  *ControllerScript
+	Index    *ControllerIndex
+	Node     *ControllerNode
+	Swagger  *ControllerSwagger
+	Script   *ControllerScript
+	Workflow *ControllerWorkflow
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -18,9 +19,10 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 	scriptService *scripts.ScriptService) *ControllersV1 {
 	common := NewControllerCommon(adaptors, core)
 	return &ControllersV1{
-		Index:   NewControllerIndex(common),
-		Node:    NewControllerNode(common),
-		Swagger: NewControllerSwagger(common),
-		Script:  NewControllerScript(common, scriptService),
+		Index:    NewControllerIndex(common),
+		Node:     NewControllerNode(common),
+		Swagger:  NewControllerSwagger(common),
+		Script:   NewControllerScript(common, scriptService),
+		Workflow: NewControllerWorkflow(common),
 	}
 }

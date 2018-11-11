@@ -12,25 +12,51 @@ var (
 )
 
 type Core struct {
-	nodes map[int64]*m.Node
-	//workflows  		map[int64]*Workflow
+	sync.Mutex
+	nodes     map[int64]*m.Node
+	workflows map[int64]*Workflow
+	adaptors  *adaptors.Adaptors
 	//telemetry		Telemetry
 	//Map				*Map
-	sync.Mutex
-	adaptors *adaptors.Adaptors
 }
 
 func NewCore(adaptors *adaptors.Adaptors) (core *Core, err error) {
 	core = &Core{
-		nodes:    make(map[int64]*m.Node),
-		adaptors: adaptors,
+		nodes:     make(map[int64]*m.Node),
+		workflows: make(map[int64]*Workflow),
+		adaptors:  adaptors,
 	}
 
 	return
 }
 
-func (c *Core) Start() (err error) {
-	err = c.initNodes()
+func (c *Core) Run() (err error) {
+	if err = c.initNodes(); err != nil {
+		return
+	}
+	err = c.InitWorkflows()
+	return
+}
+
+func (b *Core) Stop() (err error) {
+
+	for _, workflow := range b.workflows {
+		b.DeleteWorkflow(workflow.model)
+	}
+
+	for _, node := range b.nodes {
+		b.RemoveNode(node)
+	}
+
+	return
+}
+
+func (b *Core) Restart() (err error) {
+
+	b.Stop()
+
+	b.Run()
+
 	return
 }
 
@@ -160,6 +186,87 @@ func (b *Core) GetNodes() (nodes map[int64]*m.Node) {
 		nodes[id] = node
 	}
 	b.Unlock()
+
+	return
+}
+
+// ------------------------------------------------
+// Workflows
+// ------------------------------------------------
+
+// инициализация всего рабочего процесса, с запуском
+// дочерни подпроцессов
+func (b *Core) InitWorkflows() (err error) {
+
+	workflows, err := b.adaptors.Workflow.GetAllEnabled()
+	if err != nil {
+		return
+	}
+
+	for _, workflow := range workflows {
+		b.AddWorkflow(workflow)
+	}
+
+	return
+}
+
+// добавление рабочего процесс
+func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
+
+	log.Infof("Add workflow: %s", workflow.Name)
+
+	if _, ok := b.workflows[workflow.Id]; ok {
+		return
+	}
+
+	wf := NewWorkflow(workflow)
+
+	if err = wf.Run(); err != nil {
+		return
+	}
+
+	b.workflows[workflow.Id] = wf
+
+	return
+}
+
+// нельзя удалить workflow, если присутствуют связанные сущности
+func (b *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
+
+	log.Infof("Remove workflow: %s", workflow.Name)
+
+	if _, ok := b.workflows[workflow.Id]; !ok {
+		return
+	}
+
+	b.workflows[workflow.Id].Stop()
+	delete(b.workflows, workflow.Id)
+
+	return
+}
+
+func (b *Core) UpdateWorkflowScenario(workflow *m.Workflow) (err error) {
+
+	//if _, ok := b.workflows[workflow.Id]; !ok {
+	//	return
+	//}
+
+	//err = b.workflows[workflow.Id].UpdateScenario()
+
+	return
+}
+
+func (b *Core) UpdateWorkflow(workflow *m.Workflow) (err error) {
+
+	if workflow.Status == "enabled" {
+		if _, ok := b.workflows[workflow.Id]; !ok {
+			err = b.AddWorkflow(workflow)
+		}
+	} else {
+		if _, ok := b.workflows[workflow.Id]; ok {
+			err = b.DeleteWorkflow(workflow)
+		}
+	}
 
 	return
 }

@@ -31,4 +31,11 @@ func (s *Server) setControllers() {
 	v1.DELETE("/script/:id", s.ControllersV1.Script.DeleteScriptById)
 	v1.GET("/script", s.ControllersV1.Script.GetScriptList)
 	v1.POST("/script/:id/exec", s.ControllersV1.Script.Exec)
+
+	// workflow
+	v1.POST("/workflow", s.ControllersV1.Workflow.AddWorkflow)
+	v1.GET("/workflow/:id", s.ControllersV1.Workflow.GetWorkflowById)
+	v1.PUT("/workflow/:id", s.ControllersV1.Workflow.UpdateWorkflow)
+	v1.DELETE("/workflow/:id", s.ControllersV1.Workflow.DeleteWorkflowById)
+	v1.GET("/workflow", s.ControllersV1.Workflow.GetWorkflowList)
 }
