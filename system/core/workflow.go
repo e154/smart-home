@@ -178,7 +178,7 @@ func (wf *Workflow) enterScenario() (err error) {
 
 	log.Infof("Workflow '%s': enter scenario", wf.model.Name)
 
-	wf.runScenarioScripts(wf.model.Scenario, "on_enter")
+	err = wf.runScenarioScripts(wf.model.Scenario, "on_enter")
 
 	return
 }
@@ -191,7 +191,7 @@ func (wf *Workflow) exitScenario() (err error) {
 
 	log.Infof("Workflow '%s': exit from scenario", wf.model.Name)
 
-	wf.runScenarioScripts(wf.model.Scenario, "on_exit")
+	err = wf.runScenarioScripts(wf.model.Scenario, "on_exit")
 
 	return
 }
@@ -212,12 +212,14 @@ func (wf *Workflow) UpdateScenario() (err error) {
 	log.Infof("Workflow '%s': update scenario", wf.model.Name)
 
 	if wf.model.Scenario != nil {
-		wf.runScenarioScripts(wf.model.Scenario, "on_exit")
+		if err = wf.runScenarioScripts(wf.model.Scenario, "on_exit"); err != nil {
+			return
+		}
 	}
 
 	*wf.model = *model
 
-	wf.Restart()
+	err = wf.enterScenario()
 
 	return
 }

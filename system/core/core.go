@@ -45,11 +45,15 @@ func (c *Core) Run() (err error) {
 func (b *Core) Stop() (err error) {
 
 	for _, workflow := range b.workflows {
-		b.DeleteWorkflow(workflow.model)
+		if err = b.DeleteWorkflow(workflow.model); err != nil {
+			return
+		}
 	}
 
 	for _, node := range b.nodes {
-		b.RemoveNode(node)
+		if err = b.RemoveNode(node); err != nil {
+			return
+		}
 	}
 
 	return
@@ -57,9 +61,13 @@ func (b *Core) Stop() (err error) {
 
 func (b *Core) Restart() (err error) {
 
-	b.Stop()
+	if err = b.Stop(); err != nil {
+		log.Error(err.Error())
+	}
 
-	b.Run()
+	if err = b.Run(); err != nil {
+		log.Error(err.Error())
+	}
 
 	return
 }
@@ -208,7 +216,9 @@ func (b *Core) InitWorkflows() (err error) {
 	}
 
 	for _, workflow := range workflows {
-		b.AddWorkflow(workflow)
+		if err = b.AddWorkflow(workflow); err != nil {
+			return
+		}
 	}
 
 	return
