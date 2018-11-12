@@ -6,6 +6,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/op/go-logging"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/graceful_service"
 )
 
 var (
@@ -18,19 +19,23 @@ type Core struct {
 	workflows map[int64]*Workflow
 	adaptors  *adaptors.Adaptors
 	scripts   *scripts.ScriptService
+	graceful  *graceful_service.GracefulService
 	//telemetry		Telemetry
 	//Map				*Map
 }
 
 func NewCore(adaptors *adaptors.Adaptors,
-	scripts *scripts.ScriptService) (core *Core, err error) {
+	scripts *scripts.ScriptService,
+	graceful *graceful_service.GracefulService) (core *Core, err error) {
 	core = &Core{
 		nodes:     make(map[int64]*m.Node),
 		workflows: make(map[int64]*Workflow),
 		adaptors:  adaptors,
 		scripts:   scripts,
+		graceful:  graceful,
 	}
 
+	graceful.Subscribe(core)
 	return
 }
 
@@ -70,6 +75,10 @@ func (b *Core) Restart() (err error) {
 	}
 
 	return
+}
+
+func (b *Core) Shutdown() {
+	b.Stop()
 }
 
 // ------------------------------------------------
