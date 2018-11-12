@@ -157,7 +157,7 @@ func (j *Javascript) DoCustom(f string) (result string, err error) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			log.Critical("Script: Recovered in f", r)
+			log.Fatalf("Script: Recovered in %s", r)
 		}
 	}()
 

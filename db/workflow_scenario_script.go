@@ -10,9 +10,9 @@ type WorkflowScenarioScripts struct {
 }
 
 type WorkflowScenarioScript struct {
-	Id         int64 `gorm:"primary_key"`
-	ScriptId   int64
-	WorkflowId int64
+	Id                 int64 `gorm:"primary_key"`
+	ScriptId           int64
+	WorkflowScenarioId int64
 }
 
 func (d *WorkflowScenarioScript) TableName() string {

@@ -19,10 +19,10 @@ func GetScriptAdaptor(d *gorm.DB) *Script {
 	}
 }
 
-func (n *Script) Add(node *m.Script) (id int64, err error) {
+func (n *Script) Add(script *m.Script) (id int64, err error) {
 
 	var dbScript *db.Script
-	if dbScript, err = n.toDb(node); err != nil {
+	if dbScript, err = n.toDb(script); err != nil {
 		return
 	}
 
@@ -30,29 +30,29 @@ func (n *Script) Add(node *m.Script) (id int64, err error) {
 	return
 }
 
-func (n *Script) GetById(nodeId int64) (node *m.Script, err error) {
+func (n *Script) GetById(scriptId int64) (script *m.Script, err error) {
 
 	var dbScript *db.Script
-	if dbScript, err = n.table.GetById(nodeId); err != nil {
+	if dbScript, err = n.table.GetById(scriptId); err != nil {
 		return
 	}
 
-	node, _ = n.fromDb(dbScript)
+	script, _ = n.fromDb(dbScript)
 
 	return
 }
 
-func (n *Script) Update(node *m.Script) (err error) {
+func (n *Script) Update(script *m.Script) (err error) {
 	var dbScript *db.Script
-	if dbScript, err = n.toDb(node); err != nil {
+	if dbScript, err = n.toDb(script); err != nil {
 		return
 	}
 	err = n.table.Update(dbScript)
 	return
 }
 
-func (n *Script) Delete(nodeId int64) (err error) {
-	err = n.table.Delete(nodeId)
+func (n *Script) Delete(scriptId int64) (err error) {
+	err = n.table.Delete(scriptId)
 	return
 }
 
@@ -64,21 +64,21 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 
 	list = make([]*m.Script, 0)
 	for _, dbScript := range dbList {
-		node, _ := n.fromDb(dbScript)
-		list = append(list, node)
+		script, _ := n.fromDb(dbScript)
+		list = append(list, script)
 	}
 
 	return
 }
 
-func (n *Script) fromDb(dbScript *db.Script) (node *m.Script, err error) {
-	node = &m.Script{}
-	err = copier.Copy(&node, &dbScript)
+func (n *Script) fromDb(dbScript *db.Script) (script *m.Script, err error) {
+	script = &m.Script{}
+	err = copier.Copy(&script, &dbScript)
 	return
 }
 
-func (n *Script) toDb(node *m.Script) (dbScript *db.Script, err error) {
+func (n *Script) toDb(script *m.Script) (dbScript *db.Script, err error) {
 	dbScript = &db.Script{}
-	err = copier.Copy(&dbScript, &node)
+	err = copier.Copy(&dbScript, &script)
 	return
 }

@@ -66,11 +66,22 @@ func (n *WorkflowScenario) List(limit, offset int64, orderBy, sort string) (list
 	return
 }
 
+func (n *WorkflowScenario) AddScript(workflowScenario *m.WorkflowScenario, script *m.Script) (err error) {
+	err = n.table.AddScript(workflowScenario.Id, script.Id)
+	return
+}
+
+func (n *WorkflowScenario) RemoveScript(workflowScenario *m.WorkflowScenario, script *m.Script) (err error) {
+	err = n.table.RemoveScript(workflowScenario.Id, script.Id)
+	return
+}
+
 func (n *WorkflowScenario) fromDb(dbWorkflowScenario *db.WorkflowScenario) (workflow *m.WorkflowScenario) {
 	workflow = &m.WorkflowScenario{
 		Id:         dbWorkflowScenario.Id,
 		Name:       dbWorkflowScenario.Name,
 		WorkflowId: dbWorkflowScenario.WorkflowId,
+		SystemName: dbWorkflowScenario.SystemName,
 		CreatedAt:  dbWorkflowScenario.CreatedAt,
 		UpdatedAt:  dbWorkflowScenario.UpdatedAt,
 	}
@@ -91,6 +102,7 @@ func (n *WorkflowScenario) toDb(workflow *m.WorkflowScenario) (dbWorkflowScenari
 		Id:         workflow.Id,
 		Name:       workflow.Name,
 		WorkflowId: workflow.WorkflowId,
+		SystemName: workflow.SystemName,
 		CreatedAt:  workflow.CreatedAt,
 		UpdatedAt:  workflow.UpdatedAt,
 	}

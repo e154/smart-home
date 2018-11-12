@@ -64,9 +64,10 @@ func (n Workflows) GetById(workflowId int64) (workflow *Workflow, err error) {
 
 func (n Workflows) Update(m *Workflow) (err error) {
 	err = n.Db.Model(&Workflow{Id: m.Id}).Updates(map[string]interface{}{
-		"name":        m.Name,
-		"description": m.Description,
-		"status":      m.Status,
+		"name":                 m.Name,
+		"description":          m.Description,
+		"status":               m.Status,
+		"workflow_scenario_id": m.WorkflowScenarioId,
 	}).Error
 	return
 }
@@ -158,5 +159,15 @@ func (n *Workflows) DependencyLoading(workflow *Workflow) (err error) {
 		}
 	}
 
+	return
+}
+
+func (n *Workflows) AddScript(workflowId, scriptId int64) (err error) {
+	err = n.Db.Create(&WorkflowScripts{WorkflowId: workflowId, ScriptId: scriptId}).Error
+	return
+}
+
+func (n *Workflows) RemoveScript(workflowId, scriptId int64) (err error) {
+	err = n.Db.Delete(&WorkflowScripts{WorkflowId: workflowId, ScriptId: scriptId}).Error
 	return
 }

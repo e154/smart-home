@@ -67,3 +67,13 @@ func (n *WorkflowScenarios) List(limit, offset int64, orderBy, sort string) (lis
 
 	return
 }
+
+func (n *WorkflowScenarios) AddScript(workflowScenarioId, scriptId int64) (err error) {
+	err = n.Db.Create(&WorkflowScenarioScript{WorkflowScenarioId: workflowScenarioId, ScriptId: scriptId}).Error
+	return
+}
+
+func (n *WorkflowScenarios) RemoveScript(workflowScenarioId, scriptId int64) (err error) {
+	err = n.Db.Delete(&WorkflowScenarioScript{WorkflowScenarioId: workflowScenarioId, ScriptId: scriptId}).Error
+	return
+}

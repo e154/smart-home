@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/scripts"
 )
 
 var (
@@ -16,15 +17,18 @@ type Core struct {
 	nodes     map[int64]*m.Node
 	workflows map[int64]*Workflow
 	adaptors  *adaptors.Adaptors
+	scripts   *scripts.ScriptService
 	//telemetry		Telemetry
 	//Map				*Map
 }
 
-func NewCore(adaptors *adaptors.Adaptors) (core *Core, err error) {
+func NewCore(adaptors *adaptors.Adaptors,
+	scripts *scripts.ScriptService) (core *Core, err error) {
 	core = &Core{
 		nodes:     make(map[int64]*m.Node),
 		workflows: make(map[int64]*Workflow),
 		adaptors:  adaptors,
+		scripts:   scripts,
 	}
 
 	return
@@ -219,7 +223,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow)
+	wf := NewWorkflow(workflow, b.adaptors, b.scripts)
 
 	if err = wf.Run(); err != nil {
 		return
@@ -247,11 +251,11 @@ func (b *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 
 func (b *Core) UpdateWorkflowScenario(workflow *m.Workflow) (err error) {
 
-	//if _, ok := b.workflows[workflow.Id]; !ok {
-	//	return
-	//}
+	if _, ok := b.workflows[workflow.Id]; !ok {
+		return
+	}
 
-	//err = b.workflows[workflow.Id].UpdateScenario()
+	err = b.workflows[workflow.Id].UpdateScenario()
 
 	return
 }

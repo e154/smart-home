@@ -88,6 +88,16 @@ func (n *Workflow) DependencyLoading(workflow *m.Workflow) (err error) {
 	return
 }
 
+func (n *Workflow) AddScript(workflow *m.Workflow, script *m.Script) (err error) {
+	err = n.table.AddScript(workflow.Id, script.Id)
+	return
+}
+
+func (n *Workflow) RemoveScript(workflow *m.Workflow, script *m.Script) (err error) {
+	err = n.table.RemoveScript(workflow.Id, script.Id)
+	return
+}
+
 func (n *Workflow) fromDb(dbWorkflow *db.Workflow) (workflow *m.Workflow) {
 	workflow = &m.Workflow{
 		Id:          dbWorkflow.Id,
@@ -136,5 +146,10 @@ func (n *Workflow) toDb(workflow *m.Workflow) (dbWorkflow *db.Workflow) {
 		CreatedAt:   workflow.CreatedAt,
 		UpdatedAt:   workflow.UpdatedAt,
 	}
+
+	if workflow.Scenario != nil && workflow.Scenario.Id != 0 {
+		dbWorkflow.WorkflowScenarioId = &workflow.Scenario.Id
+	}
+
 	return
 }
