@@ -5,7 +5,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/scripts"
-	"fmt"
 )
 
 type Workflow struct {
@@ -49,6 +48,8 @@ func (wf *Workflow) Stop() (err error) {
 	//for _, flow := range wf.Flows {
 	//	wf.RemoveFlow(flow.Model)
 	//}
+
+	err = wf.exitScenario()
 
 	return
 }
@@ -147,8 +148,6 @@ func (wf *Workflow) Restart() (err error) {
 
 func (wf *Workflow) SetScenario(systemName string) (err error) {
 
-	log.Infof("start migrate to scenario %s", systemName)
-
 	var scenario *m.WorkflowScenario
 	for _, scenario = range wf.model.Scenarios {
 		if scenario.SystemName != systemName {
@@ -163,8 +162,8 @@ func (wf *Workflow) SetScenario(systemName string) (err error) {
 			return
 		}
 
-		log.Infof("end migrate to scenario %s", systemName)
 		wf.UpdateScenario()
+
 		break
 	}
 
@@ -184,6 +183,19 @@ func (wf *Workflow) enterScenario() (err error) {
 	return
 }
 
+func (wf *Workflow) exitScenario() (err error) {
+
+	if wf.model.Scenario == nil {
+		return
+	}
+
+	log.Infof("Workflow '%s': exit from scenario", wf.model.Name)
+
+	wf.runScenarioScripts(wf.model.Scenario, "on_exit")
+
+	return
+}
+
 func (wf *Workflow) UpdateScenario() (err error) {
 
 	// get workflow from base
@@ -191,9 +203,6 @@ func (wf *Workflow) UpdateScenario() (err error) {
 	if model, err = wf.adaptors.Workflow.GetById(wf.model.Id); err != nil {
 		return
 	}
-
-	fmt.Println("current scenario:", wf.model.Scenario.SystemName)
-	fmt.Println("new scenario:", model.Scenario.SystemName)
 
 	// exit if scenario is loaded
 	if wf.model.Scenario.SystemName == model.Scenario.SystemName {
@@ -238,8 +247,7 @@ func (wf *Workflow) runScripts() (err error) {
 
 	var engine *scripts.Engine
 	for _, scenarioScript := range wf.model.Scripts {
-		if engine, err = wf.scripts.NewEngine(scenarioScript); err != nil {
-			log.Error(err.Error())
+		if engine, err = wf.NewScript(scenarioScript); err != nil {
 			continue
 		}
 

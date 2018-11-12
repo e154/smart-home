@@ -8,6 +8,7 @@ package core
 //	 .setVar(string, interface)
 //	 .getVar(string)
 //	 .getScenario() string
+//	 .GetScenarioName() string
 //	 .setScenario(string)
 //
 type WorkflowBind struct {
@@ -32,6 +33,10 @@ func (w *WorkflowBind) GetVar(key string) interface{} {
 
 func (w *WorkflowBind) GetScenario() string {
 	return w.wf.model.Scenario.SystemName
+}
+
+func (w *WorkflowBind) GetScenarioName() string {
+	return w.wf.model.Scenario.Name
 }
 
 func (w *WorkflowBind) SetScenario(system_name string) {

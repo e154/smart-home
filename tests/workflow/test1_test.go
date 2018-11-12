@@ -93,8 +93,8 @@ func Test1(t *testing.T) {
 
 			// create workflow
 			workflow = &m.Workflow{
-				Name: "wf name",
-				Description: "wf desc",
+				Name: "main workflow",
+				Description: "main workflow desc",
 				Status: "enabled",
 			}
 
@@ -172,6 +172,8 @@ func Test1(t *testing.T) {
 			err = wf.Run()
 			So(err, ShouldBeNil)
 
+			err = wf.Stop()
+			So(err, ShouldBeNil)
 		})
 	})
 }
