@@ -16,6 +16,9 @@ type Adaptors struct {
 	Script           *Script
 	Workflow         *Workflow
 	WorkflowScenario *WorkflowScenario
+	Device           *Device
+	DeviceAction     *DeviceAction
+	DeviceState      *DeviceState
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -33,6 +36,9 @@ func NewAdaptors(db *gorm.DB,
 		Script:           GetScriptAdaptor(db),
 		Workflow:         GetWorkflowAdaptor(db),
 		WorkflowScenario: GetWorkflowScenarioAdaptor(db),
+		Device:           GetDeviceAdaptor(db),
+		DeviceAction:     GetDeviceActionAdaptor(db),
+		DeviceState:      GetDeviceStateAdaptor(db),
 	}
 
 	return

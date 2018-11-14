@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/webdav"
 	"regexp"
-	"fmt"
 	"github.com/e154/smart-home/system/swaggo/gin-swagger/swaggerFiles"
 	"html/template"
 	"strings"
@@ -32,7 +31,7 @@ func (c ControllerSwagger) WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
 		r := ctx.Request.RequestURI
-		fmt.Println(r)
+		//fmt.Println(r)
 		var matches []string
 		if matches = re.FindStringSubmatch(r); len(matches) != 3 {
 			ctx.Status(404)
@@ -40,7 +39,7 @@ func (c ControllerSwagger) WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 			return
 		}
 		path := matches[2]
-		fmt.Println("path", path)
+		//fmt.Println("path", path)
 
 		switch path {
 		case "index.html":

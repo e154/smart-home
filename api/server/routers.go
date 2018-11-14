@@ -38,4 +38,11 @@ func (s *Server) setControllers() {
 	v1.PUT("/workflow/:id", s.ControllersV1.Workflow.UpdateWorkflow)
 	v1.DELETE("/workflow/:id", s.ControllersV1.Workflow.DeleteWorkflowById)
 	v1.GET("/workflow", s.ControllersV1.Workflow.GetWorkflowList)
+
+	// device
+	v1.POST("/device", s.ControllersV1.Device.AddDevice)
+	v1.GET("/device/:id", s.ControllersV1.Device.GetDeviceById)
+	v1.PUT("/device/:id", s.ControllersV1.Device.UpdateDevice)
+	v1.DELETE("/device/:id", s.ControllersV1.Device.DeleteDeviceById)
+	v1.GET("/device", s.ControllersV1.Device.GetDeviceList)
 }

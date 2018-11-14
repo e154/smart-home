@@ -12,6 +12,7 @@ type ControllersV1 struct {
 	Swagger  *ControllerSwagger
 	Script   *ControllerScript
 	Workflow *ControllerWorkflow
+	Device   *ControllerDevice
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -24,5 +25,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Swagger:  NewControllerSwagger(common),
 		Script:   NewControllerScript(common, scriptService),
 		Workflow: NewControllerWorkflow(common),
+		Device:   NewControllerDevice(common),
 	}
 }

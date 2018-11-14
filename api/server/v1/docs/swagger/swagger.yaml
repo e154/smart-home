@@ -1,5 +1,38 @@
 basePath: /api/v1
 definitions:
+  models.Device:
+    properties:
+      address:
+        type: integer
+      baud:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      device_id:
+        type: integer
+      id:
+        type: integer
+      is_group:
+        type: boolean
+      name:
+        type: string
+      node_id:
+        type: integer
+      sleep:
+        type: integer
+      status:
+        type: string
+      stop_bite:
+        type: integer
+      timeout:
+        type: integer
+      tty:
+        type: string
+      updated_at:
+        type: string
+    type: object
   models.ErrorModel:
     properties:
       code:
@@ -14,6 +47,35 @@ definitions:
         type: string
     type: object
   models.ErrorModelErrors:
+    type: object
+  models.NewDevice:
+    properties:
+      address:
+        type: integer
+      baud:
+        type: integer
+      description:
+        type: string
+      device_id:
+        type: integer
+      id:
+        type: integer
+      is_group:
+        type: boolean
+      name:
+        type: string
+      node_id:
+        type: integer
+      sleep:
+        type: integer
+      status:
+        type: string
+      stop_bite:
+        type: integer
+      timeout:
+        type: integer
+      tty:
+        type: string
     type: object
   models.NewNode:
     properties:
@@ -76,6 +138,35 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  models.ResponseDevice:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          device:
+            $ref: '#/definitions/models.Device'
+            type: object
+        type: object
+    type: object
+  models.ResponseDeviceList:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          items:
+            items:
+              $ref: '#/definitions/models.Device'
+            type: array
+          limit:
+            type: integer
+          offset:
+            type: integer
+          total:
+            type: integer
+        type: object
     type: object
   models.ResponseNode:
     properties:
@@ -198,6 +289,35 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.UpdateDevice:
+    properties:
+      address:
+        type: integer
+      baud:
+        type: integer
+      description:
+        type: string
+      device_id:
+        type: integer
+      id:
+        type: integer
+      is_group:
+        type: boolean
+      name:
+        type: string
+      node_id:
+        type: integer
+      sleep:
+        type: integer
+      status:
+        type: string
+      stop_bite:
+        type: integer
+      timeout:
+        type: integer
+      tty:
+        type: string
+    type: object
   models.UpdateNode:
     properties:
       description:
@@ -300,6 +420,208 @@ paths:
       summary: index page
       tags:
       - index
+  /device:
+    get:
+      consumes:
+      - application/json
+      description: Get device list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseDeviceList'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Device list
+      tags:
+      - device
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: device params
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewDevice'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Add new device
+      tags:
+      - device
+  /device/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete device by id
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Delete device
+      tags:
+      - device
+    get:
+      consumes:
+      - application/json
+      description: Get device by id
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseDevice'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Show device
+      tags:
+      - device
+    put:
+      consumes:
+      - application/json
+      description: Update device by id
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update device
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateDevice'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Update device
+      tags:
+      - device
   /node:
     get:
       consumes:
