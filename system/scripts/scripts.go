@@ -29,7 +29,8 @@ func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 	service = &ScriptService{cfg: cfg, pull: pull}
 	service.PushStruct("Notifr", &bind.NotifrBind{})
 	service.PushStruct("Log", &bind.LogBind{})
-	service.PushFunctions("Execute", bind.Execute)
+	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
+	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
 	return service
 }
 
@@ -68,6 +69,8 @@ func (service *ScriptService) PushStruct(name string, s interface{}) {
 func (service *ScriptService) PushFunctions(name string, s interface{}) {
 	service.pull.Lock()
 	defer service.pull.Unlock()
+
+	fmt.Println("push function")
 
 	service.pull.functions[name] = s
 }

@@ -2,6 +2,7 @@ package scripts
 
 import (
 	"sync"
+	"fmt"
 )
 
 type Pull struct {
@@ -20,6 +21,8 @@ func (p *Pull) GetStruct() map[string]interface{} {
 func (p *Pull) Getfunctions() map[string]interface{} {
 	p.Lock()
 	defer p.Unlock()
+
+	fmt.Println("get function")
 
 	return p.functions
 }

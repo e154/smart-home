@@ -3,6 +3,7 @@ package scripts
 import (
 	"fmt"
 	m "github.com/e154/smart-home/models"
+	"io/ioutil"
 )
 
 type Magic interface {
@@ -66,7 +67,7 @@ func (s *Engine) DoFull() (res string, err error) {
 }
 
 func (s *Engine) Do() (string, error) {
-	return s.script.DoCustom("main")
+	return s.script.Do()
 }
 
 func (s *Engine) DoCustom(f string) (result string, err error) {
@@ -92,4 +93,12 @@ func (s *Engine) Print(v ...interface{}) {
 
 func (s *Engine) Get() Magic {
 	return s.script
+}
+
+func (s *Engine) File(path string) ([]byte, error) {
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }

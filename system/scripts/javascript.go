@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"errors"
-	"github.com/e154/go-candyjs"
 	. "github.com/e154/smart-home/common"
-	"github.com/astaxie/beego"
+	"github.com/e154/smart-home/system/scripts/go-candyjs"
 )
 
 type Javascript struct {
@@ -18,11 +17,12 @@ type Javascript struct {
 func (j *Javascript) Init() (err error) {
 
 	j.ctx = candyjs.NewContext()
-	if err = j.ctx.PevalString(j.engine.model.Compiled); err != nil {
-		return
-	}
 
 	j.bind()
+
+	if err = j.EvalString(j.engine.model.Compiled); err != nil {
+		return
+	}
 
 	return
 }
@@ -60,9 +60,9 @@ func (j *Javascript) Compile() (err error) {
 
 	}
 
-	if err = j.ctx.PevalString(j.engine.model.Compiled); err != nil {
-		return
-	}
+	//if err = j.EvalString(j.engine.model.Compiled); err != nil {
+	//	return
+	//}
 
 	return
 }
@@ -97,7 +97,7 @@ func (j *Javascript) GetCompiler() error {
 
 func (j *Javascript) tsCompile() (result string, err error) {
 
-	if err = j.ctx.PevalString(j.compiler); err != nil {
+	if err = j.EvalString(j.compiler); err != nil {
 		return
 	}
 
@@ -108,7 +108,7 @@ func (j *Javascript) tsCompile() (result string, err error) {
 	doc = strings.Replace(doc, `"`, `\"`, -1)
 
 	// compile from coffee to native script
-	if err = j.ctx.PevalString(fmt.Sprintf(`ts.transpile("%s", %s);`, doc, options)); err != nil {
+	if err = j.EvalString(fmt.Sprintf(`ts.transpile("%s", %s);`, doc, options)); err != nil {
 		return
 	}
 
@@ -120,7 +120,7 @@ func (j *Javascript) tsCompile() (result string, err error) {
 
 func (j *Javascript) coffeeCompile() (result string, err error) {
 
-	if err = j.ctx.PevalString(j.compiler); err != nil {
+	if err = j.EvalString(j.compiler); err != nil {
 		return
 	}
 
@@ -129,7 +129,7 @@ func (j *Javascript) coffeeCompile() (result string, err error) {
 	doc = strings.Replace(doc, `"`, `\"`, -1)
 
 	// compile from coffee to native script
-	if err = j.ctx.PevalString(fmt.Sprintf(`CoffeeScript.compile("%s", {"bare":true})`, doc)); err != nil {
+	if err = j.EvalString(fmt.Sprintf(`CoffeeScript.compile("%s", {"bare":true})`, doc)); err != nil {
 		return
 	}
 
@@ -140,18 +140,15 @@ func (j *Javascript) coffeeCompile() (result string, err error) {
 }
 
 func (j *Javascript) Do() (result string, err error) {
-	return j.DoCustom("main")
+	err = j.EvalString(j.engine.model.Compiled)
+	return
 }
 
 func (j *Javascript) DoCustom(f string) (result string, err error) {
 
-	//j.ctx.PushGlobalObject()
-	//if err = j.ctx.PushTimers(); err != nil {
-	//	return
-	//}
 
 	if b := j.ctx.GetGlobalString(f); !b {
-		err = errors.New("main function not found!")
+		err = errors.New(fmt.Sprintf("%s function not found", f))
 		return
 	}
 
@@ -202,7 +199,12 @@ func (j *Javascript) bind() {
 	//
 
 	// base
-	j.ctx.PevalString(fmt.Sprintf(`
+	j.EvalString(fmt.Sprintf(`
+
+	var self = {},
+    console = {log:print,warn:print,error:print,info:print},
+    global = {};
+
 	IC = {};
 	IC.Runmode = '%s';
 	IC.hex2arr = function (hexString) {
@@ -254,7 +256,7 @@ func (j *Javascript) bind() {
 		return dev;
 	};
 
-	`, beego.BConfig.RunMode))
+	`, "dev"))
 
 	// push structures
 	for name, structure := range j.engine.pull.GetStruct() {
@@ -281,6 +283,19 @@ func (j *Javascript) bind() {
 	// print
 	j.PushFunction("print", func(a ...interface{}) {
 		j.engine.Print(a...)
+	})
+
+	j.ctx.SetRequireFunction(func(id string, a ...interface{}) (res string) {
+		f, err := j.engine.File(id)
+		if err != nil {
+			log.Error(err.Error())
+			return
+		}
+		if err = j.EvalString(string(f)); err != nil {
+			log.Error(err.Error())
+			return
+		}
+		return
 	})
 
 	return

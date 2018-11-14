@@ -3,10 +3,16 @@ tmp/
 data/file_storage/*
 vendor/*
 /smart-home
-data/scripts
 /conf/config.json
 /conf/dbconfig.yml
 /api/server/v1/docs/docs.go
 /api/server/v1/docs/swagger/swagger.json
 /api/server/v2/docs/docs.go
 /api/server/v2/docs/swagger/swagger.json
+.DS_Store
+conf/.DS_Store
+data/.DS_Store
+data/icons/.DS_Store
+doc/.DS_Store
+doc/static/.DS_Store
+doc/static/img/.DS_Store
