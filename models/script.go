@@ -8,7 +8,7 @@ import (
 
 type Script struct {
 	Id          int64      `gorm:"primary_key"`
-	Lang        ScriptLang `json:"lang"`
+	Lang        ScriptLang `json:"lang" valid:"Required"`
 	Name        string     `json:"name" valid:"MaxSize(254);Required"`
 	Source      string     `json:"source"`
 	Description string     `json:"description"`

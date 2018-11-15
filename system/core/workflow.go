@@ -13,7 +13,7 @@ type Workflow struct {
 	sync.Mutex
 	adaptors *adaptors.Adaptors
 	scripts  *scripts.ScriptService
-	//Flows   map[int64]*Flow
+	Flows    map[int64]*Flow
 }
 
 func NewWorkflow(model *m.Workflow,
@@ -24,7 +24,7 @@ func NewWorkflow(model *m.Workflow,
 		model:    model,
 		adaptors: adaptors,
 		scripts:  scripts,
-		//Flows: make(map[int64]*Flow),
+		Flows:    make(map[int64]*Flow),
 	}
 
 	workflow.pull = make(map[string]interface{})

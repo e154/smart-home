@@ -7,12 +7,12 @@ import (
 
 type Workflow struct {
 	Id          int64               `json:"id"`
-	Name        string              `json:"name"`
+	Name        string              `json:"name" valid:"MaxSize(254);Required"`
 	Description string              `json:"description"`
-	Status      string              `json:"status"`
-	//Flows       []*Flow             `orm:"-" json:"flows"`
+	Status      string              `json:"status" valid:"Required"`
+	Flows       []*Flow             `orm:"-" json:"flows"`
 	Scripts     []*Script           `json:"scripts"`
-	Scenario    *WorkflowScenario   `json:"scenario"`
+	Scenario    *WorkflowScenario   `json:"scenario" valid:"Required"`
 	Scenarios   []*WorkflowScenario `json:"scenarios"`
 	CreatedAt   time.Time           `json:"created_at"`
 	UpdatedAt   time.Time           `json:"updated_at"`

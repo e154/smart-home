@@ -19,6 +19,9 @@ type Adaptors struct {
 	Device           *Device
 	DeviceAction     *DeviceAction
 	DeviceState      *DeviceState
+	Flow             *Flow
+	FlowElement      *FlowElement
+	Connection       *Connection
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -39,6 +42,9 @@ func NewAdaptors(db *gorm.DB,
 		Device:           GetDeviceAdaptor(db),
 		DeviceAction:     GetDeviceActionAdaptor(db),
 		DeviceState:      GetDeviceStateAdaptor(db),
+		Flow:             GetFlowAdaptor(db),
+		FlowElement:      GetFlowElementAdaptor(db),
+		Connection:       GetConnectionAdaptor(db),
 	}
 
 	return
