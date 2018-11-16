@@ -97,6 +97,12 @@ func (n *FlowElement) fromDb(dbFlowElement *db.FlowElement) (element *m.FlowElem
 		CreatedAt:     dbFlowElement.CreatedAt,
 		UpdatedAt:     dbFlowElement.UpdatedAt,
 	}
+
+	scriptAdaptor := GetScriptAdaptor(n.db)
+	if dbFlowElement.Script != nil {
+		element.Script, _ = scriptAdaptor.fromDb(dbFlowElement.Script)
+	}
+
 	return
 }
 

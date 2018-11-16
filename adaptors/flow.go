@@ -96,6 +96,20 @@ func (n *Flow) fromDb(dbFlow *db.Flow) (flow *m.Flow) {
 		UpdatedAt:          dbFlow.UpdatedAt,
 	}
 
+	// connections
+	connectionAdaptor := GetConnectionAdaptor(n.db)
+	for _, dbConn := range dbFlow.Connections {
+		conn := connectionAdaptor.fromDb(dbConn)
+		flow.Connections = append(flow.Connections, conn)
+	}
+
+	// flow elements
+	flowElementAdaptor := GetFlowElementAdaptor(n.db)
+	for _, dbElement := range dbFlow.FlowElements {
+		element := flowElementAdaptor.fromDb(dbElement)
+		flow.FlowElements = append(flow.FlowElements, element)
+	}
+
 	return
 }
 

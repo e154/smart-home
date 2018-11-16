@@ -113,5 +113,32 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 		Related(&flow.Connections).
 		Related(&flow.FlowElements)
 
+	// scripts
+	var scriptIds []int64
+	for _, element := range flow.FlowElements {
+		if element.ScriptId != nil {
+			scriptIds = append(scriptIds, *element.ScriptId)
+		}
+	}
+
+	scripts := make([]*Script, 0)
+	err = n.Db.Model(&Script{}).
+		Where("id in (?)", scriptIds).
+		Find(&scripts).
+		Error
+	if err != nil {
+		return
+	}
+
+	for _, element := range flow.FlowElements {
+		if element.ScriptId != nil {
+			for _, script := range scripts {
+				if *element.ScriptId == script.Id {
+					element.Script = script
+				}
+			}
+		}
+	}
+
 	return
 }

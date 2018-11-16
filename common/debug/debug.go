@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"encoding/json"
+	"github.com/e154/smart-home/system/validation"
 )
 
 // https://github.com/Unknwon/gcblog/blob/master/content/04-go-caller.md
@@ -36,4 +37,10 @@ func Trace() (trace string) {
 func Println(i interface{}) {
 	b, _ := json.MarshalIndent(i, " ", "  ")
 	fmt.Println(string(b))
+}
+
+func PrintValidationErrs(errs []*validation.Error) {
+	for _, err := range errs {
+		fmt.Printf("%s - %s", err.Name, err.String())
+	}
 }

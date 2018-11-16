@@ -17,8 +17,9 @@ type FlowElement struct {
 	Uuid          uuid.UUID `gorm:"primary_key"`
 	Name          string
 	Description   string
-	//Flow          *Flow
+	Flow          *Flow
 	FlowId        int64
+	Script        *Script
 	ScriptId      *int64
 	Status        StatusType
 	FlowLink      *int64

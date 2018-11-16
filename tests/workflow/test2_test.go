@@ -8,6 +8,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/debug"
 	"fmt"
 )
 
@@ -115,6 +116,7 @@ func Test2(t *testing.T) {
 				FlowId:        flow1.Id,
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeMessageEmitter,
+				ScriptId:      &script1.Id,
 			}
 
 			feHandler := &m.FlowElement{
@@ -145,14 +147,18 @@ func Test2(t *testing.T) {
 				PointTo:     1,
 			}
 
-			ok, errs := connect.Valid()
-			for _, err := range errs {
-				fmt.Println(err.Name, err.String())
-			}
+			ok, _ = connect.Valid()
 			So(ok, ShouldEqual, true)
 
 			connect.Uuid, err = adaptors.Connection.Add(connect)
 			So(err, ShouldBeNil)
+
+			flow1, err = adaptors.Flow.GetById(flow1.Id)
+			So(err, ShouldBeNil)
+
+			fmt.Println()
+
+			debug.Println(flow1)
 		})
 	})
 }
