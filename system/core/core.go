@@ -7,6 +7,7 @@ import (
 	"github.com/op/go-logging"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/graceful_service"
+	"errors"
 )
 
 var (
@@ -249,6 +250,18 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 	}
 
 	b.workflows[workflow.Id] = wf
+
+	return
+}
+
+func (wf *Core) GetWorkflow(workflowId int64) (workflow *Workflow, err error) {
+
+	if _, ok := wf.workflows[workflowId]; !ok {
+		err = errors.New("not found")
+		return
+	}
+
+	workflow = wf.workflows[workflowId]
 
 	return
 }

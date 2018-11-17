@@ -44,6 +44,22 @@ func (n *Flow) GetAllEnabled() (list []*m.Flow, err error) {
 	return
 }
 
+func (n *Flow) GetAllEnabledByWorkflow(workflowId int64) (list []*m.Flow, err error) {
+
+	var dbList []*db.Flow
+	if dbList, err = n.table.GetAllEnabledByWorkflow(workflowId); err != nil {
+		return
+	}
+
+	list = make([]*m.Flow, 0)
+	for _, dbFlow := range dbList {
+		flow := n.fromDb(dbFlow)
+		list = append(list, flow)
+	}
+
+	return
+}
+
 func (n *Flow) GetById(flowId int64) (flow *m.Flow, err error) {
 
 	var dbFlow *db.Flow

@@ -49,3 +49,27 @@ on_exit =->
     print "description " + wf.getDescription()
 `
 
+const coffeeScript5 = `
+# test 2
+
+print "run message emitter script (script 5)"
+print "message", message
+
+`
+
+const coffeeScript6 = `
+# test 2
+
+print "run message handler script (script 6)"
+print "message", message
+
+`
+
+const coffeeScript7 = `
+# test 2
+# workflow script
+
+print "run workflow script (script 7)"
+
+
+`

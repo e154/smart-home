@@ -1,82 +1,58 @@
 package core
 
 import (
-	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
+	"errors"
 )
 
 type Flow struct {
 	Storage
-	Model        *models.Flow
+	Model        *m.Flow
 	workflow     *Workflow
-	Connections  []*models.Connection
-	FlowElements []*models.FlowElement
-	Node         *models.Node
-	cursor       []*models.FlowElement
+	Connections  []*m.Connection
+	FlowElements []*FlowElement
+	cursor       []*FlowElement
+	Node         *m.Node
 	quit         chan bool
 	adaptors     *adaptors.Adaptors
 	scripts      *scripts.ScriptService
 	//Workers     	map[int64]*Worker
 }
 
-func NewFlow(model *models.Flow, workflow *Workflow) (flow *Flow, err error) {
+func NewFlow(model *m.Flow,
+	workflow *Workflow,
+	adaptors *adaptors.Adaptors,
+	scripts *scripts.ScriptService) (flow *Flow, err error) {
 
 	flow = &Flow{
 		Model:    model,
 		workflow: workflow,
-		//cursor: []*FlowElement{},
-		quit: make(chan bool),
+		quit:     make(chan bool),
+		adaptors: adaptors,
+		scripts:  scripts,
+		cursor:   []*FlowElement{},
 		//Workers: make(map[int64]*Worker),
 	}
 
 	flow.pull = make(map[string]interface{})
 
-	//// get flow elements
-	//var flowelements []*models.FlowElement
-	//if flowelements, err = models.GetFlowElementsByFlow(model); err != nil {
-	//	return
-	//}
-	//
-	//for _, element := range flowelements {
-	//	flowElement, err := NewFlowElement(element, flow, workflow)
-	//	if err == nil {
-	//		flow.FlowElements = append(flow.FlowElements, flowElement)
-	//	} else {
-	//		log.Warn(err.Error())
-	//	}
-	//}
-	//
-	//// get connections
-	//if flow.Connections, err = models.GetConnectionsByFlow(model); err != nil {
-	//	return
-	//}
-	//
-	//for _, element := range flow.FlowElements {
-	//	element.Flow = flow
-	//	switch element.Model.PrototypeType {
-	//	case "MessageHandler":
-	//		element.Prototype = &MessageHandler{}
-	//		break
-	//	case "MessageEmitter":
-	//		element.Prototype = &MessageEmitter{}
-	//		break
-	//	case "Task":
-	//		element.Prototype = &Task{}
-	//		break
-	//	case "Gateway":
-	//		element.Prototype = &Gateway{}
-	//		break
-	//	case "Flow":
-	//		element.Prototype = &FlowLink{}
-	//		break
-	//	}
-	//}
-	//
-	//go flow.loop()
-	//
-	//// add worker
-	//err = flow.InitWorkers()
+	for _, element := range flow.Model.FlowElements {
+		flowElement, err := NewFlowElement(element, flow, workflow, adaptors)
+		if err == nil {
+			flow.FlowElements = append(flow.FlowElements, flowElement)
+		} else {
+			log.Warning(err.Error())
+		}
+	}
+
+	for _, conn := range flow.Model.Connections {
+		flow.Connections = append(flow.Connections, conn)
+	}
+
+	// add worker
+	err = flow.InitWorkers()
 
 	return
 }
@@ -90,90 +66,90 @@ func (f *Flow) Remove() {
 
 func (f *Flow) NewMessage(message *Message) (err error) {
 
-	//var _element *FlowElement
-	//
-	//// find message handler
-	//// ------------------------------------------------
-	//for _, element := range f.FlowElements {
-	//	if element.Prototype == nil {
-	//		continue
-	//	}
-	//
-	//	if element.Model.PrototypeType != "MessageHandler" {
-	//		continue
-	//	}
-	//
-	//	_element = element
-	//	break
-	//}
-	//
-	//if _element == nil {
-	//	err = errors.New("Message handler not found")
-	//	return
-	//}
-	//
-	//// ------------------------------------------------
-	//getNextElements := func(element *FlowElement, isScripted, isTrue bool) (elements []*FlowElement) {
-	//	// each connections
-	//	for _, conn := range f.Connections {
-	//		if conn.ElementFrom != element.Model.Uuid || conn.ElementTo == element.Model.Uuid {
-	//			continue
-	//		}
-	//
-	//		for _, element := range f.FlowElements {
-	//			if conn.ElementTo != element.Model.Uuid {
-	//				continue
-	//			}
-	//
-	//			if isScripted {
-	//				if conn.Direction == "true" {
-	//					if !isTrue {
-	//						continue
-	//					}
-	//				} else if conn.Direction == "false" {
-	//					if isTrue {
-	//						continue
-	//					}
-	//				}
-	//			}
-	//
-	//			// send message to linked flow
-	//			if element.Model.PrototypeType == "Flow" && element.Model.FlowLink.Valid {
-	//				if flow, ok := f.workflow.Flows[element.Model.FlowLink.Int64]; ok {
-	//					go flow.NewMessage(message)
-	//				}
-	//
-	//			} else {
-	//				elements = append(elements, element)
-	//			}
-	//		}
-	//	}
-	//
-	//	return
-	//}
-	//
-	//var runElement func(*FlowElement)
-	//var return_message *Message
-	//runElement = func(element *FlowElement) {
-	//	var ok, isScripted bool
-	//	isScripted = element.Script != nil
-	//	if ok, return_message, err = element.Run(message); err != nil {
-	//		log.Error(err.Error())
-	//		return
-	//	}
-	//
-	//	// copy message
-	//	if return_message != nil {
-	//		message = return_message
-	//	}
-	//
-	//	elements := getNextElements(element, isScripted, ok)
-	//	for _, e := range elements {
-	//		runElement(e)
-	//	}
-	//}
-	//
-	//runElement(_element)
+	var _element *FlowElement
+
+	// find message handler
+	// ------------------------------------------------
+	for _, element := range f.FlowElements {
+		if element.Prototype == nil {
+			continue
+		}
+
+		if element.Model.PrototypeType != "MessageHandler" {
+			continue
+		}
+
+		_element = element
+		break
+	}
+
+	if _element == nil {
+		err = errors.New("message handler not found")
+		return
+	}
+
+	// ------------------------------------------------
+	getNextElements := func(element *FlowElement, isScripted, isTrue bool) (elements []*FlowElement) {
+		// each connections
+		for _, conn := range f.Connections {
+			if conn.ElementFrom != element.Model.Uuid || conn.ElementTo == element.Model.Uuid {
+				continue
+			}
+
+			for _, element := range f.FlowElements {
+				if conn.ElementTo != element.Model.Uuid {
+					continue
+				}
+
+				if isScripted {
+					if conn.Direction == "true" {
+						if !isTrue {
+							continue
+						}
+					} else if conn.Direction == "false" {
+						if isTrue {
+							continue
+						}
+					}
+				}
+
+				// send message to linked flow
+				if element.Model.PrototypeType == "Flow" && element.Model.FlowLink != nil {
+					if flow, ok := f.workflow.Flows[*element.Model.FlowLink]; ok {
+						go flow.NewMessage(message)
+					}
+
+				} else {
+					elements = append(elements, element)
+				}
+			}
+		}
+
+		return
+	}
+
+	var runElement func(*FlowElement)
+	var return_message *Message
+	runElement = func(element *FlowElement) {
+		var ok, isScripted bool
+		isScripted = element.Script != nil
+		if ok, return_message, err = element.Run(message); err != nil {
+			log.Error(err.Error())
+			return
+		}
+
+		// copy message
+		if return_message != nil {
+			message = return_message
+		}
+
+		elements := getNextElements(element, isScripted, ok)
+		for _, e := range elements {
+			runElement(e)
+		}
+	}
+
+	runElement(_element)
 
 	return
 }
@@ -191,23 +167,23 @@ func (f *Flow) loop() {
 // Workers
 // ------------------------------------------------
 
-//func (f *Flow) InitWorkers() (err error) {
-//
-//	var workers []*models.Worker
-//	if workers, err = f.Model.GetAllEnabledWorkers(); err != nil {
-//		return
-//	}
-//
-//	for _, worker := range workers {
-//		if err = f.AddWorker(worker); err != nil {
-//			log.Warn(err.Error())
-//			return
-//		}
-//	}
-//
-//	return
-//}
-//
+func (f *Flow) InitWorkers() (err error) {
+	//
+	//	var workers []*models.Worker
+	//	if workers, err = f.Model.GetAllEnabledWorkers(); err != nil {
+	//		return
+	//	}
+	//
+	//	for _, worker := range workers {
+	//		if err = f.AddWorker(worker); err != nil {
+	//			log.Warn(err.Error())
+	//			return
+	//		}
+	//	}
+	//
+	return
+}
+
 //func (f *Flow) AddWorker(model *models.Worker) (err error) {
 //
 //	log.Infof("Add worker: \"%s\"", model.Name)
@@ -333,24 +309,24 @@ func (f *Flow) loop() {
 //
 //	return
 //}
-//
-//func (f *Flow) NewScript(model *models.Script) (script *scripts.Engine, err error) {
-//
-//	if script, err = f.workflow.NewScript(model); err != nil {
-//		return
-//	}
-//
-//	javascript := script.Get().(*scripts.Javascript)
-//	ctx := javascript.Ctx()
-//	if b := ctx.GetGlobalString("IC"); !b {
-//		return
-//	}
-//	ctx.PushObject()
-//	ctx.PushGoFunction(func() *FlowBind {
-//		return &FlowBind{flow: f}
-//	})
-//	ctx.PutPropString(-3, "Flow")
-//	ctx.Pop()
-//
-//	return
-//}
+
+func (f *Flow) NewScript(model *m.Script) (script *scripts.Engine, err error) {
+
+	if script, err = f.workflow.NewScript(model); err != nil {
+		return
+	}
+
+	javascript := script.Get().(*scripts.Javascript)
+	ctx := javascript.Ctx()
+	if b := ctx.GetGlobalString("IC"); !b {
+		return
+	}
+	ctx.PushObject()
+	ctx.PushGoFunction(func() *FlowBind {
+		return &FlowBind{flow: f}
+	})
+	ctx.PutPropString(-3, "Flow")
+	ctx.Pop()
+
+	return
+}

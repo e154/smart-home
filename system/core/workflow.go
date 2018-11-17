@@ -5,6 +5,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/scripts"
+	"errors"
 )
 
 type Workflow struct {
@@ -38,16 +39,16 @@ func (wf *Workflow) Run() (err error) {
 
 	wf.enterScenario()
 
-	//err = wf.initFlows()
+	err = wf.initFlows()
 
 	return
 }
 
 func (wf *Workflow) Stop() (err error) {
 
-	//for _, flow := range wf.Flows {
-	//	wf.RemoveFlow(flow.Model)
-	//}
+	for _, flow := range wf.Flows {
+		wf.RemoveFlow(flow.Model)
+	}
 
 	err = wf.exitScenario()
 
@@ -66,81 +67,93 @@ func (wf *Workflow) Restart() (err error) {
 // Flows
 // ------------------------------------------------
 
-//// получаем все связанные процессы
-//func (wf *Workflow) initFlows() (err error) {
-//
-//	var flows []*models.Flow
-//	if flows, err = wf.model.GetAllEnabledFlows(); err != nil {
-//		return
-//	}
-//
-//	for _, flow := range flows {
-//		wf.AddFlow(flow)
-//	}
-//
-//	return
-//}
-//
-//// Flow должен быть полный:
-//// с Connections
-//// с FlowElements
-//// с Cursor
-//// с Workers
-//func (wf *Workflow) AddFlow(flow *models.Flow) (err error) {
-//
-//	if flow.Status != "enabled" {
-//		return
-//	}
-//
-//	log.Info("Add flow:", flow.Name)
-//
-//	wf.Lock()
-//	if _, ok := wf.Flows[flow.Id]; ok {
-//		return
-//	}
-//	wf.Unlock()
-//
-//	var model *Flow
-//	if model, err = NewFlow(flow, wf); err != nil {
-//		return
-//	}
-//
-//	wf.Lock()
-//	wf.Flows[flow.Id] = model
-//	wf.Unlock()
-//
-//
-//	return
-//}
-//
-//func (wf *Workflow) UpdateFlow(flow *models.Flow) (err error) {
-//
-//	err = wf.RemoveFlow(flow)
-//	if err != nil {
-//		return
-//	}
-//
-//	err = wf.AddFlow(flow)
-//
-//	return
-//}
-//
-//func (wf *Workflow) RemoveFlow(flow *models.Flow) (err error) {
-//
-//	log.Info("Remove flow:", flow.Name)
-//
-//	wf.Lock()
-//	defer wf.Unlock()
-//
-//	if _, ok := wf.Flows[flow.Id]; !ok {
-//		return
-//	}
-//
-//	wf.Flows[flow.Id].Remove()
-//	delete(wf.Flows, flow.Id)
-//
-//	return
-//}
+// получаем все связанные процессы
+func (wf *Workflow) initFlows() (err error) {
+
+	var flows []*m.Flow
+	if flows, err = wf.adaptors.Flow.GetAllEnabledByWorkflow(wf.model.Id); err != nil {
+		return
+	}
+
+
+	for _, flow := range flows {
+		wf.AddFlow(flow)
+	}
+
+	return
+}
+
+// Flow должен быть полный:
+// с Connections
+// с FlowElements
+// с Cursor
+// с Workers
+func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
+
+	if flow.Status != "enabled" {
+		return
+	}
+
+	log.Infof("Add flow: %s", flow.Name)
+
+	wf.Lock()
+	if _, ok := wf.Flows[flow.Id]; ok {
+		return
+	}
+	wf.Unlock()
+
+	var model *Flow
+	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts); err != nil {
+		return
+	}
+
+	wf.Lock()
+	wf.Flows[flow.Id] = model
+	wf.Unlock()
+
+	return
+}
+
+func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
+
+	err = wf.RemoveFlow(flow)
+	if err != nil {
+		return
+	}
+
+	err = wf.AddFlow(flow)
+
+	return
+}
+
+func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
+
+	log.Infof("Remove flow: %s", flow.Name)
+
+	wf.Lock()
+	defer wf.Unlock()
+
+	if _, ok := wf.Flows[flow.Id]; !ok {
+		return
+	}
+
+	wf.Flows[flow.Id].Remove()
+	delete(wf.Flows, flow.Id)
+
+	return
+}
+
+func (wf *Workflow) GetFLow(flowId int64) (flow *Flow, err error) {
+
+	if _, ok := wf.Flows[flowId]; !ok {
+		err = errors.New("not found")
+		return
+	}
+
+	flow = wf.Flows[flowId]
+
+	return
+}
 
 // ------------------------------------------------
 // Scenarios

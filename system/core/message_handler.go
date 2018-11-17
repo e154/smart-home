@@ -4,17 +4,17 @@ package core
 type MessageHandler struct{}
 
 func (m *MessageHandler) After(message *Message, flow *Flow) (err error) {
-	//log.Info("MessageHandler.after: ", message)
+	log.Infof("MessageHandler.after: %v", message)
 	return
 }
 
 func (m *MessageHandler) Run(message *Message, flow *Flow) (err error) {
-	//log.Info("MessageHandler.run: ", message)
+	log.Infof("MessageHandler.run: %v", message)
 	return
 }
 
 func (m *MessageHandler) Before(message *Message, flow *Flow) (err error) {
-	//log.Info("MessageHandler.before: ", message)
+	log.Infof("MessageHandler.before: %v", message)
 	return
 }
 

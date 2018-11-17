@@ -54,6 +54,25 @@ func (n Flows) GetAllEnabled() (list []*Flow, err error) {
 	return
 }
 
+func (n Flows) GetAllEnabledByWorkflow(workflowId int64) (list []*Flow, err error) {
+	list = make([]*Flow, 0)
+	err = n.Db.
+		Joins("left join workflows w on w.id = ?", workflowId).
+		Where("flows.status = 'enabled' and workflow_id = ?", workflowId).
+		Where("flows.workflow_scenario_id = w.workflow_scenario_id").
+		Find(&list).Error
+	if err != nil {
+		return
+	}
+
+	for _, flow := range list {
+		if err = n.DependencyLoading(flow); err != nil {
+			return
+		}
+	}
+	return
+}
+
 func (n Flows) GetById(flowId int64) (flow *Flow, err error) {
 	flow = &Flow{Id: flowId}
 	if err = n.Db.First(&flow).Error; err != nil {
