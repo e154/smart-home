@@ -27,7 +27,7 @@ func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 	}
 
 	service = &ScriptService{cfg: cfg, pull: pull}
-	service.PushStruct("Notifr", &bind.NotifrBind{})
+	//service.PushStruct("Notifr", &bind.NotifrBind{})
 	service.PushStruct("Log", &bind.LogBind{})
 	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)

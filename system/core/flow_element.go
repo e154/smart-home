@@ -8,14 +8,14 @@ import (
 )
 
 type FlowElement struct {
-	Model     *m.FlowElement
-	Flow      *Flow
-	Workflow  *Workflow
-	Script    *scripts.Engine
-	Prototype ActionPrototypes
-	status    Status
-	Action    *Action
-	adaptors  *adaptors.Adaptors
+	Model        *m.FlowElement
+	Flow         *Flow
+	Workflow     *Workflow
+	ScriptEngine *scripts.Engine
+	Prototype    ActionPrototypes
+	status       Status
+	Action       *Action
+	adaptors     *adaptors.Adaptors
 }
 
 func NewFlowElement(model *m.FlowElement,
@@ -24,10 +24,11 @@ func NewFlowElement(model *m.FlowElement,
 	adaptors *adaptors.Adaptors) (flowElement *FlowElement, err error) {
 
 	flowElement = &FlowElement{
-		Model:    model,
-		Flow:     flow,
-		Workflow: workflow,
-		adaptors: adaptors,
+		Model:        model,
+		Flow:         flow,
+		Workflow:     workflow,
+		adaptors:     adaptors,
+		ScriptEngine: flow.scriptEngine,
 	}
 
 	switch flowElement.Model.PrototypeType {
@@ -48,14 +49,6 @@ func NewFlowElement(model *m.FlowElement,
 		break
 	}
 
-	if model.Script == nil {
-		return
-	}
-
-	if flowElement.Script, err = flow.NewScript(model.Script); err != nil {
-		return
-	}
-
 	return
 }
 
@@ -66,11 +59,15 @@ func (m *FlowElement) Before(message *Message) error {
 }
 
 // run internal process
-func (m *FlowElement) Run(message *Message) (b bool, returnMessage *Message, err error) {
+func (m *FlowElement) Run(msg *Message) (b bool, returnMessage *Message, err error) {
+
+	message := msg.Copy()
 
 	m.status = IN_PROCESS
 
-	//m.Flow.PushCursor(m)
+	//???
+	m.Flow.cursor = m.Model.Uuid
+
 	if err = m.Before(message); err != nil {
 		m.status = ERROR
 		return
@@ -85,23 +82,25 @@ func (m *FlowElement) Run(message *Message) (b bool, returnMessage *Message, err
 	*returnMessage = *message
 
 	//run script if exist
-	if m.Script != nil {
+	if m.Model.Script != nil {
 
-		m.Script.PushStruct("message", message)
-
-		var ok string
-		if ok, err = m.Script.Do(); err != nil {
+		if _, err = m.ScriptEngine.PushStruct("message", message); err != nil {
 			m.status = ERROR
 			return
 		}
-		//TODO refactor message system
+
+		if err = m.ScriptEngine.EvalString(m.Model.Script.Compiled); err != nil {
+			m.status = ERROR
+			return
+		}
+
 		if message.Error != "" {
 			err = errors.New(message.Error)
 			m.status = ERROR
 			return
 		}
 
-		b = ok == "true"
+		b = message.Success
 	}
 
 	if err = m.After(message); err != nil {
@@ -109,16 +108,14 @@ func (m *FlowElement) Run(message *Message) (b bool, returnMessage *Message, err
 		return
 	}
 
-	//m.Flow.PopCursor(m)
-
 	m.status = ENDED
 
 	return
 }
 
 func (m *FlowElement) After(message *Message) error {
-	m.status = STARTED
-	return  m.Prototype.After(message, m.Flow)
+	m.status = DONE
+	return m.Prototype.After(message, m.Flow)
 }
 
 func (m *FlowElement) GetStatus() (status Status) {

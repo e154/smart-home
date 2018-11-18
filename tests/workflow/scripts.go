@@ -53,16 +53,21 @@ const coffeeScript5 = `
 # test 2
 
 print "run message emitter script (script 5)"
-print "message", message
+print "message:", message
+print "ENV", ENV.a
 
+print "message.ENV:", message.getVar "ENV"
+
+IC.store ENV.a
 `
 
 const coffeeScript6 = `
 # test 2
 
+ENV = {"a": "b"}
 print "run message handler script (script 6)"
-print "message", message
 
+message.setVar("ENV", ENV) 
 `
 
 const coffeeScript7 = `

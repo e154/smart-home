@@ -30,3 +30,14 @@ console.log months[0]
 
 IC.store(foo + '-' + bar + '-' + months[0])
 `
+
+const coffeeScript3 = `
+"use strict";
+
+message.error = 'err'
+message.r = {'a':1}	
+print 'MESSAGE:', message
+
+#message.a = 3
+#message.c = 5
+`

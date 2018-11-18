@@ -19,18 +19,18 @@ import (
 //
 func Test2(t *testing.T) {
 
-	//var store interface{}
-	//Convey("add scripts", t, func(ctx C) {
-	//	container.Invoke(func(adaptors *adaptors.Adaptors,
-	//		migrations *migrations.Migrations,
-	//		scriptService *scripts.ScriptService,
-	//		c *core.Core) {
-	//
-	//		scriptService.PushFunctions("store", func(value interface{}) {
-	//			store = value
-	//		})
-	//	})
-	//})
+	var store interface{}
+	Convey("add scripts", t, func(ctx C) {
+		container.Invoke(func(adaptors *adaptors.Adaptors,
+			migrations *migrations.Migrations,
+			scriptService *scripts.ScriptService,
+			c *core.Core) {
+
+			scriptService.PushFunctions("store", func(value interface{}) {
+				store = value
+			})
+		})
+	})
 
 	Convey("add scripts", t, func(ctx C) {
 		container.Invoke(func(adaptors *adaptors.Adaptors,
@@ -219,6 +219,7 @@ func Test2(t *testing.T) {
 			err = flowCore.NewMessage(msg)
 			So(err, ShouldBeNil)
 
+			So(store, ShouldEqual, "b")
 		})
 	})
 }

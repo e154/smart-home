@@ -5,19 +5,22 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"errors"
+	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/uuid"
 )
 
 type Flow struct {
 	Storage
-	Model        *m.Flow
-	workflow     *Workflow
-	Connections  []*m.Connection
-	FlowElements []*FlowElement
-	cursor       []*FlowElement
-	Node         *m.Node
-	quit         chan bool
-	adaptors     *adaptors.Adaptors
-	scripts      *scripts.ScriptService
+	Model         *m.Flow
+	workflow      *Workflow
+	Connections   []*m.Connection
+	FlowElements  []*FlowElement
+	cursor        uuid.UUID
+	Node          *m.Node
+	quit          chan bool
+	adaptors      *adaptors.Adaptors
+	scriptService *scripts.ScriptService
+	scriptEngine  *scripts.Engine
 	//Workers     	map[int64]*Worker
 }
 
@@ -27,20 +30,23 @@ func NewFlow(model *m.Flow,
 	scripts *scripts.ScriptService) (flow *Flow, err error) {
 
 	flow = &Flow{
-		Model:    model,
-		workflow: workflow,
-		quit:     make(chan bool),
-		adaptors: adaptors,
-		scripts:  scripts,
-		cursor:   []*FlowElement{},
+		Model:         model,
+		workflow:      workflow,
+		quit:          make(chan bool),
+		adaptors:      adaptors,
+		scriptService: scripts,
 		//Workers: make(map[int64]*Worker),
 	}
 
 	flow.pull = make(map[string]interface{})
 
+	if flow.scriptEngine, err = flow.newScript(); err != nil {
+		return
+	}
+
 	for _, element := range flow.Model.FlowElements {
-		flowElement, err := NewFlowElement(element, flow, workflow, adaptors)
-		if err == nil {
+		var flowElement *FlowElement
+		if flowElement, err = NewFlowElement(element, flow, workflow, adaptors); err == nil {
 			flow.FlowElements = append(flow.FlowElements, flowElement)
 		} else {
 			log.Warning(err.Error())
@@ -129,18 +135,18 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 	}
 
 	var runElement func(*FlowElement)
-	var return_message *Message
+	var returnMessage *Message
 	runElement = func(element *FlowElement) {
 		var ok, isScripted bool
-		isScripted = element.Script != nil
-		if ok, return_message, err = element.Run(message); err != nil {
+		isScripted = element.ScriptEngine != nil
+		if ok, returnMessage, err = element.Run(message); err != nil {
 			log.Error(err.Error())
 			return
 		}
 
 		// copy message
-		if return_message != nil {
-			message = return_message
+		if returnMessage != nil {
+			message = returnMessage
 		}
 
 		elements := getNextElements(element, isScripted, ok)
@@ -310,8 +316,11 @@ func (f *Flow) InitWorkers() (err error) {
 //	return
 //}
 
-func (f *Flow) NewScript(model *m.Script) (script *scripts.Engine, err error) {
+func (f *Flow) newScript() (script *scripts.Engine, err error) {
 
+	model := &m.Script{
+		Lang: ScriptLangJavascript,
+	}
 	if script, err = f.workflow.NewScript(model); err != nil {
 		return
 	}

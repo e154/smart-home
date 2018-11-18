@@ -15,6 +15,7 @@ type Workflow struct {
 	adaptors *adaptors.Adaptors
 	scripts  *scripts.ScriptService
 	Flows    map[int64]*Flow
+	engine   *scripts.Engine
 }
 
 func NewWorkflow(model *m.Workflow,
@@ -75,7 +76,6 @@ func (wf *Workflow) initFlows() (err error) {
 		return
 	}
 
-
 	for _, flow := range flows {
 		wf.AddFlow(flow)
 	}
@@ -104,6 +104,7 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 
 	var model *Flow
 	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts); err != nil {
+		log.Error(err.Error())
 		return
 	}
 
