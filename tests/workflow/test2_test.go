@@ -11,11 +11,17 @@ import (
 	"github.com/e154/smart-home/system/core"
 )
 
-// create flow
 //
-//  workflow + workflow scenario
+// create workflow
 //
-//  emitter --> handler
+// add workflow scenarios (wf_scenario_1 + script7)
+//
+// add flow (flow1)
+//
+// flow add elements
+// 				[emitter] -----> [handler]
+//
+// run core
 //
 func Test2(t *testing.T) {
 

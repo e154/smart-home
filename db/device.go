@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"fmt"
 	"errors"
+	"encoding/json"
 )
 
 type Devices struct {
@@ -13,20 +14,16 @@ type Devices struct {
 
 type Device struct {
 	Id          int64 `gorm:"primary_key"`
+	Name        string
+	Description string
 	DeviceId    *int64
 	NodeId      *int64
-	Address     *int
-	Baud        int
-	Sleep       int64
-	Description string
-	Name        string
 	Status      string
-	StopBite    int64
-	Timeout     time.Duration
-	Tty         string
+	Type        string
+	Properties  json.RawMessage `gorm:"type:jsonb;not null"`
 	States      []*DeviceState
 	Actions     []*DeviceAction
-	IsGroup     bool `gorm:"-"`
+	Devices     []*Device
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -72,12 +69,10 @@ func (n Devices) Update(m *Device) (err error) {
 		"name":        m.Name,
 		"description": m.Description,
 		"status":      m.Status,
-		"address":     m.Address,
-		"sleep":       m.Sleep,
-		"tty":         m.Tty,
-		"timeout":     m.Timeout,
-		"stop_bite":   m.StopBite,
-		"baud":        m.Baud,
+		"properties":  m.Properties,
+		"device_id":   m.DeviceId,
+		"node_id":     m.NodeId,
+		"type":        m.Type,
 	}).Error
 	return
 }
@@ -116,10 +111,16 @@ func (n *Devices) DependencyLoading(device *Device) (err error) {
 
 	device.States = make([]*DeviceState, 0)
 	device.Actions = make([]*DeviceAction, 0)
+	device.Devices = make([]*Device, 0)
 
 	n.Db.Model(device).
 		Related(&device.States).
 		Related(&device.Actions)
+
+	err = n.Db.Model(device).
+		Where("device_id = ?", device.Id).
+		Find(&device.Devices).
+		Error
 
 	return
 }

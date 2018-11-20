@@ -15,6 +15,7 @@ type Flow struct {
 	WorkflowScenarioId int64          `json:"workflow_scenario_id" valid:"Required"`
 	Connections        []*Connection  `json:"connections"`
 	FlowElements       []*FlowElement `json:"flow_elements"`
+	Workers            []*Worker      `json:"workers"`
 	CreatedAt          time.Time      `json:"created_at"`
 	UpdatedAt          time.Time      `json:"updated_at"`
 }

@@ -197,11 +197,11 @@ func (n *Node) SetConnectStatus(st string) {
 func (n *Node) Smartbus(device *Device, return_result bool, command []byte) (result SmartbusResult) {
 
 	request := &SmartbusRequest{
-		Baud:     device.Baud,
-		Device:   device.Tty,
-		Timeout:  device.Timeout,
-		StopBits: device.StopBite,
-		Sleep:    device.Sleep,
+		//Baud:     device.Baud,
+		//Device:   device.Tty,
+		//Timeout:  device.Timeout,
+		//StopBits: device.StopBite,
+		//Sleep:    device.Sleep,
 		Result:   return_result,
 		Command:  command,
 	}

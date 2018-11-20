@@ -20,6 +20,7 @@ type Flow struct {
 	WorkflowScenarioId int64
 	Connections        []*Connection
 	FlowElements       []*FlowElement
+	Workers            []*Worker
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 }
@@ -127,6 +128,7 @@ func (n *Flows) List(limit, offset int64, orderBy, sort string) (list []*Flow, t
 func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 	flow.Connections = make([]*Connection, 0)
 	flow.FlowElements = make([]*FlowElement, 0)
+	flow.Workers = make([]*Worker, 0)
 
 	n.Db.Model(flow).
 		Related(&flow.Connections).
@@ -158,6 +160,12 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 			}
 		}
 	}
+
+	// workers
+	err = n.Db.Model(&Worker{}).
+		Where("flow_id = ?", flow.Id).
+		Find(&flow.Workers).
+		Error
 
 	return
 }

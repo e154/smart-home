@@ -6,7 +6,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
-	"time"
 )
 
 type ControllerDevice struct {
@@ -40,14 +39,14 @@ func (c ControllerDevice) AddDevice(ctx *gin.Context) {
 	n := &m.Device{
 		Id:          params.Id,
 		NodeId:      params.NodeId,
-		Baud:        params.Baud,
-		Sleep:       params.Sleep,
+		//Baud:        params.Baud,
+		//Sleep:       params.Sleep,
 		Description: params.Description,
 		Name:        params.Name,
 		Status:      params.Status,
-		StopBite:    params.StopBite,
-		Timeout:     time.Duration(params.Timeout),
-		Tty:         params.Tty,
+		//StopBite:    params.StopBite,
+		//Timeout:     time.Duration(params.Timeout),
+		//Tty:         params.Tty,
 		IsGroup:     params.IsGroup,
 	}
 
@@ -55,9 +54,9 @@ func (c ControllerDevice) AddDevice(ctx *gin.Context) {
 		n.Device = &m.Device{Id: *params.DeviceId}
 	}
 
-	if params.Address != nil && *params.Address != 0 {
-		n.Address = params.Address
-	}
+	//if params.Address != nil && *params.Address != 0 {
+	//	n.Address = params.Address
+	//}
 
 	_, id, errs, err := AddDevice(n, c.adaptors, c.core)
 	if len(errs) > 0 {

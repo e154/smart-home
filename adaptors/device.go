@@ -88,15 +88,12 @@ func (n *Device) fromDb(dbDevice *db.Device) (device *m.Device) {
 		Name:        dbDevice.Name,
 		Status:      dbDevice.Status,
 		Description: dbDevice.Description,
-		StopBite:    dbDevice.StopBite,
-		Timeout:     dbDevice.Timeout,
-		Tty:         dbDevice.Tty,
-		Sleep:       dbDevice.Sleep,
-		Address:     dbDevice.Address,
-		Baud:        dbDevice.Baud,
+		Type:        dbDevice.Type,
+		Properties:  dbDevice.Properties,
 		IsGroup:     dbDevice.DeviceId == nil,
 		Actions:     make([]*m.DeviceAction, 0),
 		States:      make([]*m.DeviceState, 0),
+		Devices:     make([]*m.Device, 0),
 		NodeId:      dbDevice.NodeId,
 		CreatedAt:   dbDevice.CreatedAt,
 		UpdatedAt:   dbDevice.UpdatedAt,
@@ -116,6 +113,12 @@ func (n *Device) fromDb(dbDevice *db.Device) (device *m.Device) {
 		device.States = append(device.States, state)
 	}
 
+	// devices
+	for _, dbDevice := range dbDevice.Devices {
+		dev := n.fromDb(dbDevice)
+		device.Devices = append(device.Devices, dev)
+	}
+
 	return
 }
 
@@ -127,13 +130,9 @@ func (n *Device) toDb(device *m.Device) (dbDevice *db.Device) {
 		Description: device.Description,
 		CreatedAt:   device.CreatedAt,
 		UpdatedAt:   device.UpdatedAt,
-		StopBite:    device.StopBite,
-		Timeout:     device.Timeout,
-		Tty:         device.Tty,
-		Sleep:       device.Sleep,
-		Address:     device.Address,
-		Baud:        device.Baud,
 		NodeId:      device.NodeId,
+		Properties:  device.Properties,
+		Type:        device.Type,
 	}
 
 	// device

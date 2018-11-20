@@ -1,5 +1,6 @@
 -- +migrate Up
 create type devices_status as enum ('enabled', 'disabled');
+create type devices_type as enum ('default', 'smartbus', 'zigbee');
 
 CREATE TABLE devices (
   id          bigserial constraint devices_pkey primary key not null,
@@ -7,20 +8,15 @@ CREATE TABLE devices (
   description VarChar(255)                                  default '',
   device_id   smallint                                      NULL,
   node_id     BIGINT CONSTRAINT devices_2_nodes_fk REFERENCES nodes (id) on update cascade on delete cascade null,
-  baud        smallint                                      default 0,
-  tty         VarChar(255)                                  NULL,
-  stop_bite   smallint                                      default 0,
-  timeout     smallint                                      default 0,
-  address     smallint                                      NULL,
+  properties  jsonb                                         default '{"params":{}}',
+  type        devices_type                                  default 'default' not null,
   status      devices_status                                NOT NULL DEFAULT 'enabled',
-  sleep       smallint                                      NOT NULL DEFAULT 0,
   created_at  timestamp with time zone                      not null,
   updated_at  timestamp with time zone                      not null
 );
 
-CREATE UNIQUE INDEX name_device_address_2_devices_unq ON devices (name, device_id, address);
-CREATE UNIQUE INDEX name_address_2_devices_unq ON devices (node_id, address);
-CREATE UNIQUE INDEX device_address_2_devices_unq ON devices (device_id, address);
+CREATE UNIQUE INDEX name_device_address_2_devices_unq ON devices (name, device_id);
+CREATE INDEX properties_address_2_devices_idx ON devices ((((properties -> 'params') ->> 'address')::int));
 
 CREATE TABLE device_actions (
   id          bigserial constraint device_actions_pkey primary key                                                      NOT NULL,
@@ -50,3 +46,4 @@ DROP TABLE IF EXISTS devices CASCADE;
 DROP TABLE IF EXISTS device_actions CASCADE;
 DROP TABLE IF EXISTS device_states CASCADE;
 drop type devices_status;
+drop type devices_type;

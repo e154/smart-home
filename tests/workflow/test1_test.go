@@ -10,7 +10,15 @@ import (
 	"github.com/e154/smart-home/system/core"
 )
 
+//
 // create workflow
+// 				(script1, script2)
+//
+// add workflow scenarios
+// 				(wf_scenario_1 + script3, wf_scenario_2 + script4)
+//
+// run workflow
+//
 func Test1(t *testing.T) {
 
 	var script1, script2, script3, script4 *m.Script

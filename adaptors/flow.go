@@ -108,6 +108,7 @@ func (n *Flow) fromDb(dbFlow *db.Flow) (flow *m.Flow) {
 		WorkflowScenarioId: dbFlow.WorkflowScenarioId,
 		Connections:        make([]*m.Connection, 0),
 		FlowElements:       make([]*m.FlowElement, 0),
+		Workers:            make([]*m.Worker, 0),
 		CreatedAt:          dbFlow.CreatedAt,
 		UpdatedAt:          dbFlow.UpdatedAt,
 	}
@@ -124,6 +125,13 @@ func (n *Flow) fromDb(dbFlow *db.Flow) (flow *m.Flow) {
 	for _, dbElement := range dbFlow.FlowElements {
 		element := flowElementAdaptor.fromDb(dbElement)
 		flow.FlowElements = append(flow.FlowElements, element)
+	}
+
+	// workers
+	workerAdaptor := GetWorkerAdaptor(n.db)
+	for _, dbWorker := range dbFlow.Workers {
+		worker := workerAdaptor.fromDb(dbWorker)
+		flow.Workers = append(flow.Workers, worker)
 	}
 
 	return
