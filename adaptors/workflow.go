@@ -143,8 +143,6 @@ func (n *Workflow) toDb(workflow *m.Workflow) (dbWorkflow *db.Workflow) {
 		Name:        workflow.Name,
 		Description: workflow.Description,
 		Status:      workflow.Status,
-		CreatedAt:   workflow.CreatedAt,
-		UpdatedAt:   workflow.UpdatedAt,
 	}
 
 	if workflow.Scenario != nil && workflow.Scenario.Id != 0 {

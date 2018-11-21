@@ -145,8 +145,6 @@ func (n *Flow) toDb(flow *m.Flow) (dbFlow *db.Flow) {
 		Description:        flow.Description,
 		WorkflowScenarioId: flow.WorkflowScenarioId,
 		WorkflowId:         flow.WorkflowId,
-		CreatedAt:          flow.CreatedAt,
-		UpdatedAt:          flow.UpdatedAt,
 	}
 	return
 }

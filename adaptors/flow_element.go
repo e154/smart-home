@@ -117,8 +117,6 @@ func (n *FlowElement) toDb(element *m.FlowElement) (dbFlowElement *db.FlowElemen
 		FlowId:        element.FlowId,
 		Status:        element.Status,
 		Description:   element.Description,
-		CreatedAt:     element.CreatedAt,
-		UpdatedAt:     element.UpdatedAt,
 	}
 	return
 }

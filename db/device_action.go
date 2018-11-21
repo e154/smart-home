@@ -12,11 +12,12 @@ type DeviceActions struct {
 
 type DeviceAction struct {
 	Id          int64 `gorm:"primary_key"`
-	Device      *Device
-	DeviceId    int64
 	Name        string
 	Description string
+	Device      *Device
+	DeviceId    int64
 	Script      *Script
+	ScriptId    int64
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -43,7 +44,8 @@ func (n DeviceActions) Update(m *DeviceAction) (err error) {
 	err = n.Db.Model(&DeviceAction{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
-		"script":      m.Script,
+		"script_id":   m.ScriptId,
+		"device_id":   m.DeviceId,
 	}).Error
 	return
 }

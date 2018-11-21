@@ -90,11 +90,10 @@ func (n *Device) fromDb(dbDevice *db.Device) (device *m.Device) {
 		Description: dbDevice.Description,
 		Type:        dbDevice.Type,
 		Properties:  dbDevice.Properties,
-		IsGroup:     dbDevice.DeviceId == nil,
+		IsGroup:     dbDevice.DeviceId.Valid,
 		Actions:     make([]*m.DeviceAction, 0),
 		States:      make([]*m.DeviceState, 0),
 		Devices:     make([]*m.Device, 0),
-		NodeId:      dbDevice.NodeId,
 		CreatedAt:   dbDevice.CreatedAt,
 		UpdatedAt:   dbDevice.UpdatedAt,
 	}
@@ -119,6 +118,12 @@ func (n *Device) fromDb(dbDevice *db.Device) (device *m.Device) {
 		device.Devices = append(device.Devices, dev)
 	}
 
+	// node
+	if dbDevice.Node != nil {
+		nodeAdaptor := GetNodeAdaptor(n.db)
+		device.Node = nodeAdaptor.fromDb(dbDevice.Node)
+	}
+
 	return
 }
 
@@ -128,16 +133,18 @@ func (n *Device) toDb(device *m.Device) (dbDevice *db.Device) {
 		Name:        device.Name,
 		Status:      device.Status,
 		Description: device.Description,
-		CreatedAt:   device.CreatedAt,
-		UpdatedAt:   device.UpdatedAt,
-		NodeId:      device.NodeId,
 		Properties:  device.Properties,
 		Type:        device.Type,
 	}
 
 	// device
-	if device.Device != nil {
-		dbDevice.DeviceId = &device.Device.Id
+	if device.Device != nil && device.Device.Id != 0 {
+		dbDevice.DeviceId.Scan(device.Device.Id)
+	}
+
+	// node
+	if device.Node != nil && device.Node.Id != 0 {
+		dbDevice.NodeId.Scan(device.Node.Id)
 	}
 
 	return

@@ -80,8 +80,6 @@ func (n *DeviceState) toDb(device *m.DeviceState) (dbDeviceState *db.DeviceState
 	dbDeviceState = &db.DeviceState{
 		Id:          device.Id,
 		Description: device.Description,
-		CreatedAt:   device.CreatedAt,
-		UpdatedAt:   device.UpdatedAt,
 	}
 	return
 }

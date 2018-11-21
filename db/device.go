@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"errors"
 	"encoding/json"
+	"database/sql"
 )
 
 type Devices struct {
@@ -16,8 +17,10 @@ type Device struct {
 	Id          int64 `gorm:"primary_key"`
 	Name        string
 	Description string
-	DeviceId    *int64
-	NodeId      *int64
+	Device      *Device
+	DeviceId    sql.NullInt64
+	Node        *Node
+	NodeId      sql.NullInt64
 	Status      string
 	Type        string
 	Properties  json.RawMessage `gorm:"type:jsonb;not null"`
@@ -71,7 +74,7 @@ func (n Devices) Update(m *Device) (err error) {
 		"status":      m.Status,
 		"properties":  m.Properties,
 		"device_id":   m.DeviceId,
-		"node_id":     m.NodeId,
+		"node":        m.Node,
 		"type":        m.Type,
 	}).Error
 	return

@@ -12,9 +12,9 @@ type Device struct {
 	Description string          `json:"description" valid:"MaxSize(254)"`
 	Status      string          `json:"status" valid:"MaxSize(254)"`
 	Device      *Device         `json:"device"`
-	NodeId      *int64          `json:"node_id"`
+	Node        *Node           `json:"node"`
 	Type        string          `json:"type"`
-	Properties  json.RawMessage `json:"properties"`
+	Properties  json.RawMessage `json:"properties" valid:"Required"`
 	States      []*DeviceState  `json:"states"`
 	Actions     []*DeviceAction `json:"actions"`
 	Devices     []*Device       `json:"devices"`

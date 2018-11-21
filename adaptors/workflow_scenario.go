@@ -103,8 +103,6 @@ func (n *WorkflowScenario) toDb(workflow *m.WorkflowScenario) (dbWorkflowScenari
 		Name:       workflow.Name,
 		WorkflowId: workflow.WorkflowId,
 		SystemName: workflow.SystemName,
-		CreatedAt:  workflow.CreatedAt,
-		UpdatedAt:  workflow.UpdatedAt,
 	}
 	return
 }

@@ -125,8 +125,6 @@ func (n *Worker) toDb(worker *m.Worker) (dbWorker *db.Worker) {
 		Status:         worker.Status,
 		Name:           worker.Name,
 		Time:           worker.Time,
-		CreatedAt:      worker.CreatedAt,
-		UpdatedAt:      worker.UpdatedAt,
 	}
 	return
 }

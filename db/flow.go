@@ -164,6 +164,10 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 	// workers
 	err = n.Db.Model(&Worker{}).
 		Where("flow_id = ?", flow.Id).
+		Preload("DeviceAction").
+		Preload("DeviceAction.Script").
+		Preload("DeviceAction.Device").
+		Preload("DeviceAction.Device.Node").
 		Find(&flow.Workers).
 		Error
 

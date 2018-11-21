@@ -75,6 +75,12 @@ const coffeeScript7 = `
 # workflow script
 
 print "run workflow script (script 7)"
+`
 
+const coffeeScript8 = `
+print "run workflow script (script 8)"
+`
 
+const coffeeScript9 = `
+print "run workflow script (script 9)"
 `

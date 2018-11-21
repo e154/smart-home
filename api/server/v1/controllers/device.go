@@ -38,7 +38,7 @@ func (c ControllerDevice) AddDevice(ctx *gin.Context) {
 
 	n := &m.Device{
 		Id:          params.Id,
-		NodeId:      params.NodeId,
+		//NodeId:      params.NodeId,
 		//Baud:        params.Baud,
 		//Sleep:       params.Sleep,
 		Description: params.Description,

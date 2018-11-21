@@ -95,8 +95,6 @@ func (n *Connection) toDb(con *m.Connection) (dbConnection *db.Connection) {
 		Direction:     con.Direction,
 		GraphSettings: con.GraphSettings,
 		FlowId:        con.FlowId,
-		CreatedAt:     con.CreatedAt,
-		UpdatedAt:     con.UpdatedAt,
 	}
 	return
 }

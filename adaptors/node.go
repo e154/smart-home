@@ -103,8 +103,6 @@ func (n *Node) toDb(node *m.Node) (dbNode *db.Node) {
 		Port:        node.Port,
 		Status:      node.Status,
 		Description: node.Description,
-		CreatedAt:   node.CreatedAt,
-		UpdatedAt:   node.UpdatedAt,
 	}
 	return
 }

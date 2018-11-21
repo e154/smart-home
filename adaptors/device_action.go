@@ -74,6 +74,21 @@ func (n *DeviceAction) fromDb(dbDeviceAction *db.DeviceAction) (device *m.Device
 		CreatedAt:   dbDeviceAction.CreatedAt,
 		UpdatedAt:   dbDeviceAction.UpdatedAt,
 	}
+
+	// device
+	if dbDeviceAction.Device != nil {
+		deviceAdaptor := GetDeviceAdaptor(n.db)
+		device.Device = deviceAdaptor.fromDb(dbDeviceAction.Device)
+		device.DeviceId = dbDeviceAction.DeviceId
+	}
+
+	// script
+	if dbDeviceAction.Script != nil {
+		scriptADaptor := GetScriptAdaptor(n.db)
+		device.Script, _ = scriptADaptor.fromDb(dbDeviceAction.Script)
+		device.ScriptId = dbDeviceAction.ScriptId
+	}
+
 	return
 }
 
@@ -82,8 +97,8 @@ func (n *DeviceAction) toDb(device *m.DeviceAction) (dbDeviceAction *db.DeviceAc
 		Id:          device.Id,
 		Name:        device.Name,
 		Description: device.Description,
-		CreatedAt:   device.CreatedAt,
-		UpdatedAt:   device.UpdatedAt,
+		DeviceId:    device.DeviceId,
+		ScriptId:    device.ScriptId,
 	}
 	return
 }
