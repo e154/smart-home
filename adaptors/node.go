@@ -83,15 +83,17 @@ func (n *Node) List(limit, offset int64, orderBy, sort string) (list []*m.Node, 
 }
 
 func (n *Node) fromDb(dbNode *db.Node) (node *m.Node) {
-	node = m.NewNode()
-	node.Id = dbNode.Id
-	node.Name = dbNode.Name
-	node.Ip = dbNode.Ip
-	node.Port = dbNode.Port
-	node.Status = dbNode.Status
-	node.Description = dbNode.Description
-	node.CreatedAt = dbNode.CreatedAt
-	node.UpdatedAt = dbNode.UpdatedAt
+	node = &m.Node{
+		Id: dbNode.Id,
+		Name: dbNode.Name,
+		Ip: dbNode.Ip,
+		Port: dbNode.Port,
+		Status: dbNode.Status,
+		Description: dbNode.Description,
+		CreatedAt: dbNode.CreatedAt,
+		UpdatedAt: dbNode.UpdatedAt,
+	}
+
 	return
 }
 

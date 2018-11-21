@@ -36,12 +36,13 @@ func (c ControllerNode) AddNode(ctx *gin.Context) {
 		return
 	}
 
-	n := m.NewNode()
-	n.Port = int(params.Port)
-	n.Status = params.Status
-	n.Name = params.Name
-	n.Ip = params.IP
-	n.Description = params.Description
+	n := &m.Node{
+		Port: int(params.Port),
+		Status: params.Status,
+		Name: params.Name,
+		Ip: params.IP,
+		Description: params.Description,
+	}
 
 	_, id, errs, err := AddNode(n, c.adaptors, c.core)
 	if len(errs) > 0 {
@@ -117,7 +118,7 @@ func (c ControllerNode) UpdateNode(ctx *gin.Context) {
 		return
 	}
 
-	n := m.NewNode()
+	n := &m.Node{}
 	if err := ctx.ShouldBindJSON(&n); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)

@@ -15,21 +15,9 @@ import (
 //
 // create device
 //
-// create device-actions (+script8)
+// create device-actions (+script)
 //
-// create workflow
-//
-// add workflow scenarios (wf_scenario_1)
-//
-// add flow (flow1)
-//
-// flow add elements
-// 				[handler + script9]
-//
-// add worker
-//
-//
-func Test3(t *testing.T) {
+func Test4(t *testing.T) {
 
 	Convey("add scripts", t, func(ctx C) {
 		container.Invoke(func(adaptors *adaptors.Adaptors,

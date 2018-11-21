@@ -7,6 +7,7 @@ import (
 	"errors"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/uuid"
+	cr "github.com/e154/smart-home/system/cron"
 )
 
 type Flow struct {
@@ -21,13 +22,15 @@ type Flow struct {
 	adaptors      *adaptors.Adaptors
 	scriptService *scripts.ScriptService
 	scriptEngine  *scripts.Engine
-	//Workers     	map[int64]*Worker
+	Workers       map[int64]*Worker
+	cron          *cr.Cron
 }
 
 func NewFlow(model *m.Flow,
 	workflow *Workflow,
 	adaptors *adaptors.Adaptors,
-	scripts *scripts.ScriptService) (flow *Flow, err error) {
+	scripts *scripts.ScriptService,
+	cron *cr.Cron) (flow *Flow, err error) {
 
 	flow = &Flow{
 		Model:         model,
@@ -35,7 +38,8 @@ func NewFlow(model *m.Flow,
 		quit:          make(chan bool),
 		adaptors:      adaptors,
 		scriptService: scripts,
-		//Workers: make(map[int64]*Worker),
+		Workers:       make(map[int64]*Worker),
+		cron:          cron,
 	}
 
 	flow.pull = make(map[string]interface{})
@@ -174,147 +178,141 @@ func (f *Flow) loop() {
 // ------------------------------------------------
 
 func (f *Flow) InitWorkers() (err error) {
+
+	for _, worker := range f.Model.Workers {
+		if err = f.AddWorker(worker); err != nil {
+			log.Warning(err.Error())
+			return
+		}
+	}
+
+	return
+}
+
+func (f *Flow) AddWorker(model *m.Worker) (err error) {
+
+	log.Infof("Add worker: \"%s\"", model.Name)
+
+	if _, ok := f.Workers[model.Id]; ok {
+		return
+	}
+
+	if len(f.FlowElements) == 0 {
+		err = errors.New("no flow elements")
+		return
+	}
+
+	// generate new worker
+	//worker := NewWorker(model, f, f.cron)
+
+	// get device
+	// ------------------------------------------------
+	var devices []*m.Device
+	if !model.DeviceAction.Device.IsGroup {
+		devices = append(devices, model.DeviceAction.Device)
+	} else {
+		// значит тут группа устройств
+		for _, child := range model.DeviceAction.Device.Devices {
+			if child.Status != "enabled" {
+				continue
+			}
+
+			//if child.Address == nil {
+			//	continue
+			//}
+
+			device := &m.Device{}
+			//			*device = *model.DeviceAction.Device
+			//			device.Id = child.Id
+			//			device.Name = child.Name
+			//			device.Address = new(int)
+			//			*device.Address = *child.Address
+			//			device.Device = &m.Device{Id: model.DeviceAction.Device.Id}
+			//			device.Tty = child.Tty
+			//			device.Sleep = model.DeviceAction.Device.Sleep
+			devices = append(devices, device)
+		}
+	}
+
+	// get node
+	// ------------------------------------------------
+	//	var nodes map[int64]*Node
+	//	nodes = corePtr.GetNodes()
 	//
-	//	var workers []*models.Worker
-	//	if workers, err = f.Model.GetAllEnabledWorkers(); err != nil {
+	//	if _, ok := nodes[model.DeviceAction.Device.Node.Id]; ok {
+	//		f.Node = nodes[model.DeviceAction.Device.Node.Id]
+	//	} else {
+	//		// autoload nodes
+	//		var node *m.Node
+	//		if node, err = m.GetNodeById(model.DeviceAction.Device.Node.Id); err == nil {
+	//			f.Node = NewNode(node)
+	//		} else {
+	//			return
+	//		}
+	//
+	//		CorePtr().AddNode(f.Node)
+	//	}
+	//
+	//	// get script
+	//	// ------------------------------------------------
+	//	o := orm.NewOrm()
+	//	if _, err = o.LoadRelated(model.DeviceAction, "Script"); err != nil {
 	//		return
 	//	}
 	//
-	//	for _, worker := range workers {
-	//		if err = f.AddWorker(worker); err != nil {
-	//			log.Warn(err.Error())
-	//			return
+	//	// add devices to worker
+	//	// ------------------------------------------------
+	//	for _, device := range devices {
+	//
+	//		var action *Action
+	//		if action, err = NewAction(device, model.DeviceAction.Script, f.Node, f); err != nil {
+	//			log.Error(err.Error())
+	//			continue
 	//		}
+	//
+	//		worker.AddAction(action)
+	//	}
+	//
+	//	f.Workers[model.Id] = worker
+	//	f.Workers[model.Id].RegTask()
+
+	return
+}
+
+func (f *Flow) UpdateWorker(worker *m.Worker) (err error) {
+
+	//	if _, ok := f.Workers[worker.Id]; !ok {
+	//		err = fmt.Errorf("worker id:%d not found", worker.Id)
+	//	}
+	//
+	//	if err = f.RemoveWorker(worker); err != nil {
+	//		log.Warn("error:", err.Error())
+	//	}
+	//
+	//	if err = f.AddWorker(worker); err != nil {
+	//		log.Warn("error:", err.Error())
 	//	}
 	//
 	return
 }
 
-//func (f *Flow) AddWorker(model *models.Worker) (err error) {
-//
-//	log.Infof("Add worker: \"%s\"", model.Name)
-//
-//	if _, ok := f.Workers[model.Id]; ok {
-//		return
-//	}
-//
-//	if len(f.FlowElements) == 0 {
-//		err = errors.New("No flow elements")
-//		return
-//	}
-//
-//	// generate new worker
-//	worker := NewWorker(model, f)
-//
-//	// get device
-//	// ------------------------------------------------
-//	var devices []*models.Device
-//	if model.DeviceAction.Device.Address != nil {
-//		devices = append(devices, model.DeviceAction.Device)
-//	} else {
-//		// значит тут группа устройств
-//		var childs []*models.Device
-//		if childs, _, err = model.DeviceAction.Device.GetChilds(); err != nil {
-//			return
-//		}
-//
-//		for _, child := range childs {
-//			if child.Address == nil || child.Status != "enabled" {
-//				continue
-//			}
-//
-//			device := &models.Device{}
-//			*device = *model.DeviceAction.Device
-//			device.Id = child.Id
-//			device.Name = child.Name
-//			device.Address = new(int)
-//			*device.Address = *child.Address
-//			device.Device = &models.Device{Id: model.DeviceAction.Device.Id}
-//			device.Tty = child.Tty
-//			device.Sleep = model.DeviceAction.Device.Sleep
-//			devices = append(devices, device)
-//		}
-//	}
-//
-//	// get node
-//	// ------------------------------------------------
-//	var nodes map[int64]*Node
-//	nodes = corePtr.GetNodes()
-//
-//	if _, ok := nodes[model.DeviceAction.Device.Node.Id]; ok {
-//		f.Node = nodes[model.DeviceAction.Device.Node.Id]
-//	} else {
-//		// autoload nodes
-//		var node *models.Node
-//		if node, err = models.GetNodeById(model.DeviceAction.Device.Node.Id); err == nil {
-//			f.Node = NewNode(node)
-//		} else {
-//			return
-//		}
-//
-//		CorePtr().AddNode(f.Node)
-//	}
-//
-//	// get script
-//	// ------------------------------------------------
-//	o := orm.NewOrm()
-//	if _, err = o.LoadRelated(model.DeviceAction, "Script"); err != nil {
-//		return
-//	}
-//
-//	// add devices to worker
-//	// ------------------------------------------------
-//	for _, device := range devices {
-//
-//		var action *Action
-//		if action, err = NewAction(device, model.DeviceAction.Script, f.Node, f); err != nil {
-//			log.Error(err.Error())
-//			continue
-//		}
-//
-//		worker.AddAction(action)
-//	}
-//
-//	f.Workers[model.Id] = worker
-//	f.Workers[model.Id].RegTask()
-//
-//	return
-//}
-//
-//func (f *Flow) UpdateWorker(worker *models.Worker) (err error) {
-//
-//	if _, ok := f.Workers[worker.Id]; !ok {
-//		err = fmt.Errorf("worker id:%d not found", worker.Id)
-//	}
-//
-//	if err = f.RemoveWorker(worker); err != nil {
-//		log.Warn("error:", err.Error())
-//	}
-//
-//	if err = f.AddWorker(worker); err != nil {
-//		log.Warn("error:", err.Error())
-//	}
-//
-//	return
-//}
-//
-//func (f *Flow) RemoveWorker(worker *models.Worker) (err error) {
-//
-//	log.Infof("Remove worker: \"%s\"", worker.Name)
-//
-//	if _, ok := f.Workers[worker.Id]; !ok {
-//		err = fmt.Errorf("worker id:%d not found", worker.Id)
-//		return
-//	}
-//
-//	// stop cron task
-//	f.Workers[worker.Id].RemoveTask()
-//
-//	// delete worker
-//	delete(f.Workers, worker.Id)
-//
-//	return
-//}
+func (f *Flow) RemoveWorker(worker *m.Worker) (err error) {
+
+	//	log.Infof("Remove worker: \"%s\"", worker.Name)
+	//
+	//	if _, ok := f.Workers[worker.Id]; !ok {
+	//		err = fmt.Errorf("worker id:%d not found", worker.Id)
+	//		return
+	//	}
+	//
+	//	// stop cron task
+	//	f.Workers[worker.Id].RemoveTask()
+	//
+	//	// delete worker
+	//	delete(f.Workers, worker.Id)
+
+	return
+}
 
 func (f *Flow) newScript() (script *scripts.Engine, err error) {
 

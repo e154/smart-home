@@ -8,6 +8,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/core"
+	cr "github.com/e154/smart-home/system/cron"
 )
 
 //
@@ -99,12 +100,11 @@ func Test1(t *testing.T) {
 
 		container.Invoke(func(adaptors *adaptors.Adaptors) {
 
-
 			// create workflow
 			workflow = &m.Workflow{
-				Name: "main workflow",
+				Name:        "main workflow",
 				Description: "main workflow desc",
-				Status: "enabled",
+				Status:      "enabled",
 			}
 
 			wfId, err := adaptors.Workflow.Add(workflow)
@@ -125,12 +125,12 @@ func Test1(t *testing.T) {
 		container.Invoke(func(adaptors *adaptors.Adaptors) {
 
 			wfScenario1 = &m.WorkflowScenario{
-				Name: "wf scenario 1",
+				Name:       "wf scenario 1",
 				SystemName: "wf_scenario_1",
 				WorkflowId: workflow.Id,
 			}
 			wfScenario2 = &m.WorkflowScenario{
-				Name: "wf scenario 2",
+				Name:       "wf scenario 2",
 				SystemName: "wf_scenario_2",
 				WorkflowId: workflow.Id,
 			}
@@ -171,13 +171,14 @@ func Test1(t *testing.T) {
 	Convey("run workflow", t, func(ctx C) {
 
 		container.Invoke(func(adaptors *adaptors.Adaptors,
-			scriptService *scripts.ScriptService) {
+			scriptService *scripts.ScriptService,
+			cron *cr.Cron) {
 
 			var err error
 			workflow, err = adaptors.Workflow.GetById(workflow.Id)
 			So(err, ShouldBeNil)
 
-			wf := core.NewWorkflow(workflow, adaptors, scriptService)
+			wf := core.NewWorkflow(workflow, adaptors, scriptService, cron)
 			err = wf.Run()
 			So(err, ShouldBeNil)
 

@@ -8,6 +8,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/graceful_service"
 	"errors"
+	cr "github.com/e154/smart-home/system/cron"
 )
 
 var (
@@ -16,24 +17,28 @@ var (
 
 type Core struct {
 	sync.Mutex
-	nodes     map[int64]*m.Node
+	nodes     map[int64]*Node
 	workflows map[int64]*Workflow
 	adaptors  *adaptors.Adaptors
 	scripts   *scripts.ScriptService
 	graceful  *graceful_service.GracefulService
+	cron      *cr.Cron
 	//telemetry		Telemetry
 	//Map				*Map
 }
 
 func NewCore(adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
-	graceful *graceful_service.GracefulService) (core *Core, err error) {
+	graceful *graceful_service.GracefulService,
+	cron *cr.Cron) (core *Core, err error) {
+
 	core = &Core{
-		nodes:     make(map[int64]*m.Node),
+		nodes:     make(map[int64]*Node),
 		workflows: make(map[int64]*Workflow),
 		adaptors:  adaptors,
 		scripts:   scripts,
 		graceful:  graceful,
+		cron:      cron,
 	}
 
 	graceful.Subscribe(core)
@@ -57,7 +62,7 @@ func (b *Core) Stop() (err error) {
 	}
 
 	for _, node := range b.nodes {
-		if err = b.RemoveNode(node); err != nil {
+		if err = b.RemoveNode(&m.Node{Id: node.Id}); err != nil {
 			return
 		}
 	}
@@ -113,8 +118,8 @@ func (b *Core) AddNode(node *m.Node) (err error) {
 	}
 
 	b.Lock()
-	node.Start()
-	b.nodes[node.Id] = node.Connect()
+	n := NewNode(node)
+	b.nodes[node.Id] = n.Connect()
 	b.Unlock()
 
 	//TODO add telemetry
@@ -199,9 +204,9 @@ func (b *Core) DisconnectNode(node *m.Node) (err error) {
 	return
 }
 
-func (b *Core) GetNodes() (nodes map[int64]*m.Node) {
+func (b *Core) GetNodes() (nodes map[int64]*Node) {
 
-	nodes = make(map[int64]*m.Node)
+	nodes = make(map[int64]*Node)
 
 	b.Lock()
 	for id, node := range b.nodes {
@@ -243,7 +248,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow, b.adaptors, b.scripts)
+	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron)
 
 	if err = wf.Run(); err != nil {
 		return
@@ -301,6 +306,164 @@ func (b *Core) UpdateWorkflow(workflow *m.Workflow) (err error) {
 	} else {
 		if _, ok := b.workflows[workflow.Id]; ok {
 			err = b.DeleteWorkflow(workflow)
+		}
+	}
+
+	return
+}
+
+// ------------------------------------------------
+// Flows
+// ------------------------------------------------
+
+func (b *Core) AddFlow(flow *m.Flow) (err error) {
+
+	if _, ok := b.workflows[flow.WorkflowId]; !ok {
+		return
+	}
+
+	if err = b.workflows[flow.WorkflowId].AddFlow(flow); err != nil {
+		return
+	}
+
+	return
+}
+
+func (b *Core) GetFlow(id int64) (*Flow, error) {
+
+	var flow *m.Flow
+	var err error
+	if flow, err = b.adaptors.Flow.GetById(id); err != nil {
+		return nil, err
+	}
+
+	if _, ok := b.workflows[flow.WorkflowId]; !ok {
+		return nil, nil
+	}
+
+	if flow, ok := b.workflows[flow.WorkflowId].Flows[id]; ok {
+		return flow, nil
+	}
+
+	return nil, nil
+}
+
+func (b *Core) UpdateFlow(flow *m.Flow) (err error) {
+
+	if _, ok := b.workflows[flow.WorkflowId]; !ok {
+		return
+	}
+
+	if err = b.workflows[flow.WorkflowId].UpdateFlow(flow); err != nil {
+		return
+	}
+
+	return
+}
+
+func (b *Core) RemoveFlow(flow *m.Flow) (err error) {
+
+	if _, ok := b.workflows[flow.WorkflowId]; !ok {
+		return
+	}
+
+	if err = b.workflows[flow.WorkflowId].RemoveFlow(flow); err != nil {
+		return
+	}
+
+	return
+}
+
+// ------------------------------------------------
+// Workers
+// ------------------------------------------------
+
+func (b *Core) UpdateFlowFromDevice(device *m.Device) (err error) {
+
+	//	var flows map[int64]*m.Flow
+	//	flows = make(map[int64]*m.Flow)
+	//	childs, _, _ := device.GetChilds()
+	//
+	//	for _, workflow := range b.workflows {
+	//		for _, flow := range workflow.Flows {
+	//			for _, worker := range flow.Workers {
+	//				for _, action := range worker.actions {
+	//					//if action.Device.Id == device.Id {
+	//					//	workflow.UpdateFlow(flow.Model)
+	//					//	continue
+	//					//}
+	//
+	//					if action.Device != nil && action.Device.Id == device.Id {
+	//						//workflow.UpdateFlow(flow.Model)
+	//						flows[flow.Model.Id] = flow.Model
+	//						continue
+	//					}
+	//
+	//					for _, child := range childs {
+	//						if action.Device != nil && action.Device.Id == child.Id {
+	//							flows[flow.Model.Id] = flow.Model
+	//						}
+	//					}
+	//				}
+	//
+	//				if device.Device != nil && worker.Model.DeviceAction.Device.Id == device.Device.Id {
+	//					//workflow.UpdateFlow(flow.Model)
+	//					flows[flow.Model.Id] = flow.Model
+	//					continue
+	//				}
+	//			}
+	//		}
+	//
+	//		for _, flow := range flows {
+	//			workflow.UpdateFlow(flow)
+	//		}
+	//
+	//		flows = make(map[int64]*m.Flow)
+	//	}
+
+	return
+}
+
+func (b *Core) UpdateWorker(_worker *m.Worker) (err error) {
+
+	//	for _, workflow := range b.workflows {
+	//		for _, flow := range workflow.Flows {
+	//			for _, worker := range flow.Workers {
+	//				if worker.Model.Id == _worker.Id {
+	//					flow.UpdateWorker(_worker)
+	//					break
+	//				}
+	//			}
+	//		}
+	//	}
+	//
+	return
+}
+
+func (b *Core) RemoveWorker(_worker *m.Worker) (err error) {
+
+	//	for _, workflow := range b.workflows {
+	//		for _, flow := range workflow.Flows {
+	//			for _, worker := range flow.Workers {
+	//				if worker.Model.Id == _worker.Id {
+	//					flow.RemoveWorker(_worker)
+	//					break
+	//				}
+	//			}
+	//		}
+	//	}
+
+	return
+}
+
+func (b *Core) DoWorker(model *m.Worker) (err error) {
+
+	for _, workflow := range b.workflows {
+		for _, flow := range workflow.Flows {
+			if worker, ok := flow.Workers[model.Id]; ok {
+				worker.Do()
+				break
+			}
 		}
 	}
 
