@@ -32,7 +32,6 @@ func main() {
 
 				l.Initialize(lx)
 				initialService.Reset()
-				graceful.Wait()
 			})
 		}
 	}
@@ -52,7 +51,6 @@ func start() {
 		l.Initialize(lx)
 		go server.Start()
 		go core.Run()
-		//initialService.Reset()
 
 		graceful.Wait()
 	})
