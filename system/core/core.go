@@ -23,8 +23,8 @@ type Core struct {
 	scripts   *scripts.ScriptService
 	graceful  *graceful_service.GracefulService
 	cron      *cr.Cron
-	//telemetry		Telemetry
-	//Map				*Map
+	//telemetry Telemetry
+	//Map       *Map
 }
 
 func NewCore(adaptors *adaptors.Adaptors,
@@ -98,17 +98,18 @@ func (c *Core) initNodes() (err error) {
 		return
 	}
 
-	for _, model_node := range nodes {
-		c.AddNode(model_node)
+	for _, modelNode := range nodes {
+		c.AddNode(modelNode)
 	}
 
 	return
 }
 
-func (b *Core) AddNode(node *m.Node) (err error) {
+func (b *Core) AddNode(node *m.Node) (n *Node, err error) {
 
 	if _, exist := b.nodes[node.Id]; exist {
-		return b.ReloadNode(node)
+		err = b.ReloadNode(node)
+		return
 	}
 
 	log.Infof("Add node: \"%s\"", node.Name)
@@ -118,7 +119,7 @@ func (b *Core) AddNode(node *m.Node) (err error) {
 	}
 
 	b.Lock()
-	n := NewNode(node)
+	n = NewNode(node)
 	b.nodes[node.Id] = n.Connect()
 	b.Unlock()
 
@@ -248,7 +249,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron)
+	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b)
 
 	if err = wf.Run(); err != nil {
 		return

@@ -28,7 +28,7 @@ CREATE TABLE device_actions (
   updated_at  timestamp with time zone                                                                                  NOT NULL
 );
 
-CREATE UNIQUE INDEX device_name_2_device_actions_unq ON device_actions (device_id, name);
+-- CREATE UNIQUE INDEX device_name_2_device_actions_unq ON device_actions (device_id, name);
 
 CREATE TABLE device_states (
   id          bigserial                not null constraint device_states_pkey primary key,

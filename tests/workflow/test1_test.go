@@ -172,13 +172,14 @@ func Test1(t *testing.T) {
 
 		container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService *scripts.ScriptService,
-			cron *cr.Cron) {
+			cron *cr.Cron,
+			c *core.Core) {
 
 			var err error
 			workflow, err = adaptors.Workflow.GetById(workflow.Id)
 			So(err, ShouldBeNil)
 
-			wf := core.NewWorkflow(workflow, adaptors, scriptService, cron)
+			wf := core.NewWorkflow(workflow, adaptors, scriptService, cron, c)
 			err = wf.Run()
 			So(err, ShouldBeNil)
 

@@ -13,6 +13,7 @@ import (
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/initial"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -34,6 +35,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(logging.NewLogrus)
 	container.Provide(scripts.NewScriptService)
 	container.Provide(cron.NewCron)
+	container.Provide(initial.NewInitialService)
 
 	return
 }

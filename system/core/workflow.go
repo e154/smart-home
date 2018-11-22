@@ -18,12 +18,14 @@ type Workflow struct {
 	Flows    map[int64]*Flow
 	engine   *scripts.Engine
 	cron     *cr.Cron
+	core     *Core
 }
 
 func NewWorkflow(model *m.Workflow,
 	adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
-	cron *cr.Cron) (workflow *Workflow) {
+	cron *cr.Cron,
+	core *Core) (workflow *Workflow) {
 
 	workflow = &Workflow{
 		model:    model,
@@ -31,6 +33,7 @@ func NewWorkflow(model *m.Workflow,
 		scripts:  scripts,
 		Flows:    make(map[int64]*Flow),
 		cron:     cron,
+		core:     core,
 	}
 
 	workflow.pull = make(map[string]interface{})
@@ -107,7 +110,7 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 	wf.Unlock()
 
 	var model *Flow
-	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts, wf.cron); err != nil {
+	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts, wf.cron, wf.core); err != nil {
 		log.Error(err.Error())
 		return
 	}

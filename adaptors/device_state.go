@@ -70,8 +70,15 @@ func (n *DeviceState) fromDb(dbDeviceState *db.DeviceState) (device *m.DeviceSta
 	device = &m.DeviceState{
 		Id:          dbDeviceState.Id,
 		Description: dbDeviceState.Description,
+		SystemName:  dbDeviceState.SystemName,
 		CreatedAt:   dbDeviceState.CreatedAt,
 		UpdatedAt:   dbDeviceState.UpdatedAt,
+	}
+
+	if dbDeviceState.Device != nil {
+		device.DeviceId = dbDeviceState.Device.Id
+		deviceAdaptor := GetDeviceAdaptor(n.db)
+		device.Device = deviceAdaptor.fromDb(dbDeviceState.Device)
 	}
 	return
 }
@@ -80,6 +87,8 @@ func (n *DeviceState) toDb(device *m.DeviceState) (dbDeviceState *db.DeviceState
 	dbDeviceState = &db.DeviceState{
 		Id:          device.Id,
 		Description: device.Description,
+		DeviceId:    device.DeviceId,
+		SystemName:  device.SystemName,
 	}
 	return
 }

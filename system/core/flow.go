@@ -17,20 +17,22 @@ type Flow struct {
 	Connections   []*m.Connection
 	FlowElements  []*FlowElement
 	cursor        uuid.UUID
-	Node          *m.Node
+	Node          *Node
 	quit          chan bool
 	adaptors      *adaptors.Adaptors
 	scriptService *scripts.ScriptService
 	scriptEngine  *scripts.Engine
 	Workers       map[int64]*Worker
 	cron          *cr.Cron
+	core          *Core
 }
 
 func NewFlow(model *m.Flow,
 	workflow *Workflow,
 	adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
-	cron *cr.Cron) (flow *Flow, err error) {
+	cron *cr.Cron,
+	core *Core) (flow *Flow, err error) {
 
 	flow = &Flow{
 		Model:         model,
@@ -40,11 +42,12 @@ func NewFlow(model *m.Flow,
 		scriptService: scripts,
 		Workers:       make(map[int64]*Worker),
 		cron:          cron,
+		core:          core,
 	}
 
 	flow.pull = make(map[string]interface{})
 
-	if flow.scriptEngine, err = flow.newScript(); err != nil {
+	if flow.scriptEngine, err = flow.NewScript(); err != nil {
 		return
 	}
 
@@ -202,9 +205,6 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 		return
 	}
 
-	// generate new worker
-	//worker := NewWorker(model, f, f.cron)
-
 	// get device
 	// ------------------------------------------------
 	var devices []*m.Device
@@ -221,60 +221,61 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 			//	continue
 			//}
 
-			device := &m.Device{}
-			//			*device = *model.DeviceAction.Device
-			//			device.Id = child.Id
-			//			device.Name = child.Name
-			//			device.Address = new(int)
-			//			*device.Address = *child.Address
-			//			device.Device = &m.Device{Id: model.DeviceAction.Device.Id}
-			//			device.Tty = child.Tty
-			//			device.Sleep = model.DeviceAction.Device.Sleep
+			device := &m.Device{
+				Id:         child.Id,
+				Name:       child.Name,
+				Properties: child.Properties,
+				Type:       model.DeviceAction.Device.Type,
+				Device:     &m.Device{Id: model.DeviceAction.Device.Id},
+			}
+
+			//*device = *model.DeviceAction.Device
+			//device.Id = child.Id
+			//device.Name = child.Name
+			//device.Address = new(int)
+			//*device.Address = *child.Address
+			//device.Device = &m.Device{Id: model.DeviceAction.Device.Id}
+			//device.Tty = child.Tty
+			//device.Sleep = model.DeviceAction.Device.Sleep
 			devices = append(devices, device)
 		}
 	}
 
 	// get node
 	// ------------------------------------------------
-	//	var nodes map[int64]*Node
-	//	nodes = corePtr.GetNodes()
-	//
-	//	if _, ok := nodes[model.DeviceAction.Device.Node.Id]; ok {
-	//		f.Node = nodes[model.DeviceAction.Device.Node.Id]
-	//	} else {
-	//		// autoload nodes
-	//		var node *m.Node
-	//		if node, err = m.GetNodeById(model.DeviceAction.Device.Node.Id); err == nil {
-	//			f.Node = NewNode(node)
-	//		} else {
-	//			return
-	//		}
-	//
-	//		CorePtr().AddNode(f.Node)
-	//	}
-	//
-	//	// get script
-	//	// ------------------------------------------------
-	//	o := orm.NewOrm()
-	//	if _, err = o.LoadRelated(model.DeviceAction, "Script"); err != nil {
-	//		return
-	//	}
-	//
-	//	// add devices to worker
-	//	// ------------------------------------------------
-	//	for _, device := range devices {
-	//
-	//		var action *Action
-	//		if action, err = NewAction(device, model.DeviceAction.Script, f.Node, f); err != nil {
-	//			log.Error(err.Error())
-	//			continue
-	//		}
-	//
-	//		worker.AddAction(action)
-	//	}
-	//
-	//	f.Workers[model.Id] = worker
-	//	f.Workers[model.Id].RegTask()
+	nodes := f.core.GetNodes()
+	nodeId := model.DeviceAction.Device.Node.Id
+	if _, ok := nodes[nodeId]; ok {
+		f.Node = nodes[nodeId]
+	} else {
+		// autoload nodes
+		var node *m.Node
+		if node, err = f.adaptors.Node.GetById(nodeId); err == nil {
+			f.Node, _ = f.core.AddNode(node)
+		} else {
+			log.Error(err.Error())
+			return
+		}
+	}
+
+	// generate new worker
+	worker := NewWorker(model, f, f.cron)
+
+	// add devices to worker
+	// ------------------------------------------------
+	for _, device := range devices {
+
+		var action *Action
+		if action, err = NewAction(device, model.DeviceAction.Script, f.Node, f, f.scriptService); err != nil {
+			log.Error(err.Error())
+			continue
+		}
+
+		worker.AddAction(action)
+	}
+
+	f.Workers[model.Id] = worker
+	f.Workers[model.Id].RegTask()
 
 	return
 }
@@ -314,16 +315,22 @@ func (f *Flow) RemoveWorker(worker *m.Worker) (err error) {
 	return
 }
 
-func (f *Flow) newScript() (script *scripts.Engine, err error) {
+func (f *Flow) NewScript(s ...*m.Script) (engine *scripts.Engine, err error) {
 
-	model := &m.Script{
-		Lang: ScriptLangJavascript,
+	var model *m.Script
+	if len(s) == 0 {
+		model = &m.Script{
+			Lang: ScriptLangJavascript,
+		}
+	} else {
+		model = s[0]
 	}
-	if script, err = f.workflow.NewScript(model); err != nil {
+
+	if engine, err = f.workflow.NewScript(model); err != nil {
 		return
 	}
 
-	javascript := script.Get().(*scripts.Javascript)
+	javascript := engine.Get().(*scripts.Javascript)
 	ctx := javascript.Ctx()
 	if b := ctx.GetGlobalString("IC"); !b {
 		return

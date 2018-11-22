@@ -23,7 +23,7 @@ func AddNode(node *m.Node, adaptors *adaptors.Adaptors, core *core.Core) (ok boo
 	node.Id = id
 
 	// add node
-	err = core.AddNode(node)
+	_, err = core.AddNode(node)
 
 	return
 }

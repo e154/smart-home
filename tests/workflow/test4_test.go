@@ -9,13 +9,26 @@ import (
 	"github.com/e154/smart-home/system/core"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/common"
+	"fmt"
+	"github.com/e154/smart-home/common/debug"
 )
 
 // create node
 //
-// create device
+// create parent device
+// 			child device x 2
 //
-// create device-actions (+script)
+// create parent device-actions (+script10)
+//
+// add workflow scenarios (wf_scenario_1)
+//
+// add flow (flow1)
+//
+// flow add elements
+// 				[handler + script11]
+//
+// add worker
+//
 //
 func Test4(t *testing.T) {
 
@@ -30,9 +43,9 @@ func Test4(t *testing.T) {
 
 			// add node
 			node := &m.Node{
-				Name: "node",
-				Ip: "127.0.0.1",
-				Port: 3001,
+				Name:   "node",
+				Ip:     "127.0.0.1",
+				Port:   3001,
 				Status: "enabled",
 			}
 			ok, _ := node.Valid()
@@ -42,65 +55,87 @@ func Test4(t *testing.T) {
 			node.Id, err = adaptors.Node.Add(node)
 			So(err, ShouldBeNil)
 
-			// add device
-			device := &m.Device{
-				Name: "device",
-				Status: "enabled",
-				Type: "default",
-				Node: node,
+			// add parent device
+			parentDevice := &m.Device{
+				Name:       "device",
+				Status:     "enabled",
+				Type:       "default",
+				Node:       node,
 				Properties: []byte("{}"),
 			}
-
-			ok, _ = device.Valid()
+			ok, _ = parentDevice.Valid()
 			So(ok, ShouldEqual, true)
 
-			deviceId, err := adaptors.Device.Add(device)
+			parentDevice.Id, err = adaptors.Device.Add(parentDevice)
 			So(err, ShouldBeNil)
-			device.Id = deviceId
+
+			// add child device
+			device1 := &m.Device{
+				Name:       "device",
+				Status:     "enabled",
+				Type:       "default",
+				Device:     parentDevice,
+				Properties: []byte("{}"),
+			}
+			device2 := &m.Device{
+				Name:       "device",
+				Status:     "enabled",
+				Type:       "default",
+				Device:     parentDevice,
+				Properties: []byte("{}"),
+			}
+			ok, _ = device1.Valid()
+			So(ok, ShouldEqual, true)
+			ok, _ = device2.Valid()
+			So(ok, ShouldEqual, true)
+
+			device1.Id, err = adaptors.Device.Add(device1)
+			So(err, ShouldBeNil)
+			device2.Id, err = adaptors.Device.Add(device2)
+			So(err, ShouldBeNil)
 
 			// add script
-			script8 := &m.Script{
+			script10 := &m.Script{
 				Lang:        "coffeescript",
-				Name:        "test8",
-				Source:      coffeeScript8,
-				Description: "test8",
+				Name:        "test10",
+				Source:      coffeeScript10,
+				Description: "test10",
 			}
-			script9 := &m.Script{
+			script11 := &m.Script{
 				Lang:        "coffeescript",
-				Name:        "test9",
-				Source:      coffeeScript9,
-				Description: "test9",
+				Name:        "test11",
+				Source:      coffeeScript11,
+				Description: "test11",
 			}
 
-			ok, _ = script8.Valid()
+			ok, _ = script10.Valid()
+			So(ok, ShouldEqual, true)
+			ok, _ = script11.Valid()
 			So(ok, ShouldEqual, true)
 
-			ok, _ = script9.Valid()
-			So(ok, ShouldEqual, true)
-
-			engine8, err := scriptService.NewEngine(script8)
+			engine10, err := scriptService.NewEngine(script10)
 			So(err, ShouldBeNil)
-			err = engine8.Compile()
+			err = engine10.Compile()
 			So(err, ShouldBeNil)
-			script8Id, err := adaptors.Script.Add(script8)
+			script10Id, err := adaptors.Script.Add(script10)
 			So(err, ShouldBeNil)
-			script8, err = adaptors.Script.GetById(script8Id)
+			script10, err = adaptors.Script.GetById(script10Id)
 			So(err, ShouldBeNil)
 
-			engine9, err := scriptService.NewEngine(script9)
+			engine11, err := scriptService.NewEngine(script11)
 			So(err, ShouldBeNil)
-			err = engine9.Compile()
+			err = engine11.Compile()
 			So(err, ShouldBeNil)
-			script9Id, err := adaptors.Script.Add(script9)
+			script11Id, err := adaptors.Script.Add(script11)
 			So(err, ShouldBeNil)
-			script9, err = adaptors.Script.GetById(script9Id)
+			script11, err = adaptors.Script.GetById(script11Id)
 			So(err, ShouldBeNil)
 
 			// add device action
 			deviceAction := &m.DeviceAction{
-				Name: "deviceAction",
-				DeviceId: deviceId,
-				ScriptId: script8Id,
+				Name:     "deviceAction",
+				DeviceId: parentDevice.Id,
+				ScriptId: script10Id,
 			}
 			deviceAction.Id, err = adaptors.DeviceAction.Add(deviceAction)
 			So(err, ShouldBeNil)
@@ -151,7 +186,7 @@ func Test4(t *testing.T) {
 				FlowId:        flow1.Id,
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeMessageHandler,
-				ScriptId:      &script9.Id,
+				ScriptId:      &script11.Id,
 			}
 
 			ok, _ = feHandler.Valid()
@@ -162,11 +197,11 @@ func Test4(t *testing.T) {
 
 			// add worker
 			worker := &m.Worker{
-				Name: "worker",
-				Time: "* * * * * *",
-				Status: "enabled",
-				WorkflowId: workflow.Id,
-				FlowId: flow1.Id,
+				Name:           "worker",
+				Time:           "* * * * * *",
+				Status:         "enabled",
+				WorkflowId:     workflow.Id,
+				FlowId:         flow1.Id,
 				DeviceActionId: deviceAction.Id,
 			}
 
@@ -180,9 +215,9 @@ func Test4(t *testing.T) {
 			flow1, err = adaptors.Flow.GetById(flow1.Id)
 			So(err, ShouldBeNil)
 
-			//fmt.Println("----")
-			//debug.Println(flow1)
-			//fmt.Println("----")
+			fmt.Println("----")
+			debug.Println(flow1)
+			fmt.Println("----")
 		})
 	})
 }

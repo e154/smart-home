@@ -9,6 +9,8 @@ import (
 	"github.com/e154/smart-home/system/core"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/common"
+	"fmt"
+	"github.com/e154/smart-home/common/debug"
 )
 
 // create node
@@ -66,9 +68,8 @@ func Test3(t *testing.T) {
 			ok, _ = device.Valid()
 			So(ok, ShouldEqual, true)
 
-			deviceId, err := adaptors.Device.Add(device)
+			device.Id, err = adaptors.Device.Add(device)
 			So(err, ShouldBeNil)
-			device.Id = deviceId
 
 			// add script
 			script8 := &m.Script{
@@ -111,7 +112,7 @@ func Test3(t *testing.T) {
 			// add device action
 			deviceAction := &m.DeviceAction{
 				Name: "deviceAction",
-				DeviceId: deviceId,
+				DeviceId: device.Id,
 				ScriptId: script8Id,
 			}
 			deviceAction.Id, err = adaptors.DeviceAction.Add(deviceAction)
@@ -192,9 +193,9 @@ func Test3(t *testing.T) {
 			flow1, err = adaptors.Flow.GetById(flow1.Id)
 			So(err, ShouldBeNil)
 
-			//fmt.Println("----")
-			//debug.Println(flow1)
-			//fmt.Println("----")
+			fmt.Println("----")
+			debug.Println(flow1)
+			fmt.Println("----")
 		})
 	})
 }

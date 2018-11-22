@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	l "github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/api/server"
+	"github.com/e154/smart-home/system/initial"
 )
 
 var (
@@ -18,9 +19,21 @@ func main() {
 
 	args := os.Args[1:]
 	for _, arg := range args {
-		if arg == "-v" || arg == "--version" {
+		switch arg {
+		case "-v", "--version":
 			log.Info(GetHumanVersion())
 			return
+		case "-r":
+			container := BuildContainer()
+			container.Invoke(func(server *server.Server,
+				graceful *graceful_service.GracefulService,
+				lx *logrus.Logger,
+				initialService *initial.InitialService) {
+
+				l.Initialize(lx)
+				initialService.Reset()
+				graceful.Wait()
+			})
 		}
 	}
 
@@ -33,11 +46,13 @@ func start() {
 	container.Invoke(func(server *server.Server,
 		core *core.Core,
 		graceful *graceful_service.GracefulService,
-		lx *logrus.Logger) {
+		lx *logrus.Logger,
+		initialService *initial.InitialService) {
 
 		l.Initialize(lx)
 		go server.Start()
 		go core.Run()
+		//initialService.Reset()
 
 		graceful.Wait()
 	})

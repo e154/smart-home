@@ -12,6 +12,7 @@ import (
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/cron"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -32,6 +33,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(adaptors.NewAdaptors)
 	container.Provide(logging.NewLogrus)
 	container.Provide(scripts.NewScriptService)
+	container.Provide(cron.NewCron)
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()
 		conf.PgName = "smart_home_test"
