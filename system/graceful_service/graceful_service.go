@@ -64,3 +64,9 @@ func (p GracefulService) Unsubscribe(id string) {
 	p.pool.unsubscribe(id)
 	return
 }
+
+
+func (p GracefulService) Shutdown() {
+	p.pool.shutdown()
+	return
+}

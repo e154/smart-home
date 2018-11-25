@@ -23,30 +23,36 @@ func main() {
 	for _, arg := range args {
 		switch arg {
 		case "-v", "--version":
-			log.Info(GetHumanVersion())
+			fmt.Printf(shortVersionBanner, GetHumanVersion())
 			return
 		case "-backup":
 			container := BuildContainer()
 			container.Invoke(func(
-				backup *backup.Backup) {
+				backup *backup.Backup,
+				graceful *graceful_service.GracefulService) {
 
 				if err := backup.New(); err != nil {
-					fmt.Println(err.Error())
+					log.Error(err.Error())
 				}
+
+				graceful.Shutdown()
 			})
 			return
 		case "-restore":
 			if len(os.Args) <3 {
-				fmt.Println("need backup name")
+				log.Error("need backup name")
 				return
 			}
 			container := BuildContainer()
 			container.Invoke(func(
-				backup *backup.Backup) {
+				backup *backup.Backup,
+				graceful *graceful_service.GracefulService) {
 
 				if err := backup.Restore(os.Args[2]); err != nil {
-					fmt.Println(err.Error())
+					log.Error(err.Error())
 				}
+
+				graceful.Shutdown()
 			})
 			return
 		case "-reset":
@@ -56,6 +62,9 @@ func main() {
 
 				initialService.Reset()
 			})
+			return
+		default:
+			fmt.Printf(verboseVersionBanner, "v2", os.Args[0])
 			return
 		}
 	}

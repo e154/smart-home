@@ -49,6 +49,7 @@ func NewOrm(cfg *OrmConfig,
 
 func (o *Orm) Shutdown() {
 	if o.db != nil {
+		log.Debugf("database shutdown")
 		o.db.Close()
 	}
 }

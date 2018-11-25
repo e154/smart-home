@@ -9,6 +9,11 @@ import (
 	"github.com/jinzhu/gorm"
 	"time"
 	"errors"
+	"github.com/op/go-logging"
+)
+
+var (
+	log = logging.MustGetLogger("backup")
 )
 
 type Backup struct {
@@ -26,7 +31,7 @@ func NewBackup(cfg *BackupConfig,
 }
 
 func (b *Backup) New() (err error) {
-	fmt.Println("backup")
+	log.Info("backup")
 
 	options := b.dumpOptions()
 
@@ -39,7 +44,7 @@ func (b *Backup) New() (err error) {
 	filename := path.Join(tmpDir, "database.tar")
 	options = append(options, "-f", filename)
 
-	//fmt.Println("options", options)
+	//log.Info()("options", options)
 
 	cmd := exec.Command("pg_dump", options...)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
@@ -56,7 +61,7 @@ func (b *Backup) New() (err error) {
 
 	os.Remove(tmpDir)
 
-	fmt.Println("complete")
+	log.Info("complete")
 
 	return
 }
@@ -74,7 +79,7 @@ func (b *Backup) List() (list []string) {
 }
 
 func (b *Backup) Restore(name string) (err error) {
-	fmt.Println("restore:", name)
+	log.Infof("restore: %s", name)
 
 	file := path.Join(b.cfg.Path, name)
 
@@ -89,9 +94,9 @@ func (b *Backup) Restore(name string) (err error) {
 		return
 	}
 
-	//fmt.Println("tmpDir", tmpDir)
+	//log.Info()("tmpDir", tmpDir)
 
-	fmt.Println("Purge database")
+	log.Info("Purge database")
 
 	if err = b.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		return
@@ -104,7 +109,7 @@ func (b *Backup) Restore(name string) (err error) {
 
 	options = append(options, "-f", path.Join(tmpDir, "database.tar"))
 
-	//fmt.Println("options", options)
+	//log.Info()("options", options)
 
 	cmd := exec.Command("psql", options...)
 	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
@@ -121,7 +126,7 @@ func (b *Backup) Restore(name string) (err error) {
 
 	os.Remove(tmpDir)
 
-	fmt.Println("complete")
+	log.Info("complete")
 
 	return
 }
