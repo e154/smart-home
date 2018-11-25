@@ -74,6 +74,8 @@ func main() {
 
 func start() {
 
+	fmt.Printf(shortVersionBanner, "")
+
 	container := BuildContainer()
 	container.Invoke(func(server *server.Server,
 		core *core.Core,
