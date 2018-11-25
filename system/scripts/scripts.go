@@ -70,7 +70,7 @@ func (service *ScriptService) PushFunctions(name string, s interface{}) {
 	service.pull.Lock()
 	defer service.pull.Unlock()
 
-	fmt.Println("push function")
+	//fmt.Println("push function")
 
 	service.pull.functions[name] = s
 }
