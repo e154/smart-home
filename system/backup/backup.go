@@ -30,8 +30,13 @@ func (b *Backup) New() (err error) {
 
 	options := b.dumpOptions()
 
+	tmpDir := path.Join(os.TempDir(), "smart_home")
+	if err = os.MkdirAll(tmpDir, 0755); err != nil {
+		return
+	}
+
 	// filename
-	filename := path.Join(b.cfg.Path, "database.tar")
+	filename := path.Join(tmpDir, "database.tar")
 	options = append(options, "-f", filename)
 
 	//fmt.Println("options", options)
@@ -49,9 +54,7 @@ func (b *Backup) New() (err error) {
 		return
 	}
 
-	if err = os.Remove(filename); err != nil {
-		return
-	}
+	os.Remove(tmpDir)
 
 	fmt.Println("complete")
 
@@ -115,6 +118,8 @@ func (b *Backup) Restore(name string) (err error) {
 	if err = Copy(path.Join(tmpDir, "file_storage"), path.Join("data", "file_storage")); err != nil {
 		return
 	}
+
+	os.Remove(tmpDir)
 
 	fmt.Println("complete")
 
