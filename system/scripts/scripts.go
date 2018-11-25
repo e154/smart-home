@@ -50,9 +50,9 @@ func (service ScriptService) NewEngine(s *m.Script) (engine *Engine, err error) 
 		return
 	}
 
-	if err == nil {
-		log.Infof("Add script: %s (%s)", s.Name, s.Lang)
-	}
+	//if err == nil {
+	//	log.Infof("Add script: %s (%s)", s.Name, s.Lang)
+	//}
 
 	engine.script.Init()
 

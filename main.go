@@ -52,11 +52,8 @@ func main() {
 		case "-reset":
 			container := BuildContainer()
 			container.Invoke(func(
-				graceful *graceful_service.GracefulService,
-				lx *logrus.Logger,
 				initialService *initial.InitialService) {
 
-				l.Initialize(lx)
 				initialService.Reset()
 			})
 			return
