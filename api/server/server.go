@@ -9,6 +9,7 @@ import (
 	"context"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/api/server/v1/controllers"
+	"github.com/e154/smart-home/system/config"
 )
 
 var (
@@ -59,7 +60,11 @@ func NewServer(cfg *ServerConfig,
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = logger
 	gin.DefaultErrorWriter = logger
-	gin.SetMode(gin.DebugMode)
+	if cfg.RunMode == config.ReleaseMode {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+	}
 
 	engine := gin.New()
 	engine.Use(gin.Recovery())
