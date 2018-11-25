@@ -20,8 +20,6 @@ var (
 func main() {
 
 	args := os.Args[1:]
-	fmt.Println(os.Args)
-	fmt.Println(len(os.Args))
 	for _, arg := range args {
 		switch arg {
 		case "-v", "--version":
@@ -32,7 +30,9 @@ func main() {
 			container.Invoke(func(
 				backup *backup.Backup) {
 
-				backup.New()
+				if err := backup.New(); err != nil {
+					fmt.Println(err.Error())
+				}
 			})
 			return
 		case "-restore":
@@ -44,8 +44,11 @@ func main() {
 			container.Invoke(func(
 				backup *backup.Backup) {
 
-				backup.Restore(os.Args[2])
+				if err := backup.Restore(os.Args[2]); err != nil {
+					fmt.Println(err.Error())
+				}
 			})
+			return
 		case "-reset":
 			container := BuildContainer()
 			container.Invoke(func(

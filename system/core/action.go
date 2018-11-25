@@ -3,7 +3,6 @@ package core
 import (
 	"github.com/e154/smart-home/system/scripts"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home-old/api/stream"
 	. "github.com/e154/smart-home/common"
 )
 
@@ -90,7 +89,7 @@ func (a *Action) GetNode() *Node {
 // ------------------------------------------------
 // stream
 // ------------------------------------------------
-func streamDoAction(client *stream.Client, value interface{}) {
+//func streamDoAction(client *stream.Client, value interface{}) {
 	//v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
 	//if !ok {
 	//	return
@@ -200,4 +199,4 @@ func streamDoAction(client *stream.Client, value interface{}) {
 	//
 	//	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
 	//	client.Send <- msg
-}
+//}

@@ -4,57 +4,64 @@ import (
 	"fmt"
 	"os/exec"
 	"os"
-	"time"
-	"github.com/e154/smart-home-old/api/log"
 	"path/filepath"
+	"path"
+	"github.com/jinzhu/gorm"
+	"time"
+	"errors"
 )
 
 type Backup struct {
 	cfg     *BackupConfig
 	Options []string
-	path string
+	db      *gorm.DB
 }
 
-func NewBackup(cfg *BackupConfig) *Backup {
+func NewBackup(cfg *BackupConfig,
+	db *gorm.DB) *Backup {
 	return &Backup{
 		cfg: cfg,
-		path: "./snapshots",
+		db:  db,
 	}
 }
 
-func (b *Backup) New() {
+func (b *Backup) New() (err error) {
 	fmt.Println("backup")
 
 	options := b.dumpOptions()
 
 	// filename
-	filename := fmt.Sprintf("%s/database.psql", b.path)
+	filename := path.Join(b.cfg.Path, "database.tar")
 	options = append(options, "-f", filename)
 
 	//fmt.Println("options", options)
 
 	cmd := exec.Command("pg_dump", options...)
-	cmd.Env = append(os.Environ(), "PGPASSWORD=qwe123")
+	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
 
-	_, err := cmd.CombinedOutput()
+	_, err = cmd.CombinedOutput()
 	if err != nil {
-		fmt.Printf("cmd.Run() failed with %s\n", err)
+		return
 	}
 
-	err = zipit([]string{"./data/file_storage", filename}, fmt.Sprintf("%s/%s.zip", b.path, time.Now().Format("2006-01-02T15:04:05.999")))
+	err = zipit([]string{path.Join("data", "file_storage"), filename}, path.Join(b.cfg.Path, fmt.Sprintf("%s.zip", time.Now().Format("2006-01-02T15:04:05.999")), ))
 	if err != nil {
-		log.Error(err.Error())
+		return
 	}
 
 	if err = os.Remove(filename); err != nil {
-		log.Error(err.Error())
+		return
 	}
+
+	fmt.Println("complete")
+
+	return
 }
 
 func (b *Backup) List() (list []string) {
 
-	filepath.Walk(b.path, func(path string, info os.FileInfo, err error) error {
-		if info.Name() == ".gitignore" || info.Name() == b.path || info.IsDir() {
+	filepath.Walk(b.cfg.Path, func(path string, info os.FileInfo, err error) error {
+		if info.Name() == ".gitignore" || info.Name() == b.cfg.Path || info.IsDir() {
 			return nil
 		}
 		list = append(list, info.Name())
@@ -63,10 +70,55 @@ func (b *Backup) List() (list []string) {
 	return
 }
 
-func (b *Backup) Restore(name string) {
+func (b *Backup) Restore(name string) (err error) {
 	fmt.Println("restore:", name)
 
+	file := path.Join(b.cfg.Path, name)
 
+	_, err = os.Stat(file)
+	if os.IsNotExist(err) {
+		err = errors.New("file not found")
+		return
+	}
+
+	tmpDir := path.Join(os.TempDir(), "smart_home")
+	if err = unzip(file, tmpDir); err != nil {
+		return
+	}
+
+	//fmt.Println("tmpDir", tmpDir)
+
+	fmt.Println("Purge database")
+
+	if err = b.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
+		return
+	}
+	if err = b.db.Exec(`CREATE SCHEMA "public";`).Error; err != nil {
+		return
+	}
+
+	options := b.restoreOptions()
+
+	options = append(options, "-f", path.Join(tmpDir, "database.tar"))
+
+	//fmt.Println("options", options)
+
+	cmd := exec.Command("psql", options...)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("PGPASSWORD=%s", b.cfg.PgPass))
+
+	if _, err = cmd.CombinedOutput(); err != nil {
+		return
+	}
+
+	os.Remove(path.Join("data", "file_storage"))
+
+	if err = Copy(path.Join(tmpDir, "file_storage"), path.Join("data", "file_storage")); err != nil {
+		return
+	}
+
+	fmt.Println("complete")
+
+	return
 }
 
 func (b Backup) dumpOptions() []string {
@@ -97,10 +149,41 @@ func (b Backup) dumpOptions() []string {
 	}
 
 	// compress level
-	options = append(options, "-Z", "9")
+	//options = append(options, "-Z", "9")
 
 	// formats
-	//options = append(options, "-F", "t")
+	options = append(options, "-F", "t")
+
+	return options
+}
+
+
+func (b Backup) restoreOptions() []string {
+	options := b.Options
+
+	// db name
+	if b.cfg.PgName != "" {
+		options = append(options, "-d")
+		options = append(options, b.cfg.PgName)
+	}
+
+	// host
+	if b.cfg.PgHost != "" {
+		options = append(options, "-h")
+		options = append(options, b.cfg.PgHost)
+	}
+
+	// port
+	if b.cfg.PgPort != "" {
+		options = append(options, "-p")
+		options = append(options, b.cfg.PgPort)
+	}
+
+	// user
+	if b.cfg.PgUser != "" {
+		options = append(options, "-U")
+		options = append(options, b.cfg.PgUser)
+	}
 
 	return options
 }
