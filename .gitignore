@@ -18,3 +18,4 @@ doc/static/.DS_Store
 doc/static/img/.DS_Store
 snapshots/*
 !snapshots/.gitignore
+bee.json
