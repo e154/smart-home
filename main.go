@@ -9,6 +9,8 @@ import (
 	l "github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/system/initial"
+	"github.com/e154/smart-home/system/backup"
+	"fmt"
 )
 
 var (
@@ -18,14 +20,35 @@ var (
 func main() {
 
 	args := os.Args[1:]
+	fmt.Println(os.Args)
+	fmt.Println(len(os.Args))
 	for _, arg := range args {
 		switch arg {
 		case "-v", "--version":
 			log.Info(GetHumanVersion())
 			return
-		case "-r":
+		case "-backup":
 			container := BuildContainer()
-			container.Invoke(func(server *server.Server,
+			container.Invoke(func(
+				backup *backup.Backup) {
+
+				backup.New()
+			})
+			return
+		case "-restore":
+			if len(os.Args) <3 {
+				fmt.Println("need backup name")
+				return
+			}
+			container := BuildContainer()
+			container.Invoke(func(
+				backup *backup.Backup) {
+
+				backup.Restore(os.Args[2])
+			})
+		case "-reset":
+			container := BuildContainer()
+			container.Invoke(func(
 				graceful *graceful_service.GracefulService,
 				lx *logrus.Logger,
 				initialService *initial.InitialService) {
@@ -33,6 +56,7 @@ func main() {
 				l.Initialize(lx)
 				initialService.Reset()
 			})
+			return
 		}
 	}
 

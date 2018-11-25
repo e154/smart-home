@@ -6,6 +6,14 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
+// env1
+//
+// node1 + node2
+// script1 + script2 + script3
+// device1
+// 		+ child device2
+// device3
+//
 func Init(adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.ScriptService) {
 
 	// nodes
@@ -14,10 +22,13 @@ func Init(adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.S
 
 	// scripts
 	// ------------------------------------------------
-	script1, script2, script3 := addScripts(adaptors, scriptService)
+	script1, script2, script3, script4, _ := addScripts(adaptors, scriptService)
 
 	// devices
 	// ------------------------------------------------
-	devices(node1, adaptors, core, script1, script2, script3)
+	_, _, _, deviceAction1 := devices(node1, adaptors, script1, script2, script3)
 
+	// workflow
+	// ------------------------------------------------
+	addWorkflow(adaptors, deviceAction1, script4)
 }

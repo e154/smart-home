@@ -8,7 +8,7 @@ import (
 )
 
 func addScripts(adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService) (script1, script2, script3 *m.Script) {
+	scriptService *scripts.ScriptService) (script1, script2, script3, script4, script5 *m.Script) {
 
 	// add script
 	// ------------------------------------------------
@@ -66,6 +66,42 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script3, err = adaptors.Script.GetById(script3Id)
 	So(err, ShouldBeNil)
 
+	script4 = &m.Script{
+		Lang:        "coffeescript",
+		Name:        "script4",
+		Source:      coffeescript4,
+		Description: "script4",
+	}
+	ok, _ = script4.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine4, err := scriptService.NewEngine(script4)
+	So(err, ShouldBeNil)
+	err = engine4.Compile()
+	So(err, ShouldBeNil)
+	script4Id, err := adaptors.Script.Add(script4)
+	So(err, ShouldBeNil)
+	script4, err = adaptors.Script.GetById(script4Id)
+	So(err, ShouldBeNil)
+
+	script5 = &m.Script{
+		Lang:        "coffeescript",
+		Name:        "script5",
+		Source:      coffeescript5,
+		Description: "script5",
+	}
+	ok, _ = script5.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine5, err := scriptService.NewEngine(script5)
+	So(err, ShouldBeNil)
+	err = engine5.Compile()
+	So(err, ShouldBeNil)
+	script5Id, err := adaptors.Script.Add(script5)
+	So(err, ShouldBeNil)
+	script5, err = adaptors.Script.GetById(script5Id)
+	So(err, ShouldBeNil)
+
 	return
 }
 
@@ -78,5 +114,13 @@ const coffeescript2 = `
 `
 
 const coffeescript3 = `
+
+`
+
+const coffeescript4 = `
+
+`
+
+const coffeescript5 = `
 
 `

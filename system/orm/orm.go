@@ -1,16 +1,21 @@
-package db
+package orm
 
 import (
 	_ "github.com/lib/pq"
 	"github.com/jinzhu/gorm"
 	"time"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/op/go-logging"
 )
 
 type Orm struct {
 	cfg *OrmConfig
 	db  *gorm.DB
 }
+
+var (
+	log = logging.MustGetLogger("orm")
+)
 
 func NewOrm(cfg *OrmConfig,
 	graceful *graceful_service.GracefulService) (orm *Orm, db *gorm.DB) {

@@ -14,4 +14,5 @@ type AppConfig struct {
 	PgMaxOpenConns    int    `json:"pg_max_open_conns"`
 	PgConnMaxLifeTime int    `json:"pg_conn_max_life_time"`
 	AutoMigrate       bool   `json:"auto_migrate"`
+	SnapshotDir         string `json:"snapshot_dir"`
 }

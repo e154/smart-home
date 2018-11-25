@@ -3,14 +3,12 @@ package env1
 import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/core"
 	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
 func devices(node1 *m.Node,
 	adaptors *adaptors.Adaptors,
-	core *core.Core,
-	script1, script2, script3 *m.Script) (device1, device2, device3 *m.Device) {
+	script1, script2, script3 *m.Script) (device1, device2, device3 *m.Device, deviceAction1 *m.DeviceAction) {
 
 	// devices
 	// ------------------------------------------------
@@ -56,7 +54,7 @@ func devices(node1 *m.Node,
 
 	// add device action
 	// ------------------------------------------------
-	deviceAction1 := &m.DeviceAction{
+	deviceAction1 = &m.DeviceAction{
 		Name:     "Turning on",
 		DeviceId: device1.Id,
 		ScriptId: script1.Id,

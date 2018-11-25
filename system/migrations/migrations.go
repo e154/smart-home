@@ -9,7 +9,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"path"
 	"fmt"
-	"github.com/e154/smart-home/db"
+	"github.com/e154/smart-home/system/orm"
 )
 
 var (
@@ -17,12 +17,12 @@ var (
 )
 
 type Migrations struct {
-	cfg    *db.OrmConfig
+	cfg    *orm.OrmConfig
 	source migrate.MigrationSource
 	db     *gorm.DB
 }
 
-func NewMigrations(cfg *db.OrmConfig, db *gorm.DB, mConf *MigrationsConfig) *Migrations {
+func NewMigrations(cfg *orm.OrmConfig, db *gorm.DB, mConf *MigrationsConfig) *Migrations {
 
 	var source migrate.MigrationSource
 
