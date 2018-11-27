@@ -307,6 +307,20 @@ main()
 `
 
 const coffeescript4 = `
+# variables:
+
+#IC.Workflow()
+#    .getName()
+#    .getDescription()
+#    .setVar(string, interface)
+#    .getVar(string)
+#    .getScenario() string
+#    .setScenario(string)
+
+#
+# workflow script example
+#
+
 on_enter =->
     print 'on enter'
 
@@ -321,6 +335,20 @@ main =->
 `
 
 const coffeescript5 = `
+# variables:
+
+#IC.Workflow()
+#    .getName()
+#    .getDescription()
+#    .setVar(string, interface)
+#    .getVar(string)
+#    .getScenario() string
+#    .setScenario(string)
+
+#
+# workflow script example
+#
+
 on_enter =->
     print 'on enter'
 
@@ -334,6 +362,7 @@ main =->
 `
 
 const coffeescript6 = `
+
 main =->
     incoming = IC.hex2arr message.getVar('result')
     print IC.Flow().getName(), 'incoming:', incoming
