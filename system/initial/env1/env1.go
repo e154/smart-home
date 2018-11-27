@@ -22,7 +22,7 @@ func Init(adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.S
 
 	// scripts
 	// ------------------------------------------------
-	script1, script2, script3, script4, _ := addScripts(adaptors, scriptService)
+	script1, script2, script3, script4, script5, script6 := addScripts(adaptors, scriptService)
 
 	// devices
 	// ------------------------------------------------
@@ -30,5 +30,5 @@ func Init(adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.S
 
 	// workflow
 	// ------------------------------------------------
-	addWorkflow(adaptors, deviceAction1, script4)
+	addWorkflow(adaptors, deviceAction1, script4, script5, script6)
 }

@@ -9,7 +9,7 @@ import (
 
 func addWorkflow(adaptors *adaptors.Adaptors,
 	deviceAction1 *m.DeviceAction,
-	script4 *m.Script) (workflow1 *m.Workflow) {
+	script4, script5, script6 *m.Script) (workflow1 *m.Workflow) {
 
 	workflow1 = &m.Workflow{
 		Name:        "workflow1",
@@ -26,14 +26,31 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 	// add workflow scenario
 	// ------------------------------------------------
 	wfScenario1 := &m.WorkflowScenario{
-		Name:       "workflow1 scenario",
-		SystemName: "wf_scenario_1",
+		Name:       "Будний день(weekday)",
+		SystemName: "weekday",
+		WorkflowId: workflow1.Id,
+	}
+	wfScenario2 := &m.WorkflowScenario{
+		Name:       "Выходные (weekend)",
+		SystemName: "weekend",
 		WorkflowId: workflow1.Id,
 	}
 	ok, _ = wfScenario1.Valid()
 	So(ok, ShouldEqual, true)
+	ok, _ = wfScenario2.Valid()
+	So(ok, ShouldEqual, true)
 
 	wfScenario1.Id, err = adaptors.WorkflowScenario.Add(wfScenario1)
+	So(err, ShouldBeNil)
+	err = adaptors.WorkflowScenario.AddScript(wfScenario1, script4)
+	So(err, ShouldBeNil)
+
+	wfScenario2.Id, err = adaptors.WorkflowScenario.Add(wfScenario2)
+	So(err, ShouldBeNil)
+	err = adaptors.WorkflowScenario.AddScript(wfScenario2, script5)
+	So(err, ShouldBeNil)
+
+	err = adaptors.Workflow.SetScenario(workflow1, wfScenario1)
 	So(err, ShouldBeNil)
 
 	// add flow1
@@ -68,6 +85,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		FlowId:        flow1.Id,
 		Status:        Enabled,
 		PrototypeType: FlowElementsPrototypeTask,
+		ScriptId:      &script6.Id,
 	}
 	ok, _ = feHandler.Valid()
 	So(ok, ShouldEqual, true)

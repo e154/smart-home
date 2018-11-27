@@ -12,7 +12,6 @@ import (
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/backup"
 )
@@ -35,7 +34,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(adaptors.NewAdaptors)
 	container.Provide(logging.NewLogrus)
 	container.Provide(scripts.NewScriptService)
-	container.Provide(cron.NewCron)
+	container.Provide(core.NewCron)
 	container.Provide(initial.NewInitialService)
 	container.Provide(backup.NewBackupConfig)
 	container.Provide(backup.NewBackup)

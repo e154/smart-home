@@ -8,6 +8,7 @@ import (
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/uuid"
 	cr "github.com/e154/smart-home/system/cron"
+	"fmt"
 )
 
 type Flow struct {
@@ -72,9 +73,9 @@ func NewFlow(model *m.Flow,
 
 func (f *Flow) Remove() {
 	//f.quit <- true
-	//for _, worker := range f.Workers {
-	//	f.RemoveWorker(worker.Model)
-	//}
+	for _, worker := range f.Workers {
+		f.RemoveWorker(worker.Model)
+	}
 }
 
 func (f *Flow) NewMessage(message *Message) (err error) {
@@ -168,12 +169,12 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 }
 
 func (f *Flow) loop() {
-	for {
-		select {
-		case <-f.quit:
-			break
-		}
-	}
+	//for {
+	//	select {
+	//	case <-f.quit:
+	//		break
+	//	}
+	//}
 }
 
 // ------------------------------------------------
@@ -282,35 +283,35 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 
 func (f *Flow) UpdateWorker(worker *m.Worker) (err error) {
 
-	//	if _, ok := f.Workers[worker.Id]; !ok {
-	//		err = fmt.Errorf("worker id:%d not found", worker.Id)
-	//	}
-	//
-	//	if err = f.RemoveWorker(worker); err != nil {
-	//		log.Warn("error:", err.Error())
-	//	}
-	//
-	//	if err = f.AddWorker(worker); err != nil {
-	//		log.Warn("error:", err.Error())
-	//	}
-	//
+	if _, ok := f.Workers[worker.Id]; !ok {
+		err = fmt.Errorf("worker id:%d not found", worker.Id)
+	}
+
+	if err = f.RemoveWorker(worker); err != nil {
+		log.Warningf("error: %s", err.Error())
+	}
+
+	if err = f.AddWorker(worker); err != nil {
+		log.Warningf("error: %s", err.Error())
+	}
+
 	return
 }
 
 func (f *Flow) RemoveWorker(worker *m.Worker) (err error) {
 
-	//	log.Infof("Remove worker: \"%s\"", worker.Name)
-	//
-	//	if _, ok := f.Workers[worker.Id]; !ok {
-	//		err = fmt.Errorf("worker id:%d not found", worker.Id)
-	//		return
-	//	}
-	//
-	//	// stop cron task
-	//	f.Workers[worker.Id].RemoveTask()
-	//
-	//	// delete worker
-	//	delete(f.Workers, worker.Id)
+	log.Infof("Remove worker: \"%s\"", worker.Name)
+
+	if _, ok := f.Workers[worker.Id]; !ok {
+		err = fmt.Errorf("worker id:%d not found", worker.Id)
+		return
+	}
+
+	// stop cron task
+	f.Workers[worker.Id].RemoveTask()
+
+	// delete worker
+	delete(f.Workers, worker.Id)
 
 	return
 }

@@ -87,11 +87,10 @@ func (w *Worker) Do() {
 	w.isRuning = true
 
 	for _, action := range w.actions {
-		//TODO refactor message system
-		//if _, err := action.Do(); err != nil {
-		//	//log.Errorf("node: %s, device: %s error: %s", action.Node.Name, action.Device.Name, err.Error())
-		//	continue
-		//}
+		if _, err := action.Do(); err != nil {
+			//log.Errorf("node: %s, device: %s error: %s", action.Node.Name, action.Device.Name, err.Error())
+			continue
+		}
 
 		if action.Message.Error != "" {
 			continue

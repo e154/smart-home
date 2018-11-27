@@ -4,17 +4,17 @@ package core
 type FlowLink struct {}
 
 func (m *FlowLink) After(message *Message, flow *Flow) (err error) {
-	//log.Info("FlowLink.after: ", message)
+	//log.Infof("FlowLink.after: %v", message)
 	return
 }
 
 func (m *FlowLink) Run(message *Message, flow *Flow) (err error) {
-	//log.Info("FlowLink.run: ", message)
+	//log.Infof("FlowLink.run: %v", message)
 	return
 }
 
 func (m *FlowLink) Before(message *Message, flow *Flow) (err error) {
-	//log.Info("FlowLink.before: ", message)
+	//log.Infof("FlowLink.before: %v", message)
 	return
 }
 

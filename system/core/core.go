@@ -62,7 +62,7 @@ func (b *Core) Stop() (err error) {
 	}
 
 	for _, node := range b.nodes {
-		if err = b.RemoveNode(&m.Node{Id: node.Id}); err != nil {
+		if err = b.RemoveNode(&m.Node{Id: node.Id, Name: node.Name}); err != nil {
 			return
 		}
 	}

@@ -32,6 +32,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(adaptors.NewAdaptors)
 	container.Provide(logging.NewLogrus)
 	container.Provide(scripts.NewScriptService)
+	container.Provide(core.NewCron)
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()
 		conf.PgName = "smart_home_test"

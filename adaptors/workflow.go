@@ -4,6 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"errors"
 )
 
 type Workflow struct {
@@ -95,6 +96,21 @@ func (n *Workflow) AddScript(workflow *m.Workflow, script *m.Script) (err error)
 
 func (n *Workflow) RemoveScript(workflow *m.Workflow, script *m.Script) (err error) {
 	err = n.table.RemoveScript(workflow.Id, script.Id)
+	return
+}
+
+func (n *Workflow) SetScenario(workflow *m.Workflow, s interface{}) (err error) {
+	var scenarioId int64
+	switch x := s.(type) {
+	case int64:
+		scenarioId = x
+	case *m.WorkflowScenario:
+		scenarioId = x.Id
+	default:
+		err = errors.New("unknown scenario type")
+		return
+	}
+	err = n.table.SetScenario(workflow.Id, scenarioId)
 	return
 }
 

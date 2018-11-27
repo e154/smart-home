@@ -171,3 +171,10 @@ func (n *Workflows) RemoveScript(workflowId, scriptId int64) (err error) {
 	err = n.Db.Delete(&WorkflowScripts{WorkflowId: workflowId, ScriptId: scriptId}).Error
 	return
 }
+
+func (n *Workflows) SetScenario(workflowId, scenarioId int64) (err error) {
+	err = n.Db.Model(&Workflow{Id: workflowId}).Updates(map[string]interface{}{
+		"workflow_scenario_id": scenarioId,
+	}).Error
+	return
+}

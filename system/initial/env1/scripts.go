@@ -8,13 +8,13 @@ import (
 )
 
 func addScripts(adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService) (script1, script2, script3, script4, script5 *m.Script) {
+	scriptService *scripts.ScriptService) (script1, script2, script3, script4, script5, script6 *m.Script) {
 
 	// add script
 	// ------------------------------------------------
 	script1 = &m.Script{
 		Lang:        "coffeescript",
-		Name:        "script1",
+		Name:        "turn_on_the_socket",
 		Source:      coffeescript1,
 		Description: "test1",
 	}
@@ -32,7 +32,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 
 	script2 = &m.Script{
 		Lang:        "coffeescript",
-		Name:        "script2",
+		Name:        "turn_off_the_socket",
 		Source:      coffeescript2,
 		Description: "script2",
 	}
@@ -50,7 +50,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 
 	script3 = &m.Script{
 		Lang:        "coffeescript",
-		Name:        "script3",
+		Name:        "socket_status_сheck",
 		Source:      coffeescript3,
 		Description: "script3",
 	}
@@ -68,7 +68,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 
 	script4 = &m.Script{
 		Lang:        "coffeescript",
-		Name:        "script4",
+		Name:        "scenario_weekday",
 		Source:      coffeescript4,
 		Description: "script4",
 	}
@@ -86,7 +86,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 
 	script5 = &m.Script{
 		Lang:        "coffeescript",
-		Name:        "script5",
+		Name:        "scenario_weekend",
 		Source:      coffeescript5,
 		Description: "script5",
 	}
@@ -102,25 +102,246 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script5, err = adaptors.Script.GetById(script5Id)
 	So(err, ShouldBeNil)
 
+	script6 = &m.Script{
+		Lang:        "coffeescript",
+		Name:        "task1",
+		Source:      coffeescript6,
+		Description: "script6",
+	}
+	ok, _ = script6.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine6, err := scriptService.NewEngine(script6)
+	So(err, ShouldBeNil)
+	err = engine6.Compile()
+	So(err, ShouldBeNil)
+	script6Id, err := adaptors.Script.Add(script6)
+	So(err, ShouldBeNil)
+	script6, err = adaptors.Script.GetById(script6Id)
+	So(err, ShouldBeNil)
+
 	return
 }
 
 const coffeescript1 = `
+# Контекст применения: 
+# action (действие)
+#
+# Описание:
+# Включение устройства. (частное)
+# Не имеет зависимостей, и ни чего не передает наружу
+# Должен вызываться в рамках воркера, или действия устройства,
+# иначе выдаст ошибку, так как контекст выполнения накладывает 
+# некоторые ограничения
 
+fetchStatus =(node, dev)->
+    
+    FUNCTION = 4
+    DEVICE_ADDR = dev.getAddress()
+    TOGGLE = 1
+    
+    COMMAND = [DEVICE_ADDR, FUNCTION, 0, TOGGLE, 0, 0]
+    
+    from_node = node.smartbus dev, true, COMMAND
+    
+    # map element
+    element = IC.Map.getElement dev
+    
+    if from_node.error
+        message.setError from_node.error
+        element.setState 'ERROR'
+        
+        # IC.Log.error "#{message.dev.name} - error: #{from_node.error}"
+        
+        return false
+       
+    if from_node.result != ""
+        result = IC.hex2arr(from_node.result)
+        
+        # check power
+        if result[2] == 1
+            element.setState 'ENABLED'
+        else
+            element.setState 'DISABLED'
+        
+    from_node.result
+
+main =->
+    
+    node = IC.CurrentNode()
+    dev = IC.CurrentDevice()
+    
+    return if !node || !dev
+     
+    fetchStatus(node, dev)
+
+main()
 `
 
 const coffeescript2 = `
+# Контекст применения: 
+# action (действие)
+#
+# Описание:
+# Выключение устройства. (частное)
+# Не имеет зависимостей, и ни чего не передает наружу
+# Должен вызываться в рамках воркера, или действия устройства,
+# иначе выдаст ошибку, так как контекст выполнения накладывает 
+# некоторые ограничения
 
+fetchStatus =(node, dev)->
+    
+    FUNCTION = 4
+    DEVICE_ADDR = dev.getAddress()
+    TOGGLE = 0
+    
+    COMMAND = [DEVICE_ADDR, FUNCTION, 0, TOGGLE, 0, 0]
+    
+    from_node = node.smartbus dev, true, COMMAND
+    
+    # map element
+    element = IC.Map.getElement dev
+    
+    if from_node.error
+        message.setError from_node.error
+        element.setState 'ERROR'
+        
+        # IC.Log.error "#{message.dev.name} - error: #{from_node.error}"
+        
+        return false
+       
+    if from_node.result != ""
+        result = IC.hex2arr(from_node.result)
+        
+        # check power
+        if result[2] == 1
+            element.setState 'ENABLED'
+        else
+            element.setState 'DISABLED'
+        
+    from_node.result
+
+main =->
+    
+    node = IC.CurrentNode()
+    dev = IC.CurrentDevice()
+    
+    return if !node || !dev
+     
+    fetchStatus(node, dev)
+
+main()
 `
 
 const coffeescript3 = `
+# Контекст применения: 
+# action (действие)
+#
+# Описание:
+# Проверка состояния устройства. (частное)
+# Не имеет зависимостей, и ни чего не передает наружу
+# Должен вызываться в рамках воркера, или действия устройства,
+# иначе выдаст ошибку, так как контекст выполнения накладывает 
+# некоторые ограничения
 
+fetchStatus =(node, dev, flow)->
+    
+    # номер комманнды 
+    # 3 - проверка состояния
+    FUNCTION = 3
+
+    # получим адрес устройства из контекста запуска
+    DEVICE_ADDR = dev.getAddress()
+    
+    COMMAND = [DEVICE_ADDR, FUNCTION, 0, 0, 0, 5]
+    
+    # map element
+    element = IC.Map.getElement dev
+    element.setOptions {text: 'some text'}
+    
+    print "check status, flow:", flow.getName(), "dev:", DEVICE_ADDR
+    
+    # запрос состояния устройства
+    from_node = node.smartbus dev, true, COMMAND
+    
+    # if 'Лампа в зале' == dev.getName()
+    #     print '---', from_node
+    
+    if from_node.error
+        # if 'Лампа в зале' == dev.getName()
+        #     print 'error'
+            
+        message.setError from_node.error
+        element.setState 'ERROR'
+        
+        # IC.Log.error "#{dev.name} - error: #{from_node.error}"
+        return false
+       
+    if from_node.result != ""
+        result = IC.hex2arr(from_node.result)
+        
+        # check power
+        if result[2] == 1
+            element.setState 'ENABLED'
+        else
+            element.setState 'DISABLED'
+    
+        print 'result', from_node.result, 'dev:', DEVICE_ADDR
+    # print 'dev:', DEVICE_ADDR, 'state', element.getState().systemName
+    
+    from_node.result
+
+main =->
+    
+    node = IC.CurrentNode()
+    dev = IC.CurrentDevice()
+    flow = IC.Flow()
+    
+    print 1
+    return if !node || !dev
+    print 2
+    
+    fetchStatus(node, dev, flow)
+    
+main()
 `
 
 const coffeescript4 = `
+on_enter =->
+    print 'on enter'
 
+on_exit =->
+    print 'on exit'
+    
+main =->
+    scenario = 'weekday'
+    print 'scenario', scenario
+    IC.Workflow().setVar 'scenario', scenario
+    
 `
 
 const coffeescript5 = `
+on_enter =->
+    print 'on enter'
 
+on_exit =->
+    print 'on exit'
+    
+main =->
+    scenario = 'weekend'
+    print 'scenario', scenario
+    IC.Workflow().setVar 'scenario', scenario
+`
+
+const coffeescript6 = `
+main =->
+    incoming = IC.hex2arr message.getVar('result')
+    print IC.Flow().getName(), 'incoming:', incoming
+    print IC.Map.getDeviceState(message.getVar('devId'))
+    # IC.Log.warn 'test'
+    # print IC.Workflow().getVar 'scenario'
+    # scenario = IC.Workflow().getScenario()
+    # print scenario
+    # if scenario == 'weekday'
+    #     IC.Workflow().setScenario 'weekend' 
 `

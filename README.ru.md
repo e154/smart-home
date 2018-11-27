@@ -130,15 +130,18 @@ PS совсем скоро добавится пример hello world
 #### Сервер
 
 ```bash
-go get -u github.com/FiloSottile/gvt
+go get -u github.com/golang/dep/cmd/dep
 
 git clone https://github.com/e154/smart-home $GOPATH/src/github.com/e154/smart-home
 
 cd $GOPATH/src/github.com/e154/smart-home
 
-gvt restore
+dep ensure
 
 go build
+
+./smart-home -reset
+./smart-home
 ```
 
 Редактируем файлы конфигурации
@@ -195,6 +198,10 @@ go test ./tests -v
 - Все изменения должны покрываться тестами
 
 Спасибо за понимание
+
+### Не коммерческие аналоги
+
+* [OpenHub](https://www.openhab.org)
 
 ### Коммерческие аналоги
 
