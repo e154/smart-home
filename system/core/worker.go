@@ -88,7 +88,7 @@ func (w *Worker) Do() {
 
 	for _, action := range w.actions {
 		if _, err := action.Do(); err != nil {
-			//log.Errorf("node: %s, device: %s error: %s", action.Node.Name, action.Device.Name, err.Error())
+			log.Errorf("node: %s, device: %s error: %s", action.Node.Name, action.Device.Name, err.Error())
 			continue
 		}
 

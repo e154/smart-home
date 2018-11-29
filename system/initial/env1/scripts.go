@@ -141,8 +141,8 @@ fetchStatus =(node, dev)->
     TOGGLE = 1
     
     COMMAND = [DEVICE_ADDR, FUNCTION, 0, TOGGLE, 0, 0]
-    
-    from_node = node.smartbus dev, true, COMMAND
+
+    from_node = node.send dev, true, COMMAND
     
     # map element
     element = IC.Map.getElement dev
@@ -197,7 +197,7 @@ fetchStatus =(node, dev)->
     
     COMMAND = [DEVICE_ADDR, FUNCTION, 0, TOGGLE, 0, 0]
     
-    from_node = node.smartbus dev, true, COMMAND
+    from_node = node.send dev, true, COMMAND
     
     # map element
     element = IC.Map.getElement dev
@@ -262,7 +262,7 @@ fetchStatus =(node, dev, flow)->
     print "check status, flow:", flow.getName(), "dev:", DEVICE_ADDR
     
     # запрос состояния устройства
-    from_node = node.smartbus dev, true, COMMAND
+    from_node = node.send dev, true, COMMAND
     
     # if 'Лампа в зале' == dev.getName()
     #     print '---', from_node

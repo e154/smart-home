@@ -4,6 +4,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/common"
+	"fmt"
 )
 
 type Action struct {
@@ -37,6 +38,7 @@ func NewAction(device *m.Device,
 
 func (a *Action) Do() (res string, err error) {
 
+	fmt.Println("---", a.script.Name)
 	a.Message.Clear()
 	/*res,*/ err = a.ScriptEngine.EvalString(a.script.Compiled)
 	//a.Message.SetVar("result", res)
@@ -68,6 +70,7 @@ func (a *Action) NewScript() (err error) {
 	if b := ctx.GetGlobalString("IC"); !b {
 		return
 	}
+	fmt.Println("---------")
 	ctx.PushObject()
 	ctx.PushGoFunction(func() *ActionBind {
 		return &ActionBind{action: a}

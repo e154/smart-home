@@ -8,7 +8,7 @@ import (
 
 func devices(node1 *m.Node,
 	adaptors *adaptors.Adaptors,
-	script1, script2, script3 *m.Script) (device1, device2, device3 *m.Device, deviceAction1 *m.DeviceAction) {
+	script1, script2, script3 *m.Script) (device1, device2, device3 *m.Device, deviceAction3 *m.DeviceAction) {
 
 	// devices
 	// ------------------------------------------------
@@ -54,7 +54,7 @@ func devices(node1 *m.Node,
 
 	// add device action
 	// ------------------------------------------------
-	deviceAction1 = &m.DeviceAction{
+	deviceAction1 := &m.DeviceAction{
 		Name:     "Turning on",
 		DeviceId: device1.Id,
 		ScriptId: script1.Id,
@@ -64,7 +64,7 @@ func devices(node1 *m.Node,
 		DeviceId: device1.Id,
 		ScriptId: script2.Id,
 	}
-	deviceAction3 := &m.DeviceAction{
+	deviceAction3 = &m.DeviceAction{
 		Name:     "Condition check",
 		DeviceId: device1.Id,
 		ScriptId: script3.Id,

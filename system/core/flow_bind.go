@@ -29,6 +29,6 @@ func (f *FlowBind) GetVar(key string) interface{} {
 	return f.flow.GetVar(key)
 }
 
-//func (f *FlowBind) Node() *NodeBind {
-//	return &NodeBind{node:f.flow.Node}
-//}
+func (f *FlowBind) Node() *NodeBind {
+	return &NodeBind{node:f.flow.Node}
+}

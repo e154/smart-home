@@ -9,6 +9,7 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"errors"
 	cr "github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/mqtt"
 )
 
 var (
@@ -21,8 +22,8 @@ type Core struct {
 	workflows map[int64]*Workflow
 	adaptors  *adaptors.Adaptors
 	scripts   *scripts.ScriptService
-	graceful  *graceful_service.GracefulService
 	cron      *cr.Cron
+	mqtt      *mqtt.Mqtt
 	//telemetry Telemetry
 	//Map       *Map
 }
@@ -30,15 +31,16 @@ type Core struct {
 func NewCore(adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
 	graceful *graceful_service.GracefulService,
-	cron *cr.Cron) (core *Core, err error) {
+	cron *cr.Cron,
+	mqtt *mqtt.Mqtt) (core *Core, err error) {
 
 	core = &Core{
 		nodes:     make(map[int64]*Node),
 		workflows: make(map[int64]*Workflow),
 		adaptors:  adaptors,
 		scripts:   scripts,
-		graceful:  graceful,
 		cron:      cron,
+		mqtt:      mqtt,
 	}
 
 	graceful.Subscribe(core)
@@ -119,7 +121,7 @@ func (b *Core) AddNode(node *m.Node) (n *Node, err error) {
 	}
 
 	b.Lock()
-	n = NewNode(node)
+	n = NewNode(node, b.mqtt)
 	b.nodes[node.Id] = n.Connect()
 	b.Unlock()
 
@@ -165,7 +167,7 @@ func (b *Core) ReloadNode(node *m.Node) (err error) {
 	b.nodes[node.Id].Status = node.Status
 	b.nodes[node.Id].Ip = node.Ip
 	b.nodes[node.Id].Port = node.Port
-	b.nodes[node.Id].SetConnectStatus("wait")
+	//b.nodes[node.Id].SetConnectStatus("wait")
 	b.Unlock()
 
 	if b.nodes[node.Id].Status == "disabled" {

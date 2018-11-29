@@ -14,6 +14,8 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/services"
+	"github.com/e154/smart-home/system/mqtt"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -38,6 +40,9 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(initial.NewInitialService)
 	container.Provide(backup.NewBackupConfig)
 	container.Provide(backup.NewBackup)
+	container.Provide(services.NewServices)
+	container.Provide(mqtt.NewMqtt)
+	container.Provide(mqtt.NewMqttConfig)
 
 	return
 }

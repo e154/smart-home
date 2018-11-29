@@ -29,6 +29,24 @@
   revision = "a0175ee3bccc567396460bf5acd36800cb10c49c"
 
 [[projects]]
+  digest = "1:769b12bbef627a9e062ca5abcd7c1fedc640c1ba05b4c3b4b0d7ffe8937652d4"
+  name = "github.com/astaxie/beego"
+  packages = [
+    ".",
+    "config",
+    "context",
+    "context/param",
+    "grace",
+    "logs",
+    "session",
+    "toolbox",
+    "utils",
+  ]
+  pruneopts = "UT"
+  revision = "b0e2bbce2a45fcfda684b47968387fa0866ada06"
+  version = "v1.11.0"
+
+[[projects]]
   branch = "master"
   digest = "1:36fe9527deed01d2a317617e59304eb2c4ce9f8a24115bcc5c2e37b3aee5bae4"
   name = "github.com/gin-contrib/sse"
@@ -50,12 +68,68 @@
   version = "v1.3.0"
 
 [[projects]]
+  digest = "1:953a2628e4c5c72856b53f5470ed5e071c55eccf943d798d42908102af2a610f"
+  name = "github.com/go-openapi/jsonpointer"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ef5f0afec364d3b9396b7b77b43dbe26bf1f8004"
+  version = "v0.17.2"
+
+[[projects]]
+  digest = "1:81210e0af657a0fb3638932ec68e645236bceefa4c839823db0c4d918f080895"
+  name = "github.com/go-openapi/jsonreference"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "8483a886a90412cd6858df4ea3483dce9c8e35a3"
+  version = "v0.17.2"
+
+[[projects]]
+  digest = "1:394fed5c0425fe01da3a34078adaa1682e4deaea6e5d232dde25c4034004c151"
+  name = "github.com/go-openapi/spec"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5bae59e25b21498baea7f9d46e9c147ec106a42e"
+  version = "v0.17.2"
+
+[[projects]]
+  digest = "1:32f3d2e7f343de7263c550d696fb8a64d3c49d8df16b1ddfc8e80e1e4b3233ce"
+  name = "github.com/go-openapi/swag"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5899d5c5e619fda5fa86e14795a835f473ca284c"
+  version = "v0.17.2"
+
+[[projects]]
+  digest = "1:97df918963298c287643883209a2c3f642e6593379f97ab400c2a2e219ab647d"
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  pruneopts = "UT"
+  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
+  version = "v1.2.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:f14d1b50e0075fb00177f12a96dd7addf93d1e2883c25befd17285b779549795"
+  name = "github.com/gopherjs/gopherjs"
+  packages = ["js"]
+  pruneopts = "UT"
+  revision = "d547d1d9531ed93dbdebcbff7f83e7c876a1e0ee"
+
+[[projects]]
   branch = "master"
   digest = "1:89cd2208bdeb192cc83ee287216af3c987fc87a90b9087718ad6631b636cefcf"
   name = "github.com/iancoleman/strcase"
   packages = ["."]
   pruneopts = "UT"
   revision = "3605ed457bf7f8caa1371b4fafadadc026673479"
+
+[[projects]]
+  digest = "1:a2cff208d4759f6ba1b1cd228587b0a1869f95f22542ec9cd17fff64430113c7"
+  name = "github.com/jessevdk/go-flags"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
+  version = "v1.4.0"
 
 [[projects]]
   branch = "master"
@@ -90,12 +164,36 @@
   version = "v1.1.5"
 
 [[projects]]
+  digest = "1:4b63210654b1f2b664f74ec434a1bb1cb442b3d75742cc064a10808d1cca6361"
+  name = "github.com/jtolds/gls"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b4936e06046bbecbb94cae9c18127ebe510a2cb9"
+  version = "v4.20"
+
+[[projects]]
   digest = "1:0a69a1c0db3591fcefb47f115b224592c8dfa4368b7ba9fae509d5e16cdc95c8"
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
   pruneopts = "UT"
   revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
   version = "v1.0.1"
+
+[[projects]]
+  digest = "1:ca955a9cd5b50b0f43d2cc3aeb35c951473eeca41b34eb67507f1dbcc0542394"
+  name = "github.com/kr/pretty"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "73f6ac0b30a98e433b289500d779f50c1a6f0712"
+  version = "v0.1.0"
+
+[[projects]]
+  digest = "1:15b5cc79aad436d47019f814fde81a10221c740dc8ddf769221a65097fb6c2e9"
+  name = "github.com/kr/text"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f"
+  version = "v0.1.0"
 
 [[projects]]
   digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
@@ -107,6 +205,14 @@
   pruneopts = "UT"
   revision = "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
   version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:2ce1c52ce80ce9ac0d2ac4c2f78b32b7e9fad95aae5558a21e79f86d7c41b28a"
+  name = "github.com/lox/go-servejs"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b196cd09c2b3ffb1883b484cc584e8c380a4b00d"
 
 [[projects]]
   branch = "master"
@@ -130,6 +236,14 @@
   version = "v0.0.4"
 
 [[projects]]
+  branch = "master"
+  digest = "1:d2db15ed9dfd347a6b29257bb032cc090f36a604daf292fa2f41df9fa840e912"
+  name = "github.com/mcuadros/go-candyjs"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d703dfa5153a4276b8a4783d985793595228073d"
+
+[[projects]]
   digest = "1:33422d238f147d247752996a26574ac48dcf472976eda7f5134015f06bf16563"
   name = "github.com/modern-go/concurrent"
   packages = ["."]
@@ -144,6 +258,14 @@
   pruneopts = "UT"
   revision = "4b7aa43c6742a2c18fdef89dd197aaae7dac7ccd"
   version = "1.0.1"
+
+[[projects]]
+  branch = "v3"
+  digest = "1:47360765b64ba68cc23420ec2967c7cca5b1d8a438493ac55945ef58e7560bc2"
+  name = "github.com/olebedev/go-duktape"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ccb656ba24c2a193e5650299767e2df1554725fd"
 
 [[projects]]
   digest = "1:3371d8e907e3456fd56105ba454a63b8dc5537481929588162b3a7f78d5b64af"
@@ -193,6 +315,59 @@
   version = "v1.2.0"
 
 [[projects]]
+  digest = "1:cc1c574c9cb5e99b123888c12b828e2d19224ab6c2244bda34647f230bf33243"
+  name = "github.com/smartystreets/assertions"
+  packages = [
+    ".",
+    "internal/go-render/render",
+    "internal/oglematchers",
+  ]
+  pruneopts = "UT"
+  revision = "7678a5452ebea5b7090a6b163f844c133f523da2"
+  version = "1.8.3"
+
+[[projects]]
+  digest = "1:a3e081e593ee8e3b0a9af6a5dcac964c67a40c4f2034b5345b2ad78d05920728"
+  name = "github.com/smartystreets/goconvey"
+  packages = [
+    "convey",
+    "convey/gotest",
+    "convey/reporting",
+  ]
+  pruneopts = "UT"
+  revision = "9e8dc3f972df6c8fcc0375ef492c24d0bb204857"
+  version = "1.6.3"
+
+[[projects]]
+  branch = "master"
+  digest = "1:11395ff810f2ada545e57e8ba7ac23e5081662f4e105d8501506e55958bd5286"
+  name = "github.com/surge/glog"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2578deb2b95c665e6b1ebabf304ce2085c9e1985"
+
+[[projects]]
+  branch = "master"
+  digest = "1:84dfee0fc72c46f52cb4e4322f8cbb73345d601405f0683285b85038c8d110e8"
+  name = "github.com/surgemq/message"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2b7ca1ac6121420133f8df6b94a976d5ca35339a"
+
+[[projects]]
+  branch = "master"
+  digest = "1:b318ea1e887063cae478a14c2ebb224c4225b69971122bbd076601b848bb9f45"
+  name = "github.com/surgemq/surgemq"
+  packages = [
+    "auth",
+    "service",
+    "sessions",
+    "topics",
+  ]
+  pruneopts = "UT"
+  revision = "782e2da078054c9a245f7f78c3f9a0994b5c21c2"
+
+[[projects]]
   digest = "1:f7e7c41b7c708912d83dc5e4acd1392402733e18f5a6aebbe217e0f9e10057f2"
   name = "github.com/swaggo/swag"
   packages = ["."]
@@ -207,6 +382,14 @@
   pruneopts = "UT"
   revision = "b4c50a2b199d93b13dc15e78929cfb23bfdf21ab"
   version = "v1.1.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:39286c8eb224835ae79a480d26cc41243cd6fa6342a6786d98b81f2a662c874d"
+  name = "github.com/zentures/surgemq"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "782e2da078054c9a245f7f78c3f9a0994b5c21c2"
 
 [[projects]]
   digest = "1:72503e87c2b7e319cb7b676943915aa8d62b224831963dd5961624c0189daa00"
@@ -268,6 +451,22 @@
   version = "v0.3.0"
 
 [[projects]]
+  branch = "v1"
+  digest = "1:af715ae33cc1f5695c4b2a4e4b21d008add8802a99e15bb467ac7c32edb5000d"
+  name = "gopkg.in/check.v1"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "788fd78401277ebd861206a03c884797c6ec5541"
+
+[[projects]]
+  branch = "v3"
+  digest = "1:a7817feb7f5d8b30937af21182124eca77e3ee4bd75f23ed955c525be2642256"
+  name = "gopkg.in/e154/go-duktape.v3"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4f7041e2de473562693d11ff52b68128648cdb65"
+
+[[projects]]
   digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
   name = "gopkg.in/go-playground/validator.v8"
   packages = ["."]
@@ -291,6 +490,17 @@
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
   version = "v2.2.1"
 
+[[projects]]
+  branch = "(default)"
+  digest = "1:c3371eecf014177a2355875b7f706a6ea61b587d7c0428db9460433dfd0ea83e"
+  name = "launchpad.net/goamz"
+  packages = [
+    "aws",
+    "s3",
+  ]
+  pruneopts = "UT"
+  revision = "martin.packman@canonical.com-20140813150539-umttn7s536u85eiz"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -299,16 +509,29 @@
     "github.com/astaxie/beego",
     "github.com/gin-gonic/gin",
     "github.com/iancoleman/strcase",
+    "github.com/jessevdk/go-flags",
     "github.com/jinzhu/copier",
     "github.com/jinzhu/gorm",
     "github.com/lib/pq",
+    "github.com/lox/go-servejs",
+    "github.com/mcuadros/go-candyjs",
+    "github.com/olebedev/go-duktape",
     "github.com/olivere/elastic",
     "github.com/op/go-logging",
     "github.com/rubenv/sql-migrate",
     "github.com/sirupsen/logrus",
+    "github.com/smartystreets/assertions",
+    "github.com/smartystreets/goconvey/convey",
+    "github.com/smartystreets/goconvey/convey/reporting",
+    "github.com/surgemq/surgemq/service",
     "github.com/swaggo/swag",
+    "github.com/zentures/surgemq",
     "golang.org/x/net/context",
     "golang.org/x/net/webdav",
+    "gopkg.in/check.v1",
+    "gopkg.in/e154/go-duktape.v3",
+    "launchpad.net/goamz/aws",
+    "launchpad.net/goamz/s3",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

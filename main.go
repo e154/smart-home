@@ -11,6 +11,7 @@ import (
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/backup"
 	"fmt"
+	"github.com/e154/smart-home/system/mqtt"
 )
 
 var (
@@ -81,7 +82,8 @@ func start() {
 		core *core.Core,
 		graceful *graceful_service.GracefulService,
 		lx *logrus.Logger,
-		initialService *initial.InitialService) {
+		initialService *initial.InitialService,
+		mqtt *mqtt.Mqtt) {
 
 		l.Initialize(lx)
 		go server.Start()
