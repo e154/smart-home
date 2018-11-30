@@ -2,7 +2,6 @@ package graceful_service
 
 import (
 	"sync"
-	"github.com/e154/smart-home/system/uuid"
 )
 
 type IGracefulClient interface {
@@ -12,32 +11,25 @@ type IGracefulClient interface {
 type GracefulServicePool struct {
 	cfg     *GracefulServiceConfig
 	m       sync.Mutex
-	clients map[string]IGracefulClient
+	clients map[int]IGracefulClient
 }
 
 func NewGracefulServicePool(cfg *GracefulServiceConfig) *GracefulServicePool {
 	return &GracefulServicePool{
 		cfg:     cfg,
-		clients: make(map[string]IGracefulClient),
+		clients: make(map[int]IGracefulClient),
 	}
 }
 
-func (h *GracefulServicePool) subscribe(client IGracefulClient) (id string) {
+func (h *GracefulServicePool) subscribe(client IGracefulClient) (id int) {
 	h.m.Lock()
-	for {
-		id = uuid.NewV4().String()
-		if _, ok := h.clients[id]; !ok {
-			break
-		}
-	}
-
+	id = len(h.clients)
 	h.clients[id] = client
 	h.m.Unlock()
-
 	return
 }
 
-func (h *GracefulServicePool) unsubscribe(id string) {
+func (h *GracefulServicePool) unsubscribe(id int) {
 	h.m.Lock()
 	if _, ok := h.clients[id]; ok {
 		delete(h.clients, id)
@@ -47,8 +39,12 @@ func (h *GracefulServicePool) unsubscribe(id string) {
 
 func (h *GracefulServicePool) shutdown() {
 	h.m.Lock()
-	for _, client := range h.clients {
-		client.Shutdown()
+	i := len(h.clients)
+	for ;i>=0;i-- {
+		client := h.clients[i]
+		if client != nil {
+			client.Shutdown()
+		}
 	}
 	h.m.Unlock()
 }

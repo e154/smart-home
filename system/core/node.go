@@ -4,9 +4,15 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/surgemq/message"
+	"encoding/json"
 )
 
 type Nodes []*Node
+
+type NodeMessage struct {
+	Device  *m.Device `json:"device"`
+	Command []byte    `json:"command"`
+}
 
 type Node struct {
 	*m.Node
@@ -33,8 +39,15 @@ func NewNode(model *m.Node,
 }
 
 func (n *Node) Send(device *m.Device, command []byte) (err error) {
-	log.Debugf("send device(%v) command(%v)", device, command)
-	//n.mqttClient.Publish(command)
+	log.Debugf("send device(%v) command(%v)", device.Id, command)
+
+	msg := &NodeMessage{
+		Device:  device,
+		Command: command,
+	}
+
+	data, _ := json.Marshal(msg)
+	err = n.mqttClient.Publish(data)
 	return
 }
 

@@ -1,6 +1,6 @@
 -- +migrate Up
 create type devices_status as enum ('enabled', 'disabled');
-create type devices_type as enum ('default', 'smartbus', 'zigbee');
+create type devices_type as enum ('default', 'smartbus', 'modbus', 'zigbee');
 
 CREATE TABLE devices (
   id          bigserial constraint devices_pkey primary key not null,

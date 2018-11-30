@@ -4,6 +4,8 @@ import (
 	"time"
 	"github.com/e154/smart-home/system/validation"
 	"encoding/json"
+	. "github.com/e154/smart-home/common"
+	"fmt"
 )
 
 type Device struct {
@@ -13,7 +15,7 @@ type Device struct {
 	Status      string          `json:"status" valid:"MaxSize(254)"`
 	Device      *Device         `json:"device"`
 	Node        *Node           `json:"node"`
-	Type        string          `json:"type"`
+	Type        DeviceType      `json:"type"`
 	Properties  json.RawMessage `json:"properties" valid:"Required"`
 	States      []*DeviceState  `json:"states"`
 	Actions     []*DeviceAction `json:"actions"`
@@ -28,6 +30,31 @@ func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 	valid := validation.Validation{}
 	if ok, _ = valid.Valid(d); !ok {
 		errs = valid.Errors
+	}
+
+	return
+}
+
+func (d *Device) SetProperties(properties interface{}) (ok bool, errs []*validation.Error) {
+
+	var dType DeviceType
+
+	switch v := properties.(type) {
+	case *DevConfSmartBus:
+		dType = DevTypeSmartBus
+		ok, errs = v.Valid()
+	default:
+		fmt.Printf("unknown device config %v", v)
+		return
+	}
+
+	if !ok || len(errs) > 0 {
+		return
+	}
+
+	d.Type = dType
+	if data, err := json.Marshal(properties); err == nil {
+		d.Properties.UnmarshalJSON(data)
 	}
 
 	return

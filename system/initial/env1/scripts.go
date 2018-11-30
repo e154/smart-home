@@ -301,7 +301,9 @@ main =->
     return if !node || !dev
     print 2
     
-    fetchStatus(node, dev, flow)
+    node.send dev, {}
+
+    #fetchStatus(node, dev, flow)
     
 main()
 `

@@ -25,3 +25,12 @@ const (
 	Enabled  = StatusType("enabled")
 	Disabled = StatusType("disabled")
 )
+
+type DeviceType string
+
+const (
+	DevTypeSmartBus = DeviceType("smartbus")
+	DevTypeModBus   = DeviceType("modbus")
+	DevTypeZigbee   = DeviceType("zigbee")
+	DevTypeDefault  = DeviceType("default")
+)

@@ -9,8 +9,9 @@ import (
 const assertionSuccess = ""
 
 var (
-	ShouldEqual = assertions.ShouldEqual
-	ShouldBeNil = assertions.ShouldBeNil
+	ShouldEqual       = assertions.ShouldEqual
+	ShouldBeNil       = assertions.ShouldBeNil
+	ShouldBeZeroValue = assertions.ShouldBeZeroValue
 )
 
 type assertion func(actual interface{}, expected ...interface{}) string
@@ -20,6 +21,6 @@ func So(actual interface{}, assert assertion, expected ...interface{}) {
 		fmt.Printf(".")
 	} else {
 		fmt.Println()
-		fmt.Println(reporting.NewFailureReport(result))
+		panic(fmt.Sprintf("%v", reporting.NewFailureReport(result)))
 	}
 }

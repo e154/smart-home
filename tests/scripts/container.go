@@ -12,6 +12,10 @@ import (
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/initial"
+	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/services"
+	"github.com/e154/smart-home/system/mqtt"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -33,6 +37,13 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(logging.NewLogrus)
 	container.Provide(scripts.NewScriptService)
 	container.Provide(core.NewCron)
+	container.Provide(initial.NewInitialService)
+	container.Provide(backup.NewBackupConfig)
+	container.Provide(backup.NewBackup)
+	container.Provide(services.NewServices)
+	container.Provide(mqtt.NewMqtt)
+	container.Provide(mqtt.NewMqttConfig)
+
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()
 		conf.PgName = "smart_home_test"

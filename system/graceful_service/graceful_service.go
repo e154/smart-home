@@ -55,12 +55,12 @@ func (p GracefulService) Wait() {
 	close(gracefulStop)
 }
 
-func (p GracefulService) Subscribe(client IGracefulClient) (id string) {
+func (p GracefulService) Subscribe(client IGracefulClient) (id int) {
 	id = p.pool.subscribe(client)
 	return
 }
 
-func (p GracefulService) Unsubscribe(id string) {
+func (p GracefulService) Unsubscribe(id int) {
 	p.pool.unsubscribe(id)
 	return
 }

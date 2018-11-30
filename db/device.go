@@ -7,6 +7,7 @@ import (
 	"errors"
 	"encoding/json"
 	"database/sql"
+	"github.com/e154/smart-home/common"
 )
 
 type Devices struct {
@@ -22,7 +23,7 @@ type Device struct {
 	Node        *Node
 	NodeId      sql.NullInt64
 	Status      string
-	Type        string
+	Type        common.DeviceType
 	Properties  json.RawMessage `gorm:"type:jsonb;not null"`
 	States      []*DeviceState
 	Actions     []*DeviceAction

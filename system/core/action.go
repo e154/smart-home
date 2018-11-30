@@ -38,7 +38,6 @@ func NewAction(device *m.Device,
 
 func (a *Action) Do() (res string, err error) {
 
-	fmt.Println("---", a.script.Name)
 	a.Message.Clear()
 	/*res,*/ err = a.ScriptEngine.EvalString(a.script.Compiled)
 	//a.Message.SetVar("result", res)

@@ -31,16 +31,16 @@ func NewMqtt(cfg *MqttConfig,
 }
 
 func (m *Mqtt) Shutdown() {
-	if m.server != nil {
-		m.server.Close()
-	}
+	//if m.server != nil {
+	//	m.server.Close()
+	//}
 
-	for _, client := range m.clients {
-		if client == nil {
-			continue
-		}
-		client.Disconnect()
-	}
+	//for _, client := range m.clients {
+	//	if client == nil {
+	//		continue
+	//	}
+	//	client.Disconnect()
+	//}
 
 	log.Info("Server exiting")
 }
