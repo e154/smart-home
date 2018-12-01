@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/common"
+	"time"
 )
 
 type Nodes []*Node
@@ -24,6 +25,7 @@ type Node struct {
 	connStatus  string
 	mqttClient  *mqtt.Client
 	IsConnected bool
+	lastPing time.Time
 }
 
 func NewNode(model *m.Node,
@@ -40,6 +42,8 @@ func NewNode(model *m.Node,
 	}
 
 	node.mqttClient = mqttClient
+
+	go node.pong()
 
 	return node
 }
@@ -66,7 +70,10 @@ func (n *Node) Send(device *m.Device, command []byte) (err error) {
 //}
 
 func (n *Node) onPublish(msg *message.PublishMessage) error {
-	log.Debug("onPublish")
+	if string(msg.Payload()) == "live" {
+		n.lastPing = time.Now()
+		return nil
+	}
 	return nil
 }
 
@@ -85,5 +92,10 @@ func (n *Node) Disconnect() {
 }
 
 func (n *Node) pong() {
-
+	go func() {
+		for ;; {
+			time.Sleep(time.Second)
+			n.IsConnected = time.Now().Sub(n.lastPing).Seconds() < 10
+		}
+	}()
 }
