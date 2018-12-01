@@ -17,6 +17,10 @@ func (n *NodeBind) Send(device *DeviceBind, command []byte) (err error) {
 	return n.node.Send(device.model, command)
 }
 
+func (n *NodeBind) IsConnected() bool {
+	return n.node.IsConnected
+}
+
 //func (n *NodeBind) Smartbus(device *DeviceBind, returnResult bool, command []byte) SmartbusResult {
 //	return n.node.Smartbus(device.model, returnResult, command)
 //}

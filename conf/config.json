@@ -13,7 +13,7 @@
   "pg_conn_max_life_time": 30,
   "auto_migrate": false,
   "snapshot_dir": "snapshots",
-  "mode": "debug",
+  "mode": "release",
   "mqtt_keep_alive": 300,
   "mqtt_connect_timeout": 2,
   "mqtt_sessions_provider": "mem",

@@ -58,7 +58,7 @@ func (c *Client) Connect() (err error) {
 
 	// Creates a new SUBSCRIBE message to subscribe to topic "topic"
 	submsg := message.NewSubscribeMessage()
-	if err = submsg.AddTopic([]byte(c.topic), c.qos); err != nil {
+	if err = submsg.AddTopic([]byte(c.topic + "/resp"), c.qos); err != nil {
 		return
 	}
 
@@ -85,7 +85,7 @@ func (c *Client) Publish(v []byte) (err error) {
 
 	// Creates a new PUBLISH message with the appropriate contents for publishing
 	pubmsg := message.NewPublishMessage()
-	if err = pubmsg.SetTopic([]byte(c.topic)); err != nil {
+	if err = pubmsg.SetTopic([]byte(c.topic + "/req")); err != nil {
 		return
 	}
 	pubmsg.SetPayload(v)

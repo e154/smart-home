@@ -76,6 +76,31 @@ func devices(node1 *m.Node,
 	device2.Id, err = adaptors.Device.Add(device2)
 	So(err, ShouldBeNil)
 
+	device4 := &m.Device{
+		Name:       "device4",
+		Status:     "enabled",
+		Type:       "default",
+		Device:     device1,
+		Properties: []byte("{}"),
+	}
+
+	ok, _ = device4.Valid()
+	So(ok, ShouldEqual, true)
+
+	smartBusConfig4 := &common.DevConfSmartBus{
+		Baud: 19200,
+		Device: 4,
+		Timeout: 457,
+		StopBits: 2,
+		Sleep: 0,
+	}
+
+	ok, _ = device4.SetProperties(smartBusConfig4)
+	So(ok, ShouldEqual, true)
+
+	device4.Id, err = adaptors.Device.Add(device4)
+	So(err, ShouldBeNil)
+
 	// add device action
 	// ------------------------------------------------
 	deviceAction1 := &m.DeviceAction{

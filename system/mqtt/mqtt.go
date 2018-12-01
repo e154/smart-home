@@ -58,7 +58,7 @@ func (m *Mqtt) runServer() {
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.SrvPort)
 
-	if err := m.server.ListenAndServe(fmt.Sprintf("tcp://:%d", m.cfg.SrvPort)); err != nil {
+	if err := m.server.ListenAndServe(fmt.Sprintf("tcp://0.0.0.0:%d", m.cfg.SrvPort)); err != nil {
 		log.Error(err.Error())
 	}
 }
@@ -66,6 +66,9 @@ func (m *Mqtt) runServer() {
 func (m *Mqtt) NewClient(topic string, onComplete service.OnCompleteFunc, onPublish service.OnPublishFunc) (c *Client, err error) {
 
 	uri := fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.SrvPort)
+
+	log.Infof("new queue client %s topic(%s)", uri, topic)
+
 	if c, err = NewClient(uri, topic, onComplete, onPublish); err != nil {
 		return
 	}

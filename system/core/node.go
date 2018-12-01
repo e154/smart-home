@@ -5,20 +5,25 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/surgemq/message"
 	"encoding/json"
+	"fmt"
+	"github.com/e154/smart-home/common"
 )
 
 type Nodes []*Node
 
 type NodeMessage struct {
-	Device  *m.Device `json:"device"`
-	Command []byte    `json:"command"`
+	DeviceId   int64             `json:"device_id"`
+	DeviceType common.DeviceType `json:"device_type"`
+	Properties json.RawMessage   `json:"properties"`
+	Command    []byte            `json:"command"`
 }
 
 type Node struct {
 	*m.Node
-	errors     int64
-	connStatus string
-	mqttClient *mqtt.Client
+	errors      int64
+	connStatus  string
+	mqttClient  *mqtt.Client
+	IsConnected bool
 }
 
 func NewNode(model *m.Node,
@@ -28,7 +33,8 @@ func NewNode(model *m.Node,
 		Node: model,
 	}
 
-	mqttClient, err := mqtt.NewClient(model.Name, node.onComplete, node.onPublish)
+	topic := fmt.Sprintf("/home/%s", model.Name)
+	mqttClient, err := mqtt.NewClient(topic, nil, node.onPublish)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -39,11 +45,14 @@ func NewNode(model *m.Node,
 }
 
 func (n *Node) Send(device *m.Device, command []byte) (err error) {
+
 	log.Debugf("send device(%v) command(%v)", device.Id, command)
 
 	msg := &NodeMessage{
-		Device:  device,
-		Command: command,
+		DeviceId:   device.Id,
+		DeviceType: device.Type,
+		Properties: device.Properties,
+		Command:    command,
 	}
 
 	data, _ := json.Marshal(msg)
@@ -51,10 +60,10 @@ func (n *Node) Send(device *m.Device, command []byte) (err error) {
 	return
 }
 
-func (n *Node) onComplete(msg, ack message.Message, err error) error {
-	log.Debug("onComplete")
-	return nil
-}
+//func (n *Node) onComplete(msg, ack message.Message, err error) error {
+//	log.Debug("onComplete")
+//	return nil
+//}
 
 func (n *Node) onPublish(msg *message.PublishMessage) error {
 	log.Debug("onPublish")
