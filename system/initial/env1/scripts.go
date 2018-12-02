@@ -297,11 +297,16 @@ main =->
     dev = IC.CurrentDevice()
     flow = IC.Flow()
     
-    print 1
     return if !node || !dev
-    print 2
     
-    node.send dev, {}
+    # номер комманнды 
+    # 3 - проверка состояния
+    FUNCTION = 3
+    
+    COMMAND = [FUNCTION, 0, 0, 0, 5]
+    print 1
+    node.send dev, COMMAND
+    print 2
 
     #fetchStatus(node, dev, flow)
     
