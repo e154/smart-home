@@ -28,6 +28,17 @@ type NodeResponse struct {
 	Status     string            `json:"status"`
 }
 
+type NodeStatus struct {
+	Status string `json:"status"`
+	Thread int    `json:"thread"`
+}
+
+type NodeBindResult struct {
+	Result    string `json: "result"`
+	Error     string `json: "error"`
+	ErrorCode string `json: "error_code"`
+}
+
 type Node struct {
 	*m.Node
 	errors      int64
@@ -36,7 +47,9 @@ type Node struct {
 	IsConnected bool
 	lastPing    time.Time
 	sync.Mutex
-	ch map[int64]chan *NodeResponse
+	ch          map[int64]chan *NodeResponse
+	nodesStatus string
+	thread      int
 }
 
 func NewNode(model *m.Node,
@@ -48,7 +61,7 @@ func NewNode(model *m.Node,
 	}
 
 	topic := fmt.Sprintf("/home/%s", model.Name)
-	mqttClient, err := mqtt.NewClient(topic, nil, node.onPublish)
+	mqttClient, err := mqtt.NewClient(topic)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -60,9 +73,9 @@ func NewNode(model *m.Node,
 	return node
 }
 
-func (n *Node) Send(device *m.Device, command []byte) (err error) {
+func (n *Node) Send(device *m.Device, command []byte) (result NodeBindResult) {
 
-	log.Debugf("send device(%v) command(%v)", device.Id, command)
+	//log.Debugf("send device(%v) command(%v)", device.Id, command)
 
 	ch := make(chan *NodeResponse)
 	n.addCh(device.Id, ch)
@@ -76,8 +89,9 @@ func (n *Node) Send(device *m.Device, command []byte) (err error) {
 	}
 
 	data, _ := json.Marshal(msg)
-	if err = n.qClient.Publish(data); err != nil {
+	if err := n.qClient.Publish(data); err != nil {
 		log.Error(err.Error())
+		result.Error = err.Error()
 	}
 
 	timeout := time.Second * 2
@@ -97,8 +111,17 @@ func (n *Node) Send(device *m.Device, command []byte) (err error) {
 			if resp.DeviceId != device.Id {
 				continue
 			}
-			fmt.Println("//////////////")
-			fmt.Println(resp)
+			// тут ответ на запрос
+			//fmt.Println(resp)
+			ticker.Stop()
+			done = true
+
+			result.Error = resp.Status
+			if result.Error == "" {
+				result.Result = string(resp.Response[:len(resp.Response)])
+			}
+
+			fmt.Println(result)
 		}
 	}
 
@@ -132,10 +155,6 @@ func (n *Node) delCh(deviceId int64) {
 //}
 
 func (n *Node) onPublish(msg *message.PublishMessage) (err error) {
-	if string(msg.Payload()) == "live" {
-		n.lastPing = time.Now()
-		return
-	}
 
 	resp := &NodeResponse{}
 	if err = json.Unmarshal(msg.Payload(), resp); err != nil {
@@ -154,10 +173,22 @@ func (n *Node) onPublish(msg *message.PublishMessage) (err error) {
 }
 
 func (n *Node) Connect() *Node {
-	log.Debug("Connect")
+
 	if err := n.qClient.Connect(); err != nil {
 		log.Error(err.Error())
 	}
+
+	time.Sleep(time.Second)
+
+	topic := fmt.Sprintf("/home/%s", n.Name)
+	if err := n.qClient.Subscribe(topic+"/resp", nil, n.onPublish); err != nil {
+		log.Warning(err.Error())
+	}
+
+	if err := n.qClient.Subscribe(topic+"/ping", nil, n.ping); err != nil {
+		log.Warning(err.Error())
+	}
+
 	return n
 }
 
@@ -167,11 +198,20 @@ func (n *Node) Disconnect() {
 	}
 }
 
+func (n *Node) ping(msg *message.PublishMessage) (err error) {
+	stat := &NodeStatus{}
+	json.Unmarshal(msg.Payload(), stat)
+	n.nodesStatus = stat.Status
+	n.thread = stat.Thread
+	n.lastPing = time.Now()
+	return
+}
+
 func (n *Node) pong() {
 	go func() {
 		for ; ; {
 			time.Sleep(time.Second)
-			n.IsConnected = time.Now().Sub(n.lastPing).Seconds() < 10
+			n.IsConnected = time.Now().Sub(n.lastPing).Seconds() < 2 && n.thread > 0
 		}
 	}()
 }

@@ -13,7 +13,7 @@ type NodeBind struct {
 	node *Node
 }
 
-func (n *NodeBind) Send(device *DeviceBind, command []byte) (err error) {
+func (n *NodeBind) Send(device *DeviceBind, command []byte) NodeBindResult {
 	return n.node.Send(device.model, command)
 }
 

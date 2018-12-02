@@ -63,13 +63,13 @@ func (m *Mqtt) runServer() {
 	}
 }
 
-func (m *Mqtt) NewClient(topic string, onComplete service.OnCompleteFunc, onPublish service.OnPublishFunc) (c *Client, err error) {
+func (m *Mqtt) NewClient(topic string) (c *Client, err error) {
 
 	uri := fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.SrvPort)
 
 	log.Infof("new queue client %s topic(%s)", uri, topic)
 
-	if c, err = NewClient(uri, topic, onComplete, onPublish); err != nil {
+	if c, err = NewClient(uri, topic); err != nil {
 		return
 	}
 

@@ -89,7 +89,7 @@ func devices(node1 *m.Node,
 
 	smartBusConfig4 := &common.DevConfSmartBus{
 		Baud: 19200,
-		Device: 4,
+		Device: 1,
 		Timeout: 457,
 		StopBits: 2,
 		Sleep: 0,

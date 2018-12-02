@@ -304,9 +304,12 @@ main =->
     FUNCTION = 3
     
     COMMAND = [FUNCTION, 0, 0, 0, 5]
-    print 1
-    node.send dev, COMMAND
-    print 2
+    from_node = node.send dev, COMMAND
+    print from_node.error
+    if from_node.result != ""
+        result = IC.hex2arr(from_node.result)
+        print "1", from_node.result[0]
+        print "2", result[0]
 
     #fetchStatus(node, dev, flow)
     
