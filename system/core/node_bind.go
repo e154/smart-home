@@ -41,6 +41,10 @@ func (n *NodeBind) Status() string {
 	return n.node.Status
 }
 
+func (n *NodeBind) Stat() *NodeStatModel {
+	return n.node.stat
+}
+
 func (n *NodeBind) Description() string {
 	return n.node.Description
 }

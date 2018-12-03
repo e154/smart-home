@@ -6,38 +6,12 @@ import (
 	"github.com/surgemq/message"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"time"
 	"sync"
+	"github.com/e154/smart-home/common/debug"
 )
 
 type Nodes []*Node
-
-type NodeMessage struct {
-	DeviceId   int64             `json:"device_id"`
-	DeviceType common.DeviceType `json:"device_type"`
-	Properties json.RawMessage   `json:"properties"`
-	Command    []byte            `json:"command"`
-}
-
-type NodeResponse struct {
-	DeviceId   int64             `json:"device_id"`
-	DeviceType common.DeviceType `json:"device_type"`
-	Properties json.RawMessage   `json:"properties"`
-	Response   []byte            `json:"response"`
-	Status     string            `json:"status"`
-}
-
-type NodeStatus struct {
-	Status string `json:"status"`
-	Thread int    `json:"thread"`
-}
-
-type NodeBindResult struct {
-	Result    string `json: "result"`
-	Error     string `json: "error"`
-	ErrorCode string `json: "error_code"`
-}
 
 type Node struct {
 	*m.Node
@@ -46,10 +20,10 @@ type Node struct {
 	qClient     *mqtt.Client
 	IsConnected bool
 	lastPing    time.Time
+	quit        bool
+	stat        *NodeStatModel
 	sync.Mutex
-	ch          map[int64]chan *NodeResponse
-	nodesStatus string
-	thread      int
+	ch map[int64]chan *NodeResponse
 }
 
 func NewNode(model *m.Node,
@@ -58,6 +32,7 @@ func NewNode(model *m.Node,
 	node := &Node{
 		Node: model,
 		ch:   make(map[int64]chan *NodeResponse, 0),
+		stat: &NodeStatModel{},
 	}
 
 	topic := fmt.Sprintf("/home/%s", model.Name)
@@ -68,7 +43,15 @@ func NewNode(model *m.Node,
 
 	node.qClient = mqttClient
 
-	go node.pong()
+	go func() {
+		for ; ; {
+			if node.quit {
+				break
+			}
+			time.Sleep(time.Second)
+			node.IsConnected = time.Now().Sub(node.lastPing).Seconds() < 2 && node.stat.Thread > 0
+		}
+	}()
 
 	return node
 }
@@ -118,7 +101,7 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeBindResult) {
 
 			result.Error = resp.Status
 			if result.Error == "" {
-				result.Result = string(resp.Response[:len(resp.Response)])
+				result.Result = string(resp.Response[:])
 			}
 
 			fmt.Println(result)
@@ -193,25 +176,15 @@ func (n *Node) Connect() *Node {
 }
 
 func (n *Node) Disconnect() {
+	n.quit = true
 	if n.qClient != nil {
 		n.qClient.Disconnect()
 	}
 }
 
 func (n *Node) ping(msg *message.PublishMessage) (err error) {
-	stat := &NodeStatus{}
-	json.Unmarshal(msg.Payload(), stat)
-	n.nodesStatus = stat.Status
-	n.thread = stat.Thread
+	json.Unmarshal(msg.Payload(), n.stat)
+	debug.Println(n.stat)
 	n.lastPing = time.Now()
 	return
-}
-
-func (n *Node) pong() {
-	go func() {
-		for ; ; {
-			time.Sleep(time.Second)
-			n.IsConnected = time.Now().Sub(n.lastPing).Seconds() < 2 && n.thread > 0
-		}
-	}()
 }
