@@ -308,8 +308,10 @@ main =->
     print from_node.error
     if from_node.result != ""
         result = IC.hex2arr(from_node.result)
-        print "1", from_node.result[0]
-        print "2", result[0]
+        print 1, from_node.result[0]
+        print 2, result[0]
+        print 3, result
+        print 4, from_node.time
 
     #fetchStatus(node, dev, flow)
     

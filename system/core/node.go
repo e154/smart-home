@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 	"sync"
-	"github.com/e154/smart-home/common/debug"
 )
 
 type Nodes []*Node
@@ -60,10 +59,14 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeBindResult) {
 
 	//log.Debugf("send device(%v) command(%v)", device.Id, command)
 
+	// time metric
+	startTime := time.Now()
+
 	ch := make(chan *NodeResponse)
 	n.addCh(device.Id, ch)
 	defer n.delCh(device.Id)
 
+	// send message to node
 	msg := &NodeMessage{
 		DeviceId:   device.Id,
 		DeviceType: device.Type,
@@ -77,8 +80,8 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeBindResult) {
 		result.Error = err.Error()
 	}
 
-	timeout := time.Second * 2
-	ticker := time.NewTicker(timeout)
+	// wait response
+	ticker := time.NewTicker(time.Second * 1)
 	defer ticker.Stop()
 
 	var done bool
@@ -88,23 +91,22 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeBindResult) {
 		}
 		select {
 		case <-ticker.C:
-			log.Debugf("request timeout device(%d)", device.Id)
+			//log.Debugf("request timeout device(%d)", device.Id)
+			result.Error = "error"
+			result.Time = time.Since(startTime).Seconds()
 			done = true
 		case resp := <-ch:
 			if resp.DeviceId != device.Id {
 				continue
 			}
-			// тут ответ на запрос
-			//fmt.Println(resp)
-			ticker.Stop()
-			done = true
 
+			// response from node
+			result.Time = time.Since(startTime).Seconds()
+			done = true
 			result.Error = resp.Status
 			if result.Error == "" {
-				result.Result = string(resp.Response[:])
+				result.Result = fmt.Sprintf("%x", resp.Response)
 			}
-
-			fmt.Println(result)
 		}
 	}
 
@@ -184,7 +186,6 @@ func (n *Node) Disconnect() {
 
 func (n *Node) ping(msg *message.PublishMessage) (err error) {
 	json.Unmarshal(msg.Payload(), n.stat)
-	debug.Println(n.stat)
 	n.lastPing = time.Now()
 	return
 }
