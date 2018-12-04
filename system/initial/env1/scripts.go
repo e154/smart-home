@@ -8,7 +8,7 @@ import (
 )
 
 func addScripts(adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService) (script1, script2, script3, script4, script5, script6 *m.Script) {
+	scriptService *scripts.ScriptService) (script1, script2, script3, script4, script5, script6, script7 *m.Script) {
 
 	// add script
 	// ------------------------------------------------
@@ -118,6 +118,24 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script6Id, err := adaptors.Script.Add(script6)
 	So(err, ShouldBeNil)
 	script6, err = adaptors.Script.GetById(script6Id)
+	So(err, ShouldBeNil)
+
+	script7 = &m.Script{
+		Lang:        "coffeescript",
+		Name:        "task1",
+		Source:      coffeescript7,
+		Description: "script7",
+	}
+	ok, _ = script7.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine7, err := scriptService.NewEngine(script7)
+	So(err, ShouldBeNil)
+	err = engine7.Compile()
+	So(err, ShouldBeNil)
+	script7Id, err := adaptors.Script.Add(script7)
+	So(err, ShouldBeNil)
+	script7, err = adaptors.Script.GetById(script7Id)
 	So(err, ShouldBeNil)
 
 	return
@@ -297,7 +315,7 @@ main =->
     dev = IC.CurrentDevice()
     flow = IC.Flow()
     
-    return if !node || !dev
+    return if !node || !dev || !flow
     
     # номер комманнды 
     # 3 - проверка состояния
@@ -311,11 +329,12 @@ main =->
         print 1, from_node.result[0]
         print 2, result[0]
         print 3, result
-        print 4, from_node.time
+    print 4, from_node.time
+    print 5, flow
 
     #fetchStatus(node, dev, flow)
     
-main()
+#main()
 `
 
 const coffeescript4 = `
@@ -376,13 +395,21 @@ main =->
 const coffeescript6 = `
 
 main =->
-    incoming = IC.hex2arr message.getVar('result')
-    print IC.Flow().getName(), 'incoming:', incoming
-    print IC.Map.getDeviceState(message.getVar('devId'))
-    # IC.Log.warn 'test'
-    # print IC.Workflow().getVar 'scenario'
-    # scenario = IC.Workflow().getScenario()
-    # print scenario
-    # if scenario == 'weekday'
-    #     IC.Workflow().setScenario 'weekend' 
+
+`
+const coffeescript7 = `
+main =->
+    
+    node = IC.CurrentNode()
+    dev = IC.CurrentDevice()
+    flow = IC.Flow()
+    
+    return if !node || !dev || !flow
+    
+    COMMAND1 = ['./data/scripts/ping.sh', 'ya.ru']
+    COMMAND2 = [1,2,0,0,0,5]
+    node.send dev, COMMAND1
+    node.send dev, COMMAND2
+
+main()
 `

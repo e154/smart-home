@@ -28,6 +28,7 @@ type Device struct {
 	States      []*DeviceState
 	Actions     []*DeviceAction
 	Devices     []*Device
+	IsGroup     bool
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

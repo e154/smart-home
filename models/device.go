@@ -43,6 +43,8 @@ func (d *Device) SetProperties(properties interface{}) (ok bool, errs []*validat
 	case *DevConfSmartBus:
 		dType = DevTypeSmartBus
 		ok, errs = v.Valid()
+	case *DevConfCommand:
+		dType = DevTypeCommand
 	default:
 		fmt.Printf("unknown device config %v", v)
 		return

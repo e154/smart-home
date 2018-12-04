@@ -92,7 +92,7 @@ func (m Migrations) Down() (err error) {
 
 func (m Migrations) Purge() (err error) {
 
-	log.Warning("Purge database")
+	log.Warningf("Purge database: %s", m.cfg.Name)
 
 	if err = m.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		log.Error(err.Error())

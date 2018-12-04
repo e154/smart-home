@@ -169,6 +169,9 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 		Preload("DeviceAction.Device").
 		Preload("DeviceAction.Device.Devices").
 		Preload("DeviceAction.Device.Node").
+		Preload("DeviceAction.Device.States").
+		Preload("DeviceAction.Device.Actions").
+		Preload("DeviceAction.Device.Actions.Script").
 		Find(&flow.Workers).
 		Error
 

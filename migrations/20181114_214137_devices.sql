@@ -1,6 +1,5 @@
 -- +migrate Up
 create type devices_status as enum ('enabled', 'disabled');
-create type devices_type as enum ('default', 'smartbus', 'modbus', 'zigbee');
 
 CREATE TABLE devices (
   id          bigserial constraint devices_pkey primary key not null,
@@ -9,8 +8,9 @@ CREATE TABLE devices (
   device_id   smallint                                      NULL,
   node_id     BIGINT CONSTRAINT devices_2_nodes_fk REFERENCES nodes (id) on update cascade on delete cascade null,
   properties  jsonb                                         default '{"params":{}}',
-  type        devices_type                                  default 'default' not null,
+  type        text                                          default 'default' not null,
   status      devices_status                                NOT NULL DEFAULT 'enabled',
+  is_group    BOOLEAN                                       DEFAULT FALSE,
   created_at  timestamp with time zone                      not null,
   updated_at  timestamp with time zone                      not null
 );

@@ -90,7 +90,7 @@ func (n *Device) fromDb(dbDevice *db.Device) (device *m.Device) {
 		Description: dbDevice.Description,
 		Type:        dbDevice.Type,
 		Properties:  dbDevice.Properties,
-		IsGroup:     !dbDevice.DeviceId.Valid,
+		IsGroup:     dbDevice.IsGroup,
 		Actions:     make([]*m.DeviceAction, 0),
 		States:      make([]*m.DeviceState, 0),
 		Devices:     make([]*m.Device, 0),
@@ -135,6 +135,7 @@ func (n *Device) toDb(device *m.Device) (dbDevice *db.Device) {
 		Description: device.Description,
 		Properties:  device.Properties,
 		Type:        device.Type,
+		IsGroup:     device.IsGroup,
 	}
 
 	// device

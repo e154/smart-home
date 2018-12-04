@@ -22,3 +22,6 @@ func (d DevConfSmartBus) Valid() (ok bool, errs []*validation.Error) {
 
 type DevConfModBus struct {
 }
+
+type DevConfCommand struct {
+}

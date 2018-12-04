@@ -9,24 +9,25 @@ import (
 
 func devices(node1 *m.Node,
 	adaptors *adaptors.Adaptors,
-	script1, script2, script3 *m.Script) (device1, device2, device3 *m.Device, deviceAction3 *m.DeviceAction) {
+	script1, script2, script3, script7 *m.Script) (device1, device2, device3 *m.Device, deviceAction3, deviceAction7 *m.DeviceAction) {
 
 	// devices
 	// ------------------------------------------------
 	device1 = &m.Device{
 		Name:       "device1",
 		Status:     "enabled",
-		Type:       "default",
+		Type:       common.DevTypeDefault,
 		Node:       node1,
+		IsGroup:    true,
 		Properties: []byte("{}"),
 	}
 
 	smartBusConfig := &common.DevConfSmartBus{
-		Baud: 19200,
-		Device: 0,
-		Timeout: 457,
+		Baud:     19200,
+		Device:   0,
+		Timeout:  457,
 		StopBits: 2,
-		Sleep: 0,
+		Sleep:    0,
 	}
 
 	ok, _ := device1.SetProperties(smartBusConfig)
@@ -38,7 +39,7 @@ func devices(node1 *m.Node,
 	device3 = &m.Device{
 		Name:       "device3",
 		Status:     "disabled",
-		Type:       "default",
+		Type:       common.DevTypeDefault,
 		Node:       node1,
 		Properties: []byte("{}"),
 	}
@@ -54,7 +55,7 @@ func devices(node1 *m.Node,
 	device2 = &m.Device{
 		Name:       "device2",
 		Status:     "enabled",
-		Type:       "default",
+		Type:       common.DevTypeDefault,
 		Device:     device1,
 		Properties: []byte("{}"),
 	}
@@ -63,11 +64,11 @@ func devices(node1 *m.Node,
 	So(ok, ShouldEqual, true)
 
 	smartBusConfig2 := &common.DevConfSmartBus{
-		Baud: 19200,
-		Device: 2,
-		Timeout: 457,
+		Baud:     19200,
+		Device:   2,
+		Timeout:  457,
 		StopBits: 2,
-		Sleep: 0,
+		Sleep:    0,
 	}
 
 	ok, _ = device2.SetProperties(smartBusConfig2)
@@ -79,7 +80,7 @@ func devices(node1 *m.Node,
 	device4 := &m.Device{
 		Name:       "device4",
 		Status:     "enabled",
-		Type:       "default",
+		Type:       common.DevTypeDefault,
 		Device:     device1,
 		Properties: []byte("{}"),
 	}
@@ -88,11 +89,11 @@ func devices(node1 *m.Node,
 	So(ok, ShouldEqual, true)
 
 	smartBusConfig4 := &common.DevConfSmartBus{
-		Baud: 19200,
-		Device: 1,
-		Timeout: 457,
+		Baud:     19200,
+		Device:   1,
+		Timeout:  457,
 		StopBits: 2,
-		Sleep: 0,
+		Sleep:    0,
 	}
 
 	ok, _ = device4.SetProperties(smartBusConfig4)
@@ -221,6 +222,61 @@ func devices(node1 *m.Node,
 	deviceState5.Id, err = adaptors.DeviceState.Add(deviceState5)
 	So(err, ShouldBeNil)
 	deviceState6.Id, err = adaptors.DeviceState.Add(deviceState6)
+	So(err, ShouldBeNil)
+
+	// device for command action
+	// ------------------------------------------------
+
+	device6 := &m.Device{
+		Name:       "device6",
+		Status:     "enabled",
+		Type:       common.DevTypeCommand,
+		Node:       node1,
+		Properties: []byte("{}"),
+	}
+
+	ok, _ = device6.Valid()
+	So(ok, ShouldEqual, true)
+	device6.Id, err = adaptors.Device.Add(device6)
+	So(err, ShouldBeNil)
+
+	deviceAction7 = &m.DeviceAction{
+		Name:     "Condition check",
+		DeviceId: device6.Id,
+		ScriptId: script7.Id,
+	}
+	ok, _ = deviceAction7.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction7.Id, err = adaptors.DeviceAction.Add(deviceAction7)
+	So(err, ShouldBeNil)
+
+	deviceState7 := &m.DeviceState{
+		SystemName:  "ONLINE",
+		Description: "address is online",
+		DeviceId:    device6.Id,
+	}
+	deviceState8 := &m.DeviceState{
+		SystemName:  "OFFLINE",
+		Description: "address is offline",
+		DeviceId:    device6.Id,
+	}
+	deviceState9 := &m.DeviceState{
+		SystemName:  "ERROR",
+		Description: "unknown error",
+		DeviceId:    device6.Id,
+	}
+	ok, _ = deviceState7.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = deviceState8.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = deviceState9.Valid()
+	So(ok, ShouldEqual, true)
+
+	deviceState7.Id, err = adaptors.DeviceState.Add(deviceState7)
+	So(err, ShouldBeNil)
+	deviceState8.Id, err = adaptors.DeviceState.Add(deviceState8)
+	So(err, ShouldBeNil)
+	deviceState9.Id, err = adaptors.DeviceState.Add(deviceState9)
 	So(err, ShouldBeNil)
 
 	return

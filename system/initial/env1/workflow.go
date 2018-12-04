@@ -8,7 +8,7 @@ import (
 )
 
 func addWorkflow(adaptors *adaptors.Adaptors,
-	deviceAction3 *m.DeviceAction,
+	deviceAction3, deviceAction7 *m.DeviceAction,
 	script4, script5, script6 *m.Script) (workflow1 *m.Workflow) {
 
 	workflow1 = &m.Workflow{
@@ -144,5 +144,95 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 	worker.Id, err = adaptors.Worker.Add(worker)
 	So(err, ShouldBeNil)
 
+	// add command flow
+	// ------------------------------------------------
+	flow2 := &m.Flow{
+		Name:               "flow2",
+		Status:             Enabled,
+		WorkflowId:         workflow1.Id,
+		WorkflowScenarioId: wfScenario1.Id,
+	}
+	ok, _ = flow2.Valid()
+	So(ok, ShouldEqual, true)
+
+	flow2.Id, err = adaptors.Flow.Add(flow2)
+	So(err, ShouldBeNil)
+
+	// add handler
+	feHandler2 := &m.FlowElement{
+		Name:          "handler",
+		FlowId:        flow2.Id,
+		Status:        Enabled,
+		PrototypeType: FlowElementsPrototypeMessageHandler,
+	}
+	feEmitter2 := &m.FlowElement{
+		Name:          "emitter",
+		FlowId:        flow2.Id,
+		Status:        Enabled,
+		PrototypeType: FlowElementsPrototypeMessageEmitter,
+	}
+	feTask2 := &m.FlowElement{
+		Name:          "task",
+		FlowId:        flow2.Id,
+		Status:        Enabled,
+		PrototypeType: FlowElementsPrototypeTask,
+		ScriptId:      &script6.Id,
+	}
+	ok, _ = feHandler2.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = feEmitter2.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = feTask2.Valid()
+	So(ok, ShouldEqual, true)
+
+	feHandler2.Uuid, err = adaptors.FlowElement.Add(feHandler2)
+	So(err, ShouldBeNil)
+	feEmitter2.Uuid, err = adaptors.FlowElement.Add(feEmitter2)
+	So(err, ShouldBeNil)
+	feTask2.Uuid, err = adaptors.FlowElement.Add(feTask2)
+	So(err, ShouldBeNil)
+
+	connect3 := &m.Connection{
+		Name:        "con1",
+		ElementFrom: feHandler2.Uuid,
+		ElementTo:   feTask2.Uuid,
+		FlowId:      flow2.Id,
+		PointFrom:   1,
+		PointTo:     1,
+	}
+	connect4 := &m.Connection{
+		Name:        "con2",
+		ElementFrom: feTask2.Uuid,
+		ElementTo:   feEmitter2.Uuid,
+		FlowId:      flow2.Id,
+		PointFrom:   1,
+		PointTo:     1,
+	}
+
+	ok, _ = connect3.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = connect4.Valid()
+	So(ok, ShouldEqual, true)
+
+	connect3.Uuid, err = adaptors.Connection.Add(connect3)
+	So(err, ShouldBeNil)
+	connect4.Uuid, err = adaptors.Connection.Add(connect4)
+	So(err, ShouldBeNil)
+
+	// add worker
+	worker2 := &m.Worker{
+		Name:           "worker2",
+		Time:           "* * * * * *",
+		Status:         "enabled",
+		WorkflowId:     workflow1.Id,
+		FlowId:         flow2.Id,
+		DeviceActionId: deviceAction7.Id,
+	}
+
+	ok, _ = worker2.Valid()
+	So(ok, ShouldEqual, true)
+
+	worker2.Id, err = adaptors.Worker.Add(worker2)
+	So(err, ShouldBeNil)
 	return
 }
