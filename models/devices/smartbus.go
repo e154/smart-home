@@ -1,8 +1,8 @@
-package common
+package devices
 
 import "github.com/e154/smart-home/system/validation"
 
-type DevConfSmartBus struct {
+type DevSmartBusConfig struct {
 	Baud     int `json:"baud" valid:"Required"`
 	Device   int `json:"device"`
 	Timeout  int `json:"timeout" valid:"Required"`
@@ -10,7 +10,7 @@ type DevConfSmartBus struct {
 	Sleep    int `json:"sleep"`
 }
 
-func (d DevConfSmartBus) Valid() (ok bool, errs []*validation.Error) {
+func (d DevSmartBusConfig) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
 	if ok, _ = valid.Valid(d); !ok {
@@ -20,8 +20,10 @@ func (d DevConfSmartBus) Valid() (ok bool, errs []*validation.Error) {
 	return
 }
 
-type DevConfModBus struct {
+type DevSmartBusRequest struct {
+	Command []byte `json:"command"`
 }
-
-type DevConfCommand struct {
+type DevSmartBusResponse struct {
+	BaseResponse
+	Result []byte `json:"result"`
 }

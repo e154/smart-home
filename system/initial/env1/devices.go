@@ -4,6 +4,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
+	. "github.com/e154/smart-home/models/devices"
 	"github.com/e154/smart-home/common"
 )
 
@@ -22,7 +23,7 @@ func devices(node1 *m.Node,
 		Properties: []byte("{}"),
 	}
 
-	smartBusConfig := &common.DevConfSmartBus{
+	smartBusConfig := &DevSmartBusConfig{
 		Baud:     19200,
 		Device:   0,
 		Timeout:  457,
@@ -63,7 +64,7 @@ func devices(node1 *m.Node,
 	ok, _ = device2.Valid()
 	So(ok, ShouldEqual, true)
 
-	smartBusConfig2 := &common.DevConfSmartBus{
+	smartBusConfig2 := &DevSmartBusConfig{
 		Baud:     19200,
 		Device:   2,
 		Timeout:  457,
@@ -88,7 +89,7 @@ func devices(node1 *m.Node,
 	ok, _ = device4.Valid()
 	So(ok, ShouldEqual, true)
 
-	smartBusConfig4 := &common.DevConfSmartBus{
+	smartBusConfig4 := &DevSmartBusConfig{
 		Baud:     19200,
 		Device:   1,
 		Timeout:  457,

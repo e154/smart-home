@@ -400,16 +400,10 @@ main =->
 const coffeescript7 = `
 main =->
     
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    flow = IC.Flow()
-    
-    return if !node || !dev || !flow
-    
-    COMMAND1 = ['./data/scripts/ping.sh', 'ya.ru']
-    COMMAND2 = [1,2,0,0,0,5]
-    node.send dev, COMMAND1
-    node.send dev, COMMAND2
+    NAME = './data/scripts/ping.sh'
+    ARGS = ['ya.ru']
+    result = device.runCommand NAME, ARGS
+    print result
 
 main()
 `

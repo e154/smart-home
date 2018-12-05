@@ -9,6 +9,7 @@ import (
 	"github.com/e154/smart-home/system/core"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/common"
+	. "github.com/e154/smart-home/models/devices"
 	"fmt"
 	"github.com/e154/smart-home/common/debug"
 )
@@ -56,7 +57,7 @@ func Test5(t *testing.T) {
 			ok, _ = parentDevice.Valid()
 			So(ok, ShouldEqual, true)
 
-			smartBusConfig1 := &DevConfSmartBus{
+			smartBusConfig1 := &DevSmartBusConfig{
 				Baud: 19200,
 				Timeout: 457,
 				StopBits: 2,

@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/system/validation"
 	"encoding/json"
 	. "github.com/e154/smart-home/common"
+	. "github.com/e154/smart-home/models/devices"
 	"fmt"
 )
 
@@ -40,11 +41,12 @@ func (d *Device) SetProperties(properties interface{}) (ok bool, errs []*validat
 	var dType DeviceType
 
 	switch v := properties.(type) {
-	case *DevConfSmartBus:
+	case *DevSmartBusConfig:
 		dType = DevTypeSmartBus
 		ok, errs = v.Valid()
-	case *DevConfCommand:
+	case *DevCommandConfig:
 		dType = DevTypeCommand
+		ok, errs = v.Valid()
 	default:
 		fmt.Printf("unknown device config %v", v)
 		return

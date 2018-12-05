@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 	"sync"
+	"errors"
 )
 
 type Nodes []*Node
@@ -55,7 +56,7 @@ func NewNode(model *m.Node,
 	return node
 }
 
-func (n *Node) Send(device *m.Device, command []byte) (result NodeBindResult) {
+func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err error) {
 
 	//log.Debugf("send device(%v) command(%v)", device.Id, command)
 
@@ -75,9 +76,9 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeBindResult) {
 	}
 
 	data, _ := json.Marshal(msg)
-	if err := n.qClient.Publish(data); err != nil {
+	if err = n.qClient.Publish(data); err != nil {
 		log.Error(err.Error())
-		result.Error = err.Error()
+		return
 	}
 
 	// wait response
@@ -92,8 +93,7 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeBindResult) {
 		select {
 		case <-ticker.C:
 			//log.Debugf("request timeout device(%d)", device.Id)
-			result.Error = "error"
-			result.Time = time.Since(startTime).Seconds()
+			err = errors.New("timeout")
 			done = true
 		case resp := <-ch:
 			if resp.DeviceId != device.Id {
@@ -101,14 +101,18 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeBindResult) {
 			}
 
 			// response from node
-			result.Time = time.Since(startTime).Seconds()
-			done = true
-			result.Error = resp.Status
-			if result.Error == "" {
-				result.Result = fmt.Sprintf("%x", resp.Response)
+			result = NodeResponse{
+				DeviceId:   resp.DeviceId,
+				Status:     resp.Status,
+				DeviceType: resp.DeviceType,
+				Response:   resp.Response,
+				Properties: resp.Properties,
 			}
+			done = true
 		}
 	}
+
+	result.Time = time.Since(startTime).Seconds()
 
 	return
 }
