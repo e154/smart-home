@@ -1,6 +1,13 @@
 package devices
 
-import "github.com/e154/smart-home/system/validation"
+import (
+	"github.com/e154/smart-home/system/validation"
+	. "github.com/e154/smart-home/common"
+)
+
+const (
+	DevTypeCommand  = DeviceType("command")
+)
 
 type DevCommandConfig struct {
 }

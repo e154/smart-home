@@ -322,19 +322,12 @@ main =->
     FUNCTION = 3
     
     COMMAND = [FUNCTION, 0, 0, 0, 5]
-    from_node = node.send dev, COMMAND
-    print from_node.error
-    if from_node.result != ""
-        result = IC.hex2arr(from_node.result)
-        print 1, from_node.result[0]
-        print 2, result[0]
-        print 3, result
-    print 4, from_node.time
-    print 5, flow
+    result = device.smartBus COMMAND
+    print result
 
     #fetchStatus(node, dev, flow)
     
-#main()
+main()
 `
 
 const coffeescript4 = `
@@ -405,5 +398,5 @@ main =->
     result = device.runCommand NAME, ARGS
     print result
 
-main()
+#main()
 `

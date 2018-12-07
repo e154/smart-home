@@ -1,6 +1,13 @@
 package devices
 
-import "github.com/e154/smart-home/system/validation"
+import (
+	"github.com/e154/smart-home/system/validation"
+	. "github.com/e154/smart-home/common"
+)
+
+const (
+	DevTypeSmartBus = DeviceType("smartbus")
+)
 
 type DevSmartBusConfig struct {
 	Baud     int `json:"baud" valid:"Required"`

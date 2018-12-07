@@ -5,7 +5,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	. "github.com/e154/smart-home/models/devices"
-	"github.com/e154/smart-home/common"
 )
 
 func devices(node1 *m.Node,
@@ -17,7 +16,7 @@ func devices(node1 *m.Node,
 	device1 = &m.Device{
 		Name:       "device1",
 		Status:     "enabled",
-		Type:       common.DevTypeDefault,
+		Type:       DevTypeDefault,
 		Node:       node1,
 		IsGroup:    true,
 		Properties: []byte("{}"),
@@ -40,7 +39,7 @@ func devices(node1 *m.Node,
 	device3 = &m.Device{
 		Name:       "device3",
 		Status:     "disabled",
-		Type:       common.DevTypeDefault,
+		Type:       DevTypeDefault,
 		Node:       node1,
 		Properties: []byte("{}"),
 	}
@@ -56,7 +55,7 @@ func devices(node1 *m.Node,
 	device2 = &m.Device{
 		Name:       "device2",
 		Status:     "enabled",
-		Type:       common.DevTypeDefault,
+		Type:       DevTypeDefault,
 		Device:     device1,
 		Properties: []byte("{}"),
 	}
@@ -81,7 +80,7 @@ func devices(node1 *m.Node,
 	device4 := &m.Device{
 		Name:       "device4",
 		Status:     "enabled",
-		Type:       common.DevTypeDefault,
+		Type:       DevTypeDefault,
 		Device:     device1,
 		Properties: []byte("{}"),
 	}
@@ -231,7 +230,7 @@ func devices(node1 *m.Node,
 	device6 := &m.Device{
 		Name:       "device6",
 		Status:     "enabled",
-		Type:       common.DevTypeCommand,
+		Type:       DevTypeCommand,
 		Node:       node1,
 		Properties: []byte("{}"),
 	}

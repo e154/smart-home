@@ -27,11 +27,3 @@ const (
 )
 
 type DeviceType string
-
-const (
-	DevTypeSmartBus = DeviceType("smartbus")
-	DevTypeCommand  = DeviceType("command")
-	DevTypeModBus   = DeviceType("modbus")
-	DevTypeZigbee   = DeviceType("zigbee")
-	DevTypeDefault  = DeviceType("default")
-)
