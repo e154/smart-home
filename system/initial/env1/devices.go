@@ -25,7 +25,7 @@ func devices(node1 *m.Node,
 	smartBusConfig := &DevSmartBusConfig{
 		Baud:     19200,
 		Device:   0,
-		Timeout:  457,
+		Timeout:  50,
 		StopBits: 2,
 		Sleep:    0,
 	}
@@ -66,7 +66,7 @@ func devices(node1 *m.Node,
 	smartBusConfig2 := &DevSmartBusConfig{
 		Baud:     19200,
 		Device:   2,
-		Timeout:  457,
+		Timeout:  50,
 		StopBits: 2,
 		Sleep:    0,
 	}
@@ -91,7 +91,7 @@ func devices(node1 *m.Node,
 	smartBusConfig4 := &DevSmartBusConfig{
 		Baud:     19200,
 		Device:   1,
-		Timeout:  457,
+		Timeout:  50,
 		StopBits: 2,
 		Sleep:    0,
 	}

@@ -4,7 +4,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/models/devices"
 	"encoding/json"
-	"github.com/e154/smart-home/common/debug"
 )
 
 type Device struct {
@@ -62,7 +61,7 @@ func (d *Device) SmartBus(command []byte) (result *DevSmartBusResponse) {
 	}
 
 	//debug.Println(nodeResult)
-	debug.Println(result)
+	//debug.Println(result)
 
 	result.Time = nodeResult.Time
 

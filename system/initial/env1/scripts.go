@@ -398,5 +398,5 @@ main =->
     result = device.runCommand NAME, ARGS
     print result
 
-#main()
+main()
 `
