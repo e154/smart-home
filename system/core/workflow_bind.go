@@ -8,7 +8,7 @@ package core
 //	 .setVar(string, interface)
 //	 .getVar(string)
 //	 .getScenario() string
-//	 .GetScenarioName() string
+//	 .getScenarioName() string
 //	 .setScenario(string)
 //
 type WorkflowBind struct {
