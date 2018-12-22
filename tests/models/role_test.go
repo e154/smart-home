@@ -78,16 +78,30 @@ func TestRole(t *testing.T) {
 			err = adaptors.Role.Add(adminRole)
 			So(err, ShouldBeNil)
 
+			// user
 			userRole, err = adaptors.Role.GetByName("user")
 			So(err, ShouldBeNil)
-
-			//debug.Println(userRole)
-			//fmt.Println("---")
-
-			So(userRole.Parent, ShouldNotBeNil)
 			So(userRole.Name, ShouldEqual, "user")
+			So(userRole.Parent, ShouldNotBeNil)
 			So(userRole.Parent.Name, ShouldEqual, "demo")
 			So(len(userRole.Children), ShouldEqual, 1)
+			So(userRole.Children[0].Name, ShouldEqual, "admin")
+
+			// demo
+			demoRole, err = adaptors.Role.GetByName("demo")
+			So(err, ShouldBeNil)
+			So(demoRole.Parent, ShouldBeNil)
+			So(demoRole.Name, ShouldEqual, "demo")
+			So(len(demoRole.Children), ShouldEqual, 1)
+			So(demoRole.Children[0].Name, ShouldEqual, "user")
+
+			// admin
+			adminRole, err = adaptors.Role.GetByName("admin")
+			So(err, ShouldBeNil)
+			So(adminRole.Parent, ShouldNotBeNil)
+			So(adminRole.Parent.Name, ShouldEqual, "user")
+			So(adminRole.Name, ShouldEqual, "admin")
+			So(len(adminRole.Children), ShouldBeZeroValue)
 
 			permissions, err := adaptors.Permission.GetAllPermissions("user")
 			So(err, ShouldBeNil)
