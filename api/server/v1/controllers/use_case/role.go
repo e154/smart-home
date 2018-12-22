@@ -68,12 +68,12 @@ func Search(query string, limit, offset int, adaptors *adaptors.Adaptors) (roles
 	return
 }
 
-func GetAccessList(name string,
+func GetAccessList(roleName string,
 	adaptors *adaptors.Adaptors,
 	accessListService *access_list.AccessListService) (accessList access_list.AccessList, err error) {
 
 	var role *m.Role
-	if role, err = adaptors.Role.GetByName(name); err != nil {
+	if role, err = adaptors.Role.GetByName(roleName); err != nil {
 		return
 	}
 
@@ -103,6 +103,47 @@ func GetAccessList(name string,
 
 		item.RoleName = perm.RoleName
 		accessList[perm.PackageName][perm.LevelName] = item
+	}
+
+	return
+}
+
+func UpdateAccessList(roleName string, accessListDif map[string]map[string]bool, adaptors *adaptors.Adaptors) (err error) {
+
+	var role *m.Role
+	if role, err = adaptors.Role.GetByName(roleName); err != nil {
+		return
+	}
+
+	addPerms := make([]*m.Permission, 0)
+	delPerms := make([]string, 0)
+	for packName, pack := range accessListDif {
+		for levelName, dir := range pack {
+			if dir {
+				addPerms = append(addPerms, &m.Permission{
+					RoleName:    role.Name,
+					PackageName: packName,
+					LevelName:   levelName,
+				})
+			} else {
+				delPerms = append(delPerms, levelName)
+			}
+
+			if len(delPerms) > 0 {
+				if err = adaptors.Permission.Delete(packName, delPerms); err != nil {
+					return
+				}
+				delPerms = []string{}
+			}
+		}
+	}
+
+	if len(addPerms) == 0 {
+		return
+	}
+
+	for _, perm := range addPerms {
+		adaptors.Permission.Add(perm)
 	}
 
 	return

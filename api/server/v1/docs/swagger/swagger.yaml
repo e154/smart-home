@@ -1,5 +1,9 @@
 basePath: /api/v1
 definitions:
+  models.AccessList:
+    type: object
+  models.AccessListDiff:
+    type: object
   models.Device:
     properties:
       address:
@@ -1085,7 +1089,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseRole'
+            $ref: '#/definitions/models.AccessList'
             type: object
         "400":
           description: some error
@@ -1115,6 +1119,13 @@ paths:
         name: name
         required: true
         type: string
+      - description: permission
+        in: body
+        name: diff
+        required: true
+        schema:
+          $ref: '#/definitions/models.AccessListDiff'
+          type: object
       produces:
       - application/json
       responses:

@@ -41,21 +41,7 @@ func (n Roles) GetByName(name string) (role *Role, err error) {
 		return
 	}
 
-	// get parent
-	if role.RoleName.Valid {
-		role.Role = &Role{}
-		err = n.Db.Model(role).
-			Where("name = ?", role.RoleName.String).
-			Find(&role.Role).
-			Error
-	}
-
-	// get children
-	role.Children = make([]*Role, 0)
-	err = n.Db.Model(role).
-		Where("parent = ?", role.Name).
-		Find(&role.Children).
-		Error
+	err = n.RelData(role)
 
 	return
 }
@@ -86,6 +72,14 @@ func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, t
 		Find(&list).
 		Error
 
+	if err != nil {
+		return
+	}
+
+	for _, role := range list {
+		n.RelData(role)
+	}
+
 	return
 }
 
@@ -102,6 +96,27 @@ func (n *Roles) Search(query string, limit, offset int) (list []*Role, total int
 
 	list = make([]*Role, 0)
 	err = q.Find(&list).Error
+
+	return
+}
+
+func (n *Roles) RelData(role *Role) (err error) {
+
+	// get parent
+	if role.RoleName.Valid {
+		role.Role = &Role{}
+		err = n.Db.Model(role).
+			Where("name = ?", role.RoleName.String).
+			Find(&role.Role).
+			Error
+	}
+
+	// get children
+	role.Children = make([]*Role, 0)
+	err = n.Db.Model(role).
+		Where("parent = ?", role.Name).
+		Find(&role.Children).
+		Error
 
 	return
 }

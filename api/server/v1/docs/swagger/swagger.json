@@ -862,7 +862,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseRole"
+                            "$ref": "#/definitions/models.AccessList"
                         }
                     },
                     "400": {
@@ -907,6 +907,16 @@
                         "name": "name",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "permission",
+                        "name": "diff",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.AccessListDiff"
+                        }
                     }
                 ],
                 "responses": {
@@ -1727,6 +1737,12 @@
         }
     },
     "definitions": {
+        "models.AccessList": {
+            "type": "object"
+        },
+        "models.AccessListDiff": {
+            "type": "object"
+        },
         "models.Device": {
             "type": "object",
             "properties": {

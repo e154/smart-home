@@ -93,7 +93,7 @@ func (c ControllerRole) GetRoleByName(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param name path string true "Role name"
-// @Success 200 {object} models.ResponseRole
+// @Success 200 {object} models.AccessList
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -122,6 +122,7 @@ func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param name path string true "Role name"
+// @Param diff body models.AccessListDiff true "permission"
 // @Success 200 {object} models.ResponseRole
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
@@ -129,9 +130,15 @@ func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 // @Router /role/{name}/access_list [Put]
 func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 
+	accessListDif := make(map[string]map[string]bool)
+	if err := ctx.ShouldBindJSON(&accessListDif); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
 	name := ctx.Param("name")
-	role, err := GetRoleByName(name, c.adaptors)
-	if err != nil {
+	if err := UpdateAccessList(name, accessListDif, c.adaptors); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -141,7 +148,7 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("role", role).Send(ctx)
+	resp.Send(ctx)
 }
 
 // Role godoc

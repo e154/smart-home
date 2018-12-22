@@ -30,8 +30,9 @@ func (n Permissions) Add(permission *Permission) (id int64, err error) {
 
 func (n Permissions) Delete(packageName string, levelName []string) (err error) {
 
-	err = n.Db.Model(&Permission{}).
-		Delete("package_name = ? and level_name in (?)", packageName, levelName).
+	err = n.Db.
+		Where("package_name = ? and level_name in (?)", packageName, levelName).
+		Delete(&Permission{}).
 		Error
 
 	return
