@@ -1,6 +1,17 @@
 package db
 
-import "time"
+import (
+	"time"
+	"encoding/json"
+	"github.com/jinzhu/gorm"
+	"database/sql"
+)
+
+const HISTORY_MAX = 8
+
+type Users struct {
+	Db *gorm.DB
+}
 
 type User struct {
 	Id                  int64 `gorm:"primary_key"`
@@ -9,25 +20,29 @@ type User struct {
 	LastName            string
 	EncryptedPassword   string
 	Email               string
-	HistoryStr          string
 	Status              string
 	ResetPasswordToken  string
 	AuthenticationToken string
-	Avatar              *Image
+	Image               *Image
+	ImageId             sql.NullInt64
 	SignInCount         int64
 	CurrentSignInIp     string
 	LastSignInIp        string
 	Lang                string
-	CreatedBy           *User
+	User                *User
+	UserId              sql.NullInt64
 	Role                *Role
+	RoleId              int64
 	Meta                []*UserMeta
 	ResetPasswordSentAt time.Time
 	CurrentSignInAt     time.Time
 	LastSignInAt        time.Time
 	CreatedAt           time.Time
-	UpdateAt            *time.Time
-	Deleted             *time.Time
-	//History             []*UserHistory `gorm:"-"`
+	UpdatedAt           *time.Time
+	DeletedAt           *time.Time
+	History             json.RawMessage `gorm:"type:jsonb;not null"`
 }
 
-const HISTORY_MAX = 8
+func (m *User) TableName() string {
+	return "users"
+}

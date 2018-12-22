@@ -16,6 +16,7 @@ import (
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/services"
+	"github.com/e154/smart-home/system/access_list"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -43,6 +44,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(services.NewServices)
 	container.Provide(mqtt.NewMqtt)
 	container.Provide(mqtt.NewMqttConfig)
+	container.Provide(access_list.NewAccessListService)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()

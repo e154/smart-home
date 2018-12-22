@@ -23,6 +23,8 @@ type Adaptors struct {
 	FlowElement      *FlowElement
 	Connection       *Connection
 	Worker           *Worker
+	Role             *Role
+	Permission       *Permission
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -47,6 +49,8 @@ func NewAdaptors(db *gorm.DB,
 		FlowElement:      GetFlowElementAdaptor(db),
 		Connection:       GetConnectionAdaptor(db),
 		Worker:           GetWorkerAdaptor(db),
+		Role:             GetRoleAdaptor(db),
+		Permission:       GetPermissionAdaptor(db),
 	}
 
 	return

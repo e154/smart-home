@@ -37,18 +37,6 @@ func (r *Response) Page(limit, offset, total int, items interface{}) *Response {
 	return r
 }
 
-func (r *Response) List(limit, items, cursor interface{}) *Response {
-	r.Payload = map[string]interface{}{
-		"code": "success",
-		"data": map[string]interface{}{
-			"limit":  limit,
-			"cursor": cursor,
-			"items":  items,
-		},
-	}
-	return r
-}
-
 func (r *Response) Item(name string, item interface{}) *Response {
 	r.Payload = map[string]interface{}{
 		"code": "success",

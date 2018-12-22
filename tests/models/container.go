@@ -1,7 +1,6 @@
-package main
+package models
 
 import (
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/dig"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/system/orm"
@@ -12,6 +11,7 @@ import (
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/services"
@@ -25,7 +25,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(server.NewServer)
 	container.Provide(server.NewServerConfig)
 	container.Provide(controllers.NewControllersV1)
-	container.Provide(config.ReadConfig)
+	//container.Provide(config.ReadConfig)
 	container.Provide(graceful_service.NewGracefulService)
 	container.Provide(graceful_service.NewGracefulServicePool)
 	container.Provide(graceful_service.NewGracefulServiceConfig)
@@ -46,8 +46,11 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(mqtt.NewMqttConfig)
 	container.Provide(access_list.NewAccessListService)
 
+	container.Provide(func() (conf *config.AppConfig, err error) {
+		conf, err = config.ReadConfig()
+		conf.PgName = "smart_home_test"
+		return
+	})
+
 	return
 }
-
-
-

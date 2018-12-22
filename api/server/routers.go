@@ -45,4 +45,14 @@ func (s *Server) setControllers() {
 	v1.PUT("/device/:id", s.ControllersV1.Device.UpdateDevice)
 	v1.DELETE("/device/:id", s.ControllersV1.Device.DeleteDeviceById)
 	v1.GET("/device", s.ControllersV1.Device.GetDeviceList)
+
+	// role
+	v1.POST("/role", s.ControllersV1.Role.AddRole)
+	v1.GET("/role/:name", s.ControllersV1.Role.GetRoleByName)
+	v1.GET("/role/:name/access_list", s.ControllersV1.Role.GetAccessList)
+	v1.PUT("/role/:name/access_list", s.ControllersV1.Role.UpdateAccessList)
+	v1.PUT("/role/:name", s.ControllersV1.Role.UpdateRole)
+	v1.DELETE("/role/:name", s.ControllersV1.Role.DeleteRoleByName)
+	v1.GET("/roles", s.ControllersV1.Role.GetRoleList)
+	v1.GET("/roles/search", s.ControllersV1.Role.Search)
 }

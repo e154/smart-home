@@ -1,6 +1,13 @@
 package db
 
-import "time"
+import (
+	"time"
+	"github.com/jinzhu/gorm"
+)
+
+type Images struct {
+	Db *gorm.DB
+}
 
 type Image struct {
 	Id        int64 `gorm:"primary_key"`
@@ -12,4 +19,8 @@ type Image struct {
 	Size      int64
 	Name      string
 	CreatedAt time.Time
+}
+
+func (m *Image) TableName() string {
+	return "images"
 }

@@ -2,8 +2,8 @@ package env1
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/access_list"
 )
 
 // env1
@@ -14,7 +14,13 @@ import (
 // 		+ child device2
 // device3
 //
-func Init(adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.ScriptService) {
+func Init(adaptors *adaptors.Adaptors,
+	accessList *access_list.AccessListService,
+	scriptService *scripts.ScriptService) {
+
+	// roles
+	// ------------------------------------------------
+	roles(adaptors, accessList)
 
 	// nodes
 	// ------------------------------------------------

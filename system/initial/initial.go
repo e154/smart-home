@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/access_list"
 )
 
 var (
@@ -19,17 +20,20 @@ type InitialService struct {
 	adaptors      *adaptors.Adaptors
 	core          *core.Core
 	scriptService *scripts.ScriptService
+	accessList    *access_list.AccessListService
 }
 
 func NewInitialService(migrations *migrations.Migrations,
 	adaptors *adaptors.Adaptors,
 	core *core.Core,
-	scriptService *scripts.ScriptService) *InitialService {
+	scriptService *scripts.ScriptService,
+	accessList *access_list.AccessListService) *InitialService {
 	return &InitialService{
 		migrations:    migrations,
 		adaptors:      adaptors,
 		core:          core,
 		scriptService: scriptService,
+		accessList:    accessList,
 	}
 }
 
@@ -39,7 +43,7 @@ func (n *InitialService) Reset() {
 
 	n.migrations.Purge()
 
-	env1.Init(n.adaptors, n.core, n.scriptService)
+	env1.Init(n.adaptors, n.accessList, n.scriptService)
 
 	fmt.Println()
 	log.Info("complete")

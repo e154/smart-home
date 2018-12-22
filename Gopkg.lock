@@ -384,14 +384,6 @@
   version = "v1.1.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:39286c8eb224835ae79a480d26cc41243cd6fa6342a6786d98b81f2a662c874d"
-  name = "github.com/zentures/surgemq"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "782e2da078054c9a245f7f78c3f9a0994b5c21c2"
-
-[[projects]]
   digest = "1:72503e87c2b7e319cb7b676943915aa8d62b224831963dd5961624c0189daa00"
   name = "golang.org/x/crypto"
   packages = [
@@ -523,9 +515,9 @@
     "github.com/smartystreets/assertions",
     "github.com/smartystreets/goconvey/convey",
     "github.com/smartystreets/goconvey/convey/reporting",
+    "github.com/surgemq/message",
     "github.com/surgemq/surgemq/service",
     "github.com/swaggo/swag",
-    "github.com/zentures/surgemq",
     "golang.org/x/net/context",
     "golang.org/x/net/webdav",
     "gopkg.in/check.v1",

@@ -100,6 +100,18 @@ definitions:
             type: integer
         type: object
     type: object
+  models.NewRole:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      parent:
+        properties:
+          name:
+            type: string
+        type: object
+    type: object
   models.NewScript:
     properties:
       description:
@@ -137,6 +149,15 @@ definitions:
       status:
         type: string
       updated_at:
+        type: string
+    type: object
+  models.Permission:
+    properties:
+      id:
+        type: integer
+      level_name:
+        type: string
+      package_name:
         type: string
     type: object
   models.ResponseDevice:
@@ -188,6 +209,35 @@ definitions:
           items:
             items:
               $ref: '#/definitions/models.Node'
+            type: array
+          limit:
+            type: integer
+          offset:
+            type: integer
+          total:
+            type: integer
+        type: object
+    type: object
+  models.ResponseRole:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          role:
+            $ref: '#/definitions/models.Role'
+            type: object
+        type: object
+    type: object
+  models.ResponseRoleList:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          items:
+            items:
+              $ref: '#/definitions/models.Role'
             type: array
           limit:
             type: integer
@@ -272,6 +322,32 @@ definitions:
             type: integer
         type: object
     type: object
+  models.Role:
+    properties:
+      access_list:
+        type: object
+      children:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      parent:
+        properties:
+          name:
+            type: string
+        type: object
+      permissions:
+        items:
+          $ref: '#/definitions/models.Permission'
+        type: array
+      updated_at:
+        type: string
+    type: object
   models.Script:
     properties:
       created_at:
@@ -288,6 +364,13 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  models.SearchRoleResponse:
+    properties:
+      roles:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
     type: object
   models.UpdateDevice:
     properties:
@@ -330,6 +413,18 @@ definitions:
         type: integer
       status:
         type: string
+    type: object
+  models.UpdateRole:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      parent:
+        properties:
+          name:
+            type: string
+        type: object
     type: object
   models.UpdateScript:
     properties:
@@ -824,6 +919,330 @@ paths:
       summary: Update node
       tags:
       - node
+  /role:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: role params
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewRole'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Add new role
+      tags:
+      - role
+  /role/{name}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete role by name
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Delete role
+      tags:
+      - role
+    get:
+      consumes:
+      - application/json
+      description: Get role by name
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseRole'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Show role
+      tags:
+      - role
+    put:
+      consumes:
+      - application/json
+      description: Update role by name
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Update role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateRole'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Update role
+      tags:
+      - role
+  /role/{name}/access_list:
+    get:
+      consumes:
+      - application/json
+      description: Get access list
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseRole'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: get role access list
+      tags:
+      - role
+    put:
+      consumes:
+      - application/json
+      description: Update access list
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseRole'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: update role access list
+      tags:
+      - role
+  /roles:
+    get:
+      consumes:
+      - application/json
+      description: Get role list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: name
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseRoleList'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Role list
+      tags:
+      - role
+  /roles/search:
+    get:
+      consumes:
+      - application/json
+      description: Search role by name
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchRoleResponse'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Search role
+      tags:
+      - role
   /script:
     get:
       consumes:

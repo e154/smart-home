@@ -55,7 +55,3 @@
 [[constraint]]
   branch = "master"
   name = "github.com/jinzhu/copier"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/zentures/surgemq"

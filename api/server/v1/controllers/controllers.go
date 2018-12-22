@@ -4,6 +4,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/access_list"
 )
 
 type ControllersV1 struct {
@@ -13,12 +14,14 @@ type ControllersV1 struct {
 	Script   *ControllerScript
 	Workflow *ControllerWorkflow
 	Device   *ControllerDevice
+	Role     *ControllerRole
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
 	core *core.Core,
-	scriptService *scripts.ScriptService) *ControllersV1 {
-	common := NewControllerCommon(adaptors, core)
+	scriptService *scripts.ScriptService,
+	accessList *access_list.AccessListService) *ControllersV1 {
+	common := NewControllerCommon(adaptors, core, accessList)
 	return &ControllersV1{
 		Index:    NewControllerIndex(common),
 		Node:     NewControllerNode(common),
@@ -26,5 +29,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Script:   NewControllerScript(common, scriptService),
 		Workflow: NewControllerWorkflow(common),
 		Device:   NewControllerDevice(common),
+		Role:     NewControllerRole(common),
 	}
 }
