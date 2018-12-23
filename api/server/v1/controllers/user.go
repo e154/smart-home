@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
+	"strconv"
 )
 
 type ControllerUser struct {
@@ -57,34 +58,34 @@ func (c ControllerUser) AddUser(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "User ID"
-// @Success 200 {object} models.ResponseUser
+// @Success 200 {object} models.UserByIdModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /user/{id} [Get]
-//func (c ControllerUser) GetUserById(ctx *gin.Context) {
-//
-//	id := ctx.Param("id")
-//	aid, err := strconv.Atoi(id)
-//	if err != nil {
-//		log.Error(err.Error())
-//		NewError(400, err).Send(ctx)
-//		return
-//	}
-//
-//	user, err := GetUserById(int64(aid), c.adaptors)
-//	if err != nil {
-//		code := 500
-//		if err.Error() == "record not found" {
-//			code = 404
-//		}
-//		NewError(code, err).Send(ctx)
-//		return
-//	}
-//
-//	resp := NewSuccess()
-//	resp.Item("user", user).Send(ctx)
-//}
+func (c ControllerUser) GetUserById(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	user, err := GetUserById(int64(aid), c.adaptors)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Item("user", user).Send(ctx)
+}
 
 // User godoc
 // @tags user
@@ -148,44 +149,19 @@ func (c ControllerUser) AddUser(ctx *gin.Context) {
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /user [Get]
-//func (c ControllerUser) GetUserList(ctx *gin.Context) {
-//
-//	var limit = 15
-//	var offset = 0
-//	var order = "DESC"
-//	var sortBy = "id"
-//
-//	var err error
-//	if limit, err = strconv.Atoi(c.query(ctx, "limit")); err != nil {
-//		log.Error(err.Error())
-//		NewError(400, err).Send(ctx)
-//		return
-//	}
-//
-//	if offset, err = strconv.Atoi(c.query(ctx, "offset")); err != nil {
-//		log.Error(err.Error())
-//		NewError(400, err).Send(ctx)
-//		return
-//	}
-//
-//	if c.query(ctx, "order") != "" {
-//		order = c.query(ctx, "order")
-//	}
-//
-//	if c.query(ctx, "sort_by") != "" {
-//		sortBy = c.query(ctx, "sort_by")
-//	}
-//
-//	items, total, err := GetUserList(int64(limit), int64(offset), order, sortBy, c.adaptors)
-//	if err != nil {
-//		NewError(500, err).Send(ctx)
-//		return
-//	}
-//
-//	resp := NewSuccess()
-//	resp.Page(limit, offset, int(total), items).Send(ctx)
-//	return
-//}
+func (c ControllerUser) GetUserList(ctx *gin.Context) {
+
+	_, sortBy, order, limit, offset := c.list(ctx)
+	items, total, err := GetUserList(limit, offset, order, sortBy, c.adaptors)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Page(limit, offset, int(total), items).Send(ctx)
+	return
+}
 
 // User godoc
 // @tags user
@@ -199,25 +175,25 @@ func (c ControllerUser) AddUser(ctx *gin.Context) {
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /user/{id} [Delete]
-//func (c ControllerUser) DeleteUserById(ctx *gin.Context) {
-//
-//	id := ctx.Param("id")
-//	aid, err := strconv.Atoi(id)
-//	if err != nil {
-//		log.Error(err.Error())
-//		NewError(400, err).Send(ctx)
-//		return
-//	}
-//
-//	if err := DeleteUserById(int64(aid), c.adaptors, c.core); err != nil {
-//		code := 500
-//		if err.Error() == "record not found" {
-//			code = 404
-//		}
-//		NewError(code, err).Send(ctx)
-//		return
-//	}
-//
-//	resp := NewSuccess()
-//	resp.Send(ctx)
-//}
+func (c ControllerUser) DeleteUserById(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	if err := DeleteUserById(int64(aid), c.adaptors); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
+}

@@ -52,6 +52,27 @@ definitions:
     type: object
   models.ErrorModelErrors:
     type: object
+  models.Image:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      mime_type:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+      thumb:
+        type: string
+      title:
+        type: string
+      url:
+        type: string
+    type: object
   models.NewDevice:
     properties:
       address:
@@ -494,6 +515,81 @@ definitions:
       name:
         type: string
       status:
+        type: string
+    type: object
+  models.UserByIdModel:
+    properties:
+      authentication_token:
+        type: string
+      created_at:
+        type: string
+      current_sign_in_at:
+        type: string
+      current_sign_in_ip:
+        type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      history:
+        items:
+          $ref: '#/definitions/models.UserByIdModelUserHistory'
+        type: array
+      id:
+        type: integer
+      image:
+        $ref: '#/definitions/models.Image'
+        type: object
+      lang:
+        type: string
+      last_name:
+        type: string
+      last_sign_in_at:
+        type: string
+      last_sign_in_ip:
+        type: string
+      meta:
+        items:
+          $ref: '#/definitions/models.UserByIdModelMeta'
+        type: array
+      nickname:
+        type: string
+      reset_password_sent_at:
+        type: string
+      role:
+        $ref: '#/definitions/models.Role'
+        type: object
+      role_name:
+        type: string
+      sign_in_count:
+        type: integer
+      status:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.UserByIdModelParent'
+        type: object
+    type: object
+  models.UserByIdModelMeta:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  models.UserByIdModelParent:
+    properties:
+      id:
+        type: integer
+    type: object
+  models.UserByIdModelUserHistory:
+    properties:
+      ip:
+        type: string
+      time:
         type: string
     type: object
   models.Workflow:
@@ -1570,6 +1666,43 @@ paths:
             $ref: '#/definitions/models.ErrorModel'
             type: object
       summary: Add new user
+      tags:
+      - user
+  /user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserByIdModel'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Show user
       tags:
       - user
   /workflow:

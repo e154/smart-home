@@ -174,32 +174,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 // @Router /device [Get]
 func (c ControllerDevice) GetDeviceList(ctx *gin.Context) {
 
-	var limit = 15
-	var offset = 0
-	var order = "DESC"
-	var sortBy = "id"
-
-	var err error
-	if limit, err = strconv.Atoi(c.query(ctx, "limit")); err != nil {
-		log.Error(err.Error())
-		NewError(400, err).Send(ctx)
-		return
-	}
-
-	if offset, err = strconv.Atoi(c.query(ctx, "offset")); err != nil {
-		log.Error(err.Error())
-		NewError(400, err).Send(ctx)
-		return
-	}
-
-	if c.query(ctx, "order") != "" {
-		order = c.query(ctx, "order")
-	}
-
-	if c.query(ctx, "sort_by") != "" {
-		sortBy = c.query(ctx, "sort_by")
-	}
-
+	_, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetDeviceList(int64(limit), int64(offset), order, sortBy, c.adaptors)
 	if err != nil {
 		NewError(500, err).Send(ctx)

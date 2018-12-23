@@ -19,9 +19,8 @@ type UpdateRole struct {
 }
 
 type Role struct {
-	Name        string        `json:"name"`
-	Description string        `json:"description"`
-	Permissions []*Permission `json:"permissions"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 	Parent      struct {
 		Name string `json:"name"`
 	}
@@ -53,10 +52,10 @@ type SearchRoleResponse struct {
 }
 
 type AccessItem struct {
-	Actions		[]string	`json:"actions"`
-	Method		string		`json:"method"`
-	Description	string		`json:"description"`
-	RoleName	string		`json:"role_name"`
+	Actions     []string `json:"actions"`
+	Method      string   `json:"method"`
+	Description string   `json:"description"`
+	RoleName    string   `json:"role_name"`
 }
 
 type AccessLevels map[string]AccessItem

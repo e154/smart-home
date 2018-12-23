@@ -58,4 +58,5 @@ func (s *Server) setControllers() {
 
 	// user
 	v1.POST("/user", s.ControllersV1.User.AddUser)
+	v1.GET("/user/:id", s.ControllersV1.User.GetUserById)
 }

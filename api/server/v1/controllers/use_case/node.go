@@ -81,4 +81,3 @@ func DeleteNodeById(nodeId int64, adaptors *adaptors.Adaptors, core *core.Core) 
 
 	return
 }
-

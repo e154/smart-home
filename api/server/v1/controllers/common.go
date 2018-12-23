@@ -48,11 +48,31 @@ func (c ControllerCommon) select2(ctx *gin.Context) (query string, limit, offset
 //order
 //limit
 //offset
-func (c ControllerCommon) list(ctx *gin.Context) (query, sortby, order string, limit, offset int) {
-	query = ctx.Request.URL.Query().Get("query")
-	sortby = ctx.Request.URL.Query().Get("sortby")
-	order = ctx.Request.URL.Query().Get("order")
-	limit, _ = strconv.Atoi(ctx.Request.URL.Query().Get("limit"))
-	offset, _ = strconv.Atoi(ctx.Request.URL.Query().Get("offset"))
+func (c ControllerCommon) list(ctx *gin.Context) (query, sortBy, order string, limit, offset int) {
+
+	limit = 15
+	offset = 0
+	order = "DESC"
+	sortBy = "id"
+
+	if ctx.Request.URL.Query().Get("query") != "" {
+		query = ctx.Request.URL.Query().Get("query")
+	}
+
+	if ctx.Request.URL.Query().Get("sortby") != "" {
+		sortBy = ctx.Request.URL.Query().Get("sortby")
+	}
+
+	if ctx.Request.URL.Query().Get("order") != "" {
+		order = ctx.Request.URL.Query().Get("order")
+	}
+
+	if ctx.Request.URL.Query().Get("limit") != "" {
+		limit, _ = strconv.Atoi(ctx.Request.URL.Query().Get("limit"))
+	}
+
+	if ctx.Request.URL.Query().Get("offset") != "" {
+		offset, _ = strconv.Atoi(ctx.Request.URL.Query().Get("offset"))
+	}
 	return
 }
