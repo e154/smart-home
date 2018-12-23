@@ -84,6 +84,25 @@ func (n *Role) Search(query string, limit, offset int) (list []*m.Role, total in
 	return
 }
 
+func (n *Role) GetAccessList(role *m.Role) (err error) {
+
+	role.AccessList = make(map[string][]string)
+	permissionAdaptor := GetPermissionAdaptor(n.db)
+	var permissions []*m.Permission
+	if permissions, err = permissionAdaptor.GetAllPermissions(role.Name); err != nil {
+		return
+	}
+
+	for _, perm := range permissions {
+		if _, ok := role.AccessList[perm.PackageName]; !ok {
+			role.AccessList[perm.PackageName] = []string{}
+		}
+		role.AccessList[perm.PackageName] = append(role.AccessList[perm.PackageName], perm.LevelName)
+	}
+
+	return
+}
+
 func (n *Role) fromDb(dbRole *db.Role) (role *m.Role) {
 	role = &m.Role{
 		Name:        dbRole.Name,
@@ -91,7 +110,6 @@ func (n *Role) fromDb(dbRole *db.Role) (role *m.Role) {
 		CreatedAt:   dbRole.CreatedAt,
 		UpdatedAt:   dbRole.UpdatedAt,
 		Children:    []*m.Role{},
-		//Permissions: dbRole.Permissions,
 	}
 
 	if dbRole.Role != nil {

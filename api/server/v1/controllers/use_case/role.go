@@ -77,33 +77,7 @@ func GetAccessList(roleName string,
 		return
 	}
 
-	var permissions []*m.Permission
-	if permissions, err = adaptors.Permission.GetAllPermissions(role.Name); err != nil {
-		return
-	}
-
-	accessList = make(access_list.AccessList)
-	var item access_list.AccessItem
-	var levels access_list.AccessLevels
-	var ok bool
-	list := *accessListService.List
-	for _, perm := range permissions {
-
-		if levels, ok = list[perm.PackageName]; !ok {
-			continue
-		}
-
-		if accessList[perm.PackageName] == nil {
-			accessList[perm.PackageName] = access_list.NewAccessLevels()
-		}
-
-		if item, ok = levels[perm.LevelName]; !ok {
-			continue
-		}
-
-		item.RoleName = perm.RoleName
-		accessList[perm.PackageName][perm.LevelName] = item
-	}
+	accessList, err = accessListService.GetFullAccessList(role)
 
 	return
 }

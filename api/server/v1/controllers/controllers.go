@@ -15,6 +15,7 @@ type ControllersV1 struct {
 	Workflow *ControllerWorkflow
 	Device   *ControllerDevice
 	Role     *ControllerRole
+	User     *ControllerUser
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -30,5 +31,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Workflow: NewControllerWorkflow(common),
 		Device:   NewControllerDevice(common),
 		Role:     NewControllerRole(common),
+		User:     NewControllerUser(common),
 	}
 }

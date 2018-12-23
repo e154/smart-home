@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"github.com/op/go-logging"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/adaptors"
 )
 
 var (
@@ -11,11 +13,14 @@ var (
 )
 
 type AccessListService struct {
-	List *AccessList
+	List     *AccessList
+	adaptors *adaptors.Adaptors
 }
 
-func NewAccessListService() *AccessListService {
-	accessList := &AccessListService{}
+func NewAccessListService(adaptors *adaptors.Adaptors) *AccessListService {
+	accessList := &AccessListService{
+		adaptors: adaptors,
+	}
 	accessList.ReadConfig("./conf/access_list.json")
 	return accessList
 }
@@ -36,5 +41,44 @@ func (a *AccessListService) ReadConfig(path string) (err error) {
 		return
 	}
 
+	return
+}
+
+func (a *AccessListService) GetFullAccessList(role *m.Role) (accessList AccessList, err error) {
+
+	var permissions []*m.Permission
+	if permissions, err = a.adaptors.Permission.GetAllPermissions(role.Name); err != nil {
+		return
+	}
+
+	accessList = make(AccessList)
+	var item AccessItem
+	var levels AccessLevels
+	var ok bool
+	list := *a.List
+	for _, perm := range permissions {
+
+		if levels, ok = list[perm.PackageName]; !ok {
+			continue
+		}
+
+		if accessList[perm.PackageName] == nil {
+			accessList[perm.PackageName] = NewAccessLevels()
+		}
+
+		if item, ok = levels[perm.LevelName]; !ok {
+			continue
+		}
+
+		item.RoleName = perm.RoleName
+		accessList[perm.PackageName][perm.LevelName] = item
+	}
+
+	return
+}
+
+func (a *AccessListService) GetShotAccessList(role *m.Role) (err error) {
+
+	err = a.adaptors.Role.GetAccessList(role)
 	return
 }

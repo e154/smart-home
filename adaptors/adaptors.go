@@ -25,6 +25,9 @@ type Adaptors struct {
 	Worker           *Worker
 	Role             *Role
 	Permission       *Permission
+	User             *User
+	UserMeta         *UserMeta
+	Image            *Image
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -51,6 +54,9 @@ func NewAdaptors(db *gorm.DB,
 		Worker:           GetWorkerAdaptor(db),
 		Role:             GetRoleAdaptor(db),
 		Permission:       GetPermissionAdaptor(db),
+		User:             GetUserAdaptor(db),
+		UserMeta:         GetUserMetaAdaptor(db),
+		Image:            GetImageAdaptor(db),
 	}
 
 	return

@@ -127,6 +127,52 @@ definitions:
       source:
         type: string
     type: object
+  models.NewUser:
+    properties:
+      avatar:
+        $ref: '#/definitions/models.NewUserImage'
+        type: object
+      email:
+        type: string
+      first_name:
+        type: string
+      lang:
+        type: string
+      last_name:
+        type: string
+      meta:
+        items:
+          $ref: '#/definitions/models.NewUserMeta'
+        type: array
+      nickname:
+        type: string
+      password:
+        type: string
+      password_repeat:
+        type: string
+      role:
+        $ref: '#/definitions/models.NewUserRole'
+        type: object
+      status:
+        type: string
+    type: object
+  models.NewUserImage:
+    properties:
+      id:
+        type: integer
+    type: object
+  models.NewUserMeta:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  models.NewUserRole:
+    properties:
+      name:
+        type: string
+    type: object
   models.NewWorkflow:
     properties:
       description:
@@ -1493,6 +1539,39 @@ paths:
       summary: Execute script
       tags:
       - script
+  /user:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user params
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewUser'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Add new user
+      tags:
+      - user
   /workflow:
     get:
       consumes:

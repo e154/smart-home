@@ -55,4 +55,7 @@ func (s *Server) setControllers() {
 	v1.DELETE("/role/:name", s.ControllersV1.Role.DeleteRoleByName)
 	v1.GET("/roles", s.ControllersV1.Role.GetRoleList)
 	v1.GET("/roles/search", s.ControllersV1.Role.Search)
+
+	// user
+	v1.POST("/user", s.ControllersV1.User.AddUser)
 }

@@ -48,6 +48,13 @@ CREATE UNIQUE INDEX email_2_users_unq
   ON users (email);
 CREATE UNIQUE INDEX nickname_2_users_unq
   ON users (nickname);
+CREATE UNIQUE INDEX authentication_token_2_users_unq
+  ON users (authentication_token);
+
+CREATE INDEX email_2_user_idx
+  ON users (email);
+CREATE INDEX authentication_token_2_user_idx
+  ON users (authentication_token);
 
 CREATE TABLE user_metas (
   id      BIGSERIAL PRIMARY KEY,
@@ -55,6 +62,9 @@ CREATE TABLE user_metas (
   key     VARCHAR(255) NOT NULL,
   value   text         NOT NULL
 );
+
+CREATE UNIQUE INDEX kay_user_2_user_metas_unq
+  ON user_metas (key, user_id);
 
 -- +migrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
