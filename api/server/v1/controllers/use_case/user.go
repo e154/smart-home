@@ -10,7 +10,9 @@ import (
 	"errors"
 )
 
-func AddUser(params models.NewUser, adaptors *adaptors.Adaptors) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddUser(params models.NewUser,
+	adaptors *adaptors.Adaptors,
+	currentUser *m.User) (ok bool, id int64, errs []*validation.Error, err error) {
 
 	// validation income request
 	ok, errs = params.Valid()
@@ -21,6 +23,10 @@ func AddUser(params models.NewUser, adaptors *adaptors.Adaptors) (ok bool, id in
 	user := &m.User{}
 	if err = copier.Copy(&user, &params); err != nil {
 		return
+	}
+
+	if currentUser != nil {
+		user.UserId.Scan(currentUser.Id)
 	}
 
 	if params.Password == params.PasswordRepeat {

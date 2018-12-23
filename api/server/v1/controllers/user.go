@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/api/server/v1/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerUser struct {
@@ -36,7 +37,12 @@ func (c ControllerUser) AddUser(ctx *gin.Context) {
 		return
 	}
 
-	_, id, errs, err := AddUser(params, c.adaptors)
+	var currentUser *m.User
+	if user, ok := ctx.Get("currentUser"); ok {
+		currentUser = user.(*m.User)
+	}
+
+	_, id, errs, err := AddUser(params, c.adaptors, currentUser)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
