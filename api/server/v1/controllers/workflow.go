@@ -26,6 +26,7 @@ func NewControllerWorkflow(common *ControllerCommon) *ControllerWorkflow {
 // @Success 200 {object} models.NewObjectSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /workflow [post]
 func (c ControllerWorkflow) AddWorkflow(ctx *gin.Context) {
 
@@ -69,6 +70,7 @@ func (c ControllerWorkflow) AddWorkflow(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /workflow/{id} [Get]
 func (c ControllerWorkflow) GetWorkflowById(ctx *gin.Context) {
 
@@ -106,6 +108,7 @@ func (c ControllerWorkflow) GetWorkflowById(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /workflow/{id} [Put]
 func (c ControllerWorkflow) UpdateWorkflow(ctx *gin.Context) {
 
@@ -155,6 +158,7 @@ func (c ControllerWorkflow) UpdateWorkflow(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /workflow [Get]
 func (c ControllerWorkflow) GetWorkflowList(ctx *gin.Context) {
 
@@ -181,6 +185,7 @@ func (c ControllerWorkflow) GetWorkflowList(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /workflow/{id} [Delete]
 func (c ControllerWorkflow) DeleteWorkflowById(ctx *gin.Context) {
 

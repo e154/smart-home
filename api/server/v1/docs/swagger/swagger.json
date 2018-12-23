@@ -36,6 +36,11 @@
         },
         "/device": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -85,6 +90,11 @@
         },
         "/device/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get device by id",
                 "consumes": [
                     "application/json"
@@ -137,6 +147,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update device by id",
                 "consumes": [
                     "application/json"
@@ -199,6 +214,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete device by id",
                 "consumes": [
                     "application/json"
@@ -253,6 +273,11 @@
         },
         "/devices": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get device list",
                 "consumes": [
                     "application/json"
@@ -330,6 +355,11 @@
         },
         "/node": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -379,6 +409,11 @@
         },
         "/node/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get node by id",
                 "consumes": [
                     "application/json"
@@ -431,6 +466,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update node by id",
                 "consumes": [
                     "application/json"
@@ -493,6 +533,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete node by id",
                 "consumes": [
                     "application/json"
@@ -547,6 +592,11 @@
         },
         "/nodes": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get node list",
                 "consumes": [
                     "application/json"
@@ -624,6 +674,11 @@
         },
         "/role": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -673,6 +728,11 @@
         },
         "/role/{name}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get role by name",
                 "consumes": [
                     "application/json"
@@ -725,6 +785,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update role by name",
                 "consumes": [
                     "application/json"
@@ -787,6 +852,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete role by name",
                 "consumes": [
                     "application/json"
@@ -841,6 +911,11 @@
         },
         "/role/{name}/access_list": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get access list",
                 "consumes": [
                     "application/json"
@@ -893,6 +968,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update access list",
                 "consumes": [
                     "application/json"
@@ -957,6 +1037,11 @@
         },
         "/roles": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get role list",
                 "consumes": [
                     "application/json"
@@ -1034,6 +1119,11 @@
         },
         "/roles/search": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Search role by name",
                 "consumes": [
                     "application/json"
@@ -1103,6 +1193,11 @@
         },
         "/script": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1152,6 +1247,11 @@
         },
         "/script/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get script by id",
                 "consumes": [
                     "application/json"
@@ -1204,6 +1304,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update script by id",
                 "consumes": [
                     "application/json"
@@ -1266,6 +1371,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete script by id",
                 "consumes": [
                     "application/json"
@@ -1320,6 +1430,11 @@
         },
         "/script/{id}/exec": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Execute script by id",
                 "consumes": [
                     "application/json"
@@ -1374,6 +1489,11 @@
         },
         "/scripts": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get script list",
                 "consumes": [
                     "application/json"
@@ -1747,6 +1867,11 @@
         },
         "/workflow": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get workflow list",
                 "consumes": [
                     "application/json"
@@ -1822,6 +1947,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1871,6 +2001,11 @@
         },
         "/workflow/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get workflow by id",
                 "consumes": [
                     "application/json"
@@ -1923,6 +2058,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Update workflow by id",
                 "consumes": [
                     "application/json"
@@ -1985,6 +2125,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Delete workflow by id",
                 "consumes": [
                     "application/json"

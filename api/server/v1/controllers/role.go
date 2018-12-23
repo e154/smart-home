@@ -25,6 +25,7 @@ func NewControllerRole(common *ControllerCommon) *ControllerRole {
 // @Success 200 {object} models.NewObjectSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /role [post]
 func (c ControllerRole) AddRole(ctx *gin.Context) {
 
@@ -67,6 +68,7 @@ func (c ControllerRole) AddRole(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /role/{name} [Get]
 func (c ControllerRole) GetRoleByName(ctx *gin.Context) {
 
@@ -96,6 +98,7 @@ func (c ControllerRole) GetRoleByName(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /role/{name}/access_list [Get]
 func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 
@@ -126,6 +129,7 @@ func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /role/{name}/access_list [Put]
 func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 
@@ -162,6 +166,7 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /role/{name} [Put]
 func (c ControllerRole) UpdateRole(ctx *gin.Context) {
 
@@ -210,6 +215,7 @@ func (c ControllerRole) UpdateRole(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /roles [Get]
 func (c ControllerRole) GetRoleList(ctx *gin.Context) {
 
@@ -236,6 +242,7 @@ func (c ControllerRole) GetRoleList(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /role/{name} [Delete]
 func (c ControllerRole) DeleteRoleByName(ctx *gin.Context) {
 
@@ -272,6 +279,7 @@ func (c ControllerRole) DeleteRoleByName(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /roles/search [Get]
 func (c ControllerRole) Search(ctx *gin.Context) {
 

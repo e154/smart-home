@@ -751,6 +751,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Add new device
       tags:
       - device
@@ -788,6 +790,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Delete device
       tags:
       - device
@@ -824,6 +828,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Show device
       tags:
       - device
@@ -867,6 +873,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Update device
       tags:
       - device
@@ -921,6 +929,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Device list
       tags:
       - device
@@ -954,6 +964,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Add new node
       tags:
       - node
@@ -991,6 +1003,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Delete node
       tags:
       - node
@@ -1027,6 +1041,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Show node
       tags:
       - node
@@ -1070,6 +1086,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Update node
       tags:
       - node
@@ -1124,6 +1142,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Node list
       tags:
       - node
@@ -1157,6 +1177,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Add new role
       tags:
       - role
@@ -1194,6 +1216,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Delete role
       tags:
       - role
@@ -1230,6 +1254,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Show role
       tags:
       - role
@@ -1273,6 +1299,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Update role
       tags:
       - role
@@ -1310,6 +1338,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: get role access list
       tags:
       - role
@@ -1353,6 +1383,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: update role access list
       tags:
       - role
@@ -1407,6 +1439,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Role list
       tags:
       - role
@@ -1455,6 +1489,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Search role
       tags:
       - role
@@ -1488,6 +1524,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Add new script
       tags:
       - script
@@ -1525,6 +1563,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Delete script
       tags:
       - script
@@ -1561,6 +1601,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Show script
       tags:
       - script
@@ -1604,6 +1646,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Update script
       tags:
       - script
@@ -1641,6 +1685,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Execute script
       tags:
       - script
@@ -1695,6 +1741,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Script list
       tags:
       - script
@@ -1945,6 +1993,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Workflow list
       tags:
       - workflow
@@ -1977,6 +2027,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Add new workflow
       tags:
       - workflow
@@ -2014,6 +2066,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Delete workflow
       tags:
       - workflow
@@ -2050,6 +2104,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Show workflow
       tags:
       - workflow
@@ -2093,6 +2149,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Update workflow
       tags:
       - workflow

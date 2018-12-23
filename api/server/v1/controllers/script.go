@@ -33,6 +33,7 @@ func NewControllerScript(common *ControllerCommon,
 // @Success 200 {object} models.NewObjectSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /script [post]
 func (c ControllerScript) AddScript(ctx *gin.Context) {
 
@@ -76,6 +77,7 @@ func (c ControllerScript) AddScript(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /script/{id} [Get]
 func (c ControllerScript) GetScriptById(ctx *gin.Context) {
 
@@ -113,6 +115,7 @@ func (c ControllerScript) GetScriptById(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /script/{id} [Put]
 func (c ControllerScript) UpdateScript(ctx *gin.Context) {
 
@@ -162,6 +165,7 @@ func (c ControllerScript) UpdateScript(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /scripts [Get]
 func (c ControllerScript) GetScriptList(ctx *gin.Context) {
 
@@ -188,6 +192,7 @@ func (c ControllerScript) GetScriptList(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /script/{id} [Delete]
 func (c ControllerScript) DeleteScriptById(ctx *gin.Context) {
 
@@ -223,6 +228,7 @@ func (c ControllerScript) DeleteScriptById(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /script/{id}/exec [Post]
 func (c ControllerScript) Exec(ctx *gin.Context) {
 
