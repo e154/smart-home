@@ -226,5 +226,6 @@ func (e *Error) ValidationToErrors(errs []*validation.Error) *Error {
 
 func (e *Error) Send(ctx *gin.Context) {
 	ctx.JSON(e._statusCode, e.Payload)
+	ctx.Abort()
 	return
 }

@@ -4,6 +4,45 @@ definitions:
     type: object
   models.AccessListDiff:
     type: object
+  models.AuthSignInResponse:
+    properties:
+      access_token:
+        type: string
+      current_user:
+        $ref: '#/definitions/models.CurrentUserModel'
+        type: object
+    type: object
+  models.CurrentUserModel:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      history:
+        items:
+          $ref: '#/definitions/models.UserHistory'
+        type: array
+      id:
+        type: integer
+      image:
+        $ref: '#/definitions/models.Image'
+        type: object
+      lang:
+        type: string
+      last_name:
+        type: string
+      meta:
+        items:
+          $ref: '#/definitions/models.UserByIdModelMeta'
+        type: array
+      nickname:
+        type: string
+      role:
+        $ref: '#/definitions/models.Role'
+        type: object
+      sign_in_count:
+        type: integer
+    type: object
   models.Device:
     properties:
       address:
@@ -222,15 +261,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  models.Permission:
-    properties:
-      id:
-        type: integer
-      level_name:
-        type: string
-      package_name:
-        type: string
-    type: object
   models.ResponseDevice:
     properties:
       code:
@@ -412,10 +442,6 @@ definitions:
           name:
             type: string
         type: object
-      permissions:
-        items:
-          $ref: '#/definitions/models.Permission'
-        type: array
       updated_at:
         type: string
     type: object
@@ -535,7 +561,7 @@ definitions:
         type: string
       history:
         items:
-          $ref: '#/definitions/models.UserByIdModelUserHistory'
+          $ref: '#/definitions/models.UserHistory'
         type: array
       id:
         type: integer
@@ -584,13 +610,47 @@ definitions:
     properties:
       id:
         type: integer
+      nickname:
+        type: string
     type: object
-  models.UserByIdModelUserHistory:
+  models.UserHistory:
     properties:
       ip:
         type: string
       time:
         type: string
+    type: object
+  models.UserShotModel:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      image:
+        $ref: '#/definitions/models.Image'
+        type: object
+      lang:
+        type: string
+      last_name:
+        type: string
+      nickname:
+        type: string
+      role:
+        $ref: '#/definitions/models.Role'
+        type: object
+      role_name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.UserByIdModelParent'
+        type: object
     type: object
   models.Workflow:
     properties:
@@ -662,59 +722,6 @@ paths:
       tags:
       - index
   /device:
-    get:
-      consumes:
-      - application/json
-      description: Get device list
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.ResponseDeviceList'
-            type: object
-        "400":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-        "404":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-        "500":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-      summary: Device list
-      tags:
-      - device
     post:
       consumes:
       - application/json
@@ -863,11 +870,11 @@ paths:
       summary: Update device
       tags:
       - device
-  /node:
+  /devices:
     get:
       consumes:
       - application/json
-      description: Get node list
+      description: Get device list
       parameters:
       - default: 10
         description: limit
@@ -897,7 +904,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseNodeList'
+            $ref: '#/definitions/models.ResponseDeviceList'
             type: object
         "400":
           description: some error
@@ -914,9 +921,10 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
-      summary: Node list
+      summary: Device list
       tags:
-      - node
+      - device
+  /node:
     post:
       consumes:
       - application/json
@@ -1063,6 +1071,60 @@ paths:
             $ref: '#/definitions/models.ErrorModel'
             type: object
       summary: Update node
+      tags:
+      - node
+  /nodes:
+    get:
+      consumes:
+      - application/json
+      description: Get node list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseNodeList'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Node list
       tags:
       - node
   /role:
@@ -1397,59 +1459,6 @@ paths:
       tags:
       - role
   /script:
-    get:
-      consumes:
-      - application/json
-      description: Get script list
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.ResponseScriptList'
-            type: object
-        "400":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-        "404":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-        "500":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-      summary: Script list
-      tags:
-      - script
     post:
       consumes:
       - application/json
@@ -1635,6 +1644,87 @@ paths:
       summary: Execute script
       tags:
       - script
+  /scripts:
+    get:
+      consumes:
+      - application/json
+      description: Get script list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseScriptList'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      summary: Script list
+      tags:
+      - script
+  /signin:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AuthSignInResponse'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - BasicAuth: []
+      summary: Add new auth
+      tags:
+      - auth
   /user:
     post:
       consumes:
@@ -1665,10 +1755,50 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Add new user
       tags:
       - user
   /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user
+      tags:
+      - user
     get:
       consumes:
       - application/json
@@ -1702,7 +1832,66 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Show user
+      tags:
+      - user
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get user list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserShotModel'
+            type: array
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: User list
       tags:
       - user
   /workflow:
@@ -1907,4 +2096,11 @@ paths:
       summary: Update workflow
       tags:
       - workflow
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  BasicAuth:
+    type: basic
 swagger: "2.0"

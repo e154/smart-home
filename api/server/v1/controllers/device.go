@@ -171,7 +171,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device [Get]
+// @Router /devices [Get]
 func (c ControllerDevice) GetDeviceList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)

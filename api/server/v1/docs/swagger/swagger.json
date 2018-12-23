@@ -35,81 +35,6 @@
             }
         },
         "/device": {
-            "get": {
-                "description": "Get device list",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "device"
-                ],
-                "summary": "Device list",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "limit",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 0,
-                        "description": "offset",
-                        "name": "offset",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "default": "DESC",
-                        "description": "order",
-                        "name": "order",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "id",
-                        "description": "sort_by",
-                        "name": "sort_by",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ResponseDeviceList"
-                        }
-                    },
-                    "400": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    },
-                    "404": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    },
-                    "500": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -326,9 +251,9 @@
                 }
             }
         },
-        "/node": {
+        "/devices": {
             "get": {
-                "description": "Get node list",
+                "description": "Get device list",
                 "consumes": [
                     "application/json"
                 ],
@@ -336,9 +261,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "node"
+                    "device"
                 ],
-                "summary": "Node list",
+                "summary": "Device list",
                 "parameters": [
                     {
                         "type": "integer",
@@ -376,7 +301,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseNodeList"
+                            "$ref": "#/definitions/models.ResponseDeviceList"
                         }
                     },
                     "400": {
@@ -401,7 +326,9 @@
                         }
                     }
                 }
-            },
+            }
+        },
+        "/node": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -592,6 +519,83 @@
                         "schema": {
                             "type": "object",
                             "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/nodes": {
+            "get": {
+                "description": "Get node list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "node"
+                ],
+                "summary": "Node list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "DESC",
+                        "description": "order",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "sort_by",
+                        "name": "sort_by",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseNodeList"
                         }
                     },
                     "400": {
@@ -1098,81 +1102,6 @@
             }
         },
         "/script": {
-            "get": {
-                "description": "Get script list",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "script"
-                ],
-                "summary": "Script list",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "limit",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 0,
-                        "description": "offset",
-                        "name": "offset",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "default": "DESC",
-                        "description": "order",
-                        "name": "order",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "id",
-                        "description": "sort_by",
-                        "name": "sort_by",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ResponseScriptList"
-                        }
-                    },
-                    "400": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    },
-                    "404": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    },
-                    "500": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -1443,8 +1372,132 @@
                 }
             }
         },
+        "/scripts": {
+            "get": {
+                "description": "Get script list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "script"
+                ],
+                "summary": "Script list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "DESC",
+                        "description": "order",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "sort_by",
+                        "name": "sort_by",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseScriptList"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/signin": {
+            "post": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Add new auth",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.AuthSignInResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1494,6 +1547,11 @@
         },
         "/user/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get user by id",
                 "consumes": [
                     "application/json"
@@ -1520,6 +1578,147 @@
                         "schema": {
                             "type": "object",
                             "$ref": "#/definitions/models.UserByIdModel"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete user by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get user list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "User list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "DESC",
+                        "description": "order",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "sort_by",
+                        "name": "sort_by",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.UserShotModel"
+                            }
                         }
                     },
                     "400": {
@@ -1845,6 +2044,64 @@
         },
         "models.AccessListDiff": {
             "type": "object"
+        },
+        "models.AuthSignInResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "current_user": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.CurrentUserModel"
+                }
+            }
+        },
+        "models.CurrentUserModel": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "history": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserHistory"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Image"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserByIdModelMeta"
+                    }
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Role"
+                },
+                "sign_in_count": {
+                    "type": "integer"
+                }
+            }
         },
         "models.Device": {
             "type": "object",
@@ -2178,20 +2435,6 @@
                 }
             }
         },
-        "models.Permission": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "level_name": {
-                    "type": "string"
-                },
-                "package_name": {
-                    "type": "string"
-                }
-            }
-        },
         "models.ResponseDevice": {
             "type": "object",
             "properties": {
@@ -2473,12 +2716,6 @@
                         }
                     }
                 },
-                "permissions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Permission"
-                    }
-                },
                 "updated_at": {
                     "type": "string"
                 }
@@ -2662,7 +2899,7 @@
                 "history": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.UserByIdModelUserHistory"
+                        "$ref": "#/definitions/models.UserHistory"
                     }
                 },
                 "id": {
@@ -2734,10 +2971,13 @@
             "properties": {
                 "id": {
                     "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
                 }
             }
         },
-        "models.UserByIdModelUserHistory": {
+        "models.UserHistory": {
             "type": "object",
             "properties": {
                 "ip": {
@@ -2745,6 +2985,53 @@
                 },
                 "time": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UserShotModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Image"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Role"
+                },
+                "role_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.UserByIdModelParent"
                 }
             }
         },
@@ -2815,6 +3102,16 @@
                     "type": "integer"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "BasicAuth": {
+            "type": "basic"
         }
     }
 }

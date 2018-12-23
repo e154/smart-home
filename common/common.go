@@ -4,6 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	crypto_rand "crypto/rand"
+	"math/rand"
+	"time"
 )
 
 //create md5 string
@@ -31,6 +33,19 @@ func RandStr(strSize int, dictionary string) string {
 	crypto_rand.Read(bytes)
 	for k, v := range bytes {
 		bytes[k] = dictionary[v%byte(len(dictionary))]
+	}
+	return string(bytes)
+}
+
+func RandInt(min int, max int) int {
+	rand.Seed(time.Now().UnixNano())
+	return min + rand.Intn(max-min)
+}
+
+func RandomString(l int) string {
+	bytes := make([]byte, l)
+	for i := 0; i < l; i++ {
+		bytes[i] = byte(RandInt(65, 129))
 	}
 	return string(bytes)
 }

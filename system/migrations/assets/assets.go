@@ -9,6 +9,7 @@
 // migrations/20181119_092050_add_workers.sql
 // migrations/20181219_205800_add_images.sql
 // migrations/20181219_205810_add_users.sql
+// migrations/20181223_231535_add_variables.sql
 // DO NOT EDIT!
 
 package database
@@ -256,6 +257,26 @@ func migrations20181219_205810_add_usersSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20181223_231535_add_variablesSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xd0\xb1\x6e\xea\x30\x14\xc6\xf1\xdd\x4f\xf1\x6d\x80\xee\xcd\x52\x89\x89\xc9\x24\x46\x8d\x6a\x08\x8d\x9d\xaa\x74\xa9\x4c\x7c\x54\xac\x9a\x24\x4a\x1c\xe0\xf1\xab\x08\x52\xd1\xa5\xea\x19\xad\xff\xe7\xe1\x17\x45\xf8\x77\x74\x1f\xad\x09\x84\xa2\x61\x51\x04\xf5\x2c\xe1\x2a\x74\x54\x06\x57\x57\x98\x14\xcd\x04\xae\x03\x5d\xa8\xec\x03\x59\x9c\x0f\x54\x21\x1c\x5c\x87\xeb\x6e\x88\x5c\x07\xd3\x34\xde\x91\x65\x71\x2e\xb8\x16\xd0\x7c\x29\x05\x4e\xa6\x75\x66\xef\xa9\xc3\x94\x01\x95\x39\x12\xae\xf7\xc2\xf3\xf8\x91\xe7\xd3\x87\xf9\x7c\x86\x4d\xa6\xb1\x29\xa4\xc4\x36\x4f\xd7\x3c\xdf\xe1\x49\xec\xfe\x33\xe0\x64\x7c\x7f\x1b\x04\xba\x04\x8c\x37\xf6\x43\x63\xfa\x50\xfb\xda\x58\x00\xcb\x2c\x93\x82\x6f\x90\x88\x15\x2f\xa4\xc6\x8a\x4b\x25\x86\xa6\x6c\xc9\x04\xb2\xef\x26\x40\xa7\x6b\xa1\x34\x5f\x6f\xf5\xdb\xcf\x7f\xfa\xc6\xfe\xda\xb0\xd9\x82\xb1\x7b\xac\xa4\x3e\x57\x23\xd7\xb7\xd5\xf0\xf8\x27\xad\xb6\xf6\x9e\x2c\xf6\xa6\xfc\x64\x49\x9e\x6d\x6f\x5e\xe9\x0a\xe2\x35\x55\x5a\xdd\xc9\xc5\x5c\xc5\x3c\x11\x0b\xc6\xbe\x02\x00\x00\xff\xff\x9c\x2c\xcd\x5b\xac\x01\x00\x00")
+
+func migrations20181223_231535_add_variablesSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20181223_231535_add_variablesSql,
+		"migrations/20181223_231535_add_variables.sql",
+	)
+}
+
+func migrations20181223_231535_add_variablesSql() (*asset, error) {
+	bytes, err := migrations20181223_231535_add_variablesSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20181223_231535_add_variables.sql", size: 428, mode: os.FileMode(420), modTime: time.Unix(1545581934, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -317,6 +338,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20181119_092050_add_workers.sql": migrations20181119_092050_add_workersSql,
 	"migrations/20181219_205800_add_images.sql": migrations20181219_205800_add_imagesSql,
 	"migrations/20181219_205810_add_users.sql": migrations20181219_205810_add_usersSql,
+	"migrations/20181223_231535_add_variables.sql": migrations20181223_231535_add_variablesSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -369,6 +391,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20181119_092050_add_workers.sql": &bintree{migrations20181119_092050_add_workersSql, map[string]*bintree{}},
 		"20181219_205800_add_images.sql": &bintree{migrations20181219_205800_add_imagesSql, map[string]*bintree{}},
 		"20181219_205810_add_users.sql": &bintree{migrations20181219_205810_add_usersSql, map[string]*bintree{}},
+		"20181223_231535_add_variables.sql": &bintree{migrations20181223_231535_add_variablesSql, map[string]*bintree{}},
 	}},
 }}
 

@@ -25,6 +25,7 @@ func NewControllerUser(common *ControllerCommon) *ControllerUser {
 // @Success 200 {object} models.NewObjectSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /user [post]
 func (c ControllerUser) AddUser(ctx *gin.Context) {
 
@@ -62,6 +63,7 @@ func (c ControllerUser) AddUser(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /user/{id} [Get]
 func (c ControllerUser) GetUserById(ctx *gin.Context) {
 
@@ -99,6 +101,7 @@ func (c ControllerUser) GetUserById(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /user/{id} [Put]
 //func (c ControllerUser) UpdateUser(ctx *gin.Context) {
 //
@@ -144,11 +147,12 @@ func (c ControllerUser) GetUserById(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Param order query string false "order" default(DESC)
 // @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.ResponseUserList
+// @Success 200 {array} models.UserShotModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /user [Get]
+// @Security ApiKeyAuth
+// @Router /users [Get]
 func (c ControllerUser) GetUserList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
@@ -174,6 +178,7 @@ func (c ControllerUser) GetUserList(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
 // @Router /user/{id} [Delete]
 func (c ControllerUser) DeleteUserById(ctx *gin.Context) {
 

@@ -17,19 +17,22 @@ func (s *Server) setControllers() {
 	})
 	v1.GET("/swagger/*any", s.ControllersV1.Swagger.WrapHandler(swaggerFiles.Handler))
 
+	// auth
+	v1.POST("/signin", s.ControllersV1.Auth.SignIn)
+
 	// nodes
 	v1.POST("/node", s.ControllersV1.Node.AddNode)
 	v1.GET("/node/:id", s.ControllersV1.Node.GetNodeById)
 	v1.PUT("/node/:id", s.ControllersV1.Node.UpdateNode)
 	v1.DELETE("/node/:id", s.ControllersV1.Node.DeleteNodeById)
-	v1.GET("/node", s.ControllersV1.Node.GetNodeList)
+	v1.GET("/nodes", s.ControllersV1.Node.GetNodeList)
 
 	// scripts
 	v1.POST("/script", s.ControllersV1.Script.AddScript)
 	v1.GET("/script/:id", s.ControllersV1.Script.GetScriptById)
 	v1.PUT("/script/:id", s.ControllersV1.Script.UpdateScript)
 	v1.DELETE("/script/:id", s.ControllersV1.Script.DeleteScriptById)
-	v1.GET("/script", s.ControllersV1.Script.GetScriptList)
+	v1.GET("/scripts", s.ControllersV1.Script.GetScriptList)
 	v1.POST("/script/:id/exec", s.ControllersV1.Script.Exec)
 
 	// workflow
@@ -44,7 +47,7 @@ func (s *Server) setControllers() {
 	v1.GET("/device/:id", s.ControllersV1.Device.GetDeviceById)
 	v1.PUT("/device/:id", s.ControllersV1.Device.UpdateDevice)
 	v1.DELETE("/device/:id", s.ControllersV1.Device.DeleteDeviceById)
-	v1.GET("/device", s.ControllersV1.Device.GetDeviceList)
+	v1.GET("/devices", s.ControllersV1.Device.GetDeviceList)
 
 	// role
 	v1.POST("/role", s.ControllersV1.Role.AddRole)
@@ -59,4 +62,5 @@ func (s *Server) setControllers() {
 	// user
 	v1.POST("/user", s.ControllersV1.User.AddUser)
 	v1.GET("/user/:id", s.ControllersV1.User.GetUserById)
+	v1.GET("/users", s.ControllersV1.User.GetUserList)
 }

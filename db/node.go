@@ -18,7 +18,7 @@ type Node struct {
 	Status      string
 	Description string
 	CreatedAt   time.Time
-	UpdatedAt   *time.Time
+	UpdatedAt   time.Time
 }
 
 func (d *Node) TableName() string {

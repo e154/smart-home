@@ -93,9 +93,9 @@ func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserByIdM
 	}
 
 	// history
-	u.History = make([]*models.UserByIdModelUserHistory, 0)
+	u.History = make([]*models.UserHistory, 0)
 	for _, story := range user.History {
-		s := &models.UserByIdModelUserHistory{}
+		s := &models.UserHistory{}
 		copier.Copy(&s, &story)
 		u.History = append(u.History, s)
 	}

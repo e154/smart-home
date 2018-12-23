@@ -157,7 +157,7 @@ func (c ControllerNode) UpdateNode(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /node [Get]
+// @Router /nodes [Get]
 func (c ControllerNode) GetNodeList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)

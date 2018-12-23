@@ -12,3 +12,9 @@ package v1
 // @license.url https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
 
 // @BasePath /api/v1
+
+// @securityDefinitions.basic BasicAuth
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization

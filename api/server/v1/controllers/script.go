@@ -162,7 +162,7 @@ func (c ControllerScript) UpdateScript(ctx *gin.Context) {
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /script [Get]
+// @Router /scripts [Get]
 func (c ControllerScript) GetScriptList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
