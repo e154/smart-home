@@ -10,6 +10,7 @@ import (
 	"encoding/hex"
 	"time"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/e154/smart-home/system/access_list"
 )
 
 const (
@@ -96,6 +97,22 @@ func SignIn(email, password string, adaptors *adaptors.Adaptors, ip string) (cur
 
 	log.Infof("Successful login, user: %s", user.Email)
 
+	return
+}
+
+func SignOut(user *m.User, adaptors *adaptors.Adaptors) (err error) {
+
+	err = adaptors.User.ClearToken(user)
+
+	return
+}
+
+func Recovery() {}
+
+func Reset() {}
+
+func AccessList(user *m.User, accessListService *access_list.AccessListService) (accessList *access_list.AccessList, err error) {
+	accessList = accessListService.List
 	return
 }
 

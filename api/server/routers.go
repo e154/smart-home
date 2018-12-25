@@ -19,6 +19,10 @@ func (s *Server) setControllers() {
 
 	// auth
 	v1.POST("/signin", s.ControllersV1.Auth.SignIn)
+	v1.POST("/signout", s.af.Auth, s.ControllersV1.Auth.SignOut)
+	v1.POST("/recovery", s.af.Auth, s.ControllersV1.Auth.Recovery)
+	v1.POST("/reset", s.af.Auth, s.ControllersV1.Auth.Reset)
+	v1.GET("/access_list", s.af.Auth, s.ControllersV1.Auth.AccessList)
 
 	// nodes
 	v1.POST("/node", s.af.Auth, s.ControllersV1.Node.AddNode)

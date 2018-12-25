@@ -721,6 +721,33 @@ paths:
       summary: index page
       tags:
       - index
+  /access_list:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AccessList'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get user access list
+      tags:
+      - auth
   /device:
     post:
       consumes:
@@ -1147,6 +1174,60 @@ paths:
       summary: Node list
       tags:
       - node
+  /recovery:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Recovery access
+      tags:
+      - auth
+  /reset:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Reset password
+      tags:
+      - auth
   /role:
     post:
       consumes:
@@ -1771,6 +1852,33 @@ paths:
       security:
       - BasicAuth: []
       summary: Add new auth
+      tags:
+      - auth
+  /signout:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Sign out
       tags:
       - auth
   /user:

@@ -143,6 +143,7 @@ window.onload = function() {
 	url: "swagger.yml",
     dom_id: '#swagger-ui',
     validatorUrl: null,
+	docExpansion: 'none',
 	deepLinking: true,
     presets: [
       SwaggerUIBundle.presets.apis,
