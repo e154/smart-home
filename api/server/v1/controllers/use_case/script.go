@@ -15,7 +15,7 @@ func AddScript(script *m.Script, adaptors *adaptors.Adaptors, core *core.Core, s
 
 	// validation
 	ok, errs = script.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 
@@ -54,7 +54,7 @@ func UpdateScript(script *m.Script, adaptors *adaptors.Adaptors, core *core.Core
 
 	// validation
 	ok, errs = script.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 

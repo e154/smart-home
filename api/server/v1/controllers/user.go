@@ -23,7 +23,7 @@ func NewControllerUser(common *ControllerCommon) *ControllerUser {
 // @Produce json
 // @Accept  json
 // @Param user body models.NewUser true "user params"
-// @Success 200 {object} models.NewObjectSuccess
+// @Success 200 {object} models.UserFullModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
@@ -42,7 +42,7 @@ func (c ControllerUser) AddUser(ctx *gin.Context) {
 		currentUser = user.(*m.User)
 	}
 
-	_, id, errs, err := AddUser(params, c.adaptors, currentUser)
+	_, createdUser, errs, err := AddUser(params, c.adaptors, currentUser)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -55,7 +55,7 @@ func (c ControllerUser) AddUser(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("id", id).Send(ctx)
+	resp.Item("user", createdUser).Send(ctx)
 }
 
 // User godoc
@@ -65,7 +65,7 @@ func (c ControllerUser) AddUser(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "User ID"
-// @Success 200 {object} models.UserByIdModel
+// @Success 200 {object} models.UserFullModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -102,46 +102,86 @@ func (c ControllerUser) GetUserById(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param  id path int true "User ID"
-// @Param  user body models.UpdateUser true "Update user"
+// @Param  user body models.ResponseSuccess true "Update user"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /user/{id} [Put]
-//func (c ControllerUser) UpdateUser(ctx *gin.Context) {
-//
-//	aid, err := strconv.Atoi(ctx.Param("id"))
-//	if err != nil {
-//		log.Error(err.Error())
-//		NewError(400, err).Send(ctx)
-//		return
-//	}
-//
-//	n := &m.User{}
-//	if err := ctx.ShouldBindJSON(&n); err != nil {
-//		log.Error(err.Error())
-//		NewError(400, err).Send(ctx)
-//		return
-//	}
-//
-//	n.Id = int64(aid)
-//
-//	_, errs, err := UpdateUser(n, c.adaptors, c.core)
-//	if len(errs) > 0 {
-//		err400 := NewError(400)
-//		err400.ValidationToErrors(errs).Send(ctx)
-//		return
-//	}
-//
-//	if err != nil {
-//		NewError(500, err).Send(ctx)
-//		return
-//	}
-//
-//	resp := NewSuccess()
-//	resp.Send(ctx)
-//}
+func (c ControllerUser) UpdateUser(ctx *gin.Context) {
+
+	aid, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	n := &models.UpdateUser{}
+	if err := ctx.ShouldBindJSON(n); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	n.Id = int64(aid)
+
+	_, errs, err := UpdateUser(n, c.adaptors)
+	if len(errs) > 0 {
+		err400 := NewError(400)
+		err400.ValidationToErrors(errs).Send(ctx)
+		return
+	}
+
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
+}
+
+
+// User godoc
+// @tags user
+// @Summary Update user status
+// @Description Update user status
+// @Produce json
+// @Accept  json
+// @Param  id path int true "User ID"
+// @Param  user body models.ResponseSuccess true "Update user"
+// @Success 200 {object} models.UserUpdateStatusRequest
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
+// @Router /user/{id}/update_status [Put]
+func (c ControllerUser) UpdateStatus(ctx *gin.Context) {
+
+	aid, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	n := &models.UserUpdateStatusRequest{}
+	if err := ctx.ShouldBindJSON(n); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	if err = UpdateStatus(int64(aid), n.Status, c.adaptors); err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
+}
 
 // User godoc
 // @tags user

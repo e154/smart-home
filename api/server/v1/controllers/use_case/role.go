@@ -12,7 +12,7 @@ func AddRole(role *m.Role, adaptors *adaptors.Adaptors) (ok bool, errs []*valida
 
 	// validation
 	ok, errs = role.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 
@@ -34,7 +34,7 @@ func UpdateRole(role *m.Role, adaptors *adaptors.Adaptors) (ok bool, errs []*val
 
 	// validation
 	ok, errs = role.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 

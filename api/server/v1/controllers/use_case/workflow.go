@@ -12,7 +12,7 @@ func AddWorkflow(workflow *m.Workflow, adaptors *adaptors.Adaptors, core *core.C
 
 	// validation
 	ok, errs = workflow.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 
@@ -39,7 +39,7 @@ func UpdateWorkflow(workflow *m.Workflow, adaptors *adaptors.Adaptors, core *cor
 
 	// validation
 	ok, errs = workflow.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 

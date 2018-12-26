@@ -12,7 +12,7 @@ func AddNode(node *m.Node, adaptors *adaptors.Adaptors, core *core.Core) (ok boo
 
 	// validation
 	ok, errs = node.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 
@@ -39,7 +39,7 @@ func UpdateNode(node *m.Node, adaptors *adaptors.Adaptors, core *core.Core) (ok 
 
 	// validation
 	ok, errs = node.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 

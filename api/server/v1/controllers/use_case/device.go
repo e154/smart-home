@@ -12,7 +12,7 @@ func AddDevice(device *m.Device, adaptors *adaptors.Adaptors, core *core.Core) (
 
 	// validation
 	ok, errs = device.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 
@@ -36,7 +36,7 @@ func UpdateDevice(device *m.Device, adaptors *adaptors.Adaptors, core *core.Core
 
 	// validation
 	ok, errs = device.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 

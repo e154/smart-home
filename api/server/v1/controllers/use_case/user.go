@@ -12,11 +12,11 @@ import (
 
 func AddUser(params models.NewUser,
 	adaptors *adaptors.Adaptors,
-	currentUser *m.User) (ok bool, id int64, errs []*validation.Error, err error) {
+	currentUser *m.User) (ok bool, createdUser *m.User, errs []*validation.Error, err error) {
 
 	// validation income request
 	ok, errs = params.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 
@@ -60,20 +60,21 @@ func AddUser(params models.NewUser,
 
 	// validation user model
 	ok, errs = user.Valid()
-	if len(errs) > 0 {
+	if len(errs) > 0 || !ok {
 		return
 	}
 
+	var id int64
 	if id, err = adaptors.User.Add(user); err != nil {
 		return
 	}
 
-	user.Id = id
+	createdUser, err = adaptors.User.GetById(id)
 
 	return
 }
 
-func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserByIdModel, err error) {
+func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserFullModel, err error) {
 
 	var user *m.User
 	if user, err = adaptors.User.GetById(userId); err != nil {
@@ -81,7 +82,7 @@ func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserByIdM
 	}
 
 	// base model
-	u = &models.UserByIdModel{}
+	u = &models.UserFullModel{}
 	copier.Copy(&u, &user)
 
 	// parent model
@@ -145,6 +146,7 @@ func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Ada
 
 	for _, user := range userList {
 		item := &models.UserShotModel{}
+		copier.Copy(&item , &user)
 
 		// parent model
 		if user.User != nil {
@@ -164,6 +166,52 @@ func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Ada
 
 		items = append(items, item)
 	}
+
+	return
+}
+
+func UpdateUser(newParams *models.UpdateUser, adaptors *adaptors.Adaptors) (ok bool, errs []*validation.Error, err error) {
+
+	ok, errs = newParams.Valid()
+	if len(errs) > 0 || !ok {
+		return
+	}
+
+	var user *m.User
+	if user, err = adaptors.User.GetById(newParams.Id); err != nil {
+		return
+	}
+
+	if newParams.Password != newParams.PasswordRepeat {
+		err = errors.New("bad passwords")
+		return
+	}
+
+	copier.Copy(&user, &newParams)
+	user.EncryptedPassword = common.Pwdhash(newParams.Password)
+
+	err = adaptors.User.Update(user)
+
+	return
+}
+
+func UpdateStatus(userId int64, newStatus string, adaptors *adaptors.Adaptors) (err error) {
+
+	var user *m.User
+	if user, err = adaptors.User.GetById(userId); err != nil {
+		return
+	}
+
+	user.Status = newStatus
+
+	// check user status
+	switch user.Status {
+	case "active", "blocked":
+	default:
+		user.Status = "blocked"
+	}
+
+	err = adaptors.User.Update(user)
 
 	return
 }

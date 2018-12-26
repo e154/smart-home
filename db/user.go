@@ -57,7 +57,7 @@ func (u *Users) GetById(userId int64) (user *User, err error) {
 
 	user = &User{}
 	err = u.Db.Model(&User{}).
-		Where("id = ?", userId).
+		Where("id = ? and deleted_at isnull", userId).
 		Preload("Image").
 		Preload("Meta").
 		Preload("Role").
@@ -138,7 +138,6 @@ func (u *Users) Update(user *User) (err error) {
 		"created_at":             user.CreatedAt,
 		"updated_at":             user.UpdatedAt,
 		"deleted_at":             user.DeletedAt,
-		"history":                user.History,
 	}).Error
 
 	return
@@ -146,7 +145,7 @@ func (u *Users) Update(user *User) (err error) {
 
 func (u *Users) NewResetPassToken(userId int64, token string) (err error) {
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
-		"reset_password_token": token,
+		"reset_password_token":   token,
 		"reset_password_sent_at": time.Now(),
 	}).Error
 	return
@@ -154,7 +153,7 @@ func (u *Users) NewResetPassToken(userId int64, token string) (err error) {
 
 func (u *Users) ClearResetPassToken(userId int64) (err error) {
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
-		"reset_password_token": "",
+		"reset_password_token":   "",
 		"reset_password_sent_at": nil,
 	}).Error
 	return
@@ -176,6 +175,9 @@ func (u *Users) UpdateAuthenticationToken(userId int64, token string) (err error
 
 func (u *Users) Delete(userId int64) (err error) {
 	err = u.Db.Delete(&User{Id: userId}).Error
+	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
+		"deleted_at": time.Now(),
+	}).Error
 	return
 }
 
