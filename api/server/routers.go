@@ -67,6 +67,7 @@ func (s *Server) setControllers() {
 	v1.POST("/user", s.af.Auth, s.ControllersV1.User.AddUser)
 	v1.GET("/user/:id", s.af.Auth, s.ControllersV1.User.GetUserById)
 	v1.PUT("/user/:id", s.af.Auth, s.ControllersV1.User.UpdateUser)
+	v1.DELETE("/user/:id", s.af.Auth, s.ControllersV1.User.DeleteUserById)
 	v1.PUT("/user/:id/update_status", s.af.Auth, s.ControllersV1.User.UpdateStatus)
 	v1.GET("/users", s.af.Auth, s.ControllersV1.User.GetUserList)
 }

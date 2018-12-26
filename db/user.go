@@ -174,7 +174,6 @@ func (u *Users) UpdateAuthenticationToken(userId int64, token string) (err error
 }
 
 func (u *Users) Delete(userId int64) (err error) {
-	err = u.Db.Delete(&User{Id: userId}).Error
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"deleted_at": time.Now(),
 	}).Error
@@ -196,6 +195,7 @@ func (n *Users) List(limit, offset int64, orderBy, sort string) (list []*User, t
 		Preload("Meta").
 		Preload("Role").
 		Preload("User").
+		Where("deleted_at isnull").
 		Find(&list).
 		Error
 
