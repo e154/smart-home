@@ -368,7 +368,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseDeviceList"
+                            "$ref": "#/definitions/models.DeviceListModel"
                         }
                     },
                     "400": {
@@ -832,7 +832,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.NewObjectSuccess"
+                            "$ref": "#/definitions/models.Role"
                         }
                     },
                     "400": {
@@ -884,7 +884,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseRole"
+                            "$ref": "#/definitions/models.Role"
                         }
                     },
                     "400": {
@@ -1134,7 +1134,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseRole"
+                            "$ref": "#/definitions/models.ResponseSuccess"
                         }
                     },
                     "400": {
@@ -1216,7 +1216,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseRoleList"
+                            "$ref": "#/definitions/models.RoleListModel"
                         }
                     },
                     "400": {
@@ -1813,7 +1813,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.NewObjectSuccess"
+                            "$ref": "#/definitions/models.UserFullModel"
                         }
                     },
                     "400": {
@@ -1865,7 +1865,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.UserByIdModel"
+                            "$ref": "#/definitions/models.UserFullModel"
                         }
                     },
                     "400": {
@@ -1923,7 +1923,7 @@
                         "required": true,
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseSuccess"
+                            "$ref": "#/definitions/models.UpdateUser"
                         }
                     }
                 ],
@@ -2016,6 +2016,75 @@
                 }
             }
         },
+        "/user/{id}/update_status": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update user status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update user status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.UserUpdateStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "security": [
@@ -2070,10 +2139,8 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.UserShotModel"
-                            }
+                            "type": "object",
+                            "$ref": "#/definitions/models.UserListModel"
                         }
                     },
                     "400": {
@@ -2533,6 +2600,31 @@
                 }
             }
         },
+        "models.DeviceListModel": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserShotModel"
+                    }
+                },
+                "meta": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer"
+                        },
+                        "objects_count": {
+                            "type": "integer"
+                        },
+                        "offset": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
         "models.ErrorModel": {
             "type": "object",
             "properties": {
@@ -2651,20 +2743,7 @@
             }
         },
         "models.NewObjectSuccess": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
+            "type": "object"
         },
         "models.NewRole": {
             "type": "object",
@@ -2832,34 +2911,6 @@
                 }
             }
         },
-        "models.ResponseDeviceList": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "items": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Device"
-                            }
-                        },
-                        "limit": {
-                            "type": "integer"
-                        },
-                        "offset": {
-                            "type": "integer"
-                        },
-                        "total": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
         "models.ResponseNode": {
             "type": "object",
             "properties": {
@@ -2890,51 +2941,6 @@
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/models.Node"
-                            }
-                        },
-                        "limit": {
-                            "type": "integer"
-                        },
-                        "offset": {
-                            "type": "integer"
-                        },
-                        "total": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "models.ResponseRole": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "role": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.Role"
-                        }
-                    }
-                }
-            }
-        },
-        "models.ResponseRoleList": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "items": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Role"
                             }
                         },
                         "limit": {
@@ -3012,15 +3018,7 @@
             }
         },
         "models.ResponseSuccess": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object"
-                }
-            }
+            "type": "object"
         },
         "models.ResponseWorkflow": {
             "type": "object",
@@ -3098,6 +3096,31 @@
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "models.RoleListModel": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserShotModel"
+                    }
+                },
+                "meta": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer"
+                        },
+                        "objects_count": {
+                            "type": "integer"
+                        },
+                        "offset": {
+                            "type": "integer"
+                        }
+                    }
                 }
             }
         },
@@ -3238,6 +3261,52 @@
                 }
             }
         },
+        "models.UpdateUser": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.NewUserImage"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.NewUserMeta"
+                    }
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "password_repeat": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.NewUserRole"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UpdateWorkflow": {
             "type": "object",
             "properties": {
@@ -3252,7 +3321,29 @@
                 }
             }
         },
-        "models.UserByIdModel": {
+        "models.UserByIdModelMeta": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserByIdModelParent": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserFullModel": {
             "type": "object",
             "properties": {
                 "authentication_token": {
@@ -3335,28 +3426,6 @@
                 }
             }
         },
-        "models.UserByIdModelMeta": {
-            "type": "object",
-            "properties": {
-                "key": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.UserByIdModelParent": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "nickname": {
-                    "type": "string"
-                }
-            }
-        },
         "models.UserHistory": {
             "type": "object",
             "properties": {
@@ -3365,6 +3434,31 @@
                 },
                 "time": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UserListModel": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.UserShotModel"
+                    }
+                },
+                "meta": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer"
+                        },
+                        "objects_count": {
+                            "type": "integer"
+                        },
+                        "offset": {
+                            "type": "integer"
+                        }
+                    }
                 }
             }
         },
@@ -3412,6 +3506,14 @@
                 "user": {
                     "type": "object",
                     "$ref": "#/definitions/models.UserByIdModelParent"
+                }
+            }
+        },
+        "models.UserUpdateStatusRequest": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
                 }
             }
         },

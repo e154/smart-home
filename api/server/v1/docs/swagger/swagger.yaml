@@ -76,6 +76,22 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.DeviceListModel:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.UserShotModel'
+        type: array
+      meta:
+        properties:
+          limit:
+            type: integer
+          objects_count:
+            type: integer
+          offset:
+            type: integer
+        type: object
+    type: object
   models.ErrorModel:
     properties:
       code:
@@ -155,14 +171,6 @@ definitions:
         type: string
     type: object
   models.NewObjectSuccess:
-    properties:
-      code:
-        type: string
-      data:
-        properties:
-          id:
-            type: integer
-        type: object
     type: object
   models.NewRole:
     properties:
@@ -272,24 +280,6 @@ definitions:
             type: object
         type: object
     type: object
-  models.ResponseDeviceList:
-    properties:
-      code:
-        type: string
-      data:
-        properties:
-          items:
-            items:
-              $ref: '#/definitions/models.Device'
-            type: array
-          limit:
-            type: integer
-          offset:
-            type: integer
-          total:
-            type: integer
-        type: object
-    type: object
   models.ResponseNode:
     properties:
       code:
@@ -310,35 +300,6 @@ definitions:
           items:
             items:
               $ref: '#/definitions/models.Node'
-            type: array
-          limit:
-            type: integer
-          offset:
-            type: integer
-          total:
-            type: integer
-        type: object
-    type: object
-  models.ResponseRole:
-    properties:
-      code:
-        type: string
-      data:
-        properties:
-          role:
-            $ref: '#/definitions/models.Role'
-            type: object
-        type: object
-    type: object
-  models.ResponseRoleList:
-    properties:
-      code:
-        type: string
-      data:
-        properties:
-          items:
-            items:
-              $ref: '#/definitions/models.Role'
             type: array
           limit:
             type: integer
@@ -388,11 +349,6 @@ definitions:
         type: object
     type: object
   models.ResponseSuccess:
-    properties:
-      code:
-        type: string
-      data:
-        type: object
     type: object
   models.ResponseWorkflow:
     properties:
@@ -444,6 +400,22 @@ definitions:
         type: object
       updated_at:
         type: string
+    type: object
+  models.RoleListModel:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.UserShotModel'
+        type: array
+      meta:
+        properties:
+          limit:
+            type: integer
+          objects_count:
+            type: integer
+          offset:
+            type: integer
+        type: object
     type: object
   models.Script:
     properties:
@@ -534,6 +506,37 @@ definitions:
       source:
         type: string
     type: object
+  models.UpdateUser:
+    properties:
+      avatar:
+        $ref: '#/definitions/models.NewUserImage'
+        type: object
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      lang:
+        type: string
+      last_name:
+        type: string
+      meta:
+        items:
+          $ref: '#/definitions/models.NewUserMeta'
+        type: array
+      nickname:
+        type: string
+      password:
+        type: string
+      password_repeat:
+        type: string
+      role:
+        $ref: '#/definitions/models.NewUserRole'
+        type: object
+      status:
+        type: string
+    type: object
   models.UpdateWorkflow:
     properties:
       description:
@@ -543,7 +546,21 @@ definitions:
       status:
         type: string
     type: object
-  models.UserByIdModel:
+  models.UserByIdModelMeta:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  models.UserByIdModelParent:
+    properties:
+      id:
+        type: integer
+      nickname:
+        type: string
+    type: object
+  models.UserFullModel:
     properties:
       authentication_token:
         type: string
@@ -599,26 +616,28 @@ definitions:
         $ref: '#/definitions/models.UserByIdModelParent'
         type: object
     type: object
-  models.UserByIdModelMeta:
-    properties:
-      key:
-        type: string
-      value:
-        type: string
-    type: object
-  models.UserByIdModelParent:
-    properties:
-      id:
-        type: integer
-      nickname:
-        type: string
-    type: object
   models.UserHistory:
     properties:
       ip:
         type: string
       time:
         type: string
+    type: object
+  models.UserListModel:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.UserShotModel'
+        type: array
+      meta:
+        properties:
+          limit:
+            type: integer
+          objects_count:
+            type: integer
+          offset:
+            type: integer
+        type: object
     type: object
   models.UserShotModel:
     properties:
@@ -651,6 +670,11 @@ definitions:
       user:
         $ref: '#/definitions/models.UserByIdModelParent'
         type: object
+    type: object
+  models.UserUpdateStatusRequest:
+    properties:
+      status:
+        type: string
     type: object
   models.Workflow:
     properties:
@@ -939,7 +963,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseDeviceList'
+            $ref: '#/definitions/models.DeviceListModel'
             type: object
         "400":
           description: some error
@@ -1246,7 +1270,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.NewObjectSuccess'
+            $ref: '#/definitions/models.Role'
             type: object
         "400":
           description: some error
@@ -1318,7 +1342,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseRole'
+            $ref: '#/definitions/models.Role'
             type: object
         "400":
           description: some error
@@ -1447,7 +1471,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseRole'
+            $ref: '#/definitions/models.ResponseSuccess'
             type: object
         "400":
           description: some error
@@ -1503,7 +1527,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseRoleList'
+            $ref: '#/definitions/models.RoleListModel'
             type: object
         "400":
           description: some error
@@ -1899,7 +1923,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.NewObjectSuccess'
+            $ref: '#/definitions/models.UserFullModel'
             type: object
         "400":
           description: some error
@@ -1971,7 +1995,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserByIdModel'
+            $ref: '#/definitions/models.UserFullModel'
             type: object
         "400":
           description: some error
@@ -2008,7 +2032,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.ResponseSuccess'
+          $ref: '#/definitions/models.UpdateUser'
           type: object
       produces:
       - application/json
@@ -2036,6 +2060,52 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update user
+      tags:
+      - user
+  /user/{id}/update_status:
+    put:
+      consumes:
+      - application/json
+      description: Update user status
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdateStatusRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update user status
       tags:
       - user
   /users:
@@ -2072,9 +2142,8 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.UserShotModel'
-            type: array
+            $ref: '#/definitions/models.UserListModel'
+            type: object
         "400":
           description: some error
           schema:

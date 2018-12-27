@@ -34,11 +34,8 @@ func (n *Role) GetByName(name string) (role *m.Role, err error) {
 	}
 
 	role = n.fromDb(dbRole)
-	//
-	//permissionAdaptor := GetPermissionAdaptor(n.db)
-	//if role.Permissions, err = permissionAdaptor.GetAllPermissions(dbRole.Name); err != nil {
-	//	return
-	//}
+
+	err = n.GetAccessList(role)
 
 	return
 }

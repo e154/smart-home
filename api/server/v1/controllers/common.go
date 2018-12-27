@@ -53,7 +53,7 @@ func (c ControllerCommon) list(ctx *gin.Context) (query, sortBy, order string, l
 	limit = 15
 	offset = 0
 	order = "DESC"
-	sortBy = "id"
+	sortBy = "created_at"
 
 	if ctx.Request.URL.Query().Get("query") != "" {
 		query = ctx.Request.URL.Query().Get("query")

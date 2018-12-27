@@ -6,13 +6,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 	"errors"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/api/server/v1/models"
 )
 
-func AddRole(role *m.Role, adaptors *adaptors.Adaptors) (ok bool, errs []*validation.Error, err error) {
+func AddRole(roleParams models.NewRole, adaptors *adaptors.Adaptors) (role *m.Role, errs []*validation.Error, err error) {
+
+	role = &m.Role{
+		Name:        roleParams.Name,
+		Description: roleParams.Description,
+	}
 
 	// validation
-	ok, errs = role.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = role.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
@@ -30,7 +36,20 @@ func GetRoleByName(name string, adaptors *adaptors.Adaptors) (role *m.Role, err 
 	return
 }
 
-func UpdateRole(role *m.Role, adaptors *adaptors.Adaptors) (ok bool, errs []*validation.Error, err error) {
+func UpdateRole(roleParams *models.UpdateRole, adaptors *adaptors.Adaptors) (ok bool, errs []*validation.Error, err error) {
+
+	role, err := adaptors.Role.GetByName(roleParams.Name)
+	if err != nil {
+		return
+	}
+
+	if roleParams.Parent.Name == "" {
+		role.Parent = nil
+	} else {
+		role.Parent = &m.Role{
+			Name: roleParams.Parent.Name,
+		}
+	}
 
 	// validation
 	ok, errs = role.Valid()

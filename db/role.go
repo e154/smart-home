@@ -49,6 +49,7 @@ func (n Roles) GetByName(name string) (role *Role, err error) {
 func (n Roles) Update(m *Role) (err error) {
 	err = n.Db.Model(&Role{Name: m.Name}).Updates(map[string]interface{}{
 		"description": m.Description,
+		"parent":      m.RoleName,
 	}).Error
 	return
 }

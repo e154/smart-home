@@ -177,7 +177,7 @@ func (c ControllerScript) GetScriptList(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Page(limit, offset, int(total), items).Send(ctx)
+	resp.Page(limit, offset, total, items).Send(ctx)
 	return
 }
 

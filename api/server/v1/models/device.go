@@ -61,12 +61,11 @@ type ResponseDevice struct {
 	} `json:"data"`
 }
 
-type ResponseDeviceList struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		Items  []*Device `json:"items"`
-		Limit  int64     `json:"limit"`
-		Offset int64     `json:"offset"`
-		Total  int64     `json:"total"`
-	} `json:"data"`
+type DeviceListModel struct {
+	Items []UserShotModel
+	Meta  struct {
+		Limit        int `json:"limit"`
+		Offset       int `json:"offset"`
+		ObjectsCount int `json:"objects_count"`
+	}
 }

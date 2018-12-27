@@ -170,7 +170,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Param order query string false "order" default(DESC)
 // @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.ResponseDeviceList
+// @Success 200 {object} models.DeviceListModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -186,7 +186,7 @@ func (c ControllerDevice) GetDeviceList(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Page(limit, offset, int(total), items).Send(ctx)
+	resp.Page(limit, offset, total, items).Send(ctx)
 	return
 }
 

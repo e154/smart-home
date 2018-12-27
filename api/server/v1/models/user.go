@@ -141,3 +141,12 @@ type CurrentUserModel struct {
 	Role        *Role                `json:"role"`
 	Lang        string               `json:"lang"`
 }
+
+type UserListModel struct {
+	Items []UserShotModel
+	Meta  struct {
+		Limit        int `json:"limit"`
+		Offset       int `json:"offset"`
+		ObjectsCount int `json:"objects_count"`
+	}
+}

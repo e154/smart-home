@@ -30,21 +30,13 @@ type Role struct {
 	UpdatedAt  time.Time           `json:"updated_at"`
 }
 
-type ResponseRole struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		Role *Role `json:"role"`
-	} `json:"data"`
-}
-
-type ResponseRoleList struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		Items  []*Role `json:"items"`
-		Limit  int64   `json:"limit"`
-		Offset int64   `json:"offset"`
-		Total  int64   `json:"total"`
-	} `json:"data"`
+type RoleListModel struct {
+	Items []UserShotModel
+	Meta  struct {
+		Limit        int `json:"limit"`
+		Offset       int `json:"offset"`
+		ObjectsCount int `json:"objects_count"`
+	}
 }
 
 type SearchRoleResponse struct {

@@ -102,7 +102,7 @@ func (c ControllerUser) GetUserById(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param  id path int true "User ID"
-// @Param  user body models.ResponseSuccess true "Update user"
+// @Param  user body models.UpdateUser true "Update user"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
@@ -151,8 +151,8 @@ func (c ControllerUser) UpdateUser(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param  id path int true "User ID"
-// @Param  user body models.ResponseSuccess true "Update user"
-// @Success 200 {object} models.UserUpdateStatusRequest
+// @Param  user body models.UserUpdateStatusRequest true "Update user"
+// @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -193,7 +193,7 @@ func (c ControllerUser) UpdateStatus(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Param order query string false "order" default(DESC)
 // @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {array} models.UserShotModel
+// @Success 200 {object} models.UserListModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -209,7 +209,7 @@ func (c ControllerUser) GetUserList(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Page(limit, offset, int(total), items).Send(ctx)
+	resp.Page(limit, offset, total, items).Send(ctx)
 	return
 }
 

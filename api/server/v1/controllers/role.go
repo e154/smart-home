@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 )
 
@@ -22,7 +21,7 @@ func NewControllerRole(common *ControllerCommon) *ControllerRole {
 // @Produce json
 // @Accept  json
 // @Param role body models.NewRole true "role params"
-// @Success 200 {object} models.NewObjectSuccess
+// @Success 200 {object} models.Role
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
@@ -36,12 +35,7 @@ func (c ControllerRole) AddRole(ctx *gin.Context) {
 		return
 	}
 
-	role := &m.Role{
-		Name:        params.Name,
-		Description: params.Description,
-	}
-
-	_, errs, err := AddRole(role, c.adaptors)
+	role, errs, err := AddRole(params, c.adaptors)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -54,7 +48,7 @@ func (c ControllerRole) AddRole(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("role", role).Send(ctx)
+	resp.SetData(role).Send(ctx)
 }
 
 // Role godoc
@@ -64,7 +58,7 @@ func (c ControllerRole) AddRole(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param name path string true "Role name"
-// @Success 200 {object} models.ResponseRole
+// @Success 200 {object} models.Role
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -84,7 +78,7 @@ func (c ControllerRole) GetRoleByName(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("role", role).Send(ctx)
+	resp.SetData(role).Send(ctx)
 }
 
 // Role godoc
@@ -125,7 +119,7 @@ func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 // @Accept  json
 // @Param name path string true "Role name"
 // @Param diff body models.AccessListDiff true "permission"
-// @Success 200 {object} models.ResponseRole
+// @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -171,14 +165,8 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 func (c ControllerRole) UpdateRole(ctx *gin.Context) {
 
 	name := ctx.Param("name")
-	role, err := c.adaptors.Role.GetByName(name)
-	if err != nil {
-		NewError(404, err).Send(ctx)
-		return
-	}
-
+	role := &models.UpdateRole{}
 	if err := ctx.ShouldBindJSON(&role); err != nil {
-		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
@@ -187,8 +175,11 @@ func (c ControllerRole) UpdateRole(ctx *gin.Context) {
 
 	_, errs, err := UpdateRole(role, c.adaptors)
 	if len(errs) > 0 {
-		err400 := NewError(400)
-		err400.ValidationToErrors(errs).Send(ctx)
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
 		return
 	}
 
@@ -211,7 +202,7 @@ func (c ControllerRole) UpdateRole(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Param order query string false "order" default(DESC)
 // @Param sort_by query string false "sort_by" default(name)
-// @Success 200 {object} models.ResponseRoleList
+// @Success 200 {object} models.RoleListModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -227,7 +218,7 @@ func (c ControllerRole) GetRoleList(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Page(limit, offset, int(total), items).Send(ctx)
+	resp.Page(limit, offset, total, items).Send(ctx)
 	return
 }
 
@@ -284,16 +275,13 @@ func (c ControllerRole) DeleteRoleByName(ctx *gin.Context) {
 func (c ControllerRole) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	roles, total, err := Search(query, limit, offset, c.adaptors)
+	roles, _, err := Search(query, limit, offset, c.adaptors)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
 	resp := NewSuccess()
-	resp.SetData(map[string]interface{}{
-		"roles": roles,
-		"total": total,
-	})
+	resp.Item("roles", roles)
 	resp.Send(ctx)
 }

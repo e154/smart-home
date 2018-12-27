@@ -21,7 +21,7 @@ func (r *Response) Success() *Response {
 	return r
 }
 
-func (r *Response) Page(limit, offset, total int, items interface{}) *Response {
+func (r *Response) Page(limit, offset int, total int64, items interface{}) *Response {
 	r.Payload = map[string]interface{}{
 		"items": items,
 		"meta": map[string]interface{}{
