@@ -11,6 +11,7 @@ import (
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/rbac"
+	"github.com/e154/smart-home/system/stream"
 )
 
 var (
@@ -25,6 +26,7 @@ type Server struct {
 	graceful      *graceful_service.GracefulService
 	logger        *ServerLogger
 	af            *rbac.AccessFilter
+	streamService *stream.StreamService
 }
 
 func (s *Server) Start() {
@@ -56,7 +58,8 @@ func (s *Server) Shutdown() {
 func NewServer(cfg *ServerConfig,
 	ctrls *controllers.ControllersV1,
 	graceful *graceful_service.GracefulService,
-	accessFilter *rbac.AccessFilter) (newServer *Server) {
+	accessFilter *rbac.AccessFilter,
+	streamService *stream.StreamService) (newServer *Server) {
 
 	logger := &ServerLogger{log}
 
@@ -79,6 +82,7 @@ func NewServer(cfg *ServerConfig,
 		graceful:      graceful,
 		logger:        logger,
 		af:            accessFilter,
+		streamService: streamService,
 	}
 
 	newServer.graceful.Subscribe(newServer)

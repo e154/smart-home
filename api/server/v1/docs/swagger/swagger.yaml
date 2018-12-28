@@ -171,6 +171,9 @@ definitions:
         type: string
     type: object
   models.NewObjectSuccess:
+    properties:
+      id:
+        type: integer
     type: object
   models.NewRole:
     properties:
@@ -269,6 +272,22 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.NodeListModel:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.Node'
+        type: array
+      meta:
+        properties:
+          limit:
+            type: integer
+          objects_count:
+            type: integer
+          offset:
+            type: integer
+        type: object
+    type: object
   models.ResponseDevice:
     properties:
       code:
@@ -278,35 +297,6 @@ definitions:
           device:
             $ref: '#/definitions/models.Device'
             type: object
-        type: object
-    type: object
-  models.ResponseNode:
-    properties:
-      code:
-        type: string
-      data:
-        properties:
-          node:
-            $ref: '#/definitions/models.Node'
-            type: object
-        type: object
-    type: object
-  models.ResponseNodeList:
-    properties:
-      code:
-        type: string
-      data:
-        properties:
-          items:
-            items:
-              $ref: '#/definitions/models.Node'
-            type: array
-          limit:
-            type: integer
-          offset:
-            type: integer
-          total:
-            type: integer
         type: object
     type: object
   models.ResponseScript:
@@ -474,6 +464,8 @@ definitions:
     properties:
       description:
         type: string
+      id:
+        type: integer
       ip:
         type: string
       name:
@@ -1075,7 +1067,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseNode'
+            $ref: '#/definitions/models.Node'
             type: object
         "400":
           description: some error
@@ -1176,7 +1168,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseNodeList'
+            $ref: '#/definitions/models.NodeListModel'
             type: object
         "400":
           description: some error

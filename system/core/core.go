@@ -10,6 +10,7 @@ import (
 	"errors"
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/telemetry"
 )
 
 var (
@@ -24,7 +25,7 @@ type Core struct {
 	scripts   *scripts.ScriptService
 	cron      *cr.Cron
 	mqtt      *mqtt.Mqtt
-	//telemetry Telemetry
+	telemetry *telemetry.Telemetry
 	//Map       *Map
 }
 
@@ -32,7 +33,8 @@ func NewCore(adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
 	graceful *graceful_service.GracefulService,
 	cron *cr.Cron,
-	mqtt *mqtt.Mqtt) (core *Core, err error) {
+	mqtt *mqtt.Mqtt,
+	telemetry *telemetry.Telemetry) (core *Core, err error) {
 
 	core = &Core{
 		nodes:     make(map[int64]*Node),
@@ -41,6 +43,7 @@ func NewCore(adaptors *adaptors.Adaptors,
 		scripts:   scripts,
 		cron:      cron,
 		mqtt:      mqtt,
+		telemetry: telemetry,
 	}
 
 	graceful.Subscribe(core)
@@ -125,8 +128,7 @@ func (b *Core) AddNode(node *m.Node) (n *Node, err error) {
 	b.nodes[node.Id] = n.Connect()
 	b.Unlock()
 
-	//TODO add telemetry
-	//b.telemetry.Broadcast("nodes")
+	b.telemetry.Broadcast("nodes")
 
 	return
 }
@@ -148,8 +150,7 @@ func (b *Core) RemoveNode(node *m.Node) (err error) {
 	delete(b.nodes, node.Id)
 	b.Unlock()
 
-	//TODO add telemetry
-	//b.telemetry.Broadcast("nodes")
+	b.telemetry.Broadcast("nodes")
 
 	return
 }
@@ -187,8 +188,7 @@ func (b *Core) ConnectNode(node *m.Node) (err error) {
 		b.nodes[node.Id].Connect()
 	}
 
-	//TODO add telemetry
-	//b.telemetry.Broadcast("nodes")
+	b.telemetry.Broadcast("nodes")
 
 	return
 }
@@ -201,8 +201,7 @@ func (b *Core) DisconnectNode(node *m.Node) (err error) {
 		b.nodes[node.Id].Disconnect()
 	}
 
-	//TODO add telemetry
-	//b.telemetry.Broadcast("nodes")
+	b.telemetry.Broadcast("nodes")
 
 	return
 }

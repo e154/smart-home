@@ -481,7 +481,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseNode"
+                            "$ref": "#/definitions/models.Node"
                         }
                     },
                     "400": {
@@ -687,7 +687,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseNodeList"
+                            "$ref": "#/definitions/models.NodeListModel"
                         }
                     },
                     "400": {
@@ -2743,7 +2743,12 @@
             }
         },
         "models.NewObjectSuccess": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
         },
         "models.NewRole": {
             "type": "object",
@@ -2894,6 +2899,31 @@
                 }
             }
         },
+        "models.NodeListModel": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Node"
+                    }
+                },
+                "meta": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer"
+                        },
+                        "objects_count": {
+                            "type": "integer"
+                        },
+                        "offset": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
         "models.ResponseDevice": {
             "type": "object",
             "properties": {
@@ -2906,51 +2936,6 @@
                         "device": {
                             "type": "object",
                             "$ref": "#/definitions/models.Device"
-                        }
-                    }
-                }
-            }
-        },
-        "models.ResponseNode": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "node": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.Node"
-                        }
-                    }
-                }
-            }
-        },
-        "models.ResponseNodeList": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "items": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Node"
-                            }
-                        },
-                        "limit": {
-                            "type": "integer"
-                        },
-                        "offset": {
-                            "type": "integer"
-                        },
-                        "total": {
-                            "type": "integer"
                         }
                     }
                 }
@@ -3210,6 +3195,9 @@
             "properties": {
                 "description": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "ip": {
                     "type": "string"

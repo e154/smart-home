@@ -68,7 +68,7 @@ func (c ControllerNode) AddNode(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Node ID"
-// @Success 200 {object} models.ResponseNode
+// @Success 200 {object} models.Node
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -95,7 +95,7 @@ func (c ControllerNode) GetNodeById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("node", node).Send(ctx)
+	resp.SetData(node).Send(ctx)
 }
 
 // Node godoc
@@ -121,7 +121,7 @@ func (c ControllerNode) UpdateNode(ctx *gin.Context) {
 		return
 	}
 
-	n := &m.Node{}
+	n := &models.UpdateNode{}
 	if err := ctx.ShouldBindJSON(&n); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -156,7 +156,7 @@ func (c ControllerNode) UpdateNode(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Param order query string false "order" default(DESC)
 // @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.ResponseNodeList
+// @Success 200 {object} models.NodeListModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"

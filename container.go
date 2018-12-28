@@ -18,6 +18,9 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/rbac"
+	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/telemetry"
+	"github.com/e154/smart-home/system/telemetry/dashboard"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -47,6 +50,10 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(mqtt.NewMqttConfig)
 	container.Provide(access_list.NewAccessListService)
 	container.Provide(rbac.NewAccessFilter)
+	container.Provide(stream.NewStreamService)
+	container.Provide(stream.NewHub)
+	container.Provide(telemetry.NewTelemetry)
+	container.Provide(dashboard.NewDashboard)
 
 	return
 }

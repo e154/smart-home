@@ -92,7 +92,7 @@ func (c ControllerUser) GetUserById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("user", user).Send(ctx)
+	resp.SetData(user).Send(ctx)
 }
 
 // User godoc

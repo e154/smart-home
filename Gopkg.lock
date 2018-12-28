@@ -18,6 +18,14 @@
   revision = "de5bf2ad457846296e2031421a34e2568e304e35"
 
 [[projects]]
+  digest = "1:e92f5581902c345eb4ceffdcd4a854fb8f73cf436d47d837d1ec98ef1fe0a214"
+  name = "github.com/StackExchange/wmi"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5d049714c4a64225c3c79a7cf7d02f7fb5b96338"
+  version = "1.0.0"
+
+[[projects]]
   branch = "master"
   digest = "1:315c5f2f60c76d89b871c73f9bd5fe689cad96597afd50fb9992228ef80bdd34"
   name = "github.com/alecthomas/template"
@@ -29,22 +37,12 @@
   revision = "a0175ee3bccc567396460bf5acd36800cb10c49c"
 
 [[projects]]
-  digest = "1:769b12bbef627a9e062ca5abcd7c1fedc640c1ba05b4c3b4b0d7ffe8937652d4"
-  name = "github.com/astaxie/beego"
-  packages = [
-    ".",
-    "config",
-    "context",
-    "context/param",
-    "grace",
-    "logs",
-    "session",
-    "toolbox",
-    "utils",
-  ]
+  digest = "1:76dc72490af7174349349838f2fe118996381b31ea83243812a97e5a0fd5ed55"
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
   pruneopts = "UT"
-  revision = "b0e2bbce2a45fcfda684b47968387fa0866ada06"
-  version = "v1.11.0"
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
 
 [[projects]]
   branch = "master"
@@ -66,6 +64,17 @@
   pruneopts = "UT"
   revision = "b869fe1415e4b9eb52f247441830d502aece2d4d"
   version = "v1.3.0"
+
+[[projects]]
+  digest = "1:c96d16a4451e48e2c44b2c3531fd8ec9248d822637f1911a88959ca0bcae4a64"
+  name = "github.com/go-ole/go-ole"
+  packages = [
+    ".",
+    "oleutil",
+  ]
+  pruneopts = "UT"
+  revision = "39dc8486bd0952279431257138bc428275b86797"
+  version = "v1.2.2"
 
 [[projects]]
   digest = "1:953a2628e4c5c72856b53f5470ed5e071c55eccf943d798d42908102af2a610f"
@@ -114,6 +123,14 @@
   packages = ["js"]
   pruneopts = "UT"
   revision = "d547d1d9531ed93dbdebcbff7f83e7c876a1e0ee"
+
+[[projects]]
+  digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
+  name = "github.com/gorilla/websocket"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
+  version = "v1.4.0"
 
 [[projects]]
   branch = "master"
@@ -307,6 +324,30 @@
   revision = "3f452fc0ebebbb784fdab91f7bc79a31dcacab5c"
 
 [[projects]]
+  digest = "1:772b258c49e7eb2d46983b28c108f4300291d7b44709ffbd12f50012397fd5a6"
+  name = "github.com/shirou/gopsutil"
+  packages = [
+    "cpu",
+    "disk",
+    "host",
+    "internal/common",
+    "mem",
+    "net",
+    "process",
+  ]
+  pruneopts = "UT"
+  revision = "0f70a4a06f7a1039305ec9b3ba9c2800f8929fba"
+  version = "v2.18.11"
+
+[[projects]]
+  branch = "master"
+  digest = "1:99c6a6dab47067c9b898e8c8b13d130c6ab4ffbcc4b7cc6236c2cd0b1e344f5b"
+  name = "github.com/shirou/w32"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "bb4de0191aa41b5507caa14b0650cdbddcd9280b"
+
+[[projects]]
   digest = "1:69b1cc331fca23d702bd72f860c6a647afd0aa9fcbc1d0659b1365e26546dd70"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
@@ -384,13 +425,9 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:72503e87c2b7e319cb7b676943915aa8d62b224831963dd5961624c0189daa00"
+  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
   name = "golang.org/x/crypto"
-  packages = [
-    "acme",
-    "acme/autocert",
-    "ssh/terminal",
-  ]
+  packages = ["ssh/terminal"]
   pruneopts = "UT"
   revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
 
@@ -498,8 +535,9 @@
   analyzer-version = 1
   input-imports = [
     "github.com/alecthomas/template",
-    "github.com/astaxie/beego",
+    "github.com/dgrijalva/jwt-go",
     "github.com/gin-gonic/gin",
+    "github.com/gorilla/websocket",
     "github.com/iancoleman/strcase",
     "github.com/jessevdk/go-flags",
     "github.com/jinzhu/copier",
@@ -511,6 +549,10 @@
     "github.com/olivere/elastic",
     "github.com/op/go-logging",
     "github.com/rubenv/sql-migrate",
+    "github.com/shirou/gopsutil/cpu",
+    "github.com/shirou/gopsutil/disk",
+    "github.com/shirou/gopsutil/host",
+    "github.com/shirou/gopsutil/mem",
     "github.com/sirupsen/logrus",
     "github.com/smartystreets/assertions",
     "github.com/smartystreets/goconvey/convey",

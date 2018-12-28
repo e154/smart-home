@@ -17,6 +17,10 @@ func (s *Server) setControllers() {
 	})
 	v1.GET("/swagger/*any", s.ControllersV1.Swagger.WrapHandler(swaggerFiles.Handler))
 
+	// ws
+	v1.GET("/ws", s.af.Auth, s.streamService.Ws)
+	v1.GET("/ws/*any", s.af.Auth, s.streamService.Ws)
+
 	// auth
 	v1.POST("/signin", s.ControllersV1.Auth.SignIn)
 	v1.POST("/signout", s.af.Auth, s.ControllersV1.Auth.SignOut)
