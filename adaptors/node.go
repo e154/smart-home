@@ -82,6 +82,21 @@ func (n *Node) List(limit, offset int64, orderBy, sort string) (list []*m.Node, 
 	return
 }
 
+func (n *Node) Search(query string, limit, offset int) (list []*m.Node, total int64, err error) {
+	var dbList []*db.Node
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Node, 0)
+	for _, dbNode := range dbList {
+		node := n.fromDb(dbNode)
+		list = append(list, node)
+	}
+
+	return
+}
+
 func (n *Node) fromDb(dbNode *db.Node) (node *m.Node) {
 	node = &m.Node{
 		Id: dbNode.Id,

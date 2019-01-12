@@ -18,7 +18,7 @@ type Device struct {
 	Id          int64 `gorm:"primary_key"`
 	Name        string
 	Description string
-	Device      *Device
+	Device      *Device `gorm:"foreignkey:DeviceId"`
 	DeviceId    sql.NullInt64
 	Node        *Node
 	NodeId      sql.NullInt64
@@ -98,6 +98,8 @@ func (n *Devices) List(limit, offset int64, orderBy, sort string) (list []*Devic
 		Limit(limit).
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
+		Preload("Device").
+		Preload("Node").
 		Find(&list).
 		Error
 
@@ -114,14 +116,56 @@ func (n *Devices) List(limit, offset int64, orderBy, sort string) (list []*Devic
 
 func (n *Devices) DependencyLoading(device *Device) (err error) {
 
-	device.States = make([]*DeviceState, 0)
+	// actions
 	device.Actions = make([]*DeviceAction, 0)
+	n.Db.Model(&DeviceAction{}).
+		Where("device_id = ?", device.Id).
+		Preload("Script").
+		Find(&device.Actions)
+
+	// states
+	device.States = make([]*DeviceState, 0)
+	n.Db.Model(&DeviceState{}).
+		Where("device_id = ?", device.Id).
+		Find(&device.States)
+
+	// node
+	if device.NodeId.Valid {
+		device.Node = &Node{Id: device.NodeId.Int64}
+		n.Db.Model(device.Node).
+			Find(&device.Node)
+	}
+
+	// parent device
+	if device.DeviceId.Valid {
+		device.Device = &Device{}
+
+		n.Db.Model(device).
+			Related(&device.Device)
+
+		// node
+		if device.Device.NodeId.Valid {
+			device.Device.Node = &Node{Id: device.Device.NodeId.Int64}
+			n.Db.Model(device.Device.Node).
+				Find(&device.Device.Node)
+		}
+
+		// actions
+		device.Device.Actions = make([]*DeviceAction, 0)
+		n.Db.Model(&DeviceAction{}).
+			Where("device_id = ?", device.Device.Id).
+			Preload("Script").
+			Find(&device.Device.Actions)
+
+		// states
+		device.Device.States = make([]*DeviceState, 0)
+		n.Db.Model(&DeviceState{}).
+			Where("device_id = ?", device.Device.Id).
+			Find(&device.Device.States)
+	}
+
+	// slave devices
 	device.Devices = make([]*Device, 0)
-
-	n.Db.Model(device).
-		Related(&device.States).
-		Related(&device.Actions)
-
 	err = n.Db.Model(device).
 		Where("device_id = ?", device.Id).
 		Find(&device.Devices).
@@ -145,5 +189,22 @@ func (n *Devices) RemoveAction(deviceId, actionId int64) (err error) {
 		return
 	}
 	err = n.Db.Delete(&DeviceAction{DeviceId: deviceId, Id: actionId}).Error
+	return
+}
+
+func (n *Devices) Search(query string, limit, offset int) (list []*Device, total int64, err error) {
+
+	fmt.Println(query)
+	q := n.Db.Model(&Device{}).
+		Where("name LIKE ?", "%"+query+"%").
+		Order("name ASC")
+
+	if err = q.Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*Device, 0)
+	err = q.Find(&list).Error
+
 	return
 }

@@ -128,3 +128,10 @@ func ExecuteScript(scriptId int64, adaptors *adaptors.Adaptors, core *core.Core,
 
 	return
 }
+
+func SearchScript(query string, limit, offset int, adaptors *adaptors.Adaptors) (devices []*m.Script, total int64, err error) {
+
+	devices, total, err = adaptors.Script.Search(query, limit, offset)
+
+	return
+}

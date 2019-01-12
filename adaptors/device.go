@@ -82,6 +82,21 @@ func (n *Device) List(limit, offset int64, orderBy, sort string) (list []*m.Devi
 	return
 }
 
+func (n *Device) Search(query string, limit, offset int) (list []*m.Device, total int64, err error) {
+	var dbList []*db.Device
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Device, 0)
+	for _, dbDevice := range dbList {
+		dev := n.fromDb(dbDevice)
+		list = append(list, dev)
+	}
+
+	return
+}
+
 func (n *Device) fromDb(dbDevice *db.Device) (device *m.Device) {
 	device = &m.Device{
 		Id:          dbDevice.Id,
@@ -96,6 +111,12 @@ func (n *Device) fromDb(dbDevice *db.Device) (device *m.Device) {
 		Devices:     make([]*m.Device, 0),
 		CreatedAt:   dbDevice.CreatedAt,
 		UpdatedAt:   dbDevice.UpdatedAt,
+	}
+
+	// parent device
+	if dbDevice.Device != nil && dbDevice.DeviceId.Valid {
+		device.Device = n.fromDb(dbDevice.Device)
+		device.DeviceId = &dbDevice.DeviceId.Int64
 	}
 
 	// actions

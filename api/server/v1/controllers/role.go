@@ -275,7 +275,7 @@ func (c ControllerRole) DeleteRoleByName(ctx *gin.Context) {
 func (c ControllerRole) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	roles, _, err := Search(query, limit, offset, c.adaptors)
+	roles, _, err := SearchRole(query, limit, offset, c.adaptors)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

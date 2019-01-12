@@ -113,7 +113,7 @@ func (f *AccessFilter) getAccessList(token string) (user *m.User, accessList acc
 	// load user info
 	var claims jwt.MapClaims
 	if claims, err = common.ParseHmacToken(token, hmacKey); err != nil {
-		log.Warning(err.Error())
+		//log.Warning(err.Error())
 		return
 	}
 

@@ -34,6 +34,7 @@ func (s *Server) setControllers() {
 	v1.PUT("/node/:id", s.af.Auth, s.ControllersV1.Node.UpdateNode)
 	v1.DELETE("/node/:id", s.af.Auth, s.ControllersV1.Node.DeleteNodeById)
 	v1.GET("/nodes", s.af.Auth, s.ControllersV1.Node.GetNodeList)
+	v1.GET("/nodes/search", s.af.Auth, s.ControllersV1.Node.Search)
 
 	// scripts
 	v1.POST("/script", s.af.Auth, s.ControllersV1.Script.AddScript)
@@ -42,6 +43,7 @@ func (s *Server) setControllers() {
 	v1.DELETE("/script/:id", s.af.Auth, s.ControllersV1.Script.DeleteScriptById)
 	v1.GET("/scripts", s.af.Auth, s.ControllersV1.Script.GetScriptList)
 	v1.POST("/script/:id/exec", s.af.Auth, s.ControllersV1.Script.Exec)
+	v1.GET("/scripts/search", s.af.Auth, s.ControllersV1.Script.Search)
 
 	// workflow
 	v1.POST("/workflow", s.af.Auth, s.ControllersV1.Workflow.AddWorkflow)
@@ -56,6 +58,7 @@ func (s *Server) setControllers() {
 	v1.PUT("/device/:id", s.af.Auth, s.ControllersV1.Device.UpdateDevice)
 	v1.DELETE("/device/:id", s.af.Auth, s.ControllersV1.Device.DeleteDeviceById)
 	v1.GET("/devices", s.af.Auth, s.ControllersV1.Device.GetDeviceList)
+	v1.GET("/devices/search", s.af.Auth, s.ControllersV1.Device.Search)
 
 	// role
 	v1.POST("/role", s.af.Auth, s.ControllersV1.Role.AddRole)

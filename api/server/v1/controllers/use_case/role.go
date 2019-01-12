@@ -80,7 +80,7 @@ func DeleteRoleByName(name string, adaptors *adaptors.Adaptors) (err error) {
 	return
 }
 
-func Search(query string, limit, offset int, adaptors *adaptors.Adaptors) (roles []*m.Role, total int64, err error) {
+func SearchRole(query string, limit, offset int, adaptors *adaptors.Adaptors) (roles []*m.Role, total int64, err error) {
 
 	roles, total, err = adaptors.Role.Search(query, limit, offset)
 

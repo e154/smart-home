@@ -135,17 +135,17 @@ func devices(node1 *m.Node,
 
 	deviceAction4 := &m.DeviceAction{
 		Name:     "Turning on",
-		DeviceId: device1.Id,
+		DeviceId: device2.Id,
 		ScriptId: script1.Id,
 	}
 	deviceAction5 := &m.DeviceAction{
 		Name:     "Power off",
-		DeviceId: device1.Id,
+		DeviceId: device2.Id,
 		ScriptId: script2.Id,
 	}
 	deviceAction6 := &m.DeviceAction{
 		Name:     "Condition check",
-		DeviceId: device1.Id,
+		DeviceId: device2.Id,
 		ScriptId: script3.Id,
 	}
 

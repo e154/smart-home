@@ -90,3 +90,10 @@ func DeleteNodeById(nodeId int64, adaptors *adaptors.Adaptors, core *core.Core) 
 
 	return
 }
+
+func SearchNode(query string, limit, offset int, adaptors *adaptors.Adaptors) (nodes []*m.Node, total int64, err error) {
+
+	nodes, total, err = adaptors.Node.Search(query, limit, offset)
+
+	return
+}

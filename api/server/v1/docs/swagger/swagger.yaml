@@ -45,14 +45,13 @@ definitions:
     type: object
   models.Device:
     properties:
-      address:
-        type: integer
-      baud:
-        type: integer
       created_at:
         type: string
       description:
         type: string
+      device:
+        $ref: '#/definitions/models.ParentDevice'
+        type: object
       device_id:
         type: integer
       id:
@@ -61,17 +60,15 @@ definitions:
         type: boolean
       name:
         type: string
-      node_id:
-        type: integer
-      sleep:
-        type: integer
+      node:
+        $ref: '#/definitions/models.Node'
+        type: object
+      properties:
+        $ref: '#/definitions/models.DeviceProperties'
+        type: object
       status:
         type: string
-      stop_bite:
-        type: integer
-      timeout:
-        type: integer
-      tty:
+      type:
         type: string
       updated_at:
         type: string
@@ -80,7 +77,7 @@ definitions:
     properties:
       items:
         items:
-          $ref: '#/definitions/models.UserShotModel'
+          $ref: '#/definitions/models.Device'
         type: array
       meta:
         properties:
@@ -91,6 +88,8 @@ definitions:
           offset:
             type: integer
         type: object
+    type: object
+  models.DeviceProperties:
     type: object
   models.ErrorModel:
     properties:
@@ -130,32 +129,27 @@ definitions:
     type: object
   models.NewDevice:
     properties:
-      address:
-        type: integer
-      baud:
-        type: integer
       description:
         type: string
-      device_id:
-        type: integer
-      id:
-        type: integer
-      is_group:
-        type: boolean
+      device:
+        $ref: '#/definitions/models.ParentDevice'
+        type: object
       name:
         type: string
-      node_id:
-        type: integer
-      sleep:
-        type: integer
+      node:
+        $ref: '#/definitions/models.NewDeviceNode'
+        type: object
+      properties:
+        type: object
       status:
         type: string
-      stop_bite:
-        type: integer
-      timeout:
-        type: integer
-      tty:
+      type:
         type: string
+    type: object
+  models.NewDeviceNode:
+    properties:
+      id:
+        type: integer
     type: object
   models.NewNode:
     properties:
@@ -288,16 +282,10 @@ definitions:
             type: integer
         type: object
     type: object
-  models.ResponseDevice:
+  models.ParentDevice:
     properties:
-      code:
-        type: string
-      data:
-        properties:
-          device:
-            $ref: '#/definitions/models.Device'
-            type: object
-        type: object
+      id:
+        type: integer
     type: object
   models.ResponseScript:
     properties:
@@ -424,6 +412,20 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.SearchDeviceResponse:
+    properties:
+      devices:
+        items:
+          $ref: '#/definitions/models.Device'
+        type: array
+    type: object
+  models.SearchNodeResponse:
+    properties:
+      nodes:
+        items:
+          $ref: '#/definitions/models.Node'
+        type: array
+    type: object
   models.SearchRoleResponse:
     properties:
       roles:
@@ -433,31 +435,21 @@ definitions:
     type: object
   models.UpdateDevice:
     properties:
-      address:
-        type: integer
-      baud:
-        type: integer
       description:
         type: string
-      device_id:
-        type: integer
-      id:
-        type: integer
-      is_group:
-        type: boolean
+      device:
+        $ref: '#/definitions/models.ParentDevice'
+        type: object
       name:
         type: string
-      node_id:
-        type: integer
-      sleep:
-        type: integer
+      node:
+        $ref: '#/definitions/models.NewDeviceNode'
+        type: object
+      properties:
+        type: object
       status:
         type: string
-      stop_bite:
-        type: integer
-      timeout:
-        type: integer
-      tty:
+      type:
         type: string
     type: object
   models.UpdateNode:
@@ -854,7 +846,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseDevice'
+            $ref: '#/definitions/models.Device'
             type: object
         "400":
           description: some error
@@ -975,6 +967,56 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Device list
+      tags:
+      - device
+  /devices/search:
+    get:
+      consumes:
+      - application/json
+      description: Search device by name
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchDeviceResponse'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Search device
       tags:
       - device
   /node:
@@ -1188,6 +1230,56 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Node list
+      tags:
+      - node
+  /nodes/search:
+    get:
+      consumes:
+      - application/json
+      description: Search node by name
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchNodeResponse'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Search node
       tags:
       - node
   /recovery:

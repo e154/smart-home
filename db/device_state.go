@@ -13,7 +13,7 @@ type DeviceStates struct {
 type DeviceState struct {
 	Id          int64 `gorm:"primary_key"`
 	Device      *Device
-	DeviceId    int64
+	DeviceId    int64 `gorm:"column:device_id"`
 	Description string
 	SystemName  string
 	CreatedAt   time.Time

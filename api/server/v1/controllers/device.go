@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
 )
@@ -37,29 +36,7 @@ func (c ControllerDevice) AddDevice(ctx *gin.Context) {
 		return
 	}
 
-	n := &m.Device{
-		Id:          params.Id,
-		//NodeId:      params.NodeId,
-		//Baud:        params.Baud,
-		//Sleep:       params.Sleep,
-		Description: params.Description,
-		Name:        params.Name,
-		Status:      params.Status,
-		//StopBite:    params.StopBite,
-		//Timeout:     time.Duration(params.Timeout),
-		//Tty:         params.Tty,
-		IsGroup:     params.IsGroup,
-	}
-
-	if params.DeviceId != nil && *params.DeviceId != 0 {
-		n.Device = &m.Device{Id: *params.DeviceId}
-	}
-
-	//if params.Address != nil && *params.Address != 0 {
-	//	n.Address = params.Address
-	//}
-
-	_, id, errs, err := AddDevice(n, c.adaptors, c.core)
+	_, id, errs, err := AddDevice(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -82,7 +59,7 @@ func (c ControllerDevice) AddDevice(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Device ID"
-// @Success 200 {object} models.ResponseDevice
+// @Success 200 {object} models.Device
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -109,7 +86,7 @@ func (c ControllerDevice) GetDeviceById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("device", device).Send(ctx)
+	resp.SetData(device).Send(ctx)
 }
 
 // Device godoc
@@ -135,16 +112,14 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 		return
 	}
 
-	n := &m.Device{}
-	if err := ctx.ShouldBindJSON(&n); err != nil {
+	var params models.UpdateDevice
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	n.Id = int64(aid)
-
-	_, errs, err := UpdateDevice(n, c.adaptors, c.core)
+	_, errs, err := UpdateDevice(params, int64(aid), c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -156,8 +131,18 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 		return
 	}
 
+	device, err := GetDeviceById(int64(aid), c.adaptors)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(device).Send(ctx)
 }
 
 // Device godoc
@@ -223,5 +208,34 @@ func (c ControllerDevice) DeleteDeviceById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
+	resp.Send(ctx)
+}
+
+// Device godoc
+// @tags device
+// @Summary Search device
+// @Description Search device by name
+// @Produce json
+// @Accept  json
+// @Param query query string false "query"
+// @Param limit query int true "limit" default(10)
+// @Param offset query int true "offset" default(0)
+// @Success 200 {object} models.SearchDeviceResponse
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
+// @Router /devices/search [Get]
+func (c ControllerDevice) Search(ctx *gin.Context) {
+
+	query, limit, offset := c.select2(ctx)
+	devices, _, err := SearchDevice(query, limit, offset, c.adaptors)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Item("devices", devices)
 	resp.Send(ctx)
 }

@@ -71,6 +71,21 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 	return
 }
 
+func (n *Script) Search(query string, limit, offset int) (list []*m.Script, total int64, err error) {
+	var dbList []*db.Script
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Script, 0)
+	for _, dbScript := range dbList {
+		dev, _ := n.fromDb(dbScript)
+		list = append(list, dev)
+	}
+
+	return
+}
+
 func (n *Script) fromDb(dbScript *db.Script) (script *m.Script, err error) {
 	script = &m.Script{}
 	err = copier.Copy(&script, &dbScript)

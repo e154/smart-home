@@ -12,7 +12,7 @@ type Script struct {
 	Name        string     `json:"name" valid:"MaxSize(254);Required"`
 	Source      string     `json:"source"`
 	Description string     `json:"description"`
-	Compiled    string     `json:"compiled"`
+	Compiled    string     `json:"-"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 }

@@ -2,54 +2,49 @@ package models
 
 import "time"
 
+type NewDeviceNode struct {
+	Id int64 `json:"id"`
+}
+
 type NewDevice struct {
-	Id          int64  `json:"id"`
-	DeviceId    *int64 `json:"device_id"`
-	NodeId      *int64  `json:"node_id"`
-	Address     *int   `json:"address"`
-	Baud        int    `json:"baud"`
-	Sleep       int64  `json:"sleep"`
-	Description string `json:"description"`
-	Name        string `json:"name"`
-	Status      string `json:"status"`
-	StopBite    int64  `json:"stop_bite"`
-	Timeout     int64  `json:"timeout"`
-	Tty         string `json:"tty"`
-	IsGroup     bool   `json:"is_group"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Status      string                 `json:"status"`
+	Device      *ParentDevice          `json:"device"`
+	Type        string                 `json:"type"`
+	Node        *NewDeviceNode         `json:"node"`
+	Properties  map[string]interface{} `json:"properties"`
 }
 
 type UpdateDevice struct {
-	Id          int64  `json:"id"`
-	DeviceId    *int64 `json:"device_id"`
-	NodeId      *int64  `json:"node_id"`
-	Address     *int   `json:"address"`
-	Baud        int    `json:"baud"`
-	Sleep       int64  `json:"sleep"`
-	Description string `json:"description"`
-	Name        string `json:"name"`
-	Status      string `json:"status"`
-	StopBite    int64  `json:"stop_bite"`
-	Timeout     int64  `json:"timeout"`
-	Tty         string `json:"tty"`
-	IsGroup     bool   `json:"is_group"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Status      string                 `json:"status"`
+	Device      *ParentDevice          `json:"device"`
+	Type        string                 `json:"type"`
+	Node        *NewDeviceNode         `json:"node"`
+	Properties  map[string]interface{} `json:"properties"`
 }
 
+type ParentDevice struct {
+	Id int64 `json:"id"`
+}
+
+type DeviceProperties map[string]interface{}
+
 type Device struct {
-	Id          int64     `json:"id"`
-	DeviceId    *int64    `json:"device_id"`
-	NodeId      *int64     `json:"node_id"`
-	Address     *int      `json:"address"`
-	Baud        int       `json:"baud"`
-	Sleep       int64     `json:"sleep"`
-	Description string    `json:"description"`
-	Name        string    `json:"name"`
-	Status      string    `json:"status"`
-	StopBite    int64     `json:"stop_bite"`
-	Timeout     int64     `json:"timeout"`
-	Tty         string    `json:"tty"`
-	IsGroup     bool      `json:"is_group"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Id          int64            `json:"id"`
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
+	Node        *Node            `json:"node"`
+	Properties  DeviceProperties `json:"properties"`
+	Type        string           `json:"type"`
+	Status      string           `json:"status"`
+	IsGroup     bool             `json:"is_group"`
+	CreatedAt   time.Time        `json:"created_at"`
+	UpdatedAt   time.Time        `json:"updated_at"`
+	Device      *ParentDevice    `json:"device"`
+	DeviceId    *int64           `json:"device_id"`
 }
 
 type Devices []*Device
@@ -62,10 +57,14 @@ type ResponseDevice struct {
 }
 
 type DeviceListModel struct {
-	Items []UserShotModel
+	Items []Device
 	Meta  struct {
 		Limit        int `json:"limit"`
 		Offset       int `json:"offset"`
 		ObjectsCount int `json:"objects_count"`
 	}
+}
+
+type SearchDeviceResponse struct {
+	Devices []Device `json:"devices"`
 }

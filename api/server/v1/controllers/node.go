@@ -211,3 +211,32 @@ func (c ControllerNode) DeleteNodeById(ctx *gin.Context) {
 	resp := NewSuccess()
 	resp.Send(ctx)
 }
+
+// Node godoc
+// @tags node
+// @Summary Search node
+// @Description Search node by name
+// @Produce json
+// @Accept  json
+// @Param query query string false "query"
+// @Param limit query int true "limit" default(10)
+// @Param offset query int true "offset" default(0)
+// @Success 200 {object} models.SearchNodeResponse
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
+// @Router /nodes/search [Get]
+func (c ControllerNode) Search(ctx *gin.Context) {
+
+	query, limit, offset := c.select2(ctx)
+	nodes, _, err := SearchNode(query, limit, offset, c.adaptors)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Item("nodes", nodes)
+	resp.Send(ctx)
+}

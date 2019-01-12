@@ -78,3 +78,20 @@ func (n *Nodes) List(limit, offset int64, orderBy, sort string) (list []*Node, t
 
 	return
 }
+
+func (n *Nodes) Search(query string, limit, offset int) (list []*Node, total int64, err error) {
+
+	fmt.Println(query)
+	q := n.Db.Model(&Node{}).
+		Where("name LIKE ?", "%"+query+"%").
+		Order("name ASC")
+
+	if err = q.Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*Node, 0)
+	err = q.Find(&list).Error
+
+	return
+}

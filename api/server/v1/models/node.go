@@ -40,3 +40,7 @@ type NodeListModel struct {
 		ObjectsCount int `json:"objects_count"`
 	}
 }
+
+type SearchNodeResponse struct {
+	Nodes []Node `json:"nodes"`
+}

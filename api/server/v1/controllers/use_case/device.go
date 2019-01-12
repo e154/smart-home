@@ -5,10 +5,36 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/validation"
+	"github.com/e154/smart-home/api/server/v1/models"
 	"errors"
+	"encoding/json"
+	"github.com/e154/smart-home/common"
 )
 
-func AddDevice(device *m.Device, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddDevice(params models.NewDevice, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+
+	var properties []byte
+	if properties, err = json.Marshal(params.Properties); err != nil {
+		return
+	}
+
+	device := &m.Device{
+		Name:        params.Name,
+		Description: params.Description,
+		Properties:  properties,
+		Status:      params.Status,
+		Type:        common.DeviceType(params.Type),
+	}
+
+	if params.Device != nil && params.Device.Id != 0 {
+		device.Device = &m.Device{Id: params.Device.Id}
+	}
+
+	if params.Node != nil && params.Node.Id != 0 {
+		device.Node = &m.Node{Id: params.Node.Id}
+	}
+
+	device.SetPropertiesFromMap(params.Properties)
 
 	// validation
 	ok, errs = device.Valid()
@@ -32,7 +58,23 @@ func GetDeviceById(deviceId int64, adaptors *adaptors.Adaptors) (device *m.Devic
 	return
 }
 
-func UpdateDevice(device *m.Device, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+func UpdateDevice(params models.UpdateDevice, id int64, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+
+	var properties []byte
+	if properties, err = json.Marshal(params.Properties); err != nil {
+		return
+	}
+
+	device := &m.Device{
+		Id:          id,
+		Name:        params.Name,
+		Description: params.Description,
+		Properties:  properties,
+		Status:      params.Status,
+		Type:        common.DeviceType(params.Type),
+	}
+
+	device.SetPropertiesFromMap(params.Properties)
 
 	// validation
 	ok, errs = device.Valid()
@@ -71,3 +113,9 @@ func DeleteDeviceById(deviceId int64, adaptors *adaptors.Adaptors, core *core.Co
 	return
 }
 
+func SearchDevice(query string, limit, offset int, adaptors *adaptors.Adaptors) (devices []*m.Device, total int64, err error) {
+
+	devices, total, err = adaptors.Device.Search(query, limit, offset)
+
+	return
+}

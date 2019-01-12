@@ -15,7 +15,7 @@ type DeviceAction struct {
 	Name        string
 	Description string
 	Device      *Device
-	DeviceId    int64
+	DeviceId    int64 `gorm:"column:device_id"`
 	Script      *Script
 	ScriptId    int64
 	CreatedAt   time.Time

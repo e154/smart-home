@@ -253,3 +253,32 @@ func (c ControllerScript) Exec(ctx *gin.Context) {
 	resp := NewSuccess()
 	resp.Item("result", result).Send(ctx)
 }
+
+// Script godoc
+// @tags device
+// @Summary Search device
+// @Description Search device by name
+// @Produce json
+// @Accept  json
+// @Param query query string false "query"
+// @Param limit query int true "limit" default(10)
+// @Param offset query int true "offset" default(0)
+// @Success 200 {object} models.SearchScriptResponse
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
+// @Router /scripts/search [Get]
+func (c ControllerScript) Search(ctx *gin.Context) {
+
+	query, limit, offset := c.select2(ctx)
+	scripts, _, err := SearchScript(query, limit, offset, c.adaptors)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Item("scripts", scripts)
+	resp.Send(ctx)
+}
