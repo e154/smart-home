@@ -38,6 +38,8 @@ func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 
 	var out interface{}
 	switch d.Type {
+	case DevTypeModbus:
+		out = &DevModBusConfig{}
 	case DevTypeSmartBus:
 		out = &DevSmartBusConfig{}
 	case DevTypeCommand:
@@ -71,6 +73,9 @@ func (d *Device) SetProperties(properties interface{}) (ok bool, errs []*validat
 	var dType DeviceType
 
 	switch v := properties.(type) {
+	case *DevModBusConfig:
+		dType = DevTypeModbus
+		ok, errs = v.Valid()
 	case *DevSmartBusConfig:
 		dType = DevTypeSmartBus
 		ok, errs = v.Valid()
@@ -98,6 +103,8 @@ func (d *Device) SetPropertiesFromMap(properties map[string]interface{}) (ok boo
 
 	var out interface{}
 	switch d.Type {
+	case DevTypeModbus:
+		out = &DevModBusConfig{}
 	case DevTypeSmartBus:
 		out = &DevSmartBusConfig{}
 	case DevTypeCommand:

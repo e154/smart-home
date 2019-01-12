@@ -31,12 +31,3 @@ type DeviceAction struct {
 	CreatedAt   time.Time          `json:"created_at"`
 	UpdatedAt   time.Time          `json:"updated_at"`
 }
-
-type DeviceActionListModel struct {
-	Items []DeviceAction
-	Meta  struct {
-		Limit        int `json:"limit"`
-		Offset       int `json:"offset"`
-		ObjectsCount int `json:"objects_count"`
-	}
-}

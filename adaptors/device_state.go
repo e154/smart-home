@@ -40,6 +40,22 @@ func (n *DeviceState) GetById(deviceId int64) (device *m.DeviceState, err error)
 	return
 }
 
+func (n *DeviceState) GetByDeviceId(deviceId int64) (states []*m.DeviceState, err error) {
+
+	var dbDeviceStates []*db.DeviceState
+	if dbDeviceStates, err = n.table.GetByDeviceId(deviceId); err != nil {
+		return
+	}
+
+	states = make([]*m.DeviceState, 0)
+	for _, dbActino := range dbDeviceStates {
+		state := n.fromDb(dbActino)
+		states = append(states, state)
+	}
+
+	return
+}
+
 func (n *DeviceState) Update(device *m.DeviceState) (err error) {
 	dbDeviceState := n.toDb(device)
 	err = n.table.Update(dbDeviceState)

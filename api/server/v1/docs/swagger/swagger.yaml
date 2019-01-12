@@ -105,22 +105,6 @@ definitions:
       id:
         type: integer
     type: object
-  models.DeviceActionListModel:
-    properties:
-      items:
-        items:
-          $ref: '#/definitions/models.DeviceAction'
-        type: array
-      meta:
-        properties:
-          limit:
-            type: integer
-          objects_count:
-            type: integer
-          offset:
-            type: integer
-        type: object
-    type: object
   models.DeviceActionScript:
     properties:
       id:
@@ -150,14 +134,20 @@ definitions:
         type: string
       description:
         type: string
-      device_id:
-        type: integer
+      device:
+        $ref: '#/definitions/models.DeviceStateDevice'
+        type: object
       id:
         type: integer
       system_name:
         type: string
       updated_at:
         type: string
+    type: object
+  models.DeviceStateDevice:
+    properties:
+      id:
+        type: integer
     type: object
   models.ErrorModel:
     properties:
@@ -231,6 +221,16 @@ definitions:
     properties:
       id:
         type: integer
+    type: object
+  models.NewDeviceState:
+    properties:
+      description:
+        type: string
+      device:
+        $ref: '#/definitions/models.DeviceStateDevice'
+        type: object
+      system_name:
+        type: string
     type: object
   models.NewNode:
     properties:
@@ -552,6 +552,16 @@ definitions:
       script:
         $ref: '#/definitions/models.DeviceActionScript'
         type: object
+    type: object
+  models.UpdateDeviceState:
+    properties:
+      description:
+        type: string
+      device:
+        $ref: '#/definitions/models.DeviceStateDevice'
+        type: object
+      system_name:
+        type: string
     type: object
   models.UpdateNode:
     properties:
@@ -1188,8 +1198,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DeviceActionListModel'
-            type: object
+            items:
+              $ref: '#/definitions/models.DeviceAction'
+            type: array
         "400":
           description: some error
           schema:
@@ -1210,6 +1221,203 @@ paths:
       summary: DeviceAction list
       tags:
       - device_action
+  /device_state:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: device state params
+        in: body
+        name: device_state
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewDeviceState'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeviceState'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Add new device state
+      tags:
+      - device_state
+  /device_state/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete device state by id
+      parameters:
+      - description: DeviceState ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete device state
+      tags:
+      - device_state
+    get:
+      consumes:
+      - application/json
+      description: Get device state by id
+      parameters:
+      - description: DeviceState ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeviceState'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Show device state
+      tags:
+      - device_state
+    put:
+      consumes:
+      - application/json
+      description: Update device state by id
+      parameters:
+      - description: DeviceState ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update device state
+        in: body
+        name: state
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateDeviceState'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update device state
+      tags:
+      - device_state
+  /device_states/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get device list
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.DeviceState'
+            type: array
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: DeviceState list
+      tags:
+      - device_state
   /devices:
     get:
       consumes:

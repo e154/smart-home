@@ -18,6 +18,7 @@ type ControllersV1 struct {
 	User         *ControllerUser
 	Auth         *ControllerAuth
 	DeviceAction *ControllerDeviceAction
+	DeviceState  *ControllerDeviceState
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -36,5 +37,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		User:         NewControllerUser(common),
 		Auth:         NewControllerAuth(common),
 		DeviceAction: NewControllerDeviceAction(common),
+		DeviceState:  NewControllerDeviceState(common),
 	}
 }

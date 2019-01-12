@@ -67,6 +67,13 @@ func (s *Server) setControllers() {
 	v1.DELETE("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.DeleteById)
 	v1.GET("/device_actions/:id", s.af.Auth, s.ControllersV1.DeviceAction.GetDeviceActionList)
 
+	// device states
+	v1.POST("/device_state", s.af.Auth, s.ControllersV1.DeviceState.AddState)
+	v1.GET("/device_state/:id", s.af.Auth, s.ControllersV1.DeviceState.GetById)
+	v1.PUT("/device_state/:id", s.af.Auth, s.ControllersV1.DeviceState.Update)
+	v1.DELETE("/device_state/:id", s.af.Auth, s.ControllersV1.DeviceState.DeleteById)
+	v1.GET("/device_states/:id", s.af.Auth, s.ControllersV1.DeviceState.GetDeviceStateList)
+
 	// role
 	v1.POST("/role", s.af.Auth, s.ControllersV1.Role.AddRole)
 	v1.GET("/role/:name", s.af.Auth, s.ControllersV1.Role.GetRoleByName)

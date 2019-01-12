@@ -32,9 +32,9 @@ func Init(adaptors *adaptors.Adaptors,
 
 	// devices
 	// ------------------------------------------------
-	_, _, _, deviceAction3, deviceAction7 := devices(node1, adaptors, script1, script2, script3, script7)
+	_, _, deviceAction1, deviceAction2 := devices(node1, adaptors, script1, script2, script3, script7)
 
 	// workflow
 	// ------------------------------------------------
-	addWorkflow(adaptors, deviceAction3, deviceAction7, script4, script5, script6)
+	addWorkflow(adaptors, deviceAction1, deviceAction2, script4, script5, script6)
 }

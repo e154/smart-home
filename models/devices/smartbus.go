@@ -13,7 +13,7 @@ type DevSmartBusConfig struct {
 	Baud     int `json:"baud" valid:"Required"`
 	Device   int `json:"device"`
 	Timeout  int `json:"timeout" valid:"Required"`
-	StopBits int `json:"stop_bits" valid:"Required"`
+	StopBits int `json:"stop_bits" valid:"Required" mapstructure:"stop_bits"`
 	Sleep    int `json:"sleep"`
 }
 

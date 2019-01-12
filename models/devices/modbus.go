@@ -10,11 +10,11 @@ const (
 )
 
 type DevModBusConfig struct {
-	Baud     int `json:"baud" valid:"Required"`
-	Device   int `json:"device"`
-	Timeout  int `json:"timeout" valid:"Required"`
-	StopBits int `json:"stop_bits" valid:"Required"`
-	Sleep    int `json:"sleep"`
+	SlaveId  int    `json:"slave_id" mapstructure:"slave_id"`
+	Baud     int    `json:"baud"`
+	DataBits int    `json:"data_bits" mapstructure:"data_bits"`
+	StopBits int    `json:"stop_bits" mapstructure:"stop_bits"`
+	Parity   string `json:"parity"` // none, odd, even
 }
 
 func (d DevModBusConfig) Valid() (ok bool, errs []*validation.Error) {

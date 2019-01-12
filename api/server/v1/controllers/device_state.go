@@ -7,36 +7,36 @@ import (
 	"strconv"
 )
 
-type ControllerDeviceAction struct {
+type ControllerDeviceState struct {
 	*ControllerCommon
 }
 
-func NewControllerDeviceAction(common *ControllerCommon) *ControllerDeviceAction {
-	return &ControllerDeviceAction{ControllerCommon: common}
+func NewControllerDeviceState(common *ControllerCommon) *ControllerDeviceState {
+	return &ControllerDeviceState{ControllerCommon: common}
 }
 
-// DeviceAction godoc
-// @tags device_action
-// @Summary Add new device action
+// DeviceState godoc
+// @tags device_state
+// @Summary Add new device state
 // @Description
 // @Produce json
 // @Accept  json
-// @Param device_action body models.NewDeviceAction true "device action params"
-// @Success 200 {object} models.DeviceAction
+// @Param device_state body models.NewDeviceState true "device state params"
+// @Success 200 {object} models.DeviceState
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_action [post]
+// @Router /device_state [post]
 // @Security ApiKeyAuth
-func (c ControllerDeviceAction) AddAction(ctx *gin.Context) {
+func (c ControllerDeviceState) AddState(ctx *gin.Context) {
 
-	var params models.NewDeviceAction
+	var params models.NewDeviceState
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	_, id, errs, err := AddDeviceAction(params, c.adaptors, c.core)
+	_, id, errs, err := AddDeviceState(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -48,7 +48,7 @@ func (c ControllerDeviceAction) AddAction(ctx *gin.Context) {
 		return
 	}
 
-	action, err := GetDeviceActionById(id, c.adaptors)
+	state, err := GetDeviceStateById(id, c.adaptors)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -59,23 +59,23 @@ func (c ControllerDeviceAction) AddAction(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.SetData(action).Send(ctx)
+	resp.SetData(state).Send(ctx)
 }
 
-// DeviceAction godoc
-// @tags device_action
-// @Summary Show device action
-// @Description Get device action by id
+// DeviceState godoc
+// @tags device_state
+// @Summary Show device state
+// @Description Get device state by id
 // @Produce json
 // @Accept  json
-// @Param id path int true "DeviceAction ID"
-// @Success 200 {object} models.DeviceAction
+// @Param id path int true "DeviceState ID"
+// @Success 200 {object} models.DeviceState
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_action/{id} [Get]
+// @Router /device_state/{id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerDeviceAction) GetById(ctx *gin.Context) {
+func (c ControllerDeviceState) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -85,7 +85,7 @@ func (c ControllerDeviceAction) GetById(ctx *gin.Context) {
 		return
 	}
 
-	action, err := GetDeviceActionById(int64(aid), c.adaptors)
+	state, err := GetDeviceStateById(int64(aid), c.adaptors)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -96,24 +96,24 @@ func (c ControllerDeviceAction) GetById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.SetData(action).Send(ctx)
+	resp.SetData(state).Send(ctx)
 }
 
-// DeviceAction godoc
-// @tags device_action
-// @Summary Update device action
-// @Description Update device action by id
+// DeviceState godoc
+// @tags device_state
+// @Summary Update device state
+// @Description Update device state by id
 // @Produce json
 // @Accept  json
-// @Param  id path int true "DeviceAction ID"
-// @Param  device action body models.UpdateDeviceAction true "Update device action"
+// @Param  id path int true "DeviceState ID"
+// @Param  device state body models.UpdateDeviceState true "Update device state"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_action/{id} [Put]
+// @Router /device_state/{id} [Put]
 // @Security ApiKeyAuth
-func (c ControllerDeviceAction) Update(ctx *gin.Context) {
+func (c ControllerDeviceState) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -122,14 +122,14 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 		return
 	}
 
-	var params models.UpdateDeviceAction
+	var params models.UpdateDeviceState
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	_, errs, err := UpdateDeviceAction(params, int64(aid), c.adaptors, c.core)
+	_, errs, err := UpdateDeviceState(params, int64(aid), c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -141,7 +141,7 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 		return
 	}
 
-	deviceAction, err := GetDeviceActionById(int64(aid), c.adaptors)
+	deviceState, err := GetDeviceStateById(int64(aid), c.adaptors)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -152,23 +152,23 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.SetData(deviceAction).Send(ctx)
+	resp.SetData(deviceState).Send(ctx)
 }
 
-// DeviceAction godoc
-// @tags device_action
-// @Summary Delete device action
-// @Description Delete device action by id
+// DeviceState godoc
+// @tags device_state
+// @Summary Delete device state
+// @Description Delete device state by id
 // @Produce json
 // @Accept  json
-// @Param  id path int true "DeviceAction ID"
+// @Param  id path int true "DeviceState ID"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_action/{id} [Delete]
+// @Router /device_state/{id} [Delete]
 // @Security ApiKeyAuth
-func (c ControllerDeviceAction) DeleteById(ctx *gin.Context) {
+func (c ControllerDeviceState) DeleteById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -178,7 +178,7 @@ func (c ControllerDeviceAction) DeleteById(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteDeviceActionById(int64(aid), c.adaptors, c.core); err != nil {
+	if err := DeleteDeviceStateById(int64(aid), c.adaptors, c.core); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -191,20 +191,20 @@ func (c ControllerDeviceAction) DeleteById(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// DeviceAction godoc
-// @tags device_action
-// @Summary DeviceAction list
+// DeviceState godoc
+// @tags device_state
+// @Summary DeviceState list
 // @Description Get device list
 // @Produce json
 // @Accept  json
 // @Param  id path int true "Device ID"
-// @Success 200 {array} models.DeviceAction
+// @Success 200 {array} models.DeviceState
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_actions/{id} [Get]
+// @Router /device_states/{id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerDeviceAction) GetDeviceActionList(ctx *gin.Context) {
+func (c ControllerDeviceState) GetDeviceStateList(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	deviceId, err := strconv.Atoi(id)
@@ -214,7 +214,7 @@ func (c ControllerDeviceAction) GetDeviceActionList(ctx *gin.Context) {
 		return
 	}
 
-	items, err := GetDeviceActionList(int64(deviceId), c.adaptors)
+	items, err := GetDeviceStateList(int64(deviceId), c.adaptors)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

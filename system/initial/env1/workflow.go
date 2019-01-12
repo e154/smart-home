@@ -8,7 +8,7 @@ import (
 )
 
 func addWorkflow(adaptors *adaptors.Adaptors,
-	deviceAction3, deviceAction7 *m.DeviceAction,
+	deviceAction1, deviceAction2 *m.DeviceAction,
 	script4, script5, script6 *m.Script) (workflow1 *m.Workflow) {
 
 	workflow1 = &m.Workflow{
@@ -128,21 +128,21 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 	connect2.Uuid, err = adaptors.Connection.Add(connect2)
 	So(err, ShouldBeNil)
 
-	// add worker
-	worker := &m.Worker{
-		Name:           "worker",
-		Time:           "10,20,30,40,50 * * * * *",
-		Status:         "enabled",
-		WorkflowId:     workflow1.Id,
-		FlowId:         flow1.Id,
-		DeviceActionId: deviceAction3.Id,
-	}
-
-	ok, _ = worker.Valid()
-	So(ok, ShouldEqual, true)
-
-	worker.Id, err = adaptors.Worker.Add(worker)
-	So(err, ShouldBeNil)
+	//// add worker
+	//worker := &m.Worker{
+	//	Name:           "worker",
+	//	Time:           "10,20,30,40,50 * * * * *",
+	//	Status:         "enabled",
+	//	WorkflowId:     workflow1.Id,
+	//	FlowId:         flow1.Id,
+	//	DeviceActionId: deviceAction1.Id,
+	//}
+	//
+	//ok, _ = worker.Valid()
+	//So(ok, ShouldEqual, true)
+	//
+	//worker.Id, err = adaptors.Worker.Add(worker)
+	//So(err, ShouldBeNil)
 
 	// add command flow
 	// ------------------------------------------------
@@ -220,19 +220,19 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 	So(err, ShouldBeNil)
 
 	// add worker
-	worker2 := &m.Worker{
-		Name:           "worker2",
-		Time:           "* * * * * *",
-		Status:         "enabled",
-		WorkflowId:     workflow1.Id,
-		FlowId:         flow2.Id,
-		DeviceActionId: deviceAction7.Id,
-	}
-
-	ok, _ = worker2.Valid()
-	So(ok, ShouldEqual, true)
-
-	worker2.Id, err = adaptors.Worker.Add(worker2)
-	So(err, ShouldBeNil)
+	//worker2 := &m.Worker{
+	//	Name:           "worker2",
+	//	Time:           "* * * * * *",
+	//	Status:         "enabled",
+	//	WorkflowId:     workflow1.Id,
+	//	FlowId:         flow2.Id,
+	//	DeviceActionId: deviceAction2.Id,
+	//}
+	//
+	//ok, _ = worker2.Valid()
+	//So(ok, ShouldEqual, true)
+	//
+	//worker2.Id, err = adaptors.Worker.Add(worker2)
+	//So(err, ShouldBeNil)
 	return
 }

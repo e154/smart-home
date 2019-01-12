@@ -581,8 +581,308 @@
                     "200": {
                         "description": "OK",
                         "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DeviceAction"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.DeviceActionListModel"
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/device_state": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_state"
+                ],
+                "summary": "Add new device state",
+                "parameters": [
+                    {
+                        "description": "device state params",
+                        "name": "device_state",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.NewDeviceState"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.DeviceState"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/device_state/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get device state by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_state"
+                ],
+                "summary": "Show device state",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "DeviceState ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.DeviceState"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update device state by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_state"
+                ],
+                "summary": "Update device state",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "DeviceState ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update device state",
+                        "name": "state",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.UpdateDeviceState"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete device state by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_state"
+                ],
+                "summary": "Delete device state",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "DeviceState ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/device_states/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get device list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_state"
+                ],
+                "summary": "DeviceState list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Device ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DeviceState"
+                            }
                         }
                     },
                     "400": {
@@ -3160,31 +3460,6 @@
                 }
             }
         },
-        "models.DeviceActionListModel": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.DeviceAction"
-                    }
-                },
-                "meta": {
-                    "type": "object",
-                    "properties": {
-                        "limit": {
-                            "type": "integer"
-                        },
-                        "objects_count": {
-                            "type": "integer"
-                        },
-                        "offset": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
         "models.DeviceActionScript": {
             "type": "object",
             "properties": {
@@ -3230,8 +3505,9 @@
                 "description": {
                     "type": "string"
                 },
-                "device_id": {
-                    "type": "integer"
+                "device": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceStateDevice"
                 },
                 "id": {
                     "type": "integer"
@@ -3241,6 +3517,14 @@
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "models.DeviceStateDevice": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3349,6 +3633,21 @@
             "properties": {
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.NewDeviceState": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceStateDevice"
+                },
+                "system_name": {
+                    "type": "string"
                 }
             }
         },
@@ -3844,6 +4143,21 @@
                 "script": {
                     "type": "object",
                     "$ref": "#/definitions/models.DeviceActionScript"
+                }
+            }
+        },
+        "models.UpdateDeviceState": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceStateDevice"
+                },
+                "system_name": {
+                    "type": "string"
                 }
             }
         },
