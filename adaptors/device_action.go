@@ -28,14 +28,30 @@ func (n *DeviceAction) Add(device *m.DeviceAction) (id int64, err error) {
 	return
 }
 
-func (n *DeviceAction) GetById(deviceId int64) (device *m.DeviceAction, err error) {
+func (n *DeviceAction) GetById(actionId int64) (device *m.DeviceAction, err error) {
 
 	var dbDeviceAction *db.DeviceAction
-	if dbDeviceAction, err = n.table.GetById(deviceId); err != nil {
+	if dbDeviceAction, err = n.table.GetById(actionId); err != nil {
 		return
 	}
 
 	device = n.fromDb(dbDeviceAction)
+
+	return
+}
+
+func (n *DeviceAction) GetByDeviceId(deviceId int64) (actions []*m.DeviceAction, err error) {
+
+	var dbDeviceActions []*db.DeviceAction
+	if dbDeviceActions, err = n.table.GetByDeviceId(deviceId); err != nil {
+		return
+	}
+
+	actions = make([]*m.DeviceAction, 0)
+	for _, dbActino := range dbDeviceActions {
+		action := n.fromDb(dbActino)
+		actions = append(actions, action)
+	}
 
 	return
 }

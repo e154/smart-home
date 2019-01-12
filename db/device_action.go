@@ -36,7 +36,20 @@ func (n DeviceActions) Add(action *DeviceAction) (id int64, err error) {
 
 func (n DeviceActions) GetById(actionId int64) (action *DeviceAction, err error) {
 	action = &DeviceAction{Id: actionId}
-	err = n.Db.First(&action).Error
+	err = n.Db.Model(action).
+		Preload("Script").
+		First(&action).
+		Error
+	return
+}
+
+func (n DeviceActions) GetByDeviceId(deviceId int64) (actions []*DeviceAction, err error) {
+	actions = make([]*DeviceAction, 0)
+	err = n.Db.Model(&DeviceAction{}).
+		Where("device_id = ?", deviceId).
+		Preload("Script").
+		Find(&actions).
+		Error
 	return
 }
 

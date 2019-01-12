@@ -55,3 +55,7 @@ type ResponseScriptExec struct {
 		Result string `json:"result"`
 	} `json:"data"`
 }
+
+type SearchScriptResponse struct {
+	Scripts []Script `json:"scripts"`
+}

@@ -255,7 +255,7 @@ func (c ControllerScript) Exec(ctx *gin.Context) {
 }
 
 // Script godoc
-// @tags device
+// @tags script
 // @Summary Search device
 // @Description Search device by name
 // @Produce json

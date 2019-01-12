@@ -32,6 +32,15 @@ type ParentDevice struct {
 
 type DeviceProperties map[string]interface{}
 
+type DeviceState struct {
+	Id          int64     `json:"id"`
+	Description string    `json:"description"`
+	SystemName  string    `json:"system_name" valid:"MaxSize(254);Required"`
+	DeviceId    int64     `json:"device_id" valid:"Required"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 type Device struct {
 	Id          int64            `json:"id"`
 	Name        string           `json:"name"`
@@ -43,6 +52,8 @@ type Device struct {
 	IsGroup     bool             `json:"is_group"`
 	CreatedAt   time.Time        `json:"created_at"`
 	UpdatedAt   time.Time        `json:"updated_at"`
+	Actions     []DeviceAction   `json:"actions"`
+	States      []DeviceState    `json:"states"`
 	Device      *ParentDevice    `json:"device"`
 	DeviceId    *int64           `json:"device_id"`
 }

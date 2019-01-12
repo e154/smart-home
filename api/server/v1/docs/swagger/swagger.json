@@ -313,6 +313,302 @@
                 }
             }
         },
+        "/device_action": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_action"
+                ],
+                "summary": "Add new device action",
+                "parameters": [
+                    {
+                        "description": "device action params",
+                        "name": "device_action",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.NewDeviceAction"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.DeviceAction"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/device_action/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get device action by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_action"
+                ],
+                "summary": "Show device action",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "DeviceAction ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.DeviceAction"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update device action by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_action"
+                ],
+                "summary": "Update device action",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "DeviceAction ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update device action",
+                        "name": "action",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.UpdateDeviceAction"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete device action by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_action"
+                ],
+                "summary": "Delete device action",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "DeviceAction ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/device_actions/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get device list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_action"
+                ],
+                "summary": "DeviceAction list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Device ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.DeviceActionListModel"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
         "/devices": {
             "get": {
                 "security": [
@@ -1843,6 +2139,80 @@
                 }
             }
         },
+        "/scripts/search": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Search device by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "script"
+                ],
+                "summary": "Search device",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.SearchScriptResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
         "/signin": {
             "post": {
                 "security": [
@@ -2701,6 +3071,12 @@
         "models.Device": {
             "type": "object",
             "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DeviceAction"
+                    }
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2731,6 +3107,12 @@
                     "type": "object",
                     "$ref": "#/definitions/models.DeviceProperties"
                 },
+                "states": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DeviceState"
+                    }
+                },
                 "status": {
                     "type": "string"
                 },
@@ -2739,6 +3121,75 @@
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "models.DeviceAction": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceActionDevice"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "script": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceActionScript"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.DeviceActionDevice": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.DeviceActionListModel": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DeviceAction"
+                    }
+                },
+                "meta": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer"
+                        },
+                        "objects_count": {
+                            "type": "integer"
+                        },
+                        "offset": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "models.DeviceActionScript": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
                 }
             }
         },
@@ -2769,6 +3220,29 @@
         },
         "models.DeviceProperties": {
             "type": "object"
+        },
+        "models.DeviceState": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "device_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "system_name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
         },
         "models.ErrorModel": {
             "type": "object",
@@ -2848,6 +3322,25 @@
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "models.NewDeviceAction": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceActionDevice"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "script": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceActionScript"
                 }
             }
         },
@@ -3296,6 +3789,17 @@
                 }
             }
         },
+        "models.SearchScriptResponse": {
+            "type": "object",
+            "properties": {
+                "scripts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Script"
+                    }
+                }
+            }
+        },
         "models.UpdateDevice": {
             "type": "object",
             "properties": {
@@ -3321,6 +3825,25 @@
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UpdateDeviceAction": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceActionDevice"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "script": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceActionScript"
                 }
             }
         },

@@ -8,15 +8,16 @@ import (
 )
 
 type ControllersV1 struct {
-	Index    *ControllerIndex
-	Node     *ControllerNode
-	Swagger  *ControllerSwagger
-	Script   *ControllerScript
-	Workflow *ControllerWorkflow
-	Device   *ControllerDevice
-	Role     *ControllerRole
-	User     *ControllerUser
-	Auth     *ControllerAuth
+	Index        *ControllerIndex
+	Node         *ControllerNode
+	Swagger      *ControllerSwagger
+	Script       *ControllerScript
+	Workflow     *ControllerWorkflow
+	Device       *ControllerDevice
+	Role         *ControllerRole
+	User         *ControllerUser
+	Auth         *ControllerAuth
+	DeviceAction *ControllerDeviceAction
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -25,14 +26,15 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 	accessList *access_list.AccessListService) *ControllersV1 {
 	common := NewControllerCommon(adaptors, core, accessList)
 	return &ControllersV1{
-		Index:    NewControllerIndex(common),
-		Node:     NewControllerNode(common),
-		Swagger:  NewControllerSwagger(common),
-		Script:   NewControllerScript(common, scriptService),
-		Workflow: NewControllerWorkflow(common),
-		Device:   NewControllerDevice(common),
-		Role:     NewControllerRole(common),
-		User:     NewControllerUser(common),
-		Auth:     NewControllerAuth(common),
+		Index:        NewControllerIndex(common),
+		Node:         NewControllerNode(common),
+		Swagger:      NewControllerSwagger(common),
+		Script:       NewControllerScript(common, scriptService),
+		Workflow:     NewControllerWorkflow(common),
+		Device:       NewControllerDevice(common),
+		Role:         NewControllerRole(common),
+		User:         NewControllerUser(common),
+		Auth:         NewControllerAuth(common),
+		DeviceAction: NewControllerDeviceAction(common),
 	}
 }
