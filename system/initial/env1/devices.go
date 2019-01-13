@@ -23,7 +23,7 @@ func devices(node1 *m.Node,
 
 	modBusConfig := &DevModBusConfig{
 		SlaveId:  1,
-		Baud:     115200,
+		Baud:     19200,
 		DataBits: 8,
 		StopBits: 1,
 		Parity:   "none",

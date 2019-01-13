@@ -142,14 +142,18 @@ func addScripts(adaptors *adaptors.Adaptors,
 }
 
 const coffeescript1 = `
-fetchStatus =()->
+fetchStatus =->
 
     COMMAND = []
-    FUNC = 'READ_HOLDING_REGISTERS'
+    FUNC = 'ReadHoldingRegisters'
     ADDRESS = 0
     COUNT = 16
     
-    device.modBus FUNC, ADDRESS, COUNT, COMMAND
+    res = device.modBus FUNC, ADDRESS, COUNT, COMMAND
+    if res.error
+        print 'error: ', res.error
+    else
+        print 'ok: ', res.result
 
 main =->
     

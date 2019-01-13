@@ -4,7 +4,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/models/devices"
 	"encoding/json"
-	"github.com/e154/smart-home/common/debug"
 )
 
 type Device struct {
@@ -69,7 +68,7 @@ func (d *Device) SmartBus(command []byte) (result *DevSmartBusResponse) {
 	return
 }
 
-func (d *Device) ModbusBus(f string, address, count int64, command []byte) (result *DevModBusResponse) {
+func (d *Device) ModbusBus(f string, address, count uint16, command []byte) (result *DevModBusResponse) {
 
 	request := &DevModBusRequest{
 		Function: f,
@@ -99,8 +98,8 @@ func (d *Device) ModbusBus(f string, address, count int64, command []byte) (resu
 		return
 	}
 
-	debug.Println(nodeResult)
-	debug.Println(result)
+	//debug.Println(nodeResult)
+	//debug.Println(result)
 
 	result.Time = nodeResult.Time
 

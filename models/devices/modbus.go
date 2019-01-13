@@ -7,6 +7,19 @@ import (
 
 const (
 	DevTypeModbus = DeviceType("modbus")
+
+	// bit access
+	ReadCoils          = "ReadCoils"
+	ReadDiscreteInputs = "ReadDiscreteInputs"
+	WriteSingleCoil    = "WriteSingleCoil"
+	WriteMultipleCoils = "WriteMultipleCoils"
+
+	// 16-bit access
+	ReadInputRegisters         = "ReadInputRegisters"
+	ReadHoldingRegisters       = "ReadHoldingRegisters"
+	ReadWriteMultipleRegisters = "ReadWriteMultipleRegisters"
+	WriteSingleRegister        = "WriteSingleRegister"
+	WriteMultipleRegisters     = "WriteMultipleRegisters"
 )
 
 type DevModBusConfig struct {
@@ -30,12 +43,16 @@ func (d DevModBusConfig) Valid() (ok bool, errs []*validation.Error) {
 
 type DevModBusRequest struct {
 	Function string `json:"function"`
-	Address  int64  `json:"address"`
-	Count    int64  `json:"count"`
+	Address  uint16 `json:"address"`
+	Count    uint16 `json:"count"`
 	Command  []byte `json:"command"`
 }
 
+// params:
+// result
+// error
+// time
 type DevModBusResponse struct {
 	BaseResponse
-	Result []byte `json:"result"`
+	Result []uint16 `json:"result"`
 }
