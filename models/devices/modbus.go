@@ -10,11 +10,12 @@ const (
 )
 
 type DevModBusConfig struct {
-	SlaveId  int    `json:"slave_id" mapstructure:"slave_id"`
-	Baud     int    `json:"baud"`
-	DataBits int    `json:"data_bits" mapstructure:"data_bits"`
-	StopBits int    `json:"stop_bits" mapstructure:"stop_bits"`
-	Parity   string `json:"parity"` // none, odd, even
+	SlaveId  int    `json:"slave_id" mapstructure:"slave_id"`   // 1-32
+	Baud     int    `json:"baud"`                               // 9600, 19200, ...
+	DataBits int    `json:"data_bits" mapstructure:"data_bits"` // 5-9
+	StopBits int    `json:"stop_bits" mapstructure:"stop_bits"` // 1, 2
+	Parity   string `json:"parity"`                             // none, odd, even
+	Timeout  int    `json:"timeout"`                            // milliseconds
 }
 
 func (d DevModBusConfig) Valid() (ok bool, errs []*validation.Error) {
@@ -28,7 +29,10 @@ func (d DevModBusConfig) Valid() (ok bool, errs []*validation.Error) {
 }
 
 type DevModBusRequest struct {
-	Command []byte `json:"command"`
+	Function string `json:"function"`
+	Address  int64  `json:"address"`
+	Count    int64  `json:"count"`
+	Command  []byte `json:"command"`
 }
 
 type DevModBusResponse struct {

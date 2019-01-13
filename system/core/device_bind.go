@@ -12,6 +12,7 @@ import (
 //	.getDescription()
 //	.runCommand(command []string)
 //	.smartBus(command []byte)
+//	.modBus(func string, address, count int64, command []byte)
 //
 type DeviceBind struct {
 	model *m.Device
@@ -42,5 +43,14 @@ func (d *DeviceBind) SmartBus(command []byte) (result *DevSmartBusResponse) {
 		node: d.node,
 	}
 	result = dev.SmartBus(command)
+	return
+}
+
+func (d *DeviceBind) ModBus(f string, address, count int64, command []byte) (result *DevModBusResponse) {
+	dev := &Device{
+		dev: d.model,
+		node: d.node,
+	}
+	result = dev.ModbusBus(f, address, count, command)
 	return
 }

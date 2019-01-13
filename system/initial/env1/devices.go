@@ -25,8 +25,9 @@ func devices(node1 *m.Node,
 		SlaveId:  1,
 		Baud:     115200,
 		DataBits: 8,
-		StopBits: 2,
+		StopBits: 1,
 		Parity:   "none",
+		Timeout:  100,
 	}
 
 	ok, _ := device1.SetProperties(modBusConfig)

@@ -128,21 +128,21 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 	connect2.Uuid, err = adaptors.Connection.Add(connect2)
 	So(err, ShouldBeNil)
 
-	//// add worker
-	//worker := &m.Worker{
-	//	Name:           "worker",
-	//	Time:           "10,20,30,40,50 * * * * *",
-	//	Status:         "enabled",
-	//	WorkflowId:     workflow1.Id,
-	//	FlowId:         flow1.Id,
-	//	DeviceActionId: deviceAction1.Id,
-	//}
-	//
-	//ok, _ = worker.Valid()
-	//So(ok, ShouldEqual, true)
-	//
-	//worker.Id, err = adaptors.Worker.Add(worker)
-	//So(err, ShouldBeNil)
+	// add worker
+	worker := &m.Worker{
+		Name:           "worker",
+		Time:           "10,20,30,40,50 * * * * *",
+		Status:         "enabled",
+		WorkflowId:     workflow1.Id,
+		FlowId:         flow1.Id,
+		DeviceActionId: deviceAction1.Id,
+	}
+
+	ok, _ = worker.Valid()
+	So(ok, ShouldEqual, true)
+
+	worker.Id, err = adaptors.Worker.Add(worker)
+	So(err, ShouldBeNil)
 
 	// add command flow
 	// ------------------------------------------------

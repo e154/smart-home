@@ -14,7 +14,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 	// ------------------------------------------------
 	script1 = &m.Script{
 		Lang:        "coffeescript",
-		Name:        "turn_on_the_socket",
+		Name:        "condition_check",
 		Source:      coffeescript1,
 		Description: "test1",
 	}
@@ -142,6 +142,27 @@ func addScripts(adaptors *adaptors.Adaptors,
 }
 
 const coffeescript1 = `
+fetchStatus =()->
+
+    COMMAND = []
+    FUNC = 'READ_HOLDING_REGISTERS'
+    ADDRESS = 0
+    COUNT = 16
+    
+    device.modBus FUNC, ADDRESS, COUNT, COMMAND
+
+main =->
+    
+    node = IC.CurrentNode()
+    dev = IC.CurrentDevice()
+    
+    return if !node || !dev
+    
+    fetchStatus()
+
+main()
+`
+const coffeescript123 = `
 # Контекст применения: 
 # action (действие)
 #
