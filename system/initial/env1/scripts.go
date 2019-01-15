@@ -5,18 +5,21 @@ import (
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/scripts"
+	"fmt"
 )
 
 func addScripts(adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService) (script1, script2, script3, script4, script5, script6, script7 *m.Script) {
+	scriptService *scripts.ScriptService) (scripts map[string]*m.Script) {
 
-	// add script
+	scripts = make(map[string]*m.Script)
+
+	// mb_condition_check_v1
 	// ------------------------------------------------
-	script1 = &m.Script{
+	script1 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "condition_check",
-		Source:      coffeescript1,
-		Description: "test1",
+		Name:        "mb_condition_check_v1",
+		Source:      MbConditionCheckV1,
+		Description: "condition check",
 	}
 	ok, _ := script1.Valid()
 	So(ok, ShouldEqual, true)
@@ -24,17 +27,24 @@ func addScripts(adaptors *adaptors.Adaptors,
 	engine1, err := scriptService.NewEngine(script1)
 	So(err, ShouldBeNil)
 	err = engine1.Compile()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	So(err, ShouldBeNil)
 	script1Id, err := adaptors.Script.Add(script1)
 	So(err, ShouldBeNil)
 	script1, err = adaptors.Script.GetById(script1Id)
 	So(err, ShouldBeNil)
 
-	script2 = &m.Script{
+	scripts["mb_condition_check_v1"] = script1
+
+	// mb_turn_on_first_light_v1
+	// ------------------------------------------------
+	script2 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "turn_off_the_socket",
-		Source:      coffeescript2,
-		Description: "script2",
+		Name:        "mb_turn_on_first_light_v1",
+		Source:      MbTurnOnFirstLightV1,
+		Description: "turn on first light",
 	}
 	ok, _ = script2.Valid()
 	So(ok, ShouldEqual, true)
@@ -48,11 +58,15 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script2, err = adaptors.Script.GetById(script2Id)
 	So(err, ShouldBeNil)
 
-	script3 = &m.Script{
+	scripts["mb_turn_on_first_light_v1"] = script2
+
+	// mb_turn_off_first_light_v1
+	// ------------------------------------------------
+	script3 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "socket_status_сheck",
-		Source:      coffeescript3,
-		Description: "script3",
+		Name:        "mb_turn_off_first_light_v1",
+		Source:      MbTurnOffFirstLightV1,
+		Description: "turn off first light",
 	}
 	ok, _ = script3.Valid()
 	So(ok, ShouldEqual, true)
@@ -66,11 +80,15 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script3, err = adaptors.Script.GetById(script3Id)
 	So(err, ShouldBeNil)
 
-	script4 = &m.Script{
+	scripts["mb_turn_off_first_light_v1"] = script3
+
+	// cmd_condition_check_v1
+	// ------------------------------------------------
+	script4 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "scenario_weekday",
-		Source:      coffeescript4,
-		Description: "script4",
+		Name:        "cmd_condition_check_v1",
+		Source:      CmdConditionCheckV1,
+		Description: "condition check",
 	}
 	ok, _ = script4.Valid()
 	So(ok, ShouldEqual, true)
@@ -84,11 +102,15 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script4, err = adaptors.Script.GetById(script4Id)
 	So(err, ShouldBeNil)
 
-	script5 = &m.Script{
+	scripts["cmd_condition_check_v1"] = script4
+
+	// wflow_scenario_weekday_v1
+	// ------------------------------------------------
+	script5 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "scenario_weekend",
-		Source:      coffeescript5,
-		Description: "script5",
+		Name:        "wflow_scenario_weekday_v1",
+		Source:      WflowScenarioWeekdayV1,
+		Description: "weekday scenario",
 	}
 	ok, _ = script5.Valid()
 	So(ok, ShouldEqual, true)
@@ -102,11 +124,15 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script5, err = adaptors.Script.GetById(script5Id)
 	So(err, ShouldBeNil)
 
-	script6 = &m.Script{
+	scripts["wflow_scenario_weekday_v1"] = script5
+
+	// wflow_scenario_weekend_v1
+	// ------------------------------------------------
+	script6 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "task1",
-		Source:      coffeescript6,
-		Description: "script6",
+		Name:        "wflow_scenario_weekend_v1",
+		Source:      WflowScenarioWeekendV1,
+		Description: "weekend scenario",
 	}
 	ok, _ = script6.Valid()
 	So(ok, ShouldEqual, true)
@@ -120,11 +146,15 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script6, err = adaptors.Script.GetById(script6Id)
 	So(err, ShouldBeNil)
 
-	script7 = &m.Script{
+	scripts["wflow_scenario_weekend_v1"] = script6
+
+	// base_script
+	// ------------------------------------------------
+	script7 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "task1",
-		Source:      coffeescript7,
-		Description: "script7",
+		Name:        "base_script",
+		Source:      BaseScript,
+		Description: "weekend scenario",
 	}
 	ok, _ = script7.Valid()
 	So(ok, ShouldEqual, true)
@@ -138,10 +168,13 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script7, err = adaptors.Script.GetById(script7Id)
 	So(err, ShouldBeNil)
 
+	scripts["base_script"] = script6
+
 	return
 }
 
-const coffeescript1 = `
+const MbConditionCheckV1 = `
+# get device status
 fetchStatus =->
 
     COMMAND = []
@@ -166,48 +199,15 @@ main =->
 
 main()
 `
-const coffeescript123 = `
-# Контекст применения: 
-# action (действие)
-#
-# Описание:
-# Включение устройства. (частное)
-# Не имеет зависимостей, и ни чего не передает наружу
-# Должен вызываться в рамках воркера, или действия устройства,
-# иначе выдаст ошибку, так как контекст выполнения накладывает 
-# некоторые ограничения
-
-fetchStatus =(node, dev)->
+const MbTurnOnFirstLightV1 = `
+# turn on first light
+fetchStatus =->
     
-    FUNCTION = 4
-    DEVICE_ADDR = dev.getAddress()
-    TOGGLE = 1
-    
-    COMMAND = [DEVICE_ADDR, FUNCTION, 0, TOGGLE, 0, 0]
-
-    from_node = node.send dev, true, COMMAND
-    
-    # map element
-    element = IC.Map.getElement dev
-    
-    if from_node.error
-        message.setError from_node.error
-        element.setState 'ERROR'
-        
-        # IC.Log.error "#{message.dev.name} - error: #{from_node.error}"
-        
-        return false
-       
-    if from_node.result != ""
-        result = IC.hex2arr(from_node.result)
-        
-        # check power
-        if result[2] == 1
-            element.setState 'ENABLED'
-        else
-            element.setState 'DISABLED'
-        
-    from_node.result
+    res = device.modBus 'WriteMultipleRegisters', 0, 1, [1]
+    if res.error
+        print 'error: ', res.error
+    else
+        print 'ok: ', res.result
 
 main =->
     
@@ -215,54 +215,20 @@ main =->
     dev = IC.CurrentDevice()
     
     return if !node || !dev
-     
-    fetchStatus(node, dev)
+    
+    fetchStatus()
 
 main()
 `
-
-const coffeescript2 = `
-# Контекст применения: 
-# action (действие)
-#
-# Описание:
-# Выключение устройства. (частное)
-# Не имеет зависимостей, и ни чего не передает наружу
-# Должен вызываться в рамках воркера, или действия устройства,
-# иначе выдаст ошибку, так как контекст выполнения накладывает 
-# некоторые ограничения
-
-fetchStatus =(node, dev)->
+const MbTurnOffFirstLightV1 = `
+# turn off first light
+fetchStatus =->
     
-    FUNCTION = 4
-    DEVICE_ADDR = dev.getAddress()
-    TOGGLE = 0
-    
-    COMMAND = [DEVICE_ADDR, FUNCTION, 0, TOGGLE, 0, 0]
-    
-    from_node = node.send dev, true, COMMAND
-    
-    # map element
-    element = IC.Map.getElement dev
-    
-    if from_node.error
-        message.setError from_node.error
-        element.setState 'ERROR'
-        
-        # IC.Log.error "#{message.dev.name} - error: #{from_node.error}"
-        
-        return false
-       
-    if from_node.result != ""
-        result = IC.hex2arr(from_node.result)
-        
-        # check power
-        if result[2] == 1
-            element.setState 'ENABLED'
-        else
-            element.setState 'DISABLED'
-        
-    from_node.result
+    res = device.modBus 'WriteMultipleRegisters', 0, 1, [0]
+    if res.error
+        print 'error: ', res.error
+    else
+        print 'ok: ', res.result
 
 main =->
     
@@ -270,92 +236,24 @@ main =->
     dev = IC.CurrentDevice()
     
     return if !node || !dev
-     
-    fetchStatus(node, dev)
+    
+    fetchStatus()
 
 main()
 `
 
-const coffeescript3 = `
-# Контекст применения: 
-# action (действие)
-#
-# Описание:
-# Проверка состояния устройства. (частное)
-# Не имеет зависимостей, и ни чего не передает наружу
-# Должен вызываться в рамках воркера, или действия устройства,
-# иначе выдаст ошибку, так как контекст выполнения накладывает 
-# некоторые ограничения
-
-fetchStatus =(node, dev, flow)->
-    
-    # номер комманнды 
-    # 3 - проверка состояния
-    FUNCTION = 3
-
-    # получим адрес устройства из контекста запуска
-    DEVICE_ADDR = dev.getAddress()
-    
-    COMMAND = [DEVICE_ADDR, FUNCTION, 0, 0, 0, 5]
-    
-    # map element
-    element = IC.Map.getElement dev
-    element.setOptions {text: 'some text'}
-    
-    print "check status, flow:", flow.getName(), "dev:", DEVICE_ADDR
-    
-    # запрос состояния устройства
-    from_node = node.send dev, true, COMMAND
-    
-    # if 'Лампа в зале' == dev.getName()
-    #     print '---', from_node
-    
-    if from_node.error
-        # if 'Лампа в зале' == dev.getName()
-        #     print 'error'
-            
-        message.setError from_node.error
-        element.setState 'ERROR'
-        
-        # IC.Log.error "#{dev.name} - error: #{from_node.error}"
-        return false
-       
-    if from_node.result != ""
-        result = IC.hex2arr(from_node.result)
-        
-        # check power
-        if result[2] == 1
-            element.setState 'ENABLED'
-        else
-            element.setState 'DISABLED'
-    
-        print 'result', from_node.result, 'dev:', DEVICE_ADDR
-    # print 'dev:', DEVICE_ADDR, 'state', element.getState().systemName
-    
-    from_node.result
-
+const CmdConditionCheckV1 = `
 main =->
     
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    flow = IC.Flow()
-    
-    return if !node || !dev || !flow
-    
-    # номер комманнды 
-    # 3 - проверка состояния
-    FUNCTION = 3
-    
-    COMMAND = [FUNCTION, 0, 0, 0, 5]
-    result = device.smartBus COMMAND
+    NAME = './data/scripts/ping.sh'
+    ARGS = ['ya.ru']
+    result = device.runCommand NAME, ARGS
     print result
 
-    #fetchStatus(node, dev, flow)
-    
 main()
 `
 
-const coffeescript4 = `
+const WflowScenarioWeekdayV1 = `
 # variables:
 
 #IC.Workflow()
@@ -383,7 +281,7 @@ main =->
     
 `
 
-const coffeescript5 = `
+const WflowScenarioWeekendV1 = `
 # variables:
 
 #IC.Workflow()
@@ -410,18 +308,7 @@ main =->
     IC.Workflow().setVar 'scenario', scenario
 `
 
-const coffeescript6 = `
+const BaseScript = `
 
 main =->
-
-`
-const coffeescript7 = `
-main =->
-    
-    NAME = './data/scripts/ping.sh'
-    ARGS = ['ya.ru']
-    result = device.runCommand NAME, ARGS
-    print result
-
-main()
 `

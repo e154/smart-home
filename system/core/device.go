@@ -68,7 +68,7 @@ func (d *Device) SmartBus(command []byte) (result *DevSmartBusResponse) {
 	return
 }
 
-func (d *Device) ModbusBus(f string, address, count uint16, command []byte) (result *DevModBusResponse) {
+func (d *Device) ModbusBus(f string, address, count uint16, command []uint16) (result *DevModBusResponse) {
 
 	request := &DevModBusRequest{
 		Function: f,

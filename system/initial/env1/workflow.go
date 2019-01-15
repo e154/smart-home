@@ -8,8 +8,8 @@ import (
 )
 
 func addWorkflow(adaptors *adaptors.Adaptors,
-	deviceAction1, deviceAction2 *m.DeviceAction,
-	script4, script5, script6 *m.Script) (workflow1 *m.Workflow) {
+	deviceActions []*m.DeviceAction,
+	scripts map[string]*m.Script) (workflow1 *m.Workflow) {
 
 	workflow1 = &m.Workflow{
 		Name:        "workflow1",
@@ -42,12 +42,12 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 
 	wfScenario1.Id, err = adaptors.WorkflowScenario.Add(wfScenario1)
 	So(err, ShouldBeNil)
-	err = adaptors.WorkflowScenario.AddScript(wfScenario1, script4)
+	err = adaptors.WorkflowScenario.AddScript(wfScenario1, scripts["wflow_scenario_weekday_v1"])
 	So(err, ShouldBeNil)
 
 	wfScenario2.Id, err = adaptors.WorkflowScenario.Add(wfScenario2)
 	So(err, ShouldBeNil)
-	err = adaptors.WorkflowScenario.AddScript(wfScenario2, script5)
+	err = adaptors.WorkflowScenario.AddScript(wfScenario2, scripts["wflow_scenario_weekend_v1"])
 	So(err, ShouldBeNil)
 
 	err = adaptors.Workflow.SetScenario(workflow1, wfScenario1)
@@ -85,7 +85,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		FlowId:        flow1.Id,
 		Status:        Enabled,
 		PrototypeType: FlowElementsPrototypeTask,
-		ScriptId:      &script6.Id,
+		ScriptId:      &scripts["base_script"].Id,
 	}
 	ok, _ = feHandler.Valid()
 	So(ok, ShouldEqual, true)
@@ -135,7 +135,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		Status:         "enabled",
 		WorkflowId:     workflow1.Id,
 		FlowId:         flow1.Id,
-		DeviceActionId: deviceAction1.Id,
+		DeviceActionId: deviceActions[0].Id,
 	}
 
 	ok, _ = worker.Valid()
@@ -176,7 +176,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		FlowId:        flow2.Id,
 		Status:        Enabled,
 		PrototypeType: FlowElementsPrototypeTask,
-		ScriptId:      &script6.Id,
+		ScriptId:      &scripts["base_script"].Id,
 	}
 	ok, _ = feHandler2.Valid()
 	So(ok, ShouldEqual, true)
@@ -220,19 +220,19 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 	So(err, ShouldBeNil)
 
 	// add worker
-	//worker2 := &m.Worker{
-	//	Name:           "worker2",
-	//	Time:           "* * * * * *",
-	//	Status:         "enabled",
-	//	WorkflowId:     workflow1.Id,
-	//	FlowId:         flow2.Id,
-	//	DeviceActionId: deviceAction2.Id,
-	//}
-	//
-	//ok, _ = worker2.Valid()
-	//So(ok, ShouldEqual, true)
-	//
-	//worker2.Id, err = adaptors.Worker.Add(worker2)
-	//So(err, ShouldBeNil)
+	worker2 := &m.Worker{
+		Name:           "worker2",
+		Time:           "* * * * * *",
+		Status:         "enabled",
+		WorkflowId:     workflow1.Id,
+		FlowId:         flow2.Id,
+		DeviceActionId: deviceActions[1].Id,
+	}
+
+	ok, _ = worker2.Valid()
+	So(ok, ShouldEqual, true)
+
+	worker2.Id, err = adaptors.Worker.Add(worker2)
+	So(err, ShouldBeNil)
 	return
 }

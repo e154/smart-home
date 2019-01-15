@@ -2,7 +2,7 @@ package env1
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/scripts"
+	. "github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/access_list"
 )
 
@@ -16,7 +16,7 @@ import (
 //
 func Init(adaptors *adaptors.Adaptors,
 	accessList *access_list.AccessListService,
-	scriptService *scripts.ScriptService) {
+	scriptService *ScriptService) {
 
 	// roles
 	// ------------------------------------------------
@@ -28,13 +28,13 @@ func Init(adaptors *adaptors.Adaptors,
 
 	// scripts
 	// ------------------------------------------------
-	script1, script2, script3, script4, script5, script6, script7 := addScripts(adaptors, scriptService)
+	scripts := addScripts(adaptors, scriptService)
 
 	// devices
 	// ------------------------------------------------
-	_, _, deviceAction1, deviceAction2 := devices(node1, adaptors, script1, script2, script3, script7)
+	_, deviceActions := devices(node1, adaptors, scripts)
 
 	// workflow
 	// ------------------------------------------------
-	addWorkflow(adaptors, deviceAction1, deviceAction2, script4, script5, script6)
+	addWorkflow(adaptors, deviceActions, scripts)
 }

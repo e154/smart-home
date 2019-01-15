@@ -46,7 +46,7 @@ func (d *DeviceBind) SmartBus(command []byte) (result *DevSmartBusResponse) {
 	return
 }
 
-func (d *DeviceBind) ModBus(f string, address, count uint16, command []byte) (result *DevModBusResponse) {
+func (d *DeviceBind) ModBus(f string, address, count uint16, command []uint16) (result *DevModBusResponse) {
 	dev := &Device{
 		dev: d.model,
 		node: d.node,
