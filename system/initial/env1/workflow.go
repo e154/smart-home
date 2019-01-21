@@ -226,7 +226,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		Status:         "enabled",
 		WorkflowId:     workflow1.Id,
 		FlowId:         flow2.Id,
-		DeviceActionId: deviceActions[1].Id,
+		DeviceActionId: deviceActions[3].Id,
 	}
 
 	ok, _ = worker2.Valid()

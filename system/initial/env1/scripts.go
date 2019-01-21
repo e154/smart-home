@@ -17,8 +17,8 @@ func addScripts(adaptors *adaptors.Adaptors,
 	// ------------------------------------------------
 	script1 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "mb_condition_check_v1",
-		Source:      MbConditionCheckV1,
+		Name:        "mb_dev1_condition_check_v1",
+		Source:      MbDev1ConditionCheckV1,
 		Description: "condition check",
 	}
 	ok, _ := script1.Valid()
@@ -36,14 +36,14 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script1, err = adaptors.Script.GetById(script1Id)
 	So(err, ShouldBeNil)
 
-	scripts["mb_condition_check_v1"] = script1
+	scripts["mb_dev1_condition_check_v1"] = script1
 
 	// mb_turn_on_first_light_v1
 	// ------------------------------------------------
 	script2 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "mb_turn_on_first_light_v1",
-		Source:      MbTurnOnFirstLightV1,
+		Name:        "mb_dev1_turn_on_first_light_v1",
+		Source:      MbDev1TurnOnFirstLightV1,
 		Description: "turn on first light",
 	}
 	ok, _ = script2.Valid()
@@ -58,14 +58,14 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script2, err = adaptors.Script.GetById(script2Id)
 	So(err, ShouldBeNil)
 
-	scripts["mb_turn_on_first_light_v1"] = script2
+	scripts["mb_dev1_turn_on_first_light_v1"] = script2
 
 	// mb_turn_off_first_light_v1
 	// ------------------------------------------------
 	script3 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "mb_turn_off_first_light_v1",
-		Source:      MbTurnOffFirstLightV1,
+		Name:        "mb_dev1_turn_off_first_light_v1",
+		Source:      MbDev1TurnOffFirstLightV1,
 		Description: "turn off first light",
 	}
 	ok, _ = script3.Valid()
@@ -80,7 +80,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script3, err = adaptors.Script.GetById(script3Id)
 	So(err, ShouldBeNil)
 
-	scripts["mb_turn_off_first_light_v1"] = script3
+	scripts["mb_dev1_turn_off_first_light_v1"] = script3
 
 	// cmd_condition_check_v1
 	// ------------------------------------------------
@@ -173,7 +173,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 	return
 }
 
-const MbConditionCheckV1 = `
+const MbDev1ConditionCheckV1 = `
 # get device status
 fetchStatus =->
 
@@ -185,8 +185,14 @@ fetchStatus =->
     res = device.modBus FUNC, ADDRESS, COUNT, COMMAND
     if res.error
         print 'error: ', res.error
+        return
     else
         print 'ok: ', res.result
+
+    #if res.result[0] == 1
+    #    device.modBus 'WriteMultipleRegisters', 0, 1, [0]
+    #else
+    #    device.modBus 'WriteMultipleRegisters', 0, 1, [1]
 
 main =->
     
@@ -199,7 +205,7 @@ main =->
 
 main()
 `
-const MbTurnOnFirstLightV1 = `
+const MbDev1TurnOnFirstLightV1 = `
 # turn on first light
 fetchStatus =->
     
@@ -220,7 +226,7 @@ main =->
 
 main()
 `
-const MbTurnOffFirstLightV1 = `
+const MbDev1TurnOffFirstLightV1 = `
 # turn off first light
 fetchStatus =->
     

@@ -42,47 +42,156 @@ func devices(node1 *m.Node,
 
 	devices = append(devices, device1)
 
+	// action1
 	deviceAction1 := &m.DeviceAction{
 		Name:     "Condition check",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_condition_check_v1"].Id,
+		ScriptId: scripts["mb_dev1_condition_check_v1"].Id,
 	}
-
 	ok, _ = deviceAction1.Valid()
 	So(ok, ShouldEqual, true)
-
 	deviceAction1.Id, err = adaptors.DeviceAction.Add(deviceAction1)
 	So(err, ShouldBeNil)
-
 	deviceActions = append(deviceActions, deviceAction1)
 
-	deviceState1 := &m.DeviceState{
+	// action2
+	deviceAction2 := &m.DeviceAction{
+		Name:     "turn on light1",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_on_first_light_v1"].Id,
+	}
+	ok, _ = deviceAction2.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction2.Id, err = adaptors.DeviceAction.Add(deviceAction2)
+	So(err, ShouldBeNil)
+	deviceActions = append(deviceActions, deviceAction2)
+
+	// action3
+	deviceAction3 := &m.DeviceAction{
+		Name:     "turn off light1",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_off_first_light_v1"].Id,
+	}
+	ok, _ = deviceAction3.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction3.Id, err = adaptors.DeviceAction.Add(deviceAction3)
+	So(err, ShouldBeNil)
+	deviceActions = append(deviceActions, deviceAction3)
+
+	// states
+	stateDev1Enabled := &m.DeviceState{
 		SystemName:  "ENABLED",
 		Description: "device enabled",
 		DeviceId:    device1.Id,
 	}
-	deviceState2 := &m.DeviceState{
+	stateDev1Disabled := &m.DeviceState{
 		SystemName:  "DISABLED",
 		Description: "device disabled",
 		DeviceId:    device1.Id,
 	}
-	deviceState3 := &m.DeviceState{
+	stateDev1Error := &m.DeviceState{
 		SystemName:  "ERROR",
 		Description: "device in error state",
 		DeviceId:    device1.Id,
 	}
-	ok, _ = deviceState1.Valid()
+	stateDev1Light1On := &m.DeviceState{
+		SystemName:  "LIGHT_1_ON",
+		Description: "device light 1 on",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Light1Off := &m.DeviceState{
+		SystemName:  "LIGHT_1_OFF",
+		Description: "device light 1 off",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Light2On := &m.DeviceState{
+		SystemName:  "LIGHT_2_ON",
+		Description: "device light 2 on",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Light2Off := &m.DeviceState{
+		SystemName:  "LIGHT_2_OFF",
+		Description: "device light 2 off",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Light3On := &m.DeviceState{
+		SystemName:  "LIGHT_3_ON",
+		Description: "device light 3 on",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Light3Off := &m.DeviceState{
+		SystemName:  "LIGHT_3_OFF",
+		Description: "device light 3 off",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Light4On := &m.DeviceState{
+		SystemName:  "LIGHT_4_ON",
+		Description: "device light 4 on",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Light4Off := &m.DeviceState{
+		SystemName:  "LIGHT_4_OFF",
+		Description: "device light 4 off",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Fan1On := &m.DeviceState{
+		SystemName:  "FAN_1_ON",
+		Description: "device fan 1 on",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Fan1Off := &m.DeviceState{
+		SystemName:  "FAN_1_OFF",
+		Description: "device fan 1 off",
+		DeviceId:    device1.Id,
+	}
+	ok, _ = stateDev1Enabled.Valid()
 	So(ok, ShouldEqual, true)
-	ok, _ = deviceState2.Valid()
+	ok, _ = stateDev1Disabled.Valid()
 	So(ok, ShouldEqual, true)
-	ok, _ = deviceState3.Valid()
+	ok, _ = stateDev1Error.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Light2On.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Light2Off.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Light3On.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Light3Off.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Light4On.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Light4Off.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Fan1On.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Fan1Off.Valid()
 	So(ok, ShouldEqual, true)
 
-	deviceState1.Id, err = adaptors.DeviceState.Add(deviceState1)
+	stateDev1Enabled.Id, err = adaptors.DeviceState.Add(stateDev1Enabled)
 	So(err, ShouldBeNil)
-	deviceState2.Id, err = adaptors.DeviceState.Add(deviceState2)
+	stateDev1Disabled.Id, err = adaptors.DeviceState.Add(stateDev1Disabled)
 	So(err, ShouldBeNil)
-	deviceState3.Id, err = adaptors.DeviceState.Add(deviceState3)
+	stateDev1Error.Id, err = adaptors.DeviceState.Add(stateDev1Error)
+	So(err, ShouldBeNil)
+	stateDev1Light1On.Id, err = adaptors.DeviceState.Add(stateDev1Light1On)
+	So(err, ShouldBeNil)
+	stateDev1Light1Off.Id, err = adaptors.DeviceState.Add(stateDev1Light1Off)
+	So(err, ShouldBeNil)
+	stateDev1Light2On.Id, err = adaptors.DeviceState.Add(stateDev1Light2On)
+	So(err, ShouldBeNil)
+	stateDev1Light2Off.Id, err = adaptors.DeviceState.Add(stateDev1Light2Off)
+	So(err, ShouldBeNil)
+	stateDev1Light3On.Id, err = adaptors.DeviceState.Add(stateDev1Light3On)
+	So(err, ShouldBeNil)
+	stateDev1Light3Off.Id, err = adaptors.DeviceState.Add(stateDev1Light3Off)
+	So(err, ShouldBeNil)
+	stateDev1Light4On.Id, err = adaptors.DeviceState.Add(stateDev1Light4On)
+	So(err, ShouldBeNil)
+	stateDev1Light4Off.Id, err = adaptors.DeviceState.Add(stateDev1Light4Off)
+	So(err, ShouldBeNil)
+	stateDev1Fan1On.Id, err = adaptors.DeviceState.Add(stateDev1Fan1On)
+	So(err, ShouldBeNil)
+	stateDev1Fan1Off.Id, err = adaptors.DeviceState.Add(stateDev1Fan1Off)
 	So(err, ShouldBeNil)
 
 	// device 2
@@ -102,17 +211,17 @@ func devices(node1 *m.Node,
 
 	devices = append(devices, device2)
 
-	deviceAction2 := &m.DeviceAction{
+	deviceAction21 := &m.DeviceAction{
 		Name:     "internet address condition check",
 		DeviceId: device2.Id,
 		ScriptId: scripts["cmd_condition_check_v1"].Id,
 	}
-	ok, _ = deviceAction2.Valid()
+	ok, _ = deviceAction21.Valid()
 	So(ok, ShouldEqual, true)
-	deviceAction2.Id, err = adaptors.DeviceAction.Add(deviceAction2)
+	deviceAction21.Id, err = adaptors.DeviceAction.Add(deviceAction21)
 	So(err, ShouldBeNil)
 
-	deviceActions = append(deviceActions, deviceAction2)
+	deviceActions = append(deviceActions, deviceAction21)
 
 	deviceState7 := &m.DeviceState{
 		SystemName:  "ONLINE",
