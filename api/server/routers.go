@@ -91,4 +91,12 @@ func (s *Server) setControllers() {
 	v1.DELETE("/user/:id", s.af.Auth, s.ControllersV1.User.DeleteUserById)
 	v1.PUT("/user/:id/update_status", s.af.Auth, s.ControllersV1.User.UpdateStatus)
 	v1.GET("/users", s.af.Auth, s.ControllersV1.User.GetUserList)
+
+	// maps
+	v1.POST("/map", s.af.Auth, s.ControllersV1.Map.AddMap)
+	v1.GET("/map/:id", s.af.Auth, s.ControllersV1.Map.GetMapById)
+	v1.PUT("/map/:id", s.af.Auth, s.ControllersV1.Map.UpdateMap)
+	v1.DELETE("/map/:id", s.af.Auth, s.ControllersV1.Map.DeleteMapById)
+	v1.GET("/maps", s.af.Auth, s.ControllersV1.Map.GetMapList)
+	v1.GET("/maps/search", s.af.Auth, s.ControllersV1.Map.Search)
 }

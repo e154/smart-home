@@ -37,4 +37,8 @@ func Init(adaptors *adaptors.Adaptors,
 	// workflow
 	// ------------------------------------------------
 	addWorkflow(adaptors, deviceActions, scripts)
+
+	// maps
+	// ------------------------------------------------
+	addMaps(adaptors, scripts)
 }

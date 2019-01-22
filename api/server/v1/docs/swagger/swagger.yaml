@@ -185,6 +185,37 @@ definitions:
       url:
         type: string
     type: object
+  models.Map:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      options:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.MapListModel:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.Map'
+        type: array
+      meta:
+        properties:
+          limit:
+            type: integer
+          objects_count:
+            type: integer
+          offset:
+            type: integer
+        type: object
+    type: object
   models.NewDevice:
     properties:
       description:
@@ -230,6 +261,15 @@ definitions:
         $ref: '#/definitions/models.DeviceStateDevice'
         type: object
       system_name:
+        type: string
+    type: object
+  models.NewMap:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      options:
         type: string
     type: object
   models.NewNode:
@@ -500,6 +540,13 @@ definitions:
           $ref: '#/definitions/models.Device'
         type: array
     type: object
+  models.SearchMapResponse:
+    properties:
+      nodes:
+        items:
+          $ref: '#/definitions/models.Map'
+        type: array
+    type: object
   models.SearchNodeResponse:
     properties:
       nodes:
@@ -561,6 +608,17 @@ definitions:
         $ref: '#/definitions/models.DeviceStateDevice'
         type: object
       system_name:
+        type: string
+    type: object
+  models.UpdateMap:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      options:
         type: string
     type: object
   models.UpdateNode:
@@ -1524,6 +1582,269 @@ paths:
       summary: Search device
       tags:
       - device
+  /map:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: map params
+        in: body
+        name: map
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewMap'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Add new map
+      tags:
+      - map
+  /map/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete map by id
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete map
+      tags:
+      - map
+    get:
+      consumes:
+      - application/json
+      description: Get map by id
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Map'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Show map
+      tags:
+      - map
+    put:
+      consumes:
+      - application/json
+      description: Update map by id
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update map
+        in: body
+        name: map
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateMap'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update map
+      tags:
+      - map
+  /maps:
+    get:
+      consumes:
+      - application/json
+      description: Get map list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MapListModel'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Map list
+      tags:
+      - map
+  /maps/search:
+    get:
+      consumes:
+      - application/json
+      description: Search map by name
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchMapResponse'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Search map
+      tags:
+      - map
   /node:
     post:
       consumes:

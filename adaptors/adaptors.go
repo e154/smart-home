@@ -29,6 +29,7 @@ type Adaptors struct {
 	UserMeta         *UserMeta
 	Image            *Image
 	Variable         *Variable
+	Map              *Map
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -59,6 +60,7 @@ func NewAdaptors(db *gorm.DB,
 		UserMeta:         GetUserMetaAdaptor(db),
 		Image:            GetImageAdaptor(db),
 		Variable:         GetVariableAdaptor(db),
+		Map:              GetMapAdaptor(db),
 	}
 
 	return
