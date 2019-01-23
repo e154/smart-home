@@ -157,12 +157,12 @@
   revision = "7e38e58719c33e0d44d585c4ab477a30f8cb82dd"
 
 [[projects]]
-  digest = "1:235ae01f32fb5f12c5f6d2e0e05ab48e651ab31c126e45a4efc4f510810941ac"
+  branch = "master"
+  digest = "1:8cd2f7a41b90a42986472382204daf3cbf7d7e121dc92390ba841f8453a7356a"
   name = "github.com/jinzhu/gorm"
   packages = ["."]
   pruneopts = "UT"
-  revision = "6ed508ec6a4ecb3531899a69cbc746ccf65a4166"
-  version = "v1.9.1"
+  revision = "9f1a7f53511168c0567b4b4b4f10ab7d21265174"
 
 [[projects]]
   branch = "master"
@@ -259,6 +259,13 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "d703dfa5153a4276b8a4783d985793595228073d"
+
+[[projects]]
+  digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
+  name = "github.com/mitchellh/mapstructure"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
 
 [[projects]]
   digest = "1:33422d238f147d247752996a26574ac48dcf472976eda7f5134015f06bf16563"
@@ -417,6 +424,14 @@
   version = "v1.3.2"
 
 [[projects]]
+  branch = "master"
+  digest = "1:7f8209ffee3634c5a24ce6993bd0385584f4bb159db733b07289ca1d86ed0313"
+  name = "github.com/t-tiger/gorm-bulk-insert"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d028f1d13a79cf51420e00710c61ed21d9a22ad5"
+
+[[projects]]
   digest = "1:03aa6e485e528acb119fb32901cf99582c380225fc7d5a02758e08b180cb56c3"
   name = "github.com/ugorji/go"
   packages = ["codec"]
@@ -545,6 +560,7 @@
     "github.com/lib/pq",
     "github.com/lox/go-servejs",
     "github.com/mcuadros/go-candyjs",
+    "github.com/mitchellh/mapstructure",
     "github.com/olebedev/go-duktape",
     "github.com/olivere/elastic",
     "github.com/op/go-logging",
@@ -560,6 +576,7 @@
     "github.com/surgemq/message",
     "github.com/surgemq/surgemq/service",
     "github.com/swaggo/swag",
+    "github.com/t-tiger/gorm-bulk-insert",
     "golang.org/x/net/context",
     "golang.org/x/net/webdav",
     "gopkg.in/check.v1",

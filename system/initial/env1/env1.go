@@ -32,7 +32,7 @@ func Init(adaptors *adaptors.Adaptors,
 
 	// devices
 	// ------------------------------------------------
-	_, deviceActions := devices(node1, adaptors, scripts)
+	devList, deviceActions := devices(node1, adaptors, scripts)
 
 	// workflow
 	// ------------------------------------------------
@@ -40,5 +40,5 @@ func Init(adaptors *adaptors.Adaptors,
 
 	// maps
 	// ------------------------------------------------
-	addMaps(adaptors, scripts)
+	addMaps(adaptors, scripts, devList)
 }

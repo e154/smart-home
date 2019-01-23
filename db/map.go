@@ -16,6 +16,7 @@ type Map struct {
 	Name        string
 	Description string
 	Options     json.RawMessage `gorm:"type:jsonb;not null"`
+	Layers      []*MapLayer
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

@@ -1,6 +1,6 @@
 -- +migrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-create type layer_status as enum ('enabled', 'disabled');
+create type layer_status as enum ('enabled', 'disabled', 'frozen');
 create type map_element_status as enum ('enabled', 'disabled');
 
 CREATE TABLE maps (

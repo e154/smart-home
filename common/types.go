@@ -27,3 +27,12 @@ const (
 )
 
 type DeviceType string
+
+type PrototypeType string
+
+const (
+	PrototypeTypeText   = PrototypeType("text")
+	PrototypeTypeImage  = PrototypeType("image")
+	PrototypeTypeDevice = PrototypeType("device")
+)
+

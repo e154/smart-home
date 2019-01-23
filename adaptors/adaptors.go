@@ -30,6 +30,13 @@ type Adaptors struct {
 	Image            *Image
 	Variable         *Variable
 	Map              *Map
+	MapLayer         *MapLayer
+	MapText          *MapText
+	MapImage         *MapImage
+	MapDevice        *MapDevice
+	MapElement       *MapElement
+	MapDeviceState   *MapDeviceState
+	MapDeviceAction  *MapDeviceAction
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -61,6 +68,13 @@ func NewAdaptors(db *gorm.DB,
 		Image:            GetImageAdaptor(db),
 		Variable:         GetVariableAdaptor(db),
 		Map:              GetMapAdaptor(db),
+		MapLayer:         GetMapLayerAdaptor(db),
+		MapText:          GetMapTextAdaptor(db),
+		MapImage:         GetMapImageAdaptor(db),
+		MapDevice:        GetMapDeviceAdaptor(db),
+		MapElement:       GetMapElementAdaptor(db),
+		MapDeviceState:   GetMapDeviceStateAdaptor(db),
+		MapDeviceAction:  GetMapDeviceActionAdaptor(db),
 	}
 
 	return

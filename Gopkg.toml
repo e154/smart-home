@@ -55,3 +55,11 @@
 [[constraint]]
   branch = "master"
   name = "github.com/jinzhu/copier"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/jinzhu/gorm"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/t-tiger/gorm-bulk-insert"
