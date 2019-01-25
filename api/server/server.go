@@ -12,6 +12,7 @@ import (
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
+	streamControllers "github.com/e154/smart-home/system/stream/controllers"
 )
 
 var (
@@ -59,7 +60,8 @@ func NewServer(cfg *ServerConfig,
 	ctrls *controllers.ControllersV1,
 	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,
-	streamService *stream.StreamService) (newServer *Server) {
+	streamService *stream.StreamService,
+	streamControllers *streamControllers.StreamControllers) (newServer *Server) {
 
 	logger := &ServerLogger{log}
 

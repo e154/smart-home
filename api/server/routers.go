@@ -3,11 +3,22 @@ package server
 import (
 	"github.com/e154/smart-home/system/swaggo/gin-swagger/swaggerFiles"
 	"github.com/gin-gonic/gin"
+	"path/filepath"
 )
 
 func (s *Server) setControllers() {
 
 	r := s.engine
+
+	// upload
+	const (
+		dataDir  = "./data"
+		fileStoragePath = "./file_storage"
+	)
+
+	dir := filepath.Join(dataDir, fileStoragePath)
+	r.Static("/upload", dir)
+
 	basePath := r.Group("/api")
 
 	v1 := basePath.Group("/v1")
@@ -99,4 +110,12 @@ func (s *Server) setControllers() {
 	v1.DELETE("/map/:id", s.af.Auth, s.ControllersV1.Map.DeleteMapById)
 	v1.GET("/maps", s.af.Auth, s.ControllersV1.Map.GetMapList)
 	v1.GET("/maps/search", s.af.Auth, s.ControllersV1.Map.Search)
+
+	// images
+	v1.GET("/image/:id", s.af.Auth, s.ControllersV1.Image.GetImageById)
+	v1.GET("/images", s.af.Auth, s.ControllersV1.Image.GetImageList)
+	v1.POST("/image", s.af.Auth, s.ControllersV1.Image.AddImage)
+	v1.POST("/image/upload", s.af.Auth, s.ControllersV1.Image.Upload)
+	v1.PUT("/image/:id", s.af.Auth, s.ControllersV1.Image.UpdateImage)
+	v1.DELETE("/image/:id", s.af.Auth, s.ControllersV1.Image.DeleteImageById)
 }

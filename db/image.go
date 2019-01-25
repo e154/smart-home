@@ -4,6 +4,7 @@ import (
 	"time"
 	"github.com/jinzhu/gorm"
 	"fmt"
+	"database/sql"
 )
 
 type Images struct {
@@ -65,6 +66,52 @@ func (n *Images) List(limit, offset int64, orderBy, sort string) (list []*Image,
 		Offset(offset).
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
+		Error
+
+	return
+}
+
+type ImageFilterList struct {
+	Date  string `json:"date"`
+	Count int    `json:"count"`
+}
+
+func (n *Images) GetFilterList() (images []*ImageFilterList, err error) {
+
+	image := &Image{}
+	var rows *sql.Rows
+	rows, err = n.Db.Raw(`
+SELECT
+	to_char(created_at,'YYYY-mm-dd') as date, COUNT( created_at) as count
+FROM ` + image.TableName() + `
+GROUP BY date
+ORDER BY date`).Rows()
+
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		item := &ImageFilterList{}
+		rows.Scan(&item.Date, &item.Count)
+		images = append(images, item)
+	}
+
+	return
+}
+
+func (n *Images) GetAllByDate(filter string) (images []*Image, err error) {
+
+	fmt.Println("filter", filter)
+
+	images = make([]*Image, 0)
+	image := &Image{}
+	err = n.Db.Raw(`
+SELECT *
+FROM ` + image.TableName() + `
+WHERE to_char(created_at,'YYYY-mm-dd') = ?
+ORDER BY created_at`, filter).
+		Find(&images).
 		Error
 
 	return

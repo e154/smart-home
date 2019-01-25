@@ -205,13 +205,14 @@ func (c ControllerImage) DeleteImageById(ctx *gin.Context) {
 
 func (c *ControllerImage) Upload(ctx *gin.Context) {
 
-	files := ctx.Request.MultipartForm.File
-	if len(files) == 0 {
+	form, _ := ctx.MultipartForm()
+
+	if len(form.File) == 0 {
 		NewError(403, "http: no such file").Send(ctx)
 		return
 	}
 
-	images, errs := UploadImages(files, c.adaptors)
+	images, errs := UploadImages(form.File, c.adaptors)
 
 	resp := NewSuccess()
 	resp.SetData(&map[string]interface{}{

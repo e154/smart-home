@@ -26,3 +26,8 @@ func (m *Image) Valid() (ok bool, errs []*validation.Error) {
 
 	return
 }
+
+type ImageFilterList struct {
+	Date  string `json:"date"`
+	Count int    `json:"count"`
+}

@@ -20,6 +20,7 @@ type ControllersV1 struct {
 	DeviceAction *ControllerDeviceAction
 	DeviceState  *ControllerDeviceState
 	Map          *ControllerMap
+	Image        *ControllerImage
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -40,5 +41,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		DeviceAction: NewControllerDeviceAction(common),
 		DeviceState:  NewControllerDeviceState(common),
 		Map:          NewControllerMap(common),
+		Image:        NewControllerImage(common),
 	}
 }

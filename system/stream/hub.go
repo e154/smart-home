@@ -152,6 +152,7 @@ func (h *Hub) Clients() (clients []*Client) {
 }
 
 func (h *Hub) Subscribe(command string, f func(client *Client, value interface{})) {
+	log.Infof("subscribe %s", command)
 	if h.subscribers[command] != nil {
 		delete(h.subscribers, command)
 	}

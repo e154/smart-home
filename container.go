@@ -21,6 +21,7 @@ import (
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/telemetry"
 	"github.com/e154/smart-home/system/telemetry/dashboard"
+	streamControllers "github.com/e154/smart-home/system/stream/controllers"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -54,6 +55,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(stream.NewHub)
 	container.Provide(telemetry.NewTelemetry)
 	container.Provide(dashboard.NewDashboard)
+	container.Provide(streamControllers.NewStreamControllers)
 
 	return
 }

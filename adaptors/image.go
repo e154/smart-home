@@ -114,7 +114,7 @@ func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (err error) {
 	defer dst.Close()
 
 	//copy the uploaded file to the destination file
-	if _, err = io.Copy(dst, reader); err != nil {
+	if _, err = io.Copy(dst, buffer); err != nil {
 		return
 	}
 
@@ -141,6 +141,36 @@ func (n *Image) AddMultiple(items []*m.Image) (err error) {
 
 	err = gormbulk.BulkInsert(n.db, insertRecords, 3000)
 
+	return
+}
+
+func (n *Image) GetAllByDate(filter string) (images []*m.Image, err error) {
+
+	var dblist []*db.Image
+	if dblist, err = n.table.GetAllByDate(filter); err != nil {
+		return
+	}
+	for _, dbVer := range dblist {
+		ver := n.fromDb(dbVer)
+		images = append(images, ver)
+	}
+
+	return
+}
+
+func (n *Image) GetFilterList() (filterList []*m.ImageFilterList, err error) {
+
+	var dblist []*db.ImageFilterList
+	if dblist, err = n.table.GetFilterList(); err != nil {
+		return
+	}
+	for _, dbVer := range dblist {
+		ver := &m.ImageFilterList{
+			Date:  dbVer.Date,
+			Count: dbVer.Count,
+		}
+		filterList = append(filterList, ver)
+	}
 	return
 }
 
