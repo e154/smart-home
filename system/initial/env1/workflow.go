@@ -8,7 +8,7 @@ import (
 )
 
 func addWorkflow(adaptors *adaptors.Adaptors,
-	deviceActions []*m.DeviceAction,
+	deviceActions map[string]*m.DeviceAction,
 	scripts map[string]*m.Script) (workflow1 *m.Workflow) {
 
 	workflow1 = &m.Workflow{
@@ -135,7 +135,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		Status:         "enabled",
 		WorkflowId:     workflow1.Id,
 		FlowId:         flow1.Id,
-		DeviceActionId: deviceActions[0].Id,
+		DeviceActionId: deviceActions["mb_dev1_condition_check_v1"].Id,
 	}
 
 	ok, _ = worker.Valid()
@@ -226,7 +226,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		Status:         "enabled",
 		WorkflowId:     workflow1.Id,
 		FlowId:         flow2.Id,
-		DeviceActionId: deviceActions[3].Id,
+		DeviceActionId: deviceActions["cmd_condition_check_v1"].Id,
 	}
 
 	ok, _ = worker2.Valid()

@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/debug"
 )
 
 type Image struct {
@@ -139,6 +140,7 @@ func (n *Image) AddMultiple(items []*m.Image) (err error) {
 		insertRecords = append(insertRecords, dbVer)
 	}
 
+	debug.Println(insertRecords)
 	err = gormbulk.BulkInsert(n.db, insertRecords, 3000)
 
 	return
@@ -178,7 +180,7 @@ func (n *Image) fromDb(dbImage *db.Image) (image *m.Image) {
 	image = &m.Image{
 		Id:        dbImage.Id,
 		Thumb:     dbImage.Thumb,
-		Url:       dbImage.Url,
+		Url:       common.GetLinkPath(image.Image),
 		Image:     dbImage.Image,
 		MimeType:  dbImage.MimeType,
 		Title:     dbImage.Title,
@@ -193,7 +195,6 @@ func (n *Image) toDb(image *m.Image) (dbImage *db.Image) {
 	dbImage = &db.Image{
 		Id:       image.Id,
 		Thumb:    image.Thumb,
-		Url:      image.Url,
 		Image:    image.Image,
 		MimeType: image.MimeType,
 		Title:    image.Title,

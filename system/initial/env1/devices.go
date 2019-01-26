@@ -9,7 +9,10 @@ import (
 
 func devices(node1 *m.Node,
 	adaptors *adaptors.Adaptors,
-	scripts map[string]*m.Script) (devices []*m.Device, deviceActions []*m.DeviceAction) {
+	scripts map[string]*m.Script) (devices []*m.Device, deviceActions map[string]*m.DeviceAction, deviceStates map[string]*m.DeviceState) {
+
+	deviceActions = make(map[string]*m.DeviceAction)
+	deviceStates = make(map[string]*m.DeviceState)
 
 	// devices1
 	// ------------------------------------------------
@@ -52,7 +55,7 @@ func devices(node1 *m.Node,
 	So(ok, ShouldEqual, true)
 	deviceAction1.Id, err = adaptors.DeviceAction.Add(deviceAction1)
 	So(err, ShouldBeNil)
-	deviceActions = append(deviceActions, deviceAction1)
+	deviceActions["mb_dev1_condition_check_v1"] = deviceAction1
 
 	// action2
 	deviceAction2 := &m.DeviceAction{
@@ -64,7 +67,7 @@ func devices(node1 *m.Node,
 	So(ok, ShouldEqual, true)
 	deviceAction2.Id, err = adaptors.DeviceAction.Add(deviceAction2)
 	So(err, ShouldBeNil)
-	deviceActions = append(deviceActions, deviceAction2)
+	deviceActions["mb_dev1_turn_on_first_light_v1"] = deviceAction2
 
 	// action3
 	deviceAction3 := &m.DeviceAction{
@@ -76,7 +79,7 @@ func devices(node1 *m.Node,
 	So(ok, ShouldEqual, true)
 	deviceAction3.Id, err = adaptors.DeviceAction.Add(deviceAction3)
 	So(err, ShouldBeNil)
-	deviceActions = append(deviceActions, deviceAction3)
+	deviceActions["mb_dev1_turn_off_first_light_v1"] = deviceAction3
 
 	// states
 	stateDev1Enabled := &m.DeviceState{
@@ -221,7 +224,7 @@ func devices(node1 *m.Node,
 	deviceAction21.Id, err = adaptors.DeviceAction.Add(deviceAction21)
 	So(err, ShouldBeNil)
 
-	deviceActions = append(deviceActions, deviceAction21)
+	deviceActions["cmd_condition_check_v1"] = deviceAction21
 
 	deviceState7 := &m.DeviceState{
 		SystemName:  "ONLINE",

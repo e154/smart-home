@@ -18,6 +18,10 @@ func Init(adaptors *adaptors.Adaptors,
 	accessList *access_list.AccessListService,
 	scriptService *ScriptService) {
 
+	// images
+	// ------------------------------------------------
+	imageList := images(adaptors)
+
 	// roles
 	// ------------------------------------------------
 	roles(adaptors, accessList)
@@ -32,7 +36,7 @@ func Init(adaptors *adaptors.Adaptors,
 
 	// devices
 	// ------------------------------------------------
-	devList, deviceActions := devices(node1, adaptors, scripts)
+	devList, deviceActions, deviceStates := devices(node1, adaptors, scripts)
 
 	// workflow
 	// ------------------------------------------------
@@ -40,5 +44,5 @@ func Init(adaptors *adaptors.Adaptors,
 
 	// maps
 	// ------------------------------------------------
-	addMaps(adaptors, scripts, devList)
+	addMaps(adaptors, scripts, devList, imageList, deviceActions, deviceStates)
 }

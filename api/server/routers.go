@@ -3,21 +3,14 @@ package server
 import (
 	"github.com/e154/smart-home/system/swaggo/gin-swagger/swaggerFiles"
 	"github.com/gin-gonic/gin"
-	"path/filepath"
+	"github.com/e154/smart-home/common"
 )
 
 func (s *Server) setControllers() {
 
 	r := s.engine
 
-	// upload
-	const (
-		dataDir  = "./data"
-		fileStoragePath = "./file_storage"
-	)
-
-	dir := filepath.Join(dataDir, fileStoragePath)
-	r.Static("/upload", dir)
+	r.Static("/upload", common.StoragePath())
 
 	basePath := r.Group("/api")
 

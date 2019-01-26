@@ -14,7 +14,6 @@ type Images struct {
 type Image struct {
 	Id        int64 `gorm:"primary_key"`
 	Thumb     string
-	Url       string `gorm:"-"`
 	Image     string
 	MimeType  string
 	Title     string
@@ -108,7 +107,7 @@ func (n *Images) GetAllByDate(filter string) (images []*Image, err error) {
 	image := &Image{}
 	err = n.Db.Raw(`
 SELECT *
-FROM ` + image.TableName() + `
+FROM `+image.TableName()+`
 WHERE to_char(created_at,'YYYY-mm-dd') = ?
 ORDER BY created_at`, filter).
 		Find(&images).

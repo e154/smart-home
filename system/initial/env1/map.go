@@ -10,7 +10,10 @@ import (
 
 func addMaps(adaptors *adaptors.Adaptors,
 	scripts map[string]*m.Script,
-	devices []*m.Device) (maps []*m.Map) {
+	devices []*m.Device,
+	imageList map[string]*m.Image,
+	deviceActions map[string]*m.DeviceAction,
+	deviceStates map[string]*m.DeviceState) (maps []*m.Map) {
 
 	var err error
 
@@ -60,13 +63,15 @@ func addMaps(adaptors *adaptors.Adaptors,
 	devLight1 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT1",
 		DeviceId:   devices[0].Id,
-	}
-	devLight1.States = []*m.MapDeviceState{
-		{
-
+		States: []*m.MapDeviceState{
+			{
+				DeviceStateId: devices[0].Id,
+				//ImageId: imageList[""]
+			},
 		},
+		Actions: []*m.MapDeviceAction{},
 	}
-	devLight1.Actions = []*m.MapDeviceAction{}
+
 	ok, _ = devLight1.Valid()
 	mapElementLight1 := &m.MapElement{
 		Name:          "dev1_light1",

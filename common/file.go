@@ -4,6 +4,14 @@ import (
 	"path/filepath"
 	"unicode/utf8"
 	"os"
+	"log"
+	"io"
+)
+
+const (
+	dataDir  = "./data"
+	fileStoragePath = "./file_storage"
+	depth = 3
 )
 
 func GetFileSize(name string) (int64, error) {
@@ -23,12 +31,6 @@ func GetFileSize(name string) (int64, error) {
 
 func GetFullPath(name string) string {
 
-	const (
-		dataDir  = "./data"
-		fileStoragePath = "./file_storage"
-		depth = 3
-	)
-
 	dir := filepath.Join(dataDir, fileStoragePath)
 
 	for i := 0; i < depth; i++ {
@@ -47,11 +49,49 @@ func GetLinkPath(name string) string {
 		return filepath.Join(dir, name)
 	}
 
-	const depth = 3
-
 	for i := 0; i < depth; i++ {
 		dir = filepath.Join(dir, name[i*3:(i+1)*3])
 	}
 
 	return filepath.Join(dir, name)
+}
+
+func StoragePath() string {
+	return filepath.Join(dataDir, fileStoragePath)
+}
+
+func FileExist(path string) (exist bool) {
+
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			// file does not exist
+		} else {
+			// other error
+		}
+		return
+	}
+
+	exist = true
+
+	return
+}
+
+func CopyFile(f, t string) {
+
+	from, err := os.Open(f)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer from.Close()
+
+	to, err := os.OpenFile(t, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer to.Close()
+
+	_, err = io.Copy(to, from)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

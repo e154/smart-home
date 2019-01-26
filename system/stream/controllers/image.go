@@ -40,10 +40,6 @@ func (c *ControllerImage) GetImageList(client *stream.Client, value interface{})
 		return
 	}
 
-	for _, image := range images {
-		image.Url = common.GetLinkPath(image.Image)
-	}
-
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "images": images})
 	client.Send <- msg
 }
