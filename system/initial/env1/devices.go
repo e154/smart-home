@@ -57,7 +57,7 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 	deviceActions["mb_dev1_condition_check_v1"] = deviceAction1
 
-	// action2
+	// light1
 	deviceAction2 := &m.DeviceAction{
 		Name:     "turn on light1",
 		DeviceId: device1.Id,
@@ -69,7 +69,6 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 	deviceActions["mb_dev1_turn_on_light1_v1"] = deviceAction2
 
-	// action3
 	deviceAction3 := &m.DeviceAction{
 		Name:     "turn off light1",
 		DeviceId: device1.Id,
@@ -81,7 +80,7 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 	deviceActions["mb_dev1_turn_off_light1_v1"] = deviceAction3
 
-	// action4
+	// light2
 	deviceAction4 := &m.DeviceAction{
 		Name:     "turn on light2",
 		DeviceId: device1.Id,
@@ -93,7 +92,6 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 	deviceActions["mb_dev1_turn_on_light2_v1"] = deviceAction4
 
-	// action5
 	deviceAction5 := &m.DeviceAction{
 		Name:     "turn off light2",
 		DeviceId: device1.Id,
@@ -104,6 +102,75 @@ func devices(node1 *m.Node,
 	deviceAction5.Id, err = adaptors.DeviceAction.Add(deviceAction5)
 	So(err, ShouldBeNil)
 	deviceActions["mb_dev1_turn_off_light2_v1"] = deviceAction5
+
+	// light3
+	deviceAction6 := &m.DeviceAction{
+		Name:     "turn on light3",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_on_light3_v1"].Id,
+	}
+	ok, _ = deviceAction6.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction6.Id, err = adaptors.DeviceAction.Add(deviceAction6)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_on_light3_v1"] = deviceAction6
+
+	deviceAction7 := &m.DeviceAction{
+		Name:     "turn off light3",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_off_light3_v1"].Id,
+	}
+	ok, _ = deviceAction7.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction7.Id, err = adaptors.DeviceAction.Add(deviceAction7)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_off_light3_v1"] = deviceAction7
+
+	// light4
+	deviceAction8 := &m.DeviceAction{
+		Name:     "turn on light4",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_on_light4_v1"].Id,
+	}
+	ok, _ = deviceAction8.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction8.Id, err = adaptors.DeviceAction.Add(deviceAction8)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_on_light4_v1"] = deviceAction8
+
+	deviceAction9 := &m.DeviceAction{
+		Name:     "turn off light4",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_off_light4_v1"].Id,
+	}
+	ok, _ = deviceAction9.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction9.Id, err = adaptors.DeviceAction.Add(deviceAction9)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_off_light4_v1"] = deviceAction9
+
+	// fan1
+	deviceAction10 := &m.DeviceAction{
+		Name:     "turn on fan1",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_on_fan1_v1"].Id,
+	}
+	ok, _ = deviceAction10.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction10.Id, err = adaptors.DeviceAction.Add(deviceAction10)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_on_fan1_v1"] = deviceAction10
+
+	deviceAction11 := &m.DeviceAction{
+		Name:     "turn off fan1",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_off_fan1_v1"].Id,
+	}
+	ok, _ = deviceAction11.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction11.Id, err = adaptors.DeviceAction.Add(deviceAction11)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_off_fan1_v1"] = deviceAction11
 
 
 	// states

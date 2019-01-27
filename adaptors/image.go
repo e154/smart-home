@@ -180,13 +180,15 @@ func (n *Image) fromDb(dbImage *db.Image) (image *m.Image) {
 	image = &m.Image{
 		Id:        dbImage.Id,
 		Thumb:     dbImage.Thumb,
-		Url:       common.GetLinkPath(image.Image),
 		Image:     dbImage.Image,
 		MimeType:  dbImage.MimeType,
 		Title:     dbImage.Title,
 		Size:      dbImage.Size,
 		Name:      dbImage.Name,
 		CreatedAt: dbImage.CreatedAt,
+	}
+	if image.Image != "" {
+		image.Url = common.GetLinkPath(image.Image)
 	}
 	return
 }

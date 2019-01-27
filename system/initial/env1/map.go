@@ -57,9 +57,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	mapLayer2.Id, err = adaptors.MapLayer.Add(mapLayer2)
 	So(err, ShouldBeNil)
 
-	// device
+	// light1
 	// ------------------------------------------------
-	//light1
 	devLight1 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT1",
 		DeviceId:   devices[0].Id,
@@ -103,7 +102,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	mapElementLight1.Id, err = adaptors.MapElement.Add(mapElementLight1)
 	So(err, ShouldBeNil)
 
-	//light2
+	// light2
+	// ------------------------------------------------
 	devLight2 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT2",
 		DeviceId:   devices[0].Id,
@@ -144,10 +144,36 @@ func addMaps(adaptors *adaptors.Adaptors,
 	So(ok, ShouldEqual, true)
 	mapElementLight2.Id, err = adaptors.MapElement.Add(mapElementLight2)
 	So(err, ShouldBeNil)
-	//light3
+
+	// light3
+	// ------------------------------------------------
 	devLight3 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT3",
 		DeviceId:   devices[0].Id,
+		States: []*m.MapDeviceState{
+			{
+				DeviceStateId: deviceStates["dev1_light3_on"].Id,
+				ImageId:       imageList["lamp_v1_y"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_light3_off"].Id,
+				ImageId:       imageList["lamp_v1_def"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["lamp_v1_r"].Id,
+			},
+		},
+		Actions: []*m.MapDeviceAction{
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_on_light3_v1"].Id,
+				ImageId:        imageList["button_v1_on"].Id,
+			},
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_off_light3_v1"].Id,
+				ImageId:        imageList["button_v1_off"].Id,
+			},
+		},
 	}
 	mapElementLight3 := &m.MapElement{
 		Name:          "dev1_light3",
@@ -161,10 +187,36 @@ func addMaps(adaptors *adaptors.Adaptors,
 	So(ok, ShouldEqual, true)
 	mapElementLight3.Id, err = adaptors.MapElement.Add(mapElementLight3)
 	So(err, ShouldBeNil)
-	//light4
+
+	// light4
+	// ------------------------------------------------
 	devLight4 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT4",
 		DeviceId:   devices[0].Id,
+		States: []*m.MapDeviceState{
+			{
+				DeviceStateId: deviceStates["dev1_light4_on"].Id,
+				ImageId:       imageList["lamp_v1_y"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_light4_off"].Id,
+				ImageId:       imageList["lamp_v1_def"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["lamp_v1_r"].Id,
+			},
+		},
+		Actions: []*m.MapDeviceAction{
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_on_light4_v1"].Id,
+				ImageId:        imageList["button_v1_on"].Id,
+			},
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_off_light4_v1"].Id,
+				ImageId:        imageList["button_v1_off"].Id,
+			},
+		},
 	}
 	mapElementLight4 := &m.MapElement{
 		Name:          "dev1_light4",
@@ -178,13 +230,39 @@ func addMaps(adaptors *adaptors.Adaptors,
 	So(ok, ShouldEqual, true)
 	mapElementLight4.Id, err = adaptors.MapElement.Add(mapElementLight4)
 	So(err, ShouldBeNil)
-	//fan5
+
+	// fan5
+	// ------------------------------------------------
 	devFan1 := &m.MapDevice{
 		SystemName: "DEV1_FAN1",
 		DeviceId:   devices[0].Id,
+		States: []*m.MapDeviceState{
+			{
+				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
+				ImageId:       imageList["lamp_v1_y"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_fan1_off"].Id,
+				ImageId:       imageList["lamp_v1_def"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["lamp_v1_r"].Id,
+			},
+		},
+		Actions: []*m.MapDeviceAction{
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_on_fan1_v1"].Id,
+				ImageId:        imageList["button_v1_on"].Id,
+			},
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_off_fan1_v1"].Id,
+				ImageId:        imageList["button_v1_off"].Id,
+			},
+		},
 	}
 	mapElementFan1 := &m.MapElement{
-		Name:          "dev1_fan5",
+		Name:          "dev1_fan1",
 		Prototype:     devFan1,
 		MapId:         map1.Id,
 		LayerId:       mapLayer2.Id,
@@ -194,6 +272,70 @@ func addMaps(adaptors *adaptors.Adaptors,
 	ok, _ = mapElementFan1.Valid()
 	So(ok, ShouldEqual, true)
 	mapElementFan1.Id, err = adaptors.MapElement.Add(mapElementFan1)
+	So(err, ShouldBeNil)
+
+	// temp1
+	// ------------------------------------------------
+	dev1Temp1 := &m.MapDevice{
+		SystemName: "DEV1_TEMP1",
+		DeviceId:   devices[0].Id,
+		States: []*m.MapDeviceState{
+			{
+				//TODO update temperature image
+				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
+				ImageId:       imageList["lamp_v1_y"].Id,
+			},
+			{
+				//TODO update temperature image
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["lamp_v1_r"].Id,
+			},
+		},
+	}
+	mapElementTemp1 := &m.MapElement{
+		Name:          "dev1_temp1",
+		Description:   "temperature sensor room1",
+		Prototype:     dev1Temp1,
+		MapId:         map1.Id,
+		LayerId:       mapLayer2.Id,
+		Status:        Enabled,
+		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+	}
+	ok, _ = mapElementTemp1.Valid()
+	So(ok, ShouldEqual, true)
+	mapElementTemp1.Id, err = adaptors.MapElement.Add(mapElementTemp1)
+	So(err, ShouldBeNil)
+
+	// temp2
+	// ------------------------------------------------
+	dev1Temp2 := &m.MapDevice{
+		SystemName: "DEV1_TEMP2",
+		DeviceId:   devices[0].Id,
+		States: []*m.MapDeviceState{
+			{
+				//TODO update temperature image
+				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
+				ImageId:       imageList["lamp_v1_y"].Id,
+			},
+			{
+				//TODO update temperature image
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["lamp_v1_r"].Id,
+			},
+		},
+	}
+	mapElementTemp2 := &m.MapElement{
+		Name:          "dev1_temp2",
+		Description:   "temperature sensor room2",
+		Prototype:     dev1Temp2,
+		MapId:         map1.Id,
+		LayerId:       mapLayer2.Id,
+		Status:        Enabled,
+		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+	}
+	ok, _ = mapElementTemp2.Valid()
+	So(ok, ShouldEqual, true)
+	mapElementTemp2.Id, err = adaptors.MapElement.Add(mapElementTemp2)
 	So(err, ShouldBeNil)
 
 	// map element text1
