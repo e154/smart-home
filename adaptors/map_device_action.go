@@ -19,6 +19,16 @@ func GetMapDeviceActionAdaptor(d *gorm.DB) *MapDeviceAction {
 	}
 }
 
+func (n *MapDeviceAction) Add(ver *m.MapDeviceAction) (id int64, err error) {
+
+	dbVer := n.toDb(ver)
+	if id, err = n.table.Add(dbVer); err != nil {
+		return
+	}
+
+	return
+}
+
 func (n *MapDeviceAction) AddMultiple(items []*m.MapDeviceAction) (err error) {
 
 	insertRecords := make([]interface{}, 0)

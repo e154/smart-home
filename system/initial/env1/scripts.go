@@ -38,13 +38,13 @@ func addScripts(adaptors *adaptors.Adaptors,
 
 	scripts["mb_dev1_condition_check_v1"] = script1
 
-	// mb_turn_on_first_light_v1
+	// mb_turn_on_light1_v1
 	// ------------------------------------------------
 	script2 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_on_first_light_v1",
-		Source:      MbDev1TurnOnFirstLightV1,
-		Description: "turn on first light",
+		Name:        "mb_dev1_turn_on_light1_v1",
+		Source:      MbDev1TurnOnLight1V1,
+		Description: "turn on light1",
 	}
 	ok, _ = script2.Valid()
 	So(ok, ShouldEqual, true)
@@ -58,15 +58,15 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script2, err = adaptors.Script.GetById(script2Id)
 	So(err, ShouldBeNil)
 
-	scripts["mb_dev1_turn_on_first_light_v1"] = script2
+	scripts["mb_dev1_turn_on_light1_v1"] = script2
 
-	// mb_turn_off_first_light_v1
+	// mb_turn_off_light1_v1
 	// ------------------------------------------------
 	script3 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_off_first_light_v1",
-		Source:      MbDev1TurnOffFirstLightV1,
-		Description: "turn off first light",
+		Name:        "mb_dev1_turn_off_light1_v1",
+		Source:      MbDev1TurnOffLight1V1,
+		Description: "turn off light1",
 	}
 	ok, _ = script3.Valid()
 	So(ok, ShouldEqual, true)
@@ -80,7 +80,51 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script3, err = adaptors.Script.GetById(script3Id)
 	So(err, ShouldBeNil)
 
-	scripts["mb_dev1_turn_off_first_light_v1"] = script3
+	scripts["mb_dev1_turn_off_light1_v1"] = script3
+
+	// mb_turn_on_light1_v1
+	// ------------------------------------------------
+	script8 := &m.Script{
+		Lang:        "coffeescript",
+		Name:        "mb_dev1_turn_on_light2_v1",
+		Source:      MbDev1TurnOnLight2V1,
+		Description: "turn on light2",
+	}
+	ok, _ = script8.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine8, err := scriptService.NewEngine(script8)
+	So(err, ShouldBeNil)
+	err = engine8.Compile()
+	So(err, ShouldBeNil)
+	script8Id, err := adaptors.Script.Add(script8)
+	So(err, ShouldBeNil)
+	script8, err = adaptors.Script.GetById(script8Id)
+	So(err, ShouldBeNil)
+
+	scripts["mb_dev1_turn_on_light2_v1"] = script8
+
+	// mb_turn_off_light1_v1
+	// ------------------------------------------------
+	script9 := &m.Script{
+		Lang:        "coffeescript",
+		Name:        "mb_dev1_turn_off_light2_v1",
+		Source:      MbDev1TurnOffLight2V1,
+		Description: "turn off light2",
+	}
+	ok, _ = script9.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine9, err := scriptService.NewEngine(script9)
+	So(err, ShouldBeNil)
+	err = engine9.Compile()
+	So(err, ShouldBeNil)
+	script9Id, err := adaptors.Script.Add(script9)
+	So(err, ShouldBeNil)
+	script9, err = adaptors.Script.GetById(script9Id)
+	So(err, ShouldBeNil)
+
+	scripts["mb_dev1_turn_off_light2_v1"] = script9
 
 	// cmd_condition_check_v1
 	// ------------------------------------------------
@@ -205,7 +249,7 @@ main =->
 
 main()
 `
-const MbDev1TurnOnFirstLightV1 = `
+const MbDev1TurnOnLight1V1 = `
 # turn on first light
 fetchStatus =->
     
@@ -226,11 +270,53 @@ main =->
 
 main()
 `
-const MbDev1TurnOffFirstLightV1 = `
+const MbDev1TurnOffLight1V1 = `
 # turn off first light
 fetchStatus =->
     
     res = device.modBus 'WriteMultipleRegisters', 0, 1, [0]
+    if res.error
+        print 'error: ', res.error
+    else
+        print 'ok: ', res.result
+
+main =->
+    
+    node = IC.CurrentNode()
+    dev = IC.CurrentDevice()
+    
+    return if !node || !dev
+    
+    fetchStatus()
+
+main()
+`
+const MbDev1TurnOnLight2V1 = `
+# turn on first light
+fetchStatus =->
+    
+    res = device.modBus 'WriteMultipleRegisters', 1, 1, [1]
+    if res.error
+        print 'error: ', res.error
+    else
+        print 'ok: ', res.result
+
+main =->
+    
+    node = IC.CurrentNode()
+    dev = IC.CurrentDevice()
+    
+    return if !node || !dev
+    
+    fetchStatus()
+
+main()
+`
+const MbDev1TurnOffLight2V1 = `
+# turn off first light
+fetchStatus =->
+    
+    res = device.modBus 'WriteMultipleRegisters', 1, 1, [0]
     if res.error
         print 'error: ', res.error
     else

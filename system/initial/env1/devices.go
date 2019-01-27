@@ -61,25 +61,50 @@ func devices(node1 *m.Node,
 	deviceAction2 := &m.DeviceAction{
 		Name:     "turn on light1",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_on_first_light_v1"].Id,
+		ScriptId: scripts["mb_dev1_turn_on_light1_v1"].Id,
 	}
 	ok, _ = deviceAction2.Valid()
 	So(ok, ShouldEqual, true)
 	deviceAction2.Id, err = adaptors.DeviceAction.Add(deviceAction2)
 	So(err, ShouldBeNil)
-	deviceActions["mb_dev1_turn_on_first_light_v1"] = deviceAction2
+	deviceActions["mb_dev1_turn_on_light1_v1"] = deviceAction2
 
 	// action3
 	deviceAction3 := &m.DeviceAction{
 		Name:     "turn off light1",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_off_first_light_v1"].Id,
+		ScriptId: scripts["mb_dev1_turn_off_light1_v1"].Id,
 	}
 	ok, _ = deviceAction3.Valid()
 	So(ok, ShouldEqual, true)
 	deviceAction3.Id, err = adaptors.DeviceAction.Add(deviceAction3)
 	So(err, ShouldBeNil)
-	deviceActions["mb_dev1_turn_off_first_light_v1"] = deviceAction3
+	deviceActions["mb_dev1_turn_off_light1_v1"] = deviceAction3
+
+	// action4
+	deviceAction4 := &m.DeviceAction{
+		Name:     "turn on light2",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_on_light2_v1"].Id,
+	}
+	ok, _ = deviceAction4.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction4.Id, err = adaptors.DeviceAction.Add(deviceAction4)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_on_light2_v1"] = deviceAction4
+
+	// action5
+	deviceAction5 := &m.DeviceAction{
+		Name:     "turn off light2",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_off_light2_v1"].Id,
+	}
+	ok, _ = deviceAction5.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction5.Id, err = adaptors.DeviceAction.Add(deviceAction5)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_off_light2_v1"] = deviceAction5
+
 
 	// states
 	stateDev1Enabled := &m.DeviceState{
@@ -196,6 +221,20 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 	stateDev1Fan1Off.Id, err = adaptors.DeviceState.Add(stateDev1Fan1Off)
 	So(err, ShouldBeNil)
+
+	deviceStates["dev1_enabled"] = stateDev1Enabled
+	deviceStates["dev1_disabled"] = stateDev1Disabled
+	deviceStates["dev1_error"] = stateDev1Error
+	deviceStates["dev1_light1_on"] = stateDev1Light1On
+	deviceStates["dev1_light1_off"] = stateDev1Light1Off
+	deviceStates["dev1_light2_on"] = stateDev1Light2On
+	deviceStates["dev1_light2_off"] = stateDev1Light2Off
+	deviceStates["dev1_light3_on"] = stateDev1Light3On
+	deviceStates["dev1_light3_off"] = stateDev1Light3Off
+	deviceStates["dev1_light4_on"] = stateDev1Light4On
+	deviceStates["dev1_light4_off"] = stateDev1Light4Off
+	deviceStates["dev1_fan1_on"] = stateDev1Fan1On
+	deviceStates["dev1_fan1_off"] = stateDev1Fan1Off
 
 	// device 2
 	// ------------------------------------------------

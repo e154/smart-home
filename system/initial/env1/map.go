@@ -65,11 +65,28 @@ func addMaps(adaptors *adaptors.Adaptors,
 		DeviceId:   devices[0].Id,
 		States: []*m.MapDeviceState{
 			{
-				DeviceStateId: devices[0].Id,
-				//ImageId: imageList[""]
+				DeviceStateId: deviceStates["dev1_light1_on"].Id,
+				ImageId:       imageList["lamp_v1_y"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_light1_off"].Id,
+				ImageId:       imageList["lamp_v1_def"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["lamp_v1_r"].Id,
 			},
 		},
-		Actions: []*m.MapDeviceAction{},
+		Actions: []*m.MapDeviceAction{
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_on_light1_v1"].Id,
+				ImageId:        imageList["button_v1_on"].Id,
+			},
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_off_light1_v1"].Id,
+				ImageId:        imageList["button_v1_off"].Id,
+			},
+		},
 	}
 
 	ok, _ = devLight1.Valid()
@@ -90,6 +107,30 @@ func addMaps(adaptors *adaptors.Adaptors,
 	devLight2 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT2",
 		DeviceId:   devices[0].Id,
+		States: []*m.MapDeviceState{
+			{
+				DeviceStateId: deviceStates["dev1_light2_on"].Id,
+				ImageId:       imageList["lamp_v1_y"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_light2_off"].Id,
+				ImageId:       imageList["lamp_v1_def"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["lamp_v1_r"].Id,
+			},
+		},
+		Actions: []*m.MapDeviceAction{
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_on_light2_v1"].Id,
+				ImageId:        imageList["button_v1_on"].Id,
+			},
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_off_light2_v1"].Id,
+				ImageId:        imageList["button_v1_off"].Id,
+			},
+		},
 	}
 	mapElementLight2 := &m.MapElement{
 		Name:          "dev1_light2",

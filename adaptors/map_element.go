@@ -35,13 +35,27 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 		if ver.PrototypeId, err = deviceAdaptor.Add(t); err != nil {
 			return
 		}
+
 		ver.PrototypeType = "device"
 		//actions
 		deviceAction := GetMapDeviceActionAdaptor(n.db)
-		deviceAction.AddMultiple(t.Actions)
+		//err = deviceAction.AddMultiple(t.Actions)
+		for _, action := range t.Actions {
+			action.MapDeviceId = ver.PrototypeId
+			if action.Id, err = deviceAction.Add(action); err != nil {
+				log.Error(err.Error())
+			}
+		}
+
 		//states
 		stateAdaptor := GetMapDeviceStateAdaptor(n.db)
-		stateAdaptor.AddMultiple(t.States)
+		//err = stateAdaptor.AddMultiple(t.States)
+		for _, state := range t.States {
+			state.MapDeviceId = ver.PrototypeId
+			if state.Id, err = stateAdaptor.Add(state); err != nil {
+				log.Error(err.Error())
+			}
+		}
 
 	default:
 		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
