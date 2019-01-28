@@ -209,3 +209,82 @@ func (c ControllerWorkflow) DeleteWorkflowById(ctx *gin.Context) {
 	resp := NewSuccess()
 	resp.Send(ctx)
 }
+
+// Workflow godoc
+// @tags workflow
+// @Summary Search workflow
+// @Description Search workflow by name
+// @Produce json
+// @Accept  json
+// @Param query query string false "query"
+// @Param limit query int true "limit" default(10)
+// @Param offset query int true "offset" default(0)
+// @Success 200 {object} models.SearchWorkflowResponse
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
+// @Router /workflow/search [Get]
+func (c ControllerWorkflow) Search(ctx *gin.Context) {
+
+	query, limit, offset := c.select2(ctx)
+	workflows, _, err := SearchWorkflow(query, limit, offset, c.adaptors)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Item("workflows", workflows)
+	resp.Send(ctx)
+}
+
+// Workflow godoc
+// @tags workflow
+// @Summary Update workflow scenario
+// @Description Update workflow by id
+// @Produce json
+// @Accept  json
+// @Param  id path int true "Workflow ID"
+// @Param  workflow scenario body models.WorkflowUpdateWorkflowScenario true "Update workflow scenario"
+// @Success 200 {object} models.ResponseSuccess
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
+// @Router /workflow/{id}/update_scenario [Put]
+func (c ControllerWorkflow) UpdateScenario(ctx *gin.Context) {
+
+	aid, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	workflow, err := c.adaptors.Workflow.GetById(int64(aid))
+	if err != nil {
+		log.Error(err.Error())
+		NewError(404, err).Send(ctx)
+		return
+	}
+
+	workflowScenario := &models.WorkflowUpdateWorkflowScenario{}
+	if err := ctx.ShouldBindJSON(&workflowScenario); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	err = UpdateWorkflowScenario(workflow, workflowScenario.WorkflowScenarioId, c.adaptors, c.core)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
+
+	return
+}

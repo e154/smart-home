@@ -54,7 +54,17 @@ func (s *Server) setControllers() {
 	v1.GET("/workflow/:id", s.af.Auth, s.ControllersV1.Workflow.GetWorkflowById)
 	v1.PUT("/workflow/:id", s.af.Auth, s.ControllersV1.Workflow.UpdateWorkflow)
 	v1.DELETE("/workflow/:id", s.af.Auth, s.ControllersV1.Workflow.DeleteWorkflowById)
-	v1.GET("/workflow", s.af.Auth, s.ControllersV1.Workflow.GetWorkflowList)
+	v1.GET("/workflows", s.af.Auth, s.ControllersV1.Workflow.GetWorkflowList)
+	v1.GET("/workflows/search", s.af.Auth, s.ControllersV1.Workflow.Search)
+	v1.PUT("/workflow/:id/update_scenario", s.af.Auth, s.ControllersV1.Workflow.UpdateScenario)
+
+	// workflow scenario
+	v1.GET("/workflow/:id/scenario/:scenario_id", s.af.Auth, s.ControllersV1.WorkflowScenario.GetWorkflowScenarioById)
+	v1.GET("/workflow/:id/scenarios", s.af.Auth, s.ControllersV1.WorkflowScenario.GetWorkflowScenarioList)
+	v1.POST("/workflow/:id/scenario", s.af.Auth, s.ControllersV1.WorkflowScenario.AddWorkflowScenario)
+	v1.PUT("/workflow/:id/scenario/:scenario_id", s.af.Auth, s.ControllersV1.WorkflowScenario.UpdateWorkflowScenario)
+	v1.DELETE("/workflow/:id/scenario/:scenario_id", s.af.Auth, s.ControllersV1.WorkflowScenario.DeleteWorkflowScenarioById)
+	v1.GET("/workflow/:id/scenarios/search", s.af.Auth, s.ControllersV1.WorkflowScenario.Search)
 
 	// device
 	v1.POST("/device", s.af.Auth, s.ControllersV1.Device.AddDevice)

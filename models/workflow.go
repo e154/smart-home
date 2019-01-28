@@ -10,7 +10,7 @@ type Workflow struct {
 	Name        string              `json:"name" valid:"MaxSize(254);Required"`
 	Description string              `json:"description"`
 	Status      string              `json:"status" valid:"Required"`
-	Flows       []*Flow             `orm:"-" json:"flows"`
+	Flows       []*Flow             `json:"flows"`
 	Scripts     []*Script           `json:"scripts"`
 	Scenario    *WorkflowScenario   `json:"scenario" valid:"Required"`
 	Scenarios   []*WorkflowScenario `json:"scenarios"`

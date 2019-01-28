@@ -33,3 +33,12 @@ type Image struct {
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type ImageListModel struct {
+	Items []Image `json:"items"`
+	Meta  struct {
+		Limit        int `json:"limit"`
+		Offset       int `json:"offset"`
+		ObjectsCount int `json:"objects_count"`
+	}
+}

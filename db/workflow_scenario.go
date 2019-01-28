@@ -68,6 +68,21 @@ func (n *WorkflowScenarios) List(limit, offset int64, orderBy, sort string) (lis
 	return
 }
 
+func (n *WorkflowScenarios) ListByWorkflow(workflowId int64) (list []*WorkflowScenario, total int64, err error) {
+
+	if err = n.Db.Model(WorkflowScenario{}).Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*WorkflowScenario, 0)
+	err = n.Db.
+		Where("workflow_id = ?", workflowId).
+		Find(&list).
+		Error
+
+	return
+}
+
 func (n *WorkflowScenarios) AddScript(workflowScenarioId, scriptId int64) (err error) {
 	err = n.Db.Create(&WorkflowScenarioScript{WorkflowScenarioId: workflowScenarioId, ScriptId: scriptId}).Error
 	return
@@ -75,5 +90,21 @@ func (n *WorkflowScenarios) AddScript(workflowScenarioId, scriptId int64) (err e
 
 func (n *WorkflowScenarios) RemoveScript(workflowScenarioId, scriptId int64) (err error) {
 	err = n.Db.Delete(&WorkflowScenarioScript{WorkflowScenarioId: workflowScenarioId, ScriptId: scriptId}).Error
+	return
+}
+
+func (n *WorkflowScenarios) Search(query string, limit, offset int) (list []*WorkflowScenario, total int64, err error) {
+
+	q := n.Db.Model(&WorkflowScenario{}).
+		Where("name LIKE ?", "%"+query+"%").
+		Order("name ASC")
+
+	if err = q.Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*WorkflowScenario, 0)
+	err = q.Find(&list).Error
+
 	return
 }

@@ -44,3 +44,11 @@ type ResponseWorkflowList struct {
 		Total  int64       `json:"total"`
 	} `json:"data"`
 }
+
+type SearchWorkflowResponse struct {
+	Workflows []Workflow `json:"workflows"`
+}
+
+type WorkflowUpdateWorkflowScenario struct {
+	WorkflowScenarioId int64 `json:"workflow_scenario_id"`
+}

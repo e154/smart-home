@@ -185,6 +185,22 @@ definitions:
       url:
         type: string
     type: object
+  models.ImageListModel:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.Image'
+        type: array
+      meta:
+        properties:
+          limit:
+            type: integer
+          objects_count:
+            type: integer
+          offset:
+            type: integer
+        type: object
+    type: object
   models.Map:
     properties:
       created_at:
@@ -261,6 +277,21 @@ definitions:
         $ref: '#/definitions/models.DeviceStateDevice'
         type: object
       system_name:
+        type: string
+    type: object
+  models.NewImage:
+    properties:
+      image:
+        type: string
+      mime_type:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+      thumb:
+        type: string
+      title:
         type: string
     type: object
   models.NewMap:
@@ -367,6 +398,15 @@ definitions:
         type: string
       status:
         type: string
+    type: object
+  models.NewWorkflowScenario:
+    properties:
+      name:
+        type: string
+      system_name:
+        type: string
+      workflow_id:
+        type: integer
     type: object
   models.Node:
     properties:
@@ -568,6 +608,20 @@ definitions:
           $ref: '#/definitions/models.Script'
         type: array
     type: object
+  models.SearchWorkflowResponse:
+    properties:
+      workflows:
+        items:
+          $ref: '#/definitions/models.Workflow'
+        type: array
+    type: object
+  models.SearchWorkflowScenarioResponse:
+    properties:
+      scenarios:
+        items:
+          $ref: '#/definitions/models.WorkflowScenario'
+        type: array
+    type: object
   models.UpdateDevice:
     properties:
       description:
@@ -608,6 +662,25 @@ definitions:
         $ref: '#/definitions/models.DeviceStateDevice'
         type: object
       system_name:
+        type: string
+    type: object
+  models.UpdateImage:
+    properties:
+      id:
+        type: integer
+      image:
+        type: string
+      mime_type:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+      thumb:
+        type: string
+      title:
+        type: string
+      url:
         type: string
     type: object
   models.UpdateMap:
@@ -872,6 +945,18 @@ definitions:
       updated_at:
         type: string
       workflow_id:
+        type: integer
+    type: object
+  models.WorkflowScenarioListModel:
+    properties:
+      scenarios:
+        items:
+          $ref: '#/definitions/models.WorkflowScenario'
+        type: array
+    type: object
+  models.WorkflowUpdateWorkflowScenario:
+    properties:
+      workflow_scenario_id:
         type: integer
     type: object
 host: '{{.Host}}'
@@ -1582,6 +1667,219 @@ paths:
       summary: Search device
       tags:
       - device
+  /image:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: image params
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewImage'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Image'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Add new image
+      tags:
+      - image
+  /image/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete image by id
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete image
+      tags:
+      - image
+    get:
+      consumes:
+      - application/json
+      description: Get image by id
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Image'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Show image
+      tags:
+      - image
+    put:
+      consumes:
+      - application/json
+      description: Update image by id
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update image
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateImage'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update image
+      tags:
+      - image
+  /images:
+    get:
+      consumes:
+      - application/json
+      description: Get image list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ImageListModel'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Image list
+      tags:
+      - image
   /map:
     post:
       consumes:
@@ -3334,6 +3632,365 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update workflow
+      tags:
+      - workflow
+  /workflow/{id}/scenario:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: workflow_scenario params
+        in: body
+        name: workflow_scenario
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewWorkflowScenario'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Add new workflow_scenario
+      tags:
+      - workflow_scenario
+  /workflow/{id}/scenario/{scenario_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete workflow_scenario by id
+      parameters:
+      - description: WorkflowScenario ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete workflow_scenario
+      tags:
+      - workflow_scenario
+    get:
+      consumes:
+      - application/json
+      description: Get workflow_scenario by id
+      parameters:
+      - description: WorkflowScenario ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WorkflowScenario'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Show workflow_scenario
+      tags:
+      - workflow_scenario
+    put:
+      consumes:
+      - application/json
+      description: Update workflow_scenario by id
+      parameters:
+      - description: WorkflowScenario ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update workflow_scenario
+        in: body
+        name: workflow_scenario
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkflowUpdateWorkflowScenario'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update workflow_scenario
+      tags:
+      - workflow_scenario
+  /workflow/{id}/scenarios:
+    get:
+      consumes:
+      - application/json
+      description: Get workflow_scenario list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WorkflowScenarioListModel'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: WorkflowScenario list
+      tags:
+      - workflow_scenario
+  /workflow/{id}/scenarios/search:
+    get:
+      consumes:
+      - application/json
+      description: Search workflow by name
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchWorkflowScenarioResponse'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Search workflow
+      tags:
+      - workflow
+  /workflow/{id}/update_scenario:
+    put:
+      consumes:
+      - application/json
+      description: Update workflow by id
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update workflow scenario
+        in: body
+        name: scenario
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkflowUpdateWorkflowScenario'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update workflow scenario
+      tags:
+      - workflow
+  /workflow/search:
+    get:
+      consumes:
+      - application/json
+      description: Search workflow by name
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchWorkflowResponse'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Search workflow
       tags:
       - workflow
 securityDefinitions:

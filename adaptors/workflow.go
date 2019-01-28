@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"errors"
+	"go/types"
 )
 
 type Workflow struct {
@@ -100,17 +101,34 @@ func (n *Workflow) RemoveScript(workflow *m.Workflow, script *m.Script) (err err
 }
 
 func (n *Workflow) SetScenario(workflow *m.Workflow, s interface{}) (err error) {
-	var scenarioId int64
+	var scenarioId *int64
 	switch x := s.(type) {
 	case int64:
-		scenarioId = x
+		scenarioId = &x
 	case *m.WorkflowScenario:
-		scenarioId = x.Id
+		scenarioId = &x.Id
+	case types.Nil:
+		scenarioId = nil
 	default:
 		err = errors.New("unknown scenario type")
 		return
 	}
 	err = n.table.SetScenario(workflow.Id, scenarioId)
+	return
+}
+
+func (n *Workflow) Search(query string, limit, offset int) (list []*m.Workflow, total int64, err error) {
+	var dbList []*db.Workflow
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Workflow, 0)
+	for _, dbWorkflow := range dbList {
+		ver := n.fromDb(dbWorkflow)
+		list = append(list, ver)
+	}
+
 	return
 }
 

@@ -82,3 +82,21 @@ func DeleteWorkflowById(workflowId int64, adaptors *adaptors.Adaptors, core *cor
 	return
 }
 
+func SearchWorkflow(query string, limit, offset int, adaptors *adaptors.Adaptors) (workflows []*m.Workflow, total int64, err error) {
+
+	workflows, total, err = adaptors.Workflow.Search(query, limit, offset)
+
+	return
+}
+
+func UpdateWorkflowScenario(workflow *m.Workflow, workflowScenarioId int64, adaptors *adaptors.Adaptors, core *core.Core) (err error) {
+
+	if err = adaptors.Workflow.SetScenario(workflow, workflowScenarioId); err != nil {
+		return
+	}
+
+	// update core
+	core.UpdateWorkflowScenario(workflow)
+
+	return
+}

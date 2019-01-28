@@ -66,6 +66,21 @@ func (n *WorkflowScenario) List(limit, offset int64, orderBy, sort string) (list
 	return
 }
 
+func (n *WorkflowScenario) ListByWorkflow(workflowId int64) (list []*m.WorkflowScenario, total int64, err error) {
+	var dbList []*db.WorkflowScenario
+	if dbList, total, err = n.table.ListByWorkflow(workflowId); err != nil {
+		return
+	}
+
+	list = make([]*m.WorkflowScenario, 0)
+	for _, dbWorkflowScenario := range dbList {
+		workflow := n.fromDb(dbWorkflowScenario)
+		list = append(list, workflow)
+	}
+
+	return
+}
+
 func (n *WorkflowScenario) AddScript(workflowScenario *m.WorkflowScenario, script *m.Script) (err error) {
 	err = n.table.AddScript(workflowScenario.Id, script.Id)
 	return
@@ -73,6 +88,21 @@ func (n *WorkflowScenario) AddScript(workflowScenario *m.WorkflowScenario, scrip
 
 func (n *WorkflowScenario) RemoveScript(workflowScenario *m.WorkflowScenario, script *m.Script) (err error) {
 	err = n.table.RemoveScript(workflowScenario.Id, script.Id)
+	return
+}
+
+func (n *WorkflowScenario) Search(query string, limit, offset int) (list []*m.WorkflowScenario, total int64, err error) {
+	var dbList []*db.WorkflowScenario
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.WorkflowScenario, 0)
+	for _, dbVer := range dbList {
+		ver := n.fromDb(dbVer)
+		list = append(list, ver)
+	}
+
 	return
 }
 

@@ -172,9 +172,25 @@ func (n *Workflows) RemoveScript(workflowId, scriptId int64) (err error) {
 	return
 }
 
-func (n *Workflows) SetScenario(workflowId, scenarioId int64) (err error) {
+func (n *Workflows) SetScenario(workflowId int64, scenarioId *int64) (err error) {
 	err = n.Db.Model(&Workflow{Id: workflowId}).Updates(map[string]interface{}{
 		"workflow_scenario_id": scenarioId,
 	}).Error
+	return
+}
+
+func (n *Workflows) Search(query string, limit, offset int) (list []*Workflow, total int64, err error) {
+
+	q := n.Db.Model(&Workflow{}).
+		Where("name LIKE ?", "%"+query+"%").
+		Order("name ASC")
+
+	if err = q.Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*Workflow, 0)
+	err = q.Find(&list).Error
+
 	return
 }

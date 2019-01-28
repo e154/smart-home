@@ -8,19 +8,20 @@ import (
 )
 
 type ControllersV1 struct {
-	Index        *ControllerIndex
-	Node         *ControllerNode
-	Swagger      *ControllerSwagger
-	Script       *ControllerScript
-	Workflow     *ControllerWorkflow
-	Device       *ControllerDevice
-	Role         *ControllerRole
-	User         *ControllerUser
-	Auth         *ControllerAuth
-	DeviceAction *ControllerDeviceAction
-	DeviceState  *ControllerDeviceState
-	Map          *ControllerMap
-	Image        *ControllerImage
+	Index            *ControllerIndex
+	Node             *ControllerNode
+	Swagger          *ControllerSwagger
+	Script           *ControllerScript
+	Workflow         *ControllerWorkflow
+	Device           *ControllerDevice
+	Role             *ControllerRole
+	User             *ControllerUser
+	Auth             *ControllerAuth
+	DeviceAction     *ControllerDeviceAction
+	DeviceState      *ControllerDeviceState
+	Map              *ControllerMap
+	Image            *ControllerImage
+	WorkflowScenario *ControllerWorkflowScenario
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -29,18 +30,19 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 	accessList *access_list.AccessListService) *ControllersV1 {
 	common := NewControllerCommon(adaptors, core, accessList)
 	return &ControllersV1{
-		Index:        NewControllerIndex(common),
-		Node:         NewControllerNode(common),
-		Swagger:      NewControllerSwagger(common),
-		Script:       NewControllerScript(common, scriptService),
-		Workflow:     NewControllerWorkflow(common),
-		Device:       NewControllerDevice(common),
-		Role:         NewControllerRole(common),
-		User:         NewControllerUser(common),
-		Auth:         NewControllerAuth(common),
-		DeviceAction: NewControllerDeviceAction(common),
-		DeviceState:  NewControllerDeviceState(common),
-		Map:          NewControllerMap(common),
-		Image:        NewControllerImage(common),
+		Index:            NewControllerIndex(common),
+		Node:             NewControllerNode(common),
+		Swagger:          NewControllerSwagger(common),
+		Script:           NewControllerScript(common, scriptService),
+		Workflow:         NewControllerWorkflow(common),
+		Device:           NewControllerDevice(common),
+		Role:             NewControllerRole(common),
+		User:             NewControllerUser(common),
+		Auth:             NewControllerAuth(common),
+		DeviceAction:     NewControllerDeviceAction(common),
+		DeviceState:      NewControllerDeviceState(common),
+		Map:              NewControllerMap(common),
+		Image:            NewControllerImage(common),
+		WorkflowScenario: NewControllerWorkflowScenario(common),
 	}
 }
