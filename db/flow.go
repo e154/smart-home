@@ -16,6 +16,7 @@ type Flow struct {
 	Name               string
 	Description        string
 	Status             StatusType
+	Workflow           *Workflow
 	WorkflowId         int64
 	WorkflowScenarioId int64
 	Connections        []*Connection
@@ -145,10 +146,12 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 	flow.Connections = make([]*Connection, 0)
 	flow.FlowElements = make([]*FlowElement, 0)
 	flow.Workers = make([]*Worker, 0)
+	flow.Workflow = &Workflow{}
 
 	n.Db.Model(flow).
 		Related(&flow.Connections).
-		Related(&flow.FlowElements)
+		Related(&flow.FlowElements).
+		Related(&flow.Workflow)
 
 	// scripts
 	var scriptIds []int64

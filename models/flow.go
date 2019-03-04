@@ -11,6 +11,7 @@ type Flow struct {
 	Name               string         `json:"name" valid:"MaxSize(254);Required"`
 	Description        string         `json:"description" valid:"MaxSize(254)"`
 	Status             StatusType     `json:"status" valid:"Required"`
+	Workflow           *Workflow      `json:"workflow"`
 	WorkflowId         int64          `json:"workflow_id" valid:"Required"`
 	WorkflowScenarioId int64          `json:"workflow_scenario_id" valid:"Required"`
 	Connections        []*Connection  `json:"connections"`

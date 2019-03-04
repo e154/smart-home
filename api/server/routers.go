@@ -128,7 +128,7 @@ func (s *Server) setControllers() {
 	//v1.GET("/flow/:id/full", s.af.Auth, s.ControllersV1.Flow.GetFull)
 	//v1.GET("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.GetOneRedactor)
 	//v1.PUT("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.UpdateRedactor)
-	v1.GET("/flow", s.af.Auth, s.ControllersV1.Flow.GetFlowList)
+	v1.GET("/flows", s.af.Auth, s.ControllersV1.Flow.GetFlowList)
 	v1.POST("/flow", s.af.Auth, s.ControllersV1.Flow.AddFlow)
 	v1.PUT("/flow/:id", s.af.Auth, s.ControllersV1.Flow.UpdateFlow)
 	v1.DELETE("/flow/:id", s.af.Auth, s.ControllersV1.Flow.DeleteFlowById)

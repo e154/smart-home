@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 )
 
 type ControllerFlow struct {
@@ -89,8 +90,15 @@ func (c ControllerFlow) UpdateFlow(ctx *gin.Context) {
 // @Security ApiKeyAuth
 func (c ControllerFlow) GetFlowList(ctx *gin.Context) {
 
+	_, sortBy, order, limit, offset := c.list(ctx)
+	items, total, err := GetFlowList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.Page(limit, offset, total, items).Send(ctx)
 }
 
 // Flow godoc

@@ -114,6 +114,7 @@ func (n *Flow) GetAllEnabledByWorkflow(workflowId int64) (list []*m.Flow, err er
 }
 
 func (n *Flow) fromDb(dbFlow *db.Flow) (flow *m.Flow) {
+
 	flow = &m.Flow{
 		Id:                 dbFlow.Id,
 		Name:               dbFlow.Name,
@@ -121,9 +122,26 @@ func (n *Flow) fromDb(dbFlow *db.Flow) (flow *m.Flow) {
 		Description:        dbFlow.Description,
 		WorkflowId:         dbFlow.WorkflowId,
 		WorkflowScenarioId: dbFlow.WorkflowScenarioId,
+		Workers:            make([]*m.Worker, 0),
 		CreatedAt:          dbFlow.CreatedAt,
 		UpdatedAt:          dbFlow.UpdatedAt,
 	}
+
+	// workflow
+	if dbFlow.Workflow != nil {
+		workflowAdaptor := GetWorkflowAdaptor(n.db)
+		flow.Workflow = workflowAdaptor.fromDb(dbFlow.Workflow)
+	}
+
+	// workers
+	if dbFlow.Workers != nil {
+		workerAdaptor := GetWorkerAdaptor(n.db)
+		for _, dbWorker := range dbFlow.Workers {
+			worker := workerAdaptor.fromDb(dbWorker)
+			flow.Workers = append(flow.Workers, worker)
+		}
+	}
+
 	return
 }
 
