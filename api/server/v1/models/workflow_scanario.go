@@ -19,10 +19,11 @@ type NewWorkflowScenario struct {
 }
 
 type UpdateWorkflowScenario struct {
-	Id         int64  `json:"id"`
-	Name       string `json:"name"`
-	SystemName string `json:"system_name"`
-	WorkflowId int64  `json:"workflow_id"`
+	Id         int64     `json:"id"`
+	Name       string    `json:"name"`
+	SystemName string    `json:"system_name"`
+	WorkflowId int64     `json:"workflow_id"`
+	Scripts    []*Script `json:"scripts"`
 }
 
 type WorkflowScenarioListModel struct {

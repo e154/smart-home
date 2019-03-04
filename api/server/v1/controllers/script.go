@@ -256,6 +256,38 @@ func (c ControllerScript) Exec(ctx *gin.Context) {
 
 // Script godoc
 // @tags script
+// @Summary Execute script
+// @Description Execute script by id
+// @Produce json
+// @Accept  json
+// @Param  script body models.ExecScript true "Exec script"
+// @Success 200 {object} models.ResponseScriptExec
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
+// @Router /script/{id}/exec_src [Post]
+func (c ControllerScript) ExecSrc(ctx *gin.Context) {
+
+	script := &m.Script{}
+	if err := ctx.ShouldBindJSON(script); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	result, err := ExecuteSourceScript(script, c.scriptService)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Item("result", result).Send(ctx)
+}
+
+// Script godoc
+// @tags script
 // @Summary Search device
 // @Description Search device by name
 // @Produce json

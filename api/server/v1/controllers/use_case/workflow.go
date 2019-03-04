@@ -23,6 +23,9 @@ func AddWorkflow(workflow *m.Workflow, adaptors *adaptors.Adaptors, core *core.C
 	workflow.Id = id
 
 	// add workflow
+	if workflow, err = adaptors.Workflow.GetById(workflow.Id); err != nil {
+		return
+	}
 	err = core.AddWorkflow(workflow)
 
 	return
@@ -48,6 +51,9 @@ func UpdateWorkflow(workflow *m.Workflow, adaptors *adaptors.Adaptors, core *cor
 	}
 
 	// reload workflow
+	if workflow, err = adaptors.Workflow.GetById(workflow.Id); err != nil {
+		return
+	}
 	err = core.UpdateWorkflow(workflow)
 
 	return
@@ -96,6 +102,9 @@ func UpdateWorkflowScenario(workflow *m.Workflow, workflowScenarioId int64, adap
 	}
 
 	// update core
+	if workflow, err = adaptors.Workflow.GetById(workflow.Id); err != nil {
+		return
+	}
 	core.UpdateWorkflowScenario(workflow)
 
 	return

@@ -44,22 +44,6 @@ func (n *Flow) GetAllEnabled() (list []*m.Flow, err error) {
 	return
 }
 
-func (n *Flow) GetAllEnabledByWorkflow(workflowId int64) (list []*m.Flow, err error) {
-
-	var dbList []*db.Flow
-	if dbList, err = n.table.GetAllEnabledByWorkflow(workflowId); err != nil {
-		return
-	}
-
-	list = make([]*m.Flow, 0)
-	for _, dbFlow := range dbList {
-		flow := n.fromDb(dbFlow)
-		list = append(list, flow)
-	}
-
-	return
-}
-
 func (n *Flow) GetById(flowId int64) (flow *m.Flow, err error) {
 
 	var dbFlow *db.Flow
@@ -98,6 +82,37 @@ func (n *Flow) List(limit, offset int64, orderBy, sort string) (list []*m.Flow, 
 	return
 }
 
+func (n *Flow) Search(query string, limit, offset int) (list []*m.Flow, total int64, err error) {
+	var dbList []*db.Flow
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Flow, 0)
+	for _, dbFlow := range dbList {
+		flow := n.fromDb(dbFlow)
+		list = append(list, flow)
+	}
+
+	return
+}
+
+func (n *Flow) GetAllEnabledByWorkflow(workflowId int64) (list []*m.Flow, err error) {
+
+	var dbList []*db.Flow
+	if dbList, err = n.table.GetAllEnabledByWorkflow(workflowId); err != nil {
+		return
+	}
+
+	list = make([]*m.Flow, 0)
+	for _, dbFlow := range dbList {
+		flow := n.fromDb(dbFlow)
+		list = append(list, flow)
+	}
+
+	return
+}
+
 func (n *Flow) fromDb(dbFlow *db.Flow) (flow *m.Flow) {
 	flow = &m.Flow{
 		Id:                 dbFlow.Id,
@@ -106,34 +121,9 @@ func (n *Flow) fromDb(dbFlow *db.Flow) (flow *m.Flow) {
 		Description:        dbFlow.Description,
 		WorkflowId:         dbFlow.WorkflowId,
 		WorkflowScenarioId: dbFlow.WorkflowScenarioId,
-		Connections:        make([]*m.Connection, 0),
-		FlowElements:       make([]*m.FlowElement, 0),
-		Workers:            make([]*m.Worker, 0),
 		CreatedAt:          dbFlow.CreatedAt,
 		UpdatedAt:          dbFlow.UpdatedAt,
 	}
-
-	// connections
-	connectionAdaptor := GetConnectionAdaptor(n.db)
-	for _, dbConn := range dbFlow.Connections {
-		conn := connectionAdaptor.fromDb(dbConn)
-		flow.Connections = append(flow.Connections, conn)
-	}
-
-	// flow elements
-	flowElementAdaptor := GetFlowElementAdaptor(n.db)
-	for _, dbElement := range dbFlow.FlowElements {
-		element := flowElementAdaptor.fromDb(dbElement)
-		flow.FlowElements = append(flow.FlowElements, element)
-	}
-
-	// workers
-	workerAdaptor := GetWorkerAdaptor(n.db)
-	for _, dbWorker := range dbFlow.Workers {
-		worker := workerAdaptor.fromDb(dbWorker)
-		flow.Workers = append(flow.Workers, worker)
-	}
-
 	return
 }
 
@@ -143,8 +133,8 @@ func (n *Flow) toDb(flow *m.Flow) (dbFlow *db.Flow) {
 		Name:               flow.Name,
 		Status:             flow.Status,
 		Description:        flow.Description,
-		WorkflowScenarioId: flow.WorkflowScenarioId,
 		WorkflowId:         flow.WorkflowId,
+		WorkflowScenarioId: flow.WorkflowScenarioId,
 	}
 	return
 }

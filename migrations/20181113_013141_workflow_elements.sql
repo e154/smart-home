@@ -10,7 +10,7 @@ CREATE TABLE flows (
   description          Text                     NULL,
   status               flows_status             NOT NULL DEFAULT 'enabled',
   workflow_id          BIGINT CONSTRAINT flows_2_workflows_fk REFERENCES workflows (id) on update cascade on delete cascade,
-  workflow_scenario_id BIGINT CONSTRAINT flows_2_workflow_scenarios_fk REFERENCES workflow_scenarios (id) on update cascade on delete cascade,
+  workflow_scenario_id BIGINT CONSTRAINT flows_2_workflow_scenarios_fk REFERENCES workflow_scenarios (id) on update cascade on delete restrict,
   created_at           timestamp with time zone,
   updated_at           timestamp with time zone null
 );

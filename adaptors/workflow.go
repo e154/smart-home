@@ -60,7 +60,12 @@ func (n *Workflow) GetById(workflowId int64) (workflow *m.Workflow, err error) {
 
 func (n *Workflow) Update(workflow *m.Workflow) (err error) {
 	dbWorkflow := n.toDb(workflow)
-	err = n.table.Update(dbWorkflow)
+	if err = n.table.Update(dbWorkflow); err != nil {
+		return
+	}
+
+	err = n.UpdateScripts(workflow)
+
 	return
 }
 
@@ -97,6 +102,45 @@ func (n *Workflow) AddScript(workflow *m.Workflow, script *m.Script) (err error)
 
 func (n *Workflow) RemoveScript(workflow *m.Workflow, script *m.Script) (err error) {
 	err = n.table.RemoveScript(workflow.Id, script.Id)
+	return
+}
+
+func (n *Workflow) UpdateScripts(wf *m.Workflow) (err error) {
+
+	var dbWf *db.Workflow
+	dbWf, err = n.table.GetById(wf.Id)
+	if err != nil {
+		return
+	}
+
+	var exist bool
+	for _, s1 := range wf.Scripts {
+		exist = false
+		for _, s2 := range dbWf.Scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			n.AddScript(wf, s1)
+		}
+	}
+
+	for _, s1 := range dbWf.Scripts {
+		exist = false
+		for _, s2 := range wf.Scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			n.RemoveScript(wf, &m.Script{Id: s1.Id})
+
+		}
+	}
+
 	return
 }
 

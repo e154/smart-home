@@ -20,6 +20,13 @@ type UpdateScript struct {
 	Description string     `json:"description"`
 }
 
+type ExecScript struct {
+	Lang        ScriptLang `json:"lang"`
+	Name        string     `json:"name"`
+	Source      string     `json:"source"`
+	Description string     `json:"description"`
+}
+
 type Script struct {
 	Id          int64      `json:"id"`
 	Lang        ScriptLang `json:"lang"`

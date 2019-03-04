@@ -42,7 +42,12 @@ func (n *WorkflowScenario) GetById(workflowId int64) (workflow *m.WorkflowScenar
 
 func (n *WorkflowScenario) Update(workflow *m.WorkflowScenario) (err error) {
 	dbWorkflowScenario := n.toDb(workflow)
-	err = n.table.Update(dbWorkflowScenario)
+	if err = n.table.Update(dbWorkflowScenario); err != nil {
+		return
+	}
+
+	err = n.UpdateScripts(workflow)
+
 	return
 }
 
@@ -88,6 +93,45 @@ func (n *WorkflowScenario) AddScript(workflowScenario *m.WorkflowScenario, scrip
 
 func (n *WorkflowScenario) RemoveScript(workflowScenario *m.WorkflowScenario, script *m.Script) (err error) {
 	err = n.table.RemoveScript(workflowScenario.Id, script.Id)
+	return
+}
+
+func (n *WorkflowScenario) UpdateScripts(wf *m.WorkflowScenario) (err error) {
+
+	var dbWf *db.WorkflowScenario
+	dbWf, err = n.table.GetById(wf.Id)
+	if err != nil {
+		return
+	}
+
+	var exist bool
+	for _, s1 := range wf.Scripts {
+		exist = false
+		for _, s2 := range dbWf.Scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			n.AddScript(wf, s1)
+		}
+	}
+
+	for _, s1 := range dbWf.Scripts {
+		exist = false
+		for _, s2 := range wf.Scripts {
+			if s1.Id == s2.Id {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			n.RemoveScript(wf, &m.Script{Id: s1.Id})
+
+		}
+	}
+
 	return
 }
 

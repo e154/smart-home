@@ -125,6 +125,22 @@ func (n *Flows) List(limit, offset int64, orderBy, sort string) (list []*Flow, t
 	return
 }
 
+func (n *Flows) Search(query string, limit, offset int) (list []*Flow, total int64, err error) {
+
+	q := n.Db.Model(&Flow{}).
+		Where("name LIKE ?", "%"+query+"%").
+		Order("name ASC")
+
+	if err = q.Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*Flow, 0)
+	err = q.Find(&list).Error
+
+	return
+}
+
 func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 	flow.Connections = make([]*Connection, 0)
 	flow.FlowElements = make([]*FlowElement, 0)

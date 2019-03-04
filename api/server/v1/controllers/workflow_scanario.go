@@ -6,6 +6,7 @@ import (
 	"github.com/e154/smart-home/api/server/v1/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/copier"
 )
 
 type ControllerWorkflowScenario struct {
@@ -138,6 +139,15 @@ func (c ControllerWorkflowScenario) UpdateWorkflowScenario(ctx *gin.Context) {
 		Name:       params.Name,
 		WorkflowId: int64(workflowId),
 		SystemName: params.SystemName,
+		Scripts:    make([]*m.Script, 0),
+	}
+
+	for _, s := range params.Scripts {
+		script := &m.Script{}
+		if err = copier.Copy(&script, &s); err != nil {
+			log.Error(err.Error())
+		}
+		workflowScenario.Scripts = append(workflowScenario.Scripts, script)
 	}
 
 	_, errs, err := WorkflowUpdateWorkflowScenario(workflowScenario, c.adaptors)

@@ -75,7 +75,6 @@ func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Scrip
 
 func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total int64, err error) {
 
-	fmt.Println(query)
 	q := n.Db.Model(&Script{}).
 		Where("name LIKE ?", "%"+query+"%").
 		Order("name ASC")

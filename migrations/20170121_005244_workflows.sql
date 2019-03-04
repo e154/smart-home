@@ -38,7 +38,7 @@ CREATE UNIQUE INDEX system_name_2_workflow_scenarios_unq
 
 CREATE TABLE workflow_scenario_scripts (
   id                   bigserial not null constraint workflow_scenario_scripts_pkey primary key,
-  workflow_scenario_id BIGINT CONSTRAINT workflow_scenarios_2_workflows_fk REFERENCES workflow_scenarios (id) on update cascade on delete cascade,
+  workflow_scenario_id BIGINT CONSTRAINT workflow_scenarios_2_workflows_fk REFERENCES workflow_scenarios (id) on update cascade on delete restrict,
   script_id            BIGINT CONSTRAINT script_scenarios_2_scripts_fk REFERENCES scripts (id) on update cascade on delete cascade
 );
 

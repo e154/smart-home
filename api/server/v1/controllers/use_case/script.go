@@ -129,6 +129,22 @@ func ExecuteScript(scriptId int64, adaptors *adaptors.Adaptors, core *core.Core,
 	return
 }
 
+func ExecuteSourceScript(script *m.Script, scriptService *scripts.ScriptService) (result string, err error) {
+
+	var engine *scripts.Engine
+	if engine, err = scriptService.NewEngine(script); err != nil {
+		return
+	}
+
+	if err = engine.Compile(); err != nil {
+		return
+	}
+
+	result, err = engine.DoFull()
+
+	return
+}
+
 func SearchScript(query string, limit, offset int, adaptors *adaptors.Adaptors) (devices []*m.Script, total int64, err error) {
 
 	devices, total, err = adaptors.Script.Search(query, limit, offset)

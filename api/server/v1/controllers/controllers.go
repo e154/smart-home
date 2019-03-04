@@ -22,6 +22,7 @@ type ControllersV1 struct {
 	Map              *ControllerMap
 	Image            *ControllerImage
 	WorkflowScenario *ControllerWorkflowScenario
+	Flow             *ControllerFlow
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -44,5 +45,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Map:              NewControllerMap(common),
 		Image:            NewControllerImage(common),
 		WorkflowScenario: NewControllerWorkflowScenario(common),
+		Flow:             NewControllerFlow(common),
 	}
 }

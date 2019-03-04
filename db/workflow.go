@@ -168,7 +168,7 @@ func (n *Workflows) AddScript(workflowId, scriptId int64) (err error) {
 }
 
 func (n *Workflows) RemoveScript(workflowId, scriptId int64) (err error) {
-	err = n.Db.Delete(&WorkflowScripts{WorkflowId: workflowId, ScriptId: scriptId}).Error
+	err = n.Db.Delete(&WorkflowScripts{}, "workflow_id = ? and script_id = ?", workflowId, scriptId).Error
 	return
 }
 

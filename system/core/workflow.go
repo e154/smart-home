@@ -7,6 +7,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/scripts"
 	cr "github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/common"
 )
 
 type Workflow struct {
@@ -247,14 +248,13 @@ func (wf *Workflow) UpdateScenario() (err error) {
 
 func (wf *Workflow) runScenarioScripts(scenario *m.WorkflowScenario, f string) (err error) {
 
-	var script *scripts.Engine
 	for _, scenarioScript := range scenario.Scripts {
 
-		if script, err = wf.NewScript(scenarioScript); err != nil {
+		if err = wf.engine.EvalString(scenarioScript.Compiled); err != nil {
 			log.Errorf("compile script %d, message: %s", scenarioScript.Id, err.Error())
 		}
 
-		if _, err = script.DoCustom(f); err != nil {
+		if _, err = wf.engine.DoCustom(f); err != nil {
 			log.Errorf("on run script %s scenario, message: %s", f, err.Error())
 		}
 	}
@@ -268,27 +268,14 @@ func (wf *Workflow) runScenarioScripts(scenario *m.WorkflowScenario, f string) (
 
 func (wf *Workflow) runScripts() (err error) {
 
-	var engine *scripts.Engine
-	for _, scenarioScript := range wf.model.Scripts {
-		if engine, err = wf.NewScript(scenarioScript); err != nil {
-			continue
-		}
-
-		if _, err = engine.DoFull(); err != nil {
-			log.Errorf("on run script %s", err.Error())
-		}
+	dummy := &m.Script{
+		Lang: common.ScriptLangJavascript,
 	}
-
-	return
-}
-
-func (wf *Workflow) NewScript(model *m.Script) (script *scripts.Engine, err error) {
-
-	if script, err = wf.scripts.NewEngine(model); err != nil {
+	if wf.engine, err = wf.scripts.NewEngine(dummy); err != nil {
 		return
 	}
 
-	javascript := script.Get().(*scripts.Javascript)
+	javascript := wf.engine.Get().(*scripts.Javascript)
 	ctx := javascript.Ctx()
 	if b := ctx.GetGlobalString("IC"); !b {
 		return
@@ -300,5 +287,18 @@ func (wf *Workflow) NewScript(model *m.Script) (script *scripts.Engine, err erro
 	ctx.PutPropString(-3, "Workflow")
 	ctx.Pop()
 
+	for _, wfScript := range wf.model.Scripts {
+		if err = wf.engine.EvalString(wfScript.Compiled); err != nil {
+			log.Errorf(err.Error())
+		}
+	}
+
 	return
+}
+
+func (wf *Workflow) NewScript(model *m.Script) *scripts.Engine {
+
+	wf.engine.EvalString(model.Compiled)
+
+	return wf.engine
 }

@@ -23,6 +23,9 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 	workflow1.Id, err = adaptors.Workflow.Add(workflow1)
 	So(err, ShouldBeNil)
 
+	err = adaptors.Workflow.AddScript(workflow1, scripts["wflow_script_v1"])
+	So(err, ShouldBeNil)
+
 	// add workflow scenario
 	// ------------------------------------------------
 	wfScenario1 := &m.WorkflowScenario{

@@ -4,6 +4,7 @@ import (
 	"time"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"database/sql"
 )
 
 type WorkflowScenarios struct {
@@ -34,7 +35,11 @@ func (n WorkflowScenarios) Add(scenario *WorkflowScenario) (id int64, err error)
 
 func (n WorkflowScenarios) GetById(workflowId int64) (scenario *WorkflowScenario, err error) {
 	scenario = &WorkflowScenario{Id: workflowId}
-	err = n.Db.First(&scenario).Error
+	if err = n.Db.First(&scenario).Error; err != nil {
+		return
+	}
+
+	err = n.DependencyLoading(scenario)
 	return
 }
 
@@ -89,7 +94,7 @@ func (n *WorkflowScenarios) AddScript(workflowScenarioId, scriptId int64) (err e
 }
 
 func (n *WorkflowScenarios) RemoveScript(workflowScenarioId, scriptId int64) (err error) {
-	err = n.Db.Delete(&WorkflowScenarioScript{WorkflowScenarioId: workflowScenarioId, ScriptId: scriptId}).Error
+	err = n.Db.Delete(&WorkflowScenarioScript{}, "workflow_scenario_id = ? and script_id = ?", workflowScenarioId, scriptId).Error
 	return
 }
 
@@ -105,6 +110,30 @@ func (n *WorkflowScenarios) Search(query string, limit, offset int) (list []*Wor
 
 	list = make([]*WorkflowScenario, 0)
 	err = q.Find(&list).Error
+
+	return
+}
+
+func (n *WorkflowScenarios) DependencyLoading(scenario *WorkflowScenario) (err error) {
+
+	var rows *sql.Rows
+
+	scenario.Scripts = make([]*Script, 0)
+	rows, err = n.Db.Model(&WorkflowScenarioScript{}).
+		Where("workflow_scenario_scripts.workflow_scenario_id = ?", scenario.Id).
+		Joins("left join scripts s on workflow_scenario_scripts.script_id = s.id").
+		Select("s.id, s.lang, s.name, s.source, s.description, s.compiled, s.created_at, s.updated_at").
+		Rows()
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		s := &Script{}
+		rows.Scan(&s.Id, &s.Lang, &s.Name, &s.Source, &s.Description, &s.Compiled, &s.CreatedAt, &s.UpdatedAt)
+		scenario.Scripts = append(scenario.Scripts, s)
+	}
 
 	return
 }

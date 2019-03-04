@@ -327,9 +327,7 @@ func (f *Flow) NewScript(s ...*m.Script) (engine *scripts.Engine, err error) {
 		model = s[0]
 	}
 
-	if engine, err = f.workflow.NewScript(model); err != nil {
-		return
-	}
+	engine = f.workflow.NewScript(model)
 
 	javascript := engine.Get().(*scripts.Javascript)
 	ctx := javascript.Ctx()

@@ -336,6 +336,28 @@ func addScripts(adaptors *adaptors.Adaptors,
 
 	scripts["base_script"] = script6
 
+	// workflow1
+	// ------------------------------------------------
+	script16 := &m.Script{
+		Lang:        "coffeescript",
+		Name:        "wflow_script_v1",
+		Source:      WflowScriptV1,
+		Description: "workflow script",
+	}
+	ok, _ = script16.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine16, err := scriptService.NewEngine(script16)
+	So(err, ShouldBeNil)
+	err = engine16.Compile()
+	So(err, ShouldBeNil)
+	script16Id, err := adaptors.Script.Add(script16)
+	So(err, ShouldBeNil)
+	script16, err = adaptors.Script.GetById(script16Id)
+	So(err, ShouldBeNil)
+
+	scripts["wflow_script_v1"] = script16
+
 	return
 }
 
@@ -610,15 +632,11 @@ const WflowScenarioWeekdayV1 = `
 #
 
 on_enter =->
-    print 'on enter'
+    scenario = 'weekday'
+    print WFLOW_VAR1, 'scenario', scenario
+    IC.Workflow().setVar 'scenario', scenario
 
 on_exit =->
-    print 'on exit'
-    
-main =->
-    scenario = 'weekday'
-    print 'scenario', scenario
-    IC.Workflow().setVar 'scenario', scenario
     
 `
 
@@ -638,18 +656,34 @@ const WflowScenarioWeekendV1 = `
 #
 
 on_enter =->
-    print 'on enter'
+    scenario = 'weekend'
+    print WFLOW_VAR1, 'scenario', scenario
+    IC.Workflow().setVar 'scenario', scenario
 
 on_exit =->
-    print 'on exit'
-    
-main =->
-    scenario = 'weekend'
-    print 'scenario', scenario
-    IC.Workflow().setVar 'scenario', scenario
+
 `
 
 const BaseScript = `
 
 main =->
+`
+
+const WflowScriptV1 = `
+# variables:
+
+#IC.Workflow()
+#    .getName()
+#    .getDescription()
+#    .setVar(string, interface)
+#    .getVar(string)
+#    .getScenario() string
+#    .setScenario(string)
+
+#
+# workflow script example
+#
+
+# global variable
+WFLOW_VAR1 = 'workflow1'
 `

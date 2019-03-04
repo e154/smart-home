@@ -47,6 +47,7 @@ func (s *Server) setControllers() {
 	v1.DELETE("/script/:id", s.af.Auth, s.ControllersV1.Script.DeleteScriptById)
 	v1.GET("/scripts", s.af.Auth, s.ControllersV1.Script.GetScriptList)
 	v1.POST("/script/:id/exec", s.af.Auth, s.ControllersV1.Script.Exec)
+	v1.POST("/script/:id/exec_src", s.af.Auth, s.ControllersV1.Script.ExecSrc)
 	v1.GET("/scripts/search", s.af.Auth, s.ControllersV1.Script.Search)
 
 	// workflow
@@ -121,4 +122,17 @@ func (s *Server) setControllers() {
 	v1.POST("/image/upload", s.af.Auth, s.ControllersV1.Image.Upload)
 	v1.PUT("/image/:id", s.af.Auth, s.ControllersV1.Image.UpdateImage)
 	v1.DELETE("/image/:id", s.af.Auth, s.ControllersV1.Image.DeleteImageById)
+
+	// flow
+	v1.GET("/flow/:id", s.af.Auth, s.ControllersV1.Flow.GetFlowById)
+	//v1.GET("/flow/:id/full", s.af.Auth, s.ControllersV1.Flow.GetFull)
+	//v1.GET("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.GetOneRedactor)
+	//v1.PUT("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.UpdateRedactor)
+	v1.GET("/flow", s.af.Auth, s.ControllersV1.Flow.GetFlowList)
+	v1.POST("/flow", s.af.Auth, s.ControllersV1.Flow.AddFlow)
+	v1.PUT("/flow/:id", s.af.Auth, s.ControllersV1.Flow.UpdateFlow)
+	v1.DELETE("/flow/:id", s.af.Auth, s.ControllersV1.Flow.DeleteFlowById)
+	//v1.GET("/flow/:id/workers", s.af.Auth, s.ControllersV1.Flow.GetWorkers)
+	v1.GET("/flows/search", s.af.Auth, s.ControllersV1.Flow.Search)
+
 }
