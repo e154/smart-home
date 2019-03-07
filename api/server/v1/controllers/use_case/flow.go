@@ -56,6 +56,13 @@ func UpdateFlowRedactor(redactor *m.RedactorFlow, adaptors *adaptors.Adaptors) (
 	return
 }
 
+func SearchFlow(query string, limit, offset int, adaptors *adaptors.Adaptors) (flows []*m.Flow, total int64, err error) {
+
+	flows, total, err = adaptors.Flow.Search(query, limit, offset)
+
+	return
+}
+
 func ExportToRedactor(f *m.Flow, adaptors *adaptors.Adaptors) (redactorFlow *m.RedactorFlow, err error) {
 
 	if f == nil {

@@ -234,6 +234,14 @@ func (c ControllerFlow) DeleteFlowById(ctx *gin.Context) {
 // @Router /flows/search [Get]
 func (c ControllerFlow) Search(ctx *gin.Context) {
 
+	query, limit, offset := c.select2(ctx)
+	flows, _, err := SearchFlow(query, limit, offset, c.adaptors)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
 	resp := NewSuccess()
+	resp.Item("flows", flows)
 	resp.Send(ctx)
 }
