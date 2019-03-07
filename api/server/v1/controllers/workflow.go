@@ -66,7 +66,7 @@ func (c ControllerWorkflow) AddWorkflow(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Workflow ID"
-// @Success 200 {object} models.ResponseWorkflow
+// @Success 200 {object} models.ResponseWorkflowModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -77,7 +77,7 @@ func (c ControllerWorkflow) GetWorkflowById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
 	if err != nil {
-		log.Error(err.Error())
+		//log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
@@ -224,7 +224,7 @@ func (c ControllerWorkflow) DeleteWorkflowById(ctx *gin.Context) {
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
-// @Router /workflow/search [Get]
+// @Router /workflows/search [Get]
 func (c ControllerWorkflow) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)

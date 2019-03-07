@@ -14,7 +14,7 @@ type UpdateWorkflow struct {
 	Status      string `json:"status"`
 }
 
-type Workflow struct {
+type WorkflowModel struct {
 	Id          int64               `json:"id"`
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
@@ -26,27 +26,27 @@ type Workflow struct {
 	UpdatedAt   time.Time           `json:"updated_at"`
 }
 
-type Workflows []*Workflow
+type Workflows []*WorkflowModel
 
-type ResponseWorkflow struct {
+type ResponseWorkflowModel struct {
 	Code ResponseType `json:"code"`
 	Data struct {
-		Workflow *Workflow `json:"workflow"`
+		WorkflowModel *WorkflowModel `json:"workflow"`
 	} `json:"data"`
 }
 
 type ResponseWorkflowList struct {
 	Code ResponseType `json:"code"`
 	Data struct {
-		Items  []*Workflow `json:"items"`
-		Limit  int64       `json:"limit"`
-		Offset int64       `json:"offset"`
-		Total  int64       `json:"total"`
+		Items  []*WorkflowModel `json:"items"`
+		Limit  int64            `json:"limit"`
+		Offset int64            `json:"offset"`
+		Total  int64            `json:"total"`
 	} `json:"data"`
 }
 
 type SearchWorkflowResponse struct {
-	Workflows []Workflow `json:"workflows"`
+	Workflows []WorkflowModel `json:"workflows"`
 }
 
 type WorkflowUpdateWorkflowScenario struct {

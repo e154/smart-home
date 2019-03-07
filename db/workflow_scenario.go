@@ -33,8 +33,8 @@ func (n WorkflowScenarios) Add(scenario *WorkflowScenario) (id int64, err error)
 	return
 }
 
-func (n WorkflowScenarios) GetById(workflowId int64) (scenario *WorkflowScenario, err error) {
-	scenario = &WorkflowScenario{Id: workflowId}
+func (n WorkflowScenarios) GetById(scenarioId int64) (scenario *WorkflowScenario, err error) {
+	scenario = &WorkflowScenario{Id: scenarioId}
 	if err = n.Db.First(&scenario).Error; err != nil {
 		return
 	}
@@ -101,7 +101,7 @@ func (n *WorkflowScenarios) RemoveScript(workflowScenarioId, scriptId int64) (er
 func (n *WorkflowScenarios) Search(query string, limit, offset int) (list []*WorkflowScenario, total int64, err error) {
 
 	q := n.Db.Model(&WorkflowScenario{}).
-		Where("name LIKE ?", "%"+query+"%").
+		Where("name ILIKE ?", "%"+query+"%").
 		Order("name ASC")
 
 	if err = q.Count(&total).Error; err != nil {

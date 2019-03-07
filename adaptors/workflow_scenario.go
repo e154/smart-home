@@ -28,10 +28,10 @@ func (n *WorkflowScenario) Add(workflow *m.WorkflowScenario) (id int64, err erro
 	return
 }
 
-func (n *WorkflowScenario) GetById(workflowId int64) (workflow *m.WorkflowScenario, err error) {
+func (n *WorkflowScenario) GetById(scenarioId int64) (workflow *m.WorkflowScenario, err error) {
 
 	var dbWorkflowScenario *db.WorkflowScenario
-	if dbWorkflowScenario, err = n.table.GetById(workflowId); err != nil {
+	if dbWorkflowScenario, err = n.table.GetById(scenarioId); err != nil {
 		return
 	}
 

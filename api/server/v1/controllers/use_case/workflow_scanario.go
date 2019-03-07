@@ -57,9 +57,9 @@ func DeleteWorkflowScenarioById(workflowScenarioId int64, adaptors *adaptors.Ada
 	return
 }
 
-func SearchWorkflowScenario(query string, limit, offset int, adaptors *adaptors.Adaptors) (workflowScenarios []*m.WorkflowScenario, total int64, err error) {
+func SearchWorkflowScenario(query string, limit, offset int, adaptors *adaptors.Adaptors) (scenarios []*m.WorkflowScenario, total int64, err error) {
 
-	workflowScenarios, total, err = adaptors.WorkflowScenario.Search(query, limit, offset)
+	scenarios, total, err = adaptors.WorkflowScenario.Search(query, limit, offset)
 
 	return
 }

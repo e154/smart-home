@@ -257,13 +257,13 @@ func (c ControllerWorkflowScenario) DeleteWorkflowScenarioById(ctx *gin.Context)
 func (c ControllerWorkflowScenario) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	workflows, _, err := SearchWorkflowScenario(query, limit, offset, c.adaptors)
+	scenarios, _, err := SearchWorkflowScenario(query, limit, offset, c.adaptors)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
 	resp := NewSuccess()
-	resp.Item("workflows", workflows)
+	resp.Item("scenarios", scenarios)
 	resp.Send(ctx)
 }

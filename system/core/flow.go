@@ -185,7 +185,6 @@ func (f *Flow) InitWorkers() (err error) {
 
 	for _, worker := range f.Model.Workers {
 		if err = f.AddWorker(worker); err != nil {
-			log.Warning(err.Error())
 			return
 		}
 	}

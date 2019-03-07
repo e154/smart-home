@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"strconv"
 	"github.com/gin-gonic/gin"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerFlow struct {
@@ -39,7 +41,7 @@ func (c ControllerFlow) AddFlow(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Flow ID"
-// @Success 200 {object} models.Flow
+// @Success 200 {object} models.FlowModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -47,9 +49,104 @@ func (c ControllerFlow) AddFlow(ctx *gin.Context) {
 // @Security ApiKeyAuth
 func (c ControllerFlow) GetFlowById(ctx *gin.Context) {
 
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	flow, err := GetFlowById(int64(aid), c.adaptors)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
 
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.Item("flow", flow).Send(ctx)
+}
+
+// Flow godoc
+// @tags flow
+// @Summary Show flow
+// @Description Get flow by id
+// @Produce json
+// @Accept  json
+// @Param id path int true "Flow ID"
+// @Success 200 {object} models.FlowModel
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Router /flow/{id}/redactor [Get]
+// @Security ApiKeyAuth
+func (c ControllerFlow) GetFlowRedactor(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	flow, err := GetFlowRedactor(int64(aid), c.adaptors)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Item("flow", flow).Send(ctx)
+}
+
+// Flow godoc
+// @tags flow
+// @Summary Update flow
+// @Description Update flow by id
+// @Produce json
+// @Accept  json
+// @Param  id path int true "Flow ID"
+// @Param  flow body models.UpdateFlowModel true "Update flow"
+// @Success 200 {object} models.ResponseSuccess
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Router /flow/{id}/redactor [Put]
+// @Security ApiKeyAuth
+func (c ControllerFlow) UpdateFlowRedactor(ctx *gin.Context) {
+
+	aid, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	redactor := &m.RedactorFlow{}
+	if err := ctx.ShouldBindJSON(&redactor); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	redactor.Id = int64(aid)
+
+	result, err := UpdateFlowRedactor(redactor, c.adaptors)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+	}
+
+	resp := NewSuccess()
+	resp.Item("flow", result).Send(ctx)
 }
 
 // Flow godoc
