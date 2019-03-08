@@ -70,14 +70,14 @@ func GetFlowRedactor(flowId int64, adaptors *adaptors.Adaptors) (redactorFlowDto
 	return
 }
 
-func GetFlowList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (listDto []*models.FlowModel, total int64, err error) {
+func GetFlowList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (listDto []*models.FlowListModel, total int64, err error) {
 
 	var list []*m.Flow
 	if list, total, err = adaptors.Flow.List(limit, offset, order, sortBy); err != nil {
 		return
 	}
 
-	listDto = make([]*models.FlowModel, 0)
+	listDto = make([]*models.FlowListModel, 0)
 	err = common.Copy(&listDto, &list)
 
 	return
@@ -175,7 +175,7 @@ func UpdateFlowRedactor(params *models.RedactorFlowModel,
 		_, errs = fl.Valid()
 		if len(errs) > 0 {
 			for _, err := range errs {
-				log.Errorf("%s %s",err.Key, err.Message)
+				log.Errorf("%s %s", err.Key, err.Message)
 			}
 			return
 		}
@@ -223,7 +223,7 @@ func UpdateFlowRedactor(params *models.RedactorFlowModel,
 		_, errs = conn.Valid()
 		if len(errs) > 0 {
 			for _, err := range errs {
-				log.Errorf("%s %s",err.Key, err.Message)
+				log.Errorf("%s %s", err.Key, err.Message)
 			}
 			return
 		}
@@ -267,7 +267,7 @@ func UpdateFlowRedactor(params *models.RedactorFlowModel,
 		_, errs = worker.Valid()
 		if len(errs) > 0 {
 			for _, err := range errs {
-				log.Errorf("%s %s",err.Key, err.Message)
+				log.Errorf("%s %s", err.Key, err.Message)
 			}
 			return
 		}
@@ -305,7 +305,7 @@ func UpdateFlowRedactor(params *models.RedactorFlowModel,
 
 func SearchFlow(query string, limit, offset int, adaptors *adaptors.Adaptors) (listDto []*models.FlowModel, total int64, err error) {
 	var list []*m.Flow
-	if 	list, total, err = adaptors.Flow.Search(query, limit, offset); err != nil {
+	if list, total, err = adaptors.Flow.Search(query, limit, offset); err != nil {
 		return
 	}
 
@@ -326,6 +326,39 @@ func DeleteFlowById(flowId int64, adaptors *adaptors.Adaptors, core *core.Core) 
 	}
 
 	err = adaptors.Flow.Delete(flowId)
+	return
+}
+
+func UpdateFlow(params *models.UpdateFlowModel,
+	adaptors *adaptors.Adaptors,
+	core *core.Core) (result *models.FlowModel, errs []*validation.Error, err error) {
+
+	flow := &m.Flow{}
+	if err = common.Copy(&flow, &params); err != nil {
+		return
+	}
+
+	_, errs = flow.Valid()
+	if len(errs) > 0 {
+		for _, err := range errs {
+			log.Errorf("%s %s", err.Key, err.Message)
+		}
+		return
+	}
+
+	if _, err = adaptors.Flow.GetById(flow.Id); err != nil {
+		return
+	}
+
+	if err = adaptors.Flow.Update(flow); err != nil {
+		return
+	}
+
+	err = core.UpdateFlow(flow)
+
+	result = &models.FlowModel{}
+	common.Copy(&result, &flow)
+
 	return
 }
 

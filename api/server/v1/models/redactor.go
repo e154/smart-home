@@ -70,3 +70,10 @@ type RedactorFlowModel struct {
 	Scenario    *WorkflowScenario      `json:"scenario"`
 	Workers     []*WorkerModel         `json:"workers"`
 }
+
+type ResponseRedactorFlowModel struct {
+	Code ResponseType `json:"code"`
+	Data struct {
+		Flow *RedactorFlowModel `json:"flow"`
+	} `json:"data"`
+}

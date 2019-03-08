@@ -24,6 +24,7 @@ func NewControllerFlow(common *ControllerCommon) *ControllerFlow {
 // @Param flow body models.NewFlowModel true "flow params"
 // @Success 200 {object} models.NewObjectSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow [post]
 // @Security ApiKeyAuth
@@ -58,8 +59,9 @@ func (c ControllerFlow) AddFlow(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Flow ID"
-// @Success 200 {object} models.FlowModel
+// @Success 200 {object} models.ResponseFlow
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id} [Get]
@@ -95,8 +97,9 @@ func (c ControllerFlow) GetFlowById(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Flow ID"
-// @Success 200 {object} models.RedactorFlowModel
+// @Success 200 {object} models.ResponseRedactorFlowModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id}/redactor [Get]
@@ -133,8 +136,9 @@ func (c ControllerFlow) GetFlowRedactor(ctx *gin.Context) {
 // @Accept  json
 // @Param  id path int true "Flow ID"
 // @Param  flow body models.RedactorFlowModel true "Update flow"
-// @Success 200 {object} models.ResponseSuccess
+// @Success 200 {object} models.ResponseRedactorFlowModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id}/redactor [Put]
@@ -183,16 +187,47 @@ func (c ControllerFlow) UpdateFlowRedactor(ctx *gin.Context) {
 // @Accept  json
 // @Param  id path int true "Flow ID"
 // @Param  flow body models.UpdateFlowModel true "Update flow"
-// @Success 200 {object} models.ResponseSuccess
+// @Success 200 {object} models.ResponseFlow
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id} [Put]
 // @Security ApiKeyAuth
 func (c ControllerFlow) UpdateFlow(ctx *gin.Context) {
 
+	aid, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	flow := &models.UpdateFlowModel{}
+	if err := ctx.ShouldBindJSON(&flow); err != nil {
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	flow.Id = int64(aid)
+
+	result, errs, err := UpdateFlow(flow, c.adaptors, c.core)
+	if len(errs) > 0 {
+		err400 := NewError(400)
+		err400.ValidationToErrors(errs).Send(ctx)
+		return
+	}
+
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.Item("flow", result).Send(ctx)
 }
 
 // Flow godoc
@@ -207,6 +242,7 @@ func (c ControllerFlow) UpdateFlow(ctx *gin.Context) {
 // @Param sort_by query string false "sort_by" default(id)
 // @Success 200 {object} models.ResponseFlowList
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flows [Get]
@@ -233,12 +269,12 @@ func (c ControllerFlow) GetFlowList(ctx *gin.Context) {
 // @Param  id path int true "Flow ID"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id} [Delete]
 // @Security ApiKeyAuth
 func (c ControllerFlow) DeleteFlowById(ctx *gin.Context) {
-
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -271,8 +307,7 @@ func (c ControllerFlow) DeleteFlowById(ctx *gin.Context) {
 // @Param limit query int true "limit" default(10)
 // @Param offset query int true "offset" default(0)
 // @Success 200 {object} models.SearchFlowResponse
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /flows/search [Get]

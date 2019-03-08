@@ -1183,6 +1183,9 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "500": {
                         "description": "some error",
                         "schema": {
@@ -1225,7 +1228,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.FlowModel"
+                            "$ref": "#/definitions/models.ResponseFlow"
                         }
                     },
                     "400": {
@@ -1234,6 +1237,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -1292,7 +1298,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseSuccess"
+                            "$ref": "#/definitions/models.ResponseFlow"
                         }
                     },
                     "400": {
@@ -1301,6 +1307,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -1359,6 +1368,9 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "some error",
                         "schema": {
@@ -1408,7 +1420,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.RedactorFlowModel"
+                            "$ref": "#/definitions/models.ResponseRedactorFlowModel"
                         }
                     },
                     "400": {
@@ -1417,6 +1429,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -1475,7 +1490,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseSuccess"
+                            "$ref": "#/definitions/models.ResponseRedactorFlowModel"
                         }
                     },
                     "400": {
@@ -1484,6 +1499,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -1567,6 +1585,9 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "some error",
                         "schema": {
@@ -1634,19 +1655,8 @@
                             "$ref": "#/definitions/models.SearchFlowResponse"
                         }
                     },
-                    "400": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    },
-                    "404": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "some error",
@@ -5549,6 +5559,58 @@
                 }
             }
         },
+        "models.FlowListModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "workers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowListWorkerModel"
+                    }
+                },
+                "workflow": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.FlowListModelWorkflow"
+                }
+            }
+        },
+        "models.FlowListModelWorkflow": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.FlowListWorkerModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.FlowModel": {
             "type": "object",
             "properties": {
@@ -5841,41 +5903,37 @@
         "models.NewFlowModel": {
             "type": "object",
             "properties": {
-                "connections": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.FlowConnectionModel"
-                    }
-                },
                 "description": {
                     "type": "string"
-                },
-                "flow_elements": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.FlowElementModel"
-                    }
                 },
                 "name": {
                     "type": "string"
                 },
+                "scenario": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.NewFlowWorkflowScenarioModel"
+                },
                 "status": {
                     "type": "string"
                 },
-                "workers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.FlowWorkerModel"
-                    }
-                },
                 "workflow": {
                     "type": "object",
-                    "$ref": "#/definitions/models.FlowWorkflowModel"
-                },
-                "workflow_id": {
+                    "$ref": "#/definitions/models.NewFlowWorkflowModel"
+                }
+            }
+        },
+        "models.NewFlowWorkflowModel": {
+            "type": "object",
+            "properties": {
+                "id": {
                     "type": "integer"
-                },
-                "workflow_scenario_id": {
+                }
+            }
+        },
+        "models.NewFlowWorkflowScenarioModel": {
+            "type": "object",
+            "properties": {
+                "id": {
                     "type": "integer"
                 }
             }
@@ -6314,6 +6372,23 @@
                 }
             }
         },
+        "models.ResponseFlow": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "flow": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.FlowModel"
+                        }
+                    }
+                }
+            }
+        },
         "models.ResponseFlowList": {
             "type": "object",
             "properties": {
@@ -6326,7 +6401,7 @@
                         "items": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.FlowModel"
+                                "$ref": "#/definitions/models.FlowListModel"
                             }
                         },
                         "limit": {
@@ -6337,6 +6412,23 @@
                         },
                         "total": {
                             "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "models.ResponseRedactorFlowModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "flow": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.RedactorFlowModel"
                         }
                     }
                 }
@@ -6561,10 +6653,18 @@
         "models.SearchFlowResponse": {
             "type": "object",
             "properties": {
-                "flows": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.FlowModel"
+                "code": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "flows": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.FlowModel"
+                            }
+                        }
                     }
                 }
             }
@@ -6700,23 +6800,8 @@
         "models.UpdateFlowModel": {
             "type": "object",
             "properties": {
-                "connections": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.FlowConnectionModel"
-                    }
-                },
-                "created_at": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
-                },
-                "flow_elements": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.FlowElementModel"
-                    }
                 },
                 "id": {
                     "type": "integer"
@@ -6724,27 +6809,16 @@
                 "name": {
                     "type": "string"
                 },
+                "scenario": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.NewFlowWorkflowScenarioModel"
+                },
                 "status": {
                     "type": "string"
                 },
-                "updated_at": {
-                    "type": "string"
-                },
-                "workers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.FlowWorkerModel"
-                    }
-                },
                 "workflow": {
                     "type": "object",
-                    "$ref": "#/definitions/models.FlowWorkflowModel"
-                },
-                "workflow_id": {
-                    "type": "integer"
-                },
-                "workflow_scenario_id": {
-                    "type": "integer"
+                    "$ref": "#/definitions/models.NewFlowWorkflowModel"
                 }
             }
         },

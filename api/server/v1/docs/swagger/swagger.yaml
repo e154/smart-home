@@ -228,6 +228,40 @@ definitions:
       uuid:
         type: string
     type: object
+  models.FlowListModel:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      workers:
+        items:
+          $ref: '#/definitions/models.FlowListWorkerModel'
+        type: array
+      workflow:
+        $ref: '#/definitions/models.FlowListModelWorkflow'
+        type: object
+    type: object
+  models.FlowListModelWorkflow:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.FlowListWorkerModel:
+    properties:
+      id:
+        type: integer
+    type: object
   models.FlowModel:
     properties:
       connections:
@@ -421,30 +455,27 @@ definitions:
     type: object
   models.NewFlowModel:
     properties:
-      connections:
-        items:
-          $ref: '#/definitions/models.FlowConnectionModel'
-        type: array
       description:
         type: string
-      flow_elements:
-        items:
-          $ref: '#/definitions/models.FlowElementModel'
-        type: array
       name:
         type: string
+      scenario:
+        $ref: '#/definitions/models.NewFlowWorkflowScenarioModel'
+        type: object
       status:
         type: string
-      workers:
-        items:
-          $ref: '#/definitions/models.FlowWorkerModel'
-        type: array
       workflow:
-        $ref: '#/definitions/models.FlowWorkflowModel'
+        $ref: '#/definitions/models.NewFlowWorkflowModel'
         type: object
-      workflow_id:
+    type: object
+  models.NewFlowWorkflowModel:
+    properties:
+      id:
         type: integer
-      workflow_scenario_id:
+    type: object
+  models.NewFlowWorkflowScenarioModel:
+    properties:
+      id:
         type: integer
     type: object
   models.NewImage:
@@ -730,6 +761,17 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.ResponseFlow:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          flow:
+            $ref: '#/definitions/models.FlowModel'
+            type: object
+        type: object
+    type: object
   models.ResponseFlowList:
     properties:
       code:
@@ -738,7 +780,7 @@ definitions:
         properties:
           items:
             items:
-              $ref: '#/definitions/models.FlowModel'
+              $ref: '#/definitions/models.FlowListModel'
             type: array
           limit:
             type: integer
@@ -746,6 +788,17 @@ definitions:
             type: integer
           total:
             type: integer
+        type: object
+    type: object
+  models.ResponseRedactorFlowModel:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          flow:
+            $ref: '#/definitions/models.RedactorFlowModel'
+            type: object
         type: object
     type: object
   models.ResponseScript:
@@ -889,10 +942,15 @@ definitions:
     type: object
   models.SearchFlowResponse:
     properties:
-      flows:
-        items:
-          $ref: '#/definitions/models.FlowModel'
-        type: array
+      code:
+        type: string
+      data:
+        properties:
+          flows:
+            items:
+              $ref: '#/definitions/models.FlowModel'
+            type: array
+        type: object
     type: object
   models.SearchMapResponse:
     properties:
@@ -980,37 +1038,20 @@ definitions:
     type: object
   models.UpdateFlowModel:
     properties:
-      connections:
-        items:
-          $ref: '#/definitions/models.FlowConnectionModel'
-        type: array
-      created_at:
-        type: string
       description:
         type: string
-      flow_elements:
-        items:
-          $ref: '#/definitions/models.FlowElementModel'
-        type: array
       id:
         type: integer
       name:
         type: string
+      scenario:
+        $ref: '#/definitions/models.NewFlowWorkflowScenarioModel'
+        type: object
       status:
         type: string
-      updated_at:
-        type: string
-      workers:
-        items:
-          $ref: '#/definitions/models.FlowWorkerModel'
-        type: array
       workflow:
-        $ref: '#/definitions/models.FlowWorkflowModel'
+        $ref: '#/definitions/models.NewFlowWorkflowModel'
         type: object
-      workflow_id:
-        type: integer
-      workflow_scenario_id:
-        type: integer
     type: object
   models.UpdateImage:
     properties:
@@ -2120,6 +2161,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "500":
           description: some error
           schema:
@@ -2154,6 +2197,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2185,13 +2230,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.FlowModel'
+            $ref: '#/definitions/models.ResponseFlow'
             type: object
         "400":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2230,13 +2277,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess'
+            $ref: '#/definitions/models.ResponseFlow'
             type: object
         "400":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2269,13 +2318,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RedactorFlowModel'
+            $ref: '#/definitions/models.ResponseRedactorFlowModel'
             type: object
         "400":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2314,13 +2365,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess'
+            $ref: '#/definitions/models.ResponseRedactorFlowModel'
             type: object
         "400":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2377,6 +2430,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2422,16 +2477,8 @@ paths:
           schema:
             $ref: '#/definitions/models.SearchFlowResponse'
             type: object
-        "400":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-        "404":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
+        "401":
+          description: Unauthorized
         "500":
           description: some error
           schema:

@@ -4,7 +4,24 @@ import (
 	"time"
 )
 
+type FlowListModelWorkflow struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+type FlowListWorkerModel struct {
+	Id int64 `json:"id"`
+}
+
 type FlowListModel struct {
+	Id          int64                  `json:"id"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Status      string                 `json:"status"`
+	Workflow    *FlowListModelWorkflow `json:"workflow"`
+	Workers     []*FlowListWorkerModel `json:"workers"`
+	CreatedAt   time.Time              `json:"created_at"`
+	UpdatedAt   time.Time              `json:"updated_at"`
 }
 
 type StatusType string
@@ -33,27 +50,29 @@ type FlowWorkerModel struct {
 	UpdatedAt      time.Time          `json:"updated_at"`
 }
 
+type NewFlowWorkflowModel struct {
+	Id int64 `json:"id"`
+}
+
+type NewFlowWorkflowScenarioModel struct {
+	Id int64 `json:"id"`
+}
+
 type NewFlowModel struct {
-	Name        string             `json:"name"`
-	Description string             `json:"description"`
-	Status      StatusType         `json:"status"`
-	Workflow    *FlowWorkflowModel `json:"workflow"`
-	Scenario    *WorkflowScenario  `json:"scenario"`
+	Name        string                        `json:"name"`
+	Description string                        `json:"description"`
+	Status      StatusType                    `json:"status"`
+	Workflow    *NewFlowWorkflowModel         `json:"workflow"`
+	Scenario    *NewFlowWorkflowScenarioModel `json:"scenario"`
 }
 
 type UpdateFlowModel struct {
-	Id                 int64                  `json:"id"`
-	Name               string                 `json:"name" valid:"MaxSize(254);Required"`
-	Description        string                 `json:"description" valid:"MaxSize(254)"`
-	Status             StatusType             `json:"status" valid:"Required"`
-	Workflow           *FlowWorkflowModel     `json:"workflow"`
-	WorkflowId         int64                  `json:"workflow_id" valid:"Required"`
-	WorkflowScenarioId int64                  `json:"workflow_scenario_id" valid:"Required"`
-	Connections        []*FlowConnectionModel `json:"connections"`
-	FlowElements       []*FlowElementModel    `json:"flow_elements"`
-	Workers            []*FlowWorkerModel     `json:"workers"`
-	CreatedAt          time.Time              `json:"created_at"`
-	UpdatedAt          time.Time              `json:"updated_at"`
+	Id          int64                         `json:"id"`
+	Name        string                        `json:"name"`
+	Description string                        `json:"description"`
+	Status      StatusType                    `json:"status"`
+	Workflow    *NewFlowWorkflowModel         `json:"workflow"`
+	Scenario    *NewFlowWorkflowScenarioModel `json:"scenario"`
 }
 
 type FlowModel struct {
@@ -83,13 +102,16 @@ type ResponseFlow struct {
 type ResponseFlowList struct {
 	Code ResponseType `json:"code"`
 	Data struct {
-		Items  []*FlowModel `json:"items"`
-		Limit  int64        `json:"limit"`
-		Offset int64        `json:"offset"`
-		Total  int64        `json:"total"`
+		Items  []*FlowListModel `json:"items"`
+		Limit  int64            `json:"limit"`
+		Offset int64            `json:"offset"`
+		Total  int64            `json:"total"`
 	} `json:"data"`
 }
 
 type SearchFlowResponse struct {
-	Flows []FlowModel `json:"flows"`
+	Code ResponseType `json:"code"`
+	Data struct {
+		Flows []FlowModel `json:"flows"`
+	} `json:"data"`
 }
