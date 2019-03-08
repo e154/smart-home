@@ -8,9 +8,13 @@ import (
 	"errors"
 	"github.com/e154/smart-home/api/server/v1/models"
 	"github.com/jinzhu/copier"
+	"github.com/e154/smart-home/common"
 )
 
-func AddNode(node *m.Node, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddNode(params *models.NewNode, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+
+	node := &m.Node{}
+	common.Copy(&node, &params, common.JsonEngine)
 
 	// validation
 	ok, errs = node.Valid()

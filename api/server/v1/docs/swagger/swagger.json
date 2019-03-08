@@ -2424,6 +2424,9 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "500": {
                         "description": "some error",
                         "schema": {
@@ -2475,6 +2478,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -2543,6 +2549,9 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "some error",
                         "schema": {
@@ -2599,6 +2608,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -2682,6 +2694,9 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "some error",
                         "schema": {
@@ -2755,6 +2770,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",

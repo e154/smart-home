@@ -2990,6 +2990,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "500":
           description: some error
           schema:
@@ -3024,6 +3026,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3062,6 +3066,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3107,6 +3113,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3163,6 +3171,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3213,6 +3223,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:

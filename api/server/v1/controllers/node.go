@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
 )
@@ -25,27 +24,20 @@ func NewControllerNode(common *ControllerCommon) *ControllerNode {
 // @Param node body models.NewNode true "node params"
 // @Success 200 {object} models.NewObjectSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /node [post]
 // @Security ApiKeyAuth
 func (c ControllerNode) AddNode(ctx *gin.Context) {
 
-	var params models.NewNode
-	if err := ctx.ShouldBindJSON(&params); err != nil {
+	params := &models.NewNode{}
+	if err := ctx.ShouldBindJSON(params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	n := &m.Node{
-		Port: int(params.Port),
-		Status: params.Status,
-		Name: params.Name,
-		Ip: params.IP,
-		Description: params.Description,
-	}
-
-	_, id, errs, err := AddNode(n, c.adaptors, c.core)
+	_, id, errs, err := AddNode(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -70,6 +62,7 @@ func (c ControllerNode) AddNode(ctx *gin.Context) {
 // @Param id path int true "Node ID"
 // @Success 200 {object} models.Node
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /node/{id} [Get]
@@ -108,6 +101,7 @@ func (c ControllerNode) GetNodeById(ctx *gin.Context) {
 // @Param  node body models.UpdateNode true "Update node"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /node/{id} [Put]
@@ -158,6 +152,7 @@ func (c ControllerNode) UpdateNode(ctx *gin.Context) {
 // @Param sort_by query string false "sort_by" default(id)
 // @Success 200 {object} models.NodeListModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /nodes [Get]
@@ -185,6 +180,7 @@ func (c ControllerNode) GetNodeList(ctx *gin.Context) {
 // @Param  id path int true "Node ID"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /node/{id} [Delete]
@@ -223,6 +219,7 @@ func (c ControllerNode) DeleteNodeById(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Success 200 {object} models.SearchNodeResponse
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
