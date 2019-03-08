@@ -244,7 +244,7 @@ definitions:
         type: string
       workers:
         items:
-          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc0001e81c0] 349})
+          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc0001e40c0] 349})
             %!s(bool=false)}'
         type: array
       workflow:
@@ -770,6 +770,12 @@ definitions:
             type: integer
         type: object
     type: object
+  models.ResponseNodeModel:
+    properties:
+      node:
+        $ref: '#/definitions/models.NodeModel'
+        type: object
+    type: object
   models.ResponseRedactorFlowModel:
     properties:
       flow:
@@ -820,6 +826,13 @@ definitions:
       flows:
         items:
           $ref: '#/definitions/models.FlowModel'
+        type: array
+    type: object
+  models.ResponseSearchNode:
+    properties:
+      nodes:
+        items:
+          $ref: '#/definitions/models.NodeModel'
         type: array
     type: object
   models.ResponseSuccess:
@@ -927,13 +940,6 @@ definitions:
       nodes:
         items:
           $ref: '#/definitions/models.Map'
-        type: array
-    type: object
-  models.ResponseSearchNode:
-    properties:
-      nodes:
-        items:
-          $ref: '#/definitions/models.NodeModel'
         type: array
     type: object
   models.SearchRoleResponse:
@@ -3033,7 +3039,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.NodeModel'
+            $ref: '#/definitions/models.ResponseNodeModel'
             type: object
         "400":
           description: some error

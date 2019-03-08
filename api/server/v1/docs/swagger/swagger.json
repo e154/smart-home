@@ -2469,7 +2469,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.NodeModel"
+                            "$ref": "#/definitions/models.ResponseNodeModel"
                         }
                     },
                     "400": {
@@ -5625,7 +5625,7 @@
                 "workers": {
                     "type": "array",
                     "items": {
-                        "type": "\u0026{%!s(token.Pos=316) %!s(*ast.FieldList=\u0026{323 [0xc0001e81c0] 349}) %!s(bool=false)}"
+                        "type": "\u0026{%!s(token.Pos=316) %!s(*ast.FieldList=\u0026{323 [0xc0001e40c0] 349}) %!s(bool=false)}"
                     }
                 },
                 "workflow": {
@@ -6428,6 +6428,15 @@
                 }
             }
         },
+        "models.ResponseNodeModel": {
+            "type": "object",
+            "properties": {
+                "node": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.NodeModel"
+                }
+            }
+        },
         "models.ResponseRedactorFlowModel": {
             "type": "object",
             "properties": {
@@ -6505,6 +6514,17 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.FlowModel"
+                    }
+                }
+            }
+        },
+        "models.ResponseSearchNode": {
+            "type": "object",
+            "properties": {
+                "nodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.NodeModel"
                     }
                 }
             }
@@ -6671,17 +6691,6 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Map"
-                    }
-                }
-            }
-        },
-        "models.ResponseSearchNode": {
-            "type": "object",
-            "properties": {
-                "nodes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.NodeModel"
                     }
                 }
             }
