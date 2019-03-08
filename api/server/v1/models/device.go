@@ -36,7 +36,7 @@ type Device struct {
 	Id          int64            `json:"id"`
 	Name        string           `json:"name"`
 	Description string           `json:"description"`
-	Node        *Node            `json:"node"`
+	Node        *NodeModel       `json:"node"`
 	Properties  DeviceProperties `json:"properties"`
 	Type        string           `json:"type"`
 	Status      string           `json:"status"`

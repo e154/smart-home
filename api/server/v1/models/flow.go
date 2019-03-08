@@ -110,8 +110,5 @@ type ResponseFlowList struct {
 }
 
 type SearchFlowResponse struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		Flows []FlowModel `json:"flows"`
-	} `json:"data"`
+	Flows []FlowModel `json:"flows"`
 }

@@ -159,19 +159,19 @@ func (a *Action) GetNode() *Node {
 //
 //	// get node
 //	// ------------------------------------------------
-//	if device_action.Device.Node == nil {
+//	if device_action.Device.NodeModel == nil {
 //		client.Notify("error", "device node is nil")
 //		return
 //	}
 //
 //	nodes := corePtr.GetNodes()
-//	var node *Node
-//	if _, ok := nodes[device_action.Device.Node.Id]; ok {
-//		node = nodes[device_action.Device.Node.Id]
+//	var node *NodeModel
+//	if _, ok := nodes[device_action.Device.NodeModel.Id]; ok {
+//		node = nodes[device_action.Device.NodeModel.Id]
 //	} else {
 //		// autoload nodes
-//		var model_node *m.Node
-//		model_node, err = models.GetNodeById(device_action.Device.Node.Id)
+//		var model_node *m.NodeModel
+//		model_node, err = models.GetNodeById(device_action.Device.NodeModel.Id)
 //		if err != nil {
 //			client.Notify("error", err.Error())
 //			return

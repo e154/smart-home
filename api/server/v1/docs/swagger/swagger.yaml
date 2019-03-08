@@ -65,7 +65,7 @@ definitions:
       name:
         type: string
       node:
-        $ref: '#/definitions/models.Node'
+        $ref: '#/definitions/models.NodeModel'
         type: object
       properties:
         $ref: '#/definitions/models.DeviceProperties'
@@ -607,7 +607,23 @@ definitions:
       workflow_id:
         type: integer
     type: object
-  models.Node:
+  models.NodeListModel:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.NodeModel'
+        type: array
+      meta:
+        properties:
+          limit:
+            type: integer
+          objects_count:
+            type: integer
+          offset:
+            type: integer
+        type: object
+    type: object
+  models.NodeModel:
     properties:
       created_at:
         type: string
@@ -625,22 +641,6 @@ definitions:
         type: string
       updated_at:
         type: string
-    type: object
-  models.NodeListModel:
-    properties:
-      items:
-        items:
-          $ref: '#/definitions/models.Node'
-        type: array
-      meta:
-        properties:
-          limit:
-            type: integer
-          objects_count:
-            type: integer
-          offset:
-            type: integer
-        type: object
     type: object
   models.ParentDevice:
     properties:
@@ -942,15 +942,10 @@ definitions:
     type: object
   models.SearchFlowResponse:
     properties:
-      code:
-        type: string
-      data:
-        properties:
-          flows:
-            items:
-              $ref: '#/definitions/models.FlowModel'
-            type: array
-        type: object
+      flows:
+        items:
+          $ref: '#/definitions/models.FlowModel'
+        type: array
     type: object
   models.SearchMapResponse:
     properties:
@@ -963,7 +958,7 @@ definitions:
     properties:
       nodes:
         items:
-          $ref: '#/definitions/models.Node'
+          $ref: '#/definitions/models.NodeModel'
         type: array
     type: object
   models.SearchRoleResponse:
@@ -1083,7 +1078,7 @@ definitions:
       options:
         type: string
     type: object
-  models.UpdateNode:
+  models.UpdateNodeModel:
     properties:
       description:
         type: string
@@ -3059,7 +3054,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Node'
+            $ref: '#/definitions/models.NodeModel'
             type: object
         "400":
           description: some error
@@ -3098,7 +3093,7 @@ paths:
         name: node
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateNode'
+          $ref: '#/definitions/models.UpdateNodeModel'
           type: object
       produces:
       - application/json

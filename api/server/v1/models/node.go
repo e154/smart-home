@@ -10,7 +10,7 @@ type NewNode struct {
 	Description string `json:"description"`
 }
 
-type UpdateNode struct {
+type UpdateNodeModel struct {
 	Id          int64  `json:"id"`
 	Name        string `json:"name"`
 	Port        int64  `json:"port"`
@@ -19,7 +19,7 @@ type UpdateNode struct {
 	Description string `json:"description"`
 }
 
-type Node struct {
+type NodeModel struct {
 	Id          int64     `json:"id"`
 	Name        string    `json:"name"`
 	Ip          string    `json:"ip"`
@@ -30,10 +30,10 @@ type Node struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type Nodes []*Node
+type Nodes []*NodeModel
 
 type NodeListModel struct {
-	Items []Node `json:"items"`
+	Items []NodeModel `json:"items"`
 	Meta  struct {
 		Limit        int `json:"limit"`
 		Offset       int `json:"offset"`
@@ -42,5 +42,5 @@ type NodeListModel struct {
 }
 
 type SearchNodeResponse struct {
-	Nodes []Node `json:"nodes"`
+	Nodes []NodeModel `json:"nodes"`
 }

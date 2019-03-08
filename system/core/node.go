@@ -138,7 +138,7 @@ func (n *Node) delCh(deviceId int64) {
 	delete(n.ch, deviceId)
 }
 
-//func (n *Node) onComplete(msg, ack message.Message, err error) error {
+//func (n *NodeModel) onComplete(msg, ack message.Message, err error) error {
 //	log.Debug("onComplete")
 //	return nil
 //}

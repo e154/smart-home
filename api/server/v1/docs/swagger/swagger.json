@@ -2469,7 +2469,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.Node"
+                            "$ref": "#/definitions/models.NodeModel"
                         }
                     },
                     "400": {
@@ -2530,7 +2530,7 @@
                         "required": true,
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.UpdateNode"
+                            "$ref": "#/definitions/models.UpdateNodeModel"
                         }
                     }
                 ],
@@ -5332,7 +5332,7 @@
                 },
                 "node": {
                     "type": "object",
-                    "$ref": "#/definitions/models.Node"
+                    "$ref": "#/definitions/models.NodeModel"
                 },
                 "properties": {
                     "type": "object",
@@ -6155,7 +6155,32 @@
                 }
             }
         },
-        "models.Node": {
+        "models.NodeListModel": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.NodeModel"
+                    }
+                },
+                "meta": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer"
+                        },
+                        "objects_count": {
+                            "type": "integer"
+                        },
+                        "offset": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "models.NodeModel": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -6181,31 +6206,6 @@
                 },
                 "updated_at": {
                     "type": "string"
-                }
-            }
-        },
-        "models.NodeListModel": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Node"
-                    }
-                },
-                "meta": {
-                    "type": "object",
-                    "properties": {
-                        "limit": {
-                            "type": "integer"
-                        },
-                        "objects_count": {
-                            "type": "integer"
-                        },
-                        "offset": {
-                            "type": "integer"
-                        }
-                    }
                 }
             }
         },
@@ -6671,18 +6671,10 @@
         "models.SearchFlowResponse": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "flows": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.FlowModel"
-                            }
-                        }
+                "flows": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowModel"
                     }
                 }
             }
@@ -6704,7 +6696,7 @@
                 "nodes": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Node"
+                        "$ref": "#/definitions/models.NodeModel"
                     }
                 }
             }
@@ -6886,7 +6878,7 @@
                 }
             }
         },
-        "models.UpdateNode": {
+        "models.UpdateNodeModel": {
             "type": "object",
             "properties": {
                 "description": {

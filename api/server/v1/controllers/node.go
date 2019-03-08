@@ -60,7 +60,7 @@ func (c ControllerNode) AddNode(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Node ID"
-// @Success 200 {object} models.Node
+// @Success 200 {object} models.NodeModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
@@ -98,7 +98,7 @@ func (c ControllerNode) GetNodeById(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param  id path int true "Node ID"
-// @Param  node body models.UpdateNode true "Update node"
+// @Param  node body models.UpdateNodeModel true "Update node"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 401 "Unauthorized"
@@ -115,7 +115,7 @@ func (c ControllerNode) UpdateNode(ctx *gin.Context) {
 		return
 	}
 
-	n := &models.UpdateNode{}
+	n := &models.UpdateNodeModel{}
 	if err := ctx.ShouldBindJSON(&n); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -208,7 +208,7 @@ func (c ControllerNode) DeleteNodeById(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Node godoc
+// NodeModel godoc
 // @tags node
 // @Summary Search node
 // @Description Search node by name
