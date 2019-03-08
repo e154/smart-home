@@ -52,5 +52,12 @@ type AccessItem struct {
 
 type AccessLevels map[string]AccessItem
 type AccessList map[string]AccessLevels
-
 type AccessListDiff map[string]map[string]bool
+
+type ResponseRoleModel struct {
+	Role *RoleModel `json:"role"`
+}
+
+type ResponseAccessList struct {
+	AccessList struct{} `json:"access_list"`
+}

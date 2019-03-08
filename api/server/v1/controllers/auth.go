@@ -23,6 +23,8 @@ func NewControllerAuth(common *ControllerCommon) *ControllerAuth {
 // @Accept  json
 // @Success 200 {object} models.AuthSignInResponse
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "user not found"
+// @Failure 403 "password not valid"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /signin [post]
 // @Security BasicAuth
@@ -62,7 +64,7 @@ func (c ControllerAuth) SignIn(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 403 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /signout [post]
@@ -122,8 +124,8 @@ func (c ControllerAuth) Reset(ctx *gin.Context) {
 // @Description
 // @Produce json
 // @Accept  json
-// @Success 200 {object} models.AccessList
-// @Failure 400 {object} models.ErrorModel "some error"
+// @Success 200 {object} models.ResponseAccessList
+// @Failure 403 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /access_list [get]

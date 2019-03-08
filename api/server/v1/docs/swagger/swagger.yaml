@@ -1,7 +1,5 @@
 basePath: /api/v1
 definitions:
-  models.AccessList:
-    type: object
   models.AccessListDiff:
     type: object
   models.AuthSignInResponse:
@@ -43,44 +41,6 @@ definitions:
       sign_in_count:
         type: integer
     type: object
-  models.Device:
-    properties:
-      actions:
-        items:
-          $ref: '#/definitions/models.DeviceAction'
-        type: array
-      created_at:
-        type: string
-      description:
-        type: string
-      device:
-        $ref: '#/definitions/models.ParentDevice'
-        type: object
-      device_id:
-        type: integer
-      id:
-        type: integer
-      is_group:
-        type: boolean
-      name:
-        type: string
-      node:
-        $ref: '#/definitions/models.NodeModel'
-        type: object
-      properties:
-        $ref: '#/definitions/models.DeviceProperties'
-        type: object
-      states:
-        items:
-          $ref: '#/definitions/models.DeviceState'
-        type: array
-      status:
-        type: string
-      type:
-        type: string
-      updated_at:
-        type: string
-    type: object
   models.DeviceAction:
     properties:
       created_at:
@@ -114,7 +74,7 @@ definitions:
     properties:
       items:
         items:
-          $ref: '#/definitions/models.Device'
+          $ref: '#/definitions/models.DeviceModel'
         type: array
       meta:
         properties:
@@ -126,7 +86,42 @@ definitions:
             type: integer
         type: object
     type: object
-  models.DeviceProperties:
+  models.DeviceModel:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/models.DeviceAction'
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      device:
+        $ref: '#/definitions/models.ParentDevice'
+        type: object
+      device_id:
+        type: integer
+      id:
+        type: integer
+      is_group:
+        type: boolean
+      name:
+        type: string
+      node:
+        $ref: '#/definitions/models.NodeModel'
+        type: object
+      properties:
+        type: object
+      states:
+        items:
+          $ref: '#/definitions/models.DeviceState'
+        type: array
+      status:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
     type: object
   models.DeviceState:
     properties:
@@ -244,7 +239,7 @@ definitions:
         type: string
       workers:
         items:
-          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc0001e40c0] 349})
+          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc000370e80] 349})
             %!s(bool=false)}'
         type: array
       workflow:
@@ -399,7 +394,20 @@ definitions:
             type: integer
         type: object
     type: object
-  models.NewDevice:
+  models.NewDeviceAction:
+    properties:
+      description:
+        type: string
+      device:
+        $ref: '#/definitions/models.DeviceActionDevice'
+        type: object
+      name:
+        type: string
+      script:
+        $ref: '#/definitions/models.DeviceActionScript'
+        type: object
+    type: object
+  models.NewDeviceModel:
     properties:
       description:
         type: string
@@ -417,19 +425,6 @@ definitions:
         type: string
       type:
         type: string
-    type: object
-  models.NewDeviceAction:
-    properties:
-      description:
-        type: string
-      device:
-        $ref: '#/definitions/models.DeviceActionDevice'
-        type: object
-      name:
-        type: string
-      script:
-        $ref: '#/definitions/models.DeviceActionScript'
-        type: object
     type: object
   models.NewDeviceNode:
     properties:
@@ -748,6 +743,11 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.ResponseAccessList:
+    properties:
+      access_list:
+        type: object
+    type: object
   models.ResponseFlow:
     properties:
       flow:
@@ -780,6 +780,12 @@ definitions:
     properties:
       flow:
         $ref: '#/definitions/models.RedactorFlowModel'
+        type: object
+    type: object
+  models.ResponseRoleModel:
+    properties:
+      role:
+        $ref: '#/definitions/models.RoleModel'
         type: object
     type: object
   models.ResponseScript:
@@ -932,7 +938,7 @@ definitions:
     properties:
       devices:
         items:
-          $ref: '#/definitions/models.Device'
+          $ref: '#/definitions/models.DeviceModel'
         type: array
     type: object
   models.SearchMapResponse:
@@ -1392,9 +1398,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.AccessList'
+            $ref: '#/definitions/models.ResponseAccessList'
             type: object
-        "400":
+        "403":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'
@@ -1419,7 +1425,7 @@ paths:
         name: device
         required: true
         schema:
-          $ref: '#/definitions/models.NewDevice'
+          $ref: '#/definitions/models.NewDeviceModel'
           type: object
       produces:
       - application/json
@@ -1434,6 +1440,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "500":
           description: some error
           schema:
@@ -1468,6 +1476,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -1499,13 +1509,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Device'
+            $ref: '#/definitions/models.DeviceModel'
             type: object
         "400":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -1544,13 +1556,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess'
+            $ref: '#/definitions/models.DeviceModel'
             type: object
         "400":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2051,6 +2065,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2101,6 +2117,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3292,7 +3310,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RoleModel'
+            $ref: '#/definitions/models.ResponseRoleModel'
             type: object
         "400":
           description: some error
@@ -3368,7 +3386,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.RoleModel'
+            $ref: '#/definitions/models.ResponseRoleModel'
             type: object
         "400":
           description: some error
@@ -3456,7 +3474,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.AccessList'
+            $ref: '#/definitions/models.ResponseAccessList'
             type: object
         "400":
           description: some error
@@ -3997,6 +4015,10 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: user not found
+        "403":
+          description: password not valid
         "500":
           description: some error
           schema:
@@ -4019,7 +4041,7 @@ paths:
           schema:
             $ref: '#/definitions/models.ResponseSuccess'
             type: object
-        "400":
+        "403":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'

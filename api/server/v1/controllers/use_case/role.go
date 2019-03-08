@@ -28,7 +28,7 @@ func AddRole(roleParams models.NewRole, adaptors *adaptors.Adaptors) (result *mo
 	}
 
 	result = &models.RoleModel{}
-	err = common.Copy(&result, &role)
+	err = common.Copy(&result, &role, common.JsonEngine)
 
 	return
 }
@@ -66,9 +66,15 @@ func UpdateRole(roleParams *models.UpdateRole, adaptors *adaptors.Adaptors) (ok 
 	return
 }
 
-func GetRoleList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (items []*m.Role, total int64, err error) {
+func GetRoleList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (items []*models.RoleModel, total int64, err error) {
 
-	items, total, err = adaptors.Role.List(limit, offset, order, sortBy)
+	var list []*m.Role
+	if list, total, err = adaptors.Role.List(limit, offset, order, sortBy); err != nil {
+		return
+	}
+
+	items = make([]*models.RoleModel, 0)
+	err = common.Copy(&items, &list, common.JsonEngine)
 
 	return
 }
@@ -84,9 +90,15 @@ func DeleteRoleByName(name string, adaptors *adaptors.Adaptors) (err error) {
 	return
 }
 
-func SearchRole(query string, limit, offset int, adaptors *adaptors.Adaptors) (roles []*m.Role, total int64, err error) {
+func SearchRole(query string, limit, offset int, adaptors *adaptors.Adaptors) (result []*models.RoleModel, total int64, err error) {
 
-	roles, total, err = adaptors.Role.Search(query, limit, offset)
+	var roles []*m.Role
+	if roles, total, err = adaptors.Role.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	result = make([]*models.RoleModel, 0)
+	err = common.Copy(&result, &roles, common.JsonEngine)
 
 	return
 }

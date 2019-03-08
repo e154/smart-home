@@ -21,7 +21,7 @@ func NewControllerRole(common *ControllerCommon) *ControllerRole {
 // @Produce json
 // @Accept  json
 // @Param role body models.NewRole true "role params"
-// @Success 200 {object} models.RoleModel
+// @Success 200 {object} models.ResponseRoleModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 401 "Unauthorized"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -49,7 +49,7 @@ func (c ControllerRole) AddRole(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.SetData(role).Send(ctx)
+	resp.Item("role", role).Send(ctx)
 }
 
 // RoleModel godoc
@@ -59,7 +59,7 @@ func (c ControllerRole) AddRole(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param name path string true "RoleModel name"
-// @Success 200 {object} models.RoleModel
+// @Success 200 {object} models.ResponseRoleModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
@@ -80,7 +80,7 @@ func (c ControllerRole) GetRoleByName(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.SetData(role).Send(ctx)
+	resp.Item("role", role).Send(ctx)
 }
 
 // RoleModel godoc
@@ -90,7 +90,7 @@ func (c ControllerRole) GetRoleByName(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param name path string true "RoleModel name"
-// @Success 200 {object} models.AccessList
+// @Success 200 {object} models.ResponseAccessList
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"

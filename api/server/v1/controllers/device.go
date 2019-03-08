@@ -21,15 +21,16 @@ func NewControllerDevice(common *ControllerCommon) *ControllerDevice {
 // @Description
 // @Produce json
 // @Accept  json
-// @Param device body models.NewDevice true "device params"
+// @Param device body models.NewDeviceModel true "device params"
 // @Success 200 {object} models.NewObjectSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /device [post]
 // @Security ApiKeyAuth
 func (c ControllerDevice) AddDevice(ctx *gin.Context) {
 
-	var params models.NewDevice
+	var params models.NewDeviceModel
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -59,8 +60,9 @@ func (c ControllerDevice) AddDevice(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Device ID"
-// @Success 200 {object} models.Device
+// @Success 200 {object} models.DeviceModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /device/{id} [Get]
@@ -97,8 +99,9 @@ func (c ControllerDevice) GetDeviceById(ctx *gin.Context) {
 // @Accept  json
 // @Param  id path int true "Device ID"
 // @Param  device body models.UpdateDevice true "Update device"
-// @Success 200 {object} models.ResponseSuccess
+// @Success 200 {object} models.DeviceModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /device/{id} [Put]
@@ -157,6 +160,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 // @Param sort_by query string false "sort_by" default(id)
 // @Success 200 {object} models.DeviceListModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /devices [Get]
@@ -184,6 +188,7 @@ func (c ControllerDevice) GetDeviceList(ctx *gin.Context) {
 // @Param  id path int true "Device ID"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /device/{id} [Delete]
@@ -222,6 +227,7 @@ func (c ControllerDevice) DeleteDeviceById(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Success 200 {object} models.SearchDeviceResponse
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth

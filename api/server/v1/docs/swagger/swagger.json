@@ -56,10 +56,10 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.AccessList"
+                            "$ref": "#/definitions/models.ResponseAccessList"
                         }
                     },
-                    "400": {
+                    "403": {
                         "description": "some error",
                         "schema": {
                             "type": "object",
@@ -101,7 +101,7 @@
                         "required": true,
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.NewDevice"
+                            "$ref": "#/definitions/models.NewDeviceModel"
                         }
                     }
                 ],
@@ -119,6 +119,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "some error",
@@ -162,7 +165,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.Device"
+                            "$ref": "#/definitions/models.DeviceModel"
                         }
                     },
                     "400": {
@@ -171,6 +174,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -229,7 +235,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseSuccess"
+                            "$ref": "#/definitions/models.DeviceModel"
                         }
                     },
                     "400": {
@@ -238,6 +244,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -295,6 +304,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -1048,6 +1060,9 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "some error",
                         "schema": {
@@ -1121,6 +1136,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -2909,7 +2927,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.RoleModel"
+                            "$ref": "#/definitions/models.ResponseRoleModel"
                         }
                     },
                     "400": {
@@ -2964,7 +2982,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.RoleModel"
+                            "$ref": "#/definitions/models.ResponseRoleModel"
                         }
                     },
                     "400": {
@@ -3156,7 +3174,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.AccessList"
+                            "$ref": "#/definitions/models.ResponseAccessList"
                         }
                     },
                     "400": {
@@ -3964,6 +3982,12 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "user not found"
+                    },
+                    "403": {
+                        "description": "password not valid"
+                    },
                     "500": {
                         "description": "some error",
                         "schema": {
@@ -3999,7 +4023,7 @@
                             "$ref": "#/definitions/models.ResponseSuccess"
                         }
                     },
-                    "400": {
+                    "403": {
                         "description": "some error",
                         "schema": {
                             "type": "object",
@@ -5259,9 +5283,6 @@
         }
     },
     "definitions": {
-        "models.AccessList": {
-            "type": "object"
-        },
         "models.AccessListDiff": {
             "type": "object"
         },
@@ -5323,62 +5344,6 @@
                 }
             }
         },
-        "models.Device": {
-            "type": "object",
-            "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.DeviceAction"
-                    }
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "device": {
-                    "type": "object",
-                    "$ref": "#/definitions/models.ParentDevice"
-                },
-                "device_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_group": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "node": {
-                    "type": "object",
-                    "$ref": "#/definitions/models.NodeModel"
-                },
-                "properties": {
-                    "type": "object",
-                    "$ref": "#/definitions/models.DeviceProperties"
-                },
-                "states": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.DeviceState"
-                    }
-                },
-                "status": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "models.DeviceAction": {
             "type": "object",
             "properties": {
@@ -5429,7 +5394,7 @@
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Device"
+                        "$ref": "#/definitions/models.DeviceModel"
                     }
                 },
                 "meta": {
@@ -5448,8 +5413,60 @@
                 }
             }
         },
-        "models.DeviceProperties": {
-            "type": "object"
+        "models.DeviceModel": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DeviceAction"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.ParentDevice"
+                },
+                "device_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_group": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "node": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.NodeModel"
+                },
+                "properties": {
+                    "type": "object"
+                },
+                "states": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DeviceState"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
         },
         "models.DeviceState": {
             "type": "object",
@@ -5625,7 +5642,7 @@
                 "workers": {
                     "type": "array",
                     "items": {
-                        "type": "\u0026{%!s(token.Pos=316) %!s(*ast.FieldList=\u0026{323 [0xc0001e40c0] 349}) %!s(bool=false)}"
+                        "type": "\u0026{%!s(token.Pos=316) %!s(*ast.FieldList=\u0026{323 [0xc000370e80] 349}) %!s(bool=false)}"
                     }
                 },
                 "workflow": {
@@ -5860,7 +5877,26 @@
                 }
             }
         },
-        "models.NewDevice": {
+        "models.NewDeviceAction": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceActionDevice"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "script": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceActionScript"
+                }
+            }
+        },
+        "models.NewDeviceModel": {
             "type": "object",
             "properties": {
                 "description": {
@@ -5885,25 +5921,6 @@
                 },
                 "type": {
                     "type": "string"
-                }
-            }
-        },
-        "models.NewDeviceAction": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "device": {
-                    "type": "object",
-                    "$ref": "#/definitions/models.DeviceActionDevice"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "script": {
-                    "type": "object",
-                    "$ref": "#/definitions/models.DeviceActionScript"
                 }
             }
         },
@@ -6394,6 +6411,14 @@
                 }
             }
         },
+        "models.ResponseAccessList": {
+            "type": "object",
+            "properties": {
+                "access_list": {
+                    "type": "object"
+                }
+            }
+        },
         "models.ResponseFlow": {
             "type": "object",
             "properties": {
@@ -6443,6 +6468,15 @@
                 "flow": {
                     "type": "object",
                     "$ref": "#/definitions/models.RedactorFlowModel"
+                }
+            }
+        },
+        "models.ResponseRoleModel": {
+            "type": "object",
+            "properties": {
+                "role": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.RoleModel"
                 }
             }
         },
@@ -6679,7 +6713,7 @@
                 "devices": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Device"
+                        "$ref": "#/definitions/models.DeviceModel"
                     }
                 }
             }

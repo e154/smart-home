@@ -42,7 +42,7 @@ func GetNodeById(nodeId int64, adaptors *adaptors.Adaptors) (result *models.Node
 	}
 
 	result = &models.NodeModel{}
-	err = common.Copy(&result, &node)
+	err = common.Copy(&result, &node, common.JsonEngine)
 
 	return
 }
@@ -80,7 +80,7 @@ func GetNodeList(limit, offset int64, order, sortBy string, adaptors *adaptors.A
 	}
 
 	result = make([]*models.NodeModel, 0)
-	err = common.Copy(&result, &list)
+	err = common.Copy(&result, &list, common.JsonEngine)
 
 	return
 }

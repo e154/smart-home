@@ -6,7 +6,7 @@ type NewDeviceNode struct {
 	Id int64 `json:"id"`
 }
 
-type NewDevice struct {
+type NewDeviceModel struct {
 	Name        string                 `json:"name"`
 	Description string                 `json:"description"`
 	Status      string                 `json:"status"`
@@ -30,14 +30,13 @@ type ParentDevice struct {
 	Id int64 `json:"id"`
 }
 
-type DeviceProperties map[string]interface{}
 
-type Device struct {
+type DeviceModel struct {
 	Id          int64            `json:"id"`
 	Name        string           `json:"name"`
 	Description string           `json:"description"`
 	Node        *NodeModel       `json:"node"`
-	Properties  DeviceProperties `json:"properties"`
+	Properties  map[string]interface{} `json:"properties"`
 	Type        string           `json:"type"`
 	Status      string           `json:"status"`
 	IsGroup     bool             `json:"is_group"`
@@ -49,17 +48,12 @@ type Device struct {
 	DeviceId    *int64           `json:"device_id"`
 }
 
-type Devices []*Device
-
 type ResponseDevice struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		Device *Device `json:"device"`
-	} `json:"data"`
+	Device *DeviceModel `json:"device"`
 }
 
 type DeviceListModel struct {
-	Items []Device
+	Items []DeviceModel `json:"items"`
 	Meta  struct {
 		Limit        int `json:"limit"`
 		Offset       int `json:"offset"`
@@ -68,5 +62,5 @@ type DeviceListModel struct {
 }
 
 type SearchDeviceResponse struct {
-	Devices []Device `json:"devices"`
+	Devices []DeviceModel `json:"devices"`
 }
