@@ -224,3 +224,32 @@ func (c ControllerDeviceAction) GetDeviceActionList(ctx *gin.Context) {
 	resp.SetData(items).Send(ctx)
 	return
 }
+
+// Role godoc
+// @tags device_action
+// @Summary Search device_action
+// @Description Search device_action by name
+// @Produce json
+// @Accept  json
+// @Param query query string false "query"
+// @Param limit query int true "limit" default(10)
+// @Param offset query int true "offset" default(0)
+// @Success 200 {object} models.SearchDeviceActionResponse
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Security ApiKeyAuth
+// @Router /device_action1/search [Get]
+func (c ControllerDeviceAction) Search(ctx *gin.Context) {
+
+	query, limit, offset := c.select2(ctx)
+	actions, _, err := SearchDeviceAction(query, limit, offset, c.adaptors)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Item("actions", actions)
+	resp.Send(ctx)
+}

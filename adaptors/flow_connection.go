@@ -21,7 +21,6 @@ func GetConnectionAdaptor(d *gorm.DB) *Connection {
 
 func (n *Connection) Add(con *m.Connection) (id uuid.UUID, err error) {
 	dbConnection := n.toDb(con)
-	dbConnection.GraphSettings.UnmarshalJSON([]byte("{}"))
 	if id, err = n.table.Add(dbConnection); err != nil {
 		return
 	}
@@ -47,8 +46,8 @@ func (n *Connection) Update(con *m.Connection) (err error) {
 	return
 }
 
-func (n *Connection) Delete(conId uuid.UUID) (err error) {
-	err = n.table.Delete(conId)
+func (n *Connection) Delete(conIds []uuid.UUID) (err error) {
+	err = n.table.Delete(conIds)
 	return
 }
 
@@ -63,6 +62,23 @@ func (n *Connection) List(limit, offset int64, orderBy, sort string) (list []*m.
 		con := n.fromDb(dbConnection)
 		list = append(list, con)
 	}
+
+	return
+}
+
+func (n *Connection) AddOrUpdateConnection(connection *m.Connection) (err error) {
+
+	if connection.Uuid.String() == "00000000-0000-0000-0000-000000000000" {
+		_, err = n.Add(connection)
+		return
+	}
+
+	if _, err = n.table.GetById(connection.Uuid); err != nil {
+		_, err = n.Add(connection)
+		return
+	}
+
+	err = n.Update(connection)
 
 	return
 }
@@ -95,6 +111,9 @@ func (n *Connection) toDb(con *m.Connection) (dbConnection *db.Connection) {
 		Direction:     con.Direction,
 		GraphSettings: con.GraphSettings,
 		FlowId:        con.FlowId,
+	}
+	if dbConnection.GraphSettings == nil {
+		dbConnection.GraphSettings.UnmarshalJSON([]byte("{}"))
 	}
 	return
 }

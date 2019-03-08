@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"github.com/gin-gonic/gin"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/api/server/v1/models"
 )
 
 type ControllerFlow struct {
@@ -21,7 +21,7 @@ func NewControllerFlow(common *ControllerCommon) *ControllerFlow {
 // @Description
 // @Produce json
 // @Accept  json
-// @Param flow body models.NewFlow true "flow params"
+// @Param flow body models.NewFlowModel true "flow params"
 // @Success 200 {object} models.NewObjectSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -29,9 +29,26 @@ func NewControllerFlow(common *ControllerCommon) *ControllerFlow {
 // @Security ApiKeyAuth
 func (c ControllerFlow) AddFlow(ctx *gin.Context) {
 
+	flow := &models.NewFlowModel{}
+	if err := ctx.ShouldBindJSON(&flow); err != nil {
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	id, errs, err := AddFlow(flow, c.adaptors, c.core)
+	if len(errs) > 0 {
+		err400 := NewError(400)
+		err400.ValidationToErrors(errs).Send(ctx)
+		return
+	}
+
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
 
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.Item("id", id).Send(ctx)
 }
 
 // Flow godoc
@@ -78,7 +95,7 @@ func (c ControllerFlow) GetFlowById(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param id path int true "Flow ID"
-// @Success 200 {object} models.FlowModel
+// @Success 200 {object} models.RedactorFlowModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -115,7 +132,7 @@ func (c ControllerFlow) GetFlowRedactor(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param  id path int true "Flow ID"
-// @Param  flow body models.UpdateFlowModel true "Update flow"
+// @Param  flow body models.RedactorFlowModel true "Update flow"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
@@ -126,23 +143,32 @@ func (c ControllerFlow) UpdateFlowRedactor(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	redactor := &m.RedactorFlow{}
+	redactor := &models.RedactorFlowModel{}
 	if err := ctx.ShouldBindJSON(&redactor); err != nil {
-		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
 	redactor.Id = int64(aid)
 
-	result, err := UpdateFlowRedactor(redactor, c.adaptors)
+	result, errs, err := UpdateFlowRedactor(redactor, c.adaptors, c.core)
+	if len(errs) > 0 {
+		err400 := NewError(400)
+		err400.ValidationToErrors(errs).Send(ctx)
+		return
+	}
+
 	if err != nil {
-		NewError(500, err).Send(ctx)
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
 	}
 
 	resp := NewSuccess()
@@ -156,7 +182,7 @@ func (c ControllerFlow) UpdateFlowRedactor(ctx *gin.Context) {
 // @Produce json
 // @Accept  json
 // @Param  id path int true "Flow ID"
-// @Param  flow body models.UpdateFlow true "Update flow"
+// @Param  flow body models.UpdateFlowModel true "Update flow"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
@@ -179,7 +205,7 @@ func (c ControllerFlow) UpdateFlow(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Param order query string false "order" default(DESC)
 // @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.FlowListModel
+// @Success 200 {object} models.ResponseFlowList
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -212,6 +238,24 @@ func (c ControllerFlow) GetFlowList(ctx *gin.Context) {
 // @Router /flow/{id} [Delete]
 // @Security ApiKeyAuth
 func (c ControllerFlow) DeleteFlowById(ctx *gin.Context) {
+
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	if err = DeleteFlowById(int64(aid), c.adaptors, c.core); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
 
 	resp := NewSuccess()
 	resp.Send(ctx)

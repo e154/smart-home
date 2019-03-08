@@ -40,7 +40,7 @@ func (c ControllerMap) AddMap(ctx *gin.Context) {
 	n := &m.Map{
 		Name:        params.Name,
 		Description: params.Description,
-		Options:     params.Options,
+		Options:     []byte(params.Options),
 	}
 
 	_, id, errs, err := AddMap(n, c.adaptors, c.core)

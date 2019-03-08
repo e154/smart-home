@@ -69,8 +69,8 @@ func (n FlowElements) Update(m *FlowElement) (err error) {
 	return
 }
 
-func (n FlowElements) Delete(id uuid.UUID) (err error) {
-	err = n.Db.Delete(&FlowElement{Uuid: id}).Error
+func (n FlowElements) Delete(ids []uuid.UUID) (err error) {
+	err = n.Db.Delete(&FlowElement{}, "uuid in ?", ids).Error
 	return
 }
 

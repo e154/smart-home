@@ -1,30 +1,29 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 )
 
 type NewMap struct {
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Options     json.RawMessage `json:"options"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Options     string `json:"options"`
 }
 
 type UpdateMap struct {
-	Id          int64           `json:"id"`
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Options     json.RawMessage `json:"options"`
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Options     string `json:"options"`
 }
 
 type Map struct {
-	Id          int64           `json:"id"`
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Options     json.RawMessage `json:"options"`
-	CreatedAt   time.Time       `json:"created_at"`
-	UpdatedAt   time.Time       `json:"updated_at"`
+	Id          int64     `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Options     string    `json:"options"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type Maps []*Map

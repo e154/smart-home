@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
+	"encoding/json"
 )
 
 type FlowElement struct {
@@ -21,11 +22,7 @@ func GetFlowElementAdaptor(d *gorm.DB) *FlowElement {
 
 func (n *FlowElement) Add(element *m.FlowElement) (id uuid.UUID, err error) {
 	dbFlowElement := n.toDb(element)
-	dbFlowElement.GraphSettings.UnmarshalJSON([]byte("{}"))
-	if id, err = n.table.Add(dbFlowElement); err != nil {
-		return
-	}
-
+	id, err = n.table.Add(dbFlowElement)
 	return
 }
 
@@ -63,8 +60,25 @@ func (n *FlowElement) Update(element *m.FlowElement) (err error) {
 	return
 }
 
-func (n *FlowElement) Delete(elementId uuid.UUID) (err error) {
-	err = n.table.Delete(elementId)
+func (n *FlowElement) AddOrUpdateFlowElement(element *m.FlowElement) (err error) {
+
+	if element.Uuid.String() == "00000000-0000-0000-0000-000000000000" {
+		_, err = n.Add(element)
+		return
+	}
+
+	if _, err = n.table.GetById(element.Uuid); err != nil {
+		_, err = n.Add(element)
+		return
+	}
+
+	err = n.Update(element)
+
+	return
+}
+
+func (n *FlowElement) Delete(ids []uuid.UUID) (err error) {
+	err = n.table.Delete(ids)
 	return
 }
 
@@ -92,7 +106,6 @@ func (n *FlowElement) fromDb(dbFlowElement *db.FlowElement) (element *m.FlowElem
 		FlowLink:      dbFlowElement.FlowLink,
 		ScriptId:      dbFlowElement.ScriptId,
 		FlowId:        dbFlowElement.FlowId,
-		GraphSettings: dbFlowElement.GraphSettings,
 		PrototypeType: dbFlowElement.PrototypeType,
 		CreatedAt:     dbFlowElement.CreatedAt,
 		UpdatedAt:     dbFlowElement.UpdatedAt,
@@ -103,6 +116,11 @@ func (n *FlowElement) fromDb(dbFlowElement *db.FlowElement) (element *m.FlowElem
 		element.Script, _ = scriptAdaptor.fromDb(dbFlowElement.Script)
 	}
 
+	graphSettings, _ := dbFlowElement.GraphSettings.MarshalJSON()
+	if err := json.Unmarshal(graphSettings, &element.GraphSettings); err != nil {
+		log.Error(err.Error())
+	}
+
 	return
 }
 
@@ -111,12 +129,15 @@ func (n *FlowElement) toDb(element *m.FlowElement) (dbFlowElement *db.FlowElemen
 		Uuid:          element.Uuid,
 		Name:          element.Name,
 		PrototypeType: element.PrototypeType,
-		GraphSettings: element.GraphSettings,
 		ScriptId:      element.ScriptId,
 		FlowLink:      element.FlowLink,
 		FlowId:        element.FlowId,
 		Status:        element.Status,
 		Description:   element.Description,
 	}
+
+	graphSettings, _ := json.Marshal(element.GraphSettings)
+	dbFlowElement.GraphSettings.UnmarshalJSON(graphSettings)
+
 	return
 }

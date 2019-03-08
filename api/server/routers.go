@@ -81,6 +81,7 @@ func (s *Server) setControllers() {
 	v1.PUT("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.Update)
 	v1.DELETE("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.DeleteById)
 	v1.GET("/device_actions/:id", s.af.Auth, s.ControllersV1.DeviceAction.GetDeviceActionList)
+	v1.GET("/device_action1/search", s.af.Auth, s.ControllersV1.DeviceAction.Search)
 
 	// device states
 	v1.POST("/device_state", s.af.Auth, s.ControllersV1.DeviceState.AddState)

@@ -84,3 +84,19 @@ func (n *DeviceActions) List(limit, offset int64, orderBy, sort string) (list []
 
 	return
 }
+
+func (n *DeviceActions) Search(query string, limit, offset int) (list []*DeviceAction, total int64, err error) {
+
+	q := n.Db.Model(&DeviceAction{}).
+		Where("name LIKE ?", "%"+query+"%").
+		Order("name ASC")
+
+	if err = q.Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*DeviceAction, 0)
+	err = q.Find(&list).Error
+
+	return
+}

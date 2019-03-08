@@ -63,7 +63,7 @@ func main() {
 
 				initialService.Reset()
 			})
-			//return
+			return
 		default:
 			fmt.Printf(verboseVersionBanner, "v2", os.Args[0])
 			return

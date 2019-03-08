@@ -550,6 +550,80 @@
                 }
             }
         },
+        "/device_action1/search": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Search device_action by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "device_action"
+                ],
+                "summary": "Search device_action",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.SearchDeviceActionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
         "/device_actions/{id}": {
             "get": {
                 "security": [
@@ -1039,6 +1113,525 @@
                         "schema": {
                             "type": "object",
                             "$ref": "#/definitions/models.SearchDeviceResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "summary": "Add new flow",
+                "parameters": [
+                    {
+                        "description": "flow params",
+                        "name": "flow",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.NewFlowModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.NewObjectSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get flow by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "summary": "Show flow",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Flow ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.FlowModel"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update flow by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "summary": "Update flow",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Flow ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update flow",
+                        "name": "flow",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.UpdateFlowModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete flow by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "summary": "Delete flow",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Flow ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow/{id}/redactor": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get flow by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "summary": "Show flow",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Flow ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.RedactorFlowModel"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update flow by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "summary": "Update flow",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Flow ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update flow",
+                        "name": "flow",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.RedactorFlowModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/flows": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get flow list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "summary": "Flow list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "DESC",
+                        "description": "order",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "sort_by",
+                        "name": "sort_by",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseFlowList"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/flows/search": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Search flow by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "summary": "Search flow",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.SearchFlowResponse"
                         }
                     },
                     "400": {
@@ -3069,6 +3662,68 @@
                 }
             }
         },
+        "/script/{id}/exec_src": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Execute script by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "script"
+                ],
+                "summary": "Execute script",
+                "parameters": [
+                    {
+                        "description": "Exec script",
+                        "name": "script",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ExecScript"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseScriptExec"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
         "/scripts": {
             "get": {
                 "security": [
@@ -3831,80 +4486,6 @@
                 }
             }
         },
-        "/workflow/search": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Search workflow by name",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "workflow"
-                ],
-                "summary": "Search workflow",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "query",
-                        "name": "query",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "limit",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 0,
-                        "description": "offset",
-                        "name": "offset",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.SearchWorkflowResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    },
-                    "404": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    },
-                    "500": {
-                        "description": "some error",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.ErrorModel"
-                        }
-                    }
-                }
-            }
-        },
         "/workflow/{id}": {
             "get": {
                 "security": [
@@ -3937,7 +4518,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseWorkflow"
+                            "$ref": "#/definitions/models.ResponseWorkflowModel"
                         }
                     },
                     "400": {
@@ -4549,6 +5130,80 @@
                     }
                 }
             }
+        },
+        "/workflows/search": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Search workflow by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workflow"
+                ],
+                "summary": "Search workflow",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.SearchWorkflowResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -4797,6 +5452,217 @@
         "models.ErrorModelErrors": {
             "type": "object"
         },
+        "models.ExecScript": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.FlowConnectionModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "direction": {
+                    "type": "string"
+                },
+                "element_from": {
+                    "type": "string"
+                },
+                "element_to": {
+                    "type": "string"
+                },
+                "flow_id": {
+                    "type": "integer"
+                },
+                "graph_settings": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "point_from": {
+                    "type": "integer"
+                },
+                "point_to": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.FlowElementModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "flow_id": {
+                    "type": "integer"
+                },
+                "flow_link": {
+                    "type": "integer"
+                },
+                "graph_settings": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "prototype_type": {
+                    "type": "string"
+                },
+                "script": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Script"
+                },
+                "script_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.FlowModel": {
+            "type": "object",
+            "properties": {
+                "connections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowConnectionModel"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "flow_elements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowElementModel"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "workers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowWorkerModel"
+                    }
+                },
+                "workflow": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.FlowWorkflowModel"
+                },
+                "workflow_id": {
+                    "type": "integer"
+                },
+                "workflow_scenario_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.FlowWorkerModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "device_action": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceAction"
+                },
+                "device_action_id": {
+                    "type": "integer"
+                },
+                "flow_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "workflow": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.FlowWorkflowModel"
+                },
+                "workflow_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.FlowWorkflowModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Image": {
             "type": "object",
             "properties": {
@@ -4969,6 +5835,48 @@
                 },
                 "system_name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.NewFlowModel": {
+            "type": "object",
+            "properties": {
+                "connections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowConnectionModel"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "flow_elements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowElementModel"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "workers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowWorkerModel"
+                    }
+                },
+                "workflow": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.FlowWorkflowModel"
+                },
+                "workflow_id": {
+                    "type": "integer"
+                },
+                "workflow_scenario_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -5233,6 +6141,207 @@
                 }
             }
         },
+        "models.RedactorConnector": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "type": "string"
+                },
+                "end": {
+                    "type": "object",
+                    "properties": {
+                        "object": {
+                            "type": "string"
+                        },
+                        "point": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "flow_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "object",
+                    "properties": {
+                        "object": {
+                            "type": "string"
+                        },
+                        "point": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RedactorFlowModel": {
+            "type": "object",
+            "properties": {
+                "connectors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.RedactorConnector"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "objects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.RedactorObject"
+                    }
+                },
+                "scenario": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.WorkflowScenario"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "update_at": {
+                    "type": "string"
+                },
+                "workers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.WorkerModel"
+                    }
+                },
+                "workflow": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.RedactorWorkflowModel"
+                }
+            }
+        },
+        "models.RedactorObject": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "flow_link": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.FlowModel"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "object",
+                    "properties": {
+                        "left": {
+                            "type": "integer"
+                        },
+                        "top": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "prototype_type": {
+                    "type": "string"
+                },
+                "script": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Script"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "object",
+                    "properties": {
+                        "action": {
+                            "type": "string"
+                        },
+                        "end": {
+                            "type": "object"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "start": {
+                            "type": "object"
+                        },
+                        "status": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "models.RedactorWorkflowModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ResponseFlowList": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.FlowModel"
+                            }
+                        },
+                        "limit": {
+                            "type": "integer"
+                        },
+                        "offset": {
+                            "type": "integer"
+                        },
+                        "total": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
         "models.ResponseScript": {
             "type": "object",
             "properties": {
@@ -5297,23 +6406,6 @@
         "models.ResponseSuccess": {
             "type": "object"
         },
-        "models.ResponseWorkflow": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object",
-                    "properties": {
-                        "workflow": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.Workflow"
-                        }
-                    }
-                }
-            }
-        },
         "models.ResponseWorkflowList": {
             "type": "object",
             "properties": {
@@ -5326,7 +6418,7 @@
                         "items": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Workflow"
+                                "$ref": "#/definitions/models.WorkflowModel"
                             }
                         },
                         "limit": {
@@ -5337,6 +6429,23 @@
                         },
                         "total": {
                             "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "models.ResponseWorkflowModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "workflow": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.WorkflowModel"
                         }
                     }
                 }
@@ -5427,6 +6536,17 @@
                 }
             }
         },
+        "models.SearchDeviceActionResponse": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DeviceAction"
+                    }
+                }
+            }
+        },
         "models.SearchDeviceResponse": {
             "type": "object",
             "properties": {
@@ -5434,6 +6554,17 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Device"
+                    }
+                }
+            }
+        },
+        "models.SearchFlowResponse": {
+            "type": "object",
+            "properties": {
+                "flows": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowModel"
                     }
                 }
             }
@@ -5488,7 +6619,7 @@
                 "workflows": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Workflow"
+                        "$ref": "#/definitions/models.WorkflowModel"
                     }
                 }
             }
@@ -5563,6 +6694,57 @@
                 },
                 "system_name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UpdateFlowModel": {
+            "type": "object",
+            "properties": {
+                "connections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowConnectionModel"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "flow_elements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowElementModel"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "workers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowWorkerModel"
+                    }
+                },
+                "workflow": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.FlowWorkflowModel"
+                },
+                "workflow_id": {
+                    "type": "integer"
+                },
+                "workflow_scenario_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -5927,7 +7109,51 @@
                 }
             }
         },
-        "models.Workflow": {
+        "models.WorkerModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "device_action": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceAction"
+                },
+                "device_action_id": {
+                    "type": "integer"
+                },
+                "flow": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.FlowModel"
+                },
+                "flow_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "workflow": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.WorkflowModel"
+                },
+                "workflow_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.WorkflowModel": {
             "type": "object",
             "properties": {
                 "created_at": {

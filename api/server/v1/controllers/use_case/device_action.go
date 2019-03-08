@@ -95,3 +95,10 @@ func GetDeviceActionList(deviceId int64, adaptors *adaptors.Adaptors) (actions [
 
 	return
 }
+
+func SearchDeviceAction(query string, limit, offset int, adaptors *adaptors.Adaptors) (actions []*m.DeviceAction, total int64, err error) {
+
+	actions, total, err = adaptors.DeviceAction.Search(query, limit, offset)
+
+	return
+}

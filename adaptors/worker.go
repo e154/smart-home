@@ -62,8 +62,8 @@ func (n *Worker) Update(worker *m.Worker) (err error) {
 	return
 }
 
-func (n *Worker) Delete(workerId int64) (err error) {
-	err = n.table.Delete(workerId)
+func (n *Worker) Delete(ids []int64) (err error) {
+	err = n.table.Delete(ids)
 	return
 }
 

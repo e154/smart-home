@@ -59,8 +59,8 @@ func (n Connections) Update(m *Connection) (err error) {
 	return
 }
 
-func (n Connections) Delete(id uuid.UUID) (err error) {
-	err = n.Db.Delete(&Connection{Uuid: id}).Error
+func (n Connections) Delete(ids []uuid.UUID) (err error) {
+	err = n.Db.Delete(&Connection{}, "uuid in (?)", ids).Error
 	return
 }
 

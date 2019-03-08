@@ -1,65 +1,331 @@
 package use_case
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"encoding/json"
 	"errors"
-	"github.com/e154/smart-home/common/debug"
-	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/validation"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/uuid"
+	"github.com/e154/smart-home/system/core"
 )
 
-func GetFlowById(flowId int64, adaptors *adaptors.Adaptors) (flow *m.Flow, err error) {
+func AddFlow(newFlow *models.NewFlowModel, adaptors *adaptors.Adaptors, core *core.Core) (id int64, errs []*validation.Error, err error) {
 
-	flow, err = adaptors.Flow.GetById(flowId)
+	flow := &m.Flow{}
+	if err = common.Copy(&flow, &newFlow); err != nil {
+		return
+	}
+
+	if newFlow.Workflow != nil {
+		flow.WorkflowId = newFlow.Workflow.Id
+	}
+
+	if newFlow.Scenario != nil {
+		flow.WorkflowScenarioId = newFlow.Scenario.Id
+	}
+
+	_, errs = flow.Valid()
+	if len(errs) > 0 {
+		return
+	}
+
+	if id, err = adaptors.Flow.Add(flow); err != nil {
+		return
+	}
+
+	err = core.AddFlow(flow)
 
 	return
 }
-
-func GetFlowRedactor(flowId int64, adaptors *adaptors.Adaptors) (redactorFlow *m.RedactorFlow, err error) {
+func GetFlowById(flowId int64, adaptors *adaptors.Adaptors) (flowDto *models.FlowModel, err error) {
 
 	var flow *m.Flow
 	if flow, err = adaptors.Flow.GetById(flowId); err != nil {
 		return
 	}
 
-	redactorFlow, err = ExportToRedactor(flow, adaptors)
+	flowDto = &models.FlowModel{}
+	err = common.Copy(&flowDto, &flow, common.JsonEngine)
 
 	return
 }
 
-func GetFlowList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (items []*m.Flow, total int64, err error) {
+func GetFlowRedactor(flowId int64, adaptors *adaptors.Adaptors) (redactorFlowDto *models.RedactorFlowModel, err error) {
 
-	items, total, err = adaptors.Flow.List(limit, offset, order, sortBy)
+	var flow *m.Flow
+	if flow, err = adaptors.Flow.GetById(flowId); err != nil {
+		return
+	}
+
+	var redactorFlow *m.RedactorFlow
+	if redactorFlow, err = ExportToRedactor(flow, adaptors); err != nil {
+		return
+	}
+
+	redactorFlowDto = &models.RedactorFlowModel{}
+	err = common.Copy(&redactorFlowDto, &redactorFlow, common.JsonEngine)
 
 	return
 }
 
-func UpdateFlowRedactor(redactor *m.RedactorFlow, adaptors *adaptors.Adaptors) (result *m.RedactorFlow, err error) {
+func GetFlowList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (listDto []*models.FlowModel, total int64, err error) {
 
-	debug.Println(redactor)
-	fmt.Println("--------")
+	var list []*m.Flow
+	if list, total, err = adaptors.Flow.List(limit, offset, order, sortBy); err != nil {
+		return
+	}
 
-	newFlow := &m.Flow{
-		Id:                 redactor.Id,
-		Name:               redactor.Name,
-		Description:        redactor.Description,
-		Status:             redactor.Status,
-		WorkflowId:         redactor.Workflow.Id,
-		WorkflowScenarioId: redactor.Scenario.Id,
+	listDto = make([]*models.FlowModel, 0)
+	err = common.Copy(&listDto, &list)
+
+	return
+}
+
+func UpdateFlowRedactor(params *models.RedactorFlowModel,
+	adaptors *adaptors.Adaptors,
+	core *core.Core) (result *models.RedactorFlowModel, errs []*validation.Error, err error) {
+
+	//debug.Println(params)
+	//fmt.Println("--------")
+
+	var oldFlow *m.Flow
+	if oldFlow, err = adaptors.Flow.GetById(params.Id); err != nil {
+		return
+	}
+
+	newFlow := &m.Flow{}
+	if err = common.Copy(&newFlow, &params, common.JsonEngine); err != nil {
+		return
+	}
+	if params.Scenario != nil {
+		newFlow.WorkflowScenarioId = params.Scenario.Id
+	}
+	if params.Workflow != nil {
+		newFlow.WorkflowId = params.Workflow.Id
+	}
+
+	_, errs = newFlow.Valid()
+	if len(errs) > 0 {
+		return
 	}
 
 	if err = adaptors.Flow.Update(newFlow); err != nil {
 		return
 	}
 
+	//update flow elements
+	flowTodoRemove := make([]uuid.UUID, 0)
+	for _, element := range oldFlow.FlowElements {
+		exist := false
+		for _, object := range params.Objects {
+			if object.Id == element.Uuid.String() {
+				exist = true
+				break
+			}
+		}
+
+		if !exist {
+			flowTodoRemove = append(flowTodoRemove, element.Uuid)
+		}
+	}
+
+	if len(flowTodoRemove) > 0 {
+		if err = adaptors.FlowElement.Delete(flowTodoRemove); err != nil {
+			return
+		}
+	}
+
+	// insert or update flow elements
+	for _, element := range params.Objects {
+
+		fl := &m.FlowElement{}
+		common.Copy(&fl, &element)
+		common.Copy(&fl.GraphSettings.Position, &element.Position)
+		fl.Uuid.Scan(element.Id)
+		fl.FlowId = newFlow.Id
+		fl.Name = element.Title
+
+		if element.FlowLink != nil && element.FlowLink.Id != 0 {
+			fl.FlowLink = &element.FlowLink.Id
+		}
+
+		if element.Script != nil {
+			fl.ScriptId = &element.Script.Id
+		}
+
+		switch element.Type.Name {
+		case "event":
+			if element.Type.Start != nil {
+				fl.PrototypeType = common.FlowElementsPrototypeMessageHandler
+			} else if element.Type.End != nil {
+				fl.PrototypeType = common.FlowElementsPrototypeMessageEmitter
+			}
+		case "task":
+			fl.PrototypeType = common.FlowElementsPrototypeTask
+		case "gateway":
+			fl.PrototypeType = common.FlowElementsPrototypeGateway
+		case "flow":
+			fl.PrototypeType = common.FlowElementsPrototypeFlow
+		default:
+			fl.PrototypeType = common.FlowElementsPrototypeDefault
+		}
+
+		_, errs = fl.Valid()
+		if len(errs) > 0 {
+			for _, err := range errs {
+				log.Errorf("%s %s",err.Key, err.Message)
+			}
+			return
+		}
+
+		if err = adaptors.FlowElement.AddOrUpdateFlowElement(fl); err != nil {
+			return
+		}
+	}
+
+	// connectors
+	connTodoRemove := make([]uuid.UUID, 0)
+	for _, oldConn := range oldFlow.Connections {
+		exist := false
+		for _, newConn := range params.Connectors {
+			if oldConn.Uuid.String() == newConn.Id {
+				exist = true
+				break
+			}
+		}
+
+		if !exist {
+			connTodoRemove = append(connTodoRemove, oldConn.Uuid)
+		}
+	}
+
+	if len(connTodoRemove) > 0 {
+		if err = adaptors.Connection.Delete(connTodoRemove); err != nil {
+			return
+		}
+	}
+
+	for _, c := range params.Connectors {
+
+		conn := &m.Connection{
+			Name:      c.Title,
+			PointFrom: c.Start.Point,
+			PointTo:   c.End.Point,
+			FlowId:    newFlow.Id,
+			Direction: c.Direction,
+		}
+		conn.Uuid.Scan(c.Id)
+		conn.ElementFrom.Scan(c.Start.Object)
+		conn.ElementTo.Scan(c.End.Object)
+
+		_, errs = conn.Valid()
+		if len(errs) > 0 {
+			for _, err := range errs {
+				log.Errorf("%s %s",err.Key, err.Message)
+			}
+			return
+		}
+
+		if err = adaptors.Connection.AddOrUpdateConnection(conn); err != nil {
+			return
+		}
+	}
+
+	// workers
+	workersTodoRemove := make([]*m.Worker, 0)
+	for _, oldWorker := range oldFlow.Workers {
+		exist := false
+		for _, newWorker := range params.Workers {
+			if newWorker.Id == oldWorker.Id {
+				exist = true
+				break
+			}
+		}
+
+		if !exist {
+			workersTodoRemove = append(workersTodoRemove, oldWorker)
+		}
+	}
+
+	for _, worker := range workersTodoRemove {
+		if err = core.RemoveWorker(worker); err == nil {
+			if err = adaptors.Worker.Delete([]int64{worker.Id}); err != nil {
+				return
+			}
+		}
+	}
+
+	for _, w := range params.Workers {
+		worker := &m.Worker{}
+		common.Copy(&worker, &w)
+		worker.WorkflowId = newFlow.Workflow.Id
+		worker.FlowId = newFlow.Id
+		worker.DeviceActionId = w.DeviceAction.Id
+
+		_, errs = worker.Valid()
+		if len(errs) > 0 {
+			for _, err := range errs {
+				log.Errorf("%s %s",err.Key, err.Message)
+			}
+			return
+		}
+
+		if worker.Id == 0 {
+			if _, err = adaptors.Worker.Add(worker); err != nil {
+				return
+			}
+		} else {
+			if err = adaptors.Worker.Update(worker); err != nil {
+				return
+			}
+		}
+	}
+
+	// exit
+	if newFlow, err = adaptors.Flow.GetById(params.Id); err != nil {
+		return
+	}
+
+	if err = core.UpdateFlow(newFlow); err != nil {
+		return
+	}
+
+	var redactorFlow *m.RedactorFlow
+	if redactorFlow, err = ExportToRedactor(newFlow, adaptors); err != nil {
+		return
+	}
+
+	result = &models.RedactorFlowModel{}
+	err = common.Copy(&result, &redactorFlow)
+
 	return
 }
 
-func SearchFlow(query string, limit, offset int, adaptors *adaptors.Adaptors) (flows []*m.Flow, total int64, err error) {
+func SearchFlow(query string, limit, offset int, adaptors *adaptors.Adaptors) (listDto []*models.FlowModel, total int64, err error) {
+	var list []*m.Flow
+	if 	list, total, err = adaptors.Flow.Search(query, limit, offset); err != nil {
+		return
+	}
 
-	flows, total, err = adaptors.Flow.Search(query, limit, offset)
+	listDto = make([]*models.FlowModel, 0)
+	err = common.Copy(&listDto, &list)
+	return
+}
 
+func DeleteFlowById(flowId int64, adaptors *adaptors.Adaptors, core *core.Core) (err error) {
+
+	var flow *m.Flow
+	if flow, err = adaptors.Flow.GetById(flowId); err != nil {
+		return
+	}
+
+	if err = core.RemoveFlow(flow); err != nil {
+		return
+	}
+
+	err = adaptors.Flow.Delete(flowId)
 	return
 }
 
@@ -82,12 +348,14 @@ func ExportToRedactor(f *m.Flow, adaptors *adaptors.Adaptors) (redactorFlow *m.R
 		Description: f.Description,
 		Workflow:    f.Workflow,
 		Scenario:    scenario,
+		Workers:     make([]*m.Worker, 0),
 		Objects:     make([]*m.RedactorObject, 0),
 		Connectors:  make([]*m.RedactorConnector, 0),
 		CreatedAt:   f.CreatedAt,
 		UpdatedAt:   f.UpdatedAt,
 	}
 
+	// elements
 	for _, el := range f.FlowElements {
 		object := &m.RedactorObject{
 			Id:            el.Uuid,
@@ -123,16 +391,11 @@ func ExportToRedactor(f *m.Flow, adaptors *adaptors.Adaptors) (redactorFlow *m.R
 
 		}
 
-		gst := &m.RedactorGrapSettings{}
-		if err = json.Unmarshal([]byte(el.GraphSettings), &gst); err != nil {
-			return
-		}
-
-		object.Position = gst.Position
-
+		common.Copy(&object.Position, &el.GraphSettings.Position)
 		redactorFlow.Objects = append(redactorFlow.Objects, object)
 	}
 
+	// connections
 	for _, con := range f.Connections {
 		connector := &m.RedactorConnector{
 			Id:        con.Uuid,
@@ -148,6 +411,9 @@ func ExportToRedactor(f *m.Flow, adaptors *adaptors.Adaptors) (redactorFlow *m.R
 
 		redactorFlow.Connectors = append(redactorFlow.Connectors, connector)
 	}
+
+	// workers
+	common.Copy(&redactorFlow.Workers, &f.Workers)
 
 	return
 }

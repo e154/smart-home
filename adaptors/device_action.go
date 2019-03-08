@@ -82,11 +82,29 @@ func (n *DeviceAction) List(limit, offset int64, orderBy, sort string) (list []*
 	return
 }
 
+func (n *DeviceAction) Search(query string, limit, offset int) (list []*m.DeviceAction, total int64, err error) {
+	var dbList []*db.DeviceAction
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.DeviceAction, 0)
+	for _, dbDeviceAction := range dbList {
+		ver := n.fromDb(dbDeviceAction)
+		list = append(list, ver)
+	}
+
+	return
+}
+
 func (n *DeviceAction) fromDb(dbDeviceAction *db.DeviceAction) (device *m.DeviceAction) {
+
 	device = &m.DeviceAction{
 		Id:          dbDeviceAction.Id,
 		Name:        dbDeviceAction.Name,
 		Description: dbDeviceAction.Description,
+		DeviceId:    dbDeviceAction.DeviceId,
+		ScriptId:    dbDeviceAction.ScriptId,
 		CreatedAt:   dbDeviceAction.CreatedAt,
 		UpdatedAt:   dbDeviceAction.UpdatedAt,
 	}
@@ -95,14 +113,12 @@ func (n *DeviceAction) fromDb(dbDeviceAction *db.DeviceAction) (device *m.Device
 	if dbDeviceAction.Device != nil {
 		deviceAdaptor := GetDeviceAdaptor(n.db)
 		device.Device = deviceAdaptor.fromDb(dbDeviceAction.Device)
-		device.DeviceId = dbDeviceAction.DeviceId
 	}
 
 	// script
 	if dbDeviceAction.Script != nil {
 		scriptADaptor := GetScriptAdaptor(n.db)
 		device.Script, _ = scriptADaptor.fromDb(dbDeviceAction.Script)
-		device.ScriptId = dbDeviceAction.ScriptId
 	}
 
 	return

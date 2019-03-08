@@ -62,8 +62,8 @@ func (n Workers) Update(m *Worker) (err error) {
 	return
 }
 
-func (n Workers) Delete(workerId int64) (err error) {
-	err = n.Db.Delete(&Worker{Id: workerId}).Error
+func (n Workers) Delete(ids []int64) (err error) {
+	err = n.Db.Delete(&Worker{}, "id in (?)", ids).Error
 	return
 }
 

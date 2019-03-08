@@ -9,7 +9,7 @@ import (
 
 type Connection struct {
 	Uuid          uuid.UUID       `json:"uuid"`
-	Name          string          `json:"name" valid:"MaxSize(254);Required"`
+	Name          string          `json:"name" valid:"MaxSize(254)"`
 	ElementFrom   uuid.UUID       `json:"element_from" valid:"Required"`
 	ElementTo     uuid.UUID       `json:"element_to" valid:"Required"`
 	PointFrom     int64           `json:"point_from" valid:"Required"`

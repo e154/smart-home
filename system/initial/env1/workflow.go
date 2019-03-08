@@ -76,12 +76,24 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		FlowId:        flow1.Id,
 		Status:        Enabled,
 		PrototypeType: FlowElementsPrototypeMessageHandler,
+		GraphSettings: m.FlowElementGraphSettings{
+			Position: m.FlowElementGraphSettingsPosition{
+				Top: 180,
+				Left: 180,
+			},
+		},
 	}
 	feEmitter := &m.FlowElement{
 		Name:          "emitter",
 		FlowId:        flow1.Id,
 		Status:        Enabled,
 		PrototypeType: FlowElementsPrototypeMessageEmitter,
+		GraphSettings: m.FlowElementGraphSettings{
+			Position: m.FlowElementGraphSettingsPosition{
+				Top: 180,
+				Left: 560,
+			},
+		},
 	}
 	feTask1 := &m.FlowElement{
 		Name:          "task",
@@ -89,6 +101,12 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		Status:        Enabled,
 		PrototypeType: FlowElementsPrototypeTask,
 		ScriptId:      &scripts["base_script"].Id,
+		GraphSettings: m.FlowElementGraphSettings{
+			Position: m.FlowElementGraphSettingsPosition{
+				Top: 160,
+				Left: 340,
+			},
+		},
 	}
 	ok, _ = feHandler.Valid()
 	So(ok, ShouldEqual, true)
@@ -110,15 +128,15 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		ElementTo:   feTask1.Uuid,
 		FlowId:      flow1.Id,
 		PointFrom:   1,
-		PointTo:     1,
+		PointTo:     10,
 	}
 	connect2 := &m.Connection{
 		Name:        "con2",
 		ElementFrom: feTask1.Uuid,
 		ElementTo:   feEmitter.Uuid,
 		FlowId:      flow1.Id,
-		PointFrom:   1,
-		PointTo:     1,
+		PointFrom:   4,
+		PointTo:     3,
 	}
 
 	ok, _ = connect1.Valid()
@@ -167,12 +185,24 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		FlowId:        flow2.Id,
 		Status:        Enabled,
 		PrototypeType: FlowElementsPrototypeMessageHandler,
+		GraphSettings: m.FlowElementGraphSettings{
+			Position: m.FlowElementGraphSettingsPosition{
+				Top: 180,
+				Left: 180,
+			},
+		},
 	}
 	feEmitter2 := &m.FlowElement{
 		Name:          "emitter",
 		FlowId:        flow2.Id,
 		Status:        Enabled,
 		PrototypeType: FlowElementsPrototypeMessageEmitter,
+		GraphSettings: m.FlowElementGraphSettings{
+			Position: m.FlowElementGraphSettingsPosition{
+				Top: 180,
+				Left: 560,
+			},
+		},
 	}
 	feTask2 := &m.FlowElement{
 		Name:          "task",
@@ -180,6 +210,12 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		Status:        Enabled,
 		PrototypeType: FlowElementsPrototypeTask,
 		ScriptId:      &scripts["base_script"].Id,
+		GraphSettings: m.FlowElementGraphSettings{
+			Position: m.FlowElementGraphSettingsPosition{
+				Top: 160,
+				Left: 340,
+			},
+		},
 	}
 	ok, _ = feHandler2.Valid()
 	So(ok, ShouldEqual, true)
@@ -201,15 +237,15 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		ElementTo:   feTask2.Uuid,
 		FlowId:      flow2.Id,
 		PointFrom:   1,
-		PointTo:     1,
+		PointTo:     10,
 	}
 	connect4 := &m.Connection{
 		Name:        "con2",
 		ElementFrom: feTask2.Uuid,
 		ElementTo:   feEmitter2.Uuid,
 		FlowId:      flow2.Id,
-		PointFrom:   1,
-		PointTo:     1,
+		PointFrom:   4,
+		PointTo:     3,
 	}
 
 	ok, _ = connect3.Valid()

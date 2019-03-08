@@ -164,6 +164,146 @@ definitions:
     type: object
   models.ErrorModelErrors:
     type: object
+  models.ExecScript:
+    properties:
+      description:
+        type: string
+      lang:
+        type: string
+      name:
+        type: string
+      source:
+        type: string
+    type: object
+  models.FlowConnectionModel:
+    properties:
+      created_at:
+        type: string
+      direction:
+        type: string
+      element_from:
+        type: string
+      element_to:
+        type: string
+      flow_id:
+        type: integer
+      graph_settings:
+        type: string
+      name:
+        type: string
+      point_from:
+        type: integer
+      point_to:
+        type: integer
+      updated_at:
+        type: string
+      uuid:
+        type: string
+    type: object
+  models.FlowElementModel:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      flow_id:
+        type: integer
+      flow_link:
+        type: integer
+      graph_settings:
+        type: string
+      name:
+        type: string
+      prototype_type:
+        type: string
+      script:
+        $ref: '#/definitions/models.Script'
+        type: object
+      script_id:
+        type: integer
+      status:
+        type: string
+      updated_at:
+        type: string
+      uuid:
+        type: string
+    type: object
+  models.FlowModel:
+    properties:
+      connections:
+        items:
+          $ref: '#/definitions/models.FlowConnectionModel'
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      flow_elements:
+        items:
+          $ref: '#/definitions/models.FlowElementModel'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      workers:
+        items:
+          $ref: '#/definitions/models.FlowWorkerModel'
+        type: array
+      workflow:
+        $ref: '#/definitions/models.FlowWorkflowModel'
+        type: object
+      workflow_id:
+        type: integer
+      workflow_scenario_id:
+        type: integer
+    type: object
+  models.FlowWorkerModel:
+    properties:
+      created_at:
+        type: string
+      device_action:
+        $ref: '#/definitions/models.DeviceAction'
+        type: object
+      device_action_id:
+        type: integer
+      flow_id:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      time:
+        type: string
+      updated_at:
+        type: string
+      workflow:
+        $ref: '#/definitions/models.FlowWorkflowModel'
+        type: object
+      workflow_id:
+        type: integer
+    type: object
+  models.FlowWorkflowModel:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
   models.Image:
     properties:
       created_at:
@@ -278,6 +418,34 @@ definitions:
         type: object
       system_name:
         type: string
+    type: object
+  models.NewFlowModel:
+    properties:
+      connections:
+        items:
+          $ref: '#/definitions/models.FlowConnectionModel'
+        type: array
+      description:
+        type: string
+      flow_elements:
+        items:
+          $ref: '#/definitions/models.FlowElementModel'
+        type: array
+      name:
+        type: string
+      status:
+        type: string
+      workers:
+        items:
+          $ref: '#/definitions/models.FlowWorkerModel'
+        type: array
+      workflow:
+        $ref: '#/definitions/models.FlowWorkflowModel'
+        type: object
+      workflow_id:
+        type: integer
+      workflow_scenario_id:
+        type: integer
     type: object
   models.NewImage:
     properties:
@@ -448,6 +616,138 @@ definitions:
       id:
         type: integer
     type: object
+  models.RedactorConnector:
+    properties:
+      direction:
+        type: string
+      end:
+        properties:
+          object:
+            type: string
+          point:
+            type: integer
+        type: object
+      flow_type:
+        type: string
+      id:
+        type: string
+      start:
+        properties:
+          object:
+            type: string
+          point:
+            type: integer
+        type: object
+      title:
+        type: string
+    type: object
+  models.RedactorFlowModel:
+    properties:
+      connectors:
+        items:
+          $ref: '#/definitions/models.RedactorConnector'
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      objects:
+        items:
+          $ref: '#/definitions/models.RedactorObject'
+        type: array
+      scenario:
+        $ref: '#/definitions/models.WorkflowScenario'
+        type: object
+      status:
+        type: string
+      update_at:
+        type: string
+      workers:
+        items:
+          $ref: '#/definitions/models.WorkerModel'
+        type: array
+      workflow:
+        $ref: '#/definitions/models.RedactorWorkflowModel'
+        type: object
+    type: object
+  models.RedactorObject:
+    properties:
+      description:
+        type: string
+      error:
+        type: string
+      flow_link:
+        $ref: '#/definitions/models.FlowModel'
+        type: object
+      id:
+        type: string
+      position:
+        properties:
+          left:
+            type: integer
+          top:
+            type: integer
+        type: object
+      prototype_type:
+        type: string
+      script:
+        $ref: '#/definitions/models.Script'
+        type: object
+      status:
+        type: string
+      title:
+        type: string
+      type:
+        properties:
+          action:
+            type: string
+          end:
+            type: object
+          name:
+            type: string
+          start:
+            type: object
+          status:
+            type: string
+        type: object
+    type: object
+  models.RedactorWorkflowModel:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.ResponseFlowList:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          items:
+            items:
+              $ref: '#/definitions/models.FlowModel'
+            type: array
+          limit:
+            type: integer
+          offset:
+            type: integer
+          total:
+            type: integer
+        type: object
+    type: object
   models.ResponseScript:
     properties:
       code:
@@ -489,17 +789,6 @@ definitions:
     type: object
   models.ResponseSuccess:
     type: object
-  models.ResponseWorkflow:
-    properties:
-      code:
-        type: string
-      data:
-        properties:
-          workflow:
-            $ref: '#/definitions/models.Workflow'
-            type: object
-        type: object
-    type: object
   models.ResponseWorkflowList:
     properties:
       code:
@@ -508,7 +797,7 @@ definitions:
         properties:
           items:
             items:
-              $ref: '#/definitions/models.Workflow'
+              $ref: '#/definitions/models.WorkflowModel'
             type: array
           limit:
             type: integer
@@ -516,6 +805,17 @@ definitions:
             type: integer
           total:
             type: integer
+        type: object
+    type: object
+  models.ResponseWorkflowModel:
+    properties:
+      code:
+        type: string
+      data:
+        properties:
+          workflow:
+            $ref: '#/definitions/models.WorkflowModel'
+            type: object
         type: object
     type: object
   models.Role:
@@ -573,11 +873,25 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.SearchDeviceActionResponse:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/models.DeviceAction'
+        type: array
+    type: object
   models.SearchDeviceResponse:
     properties:
       devices:
         items:
           $ref: '#/definitions/models.Device'
+        type: array
+    type: object
+  models.SearchFlowResponse:
+    properties:
+      flows:
+        items:
+          $ref: '#/definitions/models.FlowModel'
         type: array
     type: object
   models.SearchMapResponse:
@@ -612,7 +926,7 @@ definitions:
     properties:
       workflows:
         items:
-          $ref: '#/definitions/models.Workflow'
+          $ref: '#/definitions/models.WorkflowModel'
         type: array
     type: object
   models.SearchWorkflowScenarioResponse:
@@ -663,6 +977,40 @@ definitions:
         type: object
       system_name:
         type: string
+    type: object
+  models.UpdateFlowModel:
+    properties:
+      connections:
+        items:
+          $ref: '#/definitions/models.FlowConnectionModel'
+        type: array
+      created_at:
+        type: string
+      description:
+        type: string
+      flow_elements:
+        items:
+          $ref: '#/definitions/models.FlowElementModel'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      workers:
+        items:
+          $ref: '#/definitions/models.FlowWorkerModel'
+        type: array
+      workflow:
+        $ref: '#/definitions/models.FlowWorkflowModel'
+        type: object
+      workflow_id:
+        type: integer
+      workflow_scenario_id:
+        type: integer
     type: object
   models.UpdateImage:
     properties:
@@ -902,7 +1250,37 @@ definitions:
       status:
         type: string
     type: object
-  models.Workflow:
+  models.WorkerModel:
+    properties:
+      created_at:
+        type: string
+      device_action:
+        $ref: '#/definitions/models.DeviceAction'
+        type: object
+      device_action_id:
+        type: integer
+      flow:
+        $ref: '#/definitions/models.FlowModel'
+        type: object
+      flow_id:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      time:
+        type: string
+      updated_at:
+        type: string
+      workflow:
+        $ref: '#/definitions/models.WorkflowModel'
+        type: object
+      workflow_id:
+        type: integer
+    type: object
+  models.WorkflowModel:
     properties:
       created_at:
         type: string
@@ -1324,6 +1702,56 @@ paths:
       summary: Update device action
       tags:
       - device_action
+  /device_action1/search:
+    get:
+      consumes:
+      - application/json
+      description: Search device_action by name
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchDeviceActionResponse'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Search device_action
+      tags:
+      - device_action
   /device_actions/{id}:
     get:
       consumes:
@@ -1667,6 +2095,353 @@ paths:
       summary: Search device
       tags:
       - device
+  /flow:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: flow params
+        in: body
+        name: flow
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewFlowModel'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Add new flow
+      tags:
+      - flow
+  /flow/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete flow by id
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete flow
+      tags:
+      - flow
+    get:
+      consumes:
+      - application/json
+      description: Get flow by id
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.FlowModel'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Show flow
+      tags:
+      - flow
+    put:
+      consumes:
+      - application/json
+      description: Update flow by id
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update flow
+        in: body
+        name: flow
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateFlowModel'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update flow
+      tags:
+      - flow
+  /flow/{id}/redactor:
+    get:
+      consumes:
+      - application/json
+      description: Get flow by id
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RedactorFlowModel'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Show flow
+      tags:
+      - flow
+    put:
+      consumes:
+      - application/json
+      description: Update flow by id
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update flow
+        in: body
+        name: flow
+        required: true
+        schema:
+          $ref: '#/definitions/models.RedactorFlowModel'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update flow
+      tags:
+      - flow
+  /flows:
+    get:
+      consumes:
+      - application/json
+      description: Get flow list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseFlowList'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Flow list
+      tags:
+      - flow
+  /flows/search:
+    get:
+      consumes:
+      - application/json
+      description: Search flow by name
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SearchFlowResponse'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Search flow
+      tags:
+      - flow
   /image:
     post:
       consumes:
@@ -3003,6 +3778,47 @@ paths:
       summary: Execute script
       tags:
       - script
+  /script/{id}/exec_src:
+    post:
+      consumes:
+      - application/json
+      description: Execute script by id
+      parameters:
+      - description: Exec script
+        in: body
+        name: script
+        required: true
+        schema:
+          $ref: '#/definitions/models.ExecScript'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseScriptExec'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Execute script
+      tags:
+      - script
   /scripts:
     get:
       consumes:
@@ -3567,7 +4383,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseWorkflow'
+            $ref: '#/definitions/models.ResponseWorkflowModel'
             type: object
         "400":
           description: some error
@@ -3943,7 +4759,7 @@ paths:
       summary: Update workflow scenario
       tags:
       - workflow
-  /workflow/search:
+  /workflows/search:
     get:
       consumes:
       - application/json
