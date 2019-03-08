@@ -225,7 +225,7 @@ func (c ControllerDeviceAction) GetDeviceActionList(ctx *gin.Context) {
 	return
 }
 
-// Role godoc
+// RoleModel godoc
 // @tags device_action
 // @Summary Search device_action
 // @Description Search device_action by name

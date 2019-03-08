@@ -38,7 +38,7 @@ definitions:
       nickname:
         type: string
       role:
-        $ref: '#/definitions/models.Role'
+        $ref: '#/definitions/models.RoleModel'
         type: object
       sign_in_count:
         type: integer
@@ -244,23 +244,16 @@ definitions:
         type: string
       workers:
         items:
-          $ref: '#/definitions/models.FlowListWorkerModel'
+          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc0001e81c0] 349})
+            %!s(bool=false)}'
         type: array
       workflow:
-        $ref: '#/definitions/models.FlowListModelWorkflow'
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
         type: object
-    type: object
-  models.FlowListModelWorkflow:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
-  models.FlowListWorkerModel:
-    properties:
-      id:
-        type: integer
     type: object
   models.FlowModel:
     properties:
@@ -460,23 +453,17 @@ definitions:
       name:
         type: string
       scenario:
-        $ref: '#/definitions/models.NewFlowWorkflowScenarioModel'
+        properties:
+          id:
+            type: integer
         type: object
       status:
         type: string
       workflow:
-        $ref: '#/definitions/models.NewFlowWorkflowModel'
+        properties:
+          id:
+            type: integer
         type: object
-    type: object
-  models.NewFlowWorkflowModel:
-    properties:
-      id:
-        type: integer
-    type: object
-  models.NewFlowWorkflowScenarioModel:
-    properties:
-      id:
-        type: integer
     type: object
   models.NewImage:
     properties:
@@ -763,42 +750,30 @@ definitions:
     type: object
   models.ResponseFlow:
     properties:
-      code:
-        type: string
-      data:
-        properties:
-          flow:
-            $ref: '#/definitions/models.FlowModel'
-            type: object
+      flow:
+        $ref: '#/definitions/models.FlowModel'
         type: object
     type: object
   models.ResponseFlowList:
     properties:
-      code:
-        type: string
-      data:
+      items:
+        items:
+          $ref: '#/definitions/models.FlowListModel'
+        type: array
+      meta:
         properties:
-          items:
-            items:
-              $ref: '#/definitions/models.FlowListModel'
-            type: array
           limit:
             type: integer
-          offset:
+          objects_count:
             type: integer
-          total:
+          offset:
             type: integer
         type: object
     type: object
   models.ResponseRedactorFlowModel:
     properties:
-      code:
-        type: string
-      data:
-        properties:
-          flow:
-            $ref: '#/definitions/models.RedactorFlowModel'
-            type: object
+      flow:
+        $ref: '#/definitions/models.RedactorFlowModel'
         type: object
     type: object
   models.ResponseScript:
@@ -840,6 +815,13 @@ definitions:
             type: integer
         type: object
     type: object
+  models.ResponseSearchFlow:
+    properties:
+      flows:
+        items:
+          $ref: '#/definitions/models.FlowModel'
+        type: array
+    type: object
   models.ResponseSuccess:
     type: object
   models.ResponseWorkflowList:
@@ -871,13 +853,29 @@ definitions:
             type: object
         type: object
     type: object
-  models.Role:
+  models.RoleListModel:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.RoleModel'
+        type: array
+      meta:
+        properties:
+          limit:
+            type: integer
+          objects_count:
+            type: integer
+          offset:
+            type: integer
+        type: object
+    type: object
+  models.RoleModel:
     properties:
       access_list:
         type: object
       children:
         items:
-          $ref: '#/definitions/models.Role'
+          $ref: '#/definitions/models.RoleModel'
         type: array
       created_at:
         type: string
@@ -892,22 +890,6 @@ definitions:
         type: object
       updated_at:
         type: string
-    type: object
-  models.RoleListModel:
-    properties:
-      items:
-        items:
-          $ref: '#/definitions/models.UserShotModel'
-        type: array
-      meta:
-        properties:
-          limit:
-            type: integer
-          objects_count:
-            type: integer
-          offset:
-            type: integer
-        type: object
     type: object
   models.Script:
     properties:
@@ -940,13 +922,6 @@ definitions:
           $ref: '#/definitions/models.Device'
         type: array
     type: object
-  models.SearchFlowResponse:
-    properties:
-      flows:
-        items:
-          $ref: '#/definitions/models.FlowModel'
-        type: array
-    type: object
   models.SearchMapResponse:
     properties:
       nodes:
@@ -954,7 +929,7 @@ definitions:
           $ref: '#/definitions/models.Map'
         type: array
     type: object
-  models.SearchNodeResponse:
+  models.ResponseSearchNode:
     properties:
       nodes:
         items:
@@ -965,7 +940,7 @@ definitions:
     properties:
       roles:
         items:
-          $ref: '#/definitions/models.Role'
+          $ref: '#/definitions/models.RoleModel'
         type: array
     type: object
   models.SearchScriptResponse:
@@ -1040,12 +1015,16 @@ definitions:
       name:
         type: string
       scenario:
-        $ref: '#/definitions/models.NewFlowWorkflowScenarioModel'
+        properties:
+          id:
+            type: integer
         type: object
       status:
         type: string
       workflow:
-        $ref: '#/definitions/models.NewFlowWorkflowModel'
+        properties:
+          id:
+            type: integer
         type: object
     type: object
   models.UpdateImage:
@@ -1212,7 +1191,7 @@ definitions:
       reset_password_sent_at:
         type: string
       role:
-        $ref: '#/definitions/models.Role'
+        $ref: '#/definitions/models.RoleModel'
         type: object
       role_name:
         type: string
@@ -1269,7 +1248,7 @@ definitions:
       nickname:
         type: string
       role:
-        $ref: '#/definitions/models.Role'
+        $ref: '#/definitions/models.RoleModel'
         type: object
       role_name:
         type: string
@@ -2470,7 +2449,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.SearchFlowResponse'
+            $ref: '#/definitions/models.ResponseSearchFlow'
             type: object
         "401":
           description: Unauthorized
@@ -3211,7 +3190,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.SearchNodeResponse'
+            $ref: '#/definitions/models.ResponseSearchNode'
             type: object
         "400":
           description: some error
@@ -3307,13 +3286,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Role'
+            $ref: '#/definitions/models.RoleModel'
             type: object
         "400":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "500":
           description: some error
           schema:
@@ -3330,7 +3311,7 @@ paths:
       - application/json
       description: Delete role by name
       parameters:
-      - description: Role name
+      - description: RoleModel name
         in: path
         name: name
         required: true
@@ -3348,6 +3329,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3368,7 +3351,7 @@ paths:
       - application/json
       description: Get role by name
       parameters:
-      - description: Role name
+      - description: RoleModel name
         in: path
         name: name
         required: true
@@ -3379,13 +3362,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Role'
+            $ref: '#/definitions/models.RoleModel'
             type: object
         "400":
           description: some error
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3406,7 +3391,7 @@ paths:
       - application/json
       description: Update role by name
       parameters:
-      - description: Role name
+      - description: RoleModel name
         in: path
         name: name
         required: true
@@ -3431,6 +3416,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3452,7 +3439,7 @@ paths:
       - application/json
       description: Get access list
       parameters:
-      - description: Role name
+      - description: RoleModel name
         in: path
         name: name
         required: true
@@ -3470,6 +3457,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3490,7 +3479,7 @@ paths:
       - application/json
       description: Update access list
       parameters:
-      - description: Role name
+      - description: RoleModel name
         in: path
         name: name
         required: true
@@ -3515,6 +3504,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3571,6 +3562,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -3583,7 +3576,7 @@ paths:
             type: object
       security:
       - ApiKeyAuth: []
-      summary: Role list
+      summary: RoleModel list
       tags:
       - role
   /roles/search:
@@ -3621,6 +3614,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:

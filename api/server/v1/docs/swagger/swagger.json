@@ -1652,7 +1652,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.SearchFlowResponse"
+                            "$ref": "#/definitions/models.ResponseSearchFlow"
                         }
                     },
                     "401": {
@@ -2761,7 +2761,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.SearchNodeResponse"
+                            "$ref": "#/definitions/models.ResponseSearchNode"
                         }
                     },
                     "400": {
@@ -2909,7 +2909,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.Role"
+                            "$ref": "#/definitions/models.RoleModel"
                         }
                     },
                     "400": {
@@ -2918,6 +2918,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "some error",
@@ -2950,7 +2953,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Role name",
+                        "description": "RoleModel name",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -2961,7 +2964,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.Role"
+                            "$ref": "#/definitions/models.RoleModel"
                         }
                     },
                     "400": {
@@ -2970,6 +2973,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -3007,7 +3013,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Role name",
+                        "description": "RoleModel name",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -3037,6 +3043,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -3074,7 +3083,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Role name",
+                        "description": "RoleModel name",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -3094,6 +3103,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -3133,7 +3145,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Role name",
+                        "description": "RoleModel name",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -3153,6 +3165,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -3190,7 +3205,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Role name",
+                        "description": "RoleModel name",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -3220,6 +3235,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -3255,7 +3273,7 @@
                 "tags": [
                     "role"
                 ],
-                "summary": "Role list",
+                "summary": "RoleModel list",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3302,6 +3320,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -3376,6 +3397,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -5292,7 +5316,7 @@
                 },
                 "role": {
                     "type": "object",
-                    "$ref": "#/definitions/models.Role"
+                    "$ref": "#/definitions/models.RoleModel"
                 },
                 "sign_in_count": {
                     "type": "integer"
@@ -5601,31 +5625,19 @@
                 "workers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.FlowListWorkerModel"
+                        "type": "\u0026{%!s(token.Pos=316) %!s(*ast.FieldList=\u0026{323 [0xc0001e81c0] 349}) %!s(bool=false)}"
                     }
                 },
                 "workflow": {
                     "type": "object",
-                    "$ref": "#/definitions/models.FlowListModelWorkflow"
-                }
-            }
-        },
-        "models.FlowListModelWorkflow": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.FlowListWorkerModel": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -5929,30 +5941,22 @@
                 },
                 "scenario": {
                     "type": "object",
-                    "$ref": "#/definitions/models.NewFlowWorkflowScenarioModel"
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
                 },
                 "status": {
                     "type": "string"
                 },
                 "workflow": {
                     "type": "object",
-                    "$ref": "#/definitions/models.NewFlowWorkflowModel"
-                }
-            }
-        },
-        "models.NewFlowWorkflowModel": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.NewFlowWorkflowScenarioModel": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
                 }
             }
         },
@@ -6393,42 +6397,31 @@
         "models.ResponseFlow": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
+                "flow": {
                     "type": "object",
-                    "properties": {
-                        "flow": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.FlowModel"
-                        }
-                    }
+                    "$ref": "#/definitions/models.FlowModel"
                 }
             }
         },
         "models.ResponseFlowList": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string"
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowListModel"
+                    }
                 },
-                "data": {
+                "meta": {
                     "type": "object",
                     "properties": {
-                        "items": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.FlowListModel"
-                            }
-                        },
                         "limit": {
                             "type": "integer"
                         },
-                        "offset": {
+                        "objects_count": {
                             "type": "integer"
                         },
-                        "total": {
+                        "offset": {
                             "type": "integer"
                         }
                     }
@@ -6438,17 +6431,9 @@
         "models.ResponseRedactorFlowModel": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {
+                "flow": {
                     "type": "object",
-                    "properties": {
-                        "flow": {
-                            "type": "object",
-                            "$ref": "#/definitions/models.RedactorFlowModel"
-                        }
-                    }
+                    "$ref": "#/definitions/models.RedactorFlowModel"
                 }
             }
         },
@@ -6513,6 +6498,17 @@
                 }
             }
         },
+        "models.ResponseSearchFlow": {
+            "type": "object",
+            "properties": {
+                "flows": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.FlowModel"
+                    }
+                }
+            }
+        },
         "models.ResponseSuccess": {
             "type": "object"
         },
@@ -6561,7 +6557,32 @@
                 }
             }
         },
-        "models.Role": {
+        "models.RoleListModel": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.RoleModel"
+                    }
+                },
+                "meta": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer"
+                        },
+                        "objects_count": {
+                            "type": "integer"
+                        },
+                        "offset": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "models.RoleModel": {
             "type": "object",
             "properties": {
                 "access_list": {
@@ -6570,7 +6591,7 @@
                 "children": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Role"
+                        "$ref": "#/definitions/models.RoleModel"
                     }
                 },
                 "created_at": {
@@ -6592,31 +6613,6 @@
                 },
                 "updated_at": {
                     "type": "string"
-                }
-            }
-        },
-        "models.RoleListModel": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.UserShotModel"
-                    }
-                },
-                "meta": {
-                    "type": "object",
-                    "properties": {
-                        "limit": {
-                            "type": "integer"
-                        },
-                        "objects_count": {
-                            "type": "integer"
-                        },
-                        "offset": {
-                            "type": "integer"
-                        }
-                    }
                 }
             }
         },
@@ -6668,17 +6664,6 @@
                 }
             }
         },
-        "models.SearchFlowResponse": {
-            "type": "object",
-            "properties": {
-                "flows": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.FlowModel"
-                    }
-                }
-            }
-        },
         "models.SearchMapResponse": {
             "type": "object",
             "properties": {
@@ -6690,7 +6675,7 @@
                 }
             }
         },
-        "models.SearchNodeResponse": {
+        "models.ResponseSearchNode": {
             "type": "object",
             "properties": {
                 "nodes": {
@@ -6707,7 +6692,7 @@
                 "roles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Role"
+                        "$ref": "#/definitions/models.RoleModel"
                     }
                 }
             }
@@ -6821,14 +6806,22 @@
                 },
                 "scenario": {
                     "type": "object",
-                    "$ref": "#/definitions/models.NewFlowWorkflowScenarioModel"
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
                 },
                 "status": {
                     "type": "string"
                 },
                 "workflow": {
                     "type": "object",
-                    "$ref": "#/definitions/models.NewFlowWorkflowModel"
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        }
+                    }
                 }
             }
         },
@@ -7082,7 +7075,7 @@
                 },
                 "role": {
                     "type": "object",
-                    "$ref": "#/definitions/models.Role"
+                    "$ref": "#/definitions/models.RoleModel"
                 },
                 "role_name": {
                     "type": "string"
@@ -7168,7 +7161,7 @@
                 },
                 "role": {
                     "type": "object",
-                    "$ref": "#/definitions/models.Role"
+                    "$ref": "#/definitions/models.RoleModel"
                 },
                 "role_name": {
                     "type": "string"

@@ -18,20 +18,20 @@ type UpdateRole struct {
 	}
 }
 
-type Role struct {
+type RoleModel struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Parent      struct {
 		Name string `json:"name"`
 	}
-	Children   []*Role             `json:"children"`
+	Children   []*RoleModel        `json:"children"`
 	AccessList map[string][]string `json:"access_list"`
 	CreatedAt  time.Time           `json:"created_at"`
 	UpdatedAt  time.Time           `json:"updated_at"`
 }
 
 type RoleListModel struct {
-	Items []UserShotModel
+	Items []RoleModel `json:"items"`
 	Meta  struct {
 		Limit        int `json:"limit"`
 		Offset       int `json:"offset"`
@@ -40,7 +40,7 @@ type RoleListModel struct {
 }
 
 type SearchRoleResponse struct {
-	Roles []*Role `json:"roles"`
+	Roles []*RoleModel `json:"roles"`
 }
 
 type AccessItem struct {

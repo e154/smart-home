@@ -14,15 +14,16 @@ func NewControllerRole(common *ControllerCommon) *ControllerRole {
 	return &ControllerRole{ControllerCommon: common}
 }
 
-// Role godoc
+// RoleModel godoc
 // @tags role
 // @Summary Add new role
 // @Description
 // @Produce json
 // @Accept  json
 // @Param role body models.NewRole true "role params"
-// @Success 200 {object} models.Role
+// @Success 200 {object} models.RoleModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /role [post]
@@ -51,15 +52,16 @@ func (c ControllerRole) AddRole(ctx *gin.Context) {
 	resp.SetData(role).Send(ctx)
 }
 
-// Role godoc
+// RoleModel godoc
 // @tags role
 // @Summary Show role
 // @Description Get role by name
 // @Produce json
 // @Accept  json
-// @Param name path string true "Role name"
-// @Success 200 {object} models.Role
+// @Param name path string true "RoleModel name"
+// @Success 200 {object} models.RoleModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
@@ -81,15 +83,16 @@ func (c ControllerRole) GetRoleByName(ctx *gin.Context) {
 	resp.SetData(role).Send(ctx)
 }
 
-// Role godoc
+// RoleModel godoc
 // @tags role
 // @Summary get role access list
 // @Description Get access list
 // @Produce json
 // @Accept  json
-// @Param name path string true "Role name"
+// @Param name path string true "RoleModel name"
 // @Success 200 {object} models.AccessList
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
@@ -111,16 +114,17 @@ func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 	resp.Item("access_list", accessList).Send(ctx)
 }
 
-// Role godoc
+// RoleModel godoc
 // @tags role
 // @Summary update role access list
 // @Description Update access list
 // @Produce json
 // @Accept  json
-// @Param name path string true "Role name"
+// @Param name path string true "RoleModel name"
 // @Param diff body models.AccessListDiff true "permission"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
@@ -148,16 +152,17 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Role godoc
+// RoleModel godoc
 // @tags role
 // @Summary Update role
 // @Description Update role by name
 // @Produce json
 // @Accept  json
-// @Param  name path string true "Role name"
+// @Param  name path string true "RoleModel name"
 // @Param  role body models.UpdateRole true "Update role"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
@@ -192,9 +197,9 @@ func (c ControllerRole) UpdateRole(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Role godoc
+// RoleModel godoc
 // @tags role
-// @Summary Role list
+// @Summary RoleModel list
 // @Description Get role list
 // @Produce json
 // @Accept  json
@@ -204,6 +209,7 @@ func (c ControllerRole) UpdateRole(ctx *gin.Context) {
 // @Param sort_by query string false "sort_by" default(name)
 // @Success 200 {object} models.RoleListModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
@@ -222,15 +228,16 @@ func (c ControllerRole) GetRoleList(ctx *gin.Context) {
 	return
 }
 
-// Role godoc
+// RoleModel godoc
 // @tags role
 // @Summary Delete role
 // @Description Delete role by name
 // @Produce json
 // @Accept  json
-// @Param  name path string true "Role name"
+// @Param  name path string true "RoleModel name"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
@@ -257,7 +264,7 @@ func (c ControllerRole) DeleteRoleByName(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Role godoc
+// RoleModel godoc
 // @tags role
 // @Summary Search role
 // @Description Search role by name
@@ -268,6 +275,7 @@ func (c ControllerRole) DeleteRoleByName(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Success 200 {object} models.SearchRoleResponse
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth

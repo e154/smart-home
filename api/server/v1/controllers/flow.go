@@ -306,7 +306,7 @@ func (c ControllerFlow) DeleteFlowById(ctx *gin.Context) {
 // @Param query query string false "query"
 // @Param limit query int true "limit" default(10)
 // @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.SearchFlowResponse
+// @Success 200 {object} models.ResponseSearchFlow
 // @Failure 401 "Unauthorized"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth

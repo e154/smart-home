@@ -100,7 +100,7 @@ type UserFullModel struct {
 	LastSignInIp        string               `json:"last_sign_in_ip"`
 	Lang                string               `json:"lang"`
 	User                *UserByIdModelParent `json:"user"`
-	Role                *Role                `json:"role"`
+	Role                *RoleModel           `json:"role"`
 	RoleName            string               `json:"role_name"`
 	Meta                []*UserByIdModelMeta `json:"meta"`
 	ResetPasswordSentAt *time.Time           `json:"reset_password_sent_at"`
@@ -122,7 +122,7 @@ type UserShotModel struct {
 	Image     *Image               `json:"image"`
 	Lang      string               `json:"lang"`
 	User      *UserByIdModelParent `json:"user"`
-	Role      *Role                `json:"role"`
+	Role      *RoleModel           `json:"role"`
 	RoleName  string               `json:"role_name"`
 	CreatedAt time.Time            `json:"created_at"`
 	UpdatedAt time.Time            `json:"updated_at"`
@@ -138,7 +138,7 @@ type CurrentUserModel struct {
 	Image       *Image               `json:"image"`
 	SignInCount int64                `json:"sign_in_count"`
 	Meta        []*UserByIdModelMeta `json:"meta"`
-	Role        *Role                `json:"role"`
+	Role        *RoleModel           `json:"role"`
 	Lang        string               `json:"lang"`
 }
 

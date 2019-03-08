@@ -4,28 +4,21 @@ import (
 	"time"
 )
 
-type FlowListModelWorkflow struct {
-	Id   int64  `json:"id"`
-	Name string `json:"name"`
-}
-
-type FlowListWorkerModel struct {
-	Id int64 `json:"id"`
-}
-
 type FlowListModel struct {
-	Id          int64                  `json:"id"`
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Status      string                 `json:"status"`
-	Workflow    *FlowListModelWorkflow `json:"workflow"`
-	Workers     []*FlowListWorkerModel `json:"workers"`
-	CreatedAt   time.Time              `json:"created_at"`
-	UpdatedAt   time.Time              `json:"updated_at"`
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	Workflow    struct {
+		Id   int64  `json:"id"`
+		Name string `json:"name"`
+	} `json:"workflow"`
+	Workers []struct {
+		Id int64 `json:"id"`
+	} `json:"workers"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
-
-type StatusType string
-type FlowElementsPrototypeType string
 
 type FlowWorkflowModel struct {
 	Id          int64     `json:"id"`
@@ -50,36 +43,36 @@ type FlowWorkerModel struct {
 	UpdatedAt      time.Time          `json:"updated_at"`
 }
 
-type NewFlowWorkflowModel struct {
-	Id int64 `json:"id"`
-}
-
-type NewFlowWorkflowScenarioModel struct {
-	Id int64 `json:"id"`
-}
-
 type NewFlowModel struct {
-	Name        string                        `json:"name"`
-	Description string                        `json:"description"`
-	Status      StatusType                    `json:"status"`
-	Workflow    *NewFlowWorkflowModel         `json:"workflow"`
-	Scenario    *NewFlowWorkflowScenarioModel `json:"scenario"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	Workflow    struct {
+		Id int64 `json:"id"`
+	} `json:"workflow"`
+	Scenario struct {
+		Id int64 `json:"id"`
+	} `json:"scenario"`
 }
 
 type UpdateFlowModel struct {
-	Id          int64                         `json:"id"`
-	Name        string                        `json:"name"`
-	Description string                        `json:"description"`
-	Status      StatusType                    `json:"status"`
-	Workflow    *NewFlowWorkflowModel         `json:"workflow"`
-	Scenario    *NewFlowWorkflowScenarioModel `json:"scenario"`
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	Workflow    struct {
+		Id int64 `json:"id"`
+	} `json:"workflow"`
+	Scenario struct {
+		Id int64 `json:"id"`
+	} `json:"scenario"`
 }
 
 type FlowModel struct {
 	Id                 int64                  `json:"id"`
 	Name               string                 `json:"name" valid:"MaxSize(254);Required"`
 	Description        string                 `json:"description" valid:"MaxSize(254)"`
-	Status             StatusType             `json:"status" valid:"Required"`
+	Status             string                 `json:"status" valid:"Required"`
 	Workflow           *FlowWorkflowModel     `json:"workflow"`
 	WorkflowId         int64                  `json:"workflow_id" valid:"Required"`
 	WorkflowScenarioId int64                  `json:"workflow_scenario_id" valid:"Required"`
@@ -90,25 +83,19 @@ type FlowModel struct {
 	UpdatedAt          time.Time              `json:"updated_at"`
 }
 
-type Flows []*FlowModel
-
 type ResponseFlow struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		Flow *FlowModel `json:"flow"`
-	} `json:"data"`
+	Flow *FlowModel `json:"flow"`
 }
 
 type ResponseFlowList struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		Items  []*FlowListModel `json:"items"`
-		Limit  int64            `json:"limit"`
-		Offset int64            `json:"offset"`
-		Total  int64            `json:"total"`
-	} `json:"data"`
+	Items []FlowListModel `json:"items"`
+	Meta  struct {
+		Limit        int `json:"limit"`
+		Offset       int `json:"offset"`
+		ObjectsCount int `json:"objects_count"`
+	}
 }
 
-type SearchFlowResponse struct {
+type ResponseSearchFlow struct {
 	Flows []FlowModel `json:"flows"`
 }

@@ -108,7 +108,7 @@ func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserFullM
 	}
 
 	// role
-	u.Role = &models.Role{}
+	u.Role = &models.RoleModel{}
 	copier.Copy(&u.Role, &user.Role)
 
 	// image
@@ -155,7 +155,7 @@ func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Ada
 		}
 
 		// role
-		item.Role = &models.Role{}
+		item.Role = &models.RoleModel{}
 		copier.Copy(&item.Role, &user.Role)
 
 		// image

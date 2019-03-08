@@ -18,11 +18,11 @@ func AddFlow(newFlow *models.NewFlowModel, adaptors *adaptors.Adaptors, core *co
 		return
 	}
 
-	if newFlow.Workflow != nil {
+	if newFlow.Workflow.Id != 0 {
 		flow.WorkflowId = newFlow.Workflow.Id
 	}
 
-	if newFlow.Scenario != nil {
+	if newFlow.Scenario.Id != 0 {
 		flow.WorkflowScenarioId = newFlow.Scenario.Id
 	}
 

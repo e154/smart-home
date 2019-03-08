@@ -7,11 +7,12 @@ import (
 	"errors"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/e154/smart-home/common"
 )
 
-func AddRole(roleParams models.NewRole, adaptors *adaptors.Adaptors) (role *m.Role, errs []*validation.Error, err error) {
+func AddRole(roleParams models.NewRole, adaptors *adaptors.Adaptors) (result *models.RoleModel, errs []*validation.Error, err error) {
 
-	role = &m.Role{
+	role := &m.Role{
 		Name:        roleParams.Name,
 		Description: roleParams.Description,
 	}
@@ -25,6 +26,9 @@ func AddRole(roleParams models.NewRole, adaptors *adaptors.Adaptors) (role *m.Ro
 	if err = adaptors.Role.Add(role); err != nil {
 		return
 	}
+
+	result = &models.RoleModel{}
+	err = common.Copy(&result, &role)
 
 	return
 }

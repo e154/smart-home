@@ -41,6 +41,10 @@ type NodeListModel struct {
 	}
 }
 
-type SearchNodeResponse struct {
+type ResponseNodeModel struct {
+	Node NodeModel `json:"node"`
+}
+
+type ResponseSearchNode struct {
 	Nodes []NodeModel `json:"nodes"`
 }

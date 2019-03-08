@@ -13,13 +13,6 @@ type RedactorWorkflowModel struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type RedactorGrapSettings struct {
-	Position struct {
-		Top  int64 `json:"top"`
-		Left int64 `json:"left"`
-	} `json:"position"`
-}
-
 type RedactorConnector struct {
 	Id    string `json:"id"`
 	Start struct {
@@ -48,20 +41,20 @@ type RedactorObject struct {
 		Top  int64 `json:"top"`
 		Left int64 `json:"left"`
 	} `json:"position"`
-	Status        string                    `json:"status"`
-	Error         string                    `json:"error"`
-	Title         string                    `json:"title"`
-	Description   string                    `json:"description"`
-	PrototypeType FlowElementsPrototypeType `json:"prototype_type"`
-	Script        *Script                   `json:"script"`
-	FlowLink      *FlowModel                `json:"flow_link"`
+	Status        string     `json:"status"`
+	Error         string     `json:"error"`
+	Title         string     `json:"title"`
+	Description   string     `json:"description"`
+	PrototypeType string     `json:"prototype_type"`
+	Script        *Script    `json:"script"`
+	FlowLink      *FlowModel `json:"flow_link"`
 }
 
 type RedactorFlowModel struct {
 	Id          int64                  `json:"id"`
 	Name        string                 `json:"name"`
 	Description string                 `json:"description"`
-	Status      StatusType             `json:"status"`
+	Status      string                 `json:"status"`
 	Objects     []*RedactorObject      `json:"objects"`
 	Connectors  []*RedactorConnector   `json:"connectors"`
 	CreatedAt   time.Time              `json:"created_at"`
@@ -72,8 +65,5 @@ type RedactorFlowModel struct {
 }
 
 type ResponseRedactorFlowModel struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		Flow *RedactorFlowModel `json:"flow"`
-	} `json:"data"`
+	Flow *RedactorFlowModel `json:"flow"`
 }

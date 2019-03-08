@@ -58,7 +58,7 @@ func SignIn(email, password string, adaptors *adaptors.Adaptors, ip string) (cur
 	}
 
 	// role
-	currentUser.Role = &models.Role{}
+	currentUser.Role = &models.RoleModel{}
 	copier.Copy(&currentUser.Role, &user.Role)
 
 	// image
