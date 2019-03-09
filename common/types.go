@@ -36,3 +36,15 @@ const (
 	PrototypeTypeDevice = PrototypeType("device")
 )
 
+type LogLevel string
+
+const (
+	LogLevelEmergency = LogLevel("Emergency")
+	LogLevelAlert     = LogLevel("Alert")
+	LogLevelCritical  = LogLevel("Critical")
+	LogLevelError     = LogLevel("Error")
+	LogLevelWarning   = LogLevel("Warning")
+	LogLevelNotice    = LogLevel("Notice")
+	LogLevelInfo      = LogLevel("Info")
+	LogLevelDebug     = LogLevel("Debug")
+)

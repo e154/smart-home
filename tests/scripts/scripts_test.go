@@ -24,9 +24,10 @@ func TestMain(m *testing.M) {
 
 	container = BuildContainer()
 	container.Invoke(func(migrations *migrations.Migrations,
-		lx *logrus.Logger) {
+		lx *logrus.Logger,
+		back *l.LogBackend) {
 
-		l.Initialize(lx)
+		l.Initialize(back)
 
 		time.Sleep(time.Millisecond * 500)
 

@@ -239,7 +239,7 @@ definitions:
         type: string
       workers:
         items:
-          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc000370e80] 349})
+          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc000216bc0] 349})
             %!s(bool=false)}'
         type: array
       workflow:

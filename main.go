@@ -5,7 +5,6 @@ import (
 	"github.com/op/go-logging"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/graceful_service"
-	"github.com/sirupsen/logrus"
 	l "github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/system/initial"
@@ -40,7 +39,7 @@ func main() {
 			})
 			return
 		case "-restore":
-			if len(os.Args) <3 {
+			if len(os.Args) < 3 {
 				log.Error("need backup name")
 				return
 			}
@@ -81,11 +80,11 @@ func start() {
 	container.Invoke(func(server *server.Server,
 		core *core.Core,
 		graceful *graceful_service.GracefulService,
-		lx *logrus.Logger,
+		back *l.LogBackend,
 		initialService *initial.InitialService,
 		mqtt *mqtt.Mqtt) {
 
-		l.Initialize(lx)
+		l.Initialize(back)
 		go server.Start()
 		go core.Run()
 

@@ -52,6 +52,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(stream.NewHub)
 	container.Provide(telemetry.NewTelemetry)
 	container.Provide(dashboard.NewDashboard)
+	container.Provide(logging.NewLogBackend)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()

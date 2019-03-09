@@ -135,4 +135,11 @@ func (s *Server) setControllers() {
 	//v1.GET("/flow/:id/workers", s.af.Auth, s.ControllersV1.Flow.GetWorkers)
 	v1.GET("/flows/search", s.af.Auth, s.ControllersV1.Flow.Search)
 
+	// logs
+	v1.POST("/log", s.af.Auth, s.ControllersV1.Log.AddLog)
+	v1.GET("/log/:id", s.af.Auth, s.ControllersV1.Log.GetLogById)
+	v1.DELETE("/log/:id", s.af.Auth, s.ControllersV1.Log.DeleteLogById)
+	v1.GET("/logs", s.af.Auth, s.ControllersV1.Log.GetLogList)
+	v1.GET("/logs/search", s.af.Auth, s.ControllersV1.Log.Search)
+
 }

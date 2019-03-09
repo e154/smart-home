@@ -37,6 +37,7 @@ type Adaptors struct {
 	MapElement       *MapElement
 	MapDeviceState   *MapDeviceState
 	MapDeviceAction  *MapDeviceAction
+	Log              *Log
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -75,6 +76,7 @@ func NewAdaptors(db *gorm.DB,
 		MapElement:       GetMapElementAdaptor(db),
 		MapDeviceState:   GetMapDeviceStateAdaptor(db),
 		MapDeviceAction:  GetMapDeviceActionAdaptor(db),
+		Log:              GetLogAdaptor(db),
 	}
 
 	return

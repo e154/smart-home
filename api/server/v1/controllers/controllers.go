@@ -23,6 +23,7 @@ type ControllersV1 struct {
 	Image            *ControllerImage
 	WorkflowScenario *ControllerWorkflowScenario
 	Flow             *ControllerFlow
+	Log              *ControllerLog
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -46,5 +47,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Image:            NewControllerImage(common),
 		WorkflowScenario: NewControllerWorkflowScenario(common),
 		Flow:             NewControllerFlow(common),
+		Log:              NewControllerLog(common),
 	}
 }
