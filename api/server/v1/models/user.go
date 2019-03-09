@@ -47,8 +47,8 @@ type UpdateUser struct {
 	Nickname       string         `json:"nickname" valid:"Required;MinSize(3);MaxSize(255)"`
 	FirstName      string         `json:"first_name"`
 	LastName       string         `json:"last_name"`
-	Password       string         `json:"password" valid:"Required;MinSize(6);MaxSize(255)"`
-	PasswordRepeat string         `json:"password_repeat" valid:"Required;MinSize(6);MaxSize(255)"`
+	Password       string         `json:"password"`
+	PasswordRepeat string         `json:"password_repeat"`
 	Email          string         `json:"email" valid:"Required;Email"`
 	Status         string         `json:"status"`
 	Lang           string         `json:"lang"`
@@ -88,11 +88,11 @@ type UserHistory struct {
 
 type UserFullModel struct {
 	Id                  int64                `json:"id"`
-	Nickname            string               `json:"nickname" valid:"Required;MinSize(3);MaxSize(255)"`
-	FirstName           string               `json:"first_name" valid:"MaxSize(255)"`
-	LastName            string               `json:"last_name" valid:"MaxSize(255)"`
-	Email               string               `json:"email" valid:"Required;Email"`
-	Status              string               `json:"status" valid:"MaxSize(255)"`
+	Nickname            string               `json:"nickname"`
+	FirstName           string               `json:"first_name"`
+	LastName            string               `json:"last_name"`
+	Email               string               `json:"email"`
+	Status              string               `json:"status"`
 	AuthenticationToken string               `json:"authentication_token"`
 	Image               *Image               `json:"image"`
 	SignInCount         int64                `json:"sign_in_count"`

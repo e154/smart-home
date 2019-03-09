@@ -103,7 +103,7 @@ func (c ControllerUser) GetUserById(ctx *gin.Context) {
 // @Accept  json
 // @Param  id path int true "User ID"
 // @Param  user body models.UpdateUser true "Update user"
-// @Success 200 {object} models.ResponseSuccess
+// @Success 200 {object} models.UserFullModel
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
@@ -127,7 +127,7 @@ func (c ControllerUser) UpdateUser(ctx *gin.Context) {
 
 	n.Id = int64(aid)
 
-	_, errs, err := UpdateUser(n, c.adaptors)
+	user, errs, err := UpdateUser(n, c.adaptors)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -140,7 +140,7 @@ func (c ControllerUser) UpdateUser(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(user).Send(ctx)
 }
 
 

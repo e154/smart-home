@@ -7,7 +7,6 @@ import (
 	"github.com/e154/smart-home/common"
 	"encoding/json"
 	"github.com/e154/smart-home/adaptors"
-	"fmt"
 )
 
 type ControllerImage struct {
@@ -22,7 +21,7 @@ func NewControllerImage(adaptors *adaptors.Adaptors) *ControllerImage {
 
 // Stream
 func (c *ControllerImage) GetImageList(client *stream.Client, value interface{}) {
-	fmt.Println("get_image_list")
+	//fmt.Println("get_image_list")
 
 	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
 	if !ok {

@@ -27,7 +27,7 @@ CREATE TABLE users (
   email                  VARCHAR(255) NOT NULL,
   lang                   VARCHAR(2)   NOT NULL DEFAULT 'en',
   history                JSONB                 DEFAULT '{}',
-  status                 VARCHAR(255) NOT NULL,
+  status                 VARCHAR(255) NOT NULL DEFAULT 'active',
   reset_password_token   VARCHAR(255) NOT NULL,
   authentication_token   VARCHAR(255) NOT NULL,
   image_id               BIGINT CONSTRAINT image_at_users_fk REFERENCES images (id) ON UPDATE CASCADE ON DELETE SET NULL,

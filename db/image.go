@@ -101,7 +101,7 @@ ORDER BY date`).Rows()
 
 func (n *Images) GetAllByDate(filter string) (images []*Image, err error) {
 
-	fmt.Println("filter", filter)
+	//fmt.Println("filter", filter)
 
 	images = make([]*Image, 0)
 	image := &Image{}

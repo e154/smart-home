@@ -170,10 +170,10 @@ func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Ada
 	return
 }
 
-func UpdateUser(newParams *models.UpdateUser, adaptors *adaptors.Adaptors) (ok bool, errs []*validation.Error, err error) {
+func UpdateUser(newParams *models.UpdateUser, adaptors *adaptors.Adaptors) (result *models.UserFullModel, errs []*validation.Error, err error) {
 
-	ok, errs = newParams.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = newParams.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
@@ -182,7 +182,7 @@ func UpdateUser(newParams *models.UpdateUser, adaptors *adaptors.Adaptors) (ok b
 		return
 	}
 
-	if newParams.Password != newParams.PasswordRepeat {
+	if newParams.Password != "" && newParams.Password != newParams.PasswordRepeat {
 		err = errors.New("bad passwords")
 		return
 	}
@@ -191,6 +191,9 @@ func UpdateUser(newParams *models.UpdateUser, adaptors *adaptors.Adaptors) (ok b
 	user.EncryptedPassword = common.Pwdhash(newParams.Password)
 
 	err = adaptors.User.Update(user)
+
+	result = &models.UserFullModel{}
+	err = copier.Copy(&result, &user)
 
 	return
 }

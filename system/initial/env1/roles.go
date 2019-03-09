@@ -52,11 +52,12 @@ func roles(adaptors *adaptors.Adaptors,
 
 	// add admin
 	adminUser := &m.User{
-		Nickname: "admin",
+		Nickname:          "admin",
 		EncryptedPassword: common.Pwdhash("admin"),
-		RoleName: "admin",
-		Email: "admin@e154.ru",
-		Lang: "en",
+		RoleName:          "admin",
+		Email:             "admin@e154.ru",
+		Lang:              "en",
+		Status:            "active",
 	}
 
 	ok, _ := adminUser.Valid()
