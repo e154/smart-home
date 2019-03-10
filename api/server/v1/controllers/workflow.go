@@ -28,7 +28,7 @@ func NewControllerWorkflow(common *ControllerCommon) *ControllerWorkflow {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /workflow [post]
-func (c ControllerWorkflow) AddWorkflow(ctx *gin.Context) {
+func (c ControllerWorkflow) Add(ctx *gin.Context) {
 
 	var params models.NewWorkflow
 	if err := ctx.ShouldBindJSON(&params); err != nil {
@@ -72,7 +72,7 @@ func (c ControllerWorkflow) AddWorkflow(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /workflow/{id} [Get]
-func (c ControllerWorkflow) GetWorkflowById(ctx *gin.Context) {
+func (c ControllerWorkflow) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -110,7 +110,7 @@ func (c ControllerWorkflow) GetWorkflowById(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /workflow/{id} [Put]
-func (c ControllerWorkflow) UpdateWorkflow(ctx *gin.Context) {
+func (c ControllerWorkflow) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -160,7 +160,7 @@ func (c ControllerWorkflow) UpdateWorkflow(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /workflow [Get]
-func (c ControllerWorkflow) GetWorkflowList(ctx *gin.Context) {
+func (c ControllerWorkflow) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetWorkflowList(int64(limit), int64(offset), order, sortBy, c.adaptors)
@@ -187,7 +187,7 @@ func (c ControllerWorkflow) GetWorkflowList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /workflow/{id} [Delete]
-func (c ControllerWorkflow) DeleteWorkflowById(ctx *gin.Context) {
+func (c ControllerWorkflow) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)

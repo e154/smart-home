@@ -27,7 +27,7 @@ func NewControllerRole(common *ControllerCommon) *ControllerRole {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /role [post]
-func (c ControllerRole) AddRole(ctx *gin.Context) {
+func (c ControllerRole) Add(ctx *gin.Context) {
 
 	var params models.NewRole
 	if err := ctx.ShouldBindJSON(&params); err != nil {
@@ -66,7 +66,7 @@ func (c ControllerRole) AddRole(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /role/{name} [Get]
-func (c ControllerRole) GetRoleByName(ctx *gin.Context) {
+func (c ControllerRole) GetByName(ctx *gin.Context) {
 
 	name := ctx.Param("name")
 	role, err := GetRoleByName(name, c.adaptors)
@@ -167,7 +167,7 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /role/{name} [Put]
-func (c ControllerRole) UpdateRole(ctx *gin.Context) {
+func (c ControllerRole) Update(ctx *gin.Context) {
 
 	name := ctx.Param("name")
 	role := &models.UpdateRole{}
@@ -214,7 +214,7 @@ func (c ControllerRole) UpdateRole(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /roles [Get]
-func (c ControllerRole) GetRoleList(ctx *gin.Context) {
+func (c ControllerRole) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetRoleList(int64(limit), int64(offset), order, sortBy, c.adaptors)
@@ -242,7 +242,7 @@ func (c ControllerRole) GetRoleList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /role/{name} [Delete]
-func (c ControllerRole) DeleteRoleByName(ctx *gin.Context) {
+func (c ControllerRole) Delete(ctx *gin.Context) {
 
 	name := ctx.Param("name")
 	_, err := c.adaptors.Role.GetByName(name)

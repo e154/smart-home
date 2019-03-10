@@ -28,7 +28,7 @@ func NewControllerDevice(common *ControllerCommon) *ControllerDevice {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /device [post]
 // @Security ApiKeyAuth
-func (c ControllerDevice) AddDevice(ctx *gin.Context) {
+func (c ControllerDevice) Add(ctx *gin.Context) {
 
 	var params models.NewDeviceModel
 	if err := ctx.ShouldBindJSON(&params); err != nil {
@@ -67,7 +67,7 @@ func (c ControllerDevice) AddDevice(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /device/{id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerDevice) GetDeviceById(ctx *gin.Context) {
+func (c ControllerDevice) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -165,7 +165,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /devices [Get]
 // @Security ApiKeyAuth
-func (c ControllerDevice) GetDeviceList(ctx *gin.Context) {
+func (c ControllerDevice) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetDeviceList(int64(limit), int64(offset), order, sortBy, c.adaptors)
@@ -193,7 +193,7 @@ func (c ControllerDevice) GetDeviceList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /device/{id} [Delete]
 // @Security ApiKeyAuth
-func (c ControllerDevice) DeleteDeviceById(ctx *gin.Context) {
+func (c ControllerDevice) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)

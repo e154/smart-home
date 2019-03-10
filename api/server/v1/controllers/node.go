@@ -28,7 +28,7 @@ func NewControllerNode(common *ControllerCommon) *ControllerNode {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /node [post]
 // @Security ApiKeyAuth
-func (c ControllerNode) AddNode(ctx *gin.Context) {
+func (c ControllerNode) Add(ctx *gin.Context) {
 
 	params := &models.NewNode{}
 	if err := ctx.ShouldBindJSON(params); err != nil {
@@ -67,7 +67,7 @@ func (c ControllerNode) AddNode(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /node/{id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerNode) GetNodeById(ctx *gin.Context) {
+func (c ControllerNode) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -106,7 +106,7 @@ func (c ControllerNode) GetNodeById(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /node/{id} [Put]
 // @Security ApiKeyAuth
-func (c ControllerNode) UpdateNode(ctx *gin.Context) {
+func (c ControllerNode) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -157,7 +157,7 @@ func (c ControllerNode) UpdateNode(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /nodes [Get]
 // @Security ApiKeyAuth
-func (c ControllerNode) GetNodeList(ctx *gin.Context) {
+func (c ControllerNode) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetNodeList(int64(limit), int64(offset), order, sortBy, c.adaptors)
@@ -185,7 +185,7 @@ func (c ControllerNode) GetNodeList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /node/{id} [Delete]
 // @Security ApiKeyAuth
-func (c ControllerNode) DeleteNodeById(ctx *gin.Context) {
+func (c ControllerNode) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)

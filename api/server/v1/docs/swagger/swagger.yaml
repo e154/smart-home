@@ -239,7 +239,7 @@ definitions:
         type: string
       workers:
         items:
-          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc000512ec0] 349})
+          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc0003f78c0] 349})
             %!s(bool=false)}'
         type: array
       workflow:
@@ -652,6 +652,34 @@ definitions:
       options:
         $ref: '#/definitions/models.MapOptions'
         type: object
+    type: object
+  models.NewMapElement:
+    properties:
+      description:
+        type: string
+      graph_settings:
+        $ref: '#/definitions/models.MapElementGraphSettings'
+        type: object
+      layer_id:
+        type: integer
+      map:
+        $ref: '#/definitions/models.Map'
+        type: object
+      map_id:
+        type: integer
+      name:
+        type: string
+      prototype:
+        $ref: '#/definitions/models.Prototype'
+        type: object
+      prototype_id:
+        type: integer
+      prototype_type:
+        type: string
+      status:
+        type: string
+      weight:
+        type: integer
     type: object
   models.NewMapLayer:
     properties:
@@ -1219,6 +1247,20 @@ definitions:
           $ref: '#/definitions/models.WorkflowScenario'
         type: array
     type: object
+  models.SortMapElement:
+    properties:
+      id:
+        type: integer
+      weight:
+        type: integer
+    type: object
+  models.SortMapLayer:
+    properties:
+      id:
+        type: integer
+      weight:
+        type: integer
+    type: object
   models.UpdateDevice:
     properties:
       description:
@@ -1312,6 +1354,50 @@ definitions:
       options:
         $ref: '#/definitions/models.MapOptions'
         type: object
+    type: object
+  models.UpdateMapElement:
+    properties:
+      description:
+        type: string
+      graph_settings:
+        $ref: '#/definitions/models.MapElementGraphSettings'
+        type: object
+      id:
+        type: integer
+      layer_id:
+        type: integer
+      map:
+        $ref: '#/definitions/models.Map'
+        type: object
+      map_id:
+        type: integer
+      name:
+        type: string
+      prototype:
+        $ref: '#/definitions/models.Prototype'
+        type: object
+      prototype_id:
+        type: integer
+      prototype_type:
+        type: string
+      status:
+        type: string
+      weight:
+        type: integer
+    type: object
+  models.UpdateMapLayer:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      map:
+        $ref: '#/definitions/models.Map'
+        type: object
+      name:
+        type: string
+      status:
+        type: string
     type: object
   models.UpdateNodeModel:
     properties:
@@ -3372,6 +3458,224 @@ paths:
       summary: Show full map
       tags:
       - map
+  /map_element:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: map_element params
+        in: body
+        name: map_element
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewMapElement'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MapElement'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Add new map_element
+      tags:
+      - map_element
+  /map_element/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete map_element by id
+      parameters:
+      - description: MapElement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete map_element
+      tags:
+      - map_element
+    get:
+      consumes:
+      - application/json
+      description: Get map_element by id
+      parameters:
+      - description: MapElement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MapElement'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Show map_element
+      tags:
+      - map_element
+    put:
+      consumes:
+      - application/json
+      description: Sort map_element by id
+      parameters:
+      - description: Sort map_element
+        in: body
+        name: map_element
+        required: true
+        schema:
+          $ref: '#/definitions/models.SortMapElement'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Sort map_element
+      tags:
+      - map_element
+  /map_elements:
+    get:
+      consumes:
+      - application/json
+      description: Get map_element list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MapListModel'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: MapElement list
+      tags:
+      - map_element
   /map_layer:
     post:
       consumes:
@@ -3493,19 +3797,14 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update map_layer by id
+      description: Sort map_layer by id
       parameters:
-      - description: MapLayer ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update map_layer
+      - description: Sort map_layer
         in: body
         name: map_layer
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateMap'
+          $ref: '#/definitions/models.SortMapLayer'
           type: object
       produces:
       - application/json
@@ -3534,51 +3833,10 @@ paths:
             type: object
       security:
       - ApiKeyAuth: []
-      summary: Update map_layer
+      summary: Sort map_layer
       tags:
       - map_layer
-  /map_layer/{id}/full:
-    get:
-      consumes:
-      - application/json
-      description: Get map_layer by id
-      parameters:
-      - description: MapLayer ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.MapFullModel'
-            type: object
-        "400":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-        "401":
-          description: Unauthorized
-        "404":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-        "500":
-          description: some error
-          schema:
-            $ref: '#/definitions/models.ErrorModel'
-            type: object
-      security:
-      - ApiKeyAuth: []
-      summary: Show full map_layer
-      tags:
-      - map_layer
-  /maps:
+  /map_layers:
     get:
       consumes:
       - application/json
@@ -3636,11 +3894,69 @@ paths:
       summary: MapLayer list
       tags:
       - map_layer
+  /maps:
+    get:
+      consumes:
+      - application/json
+      description: Get map list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MapListModel'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Map list
+      tags:
+      - map
   /maps/search:
     get:
       consumes:
       - application/json
-      description: Search map_layer by name
+      description: Search map by name
       parameters:
       - description: query
         in: query
@@ -3685,9 +4001,9 @@ paths:
             type: object
       security:
       - ApiKeyAuth: []
-      summary: Search map_layer
+      summary: Search map
       tags:
-      - map_layer
+      - map
   /node:
     post:
       consumes:

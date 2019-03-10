@@ -35,7 +35,7 @@ func NewControllerScript(common *ControllerCommon,
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /script [post]
-func (c ControllerScript) AddScript(ctx *gin.Context) {
+func (c ControllerScript) Add(ctx *gin.Context) {
 
 	var params models.NewScript
 	if err := ctx.ShouldBindJSON(&params); err != nil {
@@ -79,7 +79,7 @@ func (c ControllerScript) AddScript(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /script/{id} [Get]
-func (c ControllerScript) GetScriptById(ctx *gin.Context) {
+func (c ControllerScript) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -117,7 +117,7 @@ func (c ControllerScript) GetScriptById(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /script/{id} [Put]
-func (c ControllerScript) UpdateScript(ctx *gin.Context) {
+func (c ControllerScript) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -167,7 +167,7 @@ func (c ControllerScript) UpdateScript(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /scripts [Get]
-func (c ControllerScript) GetScriptList(ctx *gin.Context) {
+func (c ControllerScript) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetScriptList(int64(limit), int64(offset), order, sortBy, c.adaptors)
@@ -194,7 +194,7 @@ func (c ControllerScript) GetScriptList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /script/{id} [Delete]
-func (c ControllerScript) DeleteScriptById(ctx *gin.Context) {
+func (c ControllerScript) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)

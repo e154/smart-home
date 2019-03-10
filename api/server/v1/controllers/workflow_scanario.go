@@ -29,7 +29,7 @@ func NewControllerWorkflowScenario(common *ControllerCommon) *ControllerWorkflow
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /workflow/{id}/scenario [post]
 // @Security ApiKeyAuth
-func (c ControllerWorkflowScenario) AddWorkflowScenario(ctx *gin.Context) {
+func (c ControllerWorkflowScenario) Add(ctx *gin.Context) {
 
 	var params models.NewWorkflowScenario
 	if err := ctx.ShouldBindJSON(&params); err != nil {
@@ -73,7 +73,7 @@ func (c ControllerWorkflowScenario) AddWorkflowScenario(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /workflow/{id}/scenario/{scenario_id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerWorkflowScenario) GetWorkflowScenarioById(ctx *gin.Context) {
+func (c ControllerWorkflowScenario) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	workflowId, err := strconv.Atoi(id)
@@ -118,7 +118,7 @@ func (c ControllerWorkflowScenario) GetWorkflowScenarioById(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /workflow/{id}/scenario/{scenario_id} [Put]
 // @Security ApiKeyAuth
-func (c ControllerWorkflowScenario) UpdateWorkflowScenario(ctx *gin.Context) {
+func (c ControllerWorkflowScenario) Update(ctx *gin.Context) {
 
 	workflowId, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -182,7 +182,7 @@ func (c ControllerWorkflowScenario) UpdateWorkflowScenario(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /workflow/{id}/scenarios [Get]
 // @Security ApiKeyAuth
-func (c ControllerWorkflowScenario) GetWorkflowScenarioList(ctx *gin.Context) {
+func (c ControllerWorkflowScenario) GetList(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	workflowId, err := strconv.Atoi(id)
@@ -216,7 +216,7 @@ func (c ControllerWorkflowScenario) GetWorkflowScenarioList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /workflow/{id}/scenario/{scenario_id} [Delete]
 // @Security ApiKeyAuth
-func (c ControllerWorkflowScenario) DeleteWorkflowScenarioById(ctx *gin.Context) {
+func (c ControllerWorkflowScenario) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("scenario_id")
 	workflowScenarioId, err := strconv.Atoi(id)

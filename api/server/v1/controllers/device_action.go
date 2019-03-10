@@ -27,7 +27,7 @@ func NewControllerDeviceAction(common *ControllerCommon) *ControllerDeviceAction
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /device_action [post]
 // @Security ApiKeyAuth
-func (c ControllerDeviceAction) AddAction(ctx *gin.Context) {
+func (c ControllerDeviceAction) Add(ctx *gin.Context) {
 
 	var params models.NewDeviceAction
 	if err := ctx.ShouldBindJSON(&params); err != nil {
@@ -204,7 +204,7 @@ func (c ControllerDeviceAction) DeleteById(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /device_actions/{id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerDeviceAction) GetDeviceActionList(ctx *gin.Context) {
+func (c ControllerDeviceAction) GetActionList(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	deviceId, err := strconv.Atoi(id)
