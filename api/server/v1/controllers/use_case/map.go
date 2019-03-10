@@ -11,14 +11,14 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
-func AddMap(params *models.NewMap, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddMap(params *models.NewMap, adaptors *adaptors.Adaptors, core *core.Core) (result *models.Map, id int64, errs []*validation.Error, err error) {
 
 	m := &m.Map{}
 	common.Copy(&m, &params)
 
 	// validation
-	ok, errs = m.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = m.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
@@ -26,8 +26,12 @@ func AddMap(params *models.NewMap, adaptors *adaptors.Adaptors, core *core.Core)
 		return
 	}
 
-	m.Id = id
+	if m, err = adaptors.Map.GetById(id); err != nil {
+		return
+	}
 
+	result = &models.Map{}
+	err = common.Copy(&result, &m)
 
 	return
 }

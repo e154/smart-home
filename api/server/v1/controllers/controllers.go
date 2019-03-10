@@ -20,6 +20,7 @@ type ControllersV1 struct {
 	DeviceAction     *ControllerDeviceAction
 	DeviceState      *ControllerDeviceState
 	Map              *ControllerMap
+	MapLayer         *ControllerMapLayer
 	Image            *ControllerImage
 	WorkflowScenario *ControllerWorkflowScenario
 	Flow             *ControllerFlow
@@ -44,6 +45,7 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		DeviceAction:     NewControllerDeviceAction(common),
 		DeviceState:      NewControllerDeviceState(common),
 		Map:              NewControllerMap(common),
+		MapLayer:         NewControllerMapLayer(common),
 		Image:            NewControllerImage(common),
 		WorkflowScenario: NewControllerWorkflowScenario(common),
 		Flow:             NewControllerFlow(common),

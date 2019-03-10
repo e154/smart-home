@@ -117,6 +117,16 @@ func (s *Server) setControllers() {
 	v1.GET("/maps", s.af.Auth, s.ControllersV1.Map.GetMapList)
 	v1.GET("/maps/search", s.af.Auth, s.ControllersV1.Map.Search)
 
+	// map_layer
+	v1.POST("/map_layer", s.af.Auth, s.ControllersV1.MapLayer.Add)
+	v1.GET("/map_layer/:id", s.af.Auth, s.ControllersV1.MapLayer.GetById)
+	v1.PUT("/map_layer/:id", s.af.Auth, s.ControllersV1.MapLayer.Update)
+	v1.DELETE("/map_layer/:id", s.af.Auth, s.ControllersV1.MapLayer.Delete)
+	v1.GET("/map_layers", s.af.Auth, s.ControllersV1.MapLayer.GetList)
+	v1.PUT("/map_layers/sort", s.af.Auth, s.ControllersV1.MapLayer.Sort)
+
+	// map element
+
 	// images
 	v1.GET("/image/:id", s.af.Auth, s.ControllersV1.Image.GetImageById)
 	v1.GET("/images", s.af.Auth, s.ControllersV1.Image.GetImageList)

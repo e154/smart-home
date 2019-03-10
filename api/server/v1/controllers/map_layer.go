@@ -7,37 +7,37 @@ import (
 	"strconv"
 )
 
-type ControllerMap struct {
+type ControllerMapLayer struct {
 	*ControllerCommon
 }
 
-func NewControllerMap(common *ControllerCommon) *ControllerMap {
-	return &ControllerMap{ControllerCommon: common}
+func NewControllerMapLayer(common *ControllerCommon) *ControllerMapLayer {
+	return &ControllerMapLayer{ControllerCommon: common}
 }
 
-// Map godoc
-// @tags map
-// @Summary Add new map
+// MapLayer godoc
+// @tags map_layer
+// @Summary Add new map_layer
 // @Description
 // @Produce json
 // @Accept  json
-// @Param map body models.NewMap true "map params"
-// @Success 200 {object} models.Map
+// @Param map_layer body models.NewMapLayer true "map_layer params"
+// @Success 200 {object} models.MapLayer
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 401 "Unauthorized"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map [post]
+// @Router /map_layer [post]
 // @Security ApiKeyAuth
-func (c ControllerMap) AddMap(ctx *gin.Context) {
+func (c ControllerMapLayer) Add(ctx *gin.Context) {
 
-	params := &models.NewMap{}
+	params := &models.NewMapLayer{}
 	if err := ctx.ShouldBindJSON(params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	result, _, errs, err := AddMap(params, c.adaptors, c.core)
+	result, _, errs, err := AddMapLayer(params, c.adaptors)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -50,24 +50,24 @@ func (c ControllerMap) AddMap(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("map", result).Send(ctx)
+	resp.Item("map_layer", result).Send(ctx)
 }
 
-// Map godoc
-// @tags map
-// @Summary Show map
-// @Description Get map by id
+// MapLayer godoc
+// @tags map_layer
+// @Summary Show map_layer
+// @Description Get map_layer by id
 // @Produce json
 // @Accept  json
-// @Param id path int true "Map ID"
-// @Success 200 {object} models.Map
+// @Param id path int true "MapLayer ID"
+// @Success 200 {object} models.MapLayer
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map/{id} [Get]
+// @Router /map_layer/{id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerMap) GetMapById(ctx *gin.Context) {
+func (c ControllerMapLayer) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -77,7 +77,7 @@ func (c ControllerMap) GetMapById(ctx *gin.Context) {
 		return
 	}
 
-	m, err := GetMapById(int64(aid), c.adaptors)
+	result, err := GetMapLayerById(int64(aid), c.adaptors)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -88,63 +88,25 @@ func (c ControllerMap) GetMapById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.SetData(m).Send(ctx)
+	resp.Item("map_layer", result).Send(ctx)
 }
 
-// Map godoc
-// @tags map
-// @Summary Show full map
-// @Description Get map by id
+// MapLayer godoc
+// @tags map_layer
+// @Summary Update map_layer
+// @Description Update map_layer by id
 // @Produce json
 // @Accept  json
-// @Param id path int true "Map ID"
-// @Success 200 {object} models.MapFullModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map/{id}/full [Get]
-// @Security ApiKeyAuth
-func (c ControllerMap) GetFullMapById(ctx *gin.Context) {
-
-	id := ctx.Param("id")
-	aid, err := strconv.Atoi(id)
-	if err != nil {
-		log.Error(err.Error())
-		NewError(400, err).Send(ctx)
-		return
-	}
-
-	m, err := GetFullMapById(int64(aid), c.adaptors)
-	if err != nil {
-		code := 500
-		if err.Error() == "record not found" {
-			code = 404
-		}
-		NewError(code, err).Send(ctx)
-		return
-	}
-
-	resp := NewSuccess()
-	resp.SetData(m).Send(ctx)
-}
-
-// Map godoc
-// @tags map
-// @Summary Update map
-// @Description Update map by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Map ID"
-// @Param  map body models.UpdateMap true "Update map"
+// @Param  id path int true "MapLayer ID"
+// @Param  map_layer body models.UpdateMapLayer true "Update map_layer"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map/{id} [Put]
+// @Router /map_layer/{id} [Put]
 // @Security ApiKeyAuth
-func (c ControllerMap) UpdateMap(ctx *gin.Context) {
+func (c ControllerMapLayer) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -153,7 +115,7 @@ func (c ControllerMap) UpdateMap(ctx *gin.Context) {
 		return
 	}
 
-	params := &models.UpdateMap{}
+	params := &models.UpdateMapLayer{}
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -162,7 +124,7 @@ func (c ControllerMap) UpdateMap(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	_, errs, err := UpdateMap(params, c.adaptors, c.core)
+	_, errs, err := UpdateMapLayer(params, c.adaptors)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -178,10 +140,42 @@ func (c ControllerMap) UpdateMap(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Map godoc
-// @tags map
-// @Summary Map list
-// @Description Get map list
+// MapLayer godoc
+// @tags map_layer
+// @Summary Sort map_layer
+// @Description Sort map_layer by id
+// @Produce json
+// @Accept  json
+// @Param  map_layer body models.SortMapLayer true "Sort map_layer"
+// @Success 200 {object} models.ResponseSuccess
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Router /map_layer/{id} [Put]
+// @Security ApiKeyAuth
+func (c ControllerMapLayer) Sort(ctx *gin.Context) {
+
+	params := make([]*models.SortMapLayer, 0)
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	if err := SortMapLayers(params, c.adaptors); err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
+}
+
+// MapLayer godoc
+// @tags map_layer
+// @Summary MapLayer list
+// @Description Get map_layer list
 // @Produce json
 // @Accept  json
 // @Param limit query int true "limit" default(10)
@@ -193,12 +187,12 @@ func (c ControllerMap) UpdateMap(ctx *gin.Context) {
 // @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /maps [Get]
+// @Router /map_layers [Get]
 // @Security ApiKeyAuth
-func (c ControllerMap) GetMapList(ctx *gin.Context) {
+func (c ControllerMapLayer) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetMapList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	items, total, err := GetMapLayerList(int64(limit), int64(offset), order, sortBy, c.adaptors)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -209,21 +203,21 @@ func (c ControllerMap) GetMapList(ctx *gin.Context) {
 	return
 }
 
-// Map godoc
-// @tags map
-// @Summary Delete map
-// @Description Delete map by id
+// MapLayer godoc
+// @tags map_layer
+// @Summary Delete map_layer
+// @Description Delete map_layer by id
 // @Produce json
 // @Accept  json
-// @Param  id path int true "Map ID"
+// @Param  id path int true "MapLayer ID"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
 // @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map/{id} [Delete]
+// @Router /map_layer/{id} [Delete]
 // @Security ApiKeyAuth
-func (c ControllerMap) DeleteMapById(ctx *gin.Context) {
+func (c ControllerMapLayer) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -233,7 +227,7 @@ func (c ControllerMap) DeleteMapById(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteMapById(int64(aid), c.adaptors, c.core); err != nil {
+	if err := DeleteMapLayer(int64(aid), c.adaptors); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -243,35 +237,5 @@ func (c ControllerMap) DeleteMapById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Send(ctx)
-}
-
-// Map godoc
-// @tags map
-// @Summary Search map
-// @Description Search map by name
-// @Produce json
-// @Accept  json
-// @Param query query string false "query"
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.SearchMapResponse
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /maps/search [Get]
-func (c ControllerMap) Search(ctx *gin.Context) {
-
-	query, limit, offset := c.select2(ctx)
-	maps, _, err := SearchMap(query, limit, offset, c.adaptors)
-	if err != nil {
-		NewError(500, err).Send(ctx)
-		return
-	}
-
-	resp := NewSuccess()
-	resp.Item("maps", maps)
 	resp.Send(ctx)
 }
