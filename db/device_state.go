@@ -72,7 +72,6 @@ func (n DeviceStates) GetByDeviceId(deviceId int64) (actions []*DeviceState, err
 	actions = make([]*DeviceState, 0)
 	err = n.Db.Model(&DeviceState{}).
 		Where("device_id = ?", deviceId).
-		Preload("Script").
 		Find(&actions).
 		Error
 	return

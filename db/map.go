@@ -100,6 +100,8 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 			Preload("Actions.Image").
 			Preload("Actions.DeviceAction").
 			Preload("Device").
+			Preload("Device.States").
+			Preload("Device.Actions").
 			Find(&devices).
 			Error
 	}
