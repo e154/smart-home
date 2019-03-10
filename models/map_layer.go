@@ -6,14 +6,16 @@ import (
 )
 
 type MapLayer struct {
-	Id          int64     `json:"id"`
-	Name        string    `json:"name" valid:"MaxSize(254);Required"`
-	Description string    `json:"description"`
-	MapId       int64     `json:"map_id" valid:"Required"`
-	Status      string    `json:"status" valid:"Required"`
-	Weight      int64     `json:"weight"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Id          int64         `json:"id"`
+	Name        string        `json:"name" valid:"MaxSize(254);Required"`
+	Description string        `json:"description"`
+	Map         *Map          `json:"map"`
+	MapId       int64         `json:"map_id" valid:"Required"`
+	Status      string        `json:"status" valid:"Required"`
+	Weight      int64         `json:"weight"`
+	Elements    []*MapElement `json:"elements"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 func (m *MapLayer) Valid() (ok bool, errs []*validation.Error) {

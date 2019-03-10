@@ -13,6 +13,8 @@ type MapDevices struct {
 type MapDevice struct {
 	Id         int64 `gorm:"primary_key"`
 	SystemName string
+	Image      *Image
+	ImageId    int64
 	Device     *Device
 	DeviceId   int64
 	States     []*MapDeviceState

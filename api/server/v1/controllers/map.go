@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
 )
@@ -25,25 +24,20 @@ func NewControllerMap(common *ControllerCommon) *ControllerMap {
 // @Param map body models.NewMap true "map params"
 // @Success 200 {object} models.NewObjectSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /map [post]
 // @Security ApiKeyAuth
 func (c ControllerMap) AddMap(ctx *gin.Context) {
 
-	var params models.NewMap
-	if err := ctx.ShouldBindJSON(&params); err != nil {
+	params := &models.NewMap{}
+	if err := ctx.ShouldBindJSON(params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	n := &m.Map{
-		Name:        params.Name,
-		Description: params.Description,
-		Options:     []byte(params.Options),
-	}
-
-	_, id, errs, err := AddMap(n, c.adaptors, c.core)
+	_, id, errs, err := AddMap(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -68,6 +62,7 @@ func (c ControllerMap) AddMap(ctx *gin.Context) {
 // @Param id path int true "Map ID"
 // @Success 200 {object} models.Map
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /map/{id} [Get]
@@ -98,6 +93,44 @@ func (c ControllerMap) GetMapById(ctx *gin.Context) {
 
 // Map godoc
 // @tags map
+// @Summary Show full map
+// @Description Get map by id
+// @Produce json
+// @Accept  json
+// @Param id path int true "Map ID"
+// @Success 200 {object} models.MapFullModel
+// @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
+// @Failure 404 {object} models.ErrorModel "some error"
+// @Failure 500 {object} models.ErrorModel "some error"
+// @Router /map/{id}/full [Get]
+// @Security ApiKeyAuth
+func (c ControllerMap) GetFullMapById(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	m, err := GetFullMapById(int64(aid), c.adaptors)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.SetData(m).Send(ctx)
+}
+
+// Map godoc
+// @tags map
 // @Summary Update map
 // @Description Update map by id
 // @Produce json
@@ -106,6 +139,7 @@ func (c ControllerMap) GetMapById(ctx *gin.Context) {
 // @Param  map body models.UpdateMap true "Update map"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /map/{id} [Put]
@@ -119,16 +153,16 @@ func (c ControllerMap) UpdateMap(ctx *gin.Context) {
 		return
 	}
 
-	n := &models.UpdateMap{}
-	if err := ctx.ShouldBindJSON(&n); err != nil {
+	params := &models.UpdateMap{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	n.Id = int64(aid)
+	params.Id = int64(aid)
 
-	_, errs, err := UpdateMap(n, c.adaptors, c.core)
+	_, errs, err := UpdateMap(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -156,6 +190,7 @@ func (c ControllerMap) UpdateMap(ctx *gin.Context) {
 // @Param sort_by query string false "sort_by" default(id)
 // @Success 200 {object} models.MapListModel
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /maps [Get]
@@ -183,6 +218,7 @@ func (c ControllerMap) GetMapList(ctx *gin.Context) {
 // @Param  id path int true "Map ID"
 // @Success 200 {object} models.ResponseSuccess
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /map/{id} [Delete]
@@ -221,6 +257,7 @@ func (c ControllerMap) DeleteMapById(ctx *gin.Context) {
 // @Param offset query int true "offset" default(0)
 // @Success 200 {object} models.SearchMapResponse
 // @Failure 400 {object} models.ErrorModel "some error"
+// @Failure 401 "Unauthorized"
 // @Failure 404 {object} models.ErrorModel "some error"
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth

@@ -239,7 +239,7 @@ definitions:
         type: string
       workers:
         items:
-          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc000216bc0] 349})
+          type: '&{%!s(token.Pos=316) %!s(*ast.FieldList=&{323 [0xc0003d4c80] 349})
             %!s(bool=false)}'
         type: array
       workflow:
@@ -363,6 +363,17 @@ definitions:
             type: integer
         type: object
     type: object
+  models.LogModel:
+    properties:
+      body:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      level:
+        type: string
+    type: object
   models.Map:
     properties:
       created_at:
@@ -374,9 +385,150 @@ definitions:
       name:
         type: string
       options:
+        $ref: '#/definitions/models.MapOptions'
+        type: object
+      updated_at:
+        type: string
+    type: object
+  models.MapDeviceAction:
+    properties:
+      created_at:
+        type: string
+      device_action:
+        $ref: '#/definitions/models.DeviceAction'
+        type: object
+      device_action_id:
+        type: integer
+      id:
+        type: integer
+      image:
+        $ref: '#/definitions/models.Image'
+        type: object
+      image_id:
+        type: integer
+      map_device_id:
+        type: integer
+      type:
         type: string
       updated_at:
         type: string
+    type: object
+  models.MapDeviceState:
+    properties:
+      created_at:
+        type: string
+      device_state:
+        $ref: '#/definitions/models.DeviceState'
+        type: object
+      device_state_id:
+        type: integer
+      id:
+        type: integer
+      image:
+        $ref: '#/definitions/models.Image'
+        type: object
+      image_id:
+        type: integer
+      map_device_id:
+        type: integer
+      style:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.MapElement:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      graph_settings:
+        $ref: '#/definitions/models.MapElementGraphSettings'
+        type: object
+      id:
+        type: integer
+      layer_id:
+        type: integer
+      map_id:
+        type: integer
+      name:
+        type: string
+      prototype:
+        $ref: '#/definitions/models.Prototype'
+        type: object
+      prototype_id:
+        type: integer
+      prototype_type:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      weight:
+        type: integer
+    type: object
+  models.MapElementGraphSettings:
+    properties:
+      height:
+        type: integer
+      position:
+        $ref: '#/definitions/models.MapElementGraphSettingsPosition'
+        type: object
+      width:
+        type: integer
+    type: object
+  models.MapElementGraphSettingsPosition:
+    properties:
+      left:
+        type: integer
+      top:
+        type: integer
+    type: object
+  models.MapFullModel:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      layers:
+        items:
+          $ref: '#/definitions/models.MapLayer'
+        type: array
+      name:
+        type: string
+      options:
+        $ref: '#/definitions/models.MapOptions'
+        type: object
+      updated_at:
+        type: string
+    type: object
+  models.MapLayer:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      elements:
+        items:
+          $ref: '#/definitions/models.MapElement'
+        type: array
+      id:
+        type: integer
+      map:
+        $ref: '#/definitions/models.Map'
+        type: object
+      map_id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      weight:
+        type: integer
     type: object
   models.MapListModel:
     properties:
@@ -393,6 +545,15 @@ definitions:
           offset:
             type: integer
         type: object
+    type: object
+  models.MapOptions:
+    properties:
+      element_option_text:
+        type: boolean
+      element_state_text:
+        type: boolean
+      zoom:
+        type: number
     type: object
   models.NewDeviceAction:
     properties:
@@ -475,6 +636,13 @@ definitions:
       title:
         type: string
     type: object
+  models.NewLogModel:
+    properties:
+      body:
+        type: string
+      level:
+        type: string
+    type: object
   models.NewMap:
     properties:
       description:
@@ -482,7 +650,8 @@ definitions:
       name:
         type: string
       options:
-        type: string
+        $ref: '#/definitions/models.MapOptions'
+        type: object
     type: object
   models.NewNode:
     properties:
@@ -629,6 +798,39 @@ definitions:
       id:
         type: integer
     type: object
+  models.Prototype:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/models.MapDeviceAction'
+        type: array
+      created_at:
+        type: string
+      device:
+        $ref: '#/definitions/models.DeviceModel'
+        type: object
+      device_id:
+        type: integer
+      id:
+        type: integer
+      image:
+        $ref: '#/definitions/models.Image'
+        type: object
+      image_id:
+        type: integer
+      states:
+        items:
+          $ref: '#/definitions/models.MapDeviceState'
+        type: array
+      style:
+        type: string
+      system_name:
+        type: string
+      text:
+        type: string
+      updated_at:
+        type: string
+    type: object
   models.RedactorConnector:
     properties:
       direction:
@@ -770,6 +972,28 @@ definitions:
             type: integer
         type: object
     type: object
+  models.ResponseLog:
+    properties:
+      log:
+        $ref: '#/definitions/models.LogModel'
+        type: object
+    type: object
+  models.ResponseLogList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.LogModel'
+        type: array
+      meta:
+        properties:
+          limit:
+            type: integer
+          objects_count:
+            type: integer
+          offset:
+            type: integer
+        type: object
+    type: object
   models.ResponseNodeModel:
     properties:
       node:
@@ -832,6 +1056,13 @@ definitions:
       flows:
         items:
           $ref: '#/definitions/models.FlowModel'
+        type: array
+    type: object
+  models.ResponseSearchLog:
+    properties:
+      logs:
+        items:
+          $ref: '#/definitions/models.LogModel'
         type: array
     type: object
   models.ResponseSearchNode:
@@ -943,7 +1174,7 @@ definitions:
     type: object
   models.SearchMapResponse:
     properties:
-      nodes:
+      maps:
         items:
           $ref: '#/definitions/models.Map'
         type: array
@@ -1067,7 +1298,8 @@ definitions:
       name:
         type: string
       options:
-        type: string
+        $ref: '#/definitions/models.MapOptions'
+        type: object
     type: object
   models.UpdateNodeModel:
     properties:
@@ -2700,6 +2932,228 @@ paths:
       summary: Image list
       tags:
       - image
+  /log:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: log params
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewLogModel'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.NewObjectSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Add new log
+      tags:
+      - log
+  /log/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete log by id
+      parameters:
+      - description: Log ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSuccess'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete log
+      tags:
+      - log
+    get:
+      consumes:
+      - application/json
+      description: Get log by id
+      parameters:
+      - description: Log ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseLog'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Show log
+      tags:
+      - log
+  /logs:
+    get:
+      consumes:
+      - application/json
+      description: Get log list
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      - description: query
+        in: query
+        name: query
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseLogList'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Log list
+      tags:
+      - log
+  /logs/search:
+    get:
+      consumes:
+      - application/json
+      description: Search log by name
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseSearchLog'
+            type: object
+        "401":
+          description: Unauthorized
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Search log
+      tags:
+      - log
   /map:
     post:
       consumes:
@@ -2725,6 +3179,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "500":
           description: some error
           schema:
@@ -2759,6 +3215,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2797,6 +3255,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2842,6 +3302,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2855,6 +3317,47 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update map
+      tags:
+      - map
+  /map/{id}/full:
+    get:
+      consumes:
+      - application/json
+      description: Get map by id
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MapFullModel'
+            type: object
+        "400":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "401":
+          description: Unauthorized
+        "404":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+        "500":
+          description: some error
+          schema:
+            $ref: '#/definitions/models.ErrorModel'
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Show full map
       tags:
       - map
   /maps:
@@ -2898,6 +3401,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -2948,6 +3453,8 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorModel'
             type: object
+        "401":
+          description: Unauthorized
         "404":
           description: some error
           schema:
@@ -4191,7 +4698,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ResponseSuccess'
+            $ref: '#/definitions/models.UserFullModel'
             type: object
         "400":
           description: some error

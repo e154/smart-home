@@ -58,6 +58,18 @@ func (n *MapDeviceState) fromDb(dbVer *db.MapDeviceState) (ver *m.MapDeviceState
 		UpdatedAt:     dbVer.UpdatedAt,
 	}
 
+	// image
+	if dbVer.Image != nil {
+		imageAdaptor := GetImageAdaptor(n.db)
+		ver.Image = imageAdaptor.fromDb(dbVer.Image)
+	}
+
+	// state
+	if dbVer.DeviceState != nil {
+		stateAdaptor := GetDeviceStateAdaptor(n.db)
+		ver.DeviceState = stateAdaptor.fromDb(dbVer.DeviceState)
+	}
+
 	return
 }
 

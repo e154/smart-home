@@ -111,6 +111,7 @@ func (s *Server) setControllers() {
 	// maps
 	v1.POST("/map", s.af.Auth, s.ControllersV1.Map.AddMap)
 	v1.GET("/map/:id", s.af.Auth, s.ControllersV1.Map.GetMapById)
+	v1.GET("/map/:id/full", s.af.Auth, s.ControllersV1.Map.GetFullMapById)
 	v1.PUT("/map/:id", s.af.Auth, s.ControllersV1.Map.UpdateMap)
 	v1.DELETE("/map/:id", s.af.Auth, s.ControllersV1.Map.DeleteMapById)
 	v1.GET("/maps", s.af.Auth, s.ControllersV1.Map.GetMapList)

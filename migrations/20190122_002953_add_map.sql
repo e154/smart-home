@@ -42,7 +42,7 @@ CREATE TABLE map_elements (
   prototype_id   Text               NOT NULL,
   prototype_type VARCHAR(255)       NOT NULL,
   graph_settings JSONB              NOT NULL DEFAULT '{}',
-  layer_id       BIGINT             NULL CONSTRAINT map_elements_2_map_layers_fk REFERENCES map_layers (id) ON UPDATE CASCADE ON DELETE RESTRICT,
+  map_layer_id   BIGINT             NULL CONSTRAINT map_elements_2_map_layers_fk REFERENCES map_layers (id) ON UPDATE CASCADE ON DELETE RESTRICT,
   map_id         BIGINT             NULL CONSTRAINT map_elements_2_maps_fk REFERENCES maps (id) ON UPDATE CASCADE ON DELETE RESTRICT,
   status         map_element_status NOT NULL,
   weight         INTEGER            NOT NULL DEFAULT 0,

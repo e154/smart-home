@@ -18,6 +18,7 @@ type MapLayer struct {
 	MapId       int64
 	Status      string
 	Weight      int64
+	Elements    []*MapElement
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

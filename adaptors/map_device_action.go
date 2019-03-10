@@ -53,6 +53,18 @@ func (n *MapDeviceAction) fromDb(dbVer *db.MapDeviceAction) (ver *m.MapDeviceAct
 		UpdatedAt:      dbVer.UpdatedAt,
 	}
 
+	// image
+	if dbVer.Image != nil {
+		imageAdaptor := GetImageAdaptor(n.db)
+		ver.Image = imageAdaptor.fromDb(dbVer.Image)
+	}
+
+	// actions
+	if dbVer.DeviceAction != nil {
+		deviceActionAdaptor := GetDeviceActionAdaptor(n.db)
+		ver.DeviceAction = deviceActionAdaptor.fromDb(dbVer.DeviceAction)
+	}
+
 	return
 }
 

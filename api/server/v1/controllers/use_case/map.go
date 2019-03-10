@@ -8,9 +8,13 @@ import (
 	"github.com/e154/smart-home/api/server/v1/models"
 	"github.com/jinzhu/copier"
 	"errors"
+	"github.com/e154/smart-home/common"
 )
 
-func AddMap(m *m.Map, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddMap(params *models.NewMap, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+
+	m := &m.Map{}
+	common.Copy(&m, &params)
 
 	// validation
 	ok, errs = m.Valid()
@@ -28,9 +32,31 @@ func AddMap(m *m.Map, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id
 	return
 }
 
-func GetMapById(mId int64, adaptors *adaptors.Adaptors) (m *m.Map, err error) {
+func GetMapById(mId int64, adaptors *adaptors.Adaptors) (result *models.Map, err error) {
 
-	m, err = adaptors.Map.GetById(mId)
+	var m *m.Map
+	if m, err = adaptors.Map.GetById(mId); err != nil {
+		return
+	}
+
+	result = &models.Map{}
+	err = common.Copy(&result, &m)
+
+	return
+}
+
+func GetFullMapById(mId int64, adaptors *adaptors.Adaptors) (result *models.MapFullModel, err error) {
+
+	var m *m.Map
+	if m, err = adaptors.Map.GetFullById(mId); err != nil {
+		return
+	}
+
+	//debug.Println(m)
+	//fmt.Println("------------------------")
+
+	result = &models.MapFullModel{}
+	err = common.Copy(&result, &m, common.JsonEngine)
 
 	return
 }
@@ -50,16 +76,20 @@ func UpdateMap(mapParams *models.UpdateMap, adaptors *adaptors.Adaptors, core *c
 		return
 	}
 
-	if err = adaptors.Map.Update(m); err != nil {
-		return
-	}
+	err = adaptors.Map.Update(m)
 
 	return
 }
 
-func GetMapList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (items []*m.Map, total int64, err error) {
+func GetMapList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (result []*models.Map, total int64, err error) {
 
-	items, total, err = adaptors.Map.List(limit, offset, order, sortBy)
+	var items []*m.Map
+	if items, total, err = adaptors.Map.List(limit, offset, order, sortBy); err != nil {
+		return
+	}
+
+	result = make([]*models.Map, 0)
+	err = common.Copy(&result, &items)
 
 	return
 }

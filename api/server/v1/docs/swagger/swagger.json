@@ -2005,6 +2005,339 @@
                 }
             }
         },
+        "/log": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log"
+                ],
+                "summary": "Add new log",
+                "parameters": [
+                    {
+                        "description": "log params",
+                        "name": "log",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.NewLogModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.NewObjectSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/log/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get log by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log"
+                ],
+                "summary": "Show log",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Log ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseLog"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete log by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log"
+                ],
+                "summary": "Delete log",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Log ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSuccess"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/logs": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get log list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log"
+                ],
+                "summary": "Log list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "DESC",
+                        "description": "order",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "id",
+                        "description": "sort_by",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "query",
+                        "name": "query",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseLogList"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/logs/search": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Search log by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "log"
+                ],
+                "summary": "Search log",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponseSearchLog"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
         "/map": {
             "post": {
                 "security": [
@@ -2048,6 +2381,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "500": {
                         "description": "some error",
@@ -2100,6 +2436,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -2168,6 +2507,9 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "some error",
                         "schema": {
@@ -2224,6 +2566,71 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/map/{id}/full": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get map by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "map"
+                ],
+                "summary": "Show full map",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Map ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.MapFullModel"
+                        }
+                    },
+                    "400": {
+                        "description": "some error",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ErrorModel"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -2307,6 +2714,9 @@
                             "$ref": "#/definitions/models.ErrorModel"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
                     "404": {
                         "description": "some error",
                         "schema": {
@@ -2380,6 +2790,9 @@
                             "type": "object",
                             "$ref": "#/definitions/models.ErrorModel"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "404": {
                         "description": "some error",
@@ -4193,7 +4606,7 @@
                         "description": "OK",
                         "schema": {
                             "type": "object",
-                            "$ref": "#/definitions/models.ResponseSuccess"
+                            "$ref": "#/definitions/models.UserFullModel"
                         }
                     },
                     "400": {
@@ -5642,7 +6055,7 @@
                 "workers": {
                     "type": "array",
                     "items": {
-                        "type": "\u0026{%!s(token.Pos=316) %!s(*ast.FieldList=\u0026{323 [0xc000216bc0] 349}) %!s(bool=false)}"
+                        "type": "\u0026{%!s(token.Pos=316) %!s(*ast.FieldList=\u0026{323 [0xc0003d4c80] 349}) %!s(bool=false)}"
                     }
                 },
                 "workflow": {
@@ -5829,6 +6242,23 @@
                 }
             }
         },
+        "models.LogModel": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Map": {
             "type": "object",
             "properties": {
@@ -5845,10 +6275,220 @@
                     "type": "string"
                 },
                 "options": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.MapOptions"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MapDeviceAction": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "device_action": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceAction"
+                },
+                "device_action_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Image"
+                },
+                "image_id": {
+                    "type": "integer"
+                },
+                "map_device_id": {
+                    "type": "integer"
+                },
+                "type": {
                     "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "models.MapDeviceState": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "device_state": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceState"
+                },
+                "device_state_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Image"
+                },
+                "image_id": {
+                    "type": "integer"
+                },
+                "map_device_id": {
+                    "type": "integer"
+                },
+                "style": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MapElement": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "graph_settings": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.MapElementGraphSettings"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "layer_id": {
+                    "type": "integer"
+                },
+                "map_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "prototype": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Prototype"
+                },
+                "prototype_id": {
+                    "type": "integer"
+                },
+                "prototype_type": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.MapElementGraphSettings": {
+            "type": "object",
+            "properties": {
+                "height": {
+                    "type": "integer"
+                },
+                "position": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.MapElementGraphSettingsPosition"
+                },
+                "width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.MapElementGraphSettingsPosition": {
+            "type": "object",
+            "properties": {
+                "left": {
+                    "type": "integer"
+                },
+                "top": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.MapFullModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "layers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MapLayer"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.MapOptions"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MapLayer": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "elements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MapElement"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "map": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Map"
+                },
+                "map_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
                 }
             }
         },
@@ -5874,6 +6514,20 @@
                             "type": "integer"
                         }
                     }
+                }
+            }
+        },
+        "models.MapOptions": {
+            "type": "object",
+            "properties": {
+                "element_option_text": {
+                    "type": "boolean"
+                },
+                "element_state_text": {
+                    "type": "boolean"
+                },
+                "zoom": {
+                    "type": "number"
                 }
             }
         },
@@ -6000,6 +6654,17 @@
                 }
             }
         },
+        "models.NewLogModel": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "string"
+                }
+            }
+        },
         "models.NewMap": {
             "type": "object",
             "properties": {
@@ -6010,7 +6675,8 @@
                     "type": "string"
                 },
                 "options": {
-                    "type": "string"
+                    "type": "object",
+                    "$ref": "#/definitions/models.MapOptions"
                 }
             }
         },
@@ -6238,6 +6904,55 @@
                 }
             }
         },
+        "models.Prototype": {
+            "type": "object",
+            "properties": {
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MapDeviceAction"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.DeviceModel"
+                },
+                "device_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.Image"
+                },
+                "image_id": {
+                    "type": "integer"
+                },
+                "states": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MapDeviceState"
+                    }
+                },
+                "style": {
+                    "type": "string"
+                },
+                "system_name": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "models.RedactorConnector": {
             "type": "object",
             "properties": {
@@ -6453,6 +7168,40 @@
                 }
             }
         },
+        "models.ResponseLog": {
+            "type": "object",
+            "properties": {
+                "log": {
+                    "type": "object",
+                    "$ref": "#/definitions/models.LogModel"
+                }
+            }
+        },
+        "models.ResponseLogList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.LogModel"
+                    }
+                },
+                "meta": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer"
+                        },
+                        "objects_count": {
+                            "type": "integer"
+                        },
+                        "offset": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
         "models.ResponseNodeModel": {
             "type": "object",
             "properties": {
@@ -6548,6 +7297,17 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.FlowModel"
+                    }
+                }
+            }
+        },
+        "models.ResponseSearchLog": {
+            "type": "object",
+            "properties": {
+                "logs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.LogModel"
                     }
                 }
             }
@@ -6721,7 +7481,7 @@
         "models.SearchMapResponse": {
             "type": "object",
             "properties": {
-                "nodes": {
+                "maps": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Map"
@@ -6910,7 +7670,8 @@
                     "type": "string"
                 },
                 "options": {
-                    "type": "string"
+                    "type": "object",
+                    "$ref": "#/definitions/models.MapOptions"
                 }
             }
         },

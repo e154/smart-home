@@ -11,16 +11,23 @@ type MapElements struct {
 	Db *gorm.DB
 }
 
+type Prototype struct {
+	*MapImage
+	*MapText
+	*MapDevice
+}
+
 type MapElement struct {
 	Id            int64 `gorm:"primary_key"`
 	Name          string
 	Description   string
 	PrototypeId   int64
 	PrototypeType PrototypeType
+	Prototype     Prototype
 	Map           *Map
 	MapId         int64
-	Layer         *MapLayer
-	LayerId       int64
+	MapLayer      *MapLayer
+	MapLayerId    int64
 	GraphSettings json.RawMessage `gorm:"type:jsonb;not null"`
 	Status        StatusType
 	Weight        int
@@ -53,7 +60,7 @@ func (n MapElements) Update(m *MapElement) (err error) {
 		"prototype_id":   m.PrototypeId,
 		"prototype_type": m.PrototypeType,
 		"map_id":         m.MapId,
-		"layer_id":       m.LayerId,
+		"layer_id":       m.MapLayerId,
 		"graph_settings": m.GraphSettings,
 		"status":         m.Status,
 		"weight":         m.Weight,

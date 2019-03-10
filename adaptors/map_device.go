@@ -45,13 +45,42 @@ func (n *MapDevice) Delete(mapId int64) (err error) {
 	return
 }
 
-
-
 func (n *MapDevice) fromDb(dbVer *db.MapDevice) (ver *m.MapDevice) {
 	ver = &m.MapDevice{
 		Id:         dbVer.Id,
 		SystemName: dbVer.SystemName,
 		DeviceId:   dbVer.DeviceId,
+		ImageId:    dbVer.ImageId,
+		Actions:    make([]*m.MapDeviceAction, 0),
+		States:     make([]*m.MapDeviceState, 0),
+		CreatedAt:  dbVer.CreatedAt,
+		UpdatedAt:  dbVer.UpdatedAt,
+	}
+
+	// actions
+	mapDeviceActionAdaptor := GetMapDeviceActionAdaptor(n.db)
+	for _, dbAction := range dbVer.Actions {
+		action := mapDeviceActionAdaptor.fromDb(dbAction)
+		ver.Actions = append(ver.Actions, action)
+	}
+
+	// states
+	mapDeviceStateAdaptor := GetMapDeviceStateAdaptor(n.db)
+	for _, dbState := range dbVer.States {
+		state := mapDeviceStateAdaptor.fromDb(dbState)
+		ver.States = append(ver.States, state)
+	}
+
+	// device
+	if dbVer.Device != nil {
+		deviceAdaptor := GetDeviceAdaptor(n.db)
+		ver.Device = deviceAdaptor.fromDb(dbVer.Device)
+	}
+
+	// image
+	if dbVer.Image != nil {
+		imageAdaptor := GetImageAdaptor(n.db)
+		ver.Image = imageAdaptor.fromDb(dbVer.Image)
 	}
 
 	return
@@ -62,6 +91,7 @@ func (n *MapDevice) toDb(ver *m.MapDevice) (dbVer *db.MapDevice) {
 		Id:         ver.Id,
 		SystemName: ver.SystemName,
 		DeviceId:   ver.DeviceId,
+		ImageId:    ver.ImageId,
 	}
 	return
 }

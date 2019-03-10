@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"fmt"
+	"encoding/json"
 )
 
 type MapElement struct {
@@ -21,18 +22,18 @@ func GetMapElementAdaptor(d *gorm.DB) *MapElement {
 
 func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 
-	switch t := ver.Prototype.(type) {
-	case *m.MapText:
+	switch {
+	case ver.Prototype.MapText != nil:
 		textAdaptor := GetMapTextAdaptor(n.db)
-		ver.PrototypeId, err = textAdaptor.Add(t)
+		ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
 		ver.PrototypeType = "text"
-	case *m.MapImage:
+	case ver.Prototype.MapImage != nil:
 		imageAdaptor := GetMapImageAdaptor(n.db)
-		ver.PrototypeId, err = imageAdaptor.Add(t)
+		ver.PrototypeId, err = imageAdaptor.Add(ver.Prototype.MapImage)
 		ver.PrototypeType = "image"
-	case *m.MapDevice:
+	case ver.Prototype.MapDevice != nil:
 		deviceAdaptor := GetMapDeviceAdaptor(n.db)
-		if ver.PrototypeId, err = deviceAdaptor.Add(t); err != nil {
+		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
 			return
 		}
 
@@ -40,7 +41,7 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 		//actions
 		deviceAction := GetMapDeviceActionAdaptor(n.db)
 		//err = deviceAction.AddMultiple(t.Actions)
-		for _, action := range t.Actions {
+		for _, action := range ver.Prototype.MapDevice.Actions {
 			action.MapDeviceId = ver.PrototypeId
 			if action.Id, err = deviceAction.Add(action); err != nil {
 				log.Error(err.Error())
@@ -50,16 +51,12 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 		//states
 		stateAdaptor := GetMapDeviceStateAdaptor(n.db)
 		//err = stateAdaptor.AddMultiple(t.States)
-		for _, state := range t.States {
+		for _, state := range ver.Prototype.MapDevice.States {
 			state.MapDeviceId = ver.PrototypeId
 			if state.Id, err = stateAdaptor.Add(state); err != nil {
 				log.Error(err.Error())
 			}
 		}
-
-	default:
-		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
-		log.Warningf(err.Error())
 	}
 
 	if err != nil {
@@ -119,29 +116,27 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 	}
 
 	// add new prototype
-	switch t := ver.Prototype.(type) {
-	case *m.MapText:
+	switch {
+	case ver.Prototype.MapText != nil:
 		textAdaptor := GetMapTextAdaptor(n.db)
-		ver.PrototypeId, err = textAdaptor.Add(t)
+		ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
 		ver.PrototypeType = "text"
-	case *m.MapImage:
+	case ver.Prototype.MapImage != nil:
 		imageAdaptor := GetMapImageAdaptor(n.db)
-		ver.PrototypeId, err = imageAdaptor.Add(t)
+		ver.PrototypeId, err = imageAdaptor.Add(ver.Prototype.MapImage)
 		ver.PrototypeType = "image"
-	case *m.MapDevice:
+	case ver.Prototype.MapDevice != nil:
 		deviceAdaptor := GetMapDeviceAdaptor(n.db)
-		if ver.PrototypeId, err = deviceAdaptor.Add(t); err != nil {
+		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
 			return
 		}
 		ver.PrototypeType = "device"
 		//actions
 		deviceAction := GetMapDeviceActionAdaptor(n.db)
-		deviceAction.AddMultiple(t.Actions)
+		deviceAction.AddMultiple(ver.Prototype.MapDevice.Actions)
 		//states
 		stateAdaptor := GetMapDeviceStateAdaptor(n.db)
-		stateAdaptor.AddMultiple(t.States)
-	default:
-		log.Warningf("unknown prototype: %v", t)
+		stateAdaptor.AddMultiple(ver.Prototype.MapDevice.States)
 	}
 
 	if err != nil {
@@ -196,13 +191,35 @@ func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 		Description:   dbVer.Description,
 		PrototypeId:   dbVer.PrototypeId,
 		PrototypeType: dbVer.PrototypeType,
-		LayerId:       dbVer.LayerId,
+		LayerId:       dbVer.MapLayerId,
 		MapId:         dbVer.MapId,
 		Weight:        dbVer.Weight,
-		GraphSettings: dbVer.GraphSettings,
 		Status:        dbVer.Status,
 		CreatedAt:     dbVer.CreatedAt,
 		UpdatedAt:     dbVer.UpdatedAt,
+	}
+
+	// GraphSettings
+	graphSettings, _ := dbVer.GraphSettings.MarshalJSON()
+	json.Unmarshal(graphSettings, &ver.GraphSettings)
+
+	// Prototype
+	switch {
+	case dbVer.Prototype.MapText != nil:
+		mapTextAdaptor := GetMapTextAdaptor(n.db)
+		ver.Prototype = m.Prototype{
+			MapText: mapTextAdaptor.fromDb(dbVer.Prototype.MapText),
+		}
+	case dbVer.Prototype.MapImage != nil:
+		mapImageAdaptor := GetMapImageAdaptor(n.db)
+		ver.Prototype = m.Prototype{
+			MapImage: mapImageAdaptor.fromDb(dbVer.Prototype.MapImage),
+		}
+	case dbVer.Prototype.MapDevice != nil:
+		mapDeviceAdaptor := GetMapDeviceAdaptor(n.db)
+		ver.Prototype = m.Prototype{
+			MapDevice: mapDeviceAdaptor.fromDb(dbVer.Prototype.MapDevice),
+		}
 	}
 
 	return
@@ -215,11 +232,14 @@ func (n *MapElement) toDb(ver *m.MapElement) (dbVer *db.MapElement) {
 		Description:   ver.Description,
 		PrototypeId:   ver.PrototypeId,
 		PrototypeType: ver.PrototypeType,
-		LayerId:       ver.LayerId,
+		MapLayerId:    ver.LayerId,
 		MapId:         ver.MapId,
 		Weight:        ver.Weight,
-		GraphSettings: ver.GraphSettings,
 		Status:        ver.Status,
 	}
+
+	graphSettings, _ := json.Marshal(ver.GraphSettings)
+	dbVer.GraphSettings.UnmarshalJSON(graphSettings)
+
 	return
 }

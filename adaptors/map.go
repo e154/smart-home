@@ -4,6 +4,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"encoding/json"
+	"sort"
 )
 
 type Map struct {
@@ -36,6 +38,20 @@ func (n *Map) GetById(mapId int64) (ver *m.Map, err error) {
 	}
 
 	ver = n.fromDb(dbVer)
+
+	return
+}
+
+func (n *Map) GetFullById(mapId int64) (ver *m.Map, err error) {
+
+	var dbVer *db.Map
+	if dbVer, err = n.table.GetFullById(mapId); err != nil {
+		return
+	}
+
+	ver = n.fromDb(dbVer)
+
+	sort.Sort(m.SortMapLayersByWeight(ver.Layers))
 
 	return
 }
@@ -86,9 +102,17 @@ func (n *Map) fromDb(dbVer *db.Map) (ver *m.Map) {
 		Id:          dbVer.Id,
 		Name:        dbVer.Name,
 		Description: dbVer.Description,
-		Options:     dbVer.Options,
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
+	}
+	options, _ := dbVer.Options.MarshalJSON()
+	json.Unmarshal(options, &ver.Options)
+
+	// layers
+	layerAdaptor := GetMapLayerAdaptor(n.db)
+	for _, dbLayer := range dbVer.Layers {
+		layer := layerAdaptor.fromDb(dbLayer)
+		ver.Layers = append(ver.Layers, layer)
 	}
 
 	return
@@ -99,7 +123,8 @@ func (n *Map) toDb(ver *m.Map) (dbVer *db.Map) {
 		Id:          ver.Id,
 		Name:        ver.Name,
 		Description: ver.Description,
-		Options:     ver.Options,
 	}
+	options, _ := json.Marshal(ver.Options)
+	dbVer.Options.UnmarshalJSON(options)
 	return
 }

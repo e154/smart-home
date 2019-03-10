@@ -4,6 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"sort"
 )
 
 type MapLayer struct {
@@ -80,9 +81,25 @@ func (n *MapLayer) fromDb(dbVer *db.MapLayer) (ver *m.MapLayer) {
 		Status:      dbVer.Status,
 		Weight:      dbVer.Weight,
 		Description: dbVer.Description,
+		Elements:    make([]*m.MapElement, 0),
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
 	}
+
+	// elements
+	mapElementAdaptor := GetMapElementAdaptor(n.db)
+	for _, dbElement := range dbVer.Elements {
+		element := mapElementAdaptor.fromDb(dbElement)
+		ver.Elements = append(ver.Elements, element)
+	}
+
+	// map
+	if dbVer.Map != nil {
+		mapAdaptor := GetMapAdaptor(n.db)
+		ver.Map = mapAdaptor.fromDb(dbVer.Map)
+	}
+
+	sort.Sort(m.SortMapElementByWeight(ver.Elements))
 
 	return
 }

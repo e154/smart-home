@@ -1,11 +1,11 @@
 package env1
 
 import (
-	"encoding/json"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/null"
 )
 
 func addMaps(adaptors *adaptors.Adaptors,
@@ -22,7 +22,11 @@ func addMaps(adaptors *adaptors.Adaptors,
 	map1 := &m.Map{
 		Name:        "office1",
 		Description: "офис на ул. Красный проспект, д.22",
-		Options:     json.RawMessage(`{"zoom":1,"element_state_text":false,"element_option_text":false}`),
+		Options: m.MapOptions{
+			Zoom:              1,
+			ElementStateText:  false,
+			ElementOptionText: false,
+		},
 	}
 	ok, _ := map1.Valid()
 	So(ok, ShouldEqual, true)
@@ -62,6 +66,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	devLight1 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT1",
 		DeviceId:   devices[0].Id,
+		ImageId:    imageList["lamp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_light1_on"].Id,
@@ -90,12 +95,21 @@ func addMaps(adaptors *adaptors.Adaptors,
 
 	ok, _ = devLight1.Valid()
 	mapElementLight1 := &m.MapElement{
-		Name:          "dev1_light1",
-		Prototype:     devLight1,
-		MapId:         map1.Id,
-		LayerId:       mapLayer2.Id,
-		Status:        Enabled,
-		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+		Name: "dev1_light1",
+		Prototype: m.Prototype{
+			MapDevice: devLight1,
+		},
+		MapId:   map1.Id,
+		LayerId: mapLayer2.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  0,
+				Left: 0,
+			},
+		},
 	}
 	ok, _ = mapElementLight1.Valid()
 	So(ok, ShouldEqual, true)
@@ -107,6 +121,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	devLight2 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT2",
 		DeviceId:   devices[0].Id,
+		ImageId:    imageList["lamp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_light2_on"].Id,
@@ -133,12 +148,21 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementLight2 := &m.MapElement{
-		Name:          "dev1_light2",
-		Prototype:     devLight2,
-		MapId:         map1.Id,
-		LayerId:       mapLayer2.Id,
-		Status:        Enabled,
-		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+		Name: "dev1_light2",
+		Prototype: m.Prototype{
+			MapDevice: devLight2,
+		},
+		MapId:   map1.Id,
+		LayerId: mapLayer2.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  0,
+				Left: 0,
+			},
+		},
 	}
 	ok, _ = mapElementLight2.Valid()
 	So(ok, ShouldEqual, true)
@@ -150,6 +174,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	devLight3 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT3",
 		DeviceId:   devices[0].Id,
+		ImageId:    imageList["lamp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_light3_on"].Id,
@@ -176,12 +201,21 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementLight3 := &m.MapElement{
-		Name:          "dev1_light3",
-		Prototype:     devLight3,
-		MapId:         map1.Id,
-		LayerId:       mapLayer2.Id,
-		Status:        Enabled,
-		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+		Name: "dev1_light3",
+		Prototype: m.Prototype{
+			MapDevice: devLight3,
+		},
+		MapId:   map1.Id,
+		LayerId: mapLayer2.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  0,
+				Left: 0,
+			},
+		},
 	}
 	ok, _ = mapElementLight3.Valid()
 	So(ok, ShouldEqual, true)
@@ -193,6 +227,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	devLight4 := &m.MapDevice{
 		SystemName: "DEV1_LIGHT4",
 		DeviceId:   devices[0].Id,
+		ImageId:    imageList["lamp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_light4_on"].Id,
@@ -219,12 +254,21 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementLight4 := &m.MapElement{
-		Name:          "dev1_light4",
-		Prototype:     devLight4,
-		MapId:         map1.Id,
-		LayerId:       mapLayer2.Id,
-		Status:        Enabled,
-		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+		Name: "dev1_light4",
+		Prototype: m.Prototype{
+			MapDevice: devLight4,
+		},
+		MapId:   map1.Id,
+		LayerId: mapLayer2.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  0,
+				Left: 0,
+			},
+		},
 	}
 	ok, _ = mapElementLight4.Valid()
 	So(ok, ShouldEqual, true)
@@ -236,6 +280,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	devFan1 := &m.MapDevice{
 		SystemName: "DEV1_FAN1",
 		DeviceId:   devices[0].Id,
+		ImageId:    imageList["lamp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
@@ -262,12 +307,21 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementFan1 := &m.MapElement{
-		Name:          "dev1_fan1",
-		Prototype:     devFan1,
-		MapId:         map1.Id,
-		LayerId:       mapLayer2.Id,
-		Status:        Enabled,
-		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+		Name: "dev1_fan1",
+		Prototype: m.Prototype{
+			MapDevice: devFan1,
+		},
+		MapId:   map1.Id,
+		LayerId: mapLayer2.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  0,
+				Left: 0,
+			},
+		},
 	}
 	ok, _ = mapElementFan1.Valid()
 	So(ok, ShouldEqual, true)
@@ -279,6 +333,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	dev1Temp1 := &m.MapDevice{
 		SystemName: "DEV1_TEMP1",
 		DeviceId:   devices[0].Id,
+		ImageId:    imageList["lamp_v1_y"].Id,
 		States: []*m.MapDeviceState{
 			{
 				//TODO update temperature image
@@ -293,13 +348,22 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementTemp1 := &m.MapElement{
-		Name:          "dev1_temp1",
-		Description:   "temperature sensor room1",
-		Prototype:     dev1Temp1,
-		MapId:         map1.Id,
-		LayerId:       mapLayer2.Id,
-		Status:        Enabled,
-		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+		Name:        "dev1_temp1",
+		Description: "temperature sensor room1",
+		Prototype: m.Prototype{
+			MapDevice: dev1Temp1,
+		},
+		MapId:   map1.Id,
+		LayerId: mapLayer2.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  0,
+				Left: 0,
+			},
+		},
 	}
 	ok, _ = mapElementTemp1.Valid()
 	So(ok, ShouldEqual, true)
@@ -311,6 +375,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	dev1Temp2 := &m.MapDevice{
 		SystemName: "DEV1_TEMP2",
 		DeviceId:   devices[0].Id,
+		ImageId:    imageList["lamp_v1_y"].Id,
 		States: []*m.MapDeviceState{
 			{
 				//TODO update temperature image
@@ -325,13 +390,22 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementTemp2 := &m.MapElement{
-		Name:          "dev1_temp2",
-		Description:   "temperature sensor room2",
-		Prototype:     dev1Temp2,
-		MapId:         map1.Id,
-		LayerId:       mapLayer2.Id,
-		Status:        Enabled,
-		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+		Name:        "dev1_temp2",
+		Description: "temperature sensor room2",
+		Prototype: m.Prototype{
+			MapDevice: dev1Temp2,
+		},
+		MapId:   map1.Id,
+		LayerId: mapLayer2.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  0,
+				Left: 0,
+			},
+		},
 	}
 	ok, _ = mapElementTemp2.Valid()
 	So(ok, ShouldEqual, true)
@@ -345,12 +419,21 @@ func addMaps(adaptors *adaptors.Adaptors,
 	}
 
 	mapElementText1 := &m.MapElement{
-		Name:          "text1",
-		Prototype:     mapText1,
-		MapId:         map1.Id,
-		LayerId:       mapLayer2.Id,
-		Status:        Enabled,
-		GraphSettings: json.RawMessage(`{"width":0,"height":0,"position":{"top":0,"left":0}}`),
+		Name: "text1",
+		Prototype: m.Prototype{
+			MapText: mapText1,
+		},
+		MapId:   map1.Id,
+		LayerId: mapLayer2.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  0,
+				Left: 0,
+			},
+		},
 	}
 
 	ok, _ = mapElementText1.Valid()

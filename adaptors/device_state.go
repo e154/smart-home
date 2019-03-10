@@ -82,19 +82,19 @@ func (n *DeviceState) List(limit, offset int64, orderBy, sort string) (list []*m
 	return
 }
 
-func (n *DeviceState) fromDb(dbDeviceState *db.DeviceState) (device *m.DeviceState) {
-	device = &m.DeviceState{
-		Id:          dbDeviceState.Id,
-		Description: dbDeviceState.Description,
-		SystemName:  dbDeviceState.SystemName,
-		CreatedAt:   dbDeviceState.CreatedAt,
-		UpdatedAt:   dbDeviceState.UpdatedAt,
+func (n *DeviceState) fromDb(dbVer *db.DeviceState) (ver *m.DeviceState) {
+	ver = &m.DeviceState{
+		Id:          dbVer.Id,
+		Description: dbVer.Description,
+		SystemName:  dbVer.SystemName,
+		CreatedAt:   dbVer.CreatedAt,
+		UpdatedAt:   dbVer.UpdatedAt,
 	}
 
-	if dbDeviceState.Device != nil {
-		device.DeviceId = dbDeviceState.Device.Id
+	if dbVer.Device != nil {
+		ver.DeviceId = dbVer.Device.Id
 		deviceAdaptor := GetDeviceAdaptor(n.db)
-		device.Device = deviceAdaptor.fromDb(dbDeviceState.Device)
+		ver.Device = deviceAdaptor.fromDb(dbVer.Device)
 	}
 	return
 }
