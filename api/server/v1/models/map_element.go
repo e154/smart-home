@@ -22,16 +22,50 @@ type Prototype struct {
 
 type MapElement struct {
 	Id            int64                   `json:"id"`
-	Name          string                  `json:"name" valid:"Required"`
+	Name          string                  `json:"name"`
 	Description   string                  `json:"description"`
 	PrototypeId   int64                   `json:"prototype_id"`
 	PrototypeType string                  `json:"prototype_type"`
-	Prototype     Prototype               `json:"prototype" valid:"Required"`
-	MapId         int64                   `json:"map_id" valid:"Required"`
-	LayerId       int64                   `json:"layer_id" valid:"Required"`
+	Prototype     Prototype               `json:"prototype"`
+	MapId         int64                   `json:"map_id"`
+	LayerId       int64                   `json:"layer_id"`
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`
-	Status        string                  `json:"status" valid:"Required"`
+	Status        string                  `json:"status"`
 	Weight        int                     `json:"weight"`
 	CreatedAt     time.Time               `json:"created_at"`
 	UpdatedAt     time.Time               `json:"updated_at"`
+}
+
+type NewMapElement struct {
+	Name          string                  `json:"name"`
+	Description   string                  `json:"description"`
+	PrototypeId   int64                   `json:"prototype_id"`
+	PrototypeType string                  `json:"prototype_type"`
+	Prototype     Prototype               `json:"prototype"`
+	Map           *Map                    `json:"map"`
+	MapId         int64                   `json:"map_id"`
+	LayerId       int64                   `json:"layer_id"`
+	GraphSettings MapElementGraphSettings `json:"graph_settings"`
+	Status        string                  `json:"status"`
+	Weight        int                     `json:"weight"`
+}
+
+type UpdateMapElement struct {
+	Id            int64                   `json:"id"`
+	Name          string                  `json:"name"`
+	Description   string                  `json:"description"`
+	PrototypeId   int64                   `json:"prototype_id"`
+	PrototypeType string                  `json:"prototype_type"`
+	Prototype     Prototype               `json:"prototype"`
+	Map           *Map                    `json:"map"`
+	MapId         int64                   `json:"map_id"`
+	LayerId       int64                   `json:"layer_id"`
+	GraphSettings MapElementGraphSettings `json:"graph_settings"`
+	Status        string                  `json:"status"`
+	Weight        int                     `json:"weight"`
+}
+
+type SortMapElement struct {
+	Id     int64 `json:"id"`
+	Weight int64 `json:"weight"`
 }

@@ -28,7 +28,7 @@ func NewControllerLog(common *ControllerCommon) *ControllerLog {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /log [post]
 // @Security ApiKeyAuth
-func (c ControllerLog) AddLog(ctx *gin.Context) {
+func (c ControllerLog) Add(ctx *gin.Context) {
 
 	log := &models.NewLogModel{}
 	if err := ctx.ShouldBindJSON(&log); err != nil {
@@ -66,7 +66,7 @@ func (c ControllerLog) AddLog(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /log/{id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerLog) GetLogById(ctx *gin.Context) {
+func (c ControllerLog) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -108,7 +108,7 @@ func (c ControllerLog) GetLogById(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /logs [Get]
 // @Security ApiKeyAuth
-func (c ControllerLog) GetLogList(ctx *gin.Context) {
+func (c ControllerLog) GetList(ctx *gin.Context) {
 
 	query, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetLogList(int64(limit), int64(offset), order, sortBy, query, c.adaptors)
@@ -135,7 +135,7 @@ func (c ControllerLog) GetLogList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /log/{id} [Delete]
 // @Security ApiKeyAuth
-func (c ControllerLog) DeleteLogById(ctx *gin.Context) {
+func (c ControllerLog) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)

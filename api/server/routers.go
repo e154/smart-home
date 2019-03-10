@@ -109,12 +109,12 @@ func (s *Server) setControllers() {
 	v1.GET("/users", s.af.Auth, s.ControllersV1.User.GetUserList)
 
 	// maps
-	v1.POST("/map", s.af.Auth, s.ControllersV1.Map.AddMap)
-	v1.GET("/map/:id", s.af.Auth, s.ControllersV1.Map.GetMapById)
-	v1.GET("/map/:id/full", s.af.Auth, s.ControllersV1.Map.GetFullMapById)
-	v1.PUT("/map/:id", s.af.Auth, s.ControllersV1.Map.UpdateMap)
-	v1.DELETE("/map/:id", s.af.Auth, s.ControllersV1.Map.DeleteMapById)
-	v1.GET("/maps", s.af.Auth, s.ControllersV1.Map.GetMapList)
+	v1.POST("/map", s.af.Auth, s.ControllersV1.Map.Add)
+	v1.GET("/map/:id", s.af.Auth, s.ControllersV1.Map.GetById)
+	v1.GET("/map/:id/full", s.af.Auth, s.ControllersV1.Map.GetFullMap)
+	v1.PUT("/map/:id", s.af.Auth, s.ControllersV1.Map.Update)
+	v1.DELETE("/map/:id", s.af.Auth, s.ControllersV1.Map.Delete)
+	v1.GET("/maps", s.af.Auth, s.ControllersV1.Map.GetList)
 	v1.GET("/maps/search", s.af.Auth, s.ControllersV1.Map.Search)
 
 	// map_layer
@@ -126,31 +126,36 @@ func (s *Server) setControllers() {
 	v1.PUT("/map_layers/sort", s.af.Auth, s.ControllersV1.MapLayer.Sort)
 
 	// map element
+	v1.POST("/map_element", s.af.Auth, s.ControllersV1.MapElement.Add)
+	v1.GET("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.GetById)
+	v1.PUT("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.Update)
+	v1.DELETE("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.Delete)
+	v1.GET("/map_elements", s.af.Auth, s.ControllersV1.MapElement.GetList)
+	v1.PUT("/map_elements/sort", s.af.Auth, s.ControllersV1.MapElement.Sort)
 
 	// images
-	v1.GET("/image/:id", s.af.Auth, s.ControllersV1.Image.GetImageById)
-	v1.GET("/images", s.af.Auth, s.ControllersV1.Image.GetImageList)
-	v1.POST("/image", s.af.Auth, s.ControllersV1.Image.AddImage)
+	v1.POST("/image", s.af.Auth, s.ControllersV1.Image.Add)
+	v1.GET("/image/:id", s.af.Auth, s.ControllersV1.Image.GetById)
+	v1.GET("/images", s.af.Auth, s.ControllersV1.Image.GetList)
 	v1.POST("/image/upload", s.af.Auth, s.ControllersV1.Image.Upload)
 	v1.PUT("/image/:id", s.af.Auth, s.ControllersV1.Image.UpdateImage)
-	v1.DELETE("/image/:id", s.af.Auth, s.ControllersV1.Image.DeleteImageById)
+	v1.DELETE("/image/:id", s.af.Auth, s.ControllersV1.Image.Delete)
 
 	// flow
-	v1.GET("/flow/:id", s.af.Auth, s.ControllersV1.Flow.GetFlowById)
-	v1.GET("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.GetFlowRedactor)
-	v1.PUT("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.UpdateFlowRedactor)
-	v1.GET("/flows", s.af.Auth, s.ControllersV1.Flow.GetFlowList)
-	v1.POST("/flow", s.af.Auth, s.ControllersV1.Flow.AddFlow)
-	v1.PUT("/flow/:id", s.af.Auth, s.ControllersV1.Flow.UpdateFlow)
-	v1.DELETE("/flow/:id", s.af.Auth, s.ControllersV1.Flow.DeleteFlowById)
-	//v1.GET("/flow/:id/workers", s.af.Auth, s.ControllersV1.Flow.GetWorkers)
+	v1.POST("/flow", s.af.Auth, s.ControllersV1.Flow.Add)
+	v1.GET("/flow/:id", s.af.Auth, s.ControllersV1.Flow.GetById)
+	v1.GET("/flows", s.af.Auth, s.ControllersV1.Flow.GetList)
+	v1.GET("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.GetRedactor)
+	v1.PUT("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.UpdateRedactor)
+	v1.PUT("/flow/:id", s.af.Auth, s.ControllersV1.Flow.Update)
+	v1.DELETE("/flow/:id", s.af.Auth, s.ControllersV1.Flow.Delete)
 	v1.GET("/flows/search", s.af.Auth, s.ControllersV1.Flow.Search)
 
 	// logs
-	v1.POST("/log", s.af.Auth, s.ControllersV1.Log.AddLog)
-	v1.GET("/log/:id", s.af.Auth, s.ControllersV1.Log.GetLogById)
-	v1.DELETE("/log/:id", s.af.Auth, s.ControllersV1.Log.DeleteLogById)
-	v1.GET("/logs", s.af.Auth, s.ControllersV1.Log.GetLogList)
+	v1.POST("/log", s.af.Auth, s.ControllersV1.Log.Add)
+	v1.GET("/log/:id", s.af.Auth, s.ControllersV1.Log.GetById)
+	v1.DELETE("/log/:id", s.af.Auth, s.ControllersV1.Log.Delete)
+	v1.GET("/logs", s.af.Auth, s.ControllersV1.Log.GetList)
 	v1.GET("/logs/search", s.af.Auth, s.ControllersV1.Log.Search)
 
 }

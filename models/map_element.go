@@ -34,7 +34,7 @@ type MapElement struct {
 	LayerId       int64                   `json:"layer_id" valid:"Required"`
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`
 	Status        StatusType              `json:"status" valid:"Required"`
-	Weight        int                     `json:"weight"`
+	Weight        int64                   `json:"weight"`
 	CreatedAt     time.Time               `json:"created_at"`
 	UpdatedAt     time.Time               `json:"updated_at"`
 }

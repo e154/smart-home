@@ -27,7 +27,7 @@ func NewControllerImage(common *ControllerCommon) *ControllerImage {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /image [post]
 // @Security ApiKeyAuth
-func (c ControllerImage) AddImage(ctx *gin.Context) {
+func (c ControllerImage) Add(ctx *gin.Context) {
 
 	var newImage models.NewImage
 	if err := ctx.ShouldBindJSON(&newImage); err != nil {
@@ -65,7 +65,7 @@ func (c ControllerImage) AddImage(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /image/{id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerImage) GetImageById(ctx *gin.Context) {
+func (c ControllerImage) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -153,7 +153,7 @@ func (c ControllerImage) UpdateImage(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /images [Get]
 // @Security ApiKeyAuth
-func (c ControllerImage) GetImageList(ctx *gin.Context) {
+func (c ControllerImage) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetImageList(int64(limit), int64(offset), order, sortBy, c.adaptors)
@@ -180,7 +180,7 @@ func (c ControllerImage) GetImageList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /image/{id} [Delete]
 // @Security ApiKeyAuth
-func (c ControllerImage) DeleteImageById(ctx *gin.Context) {
+func (c ControllerImage) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)

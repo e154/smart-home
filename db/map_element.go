@@ -5,6 +5,7 @@ import (
 	"time"
 	"encoding/json"
 	. "github.com/e154/smart-home/common"
+	"fmt"
 )
 
 type MapElements struct {
@@ -30,7 +31,7 @@ type MapElement struct {
 	MapLayerId    int64
 	GraphSettings json.RawMessage `gorm:"type:jsonb;not null"`
 	Status        StatusType
-	Weight        int
+	Weight        int64
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -77,5 +78,22 @@ func (n MapElements) Sort(m *MapElement) (err error) {
 
 func (n MapElements) Delete(mapId int64) (err error) {
 	err = n.Db.Delete(&MapElement{Id: mapId}).Error
+	return
+}
+
+func (n *MapElements) List(limit, offset int64, orderBy, sort string) (list []*MapElement, total int64, err error) {
+
+	if err = n.Db.Model(MapElement{}).Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*MapElement, 0)
+	err = n.Db.
+		Limit(limit).
+		Offset(offset).
+		Order(fmt.Sprintf("%s %s", sort, orderBy)).
+		Find(&list).
+		Error
+
 	return
 }

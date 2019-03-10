@@ -28,7 +28,7 @@ func NewControllerFlow(common *ControllerCommon) *ControllerFlow {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow [post]
 // @Security ApiKeyAuth
-func (c ControllerFlow) AddFlow(ctx *gin.Context) {
+func (c ControllerFlow) Add(ctx *gin.Context) {
 
 	flow := &models.NewFlowModel{}
 	if err := ctx.ShouldBindJSON(&flow); err != nil {
@@ -66,7 +66,7 @@ func (c ControllerFlow) AddFlow(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id} [Get]
 // @Security ApiKeyAuth
-func (c ControllerFlow) GetFlowById(ctx *gin.Context) {
+func (c ControllerFlow) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -104,7 +104,7 @@ func (c ControllerFlow) GetFlowById(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id}/redactor [Get]
 // @Security ApiKeyAuth
-func (c ControllerFlow) GetFlowRedactor(ctx *gin.Context) {
+func (c ControllerFlow) GetRedactor(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -143,7 +143,7 @@ func (c ControllerFlow) GetFlowRedactor(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id}/redactor [Put]
 // @Security ApiKeyAuth
-func (c ControllerFlow) UpdateFlowRedactor(ctx *gin.Context) {
+func (c ControllerFlow) UpdateRedactor(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -194,7 +194,7 @@ func (c ControllerFlow) UpdateFlowRedactor(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id} [Put]
 // @Security ApiKeyAuth
-func (c ControllerFlow) UpdateFlow(ctx *gin.Context) {
+func (c ControllerFlow) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -247,7 +247,7 @@ func (c ControllerFlow) UpdateFlow(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flows [Get]
 // @Security ApiKeyAuth
-func (c ControllerFlow) GetFlowList(ctx *gin.Context) {
+func (c ControllerFlow) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetFlowList(int64(limit), int64(offset), order, sortBy, c.adaptors)
@@ -274,7 +274,7 @@ func (c ControllerFlow) GetFlowList(ctx *gin.Context) {
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Router /flow/{id} [Delete]
 // @Security ApiKeyAuth
-func (c ControllerFlow) DeleteFlowById(ctx *gin.Context) {
+func (c ControllerFlow) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)

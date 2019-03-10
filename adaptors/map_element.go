@@ -184,6 +184,21 @@ func (n *MapElement) Sort(ver *m.MapElement) (err error) {
 	return
 }
 
+func (n *MapElement) List(limit, offset int64, orderBy, sort string) (list []*m.MapElement, total int64, err error) {
+	var dbList []*db.MapElement
+	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+		return
+	}
+
+	list = make([]*m.MapElement, 0)
+	for _, dbVer := range dbList {
+		ver := n.fromDb(dbVer)
+		list = append(list, ver)
+	}
+
+	return
+}
+
 func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 	ver = &m.MapElement{
 		Id:            dbVer.Id,
