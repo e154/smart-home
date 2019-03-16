@@ -57,6 +57,8 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 				log.Error(err.Error())
 			}
 		}
+	default:
+
 	}
 
 	if err != nil {

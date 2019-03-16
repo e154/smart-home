@@ -43,6 +43,7 @@ type NewMapElement struct {
 	PrototypeType string                  `json:"prototype_type"`
 	Prototype     Prototype               `json:"prototype"`
 	Map           *Map                    `json:"map"`
+	Layer         *MapLayer               `json:"layer"`
 	MapId         int64                   `json:"map_id"`
 	LayerId       int64                   `json:"layer_id"`
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`

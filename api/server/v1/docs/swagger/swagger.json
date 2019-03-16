@@ -6709,7 +6709,7 @@
                 "workers": {
                     "type": "array",
                     "items": {
-                        "type": "\u0026{%!s(token.Pos=316) %!s(*ast.FieldList=\u0026{323 [0xc0003f78c0] 349}) %!s(bool=false)}"
+                        "type": "\u0026{%!s(token.Pos=316) %!s(*ast.FieldList=\u0026{323 [0xc0002633c0] 349}) %!s(bool=false)}"
                     }
                 },
                 "workflow": {

@@ -13,29 +13,33 @@ import (
 func AddMapElement(params *models.NewMapElement,
 	adaptors *adaptors.Adaptors) (result *models.MapElement, id int64, errs []*validation.Error, err error) {
 
-	m := &m.MapElement{}
-	common.Copy(&m, &params)
+	mapElement := &m.MapElement{}
+	common.Copy(&mapElement, &params, common.JsonEngine)
 
-	if params.Map != nil && params.Map.Id != 0 {
-		m.MapId = params.Map.Id
+	if params.Map.Id != 0 {
+		mapElement.MapId = params.Map.Id
+	}
+
+	if params.Layer.Id != 0 {
+		mapElement.LayerId = params.Layer.Id
 	}
 
 	// validation
-	_, errs = m.Valid()
+	_, errs = mapElement.Valid()
 	if len(errs) > 0 {
 		return
 	}
 
-	if id, err = adaptors.MapElement.Add(m); err != nil {
+	if id, err = adaptors.MapElement.Add(mapElement); err != nil {
 		return
 	}
 
-	if m, err = adaptors.MapElement.GetById(id); err != nil {
+	if mapElement, err = adaptors.MapElement.GetById(id); err != nil {
 		return
 	}
 
 	result = &models.MapElement{}
-	err = common.Copy(&result, &m)
+	err = common.Copy(&result, &mapElement, common.JsonEngine)
 
 	return
 }
