@@ -29,7 +29,7 @@ const (
 
 type Error struct {
 	_statusCode int
-	Payload     *models.ErrorModel `json:"body,omitempty"`
+	Payload     *models.Error `json:"body,omitempty"`
 }
 
 // NewPostAuthTokenDefault creates Error with default headers values
@@ -71,21 +71,21 @@ func NewError(code int, msg ...interface{}) *Error {
 
 	return &Error{
 		_statusCode: code,
-		Payload: &models.ErrorModel{
+		Payload: &models.Error{
 			Code:    models.ResponseType(_code),
 			Message: _message,
-			Errors:  models.ErrorModelErrors{},
+			Errors:  models.ErrorErrors{},
 		},
 	}
 }
 
-func (o *Error) Fields() []*models.ErrorModelErrorsItems {
+func (o *Error) Fields() []*models.ErrorErrorsItems {
 	return o.Payload.Errors
 }
 
 func (o *Error) AddField(code, message, field string) *Error {
 
-	_field := &models.ErrorModelErrorsItems{
+	_field := &models.ErrorErrorsItems{
 		Code:    code,
 		Message: message,
 		Field:   field,

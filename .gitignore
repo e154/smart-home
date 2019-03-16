@@ -19,3 +19,4 @@ doc/static/img/.DS_Store
 snapshots/*
 !snapshots/.gitignore
 bee.json
+/api/server/golang-swaggerui-example/

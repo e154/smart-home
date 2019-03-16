@@ -128,6 +128,8 @@ type UserShotModel struct {
 	UpdatedAt time.Time            `json:"updated_at"`
 }
 
+// Current User represents the user for this application
+// swagger:model
 type CurrentUserModel struct {
 	Id          int64                `json:"id"`
 	Nickname    string               `json:"nickname"`

@@ -15,19 +15,25 @@ func NewControllerAuth(common *ControllerCommon) *ControllerAuth {
 	return &ControllerAuth{ControllerCommon: common}
 }
 
-// Auth godoc
-// @tags auth
-// @Summary Add new auth
-// @Description
-// @Produce json
-// @Accept  json
-// @Success 200 {object} models.AuthSignInResponse
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "user not found"
-// @Failure 403 "password not valid"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /signin [post]
-// @Security BasicAuth
+// swagger:operation POST /signin authSignin
+// ---
+// summary: sign in
+// description:
+// security:
+// - BasicAuth: []
+// tags:
+// - auth
+// responses:
+//   "200":
+//	   $ref: '#/responses/AuthSignInResponse'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "user not found"
+//   "403":
+//     description: "password not valid"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerAuth) SignIn(ctx *gin.Context) {
 
 	email, password, ok := ctx.Request.BasicAuth()
@@ -57,17 +63,21 @@ func (c ControllerAuth) SignIn(ctx *gin.Context) {
 	}).Send(ctx)
 }
 
-// Auth godoc
-// @tags auth
-// @Summary Sign out
-// @Description
-// @Produce json
-// @Accept  json
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 403 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /signout [post]
+// swagger:operation POST /signout authSignout
+// ---
+// summary: sign out
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - auth
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "403":
+//     $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerAuth) SignOut(ctx *gin.Context) {
 
 	u, ok := ctx.Get("currentUser")

@@ -21,7 +21,7 @@ const (
 	ResponseTypePermissionError ResponseType = "permission_error"
 )
 
-type ErrorModelErrorsItems struct {
+type ErrorErrorsItems struct {
 
 	// тип ишибки
 	Code string `json:"code,omitempty"`
@@ -34,15 +34,16 @@ type ErrorModelErrorsItems struct {
 }
 
 
-type ErrorModelErrors []*ErrorModelErrorsItems
+type ErrorErrors []*ErrorErrorsItems
 
-type ErrorModel struct {
+// swagger:model
+type Error struct {
 
 	// code
 	Code ResponseType `json:"code,omitempty"`
 
 	// errors
-	Errors ErrorModelErrors `json:"errors"`
+	Errors ErrorErrors `json:"errors"`
 
 	// описание ошибки
 	Message string `json:"message,omitempty"`
