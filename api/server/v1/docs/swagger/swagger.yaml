@@ -450,15 +450,6 @@ definitions:
         x-go-name: Roles
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  SearchWorkflowScenarioResponse:
-    properties:
-      scenarios:
-        items:
-          $ref: '#/definitions/WorkflowScenario'
-        type: array
-        x-go-name: WorkflowScenarios
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateNode:
     properties:
       description:
@@ -853,15 +844,6 @@ definitions:
         format: int64
         type: integer
         x-go-name: WorkflowId
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  WorkflowScenarioListModel:
-    properties:
-      scenarios:
-        items:
-          $ref: '#/definitions/WorkflowScenario'
-        type: array
-        x-go-name: Scenarios
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   WorkflowUpdateWorkflowScenario:
@@ -1526,6 +1508,202 @@ paths:
       summary: update workflow by id
       tags:
       - workflow
+  /workflow/{id}/scenario:
+    post:
+      operationId: workflowScenarioAdd
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: workflow scenario params
+        in: body
+        name: workflow_scenario
+        required: true
+        schema:
+          $ref: '#/definitions/NewWorkflowScenario'
+      responses:
+        "200":
+          $ref: '#/responses/NewObjectSuccess'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new workflow scenario
+      tags:
+      - workflow_scenario
+  /workflow/{id}/scenario/{scenario_id}:
+    delete:
+      operationId: workflowScenarioDeleteById
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Workflow scenario ID
+        in: path
+        name: scenario_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete workflow scenario by id
+      tags:
+      - workflow_scenario
+    get:
+      operationId: workflowScenarioGetById
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: WorkflowScenario ID
+        in: path
+        name: scenario_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowScenario'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get workflow scenario by id
+      tags:
+      - workflow_scenario
+    put:
+      operationId: workflowScenarioUpdateById
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: WorkflowScenario ID
+        in: path
+        name: scenario_id
+        required: true
+        type: integer
+      - description: Update workflow scenario params
+        in: body
+        name: workflowScenario
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateWorkflowScenario'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update workflow scenario by id
+      tags:
+      - workflow_scenario
+  /workflow/{id}/scenarios:
+    get:
+      operationId: workflowScenarioList
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/WorkflowScenarios'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get workflow scenario list
+      tags:
+      - workflow_scenario
+  /workflow/{id}/scenarios/search:
+    get:
+      operationId: workflowScenarioSearch
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/WorkflowScenarioSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search workflow scenario
+      tags:
+      - workflow_scenario
   /workflow/{id}/update_scenario:
     put:
       operationId: workflowUpdateScenario
@@ -1761,6 +1939,24 @@ responses:
               x-go-name: Offset
           type: object
           x-go-name: Meta
+      type: object
+  WorkflowScenarioSearch:
+    schema:
+      properties:
+        scenarios:
+          items:
+            $ref: '#/definitions/WorkflowScenario'
+          type: array
+          x-go-name: Scenarios
+      type: object
+  WorkflowScenarios:
+    schema:
+      properties:
+        scenarios:
+          items:
+            $ref: '#/definitions/WorkflowScenario'
+          type: array
+          x-go-name: Scenarios
       type: object
   WorkflowSearch:
     schema:

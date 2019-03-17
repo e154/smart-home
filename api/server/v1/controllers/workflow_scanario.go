@@ -17,18 +17,37 @@ func NewControllerWorkflowScenario(common *ControllerCommon) *ControllerWorkflow
 	return &ControllerWorkflowScenario{ControllerCommon: common}
 }
 
-// WorkflowScenario godoc
-// @tags workflow_scenario
-// @Summary Add new workflow_scenario
-// @Description
-// @Produce json
-// @Accept  json
-// @Param workflow_scenario body models.NewWorkflowScenario true "workflow_scenario params"
-// @Success 200 {object} models.NewObjectSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /workflow/{id}/scenario [post]
-// @Security ApiKeyAuth
+// swagger:operation POST /workflow/{id}/scenario workflowScenarioAdd
+// ---
+// parameters:
+// - description: Workflow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: workflow scenario params
+//   in: body
+//   name: workflow_scenario
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewWorkflowScenario'
+// summary: add new workflow scenario
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - workflow_scenario
+// responses:
+//   "200":
+//	   $ref: '#/responses/NewObjectSuccess'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerWorkflowScenario) Add(ctx *gin.Context) {
 
 	var params models.NewWorkflowScenario
@@ -60,19 +79,40 @@ func (c ControllerWorkflowScenario) Add(ctx *gin.Context) {
 	resp.Item("id", id).Send(ctx)
 }
 
-// WorkflowScenario godoc
-// @tags workflow_scenario
-// @Summary Show workflow_scenario
-// @Description Get workflow_scenario by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "WorkflowScenario ID"
-// @Success 200 {object} models.WorkflowScenario
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /workflow/{id}/scenario/{scenario_id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /workflow/{id}/scenario/{scenario_id} workflowScenarioGetById
+// ---
+// parameters:
+// - description: Workflow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: WorkflowScenario ID
+//   in: path
+//   name: scenario_id
+//   required: true
+//   type: integer
+// summary: get workflow scenario by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - workflow_scenario
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/WorkflowScenario'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerWorkflowScenario) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -104,20 +144,45 @@ func (c ControllerWorkflowScenario) GetById(ctx *gin.Context) {
 	resp.SetData(workflowScenario).Send(ctx)
 }
 
-// WorkflowScenario godoc
-// @tags workflow_scenario
-// @Summary Update workflow_scenario
-// @Description Update workflow_scenario by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "WorkflowScenario ID"
-// @Param  workflow_scenario body models.WorkflowUpdateWorkflowScenario true "Update workflow_scenario"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /workflow/{id}/scenario/{scenario_id} [Put]
-// @Security ApiKeyAuth
+// swagger:operation PUT /workflow/{id}/scenario/{scenario_id} workflowScenarioUpdateById
+// ---
+// parameters:
+// - description: Workflow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: WorkflowScenario ID
+//   in: path
+//   name: scenario_id
+//   required: true
+//   type: integer
+// - description: Update workflow scenario params
+//   in: body
+//   name: workflowScenario
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateWorkflowScenario'
+//     type: object
+// summary: update workflow scenario by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - workflow_scenario
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerWorkflowScenario) Update(ctx *gin.Context) {
 
 	workflowId, err := strconv.Atoi(ctx.Param("id"))
@@ -166,22 +231,29 @@ func (c ControllerWorkflowScenario) Update(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// WorkflowScenario godoc
-// @tags workflow_scenario
-// @Summary WorkflowScenario list
-// @Description Get workflow_scenario list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.WorkflowScenarioListModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /workflow/{id}/scenarios [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /workflow/{id}/scenarios workflowScenarioList
+// ---
+// summary: get workflow scenario list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - workflow_scenario
+// parameters:
+// - description: Workflow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/WorkflowScenarios'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerWorkflowScenario) GetList(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -203,19 +275,38 @@ func (c ControllerWorkflowScenario) GetList(ctx *gin.Context) {
 	return
 }
 
-// WorkflowScenario godoc
-// @tags workflow_scenario
-// @Summary Delete workflow_scenario
-// @Description Delete workflow_scenario by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "WorkflowScenario ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /workflow/{id}/scenario/{scenario_id} [Delete]
-// @Security ApiKeyAuth
+// swagger:operation DELETE /workflow/{id}/scenario/{scenario_id} workflowScenarioDeleteById
+// ---
+// parameters:
+// - description: Workflow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Workflow scenario ID
+//   in: path
+//   name: scenario_id
+//   required: true
+//   type: integer
+// summary: delete workflow scenario by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - workflow_scenario
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerWorkflowScenario) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("scenario_id")
@@ -239,21 +330,45 @@ func (c ControllerWorkflowScenario) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// WorkflowScenario godoc
-// @tags workflow
-// @Summary Search workflow
-// @Description Search workflow by name
-// @Produce json
-// @Accept  json
-// @Param query query string false "query"
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.SearchWorkflowScenarioResponse
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /workflow/{id}/scenarios/search [Get]
+// swagger:operation GET /workflow/{id}/scenarios/search workflowScenarioSearch
+// ---
+// summary: search workflow scenario
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - workflow_scenario
+// parameters:
+// - description: Workflow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/WorkflowScenarioSearch'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerWorkflowScenario) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)

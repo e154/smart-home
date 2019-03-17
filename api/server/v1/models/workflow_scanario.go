@@ -28,11 +28,3 @@ type UpdateWorkflowScenario struct {
 	WorkflowId int64     `json:"workflow_id"`
 	Scripts    []*Script `json:"scripts"`
 }
-
-type WorkflowScenarioListModel struct {
-	Scenarios []*WorkflowScenario `json:"scenarios"`
-}
-
-type SearchWorkflowScenarioResponse struct {
-	WorkflowScenarios []WorkflowScenario `json:"scenarios"`
-}
