@@ -2,6 +2,41 @@ basePath: /api/v1
 consumes:
 - application/json
 definitions:
+  AccessItem:
+    properties:
+      actions:
+        items:
+          type: string
+        type: array
+        x-go-name: Actions
+      description:
+        type: string
+        x-go-name: Description
+      method:
+        type: string
+        x-go-name: Method
+      role_name:
+        type: string
+        x-go-name: RoleName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AccessLevels:
+    additionalProperties:
+      $ref: '#/definitions/AccessItem'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AccessList:
+    additionalProperties:
+      $ref: '#/definitions/AccessLevels'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AccessListDiff:
+    additionalProperties:
+      additionalProperties:
+        type: boolean
+      type: object
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   AuthSignInResponse:
     properties:
       access_token:
@@ -86,6 +121,22 @@ definitions:
         x-go-name: Message
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ExecScript:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      lang:
+        type: string
+        x-go-name: Lang
+      name:
+        type: string
+        x-go-name: Name
+      source:
+        type: string
+        x-go-name: Source
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
     properties:
       created_at:
@@ -138,6 +189,38 @@ definitions:
       status:
         type: string
         x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewRole:
+    properties:
+      Parent:
+        properties:
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewScript:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      lang:
+        type: string
+        x-go-name: Lang
+      name:
+        type: string
+        x-go-name: Name
+      source:
+        type: string
+        x-go-name: Source
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewUser:
@@ -234,8 +317,38 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ResponseRoleModel:
+    properties:
+      role:
+        $ref: '#/definitions/RoleModel'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseType:
     type: string
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  RoleListModel:
+    properties:
+      Meta:
+        properties:
+          limit:
+            format: int64
+            type: integer
+            x-go-name: Limit
+          objects_count:
+            format: int64
+            type: integer
+            x-go-name: ObjectsCount
+          offset:
+            format: int64
+            type: integer
+            x-go-name: Offset
+        type: object
+      items:
+        items:
+          $ref: '#/definitions/RoleModel'
+        type: array
+        x-go-name: Items
+    type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   RoleModel:
     properties:
@@ -273,6 +386,43 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Script:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      lang:
+        type: string
+        x-go-name: Lang
+      name:
+        type: string
+        x-go-name: Name
+      source:
+        type: string
+        x-go-name: Source
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  SearchRoleResponse:
+    properties:
+      roles:
+        items:
+          $ref: '#/definitions/RoleModel'
+        type: array
+        x-go-name: Roles
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateNode:
     properties:
       description:
@@ -295,6 +445,42 @@ definitions:
       status:
         type: string
         x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateRole:
+    properties:
+      Parent:
+        properties:
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateScript:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      lang:
+        type: string
+        x-go-name: Lang
+      name:
+        type: string
+        x-go-name: Name
+      source:
+        type: string
+        x-go-name: Source
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateUser:
@@ -638,10 +824,7 @@ paths:
         "200":
           description: OK
           schema:
-            properties:
-              node:
-                $ref: '#/definitions/Node'
-            type: object
+            $ref: '#/definitions/Node'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -786,6 +969,249 @@ paths:
       summary: reset access
       tags:
       - auth
+  /script:
+    post:
+      operationId: scriptAdd
+      parameters:
+      - description: script params
+        in: body
+        name: script
+        required: true
+        schema:
+          $ref: '#/definitions/NewScript'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/NewObjectSuccess'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new script
+      tags:
+      - script
+  /script/{id}:
+    delete:
+      operationId: scriptDeleteById
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete script by id
+      tags:
+      - script
+    get:
+      operationId: scriptGetById
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Script'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get script by id
+      tags:
+      - script
+    put:
+      operationId: scriptUpdateById
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update script params
+        in: body
+        name: script
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateScript'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update script by id
+      tags:
+      - script
+  /script/{id}/exec:
+    post:
+      operationId: scriptExecById
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/ScriptExec'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Execute script by id
+      tags:
+      - script
+  /script/{id}/exec_src:
+    post:
+      operationId: scriptExecSrc
+      parameters:
+      - description: source script
+        in: body
+        name: script
+        required: true
+        schema:
+          $ref: '#/definitions/ExecScript'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/ScriptExec'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Exec script from request params
+      tags:
+      - script
+  /scripts:
+    get:
+      operationId: scriptList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/ScriptList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get script list
+      tags:
+      - script
+  /scripts/search:
+    get:
+      operationId: scriptSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/ScriptSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search script
+      tags:
+      - script
   /signin:
     post:
       operationId: authSignin
@@ -882,6 +1308,47 @@ responses:
             $ref: '#/definitions/Node'
           type: array
           x-go-name: Nodes
+      type: object
+  ScriptExec:
+    schema:
+      properties:
+        result:
+          type: string
+          x-go-name: Result
+      type: object
+  ScriptList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Script'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  ScriptSearch:
+    schema:
+      properties:
+        scripts:
+          items:
+            $ref: '#/definitions/Script'
+          type: array
+          x-go-name: Scripts
       type: object
   Success:
     description: Success response

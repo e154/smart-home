@@ -51,6 +51,8 @@ type AccessItem struct {
 }
 
 type AccessLevels map[string]AccessItem
+
+// swagger:model
 type AccessList map[string]AccessLevels
 type AccessListDiff map[string]map[string]bool
 

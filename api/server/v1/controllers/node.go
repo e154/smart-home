@@ -85,10 +85,7 @@ func (c ControllerNode) Add(ctx *gin.Context) {
 //   "200":
 //     description: OK
 //     schema:
-//       type: object
-//       properties:
-//         node:
-//           $ref: '#/definitions/Node'
+//       $ref: '#/definitions/Node'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -120,7 +117,7 @@ func (c ControllerNode) GetById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("node", node).Send(ctx)
+	resp.SetData(node).Send(ctx)
 }
 
 // swagger:operation PUT /node/{id} nodeUpdateById

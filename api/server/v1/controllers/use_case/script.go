@@ -9,9 +9,17 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/api/server/v1/models"
 	"github.com/jinzhu/copier"
+	"github.com/e154/smart-home/common"
 )
 
-func AddScript(script *m.Script, adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.ScriptService) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddScript(params models.NewScript, adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.ScriptService) (ok bool, id int64, errs []*validation.Error, err error) {
+
+	script := &m.Script{
+		Lang:        common.ScriptLang(params.Lang),
+		Name:        params.Name,
+		Source:      params.Source,
+		Description: params.Description,
+	}
 
 	// validation
 	ok, errs = script.Valid()
@@ -50,7 +58,16 @@ func GetScriptById(scriptId int64, adaptors *adaptors.Adaptors) (script *models.
 	return
 }
 
-func UpdateScript(script *m.Script, adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.ScriptService) (ok bool, errs []*validation.Error, err error) {
+func UpdateScript(params *models.UpdateScript, adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.ScriptService) (ok bool, errs []*validation.Error, err error) {
+
+	var script *m.Script
+	if script, err = adaptors.Script.GetById(params.Id); err != nil {
+		return
+	}
+
+	if err = common.Copy(&script, &params); err != nil {
+		return
+	}
 
 	// validation
 	ok, errs = script.Valid()

@@ -6,7 +6,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/scripts"
 )
 
@@ -23,35 +22,22 @@ func NewControllerScript(common *ControllerCommon,
 	}
 }
 
-// Script godoc
-// @tags script
-// @Summary Add new script
-// @Description
-// @Produce json
-// @Accept  json
-// @Param script body models.NewScript true "script params"
-// @Success 200 {object} models.NewObjectSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /script [post]
-
-// swagger:operation POST /node nodeAdd
+// swagger:operation POST /script scriptAdd
 // ---
 // parameters:
-// - description: node params
+// - description: script params
 //   in: body
-//   name: node
+//   name: script
 //   required: true
 //   schema:
-//     $ref: '#/definitions/NewNode'
+//     $ref: '#/definitions/NewScript'
 //     type: object
-// summary: add new node
+// summary: add new script
 // description:
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - node
+// - script
 // responses:
 //   "200":
 //	   $ref: '#/responses/NewObjectSuccess'
@@ -72,13 +58,7 @@ func (c ControllerScript) Add(ctx *gin.Context) {
 		return
 	}
 
-	s := &m.Script{
-		Lang:        common.ScriptLang(params.Lang),
-		Name:        params.Name,
-		Source:      params.Source,
-		Description: params.Description,
-	}
-	_, id, errs, err := AddScript(s, c.adaptors, c.core, c.scriptService)
+	_, id, errs, err := AddScript(params, c.adaptors, c.core, c.scriptService)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -94,19 +74,35 @@ func (c ControllerScript) Add(ctx *gin.Context) {
 	resp.Item("id", id).Send(ctx)
 }
 
-// Script godoc
-// @tags script
-// @Summary Show script
-// @Description Get script by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "Script ID"
-// @Success 200 {object} models.ResponseScript
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /script/{id} [Get]
+// swagger:operation GET /script/{id} scriptGetById
+// ---
+// parameters:
+// - description: Script ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get script by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - script
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Script'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerScript) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -128,23 +124,43 @@ func (c ControllerScript) GetById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("script", script).Send(ctx)
+	resp.SetData(script).Send(ctx)
 }
 
-// Script godoc
-// @tags script
-// @Summary Update script
-// @Description Update script by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Script ID"
-// @Param  script body models.UpdateScript true "Update script"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /script/{id} [Put]
+// swagger:operation PUT /script/{id} scriptUpdateById
+// ---
+// parameters:
+// - description: Script ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update script params
+//   in: body
+//   name: script
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateScript'
+//     type: object
+// summary: update script by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - script
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerScript) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
@@ -154,16 +170,16 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 		return
 	}
 
-	script := &m.Script{}
-	if err := ctx.ShouldBindJSON(script); err != nil {
+	params := &models.UpdateScript{}
+	if err := ctx.ShouldBindJSON(params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	script.Id = int64(aid)
+	params.Id = int64(aid)
 
-	_, errs, err := UpdateScript(script, c.adaptors, c.core, c.scriptService)
+	_, errs, err := UpdateScript(params, c.adaptors, c.core, c.scriptService)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -171,7 +187,11 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 	}
 
 	if err != nil {
-		NewError(500, err).Send(ctx)
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
 		return
 	}
 
@@ -179,22 +199,46 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Script godoc
-// @tags script
-// @Summary Script list
-// @Description Get script list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.ResponseScriptList
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /scripts [Get]
+// swagger:operation GET /scripts scriptList
+// ---
+// summary: get script list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - script
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/ScriptList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerScript) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
@@ -209,19 +253,33 @@ func (c ControllerScript) GetList(ctx *gin.Context) {
 	return
 }
 
-// Script godoc
-// @tags script
-// @Summary Delete script
-// @Description Delete script by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Script ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /script/{id} [Delete]
+// swagger:operation DELETE /script/{id} scriptDeleteById
+// ---
+// parameters:
+// - description: Script ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete script by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - script
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerScript) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -245,19 +303,33 @@ func (c ControllerScript) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Script godoc
-// @tags script
-// @Summary Execute script
-// @Description Execute script by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Script ID"
-// @Success 200 {object} models.ResponseScriptExec
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /script/{id}/exec [Post]
+// swagger:operation POST /script/{id}/exec scriptExecById
+// ---
+// parameters:
+// - description: Script ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: Execute script by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - script
+// responses:
+//   "200":
+//	   $ref: '#/responses/ScriptExec'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerScript) Exec(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -282,19 +354,33 @@ func (c ControllerScript) Exec(ctx *gin.Context) {
 	resp.Item("result", result).Send(ctx)
 }
 
-// Script godoc
-// @tags script
-// @Summary Execute script
-// @Description Execute script by id
-// @Produce json
-// @Accept  json
-// @Param  script body models.ExecScript true "Exec script"
-// @Success 200 {object} models.ResponseScriptExec
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /script/{id}/exec_src [Post]
+// swagger:operation POST /script/{id}/exec_src scriptExecSrc
+// ---
+// parameters:
+// - description: source script
+//   in: body
+//   name: script
+//   required: true
+//   schema:
+//     $ref: '#/definitions/ExecScript'
+//     type: object
+// summary: Exec script from request params
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - script
+// responses:
+//   "200":
+//	   $ref: '#/responses/ScriptExec'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerScript) ExecSrc(ctx *gin.Context) {
 
 	script := &m.Script{}
@@ -314,21 +400,40 @@ func (c ControllerScript) ExecSrc(ctx *gin.Context) {
 	resp.Item("result", result).Send(ctx)
 }
 
-// Script godoc
-// @tags script
-// @Summary Search device
-// @Description Search device by name
-// @Produce json
-// @Accept  json
-// @Param query query string false "query"
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.SearchScriptResponse
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /scripts/search [Get]
+// swagger:operation GET /scripts/search scriptSearch
+// ---
+// summary: search script
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - script
+// parameters:
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/ScriptSearch'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerScript) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
