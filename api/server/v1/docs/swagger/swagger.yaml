@@ -785,6 +785,21 @@ definitions:
         $ref: '#/definitions/MapOptions'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewMapLayer:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      map:
+        $ref: '#/definitions/Map'
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewNode:
     properties:
       description:
@@ -1080,6 +1095,18 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  SortMapLayer:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateDevice:
     properties:
       description:
@@ -1142,6 +1169,25 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateMapLayer:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      map:
+        $ref: '#/definitions/Map'
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateNode:
@@ -2231,6 +2277,192 @@ paths:
       summary: get map full by id
       tags:
       - map
+  /map_layer:
+    post:
+      operationId: mapLayerAdd
+      parameters:
+      - description: layer params
+        in: body
+        name: map_layer
+        required: true
+        schema:
+          $ref: '#/definitions/NewMapLayer'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapLayer'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new map layer
+      tags:
+      - map_layer
+  /map_layer/{id}:
+    delete:
+      operationId: mapLayerDeleteById
+      parameters:
+      - description: MapLayer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete map layer by id
+      tags:
+      - map_layer
+    get:
+      operationId: mapLayerGetById
+      parameters:
+      - description: MapLayer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapLayer'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map layer by id
+      tags:
+      - map_layer
+    put:
+      operationId: mapLayerUpdateById
+      parameters:
+      - description: MapLayer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: layer params
+        in: body
+        name: map_layer
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateMapLayer'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update map layer
+      tags:
+      - map_layer
+  /map_layer/sort:
+    put:
+      operationId: mapLayerUpdateById
+      parameters:
+      - description: sort params
+        in: body
+        name: sort_params
+        required: true
+        schema:
+          $ref: '#/definitions/SortMapLayer'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: sort map layers
+      tags:
+      - map_layer
+  /map_layers:
+    get:
+      operationId: mapLayerList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/MapLayerList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map layer list
+      tags:
+      - map_layer
   /maps:
     get:
       operationId: mapList
@@ -3743,6 +3975,31 @@ responses:
           description: описание ошибки
           type: string
           x-go-name: Message
+      type: object
+  MapLayerList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MapLayer'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
       type: object
   MapList:
     schema:

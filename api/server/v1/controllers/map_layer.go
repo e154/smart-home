@@ -15,19 +15,35 @@ func NewControllerMapLayer(common *ControllerCommon) *ControllerMapLayer {
 	return &ControllerMapLayer{ControllerCommon: common}
 }
 
-// MapLayer godoc
-// @tags map_layer
-// @Summary Add new map_layer
-// @Description
-// @Produce json
-// @Accept  json
-// @Param map_layer body models.NewMapLayer true "map_layer params"
-// @Success 200 {object} models.MapLayer
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map_layer [post]
-// @Security ApiKeyAuth
+// swagger:operation POST /map_layer mapLayerAdd
+// ---
+// parameters:
+// - description: layer params
+//   in: body
+//   name: map_layer
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewMapLayer'
+//     type: object
+// summary: add new map layer
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map_layer
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/MapLayer'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMapLayer) Add(ctx *gin.Context) {
 
 	params := &models.NewMapLayer{}
@@ -50,23 +66,38 @@ func (c ControllerMapLayer) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("map_layer", result).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
-// MapLayer godoc
-// @tags map_layer
-// @Summary Show map_layer
-// @Description Get map_layer by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "MapLayer ID"
-// @Success 200 {object} models.MapLayer
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map_layer/{id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /map_layer/{id} mapLayerGetById
+// ---
+// parameters:
+// - description: MapLayer ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get map layer by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map_layer
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/MapLayer'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMapLayer) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -88,24 +119,43 @@ func (c ControllerMapLayer) GetById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("map_layer", result).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
-// MapLayer godoc
-// @tags map_layer
-// @Summary Update map_layer
-// @Description Update map_layer by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "MapLayer ID"
-// @Param  map_layer body models.UpdateMapLayer true "Update map_layer"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map_layer/{id} [Put]
-// @Security ApiKeyAuth
+// swagger:operation PUT /map_layer/{id} mapLayerUpdateById
+// ---
+// parameters:
+// - description: MapLayer ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: layer params
+//   in: body
+//   name: map_layer
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateMapLayer'
+//     type: object
+// summary: update map layer
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map_layer
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMapLayer) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
@@ -140,20 +190,35 @@ func (c ControllerMapLayer) Update(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// MapLayer godoc
-// @tags map_layer
-// @Summary Sort map_layer
-// @Description Sort map_layer by id
-// @Produce json
-// @Accept  json
-// @Param  map_layer body models.SortMapLayer true "Sort map_layer"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map_layer/{id} [Put]
-// @Security ApiKeyAuth
+// swagger:operation PUT /map_layer/sort mapLayerUpdateById
+// ---
+// parameters:
+// - description: sort params
+//   in: body
+//   name: sort_params
+//   required: true
+//   schema:
+//     $ref: '#/definitions/SortMapLayer'
+//     type: object
+// summary: sort map layers
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map_layer
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMapLayer) Sort(ctx *gin.Context) {
 
 	params := make([]*models.SortMapLayer, 0)
@@ -172,23 +237,46 @@ func (c ControllerMapLayer) Sort(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// MapLayer godoc
-// @tags map_layer
-// @Summary MapLayer list
-// @Description Get map_layer list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.MapListModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map_layers [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /map_layers mapLayerList
+// ---
+// summary: get map layer list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map_layer
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/MapLayerList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMapLayer) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
@@ -203,20 +291,33 @@ func (c ControllerMapLayer) GetList(ctx *gin.Context) {
 	return
 }
 
-// MapLayer godoc
-// @tags map_layer
-// @Summary Delete map_layer
-// @Description Delete map_layer by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "MapLayer ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map_layer/{id} [Delete]
-// @Security ApiKeyAuth
+// swagger:operation DELETE /map_layer/{id} mapLayerDeleteById
+// ---
+// parameters:
+// - description: MapLayer ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete map layer by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map_layer
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMapLayer) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")

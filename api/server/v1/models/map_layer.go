@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// swagger:model
 type MapLayer struct {
 	Id          int64         `json:"id"`
 	Name        string        `json:"name"`
@@ -15,6 +16,7 @@ type MapLayer struct {
 	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
+// swagger:model
 type NewMapLayer struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -22,6 +24,7 @@ type NewMapLayer struct {
 	Status      string `json:"status"`
 }
 
+// swagger:model
 type UpdateMapLayer struct {
 	Id          int64  `json:"id"`
 	Name        string `json:"name"`
