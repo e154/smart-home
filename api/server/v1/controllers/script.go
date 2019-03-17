@@ -35,6 +35,34 @@ func NewControllerScript(common *ControllerCommon,
 // @Failure 500 {object} models.ErrorModel "some error"
 // @Security ApiKeyAuth
 // @Router /script [post]
+
+// swagger:operation POST /node nodeAdd
+// ---
+// parameters:
+// - description: node params
+//   in: body
+//   name: node
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewNode'
+//     type: object
+// summary: add new node
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - node
+// responses:
+//   "200":
+//	   $ref: '#/responses/NewObjectSuccess'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerScript) Add(ctx *gin.Context) {
 
 	var params models.NewScript

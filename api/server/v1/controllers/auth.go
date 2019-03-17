@@ -25,7 +25,9 @@ func NewControllerAuth(common *ControllerCommon) *ControllerAuth {
 // - auth
 // responses:
 //   "200":
-//	   $ref: '#/responses/AuthSignInResponse'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/AuthSignInResponse'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -38,7 +40,14 @@ func (c ControllerAuth) SignIn(ctx *gin.Context) {
 
 	email, password, ok := ctx.Request.BasicAuth()
 	if !ok {
-		NewError(400, "bad request").Send(ctx)
+		err := NewError(400, "bad request")
+		if email == "" {
+			err.AddField("common.field_not_blank", "The field can't be empty", "email")
+		}
+		if password == "" {
+			err.AddField("common.field_not_blank", "The field can't be empty", "password")
+		}
+		err.Send(ctx)
 		return
 	}
 
@@ -136,7 +145,12 @@ func (c ControllerAuth) Reset(ctx *gin.Context) {
 // - auth
 // responses:
 //   "200":
-//	   $ref: '#/responses/AccessList'
+//     description: OK
+//     schema:
+//       type: object
+//       properties:
+//         access_list:
+//           $ref: '#/definitions/AccessList'
 //   "401":
 //     description: "Unauthorized"
 //   "403":
