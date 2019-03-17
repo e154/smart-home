@@ -488,6 +488,20 @@ definitions:
         x-go-name: Type
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewDeviceAction:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceActionDevice'
+      name:
+        type: string
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/DeviceActionScript'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDeviceNode:
     properties:
       id:
@@ -803,6 +817,20 @@ definitions:
       type:
         type: string
         x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateDeviceAction:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceActionDevice'
+      name:
+        type: string
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/DeviceActionScript'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateNode:
@@ -1371,6 +1399,184 @@ paths:
       summary: update device by id
       tags:
       - device
+  /device_action:
+    post:
+      operationId: deviceActionAdd
+      parameters:
+      - description: device action params
+        in: body
+        name: device_action
+        required: true
+        schema:
+          $ref: '#/definitions/NewDeviceAction'
+          type: object
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/DeviceAction'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new device action
+      tags:
+      - device_action
+  /device_action/{id}:
+    delete:
+      operationId: deviceActionDeleteById
+      parameters:
+      - description: DeviceAction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete device action by id
+      tags:
+      - device_action
+    get:
+      operationId: deviceActionGetById
+      parameters:
+      - description: DeviceAction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeviceAction'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device action by id
+      tags:
+      - device_action
+    put:
+      operationId: deviceActionUpdateById
+      parameters:
+      - description: DeviceAction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update device action params
+        in: body
+        name: device_action
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateDeviceAction'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update device action by id
+      tags:
+      - device_action
+  /device_action1/search:
+    get:
+      operationId: deviceActionSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/DeviceActionSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search device actions
+      tags:
+      - device_action
+  /device_actions/{id}:
+    get:
+      operationId: deviceActionGetListByDeviceId
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          schema:
+            items:
+              $ref: '#/definitions/DeviceAction'
+            type: array
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device actions by device id
+      tags:
+      - device_action
   /devices:
     get:
       operationId: deviceList
@@ -2358,6 +2564,40 @@ paths:
 produces:
 - application/json
 responses:
+  DeviceActionList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/DeviceAction'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  DeviceActionSearch:
+    schema:
+      properties:
+        device_actions:
+          items:
+            $ref: '#/definitions/DeviceAction'
+          type: array
+          x-go-name: DeviceActions
+      type: object
   DeviceList:
     schema:
       properties:

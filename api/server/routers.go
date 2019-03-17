@@ -79,7 +79,7 @@ func (s *Server) setControllers() {
 	v1.POST("/device_action", s.af.Auth, s.ControllersV1.DeviceAction.Add)
 	v1.GET("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.GetById)
 	v1.PUT("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.Update)
-	v1.DELETE("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.DeleteById)
+	v1.DELETE("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.Delete)
 	v1.GET("/device_actions/:id", s.af.Auth, s.ControllersV1.DeviceAction.GetActionList)
 	v1.GET("/device_action1/search", s.af.Auth, s.ControllersV1.DeviceAction.Search)
 

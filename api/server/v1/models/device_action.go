@@ -8,6 +8,8 @@ type DeviceActionScript struct {
 type DeviceActionDevice struct {
 	Id int64 `json:"id"`
 }
+
+// swagger:model
 type NewDeviceAction struct {
 	Name        string              `json:"name" valid:"MaxSize(254);Required"`
 	Description string              `json:"description"`
@@ -15,6 +17,7 @@ type NewDeviceAction struct {
 	Script      *DeviceActionScript `json:"script"`
 }
 
+// swagger:model
 type UpdateDeviceAction struct {
 	Name        string              `json:"name" valid:"MaxSize(254);Required"`
 	Description string              `json:"description"`
@@ -22,6 +25,7 @@ type UpdateDeviceAction struct {
 	Script      *DeviceActionScript `json:"script"`
 }
 
+// swagger:model
 type DeviceAction struct {
 	Id          int64               `json:"id"`
 	Name        string              `json:"name" valid:"MaxSize(254);Required"`
@@ -30,8 +34,4 @@ type DeviceAction struct {
 	Script      *DeviceActionScript `json:"script"`
 	CreatedAt   time.Time           `json:"created_at"`
 	UpdatedAt   time.Time           `json:"updated_at"`
-}
-
-type SearchDeviceActionResponse struct {
-	DeviceActions []DeviceAction `json:"actions"`
 }
