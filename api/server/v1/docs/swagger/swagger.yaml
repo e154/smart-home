@@ -43,10 +43,10 @@ definitions:
         type: string
         x-go-name: AccessToken
       current_user:
-        $ref: '#/definitions/CurrentUserModel'
+        $ref: '#/definitions/CurrentUser'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  CurrentUserModel:
+  CurrentUser:
     description: Current User represents the user for this application
     properties:
       email:
@@ -980,7 +980,7 @@ definitions:
         x-go-name: Nickname
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UserFullModel:
+  UserFull:
     properties:
       authentication_token:
         type: string
@@ -1073,30 +1073,7 @@ definitions:
         x-go-name: Time
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UserListModel:
-    properties:
-      Items:
-        items:
-          $ref: '#/definitions/UserShotModel'
-        type: array
-      Meta:
-        properties:
-          limit:
-            format: int64
-            type: integer
-            x-go-name: Limit
-          objects_count:
-            format: int64
-            type: integer
-            x-go-name: ObjectsCount
-          offset:
-            format: int64
-            type: integer
-            x-go-name: Offset
-        type: object
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UserShotModel:
+  UserShot:
     properties:
       created_at:
         format: date-time
@@ -2528,6 +2505,197 @@ paths:
       summary: sign out
       tags:
       - auth
+  /user:
+    post:
+      operationId: userAdd
+      parameters:
+      - description: user params
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/NewUser'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserFull'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new user
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      operationId: userDeleteById
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete user by id
+      tags:
+      - user
+    get:
+      operationId: userGetById
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserFull'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get user by id
+      tags:
+      - user
+    put:
+      operationId: userUpdateById
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update user params
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateUser'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserFull'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update user by id
+      tags:
+      - user
+  /user/{id}/update_status:
+    put:
+      operationId: userUpdateStatus
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: status params
+        in: body
+        name: user_status
+        required: true
+        schema:
+          $ref: '#/definitions/UserUpdateStatusRequest'
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update user status
+      tags:
+      - user
+  /users:
+    get:
+      operationId: userList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/UserList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get user list
+      tags:
+      - user
   /workflow:
     post:
       operationId: workflowAdd
@@ -3151,6 +3319,40 @@ responses:
   Success:
     description: Success response
     schema:
+      type: object
+  UserList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/UserShot'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  UserSearch:
+    schema:
+      properties:
+        users:
+          items:
+            $ref: '#/definitions/UserShot'
+          type: array
+          x-go-name: Users
       type: object
   WorkflowList:
     schema:

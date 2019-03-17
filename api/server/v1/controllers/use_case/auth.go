@@ -17,7 +17,7 @@ const (
 	AdminId = 1
 )
 
-func SignIn(email, password string, adaptors *adaptors.Adaptors, ip string) (currentUser *models.CurrentUserModel, accessToken string, err error) {
+func SignIn(email, password string, adaptors *adaptors.Adaptors, ip string) (currentUser *models.CurrentUser, accessToken string, err error) {
 
 	var user *m.User
 
@@ -38,7 +38,7 @@ func SignIn(email, password string, adaptors *adaptors.Adaptors, ip string) (cur
 		return
 	}
 
-	currentUser = &models.CurrentUserModel{}
+	currentUser = &models.CurrentUser{}
 	copier.Copy(&currentUser, &user)
 
 	// meta

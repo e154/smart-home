@@ -16,19 +16,35 @@ func NewControllerUser(common *ControllerCommon) *ControllerUser {
 	return &ControllerUser{ControllerCommon: common}
 }
 
-// User godoc
-// @tags user
-// @Summary Add new user
-// @Description
-// @Produce json
-// @Accept  json
-// @Param user body models.NewUser true "user params"
-// @Success 200 {object} models.UserFullModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /user [post]
-func (c ControllerUser) AddUser(ctx *gin.Context) {
+// swagger:operation POST /user userAdd
+// ---
+// parameters:
+// - description: user params
+//   in: body
+//   name: user
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewUser'
+// summary: add new user
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - user
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/UserFull'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerUser) Add(ctx *gin.Context) {
 
 	var params models.NewUser
 	if err := ctx.ShouldBindJSON(&params); err != nil {
@@ -55,23 +71,39 @@ func (c ControllerUser) AddUser(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("user", createdUser).Send(ctx)
+	resp.SetData(createdUser).Send(ctx)
 }
 
-// User godoc
-// @tags user
-// @Summary Show user
-// @Description Get user by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "User ID"
-// @Success 200 {object} models.UserFullModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /user/{id} [Get]
-func (c ControllerUser) GetUserById(ctx *gin.Context) {
+// swagger:operation GET /user/{id} userGetById
+// ---
+// parameters:
+// - description: User ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get user by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - user
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/UserFull'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerUser) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)
@@ -95,21 +127,43 @@ func (c ControllerUser) GetUserById(ctx *gin.Context) {
 	resp.SetData(user).Send(ctx)
 }
 
-// User godoc
-// @tags user
-// @Summary Update user
-// @Description Update user by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "User ID"
-// @Param  user body models.UpdateUser true "Update user"
-// @Success 200 {object} models.UserFullModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /user/{id} [Put]
-func (c ControllerUser) UpdateUser(ctx *gin.Context) {
+// swagger:operation PUT /user/{id} userUpdateById
+// ---
+// parameters:
+// - description: User ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update user params
+//   in: body
+//   name: user
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateUser'
+//     type: object
+// summary: update user by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - user
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/UserFull'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerUser) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -143,21 +197,39 @@ func (c ControllerUser) UpdateUser(ctx *gin.Context) {
 	resp.SetData(user).Send(ctx)
 }
 
-
-// User godoc
-// @tags user
-// @Summary Update user status
-// @Description Update user status
-// @Produce json
-// @Accept  json
-// @Param  id path int true "User ID"
-// @Param  user body models.UserUpdateStatusRequest true "Update user"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /user/{id}/update_status [Put]
+// swagger:operation PUT /user/{id}/update_status userUpdateStatus
+// ---
+// parameters:
+// - description: User ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: status params
+//   in: body
+//   name: user_status
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UserUpdateStatusRequest'
+// summary: update user status
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - user
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerUser) UpdateStatus(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
@@ -183,23 +255,47 @@ func (c ControllerUser) UpdateStatus(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// User godoc
-// @tags user
-// @Summary User list
-// @Description Get user list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.UserListModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /users [Get]
-func (c ControllerUser) GetUserList(ctx *gin.Context) {
+// swagger:operation GET /users userList
+// ---
+// summary: get user list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - user
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/UserList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerUser) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
 	items, total, err := GetUserList(limit, offset, order, sortBy, c.adaptors)
@@ -213,20 +309,34 @@ func (c ControllerUser) GetUserList(ctx *gin.Context) {
 	return
 }
 
-// User godoc
-// @tags user
-// @Summary Delete user
-// @Description Delete user by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "User ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /user/{id} [Delete]
-func (c ControllerUser) DeleteUserById(ctx *gin.Context) {
+// swagger:operation DELETE /user/{id} userDeleteById
+// ---
+// parameters:
+// - description: User ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete user by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - user
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerUser) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	aid, err := strconv.Atoi(id)

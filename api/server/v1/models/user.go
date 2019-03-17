@@ -18,6 +18,7 @@ type NewUserRole struct {
 	Name string `json:"name"`
 }
 
+// swagger:model
 type NewUser struct {
 	Nickname       string         `json:"nickname" valid:"Required;MinSize(3);MaxSize(255)"`
 	FirstName      string         `json:"first_name"`
@@ -42,6 +43,7 @@ func (d *NewUser) Valid() (ok bool, errs []*validation.Error) {
 	return
 }
 
+// swagger:model
 type UpdateUser struct {
 	Id             int64          `json:"id"`
 	Nickname       string         `json:"nickname" valid:"Required;MinSize(3);MaxSize(255)"`
@@ -86,7 +88,8 @@ type UserHistory struct {
 	Time time.Time `json:"time"`
 }
 
-type UserFullModel struct {
+// swagger:model
+type UserFull struct {
 	Id                  int64                `json:"id"`
 	Nickname            string               `json:"nickname"`
 	FirstName           string               `json:"first_name"`
@@ -112,7 +115,8 @@ type UserFullModel struct {
 	History             []*UserHistory       `json:"history"`
 }
 
-type UserShotModel struct {
+// swagger:model
+type UserShot struct {
 	Id        int64                `json:"id"`
 	Nickname  string               `json:"nickname" valid:"Required;MinSize(3);MaxSize(255)"`
 	FirstName string               `json:"first_name" valid:"MaxSize(255)"`
@@ -130,7 +134,7 @@ type UserShotModel struct {
 
 // Current User represents the user for this application
 // swagger:model
-type CurrentUserModel struct {
+type CurrentUser struct {
 	Id          int64                `json:"id"`
 	Nickname    string               `json:"nickname"`
 	FirstName   string               `json:"first_name"`
@@ -142,13 +146,4 @@ type CurrentUserModel struct {
 	Meta        []*UserByIdModelMeta `json:"meta"`
 	Role        *Role                `json:"role"`
 	Lang        string               `json:"lang"`
-}
-
-type UserListModel struct {
-	Items []UserShotModel
-	Meta  struct {
-		Limit        int `json:"limit"`
-		Offset       int `json:"offset"`
-		ObjectsCount int `json:"objects_count"`
-	}
 }

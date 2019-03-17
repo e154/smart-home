@@ -74,7 +74,7 @@ func AddUser(params models.NewUser,
 	return
 }
 
-func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserFullModel, err error) {
+func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserFull, err error) {
 
 	var user *m.User
 	if user, err = adaptors.User.GetById(userId); err != nil {
@@ -82,7 +82,7 @@ func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserFullM
 	}
 
 	// base model
-	u = &models.UserFullModel{}
+	u = &models.UserFull{}
 	copier.Copy(&u, &user)
 
 	// parent model
@@ -137,7 +137,7 @@ func DeleteUserById(userId int64, adaptors *adaptors.Adaptors) (err error) {
 	return
 }
 
-func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Adaptors) (items []*models.UserShotModel, total int64, err error) {
+func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Adaptors) (items []*models.UserShot, total int64, err error) {
 
 	var userList []*m.User
 	if userList, total, err = adaptors.User.List(int64(limit), int64(offset), order, sortBy); err != nil {
@@ -145,7 +145,7 @@ func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Ada
 	}
 
 	for _, user := range userList {
-		item := &models.UserShotModel{}
+		item := &models.UserShot{}
 		copier.Copy(&item, &user)
 
 		// parent model
@@ -170,7 +170,7 @@ func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Ada
 	return
 }
 
-func UpdateUser(newParams *models.UpdateUser, adaptors *adaptors.Adaptors) (result *models.UserFullModel, errs []*validation.Error, err error) {
+func UpdateUser(newParams *models.UpdateUser, adaptors *adaptors.Adaptors) (result *models.UserFull, errs []*validation.Error, err error) {
 
 	_, errs = newParams.Valid()
 	if len(errs) > 0 {
@@ -192,7 +192,7 @@ func UpdateUser(newParams *models.UpdateUser, adaptors *adaptors.Adaptors) (resu
 
 	err = adaptors.User.Update(user)
 
-	result = &models.UserFullModel{}
+	result = &models.UserFull{}
 	err = copier.Copy(&result, &user)
 
 	return
