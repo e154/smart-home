@@ -81,7 +81,7 @@ definitions:
         type: string
         x-go-name: Nickname
       role:
-        $ref: '#/definitions/RoleModel'
+        $ref: '#/definitions/Role'
       sign_in_count:
         format: int64
         type: integer
@@ -703,40 +703,10 @@ definitions:
         x-go-name: Id
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  ResponseRoleModel:
-    properties:
-      role:
-        $ref: '#/definitions/RoleModel'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseType:
     type: string
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  RoleListModel:
-    properties:
-      Meta:
-        properties:
-          limit:
-            format: int64
-            type: integer
-            x-go-name: Limit
-          objects_count:
-            format: int64
-            type: integer
-            x-go-name: ObjectsCount
-          offset:
-            format: int64
-            type: integer
-            x-go-name: Offset
-        type: object
-      items:
-        items:
-          $ref: '#/definitions/RoleModel'
-        type: array
-        x-go-name: Items
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  RoleModel:
+  Role:
     properties:
       Parent:
         properties:
@@ -753,7 +723,7 @@ definitions:
         x-go-name: AccessList
       children:
         items:
-          $ref: '#/definitions/RoleModel'
+          $ref: '#/definitions/Role'
         type: array
         x-go-name: Children
       created_at:
@@ -798,15 +768,6 @@ definitions:
         format: date-time
         type: string
         x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  SearchRoleResponse:
-    properties:
-      roles:
-        items:
-          $ref: '#/definitions/RoleModel'
-        type: array
-        x-go-name: Roles
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateDevice:
@@ -1082,7 +1043,7 @@ definitions:
         type: string
         x-go-name: ResetPasswordSentAt
       role:
-        $ref: '#/definitions/RoleModel'
+        $ref: '#/definitions/Role'
       role_name:
         type: string
         x-go-name: RoleName
@@ -1163,7 +1124,7 @@ definitions:
         type: string
         x-go-name: Nickname
       role:
-        $ref: '#/definitions/RoleModel'
+        $ref: '#/definitions/Role'
       role_name:
         type: string
         x-go-name: RoleName
@@ -2032,6 +1993,260 @@ paths:
       summary: reset access
       tags:
       - auth
+  /role:
+    post:
+      operationId: roleAdd
+      parameters:
+      - description: role params
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/NewRole'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Role'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new role
+      tags:
+      - role
+  /role/{name}:
+    delete:
+      operationId: roleDeleteById
+      parameters:
+      - description: Role ID
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete role by name
+      tags:
+      - role
+    get:
+      operationId: roleGetById
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Role'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get role by name
+      tags:
+      - role
+    put:
+      operationId: roleUpdateById
+      parameters:
+      - description: Role ID
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Update role params
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateRole'
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update role by name
+      tags:
+      - role
+  /role/{name}/access_list:
+    get:
+      operationId: roleGetById
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              access_list:
+                $ref: '#/definitions/AccessList'
+            type: object
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get access list by role name
+      tags:
+      - role
+    put:
+      operationId: roleUpdateById
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Update access list params
+        in: body
+        name: access_list_diff
+        required: true
+        schema:
+          $ref: '#/definitions/AccessListDiff'
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update role access list
+      tags:
+      - role
+  /roles:
+    get:
+      operationId: roleList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/RoleList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get role list
+      tags:
+      - role
+  /roles/search:
+    get:
+      operationId: roleSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/RoleSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search role
+      tags:
+      - role
   /script:
     post:
       operationId: scriptAdd
@@ -2857,6 +3072,40 @@ responses:
             $ref: '#/definitions/Node'
           type: array
           x-go-name: Nodes
+      type: object
+  RoleList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Role'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  RoleSearch:
+    schema:
+      properties:
+        roles:
+          items:
+            $ref: '#/definitions/Role'
+          type: array
+          x-go-name: Roles
       type: object
   ScriptExec:
     schema:

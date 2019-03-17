@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// swagger:model
 type NewRole struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -10,6 +11,7 @@ type NewRole struct {
 	}
 }
 
+// swagger:model
 type UpdateRole struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -18,29 +20,17 @@ type UpdateRole struct {
 	}
 }
 
-type RoleModel struct {
+// swagger:model
+type Role struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Parent      struct {
 		Name string `json:"name"`
 	}
-	Children   []*RoleModel        `json:"children"`
+	Children   []*Role             `json:"children"`
 	AccessList map[string][]string `json:"access_list"`
 	CreatedAt  time.Time           `json:"created_at"`
 	UpdatedAt  time.Time           `json:"updated_at"`
-}
-
-type RoleListModel struct {
-	Items []RoleModel `json:"items"`
-	Meta  struct {
-		Limit        int `json:"limit"`
-		Offset       int `json:"offset"`
-		ObjectsCount int `json:"objects_count"`
-	}
-}
-
-type SearchRoleResponse struct {
-	Roles []*RoleModel `json:"roles"`
 }
 
 type AccessItem struct {
@@ -55,7 +45,3 @@ type AccessLevels map[string]AccessItem
 // swagger:model
 type AccessList map[string]AccessLevels
 type AccessListDiff map[string]map[string]bool
-
-type ResponseRoleModel struct {
-	Role *RoleModel `json:"role"`
-}

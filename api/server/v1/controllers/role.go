@@ -14,19 +14,35 @@ func NewControllerRole(common *ControllerCommon) *ControllerRole {
 	return &ControllerRole{ControllerCommon: common}
 }
 
-// RoleModel godoc
-// @tags role
-// @Summary Add new role
-// @Description
-// @Produce json
-// @Accept  json
-// @Param role body models.NewRole true "role params"
-// @Success 200 {object} models.ResponseRoleModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /role [post]
+// swagger:operation POST /role roleAdd
+// ---
+// parameters:
+// - description: role params
+//   in: body
+//   name: role
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewRole'
+//     type: object
+// summary: add new role
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - role
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Role'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerRole) Add(ctx *gin.Context) {
 
 	var params models.NewRole
@@ -49,23 +65,38 @@ func (c ControllerRole) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("role", role).Send(ctx)
+	resp.SetData(role).Send(ctx)
 }
 
-// RoleModel godoc
-// @tags role
-// @Summary Show role
-// @Description Get role by name
-// @Produce json
-// @Accept  json
-// @Param name path string true "RoleModel name"
-// @Success 200 {object} models.ResponseRoleModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /role/{name} [Get]
+// swagger:operation GET /role/{name} roleGetById
+// ---
+// parameters:
+// - description: Role name
+//   in: path
+//   name: name
+//   required: true
+//   type: string
+// summary: get role by name
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - role
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Role'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerRole) GetByName(ctx *gin.Context) {
 
 	name := ctx.Param("name")
@@ -80,23 +111,41 @@ func (c ControllerRole) GetByName(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("role", role).Send(ctx)
+	resp.SetData(role).Send(ctx)
 }
 
-// RoleModel godoc
-// @tags role
-// @Summary get role access list
-// @Description Get access list
-// @Produce json
-// @Accept  json
-// @Param name path string true "RoleModel name"
-// @Success 200 {object} models.ResponseAccessList
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /role/{name}/access_list [Get]
+// swagger:operation GET /role/{name}/access_list roleGetById
+// ---
+// parameters:
+// - description: Role name
+//   in: path
+//   name: name
+//   required: true
+//   type: string
+// summary: get access list by role name
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - role
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       type: object
+//       properties:
+//         access_list:
+//           $ref: '#/definitions/AccessList'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 
 	name := ctx.Param("name")
@@ -114,21 +163,39 @@ func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 	resp.Item("access_list", accessList).Send(ctx)
 }
 
-// RoleModel godoc
-// @tags role
-// @Summary update role access list
-// @Description Update access list
-// @Produce json
-// @Accept  json
-// @Param name path string true "RoleModel name"
-// @Param diff body models.AccessListDiff true "permission"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /role/{name}/access_list [Put]
+// swagger:operation PUT /role/{name}/access_list roleUpdateById
+// ---
+// parameters:
+// - description: Role name
+//   in: path
+//   name: name
+//   required: true
+//   type: string
+// - description: Update access list params
+//   in: body
+//   name: access_list_diff
+//   required: true
+//   schema:
+//     $ref: '#/definitions/AccessListDiff'
+// summary: update role access list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - role
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 
 	accessListDif := make(map[string]map[string]bool)
@@ -152,21 +219,39 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// RoleModel godoc
-// @tags role
-// @Summary Update role
-// @Description Update role by name
-// @Produce json
-// @Accept  json
-// @Param  name path string true "RoleModel name"
-// @Param  role body models.UpdateRole true "Update role"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /role/{name} [Put]
+// swagger:operation PUT /role/{name} roleUpdateById
+// ---
+// parameters:
+// - description: Role ID
+//   in: path
+//   name: name
+//   required: true
+//   type: string
+// - description: Update role params
+//   in: body
+//   name: role
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateRole'
+// summary: update role by name
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - role
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerRole) Update(ctx *gin.Context) {
 
 	name := ctx.Param("name")
@@ -197,23 +282,46 @@ func (c ControllerRole) Update(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// RoleModel godoc
-// @tags role
-// @Summary RoleModel list
-// @Description Get role list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(name)
-// @Success 200 {object} models.RoleListModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /roles [Get]
+// swagger:operation GET /roles roleList
+// ---
+// summary: get role list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - role
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/RoleList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerRole) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
@@ -228,20 +336,33 @@ func (c ControllerRole) GetList(ctx *gin.Context) {
 	return
 }
 
-// RoleModel godoc
-// @tags role
-// @Summary Delete role
-// @Description Delete role by name
-// @Produce json
-// @Accept  json
-// @Param  name path string true "RoleModel name"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /role/{name} [Delete]
+// swagger:operation DELETE /role/{name} roleDeleteById
+// ---
+// parameters:
+// - description: Role ID
+//   in: path
+//   name: name
+//   required: true
+//   type: string
+// summary: delete role by name
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - role
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerRole) Delete(ctx *gin.Context) {
 
 	name := ctx.Param("name")
@@ -264,22 +385,40 @@ func (c ControllerRole) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// RoleModel godoc
-// @tags role
-// @Summary Search role
-// @Description Search role by name
-// @Produce json
-// @Accept  json
-// @Param query query string false "query"
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.SearchRoleResponse
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /roles/search [Get]
+// swagger:operation GET /roles/search roleSearch
+// ---
+// summary: search role
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - role
+// parameters:
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/RoleSearch'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerRole) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)

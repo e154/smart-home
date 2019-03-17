@@ -10,7 +10,7 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
-func AddRole(roleParams models.NewRole, adaptors *adaptors.Adaptors) (result *models.RoleModel, errs []*validation.Error, err error) {
+func AddRole(roleParams models.NewRole, adaptors *adaptors.Adaptors) (result *models.Role, errs []*validation.Error, err error) {
 
 	role := &m.Role{
 		Name:        roleParams.Name,
@@ -27,7 +27,7 @@ func AddRole(roleParams models.NewRole, adaptors *adaptors.Adaptors) (result *mo
 		return
 	}
 
-	result = &models.RoleModel{}
+	result = &models.Role{}
 	err = common.Copy(&result, &role, common.JsonEngine)
 
 	return
@@ -66,14 +66,14 @@ func UpdateRole(roleParams *models.UpdateRole, adaptors *adaptors.Adaptors) (ok 
 	return
 }
 
-func GetRoleList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (items []*models.RoleModel, total int64, err error) {
+func GetRoleList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (items []*models.Role, total int64, err error) {
 
 	var list []*m.Role
 	if list, total, err = adaptors.Role.List(limit, offset, order, sortBy); err != nil {
 		return
 	}
 
-	items = make([]*models.RoleModel, 0)
+	items = make([]*models.Role, 0)
 	err = common.Copy(&items, &list, common.JsonEngine)
 
 	return
@@ -90,14 +90,14 @@ func DeleteRoleByName(name string, adaptors *adaptors.Adaptors) (err error) {
 	return
 }
 
-func SearchRole(query string, limit, offset int, adaptors *adaptors.Adaptors) (result []*models.RoleModel, total int64, err error) {
+func SearchRole(query string, limit, offset int, adaptors *adaptors.Adaptors) (result []*models.Role, total int64, err error) {
 
 	var roles []*m.Role
 	if roles, total, err = adaptors.Role.Search(query, limit, offset); err != nil {
 		return
 	}
 
-	result = make([]*models.RoleModel, 0)
+	result = make([]*models.Role, 0)
 	err = common.Copy(&result, &roles, common.JsonEngine)
 
 	return
