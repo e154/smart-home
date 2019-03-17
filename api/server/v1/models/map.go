@@ -10,12 +10,14 @@ type MapOptions struct {
 	ElementOptionText bool    `json:"element_option_text"`
 }
 
+// swagger:model
 type NewMap struct {
 	Name        string     `json:"name"`
 	Description string     `json:"description"`
 	Options     MapOptions `json:"options"`
 }
 
+// swagger:model
 type UpdateMap struct {
 	Id          int64      `json:"id"`
 	Name        string     `json:"name"`
@@ -23,6 +25,7 @@ type UpdateMap struct {
 	Options     MapOptions `json:"options"`
 }
 
+// swagger:model
 type Map struct {
 	Id          int64      `json:"id"`
 	Name        string     `json:"name"`
@@ -32,7 +35,8 @@ type Map struct {
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
-type MapFullModel struct {
+// swagger:model
+type MapFull struct {
 	Id          int64       `json:"id"`
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
@@ -40,19 +44,4 @@ type MapFullModel struct {
 	Layers      []*MapLayer `json:"layers"`
 	CreatedAt   time.Time   `json:"created_at"`
 	UpdatedAt   time.Time   `json:"updated_at"`
-}
-
-type Maps []*Map
-
-type MapListModel struct {
-	Items []Map `json:"items"`
-	Meta  struct {
-		Limit        int `json:"limit"`
-		Offset       int `json:"offset"`
-		ObjectsCount int `json:"objects_count"`
-	}
-}
-
-type SearchMapResponse struct {
-	Maps []Map `json:"maps"`
 }

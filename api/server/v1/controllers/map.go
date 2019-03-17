@@ -15,19 +15,35 @@ func NewControllerMap(common *ControllerCommon) *ControllerMap {
 	return &ControllerMap{ControllerCommon: common}
 }
 
-// Map godoc
-// @tags map
-// @Summary Add new map
-// @Description
-// @Produce json
-// @Accept  json
-// @Param map body models.NewMap true "map params"
-// @Success 200 {object} models.Map
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map [post]
-// @Security ApiKeyAuth
+// swagger:operation POST /map mapAdd
+// ---
+// parameters:
+// - description: map params
+//   in: body
+//   name: map
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewMap'
+//     type: object
+// summary: add new map
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Map'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMap) Add(ctx *gin.Context) {
 
 	params := &models.NewMap{}
@@ -50,23 +66,38 @@ func (c ControllerMap) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("map", result).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
-// Map godoc
-// @tags map
-// @Summary Show map
-// @Description Get map by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "Map ID"
-// @Success 200 {object} models.Map
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map/{id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /map/{id} mapGetById
+// ---
+// parameters:
+// - description: Map ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get map by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Map'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMap) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -91,20 +122,35 @@ func (c ControllerMap) GetById(ctx *gin.Context) {
 	resp.SetData(m).Send(ctx)
 }
 
-// Map godoc
-// @tags map
-// @Summary Show full map
-// @Description Get map by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "Map ID"
-// @Success 200 {object} models.MapFullModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map/{id}/full [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /map/{id}/full mapFullGetById
+// ---
+// parameters:
+// - description: Map ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get map full by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/MapFull'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMap) GetFullMap(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -129,21 +175,40 @@ func (c ControllerMap) GetFullMap(ctx *gin.Context) {
 	resp.SetData(m).Send(ctx)
 }
 
-// Map godoc
-// @tags map
-// @Summary Update map
-// @Description Update map by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Map ID"
-// @Param  map body models.UpdateMap true "Update map"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map/{id} [Put]
-// @Security ApiKeyAuth
+// swagger:operation PUT /map/{id} mapUpdateById
+// ---
+// parameters:
+// - description: Map ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update map params
+//   in: body
+//   name: map
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateMap'
+//     type: object
+// summary: update map by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMap) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
@@ -178,23 +243,46 @@ func (c ControllerMap) Update(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Map godoc
-// @tags map
-// @Summary Map list
-// @Description Get map list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.MapListModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /maps [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /maps mapList
+// ---
+// summary: get map list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/MapList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMap) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
@@ -209,20 +297,33 @@ func (c ControllerMap) GetList(ctx *gin.Context) {
 	return
 }
 
-// Map godoc
-// @tags map
-// @Summary Delete map
-// @Description Delete map by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Map ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /map/{id} [Delete]
-// @Security ApiKeyAuth
+// swagger:operation DELETE /map/{id} mapDeleteById
+// ---
+// parameters:
+// - description: Map ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete map by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMap) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -246,22 +347,40 @@ func (c ControllerMap) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Map godoc
-// @tags map
-// @Summary Search map
-// @Description Search map by name
-// @Produce json
-// @Accept  json
-// @Param query query string false "query"
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.SearchMapResponse
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /maps/search [Get]
+// swagger:operation GET /maps/search mapSearch
+// ---
+// summary: search map
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map
+// parameters:
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/MapSearch'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerMap) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)

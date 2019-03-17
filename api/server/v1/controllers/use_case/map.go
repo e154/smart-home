@@ -49,7 +49,7 @@ func GetMapById(mId int64, adaptors *adaptors.Adaptors) (result *models.Map, err
 	return
 }
 
-func GetFullMapById(mId int64, adaptors *adaptors.Adaptors) (result *models.MapFullModel, err error) {
+func GetFullMapById(mId int64, adaptors *adaptors.Adaptors) (result *models.MapFull, err error) {
 
 	var m *m.Map
 	if m, err = adaptors.Map.GetFullById(mId); err != nil {
@@ -59,7 +59,7 @@ func GetFullMapById(mId int64, adaptors *adaptors.Adaptors) (result *models.MapF
 	//debug.Println(m)
 	//fmt.Println("------------------------")
 
-	result = &models.MapFullModel{}
+	result = &models.MapFull{}
 	err = common.Copy(&result, &m, common.JsonEngine)
 
 	return
