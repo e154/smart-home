@@ -5,7 +5,7 @@ import "time"
 type MapDevice struct {
 	Id         int64              `json:"id"`
 	SystemName string             `json:"system_name" valid:"Required"`
-	Device     *DeviceModel       `json:"device"`
+	Device     *Device            `json:"device"`
 	DeviceId   int64              `json:"device_id" valid:"Required"`
 	Image      *Image             `json:"image"`
 	ImageId    int64              `json:"image_id"`

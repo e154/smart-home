@@ -88,6 +88,301 @@ definitions:
         x-go-name: SignInCount
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Device:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/DeviceAction'
+        type: array
+        x-go-name: Actions
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/ParentDevice'
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      is_group:
+        type: boolean
+        x-go-name: IsGroup
+      name:
+        type: string
+        x-go-name: Name
+      node:
+        $ref: '#/definitions/Node'
+      properties:
+        $ref: '#/definitions/DeviceProperties'
+      states:
+        items:
+          $ref: '#/definitions/DeviceState'
+        type: array
+        x-go-name: States
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceAction:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceActionDevice'
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/DeviceActionScript'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceActionDevice:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceActionScript:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceProperties:
+    allOf:
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        data_bits:
+          format: int64
+          type: integer
+          x-go-name: DataBits
+        parity:
+          type: string
+          x-go-name: Parity
+        slave_id:
+          format: int64
+          type: integer
+          x-go-name: SlaveId
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        device:
+          format: int64
+          type: integer
+          x-go-name: Device
+        sleep:
+          format: int64
+          type: integer
+          x-go-name: Sleep
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        data_bits:
+          format: int64
+          type: integer
+          x-go-name: DataBits
+        parity:
+          type: string
+          x-go-name: Parity
+        slave_id:
+          format: int64
+          type: integer
+          x-go-name: SlaveId
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        device:
+          format: int64
+          type: integer
+          x-go-name: Device
+        sleep:
+          format: int64
+          type: integer
+          x-go-name: Sleep
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        data_bits:
+          format: int64
+          type: integer
+          x-go-name: DataBits
+        parity:
+          type: string
+          x-go-name: Parity
+        slave_id:
+          format: int64
+          type: integer
+          x-go-name: SlaveId
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        device:
+          format: int64
+          type: integer
+          x-go-name: Device
+        sleep:
+          format: int64
+          type: integer
+          x-go-name: Sleep
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - type: object
+    description: |-
+      An AllOfModel is composed out of embedded structs but it should build
+      an allOf property
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceShort:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceState:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceStateDevice'
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      system_name:
+        type: string
+        x-go-name: SystemName
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceStateDevice:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Error:
     properties:
       code:
@@ -169,6 +464,36 @@ definitions:
       url:
         type: string
         x-go-name: Url
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewDevice:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/ParentDevice'
+      name:
+        type: string
+        x-go-name: Name
+      node:
+        $ref: '#/definitions/NewDeviceNode'
+      properties:
+        $ref: '#/definitions/DeviceProperties'
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewDeviceNode:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewNode:
@@ -344,6 +669,14 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ParentDevice:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseRoleModel:
     properties:
       role:
@@ -448,6 +781,28 @@ definitions:
           $ref: '#/definitions/RoleModel'
         type: array
         x-go-name: Roles
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateDevice:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/ParentDevice'
+      name:
+        type: string
+        x-go-name: Name
+      node:
+        $ref: '#/definitions/NewDeviceNode'
+      properties:
+        $ref: '#/definitions/DeviceProperties'
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateNode:
@@ -901,6 +1256,195 @@ paths:
       summary: get user access list
       tags:
       - auth
+  /device:
+    post:
+      operationId: deviceAdd
+      parameters:
+      - description: device params
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/NewDevice'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/NewObjectSuccess'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new device
+      tags:
+      - device
+  /device/{id}:
+    delete:
+      operationId: deviceDeleteById
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete device by id
+      tags:
+      - device
+    get:
+      operationId: deviceGetById
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Device'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device by id
+      tags:
+      - device
+    put:
+      operationId: deviceUpdateById
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update device params
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateDevice'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update device by id
+      tags:
+      - device
+  /devices:
+    get:
+      operationId: deviceList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/DeviceList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device list
+      tags:
+      - device
+  /devices/search:
+    get:
+      operationId: deviceSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/DeviceSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search device
+      tags:
+      - device
   /node:
     post:
       operationId: nodeAdd
@@ -1814,6 +2358,40 @@ paths:
 produces:
 - application/json
 responses:
+  DeviceList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Device'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  DeviceSearch:
+    schema:
+      properties:
+        devices:
+          items:
+            $ref: '#/definitions/DeviceShort'
+          type: array
+          x-go-name: Devices
+      type: object
   Error:
     description: Error response
     schema:

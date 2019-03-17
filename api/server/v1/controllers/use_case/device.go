@@ -11,7 +11,7 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
-func AddDevice(params models.NewDeviceModel, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddDevice(params models.NewDevice, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
 
 	var properties []byte
 	if properties, err = json.Marshal(params.Properties); err != nil {
@@ -34,7 +34,7 @@ func AddDevice(params models.NewDeviceModel, adaptors *adaptors.Adaptors, core *
 		device.Node = &m.Node{Id: params.Node.Id}
 	}
 
-	device.SetPropertiesFromMap(params.Properties)
+	//device.SetPropertiesFromMap(params.Properties)
 
 	// validation
 	ok, errs = device.Valid()
@@ -51,14 +51,14 @@ func AddDevice(params models.NewDeviceModel, adaptors *adaptors.Adaptors, core *
 	return
 }
 
-func GetDeviceById(deviceId int64, adaptors *adaptors.Adaptors) (result *models.DeviceModel, err error) {
+func GetDeviceById(deviceId int64, adaptors *adaptors.Adaptors) (result *models.Device, err error) {
 
 	var device *m.Device
 	if device, err = adaptors.Device.GetById(deviceId); err != nil {
 		return
 	}
 
-	result = &models.DeviceModel{}
+	result = &models.Device{}
 	err = common.Copy(&result, &device, common.JsonEngine)
 
 	return
@@ -80,7 +80,7 @@ func UpdateDevice(params models.UpdateDevice, id int64, adaptors *adaptors.Adapt
 		Type:        common.DeviceType(params.Type),
 	}
 
-	device.SetPropertiesFromMap(params.Properties)
+	//device.SetPropertiesFromMap(params.Properties)
 
 	// validation
 	ok, errs = device.Valid()
@@ -95,14 +95,14 @@ func UpdateDevice(params models.UpdateDevice, id int64, adaptors *adaptors.Adapt
 	return
 }
 
-func GetDeviceList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (result []*models.DeviceModel, total int64, err error) {
+func GetDeviceList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (result []*models.Device, total int64, err error) {
 
 	var devices []*m.Device
 	if devices, total, err = adaptors.Device.List(limit, offset, order, sortBy); err != nil {
 		return
 	}
 
-	result = make([]*models.DeviceModel, 0)
+	result = make([]*models.Device, 0)
 	err = common.Copy(&result, &devices, common.JsonEngine)
 
 	return
@@ -125,14 +125,14 @@ func DeleteDeviceById(deviceId int64, adaptors *adaptors.Adaptors, core *core.Co
 	return
 }
 
-func SearchDevice(query string, limit, offset int, adaptors *adaptors.Adaptors) (result []*models.DeviceModel, total int64, err error) {
+func SearchDevice(query string, limit, offset int, adaptors *adaptors.Adaptors) (result []*models.DeviceShort, total int64, err error) {
 
 	var devices []*m.Device
 	if devices, total, err = adaptors.Device.Search(query, limit, offset); err != nil {
 		return
 	}
 
-	result = make([]*models.DeviceModel, 0)
+	result = make([]*models.DeviceShort, 0)
 	err = common.Copy(&result, &devices, common.JsonEngine)
 
 	return

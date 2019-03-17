@@ -15,22 +15,36 @@ func NewControllerDevice(common *ControllerCommon) *ControllerDevice {
 	return &ControllerDevice{ControllerCommon: common}
 }
 
-// Device godoc
-// @tags device
-// @Summary Add new device
-// @Description
-// @Produce json
-// @Accept  json
-// @Param device body models.NewDeviceModel true "device params"
-// @Success 200 {object} models.NewObjectSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device [post]
-// @Security ApiKeyAuth
+// swagger:operation POST /device deviceAdd
+// ---
+// parameters:
+// - description: device params
+//   in: body
+//   name: device
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewDevice'
+//     type: object
+// summary: add new device
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device
+// responses:
+//   "200":
+//	   $ref: '#/responses/NewObjectSuccess'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDevice) Add(ctx *gin.Context) {
 
-	var params models.NewDeviceModel
+	var params models.NewDevice
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -53,20 +67,35 @@ func (c ControllerDevice) Add(ctx *gin.Context) {
 	resp.Item("id", id).Send(ctx)
 }
 
-// Device godoc
-// @tags device
-// @Summary Show device
-// @Description Get device by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "Device ID"
-// @Success 200 {object} models.DeviceModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device/{id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /device/{id} deviceGetById
+// ---
+// parameters:
+// - description: Device ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get device by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Device'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDevice) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -91,21 +120,40 @@ func (c ControllerDevice) GetById(ctx *gin.Context) {
 	resp.SetData(device).Send(ctx)
 }
 
-// Device godoc
-// @tags device
-// @Summary Update device
-// @Description Update device by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Device ID"
-// @Param  device body models.UpdateDevice true "Update device"
-// @Success 200 {object} models.DeviceModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device/{id} [Put]
-// @Security ApiKeyAuth
+// swagger:operation PUT /device/{id} deviceUpdateById
+// ---
+// parameters:
+// - description: Device ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update device params
+//   in: body
+//   name: device
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateDevice'
+//     type: object
+// summary: update device by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
@@ -148,23 +196,46 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 	resp.SetData(device).Send(ctx)
 }
 
-// Device godoc
-// @tags device
-// @Summary Device list
-// @Description Get device list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.DeviceListModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /devices [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /devices deviceList
+// ---
+// summary: get device list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/DeviceList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDevice) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
@@ -179,20 +250,33 @@ func (c ControllerDevice) GetList(ctx *gin.Context) {
 	return
 }
 
-// Device godoc
-// @tags device
-// @Summary Delete device
-// @Description Delete device by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Device ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device/{id} [Delete]
-// @Security ApiKeyAuth
+// swagger:operation DELETE /device/{id} deviceDeleteById
+// ---
+// parameters:
+// - description: Device ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete device by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDevice) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -216,22 +300,40 @@ func (c ControllerDevice) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Device godoc
-// @tags device
-// @Summary Search device
-// @Description Search device by name
-// @Produce json
-// @Accept  json
-// @Param query query string false "query"
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.SearchDeviceResponse
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /devices/search [Get]
+// swagger:operation GET /devices/search deviceSearch
+// ---
+// summary: search device
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device
+// parameters:
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/DeviceSearch'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDevice) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
