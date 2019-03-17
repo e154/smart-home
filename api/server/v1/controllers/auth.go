@@ -5,6 +5,7 @@ import (
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"github.com/e154/smart-home/api/server/v1/models"
 	m "github.com/e154/smart-home/models"
+	"net/http"
 )
 
 type ControllerAuth struct {
@@ -74,6 +75,8 @@ func (c ControllerAuth) SignIn(ctx *gin.Context) {
 // responses:
 //   "200":
 //	   $ref: '#/responses/Success'
+//   "401":
+//     description: "user not found"
 //   "403":
 //     $ref: '#/responses/Error'
 //   "500":
@@ -98,47 +101,57 @@ func (c ControllerAuth) SignOut(ctx *gin.Context) {
 	NewSuccess().Send(ctx)
 }
 
-// Auth godoc
-// @tags auth
-// @Summary Recovery access
-// @Description
-// @Produce json
-// @Accept  json
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /recovery [post]
+// swagger:operation POST /recovery authRecovery
+// ---
+// summary: recovery access
+// description:
+// tags:
+// - auth
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//     $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerAuth) Recovery(ctx *gin.Context) {
-
+	ctx.String(http.StatusOK, "operation Recovery has not yet been implemented")
 }
 
-// Auth godoc
-// @tags auth
-// @Summary Reset password
-// @Description
-// @Produce json
-// @Accept  json
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /reset [post]
+// swagger:operation POST /reset authReset
+// ---
+// summary: reset access
+// description:
+// tags:
+// - auth
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//     $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerAuth) Reset(ctx *gin.Context) {
-
+	ctx.String(http.StatusOK, "operation Reset has not yet been implemented")
 }
 
-// Auth godoc
-// @tags auth
-// @Summary Get user access list
-// @Description
-// @Produce json
-// @Accept  json
-// @Success 200 {object} models.ResponseAccessList
-// @Failure 403 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /access_list [get]
+// swagger:operation GET /access_list authGetAccessList
+// ---
+// summary: get user access list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - auth
+// responses:
+//   "200":
+//	   $ref: '#/responses/AccessList'
+//   "401":
+//     description: "user not found"
+//   "403":
+//     $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerAuth) AccessList(ctx *gin.Context) {
 
 	u, ok := ctx.Get("currentUser")

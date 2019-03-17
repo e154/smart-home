@@ -8,8 +8,16 @@ import (
 // swagger:response AuthSignInResponse
 type AuthSignInResponse struct {
 	// in:body
-	Body struct{
+	Body struct {
 		m.AuthSignInResponse
 	}
 }
 
+// AccessList response
+// swagger:response AccessList
+type AccessList struct {
+	// in:body
+	Body struct {
+		AccessList m.AccessList `json:"access_list"`
+	}
+}

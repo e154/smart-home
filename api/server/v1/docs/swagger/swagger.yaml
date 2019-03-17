@@ -2,6 +2,34 @@ basePath: /api/v1
 consumes:
 - application/json
 definitions:
+  AccessItem:
+    properties:
+      actions:
+        items:
+          type: string
+        type: array
+        x-go-name: Actions
+      description:
+        type: string
+        x-go-name: Description
+      method:
+        type: string
+        x-go-name: Method
+      role_name:
+        type: string
+        x-go-name: RoleName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AccessLevels:
+    additionalProperties:
+      $ref: '#/definitions/AccessItem'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AccessList:
+    additionalProperties:
+      $ref: '#/definitions/AccessLevels'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   AuthSignInResponse:
     properties:
       access_token:
@@ -474,6 +502,49 @@ paths:
       summary: index page
       tags:
       - index
+  /access_list:
+    get:
+      operationId: authGetAccessList
+      responses:
+        "200":
+          $ref: '#/responses/AccessList'
+        "401":
+          description: user not found
+        "403":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get user access list
+      tags:
+      - auth
+  /recovery:
+    post:
+      operationId: authRecovery
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      summary: recovery access
+      tags:
+      - auth
+  /reset:
+    post:
+      operationId: authReset
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      summary: reset access
+      tags:
+      - auth
   /signin:
     post:
       operationId: authSignin
@@ -499,6 +570,8 @@ paths:
       responses:
         "200":
           $ref: '#/responses/Success'
+        "401":
+          description: user not found
         "403":
           $ref: '#/responses/Error'
         "500":
@@ -511,6 +584,13 @@ paths:
 produces:
 - application/json
 responses:
+  AccessList:
+    description: AccessList response
+    schema:
+      properties:
+        access_list:
+          $ref: '#/definitions/AccessList'
+      type: object
   AuthSignInResponse:
     description: AuthSignInResponse response
     schema:

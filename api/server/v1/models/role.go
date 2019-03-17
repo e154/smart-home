@@ -57,7 +57,3 @@ type AccessListDiff map[string]map[string]bool
 type ResponseRoleModel struct {
 	Role *RoleModel `json:"role"`
 }
-
-type ResponseAccessList struct {
-	AccessList struct{} `json:"access_list"`
-}
