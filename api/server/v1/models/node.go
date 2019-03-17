@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// swagger:model
 type NewNode struct {
 	Port        int64  `json:"port"`
 	Status      string `json:"status"`
@@ -10,7 +11,8 @@ type NewNode struct {
 	Description string `json:"description"`
 }
 
-type UpdateNodeModel struct {
+// swagger:model
+type UpdateNode struct {
 	Id          int64  `json:"id"`
 	Name        string `json:"name"`
 	Port        int64  `json:"port"`
@@ -19,7 +21,8 @@ type UpdateNodeModel struct {
 	Description string `json:"description"`
 }
 
-type NodeModel struct {
+// swagger:model
+type Node struct {
 	Id          int64     `json:"id"`
 	Name        string    `json:"name"`
 	Ip          string    `json:"ip"`
@@ -28,23 +31,4 @@ type NodeModel struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
-}
-
-type Nodes []*NodeModel
-
-type NodeListModel struct {
-	Items []NodeModel `json:"items"`
-	Meta  struct {
-		Limit        int `json:"limit"`
-		Offset       int `json:"offset"`
-		ObjectsCount int `json:"objects_count"`
-	}
-}
-
-type ResponseNodeModel struct {
-	Node NodeModel `json:"node"`
-}
-
-type ResponseSearchNode struct {
-	Nodes []NodeModel `json:"nodes"`
 }

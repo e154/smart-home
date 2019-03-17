@@ -149,7 +149,6 @@ definitions:
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewNode:
-    description: Current User represents the user for this application
     properties:
       description:
         type: string
@@ -231,31 +230,7 @@ definitions:
         x-go-name: Name
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NodeListModel:
-    properties:
-      Meta:
-        properties:
-          limit:
-            format: int64
-            type: integer
-            x-go-name: Limit
-          objects_count:
-            format: int64
-            type: integer
-            x-go-name: ObjectsCount
-          offset:
-            format: int64
-            type: integer
-            x-go-name: Offset
-        type: object
-      items:
-        items:
-          $ref: '#/definitions/NodeModel'
-        type: array
-        x-go-name: Items
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NodeModel:
+  Node:
     properties:
       created_at:
         format: date-time
@@ -285,26 +260,6 @@ definitions:
         format: date-time
         type: string
         x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  Nodes:
-    items:
-      $ref: '#/definitions/NodeModel'
-    type: array
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  ResponseNodeModel:
-    properties:
-      node:
-        $ref: '#/definitions/NodeModel'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  ResponseSearchNode:
-    properties:
-      nodes:
-        items:
-          $ref: '#/definitions/NodeModel'
-        type: array
-        x-go-name: Nodes
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseType:
@@ -346,7 +301,7 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateNodeModel:
+  UpdateNode:
     properties:
       description:
         type: string
@@ -653,7 +608,7 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/Success'
+          $ref: '#/responses/NewObjectSuccess'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -665,6 +620,171 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: add new node
+      tags:
+      - node
+  /node/{id}:
+    delete:
+      operationId: nodeDeleteById
+      parameters:
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete node by id
+      tags:
+      - node
+    get:
+      operationId: nodeGetById
+      parameters:
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              node:
+                $ref: '#/definitions/Node'
+            type: object
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get node by id
+      tags:
+      - node
+    put:
+      operationId: nodeUpdateById
+      parameters:
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update node params
+        in: body
+        name: node
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateNode'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update node by id
+      tags:
+      - node
+  /nodes:
+    get:
+      operationId: nodeList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/NodeList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get node list
+      tags:
+      - node
+  /nodes/search:
+    get:
+      operationId: nodeSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/NodeSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search node
       tags:
       - node
   /recovery:
@@ -757,6 +877,49 @@ responses:
           description: описание ошибки
           type: string
           x-go-name: Message
+      type: object
+  NewObjectSuccess:
+    description: Success with id response
+    schema:
+      properties:
+        id:
+          format: int64
+          type: integer
+          x-go-name: Id
+      type: object
+  NodeList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Node'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  NodeSearch:
+    schema:
+      properties:
+        nodes:
+          items:
+            $ref: '#/definitions/Node'
+          type: array
+          x-go-name: Nodes
       type: object
   Success:
     description: Success response

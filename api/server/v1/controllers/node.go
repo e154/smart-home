@@ -33,7 +33,7 @@ func NewControllerNode(common *ControllerCommon) *ControllerNode {
 // - node
 // responses:
 //   "200":
-//	   $ref: '#/responses/Success'
+//	   $ref: '#/responses/NewObjectSuccess'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -67,20 +67,38 @@ func (c ControllerNode) Add(ctx *gin.Context) {
 	resp.Item("id", id).Send(ctx)
 }
 
-// Node godoc
-// @tags node
-// @Summary Show node
-// @Description Get node by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "Node ID"
-// @Success 200 {object} models.ResponseNodeModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /node/{id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /node/{id} nodeGetById
+// ---
+// parameters:
+// - description: Node ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get node by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - node
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       type: object
+//       properties:
+//         node:
+//           $ref: '#/definitions/Node'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerNode) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -105,21 +123,40 @@ func (c ControllerNode) GetById(ctx *gin.Context) {
 	resp.Item("node", node).Send(ctx)
 }
 
-// Node godoc
-// @tags node
-// @Summary Update node
-// @Description Update node by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Node ID"
-// @Param  node body models.UpdateNodeModel true "Update node"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /node/{id} [Put]
-// @Security ApiKeyAuth
+// swagger:operation PUT /node/{id} nodeUpdateById
+// ---
+// parameters:
+// - description: Node ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update node params
+//   in: body
+//   name: node
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateNode'
+//     type: object
+// summary: update node by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - node
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerNode) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
@@ -129,7 +166,7 @@ func (c ControllerNode) Update(ctx *gin.Context) {
 		return
 	}
 
-	n := &models.UpdateNodeModel{}
+	n := &models.UpdateNode{}
 	if err := ctx.ShouldBindJSON(&n); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -154,23 +191,46 @@ func (c ControllerNode) Update(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Node godoc
-// @tags node
-// @Summary Node list
-// @Description Get node list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.NodeListModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /nodes [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /nodes nodeList
+// ---
+// summary: get node list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - node
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/NodeList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerNode) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
@@ -185,20 +245,33 @@ func (c ControllerNode) GetList(ctx *gin.Context) {
 	return
 }
 
-// Node godoc
-// @tags node
-// @Summary Delete node
-// @Description Delete node by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Node ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /node/{id} [Delete]
-// @Security ApiKeyAuth
+// swagger:operation DELETE /node/{id} nodeDeleteById
+// ---
+// parameters:
+// - description: Node ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete node by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - node
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerNode) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -222,22 +295,40 @@ func (c ControllerNode) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// NodeModel godoc
-// @tags node
-// @Summary Search node
-// @Description Search node by name
-// @Produce json
-// @Accept  json
-// @Param query query string false "query"
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.ResponseSearchNode
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /nodes/search [Get]
+// swagger:operation GET /nodes/search nodeSearch
+// ---
+// summary: search node
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - node
+// parameters:
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/NodeSearch'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerNode) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)

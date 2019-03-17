@@ -30,22 +30,21 @@ type ParentDevice struct {
 	Id int64 `json:"id"`
 }
 
-
 type DeviceModel struct {
-	Id          int64            `json:"id"`
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
-	Node        *NodeModel       `json:"node"`
+	Id          int64                  `json:"id"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Node        *Node                  `json:"node"`
 	Properties  map[string]interface{} `json:"properties"`
-	Type        string           `json:"type"`
-	Status      string           `json:"status"`
-	IsGroup     bool             `json:"is_group"`
-	CreatedAt   time.Time        `json:"created_at"`
-	UpdatedAt   time.Time        `json:"updated_at"`
-	Actions     []DeviceAction   `json:"actions"`
-	States      []DeviceState    `json:"states"`
-	Device      *ParentDevice    `json:"device"`
-	DeviceId    *int64           `json:"device_id"`
+	Type        string                 `json:"type"`
+	Status      string                 `json:"status"`
+	IsGroup     bool                   `json:"is_group"`
+	CreatedAt   time.Time              `json:"created_at"`
+	UpdatedAt   time.Time              `json:"updated_at"`
+	Actions     []DeviceAction         `json:"actions"`
+	States      []DeviceState          `json:"states"`
+	Device      *ParentDevice          `json:"device"`
+	DeviceId    *int64                 `json:"device_id"`
 }
 
 type ResponseDevice struct {

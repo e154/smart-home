@@ -34,20 +34,20 @@ func AddNode(params *models.NewNode, adaptors *adaptors.Adaptors, core *core.Cor
 	return
 }
 
-func GetNodeById(nodeId int64, adaptors *adaptors.Adaptors) (result *models.NodeModel, err error) {
+func GetNodeById(nodeId int64, adaptors *adaptors.Adaptors) (result *models.Node, err error) {
 
 	var node *m.Node
 	if node, err = adaptors.Node.GetById(nodeId); err != nil {
 		return
 	}
 
-	result = &models.NodeModel{}
+	result = &models.Node{}
 	err = common.Copy(&result, &node, common.JsonEngine)
 
 	return
 }
 
-func UpdateNode(nodeParams *models.UpdateNodeModel, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+func UpdateNode(nodeParams *models.UpdateNode, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
 
 	var node *m.Node
 	if node, err = adaptors.Node.GetById(nodeParams.Id); err != nil {
@@ -72,14 +72,14 @@ func UpdateNode(nodeParams *models.UpdateNodeModel, adaptors *adaptors.Adaptors,
 	return
 }
 
-func GetNodeList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (result []*models.NodeModel, total int64, err error) {
+func GetNodeList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (result []*models.Node, total int64, err error) {
 
 	var list []*m.Node
 	if list, total, err = adaptors.Node.List(limit, offset, order, sortBy); err != nil {
 		return
 	}
 
-	result = make([]*models.NodeModel, 0)
+	result = make([]*models.Node, 0)
 	err = common.Copy(&result, &list, common.JsonEngine)
 
 	return
