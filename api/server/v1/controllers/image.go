@@ -15,18 +15,35 @@ func NewControllerImage(common *ControllerCommon) *ControllerImage {
 	return &ControllerImage{ControllerCommon: common}
 }
 
-// Image godoc
-// @tags image
-// @Summary Add new image
-// @Description
-// @Produce json
-// @Accept  json
-// @Param image body models.NewImage true "image params"
-// @Success 200 {object} models.Image
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /image [post]
-// @Security ApiKeyAuth
+// swagger:operation POST /image imageAdd
+// ---
+// parameters:
+// - description: image params
+//   in: body
+//   name: image
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewImage'
+//     type: object
+// summary: add new image
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - image
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Image'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerImage) Add(ctx *gin.Context) {
 
 	var newImage models.NewImage
@@ -52,19 +69,35 @@ func (c ControllerImage) Add(ctx *gin.Context) {
 	resp.SetData(image).Send(ctx)
 }
 
-// Image godoc
-// @tags image
-// @Summary Show image
-// @Description Get image by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "Image ID"
-// @Success 200 {object} models.Image
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /image/{id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /image/{id} imageGetById
+// ---
+// parameters:
+// - description: Image ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get image by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - image
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Image'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerImage) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -89,21 +122,41 @@ func (c ControllerImage) GetById(ctx *gin.Context) {
 	resp.SetData(image).Send(ctx)
 }
 
-// Image godoc
-// @tags image
-// @Summary Update image
-// @Description Update image by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Image ID"
-// @Param  image body models.UpdateImage true "Update image"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /image/{id} [Put]
-// @Security ApiKeyAuth
-func (c ControllerImage) UpdateImage(ctx *gin.Context) {
+// swagger:operation PUT /image/{id} imageUpdateById
+// ---
+// parameters:
+// - description: Image ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update image params
+//   in: body
+//   name: image
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateImage'
+//     type: object
+// summary: update image by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - image
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerImage) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -137,22 +190,46 @@ func (c ControllerImage) UpdateImage(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Image godoc
-// @tags image
-// @Summary Image list
-// @Description Get image list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.ImageListModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /images [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /images imageList
+// ---
+// summary: get image list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - image
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/ImageList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerImage) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
@@ -167,19 +244,33 @@ func (c ControllerImage) GetList(ctx *gin.Context) {
 	return
 }
 
-// Image godoc
-// @tags image
-// @Summary Delete image
-// @Description Delete image by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Image ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /image/{id} [Delete]
-// @Security ApiKeyAuth
+// swagger:operation DELETE /image/{id} imageDeleteById
+// ---
+// parameters:
+// - description: Image ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete image by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - image
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerImage) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -203,6 +294,35 @@ func (c ControllerImage) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
+// swagger:operation POST /image/upload imageUpload
+// ---
+// consumes:
+//   - multipart/form-data
+// parameters:
+//   - in: formData
+//     name: file
+//     type: array
+//     required: true
+//     description: "image file"
+//     items:
+//       type: file
+// summary: upload image files
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - image
+// responses:
+//   "200":
+//	   $ref: '#/responses/NewObjectSuccess'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c *ControllerImage) Upload(ctx *gin.Context) {
 
 	form, _ := ctx.MultipartForm()

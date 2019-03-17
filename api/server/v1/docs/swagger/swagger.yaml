@@ -773,6 +773,29 @@ definitions:
         x-go-name: SystemName
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewImage:
+    properties:
+      image:
+        type: string
+        x-go-name: Image
+      mime_type:
+        type: string
+        x-go-name: MimeType
+      name:
+        type: string
+        x-go-name: Name
+      size:
+        format: int64
+        type: integer
+        x-go-name: Size
+      thumb:
+        type: string
+        x-go-name: Thumb
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMap:
     properties:
       description:
@@ -1225,6 +1248,36 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateImage:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        type: string
+        x-go-name: Image
+      mime_type:
+        type: string
+        x-go-name: MimeType
+      name:
+        type: string
+        x-go-name: Name
+      size:
+        format: int64
+        type: integer
+        x-go-name: Size
+      thumb:
+        type: string
+        x-go-name: Thumb
+      title:
+        type: string
+        x-go-name: Title
+      url:
+        type: string
+        x-go-name: Url
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateMap:
@@ -2245,6 +2298,192 @@ paths:
       summary: search device
       tags:
       - device
+  /image:
+    post:
+      operationId: imageAdd
+      parameters:
+      - description: image params
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/NewImage'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Image'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new image
+      tags:
+      - image
+  /image/{id}:
+    delete:
+      operationId: imageDeleteById
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete image by id
+      tags:
+      - image
+    get:
+      operationId: imageGetById
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Image'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get image by id
+      tags:
+      - image
+    put:
+      operationId: imageUpdateById
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update image params
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateImage'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update image by id
+      tags:
+      - image
+  /image/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: imageUpload
+      parameters:
+      - description: image file
+        in: formData
+        items:
+          type: file
+        name: file
+        required: true
+        type: array
+      responses:
+        "200":
+          $ref: '#/responses/NewObjectSuccess'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: upload image files
+      tags:
+      - image
+  /images:
+    get:
+      operationId: imageList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/ImageList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get image list
+      tags:
+      - image
   /map:
     post:
       operationId: mapAdd
@@ -4275,6 +4514,31 @@ responses:
           description: описание ошибки
           type: string
           x-go-name: Message
+      type: object
+  ImageList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Image'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
       type: object
   MapElementList:
     schema:

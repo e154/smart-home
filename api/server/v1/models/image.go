@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// swagger:model
 type NewImage struct {
 	Thumb    string `json:"thumb"`
 	Image    string `json:"image"`
@@ -11,6 +12,7 @@ type NewImage struct {
 	Name     string `json:"name"`
 }
 
+// swagger:model
 type UpdateImage struct {
 	Id       int64  `json:"id"`
 	Thumb    string `json:"thumb"`
@@ -22,6 +24,7 @@ type UpdateImage struct {
 	Name     string `json:"name"`
 }
 
+// swagger:model
 type Image struct {
 	Id        int64     `json:"id"`
 	Thumb     string    `json:"thumb"`
@@ -32,13 +35,4 @@ type Image struct {
 	Size      int64     `json:"size"`
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
-}
-
-type ImageListModel struct {
-	Items []Image `json:"items"`
-	Meta  struct {
-		Limit        int `json:"limit"`
-		Offset       int `json:"offset"`
-		ObjectsCount int `json:"objects_count"`
-	}
 }

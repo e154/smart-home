@@ -138,7 +138,7 @@ func (s *Server) setControllers() {
 	v1.GET("/image/:id", s.af.Auth, s.ControllersV1.Image.GetById)
 	v1.GET("/images", s.af.Auth, s.ControllersV1.Image.GetList)
 	v1.POST("/image/upload", s.af.Auth, s.ControllersV1.Image.Upload)
-	v1.PUT("/image/:id", s.af.Auth, s.ControllersV1.Image.UpdateImage)
+	v1.PUT("/image/:id", s.af.Auth, s.ControllersV1.Image.Update)
 	v1.DELETE("/image/:id", s.af.Auth, s.ControllersV1.Image.Delete)
 
 	// flow
