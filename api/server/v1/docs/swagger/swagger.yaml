@@ -785,6 +785,46 @@ definitions:
         $ref: '#/definitions/MapOptions'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewMapElement:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      graph_settings:
+        $ref: '#/definitions/MapElementGraphSettings'
+      layer:
+        $ref: '#/definitions/MapLayer'
+      layer_id:
+        format: int64
+        type: integer
+        x-go-name: LayerId
+      map:
+        $ref: '#/definitions/Map'
+      map_id:
+        format: int64
+        type: integer
+        x-go-name: MapId
+      name:
+        type: string
+        x-go-name: Name
+      prototype:
+        $ref: '#/definitions/Prototype'
+      prototype_id:
+        format: int64
+        type: integer
+        x-go-name: PrototypeId
+      prototype_type:
+        type: string
+        x-go-name: PrototypeType
+      status:
+        type: string
+        x-go-name: Status
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMapLayer:
     properties:
       description:
@@ -982,51 +1022,71 @@ definitions:
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Prototype:
-    properties:
-      actions:
-        items:
-          $ref: '#/definitions/MapDeviceAction'
-        type: array
-        x-go-name: Actions
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      device:
-        $ref: '#/definitions/Device'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      image:
-        $ref: '#/definitions/Image'
-      image_id:
-        format: int64
-        type: integer
-        x-go-name: ImageId
-      states:
-        items:
-          $ref: '#/definitions/MapDeviceState'
-        type: array
-        x-go-name: States
-      style:
-        type: string
-        x-go-name: Style
-      system_name:
-        type: string
-        x-go-name: SystemName
-      text:
-        type: string
-        x-go-name: Text
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    type: object
+    allOf:
+    - properties:
+        id:
+          format: int64
+          type: integer
+          x-go-name: Id
+        image_id:
+          format: int64
+          type: integer
+          x-go-name: ImageId
+        style:
+          type: string
+          x-go-name: Style
+      type: object
+    - properties:
+        id:
+          format: int64
+          type: integer
+          x-go-name: Id
+        style:
+          type: string
+          x-go-name: Style
+        text:
+          type: string
+          x-go-name: Text
+      type: object
+    - properties:
+        actions:
+          items:
+            $ref: '#/definitions/MapDeviceAction'
+          type: array
+          x-go-name: Actions
+        created_at:
+          format: date-time
+          type: string
+          x-go-name: CreatedAt
+        device:
+          $ref: '#/definitions/Device'
+        device_id:
+          format: int64
+          type: integer
+          x-go-name: DeviceId
+        id:
+          format: int64
+          type: integer
+          x-go-name: Id
+        image:
+          $ref: '#/definitions/Image'
+        image_id:
+          format: int64
+          type: integer
+          x-go-name: ImageId
+        states:
+          items:
+            $ref: '#/definitions/MapDeviceState'
+          type: array
+          x-go-name: States
+        system_name:
+          type: string
+          x-go-name: SystemName
+        updated_at:
+          format: date-time
+          type: string
+          x-go-name: UpdatedAt
+      type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseType:
     type: string
@@ -1093,6 +1153,18 @@ definitions:
         format: date-time
         type: string
         x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  SortMapElement:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   SortMapLayer:
@@ -1169,6 +1241,48 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateMapElement:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      graph_settings:
+        $ref: '#/definitions/MapElementGraphSettings'
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      layer_id:
+        format: int64
+        type: integer
+        x-go-name: LayerId
+      map:
+        $ref: '#/definitions/Map'
+      map_id:
+        format: int64
+        type: integer
+        x-go-name: MapId
+      name:
+        type: string
+        x-go-name: Name
+      prototype:
+        $ref: '#/definitions/Prototype'
+      prototype_id:
+        format: int64
+        type: integer
+        x-go-name: PrototypeId
+      prototype_type:
+        type: string
+        x-go-name: PrototypeType
+      status:
+        type: string
+        x-go-name: Status
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateMapLayer:
@@ -2277,6 +2391,192 @@ paths:
       summary: get map full by id
       tags:
       - map
+  /map_element:
+    post:
+      operationId: mapElementAdd
+      parameters:
+      - description: element params
+        in: body
+        name: map_element
+        required: true
+        schema:
+          $ref: '#/definitions/NewMapElement'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapElement'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new map element
+      tags:
+      - map_element
+  /map_element/{id}:
+    delete:
+      operationId: mapElementDeleteById
+      parameters:
+      - description: MapElement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete map element by id
+      tags:
+      - map_element
+    get:
+      operationId: mapElementGetById
+      parameters:
+      - description: MapElement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapElement'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map element by id
+      tags:
+      - map_element
+    put:
+      operationId: mapElementUpdateById
+      parameters:
+      - description: MapElement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update map element params
+        in: body
+        name: map_element
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateMapElement'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update map element by id
+      tags:
+      - map_element
+  /map_element/sort:
+    put:
+      operationId: mapElementUpdateById
+      parameters:
+      - description: sort params
+        in: body
+        name: sort_params
+        required: true
+        schema:
+          $ref: '#/definitions/SortMapElement'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: sort map elements
+      tags:
+      - map_element
+  /map_elements:
+    get:
+      operationId: mapElementList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/MapElementList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map element list
+      tags:
+      - map_element
   /map_layer:
     post:
       operationId: mapLayerAdd
@@ -3975,6 +4275,31 @@ responses:
           description: описание ошибки
           type: string
           x-go-name: Message
+      type: object
+  MapElementList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MapElement'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
       type: object
   MapLayerList:
     schema:

@@ -14,12 +14,17 @@ type MapElementGraphSettings struct {
 	Position MapElementGraphSettingsPosition `json:"position"`
 }
 
+// swagger:model
 type Prototype struct {
-	*MapImage
-	*MapText
-	*MapDevice
+	// swagger:allOf
+	MapImage
+	// swagger:allOf
+	MapText
+	// swagger:allOf
+	MapDevice
 }
 
+// swagger:model
 type MapElement struct {
 	Id            int64                   `json:"id"`
 	Name          string                  `json:"name"`
@@ -36,6 +41,7 @@ type MapElement struct {
 	UpdatedAt     time.Time               `json:"updated_at"`
 }
 
+// swagger:model
 type NewMapElement struct {
 	Name          string                  `json:"name"`
 	Description   string                  `json:"description"`
@@ -51,6 +57,7 @@ type NewMapElement struct {
 	Weight        int                     `json:"weight"`
 }
 
+// swagger:model
 type UpdateMapElement struct {
 	Id            int64                   `json:"id"`
 	Name          string                  `json:"name"`
