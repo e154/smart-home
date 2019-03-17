@@ -24,19 +24,3 @@ type WorkflowSearch struct {
 		Workflows []*models.Workflow `json:"workflows"`
 	}
 }
-
-// swagger:response WorkflowScenarioSearch
-type WorkflowScenarioSearch struct {
-	// in:body
-	Body struct {
-		Scenarios []*models.WorkflowScenario `json:"scenarios"`
-	}
-}
-
-// swagger:response WorkflowScenarios
-type WorkflowScenarios struct {
-	// in:body
-	Body struct {
-		Scenarios []*models.WorkflowScenario `json:"scenarios"`
-	}
-}
