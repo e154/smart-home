@@ -50,7 +50,7 @@ func (f *AccessFilter) Auth(ctx *gin.Context) {
 	var accessList access_list.AccessList
 	var user *m.User
 	if user, accessList, err = f.getAccessList(accessToken); err != nil {
-		ctx.AbortWithError(401, errors.New("unauthorized access"))
+		ctx.AbortWithError(403, errors.New("unauthorized access"))
 		return
 	}
 
@@ -67,7 +67,7 @@ func (f *AccessFilter) Auth(ctx *gin.Context) {
 
 	log.Warningf(fmt.Sprintf("access denied: role(%s) [%s] url(%s)", user.Role.Name, method, requestURI))
 
-	ctx.AbortWithError(401, errors.New("unauthorized access"))
+	ctx.AbortWithError(403, errors.New("unauthorized access"))
 }
 
 // access_token

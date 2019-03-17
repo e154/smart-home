@@ -148,6 +148,27 @@ definitions:
         x-go-name: Url
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewNode:
+    description: Current User represents the user for this application
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      ip:
+        type: string
+        x-go-name: IP
+      name:
+        type: string
+        x-go-name: Name
+      port:
+        format: int64
+        type: integer
+        x-go-name: Port
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewUser:
     properties:
       avatar:
@@ -210,6 +231,82 @@ definitions:
         x-go-name: Name
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NodeListModel:
+    properties:
+      Meta:
+        properties:
+          limit:
+            format: int64
+            type: integer
+            x-go-name: Limit
+          objects_count:
+            format: int64
+            type: integer
+            x-go-name: ObjectsCount
+          offset:
+            format: int64
+            type: integer
+            x-go-name: Offset
+        type: object
+      items:
+        items:
+          $ref: '#/definitions/NodeModel'
+        type: array
+        x-go-name: Items
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NodeModel:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      ip:
+        type: string
+        x-go-name: Ip
+      name:
+        type: string
+        x-go-name: Name
+      port:
+        format: int64
+        type: integer
+        x-go-name: Port
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Nodes:
+    items:
+      $ref: '#/definitions/NodeModel'
+    type: array
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ResponseNodeModel:
+    properties:
+      node:
+        $ref: '#/definitions/NodeModel'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ResponseSearchNode:
+    properties:
+      nodes:
+        items:
+          $ref: '#/definitions/NodeModel'
+        type: array
+        x-go-name: Nodes
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseType:
     type: string
     x-go-package: github.com/e154/smart-home/api/server/v1/models
@@ -247,6 +344,30 @@ definitions:
         format: date-time
         type: string
         x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateNodeModel:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      ip:
+        type: string
+        x-go-name: IP
+      name:
+        type: string
+        x-go-name: Name
+      port:
+        format: int64
+        type: integer
+        x-go-name: Port
+      status:
+        type: string
+        x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateUser:
@@ -498,7 +619,7 @@ paths:
       - text/plain
       responses:
         "200":
-          $ref: '#/responses/ok'
+          description: Success response
       summary: index page
       tags:
       - index
@@ -509,9 +630,9 @@ paths:
         "200":
           $ref: '#/responses/AccessList'
         "401":
-          description: user not found
+          description: Unauthorized
         "403":
-          $ref: '#/responses/Error'
+          description: Forbidden
         "500":
           $ref: '#/responses/Error'
       security:
@@ -519,14 +640,39 @@ paths:
       summary: get user access list
       tags:
       - auth
+  /node:
+    post:
+      operationId: nodeAdd
+      parameters:
+      - description: node params
+        in: body
+        name: node
+        required: true
+        schema:
+          $ref: '#/definitions/NewNode'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new node
+      tags:
+      - node
   /recovery:
     post:
       operationId: authRecovery
       responses:
         "200":
           $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
         "500":
           $ref: '#/responses/Error'
       summary: recovery access
@@ -538,8 +684,6 @@ paths:
       responses:
         "200":
           $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
         "500":
           $ref: '#/responses/Error'
       summary: reset access
@@ -554,9 +698,9 @@ paths:
         "400":
           $ref: '#/responses/Error'
         "401":
-          description: user not found
+          description: Unauthorized
         "403":
-          description: password not valid
+          description: Forbidden
         "500":
           $ref: '#/responses/Error'
       security:
@@ -571,9 +715,9 @@ paths:
         "200":
           $ref: '#/responses/Success'
         "401":
-          description: user not found
+          description: Unauthorized
         "403":
-          $ref: '#/responses/Error'
+          description: Forbidden
         "500":
           $ref: '#/responses/Error'
       security:
@@ -618,8 +762,6 @@ responses:
     description: Success response
     schema:
       type: object
-  ok:
-    description: Success response
 securityDefinitions:
   ApiKeyAuth:
     in: header

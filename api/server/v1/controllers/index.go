@@ -26,7 +26,7 @@ func NewControllerIndex(common *ControllerCommon) *ControllerIndex {
 // - index
 // responses:
 //   "200":
-//	   "$ref": "#/responses/ok"
+//	   description: Success response
 func (i ControllerIndex) Index(c *gin.Context) {
 	apiVersion := Index()
 	c.String(http.StatusOK, apiVersion)

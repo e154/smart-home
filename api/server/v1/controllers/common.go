@@ -7,6 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"github.com/e154/smart-home/system/access_list"
+	m "github.com/e154/smart-home/models"
+	"fmt"
 )
 
 var (
@@ -74,5 +76,22 @@ func (c ControllerCommon) list(ctx *gin.Context) (query, sortBy, order string, l
 	if ctx.Request.URL.Query().Get("offset") != "" {
 		offset, _ = strconv.Atoi(ctx.Request.URL.Query().Get("offset"))
 	}
+	return
+}
+
+func (c ControllerCommon) getUser(ctx *gin.Context) (user *m.User, err error) {
+
+	u, ok := ctx.Get("currentUser")
+	if !ok {
+		err = fmt.Errorf("bad user object")
+		return
+	}
+
+	user, ok = u.(*m.User)
+	if !ok {
+		err = fmt.Errorf("bad user object")
+		return
+	}
+
 	return
 }

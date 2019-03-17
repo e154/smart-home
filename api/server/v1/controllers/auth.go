@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"github.com/e154/smart-home/api/server/v1/models"
-	m "github.com/e154/smart-home/models"
 	"net/http"
 )
 
@@ -30,16 +29,16 @@ func NewControllerAuth(common *ControllerCommon) *ControllerAuth {
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
-//     description: "user not found"
+//     description: "Unauthorized"
 //   "403":
-//     description: "password not valid"
+//     description: "Forbidden"
 //   "500":
 //	   $ref: '#/responses/Error'
 func (c ControllerAuth) SignIn(ctx *gin.Context) {
 
 	email, password, ok := ctx.Request.BasicAuth()
 	if !ok {
-		NewError(403, "bad request").Send(ctx)
+		NewError(400, "bad request").Send(ctx)
 		return
 	}
 
@@ -76,21 +75,17 @@ func (c ControllerAuth) SignIn(ctx *gin.Context) {
 //   "200":
 //	   $ref: '#/responses/Success'
 //   "401":
-//     description: "user not found"
+//     description: "Unauthorized"
 //   "403":
-//     $ref: '#/responses/Error'
+//     description: "Forbidden"
 //   "500":
 //	   $ref: '#/responses/Error'
 func (c ControllerAuth) SignOut(ctx *gin.Context) {
 
-	u, ok := ctx.Get("currentUser")
-	if !ok {
-		NewError(403, "bad request").Send(ctx)
-	}
-
-	user, ok := u.(*m.User)
-	if !ok {
-		NewError(403, "bad request").Send(ctx)
+	user, err := c.getUser(ctx)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
 	}
 
 	if err := SignOut(user, c.adaptors); err != nil {
@@ -110,8 +105,6 @@ func (c ControllerAuth) SignOut(ctx *gin.Context) {
 // responses:
 //   "200":
 //	   $ref: '#/responses/Success'
-//   "400":
-//     $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
 func (c ControllerAuth) Recovery(ctx *gin.Context) {
@@ -127,8 +120,6 @@ func (c ControllerAuth) Recovery(ctx *gin.Context) {
 // responses:
 //   "200":
 //	   $ref: '#/responses/Success'
-//   "400":
-//     $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
 func (c ControllerAuth) Reset(ctx *gin.Context) {
@@ -147,21 +138,17 @@ func (c ControllerAuth) Reset(ctx *gin.Context) {
 //   "200":
 //	   $ref: '#/responses/AccessList'
 //   "401":
-//     description: "user not found"
+//     description: "Unauthorized"
 //   "403":
-//     $ref: '#/responses/Error'
+//     description: "Forbidden"
 //   "500":
 //	   $ref: '#/responses/Error'
 func (c ControllerAuth) AccessList(ctx *gin.Context) {
 
-	u, ok := ctx.Get("currentUser")
-	if !ok {
-		NewError(403, "bad request").Send(ctx)
-	}
-
-	user, ok := u.(*m.User)
-	if !ok {
-		NewError(403, "bad request").Send(ctx)
+	user, err := c.getUser(ctx)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
 	}
 
 	accessList, err := AccessList(user, c.accessList)

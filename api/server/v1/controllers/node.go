@@ -15,19 +15,33 @@ func NewControllerNode(common *ControllerCommon) *ControllerNode {
 	return &ControllerNode{ControllerCommon: common}
 }
 
-// Node godoc
-// @tags node
-// @Summary Add new node
-// @Description
-// @Produce json
-// @Accept  json
-// @Param node body models.NewNode true "node params"
-// @Success 200 {object} models.NewObjectSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /node [post]
-// @Security ApiKeyAuth
+// swagger:operation POST /node nodeAdd
+// ---
+// parameters:
+// - description: node params
+//   in: body
+//   name: node
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewNode'
+//     type: object
+// summary: add new node
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - node
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerNode) Add(ctx *gin.Context) {
 
 	params := &models.NewNode{}
