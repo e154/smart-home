@@ -6,6 +6,8 @@ import (
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/validation"
 	"errors"
+	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/e154/smart-home/common"
 )
 
 func AddWorkflow(workflow *m.Workflow, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
@@ -38,7 +40,16 @@ func GetWorkflowById(workflowId int64, adaptors *adaptors.Adaptors) (workflow *m
 	return
 }
 
-func UpdateWorkflow(workflow *m.Workflow, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+func UpdateWorkflow(params *models.UpdateWorkflow, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+
+	var workflow *m.Workflow
+	if workflow, err = adaptors.Workflow.GetById(params.Id); err != nil {
+		return
+	}
+
+	if err = common.Copy(&workflow, &params); err != nil {
+		return
+	}
 
 	// validation
 	ok, errs = workflow.Valid()
@@ -95,7 +106,13 @@ func SearchWorkflow(query string, limit, offset int, adaptors *adaptors.Adaptors
 	return
 }
 
-func UpdateWorkflowScenario(workflow *m.Workflow, workflowScenarioId int64, adaptors *adaptors.Adaptors, core *core.Core) (err error) {
+func UpdateWorkflowScenario(workflowId int64, workflowScenarioId int64, adaptors *adaptors.Adaptors, core *core.Core) (err error) {
+
+	var workflow *m.Workflow
+	workflow, err = adaptors.Workflow.GetById(workflowId)
+	if err != nil {
+		return
+	}
 
 	if err = adaptors.Workflow.SetScenario(workflow, workflowScenarioId); err != nil {
 		return

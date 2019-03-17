@@ -2,19 +2,23 @@ package models
 
 import "time"
 
+// swagger:model
 type NewWorkflow struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
 }
 
+// swagger:model
 type UpdateWorkflow struct {
+	Id          int64  `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
 }
 
-type WorkflowModel struct {
+// swagger:model
+type Workflow struct {
 	Id          int64               `json:"id"`
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
@@ -26,29 +30,7 @@ type WorkflowModel struct {
 	UpdatedAt   time.Time           `json:"updated_at"`
 }
 
-type Workflows []*WorkflowModel
-
-type ResponseWorkflowModel struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		WorkflowModel *WorkflowModel `json:"workflow"`
-	} `json:"data"`
-}
-
-type ResponseWorkflowList struct {
-	Code ResponseType `json:"code"`
-	Data struct {
-		Items  []*WorkflowModel `json:"items"`
-		Limit  int64            `json:"limit"`
-		Offset int64            `json:"offset"`
-		Total  int64            `json:"total"`
-	} `json:"data"`
-}
-
-type SearchWorkflowResponse struct {
-	Workflows []WorkflowModel `json:"workflows"`
-}
-
+// swagger:model
 type WorkflowUpdateWorkflowScenario struct {
 	WorkflowScenarioId int64 `json:"workflow_scenario_id"`
 }
