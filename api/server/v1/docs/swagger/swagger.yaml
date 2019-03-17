@@ -510,6 +510,18 @@ definitions:
         x-go-name: Id
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewDeviceState:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceStateDevice'
+      system_name:
+        type: string
+        x-go-name: SystemName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewNode:
     properties:
       description:
@@ -831,6 +843,18 @@ definitions:
         x-go-name: Name
       script:
         $ref: '#/definitions/DeviceActionScript'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateDeviceState:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceStateDevice'
+      system_name:
+        type: string
+        x-go-name: SystemName
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateNode:
@@ -1577,6 +1601,152 @@ paths:
       summary: get device actions by device id
       tags:
       - device_action
+  /device_state:
+    post:
+      operationId: deviceStateAdd
+      parameters:
+      - description: device state params
+        in: body
+        name: device_state
+        required: true
+        schema:
+          $ref: '#/definitions/NewDeviceState'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeviceState'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new device state
+      tags:
+      - device_state
+  /device_state/{id}:
+    delete:
+      operationId: deviceStateDeleteById
+      parameters:
+      - description: DeviceState ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete device state by id
+      tags:
+      - device_state
+    get:
+      operationId: deviceStateGetById
+      parameters:
+      - description: DeviceState ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeviceState'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device state by id
+      tags:
+      - device_state
+    put:
+      operationId: deviceStateUpdateById
+      parameters:
+      - description: DeviceState ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update device state params
+        in: body
+        name: device_state
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateDeviceState'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeviceState'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update device state by id
+      tags:
+      - device_state
+  /device_states/{id}:
+    get:
+      operationId: deviceStateList
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/DeviceState'
+            type: array
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device state list by device id
+      tags:
+      - device_state
   /devices:
     get:
       operationId: deviceList

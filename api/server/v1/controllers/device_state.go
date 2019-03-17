@@ -15,18 +15,35 @@ func NewControllerDeviceState(common *ControllerCommon) *ControllerDeviceState {
 	return &ControllerDeviceState{ControllerCommon: common}
 }
 
-// DeviceState godoc
-// @tags device_state
-// @Summary Add new device state
-// @Description
-// @Produce json
-// @Accept  json
-// @Param device_state body models.NewDeviceState true "device state params"
-// @Success 200 {object} models.DeviceState
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_state [post]
-// @Security ApiKeyAuth
+// swagger:operation POST /device_state deviceStateAdd
+// ---
+// parameters:
+// - description: device state params
+//   in: body
+//   name: device_state
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewDeviceState'
+//     type: object
+// summary: add new device state
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device_state
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/DeviceState'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDeviceState) Add(ctx *gin.Context) {
 
 	var params models.NewDeviceState
@@ -62,19 +79,35 @@ func (c ControllerDeviceState) Add(ctx *gin.Context) {
 	resp.SetData(state).Send(ctx)
 }
 
-// DeviceState godoc
-// @tags device_state
-// @Summary Show device state
-// @Description Get device state by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "DeviceState ID"
-// @Success 200 {object} models.DeviceState
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_state/{id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /device_state/{id} deviceStateGetById
+// ---
+// parameters:
+// - description: DeviceState ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get device state by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device_state
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/DeviceState'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDeviceState) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -99,20 +132,42 @@ func (c ControllerDeviceState) GetById(ctx *gin.Context) {
 	resp.SetData(state).Send(ctx)
 }
 
-// DeviceState godoc
-// @tags device_state
-// @Summary Update device state
-// @Description Update device state by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "DeviceState ID"
-// @Param  device state body models.UpdateDeviceState true "Update device state"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_state/{id} [Put]
-// @Security ApiKeyAuth
+// swagger:operation PUT /device_state/{id} deviceStateUpdateById
+// ---
+// parameters:
+// - description: DeviceState ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update device state params
+//   in: body
+//   name: device_state
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateDeviceState'
+//     type: object
+// summary: update device state by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device_state
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/DeviceState'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDeviceState) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
@@ -155,19 +210,33 @@ func (c ControllerDeviceState) Update(ctx *gin.Context) {
 	resp.SetData(deviceState).Send(ctx)
 }
 
-// DeviceState godoc
-// @tags device_state
-// @Summary Delete device state
-// @Description Delete device state by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "DeviceState ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_state/{id} [Delete]
-// @Security ApiKeyAuth
+// swagger:operation DELETE /device_state/{id} deviceStateDeleteById
+// ---
+// parameters:
+// - description: DeviceState ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete device state by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device_state
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDeviceState) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -191,19 +260,33 @@ func (c ControllerDeviceState) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// DeviceState godoc
-// @tags device_state
-// @Summary DeviceState list
-// @Description Get device list
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Device ID"
-// @Success 200 {array} models.DeviceState
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /device_states/{id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /device_states/{id} deviceStateList
+// ---
+// summary: get device state list by device id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - device_state
+// parameters:
+// - description: Device ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       type: array
+//       items:
+//         $ref: '#/definitions/DeviceState'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerDeviceState) GetStateList(ctx *gin.Context) {
 
 	id := ctx.Param("id")
