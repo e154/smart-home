@@ -41,16 +41,17 @@ type RedactorObject struct {
 		Top  int64 `json:"top"`
 		Left int64 `json:"left"`
 	} `json:"position"`
-	Status        string     `json:"status"`
-	Error         string     `json:"error"`
-	Title         string     `json:"title"`
-	Description   string     `json:"description"`
-	PrototypeType string     `json:"prototype_type"`
-	Script        *Script    `json:"script"`
-	FlowLink      *FlowModel `json:"flow_link"`
+	Status        string  `json:"status"`
+	Error         string  `json:"error"`
+	Title         string  `json:"title"`
+	Description   string  `json:"description"`
+	PrototypeType string  `json:"prototype_type"`
+	Script        *Script `json:"script"`
+	FlowLink      *Flow   `json:"flow_link"`
 }
 
-type RedactorFlowModel struct {
+// swagger:model
+type RedactorFlow struct {
 	Id          int64                  `json:"id"`
 	Name        string                 `json:"name"`
 	Description string                 `json:"description"`
@@ -61,9 +62,5 @@ type RedactorFlowModel struct {
 	UpdatedAt   time.Time              `json:"update_at"`
 	Workflow    *RedactorWorkflowModel `json:"workflow"`
 	Scenario    *WorkflowScenario      `json:"scenario"`
-	Workers     []*WorkerModel         `json:"workers"`
-}
-
-type ResponseRedactorFlowModel struct {
-	Flow *RedactorFlowModel `json:"flow"`
+	Workers     []*Worker              `json:"workers"`
 }

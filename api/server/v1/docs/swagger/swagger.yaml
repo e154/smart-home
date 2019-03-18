@@ -432,6 +432,250 @@ definitions:
         x-go-name: Source
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Flow:
+    properties:
+      connections:
+        items:
+          $ref: '#/definitions/FlowConnection'
+        type: array
+        x-go-name: Connections
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      flow_elements:
+        items:
+          $ref: '#/definitions/FlowElement'
+        type: array
+        x-go-name: FlowElements
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workers:
+        items:
+          $ref: '#/definitions/FlowWorker'
+        type: array
+        x-go-name: Workers
+      workflow:
+        $ref: '#/definitions/FlowWorkflow'
+      workflow_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowId
+      workflow_scenario_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowScenarioId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowConnection:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      direction:
+        type: string
+        x-go-name: Direction
+      element_from:
+        $ref: '#/definitions/UUID'
+      element_to:
+        $ref: '#/definitions/UUID'
+      flow_id:
+        format: int64
+        type: integer
+        x-go-name: FlowId
+      graph_settings:
+        type: string
+        x-go-name: GraphSettings
+      name:
+        type: string
+        x-go-name: Name
+      point_from:
+        format: int64
+        type: integer
+        x-go-name: PointFrom
+      point_to:
+        format: int64
+        type: integer
+        x-go-name: PointTo
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      uuid:
+        $ref: '#/definitions/UUID'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowElement:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      flow_id:
+        format: int64
+        type: integer
+        x-go-name: FlowId
+      flow_link:
+        format: int64
+        type: integer
+        x-go-name: FlowLink
+      graph_settings:
+        type: string
+        x-go-name: GraphSettings
+      name:
+        type: string
+        x-go-name: Name
+      prototype_type:
+        type: string
+        x-go-name: PrototypeType
+      script:
+        $ref: '#/definitions/Script'
+      script_id:
+        format: int64
+        type: integer
+        x-go-name: ScriptId
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      uuid:
+        $ref: '#/definitions/UUID'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowShort:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workers:
+        items:
+          properties:
+            id:
+              format: int64
+              type: integer
+              x-go-name: Id
+          type: object
+        type: array
+        x-go-name: Workers
+      workflow:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+        x-go-name: Workflow
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowWorker:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device_action:
+        $ref: '#/definitions/DeviceAction'
+      device_action_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceActionId
+      flow_id:
+        format: int64
+        type: integer
+        x-go-name: FlowId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      time:
+        type: string
+        x-go-name: Time
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workflow:
+        $ref: '#/definitions/FlowWorkflow'
+      workflow_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowWorkflow:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
     properties:
       created_at:
@@ -773,6 +1017,35 @@ definitions:
         x-go-name: SystemName
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewFlow:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      scenario:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+        type: object
+        x-go-name: Scenario
+      status:
+        type: string
+        x-go-name: Status
+      workflow:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+        type: object
+        x-go-name: Workflow
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewImage:
     properties:
       image:
@@ -1111,6 +1384,170 @@ definitions:
           x-go-name: UpdatedAt
       type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  RedactorConnector:
+    properties:
+      direction:
+        type: string
+        x-go-name: Direction
+      end:
+        properties:
+          object:
+            type: string
+            x-go-name: Object
+          point:
+            format: int64
+            type: integer
+            x-go-name: Point
+        type: object
+        x-go-name: End
+      flow_type:
+        type: string
+        x-go-name: FlowType
+      id:
+        type: string
+        x-go-name: Id
+      start:
+        properties:
+          object:
+            type: string
+            x-go-name: Object
+          point:
+            format: int64
+            type: integer
+            x-go-name: Point
+        type: object
+        x-go-name: Start
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  RedactorFlow:
+    properties:
+      connectors:
+        items:
+          $ref: '#/definitions/RedactorConnector'
+        type: array
+        x-go-name: Connectors
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      objects:
+        items:
+          $ref: '#/definitions/RedactorObject'
+        type: array
+        x-go-name: Objects
+      scenario:
+        $ref: '#/definitions/WorkflowScenario'
+      status:
+        type: string
+        x-go-name: Status
+      update_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workers:
+        items:
+          $ref: '#/definitions/Worker'
+        type: array
+        x-go-name: Workers
+      workflow:
+        $ref: '#/definitions/RedactorWorkflowModel'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  RedactorObject:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      error:
+        type: string
+        x-go-name: Error
+      flow_link:
+        $ref: '#/definitions/Flow'
+      id:
+        type: string
+        x-go-name: Id
+      position:
+        properties:
+          left:
+            format: int64
+            type: integer
+            x-go-name: Left
+          top:
+            format: int64
+            type: integer
+            x-go-name: Top
+        type: object
+        x-go-name: Position
+      prototype_type:
+        type: string
+        x-go-name: PrototypeType
+      script:
+        $ref: '#/definitions/Script'
+      status:
+        type: string
+        x-go-name: Status
+      title:
+        type: string
+        x-go-name: Title
+      type:
+        properties:
+          action:
+            type: string
+            x-go-name: Action
+          end:
+            type: object
+            x-go-name: End
+          name:
+            type: string
+            x-go-name: Name
+          start:
+            type: object
+            x-go-name: Start
+          status:
+            type: string
+            x-go-name: Status
+        type: object
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  RedactorWorkflowModel:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseType:
     type: string
     x-go-package: github.com/e154/smart-home/api/server/v1/models
@@ -1202,6 +1639,15 @@ definitions:
         x-go-name: Weight
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UUID:
+    description: |-
+      UUID representation compliant with specification
+      described in RFC 4122.
+    items:
+      format: uint8
+      type: integer
+    type: array
+    x-go-package: github.com/e154/smart-home/system/uuid
   UpdateDevice:
     properties:
       description:
@@ -1248,6 +1694,39 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateFlow:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      scenario:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+        type: object
+        x-go-name: Scenario
+      status:
+        type: string
+        x-go-name: Status
+      workflow:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+        type: object
+        x-go-name: Workflow
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateImage:
@@ -1660,6 +2139,49 @@ definitions:
       status:
         type: string
         x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Worker:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device_action:
+        $ref: '#/definitions/DeviceAction'
+      device_action_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceActionId
+      flow:
+        $ref: '#/definitions/Flow'
+      flow_id:
+        format: int64
+        type: integer
+        x-go-name: FlowId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      time:
+        type: string
+        x-go-name: Time
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workflow:
+        $ref: '#/definitions/Workflow'
+      workflow_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowId
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Workflow:
@@ -2298,6 +2820,261 @@ paths:
       summary: search device
       tags:
       - device
+  /flow:
+    post:
+      operationId: flowAdd
+      parameters:
+      - description: flow params
+        in: body
+        name: flow
+        required: true
+        schema:
+          $ref: '#/definitions/NewFlow'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/NewObjectSuccess'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new flow
+      tags:
+      - flow
+  /flow/{id}:
+    delete:
+      operationId: flowDeleteById
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete flow by id
+      tags:
+      - flow
+    get:
+      operationId: flowGetById
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Flow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get flow by id
+      tags:
+      - flow
+    put:
+      operationId: flowUpdateById
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update flow params
+        in: body
+        name: flow
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateFlow'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Flow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update flow by id
+      tags:
+      - flow
+  /flow/{id}/redactor:
+    get:
+      operationId: flowGetRedactor
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/RedactorFlow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get flow redactor data by flow id
+      tags:
+      - flow
+    put:
+      operationId: flowUpdateRedactor
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: flow redactor params
+        in: body
+        name: flow
+        required: true
+        schema:
+          $ref: '#/definitions/RedactorFlow'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/RedactorFlow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update flow by id
+      tags:
+      - flow
+  /flows:
+    get:
+      operationId: flowList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/FlowList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get flow list
+      tags:
+      - flow
+  /flows/search:
+    get:
+      operationId: flowSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/FlowSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search flow
+      tags:
+      - flow
   /image:
     post:
       operationId: imageAdd
@@ -4514,6 +5291,40 @@ responses:
           description: описание ошибки
           type: string
           x-go-name: Message
+      type: object
+  FlowList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/FlowShort'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  FlowSearch:
+    schema:
+      properties:
+        flows:
+          items:
+            $ref: '#/definitions/Flow'
+          type: array
+          x-go-name: Flows
       type: object
   ImageList:
     schema:

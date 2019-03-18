@@ -5,7 +5,7 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 )
 
-type FlowConnectionModel struct {
+type FlowConnection struct {
 	Uuid          uuid.UUID `json:"uuid"`
 	Name          string    `json:"name" valid:"MaxSize(254);Required"`
 	ElementFrom   uuid.UUID `json:"element_from" valid:"Required"`

@@ -15,22 +15,36 @@ func NewControllerFlow(common *ControllerCommon) *ControllerFlow {
 	return &ControllerFlow{ControllerCommon: common}
 }
 
-// Flow godoc
-// @tags flow
-// @Summary Add new flow
-// @Description
-// @Produce json
-// @Accept  json
-// @Param flow body models.NewFlowModel true "flow params"
-// @Success 200 {object} models.NewObjectSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /flow [post]
-// @Security ApiKeyAuth
+// swagger:operation POST /flow flowAdd
+// ---
+// parameters:
+// - description: flow params
+//   in: body
+//   name: flow
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewFlow'
+//     type: object
+// summary: add new flow
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - flow
+// responses:
+//   "200":
+//	   $ref: '#/responses/NewObjectSuccess'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerFlow) Add(ctx *gin.Context) {
 
-	flow := &models.NewFlowModel{}
+	flow := &models.NewFlow{}
 	if err := ctx.ShouldBindJSON(&flow); err != nil {
 		NewError(400, err).Send(ctx)
 		return
@@ -52,20 +66,35 @@ func (c ControllerFlow) Add(ctx *gin.Context) {
 	resp.Item("id", id).Send(ctx)
 }
 
-// Flow godoc
-// @tags flow
-// @Summary Show flow
-// @Description Get flow by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "Flow ID"
-// @Success 200 {object} models.ResponseFlow
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /flow/{id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /flow/{id} flowGetById
+// ---
+// parameters:
+// - description: Flow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get flow by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - flow
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Flow'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerFlow) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -87,23 +116,38 @@ func (c ControllerFlow) GetById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("flow", flow).Send(ctx)
+	resp.SetData(flow).Send(ctx)
 }
 
-// Flow godoc
-// @tags flow
-// @Summary Show flow
-// @Description Get flow by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "Flow ID"
-// @Success 200 {object} models.ResponseRedactorFlowModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /flow/{id}/redactor [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /flow/{id}/redactor flowGetRedactor
+// ---
+// parameters:
+// - description: Flow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get flow redactor data by flow id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - flow
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/RedactorFlow'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerFlow) GetRedactor(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -125,24 +169,45 @@ func (c ControllerFlow) GetRedactor(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("flow", flow).Send(ctx)
+	resp.SetData(flow).Send(ctx)
 }
 
-// Flow godoc
-// @tags flow
-// @Summary Update flow
-// @Description Update flow by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Flow ID"
-// @Param  flow body models.RedactorFlowModel true "Update flow"
-// @Success 200 {object} models.ResponseRedactorFlowModel
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /flow/{id}/redactor [Put]
-// @Security ApiKeyAuth
+// swagger:operation PUT /flow/{id}/redactor flowUpdateRedactor
+// ---
+// parameters:
+// - description: Flow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: flow redactor params
+//   in: body
+//   name: flow
+//   required: true
+//   schema:
+//     $ref: '#/definitions/RedactorFlow'
+//     type: object
+// summary: update flow by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - flow
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/RedactorFlow'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerFlow) UpdateRedactor(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
@@ -151,7 +216,7 @@ func (c ControllerFlow) UpdateRedactor(ctx *gin.Context) {
 		return
 	}
 
-	redactor := &models.RedactorFlowModel{}
+	redactor := &models.RedactorFlow{}
 	if err := ctx.ShouldBindJSON(&redactor); err != nil {
 		NewError(400, err).Send(ctx)
 		return
@@ -176,24 +241,45 @@ func (c ControllerFlow) UpdateRedactor(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("flow", result).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
-// Flow godoc
-// @tags flow
-// @Summary Update flow
-// @Description Update flow by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Flow ID"
-// @Param  flow body models.UpdateFlowModel true "Update flow"
-// @Success 200 {object} models.ResponseFlow
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /flow/{id} [Put]
-// @Security ApiKeyAuth
+// swagger:operation PUT /flow/{id} flowUpdateById
+// ---
+// parameters:
+// - description: Flow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update flow params
+//   in: body
+//   name: flow
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateFlow'
+//     type: object
+// summary: update flow by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - flow
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Flow'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerFlow) Update(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
@@ -202,7 +288,7 @@ func (c ControllerFlow) Update(ctx *gin.Context) {
 		return
 	}
 
-	flow := &models.UpdateFlowModel{}
+	flow := &models.UpdateFlow{}
 	if err := ctx.ShouldBindJSON(&flow); err != nil {
 		NewError(400, err).Send(ctx)
 		return
@@ -227,26 +313,49 @@ func (c ControllerFlow) Update(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("flow", result).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
-// Flow godoc
-// @tags flow
-// @Summary Flow list
-// @Description Get flow list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Success 200 {object} models.ResponseFlowList
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /flows [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /flows flowList
+// ---
+// summary: get flow list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - flow
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/FlowList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerFlow) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
@@ -260,20 +369,33 @@ func (c ControllerFlow) GetList(ctx *gin.Context) {
 	resp.Page(limit, offset, total, items).Send(ctx)
 }
 
-// Flow godoc
-// @tags flow
-// @Summary Delete flow
-// @Description Delete flow by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Flow ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /flow/{id} [Delete]
-// @Security ApiKeyAuth
+// swagger:operation DELETE /flow/{id} flowDeleteById
+// ---
+// parameters:
+// - description: Flow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete flow by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - flow
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerFlow) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -297,20 +419,40 @@ func (c ControllerFlow) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Flow godoc
-// @tags flow
-// @Summary Search flow
-// @Description Search flow by name
-// @Produce json
-// @Accept  json
-// @Param query query string false "query"
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.ResponseSearchFlow
-// @Failure 401 "Unauthorized"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /flows/search [Get]
+// swagger:operation GET /flows/search flowSearch
+// ---
+// summary: search flow
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - flow
+// parameters:
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/FlowSearch'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerFlow) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)

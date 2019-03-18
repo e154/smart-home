@@ -11,7 +11,7 @@ import (
 	"github.com/e154/smart-home/system/core"
 )
 
-func AddFlow(newFlow *models.NewFlowModel, adaptors *adaptors.Adaptors, core *core.Core) (id int64, errs []*validation.Error, err error) {
+func AddFlow(newFlow *models.NewFlow, adaptors *adaptors.Adaptors, core *core.Core) (id int64, errs []*validation.Error, err error) {
 
 	flow := &m.Flow{}
 	if err = common.Copy(&flow, &newFlow); err != nil {
@@ -39,20 +39,20 @@ func AddFlow(newFlow *models.NewFlowModel, adaptors *adaptors.Adaptors, core *co
 
 	return
 }
-func GetFlowById(flowId int64, adaptors *adaptors.Adaptors) (flowDto *models.FlowModel, err error) {
+func GetFlowById(flowId int64, adaptors *adaptors.Adaptors) (flowDto *models.Flow, err error) {
 
 	var flow *m.Flow
 	if flow, err = adaptors.Flow.GetById(flowId); err != nil {
 		return
 	}
 
-	flowDto = &models.FlowModel{}
+	flowDto = &models.Flow{}
 	err = common.Copy(&flowDto, &flow, common.JsonEngine)
 
 	return
 }
 
-func GetFlowRedactor(flowId int64, adaptors *adaptors.Adaptors) (redactorFlowDto *models.RedactorFlowModel, err error) {
+func GetFlowRedactor(flowId int64, adaptors *adaptors.Adaptors) (redactorFlowDto *models.RedactorFlow, err error) {
 
 	var flow *m.Flow
 	if flow, err = adaptors.Flow.GetById(flowId); err != nil {
@@ -64,28 +64,28 @@ func GetFlowRedactor(flowId int64, adaptors *adaptors.Adaptors) (redactorFlowDto
 		return
 	}
 
-	redactorFlowDto = &models.RedactorFlowModel{}
+	redactorFlowDto = &models.RedactorFlow{}
 	err = common.Copy(&redactorFlowDto, &redactorFlow, common.JsonEngine)
 
 	return
 }
 
-func GetFlowList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (listDto []*models.FlowListModel, total int64, err error) {
+func GetFlowList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (listDto []*models.FlowShort, total int64, err error) {
 
 	var list []*m.Flow
 	if list, total, err = adaptors.Flow.List(limit, offset, order, sortBy); err != nil {
 		return
 	}
 
-	listDto = make([]*models.FlowListModel, 0)
+	listDto = make([]*models.FlowShort, 0)
 	err = common.Copy(&listDto, &list)
 
 	return
 }
 
-func UpdateFlowRedactor(params *models.RedactorFlowModel,
+func UpdateFlowRedactor(params *models.RedactorFlow,
 	adaptors *adaptors.Adaptors,
-	core *core.Core) (result *models.RedactorFlowModel, errs []*validation.Error, err error) {
+	core *core.Core) (result *models.RedactorFlow, errs []*validation.Error, err error) {
 
 	//debug.Println(params)
 	//fmt.Println("--------")
@@ -297,19 +297,19 @@ func UpdateFlowRedactor(params *models.RedactorFlowModel,
 		return
 	}
 
-	result = &models.RedactorFlowModel{}
+	result = &models.RedactorFlow{}
 	err = common.Copy(&result, &redactorFlow)
 
 	return
 }
 
-func SearchFlow(query string, limit, offset int, adaptors *adaptors.Adaptors) (listDto []*models.FlowModel, total int64, err error) {
+func SearchFlow(query string, limit, offset int, adaptors *adaptors.Adaptors) (listDto []*models.Flow, total int64, err error) {
 	var list []*m.Flow
 	if list, total, err = adaptors.Flow.Search(query, limit, offset); err != nil {
 		return
 	}
 
-	listDto = make([]*models.FlowModel, 0)
+	listDto = make([]*models.Flow, 0)
 	err = common.Copy(&listDto, &list)
 	return
 }
@@ -329,9 +329,9 @@ func DeleteFlowById(flowId int64, adaptors *adaptors.Adaptors, core *core.Core) 
 	return
 }
 
-func UpdateFlow(params *models.UpdateFlowModel,
+func UpdateFlow(params *models.UpdateFlow,
 	adaptors *adaptors.Adaptors,
-	core *core.Core) (result *models.FlowModel, errs []*validation.Error, err error) {
+	core *core.Core) (result *models.Flow, errs []*validation.Error, err error) {
 
 	flow := &m.Flow{}
 	if err = common.Copy(&flow, &params); err != nil {
@@ -356,7 +356,7 @@ func UpdateFlow(params *models.UpdateFlowModel,
 
 	err = core.UpdateFlow(flow)
 
-	result = &models.FlowModel{}
+	result = &models.Flow{}
 	common.Copy(&result, &flow)
 
 	return
