@@ -58,7 +58,7 @@ func (c ControllerUser) Add(ctx *gin.Context) {
 		currentUser = user.(*m.User)
 	}
 
-	_, createdUser, errs, err := AddUser(params, c.adaptors, currentUser)
+	result, errs, err := AddUser(params, c.adaptors, currentUser)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -71,7 +71,7 @@ func (c ControllerUser) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.SetData(createdUser).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /user/{id} userGetById
@@ -172,16 +172,16 @@ func (c ControllerUser) Update(ctx *gin.Context) {
 		return
 	}
 
-	n := &models.UpdateUser{}
-	if err := ctx.ShouldBindJSON(n); err != nil {
+	params := &models.UpdateUser{}
+	if err := ctx.ShouldBindJSON(params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	n.Id = int64(aid)
+	params.Id = int64(aid)
 
-	user, errs, err := UpdateUser(n, c.adaptors)
+	user, errs, err := UpdateUser(params, c.adaptors)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -189,7 +189,11 @@ func (c ControllerUser) Update(ctx *gin.Context) {
 	}
 
 	if err != nil {
-		NewError(500, err).Send(ctx)
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
 		return
 	}
 

@@ -28,7 +28,7 @@ type NewUser struct {
 	Email          string         `json:"email" valid:"Required;Email"`
 	Status         string         `json:"status"`
 	Lang           string         `json:"lang"`
-	Avatar         *NewUserImage  `json:"avatar"`
+	Image          *NewUserImage  `json:"image"`
 	Role           *NewUserRole   `json:"role"`
 	Meta           []*NewUserMeta `json:"meta"`
 }
@@ -54,7 +54,7 @@ type UpdateUser struct {
 	Email          string         `json:"email" valid:"Required;Email"`
 	Status         string         `json:"status"`
 	Lang           string         `json:"lang"`
-	Avatar         *NewUserImage  `json:"avatar"`
+	Image          *NewUserImage  `json:"image"`
 	Role           *NewUserRole   `json:"role"`
 	Meta           []*NewUserMeta `json:"meta"`
 }

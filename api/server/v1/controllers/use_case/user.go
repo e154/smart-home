@@ -4,7 +4,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/api/server/v1/models"
-	"github.com/jinzhu/copier"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/common"
 	"errors"
@@ -12,16 +11,15 @@ import (
 
 func AddUser(params models.NewUser,
 	adaptors *adaptors.Adaptors,
-	currentUser *m.User) (ok bool, createdUser *m.User, errs []*validation.Error, err error) {
+	currentUser *m.User) (result *models.UserFull, errs []*validation.Error, err error) {
 
-	// validation income request
-	ok, errs = params.Valid()
-	if len(errs) > 0 || !ok {
+	user := &m.User{}
+	if err = common.Copy(&user, &params); err != nil {
 		return
 	}
 
-	user := &m.User{}
-	if err = copier.Copy(&user, &params); err != nil {
+	_, errs = params.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
@@ -33,8 +31,8 @@ func AddUser(params models.NewUser,
 		user.EncryptedPassword = common.Pwdhash(params.Password)
 	}
 
-	if params.Avatar != nil && params.Avatar.Id != 0 {
-		user.ImageId.Scan(params.Avatar.Id)
+	if params.Image != nil && params.Image.Id != 0 {
+		user.ImageId.Scan(params.Image.Id)
 	}
 
 	if params.Role != nil {
@@ -44,7 +42,7 @@ func AddUser(params models.NewUser,
 	if params.Meta != nil && len(params.Meta) > 0 {
 		for _, rMeta := range params.Meta {
 			meta := &m.UserMeta{}
-			if err = copier.Copy(&meta, &rMeta); err != nil {
+			if err = common.Copy(&meta, &rMeta); err != nil {
 				return
 			}
 			user.Meta = append(user.Meta, meta)
@@ -59,8 +57,8 @@ func AddUser(params models.NewUser,
 	}
 
 	// validation user model
-	ok, errs = user.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = user.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
@@ -69,12 +67,12 @@ func AddUser(params models.NewUser,
 		return
 	}
 
-	createdUser, err = adaptors.User.GetById(id)
+	result, err = GetUserById(id, adaptors)
 
 	return
 }
 
-func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserFull, err error) {
+func GetUserById(userId int64, adaptors *adaptors.Adaptors) (result *models.UserFull, err error) {
 
 	var user *m.User
 	if user, err = adaptors.User.GetById(userId); err != nil {
@@ -82,40 +80,8 @@ func GetUserById(userId int64, adaptors *adaptors.Adaptors) (u *models.UserFull,
 	}
 
 	// base model
-	u = &models.UserFull{}
-	copier.Copy(&u, &user)
-
-	// parent model
-	if user.User != nil {
-		u.User = &models.UserByIdModelParent{}
-		copier.Copy(&u.User, &user.User)
-	}
-
-	// meta
-	u.Meta = make([]*models.UserByIdModelMeta, 0)
-	for _, meta := range user.Meta {
-		m := &models.UserByIdModelMeta{}
-		copier.Copy(&m, &meta)
-		u.Meta = append(u.Meta, m)
-	}
-
-	// history
-	u.History = make([]*models.UserHistory, 0)
-	for _, story := range user.History {
-		s := &models.UserHistory{}
-		copier.Copy(&s, &story)
-		u.History = append(u.History, s)
-	}
-
-	// role
-	u.Role = &models.Role{}
-	copier.Copy(&u.Role, &user.Role)
-
-	// image
-	if user.Image != nil {
-		u.Image = &models.Image{}
-		copier.Copy(&u.Image, &user.Image)
-	}
+	result = &models.UserFull{}
+	err = common.Copy(&result, &user, common.JsonEngine)
 
 	return
 }
@@ -146,22 +112,22 @@ func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Ada
 
 	for _, user := range userList {
 		item := &models.UserShot{}
-		copier.Copy(&item, &user)
+		common.Copy(&item, &user)
 
 		// parent model
 		if user.User != nil {
 			item.User = &models.UserByIdModelParent{}
-			copier.Copy(&item.User, &user.User)
+			common.Copy(&item.User, &user.User)
 		}
 
 		// role
 		item.Role = &models.Role{}
-		copier.Copy(&item.Role, &user.Role)
+		common.Copy(&item.Role, &user.Role)
 
 		// image
 		if user.Image != nil {
 			item.Image = &models.Image{}
-			copier.Copy(&item.Image, &user.Image)
+			common.Copy(&item.Image, &user.Image)
 		}
 
 		items = append(items, item)
@@ -170,30 +136,49 @@ func GetUserList(limit, offset int, order, sortBy string, adaptors *adaptors.Ada
 	return
 }
 
-func UpdateUser(newParams *models.UpdateUser, adaptors *adaptors.Adaptors) (result *models.UserFull, errs []*validation.Error, err error) {
-
-	_, errs = newParams.Valid()
-	if len(errs) > 0 {
-		return
-	}
+func UpdateUser(params *models.UpdateUser, adaptors *adaptors.Adaptors) (result *models.UserFull, errs []*validation.Error, err error) {
 
 	var user *m.User
-	if user, err = adaptors.User.GetById(newParams.Id); err != nil {
+	if user, err = adaptors.User.GetById(params.Id); err != nil {
 		return
 	}
 
-	if newParams.Password != "" && newParams.Password != newParams.PasswordRepeat {
+	if params.Password != "" && params.Password != params.PasswordRepeat {
 		err = errors.New("bad passwords")
 		return
 	}
 
-	copier.Copy(&user, &newParams)
-	user.EncryptedPassword = common.Pwdhash(newParams.Password)
+	common.Copy(&user, &params, common.JsonEngine)
+	user.EncryptedPassword = common.Pwdhash(params.Password)
 
-	err = adaptors.User.Update(user)
+	if params.Image != nil && params.Image.Id != 0 {
+		user.ImageId.Scan(params.Image.Id)
+	}
 
-	result = &models.UserFull{}
-	err = copier.Copy(&result, &user)
+	if params.Role != nil {
+		user.RoleName = params.Role.Name
+	}
+
+	if params.Meta != nil && len(params.Meta) > 0 {
+		for _, rMeta := range params.Meta {
+			meta := &m.UserMeta{}
+			if err = common.Copy(&meta, &rMeta); err != nil {
+				return
+			}
+			user.Meta = append(user.Meta, meta)
+		}
+	}
+
+	_, errs = user.Valid()
+	if len(errs) > 0 {
+		return
+	}
+
+	if err = adaptors.User.Update(user); err != nil {
+		return
+	}
+
+	result, err = GetUserById(user.Id, adaptors)
 
 	return
 }
