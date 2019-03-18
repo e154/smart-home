@@ -2342,7 +2342,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/NewObjectSuccess'
+          description: OK
+          schema:
+            $ref: '#/definitions/Device'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -2428,7 +2430,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/Success'
+          description: OK
+          schema:
+            $ref: '#/definitions/Device'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -2544,7 +2548,8 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/Success'
+          schema:
+            $ref: '#/definitions/DeviceAction'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -2855,7 +2860,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/NewObjectSuccess'
+          description: OK
+          schema:
+            $ref: '#/definitions/Flow'
         "400":
           $ref: '#/responses/Error'
         "401":

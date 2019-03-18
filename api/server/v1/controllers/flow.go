@@ -33,7 +33,9 @@ func NewControllerFlow(common *ControllerCommon) *ControllerFlow {
 // - flow
 // responses:
 //   "200":
-//	   $ref: '#/responses/NewObjectSuccess'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Flow'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -44,13 +46,13 @@ func NewControllerFlow(common *ControllerCommon) *ControllerFlow {
 //	   $ref: '#/responses/Error'
 func (c ControllerFlow) Add(ctx *gin.Context) {
 
-	flow := &models.NewFlow{}
-	if err := ctx.ShouldBindJSON(&flow); err != nil {
+	params := &models.NewFlow{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	id, errs, err := AddFlow(flow, c.adaptors, c.core)
+	result, errs, err := AddFlow(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -63,7 +65,7 @@ func (c ControllerFlow) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("id", id).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /flow/{id} flowGetById

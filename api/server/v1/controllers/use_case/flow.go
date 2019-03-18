@@ -11,19 +11,19 @@ import (
 	"github.com/e154/smart-home/system/core"
 )
 
-func AddFlow(newFlow *models.NewFlow, adaptors *adaptors.Adaptors, core *core.Core) (id int64, errs []*validation.Error, err error) {
+func AddFlow(params *models.NewFlow, adaptors *adaptors.Adaptors, core *core.Core) (result *models.Flow, errs []*validation.Error, err error) {
 
 	flow := &m.Flow{}
-	if err = common.Copy(&flow, &newFlow); err != nil {
+	if err = common.Copy(&flow, &params); err != nil {
 		return
 	}
 
-	if newFlow.Workflow.Id != 0 {
-		flow.WorkflowId = newFlow.Workflow.Id
+	if params.Workflow.Id != 0 {
+		flow.WorkflowId = params.Workflow.Id
 	}
 
-	if newFlow.Scenario.Id != 0 {
-		flow.WorkflowScenarioId = newFlow.Scenario.Id
+	if params.Scenario.Id != 0 {
+		flow.WorkflowScenarioId = params.Scenario.Id
 	}
 
 	_, errs = flow.Valid()
@@ -31,9 +31,17 @@ func AddFlow(newFlow *models.NewFlow, adaptors *adaptors.Adaptors, core *core.Co
 		return
 	}
 
+	var id int64
 	if id, err = adaptors.Flow.Add(flow); err != nil {
 		return
 	}
+
+	if flow, err = adaptors.Flow.GetById(id); err != nil {
+		return
+	}
+
+	result = &models.Flow{}
+	common.Copy(&result, &flow)
 
 	err = core.AddFlow(flow)
 
@@ -333,7 +341,11 @@ func UpdateFlow(params *models.UpdateFlow,
 	adaptors *adaptors.Adaptors,
 	core *core.Core) (result *models.Flow, errs []*validation.Error, err error) {
 
-	flow := &m.Flow{}
+	var flow *m.Flow
+	if flow, err = adaptors.Flow.GetById(flow.Id); err != nil {
+		return
+	}
+
 	if err = common.Copy(&flow, &params); err != nil {
 		return
 	}
@@ -346,18 +358,18 @@ func UpdateFlow(params *models.UpdateFlow,
 		return
 	}
 
-	if _, err = adaptors.Flow.GetById(flow.Id); err != nil {
-		return
-	}
-
 	if err = adaptors.Flow.Update(flow); err != nil {
 		return
 	}
 
-	err = core.UpdateFlow(flow)
+	if flow, err = adaptors.Flow.GetById(flow.Id); err != nil {
+		return
+	}
 
 	result = &models.Flow{}
 	common.Copy(&result, &flow)
+
+	err = core.UpdateFlow(flow)
 
 	return
 }

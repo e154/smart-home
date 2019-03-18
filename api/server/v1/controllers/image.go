@@ -145,7 +145,9 @@ func (c ControllerImage) GetById(ctx *gin.Context) {
 // - image
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Image'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -174,7 +176,7 @@ func (c ControllerImage) Update(ctx *gin.Context) {
 
 	n.Id = int64(aid)
 
-	_, errs, err := UpdateImage(n, c.adaptors)
+	result, errs, err := UpdateImage(n, c.adaptors)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -187,7 +189,7 @@ func (c ControllerImage) Update(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /images imageList

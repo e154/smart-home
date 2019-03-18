@@ -42,7 +42,7 @@ func GetImageById(imageId int64, adaptors *adaptors.Adaptors) (image *m.Image, e
 	return
 }
 
-func UpdateImage(imageParams *models.UpdateImage, adaptors *adaptors.Adaptors) (ok bool, errs []*validation.Error, err error) {
+func UpdateImage(imageParams *models.UpdateImage, adaptors *adaptors.Adaptors) (result *models.Image, errs []*validation.Error, err error) {
 
 	var image *m.Image
 	if image, err = adaptors.Image.GetById(imageParams.Id); err != nil {
@@ -54,12 +54,21 @@ func UpdateImage(imageParams *models.UpdateImage, adaptors *adaptors.Adaptors) (
 	}
 
 	// validation
-	ok, errs = image.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = image.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
-	err = adaptors.Image.Update(image)
+	if err = adaptors.Image.Update(image); err != nil {
+		return
+	}
+
+	if image, err = adaptors.Image.GetById(imageParams.Id); err != nil {
+		return
+	}
+
+	result = &models.Image{}
+	err = copier.Copy(&result, &image)
 
 	return
 }
