@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func AddLog(newLog *models.NewLog, adaptors *adaptors.Adaptors) (id int64, errs []*validation.Error, err error) {
+func AddLog(newLog *models.NewLog, adaptors *adaptors.Adaptors) (result *models.Log, errs []*validation.Error, err error) {
 
 	log := &m.Log{}
 	if err = common.Copy(&log, &newLog); err != nil {
@@ -22,9 +22,17 @@ func AddLog(newLog *models.NewLog, adaptors *adaptors.Adaptors) (id int64, errs 
 		return
 	}
 
+	var id int64
 	if id, err = adaptors.Log.Add(log); err != nil {
 		return
 	}
+
+	if log, err = adaptors.Log.GetById(id); err != nil {
+		return
+	}
+
+	result = &models.Log{}
+	err = common.Copy(&result, &log)
 
 	return
 }

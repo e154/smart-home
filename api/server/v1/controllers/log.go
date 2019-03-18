@@ -33,7 +33,9 @@ func NewControllerLog(common *ControllerCommon) *ControllerLog {
 // - log
 // responses:
 //   "200":
-//	   $ref: '#/responses/NewObjectSuccess'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Log'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -44,13 +46,13 @@ func NewControllerLog(common *ControllerCommon) *ControllerLog {
 //	   $ref: '#/responses/Error'
 func (c ControllerLog) Add(ctx *gin.Context) {
 
-	log := &models.NewLog{}
-	if err := ctx.ShouldBindJSON(&log); err != nil {
+	params := &models.NewLog{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	id, errs, err := AddLog(log, c.adaptors)
+	result, errs, err := AddLog(params, c.adaptors)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -63,7 +65,7 @@ func (c ControllerLog) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("id", id).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /log/{id} logGetById
