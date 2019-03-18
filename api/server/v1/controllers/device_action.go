@@ -52,7 +52,7 @@ func (c ControllerDeviceAction) Add(ctx *gin.Context) {
 		return
 	}
 
-	_, id, errs, err := AddDeviceAction(params, c.adaptors, c.core)
+	action, errs, err := AddDeviceAction(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -61,16 +61,6 @@ func (c ControllerDeviceAction) Add(ctx *gin.Context) {
 
 	if err != nil {
 		NewError(500, err).Send(ctx)
-		return
-	}
-
-	action, err := GetDeviceActionById(id, c.adaptors)
-	if err != nil {
-		code := 500
-		if err.Error() == "record not found" {
-			code = 404
-		}
-		NewError(code, err).Send(ctx)
 		return
 	}
 
@@ -154,7 +144,8 @@ func (c ControllerDeviceAction) GetById(ctx *gin.Context) {
 // - device_action
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     schema:
+//       $ref: '#/definitions/DeviceAction'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -181,19 +172,7 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 		return
 	}
 
-	_, errs, err := UpdateDeviceAction(params, int64(aid), c.adaptors, c.core)
-	if len(errs) > 0 {
-		err400 := NewError(400)
-		err400.ValidationToErrors(errs).Send(ctx)
-		return
-	}
-
-	if err != nil {
-		NewError(500, err).Send(ctx)
-		return
-	}
-
-	deviceAction, err := GetDeviceActionById(int64(aid), c.adaptors)
+	result, errs, err := UpdateDeviceAction(params, int64(aid), c.adaptors, c.core)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -203,8 +182,14 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 		return
 	}
 
+	if len(errs) > 0 {
+		err400 := NewError(400)
+		err400.ValidationToErrors(errs).Send(ctx)
+		return
+	}
+
 	resp := NewSuccess()
-	resp.SetData(deviceAction).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation DELETE /device_action/{id} deviceActionDeleteById

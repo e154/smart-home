@@ -11,7 +11,7 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
-func AddDevice(params models.NewDevice, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddDevice(params models.NewDevice, adaptors *adaptors.Adaptors, core *core.Core) (result *models.Device, errs []*validation.Error, err error) {
 
 	var properties []byte
 	if properties, err = json.Marshal(params.Properties); err != nil {
@@ -37,16 +37,23 @@ func AddDevice(params models.NewDevice, adaptors *adaptors.Adaptors, core *core.
 	//device.SetPropertiesFromMap(params.Properties)
 
 	// validation
-	ok, errs = device.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = device.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
+	var id int64
 	if id, err = adaptors.Device.Add(device); err != nil {
 		return
 	}
 
-	device.Id = id
+	if device, err = adaptors.Device.GetById(id); err != nil {
+		return
+	}
+
+	result = &models.Device{}
+	err = common.Copy(&result, &device)
+
 
 	return
 }
@@ -64,7 +71,7 @@ func GetDeviceById(deviceId int64, adaptors *adaptors.Adaptors) (result *models.
 	return
 }
 
-func UpdateDevice(params models.UpdateDevice, id int64, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+func UpdateDevice(params models.UpdateDevice, id int64, adaptors *adaptors.Adaptors, core *core.Core) (result *models.Device, errs []*validation.Error, err error) {
 
 	var properties []byte
 	if properties, err = json.Marshal(params.Properties); err != nil {
@@ -83,14 +90,21 @@ func UpdateDevice(params models.UpdateDevice, id int64, adaptors *adaptors.Adapt
 	//device.SetPropertiesFromMap(params.Properties)
 
 	// validation
-	ok, errs = device.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = device.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
 	if err = adaptors.Device.Update(device); err != nil {
 		return
 	}
+
+	if device, err = adaptors.Device.GetById(id); err != nil {
+		return
+	}
+
+	result = &models.Device{}
+	err = common.Copy(&result, &device)
 
 	return
 }

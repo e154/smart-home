@@ -8,6 +8,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/copier"
 	"errors"
+	"github.com/e154/smart-home/common"
 )
 
 func AddDeviceState(params models.NewDeviceState, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
@@ -34,26 +35,36 @@ func AddDeviceState(params models.NewDeviceState, adaptors *adaptors.Adaptors, c
 	return
 }
 
-func UpdateDeviceState(params models.UpdateDeviceState, id int64, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+func UpdateDeviceState(params models.UpdateDeviceState, id int64, adaptors *adaptors.Adaptors, core *core.Core) (result *models.DeviceState, errs []*validation.Error, err error) {
 
-	action := &m.DeviceState{}
-	copier.Copy(&action, &params)
+	var state *m.DeviceState
+	if state, err = adaptors.DeviceState.GetById(id); err != nil {
+		return
+	}
 
-	action.Id = id
+	copier.Copy(&state, &params)
 
 	if params.Device != nil && params.Device.Id != 0 {
-		action.DeviceId = params.Device.Id
+		state.DeviceId = params.Device.Id
 	}
 
 	// validation
-	ok, errs = action.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = state.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
-	if err = adaptors.DeviceState.Update(action); err != nil {
+	if err = adaptors.DeviceState.Update(state); err != nil {
 		return
 	}
+
+
+	if state, err = adaptors.DeviceState.GetById(id); err != nil {
+		return
+	}
+
+	result = &models.DeviceState{}
+	err = common.Copy(&result, &state)
 
 	return
 }

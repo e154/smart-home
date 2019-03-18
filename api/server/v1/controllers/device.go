@@ -33,7 +33,9 @@ func NewControllerDevice(common *ControllerCommon) *ControllerDevice {
 // - device
 // responses:
 //   "200":
-//	   $ref: '#/responses/NewObjectSuccess'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Device'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -51,7 +53,7 @@ func (c ControllerDevice) Add(ctx *gin.Context) {
 		return
 	}
 
-	_, id, errs, err := AddDevice(params, c.adaptors, c.core)
+	result, errs, err := AddDevice(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -64,7 +66,7 @@ func (c ControllerDevice) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("id", id).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /device/{id} deviceGetById
@@ -143,7 +145,9 @@ func (c ControllerDevice) GetById(ctx *gin.Context) {
 // - device
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Device'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -170,7 +174,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 		return
 	}
 
-	_, errs, err := UpdateDevice(params, int64(aid), c.adaptors, c.core)
+	result, errs, err := UpdateDevice(params, int64(aid), c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -182,18 +186,8 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 		return
 	}
 
-	device, err := GetDeviceById(int64(aid), c.adaptors)
-	if err != nil {
-		code := 500
-		if err.Error() == "record not found" {
-			code = 404
-		}
-		NewError(code, err).Send(ctx)
-		return
-	}
-
 	resp := NewSuccess()
-	resp.SetData(device).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /devices deviceList

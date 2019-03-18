@@ -184,25 +184,19 @@ func (c ControllerDeviceState) Update(ctx *gin.Context) {
 		return
 	}
 
-	_, errs, err := UpdateDeviceState(params, int64(aid), c.adaptors, c.core)
-	if len(errs) > 0 {
-		err400 := NewError(400)
-		err400.ValidationToErrors(errs).Send(ctx)
-		return
-	}
-
-	if err != nil {
-		NewError(500, err).Send(ctx)
-		return
-	}
-
-	deviceState, err := GetDeviceStateById(int64(aid), c.adaptors)
+	deviceState, errs, err := UpdateDeviceState(params, int64(aid), c.adaptors, c.core)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
 		}
 		NewError(code, err).Send(ctx)
+		return
+	}
+
+	if len(errs) > 0 {
+		err400 := NewError(400)
+		err400.ValidationToErrors(errs).Send(ctx)
 		return
 	}
 

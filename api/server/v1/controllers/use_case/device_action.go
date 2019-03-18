@@ -8,9 +8,10 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/copier"
 	"errors"
+	"github.com/e154/smart-home/common"
 )
 
-func AddDeviceAction(params models.NewDeviceAction, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddDeviceAction(params models.NewDeviceAction, adaptors *adaptors.Adaptors, core *core.Core) (result *models.DeviceAction, errs []*validation.Error, err error) {
 
 	action := &m.DeviceAction{}
 	copier.Copy(&action, &params)
@@ -23,26 +24,34 @@ func AddDeviceAction(params models.NewDeviceAction, adaptors *adaptors.Adaptors,
 	}
 
 	// validation
-	ok, errs = action.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = action.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
+	var id int64
 	if id, err = adaptors.DeviceAction.Add(action); err != nil {
 		return
 	}
 
-	action.Id = id
+	if action, err = adaptors.DeviceAction.GetById(id); err != nil {
+		return
+	}
+
+	result = &models.DeviceAction{}
+	err = common.Copy(&result, &action)
 
 	return
 }
 
-func UpdateDeviceAction(params models.UpdateDeviceAction, id int64, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+func UpdateDeviceAction(params models.UpdateDeviceAction, id int64, adaptors *adaptors.Adaptors, core *core.Core) (result *models.DeviceAction, errs []*validation.Error, err error) {
 
-	action := &m.DeviceAction{}
+	var action *m.DeviceAction
+	if action, err = adaptors.DeviceAction.GetById(id); err != nil {
+		return
+	}
+
 	copier.Copy(&action, &params)
-
-	action.Id = id
 
 	if params.Device != nil && params.Device.Id != 0 {
 		action.DeviceId = params.Device.Id
@@ -53,14 +62,22 @@ func UpdateDeviceAction(params models.UpdateDeviceAction, id int64, adaptors *ad
 
 
 	// validation
-	ok, errs = action.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = action.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
 	if err = adaptors.DeviceAction.Update(action); err != nil {
 		return
 	}
+
+	if action, err = adaptors.DeviceAction.GetById(id); err != nil {
+		return
+	}
+
+	result = &models.DeviceAction{}
+	err = common.Copy(&result, &action)
+
 
 	return
 }
