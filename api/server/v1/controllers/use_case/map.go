@@ -65,22 +65,31 @@ func GetFullMapById(mId int64, adaptors *adaptors.Adaptors) (result *models.MapF
 	return
 }
 
-func UpdateMap(mapParams *models.UpdateMap, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+func UpdateMap(params *models.UpdateMap, adaptors *adaptors.Adaptors, core *core.Core) (result *models.Map, errs []*validation.Error, err error) {
 
 	var m *m.Map
-	if m, err = adaptors.Map.GetById(mapParams.Id); err != nil {
+	if m, err = adaptors.Map.GetById(params.Id); err != nil {
 		return
 	}
 
-	copier.Copy(&m, &mapParams)
+	copier.Copy(&m, &params)
 
 	// validation
-	ok, errs = m.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = m.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
-	err = adaptors.Map.Update(m)
+	if err = adaptors.Map.Update(m); err != nil {
+		return
+	}
+
+	if m, err = adaptors.Map.GetById(params.Id); err != nil {
+		return
+	}
+
+	result = &models.Map{}
+	err = common.Copy(&result, &m)
 
 	return
 }

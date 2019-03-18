@@ -198,7 +198,9 @@ func (c ControllerMap) GetFullMap(ctx *gin.Context) {
 // - map
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Map'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -227,20 +229,24 @@ func (c ControllerMap) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	_, errs, err := UpdateMap(params, c.adaptors, c.core)
+	result, errs, err := UpdateMap(params, c.adaptors, c.core)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
 		return
 	}
 
-	if err != nil {
-		NewError(500, err).Send(ctx)
-		return
-	}
-
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /maps mapList
