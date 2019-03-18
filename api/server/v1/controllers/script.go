@@ -40,7 +40,9 @@ func NewControllerScript(common *ControllerCommon,
 // - script
 // responses:
 //   "200":
-//	   $ref: '#/responses/NewObjectSuccess'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Script'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -58,7 +60,7 @@ func (c ControllerScript) Add(ctx *gin.Context) {
 		return
 	}
 
-	_, id, errs, err := AddScript(params, c.adaptors, c.core, c.scriptService)
+	result, errs, err := AddScript(params, c.adaptors, c.core, c.scriptService)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -71,7 +73,7 @@ func (c ControllerScript) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("id", id).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /script/{id} scriptGetById
@@ -150,7 +152,9 @@ func (c ControllerScript) GetById(ctx *gin.Context) {
 // - script
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Script'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -179,7 +183,7 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	_, errs, err := UpdateScript(params, c.adaptors, c.core, c.scriptService)
+	result, errs, err := UpdateScript(params, c.adaptors, c.core, c.scriptService)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -196,7 +200,7 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /scripts scriptList

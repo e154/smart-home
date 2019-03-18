@@ -12,7 +12,10 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
-func AddScript(params models.NewScript, adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.ScriptService) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddScript(params models.NewScript,
+	adaptors *adaptors.Adaptors,
+	core *core.Core,
+	scriptService *scripts.ScriptService) (result *models.Script, errs []*validation.Error, err error) {
 
 	script := &m.Script{
 		Lang:        common.ScriptLang(params.Lang),
@@ -22,8 +25,8 @@ func AddScript(params models.NewScript, adaptors *adaptors.Adaptors, core *core.
 	}
 
 	// validation
-	ok, errs = script.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = script.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
@@ -36,11 +39,17 @@ func AddScript(params models.NewScript, adaptors *adaptors.Adaptors, core *core.
 		return
 	}
 
+	var id int64
 	if id, err = adaptors.Script.Add(script); err != nil {
 		return
 	}
 
-	script.Id = id
+	if script, err = adaptors.Script.GetById(id); err != nil {
+		return
+	}
+
+	result = &models.Script{}
+	err = copier.Copy(&result, &script)
 
 	return
 }
@@ -58,7 +67,10 @@ func GetScriptById(scriptId int64, adaptors *adaptors.Adaptors) (script *models.
 	return
 }
 
-func UpdateScript(params *models.UpdateScript, adaptors *adaptors.Adaptors, core *core.Core, scriptService *scripts.ScriptService) (ok bool, errs []*validation.Error, err error) {
+func UpdateScript(params *models.UpdateScript,
+	adaptors *adaptors.Adaptors,
+	core *core.Core,
+	scriptService *scripts.ScriptService) (result *models.Script, errs []*validation.Error, err error) {
 
 	var script *m.Script
 	if script, err = adaptors.Script.GetById(params.Id); err != nil {
@@ -70,8 +82,8 @@ func UpdateScript(params *models.UpdateScript, adaptors *adaptors.Adaptors, core
 	}
 
 	// validation
-	ok, errs = script.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = script.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
@@ -87,6 +99,13 @@ func UpdateScript(params *models.UpdateScript, adaptors *adaptors.Adaptors, core
 	if err = adaptors.Script.Update(script); err != nil {
 		return
 	}
+
+	if script, err = adaptors.Script.GetById(script.Id); err != nil {
+		return
+	}
+
+	result = &models.Script{}
+	err = copier.Copy(&result, &script)
 
 	return
 }
