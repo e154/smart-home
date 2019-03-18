@@ -14,14 +14,19 @@ func NewControllerIndex(common *ControllerCommon) *ControllerIndex {
 	return &ControllerIndex{ControllerCommon: common}
 }
 
-// Index godoc
-// @tags index
-// @Summary index page
-// @Description
-// @Produce text/plain
-// @Accept  text/plain
-// @Success 200
-// @Router / [get]
+// swagger:operation GET / index
+// ---
+// summary: index page
+// description:
+// consumes:
+// - text/plain
+// produces:
+// - text/plain
+// tags:
+// - index
+// responses:
+//   "200":
+//	   description: Success response
 func (i ControllerIndex) Index(c *gin.Context) {
 	apiVersion := Index()
 	c.String(http.StatusOK, apiVersion)

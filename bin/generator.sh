@@ -12,16 +12,24 @@ __validate() {
     swagger validate ${CONF_PATH}/swagger.yml
 }
 
-__swagger() {
+__swagger1() {
     cd ${ROOT}/api/server/v1
     swagger generate spec -o ${ROOT}/api/server/v1/docs/swagger/swagger.yaml --scan-models
+}
+
+__swagger2() {
+    cd ${ROOT}/api/server/v2
+    swagger generate spec -o ${ROOT}/api/server/v2/docs/swagger/swagger.yaml --scan-models
 }
 
 main() {
 
     case "$1" in
-        swagger)
-        __swagger
+        swagger1)
+        __swagger1
+        ;;
+        swagger2)
+        __swagger2
         ;;
         *)
         __help
@@ -37,7 +45,7 @@ Usage: generator.sh [options]
 
 OPTIONS:
 
-  swagger - generate an API server
+  swagger1 - generate an API server
 
   -h / --help - show this help text and exit 0
 

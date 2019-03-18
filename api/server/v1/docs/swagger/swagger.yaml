@@ -492,9 +492,11 @@ definitions:
         type: string
         x-go-name: Direction
       element_from:
-        $ref: '#/definitions/UUID'
+        type: string
+        x-go-name: ElementFrom
       element_to:
-        $ref: '#/definitions/UUID'
+        type: string
+        x-go-name: ElementTo
       flow_id:
         format: int64
         type: integer
@@ -518,7 +520,8 @@ definitions:
         type: string
         x-go-name: UpdatedAt
       uuid:
-        $ref: '#/definitions/UUID'
+        type: string
+        x-go-name: Uuid
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   FlowElement:
@@ -561,7 +564,8 @@ definitions:
         type: string
         x-go-name: UpdatedAt
       uuid:
-        $ref: '#/definitions/UUID'
+        type: string
+        x-go-name: Uuid
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   FlowShort:
@@ -1666,15 +1670,6 @@ definitions:
         x-go-name: Weight
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UUID:
-    description: |-
-      UUID representation compliant with specification
-      described in RFC 4122.
-    items:
-      format: uint8
-      type: integer
-    type: array
-    x-go-package: github.com/e154/smart-home/system/uuid
   UpdateDevice:
     properties:
       description:

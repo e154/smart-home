@@ -2,14 +2,14 @@ package models
 
 import (
 	"time"
-	"github.com/e154/smart-home/system/uuid"
 )
 
+// swagger:model
 type FlowConnection struct {
-	Uuid          uuid.UUID `json:"uuid"`
+	Uuid          string    `json:"uuid"`
 	Name          string    `json:"name" valid:"MaxSize(254);Required"`
-	ElementFrom   uuid.UUID `json:"element_from" valid:"Required"`
-	ElementTo     uuid.UUID `json:"element_to" valid:"Required"`
+	ElementFrom   string    `json:"element_from" valid:"Required"`
+	ElementTo     string    `json:"element_to" valid:"Required"`
 	PointFrom     int64     `json:"point_from" valid:"Required"`
 	PointTo       int64     `json:"point_to" valid:"Required"`
 	FlowId        int64     `json:"flow_id" valid:"Required"`

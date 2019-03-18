@@ -1,14 +1,33 @@
+// Smart home
+//
+// This documentation describes APIs found under https://github.com/e154/smart-home
+//
+//     BasePath: /api/v2
+//     Version: 2.0.0
+//     License: MIT https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
+//     Contact: Alex Filippov <support@e154.ru> https://e154.github.io/smart-home/
+//
+//     Consumes:
+//     - application/json
+//
+//     Produces:
+//     - application/json
+//
+//     Security:
+//     - BasicAuth
+//     - ApiKeyAuth
+//
+//     SecurityDefinitions:
+//     ApiKeyAuth:
+//          type: apiKey
+//          name: Authorization
+//          in: header
+//     BasicAuth:
+//          type: basic
+//
+// swagger:meta
 package v1
 
-// @title Smart home API
-// @version 2
-// @description Smart Home System
-
-// @contact.name Alex Filippov
-// @contact.url https://e154.github.io/smart-home/
-// @contact.email support@e154.ru
-
-// @license.name MIT License
-// @license.url https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
-
-// @BasePath /api/v2
+import (
+	_ "github.com/e154/smart-home/api/server/v2/controllers"
+)

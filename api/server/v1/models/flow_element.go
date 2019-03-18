@@ -2,11 +2,11 @@ package models
 
 import (
 	"time"
-	"github.com/e154/smart-home/system/uuid"
 )
 
+// swagger:model
 type FlowElement struct {
-	Uuid          uuid.UUID `json:"uuid"`
+	Uuid          string    `json:"uuid"`
 	Name          string    `json:"name" valid:"MaxSize(254);Required"`
 	Description   string    `json:"description"`
 	FlowId        int64     `json:"flow_id" valid:"Required"`

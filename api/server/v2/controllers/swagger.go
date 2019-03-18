@@ -20,7 +20,7 @@ func NewControllerSwagger(common *ControllerCommon) *ControllerSwagger {
 func (c ControllerSwagger) WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 
 	t := template.New("swagger_index.html")
-	index, _ := t.Parse(swagger_index_templ)
+	index, _ := t.Parse(swaggerIndexTempl)
 
 	var re = regexp.MustCompile(`(.*)(index\.html|doc\.json|favicon-16x16\.png|favicon-32x32\.png|swagger\.yml|/oauth2-redirect\.html|swagger-ui\.css|swagger-ui\.css\.map|swagger-ui\.js|swagger-ui\.js\.map|swagger-ui-bundle\.js|swagger-ui-bundle\.js\.map|swagger-ui-standalone-preset\.js|swagger-ui-standalone-preset\.js\.map)[\?|.]*`)
 
@@ -64,7 +64,7 @@ func (c ControllerSwagger) WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 	}
 }
 
-const swagger_index_templ = `<!-- HTML for static distribution bundle build -->
+const swaggerIndexTempl = `<!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143,6 +143,7 @@ window.onload = function() {
 	url: "swagger.yml",
     dom_id: '#swagger-ui',
     validatorUrl: null,
+	docExpansion: 'none',
 	deepLinking: true,
     presets: [
       SwaggerUIBundle.presets.apis,
