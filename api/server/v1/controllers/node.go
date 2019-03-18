@@ -33,7 +33,9 @@ func NewControllerNode(common *ControllerCommon) *ControllerNode {
 // - node
 // responses:
 //   "200":
-//	   $ref: '#/responses/NewObjectSuccess'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Node'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -51,7 +53,7 @@ func (c ControllerNode) Add(ctx *gin.Context) {
 		return
 	}
 
-	_, id, errs, err := AddNode(params, c.adaptors, c.core)
+	result, errs, err := AddNode(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -64,7 +66,7 @@ func (c ControllerNode) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("id", id).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /node/{id} nodeGetById
@@ -143,7 +145,9 @@ func (c ControllerNode) GetById(ctx *gin.Context) {
 // - node
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Node'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":

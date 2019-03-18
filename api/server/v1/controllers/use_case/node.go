@@ -11,22 +11,30 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
-func AddNode(params *models.NewNode, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddNode(params *models.NewNode, adaptors *adaptors.Adaptors, core *core.Core) (result *models.Node, errs []*validation.Error, err error) {
 
 	node := &m.Node{}
 	common.Copy(&node, &params, common.JsonEngine)
 
 	// validation
-	ok, errs = node.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = node.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
+	var id int64
 	if id, err = adaptors.Node.Add(node); err != nil {
 		return
 	}
 
-	node.Id = id
+	if node, err = adaptors.Node.GetById(id); err != nil {
+		return
+	}
+
+	result = &models.Node{}
+	if err = common.Copy(&result, &node, common.JsonEngine); err != nil {
+		return
+	}
 
 	// add node
 	_, err = core.AddNode(node)
@@ -47,22 +55,31 @@ func GetNodeById(nodeId int64, adaptors *adaptors.Adaptors) (result *models.Node
 	return
 }
 
-func UpdateNode(nodeParams *models.UpdateNode, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+func UpdateNode(params *models.UpdateNode, adaptors *adaptors.Adaptors, core *core.Core) (result *models.Node, errs []*validation.Error, err error) {
 
 	var node *m.Node
-	if node, err = adaptors.Node.GetById(nodeParams.Id); err != nil {
+	if node, err = adaptors.Node.GetById(params.Id); err != nil {
 		return
 	}
 
-	copier.Copy(&node, &nodeParams)
+	copier.Copy(&node, &params)
 
 	// validation
-	ok, errs = node.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = node.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
 	if err = adaptors.Node.Update(node); err != nil {
+		return
+	}
+
+	if node, err = adaptors.Node.GetById(node.Id); err != nil {
+		return
+	}
+
+	result = &models.Node{}
+	if err = common.Copy(&result, &node, common.JsonEngine); err != nil {
 		return
 	}
 

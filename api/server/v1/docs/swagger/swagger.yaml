@@ -4064,7 +4064,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/NewObjectSuccess'
+          description: OK
+          schema:
+            $ref: '#/definitions/Node'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -4150,7 +4152,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/Success'
+          description: OK
+          schema:
+            $ref: '#/definitions/Node'
         "400":
           $ref: '#/responses/Error'
         "401":
