@@ -5011,7 +5011,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/NewObjectSuccess'
+          description: OK
+          schema:
+            $ref: '#/definitions/Workflow'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -5097,7 +5099,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/Success'
+          description: OK
+          schema:
+            $ref: '#/definitions/Workflow'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -5130,7 +5134,9 @@ paths:
           $ref: '#/definitions/NewWorkflowScenario'
       responses:
         "200":
-          $ref: '#/responses/NewObjectSuccess'
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowScenario'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -5231,7 +5237,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/Success'
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowScenario'
         "400":
           $ref: '#/responses/Error'
         "401":

@@ -34,7 +34,9 @@ func NewControllerWorkflow(common *ControllerCommon) *ControllerWorkflow {
 // - workflow
 // responses:
 //   "200":
-//	   $ref: '#/responses/NewObjectSuccess'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Workflow'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -58,7 +60,7 @@ func (c ControllerWorkflow) Add(ctx *gin.Context) {
 		Status:      params.Status,
 	}
 
-	_, id, errs, err := AddWorkflow(n, c.adaptors, c.core)
+	result, errs, err := AddWorkflow(n, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -71,7 +73,7 @@ func (c ControllerWorkflow) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("id", id).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /workflow/{id} workflowGetById
@@ -151,7 +153,9 @@ func (c ControllerWorkflow) GetById(ctx *gin.Context) {
 // - workflow
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Workflow'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -180,7 +184,7 @@ func (c ControllerWorkflow) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	_, errs, err := UpdateWorkflow(params, c.adaptors, c.core)
+	result, errs, err := UpdateWorkflow(params, c.adaptors, c.core)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -197,7 +201,7 @@ func (c ControllerWorkflow) Update(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /workflows workflowList

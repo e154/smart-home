@@ -10,14 +10,17 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
-func AddWorkflow(workflow *m.Workflow, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, id int64, errs []*validation.Error, err error) {
+func AddWorkflow(workflow *m.Workflow,
+	adaptors *adaptors.Adaptors,
+	core *core.Core) (result *models.Workflow, errs []*validation.Error, err error) {
 
 	// validation
-	ok, errs = workflow.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = workflow.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
+	var id int64
 	if id, err = adaptors.Workflow.Add(workflow); err != nil {
 		return
 	}
@@ -28,19 +31,33 @@ func AddWorkflow(workflow *m.Workflow, adaptors *adaptors.Adaptors, core *core.C
 	if workflow, err = adaptors.Workflow.GetById(workflow.Id); err != nil {
 		return
 	}
+
+	result = &models.Workflow{}
+	if err = common.Copy(&result, &workflow); err != nil {
+		return
+	}
+
 	err = core.AddWorkflow(workflow)
 
 	return
 }
 
-func GetWorkflowById(workflowId int64, adaptors *adaptors.Adaptors) (workflow *m.Workflow, err error) {
+func GetWorkflowById(workflowId int64, adaptors *adaptors.Adaptors) (result *models.Workflow, err error) {
 
-	workflow, err = adaptors.Workflow.GetById(workflowId)
+	var workflow *m.Workflow
+	if workflow, err = adaptors.Workflow.GetById(workflowId); err != nil {
+		return
+	}
+
+	result = &models.Workflow{}
+	err = common.Copy(&result, &workflow)
 
 	return
 }
 
-func UpdateWorkflow(params *models.UpdateWorkflow, adaptors *adaptors.Adaptors, core *core.Core) (ok bool, errs []*validation.Error, err error) {
+func UpdateWorkflow(params *models.UpdateWorkflow,
+	adaptors *adaptors.Adaptors,
+	core *core.Core) (result *models.Workflow, errs []*validation.Error, err error) {
 
 	var workflow *m.Workflow
 	if workflow, err = adaptors.Workflow.GetById(params.Id); err != nil {
@@ -52,8 +69,8 @@ func UpdateWorkflow(params *models.UpdateWorkflow, adaptors *adaptors.Adaptors, 
 	}
 
 	// validation
-	ok, errs = workflow.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = workflow.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
@@ -65,14 +82,26 @@ func UpdateWorkflow(params *models.UpdateWorkflow, adaptors *adaptors.Adaptors, 
 	if workflow, err = adaptors.Workflow.GetById(workflow.Id); err != nil {
 		return
 	}
+
+	result = &models.Workflow{}
+	if err = common.Copy(&result, &workflow); err != nil {
+		return
+	}
+
 	err = core.UpdateWorkflow(workflow)
 
 	return
 }
 
-func GetWorkflowList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (items []*m.Workflow, total int64, err error) {
+func GetWorkflowList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (result []*models.Workflow, total int64, err error) {
 
-	items, total, err = adaptors.Workflow.List(limit, offset, order, sortBy)
+	var items []*m.Workflow
+	if items, total, err = adaptors.Workflow.List(limit, offset, order, sortBy); err != nil {
+		return
+	}
+
+	result = make([]*models.Workflow, 0)
+	err = common.Copy(&result, &items)
 
 	return
 }
@@ -99,9 +128,15 @@ func DeleteWorkflowById(workflowId int64, adaptors *adaptors.Adaptors, core *cor
 	return
 }
 
-func SearchWorkflow(query string, limit, offset int, adaptors *adaptors.Adaptors) (workflows []*m.Workflow, total int64, err error) {
+func SearchWorkflow(query string, limit, offset int, adaptors *adaptors.Adaptors) (result []*models.Workflow, total int64, err error) {
 
-	workflows, total, err = adaptors.Workflow.Search(query, limit, offset)
+	var items []*m.Workflow
+	if items, total, err = adaptors.Workflow.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	result = make([]*models.Workflow, 0)
+	err = common.Copy(&result, &items)
 
 	return
 }

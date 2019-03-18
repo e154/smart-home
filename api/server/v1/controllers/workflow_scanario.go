@@ -6,7 +6,6 @@ import (
 	"github.com/e154/smart-home/api/server/v1/models"
 	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/copier"
 )
 
 type ControllerWorkflowScenario struct {
@@ -39,7 +38,9 @@ func NewControllerWorkflowScenario(common *ControllerCommon) *ControllerWorkflow
 // - workflow_scenario
 // responses:
 //   "200":
-//	   $ref: '#/responses/NewObjectSuccess'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/WorkflowScenario'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -63,7 +64,7 @@ func (c ControllerWorkflowScenario) Add(ctx *gin.Context) {
 		WorkflowId: params.WorkflowId,
 	}
 
-	_, id, errs, err := AddWorkflowScenario(scenario, c.adaptors)
+	result, errs, err := AddWorkflowScenario(scenario, c.adaptors)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -76,7 +77,7 @@ func (c ControllerWorkflowScenario) Add(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("id", id).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /workflow/{id}/scenario/{scenario_id} workflowScenarioGetById
@@ -172,7 +173,9 @@ func (c ControllerWorkflowScenario) GetById(ctx *gin.Context) {
 // - workflow_scenario
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/WorkflowScenario'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -199,23 +202,9 @@ func (c ControllerWorkflowScenario) Update(ctx *gin.Context) {
 		return
 	}
 
-	workflowScenario := &m.WorkflowScenario{
-		Id:         params.Id,
-		Name:       params.Name,
-		WorkflowId: int64(workflowId),
-		SystemName: params.SystemName,
-		Scripts:    make([]*m.Script, 0),
-	}
+	params.WorkflowId = int64(workflowId)
 
-	for _, s := range params.Scripts {
-		script := &m.Script{}
-		if err = copier.Copy(&script, &s); err != nil {
-			log.Error(err.Error())
-		}
-		workflowScenario.Scripts = append(workflowScenario.Scripts, script)
-	}
-
-	_, errs, err := WorkflowUpdateWorkflowScenario(workflowScenario, c.adaptors)
+	result, errs, err := WorkflowUpdateWorkflowScenario(params, c.adaptors)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -223,12 +212,16 @@ func (c ControllerWorkflowScenario) Update(ctx *gin.Context) {
 	}
 
 	if err != nil {
-		NewError(500, err).Send(ctx)
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
 		return
 	}
 
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /workflow/{id}/scenarios workflowScenarioList
@@ -379,6 +372,5 @@ func (c ControllerWorkflowScenario) Search(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("scenarios", scenarios)
-	resp.Send(ctx)
+	resp.Item("scenarios", scenarios).Send(ctx)
 }
