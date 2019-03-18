@@ -33,35 +33,50 @@ func AddRole(roleParams models.NewRole, adaptors *adaptors.Adaptors) (result *mo
 	return
 }
 
-func GetRoleByName(name string, adaptors *adaptors.Adaptors) (role *m.Role, err error) {
+func GetRoleByName(name string, adaptors *adaptors.Adaptors) (result *models.Role, err error) {
 
-	role, err = adaptors.Role.GetByName(name)
+	var role *m.Role
+	if role, err = adaptors.Role.GetByName(name); err != nil {
+		return
+	}
+
+	result = &models.Role{}
+	err = common.Copy(&result, &role)
 
 	return
 }
 
-func UpdateRole(roleParams *models.UpdateRole, adaptors *adaptors.Adaptors) (ok bool, errs []*validation.Error, err error) {
+func UpdateRole(params *models.UpdateRole, adaptors *adaptors.Adaptors) (result *models.Role, errs []*validation.Error, err error) {
 
-	role, err := adaptors.Role.GetByName(roleParams.Name)
+	role, err := adaptors.Role.GetByName(params.Name)
 	if err != nil {
 		return
 	}
 
-	if roleParams.Parent.Name == "" {
+	if params.Parent.Name == "" {
 		role.Parent = nil
 	} else {
 		role.Parent = &m.Role{
-			Name: roleParams.Parent.Name,
+			Name: params.Parent.Name,
 		}
 	}
 
 	// validation
-	ok, errs = role.Valid()
-	if len(errs) > 0 || !ok {
+	_, errs = role.Valid()
+	if len(errs) > 0 {
 		return
 	}
 
-	err = adaptors.Role.Update(role)
+	if err = adaptors.Role.Update(role); err != nil {
+		return
+	}
+
+	if role, err = adaptors.Role.GetByName(params.Name); err != nil {
+		return
+	}
+
+	result = &models.Role{}
+	err = common.Copy(&result, &role)
 
 	return
 }

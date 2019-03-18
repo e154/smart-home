@@ -241,7 +241,9 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 // - role
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Role'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -263,7 +265,7 @@ func (c ControllerRole) Update(ctx *gin.Context) {
 
 	role.Name = name
 
-	_, errs, err := UpdateRole(role, c.adaptors)
+	result, errs, err := UpdateRole(role, c.adaptors)
 	if len(errs) > 0 {
 		code := 500
 		if err.Error() == "record not found" {
@@ -279,7 +281,7 @@ func (c ControllerRole) Update(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /roles roleList
