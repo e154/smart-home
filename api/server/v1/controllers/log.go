@@ -15,22 +15,36 @@ func NewControllerLog(common *ControllerCommon) *ControllerLog {
 	return &ControllerLog{ControllerCommon: common}
 }
 
-// Log godoc
-// @tags log
-// @Summary Add new log
-// @Description
-// @Produce json
-// @Accept  json
-// @Param log body models.NewLogModel true "log params"
-// @Success 200 {object} models.NewObjectSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /log [post]
-// @Security ApiKeyAuth
+// swagger:operation POST /log logAdd
+// ---
+// parameters:
+// - description: log params
+//   in: body
+//   name: log
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewLog'
+//     type: object
+// summary: add new log
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - log
+// responses:
+//   "200":
+//	   $ref: '#/responses/NewObjectSuccess'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerLog) Add(ctx *gin.Context) {
 
-	log := &models.NewLogModel{}
+	log := &models.NewLog{}
 	if err := ctx.ShouldBindJSON(&log); err != nil {
 		NewError(400, err).Send(ctx)
 		return
@@ -52,20 +66,35 @@ func (c ControllerLog) Add(ctx *gin.Context) {
 	resp.Item("id", id).Send(ctx)
 }
 
-// Log godoc
-// @tags log
-// @Summary Show log
-// @Description Get log by id
-// @Produce json
-// @Accept  json
-// @Param id path int true "Log ID"
-// @Success 200 {object} models.ResponseLog
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /log/{id} [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /log/{id} logGetById
+// ---
+// parameters:
+// - description: Log ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get log by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - log
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Log'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerLog) GetById(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -87,27 +116,54 @@ func (c ControllerLog) GetById(ctx *gin.Context) {
 	}
 
 	resp := NewSuccess()
-	resp.Item("log", log).Send(ctx)
+	resp.SetData(log).Send(ctx)
 }
 
-// Log godoc
-// @tags log
-// @Summary Log list
-// @Description Get log list
-// @Produce json
-// @Accept  json
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Param order query string false "order" default(DESC)
-// @Param sort_by query string false "sort_by" default(id)
-// @Param query query string false "query"
-// @Success 200 {object} models.ResponseLogList
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /logs [Get]
-// @Security ApiKeyAuth
+// swagger:operation GET /logs logList
+// ---
+// summary: get log list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - log
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// - default: id
+//   description: query
+//   in: query
+//   name: query
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/LogList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerLog) GetList(ctx *gin.Context) {
 
 	query, sortBy, order, limit, offset := c.list(ctx)
@@ -121,20 +177,33 @@ func (c ControllerLog) GetList(ctx *gin.Context) {
 	resp.Page(limit, offset, total, items).Send(ctx)
 }
 
-// Log godoc
-// @tags log
-// @Summary Delete log
-// @Description Delete log by id
-// @Produce json
-// @Accept  json
-// @Param  id path int true "Log ID"
-// @Success 200 {object} models.ResponseSuccess
-// @Failure 400 {object} models.ErrorModel "some error"
-// @Failure 401 "Unauthorized"
-// @Failure 404 {object} models.ErrorModel "some error"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Router /log/{id} [Delete]
-// @Security ApiKeyAuth
+// swagger:operation DELETE /log/{id} logDeleteById
+// ---
+// parameters:
+// - description: Log ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete log by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - log
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerLog) Delete(ctx *gin.Context) {
 
 	id := ctx.Param("id")
@@ -158,20 +227,40 @@ func (c ControllerLog) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// Log godoc
-// @tags log
-// @Summary Search log
-// @Description Search log by name
-// @Produce json
-// @Accept  json
-// @Param query query string false "query"
-// @Param limit query int true "limit" default(10)
-// @Param offset query int true "offset" default(0)
-// @Success 200 {object} models.ResponseSearchLog
-// @Failure 401 "Unauthorized"
-// @Failure 500 {object} models.ErrorModel "some error"
-// @Security ApiKeyAuth
-// @Router /logs/search [Get]
+// swagger:operation GET /logs/search logSearch
+// ---
+// summary: search log
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - log
+// parameters:
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/LogSearch'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
 func (c ControllerLog) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)

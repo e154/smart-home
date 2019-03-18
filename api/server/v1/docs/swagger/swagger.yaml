@@ -710,6 +710,24 @@ definitions:
         x-go-name: Url
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Log:
+    properties:
+      body:
+        type: string
+        x-go-name: Body
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      level:
+        type: string
+        x-go-name: Level
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Map:
     properties:
       created_at:
@@ -1067,6 +1085,15 @@ definitions:
       title:
         type: string
         x-go-name: Title
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewLog:
+    properties:
+      Level:
+        type: string
+      body:
+        type: string
+        x-go-name: Body
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMap:
@@ -3261,6 +3288,167 @@ paths:
       summary: get image list
       tags:
       - image
+  /log:
+    post:
+      operationId: logAdd
+      parameters:
+      - description: log params
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/NewLog'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/NewObjectSuccess'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new log
+      tags:
+      - log
+  /log/{id}:
+    delete:
+      operationId: logDeleteById
+      parameters:
+      - description: Log ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete log by id
+      tags:
+      - log
+    get:
+      operationId: logGetById
+      parameters:
+      - description: Log ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Log'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get log by id
+      tags:
+      - log
+  /logs:
+    get:
+      operationId: logList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      - default: id
+        description: query
+        in: query
+        name: query
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/LogList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get log list
+      tags:
+      - log
+  /logs/search:
+    get:
+      operationId: logSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/LogSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search log
+      tags:
+      - log
   /map:
     post:
       operationId: mapAdd
@@ -5350,6 +5538,40 @@ responses:
               x-go-name: Offset
           type: object
           x-go-name: Meta
+      type: object
+  LogList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Log'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  LogSearch:
+    schema:
+      properties:
+        logs:
+          items:
+            $ref: '#/definitions/Log'
+          type: array
+          x-go-name: Logs
       type: object
   MapElementList:
     schema:

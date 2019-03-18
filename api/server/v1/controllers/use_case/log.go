@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func AddLog(newLog *models.NewLogModel, adaptors *adaptors.Adaptors) (id int64, errs []*validation.Error, err error) {
+func AddLog(newLog *models.NewLog, adaptors *adaptors.Adaptors) (id int64, errs []*validation.Error, err error) {
 
 	log := &m.Log{}
 	if err = common.Copy(&log, &newLog); err != nil {
@@ -28,20 +28,20 @@ func AddLog(newLog *models.NewLogModel, adaptors *adaptors.Adaptors) (id int64, 
 
 	return
 }
-func GetLogById(logId int64, adaptors *adaptors.Adaptors) (logDto *models.LogModel, err error) {
+func GetLogById(logId int64, adaptors *adaptors.Adaptors) (logDto *models.Log, err error) {
 
 	var log *m.Log
 	if log, err = adaptors.Log.GetById(logId); err != nil {
 		return
 	}
 
-	logDto = &models.LogModel{}
+	logDto = &models.Log{}
 	err = common.Copy(&logDto, &log, common.JsonEngine)
 
 	return
 }
 
-func GetLogList(limit, offset int64, order, sortBy, query string, adaptors *adaptors.Adaptors) (listDto []*models.LogModel, total int64, err error) {
+func GetLogList(limit, offset int64, order, sortBy, query string, adaptors *adaptors.Adaptors) (listDto []*models.Log, total int64, err error) {
 
 	var queryObj *m.LogQuery
 	if query != "" {
@@ -69,19 +69,19 @@ func GetLogList(limit, offset int64, order, sortBy, query string, adaptors *adap
 		return
 	}
 
-	listDto = make([]*models.LogModel, 0)
+	listDto = make([]*models.Log, 0)
 	err = common.Copy(&listDto, &list)
 
 	return
 }
 
-func SearchLog(query string, limit, offset int, adaptors *adaptors.Adaptors) (listDto []*models.LogModel, total int64, err error) {
+func SearchLog(query string, limit, offset int, adaptors *adaptors.Adaptors) (listDto []*models.Log, total int64, err error) {
 	var list []*m.Log
 	if list, total, err = adaptors.Log.Search(query, limit, offset); err != nil {
 		return
 	}
 
-	listDto = make([]*models.LogModel, 0)
+	listDto = make([]*models.Log, 0)
 	err = common.Copy(&listDto, &list)
 	return
 }
