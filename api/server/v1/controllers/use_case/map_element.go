@@ -57,7 +57,7 @@ func GetMapElementById(mId int64, adaptors *adaptors.Adaptors) (result *models.M
 	return
 }
 
-func UpdateMapElement(mapParams *models.UpdateMapElement, adaptors *adaptors.Adaptors) (ok bool, errs []*validation.Error, err error) {
+func UpdateMapElement(mapParams *models.UpdateMapElement, adaptors *adaptors.Adaptors) (result *models.MapElement, errs []*validation.Error, err error) {
 
 	var m *m.MapElement
 	if m, err = adaptors.MapElement.GetById(mapParams.Id); err != nil {
@@ -72,7 +72,16 @@ func UpdateMapElement(mapParams *models.UpdateMapElement, adaptors *adaptors.Ada
 		return
 	}
 
-	err = adaptors.MapElement.Update(m)
+	if err = adaptors.MapElement.Update(m); err != nil {
+		return
+	}
+
+	if m, err = adaptors.MapElement.GetById(m.Id); err != nil {
+		return
+	}
+
+	result = &models.MapElement{}
+	err = common.Copy(&result, &m)
 
 	return
 }

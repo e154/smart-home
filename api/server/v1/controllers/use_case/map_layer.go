@@ -53,14 +53,14 @@ func GetMapLayerById(mId int64, adaptors *adaptors.Adaptors) (result *models.Map
 	return
 }
 
-func UpdateMapLayer(mapParams *models.UpdateMapLayer, adaptors *adaptors.Adaptors) (ok bool, errs []*validation.Error, err error) {
+func UpdateMapLayer(params *models.UpdateMapLayer, adaptors *adaptors.Adaptors) (result *models.MapLayer, errs []*validation.Error, err error) {
 
 	var m *m.MapLayer
-	if m, err = adaptors.MapLayer.GetById(mapParams.Id); err != nil {
+	if m, err = adaptors.MapLayer.GetById(params.Id); err != nil {
 		return
 	}
 
-	copier.Copy(&m, &mapParams)
+	copier.Copy(&m, &params)
 
 	// validation
 	_, errs = m.Valid()
@@ -68,7 +68,16 @@ func UpdateMapLayer(mapParams *models.UpdateMapLayer, adaptors *adaptors.Adaptor
 		return
 	}
 
-	err = adaptors.MapLayer.Update(m)
+	if err = adaptors.MapLayer.Update(m); err != nil {
+		return
+	}
+
+	if m, err = adaptors.MapLayer.GetById(m.Id); err != nil {
+		return
+	}
+
+	result = &models.MapLayer{}
+	err = common.Copy(&result, &m)
 
 	return
 }

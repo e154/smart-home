@@ -3556,7 +3556,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/Success'
+          description: OK
+          schema:
+            $ref: '#/definitions/Map'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -3888,7 +3890,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/Success'
+          description: OK
+          schema:
+            $ref: '#/definitions/MapLayer'
         "400":
           $ref: '#/responses/Error'
         "401":

@@ -174,20 +174,24 @@ func (c ControllerMapElement) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	_, errs, err := UpdateMapElement(params, c.adaptors)
+	result, errs, err := UpdateMapElement(params, c.adaptors)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
 		return
 	}
 
-	if err != nil {
-		NewError(500, err).Send(ctx)
-		return
-	}
-
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /map_element/sort mapElementUpdateById

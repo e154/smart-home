@@ -145,7 +145,9 @@ func (c ControllerMapLayer) GetById(ctx *gin.Context) {
 // - map_layer
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/MapLayer'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -174,20 +176,24 @@ func (c ControllerMapLayer) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	_, errs, err := UpdateMapLayer(params, c.adaptors)
+	result, errs, err := UpdateMapLayer(params, c.adaptors)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
 		return
 	}
 
-	if err != nil {
-		NewError(500, err).Send(ctx)
-		return
-	}
-
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /map_layer/sort mapLayerUpdateById
