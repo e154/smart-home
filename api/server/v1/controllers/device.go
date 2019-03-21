@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"strconv"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	"strconv"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerDevice struct {
@@ -53,7 +55,29 @@ func (c ControllerDevice) Add(ctx *gin.Context) {
 		return
 	}
 
-	result, errs, err := AddDevice(params, c.adaptors, c.core)
+	var properties []byte
+	var err error
+	if properties, err = json.Marshal(params.Properties); err != nil {
+		return
+	}
+
+	device := &m.Device{
+		Name:        params.Name,
+		Description: params.Description,
+		Properties:  properties,
+		Status:      params.Status,
+		Type:        common.DeviceType(params.Type),
+	}
+
+	if params.Device != nil && params.Device.Id != 0 {
+		device.Device = &m.Device{Id: params.Device.Id}
+	}
+
+	if params.Node != nil && params.Node.Id != 0 {
+		device.Node = &m.Node{Id: params.Node.Id}
+	}
+
+	device, errs, err := c.command.Device.Add(device)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -64,6 +88,9 @@ func (c ControllerDevice) Add(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.Device{}
+	err = common.Copy(&result, &device)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -108,7 +135,7 @@ func (c ControllerDevice) GetById(ctx *gin.Context) {
 		return
 	}
 
-	device, err := GetDeviceById(int64(aid), c.adaptors)
+	device, err := c.command.Device.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -117,6 +144,9 @@ func (c ControllerDevice) GetById(ctx *gin.Context) {
 		NewError(code, err).Send(ctx)
 		return
 	}
+
+	result := &models.Device{}
+	err = common.Copy(&result, &device, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(device).Send(ctx)
@@ -174,7 +204,20 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 		return
 	}
 
-	result, errs, err := UpdateDevice(params, int64(aid), c.adaptors, c.core)
+	var properties []byte
+	if properties, err = json.Marshal(params.Properties); err != nil {
+		return
+	}
+
+	device := &m.Device{
+		Id:          int64(aid),
+		Name:        params.Name,
+		Description: params.Description,
+		Properties:  properties,
+		Status:      params.Status,
+		Type:        common.DeviceType(params.Type),
+	}
+	device, errs, err := c.command.Device.Update(device)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -182,9 +225,16 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 	}
 
 	if err != nil {
-		NewError(500, err).Send(ctx)
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
 		return
 	}
+
+	result := &models.Device{}
+	err = common.Copy(&result, &device)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -233,14 +283,17 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 func (c ControllerDevice) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetDeviceList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	devices, total, err := c.command.Device.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Device, 0)
+	err = common.Copy(&result, &devices, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
 
@@ -281,7 +334,7 @@ func (c ControllerDevice) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteDeviceById(int64(aid), c.adaptors, c.core); err != nil {
+	if err := c.command.Device.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -331,13 +384,16 @@ func (c ControllerDevice) Delete(ctx *gin.Context) {
 func (c ControllerDevice) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	devices, _, err := SearchDevice(query, limit, offset, c.adaptors)
+	devices, _, err := c.command.Device.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.DeviceShort, 0)
+	err = common.Copy(&result, &devices, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Item("devices", devices)
+	resp.Item("devices", result)
 	resp.Send(ctx)
 }
