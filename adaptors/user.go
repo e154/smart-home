@@ -241,6 +241,7 @@ func (n *User) fromDb(dbUser *db.User) (user *m.User) {
 		CreatedAt:           dbUser.CreatedAt,
 		UpdatedAt:           dbUser.UpdatedAt,
 		DeletedAt:           dbUser.DeletedAt,
+		Meta:                make([]*m.UserMeta, 0),
 	}
 
 	if dbUser.Image != nil {

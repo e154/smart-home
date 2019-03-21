@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"github.com/e154/smart-home/api/server/v1/models"
 	"net/http"
+	"github.com/e154/smart-home/common"
 )
 
 type ControllerAuth struct {
@@ -51,7 +51,7 @@ func (c ControllerAuth) SignIn(ctx *gin.Context) {
 		return
 	}
 
-	currentUser, accessToken, err := SignIn(email, password, c.adaptors, ctx.ClientIP())
+	user, accessToken, err := c.command.Auth.SignIn(email, password, ctx.ClientIP())
 	if err != nil {
 		code := 500
 		switch err.Error() {
@@ -64,6 +64,9 @@ func (c ControllerAuth) SignIn(ctx *gin.Context) {
 		NewError(code, err.Error()).Send(ctx)
 		return
 	}
+
+	currentUser := &models.CurrentUser{}
+	common.Copy(&currentUser, &user, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(&models.AuthSignInResponse{
@@ -97,7 +100,7 @@ func (c ControllerAuth) SignOut(ctx *gin.Context) {
 		return
 	}
 
-	if err := SignOut(user, c.adaptors); err != nil {
+	if err := c.command.Auth.SignOut(user); err != nil {
 		NewError(500, err.Error()).Send(ctx)
 		return
 	}
@@ -165,7 +168,7 @@ func (c ControllerAuth) AccessList(ctx *gin.Context) {
 		return
 	}
 
-	accessList, err := AccessList(user, c.accessList)
+	accessList, err := c.command.Auth.AccessList(user, c.accessList)
 	if err != nil {
 		NewError(500, err.Error()).Send(ctx)
 		return

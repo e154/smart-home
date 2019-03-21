@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/use_case"
 )
 
 type ControllersV1 struct {
@@ -31,8 +32,9 @@ type ControllersV1 struct {
 func NewControllersV1(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	scriptService *scripts.ScriptService,
-	accessList *access_list.AccessListService) *ControllersV1 {
-	common := NewControllerCommon(adaptors, core, accessList)
+	accessList *access_list.AccessListService,
+	command *use_case.Command) *ControllersV1 {
+	common := NewControllerCommon(adaptors, core, accessList, command)
 	return &ControllersV1{
 		Index:            NewControllerIndex(common),
 		Node:             NewControllerNode(common),

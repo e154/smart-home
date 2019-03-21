@@ -149,7 +149,9 @@ func UpdateUser(params *models.UpdateUser, adaptors *adaptors.Adaptors) (result 
 	}
 
 	common.Copy(&user, &params, common.JsonEngine)
-	user.EncryptedPassword = common.Pwdhash(params.Password)
+	if params.Password != "" {
+		user.EncryptedPassword = common.Pwdhash(params.Password)
+	}
 
 	if params.Image != nil && params.Image.Id != 0 {
 		user.ImageId.Scan(params.Image.Id)
