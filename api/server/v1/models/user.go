@@ -135,15 +135,19 @@ type UserShot struct {
 // Current User represents the user for this application
 // swagger:model
 type CurrentUser struct {
-	Id          int64                `json:"id"`
-	Nickname    string               `json:"nickname"`
-	FirstName   string               `json:"first_name"`
-	LastName    string               `json:"last_name"`
-	Email       string               `json:"email"`
-	History     []*UserHistory       `json:"history"`
-	Image       *Image               `json:"image"`
-	SignInCount int64                `json:"sign_in_count"`
-	Meta        []*UserByIdModelMeta `json:"meta"`
-	Role        *Role                `json:"role"`
-	Lang        string               `json:"lang"`
+	Id              int64                `json:"id"`
+	Nickname        string               `json:"nickname"`
+	FirstName       string               `json:"first_name"`
+	LastName        string               `json:"last_name"`
+	Email           string               `json:"email"`
+	History         []*UserHistory       `json:"history"`
+	Image           *Image               `json:"image"`
+	SignInCount     int64                `json:"sign_in_count"`
+	Meta            []*UserByIdModelMeta `json:"meta"`
+	Role            *Role                `json:"role"`
+	Lang            string               `json:"lang"`
+	CreatedAt       time.Time            `json:"created_at"`
+	UpdatedAt       time.Time            `json:"updated_at"`
+	CurrentSignInAt *time.Time           `json:"current_sign_in_at"`
+	LastSignInAt    *time.Time           `json:"last_sign_in_at"`
 }
