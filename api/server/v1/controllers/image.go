@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	"strconv"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerImage struct {
@@ -46,14 +47,17 @@ func NewControllerImage(common *ControllerCommon) *ControllerImage {
 //	   $ref: '#/responses/Error'
 func (c ControllerImage) Add(ctx *gin.Context) {
 
-	var newImage models.NewImage
-	if err := ctx.ShouldBindJSON(&newImage); err != nil {
+	var params models.NewImage
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	_, image, errs, err := AddImage(newImage, c.adaptors)
+	image := &m.Image{}
+	common.Copy(&image, &params)
+
+	image, errs, err := c.command.Image.Add(image)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -65,8 +69,11 @@ func (c ControllerImage) Add(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Image{}
+	common.Copy(&result, &image)
+
 	resp := NewSuccess()
-	resp.SetData(image).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /image/{id} imageGetById
@@ -108,7 +115,7 @@ func (c ControllerImage) GetById(ctx *gin.Context) {
 		return
 	}
 
-	image, err := GetImageById(int64(aid), c.adaptors)
+	image, err := c.command.Image.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -118,8 +125,11 @@ func (c ControllerImage) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Image{}
+	common.Copy(&result, &image)
+
 	resp := NewSuccess()
-	resp.SetData(image).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /image/{id} imageUpdateById
@@ -167,16 +177,19 @@ func (c ControllerImage) Update(ctx *gin.Context) {
 		return
 	}
 
-	n := &models.UpdateImage{}
-	if err := ctx.ShouldBindJSON(&n); err != nil {
+	params := &models.UpdateImage{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	n.Id = int64(aid)
+	params.Id = int64(aid)
 
-	result, errs, err := UpdateImage(n, c.adaptors)
+	image := &m.Image{}
+	common.Copy(&image, &params)
+
+	image, errs, err := c.command.Image.Update(image)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -187,6 +200,9 @@ func (c ControllerImage) Update(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.Image{}
+	common.Copy(&result, &image)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -235,14 +251,17 @@ func (c ControllerImage) Update(ctx *gin.Context) {
 func (c ControllerImage) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetImageList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	items, total, err := c.command.Image.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Image, 0)
+	common.Copy(&result, items)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
 
@@ -283,7 +302,7 @@ func (c ControllerImage) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteImageById(int64(aid), c.adaptors); err != nil {
+	if err := c.command.Image.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -334,11 +353,14 @@ func (c *ControllerImage) Upload(ctx *gin.Context) {
 		return
 	}
 
-	images, errs := UploadImages(form.File, c.adaptors)
+	images, errs := c.command.Image.Upload(form.File)
+
+	resultImages := make([]*models.Image, 0)
+	common.Copy(&resultImages, images)
 
 	resp := NewSuccess()
 	resp.SetData(&map[string]interface{}{
-		"images": images,
+		"images": resultImages,
 		"errors": errs,
 	})
 	resp.Send(ctx)
