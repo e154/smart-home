@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	"strconv"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerLog struct {
@@ -52,7 +53,10 @@ func (c ControllerLog) Add(ctx *gin.Context) {
 		return
 	}
 
-	result, errs, err := AddLog(params, c.adaptors)
+	log := &m.Log{}
+	common.Copy(&log, &params)
+
+	log, errs, err := c.command.Log.Add(log)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -63,6 +67,9 @@ func (c ControllerLog) Add(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.Log{}
+	err = common.Copy(&result, &log)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -107,7 +114,7 @@ func (c ControllerLog) GetById(ctx *gin.Context) {
 		return
 	}
 
-	log, err := GetLogById(int64(aid), c.adaptors)
+	log, err := c.command.Log.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -117,8 +124,11 @@ func (c ControllerLog) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Log{}
+	common.Copy(&result, &log)
+
 	resp := NewSuccess()
-	resp.SetData(log).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /logs logList
@@ -169,14 +179,17 @@ func (c ControllerLog) GetById(ctx *gin.Context) {
 func (c ControllerLog) GetList(ctx *gin.Context) {
 
 	query, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetLogList(int64(limit), int64(offset), order, sortBy, query, c.adaptors)
+	items, total, err := c.command.Log.GetList(int64(limit), int64(offset), order, sortBy, query)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Log, 0)
+	err = common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 }
 
 // swagger:operation DELETE /log/{id} logDeleteById
@@ -216,7 +229,7 @@ func (c ControllerLog) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err = DeleteLogById(int64(aid), c.adaptors); err != nil {
+	if err = c.command.Log.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -266,13 +279,16 @@ func (c ControllerLog) Delete(ctx *gin.Context) {
 func (c ControllerLog) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	logs, _, err := SearchLog(query, limit, offset, c.adaptors)
+	items, _, err := c.command.Log.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Log, 0)
+	err = common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Item("logs", logs)
+	resp.Item("logs", result)
 	resp.Send(ctx)
 }
