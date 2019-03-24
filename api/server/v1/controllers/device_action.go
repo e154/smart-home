@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	"strconv"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/copier"
 )
 
 type ControllerDeviceAction struct {
@@ -52,7 +54,17 @@ func (c ControllerDeviceAction) Add(ctx *gin.Context) {
 		return
 	}
 
-	action, errs, err := AddDeviceAction(params, c.adaptors, c.core)
+	action := &m.DeviceAction{}
+	common.Copy(&action, &params, common.JsonEngine)
+
+	if params.Device != nil && params.Device.Id != 0 {
+		action.DeviceId = params.Device.Id
+	}
+	if params.Script != nil && params.Script.Id != 0 {
+		action.ScriptId = params.Script.Id
+	}
+
+	action, errs, err := c.command.DeviceAction.Add(action)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -64,8 +76,11 @@ func (c ControllerDeviceAction) Add(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.DeviceAction{}
+	err = common.Copy(&result, &action)
+
 	resp := NewSuccess()
-	resp.SetData(action).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /device_action/{id} deviceActionGetById
@@ -107,7 +122,7 @@ func (c ControllerDeviceAction) GetById(ctx *gin.Context) {
 		return
 	}
 
-	action, err := GetDeviceActionById(int64(aid), c.adaptors)
+	action, err := c.command.DeviceAction.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -117,8 +132,11 @@ func (c ControllerDeviceAction) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.DeviceAction{}
+	common.Copy(&result, &action)
+
 	resp := NewSuccess()
-	resp.SetData(action).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /device_action/{id} deviceActionUpdateById
@@ -172,7 +190,18 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 		return
 	}
 
-	result, errs, err := UpdateDeviceAction(params, int64(aid), c.adaptors, c.core)
+	params.Id = int64(aid)
+	action := &m.DeviceAction{}
+	copier.Copy(&action, &params)
+
+	if params.Device != nil && params.Device.Id != 0 {
+		action.DeviceId = params.Device.Id
+	}
+	if params.Script != nil && params.Script.Id != 0 {
+		action.ScriptId = params.Script.Id
+	}
+
+	action, errs, err := c.command.DeviceAction.Update(action)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -187,6 +216,9 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 		err400.ValidationToErrors(errs).Send(ctx)
 		return
 	}
+
+	result := &models.DeviceAction{}
+	err = common.Copy(&result, &action)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -229,7 +261,7 @@ func (c ControllerDeviceAction) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteDeviceActionById(int64(aid), c.adaptors, c.core); err != nil {
+	if err := c.command.DeviceAction.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -280,14 +312,17 @@ func (c ControllerDeviceAction) GetActionList(ctx *gin.Context) {
 		return
 	}
 
-	items, err := GetDeviceActionList(int64(deviceId), c.adaptors)
+	actions, err := c.command.DeviceAction.GetList(int64(deviceId))
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	//result := make([]*models.DeviceAction, 0)
+	//common.Copy(&result, &actions)
+
 	resp := NewSuccess()
-	resp.SetData(items).Send(ctx)
+	resp.SetData(actions).Send(ctx)
 	return
 }
 
@@ -328,11 +363,14 @@ func (c ControllerDeviceAction) GetActionList(ctx *gin.Context) {
 func (c ControllerDeviceAction) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	actions, _, err := SearchDeviceAction(query, limit, offset, c.adaptors)
+	actions, _, err := c.command.DeviceAction.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := make([]*models.DeviceAction, 0)
+	common.Copy(&result, &actions)
 
 	resp := NewSuccess()
 	resp.Item("actions", actions)

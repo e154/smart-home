@@ -13,8 +13,10 @@ var (
 )
 
 type Command struct {
-	Auth   *AuthCommand
-	Device *DeviceCommand
+	Auth         *AuthCommand
+	Device       *DeviceCommand
+	DeviceAction *DeviceActionCommand
+	DeviceState  *DeviceStateCommand
 }
 
 func NewUseCase(adaptors *adaptors.Adaptors,
@@ -23,7 +25,9 @@ func NewUseCase(adaptors *adaptors.Adaptors,
 	accessList *access_list.AccessListService) *Command {
 	common := NewCommonCommand(adaptors, core, accessList, scriptService)
 	return &Command{
-		Auth:   NewAuthCommand(common),
-		Device: NewDeviceCommand(common),
+		Auth:         NewAuthCommand(common),
+		Device:       NewDeviceCommand(common),
+		DeviceAction: NewDeviceActionCommand(common),
+		DeviceState:  NewDeviceStateCommand(common),
 	}
 }

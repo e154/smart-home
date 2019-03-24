@@ -3,8 +3,9 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common"
 )
 
 type ControllerDeviceState struct {
@@ -53,7 +54,14 @@ func (c ControllerDeviceState) Add(ctx *gin.Context) {
 		return
 	}
 
-	_, id, errs, err := AddDeviceState(params, c.adaptors, c.core)
+	state := &m.DeviceState{}
+	common.Copy(&state, &params)
+
+	if params.Device != nil && params.Device.Id != 0 {
+		state.DeviceId = params.Device.Id
+	}
+
+	_, id, errs, err := c.command.DeviceState.Add(state)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -65,7 +73,7 @@ func (c ControllerDeviceState) Add(ctx *gin.Context) {
 		return
 	}
 
-	state, err := GetDeviceStateById(id, c.adaptors)
+	state, err = c.command.DeviceState.GetById(id)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -75,8 +83,11 @@ func (c ControllerDeviceState) Add(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.DeviceState{}
+	common.Copy(&result, &state, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(state).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /device_state/{id} deviceStateGetById
@@ -118,7 +129,7 @@ func (c ControllerDeviceState) GetById(ctx *gin.Context) {
 		return
 	}
 
-	state, err := GetDeviceStateById(int64(aid), c.adaptors)
+	state, err := c.command.DeviceState.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -128,8 +139,11 @@ func (c ControllerDeviceState) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.DeviceState{}
+	common.Copy(&result, &state, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(state).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /device_state/{id} deviceStateUpdateById
@@ -184,7 +198,16 @@ func (c ControllerDeviceState) Update(ctx *gin.Context) {
 		return
 	}
 
-	deviceState, errs, err := UpdateDeviceState(params, int64(aid), c.adaptors, c.core)
+	state := &m.DeviceState{}
+	common.Copy(&state, &params, common.JsonEngine)
+
+	if params.Device != nil && params.Device.Id != 0 {
+		state.DeviceId = params.Device.Id
+	}
+
+	state.Id = int64(aid)
+
+	state, errs, err := c.command.DeviceState.Update(state)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -200,8 +223,11 @@ func (c ControllerDeviceState) Update(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.DeviceState{}
+	err = common.Copy(&result, &state, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(deviceState).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation DELETE /device_state/{id} deviceStateDeleteById
@@ -241,7 +267,7 @@ func (c ControllerDeviceState) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteDeviceStateById(int64(aid), c.adaptors, c.core); err != nil {
+	if err := c.command.DeviceState.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -291,13 +317,16 @@ func (c ControllerDeviceState) GetStateList(ctx *gin.Context) {
 		return
 	}
 
-	items, err := GetDeviceStateList(int64(deviceId), c.adaptors)
+	items, err := c.command.DeviceState.GetList(int64(deviceId))
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.DeviceState, 0)
+	common.Copy(&result, &items, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(items).Send(ctx)
+	resp.SetData(result).Send(ctx)
 	return
 }
