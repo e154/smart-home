@@ -314,6 +314,8 @@ func (u UUID) Value() (driver.Value, error) {
 // a longer byte slice or a string is handled by UnmarshalText.
 func (u *UUID) Scan(src interface{}) error {
 	switch src := src.(type) {
+	case UUID:
+		return u.UnmarshalText([]byte(src.String()))
 	case []byte:
 		if len(src) == 16 {
 			return u.UnmarshalBinary(src)

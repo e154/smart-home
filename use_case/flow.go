@@ -2,104 +2,129 @@ package use_case
 
 import (
 	"errors"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/api/server/v1/models"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/validation"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/uuid"
-	"github.com/e154/smart-home/system/core"
 )
 
-func AddFlow(params *models.NewFlow, adaptors *adaptors.Adaptors, core *core.Core) (result *models.Flow, errs []*validation.Error, err error) {
+type FlowCommand struct {
+	*CommonCommand
+}
 
-	flow := &m.Flow{}
-	if err = common.Copy(&flow, &params); err != nil {
-		return
+func NewFlowCommand(common *CommonCommand) *FlowCommand {
+	return &FlowCommand{
+		CommonCommand: common,
 	}
+}
 
-	if params.Workflow.Id != 0 {
-		flow.WorkflowId = params.Workflow.Id
-	}
+func (f *FlowCommand) Add(params *m.Flow) (result *m.Flow, errs []*validation.Error, err error) {
 
-	if params.Scenario.Id != 0 {
-		flow.WorkflowScenarioId = params.Scenario.Id
-	}
-
-	_, errs = flow.Valid()
+	_, errs = params.Valid()
 	if len(errs) > 0 {
 		return
 	}
 
 	var id int64
-	if id, err = adaptors.Flow.Add(flow); err != nil {
+	if id, err = f.adaptors.Flow.Add(params); err != nil {
 		return
 	}
 
-	if flow, err = adaptors.Flow.GetById(id); err != nil {
+	if result, err = f.adaptors.Flow.GetById(id); err != nil {
 		return
 	}
 
-	result = &models.Flow{}
-	common.Copy(&result, &flow)
-
-	err = core.AddFlow(flow)
+	err = f.core.AddFlow(result)
 
 	return
 }
-func GetFlowById(flowId int64, adaptors *adaptors.Adaptors) (flowDto *models.Flow, err error) {
+
+func (f *FlowCommand) GetById(id int64) (flow *m.Flow, err error) {
+
+	flow, err = f.adaptors.Flow.GetById(id)
+
+	return
+}
+
+func (f *FlowCommand) GetRedactor(flowId int64) (redactorFlow *m.RedactorFlow, err error) {
 
 	var flow *m.Flow
-	if flow, err = adaptors.Flow.GetById(flowId); err != nil {
+	if flow, err = f.adaptors.Flow.GetById(flowId); err != nil {
 		return
 	}
 
-	flowDto = &models.Flow{}
-	err = common.Copy(&flowDto, &flow, common.JsonEngine)
+	redactorFlow, err = f.ExportToRedactor(flow)
 
 	return
 }
 
-func GetFlowRedactor(flowId int64, adaptors *adaptors.Adaptors) (redactorFlowDto *models.RedactorFlow, err error) {
+func (f *FlowCommand) GetList(limit, offset int64, order, sortBy string) (list []*m.Flow, total int64, err error) {
+
+	list, total, err = f.adaptors.Flow.List(limit, offset, order, sortBy)
+
+	return
+}
+
+func (f *FlowCommand) Search(query string, limit, offset int) (list []*m.Flow, total int64, err error) {
+
+	if list, total, err = f.adaptors.Flow.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	return
+}
+
+func (f *FlowCommand) Update(params *m.Flow) (result *m.Flow, errs []*validation.Error, err error) {
 
 	var flow *m.Flow
-	if flow, err = adaptors.Flow.GetById(flowId); err != nil {
+	if flow, err = f.adaptors.Flow.GetById(flow.Id); err != nil {
 		return
 	}
 
-	var redactorFlow *m.RedactorFlow
-	if redactorFlow, err = ExportToRedactor(flow, adaptors); err != nil {
+	_, errs = flow.Valid()
+	if len(errs) > 0 {
+		for _, err := range errs {
+			log.Errorf("%s %s", err.Key, err.Message)
+		}
 		return
 	}
 
-	redactorFlowDto = &models.RedactorFlow{}
-	err = common.Copy(&redactorFlowDto, &redactorFlow, common.JsonEngine)
+	if err = f.adaptors.Flow.Update(flow); err != nil {
+		return
+	}
+
+	if flow, err = f.adaptors.Flow.GetById(flow.Id); err != nil {
+		return
+	}
+
+	err = f.core.UpdateFlow(flow)
 
 	return
 }
 
-func GetFlowList(limit, offset int64, order, sortBy string, adaptors *adaptors.Adaptors) (listDto []*models.FlowShort, total int64, err error) {
+func (f *FlowCommand) Delete(flowId int64) (err error) {
 
-	var list []*m.Flow
-	if list, total, err = adaptors.Flow.List(limit, offset, order, sortBy); err != nil {
+	var flow *m.Flow
+	if flow, err = f.adaptors.Flow.GetById(flowId); err != nil {
 		return
 	}
 
-	listDto = make([]*models.FlowShort, 0)
-	err = common.Copy(&listDto, &list)
+	if err = f.core.RemoveFlow(flow); err != nil {
+		return
+	}
 
+	err = f.adaptors.Flow.Delete(flowId)
 	return
 }
 
-func UpdateFlowRedactor(params *models.RedactorFlow,
-	adaptors *adaptors.Adaptors,
-	core *core.Core) (result *models.RedactorFlow, errs []*validation.Error, err error) {
+func (f *FlowCommand) UpdateRedactor(params *m.RedactorFlow) (result *m.RedactorFlow,
+	errs []*validation.Error, err error) {
 
 	//debug.Println(params)
-	//fmt.Println("--------")
+	//fmt.Println("------")
 
 	var oldFlow *m.Flow
-	if oldFlow, err = adaptors.Flow.GetById(params.Id); err != nil {
+	if oldFlow, err = f.adaptors.Flow.GetById(params.Id); err != nil {
 		return
 	}
 
@@ -119,7 +144,7 @@ func UpdateFlowRedactor(params *models.RedactorFlow,
 		return
 	}
 
-	if err = adaptors.Flow.Update(newFlow); err != nil {
+	if err = f.adaptors.Flow.Update(newFlow); err != nil {
 		return
 	}
 
@@ -128,7 +153,7 @@ func UpdateFlowRedactor(params *models.RedactorFlow,
 	for _, element := range oldFlow.FlowElements {
 		exist := false
 		for _, object := range params.Objects {
-			if object.Id == element.Uuid.String() {
+			if object.Id.String() == element.Uuid.String() {
 				exist = true
 				break
 			}
@@ -140,7 +165,7 @@ func UpdateFlowRedactor(params *models.RedactorFlow,
 	}
 
 	if len(flowTodoRemove) > 0 {
-		if err = adaptors.FlowElement.Delete(flowTodoRemove); err != nil {
+		if err = f.adaptors.FlowElement.Delete(flowTodoRemove); err != nil {
 			return
 		}
 	}
@@ -188,7 +213,7 @@ func UpdateFlowRedactor(params *models.RedactorFlow,
 			return
 		}
 
-		if err = adaptors.FlowElement.AddOrUpdateFlowElement(fl); err != nil {
+		if err = f.adaptors.FlowElement.AddOrUpdateFlowElement(fl); err != nil {
 			return
 		}
 	}
@@ -198,7 +223,7 @@ func UpdateFlowRedactor(params *models.RedactorFlow,
 	for _, oldConn := range oldFlow.Connections {
 		exist := false
 		for _, newConn := range params.Connectors {
-			if oldConn.Uuid.String() == newConn.Id {
+			if oldConn.Uuid.String() == newConn.Id.String() {
 				exist = true
 				break
 			}
@@ -210,7 +235,7 @@ func UpdateFlowRedactor(params *models.RedactorFlow,
 	}
 
 	if len(connTodoRemove) > 0 {
-		if err = adaptors.Connection.Delete(connTodoRemove); err != nil {
+		if err = f.adaptors.Connection.Delete(connTodoRemove); err != nil {
 			return
 		}
 	}
@@ -236,7 +261,7 @@ func UpdateFlowRedactor(params *models.RedactorFlow,
 			return
 		}
 
-		if err = adaptors.Connection.AddOrUpdateConnection(conn); err != nil {
+		if err = f.adaptors.Connection.AddOrUpdateConnection(conn); err != nil {
 			return
 		}
 	}
@@ -258,8 +283,8 @@ func UpdateFlowRedactor(params *models.RedactorFlow,
 	}
 
 	for _, worker := range workersTodoRemove {
-		if err = core.RemoveWorker(worker); err == nil {
-			if err = adaptors.Worker.Delete([]int64{worker.Id}); err != nil {
+		if err = f.core.RemoveWorker(worker); err == nil {
+			if err = f.adaptors.Worker.Delete([]int64{worker.Id}); err != nil {
 				return
 			}
 		}
@@ -281,100 +306,31 @@ func UpdateFlowRedactor(params *models.RedactorFlow,
 		}
 
 		if worker.Id == 0 {
-			if _, err = adaptors.Worker.Add(worker); err != nil {
+			if _, err = f.adaptors.Worker.Add(worker); err != nil {
 				return
 			}
 		} else {
-			if err = adaptors.Worker.Update(worker); err != nil {
+			if err = f.adaptors.Worker.Update(worker); err != nil {
 				return
 			}
 		}
 	}
 
 	// exit
-	if newFlow, err = adaptors.Flow.GetById(params.Id); err != nil {
+	if newFlow, err = f.adaptors.Flow.GetById(params.Id); err != nil {
 		return
 	}
 
-	if err = core.UpdateFlow(newFlow); err != nil {
+	if err = f.core.UpdateFlow(newFlow); err != nil {
 		return
 	}
 
-	var redactorFlow *m.RedactorFlow
-	if redactorFlow, err = ExportToRedactor(newFlow, adaptors); err != nil {
-		return
-	}
-
-	result = &models.RedactorFlow{}
-	err = common.Copy(&result, &redactorFlow)
+	result, err = f.ExportToRedactor(newFlow)
 
 	return
 }
 
-func SearchFlow(query string, limit, offset int, adaptors *adaptors.Adaptors) (listDto []*models.Flow, total int64, err error) {
-	var list []*m.Flow
-	if list, total, err = adaptors.Flow.Search(query, limit, offset); err != nil {
-		return
-	}
-
-	listDto = make([]*models.Flow, 0)
-	err = common.Copy(&listDto, &list)
-	return
-}
-
-func DeleteFlowById(flowId int64, adaptors *adaptors.Adaptors, core *core.Core) (err error) {
-
-	var flow *m.Flow
-	if flow, err = adaptors.Flow.GetById(flowId); err != nil {
-		return
-	}
-
-	if err = core.RemoveFlow(flow); err != nil {
-		return
-	}
-
-	err = adaptors.Flow.Delete(flowId)
-	return
-}
-
-func UpdateFlow(params *models.UpdateFlow,
-	adaptors *adaptors.Adaptors,
-	core *core.Core) (result *models.Flow, errs []*validation.Error, err error) {
-
-	var flow *m.Flow
-	if flow, err = adaptors.Flow.GetById(flow.Id); err != nil {
-		return
-	}
-
-	if err = common.Copy(&flow, &params); err != nil {
-		return
-	}
-
-	_, errs = flow.Valid()
-	if len(errs) > 0 {
-		for _, err := range errs {
-			log.Errorf("%s %s", err.Key, err.Message)
-		}
-		return
-	}
-
-	if err = adaptors.Flow.Update(flow); err != nil {
-		return
-	}
-
-	if flow, err = adaptors.Flow.GetById(flow.Id); err != nil {
-		return
-	}
-
-	result = &models.Flow{}
-	common.Copy(&result, &flow)
-
-	err = core.UpdateFlow(flow)
-
-	return
-}
-
-func ExportToRedactor(f *m.Flow, adaptors *adaptors.Adaptors) (redactorFlow *m.RedactorFlow, err error) {
+func (n *FlowCommand) ExportToRedactor(f *m.Flow) (redactorFlow *m.RedactorFlow, err error) {
 
 	if f == nil {
 		err = errors.New("ExportToRedactor: Nil point")
@@ -382,7 +338,7 @@ func ExportToRedactor(f *m.Flow, adaptors *adaptors.Adaptors) (redactorFlow *m.R
 	}
 
 	var scenario *m.WorkflowScenario
-	if scenario, err = adaptors.WorkflowScenario.GetById(f.WorkflowScenarioId); err != nil {
+	if scenario, err = n.adaptors.WorkflowScenario.GetById(f.WorkflowScenarioId); err != nil {
 		return
 	}
 
@@ -412,7 +368,7 @@ func ExportToRedactor(f *m.Flow, adaptors *adaptors.Adaptors) (redactorFlow *m.R
 
 		if el.FlowLink != nil {
 			var flow *m.Flow
-			if flow, err = adaptors.Flow.GetById(*el.FlowLink); err != nil {
+			if flow, err = n.adaptors.Flow.GetById(*el.FlowLink); err != nil {
 				return
 			}
 			object.FlowLink = flow

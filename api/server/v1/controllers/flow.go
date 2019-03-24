@@ -3,8 +3,9 @@ package controllers
 import (
 	"strconv"
 	"github.com/gin-gonic/gin"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerFlow struct {
@@ -52,7 +53,18 @@ func (c ControllerFlow) Add(ctx *gin.Context) {
 		return
 	}
 
-	result, errs, err := AddFlow(params, c.adaptors, c.core)
+	flow := &m.Flow{}
+	common.Copy(&flow, &params)
+
+	if params.Workflow.Id != 0 {
+		flow.WorkflowId = params.Workflow.Id
+	}
+
+	if params.Scenario.Id != 0 {
+		flow.WorkflowScenarioId = params.Scenario.Id
+	}
+
+	flow, errs, err := c.command.Flow.Add(flow)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -63,6 +75,9 @@ func (c ControllerFlow) Add(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.Flow{}
+	common.Copy(&result, &flow)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -107,7 +122,7 @@ func (c ControllerFlow) GetById(ctx *gin.Context) {
 		return
 	}
 
-	flow, err := GetFlowById(int64(aid), c.adaptors)
+	flow, err := c.command.Flow.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -117,8 +132,11 @@ func (c ControllerFlow) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Flow{}
+	common.Copy(&result, &flow, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(flow).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /flow/{id}/redactor flowGetRedactor
@@ -160,7 +178,7 @@ func (c ControllerFlow) GetRedactor(ctx *gin.Context) {
 		return
 	}
 
-	flow, err := GetFlowRedactor(int64(aid), c.adaptors)
+	redactorFlow, err := c.command.Flow.GetRedactor(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -170,8 +188,11 @@ func (c ControllerFlow) GetRedactor(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.RedactorFlow{}
+	common.Copy(&result, &redactorFlow, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(flow).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /flow/{id}/redactor flowUpdateRedactor
@@ -218,15 +239,18 @@ func (c ControllerFlow) UpdateRedactor(ctx *gin.Context) {
 		return
 	}
 
-	redactor := &models.RedactorFlow{}
-	if err := ctx.ShouldBindJSON(&redactor); err != nil {
+	params := &models.RedactorFlow{}
+	if err := ctx.ShouldBindJSON(params); err != nil {
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	redactor.Id = int64(aid)
+	params.Id = int64(aid)
 
-	result, errs, err := UpdateFlowRedactor(redactor, c.adaptors, c.core)
+	flowRedactor := &m.RedactorFlow{}
+	common.Copy(&flowRedactor, &params, common.JsonEngine)
+
+	flowRedactor, errs, err := c.command.Flow.UpdateRedactor(flowRedactor)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -241,6 +265,9 @@ func (c ControllerFlow) UpdateRedactor(ctx *gin.Context) {
 		NewError(code, err).Send(ctx)
 		return
 	}
+
+	result := &models.RedactorFlow{}
+	err = common.Copy(&result, &flowRedactor)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -290,15 +317,20 @@ func (c ControllerFlow) Update(ctx *gin.Context) {
 		return
 	}
 
-	flow := &models.UpdateFlow{}
-	if err := ctx.ShouldBindJSON(&flow); err != nil {
+	params := &models.UpdateFlow{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	flow.Id = int64(aid)
+	params.Id = int64(aid)
 
-	result, errs, err := UpdateFlow(flow, c.adaptors, c.core)
+	flow := &m.Flow{}
+	if err = common.Copy(&flow, &params); err != nil {
+		return
+	}
+
+	flow, errs, err := c.command.Flow.Update(flow)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -313,6 +345,9 @@ func (c ControllerFlow) Update(ctx *gin.Context) {
 		NewError(code, err).Send(ctx)
 		return
 	}
+
+	result := &models.Flow{}
+	common.Copy(&result, &flow)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -361,14 +396,17 @@ func (c ControllerFlow) Update(ctx *gin.Context) {
 func (c ControllerFlow) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetFlowList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	items, total, err := c.command.Flow.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.FlowShort, 0)
+	err = common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 }
 
 // swagger:operation DELETE /flow/{id} flowDeleteById
@@ -408,7 +446,7 @@ func (c ControllerFlow) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err = DeleteFlowById(int64(aid), c.adaptors, c.core); err != nil {
+	if err = c.command.Flow.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -458,13 +496,16 @@ func (c ControllerFlow) Delete(ctx *gin.Context) {
 func (c ControllerFlow) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	flows, _, err := SearchFlow(query, limit, offset, c.adaptors)
+	list, _, err := c.command.Flow.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Flow, 0)
+	err = common.Copy(&result, &list)
+
 	resp := NewSuccess()
-	resp.Item("flows", flows)
+	resp.Item("flows", result)
 	resp.Send(ctx)
 }

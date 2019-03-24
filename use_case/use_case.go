@@ -17,6 +17,7 @@ type Command struct {
 	Device       *DeviceCommand
 	DeviceAction *DeviceActionCommand
 	DeviceState  *DeviceStateCommand
+	Flow         *FlowCommand
 }
 
 func NewUseCase(adaptors *adaptors.Adaptors,
@@ -29,5 +30,6 @@ func NewUseCase(adaptors *adaptors.Adaptors,
 		Device:       NewDeviceCommand(common),
 		DeviceAction: NewDeviceActionCommand(common),
 		DeviceState:  NewDeviceStateCommand(common),
+		Flow:         NewFlowCommand(common),
 	}
 }
