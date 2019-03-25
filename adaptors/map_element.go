@@ -96,11 +96,9 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		oldVer.PrototypeType = ""
 	}
 
-	fmt.Println(1)
 	// delete old prototype
 	switch oldVer.PrototypeType {
 	case "text":
-		fmt.Println(2)
 		textAdaptor := GetMapTextAdaptor(n.db)
 		err = textAdaptor.Delete(ver.PrototypeId)
 	case "image":
@@ -114,15 +112,14 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		log.Warningf(err.Error())
 
 	}
-	fmt.Println(3)
+
 	if err != nil {
 		return
 	}
-	fmt.Println(4)
+
 	// add new prototype
 	switch {
 	case ver.Prototype.MapText != nil:
-		fmt.Println(5)
 		textAdaptor := GetMapTextAdaptor(n.db)
 		ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
 		ver.PrototypeType = "text"
@@ -144,16 +141,13 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		stateAdaptor.AddMultiple(ver.Prototype.MapDevice.States)
 	}
 
-	fmt.Println(6)
 	if err != nil {
 		return
 	}
 
-	fmt.Println(7)
 	dbVer := n.toDb(ver)
 	err = n.table.Update(dbVer)
 
-	fmt.Println(8)
 	return
 }
 

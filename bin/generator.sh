@@ -15,12 +15,12 @@ __validate() {
 
 __swagger1() {
     cd ${ROOT}/api/server/v1
-    CGO_ENABLED=0 ${SWAGGER} generate spec -o ${ROOT}/api/server/v1/docs/swagger/swagger.yaml --scan-models
+    ${SWAGGER} generate spec -o ${ROOT}/api/server/v1/docs/swagger/swagger.yaml --scan-models
 }
 
 __swagger2() {
     cd ${ROOT}/api/server/v2
-    CGO_ENABLED=0 ${SWAGGER} generate spec -o ${ROOT}/api/server/v2/docs/swagger/swagger.yaml --scan-models
+    ${SWAGGER} generate spec -o ${ROOT}/api/server/v2/docs/swagger/swagger.yaml --scan-models
 }
 
 main() {

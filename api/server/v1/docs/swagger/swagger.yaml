@@ -3702,7 +3702,9 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/MapElement'
+          description: OK
+          schema:
+            $ref: '#/definitions/MapElement'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -3775,7 +3777,9 @@ paths:
         type: string
       responses:
         "200":
-          $ref: '#/responses/MapElementList'
+          description: OK
+          schema:
+            $ref: '#/definitions/MapElement'
         "401":
           description: Unauthorized
         "403":
