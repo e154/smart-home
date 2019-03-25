@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	"strconv"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerMap struct {
@@ -53,7 +54,10 @@ func (c ControllerMap) Add(ctx *gin.Context) {
 		return
 	}
 
-	result, _, errs, err := AddMap(params, c.adaptors, c.core)
+	m := &m.Map{}
+	common.Copy(&m, &params)
+
+	m, errs, err := c.command.Map.Add(m)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -64,6 +68,9 @@ func (c ControllerMap) Add(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.Map{}
+	common.Copy(&result, &m, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -108,7 +115,7 @@ func (c ControllerMap) GetById(ctx *gin.Context) {
 		return
 	}
 
-	m, err := GetMapById(int64(aid), c.adaptors)
+	m, err := c.command.Map.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -118,8 +125,11 @@ func (c ControllerMap) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Map{}
+	common.Copy(&result, &m, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(m).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /map/{id}/full mapFullGetById
@@ -161,7 +171,7 @@ func (c ControllerMap) GetFullMap(ctx *gin.Context) {
 		return
 	}
 
-	m, err := GetFullMapById(int64(aid), c.adaptors)
+	m, err := c.command.Map.GetFullById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -171,8 +181,11 @@ func (c ControllerMap) GetFullMap(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.MapFull{}
+	common.Copy(&result, &m, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(m).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /map/{id} mapUpdateById
@@ -229,7 +242,10 @@ func (c ControllerMap) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	result, errs, err := UpdateMap(params, c.adaptors, c.core)
+	m := &m.Map{}
+	common.Copy(&m, &params, common.JsonEngine)
+
+	m, errs, err := c.command.Map.Update(m)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -244,6 +260,9 @@ func (c ControllerMap) Update(ctx *gin.Context) {
 		err400.ValidationToErrors(errs).Send(ctx)
 		return
 	}
+
+	result := &models.Map{}
+	common.Copy(&result, &m, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -292,14 +311,17 @@ func (c ControllerMap) Update(ctx *gin.Context) {
 func (c ControllerMap) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetMapList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	items, total, err := c.command.Map.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Map, 0)
+	common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
 
@@ -340,7 +362,7 @@ func (c ControllerMap) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteMapById(int64(aid), c.adaptors, c.core); err != nil {
+	if err := c.command.Map.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -390,13 +412,16 @@ func (c ControllerMap) Delete(ctx *gin.Context) {
 func (c ControllerMap) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	maps, _, err := SearchMap(query, limit, offset, c.adaptors)
+	items, _, err := c.command.Map.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Map, 0)
+	common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Item("maps", maps)
+	resp.Item("maps", result)
 	resp.Send(ctx)
 }

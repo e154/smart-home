@@ -20,6 +20,7 @@ type Command struct {
 	Flow         *FlowCommand
 	Image        *ImageCommand
 	Log          *LogCommand
+	Map          *MapCommand
 }
 
 func NewUseCase(adaptors *adaptors.Adaptors,
@@ -35,5 +36,6 @@ func NewUseCase(adaptors *adaptors.Adaptors,
 		Flow:         NewFlowCommand(common),
 		Image:        NewImageCommand(common),
 		Log:          NewLogCommand(common),
+		Map:          NewMapCommand(common),
 	}
 }
