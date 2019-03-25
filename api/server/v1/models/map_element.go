@@ -16,12 +16,9 @@ type MapElementGraphSettings struct {
 
 // swagger:model
 type Prototype struct {
-	// swagger:allOf
-	MapImage
-	// swagger:allOf
-	MapText
-	// swagger:allOf
-	MapDevice
+	*MapImage
+	*MapText
+	*MapDevice
 }
 
 // swagger:model
@@ -65,7 +62,6 @@ type UpdateMapElement struct {
 	PrototypeId   int64                   `json:"prototype_id"`
 	PrototypeType string                  `json:"prototype_type"`
 	Prototype     Prototype               `json:"prototype"`
-	Map           *Map                    `json:"map"`
 	MapId         int64                   `json:"map_id"`
 	LayerId       int64                   `json:"layer_id"`
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`

@@ -7,19 +7,20 @@ set -o errexit
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}")" && cd ../ && pwd)"
 CONF_PATH=${ROOT}/conf/swagger
+SWAGGER=swagger_darwin_amd64.dms.v0.19
 
 __validate() {
-    swagger validate ${CONF_PATH}/swagger.yml
+    ${SWAGGER} validate ${CONF_PATH}/swagger.yml
 }
 
 __swagger1() {
     cd ${ROOT}/api/server/v1
-    swagger generate spec -o ${ROOT}/api/server/v1/docs/swagger/swagger.yaml --scan-models
+    CGO_ENABLED=0 ${SWAGGER} generate spec -o ${ROOT}/api/server/v1/docs/swagger/swagger.yaml --scan-models
 }
 
 __swagger2() {
     cd ${ROOT}/api/server/v2
-    swagger generate spec -o ${ROOT}/api/server/v2/docs/swagger/swagger.yaml --scan-models
+    CGO_ENABLED=0 ${SWAGGER} generate spec -o ${ROOT}/api/server/v2/docs/swagger/swagger.yaml --scan-models
 }
 
 main() {
@@ -45,7 +46,8 @@ Usage: generator.sh [options]
 
 OPTIONS:
 
-  swagger1 - generate an API server
+  swagger1 - generate an API server v1
+  swagger2 - generate an API server v2
 
   -h / --help - show this help text and exit 0
 

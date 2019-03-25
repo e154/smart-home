@@ -57,14 +57,6 @@ func (c ControllerMapElement) Add(ctx *gin.Context) {
 	mapElement := &m.MapElement{}
 	common.Copy(&mapElement, &params, common.JsonEngine)
 
-	if params.Map.Id != 0 {
-		mapElement.MapId = params.Map.Id
-	}
-
-	if params.Layer.Id != 0 {
-		mapElement.LayerId = params.Layer.Id
-	}
-
 	mapElement, errs, err := c.command.MapElement.Add(mapElement)
 	if len(errs) > 0 {
 		err400 := NewError(400)
@@ -163,7 +155,9 @@ func (c ControllerMapElement) GetById(ctx *gin.Context) {
 // - map_element
 // responses:
 //   "200":
-//     $ref: '#/responses/MapElement'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/MapElement'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -298,7 +292,9 @@ func (c ControllerMapElement) Sort(ctx *gin.Context) {
 //   type: string
 // responses:
 //   "200":
-//	   $ref: '#/responses/MapElementList'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/MapElement'
 //   "401":
 //     description: "Unauthorized"
 //   "403":

@@ -49,6 +49,14 @@ definitions:
   CurrentUser:
     description: Current User represents the user for this application
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      current_sign_in_at:
+        format: date-time
+        type: string
+        x-go-name: CurrentSignInAt
       email:
         type: string
         x-go-name: Email
@@ -72,6 +80,10 @@ definitions:
       last_name:
         type: string
         x-go-name: LastName
+      last_sign_in_at:
+        format: date-time
+        type: string
+        x-go-name: LastSignInAt
       meta:
         items:
           $ref: '#/definitions/UserByIdModelMeta'
@@ -86,6 +98,10 @@ definitions:
         format: int64
         type: integer
         x-go-name: SignInCount
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Device:
@@ -1221,14 +1237,14 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewUser:
     properties:
-      avatar:
-        $ref: '#/definitions/NewUserImage'
       email:
         type: string
         x-go-name: Email
       first_name:
         type: string
         x-go-name: FirstName
+      image:
+        $ref: '#/definitions/NewUserImage'
       lang:
         type: string
         x-go-name: Lang
@@ -1349,71 +1365,51 @@ definitions:
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Prototype:
-    allOf:
-    - properties:
-        id:
-          format: int64
-          type: integer
-          x-go-name: Id
-        image_id:
-          format: int64
-          type: integer
-          x-go-name: ImageId
-        style:
-          type: string
-          x-go-name: Style
-      type: object
-    - properties:
-        id:
-          format: int64
-          type: integer
-          x-go-name: Id
-        style:
-          type: string
-          x-go-name: Style
-        text:
-          type: string
-          x-go-name: Text
-      type: object
-    - properties:
-        actions:
-          items:
-            $ref: '#/definitions/MapDeviceAction'
-          type: array
-          x-go-name: Actions
-        created_at:
-          format: date-time
-          type: string
-          x-go-name: CreatedAt
-        device:
-          $ref: '#/definitions/Device'
-        device_id:
-          format: int64
-          type: integer
-          x-go-name: DeviceId
-        id:
-          format: int64
-          type: integer
-          x-go-name: Id
-        image:
-          $ref: '#/definitions/Image'
-        image_id:
-          format: int64
-          type: integer
-          x-go-name: ImageId
-        states:
-          items:
-            $ref: '#/definitions/MapDeviceState'
-          type: array
-          x-go-name: States
-        system_name:
-          type: string
-          x-go-name: SystemName
-        updated_at:
-          format: date-time
-          type: string
-          x-go-name: UpdatedAt
-      type: object
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/MapDeviceAction'
+        type: array
+        x-go-name: Actions
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device:
+        $ref: '#/definitions/Device'
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
+      states:
+        items:
+          $ref: '#/definitions/MapDeviceState'
+        type: array
+        x-go-name: States
+      style:
+        type: string
+        x-go-name: Style
+      system_name:
+        type: string
+        x-go-name: SystemName
+      text:
+        type: string
+        x-go-name: Text
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   RedactorConnector:
     properties:
@@ -1699,6 +1695,10 @@ definitions:
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceActionDevice'
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
       name:
         type: string
         x-go-name: Name
@@ -1812,8 +1812,6 @@ definitions:
         format: int64
         type: integer
         x-go-name: LayerId
-      map:
-        $ref: '#/definitions/Map'
       map_id:
         format: int64
         type: integer
@@ -1920,8 +1918,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateUser:
     properties:
-      avatar:
-        $ref: '#/definitions/NewUserImage'
       email:
         type: string
         x-go-name: Email
@@ -1932,6 +1928,8 @@ definitions:
         format: int64
         type: integer
         x-go-name: Id
+      image:
+        $ref: '#/definitions/NewUserImage'
       lang:
         type: string
         x-go-name: Lang
@@ -3704,7 +3702,7 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/Success'
+          $ref: '#/responses/MapElement'
         "400":
           $ref: '#/responses/Error'
         "401":

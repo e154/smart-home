@@ -5,6 +5,8 @@ import (
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common/debug"
+	"fmt"
 )
 
 type MapElementCommand struct {
@@ -57,6 +59,8 @@ func (n *MapElementCommand) Update(params *m.MapElement) (result *m.MapElement, 
 		return
 	}
 
+	debug.Println(m)
+	fmt.Println("----")
 	if err = n.adaptors.MapElement.Update(m); err != nil {
 		return
 	}
