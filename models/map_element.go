@@ -54,3 +54,8 @@ type SortMapElementByWeight []*MapElement
 func (l SortMapElementByWeight) Len() int           { return len(l) }
 func (l SortMapElementByWeight) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 func (l SortMapElementByWeight) Less(i, j int) bool { return l[i].Weight < l[j].Weight }
+
+type SortMapElement struct {
+	Id     int64 `json:"id"`
+	Weight int64 `json:"weight"`
+}

@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	"strconv"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerMapElement struct {
@@ -53,7 +54,18 @@ func (c ControllerMapElement) Add(ctx *gin.Context) {
 		return
 	}
 
-	result, _, errs, err := AddMapElement(params, c.adaptors)
+	mapElement := &m.MapElement{}
+	common.Copy(&mapElement, &params, common.JsonEngine)
+
+	if params.Map.Id != 0 {
+		mapElement.MapId = params.Map.Id
+	}
+
+	if params.Layer.Id != 0 {
+		mapElement.LayerId = params.Layer.Id
+	}
+
+	mapElement, errs, err := c.command.MapElement.Add(mapElement)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -64,6 +76,9 @@ func (c ControllerMapElement) Add(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.MapElement{}
+	common.Copy(&result, &mapElement, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -108,7 +123,7 @@ func (c ControllerMapElement) GetById(ctx *gin.Context) {
 		return
 	}
 
-	result, err := GetMapElementById(int64(aid), c.adaptors)
+	mapElement, err := c.command.MapElement.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -117,6 +132,9 @@ func (c ControllerMapElement) GetById(ctx *gin.Context) {
 		NewError(code, err).Send(ctx)
 		return
 	}
+
+	result := &models.MapElement{}
+	common.Copy(&result, &mapElement, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -145,7 +163,7 @@ func (c ControllerMapElement) GetById(ctx *gin.Context) {
 // - map_element
 // responses:
 //   "200":
-//     $ref: '#/responses/Success'
+//     $ref: '#/responses/MapElement'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -174,7 +192,10 @@ func (c ControllerMapElement) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	result, errs, err := UpdateMapElement(params, c.adaptors)
+	mapElement := &m.MapElement{}
+	common.Copy(&mapElement, &params, common.JsonEngine)
+
+	mapElement, errs, err := c.command.MapElement.Update(mapElement)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -189,6 +210,9 @@ func (c ControllerMapElement) Update(ctx *gin.Context) {
 		err400.ValidationToErrors(errs).Send(ctx)
 		return
 	}
+
+	result := &models.MapElement{}
+	common.Copy(&result, &mapElement, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -225,14 +249,14 @@ func (c ControllerMapElement) Update(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerMapElement) Sort(ctx *gin.Context) {
 
-	params := make([]*models.SortMapElement, 0)
+	params := make([]*m.SortMapElement, 0)
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	if err := SortMapElements(params, c.adaptors); err != nil {
+	if err := c.command.MapElement.Sort(params); err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
@@ -284,14 +308,17 @@ func (c ControllerMapElement) Sort(ctx *gin.Context) {
 func (c ControllerMapElement) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetMapElementList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	items, total, err := c.command.MapElement.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.MapElement, 0)
+	common.Copy(&result, &items, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
 
@@ -332,7 +359,7 @@ func (c ControllerMapElement) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteMapElement(int64(aid), c.adaptors); err != nil {
+	if err := c.command.MapElement.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404

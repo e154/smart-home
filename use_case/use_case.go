@@ -21,6 +21,7 @@ type Command struct {
 	Image        *ImageCommand
 	Log          *LogCommand
 	Map          *MapCommand
+	MapElement   *MapElementCommand
 }
 
 func NewUseCase(adaptors *adaptors.Adaptors,
@@ -37,5 +38,6 @@ func NewUseCase(adaptors *adaptors.Adaptors,
 		Image:        NewImageCommand(common),
 		Log:          NewLogCommand(common),
 		Map:          NewMapCommand(common),
+		MapElement:   NewMapElementCommand(common),
 	}
 }
