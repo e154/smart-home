@@ -1,12 +1,12 @@
 package controllers
 
 import (
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	m "github.com/e154/smart-home/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	"strconv"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerScript struct {
@@ -60,7 +60,14 @@ func (c ControllerScript) Add(ctx *gin.Context) {
 		return
 	}
 
-	result, errs, err := AddScript(params, c.adaptors, c.core, c.scriptService)
+	script := &m.Script{
+		Lang:        common.ScriptLang(params.Lang),
+		Name:        params.Name,
+		Source:      params.Source,
+		Description: params.Description,
+	}
+
+	script, errs, err := c.command.Script.Add(script)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -71,6 +78,9 @@ func (c ControllerScript) Add(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.Script{}
+	common.Copy(&result, &script, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -115,7 +125,7 @@ func (c ControllerScript) GetById(ctx *gin.Context) {
 		return
 	}
 
-	script, err := GetScriptById(int64(aid), c.adaptors)
+	script, err := c.command.Script.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -125,8 +135,11 @@ func (c ControllerScript) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Script{}
+	common.Copy(&result, &script, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(script).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /script/{id} scriptUpdateById
@@ -183,7 +196,10 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	result, errs, err := UpdateScript(params, c.adaptors, c.core, c.scriptService)
+	script := &m.Script{}
+	common.Copy(&script, &params, common.JsonEngine)
+
+	script, errs, err := c.command.Script.Update(script)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -198,6 +214,9 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 		NewError(code, err).Send(ctx)
 		return
 	}
+
+	result := &models.Script{}
+	common.Copy(&result, &script, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -246,14 +265,17 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 func (c ControllerScript) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetScriptList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	items, total, err := c.command.Script.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Script, 0)
+	common.Copy(&result, &items, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
 
@@ -294,7 +316,7 @@ func (c ControllerScript) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteScriptById(int64(aid), c.adaptors, c.core); err != nil {
+	if err := c.command.Script.DeleteScriptById(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -344,7 +366,7 @@ func (c ControllerScript) Exec(ctx *gin.Context) {
 		return
 	}
 
-	result, err := ExecuteScript(int64(aid), c.adaptors, c.core, c.scriptService)
+	result, err := c.command.Script.Execute(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -394,7 +416,7 @@ func (c ControllerScript) ExecSrc(ctx *gin.Context) {
 		return
 	}
 
-	result, err := ExecuteSourceScript(script, c.scriptService)
+	result, err := c.command.Script.ExecuteSource(script)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -441,13 +463,16 @@ func (c ControllerScript) ExecSrc(ctx *gin.Context) {
 func (c ControllerScript) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	scripts, _, err := SearchScript(query, limit, offset, c.adaptors)
+	items, _, err := c.command.Script.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Script, 0)
+	common.Copy(&result, &items, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Item("scripts", scripts)
+	resp.Item("scripts", result)
 	resp.Send(ctx)
 }
