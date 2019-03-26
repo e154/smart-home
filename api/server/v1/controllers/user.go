@@ -3,9 +3,9 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common"
 )
 
 type ControllerUser struct {
@@ -58,7 +58,14 @@ func (c ControllerUser) Add(ctx *gin.Context) {
 		currentUser = user.(*m.User)
 	}
 
-	result, errs, err := AddUser(params, c.adaptors, currentUser)
+	user := &m.User{}
+	common.Copy(&user, &params, common.JsonEngine)
+
+	if params.Password == params.PasswordRepeat {
+		user.EncryptedPassword = common.Pwdhash(params.Password)
+	}
+
+	user, errs, err := c.command.User.Add(user, currentUser)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -69,6 +76,9 @@ func (c ControllerUser) Add(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.UserFull{}
+	common.Copy(&result, &user)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -113,7 +123,7 @@ func (c ControllerUser) GetById(ctx *gin.Context) {
 		return
 	}
 
-	user, err := GetUserById(int64(aid), c.adaptors)
+	user, err := c.command.User.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -123,8 +133,11 @@ func (c ControllerUser) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.UserFull{}
+	common.Copy(&result, &user)
+
 	resp := NewSuccess()
-	resp.SetData(user).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /user/{id} userUpdateById
@@ -181,7 +194,25 @@ func (c ControllerUser) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	user, errs, err := UpdateUser(params, c.adaptors)
+	user := &m.User{}
+	common.Copy(&user, &params, common.JsonEngine)
+
+	err400 := NewError(400)
+	if params.Password != "" && params.Password != params.PasswordRepeat {
+		err400.AddFieldf("password", FieldNotValid)
+		return
+	}
+
+	if params.Password != "" {
+		user.EncryptedPassword = common.Pwdhash(params.Password)
+	}
+
+	if err400.Errors() {
+		err400.Send(ctx)
+		return
+	}
+
+	user, errs, err := c.command.User.Update(user)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -197,8 +228,11 @@ func (c ControllerUser) Update(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.UserFull{}
+	common.Copy(&result, &user)
+
 	resp := NewSuccess()
-	resp.SetData(user).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /user/{id}/update_status userUpdateStatus
@@ -250,7 +284,7 @@ func (c ControllerUser) UpdateStatus(ctx *gin.Context) {
 		return
 	}
 
-	if err = UpdateStatus(int64(aid), n.Status, c.adaptors); err != nil {
+	if err = c.command.User.UpdateStatus(int64(aid), n.Status); err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
@@ -302,14 +336,17 @@ func (c ControllerUser) UpdateStatus(ctx *gin.Context) {
 func (c ControllerUser) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetUserList(limit, offset, order, sortBy, c.adaptors)
+	items, total, err := c.command.User.GetList(limit, offset, order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.UserShot, 0)
+	common.Copy(&result, &items, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
 
@@ -350,7 +387,7 @@ func (c ControllerUser) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteUserById(int64(aid), c.adaptors); err != nil {
+	if err := c.command.User.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404

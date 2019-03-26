@@ -28,6 +28,7 @@ type Command struct {
 	Script           *ScriptCommand
 	Workflow         *WorkflowCommand
 	WorkflowScenario *WorkflowScenarioCommand
+	User             *UserCommand
 }
 
 func NewUseCase(adaptors *adaptors.Adaptors,
@@ -51,5 +52,6 @@ func NewUseCase(adaptors *adaptors.Adaptors,
 		Script:           NewScriptCommand(common),
 		Workflow:         NewWorkflowCommand(common),
 		WorkflowScenario: NewWorkflowScenarioCommand(common),
+		User:             NewUserCommand(common),
 	}
 }
