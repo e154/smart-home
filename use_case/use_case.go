@@ -13,20 +13,21 @@ var (
 )
 
 type Command struct {
-	Auth         *AuthCommand
-	Device       *DeviceCommand
-	DeviceAction *DeviceActionCommand
-	DeviceState  *DeviceStateCommand
-	Flow         *FlowCommand
-	Image        *ImageCommand
-	Log          *LogCommand
-	Map          *MapCommand
-	MapElement   *MapElementCommand
-	MapLayer     *MapLayerCommand
-	Node         *NodeCommand
-	Role         *RoleCommand
-	Script       *ScriptCommand
-	Workflow     *WorkflowCommand
+	Auth             *AuthCommand
+	Device           *DeviceCommand
+	DeviceAction     *DeviceActionCommand
+	DeviceState      *DeviceStateCommand
+	Flow             *FlowCommand
+	Image            *ImageCommand
+	Log              *LogCommand
+	Map              *MapCommand
+	MapElement       *MapElementCommand
+	MapLayer         *MapLayerCommand
+	Node             *NodeCommand
+	Role             *RoleCommand
+	Script           *ScriptCommand
+	Workflow         *WorkflowCommand
+	WorkflowScenario *WorkflowScenarioCommand
 }
 
 func NewUseCase(adaptors *adaptors.Adaptors,
@@ -35,19 +36,20 @@ func NewUseCase(adaptors *adaptors.Adaptors,
 	accessList *access_list.AccessListService) *Command {
 	common := NewCommonCommand(adaptors, core, accessList, scriptService)
 	return &Command{
-		Auth:         NewAuthCommand(common),
-		Device:       NewDeviceCommand(common),
-		DeviceAction: NewDeviceActionCommand(common),
-		DeviceState:  NewDeviceStateCommand(common),
-		Flow:         NewFlowCommand(common),
-		Image:        NewImageCommand(common),
-		Log:          NewLogCommand(common),
-		Map:          NewMapCommand(common),
-		MapElement:   NewMapElementCommand(common),
-		MapLayer:     NewMapLayerCommand(common),
-		Node:         NewNodeCommand(common),
-		Role:         NewRoleCommand(common),
-		Script:       NewScriptCommand(common),
-		Workflow:     NewWorkflowCommand(common),
+		Auth:             NewAuthCommand(common),
+		Device:           NewDeviceCommand(common),
+		DeviceAction:     NewDeviceActionCommand(common),
+		DeviceState:      NewDeviceStateCommand(common),
+		Flow:             NewFlowCommand(common),
+		Image:            NewImageCommand(common),
+		Log:              NewLogCommand(common),
+		Map:              NewMapCommand(common),
+		MapElement:       NewMapElementCommand(common),
+		MapLayer:         NewMapLayerCommand(common),
+		Node:             NewNodeCommand(common),
+		Role:             NewRoleCommand(common),
+		Script:           NewScriptCommand(common),
+		Workflow:         NewWorkflowCommand(common),
+		WorkflowScenario: NewWorkflowScenarioCommand(common),
 	}
 }

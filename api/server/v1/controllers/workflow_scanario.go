@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common"
 )
 
 type ControllerWorkflowScenario struct {
@@ -64,7 +64,7 @@ func (c ControllerWorkflowScenario) Add(ctx *gin.Context) {
 		WorkflowId: params.WorkflowId,
 	}
 
-	result, errs, err := AddWorkflowScenario(scenario, c.adaptors)
+	scenario, errs, err := c.command.WorkflowScenario.Add(scenario)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -75,6 +75,9 @@ func (c ControllerWorkflowScenario) Add(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.WorkflowScenario{}
+	common.Copy(&result, &scenario, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -131,7 +134,7 @@ func (c ControllerWorkflowScenario) GetById(ctx *gin.Context) {
 		return
 	}
 
-	workflowScenario, err := GetWorkflowScenarioById(int64(workflowId), int64(scenarioId), c.adaptors)
+	workflowScenario, err := c.command.WorkflowScenario.GetById(int64(workflowId), int64(scenarioId))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -141,8 +144,11 @@ func (c ControllerWorkflowScenario) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.WorkflowScenario{}
+	common.Copy(&result, &workflowScenario, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(workflowScenario).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /workflow/{id}/scenario/{scenario_id} workflowScenarioUpdateById
@@ -203,8 +209,10 @@ func (c ControllerWorkflowScenario) Update(ctx *gin.Context) {
 	}
 
 	params.WorkflowId = int64(workflowId)
+	workflowScenario := &m.WorkflowScenario{}
+	common.Copy(&workflowScenario, &params, common.JsonEngine)
 
-	result, errs, err := WorkflowUpdateWorkflowScenario(params, c.adaptors)
+	workflowScenario, errs, err := c.command.WorkflowScenario.Update(workflowScenario)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -219,6 +227,9 @@ func (c ControllerWorkflowScenario) Update(ctx *gin.Context) {
 		NewError(code, err).Send(ctx)
 		return
 	}
+
+	result := &models.WorkflowScenario{}
+	common.Copy(&result, &workflowScenario, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -257,14 +268,17 @@ func (c ControllerWorkflowScenario) GetList(ctx *gin.Context) {
 		return
 	}
 
-	items, _, err := GetWorkflowScenarioList(int64(workflowId), c.adaptors)
+	items, _, err := c.command.WorkflowScenario.GetList(int64(workflowId))
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.WorkflowScenario, 0)
+	common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Item("scenarios", items).Send(ctx)
+	resp.Item("scenarios", result).Send(ctx)
 	return
 }
 
@@ -310,7 +324,7 @@ func (c ControllerWorkflowScenario) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteWorkflowScenarioById(int64(workflowScenarioId), c.adaptors); err != nil {
+	if err := c.command.WorkflowScenario.Delete(int64(workflowScenarioId)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -365,12 +379,15 @@ func (c ControllerWorkflowScenario) Delete(ctx *gin.Context) {
 func (c ControllerWorkflowScenario) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	scenarios, _, err := SearchWorkflowScenario(query, limit, offset, c.adaptors)
+	items, _, err := c.command.WorkflowScenario.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.WorkflowScenario, 0)
+	common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Item("scenarios", scenarios).Send(ctx)
+	resp.Item("scenarios", result).Send(ctx)
 }
