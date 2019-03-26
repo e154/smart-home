@@ -33,3 +33,8 @@ type SortMapLayersByWeight []*MapLayer
 func (l SortMapLayersByWeight) Len() int           { return len(l) }
 func (l SortMapLayersByWeight) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
 func (l SortMapLayersByWeight) Less(i, j int) bool { return l[i].Weight < l[j].Weight }
+
+type SortMapLayer struct {
+	Id     int64 `json:"id"`
+	Weight int64 `json:"weight"`
+}

@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	. "github.com/e154/smart-home/api/server/v2/controllers/use_case"
 )
 
 type ControllerIndex struct {
@@ -28,7 +27,7 @@ func NewControllerIndex(common *ControllerCommon) *ControllerIndex {
 //   "200":
 //	   description: Success response
 func (i ControllerIndex) Index(c *gin.Context) {
-	apiVersion := Index()
+	apiVersion := "Server API V2: OK"
 	c.String(http.StatusOK, apiVersion)
 	return
 }

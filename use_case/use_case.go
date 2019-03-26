@@ -22,6 +22,7 @@ type Command struct {
 	Log          *LogCommand
 	Map          *MapCommand
 	MapElement   *MapElementCommand
+	MapLayer     *MapLayerCommand
 }
 
 func NewUseCase(adaptors *adaptors.Adaptors,
@@ -39,5 +40,6 @@ func NewUseCase(adaptors *adaptors.Adaptors,
 		Log:          NewLogCommand(common),
 		Map:          NewMapCommand(common),
 		MapElement:   NewMapElementCommand(common),
+		MapLayer:     NewMapLayerCommand(common),
 	}
 }
