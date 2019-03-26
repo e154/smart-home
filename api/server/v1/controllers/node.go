@@ -1,10 +1,11 @@
 package controllers
 
 import (
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	"strconv"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 )
 
 type ControllerNode struct {
@@ -53,7 +54,10 @@ func (c ControllerNode) Add(ctx *gin.Context) {
 		return
 	}
 
-	result, errs, err := AddNode(params, c.adaptors, c.core)
+	node := &m.Node{}
+	common.Copy(&node, &params, common.JsonEngine)
+
+	node, errs, err := c.command.Node.Add(node)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -62,6 +66,11 @@ func (c ControllerNode) Add(ctx *gin.Context) {
 
 	if err != nil {
 		NewError(500, err).Send(ctx)
+		return
+	}
+
+	result := &models.Node{}
+	if err = common.Copy(&result, &node, common.JsonEngine); err != nil {
 		return
 	}
 
@@ -108,7 +117,7 @@ func (c ControllerNode) GetById(ctx *gin.Context) {
 		return
 	}
 
-	node, err := GetNodeById(int64(aid), c.adaptors)
+	node, err := c.command.Node.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -117,6 +126,9 @@ func (c ControllerNode) GetById(ctx *gin.Context) {
 		NewError(code, err).Send(ctx)
 		return
 	}
+
+	result := &models.Node{}
+	common.Copy(&result, &node, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(node).Send(ctx)
@@ -167,16 +179,19 @@ func (c ControllerNode) Update(ctx *gin.Context) {
 		return
 	}
 
-	n := &models.UpdateNode{}
-	if err := ctx.ShouldBindJSON(&n); err != nil {
+	params := &models.UpdateNode{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	n.Id = int64(aid)
+	params.Id = int64(aid)
 
-	_, errs, err := UpdateNode(n, c.adaptors, c.core)
+	node := &m.Node{}
+	common.Copy(&node, &params)
+
+	node, errs, err := c.command.Node.Update(node)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -188,8 +203,11 @@ func (c ControllerNode) Update(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Node{}
+	common.Copy(&result, &node, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /nodes nodeList
@@ -235,14 +253,17 @@ func (c ControllerNode) Update(ctx *gin.Context) {
 func (c ControllerNode) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetNodeList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	items, total, err := c.command.Node.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Node, 0)
+	common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
 
@@ -283,7 +304,7 @@ func (c ControllerNode) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteNodeById(int64(aid), c.adaptors, c.core); err != nil {
+	if err := c.command.Node.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -333,13 +354,16 @@ func (c ControllerNode) Delete(ctx *gin.Context) {
 func (c ControllerNode) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	nodes, _, err := SearchNode(query, limit, offset, c.adaptors)
+	items, _, err := c.command.Node.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Node, 0)
+	common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Item("nodes", nodes)
+	resp.Item("nodes", result)
 	resp.Send(ctx)
 }
