@@ -24,6 +24,7 @@ type Command struct {
 	MapElement   *MapElementCommand
 	MapLayer     *MapLayerCommand
 	Node         *NodeCommand
+	Role         *RoleCommand
 }
 
 func NewUseCase(adaptors *adaptors.Adaptors,
@@ -43,5 +44,6 @@ func NewUseCase(adaptors *adaptors.Adaptors,
 		MapElement:   NewMapElementCommand(common),
 		MapLayer:     NewMapLayerCommand(common),
 		Node:         NewNodeCommand(common),
+		Role:         NewRoleCommand(common),
 	}
 }

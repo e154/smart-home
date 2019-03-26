@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type NodeCommand struct {
@@ -18,21 +19,21 @@ func NewNodeCommand(common *CommonCommand) *NodeCommand {
 
 func (n *NodeCommand) Add(params *m.Node) (result *m.Node, errs []*validation.Error, err error) {
 
-	_, errs = node.Valid()
+	_, errs = params.Valid()
 	if len(errs) > 0 {
 		return
 	}
 
 	var id int64
-	if id, err = n.adaptors.Node.Add(node); err != nil {
+	if id, err = n.adaptors.Node.Add(params); err != nil {
 		return
 	}
 
-	if node, err = n.adaptors.Node.GetById(id); err != nil {
+	if result, err = n.adaptors.Node.GetById(id); err != nil {
 		return
 	}
 
-	_, err = n.core.AddNode(node)
+	_, err = n.core.AddNode(result)
 
 	return
 }
@@ -73,7 +74,7 @@ func (n *NodeCommand) Update(params *m.Node) (result *m.Node, errs []*validation
 	return
 }
 
-func (n *NodeCommand) GetList(limit, offset int64, order, sortBy string) (result []*models.Node, total int64, err error) {
+func (n *NodeCommand) GetList(limit, offset int64, order, sortBy string) (result []*m.Node, total int64, err error) {
 
 	result, total, err = n.adaptors.Node.List(limit, offset, order, sortBy)
 

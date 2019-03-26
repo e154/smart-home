@@ -3,7 +3,8 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common"
 )
 
 type ControllerRole struct {
@@ -52,7 +53,12 @@ func (c ControllerRole) Add(ctx *gin.Context) {
 		return
 	}
 
-	role, errs, err := AddRole(params, c.adaptors)
+	role := &m.Role{
+		Name:        params.Name,
+		Description: params.Description,
+	}
+
+	role, errs, err := c.command.Role.Add(role)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -64,8 +70,11 @@ func (c ControllerRole) Add(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Role{}
+	common.Copy(&result, &role, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(role).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /role/{name} roleGetById
@@ -100,7 +109,7 @@ func (c ControllerRole) Add(ctx *gin.Context) {
 func (c ControllerRole) GetByName(ctx *gin.Context) {
 
 	name := ctx.Param("name")
-	role, err := GetRoleByName(name, c.adaptors)
+	role, err := c.command.Role.GetByName(name)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -110,8 +119,11 @@ func (c ControllerRole) GetByName(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Role{}
+	common.Copy(&result, &role, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(role).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /role/{name}/access_list roleGetById
@@ -149,7 +161,7 @@ func (c ControllerRole) GetByName(ctx *gin.Context) {
 func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 
 	name := ctx.Param("name")
-	accessList, err := GetAccessList(name, c.adaptors, c.accessList)
+	accessList, err := c.command.Role.GetAccessList(name, c.accessList)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -159,8 +171,11 @@ func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 		return
 	}
 
+	result := make(models.AccessList)
+	common.Copy(&result, accessList, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Item("access_list", accessList).Send(ctx)
+	resp.Item("access_list", result).Send(ctx)
 }
 
 // swagger:operation PUT /role/{name}/access_list roleUpdateById
@@ -206,7 +221,7 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 	}
 
 	name := ctx.Param("name")
-	if err := UpdateAccessList(name, accessListDif, c.adaptors); err != nil {
+	if err := c.command.Role.UpdateAccessList(name, accessListDif); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -257,15 +272,18 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 func (c ControllerRole) Update(ctx *gin.Context) {
 
 	name := ctx.Param("name")
-	role := &models.UpdateRole{}
-	if err := ctx.ShouldBindJSON(&role); err != nil {
+	params := &models.UpdateRole{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	role.Name = name
+	params.Name = name
 
-	result, errs, err := UpdateRole(role, c.adaptors)
+	role := &m.Role{}
+	common.Copy(&role, &params)
+
+	role, errs, err := c.command.Role.Update(role)
 	if len(errs) > 0 {
 		code := 500
 		if err.Error() == "record not found" {
@@ -279,6 +297,9 @@ func (c ControllerRole) Update(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.Role{}
+	common.Copy(&result, &role, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -327,14 +348,17 @@ func (c ControllerRole) Update(ctx *gin.Context) {
 func (c ControllerRole) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetRoleList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	items, total, err := c.command.Role.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Role, 0)
+	common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
 
@@ -374,7 +398,7 @@ func (c ControllerRole) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteRoleByName(name, c.adaptors); err != nil {
+	if err := c.command.Role.Delete(name); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -424,13 +448,16 @@ func (c ControllerRole) Delete(ctx *gin.Context) {
 func (c ControllerRole) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	roles, _, err := SearchRole(query, limit, offset, c.adaptors)
+	items, _, err := c.command.Role.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Role, 0)
+	common.Copy(&result, &items)
+
 	resp := NewSuccess()
-	resp.Item("roles", roles)
+	resp.Item("roles", result)
 	resp.Send(ctx)
 }

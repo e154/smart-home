@@ -1,10 +1,9 @@
 package controllers
 
 import (
+	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
-	"strconv"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
