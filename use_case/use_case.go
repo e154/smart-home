@@ -26,6 +26,7 @@ type Command struct {
 	Node         *NodeCommand
 	Role         *RoleCommand
 	Script       *ScriptCommand
+	Workflow     *WorkflowCommand
 }
 
 func NewUseCase(adaptors *adaptors.Adaptors,
@@ -47,5 +48,6 @@ func NewUseCase(adaptors *adaptors.Adaptors,
 		Node:         NewNodeCommand(common),
 		Role:         NewRoleCommand(common),
 		Script:       NewScriptCommand(common),
+		Workflow:     NewWorkflowCommand(common),
 	}
 }

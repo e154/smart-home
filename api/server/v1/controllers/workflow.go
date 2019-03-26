@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
 	m "github.com/e154/smart-home/models"
-	. "github.com/e154/smart-home/api/server/v1/controllers/use_case"
 	"strconv"
+	"github.com/e154/smart-home/common"
 )
 
 type ControllerWorkflow struct {
@@ -54,13 +54,13 @@ func (c ControllerWorkflow) Add(ctx *gin.Context) {
 		return
 	}
 
-	n := &m.Workflow{
+	workflow := &m.Workflow{
 		Name:        params.Name,
 		Description: params.Description,
 		Status:      params.Status,
 	}
 
-	result, errs, err := AddWorkflow(n, c.adaptors, c.core)
+	workflow, errs, err := c.command.Workflow.Add(workflow)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -71,6 +71,9 @@ func (c ControllerWorkflow) Add(ctx *gin.Context) {
 		NewError(500, err).Send(ctx)
 		return
 	}
+
+	result := &models.Workflow{}
+	common.Copy(&result, &workflow)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -115,7 +118,7 @@ func (c ControllerWorkflow) GetById(ctx *gin.Context) {
 		return
 	}
 
-	workflow, err := GetWorkflowById(int64(aid), c.adaptors)
+	workflow, err := c.command.Workflow.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -125,8 +128,11 @@ func (c ControllerWorkflow) GetById(ctx *gin.Context) {
 		return
 	}
 
+	result := &models.Workflow{}
+	common.Copy(&result, &workflow, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.SetData(workflow).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // Workflow godoc
@@ -184,7 +190,10 @@ func (c ControllerWorkflow) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	result, errs, err := UpdateWorkflow(params, c.adaptors, c.core)
+	workflow := &m.Workflow{}
+	common.Copy(&workflow, &params, common.JsonEngine)
+
+	workflow, errs, err := c.command.Workflow.Update(workflow)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -199,6 +208,9 @@ func (c ControllerWorkflow) Update(ctx *gin.Context) {
 		NewError(code, err).Send(ctx)
 		return
 	}
+
+	result := &models.Workflow{}
+	common.Copy(&result, &workflow, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -247,14 +259,17 @@ func (c ControllerWorkflow) Update(ctx *gin.Context) {
 func (c ControllerWorkflow) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := GetWorkflowList(int64(limit), int64(offset), order, sortBy, c.adaptors)
+	items, total, err := c.command.Workflow.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Workflow, 0)
+	common.Copy(&result, &items, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Page(limit, offset, total, items).Send(ctx)
+	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
 
@@ -295,7 +310,7 @@ func (c ControllerWorkflow) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := DeleteWorkflowById(int64(aid), c.adaptors, c.core); err != nil {
+	if err := c.command.Workflow.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -345,14 +360,17 @@ func (c ControllerWorkflow) Delete(ctx *gin.Context) {
 func (c ControllerWorkflow) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	workflows, _, err := SearchWorkflow(query, limit, offset, c.adaptors)
+	items, _, err := c.command.Workflow.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
+	result := make([]*models.Workflow, 0)
+	common.Copy(&result, &items, common.JsonEngine)
+
 	resp := NewSuccess()
-	resp.Item("workflows", workflows)
+	resp.Item("workflows", result)
 	resp.Send(ctx)
 }
 
@@ -406,7 +424,7 @@ func (c ControllerWorkflow) UpdateScenario(ctx *gin.Context) {
 		return
 	}
 
-	err = UpdateWorkflowScenario(int64(aid), workflowScenario.WorkflowScenarioId, c.adaptors, c.core)
+	err = c.command.Workflow.UpdateScenario(int64(aid), workflowScenario.WorkflowScenarioId)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
