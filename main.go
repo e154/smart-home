@@ -11,6 +11,7 @@ import (
 	"github.com/e154/smart-home/system/backup"
 	"fmt"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/migrations"
 )
 
 var (
@@ -77,6 +78,10 @@ func start() {
 	fmt.Printf(shortVersionBanner, "")
 
 	container := BuildContainer()
+	container.Invoke(func(m *migrations.Migrations) {
+		m.Up()
+	})
+
 	container.Invoke(func(server *server.Server,
 		core *core.Core,
 		graceful *graceful_service.GracefulService,
