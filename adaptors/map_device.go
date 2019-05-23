@@ -91,7 +91,11 @@ func (n *MapDevice) toDb(ver *m.MapDevice) (dbVer *db.MapDevice) {
 		Id:         ver.Id,
 		SystemName: ver.SystemName,
 		DeviceId:   ver.DeviceId,
-		ImageId:    ver.ImageId,
+	}
+	if ver.ImageId != 0 {
+		dbVer.ImageId = ver.ImageId
+	} else if ver.Image != nil && ver.Image.Id != 0 {
+		dbVer.ImageId = ver.Image.Id
 	}
 	return
 }

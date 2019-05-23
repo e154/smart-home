@@ -62,11 +62,11 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 		for _, e := range l.Elements {
 			switch e.PrototypeType {
 			case common.PrototypeTypeText:
-				textIds = append(textIds, e.Id)
+				textIds = append(textIds, e.PrototypeId)
 			case common.PrototypeTypeImage:
-				imageIds = append(imageIds, e.Id)
+				imageIds = append(imageIds, e.PrototypeId)
 			case common.PrototypeTypeDevice:
-				deviceIds = append(deviceIds, e.Id)
+				deviceIds = append(deviceIds, e.PrototypeId)
 			}
 		}
 	}
@@ -78,6 +78,7 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 	if len(imageIds) > 0 {
 		err = n.Db.Model(&MapImage{}).
 			Where("id in (?)", imageIds).
+			Preload("Image").
 			Find(&images).
 			Error
 	}
@@ -106,8 +107,6 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 			Error
 	}
 
-	//debug.Println(devices)
-	//fmt.Println("---")
 
 	for _, l := range v.Layers {
 		for _, e := range l.Elements {

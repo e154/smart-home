@@ -49,8 +49,27 @@ func (n MapDevices) Update(m *MapDevice) (err error) {
 	return
 }
 
-func (n MapDevices) Delete(mapId int64) (err error) {
-	err = n.Db.Delete(&MapDevice{Id: mapId}).Error
+func (n MapDevices) Delete(id int64) (err error) {
+	fmt.Println(id)
+
+	tx := n.Db.Begin()
+	if err = tx.Delete(&MapDevice{Id: id}).Error; err != nil {
+		tx.Rollback()
+		return
+	}
+
+	if id != 0 {
+		err = tx.Model(&MapElement{}).
+			Where("prototype_id = ? and prototype_type = 'device'", id).
+			Update("prototype_id", "").
+			Error
+	}
+
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+	tx.Commit()
 	return
 }
 

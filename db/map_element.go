@@ -50,7 +50,61 @@ func (n MapElements) Add(v *MapElement) (id int64, err error) {
 
 func (n MapElements) GetById(mapId int64) (v *MapElement, err error) {
 	v = &MapElement{Id: mapId}
-	err = n.Db.First(&v).Error
+	if err = n.Db.First(&v).Error; err != nil {
+		return
+	}
+
+	if v.PrototypeId == 0 {
+		return
+	}
+
+	switch v.PrototypeType {
+	case PrototypeTypeText:
+		text := &MapText{}
+		err = n.Db.Model(&MapText{}).
+			Where("id = ?", v.PrototypeId).
+			First(&text).
+			Error
+
+		if err == nil {
+			v.Prototype = Prototype{
+				MapText: text,
+			}
+		}
+	case PrototypeTypeImage:
+		image := &MapImage{}
+		err = n.Db.Model(&MapImage{}).
+			Where("id = ?", v.PrototypeId).
+			First(&image).
+			Error
+		if err == nil {
+			v.Prototype = Prototype{
+				MapImage: image,
+			}
+		}
+	case PrototypeTypeDevice:
+		device := &MapDevice{}
+		err = n.Db.Model(&MapDevice{}).
+			Where("id = ?", v.PrototypeId).
+			Preload("Image").
+			Preload("States").
+			Preload("States.Image").
+			Preload("States.DeviceState").
+			Preload("Actions").
+			Preload("Actions.Image").
+			Preload("Actions.DeviceAction").
+			Preload("Device").
+			Preload("Device.States").
+			Preload("Device.Actions").
+			First(&device).
+			Error
+		if err == nil {
+			v.Prototype = Prototype{
+				MapDevice: device,
+			}
+		}
+	}
+
 	return
 }
 

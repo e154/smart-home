@@ -74,9 +74,14 @@ func (n *MapImage) List(limit, offset int64, orderBy, sort string) (list []*m.Ma
 
 func (n *MapImage) fromDb(dbVer *db.MapImage) (ver *m.MapImage) {
 	ver = &m.MapImage{
-		Id:        dbVer.Id,
-		ImageId:   dbVer.ImageId,
-		Style:     dbVer.Style,
+		Id:      dbVer.Id,
+		ImageId: dbVer.ImageId,
+		Style:   dbVer.Style,
+	}
+
+	if dbVer.Image != nil {
+		imageAdaptor := GetImageAdaptor(n.db)
+		ver.Image = imageAdaptor.fromDb(dbVer.Image)
 	}
 
 	return

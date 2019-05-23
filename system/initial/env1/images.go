@@ -121,6 +121,12 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 			Size:     2718,
 			Name:     "socket_v3_r.svg",
 		},
+		"map-schematic-original": {
+			Image:    "9384f1f6f9c2f4bf00fbc6debaae9b26.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     195108,
+			Name:     "map-schematic-original.svg",
+		},
 	}
 
 	var err error

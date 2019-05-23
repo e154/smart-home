@@ -128,7 +128,8 @@ func (s *Server) setControllers() {
 	// map element
 	v1.POST("/map_element", s.af.Auth, s.ControllersV1.MapElement.Add)
 	v1.GET("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.GetById)
-	v1.PUT("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.Update)
+	v1.PUT("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.UpdateFull)
+	v1.PUT("/map_element/:id/element_only", s.af.Auth, s.ControllersV1.MapElement.UpdateElement)
 	v1.DELETE("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.Delete)
 	v1.GET("/map_elements", s.af.Auth, s.ControllersV1.MapElement.GetList)
 	v1.PUT("/map_elements/sort", s.af.Auth, s.ControllersV1.MapElement.Sort)

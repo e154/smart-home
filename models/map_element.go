@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/system/validation"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/null"
+	"encoding/json"
 )
 
 type MapElementGraphSettingsPosition struct {
@@ -21,6 +22,44 @@ type Prototype struct {
 	*MapImage
 	*MapText
 	*MapDevice
+}
+
+func (n Prototype) MarshalJSON() (b []byte, err error) {
+
+	switch {
+	case n.MapText != nil:
+		b, err = json.Marshal(n.MapText)
+	case n.MapImage != nil:
+		b, err = json.Marshal(n.MapImage)
+	case n.MapDevice != nil:
+		b, err = json.Marshal(n.MapDevice)
+	default:
+		b, err = json.Marshal(struct{}{})
+		return
+	}
+	return
+}
+
+func (n *Prototype) UnmarshalJSON(data []byte) (err error) {
+
+	device := &MapDevice{}
+	err = json.Unmarshal(data, device)
+	if device.Device != nil && device.Device.Id != 0 && device.DeviceId != 0 {
+		n.MapDevice = device
+		return
+	}
+
+	image := &MapImage{}
+	err = json.Unmarshal(data, image)
+	if image.ImageId != 0 {
+		n.MapImage = image
+		return
+	}
+
+	text := &MapText{}
+	err = json.Unmarshal(data, text)
+	n.MapText = text
+	return
 }
 
 type MapElement struct {

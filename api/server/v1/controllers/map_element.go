@@ -147,7 +147,7 @@ func (c ControllerMapElement) GetById(ctx *gin.Context) {
 //   schema:
 //     $ref: '#/definitions/UpdateMapElement'
 //     type: object
-// summary: update map element by id
+// summary: full update map element by id
 // description:
 // security:
 // - ApiKeyAuth: []
@@ -168,7 +168,7 @@ func (c ControllerMapElement) GetById(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerMapElement) Update(ctx *gin.Context) {
+func (c ControllerMapElement) UpdateFull(ctx *gin.Context) {
 
 	aid, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -190,6 +190,86 @@ func (c ControllerMapElement) Update(ctx *gin.Context) {
 	common.Copy(&mapElement, &params, common.JsonEngine)
 
 	mapElement, errs, err := c.command.MapElement.Update(mapElement)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	if len(errs) > 0 {
+		err400 := NewError(400)
+		err400.ValidationToErrors(errs).Send(ctx)
+		return
+	}
+
+	result := &models.MapElement{}
+	common.Copy(&result, &mapElement, common.JsonEngine)
+
+	resp := NewSuccess()
+	resp.SetData(result).Send(ctx)
+}
+
+// swagger:operation PUT /map_element/{id}/element_only mapElementUpdateById
+// ---
+// parameters:
+// - description: MapElement ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update map element params
+//   in: body
+//   name: map_element
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateMapElement'
+//     type: object
+// summary: update map element only by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - map_element
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/MapElement'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerMapElement) UpdateElement(ctx *gin.Context) {
+
+	aid, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	params := &models.UpdateMapElement{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	params.Id = int64(aid)
+
+	mapElement := &m.MapElement{}
+	common.Copy(&mapElement, &params, common.JsonEngine)
+
+	mapElement, errs, err := c.command.MapElement.UpdateElement(mapElement)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {

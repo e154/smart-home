@@ -66,6 +66,34 @@ func (n *MapElementCommand) Update(params *m.MapElement) (result *m.MapElement, 
 	return
 }
 
+func (n *MapElementCommand) UpdateElement(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
+
+	var old *m.MapElement
+	if old, err = n.adaptors.MapElement.GetById(params.Id); err != nil {
+		return
+	}
+
+	var m *m.MapElement
+	common.Copy(&m, &params, common.JsonEngine)
+	m.PrototypeId = old.PrototypeId
+	m.PrototypeType = old.PrototypeType
+	m.Prototype = old.Prototype
+
+	// validation
+	_, errs = m.Valid()
+	if len(errs) > 0 {
+		return
+	}
+
+	if err = n.adaptors.MapElement.Update(m); err != nil {
+		return
+	}
+
+	result, err = n.adaptors.MapElement.GetById(m.Id)
+
+	return
+}
+
 func (n *MapElementCommand) Sort(params []*m.SortMapElement) (err error) {
 
 	for _, s := range params {

@@ -5,9 +5,10 @@ import (
 )
 
 type MapImage struct {
-	Id        int64     `json:"id"`
-	ImageId   int64     `json:"image_id" valid:"Required"`
-	Style     string    `json:"style"`
+	Id      int64  `json:"id"`
+	Image   *Image `json:"image"`
+	ImageId int64  `json:"image_id" valid:"Required"`
+	Style   string `json:"style"`
 }
 
 func (m *MapImage) Valid() (ok bool, errs []*validation.Error) {

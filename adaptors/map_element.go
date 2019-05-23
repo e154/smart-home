@@ -6,6 +6,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"fmt"
 	"encoding/json"
+	"github.com/e154/smart-home/common"
 )
 
 type MapElement struct {
@@ -26,18 +27,18 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 	case ver.Prototype.MapText != nil:
 		textAdaptor := GetMapTextAdaptor(n.db)
 		ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
-		ver.PrototypeType = "text"
+		ver.PrototypeType = common.PrototypeTypeText
 	case ver.Prototype.MapImage != nil:
 		imageAdaptor := GetMapImageAdaptor(n.db)
 		ver.PrototypeId, err = imageAdaptor.Add(ver.Prototype.MapImage)
-		ver.PrototypeType = "image"
+		ver.PrototypeType = common.PrototypeTypeImage
 	case ver.Prototype.MapDevice != nil:
 		deviceAdaptor := GetMapDeviceAdaptor(n.db)
 		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
 			return
 		}
 
-		ver.PrototypeType = "device"
+		ver.PrototypeType = common.PrototypeTypeDevice
 		//actions
 		deviceAction := GetMapDeviceActionAdaptor(n.db)
 		//err = deviceAction.AddMultiple(t.Actions)
@@ -98,19 +99,18 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 
 	// delete old prototype
 	switch oldVer.PrototypeType {
-	case "text":
+	case common.PrototypeTypeText:
 		textAdaptor := GetMapTextAdaptor(n.db)
-		err = textAdaptor.Delete(ver.PrototypeId)
-	case "image":
+		err = textAdaptor.Delete(oldVer.PrototypeId)
+	case common.PrototypeTypeImage:
 		imageAdaptor := GetMapImageAdaptor(n.db)
-		err = imageAdaptor.Delete(ver.PrototypeId)
-	case "device":
+		err = imageAdaptor.Delete(oldVer.PrototypeId)
+	case common.PrototypeTypeDevice:
 		deviceAdaptor := GetMapDeviceAdaptor(n.db)
-		err = deviceAdaptor.Delete(ver.PrototypeId)
+		err = deviceAdaptor.Delete(oldVer.PrototypeId)
 	default:
-		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
-		log.Warningf(err.Error())
-
+		//err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
+		//log.Warningf(err.Error())
 	}
 
 	if err != nil {
@@ -118,27 +118,31 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 	}
 
 	// add new prototype
-	switch {
-	case ver.Prototype.MapText != nil:
+	switch ver.PrototypeType {
+	case common.PrototypeTypeText:
 		textAdaptor := GetMapTextAdaptor(n.db)
 		ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
-		ver.PrototypeType = "text"
-	case ver.Prototype.MapImage != nil:
+	case common.PrototypeTypeImage:
 		imageAdaptor := GetMapImageAdaptor(n.db)
-		ver.PrototypeId, err = imageAdaptor.Add(ver.Prototype.MapImage)
-		ver.PrototypeType = "image"
-	case ver.Prototype.MapDevice != nil:
+		mapImage := &m.MapImage{
+			ImageId: ver.Prototype.MapImage.ImageId,
+			Style:   "", //TODO add style to image
+		}
+		ver.PrototypeId, err = imageAdaptor.Add(mapImage)
+	case common.PrototypeTypeDevice:
 		deviceAdaptor := GetMapDeviceAdaptor(n.db)
 		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
 			return
 		}
-		ver.PrototypeType = "device"
 		//actions
 		deviceAction := GetMapDeviceActionAdaptor(n.db)
 		deviceAction.AddMultiple(ver.Prototype.MapDevice.Actions)
 		//states
 		stateAdaptor := GetMapDeviceStateAdaptor(n.db)
 		stateAdaptor.AddMultiple(ver.Prototype.MapDevice.States)
+	default:
+		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
+		log.Warningf(err.Error())
 	}
 
 	if err != nil {
@@ -158,19 +162,21 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 		return
 	}
 
-	switch ver.PrototypeType {
-	case "text":
-		textAdaptor := GetMapTextAdaptor(n.db)
-		err = textAdaptor.Delete(ver.PrototypeId)
-	case "image":
-		imageAdaptor := GetMapImageAdaptor(n.db)
-		err = imageAdaptor.Delete(ver.PrototypeId)
-	case "device":
-		deviceAdaptor := GetMapDeviceAdaptor(n.db)
-		err = deviceAdaptor.Delete(ver.PrototypeId)
-	default:
-		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
-		log.Warningf(err.Error())
+	if ver.PrototypeId != 0 {
+		switch ver.PrototypeType {
+		case common.PrototypeTypeText:
+			textAdaptor := GetMapTextAdaptor(n.db)
+			err = textAdaptor.Delete(ver.PrototypeId)
+		case common.PrototypeTypeImage:
+			imageAdaptor := GetMapImageAdaptor(n.db)
+			err = imageAdaptor.Delete(ver.PrototypeId)
+		case common.PrototypeTypeDevice:
+			deviceAdaptor := GetMapDeviceAdaptor(n.db)
+			err = deviceAdaptor.Delete(ver.PrototypeId)
+		default:
+			err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
+			log.Warningf(err.Error())
+		}
 	}
 
 	if err != nil {
