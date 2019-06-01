@@ -7,17 +7,17 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
-type RoleCommand struct {
-	*CommonCommand
+type RoleEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewRoleCommand(common *CommonCommand) *RoleCommand {
-	return &RoleCommand{
-		CommonCommand: common,
+func NewRoleEndpoint(common *CommonEndpoint) *RoleEndpoint {
+	return &RoleEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (n *RoleCommand) Add(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
+func (n *RoleEndpoint) Add(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
 
 	// validation
 	_, errs = params.Valid()
@@ -34,14 +34,14 @@ func (n *RoleCommand) Add(params *m.Role) (result *m.Role, errs []*validation.Er
 	return
 }
 
-func (n *RoleCommand) GetByName(name string) (result *m.Role, err error) {
+func (n *RoleEndpoint) GetByName(name string) (result *m.Role, err error) {
 
 	result, err = n.adaptors.Role.GetByName(name)
 
 	return
 }
 
-func (n *RoleCommand) Update(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
+func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
 
 	role, err := n.adaptors.Role.GetByName(params.Name)
 	if err != nil {
@@ -71,14 +71,14 @@ func (n *RoleCommand) Update(params *m.Role) (result *m.Role, errs []*validation
 	return
 }
 
-func (n *RoleCommand) GetList(limit, offset int64, order, sortBy string) (result []*m.Role, total int64, err error) {
+func (n *RoleEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Role, total int64, err error) {
 
 	result, total, err = n.adaptors.Role.List(limit, offset, order, sortBy)
 
 	return
 }
 
-func (n *RoleCommand) Delete(name string) (err error) {
+func (n *RoleEndpoint) Delete(name string) (err error) {
 
 	if name == "admin" {
 		err = errors.New("admin is base role")
@@ -89,14 +89,14 @@ func (n *RoleCommand) Delete(name string) (err error) {
 	return
 }
 
-func (n *RoleCommand) Search(query string, limit, offset int) (result []*m.Role, total int64, err error) {
+func (n *RoleEndpoint) Search(query string, limit, offset int) (result []*m.Role, total int64, err error) {
 
 	result, total, err = n.adaptors.Role.Search(query, limit, offset)
 
 	return
 }
 
-func (n *RoleCommand) GetAccessList(roleName string,
+func (n *RoleEndpoint) GetAccessList(roleName string,
 	accessListService *access_list.AccessListService) (accessList access_list.AccessList, err error) {
 
 	var role *m.Role
@@ -109,7 +109,7 @@ func (n *RoleCommand) GetAccessList(roleName string,
 	return
 }
 
-func (n *RoleCommand) UpdateAccessList(roleName string, accessListDif map[string]map[string]bool) (err error) {
+func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[string]map[string]bool) (err error) {
 
 	var role *m.Role
 	if role, err = n.adaptors.Role.GetByName(roleName); err != nil {

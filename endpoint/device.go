@@ -6,17 +6,17 @@ import (
 	"errors"
 )
 
-type DeviceCommand struct {
-	*CommonCommand
+type DeviceEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewDeviceCommand(common *CommonCommand) *DeviceCommand {
-	return &DeviceCommand{
-		CommonCommand: common,
+func NewDeviceEndpoint(common *CommonEndpoint) *DeviceEndpoint {
+	return &DeviceEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (d *DeviceCommand) Add(params *m.Device) (device *m.Device, errs []*validation.Error, err error) {
+func (d *DeviceEndpoint) Add(params *m.Device) (device *m.Device, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
 	if len(errs) > 0 {
@@ -33,12 +33,12 @@ func (d *DeviceCommand) Add(params *m.Device) (device *m.Device, errs []*validat
 	return
 }
 
-func (d *DeviceCommand) GetById(deviceId int64) (device *m.Device, err error) {
+func (d *DeviceEndpoint) GetById(deviceId int64) (device *m.Device, err error) {
 	device, err = d.adaptors.Device.GetById(deviceId)
 	return
 }
 
-func (d *DeviceCommand) Update(device *m.Device) (result *m.Device, errs []*validation.Error, err error) {
+func (d *DeviceEndpoint) Update(device *m.Device) (result *m.Device, errs []*validation.Error, err error) {
 
 	_, errs = device.Valid()
 	if len(errs) > 0 {
@@ -54,14 +54,14 @@ func (d *DeviceCommand) Update(device *m.Device) (result *m.Device, errs []*vali
 	return
 }
 
-func (d *DeviceCommand) GetList(limit, offset int64, order, sortBy string) (devices []*m.Device, total int64, err error) {
+func (d *DeviceEndpoint) GetList(limit, offset int64, order, sortBy string) (devices []*m.Device, total int64, err error) {
 
 	devices, total, err = d.adaptors.Device.List(limit, offset, order, sortBy)
 
 	return
 }
 
-func (d *DeviceCommand) Delete(deviceId int64) (err error) {
+func (d *DeviceEndpoint) Delete(deviceId int64) (err error) {
 
 	if deviceId == 0 {
 		err = errors.New("device id is null")
@@ -78,7 +78,7 @@ func (d *DeviceCommand) Delete(deviceId int64) (err error) {
 	return
 }
 
-func (d *DeviceCommand) Search(query string, limit, offset int) (devices []*m.Device, total int64, err error) {
+func (d *DeviceEndpoint) Search(query string, limit, offset int) (devices []*m.Device, total int64, err error) {
 
 	devices, total, err = d.adaptors.Device.Search(query, limit, offset)
 

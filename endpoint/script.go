@@ -8,17 +8,17 @@ import (
 	"errors"
 )
 
-type ScriptCommand struct {
-	*CommonCommand
+type ScriptEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewScriptCommand(common *CommonCommand) *ScriptCommand {
-	return &ScriptCommand{
-		CommonCommand: common,
+func NewScriptEndpoint(common *CommonEndpoint) *ScriptEndpoint {
+	return &ScriptEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (n *ScriptCommand) Add(params *m.Script) (result *m.Script, errs []*validation.Error, err error) {
+func (n *ScriptEndpoint) Add(params *m.Script) (result *m.Script, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
 	if len(errs) > 0 {
@@ -44,14 +44,14 @@ func (n *ScriptCommand) Add(params *m.Script) (result *m.Script, errs []*validat
 	return
 }
 
-func (n *ScriptCommand) GetById(scriptId int64) (result *m.Script, err error) {
+func (n *ScriptEndpoint) GetById(scriptId int64) (result *m.Script, err error) {
 
 	result, err = n.adaptors.Script.GetById(scriptId)
 
 	return
 }
 
-func (n *ScriptCommand) Update(params *m.Script) (result *m.Script, errs []*validation.Error, err error) {
+func (n *ScriptEndpoint) Update(params *m.Script) (result *m.Script, errs []*validation.Error, err error) {
 
 	var script *m.Script
 	if script, err = n.adaptors.Script.GetById(params.Id); err != nil {
@@ -86,14 +86,14 @@ func (n *ScriptCommand) Update(params *m.Script) (result *m.Script, errs []*vali
 	return
 }
 
-func (n *ScriptCommand) GetList(limit, offset int64, order, sortBy string) (result []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Script, total int64, err error) {
 
 	result, total, err = n.adaptors.Script.List(limit, offset, order, sortBy)
 
 	return
 }
 
-func (n *ScriptCommand) DeleteScriptById(scriptId int64) (err error) {
+func (n *ScriptEndpoint) DeleteScriptById(scriptId int64) (err error) {
 
 	if scriptId == 0 {
 		err = errors.New("script id is null")
@@ -110,7 +110,7 @@ func (n *ScriptCommand) DeleteScriptById(scriptId int64) (err error) {
 	return
 }
 
-func (n *ScriptCommand) Execute(scriptId int64) (result string, err error) {
+func (n *ScriptEndpoint) Execute(scriptId int64) (result string, err error) {
 
 	var script *m.Script
 	if script, err = n.adaptors.Script.GetById(scriptId); err != nil {
@@ -127,7 +127,7 @@ func (n *ScriptCommand) Execute(scriptId int64) (result string, err error) {
 	return
 }
 
-func (n *ScriptCommand) ExecuteSource(script *m.Script) (result string, err error) {
+func (n *ScriptEndpoint) ExecuteSource(script *m.Script) (result string, err error) {
 
 	var engine *scripts.Engine
 	if engine, err = n.scriptService.NewEngine(script); err != nil {
@@ -143,7 +143,7 @@ func (n *ScriptCommand) ExecuteSource(script *m.Script) (result string, err erro
 	return
 }
 
-func (n *ScriptCommand) Search(query string, limit, offset int) (devices []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) Search(query string, limit, offset int) (devices []*m.Script, total int64, err error) {
 
 	devices, total, err = n.adaptors.Script.Search(query, limit, offset)
 

@@ -20,18 +20,18 @@ type ControllerCommon struct {
 	adaptors   *adaptors.Adaptors
 	core       *core.Core
 	accessList *access_list.AccessListService
-	endpoint   *endpoint.Command
+	endpoint   *endpoint.Endpoint
 }
 
 func NewControllerCommon(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	accessList *access_list.AccessListService,
-	command *endpoint.Command) *ControllerCommon {
+	endpoint *endpoint.Endpoint) *ControllerCommon {
 	return &ControllerCommon{
 		adaptors:   adaptors,
 		core:       core,
 		accessList: accessList,
-		endpoint:   command,
+		endpoint:   endpoint,
 	}
 }
 

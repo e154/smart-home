@@ -8,17 +8,17 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 )
 
-type FlowCommand struct {
-	*CommonCommand
+type FlowEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewFlowCommand(common *CommonCommand) *FlowCommand {
-	return &FlowCommand{
-		CommonCommand: common,
+func NewFlowEndpoint(common *CommonEndpoint) *FlowEndpoint {
+	return &FlowEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (f *FlowCommand) Add(params *m.Flow) (result *m.Flow, errs []*validation.Error, err error) {
+func (f *FlowEndpoint) Add(params *m.Flow) (result *m.Flow, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
 	if len(errs) > 0 {
@@ -39,14 +39,14 @@ func (f *FlowCommand) Add(params *m.Flow) (result *m.Flow, errs []*validation.Er
 	return
 }
 
-func (f *FlowCommand) GetById(id int64) (flow *m.Flow, err error) {
+func (f *FlowEndpoint) GetById(id int64) (flow *m.Flow, err error) {
 
 	flow, err = f.adaptors.Flow.GetById(id)
 
 	return
 }
 
-func (f *FlowCommand) GetRedactor(flowId int64) (redactorFlow *m.RedactorFlow, err error) {
+func (f *FlowEndpoint) GetRedactor(flowId int64) (redactorFlow *m.RedactorFlow, err error) {
 
 	var flow *m.Flow
 	if flow, err = f.adaptors.Flow.GetById(flowId); err != nil {
@@ -58,14 +58,14 @@ func (f *FlowCommand) GetRedactor(flowId int64) (redactorFlow *m.RedactorFlow, e
 	return
 }
 
-func (f *FlowCommand) GetList(limit, offset int64, order, sortBy string) (list []*m.Flow, total int64, err error) {
+func (f *FlowEndpoint) GetList(limit, offset int64, order, sortBy string) (list []*m.Flow, total int64, err error) {
 
 	list, total, err = f.adaptors.Flow.List(limit, offset, order, sortBy)
 
 	return
 }
 
-func (f *FlowCommand) Search(query string, limit, offset int) (list []*m.Flow, total int64, err error) {
+func (f *FlowEndpoint) Search(query string, limit, offset int) (list []*m.Flow, total int64, err error) {
 
 	if list, total, err = f.adaptors.Flow.Search(query, limit, offset); err != nil {
 		return
@@ -74,7 +74,7 @@ func (f *FlowCommand) Search(query string, limit, offset int) (list []*m.Flow, t
 	return
 }
 
-func (f *FlowCommand) Update(params *m.Flow) (result *m.Flow, errs []*validation.Error, err error) {
+func (f *FlowEndpoint) Update(params *m.Flow) (result *m.Flow, errs []*validation.Error, err error) {
 
 	var flow *m.Flow
 	if flow, err = f.adaptors.Flow.GetById(flow.Id); err != nil {
@@ -102,7 +102,7 @@ func (f *FlowCommand) Update(params *m.Flow) (result *m.Flow, errs []*validation
 	return
 }
 
-func (f *FlowCommand) Delete(flowId int64) (err error) {
+func (f *FlowEndpoint) Delete(flowId int64) (err error) {
 
 	var flow *m.Flow
 	if flow, err = f.adaptors.Flow.GetById(flowId); err != nil {
@@ -117,7 +117,7 @@ func (f *FlowCommand) Delete(flowId int64) (err error) {
 	return
 }
 
-func (f *FlowCommand) UpdateRedactor(params *m.RedactorFlow) (result *m.RedactorFlow,
+func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.RedactorFlow,
 	errs []*validation.Error, err error) {
 
 	//debug.Println(params)
@@ -330,7 +330,7 @@ func (f *FlowCommand) UpdateRedactor(params *m.RedactorFlow) (result *m.Redactor
 	return
 }
 
-func (n *FlowCommand) ExportToRedactor(f *m.Flow) (redactorFlow *m.RedactorFlow, err error) {
+func (n *FlowEndpoint) ExportToRedactor(f *m.Flow) (redactorFlow *m.RedactorFlow, err error) {
 
 	if f == nil {
 		err = errors.New("ExportToRedactor: Nil point")

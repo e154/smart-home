@@ -6,17 +6,17 @@ import (
 	"errors"
 )
 
-type DeviceActionCommand struct {
-	*CommonCommand
+type DeviceActionEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewDeviceActionCommand(common *CommonCommand) *DeviceActionCommand {
-	return &DeviceActionCommand{
-		CommonCommand: common,
+func NewDeviceActionEndpoint(common *CommonEndpoint) *DeviceActionEndpoint {
+	return &DeviceActionEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (d *DeviceActionCommand) Add(params *m.DeviceAction) (action *m.DeviceAction, errs []*validation.Error, err error) {
+func (d *DeviceActionEndpoint) Add(params *m.DeviceAction) (action *m.DeviceAction, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
 	if len(errs) > 0 {
@@ -33,7 +33,7 @@ func (d *DeviceActionCommand) Add(params *m.DeviceAction) (action *m.DeviceActio
 	return
 }
 
-func (d *DeviceActionCommand) Update(params *m.DeviceAction) (result *m.DeviceAction, errs []*validation.Error, err error) {
+func (d *DeviceActionEndpoint) Update(params *m.DeviceAction) (result *m.DeviceAction, errs []*validation.Error, err error) {
 
 	var action *m.DeviceAction
 	if action, err = d.adaptors.DeviceAction.GetById(params.Id); err != nil {
@@ -55,14 +55,14 @@ func (d *DeviceActionCommand) Update(params *m.DeviceAction) (result *m.DeviceAc
 	return
 }
 
-func (d *DeviceActionCommand) GetById(id int64) (device *m.DeviceAction, err error) {
+func (d *DeviceActionEndpoint) GetById(id int64) (device *m.DeviceAction, err error) {
 
 	device, err = d.adaptors.DeviceAction.GetById(id)
 
 	return
 }
 
-func (d *DeviceActionCommand) Delete(id int64) (err error) {
+func (d *DeviceActionEndpoint) Delete(id int64) (err error) {
 
 	if id == 0 {
 		err = errors.New("action id is null")
@@ -79,14 +79,14 @@ func (d *DeviceActionCommand) Delete(id int64) (err error) {
 	return
 }
 
-func (d *DeviceActionCommand) GetList(deviceId int64) (actions []*m.DeviceAction, err error) {
+func (d *DeviceActionEndpoint) GetList(deviceId int64) (actions []*m.DeviceAction, err error) {
 
 	actions, err = d.adaptors.DeviceAction.GetByDeviceId(deviceId)
 
 	return
 }
 
-func (d *DeviceActionCommand) Search(query string, limit, offset int) (actions []*m.DeviceAction, total int64, err error) {
+func (d *DeviceActionEndpoint) Search(query string, limit, offset int) (actions []*m.DeviceAction, total int64, err error) {
 
 	actions, total, err = d.adaptors.DeviceAction.Search(query, limit, offset)
 

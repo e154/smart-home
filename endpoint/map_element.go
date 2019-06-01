@@ -7,17 +7,17 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
-type MapElementCommand struct {
-	*CommonCommand
+type MapElementEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewMapElementCommand(common *CommonCommand) *MapElementCommand {
-	return &MapElementCommand{
-		CommonCommand: common,
+func NewMapElementEndpoint(common *CommonEndpoint) *MapElementEndpoint {
+	return &MapElementEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (n *MapElementCommand) Add(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
+func (n *MapElementEndpoint) Add(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
 
 	// validation
 	_, errs = params.Valid()
@@ -35,14 +35,14 @@ func (n *MapElementCommand) Add(params *m.MapElement) (result *m.MapElement, err
 	return
 }
 
-func (n *MapElementCommand) GetById(mId int64) (result *m.MapElement, err error) {
+func (n *MapElementEndpoint) GetById(mId int64) (result *m.MapElement, err error) {
 
 	result, err = n.adaptors.MapElement.GetById(mId)
 
 	return
 }
 
-func (n *MapElementCommand) Update(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
+func (n *MapElementEndpoint) Update(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
 
 	var m *m.MapElement
 	if m, err = n.adaptors.MapElement.GetById(params.Id); err != nil {
@@ -66,7 +66,7 @@ func (n *MapElementCommand) Update(params *m.MapElement) (result *m.MapElement, 
 	return
 }
 
-func (n *MapElementCommand) UpdateElement(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
+func (n *MapElementEndpoint) UpdateElement(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
 
 	var old *m.MapElement
 	if old, err = n.adaptors.MapElement.GetById(params.Id); err != nil {
@@ -94,7 +94,7 @@ func (n *MapElementCommand) UpdateElement(params *m.MapElement) (result *m.MapEl
 	return
 }
 
-func (n *MapElementCommand) Sort(params []*m.SortMapElement) (err error) {
+func (n *MapElementEndpoint) Sort(params []*m.SortMapElement) (err error) {
 
 	for _, s := range params {
 		n.adaptors.MapElement.Sort(&m.MapElement{
@@ -106,7 +106,7 @@ func (n *MapElementCommand) Sort(params []*m.SortMapElement) (err error) {
 	return
 }
 
-func (n *MapElementCommand) Delete(mId int64) (err error) {
+func (n *MapElementEndpoint) Delete(mId int64) (err error) {
 
 	if mId == 0 {
 		err = errors.New("m id is null")
@@ -122,7 +122,7 @@ func (n *MapElementCommand) Delete(mId int64) (err error) {
 	return
 }
 
-func (n *MapElementCommand) GetList(limit, offset int64, order, sortBy string) (result []*m.MapElement, total int64, err error) {
+func (n *MapElementEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.MapElement, total int64, err error) {
 
 	result, total, err = n.adaptors.MapElement.List(limit, offset, order, sortBy)
 

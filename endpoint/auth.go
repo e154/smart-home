@@ -14,17 +14,17 @@ const (
 	AdminId = 1
 )
 
-type AuthCommand struct {
-	*CommonCommand
+type AuthEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewAuthCommand(common *CommonCommand) *AuthCommand {
-	return &AuthCommand{
-		CommonCommand: common,
+func NewAuthEndpoint(common *CommonEndpoint) *AuthEndpoint {
+	return &AuthEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (a *AuthCommand) SignIn(email, password string, ip string) (user *m.User, accessToken string, err error) {
+func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, accessToken string, err error) {
 
 	if user, err = a.adaptors.User.GetByEmail(email); err != nil {
 		err = errors.New("user not found")
@@ -78,16 +78,16 @@ func (a *AuthCommand) SignIn(email, password string, ip string) (user *m.User, a
 	return
 }
 
-func (a *AuthCommand) SignOut(user *m.User) (err error) {
+func (a *AuthEndpoint) SignOut(user *m.User) (err error) {
 	err = a.adaptors.User.ClearToken(user)
 	return
 }
 
-func (a *AuthCommand) Recovery() {}
+func (a *AuthEndpoint) Recovery() {}
 
-func (a *AuthCommand) Reset() {}
+func (a *AuthEndpoint) Reset() {}
 
-func (a *AuthCommand) AccessList(user *m.User, accessListService *access_list.AccessListService) (accessList *access_list.AccessList, err error) {
+func (a *AuthEndpoint) AccessList(user *m.User, accessListService *access_list.AccessListService) (accessList *access_list.AccessList, err error) {
 	accessList = accessListService.List
 	return
 }

@@ -7,17 +7,17 @@ import (
 	"errors"
 )
 
-type MapLayerCommand struct {
-	*CommonCommand
+type MapLayerEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewMapLayerCommand(common *CommonCommand) *MapLayerCommand {
-	return &MapLayerCommand{
-		CommonCommand: common,
+func NewMapLayerEndpoint(common *CommonEndpoint) *MapLayerEndpoint {
+	return &MapLayerEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (n *MapLayerCommand) Add(params *m.MapLayer) (result *m.MapLayer, errs []*validation.Error, err error) {
+func (n *MapLayerEndpoint) Add(params *m.MapLayer) (result *m.MapLayer, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
 	if len(errs) > 0 {
@@ -34,14 +34,14 @@ func (n *MapLayerCommand) Add(params *m.MapLayer) (result *m.MapLayer, errs []*v
 	return
 }
 
-func (n *MapLayerCommand) GetById(mId int64) (result *m.MapLayer, err error) {
+func (n *MapLayerEndpoint) GetById(mId int64) (result *m.MapLayer, err error) {
 
 	result, err = n.adaptors.MapLayer.GetById(mId)
 
 	return
 }
 
-func (n *MapLayerCommand) Update(params *m.MapLayer) (result *m.MapLayer, errs []*validation.Error, err error) {
+func (n *MapLayerEndpoint) Update(params *m.MapLayer) (result *m.MapLayer, errs []*validation.Error, err error) {
 
 	var m *m.MapLayer
 	if m, err = n.adaptors.MapLayer.GetById(params.Id); err != nil {
@@ -65,7 +65,7 @@ func (n *MapLayerCommand) Update(params *m.MapLayer) (result *m.MapLayer, errs [
 	return
 }
 
-func (n *MapLayerCommand) Sort(params []*m.SortMapLayer) (err error) {
+func (n *MapLayerEndpoint) Sort(params []*m.SortMapLayer) (err error) {
 
 	for _, s := range params {
 		n.adaptors.MapLayer.Sort(&m.MapLayer{
@@ -77,7 +77,7 @@ func (n *MapLayerCommand) Sort(params []*m.SortMapLayer) (err error) {
 	return
 }
 
-func (n *MapLayerCommand) Delete(mId int64) (err error) {
+func (n *MapLayerEndpoint) Delete(mId int64) (err error) {
 
 	if mId == 0 {
 		err = errors.New("m id is null")
@@ -93,7 +93,7 @@ func (n *MapLayerCommand) Delete(mId int64) (err error) {
 	return
 }
 
-func (n *MapLayerCommand) GetList(limit, offset int64, order, sortBy string) (result []*m.MapLayer, total int64, err error) {
+func (n *MapLayerEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.MapLayer, total int64, err error) {
 
 	result, total, err = n.adaptors.MapLayer.List(limit, offset, order, sortBy)
 

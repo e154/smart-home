@@ -8,17 +8,17 @@ import (
 	"strings"
 )
 
-type LogCommand struct {
-	*CommonCommand
+type LogEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewLogCommand(common *CommonCommand) *LogCommand {
-	return &LogCommand{
-		CommonCommand: common,
+func NewLogEndpoint(common *CommonEndpoint) *LogEndpoint {
+	return &LogEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (l *LogCommand) Add(log *m.Log) (result *m.Log, errs []*validation.Error, err error) {
+func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs []*validation.Error, err error) {
 
 	_, errs = log.Valid()
 	if len(errs) > 0 {
@@ -35,14 +35,14 @@ func (l *LogCommand) Add(log *m.Log) (result *m.Log, errs []*validation.Error, e
 	return
 }
 
-func (l *LogCommand) GetById(id int64) (log *m.Log, err error) {
+func (l *LogEndpoint) GetById(id int64) (log *m.Log, err error) {
 
 	log, err = l.adaptors.Log.GetById(id)
 
 	return
 }
 
-func (l *LogCommand) GetList(limit, offset int64, order, sortBy, query string) (list []*m.Log, total int64, err error) {
+func (l *LogEndpoint) GetList(limit, offset int64, order, sortBy, query string) (list []*m.Log, total int64, err error) {
 
 	var queryObj *m.LogQuery
 	if query != "" {
@@ -70,14 +70,14 @@ func (l *LogCommand) GetList(limit, offset int64, order, sortBy, query string) (
 	return
 }
 
-func (l *LogCommand) Search(query string, limit, offset int) (list []*m.Log, total int64, err error) {
+func (l *LogEndpoint) Search(query string, limit, offset int) (list []*m.Log, total int64, err error) {
 
 	list, total, err = l.adaptors.Log.Search(query, limit, offset)
 
 	return
 }
 
-func (l *LogCommand) Delete(logId int64) (err error) {
+func (l *LogEndpoint) Delete(logId int64) (err error) {
 
 	if _, err = l.adaptors.Log.GetById(logId); err != nil {
 		return

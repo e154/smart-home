@@ -7,17 +7,17 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
-type NodeCommand struct {
-	*CommonCommand
+type NodeEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewNodeCommand(common *CommonCommand) *NodeCommand {
-	return &NodeCommand{
-		CommonCommand: common,
+func NewNodeEndpoint(common *CommonEndpoint) *NodeEndpoint {
+	return &NodeEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (n *NodeCommand) Add(params *m.Node) (result *m.Node, errs []*validation.Error, err error) {
+func (n *NodeEndpoint) Add(params *m.Node) (result *m.Node, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
 	if len(errs) > 0 {
@@ -38,14 +38,14 @@ func (n *NodeCommand) Add(params *m.Node) (result *m.Node, errs []*validation.Er
 	return
 }
 
-func (n *NodeCommand) GetById(nodeId int64) (result *m.Node, err error) {
+func (n *NodeEndpoint) GetById(nodeId int64) (result *m.Node, err error) {
 
 	result, err = n.adaptors.Node.GetById(nodeId)
 
 	return
 }
 
-func (n *NodeCommand) Update(params *m.Node) (result *m.Node, errs []*validation.Error, err error) {
+func (n *NodeEndpoint) Update(params *m.Node) (result *m.Node, errs []*validation.Error, err error) {
 
 	var node *m.Node
 	if node, err = n.adaptors.Node.GetById(params.Id); err != nil {
@@ -74,14 +74,14 @@ func (n *NodeCommand) Update(params *m.Node) (result *m.Node, errs []*validation
 	return
 }
 
-func (n *NodeCommand) GetList(limit, offset int64, order, sortBy string) (result []*m.Node, total int64, err error) {
+func (n *NodeEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Node, total int64, err error) {
 
 	result, total, err = n.adaptors.Node.List(limit, offset, order, sortBy)
 
 	return
 }
 
-func (n *NodeCommand) Delete(nodeId int64) (err error) {
+func (n *NodeEndpoint) Delete(nodeId int64) (err error) {
 
 	if nodeId == 0 {
 		err = errors.New("node id is null")
@@ -103,7 +103,7 @@ func (n *NodeCommand) Delete(nodeId int64) (err error) {
 	return
 }
 
-func (n *NodeCommand) Search(query string, limit, offset int) (result []*m.Node, total int64, err error) {
+func (n *NodeEndpoint) Search(query string, limit, offset int) (result []*m.Node, total int64, err error) {
 
 	result, total, err = n.adaptors.Node.Search(query, limit, offset)
 

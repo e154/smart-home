@@ -58,7 +58,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(dashboard.NewDashboard)
 	container.Provide(streamControllers.NewStreamControllers)
 	container.Provide(logging.NewLogBackend)
-	container.Provide(endpoint.NewUseCase)
+	container.Provide(endpoint.NewEndpoint)
 
 	return
 }

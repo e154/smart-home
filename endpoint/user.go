@@ -7,17 +7,17 @@ import (
 	"errors"
 )
 
-type UserCommand struct {
-	*CommonCommand
+type UserEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewUserCommand(common *CommonCommand) *UserCommand {
-	return &UserCommand{
-		CommonCommand: common,
+func NewUserEndpoint(common *CommonEndpoint) *UserEndpoint {
+	return &UserEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (n *UserCommand) Add(params *m.User,
+func (n *UserEndpoint) Add(params *m.User,
 	currentUser *m.User) (result *m.User, errs []*validation.Error, err error) {
 
 	user := &m.User{}
@@ -75,14 +75,14 @@ func (n *UserCommand) Add(params *m.User,
 	return
 }
 
-func (n *UserCommand) GetById(userId int64) (result *m.User, err error) {
+func (n *UserEndpoint) GetById(userId int64) (result *m.User, err error) {
 
 	result, err = n.adaptors.User.GetById(userId)
 
 	return
 }
 
-func (n *UserCommand) Delete(userId int64) (err error) {
+func (n *UserEndpoint) Delete(userId int64) (err error) {
 
 	var user *m.User
 	if user, err = n.adaptors.User.GetById(userId); err != nil {
@@ -99,14 +99,14 @@ func (n *UserCommand) Delete(userId int64) (err error) {
 	return
 }
 
-func (n *UserCommand) GetList(limit, offset int, order, sortBy string) (result []*m.User, total int64, err error) {
+func (n *UserEndpoint) GetList(limit, offset int, order, sortBy string) (result []*m.User, total int64, err error) {
 
 	result, total, err = n.adaptors.User.List(int64(limit), int64(offset), order, sortBy)
 
 	return
 }
 
-func (n *UserCommand) Update(params *m.User) (result *m.User, errs []*validation.Error, err error) {
+func (n *UserEndpoint) Update(params *m.User) (result *m.User, errs []*validation.Error, err error) {
 
 	var user *m.User
 	if user, err = n.adaptors.User.GetById(params.Id); err != nil {
@@ -147,7 +147,7 @@ func (n *UserCommand) Update(params *m.User) (result *m.User, errs []*validation
 	return
 }
 
-func (n *UserCommand) UpdateStatus(userId int64, newStatus string) (err error) {
+func (n *UserEndpoint) UpdateStatus(userId int64, newStatus string) (err error) {
 
 	var user *m.User
 	if user, err = n.adaptors.User.GetById(userId); err != nil {

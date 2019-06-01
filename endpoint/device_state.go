@@ -7,17 +7,17 @@ import (
 	"errors"
 )
 
-type DeviceStateCommand struct {
-	*CommonCommand
+type DeviceStateEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewDeviceStateCommand(common *CommonCommand) *DeviceStateCommand {
-	return &DeviceStateCommand{
-		CommonCommand: common,
+func NewDeviceStateEndpoint(common *CommonEndpoint) *DeviceStateEndpoint {
+	return &DeviceStateEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (d *DeviceStateCommand) Add(params *m.DeviceState) (state *m.DeviceState, id int64, errs []*validation.Error, err error) {
+func (d *DeviceStateEndpoint) Add(params *m.DeviceState) (state *m.DeviceState, id int64, errs []*validation.Error, err error) {
 
 	// validation
 	_, errs = params.Valid()
@@ -34,14 +34,14 @@ func (d *DeviceStateCommand) Add(params *m.DeviceState) (state *m.DeviceState, i
 	return
 }
 
-func (d *DeviceStateCommand) GetById(id int64) (device *m.DeviceState, err error) {
+func (d *DeviceStateEndpoint) GetById(id int64) (device *m.DeviceState, err error) {
 
 	device, err = d.adaptors.DeviceState.GetById(id)
 
 	return
 }
 
-func (d *DeviceStateCommand) Update(params *m.DeviceState) (state *m.DeviceState, errs []*validation.Error, err error) {
+func (d *DeviceStateEndpoint) Update(params *m.DeviceState) (state *m.DeviceState, errs []*validation.Error, err error) {
 
 	if state, err = d.adaptors.DeviceState.GetById(params.Id); err != nil {
 		return
@@ -64,7 +64,7 @@ func (d *DeviceStateCommand) Update(params *m.DeviceState) (state *m.DeviceState
 	return
 }
 
-func (d *DeviceStateCommand) Delete(id int64) (err error) {
+func (d *DeviceStateEndpoint) Delete(id int64) (err error) {
 
 	if id == 0 {
 		err = errors.New("action id is null")
@@ -81,7 +81,7 @@ func (d *DeviceStateCommand) Delete(id int64) (err error) {
 	return
 }
 
-func (d *DeviceStateCommand) GetList(deviceId int64) (actions []*m.DeviceState, err error) {
+func (d *DeviceStateEndpoint) GetList(deviceId int64) (actions []*m.DeviceState, err error) {
 
 	actions, err = d.adaptors.DeviceState.GetByDeviceId(deviceId)
 

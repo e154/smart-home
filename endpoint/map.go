@@ -7,17 +7,17 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
-type MapCommand struct {
-	*CommonCommand
+type MapEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewMapCommand(common *CommonCommand) *MapCommand {
-	return &MapCommand{
-		CommonCommand: common,
+func NewMapEndpoint(common *CommonEndpoint) *MapEndpoint {
+	return &MapEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (m *MapCommand) Add(params *m.Map) (result *m.Map, errs []*validation.Error, err error) {
+func (m *MapEndpoint) Add(params *m.Map) (result *m.Map, errs []*validation.Error, err error) {
 
 	// validation
 	_, errs = params.Valid()
@@ -35,21 +35,21 @@ func (m *MapCommand) Add(params *m.Map) (result *m.Map, errs []*validation.Error
 	return
 }
 
-func (m *MapCommand) GetById(id int64) (result *m.Map, err error) {
+func (m *MapEndpoint) GetById(id int64) (result *m.Map, err error) {
 
 	result, err = m.adaptors.Map.GetById(id)
 
 	return
 }
 
-func (m *MapCommand) GetFullById(mId int64) (result *m.Map, err error) {
+func (m *MapEndpoint) GetFullById(mId int64) (result *m.Map, err error) {
 
 	result, err = m.adaptors.Map.GetFullById(mId)
 
 	return
 }
 
-func (n *MapCommand) Update(params *m.Map) (result *m.Map, errs []*validation.Error, err error) {
+func (n *MapEndpoint) Update(params *m.Map) (result *m.Map, errs []*validation.Error, err error) {
 
 	var m *m.Map
 	if m, err = n.adaptors.Map.GetById(params.Id); err != nil {
@@ -72,14 +72,14 @@ func (n *MapCommand) Update(params *m.Map) (result *m.Map, errs []*validation.Er
 	return
 }
 
-func (n *MapCommand) GetList(limit, offset int64, order, sortBy string) (items []*m.Map, total int64, err error) {
+func (n *MapEndpoint) GetList(limit, offset int64, order, sortBy string) (items []*m.Map, total int64, err error) {
 
 	items, total, err = n.adaptors.Map.List(limit, offset, order, sortBy)
 
 	return
 }
 
-func (n *MapCommand) Delete(mId int64) (err error) {
+func (n *MapEndpoint) Delete(mId int64) (err error) {
 
 	if mId == 0 {
 		err = errors.New("m id is null")
@@ -96,7 +96,7 @@ func (n *MapCommand) Delete(mId int64) (err error) {
 	return
 }
 
-func (n *MapCommand) Search(query string, limit, offset int) (items []*m.Map, total int64, err error) {
+func (n *MapEndpoint) Search(query string, limit, offset int) (items []*m.Map, total int64, err error) {
 
 	items, total, err = n.adaptors.Map.Search(query, limit, offset)
 

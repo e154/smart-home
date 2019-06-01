@@ -7,18 +7,18 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
-type CommonCommand struct {
+type CommonEndpoint struct {
 	adaptors      *adaptors.Adaptors
 	core          *core.Core
 	accessList    *access_list.AccessListService
 	scriptService *scripts.ScriptService
 }
 
-func NewCommonCommand(adaptors *adaptors.Adaptors,
+func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	accessList *access_list.AccessListService,
-	scriptService *scripts.ScriptService, ) *CommonCommand {
-	return &CommonCommand{
+	scriptService *scripts.ScriptService, ) *CommonEndpoint {
+	return &CommonEndpoint{
 		adaptors:      adaptors,
 		core:          core,
 		accessList:    accessList,

@@ -33,7 +33,7 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	scriptService *scripts.ScriptService,
 	accessList *access_list.AccessListService,
-	command *endpoint.Command) *ControllersV1 {
+	command *endpoint.Endpoint) *ControllersV1 {
 	common := NewControllerCommon(adaptors, core, accessList, command)
 	return &ControllersV1{
 		Index:            NewControllerIndex(common),

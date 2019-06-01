@@ -7,17 +7,17 @@ import (
 	"errors"
 )
 
-type WorkflowCommand struct {
-	*CommonCommand
+type WorkflowEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewWorkflowCommand(common *CommonCommand) *WorkflowCommand {
-	return &WorkflowCommand{
-		CommonCommand: common,
+func NewWorkflowEndpoint(common *CommonEndpoint) *WorkflowEndpoint {
+	return &WorkflowEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (n *WorkflowCommand) Add(params *m.Workflow) (result *m.Workflow, errs []*validation.Error, err error) {
+func (n *WorkflowEndpoint) Add(params *m.Workflow) (result *m.Workflow, errs []*validation.Error, err error) {
 
 	// validation
 	_, errs = params.Valid()
@@ -39,14 +39,14 @@ func (n *WorkflowCommand) Add(params *m.Workflow) (result *m.Workflow, errs []*v
 	return
 }
 
-func (n *WorkflowCommand) GetById(workflowId int64) (result *m.Workflow, err error) {
+func (n *WorkflowEndpoint) GetById(workflowId int64) (result *m.Workflow, err error) {
 
 	result, err = n.adaptors.Workflow.GetById(workflowId)
 
 	return
 }
 
-func (n *WorkflowCommand) Update(params *m.Workflow,
+func (n *WorkflowEndpoint) Update(params *m.Workflow,
 	) (result *m.Workflow, errs []*validation.Error, err error) {
 
 	var workflow *m.Workflow
@@ -78,14 +78,14 @@ func (n *WorkflowCommand) Update(params *m.Workflow,
 	return
 }
 
-func (n *WorkflowCommand) GetList(limit, offset int64, order, sortBy string) (result []*m.Workflow, total int64, err error) {
+func (n *WorkflowEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Workflow, total int64, err error) {
 
 	result, total, err = n.adaptors.Workflow.List(limit, offset, order, sortBy)
 
 	return
 }
 
-func (n *WorkflowCommand) Delete(workflowId int64) (err error) {
+func (n *WorkflowEndpoint) Delete(workflowId int64) (err error) {
 
 	if workflowId == 0 {
 		err = errors.New("workflow id is null")
@@ -107,14 +107,14 @@ func (n *WorkflowCommand) Delete(workflowId int64) (err error) {
 	return
 }
 
-func (n *WorkflowCommand) Search(query string, limit, offset int) (result []*m.Workflow, total int64, err error) {
+func (n *WorkflowEndpoint) Search(query string, limit, offset int) (result []*m.Workflow, total int64, err error) {
 
 	result, total, err = n.adaptors.Workflow.Search(query, limit, offset)
 
 	return
 }
 
-func (n *WorkflowCommand) UpdateScenario(workflowId int64, workflowScenarioId int64) (err error) {
+func (n *WorkflowEndpoint) UpdateScenario(workflowId int64, workflowScenarioId int64) (err error) {
 
 	var workflow *m.Workflow
 	workflow, err = n.adaptors.Workflow.GetById(workflowId)

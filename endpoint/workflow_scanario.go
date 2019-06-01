@@ -8,24 +8,24 @@ import (
 	"fmt"
 )
 
-type WorkflowScenarioCommand struct {
-	*CommonCommand
+type WorkflowScenarioEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewWorkflowScenarioCommand(common *CommonCommand) *WorkflowScenarioCommand {
-	return &WorkflowScenarioCommand{
-		CommonCommand: common,
+func NewWorkflowScenarioEndpoint(common *CommonEndpoint) *WorkflowScenarioEndpoint {
+	return &WorkflowScenarioEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (n *WorkflowScenarioCommand) GetById(workflowId, scenarioId int64) (result *m.WorkflowScenario, err error) {
+func (n *WorkflowScenarioEndpoint) GetById(workflowId, scenarioId int64) (result *m.WorkflowScenario, err error) {
 
 	result, err = n.adaptors.WorkflowScenario.GetById(scenarioId)
 	
 	return
 }
 
-func (n *WorkflowScenarioCommand) Add(params *m.WorkflowScenario) (result *m.WorkflowScenario, errs []*validation.Error, err error) {
+func (n *WorkflowScenarioEndpoint) Add(params *m.WorkflowScenario) (result *m.WorkflowScenario, errs []*validation.Error, err error) {
 
 	// validation
 	_, errs = params.Valid()
@@ -43,14 +43,14 @@ func (n *WorkflowScenarioCommand) Add(params *m.WorkflowScenario) (result *m.Wor
 	return
 }
 
-func (n *WorkflowScenarioCommand) GetList(workflowId int64) (result []*m.WorkflowScenario, total int64, err error) {
+func (n *WorkflowScenarioEndpoint) GetList(workflowId int64) (result []*m.WorkflowScenario, total int64, err error) {
 
 	result, total, err = n.adaptors.WorkflowScenario.ListByWorkflow(workflowId)
 
 	return
 }
 
-func (n *WorkflowScenarioCommand) Delete(workflowScenarioId int64) (err error) {
+func (n *WorkflowScenarioEndpoint) Delete(workflowScenarioId int64) (err error) {
 
 	if workflowScenarioId == 0 {
 		err = errors.New("scenario id is null")
@@ -62,14 +62,14 @@ func (n *WorkflowScenarioCommand) Delete(workflowScenarioId int64) (err error) {
 	return
 }
 
-func (n *WorkflowScenarioCommand) Search(query string, limit, offset int) (result []*m.WorkflowScenario, total int64, err error) {
+func (n *WorkflowScenarioEndpoint) Search(query string, limit, offset int) (result []*m.WorkflowScenario, total int64, err error) {
 
 	result, total, err = n.adaptors.WorkflowScenario.Search(query, limit, offset)
 
 	return
 }
 
-func (n *WorkflowScenarioCommand) Update(params *m.WorkflowScenario) (result *m.WorkflowScenario,
+func (n *WorkflowScenarioEndpoint) Update(params *m.WorkflowScenario) (result *m.WorkflowScenario,
 	errs []*validation.Error, err error) {
 
 	var workflowScenario *m.WorkflowScenario

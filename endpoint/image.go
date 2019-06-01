@@ -9,17 +9,17 @@ import (
 	"bufio"
 )
 
-type ImageCommand struct {
-	*CommonCommand
+type ImageEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewImageCommand(common *CommonCommand) *ImageCommand {
-	return &ImageCommand{
-		CommonCommand: common,
+func NewImageEndpoint(common *CommonEndpoint) *ImageEndpoint {
+	return &ImageEndpoint{
+		CommonEndpoint: common,
 	}
 }
 
-func (i *ImageCommand) Add(params *m.Image) (image *m.Image, errs []*validation.Error, err error) {
+func (i *ImageEndpoint) Add(params *m.Image) (image *m.Image, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
 	if len(errs) > 0 {
@@ -36,14 +36,14 @@ func (i *ImageCommand) Add(params *m.Image) (image *m.Image, errs []*validation.
 	return
 }
 
-func (i *ImageCommand) GetById(id int64) (image *m.Image, err error) {
+func (i *ImageEndpoint) GetById(id int64) (image *m.Image, err error) {
 
 	image, err = i.adaptors.Image.GetById(id)
 
 	return
 }
 
-func (i *ImageCommand) Update(params *m.Image) (result *m.Image, errs []*validation.Error, err error) {
+func (i *ImageEndpoint) Update(params *m.Image) (result *m.Image, errs []*validation.Error, err error) {
 
 	var image *m.Image
 	if image, err = i.adaptors.Image.GetById(params.Id); err != nil {
@@ -68,7 +68,7 @@ func (i *ImageCommand) Update(params *m.Image) (result *m.Image, errs []*validat
 	return
 }
 
-func (i *ImageCommand) Delete(imageId int64) (err error) {
+func (i *ImageEndpoint) Delete(imageId int64) (err error) {
 
 	if imageId == 0 {
 		err = errors.New("image id is null")
@@ -85,7 +85,7 @@ func (i *ImageCommand) Delete(imageId int64) (err error) {
 	return
 }
 
-func (i *ImageCommand) Upload(files map[string][]*multipart.FileHeader) (fileList []*m.Image, errs []error) {
+func (i *ImageEndpoint) Upload(files map[string][]*multipart.FileHeader) (fileList []*m.Image, errs []error) {
 
 	fileList = make([]*m.Image, 0)
 	errs = make([]error, 0)
@@ -109,7 +109,7 @@ func (i *ImageCommand) Upload(files map[string][]*multipart.FileHeader) (fileLis
 	return
 }
 
-func (i *ImageCommand) GetList(limit, offset int64, order, sortBy string) (items []*m.Image, total int64, err error) {
+func (i *ImageEndpoint) GetList(limit, offset int64, order, sortBy string) (items []*m.Image, total int64, err error) {
 
 	items, total, err = i.adaptors.Image.List(limit, offset, order, sortBy)
 
