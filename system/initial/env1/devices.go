@@ -172,7 +172,6 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 	deviceActions["mb_dev1_turn_off_fan1_v1"] = deviceAction11
 
-
 	// states
 	stateDev1Enabled := &m.DeviceState{
 		SystemName:  "ENABLED",
@@ -239,6 +238,26 @@ func devices(node1 *m.Node,
 		Description: "device fan 1 off",
 		DeviceId:    device1.Id,
 	}
+	stateDev1Temp1On := &m.DeviceState{
+		SystemName:  "TEMP_1_ON",
+		Description: "device temp 1 on",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Temp1Off := &m.DeviceState{
+		SystemName:  "TEMP_1_OFF",
+		Description: "device temp 1 off",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Temp2On := &m.DeviceState{
+		SystemName:  "TEMP_2_ON",
+		Description: "device temp 2 on",
+		DeviceId:    device1.Id,
+	}
+	stateDev1Temp2Off := &m.DeviceState{
+		SystemName:  "TEMP_2_OFF",
+		Description: "device temp 2 off",
+		DeviceId:    device1.Id,
+	}
 	ok, _ = stateDev1Enabled.Valid()
 	So(ok, ShouldEqual, true)
 	ok, _ = stateDev1Disabled.Valid()
@@ -260,6 +279,14 @@ func devices(node1 *m.Node,
 	ok, _ = stateDev1Fan1On.Valid()
 	So(ok, ShouldEqual, true)
 	ok, _ = stateDev1Fan1Off.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Temp1On.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Temp1Off.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Temp2On.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateDev1Temp2Off.Valid()
 	So(ok, ShouldEqual, true)
 
 	stateDev1Enabled.Id, err = adaptors.DeviceState.Add(stateDev1Enabled)
@@ -288,6 +315,14 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 	stateDev1Fan1Off.Id, err = adaptors.DeviceState.Add(stateDev1Fan1Off)
 	So(err, ShouldBeNil)
+	stateDev1Temp1On.Id, err = adaptors.DeviceState.Add(stateDev1Temp1On)
+	So(err, ShouldBeNil)
+	stateDev1Temp1Off.Id, err = adaptors.DeviceState.Add(stateDev1Temp1Off)
+	So(err, ShouldBeNil)
+	stateDev1Temp2On.Id, err = adaptors.DeviceState.Add(stateDev1Temp2On)
+	So(err, ShouldBeNil)
+	stateDev1Temp2Off.Id, err = adaptors.DeviceState.Add(stateDev1Temp2Off)
+	So(err, ShouldBeNil)
 
 	deviceStates["dev1_enabled"] = stateDev1Enabled
 	deviceStates["dev1_disabled"] = stateDev1Disabled
@@ -302,6 +337,10 @@ func devices(node1 *m.Node,
 	deviceStates["dev1_light4_off"] = stateDev1Light4Off
 	deviceStates["dev1_fan1_on"] = stateDev1Fan1On
 	deviceStates["dev1_fan1_off"] = stateDev1Fan1Off
+	deviceStates["dev1_temp1_on"] = stateDev1Temp1On
+	deviceStates["dev1_temp1_off"] = stateDev1Temp1Off
+	deviceStates["dev1_temp2_on"] = stateDev1Temp2On
+	deviceStates["dev1_temp2_off"] = stateDev1Temp2Off
 
 	// device 2
 	// ------------------------------------------------

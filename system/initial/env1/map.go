@@ -336,11 +336,11 @@ func addMaps(adaptors *adaptors.Adaptors,
 		ImageId:    imageList["temp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
-				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
+				DeviceStateId: deviceStates["dev1_temp1_on"].Id,
 				ImageId:       imageList["temp_v1_y"].Id,
 			},
 			{
-				DeviceStateId: deviceStates["dev1_error"].Id,
+				DeviceStateId: deviceStates["dev1_temp1_off"].Id,
 				ImageId:       imageList["temp_v1_r"].Id,
 			},
 		},
@@ -376,11 +376,11 @@ func addMaps(adaptors *adaptors.Adaptors,
 		ImageId:    imageList["temp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
-				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
+				DeviceStateId: deviceStates["dev1_temp2_on"].Id,
 				ImageId:       imageList["temp_v1_y"].Id,
 			},
 			{
-				DeviceStateId: deviceStates["dev1_error"].Id,
+				DeviceStateId: deviceStates["dev1_temp2_off"].Id,
 				ImageId:       imageList["temp_v1_r"].Id,
 			},
 		},
