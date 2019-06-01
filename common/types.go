@@ -24,6 +24,7 @@ type StatusType string
 const (
 	Enabled  = StatusType("enabled")
 	Disabled = StatusType("disabled")
+	Frozen   = StatusType("frozen")
 )
 
 type DeviceType string

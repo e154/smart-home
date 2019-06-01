@@ -4,7 +4,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/t-tiger/gorm-bulk-insert"
 )
 
 type MapDeviceAction struct {
@@ -31,13 +30,12 @@ func (n *MapDeviceAction) Add(ver *m.MapDeviceAction) (id int64, err error) {
 
 func (n *MapDeviceAction) AddMultiple(items []*m.MapDeviceAction) (err error) {
 
-	insertRecords := make([]interface{}, 0)
 	for _, ver := range items {
 		dbVer := n.toDb(ver)
-		insertRecords = append(insertRecords, dbVer)
+		if _, err = n.table.Add(dbVer); err != nil {
+			return
+		}
 	}
-
-	err = gormbulk.BulkInsert(n.db, insertRecords, 3000)
 
 	return
 }

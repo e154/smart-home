@@ -136,10 +136,16 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		}
 		//actions
 		deviceAction := GetMapDeviceActionAdaptor(n.db)
-		deviceAction.AddMultiple(ver.Prototype.MapDevice.Actions)
+		if err = deviceAction.AddMultiple(ver.Prototype.MapDevice.Actions); err != nil {
+			log.Error(err.Error())
+			return
+		}
 		//states
 		stateAdaptor := GetMapDeviceStateAdaptor(n.db)
-		stateAdaptor.AddMultiple(ver.Prototype.MapDevice.States)
+		if err = stateAdaptor.AddMultiple(ver.Prototype.MapDevice.States); err != nil {
+			log.Errorf(err.Error())
+			return
+		}
 	default:
 		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
 		log.Warningf(err.Error())

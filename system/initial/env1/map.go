@@ -35,30 +35,59 @@ func addMaps(adaptors *adaptors.Adaptors,
 
 	// background layer
 	// ------------------------------------------------
-	mapLayer1 := &m.MapLayer{
+	backgroundLayer := &m.MapLayer{
 		Name:        "background",
 		Status:      "enabled",
 		Description: "фон",
 		MapId:       map1.Id,
-		Weight:      0,
+		Weight:      1,
 	}
-	ok, _ = mapLayer1.Valid()
+	ok, _ = backgroundLayer.Valid()
 	So(ok, ShouldEqual, true)
-	mapLayer1.Id, err = adaptors.MapLayer.Add(mapLayer1)
+	backgroundLayer.Id, err = adaptors.MapLayer.Add(backgroundLayer)
+	So(err, ShouldBeNil)
+
+	// background image
+	// ------------------------------------------------
+	backgroundImage1 := &m.MapImage{
+		ImageId: imageList["map-schematic-original"].Id,
+	}
+
+	ok, _ = backgroundImage1.Valid()
+	So(ok, ShouldEqual, true)
+
+	mapElementBackgroundImage1 := &m.MapElement{
+		Name: "background schematic map",
+		Prototype: m.Prototype{
+			MapImage: backgroundImage1,
+		},
+		MapId:   map1.Id,
+		LayerId: backgroundLayer.Id,
+		Status:  Frozen,
+		GraphSettings: m.MapElementGraphSettings{
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  0,
+				Left: 0,
+			},
+		},
+	}
+	ok, _ = mapElementBackgroundImage1.Valid()
+	So(ok, ShouldEqual, true)
+	mapElementBackgroundImage1.Id, err = adaptors.MapElement.Add(mapElementBackgroundImage1)
 	So(err, ShouldBeNil)
 
 	// base layer
 	// ------------------------------------------------
-	mapLayer2 := &m.MapLayer{
+	baseLayer := &m.MapLayer{
 		Name:        "base",
 		Status:      "enabled",
 		Description: "базовый слой",
 		MapId:       map1.Id,
-		Weight:      1,
+		Weight:      0,
 	}
-	ok, _ = mapLayer2.Valid()
+	ok, _ = baseLayer.Valid()
 	So(ok, ShouldEqual, true)
-	mapLayer2.Id, err = adaptors.MapLayer.Add(mapLayer2)
+	baseLayer.Id, err = adaptors.MapLayer.Add(baseLayer)
 	So(err, ShouldBeNil)
 
 	// light1
@@ -100,14 +129,14 @@ func addMaps(adaptors *adaptors.Adaptors,
 			MapDevice: devLight1,
 		},
 		MapId:   map1.Id,
-		LayerId: mapLayer2.Id,
+		LayerId: baseLayer.Id,
 		Status:  Enabled,
 		GraphSettings: m.MapElementGraphSettings{
 			Width:  null.NewInt64(33),
 			Height: null.NewInt64(33),
 			Position: m.MapElementGraphSettingsPosition{
-				Top:  0,
-				Left: 0,
+				Top:  644,
+				Left: 329,
 			},
 		},
 	}
@@ -153,14 +182,14 @@ func addMaps(adaptors *adaptors.Adaptors,
 			MapDevice: devLight2,
 		},
 		MapId:   map1.Id,
-		LayerId: mapLayer2.Id,
+		LayerId: baseLayer.Id,
 		Status:  Enabled,
 		GraphSettings: m.MapElementGraphSettings{
 			Width:  null.NewInt64(33),
 			Height: null.NewInt64(33),
 			Position: m.MapElementGraphSettingsPosition{
-				Top:  0,
-				Left: 0,
+				Top:  487,
+				Left: 541,
 			},
 		},
 	}
@@ -206,14 +235,14 @@ func addMaps(adaptors *adaptors.Adaptors,
 			MapDevice: devLight3,
 		},
 		MapId:   map1.Id,
-		LayerId: mapLayer2.Id,
+		LayerId: baseLayer.Id,
 		Status:  Enabled,
 		GraphSettings: m.MapElementGraphSettings{
 			Width:  null.NewInt64(33),
 			Height: null.NewInt64(33),
 			Position: m.MapElementGraphSettingsPosition{
-				Top:  0,
-				Left: 0,
+				Top:  779,
+				Left: 630,
 			},
 		},
 	}
@@ -259,14 +288,14 @@ func addMaps(adaptors *adaptors.Adaptors,
 			MapDevice: devLight4,
 		},
 		MapId:   map1.Id,
-		LayerId: mapLayer2.Id,
+		LayerId: baseLayer.Id,
 		Status:  Enabled,
 		GraphSettings: m.MapElementGraphSettings{
 			Width:  null.NewInt64(33),
 			Height: null.NewInt64(33),
 			Position: m.MapElementGraphSettingsPosition{
-				Top:  0,
-				Left: 0,
+				Top:  191,
+				Left: 564,
 			},
 		},
 	}
@@ -312,14 +341,14 @@ func addMaps(adaptors *adaptors.Adaptors,
 			MapDevice: devFan1,
 		},
 		MapId:   map1.Id,
-		LayerId: mapLayer2.Id,
+		LayerId: baseLayer.Id,
 		Status:  Enabled,
 		GraphSettings: m.MapElementGraphSettings{
 			Width:  null.NewInt64(33),
 			Height: null.NewInt64(33),
 			Position: m.MapElementGraphSettingsPosition{
-				Top:  0,
-				Left: 0,
+				Top:  113,
+				Left: 734,
 			},
 		},
 	}
@@ -352,14 +381,14 @@ func addMaps(adaptors *adaptors.Adaptors,
 			MapDevice: dev1Temp1,
 		},
 		MapId:   map1.Id,
-		LayerId: mapLayer2.Id,
+		LayerId: baseLayer.Id,
 		Status:  Enabled,
 		GraphSettings: m.MapElementGraphSettings{
 			Width:  null.NewInt64(33),
 			Height: null.NewInt64(33),
 			Position: m.MapElementGraphSettingsPosition{
-				Top:  0,
-				Left: 0,
+				Top:  388,
+				Left: 288,
 			},
 		},
 	}
@@ -392,14 +421,14 @@ func addMaps(adaptors *adaptors.Adaptors,
 			MapDevice: dev1Temp2,
 		},
 		MapId:   map1.Id,
-		LayerId: mapLayer2.Id,
+		LayerId: baseLayer.Id,
 		Status:  Enabled,
 		GraphSettings: m.MapElementGraphSettings{
 			Width:  null.NewInt64(33),
 			Height: null.NewInt64(33),
 			Position: m.MapElementGraphSettingsPosition{
-				Top:  0,
-				Left: 0,
+				Top:  113,
+				Left: 468,
 			},
 		},
 	}
@@ -411,7 +440,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// map element text1
 	// ------------------------------------------------
 	mapText1 := &m.MapText{
-		Text: "background",
+		Text: "workflow:",
 	}
 
 	mapElementText1 := &m.MapElement{
@@ -420,14 +449,14 @@ func addMaps(adaptors *adaptors.Adaptors,
 			MapText: mapText1,
 		},
 		MapId:   map1.Id,
-		LayerId: mapLayer2.Id,
+		LayerId: baseLayer.Id,
 		Status:  Enabled,
 		GraphSettings: m.MapElementGraphSettings{
 			Width:  null.NewInt64(33),
 			Height: null.NewInt64(33),
 			Position: m.MapElementGraphSettingsPosition{
-				Top:  0,
-				Left: 0,
+				Top:  30,
+				Left: 30,
 			},
 		},
 	}
@@ -439,3 +468,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 
 	return
 }
+
+// ('dev1_light1', '', '1', 'device', '{"width": 33, "height": 33, "position": {"top": 644, "left": 329}}')
+// ('dev1_light2', '', '2', 'device', '{"width": 33, "height": 33, "position": {"top": 487, "left": 541}}')
+// ('dev1_light3', '', '3', 'device', '{"width": 33, "height": 33, "position": {"top": 779, "left": 630}}')
+// ('dev1_light4', '', '4', 'device', '{"width": 33, "height": 33, "position": {"top": 191, "left": 564}}')
