@@ -55,7 +55,7 @@ func (c ControllerDeviceState) Add(ctx *gin.Context) {
 	}
 
 	state := &m.DeviceState{}
-	common.Copy(&state, &params)
+	_ = common.Copy(&state, &params)
 
 	if params.Device != nil && params.Device.Id != 0 {
 		state.DeviceId = params.Device.Id
@@ -84,7 +84,7 @@ func (c ControllerDeviceState) Add(ctx *gin.Context) {
 	}
 
 	result := &models.DeviceState{}
-	common.Copy(&result, &state, common.JsonEngine)
+	_ = common.Copy(&result, &state, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -140,7 +140,7 @@ func (c ControllerDeviceState) GetById(ctx *gin.Context) {
 	}
 
 	result := &models.DeviceState{}
-	common.Copy(&result, &state, common.JsonEngine)
+	_ = common.Copy(&result, &state, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -199,7 +199,7 @@ func (c ControllerDeviceState) Update(ctx *gin.Context) {
 	}
 
 	state := &m.DeviceState{}
-	common.Copy(&state, &params, common.JsonEngine)
+	_ = common.Copy(&state, &params, common.JsonEngine)
 
 	if params.Device != nil && params.Device.Id != 0 {
 		state.DeviceId = params.Device.Id
@@ -224,7 +224,7 @@ func (c ControllerDeviceState) Update(ctx *gin.Context) {
 	}
 
 	result := &models.DeviceState{}
-	err = common.Copy(&result, &state, common.JsonEngine)
+	_ = common.Copy(&result, &state, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -324,9 +324,8 @@ func (c ControllerDeviceState) GetStateList(ctx *gin.Context) {
 	}
 
 	result := make([]*models.DeviceState, 0)
-	common.Copy(&result, &items, common.JsonEngine)
+	_ = common.Copy(&result, &items, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
-	return
 }

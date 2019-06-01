@@ -262,7 +262,6 @@ func (c ControllerImage) GetList(ctx *gin.Context) {
 
 	resp := NewSuccess()
 	resp.Page(limit, offset, total, result).Send(ctx)
-	return
 }
 
 // swagger:operation DELETE /image/{id} imageDeleteById

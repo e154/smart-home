@@ -66,7 +66,7 @@ func (c ControllerAuth) SignIn(ctx *gin.Context) {
 	}
 
 	currentUser := &models.CurrentUser{}
-	common.Copy(&currentUser, &user, common.JsonEngine)
+	_ = common.Copy(&currentUser, &user, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(&models.AuthSignInResponse{

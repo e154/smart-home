@@ -1,0 +1,27 @@
+{
+  "Fast": false,
+  "Vendor": true,
+  "DisableAll": true,
+  "Enable": [
+    "ineffassign",
+    "golint",
+    "misspell",
+    "lll",
+    "vet",
+    "vetshadow",
+    "gofmt",
+    "gocyclo"
+  ],
+  "Exclude": [
+    "test.go",
+    "lookup.go",
+    "lookup_unix.go",
+    "email_templates.go"
+  ],
+  "VendoredLinters": true,
+  "Concurrency": 2,
+  "Deadline": "300s",
+  "LineLength": 140,
+  "Debug": false,
+  "Cyclo": 11
+}

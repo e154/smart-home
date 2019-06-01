@@ -35,10 +35,6 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 	}
 }
 
-func (c ControllerCommon) query(ctx *gin.Context, query string) string {
-	return ctx.Request.URL.Query().Get(query)
-}
-
 //query
 //limit
 //offset

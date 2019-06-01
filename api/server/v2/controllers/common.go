@@ -4,7 +4,6 @@ import (
 	"github.com/op/go-logging"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/core"
-	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -22,8 +21,4 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 		adaptors: adaptors,
 		core:     core,
 	}
-}
-
-func (c ControllerCommon) query(ctx *gin.Context, query string) string {
-	return ctx.Request.URL.Query().Get(query)
 }

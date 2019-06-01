@@ -54,7 +54,7 @@ func (c ControllerFlow) Add(ctx *gin.Context) {
 	}
 
 	flow := &m.Flow{}
-	common.Copy(&flow, &params)
+	_ = common.Copy(&flow, &params)
 
 	if params.Workflow.Id != 0 {
 		flow.WorkflowId = params.Workflow.Id
@@ -77,7 +77,7 @@ func (c ControllerFlow) Add(ctx *gin.Context) {
 	}
 
 	result := &models.Flow{}
-	common.Copy(&result, &flow)
+	_ = common.Copy(&result, &flow)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -133,7 +133,7 @@ func (c ControllerFlow) GetById(ctx *gin.Context) {
 	}
 
 	result := &models.Flow{}
-	common.Copy(&result, &flow, common.JsonEngine)
+	_ = common.Copy(&result, &flow, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -267,7 +267,7 @@ func (c ControllerFlow) UpdateRedactor(ctx *gin.Context) {
 	}
 
 	result := &models.RedactorFlow{}
-	err = common.Copy(&result, &flowRedactor)
+	_ = common.Copy(&result, &flowRedactor)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -403,7 +403,7 @@ func (c ControllerFlow) GetList(ctx *gin.Context) {
 	}
 
 	result := make([]*models.FlowShort, 0)
-	err = common.Copy(&result, &items)
+	_ = common.Copy(&result, &items)
 
 	resp := NewSuccess()
 	resp.Page(limit, offset, total, result).Send(ctx)
@@ -503,7 +503,7 @@ func (c ControllerFlow) Search(ctx *gin.Context) {
 	}
 
 	result := make([]*models.Flow, 0)
-	err = common.Copy(&result, &list)
+	_ = common.Copy(&result, &list)
 
 	resp := NewSuccess()
 	resp.Item("flows", result)

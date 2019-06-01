@@ -90,7 +90,7 @@ func (c ControllerDevice) Add(ctx *gin.Context) {
 	}
 
 	result := &models.Device{}
-	err = common.Copy(&result, &device)
+	_ = common.Copy(&result, &device)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -146,7 +146,7 @@ func (c ControllerDevice) GetById(ctx *gin.Context) {
 	}
 
 	result := &models.Device{}
-	err = common.Copy(&result, &device, common.JsonEngine)
+	_ = common.Copy(&result, &device, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(device).Send(ctx)
@@ -234,7 +234,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 	}
 
 	result := &models.Device{}
-	err = common.Copy(&result, &device)
+	_ = common.Copy(&result, &device)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -290,11 +290,10 @@ func (c ControllerDevice) GetList(ctx *gin.Context) {
 	}
 
 	result := make([]*models.Device, 0)
-	err = common.Copy(&result, &devices, common.JsonEngine)
+	_ = common.Copy(&result, &devices, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.Page(limit, offset, total, result).Send(ctx)
-	return
 }
 
 // swagger:operation DELETE /device/{id} deviceDeleteById
@@ -391,7 +390,7 @@ func (c ControllerDevice) Search(ctx *gin.Context) {
 	}
 
 	result := make([]*models.DeviceShort, 0)
-	err = common.Copy(&result, &devices, common.JsonEngine)
+	_ = common.Copy(&result, &devices, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.Item("devices", result)

@@ -55,7 +55,7 @@ func (c ControllerDeviceAction) Add(ctx *gin.Context) {
 	}
 
 	action := &m.DeviceAction{}
-	common.Copy(&action, &params, common.JsonEngine)
+	_ = common.Copy(&action, &params, common.JsonEngine)
 
 	if params.Device != nil && params.Device.Id != 0 {
 		action.DeviceId = params.Device.Id
@@ -77,7 +77,7 @@ func (c ControllerDeviceAction) Add(ctx *gin.Context) {
 	}
 
 	result := &models.DeviceAction{}
-	err = common.Copy(&result, &action)
+	_ = common.Copy(&result, &action)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -133,7 +133,7 @@ func (c ControllerDeviceAction) GetById(ctx *gin.Context) {
 	}
 
 	result := &models.DeviceAction{}
-	common.Copy(&result, &action)
+	_ = common.Copy(&result, &action)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -192,7 +192,7 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 	action := &m.DeviceAction{}
-	copier.Copy(&action, &params)
+	_ = copier.Copy(&action, &params)
 
 	if params.Device != nil && params.Device.Id != 0 {
 		action.DeviceId = params.Device.Id
@@ -218,7 +218,7 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 	}
 
 	result := &models.DeviceAction{}
-	err = common.Copy(&result, &action)
+	_ = common.Copy(&result, &action)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -323,7 +323,6 @@ func (c ControllerDeviceAction) GetActionList(ctx *gin.Context) {
 
 	resp := NewSuccess()
 	resp.SetData(actions).Send(ctx)
-	return
 }
 
 // swagger:operation GET /device_action1/search deviceActionSearch
@@ -370,7 +369,7 @@ func (c ControllerDeviceAction) Search(ctx *gin.Context) {
 	}
 
 	result := make([]*models.DeviceAction, 0)
-	common.Copy(&result, &actions)
+	_ = common.Copy(&result, &actions)
 
 	resp := NewSuccess()
 	resp.Item("actions", actions)

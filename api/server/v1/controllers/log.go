@@ -69,7 +69,7 @@ func (c ControllerLog) Add(ctx *gin.Context) {
 	}
 
 	result := &models.Log{}
-	err = common.Copy(&result, &log)
+	_ = common.Copy(&result, &log)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -186,7 +186,7 @@ func (c ControllerLog) GetList(ctx *gin.Context) {
 	}
 
 	result := make([]*models.Log, 0)
-	err = common.Copy(&result, &items)
+	_ = common.Copy(&result, &items)
 
 	resp := NewSuccess()
 	resp.Page(limit, offset, total, result).Send(ctx)
@@ -286,7 +286,7 @@ func (c ControllerLog) Search(ctx *gin.Context) {
 	}
 
 	result := make([]*models.Log, 0)
-	err = common.Copy(&result, &items)
+	_ = common.Copy(&result, &items)
 
 	resp := NewSuccess()
 	resp.Item("logs", result)
