@@ -280,19 +280,19 @@ func addMaps(adaptors *adaptors.Adaptors,
 	devFan1 := &m.MapDevice{
 		SystemName: "DEV1_FAN1",
 		DeviceId:   devices[0].Id,
-		ImageId:    imageList["lamp_v1_def"].Id,
+		ImageId:    imageList["fan_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
-				ImageId:       imageList["lamp_v1_y"].Id,
+				ImageId:       imageList["fan_v1_y"].Id,
 			},
 			{
 				DeviceStateId: deviceStates["dev1_fan1_off"].Id,
-				ImageId:       imageList["lamp_v1_def"].Id,
+				ImageId:       imageList["fan_v1_def"].Id,
 			},
 			{
 				DeviceStateId: deviceStates["dev1_error"].Id,
-				ImageId:       imageList["lamp_v1_r"].Id,
+				ImageId:       imageList["fan_v1_r"].Id,
 			},
 		},
 		Actions: []*m.MapDeviceAction{
@@ -333,17 +333,15 @@ func addMaps(adaptors *adaptors.Adaptors,
 	dev1Temp1 := &m.MapDevice{
 		SystemName: "DEV1_TEMP1",
 		DeviceId:   devices[0].Id,
-		ImageId:    imageList["lamp_v1_y"].Id,
+		ImageId:    imageList["temp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
-				//TODO update temperature image
 				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
-				ImageId:       imageList["lamp_v1_y"].Id,
+				ImageId:       imageList["temp_v1_y"].Id,
 			},
 			{
-				//TODO update temperature image
 				DeviceStateId: deviceStates["dev1_error"].Id,
-				ImageId:       imageList["lamp_v1_r"].Id,
+				ImageId:       imageList["temp_v1_r"].Id,
 			},
 		},
 	}
@@ -375,17 +373,15 @@ func addMaps(adaptors *adaptors.Adaptors,
 	dev1Temp2 := &m.MapDevice{
 		SystemName: "DEV1_TEMP2",
 		DeviceId:   devices[0].Id,
-		ImageId:    imageList["lamp_v1_y"].Id,
+		ImageId:    imageList["temp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
-				//TODO update temperature image
 				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
-				ImageId:       imageList["lamp_v1_y"].Id,
+				ImageId:       imageList["temp_v1_y"].Id,
 			},
 			{
-				//TODO update temperature image
 				DeviceStateId: deviceStates["dev1_error"].Id,
-				ImageId:       imageList["lamp_v1_r"].Id,
+				ImageId:       imageList["temp_v1_r"].Id,
 			},
 		},
 	}

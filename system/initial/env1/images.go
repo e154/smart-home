@@ -127,6 +127,54 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 			Size:     195108,
 			Name:     "map-schematic-original.svg",
 		},
+		"temp_v1_r": {
+			Image:    "688d2d752252de21c9d62a643c37ea40.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     3980,
+			Name:     "temp_v1_r.svg",
+		},
+		"temp_v1_y": {
+			Image:    "8b2f46785aa3bdf7a6a487fc89a0f99e.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     3980,
+			Name:     "temp_v1_y.svg",
+		},
+		"temp_v1_def": {
+			Image:    "655d491beafaefce2117cb2012dc674a.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     3980,
+			Name:     "temp_v1_def.svg",
+		},
+		"temp_v1_original": {
+			Image:    "e8dee745788685f9f86e611cf5758cab.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     3770,
+			Name:     "temp_v1_original.svg",
+		},
+		"fan_v1_r": {
+			Image:    "eaf1c68959341c466fac68363f21cbbe.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     6238,
+			Name:     "fan_v1_r.svg",
+		},
+		"fan_v1_y": {
+			Image:    "33a5d5e7290e0f37a4c160cdbd0b5f23.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     6238,
+			Name:     "fan_v1_y.svg",
+		},
+		"fan_v1_def": {
+			Image:    "fd64ec639417d88e37b1c2cc167bcafc.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     6238,
+			Name:     "fan_v1_def.svg",
+		},
+		"fan_v1_original": {
+			Image:    "b4820c5939fe6b042888c922dfd1bada.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     5799,
+			Name:     "fan_v1_original.svg",
+		},
 	}
 
 	var err error
@@ -148,6 +196,10 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 				subDir = "lamp"
 			case strings.Contains(image.Name, "socket"):
 				subDir = "socket"
+			case strings.Contains(image.Name, "temp"):
+				subDir = "temp"
+			case strings.Contains(image.Name, "fan"):
+				subDir = "fan"
 			}
 
 			from := path.Join("data", "icons", subDir, image.Name)
