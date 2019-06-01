@@ -1,4 +1,4 @@
-package use_case
+package endpoint
 
 import (
 	m "github.com/e154/smart-home/models"

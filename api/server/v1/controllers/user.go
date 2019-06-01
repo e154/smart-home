@@ -65,7 +65,7 @@ func (c ControllerUser) Add(ctx *gin.Context) {
 		user.EncryptedPassword = common.Pwdhash(params.Password)
 	}
 
-	user, errs, err := c.command.User.Add(user, currentUser)
+	user, errs, err := c.endpoint.User.Add(user, currentUser)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -123,7 +123,7 @@ func (c ControllerUser) GetById(ctx *gin.Context) {
 		return
 	}
 
-	user, err := c.command.User.GetById(int64(aid))
+	user, err := c.endpoint.User.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -212,7 +212,7 @@ func (c ControllerUser) Update(ctx *gin.Context) {
 		return
 	}
 
-	user, errs, err := c.command.User.Update(user)
+	user, errs, err := c.endpoint.User.Update(user)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -284,7 +284,7 @@ func (c ControllerUser) UpdateStatus(ctx *gin.Context) {
 		return
 	}
 
-	if err = c.command.User.UpdateStatus(int64(aid), n.Status); err != nil {
+	if err = c.endpoint.User.UpdateStatus(int64(aid), n.Status); err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
@@ -336,7 +336,7 @@ func (c ControllerUser) UpdateStatus(ctx *gin.Context) {
 func (c ControllerUser) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.User.GetList(limit, offset, order, sortBy)
+	items, total, err := c.endpoint.User.GetList(limit, offset, order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -387,7 +387,7 @@ func (c ControllerUser) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.User.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.User.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404

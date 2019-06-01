@@ -61,7 +61,7 @@ func (c ControllerDeviceState) Add(ctx *gin.Context) {
 		state.DeviceId = params.Device.Id
 	}
 
-	_, id, errs, err := c.command.DeviceState.Add(state)
+	_, id, errs, err := c.endpoint.DeviceState.Add(state)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -73,7 +73,7 @@ func (c ControllerDeviceState) Add(ctx *gin.Context) {
 		return
 	}
 
-	state, err = c.command.DeviceState.GetById(id)
+	state, err = c.endpoint.DeviceState.GetById(id)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -129,7 +129,7 @@ func (c ControllerDeviceState) GetById(ctx *gin.Context) {
 		return
 	}
 
-	state, err := c.command.DeviceState.GetById(int64(aid))
+	state, err := c.endpoint.DeviceState.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -207,7 +207,7 @@ func (c ControllerDeviceState) Update(ctx *gin.Context) {
 
 	state.Id = int64(aid)
 
-	state, errs, err := c.command.DeviceState.Update(state)
+	state, errs, err := c.endpoint.DeviceState.Update(state)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -267,7 +267,7 @@ func (c ControllerDeviceState) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.DeviceState.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.DeviceState.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -317,7 +317,7 @@ func (c ControllerDeviceState) GetStateList(ctx *gin.Context) {
 		return
 	}
 
-	items, err := c.command.DeviceState.GetList(int64(deviceId))
+	items, err := c.endpoint.DeviceState.GetList(int64(deviceId))
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

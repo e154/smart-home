@@ -56,7 +56,7 @@ func (c ControllerLog) Add(ctx *gin.Context) {
 	log := &m.Log{}
 	common.Copy(&log, &params)
 
-	log, errs, err := c.command.Log.Add(log)
+	log, errs, err := c.endpoint.Log.Add(log)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -114,7 +114,7 @@ func (c ControllerLog) GetById(ctx *gin.Context) {
 		return
 	}
 
-	log, err := c.command.Log.GetById(int64(aid))
+	log, err := c.endpoint.Log.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -179,7 +179,7 @@ func (c ControllerLog) GetById(ctx *gin.Context) {
 func (c ControllerLog) GetList(ctx *gin.Context) {
 
 	query, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.Log.GetList(int64(limit), int64(offset), order, sortBy, query)
+	items, total, err := c.endpoint.Log.GetList(int64(limit), int64(offset), order, sortBy, query)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -229,7 +229,7 @@ func (c ControllerLog) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err = c.command.Log.Delete(int64(aid)); err != nil {
+	if err = c.endpoint.Log.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -279,7 +279,7 @@ func (c ControllerLog) Delete(ctx *gin.Context) {
 func (c ControllerLog) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	items, _, err := c.command.Log.Search(query, limit, offset)
+	items, _, err := c.endpoint.Log.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

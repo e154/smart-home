@@ -51,7 +51,7 @@ func (c ControllerAuth) SignIn(ctx *gin.Context) {
 		return
 	}
 
-	user, accessToken, err := c.command.Auth.SignIn(email, password, ctx.ClientIP())
+	user, accessToken, err := c.endpoint.Auth.SignIn(email, password, ctx.ClientIP())
 	if err != nil {
 		code := 500
 		switch err.Error() {
@@ -100,7 +100,7 @@ func (c ControllerAuth) SignOut(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.Auth.SignOut(user); err != nil {
+	if err := c.endpoint.Auth.SignOut(user); err != nil {
 		NewError(500, err.Error()).Send(ctx)
 		return
 	}
@@ -168,7 +168,7 @@ func (c ControllerAuth) AccessList(ctx *gin.Context) {
 		return
 	}
 
-	accessList, err := c.command.Auth.AccessList(user, c.accessList)
+	accessList, err := c.endpoint.Auth.AccessList(user, c.accessList)
 	if err != nil {
 		NewError(500, err.Error()).Send(ctx)
 		return

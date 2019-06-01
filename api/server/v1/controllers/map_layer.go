@@ -61,7 +61,7 @@ func (c ControllerMapLayer) Add(ctx *gin.Context) {
 		mapLayer.MapId = params.Map.Id
 	}
 
-	mapLayer, errs, err := c.command.MapLayer.Add(mapLayer)
+	mapLayer, errs, err := c.endpoint.MapLayer.Add(mapLayer)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -119,7 +119,7 @@ func (c ControllerMapLayer) GetById(ctx *gin.Context) {
 		return
 	}
 
-	mapLayer, err := c.command.MapLayer.GetById(int64(aid))
+	mapLayer, err := c.endpoint.MapLayer.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -197,7 +197,7 @@ func (c ControllerMapLayer) Update(ctx *gin.Context) {
 		mapLayer.MapId = params.Map.Id
 	}
 
-	mapLayer, errs, err := c.command.MapLayer.Update(mapLayer)
+	mapLayer, errs, err := c.endpoint.MapLayer.Update(mapLayer)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -258,7 +258,7 @@ func (c ControllerMapLayer) Sort(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.MapLayer.Sort(params); err != nil {
+	if err := c.endpoint.MapLayer.Sort(params); err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
@@ -310,7 +310,7 @@ func (c ControllerMapLayer) Sort(ctx *gin.Context) {
 func (c ControllerMapLayer) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.MapLayer.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.MapLayer.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -361,7 +361,7 @@ func (c ControllerMapLayer) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.MapLayer.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.MapLayer.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404

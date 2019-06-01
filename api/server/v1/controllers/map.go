@@ -57,7 +57,7 @@ func (c ControllerMap) Add(ctx *gin.Context) {
 	m := &m.Map{}
 	common.Copy(&m, &params)
 
-	m, errs, err := c.command.Map.Add(m)
+	m, errs, err := c.endpoint.Map.Add(m)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -115,7 +115,7 @@ func (c ControllerMap) GetById(ctx *gin.Context) {
 		return
 	}
 
-	m, err := c.command.Map.GetById(int64(aid))
+	m, err := c.endpoint.Map.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -171,7 +171,7 @@ func (c ControllerMap) GetFullMap(ctx *gin.Context) {
 		return
 	}
 
-	m, err := c.command.Map.GetFullById(int64(aid))
+	m, err := c.endpoint.Map.GetFullById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -245,7 +245,7 @@ func (c ControllerMap) Update(ctx *gin.Context) {
 	m := &m.Map{}
 	common.Copy(&m, &params, common.JsonEngine)
 
-	m, errs, err := c.command.Map.Update(m)
+	m, errs, err := c.endpoint.Map.Update(m)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -311,7 +311,7 @@ func (c ControllerMap) Update(ctx *gin.Context) {
 func (c ControllerMap) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.Map.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.Map.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -362,7 +362,7 @@ func (c ControllerMap) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.Map.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.Map.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -412,7 +412,7 @@ func (c ControllerMap) Delete(ctx *gin.Context) {
 func (c ControllerMap) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	items, _, err := c.command.Map.Search(query, limit, offset)
+	items, _, err := c.endpoint.Map.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

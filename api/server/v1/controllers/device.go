@@ -77,7 +77,7 @@ func (c ControllerDevice) Add(ctx *gin.Context) {
 		device.Node = &m.Node{Id: params.Node.Id}
 	}
 
-	device, errs, err := c.command.Device.Add(device)
+	device, errs, err := c.endpoint.Device.Add(device)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -135,7 +135,7 @@ func (c ControllerDevice) GetById(ctx *gin.Context) {
 		return
 	}
 
-	device, err := c.command.Device.GetById(int64(aid))
+	device, err := c.endpoint.Device.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -217,7 +217,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 		Status:      params.Status,
 		Type:        common.DeviceType(params.Type),
 	}
-	device, errs, err := c.command.Device.Update(device)
+	device, errs, err := c.endpoint.Device.Update(device)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -283,7 +283,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 func (c ControllerDevice) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	devices, total, err := c.command.Device.GetList(int64(limit), int64(offset), order, sortBy)
+	devices, total, err := c.endpoint.Device.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -334,7 +334,7 @@ func (c ControllerDevice) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.Device.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.Device.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -384,7 +384,7 @@ func (c ControllerDevice) Delete(ctx *gin.Context) {
 func (c ControllerDevice) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	devices, _, err := c.command.Device.Search(query, limit, offset)
+	devices, _, err := c.endpoint.Device.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

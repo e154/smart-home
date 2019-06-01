@@ -67,7 +67,7 @@ func (c ControllerScript) Add(ctx *gin.Context) {
 		Description: params.Description,
 	}
 
-	script, errs, err := c.command.Script.Add(script)
+	script, errs, err := c.endpoint.Script.Add(script)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -125,7 +125,7 @@ func (c ControllerScript) GetById(ctx *gin.Context) {
 		return
 	}
 
-	script, err := c.command.Script.GetById(int64(aid))
+	script, err := c.endpoint.Script.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -199,7 +199,7 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 	script := &m.Script{}
 	common.Copy(&script, &params, common.JsonEngine)
 
-	script, errs, err := c.command.Script.Update(script)
+	script, errs, err := c.endpoint.Script.Update(script)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -265,7 +265,7 @@ func (c ControllerScript) Update(ctx *gin.Context) {
 func (c ControllerScript) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.Script.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.Script.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -316,7 +316,7 @@ func (c ControllerScript) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.Script.DeleteScriptById(int64(aid)); err != nil {
+	if err := c.endpoint.Script.DeleteScriptById(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -366,7 +366,7 @@ func (c ControllerScript) Exec(ctx *gin.Context) {
 		return
 	}
 
-	result, err := c.command.Script.Execute(int64(aid))
+	result, err := c.endpoint.Script.Execute(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -416,7 +416,7 @@ func (c ControllerScript) ExecSrc(ctx *gin.Context) {
 		return
 	}
 
-	result, err := c.command.Script.ExecuteSource(script)
+	result, err := c.endpoint.Script.ExecuteSource(script)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -463,7 +463,7 @@ func (c ControllerScript) ExecSrc(ctx *gin.Context) {
 func (c ControllerScript) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	items, _, err := c.command.Script.Search(query, limit, offset)
+	items, _, err := c.endpoint.Script.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

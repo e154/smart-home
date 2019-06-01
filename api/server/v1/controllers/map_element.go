@@ -57,7 +57,7 @@ func (c ControllerMapElement) Add(ctx *gin.Context) {
 	mapElement := &m.MapElement{}
 	common.Copy(&mapElement, &params, common.JsonEngine)
 
-	mapElement, errs, err := c.command.MapElement.Add(mapElement)
+	mapElement, errs, err := c.endpoint.MapElement.Add(mapElement)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -115,7 +115,7 @@ func (c ControllerMapElement) GetById(ctx *gin.Context) {
 		return
 	}
 
-	mapElement, err := c.command.MapElement.GetById(int64(aid))
+	mapElement, err := c.endpoint.MapElement.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -189,7 +189,7 @@ func (c ControllerMapElement) UpdateFull(ctx *gin.Context) {
 	mapElement := &m.MapElement{}
 	common.Copy(&mapElement, &params, common.JsonEngine)
 
-	mapElement, errs, err := c.command.MapElement.Update(mapElement)
+	mapElement, errs, err := c.endpoint.MapElement.Update(mapElement)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -269,7 +269,7 @@ func (c ControllerMapElement) UpdateElement(ctx *gin.Context) {
 	mapElement := &m.MapElement{}
 	common.Copy(&mapElement, &params, common.JsonEngine)
 
-	mapElement, errs, err := c.command.MapElement.UpdateElement(mapElement)
+	mapElement, errs, err := c.endpoint.MapElement.UpdateElement(mapElement)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -330,7 +330,7 @@ func (c ControllerMapElement) Sort(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.MapElement.Sort(params); err != nil {
+	if err := c.endpoint.MapElement.Sort(params); err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
@@ -384,7 +384,7 @@ func (c ControllerMapElement) Sort(ctx *gin.Context) {
 func (c ControllerMapElement) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.MapElement.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.MapElement.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -435,7 +435,7 @@ func (c ControllerMapElement) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.MapElement.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.MapElement.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404

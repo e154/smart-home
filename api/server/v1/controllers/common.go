@@ -9,7 +9,7 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	m "github.com/e154/smart-home/models"
 	"fmt"
-	"github.com/e154/smart-home/use_case"
+	"github.com/e154/smart-home/endpoint"
 )
 
 var (
@@ -20,18 +20,18 @@ type ControllerCommon struct {
 	adaptors   *adaptors.Adaptors
 	core       *core.Core
 	accessList *access_list.AccessListService
-	command    *use_case.Command
+	endpoint   *endpoint.Command
 }
 
 func NewControllerCommon(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	accessList *access_list.AccessListService,
-	command *use_case.Command) *ControllerCommon {
+	command *endpoint.Command) *ControllerCommon {
 	return &ControllerCommon{
 		adaptors:   adaptors,
 		core:       core,
 		accessList: accessList,
-		command:    command,
+		endpoint:   command,
 	}
 }
 

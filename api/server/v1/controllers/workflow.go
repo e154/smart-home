@@ -60,7 +60,7 @@ func (c ControllerWorkflow) Add(ctx *gin.Context) {
 		Status:      params.Status,
 	}
 
-	workflow, errs, err := c.command.Workflow.Add(workflow)
+	workflow, errs, err := c.endpoint.Workflow.Add(workflow)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -118,7 +118,7 @@ func (c ControllerWorkflow) GetById(ctx *gin.Context) {
 		return
 	}
 
-	workflow, err := c.command.Workflow.GetById(int64(aid))
+	workflow, err := c.endpoint.Workflow.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -193,7 +193,7 @@ func (c ControllerWorkflow) Update(ctx *gin.Context) {
 	workflow := &m.Workflow{}
 	common.Copy(&workflow, &params, common.JsonEngine)
 
-	workflow, errs, err := c.command.Workflow.Update(workflow)
+	workflow, errs, err := c.endpoint.Workflow.Update(workflow)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -259,7 +259,7 @@ func (c ControllerWorkflow) Update(ctx *gin.Context) {
 func (c ControllerWorkflow) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.Workflow.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.Workflow.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -310,7 +310,7 @@ func (c ControllerWorkflow) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.Workflow.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.Workflow.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -360,7 +360,7 @@ func (c ControllerWorkflow) Delete(ctx *gin.Context) {
 func (c ControllerWorkflow) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	items, _, err := c.command.Workflow.Search(query, limit, offset)
+	items, _, err := c.endpoint.Workflow.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -424,7 +424,7 @@ func (c ControllerWorkflow) UpdateScenario(ctx *gin.Context) {
 		return
 	}
 
-	err = c.command.Workflow.UpdateScenario(int64(aid), workflowScenario.WorkflowScenarioId)
+	err = c.endpoint.Workflow.UpdateScenario(int64(aid), workflowScenario.WorkflowScenarioId)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {

@@ -64,7 +64,7 @@ func (c ControllerFlow) Add(ctx *gin.Context) {
 		flow.WorkflowScenarioId = params.Scenario.Id
 	}
 
-	flow, errs, err := c.command.Flow.Add(flow)
+	flow, errs, err := c.endpoint.Flow.Add(flow)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -122,7 +122,7 @@ func (c ControllerFlow) GetById(ctx *gin.Context) {
 		return
 	}
 
-	flow, err := c.command.Flow.GetById(int64(aid))
+	flow, err := c.endpoint.Flow.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -178,7 +178,7 @@ func (c ControllerFlow) GetRedactor(ctx *gin.Context) {
 		return
 	}
 
-	redactorFlow, err := c.command.Flow.GetRedactor(int64(aid))
+	redactorFlow, err := c.endpoint.Flow.GetRedactor(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -250,7 +250,7 @@ func (c ControllerFlow) UpdateRedactor(ctx *gin.Context) {
 	flowRedactor := &m.RedactorFlow{}
 	common.Copy(&flowRedactor, &params, common.JsonEngine)
 
-	flowRedactor, errs, err := c.command.Flow.UpdateRedactor(flowRedactor)
+	flowRedactor, errs, err := c.endpoint.Flow.UpdateRedactor(flowRedactor)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -330,7 +330,7 @@ func (c ControllerFlow) Update(ctx *gin.Context) {
 		return
 	}
 
-	flow, errs, err := c.command.Flow.Update(flow)
+	flow, errs, err := c.endpoint.Flow.Update(flow)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -396,7 +396,7 @@ func (c ControllerFlow) Update(ctx *gin.Context) {
 func (c ControllerFlow) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.Flow.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.Flow.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -446,7 +446,7 @@ func (c ControllerFlow) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err = c.command.Flow.Delete(int64(aid)); err != nil {
+	if err = c.endpoint.Flow.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -496,7 +496,7 @@ func (c ControllerFlow) Delete(ctx *gin.Context) {
 func (c ControllerFlow) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	list, _, err := c.command.Flow.Search(query, limit, offset)
+	list, _, err := c.endpoint.Flow.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

@@ -64,7 +64,7 @@ func (c ControllerDeviceAction) Add(ctx *gin.Context) {
 		action.ScriptId = params.Script.Id
 	}
 
-	action, errs, err := c.command.DeviceAction.Add(action)
+	action, errs, err := c.endpoint.DeviceAction.Add(action)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -122,7 +122,7 @@ func (c ControllerDeviceAction) GetById(ctx *gin.Context) {
 		return
 	}
 
-	action, err := c.command.DeviceAction.GetById(int64(aid))
+	action, err := c.endpoint.DeviceAction.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -201,7 +201,7 @@ func (c ControllerDeviceAction) Update(ctx *gin.Context) {
 		action.ScriptId = params.Script.Id
 	}
 
-	action, errs, err := c.command.DeviceAction.Update(action)
+	action, errs, err := c.endpoint.DeviceAction.Update(action)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -261,7 +261,7 @@ func (c ControllerDeviceAction) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.DeviceAction.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.DeviceAction.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -312,7 +312,7 @@ func (c ControllerDeviceAction) GetActionList(ctx *gin.Context) {
 		return
 	}
 
-	actions, err := c.command.DeviceAction.GetList(int64(deviceId))
+	actions, err := c.endpoint.DeviceAction.GetList(int64(deviceId))
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -363,7 +363,7 @@ func (c ControllerDeviceAction) GetActionList(ctx *gin.Context) {
 func (c ControllerDeviceAction) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	actions, _, err := c.command.DeviceAction.Search(query, limit, offset)
+	actions, _, err := c.endpoint.DeviceAction.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

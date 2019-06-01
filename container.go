@@ -22,7 +22,7 @@ import (
 	"github.com/e154/smart-home/system/telemetry"
 	"github.com/e154/smart-home/system/telemetry/dashboard"
 	streamControllers "github.com/e154/smart-home/system/stream/controllers"
-	"github.com/e154/smart-home/use_case"
+	"github.com/e154/smart-home/endpoint"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -58,7 +58,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(dashboard.NewDashboard)
 	container.Provide(streamControllers.NewStreamControllers)
 	container.Provide(logging.NewLogBackend)
-	container.Provide(use_case.NewUseCase)
+	container.Provide(endpoint.NewUseCase)
 
 	return
 }

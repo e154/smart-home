@@ -58,7 +58,7 @@ func (c ControllerRole) Add(ctx *gin.Context) {
 		Description: params.Description,
 	}
 
-	role, errs, err := c.command.Role.Add(role)
+	role, errs, err := c.endpoint.Role.Add(role)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -109,7 +109,7 @@ func (c ControllerRole) Add(ctx *gin.Context) {
 func (c ControllerRole) GetByName(ctx *gin.Context) {
 
 	name := ctx.Param("name")
-	role, err := c.command.Role.GetByName(name)
+	role, err := c.endpoint.Role.GetByName(name)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -161,7 +161,7 @@ func (c ControllerRole) GetByName(ctx *gin.Context) {
 func (c ControllerRole) GetAccessList(ctx *gin.Context) {
 
 	name := ctx.Param("name")
-	accessList, err := c.command.Role.GetAccessList(name, c.accessList)
+	accessList, err := c.endpoint.Role.GetAccessList(name, c.accessList)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -221,7 +221,7 @@ func (c ControllerRole) UpdateAccessList(ctx *gin.Context) {
 	}
 
 	name := ctx.Param("name")
-	if err := c.command.Role.UpdateAccessList(name, accessListDif); err != nil {
+	if err := c.endpoint.Role.UpdateAccessList(name, accessListDif); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -283,7 +283,7 @@ func (c ControllerRole) Update(ctx *gin.Context) {
 	role := &m.Role{}
 	common.Copy(&role, &params)
 
-	role, errs, err := c.command.Role.Update(role)
+	role, errs, err := c.endpoint.Role.Update(role)
 	if len(errs) > 0 {
 		code := 500
 		if err.Error() == "record not found" {
@@ -348,7 +348,7 @@ func (c ControllerRole) Update(ctx *gin.Context) {
 func (c ControllerRole) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.Role.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.Role.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -398,7 +398,7 @@ func (c ControllerRole) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.Role.Delete(name); err != nil {
+	if err := c.endpoint.Role.Delete(name); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -448,7 +448,7 @@ func (c ControllerRole) Delete(ctx *gin.Context) {
 func (c ControllerRole) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	items, _, err := c.command.Role.Search(query, limit, offset)
+	items, _, err := c.endpoint.Role.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

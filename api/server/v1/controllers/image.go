@@ -57,7 +57,7 @@ func (c ControllerImage) Add(ctx *gin.Context) {
 	image := &m.Image{}
 	common.Copy(&image, &params)
 
-	image, errs, err := c.command.Image.Add(image)
+	image, errs, err := c.endpoint.Image.Add(image)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -115,7 +115,7 @@ func (c ControllerImage) GetById(ctx *gin.Context) {
 		return
 	}
 
-	image, err := c.command.Image.GetById(int64(aid))
+	image, err := c.endpoint.Image.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -189,7 +189,7 @@ func (c ControllerImage) Update(ctx *gin.Context) {
 	image := &m.Image{}
 	common.Copy(&image, &params)
 
-	image, errs, err := c.command.Image.Update(image)
+	image, errs, err := c.endpoint.Image.Update(image)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -251,7 +251,7 @@ func (c ControllerImage) Update(ctx *gin.Context) {
 func (c ControllerImage) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.Image.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.Image.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -302,7 +302,7 @@ func (c ControllerImage) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.Image.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.Image.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -353,7 +353,7 @@ func (c *ControllerImage) Upload(ctx *gin.Context) {
 		return
 	}
 
-	images, errs := c.command.Image.Upload(form.File)
+	images, errs := c.endpoint.Image.Upload(form.File)
 
 	resultImages := make([]*models.Image, 0)
 	common.Copy(&resultImages, images)

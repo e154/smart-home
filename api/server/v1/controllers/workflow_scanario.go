@@ -64,7 +64,7 @@ func (c ControllerWorkflowScenario) Add(ctx *gin.Context) {
 		WorkflowId: params.WorkflowId,
 	}
 
-	scenario, errs, err := c.command.WorkflowScenario.Add(scenario)
+	scenario, errs, err := c.endpoint.WorkflowScenario.Add(scenario)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -134,7 +134,7 @@ func (c ControllerWorkflowScenario) GetById(ctx *gin.Context) {
 		return
 	}
 
-	workflowScenario, err := c.command.WorkflowScenario.GetById(int64(workflowId), int64(scenarioId))
+	workflowScenario, err := c.endpoint.WorkflowScenario.GetById(int64(workflowId), int64(scenarioId))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -212,7 +212,7 @@ func (c ControllerWorkflowScenario) Update(ctx *gin.Context) {
 	workflowScenario := &m.WorkflowScenario{}
 	common.Copy(&workflowScenario, &params, common.JsonEngine)
 
-	workflowScenario, errs, err := c.command.WorkflowScenario.Update(workflowScenario)
+	workflowScenario, errs, err := c.endpoint.WorkflowScenario.Update(workflowScenario)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -268,7 +268,7 @@ func (c ControllerWorkflowScenario) GetList(ctx *gin.Context) {
 		return
 	}
 
-	items, _, err := c.command.WorkflowScenario.GetList(int64(workflowId))
+	items, _, err := c.endpoint.WorkflowScenario.GetList(int64(workflowId))
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -324,7 +324,7 @@ func (c ControllerWorkflowScenario) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.WorkflowScenario.Delete(int64(workflowScenarioId)); err != nil {
+	if err := c.endpoint.WorkflowScenario.Delete(int64(workflowScenarioId)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -379,7 +379,7 @@ func (c ControllerWorkflowScenario) Delete(ctx *gin.Context) {
 func (c ControllerWorkflowScenario) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	items, _, err := c.command.WorkflowScenario.Search(query, limit, offset)
+	items, _, err := c.endpoint.WorkflowScenario.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

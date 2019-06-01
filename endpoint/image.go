@@ -1,4 +1,4 @@
-package use_case
+package endpoint
 
 import (
 	"github.com/e154/smart-home/system/validation"

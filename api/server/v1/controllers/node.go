@@ -57,7 +57,7 @@ func (c ControllerNode) Add(ctx *gin.Context) {
 	node := &m.Node{}
 	common.Copy(&node, &params, common.JsonEngine)
 
-	node, errs, err := c.command.Node.Add(node)
+	node, errs, err := c.endpoint.Node.Add(node)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -117,7 +117,7 @@ func (c ControllerNode) GetById(ctx *gin.Context) {
 		return
 	}
 
-	node, err := c.command.Node.GetById(int64(aid))
+	node, err := c.endpoint.Node.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -191,7 +191,7 @@ func (c ControllerNode) Update(ctx *gin.Context) {
 	node := &m.Node{}
 	common.Copy(&node, &params)
 
-	node, errs, err := c.command.Node.Update(node)
+	node, errs, err := c.endpoint.Node.Update(node)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -253,7 +253,7 @@ func (c ControllerNode) Update(ctx *gin.Context) {
 func (c ControllerNode) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.command.Node.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.Node.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -304,7 +304,7 @@ func (c ControllerNode) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.command.Node.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.Node.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
@@ -354,7 +354,7 @@ func (c ControllerNode) Delete(ctx *gin.Context) {
 func (c ControllerNode) Search(ctx *gin.Context) {
 
 	query, limit, offset := c.select2(ctx)
-	items, _, err := c.command.Node.Search(query, limit, offset)
+	items, _, err := c.endpoint.Node.Search(query, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
