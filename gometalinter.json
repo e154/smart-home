@@ -1,5 +1,5 @@
 {
-  "Fast": false,
+  "Fast": true,
   "Vendor": true,
   "DisableAll": true,
   "Enable": [
@@ -12,12 +12,7 @@
     "gofmt",
     "gocyclo"
   ],
-  "Exclude": [
-    "test.go",
-    "lookup.go",
-    "lookup_unix.go",
-    "email_templates.go"
-  ],
+  "Exclude": [],
   "VendoredLinters": true,
   "Concurrency": 2,
   "Deadline": "300s",
