@@ -63,8 +63,9 @@ func (c *Core) Run() (err error) {
 		return
 	}
 
+	// register steam actions
 	c.streamService.Subscribe("do.worker", streamDoWorker(c))
-	//c.streamService.Subscribe("do.action", streamDoAction(c))
+	c.streamService.Subscribe("do.action", streamDoAction(c))
 
 	return
 }
@@ -83,8 +84,9 @@ func (b *Core) Stop() (err error) {
 		}
 	}
 
+	// unregister steam actions
 	b.streamService.UnSubscribe("do.worker")
-	//b.streamService.UnSubscribe("do.action")
+	b.streamService.UnSubscribe("do.action")
 
 	return
 }
@@ -231,6 +233,21 @@ func (b *Core) GetNodes() (nodes map[int64]*Node) {
 	b.Unlock()
 
 	return
+}
+
+
+func (b *Core) GetNodeById(nodeId int64) *Node {
+
+	b.Lock()
+	for id, node := range b.nodes {
+		if id == nodeId {
+			b.Unlock()
+			return node
+		}
+	}
+	b.Unlock()
+
+	return nil
 }
 
 // ------------------------------------------------
