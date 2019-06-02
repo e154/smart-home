@@ -11,6 +11,7 @@ import (
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/telemetry"
+	"github.com/e154/smart-home/system/stream"
 )
 
 var (
@@ -19,13 +20,14 @@ var (
 
 type Core struct {
 	sync.Mutex
-	nodes     map[int64]*Node
-	workflows map[int64]*Workflow
-	adaptors  *adaptors.Adaptors
-	scripts   *scripts.ScriptService
-	cron      *cr.Cron
-	mqtt      *mqtt.Mqtt
-	telemetry *telemetry.Telemetry
+	nodes         map[int64]*Node
+	workflows     map[int64]*Workflow
+	adaptors      *adaptors.Adaptors
+	scripts       *scripts.ScriptService
+	cron          *cr.Cron
+	mqtt          *mqtt.Mqtt
+	telemetry     *telemetry.Telemetry
+	streamService *stream.StreamService
 	//Map       *Map
 }
 
@@ -34,16 +36,18 @@ func NewCore(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
 	cron *cr.Cron,
 	mqtt *mqtt.Mqtt,
-	telemetry *telemetry.Telemetry) (core *Core, err error) {
+	telemetry *telemetry.Telemetry,
+	streamService *stream.StreamService) (core *Core, err error) {
 
 	core = &Core{
-		nodes:     make(map[int64]*Node),
-		workflows: make(map[int64]*Workflow),
-		adaptors:  adaptors,
-		scripts:   scripts,
-		cron:      cron,
-		mqtt:      mqtt,
-		telemetry: telemetry,
+		nodes:         make(map[int64]*Node),
+		workflows:     make(map[int64]*Workflow),
+		adaptors:      adaptors,
+		scripts:       scripts,
+		cron:          cron,
+		mqtt:          mqtt,
+		telemetry:     telemetry,
+		streamService: streamService,
 	}
 
 	graceful.Subscribe(core)
@@ -54,7 +58,14 @@ func (c *Core) Run() (err error) {
 	if err = c.initNodes(); err != nil {
 		return
 	}
-	err = c.InitWorkflows()
+
+	if err = c.InitWorkflows(); err != nil {
+		return
+	}
+
+	c.streamService.Subscribe("do.worker", streamDoWorker(c))
+	//c.streamService.Subscribe("do.action", streamDoAction(c))
+
 	return
 }
 
@@ -71,6 +82,9 @@ func (b *Core) Stop() (err error) {
 			return
 		}
 	}
+
+	b.streamService.UnSubscribe("do.worker")
+	//b.streamService.UnSubscribe("do.action")
 
 	return
 }

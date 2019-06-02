@@ -4,6 +4,9 @@ import (
 	"sync"
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
+	"reflect"
+	"github.com/e154/smart-home/system/stream"
+	"encoding/json"
 )
 
 type Worker struct {
@@ -107,31 +110,35 @@ func (w *Worker) Do() {
 // ------------------------------------------------
 // stream
 // ------------------------------------------------
-//func streamDoWorker(client *stream.Client, value interface{}) {
-//	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-//	if !ok {
-//		return
-//	}
-//
-//	var worker_id float64
-//	var err error
-//
-//	if worker_id, ok = v["worker_id"].(float64); !ok {
-//		log.Warn("bad id param")
-//		return
-//	}
-//
-//	var worker *models.Worker
-//	if worker, err = models.GetWorkerById(int64(worker_id)); err != nil {
-//		client.Notify("error", err.Error())
-//		return
-//	}
-//
-//	if err = corePtr.DoWorker(worker); err != nil {
-//		client.Notify("error", err.Error())
-//		return
-//	}
-//
-//	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
-//	client.Send <- msg
-//}
+func streamDoWorker(core *Core) func(client *stream.Client, value interface{}) {
+
+	return func(client *stream.Client, value interface{}) {
+
+		v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
+		if !ok {
+			return
+		}
+
+		var workerId float64
+		var err error
+
+		if workerId, ok = v["worker_id"].(float64); !ok {
+			log.Warning("bad id param")
+			return
+		}
+
+		var worker *m.Worker
+		if worker, err = core.adaptors.Worker.GetById(int64(workerId)); err != nil {
+			client.Notify("error", err.Error())
+			return
+		}
+
+		if err = core.DoWorker(worker); err != nil {
+			client.Notify("error", err.Error())
+			return
+		}
+
+		msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
+		client.Send <- msg
+	}
+}
