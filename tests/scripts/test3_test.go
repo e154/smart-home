@@ -27,10 +27,7 @@ func Test3(t *testing.T) {
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService) {
 
-			var store interface{}
-			scriptService.PushFunctions("store", func(value interface{}) {
-				store = value
-			})
+			storeRegisterCallback(scriptService)
 
 			script1 := &m.Script{
 				Source: s,

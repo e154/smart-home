@@ -296,9 +296,7 @@ func (wf *Workflow) runScripts() (err error) {
 	return
 }
 
-func (wf *Workflow) NewScript(model *m.Script) *scripts.Engine {
-
-	wf.engine.EvalString(model.Compiled)
-
-	return wf.engine
+func (wf *Workflow) NewScript(model *m.Script) (engine *scripts.Engine, err error) {
+	engine, err = wf.scripts.NewEngine(model)
+	return
 }

@@ -19,7 +19,7 @@ type NodeResponse struct {
 	Properties json.RawMessage   `json:"properties"`
 	Response   json.RawMessage   `json:"response"`
 	Status     string            `json:"status"`
-	Time       float64
+	Time       float64           `json:"time"`
 }
 
 type NodeStatus string

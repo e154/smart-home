@@ -26,15 +26,12 @@
   version = "1.0.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:315c5f2f60c76d89b871c73f9bd5fe689cad96597afd50fb9992228ef80bdd34"
-  name = "github.com/alecthomas/template"
-  packages = [
-    ".",
-    "parse",
-  ]
+  digest = "1:d8abdc866ebbe05fa3bce50863e23afd4c73c804b90c908caa864e86df1db8a1"
+  name = "github.com/bouk/monkey"
+  packages = ["."]
   pruneopts = "UT"
-  revision = "a0175ee3bccc567396460bf5acd36800cb10c49c"
+  revision = "5df1f207ff77e025801505ae4d903133a0b4353f"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:76dc72490af7174349349838f2fe118996381b31ea83243812a97e5a0fd5ed55"
@@ -123,6 +120,14 @@
   packages = ["js"]
   pruneopts = "UT"
   revision = "d547d1d9531ed93dbdebcbff7f83e7c876a1e0ee"
+
+[[projects]]
+  digest = "1:3af6be4fee7c08f81f13d36f04ffb63ad4b6b5aaba12cce96095c7c2863d4912"
+  name = "github.com/gorilla/mux"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ed099d42384823742bba0bf9a72b53b55c9e2e38"
+  version = "v1.7.2"
 
 [[projects]]
   digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
@@ -233,10 +238,9 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:aa3d8d42865c42626b5c1add193692d045b3188b1479f0a0a88690d21fe20083"
+  digest = "1:84a5a2b67486d5d67060ac393aa255d05d24ed5ee41daecd5635ec22657b6492"
   name = "github.com/mailru/easyjson"
   packages = [
-    ".",
     "buffer",
     "jlexer",
     "jwriter",
@@ -292,18 +296,6 @@
   revision = "ccb656ba24c2a193e5650299767e2df1554725fd"
 
 [[projects]]
-  digest = "1:3371d8e907e3456fd56105ba454a63b8dc5537481929588162b3a7f78d5b64af"
-  name = "github.com/olivere/elastic"
-  packages = [
-    ".",
-    "config",
-    "uritemplates",
-  ]
-  pruneopts = "UT"
-  revision = "4982266e48e0dc5c639e389b50221dcef09cdc99"
-  version = "v6.2.12"
-
-[[projects]]
   digest = "1:5b3b29ce0e569f62935d9541dff2e16cc09df981ebde48e82259076a73a3d0c7"
   name = "github.com/op/go-logging"
   packages = ["."]
@@ -312,12 +304,25 @@
   version = "v1"
 
 [[projects]]
-  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
-  name = "github.com/pkg/errors"
-  packages = ["."]
+  digest = "1:77b730fa4c2d98f3ddf492acbea351eb6b0560fa5eace4105a6fc33ff937bb1b"
+  name = "github.com/rakyll/statik"
+  packages = ["fs"]
   pruneopts = "UT"
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
+  revision = "3bac566d30cdbeddef402a80f3d6305860e59f12"
+  version = "v0.1.6"
+
+[[projects]]
+  branch = "master"
+  digest = "1:207fa20d9fe5d2a98c59ed1b512fa079ab212fe3c498ce2305cb31b603c3ae53"
+  name = "github.com/ribice/golang-swaggerui-example"
+  packages = [
+    ".",
+    "cmd/api",
+    "cmd/swagger",
+    "cmd/swaggerui",
+  ]
+  pruneopts = "UT"
+  revision = "1e7622a30e509a4e004dcf14d10ac93fbe08fc8d"
 
 [[projects]]
   branch = "master"
@@ -549,9 +554,10 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/alecthomas/template",
+    "github.com/bouk/monkey",
     "github.com/dgrijalva/jwt-go",
     "github.com/gin-gonic/gin",
+    "github.com/gorilla/mux",
     "github.com/gorilla/websocket",
     "github.com/iancoleman/strcase",
     "github.com/jessevdk/go-flags",
@@ -562,8 +568,12 @@
     "github.com/mcuadros/go-candyjs",
     "github.com/mitchellh/mapstructure",
     "github.com/olebedev/go-duktape",
-    "github.com/olivere/elastic",
     "github.com/op/go-logging",
+    "github.com/rakyll/statik/fs",
+    "github.com/ribice/golang-swaggerui-example",
+    "github.com/ribice/golang-swaggerui-example/cmd/api",
+    "github.com/ribice/golang-swaggerui-example/cmd/swagger",
+    "github.com/ribice/golang-swaggerui-example/cmd/swaggerui",
     "github.com/rubenv/sql-migrate",
     "github.com/shirou/gopsutil/cpu",
     "github.com/shirou/gopsutil/disk",

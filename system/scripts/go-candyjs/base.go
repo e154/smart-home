@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"unsafe"
 
-	"gopkg.in/e154/go-duktape.v3"
+	"github.com/e154/smart-home/system/scripts/go-duktape.v3"
 )
 
 const goProxyPtrProp = "\xff" + "goProxyPtrProp"
