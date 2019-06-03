@@ -28,7 +28,7 @@ type Core struct {
 	mqtt          *mqtt.Mqtt
 	telemetry     *telemetry.Telemetry
 	streamService *stream.StreamService
-	//Map       *Map
+	Map           *Map
 }
 
 func NewCore(adaptors *adaptors.Adaptors,
@@ -48,9 +48,15 @@ func NewCore(adaptors *adaptors.Adaptors,
 		mqtt:          mqtt,
 		telemetry:     telemetry,
 		streamService: streamService,
+		Map: &Map{
+			telemetry: telemetry,
+		},
 	}
 
 	graceful.Subscribe(core)
+
+	scripts.PushStruct("Map", &MapBind{Map: core.Map})
+
 	return
 }
 
@@ -234,7 +240,6 @@ func (b *Core) GetNodes() (nodes map[int64]*Node) {
 
 	return
 }
-
 
 func (b *Core) GetNodeById(nodeId int64) *Node {
 

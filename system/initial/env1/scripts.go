@@ -211,7 +211,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script14 := &m.Script{
 		Lang:        "coffeescript",
 		Name:        "mb_dev1_turn_on_fan1_v1",
-		Source:      MbDev1TurnOnLight4V1,
+		Source:      MbDev1TurnOnFan1V1,
 		Description: "turn on fan1",
 	}
 	ok, _ = script14.Valid()
@@ -231,7 +231,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script15 := &m.Script{
 		Lang:        "coffeescript",
 		Name:        "mb_dev1_turn_off_fan1_v1",
-		Source:      MbDev1TurnOffLight4V1,
+		Source:      MbDev1TurnOffFan1V1,
 		Description: "turn off fan1",
 	}
 	ok, _ = script15.Valid()
@@ -362,7 +362,21 @@ func addScripts(adaptors *adaptors.Adaptors,
 }
 
 const MbDev1ConditionCheckV1 = `
-# get device status
+objects = 
+	'dev1_light1':0
+	'dev1_light2':1
+	'dev1_light3':2
+	'dev1_light4':3
+	'dev1_fan1':4
+	'dev1_temp1':5
+	'dev1_temp2':6
+
+getStatus =(status)->
+	if status == 1
+		return 'ENABLED'
+	else
+		return 'DISABLED'
+
 fetchStatus =->
 
     COMMAND = []
@@ -373,14 +387,12 @@ fetchStatus =->
     res = device.modBus FUNC, ADDRESS, COUNT, COMMAND
     if res.error
         print 'error: ', res.error
+        Object.keys(objects).map (key, index)->
+            IC.map.setElementState device, key, 'ERROR'
         return
-    else
-        print 'ok: ', res.result
-
-    #if res.result[0] == 1
-    #    device.modBus 'WriteMultipleRegisters', 0, 1, [0]
-    #else
-    #    device.modBus 'WriteMultipleRegisters', 0, 1, [1]
+    Object.keys(objects).map (key, index)->
+        newStatus = getStatus(res.result[index])
+        IC.map.setElementState device, objects[key], newStatus
 
 main =->
     
