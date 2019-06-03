@@ -15,30 +15,20 @@ type Map struct {
 
 func (b *Map) SetElementState(device *m.Device, elementName, systemName string) {
 
-	fmt.Println("SetElementState", elementName, systemName)
-
 	if device == nil || elementName == "" || systemName == "" {
 		return
 	}
 
 	hashKey := b.key(device, elementName)
 
-	fmt.Println(1)
 	if v, ok := b.elements.Load(hashKey); ok {
-		fmt.Println(2)
 		v.(*MapElement).SetState(systemName)
 	} else {
-		fmt.Println(3)
 		for _, state := range device.States {
-			fmt.Println(4)
 			if state.SystemName != systemName {
 				continue
 			}
-
-			fmt.Println(5)
 			b.NewMapElement(device, elementName, state)
-
-
 			b.telemetry.BroadcastOne("devices", device.Id)
 		}
 	}

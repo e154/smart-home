@@ -1,6 +1,8 @@
 package core
 
-import "fmt"
+import (
+	m "github.com/e154/smart-home/models"
+)
 
 // Javascript Binding
 //
@@ -13,9 +15,8 @@ type MapBind struct {
 	Map *Map
 }
 
-func (e *MapBind) SetElementState(device *DeviceBind, elementName, newState string) {
-	fmt.Println("model", device)
-	e.Map.SetElementState(device.model, elementName, newState)
+func (e *MapBind) SetElementState(device *m.Device, elementName, newState string) {
+	e.Map.SetElementState(device, elementName, newState)
 }
 
 func (e *MapBind) GetElement(device *DeviceBind, elementName string) (element *MapElementBind) {

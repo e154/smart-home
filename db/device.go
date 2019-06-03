@@ -93,13 +93,18 @@ func (n *Devices) List(limit, offset int64, orderBy, sort string) (list []*Devic
 		return
 	}
 
-	list = make([]*Device, 0)
-	err = n.Db.
-		Limit(limit).
-		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sort, orderBy)).
+	q := n.Db.Model(&Device{}).
 		Preload("Device").
 		Preload("Node").
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	list = make([]*Device, 0)
+	err = q.
 		Find(&list).
 		Error
 

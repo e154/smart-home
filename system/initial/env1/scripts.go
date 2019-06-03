@@ -388,11 +388,11 @@ fetchStatus =->
     if res.error
         print 'error: ', res.error
         Object.keys(objects).map (key, index)->
-            IC.map.setElementState device, key, 'ERROR'
+            IC.map.setElementState device.getModel(), key, 'ERROR'
         return
     Object.keys(objects).map (key, index)->
         newStatus = getStatus(res.result[index])
-        IC.map.setElementState device, objects[key], newStatus
+        IC.map.setElementState device.getModel(), objects[key], newStatus
 
 main =->
     

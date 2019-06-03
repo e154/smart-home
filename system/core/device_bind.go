@@ -16,11 +16,15 @@ import (
 //
 type DeviceBind struct {
 	model *m.Device
-	node *Node
+	node  *Node
 }
 
 func (d *DeviceBind) GetName() string {
 	return d.model.Name
+}
+
+func (d *DeviceBind) GetModel() *m.Device {
+	return d.model
 }
 
 func (d *DeviceBind) GetDescription() string {
