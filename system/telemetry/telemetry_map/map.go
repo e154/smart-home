@@ -5,29 +5,31 @@ import (
 	"github.com/e154/smart-home/system/stream"
 	"github.com/op/go-logging"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/core"
 )
 
 var (
 	log = logging.MustGetLogger("telemetry_map")
 )
 
+type Map struct {
+	Devices *Devices
+	stream  *stream.StreamService
+}
+
 func NewMap(stream *stream.StreamService,
-	adaptors *adaptors.Adaptors, ) *Map {
+	adaptors *adaptors.Adaptors) *Map {
 
 	_map := &Map{
-		Devices: &Devices{
-			DeviceStats: make(map[int64]*DeviceState),
-			adaptors:    adaptors,
-		},
-		stream: stream,
+		Devices: NewDevices(adaptors),
+		stream:  stream,
 	}
 
 	return _map
 }
 
-type Map struct {
-	Devices *Devices
-	stream  *stream.StreamService
+func (m *Map) RegisterMap(coreMap *core.Map) {
+	m.Devices.CoreMap = coreMap
 }
 
 func (m *Map) Run() {

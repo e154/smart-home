@@ -3,13 +3,12 @@ package core
 import (
 	"sync"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/telemetry"
 	"fmt"
 	"strings"
 )
 
 type Map struct {
-	telemetry *telemetry.Telemetry
+	telemetry ITelemetry
 	elements  sync.Map
 }
 
@@ -47,6 +46,16 @@ func (b *Map) GetElement(device *m.Device, elementName string) (element *MapElem
 	} else {
 		element = b.NewMapElement(device, elementName, nil)
 	}
+	return
+}
+
+func (b *Map) GetAllElements() (elements []*MapElement) {
+
+	b.elements.Range(func(key, value interface{}) bool {
+		element := value.(*MapElement)
+		elements = append(elements, element)
+		return true
+	})
 	return
 }
 

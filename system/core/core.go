@@ -10,13 +10,20 @@ import (
 	"errors"
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/telemetry"
 	"github.com/e154/smart-home/system/stream"
 )
 
 var (
 	log = logging.MustGetLogger("core")
 )
+
+type ITelemetry interface {
+	Broadcast(string)
+	BroadcastOne(string, int64)
+	RegisterMap(*Map)
+	Run()
+	Stop()
+}
 
 type Core struct {
 	sync.Mutex
@@ -26,7 +33,7 @@ type Core struct {
 	scripts       *scripts.ScriptService
 	cron          *cr.Cron
 	mqtt          *mqtt.Mqtt
-	telemetry     *telemetry.Telemetry
+	telemetry     ITelemetry
 	streamService *stream.StreamService
 	Map           *Map
 }
@@ -36,7 +43,7 @@ func NewCore(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
 	cron *cr.Cron,
 	mqtt *mqtt.Mqtt,
-	telemetry *telemetry.Telemetry,
+	telemetry ITelemetry,
 	streamService *stream.StreamService) (core *Core, err error) {
 
 	core = &Core{
@@ -52,6 +59,8 @@ func NewCore(adaptors *adaptors.Adaptors,
 			telemetry: telemetry,
 		},
 	}
+
+	telemetry.RegisterMap(core.Map)
 
 	graceful.Subscribe(core)
 
@@ -73,6 +82,8 @@ func (c *Core) Run() (err error) {
 	c.streamService.Subscribe("do.worker", streamDoWorker(c))
 	c.streamService.Subscribe("do.action", streamDoAction(c))
 
+	c.telemetry.Run()
+
 	return
 }
 
@@ -89,6 +100,8 @@ func (b *Core) Stop() (err error) {
 			return
 		}
 	}
+
+	b.telemetry.Stop()
 
 	// unregister steam actions
 	b.streamService.UnSubscribe("do.worker")

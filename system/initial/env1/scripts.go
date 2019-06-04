@@ -362,20 +362,21 @@ func addScripts(adaptors *adaptors.Adaptors,
 }
 
 const MbDev1ConditionCheckV1 = `
-objects = 
-	'dev1_light1':0
-	'dev1_light2':1
-	'dev1_light3':2
-	'dev1_light4':3
-	'dev1_fan1':4
-	'dev1_temp1':5
-	'dev1_temp2':6
+objects = [
+    {name:'dev1_light1',id:0,systemName:'LIGHT_1_'}
+    {name:'dev1_light3', id:2,systemName:'LIGHT_3_'}
+    {name:'dev1_light2', id:1,systemName:'LIGHT_2_'}
+    {name:'dev1_light4', id:3,systemName:'LIGHT_4_'}
+    {name:'dev1_fan1', id:4,systemName:'FAN_1_'}
+    {name:'dev1_temp1', id:5,systemName:'TEMP_1_'}
+    {name:'dev1_temp2', id:6,systemName:'TEMP_2_'}
+]
 
 getStatus =(status)->
 	if status == 1
-		return 'ENABLED'
+		return 'ON'
 	else
-		return 'DISABLED'
+		return 'OFF'
 
 fetchStatus =->
 
@@ -387,13 +388,19 @@ fetchStatus =->
     res = device.modBus FUNC, ADDRESS, COUNT, COMMAND
     if res.error
         print 'error: ', res.error
-        Object.keys(objects).map (key, index)->
-            IC.map.setElementState device.getModel(), key, 'ERROR'
+        objects.forEach (obj)->
+            IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
+            return
         return
-    Object.keys(objects).map (key, index)->
-        newStatus = getStatus(res.result[index])
-        IC.map.setElementState device.getModel(), objects[key], newStatus
-
+    else 
+        print 'ok: ', res.result
+        objects.forEach (obj)->
+            newStatus = getStatus(res.result[obj.id])
+            print obj.name, obj.systemName + newStatus
+            IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
+            return
+        return
+    
 main =->
     
     node = IC.CurrentNode()
