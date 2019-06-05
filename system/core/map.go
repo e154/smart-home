@@ -28,9 +28,21 @@ func (b *Map) SetElementState(device *m.Device, elementName, systemName string) 
 				continue
 			}
 			b.NewMapElement(device, elementName, state)
-			b.telemetry.BroadcastOne("devices", device.Id)
+			b.telemetry.BroadcastOne("devices", device.Id, elementName)
 		}
 	}
+}
+
+func (b *Map) GetDevicesStates() (states map[int64]*m.DeviceState) {
+	states = make(map[int64]*m.DeviceState)
+
+	b.elements.Range(func(key, value interface{}) bool {
+		element := value.(*MapElement)
+		states[element.Device.Id] = element.State
+		return true
+	})
+
+	return
 }
 
 func (b *Map) GetElement(device *m.Device, elementName string) (element *MapElement) {

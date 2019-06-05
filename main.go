@@ -1,17 +1,15 @@
 package main
 
 import (
-	"os"
-	"github.com/op/go-logging"
-	"github.com/e154/smart-home/system/core"
-	"github.com/e154/smart-home/system/graceful_service"
-	l "github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/api/server"
-	"github.com/e154/smart-home/system/initial"
-	"github.com/e154/smart-home/system/backup"
 	"fmt"
-	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/api/server"
+	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/initial"
+	l "github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/op/go-logging"
+	"os"
 )
 
 var (
@@ -78,21 +76,26 @@ func start() {
 	fmt.Printf(shortVersionBanner, "")
 
 	container := BuildContainer()
-	container.Invoke(func(m *migrations.Migrations) {
+	err := container.Invoke(func(m *migrations.Migrations) {
 		m.Up()
 	})
 
-	container.Invoke(func(server *server.Server,
-		core *core.Core,
+	if err != nil {
+		panic(err.Error())
+	}
+
+	err = container.Invoke(func(server *server.Server,
 		graceful *graceful_service.GracefulService,
 		back *l.LogBackend,
-		initialService *initial.InitialService,
-		mqtt *mqtt.Mqtt) {
+		initialService *initial.InitialService) {
 
 		l.Initialize(back)
 		go server.Start()
-		go core.Run()
 
 		graceful.Wait()
 	})
+
+	if err != nil {
+		panic(err.Error())
+	}
 }

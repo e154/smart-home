@@ -26,7 +26,7 @@ func (e *MapElement) SetState(systemName string) {
 
 		e.State = state
 
-		e.Map.telemetry.BroadcastOne("devices", e.Device.Id)
+		e.Map.telemetry.BroadcastOne("devices", e.Device.Id, e.ElementName)
 	}
 }
 
@@ -43,7 +43,7 @@ func (e *MapElement) SetOptions(options interface{}) {
 
 	e.Options = options
 
-	e.Map.telemetry.BroadcastOne("devices", e.Device.Id)
+	e.Map.telemetry.BroadcastOne("devices", e.Device.Id, e.ElementName)
 }
 
 func (e *MapElement) GetOptions() interface{} {

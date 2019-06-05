@@ -2,10 +2,10 @@ package telemetry_map
 
 import (
 	"encoding/json"
-	"github.com/e154/smart-home/system/stream"
-	"github.com/op/go-logging"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/stream"
+	"github.com/op/go-logging"
 )
 
 var (
@@ -13,7 +13,7 @@ var (
 )
 
 type Map struct {
-	Devices *Devices
+	devices *Devices
 	stream  *stream.StreamService
 }
 
@@ -21,19 +21,17 @@ func NewMap(stream *stream.StreamService,
 	adaptors *adaptors.Adaptors) *Map {
 
 	_map := &Map{
-		Devices: NewDevices(adaptors),
+		devices: NewDevices(adaptors),
 		stream:  stream,
 	}
 
 	return _map
 }
 
-func (m *Map) RegisterMap(coreMap *core.Map) {
-	m.Devices.CoreMap = coreMap
-}
+func (m *Map) Run(core *core.Core) {
+	m.devices.core = core
 
-func (m *Map) Run() {
-	m.stream.Subscribe("map.get.devices.states", m.Devices.streamGetDevicesStates)
+	m.stream.Subscribe("map.get.devices.states", m.devices.streamGetDevicesStates)
 	m.stream.Subscribe("map.get.telemetry", m.streamTelemetry)
 }
 
@@ -42,14 +40,14 @@ func (m *Map) Stop() {
 	m.stream.UnSubscribe("map.get.telemetry")
 }
 
-func (m *Map) BroadcastOne(pack string, id int64) {
+func (m *Map) BroadcastOne(pack string, deviceId int64, elementName string) {
 
 	var body interface{}
 	var ok bool
 
 	switch pack {
 	case "devices":
-		body, ok = m.Devices.BroadcastOne(id)
+		body, ok = m.devices.BroadcastOne(deviceId, elementName)
 	}
 
 	if ok {
@@ -64,7 +62,7 @@ func (t *Map) Broadcast(pack string) {
 
 	switch pack {
 	case "devices":
-		body, ok = t.Devices.Broadcast()
+		body, ok = t.devices.Broadcast()
 	}
 
 	if (ok) {

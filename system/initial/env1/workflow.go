@@ -261,7 +261,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 	// add worker
 	worker2 := &m.Worker{
 		Name:           "worker2",
-		Time:           "* * * * * *",
+		Time:           "5,10,15,20,25,30,35,40,45,50,55 * * * * *",
 		Status:         "enabled",
 		WorkflowId:     workflow1.Id,
 		FlowId:         flow2.Id,

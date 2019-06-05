@@ -1,10 +1,17 @@
 package dashboard
 
 import (
-	"github.com/e154/smart-home/system/stream"
-	"time"
-	"reflect"
 	"encoding/json"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/stream"
+	"github.com/op/go-logging"
+	"reflect"
+	"time"
+)
+
+var (
+	log = logging.MustGetLogger("dashboard")
 )
 
 type Dashboard struct {
@@ -16,33 +23,35 @@ type Dashboard struct {
 	Cpu           *Cpu
 	Uptime        *Uptime
 	Disk          *Disk
-	//Devices *Devices
+	devices       *Devices
 }
 
-func NewDashboard(stream *stream.StreamService) *Dashboard {
+func NewDashboard(stream *stream.StreamService,
+	adaptors *adaptors.Adaptors) *Dashboard {
 
 	dashboard := &Dashboard{
 		Cpu:           NewCpu(),
 		Memory:        &Memory{},
 		Uptime:        &Uptime{},
 		Disk:          NewDisk(),
-		Nodes:         NewNode(),
+		Nodes:         NewNode(adaptors),
 		quit:          make(chan bool),
 		stream:        stream,
 		telemetryTime: 3,
-		//Devices: &Devices{
-		//	Status: make(map[int64]*m.DeviceState),
-		//},
+		devices:       NewDevices(adaptors),
 	}
-
-	stream.Subscribe("dashboard.get.nodes.status", dashboard.Nodes.streamNodesStatus)
-	//stream.Subscribe("dashboard.get.flows.status", streamFlowsStatus)
-	stream.Subscribe("dashboard.get.telemetry", dashboard.streamTelemetry)
 
 	return dashboard
 }
 
-func (t *Dashboard) Run() {
+func (t *Dashboard) Run(core *core.Core) {
+
+	t.devices.core = core
+	t.Nodes.core = core
+
+	t.stream.Subscribe("dashboard.get.nodes.status", t.Nodes.streamNodesStatus)
+	t.stream.Subscribe("t.get.flows.status", streamFlowsStatus)
+	t.stream.Subscribe("dashboard.get.telemetry", t.streamTelemetry)
 
 	go func() {
 		for {
@@ -61,17 +70,22 @@ func (t *Dashboard) Run() {
 }
 
 func (t *Dashboard) Stop() {
+
+	t.stream.UnSubscribe("dashboard.get.nodes.status")
+	t.stream.UnSubscribe("t.get.flows.status")
+	t.stream.UnSubscribe("dashboard.get.telemetry")
+
 	t.quit <- true
 }
 
-func (t *Dashboard) BroadcastOne(pack string, id int64) {
+func (t *Dashboard) BroadcastOne(pack string, deviceId int64, elementName string) {
 
 	var body interface{}
 	var ok bool
 
 	switch pack {
-	//case "devices":
-	//	body, ok = t.Devices.BroadcastOne(id)
+	case "devices":
+		body, ok = t.devices.BroadcastOne(deviceId, elementName)
 	}
 
 	if ok {
@@ -87,8 +101,8 @@ func (t *Dashboard) Broadcast(pack string) {
 	switch pack {
 	case "nodes":
 		body, ok = t.Nodes.Broadcast()
-		//case "devices":
-		//	body, ok = t.Devices.Broadcast()
+	case "devices":
+		body, ok = t.devices.Broadcast()
 	}
 
 	if (ok) {
@@ -133,7 +147,7 @@ func (t *Dashboard) GetStates() *Dashboard {
 	t.Uptime.Update()
 	t.Disk.Update()
 	t.Nodes.Update()
-	//t.Devices.Update()
+	t.devices.Update()
 
 	return t
 }
@@ -149,13 +163,13 @@ func (t *Dashboard) streamTelemetry(client *stream.Client, value interface{}) {
 	states := t.GetStates()
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "dashboard.telemetry":
 	map[string]interface{}{
-		"memory": states.Memory,
-		"cpu":    map[string]interface{}{"usage": t.Cpu.Usage, "info": t.Cpu.Cpuinfo, "all": t.Cpu.All},
-		"time":   time.Now(),
-		"uptime": states.Uptime,
-		"disk":   states.Disk,
-		"nodes":  states.Nodes,
-		//"devices": states.Devices,
+		"memory":  states.Memory,
+		"cpu":     map[string]interface{}{"usage": t.Cpu.Usage, "info": t.Cpu.Cpuinfo, "all": t.Cpu.All},
+		"time":    time.Now(),
+		"uptime":  states.Uptime,
+		"disk":    states.Disk,
+		"nodes":   states.Nodes,
+		"devices": states.devices,
 	}})
 	client.Send <- msg
 }

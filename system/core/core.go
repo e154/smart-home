@@ -1,27 +1,30 @@
 package core
 
 import (
-	"sync"
+	"errors"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/op/go-logging"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/graceful_service"
-	"errors"
 	cr "github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/op/go-logging"
+	"sync"
 )
 
 var (
 	log = logging.MustGetLogger("core")
 )
 
+type IGetMap interface {
+	GetMap() *Map
+}
+
 type ITelemetry interface {
-	Broadcast(string)
-	BroadcastOne(string, int64)
-	RegisterMap(*Map)
-	Run()
+	Broadcast(pack string)
+	BroadcastOne(pack string, deviceId int64, elementName string)
+	Run(core *Core)
 	Stop()
 }
 
@@ -60,8 +63,6 @@ func NewCore(adaptors *adaptors.Adaptors,
 		},
 	}
 
-	telemetry.RegisterMap(core.Map)
-
 	graceful.Subscribe(core)
 
 	scripts.PushStruct("Map", &MapBind{Map: core.Map})
@@ -78,11 +79,11 @@ func (c *Core) Run() (err error) {
 		return
 	}
 
+	c.telemetry.Run(c)
+
 	// register steam actions
 	c.streamService.Subscribe("do.worker", streamDoWorker(c))
 	c.streamService.Subscribe("do.action", streamDoAction(c))
-
-	c.telemetry.Run()
 
 	return
 }

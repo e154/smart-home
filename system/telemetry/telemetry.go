@@ -1,54 +1,61 @@
 package telemetry
 
 import (
-	"github.com/e154/smart-home/system/telemetry/dashboard"
-	"github.com/e154/smart-home/system/telemetry/telemetry_map"
-	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/telemetry/dashboard"
+	"github.com/e154/smart-home/system/telemetry/telemetry_map"
+	"github.com/op/go-logging"
 )
+
+var (
+	log = logging.MustGetLogger("telemetry")
+)
+
 
 type Telemetry struct {
 	dashboard *dashboard.Dashboard
-	Map       *telemetry_map.Map
+	_map      *telemetry_map.Map
+	core      *core.Core
 }
 
-func NewTelemetry(dashboard *dashboard.Dashboard,
+func NewTelemetry(
 	stream *stream.StreamService,
 	adaptors *adaptors.Adaptors) core.ITelemetry {
 
 	telemetry := &Telemetry{
-		dashboard: dashboard,
-		Map:       telemetry_map.NewMap(stream, adaptors),
+		dashboard: dashboard.NewDashboard(stream, adaptors),
+		_map:      telemetry_map.NewMap(stream, adaptors),
 	}
 
 	return telemetry
 }
 
-func (t *Telemetry) RegisterMap(coreMap *core.Map) {
-	t.Map.RegisterMap(coreMap)
-}
+func (t *Telemetry) Run(core *core.Core) {
 
-func (t *Telemetry) Run() {
+	log.Info("Run")
 
-	t.dashboard.Run()
-	t.Map.Run()
+	t.dashboard.Run(core)
+	t._map.Run(core)
 }
 
 func (t *Telemetry) Stop() {
 
+	log.Info("Stop")
+
 	t.dashboard.Stop()
-	t.Map.Stop()
+	t._map.Stop()
 }
 
 func (t *Telemetry) Broadcast(pack string) {
 
 	t.dashboard.Broadcast(pack)
-	t.Map.Broadcast(pack)
+	t._map.Broadcast(pack)
 }
 
-func (t *Telemetry) BroadcastOne(pack string, id int64) {
+func (t *Telemetry) BroadcastOne(pack string, deviceId int64, elementName string) {
 
-	t.dashboard.BroadcastOne(pack, id)
-	t.Map.BroadcastOne(pack, id)
+	t.dashboard.BroadcastOne(pack, deviceId, elementName)
+	t._map.BroadcastOne(pack, deviceId, elementName)
 }

@@ -2,13 +2,13 @@ package telemetry_map
 
 import (
 	"encoding/json"
-	"reflect"
-	m "github.com/e154/smart-home/models"
-	"sync"
-	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/core"
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/stream"
+	"reflect"
+	"sync"
 )
 
 type DeviceState struct {
@@ -23,7 +23,7 @@ type Devices struct {
 	Total       int64                   `json:"total"`
 	DeviceStats map[string]*DeviceState `json:"device_stats"`
 	adaptors    *adaptors.Adaptors
-	CoreMap     *core.Map
+	core        *core.Core
 }
 
 func NewDevices(adaptors *adaptors.Adaptors) *Devices {
@@ -35,7 +35,11 @@ func NewDevices(adaptors *adaptors.Adaptors) *Devices {
 
 func (d *Devices) Update() {
 
-	mapElements := d.CoreMap.GetAllElements()
+	if d.core == nil {
+		return
+	}
+
+	mapElements := d.core.Map.GetAllElements()
 	d.Total = int64(len(mapElements))
 
 	d.Lock()
@@ -62,24 +66,18 @@ func (d *Devices) Broadcast() (interface{}, bool) {
 	}, true
 }
 
-func (d *Devices) BroadcastOne(id int64) (interface{}, bool) {
-
-	fmt.Println("BroadcastOne", id)
+func (d *Devices) BroadcastOne(deviceId int64, elementName string) (interface{}, bool) {
 
 	d.Update()
 
-	//TODO fix BroadcastOne
-	//d.Lock()
-	//state, ok := d.DeviceStats[key]
-	//if !ok {
-	//	d.Unlock()
-	//	return nil, false
-	//}
-	//d.Unlock()
-
-	state := struct {
-
-	}{}
+	d.Lock()
+	key := d.key(deviceId, elementName)
+	state, ok := d.DeviceStats[key]
+	if !ok {
+		d.Unlock()
+		return nil, false
+	}
+	d.Unlock()
 
 	return map[string]interface{}{
 		"device": state,

@@ -1,30 +1,39 @@
 package dashboard
 
 import (
-	"reflect"
 	"encoding/json"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/stream"
+	"reflect"
 	"sync"
 	"time"
-	"github.com/e154/smart-home/system/stream"
 )
 
-func NewNode() (node *Nodes) {
+type Nodes struct {
+	sync.Mutex
+	Total      int64              `json:"total"`
+	Status     map[int64]string   `json:"status"`
+	lastUpdate time.Time          `json:"-"`
+	adaptors   *adaptors.Adaptors `json:"-"`
+	core       *core.Core         `json:"-"`
+}
+
+func NewNode(adaptors *adaptors.Adaptors) (node *Nodes) {
 
 	node = &Nodes{
-		Status: make(map[int64]string),
+		Status:   make(map[int64]string),
+		adaptors: adaptors,
 	}
 
 	return
 }
 
-type Nodes struct {
-	sync.Mutex
-	Total      int64            `json:"total"`
-	Status     map[int64]string `json:"status"`
-	lastUpdate time.Time
-}
-
 func (n *Nodes) Update() {
+
+	if n.core == nil {
+		return
+	}
 
 	n.Lock()
 	defer n.Unlock()
@@ -35,14 +44,14 @@ func (n *Nodes) Update() {
 
 	n.lastUpdate = time.Now()
 
-	//n.Total, _ = models.GetNodesCount()
-	//nodes := core.CorePtr().GetNodes()
-	//
-	//n.Status = make(map[int64]string)
-	//
-	//for _, node := range nodes {
-	//	n.Status[node.Id] = node.GetConnectStatus()
-	//}
+	_, n.Total, _ = n.adaptors.Node.List(999, 0, "", "")
+	nodes := n.core.GetNodes()
+
+	n.Status = make(map[int64]string)
+
+	for _, node := range nodes {
+		n.Status[node.Id] = node.Status
+	}
 }
 
 func (n *Nodes) Broadcast() (interface{}, bool) {

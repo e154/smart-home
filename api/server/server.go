@@ -1,18 +1,19 @@
 package server
 
 import (
-	"github.com/op/go-logging"
-	"github.com/gin-gonic/gin"
-	"fmt"
-	"net/http"
-	"time"
 	"context"
-	"github.com/e154/smart-home/system/graceful_service"
+	"fmt"
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
 	streamControllers "github.com/e154/smart-home/system/stream/controllers"
+	"github.com/gin-gonic/gin"
+	"github.com/op/go-logging"
+	"net/http"
+	"time"
 )
 
 var (
@@ -28,6 +29,7 @@ type Server struct {
 	logger        *ServerLogger
 	af            *rbac.AccessFilter
 	streamService *stream.StreamService
+	core          *core.Core
 }
 
 func (s *Server) Start() {
@@ -45,6 +47,8 @@ func (s *Server) Start() {
 	}()
 
 	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
+
+	go s.core.Run()
 }
 
 func (s *Server) Shutdown() {
@@ -61,7 +65,8 @@ func NewServer(cfg *ServerConfig,
 	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,
 	streamService *stream.StreamService,
-	streamControllers *streamControllers.StreamControllers) (newServer *Server) {
+	streamControllers *streamControllers.StreamControllers,
+	core *core.Core) (newServer *Server) {
 
 	logger := &ServerLogger{log}
 
@@ -85,6 +90,7 @@ func NewServer(cfg *ServerConfig,
 		logger:        logger,
 		af:            accessFilter,
 		streamService: streamService,
+		core:          core,
 	}
 
 	newServer.graceful.Subscribe(newServer)
