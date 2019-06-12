@@ -6,7 +6,6 @@ import (
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"strings"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/common"
 )
 
 func roles(adaptors *adaptors.Adaptors,
@@ -53,12 +52,12 @@ func roles(adaptors *adaptors.Adaptors,
 	// add admin
 	adminUser := &m.User{
 		Nickname:          "admin",
-		EncryptedPassword: common.Pwdhash("admin"),
 		RoleName:          "admin",
 		Email:             "admin@e154.ru",
 		Lang:              "en",
 		Status:            "active",
 	}
+	_ = adminUser.SetPass("admin")
 
 	ok, _ := adminUser.Valid()
 	So(ok, ShouldEqual, true)

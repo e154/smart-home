@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"time"
 	"github.com/e154/smart-home/system/validation"
+	"github.com/e154/smart-home/common"
 )
 
 const HistoryMax = 8
@@ -56,4 +57,14 @@ func (u *User) UpdateHistory(t time.Time, ipv4 string) {
 	}
 
 	u.History = append(u.History, &UserHistory{Ip: ipv4, Time: t})
+}
+
+func (u User) CheckPass(password string) (ok bool) {
+	ok = common.CheckPasswordHash(password, u.EncryptedPassword)
+	return
+}
+
+func (u User) SetPass(password string) (err error) {
+	u.EncryptedPassword, err = common.HashPassword(password)
+	return
 }

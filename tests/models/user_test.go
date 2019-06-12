@@ -7,7 +7,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/debug"
 	"fmt"
 	"strings"
@@ -57,7 +56,6 @@ func TestUser(t *testing.T) {
 			// add user
 			user := &m.User{
 				Nickname: nickname,
-				EncryptedPassword: common.Pwdhash("123456"),
 				RoleName: "user_role",
 				Email: email,
 				Lang: "en",
@@ -68,6 +66,8 @@ func TestUser(t *testing.T) {
 					},
 				},
 			}
+			err = user.SetPass("123456")
+			So(err, ShouldBeNil)
 
 			ok, _ := user.Valid()
 			So(ok, ShouldEqual, true)

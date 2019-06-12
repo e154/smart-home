@@ -29,7 +29,7 @@ func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, 
 	if user, err = a.adaptors.User.GetByEmail(email); err != nil {
 		err = errors.New("user not found")
 		return
-	} else if user.EncryptedPassword != common.Pwdhash(password) {
+	} else if !user.CheckPass(password) {
 		err = errors.New("password not valid")
 		return
 	} else if user.Status == "blocked" && user.Id != AdminId {

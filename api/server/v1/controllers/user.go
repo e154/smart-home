@@ -62,7 +62,7 @@ func (c ControllerUser) Add(ctx *gin.Context) {
 	common.Copy(&user, &params, common.JsonEngine)
 
 	if params.Password == params.PasswordRepeat {
-		user.EncryptedPassword, _ = common.HashPassword(params.Password)
+		user.SetPass(params.Password)
 	}
 
 	user, errs, err := c.endpoint.User.Add(user, currentUser)
@@ -198,13 +198,13 @@ func (c ControllerUser) Update(ctx *gin.Context) {
 	common.Copy(&user, &params, common.JsonEngine)
 
 	err400 := NewError(400)
-	if params.Password != "" && params.Password != params.PasswordRepeat {
+	if params.Password != params.PasswordRepeat {
 		err400.AddFieldf("password", FieldNotValid)
 		return
 	}
 
 	if params.Password != "" {
-		user.EncryptedPassword = common.Pwdhash(params.Password)
+		user.SetPass(params.Password)
 	}
 
 	if err400.Errors() {

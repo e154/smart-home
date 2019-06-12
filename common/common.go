@@ -16,11 +16,6 @@ func Strtomd5(s string) string {
 	return rs
 }
 
-//password hash function
-func Pwdhash(str string) string {
-	return Strtomd5(str)
-}
-
 const (
 	Alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	Alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
