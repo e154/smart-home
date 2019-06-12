@@ -115,11 +115,10 @@ func (u *Users) GetByResetPassToken(token string) (user *User, err error) {
 
 func (u *Users) Update(user *User) (err error) {
 
-	err = u.Db.Model(&User{Id: user.Id}).Updates(map[string]interface{}{
+	q := map[string]interface{}{
 		"nickname":             user.Nickname,
 		"first_name":           user.FirstName,
 		"last_name":            user.LastName,
-		"encrypted_password":   user.EncryptedPassword,
 		"email":                user.Email,
 		"status":               user.Status,
 		"reset_password_token": user.ResetPasswordToken,
@@ -138,7 +137,11 @@ func (u *Users) Update(user *User) (err error) {
 		"created_at":             user.CreatedAt,
 		"updated_at":             user.UpdatedAt,
 		"deleted_at":             user.DeletedAt,
-	}).Error
+	}
+	if user.EncryptedPassword != "" {
+		q["encrypted_password"] = user.EncryptedPassword
+	}
+	err = u.Db.Model(&User{Id: user.Id}).Updates(q).Error
 
 	return
 }

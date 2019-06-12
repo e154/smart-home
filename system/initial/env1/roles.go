@@ -57,7 +57,8 @@ func roles(adaptors *adaptors.Adaptors,
 		Lang:              "en",
 		Status:            "active",
 	}
-	_ = adminUser.SetPass("admin")
+	err = adminUser.SetPass("admin")
+	So(err, ShouldBeNil)
 
 	ok, _ := adminUser.Valid()
 	So(ok, ShouldEqual, true)

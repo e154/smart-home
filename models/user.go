@@ -64,7 +64,7 @@ func (u User) CheckPass(password string) (ok bool) {
 	return
 }
 
-func (u User) SetPass(password string) (err error) {
+func (u *User) SetPass(password string) (err error) {
 	u.EncryptedPassword, err = common.HashPassword(password)
 	return
 }
