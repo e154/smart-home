@@ -11,6 +11,9 @@
 
 <img align="right" width="220" height="auto" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
 
+Attention! The project is under active development.
+---------
+
 ### Overview
 
 Basic principles Underlying the system being developed, ease of configuration and content, cheapness and availability of the component base.
