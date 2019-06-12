@@ -16,16 +16,19 @@ services:
 
 before_install:
   - psql -c 'CREATE DATABASE smart_home;' -U postgres
+  - psql -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/karalabe/xgo
   - go env && pwd
-  - go get github.com/spf13/hugo
   - npm install -g gulp
 
 install:
   - go get github.com/golang/dep
   - go get github.com/lib/pq
+  - wget https://github.com/gohugoio/hugo/releases/download/v0.55.6/hugo_0.55.6_Linux-64bit.deb
+  - sudo dpkg -i hugo*.deb
+  - hugo version
 
 script:
   - ./bin/travis.sh --init
