@@ -77,7 +77,7 @@ __init() {
 
     mkdir -p ${TMP_DIR}
     cd ${ROOT}
-    gvt rebuild
+    dep ensure
 }
 
 __clean() {
