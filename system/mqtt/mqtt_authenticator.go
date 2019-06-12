@@ -32,7 +32,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 	//fmt.Println(login, pass)
 
 	password, ok := pass.(string)
-	if !ok {
+	if !ok || password == "" {
 		err = ErrBadLoginOrPassword
 	}
 

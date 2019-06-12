@@ -54,6 +54,11 @@ func (c ControllerNode) Add(ctx *gin.Context) {
 		return
 	}
 
+	if params.Password != params.PasswordRepeat {
+		NewError(400, "bad password repeat").Send(ctx)
+		return
+	}
+
 	node := &m.Node{}
 	common.Copy(&node, &params, common.JsonEngine)
 
@@ -131,7 +136,7 @@ func (c ControllerNode) GetById(ctx *gin.Context) {
 	common.Copy(&result, &node, common.JsonEngine)
 
 	resp := NewSuccess()
-	resp.SetData(node).Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation PUT /node/{id} nodeUpdateById
@@ -186,10 +191,15 @@ func (c ControllerNode) Update(ctx *gin.Context) {
 		return
 	}
 
+	if params.Password != params.PasswordRepeat {
+		NewError(400, "bad password repeat").Send(ctx)
+		return
+	}
+
 	params.Id = int64(aid)
 
 	node := &m.Node{}
-	common.Copy(&node, &params)
+	common.Copy(&node, &params, common.JsonEngine)
 
 	node, errs, err := c.endpoint.Node.Update(node)
 	if len(errs) > 0 {
