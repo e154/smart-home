@@ -31,10 +31,10 @@ install:
   - hugo version
 
 script:
-  - ./bin/travis.sh --init
-  - ./bin/travis.sh --build
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
+  - ./bin/travis.sh --init
+  - ./bin/travis.sh --build
 
 deploy:
   provider: releases
