@@ -393,10 +393,9 @@ fetchStatus =->
             return
         return
     else 
-        print 'ok: ', res.result
+        # print 'ok: ', res.result
         objects.forEach (obj)->
             newStatus = getStatus(res.result[obj.id])
-            print obj.name, obj.systemName + newStatus
             IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
             return
         return
@@ -419,8 +418,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 0, 1, [1]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     
@@ -440,8 +437,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 0, 1, [0]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     
@@ -461,8 +456,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 1, 1, [1]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     
@@ -482,8 +475,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 1, 1, [0]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     
@@ -503,8 +494,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 2, 1, [1]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     
@@ -524,8 +513,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 2, 1, [0]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     
@@ -545,8 +532,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 3, 1, [1]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     
@@ -566,8 +551,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 3, 1, [0]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     
@@ -588,8 +571,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 4, 1, [1]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     
@@ -609,8 +590,6 @@ fetchStatus =->
     res = device.modBus 'WriteMultipleRegisters', 4, 1, [0]
     if res.error
         print 'error: ', res.error
-    else
-        print 'ok: ', res.result
 
 main =->
     

@@ -96,6 +96,9 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err 
 			err = errors.New("timeout")
 			done = true
 		case resp := <-ch:
+			if resp == nil {
+				return
+			}
 			if resp.DeviceId != device.Id {
 				continue
 			}
