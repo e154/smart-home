@@ -8,10 +8,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/core"
 	m "github.com/e154/smart-home/models"
-	. "github.com/e154/smart-home/common"
 	. "github.com/e154/smart-home/models/devices"
-	"fmt"
-	"github.com/e154/smart-home/common/debug"
 )
 
 // create node
@@ -71,9 +68,9 @@ func Test5(t *testing.T) {
 			parentDevice, err = adaptors.Device.GetById(parentDevice.Id)
 			So(err, ShouldBeNil)
 
-			fmt.Println("----")
-			debug.Println(parentDevice)
-			fmt.Println("----")
+			//fmt.Println("----")
+			//debug.Println(parentDevice)
+			//fmt.Println("----")
 		})
 	})
 }

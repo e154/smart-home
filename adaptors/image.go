@@ -15,7 +15,6 @@ import (
 	"os"
 	"path/filepath"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 )
 
 type Image struct {
@@ -140,7 +139,6 @@ func (n *Image) AddMultiple(items []*m.Image) (err error) {
 		insertRecords = append(insertRecords, dbVer)
 	}
 
-	debug.Println(insertRecords)
 	err = gormbulk.BulkInsert(n.db, insertRecords, 3000)
 
 	return
