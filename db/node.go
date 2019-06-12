@@ -11,16 +11,16 @@ type Nodes struct {
 }
 
 type Node struct {
-	Id          int64 `gorm:"primary_key"`
-	Name        string
-	Ip          string
-	Port        int
-	Status      string
-	Description string
-	Login       string
-	Password    string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Id                int64 `gorm:"primary_key"`
+	Name              string
+	Ip                string
+	Port              int
+	Status            string
+	Description       string
+	Login             string
+	EncryptedPassword string
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
 }
 
 func (d *Node) TableName() string {
@@ -57,8 +57,8 @@ func (n Nodes) Update(m *Node) (err error) {
 		"port":        m.Port,
 		"login":       m.Login,
 	}
-	if m.Password != "" {
-		q["password"] = m.Password
+	if m.EncryptedPassword != "" {
+		q["encrypted_password"] = m.EncryptedPassword
 	}
 	err = n.Db.Model(&Node{Id: m.Id}).Updates(q).Error
 	return
@@ -112,4 +112,3 @@ func (n *Nodes) GetByLogin(login string) (node *Node, err error) {
 
 	return
 }
-

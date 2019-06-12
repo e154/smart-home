@@ -115,16 +115,16 @@ func (a *Node) GetByLogin(login string) (ver *m.Node, err error) {
 
 func (n *Node) fromDb(dbNode *db.Node) (node *m.Node) {
 	node = &m.Node{
-		Id:          dbNode.Id,
-		Name:        dbNode.Name,
-		Ip:          dbNode.Ip,
-		Port:        dbNode.Port,
-		Status:      dbNode.Status,
-		Description: dbNode.Description,
-		Login:       dbNode.Login,
-		Password:    dbNode.Password,
-		CreatedAt:   dbNode.CreatedAt,
-		UpdatedAt:   dbNode.UpdatedAt,
+		Id:                dbNode.Id,
+		Name:              dbNode.Name,
+		Ip:                dbNode.Ip,
+		Port:              dbNode.Port,
+		Status:            dbNode.Status,
+		Description:       dbNode.Description,
+		Login:             dbNode.Login,
+		EncryptedPassword: dbNode.EncryptedPassword,
+		CreatedAt:         dbNode.CreatedAt,
+		UpdatedAt:         dbNode.UpdatedAt,
 	}
 
 	return
@@ -142,7 +142,7 @@ func (n *Node) toDb(node *m.Node) (dbNode *db.Node, err error) {
 	}
 
 	if node.Password != "" {
-		if dbNode.Password, err = common.HashPassword(node.Password); err != nil {
+		if dbNode.EncryptedPassword, err = common.HashPassword(node.Password); err != nil {
 			return
 		}
 	}

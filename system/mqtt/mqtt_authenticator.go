@@ -45,7 +45,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 		return
 	}
 
-	if ok := common.CheckPasswordHash(password, node.Password); !ok {
+	if ok := common.CheckPasswordHash(password, node.EncryptedPassword); !ok {
 		err = ErrBadLoginOrPassword
 	}
 

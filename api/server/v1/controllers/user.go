@@ -62,7 +62,7 @@ func (c ControllerUser) Add(ctx *gin.Context) {
 	common.Copy(&user, &params, common.JsonEngine)
 
 	if params.Password == params.PasswordRepeat {
-		user.EncryptedPassword = common.Pwdhash(params.Password)
+		user.EncryptedPassword, _ = common.HashPassword(params.Password)
 	}
 
 	user, errs, err := c.endpoint.User.Add(user, currentUser)

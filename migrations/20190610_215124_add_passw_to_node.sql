@@ -3,12 +3,12 @@
 alter table nodes
   add column login text null;
 alter table nodes
-  add column password text null;
+  add column encrypted_password text null;
 
 -- +migrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
 alter table nodes
   drop column if exists login;
 alter table nodes
-  drop column if exists password;
+  drop column if exists encrypted_password;
 
