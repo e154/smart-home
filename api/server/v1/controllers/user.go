@@ -200,7 +200,6 @@ func (c ControllerUser) Update(ctx *gin.Context) {
 	err400 := NewError(400)
 	if params.Password != params.PasswordRepeat {
 		err400.AddFieldf("password", FieldNotValid)
-		return
 	}
 
 	if params.Password != "" {

@@ -14,29 +14,29 @@ type User struct {
 	Nickname            string         `json:"nickname" valid:"Required;MinSize(3);MaxSize(255)"`
 	FirstName           string         `json:"first_name" valid:"MaxSize(255)"`
 	LastName            string         `json:"last_name" valid:"MaxSize(255)"`
-	EncryptedPassword   string         `json:"-"`
+	EncryptedPassword   string         `json:"encrypted_password,omitempty"`
 	Email               string         `json:"email" valid:"Required;Email"`
 	Status              string         `json:"status" valid:"MaxSize(255)"`
-	ResetPasswordToken  string         `json:"-"`
-	AuthenticationToken string         `json:"authentication_token"`
-	Image               *Image         `json:"image"`
+	ResetPasswordToken  string         `json:"-,omitempty"`
+	AuthenticationToken string         `json:"authentication_token,omitempty"`
+	Image               *Image         `json:"image,omitempty"`
 	ImageId             sql.NullInt64  `json:"image_id"`
-	SignInCount         int64          `json:"sign_in_count"`
-	CurrentSignInIp     string         `json:"current_sign_in_ip"`
-	LastSignInIp        string         `json:"last_sign_in_ip"`
+	SignInCount         int64          `json:"sign_in_count,omitempty"`
+	CurrentSignInIp     string         `json:"current_sign_in_ip,omitempty"`
+	LastSignInIp        string         `json:"last_sign_in_ip,omitempty"`
 	Lang                string         `json:"lang"`
-	User                *User          `json:"user"`
+	User                *User          `json:"user,omitempty"`
 	UserId              sql.NullInt64  `json:"user_id"`
 	Role                *Role          `json:"role"`
-	RoleName            string         `json:"role_name"`
-	Meta                []*UserMeta    `json:"meta"`
-	ResetPasswordSentAt *time.Time     `json:"reset_password_sent_at"`
-	CurrentSignInAt     *time.Time     `json:"current_sign_in_at"`
-	LastSignInAt        *time.Time     `json:"last_sign_in_at"`
-	CreatedAt           time.Time      `json:"created_at"`
-	UpdatedAt           time.Time      `json:"updated_at"`
+	RoleName            string         `json:"role_name,omitempty"`
+	Meta                []*UserMeta    `json:"meta,omitempty"`
+	ResetPasswordSentAt *time.Time     `json:"reset_password_sent_at,omitempty"`
+	CurrentSignInAt     *time.Time     `json:"current_sign_in_at,omitempty"`
+	LastSignInAt        *time.Time     `json:"last_sign_in_at,omitempty"`
+	CreatedAt           time.Time      `json:"created_at,omitempty"`
+	UpdatedAt           time.Time      `json:"updated_at,omitempty"`
 	DeletedAt           *time.Time     `json:"deleted_at"`
-	History             []*UserHistory `json:"history"`
+	History             []*UserHistory `json:"history,omitempty"`
 }
 
 func (u *User) Valid() (ok bool, errs []*validation.Error) {

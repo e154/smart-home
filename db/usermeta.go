@@ -19,7 +19,7 @@ func (m *UserMeta) TableName() string {
 
 func (m *UserMetas) UpdateOrCreate(meta *UserMeta) (id int64, err error) {
 
-	err = m.Db.Update(&UserMeta{}).
+	err = m.Db.Model(&UserMeta{}).
 		Where("user_id = ? and key = ?", meta.UserId, meta.Key).
 		Updates(map[string]interface{}{"value": meta.Value}).
 		Error

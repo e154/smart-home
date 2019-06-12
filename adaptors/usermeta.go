@@ -4,6 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common/debug"
 )
 
 type UserMeta struct {
@@ -21,6 +22,7 @@ func GetUserMetaAdaptor(d *gorm.DB) *UserMeta {
 func (n *UserMeta) UpdateOrCreate(meta *m.UserMeta) (id int64, err error) {
 
 	dbMeta := n.toDb(meta)
+	debug.Println(dbMeta)
 	if id, err = n.table.UpdateOrCreate(dbMeta); err != nil {
 		return
 	}
