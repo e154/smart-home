@@ -11,6 +11,9 @@
 
 <img align="right" width="302" height="248" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
 
+Внимание! Проект в стадии активной разработки
+---------
+
 ### Описание
  
 Основные принципы лежащие в основе разрабатываемой системы - простота настройки, дешевизна содержания и доступность компонентной базы.
@@ -130,15 +133,18 @@ PS совсем скоро добавится пример hello world
 #### Сервер
 
 ```bash
-go get -u github.com/FiloSottile/gvt
+go get -u github.com/golang/dep/cmd/dep
 
 git clone https://github.com/e154/smart-home $GOPATH/src/github.com/e154/smart-home
 
 cd $GOPATH/src/github.com/e154/smart-home
 
-gvt restore
+dep ensure
 
 go build
+
+./smart-home -reset
+./smart-home
 ```
 
 Редактируем файлы конфигурации
@@ -195,6 +201,10 @@ go test ./tests -v
 - Все изменения должны покрываться тестами
 
 Спасибо за понимание
+
+### Не коммерческие аналоги
+
+* [OpenHub](https://www.openhab.org)
 
 ### Коммерческие аналоги
 

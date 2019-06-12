@@ -52,9 +52,6 @@ main() {
     --clean)
     __clean
     ;;
-    --migrate)
-    __migrate
-    ;;
     --docs-deploy)
     __docs_deploy
     ;;
@@ -72,29 +69,22 @@ main() {
 __test() {
 
    cd ${ROOT}
-   goveralls
+   go test -v ./tests/scripts
+   go test -v ./tests/workflow
 }
 
 __init() {
 
     mkdir -p ${TMP_DIR}
     cd ${ROOT}
-    gvt rebuild
+    dep ensure
 }
 
 __clean() {
 
-    rm -rf ${ROOT}/vendor/bin
-    rm -rf ${ROOT}/vendor/pkg
-    rm -rf ${ROOT}/vendor/src
+    rm -rf ${ROOT}/vendor
     rm -rf ${TMP_DIR}
     rm -rf ${HOME}/${ARCHIVE}
-}
-
-__migrate() {
-
-    sql-migrate up -config=./bin/dbconfig-travis.yml -env="development"
-
 }
 
 __docs_deploy() {
@@ -139,7 +129,7 @@ __build() {
     # build
     cd ${TMP_DIR}
 
-    BRANCH="$(git name-rev --name-only HEAD)"
+#    BRANCH="$(git name-rev --name-only HEAD)"
 
     if [[ $BRANCH == *"tags/"* ]]; then
       BRANCH="master"
@@ -152,23 +142,18 @@ __build() {
 
     xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
 
-    # copy configs
+    cp -r ${ROOT}/assets ${TMP_DIR}
     cp -r ${ROOT}/conf ${TMP_DIR}
-    #sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.conf > ${TMP_DIR}/conf/app.conf
-
-    # etc
-    cp -r ${ROOT}/examples ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}
+    cp -r ${ROOT}/snapshots ${TMP_DIR}
     cp ${ROOT}/LICENSE ${TMP_DIR}
-    cp ${ROOT}/README.md ${TMP_DIR}
+    cp ${ROOT}/README* ${TMP_DIR}
     cp ${ROOT}/contributors.txt ${TMP_DIR}
 
     cp ${ROOT}/bin/server ${TMP_DIR}
     cp ${ROOT}/bin/server-installer.sh ${TMP_DIR}
 
-    # sql dump
     cd ${TMP_DIR}
-    mysqldump -u root smarthome > ${TMP_DIR}/dump.sql
     echo "tar: ${ARCHIVE} copy to ${HOME}"
 
     # create arch

@@ -11,6 +11,9 @@
 
 <img align="right" width="220" height="auto" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
 
+Attention! The project is under active development.
+---------
+
 ### Overview
 
 Basic principles Underlying the system being developed, ease of configuration and content, cheapness and availability of the component base.
@@ -128,15 +131,18 @@ PS very soon an example will be added hello world
 #### main server install
 
 ```bash
-go get -u github.com/FiloSottile/gvt
+go get -u github.com/golang/dep/cmd/dep
 
 git clone https://github.com/e154/smart-home $GOPATH/src/github.com/e154/smart-home
 
 cd $GOPATH/src/github.com/e154/smart-home
 
-gvt restore
+dep ensure
 
 go build
+
+./smart-home -reset
+./smart-home
 ```
 
 editing configuration files
@@ -194,7 +200,8 @@ Thank you for your understanding!
 
 ### See also
 
-* [iridiummobile](http://www.iridiummobile.net) 
+* [OpenHub](https://www.openhab.org)
+* [iridiummobile](http://www.iridiummobile.net)
 * [amx](https://www.amx.com/en-US)
 
 ### LICENSE

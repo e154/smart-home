@@ -43,8 +43,6 @@ __help() {
   cat <<EOF
 Usage: doc.sh [options]
 
-Bootstrap Debian 8.0 host
-
 OPTIONS:
 
   --dev - run in develop mode

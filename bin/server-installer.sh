@@ -3,7 +3,6 @@
 #
 # sudo apt-get install jq
 #
-# curl -s http://localhost:1377/smart-home/server-installer.sh | bash /dev/stdin --install
 # curl -s https://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install
 #
 
@@ -16,8 +15,11 @@ GIT_REPO="smart-home"
 INSTALL_DIR="/opt/smart-home"
 ARCHIVE="server.tar.gz"
 DOWNLOAD_URL="$( curl -s https://api.github.com/repos/${GIT_USER}/${GIT_REPO}/releases/latest | jq -r ".assets[].browser_download_url" )"
-#DOWNLOAD_URL="https://github.com/e154/smart-home/releases/download/v0.0.4/smart-home-server.tar.gz"
+#DOWNLOAD_URL="https://github.com/e154/smart-home-old/releases/download/v0.0.4/smart-home-server.tar.gz"
 COMMAND=$1
+
+OS_TYPE="unknown"
+OS_ARCH="unknown"
 
 JQ=`which jq`
 
@@ -74,27 +76,31 @@ __install_default_settings() {
 
     cd ${INSTALL_DIR}/server
 
-    file="${INSTALL_DIR}/server/conf/app.conf"
+    file="${INSTALL_DIR}/server/conf/config.json"
     if [ ! -f "$file" ]; then
         log "Create file $file"
-        sed 's/dev\/app.conf/prod\/app.conf/' ${INSTALL_DIR}/server/conf/app.sample.conf > $file
+        cp ${INSTALL_DIR}/server/conf/config.dev.json $file
     fi
 
-    file="${INSTALL_DIR}/server/conf/prod/app.conf"
+    file="${INSTALL_DIR}/server/conf/dbconfig.yml"
     if [ ! -f "$file" ]; then
         log "Create file $file"
-        cp ${INSTALL_DIR}/server/conf/prod/app.sample.conf $file
-    fi
-
-    file="${INSTALL_DIR}/server/conf/prod/db.conf"
-    if [ ! -f "$file" ]; then
-        log "Create file $file"
-        cp ${INSTALL_DIR}/server/conf/prod/db.sample.conf $file
+        cp ${INSTALL_DIR}/server/conf/dbconfig.dev.yml $file
     fi
 
     if [ ! -d "${INSTALL_DIR}/data" ]; then
         log "Move data directory ../"
         mv data ../
+    fi
+
+    if [ ! -d "${INSTALL_DIR}/assets" ]; then
+        log "Move assets directory ../"
+        mv assets ../
+    fi
+
+    if [ ! -d "${INSTALL_DIR}/snapshots" ]; then
+        log "Move snapshots directory ../"
+        mv snapshots ../
     fi
 
 }
@@ -128,7 +134,10 @@ __update() {
     tar -zxf ${ARCHIVE}
 
     log "Move data directory ../"
-    mv data ../
+    mv assets ../
+    mv data/icons ../icons
+    mv data/scripts ../scripts
+    mv snapshots ../
 }
 
 __remove() {
@@ -161,5 +170,21 @@ OPTIONS:
 
 EOF
 }
+
+__check_os() {
+
+    # get os type
+    case `${UNAME} -s` in
+        (Linux)
+            OS_TYPE="linux"
+        ;;
+        (Darwin)
+            OS_TYPE="darwin"
+            INSTALL_DIR="${HOME}/smart-home"
+        ;;
+    esac
+}
+
+__check_os
 
 main "$@"

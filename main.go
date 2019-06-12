@@ -1,59 +1,101 @@
 package main
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/api/server"
+	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/initial"
+	l "github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/system/migrations"
+	"github.com/op/go-logging"
 	"os"
-	"log"
-	"strings"
-	"runtime/trace"
 )
 
 var (
-	stdlog, errlog *log.Logger
+	log = logging.MustGetLogger("main")
 )
 
 func main() {
 
-	cwd := os.Getenv("PWD")
-	rootDir := strings.Split(cwd, "tests/")
-	os.Args[0] = rootDir[0]
+	args := os.Args[1:]
+	for _, arg := range args {
+		switch arg {
+		case "-v", "--version":
+			fmt.Printf(shortVersionBanner, GetHumanVersion())
+			return
+		case "-backup":
+			container := BuildContainer()
+			container.Invoke(func(
+				backup *backup.Backup,
+				graceful *graceful_service.GracefulService) {
 
-	args := os.Args
-	switch len(args) {
-	case 1:
-		stdlog.Printf(shortVersionBanner, "")
-		ServiceInitialize()
-	case 2:
-		switch args[1] {
-		case "trace":
-			stdlog.Println("Trace mode enabled")
-			f, err := os.Create("trace.out")
-			if err != nil {
-				panic(err)
+				if err := backup.New(); err != nil {
+					log.Error(err.Error())
+				}
+
+				graceful.Shutdown()
+			})
+			return
+		case "-restore":
+			if len(os.Args) < 3 {
+				log.Error("need backup name")
+				return
 			}
+			container := BuildContainer()
+			container.Invoke(func(
+				backup *backup.Backup,
+				graceful *graceful_service.GracefulService) {
 
-			defer f.Close()
+				if err := backup.Restore(os.Args[2]); err != nil {
+					log.Error(err.Error())
+				}
 
-			if err = trace.Start(f); err != nil {
-				panic(err)
-			}
+				graceful.Shutdown()
+			})
+			return
+		case "-reset":
+			container := BuildContainer()
+			container.Invoke(func(
+				initialService *initial.InitialService) {
 
-			defer trace.Stop()
-
-			ServiceInitialize()
-
-		case "install", "remove", "start", "stop", "status":
-			ServiceInitialize()
-
+				initialService.Reset()
+			})
+			return
 		default:
-			stdlog.Printf(verboseVersionBanner, "", args[0])
+			fmt.Printf(verboseVersionBanner, "v2", os.Args[0])
+			return
 		}
-
-	default:
-		stdlog.Printf(verboseVersionBanner, "", args[0])
 	}
+
+	start()
 }
 
-func init() {
-	stdlog = log.New(os.Stdout, "", log.Ldate|log.Ltime)
-	errlog = log.New(os.Stderr, "", log.Ldate|log.Ltime)
+func start() {
+
+	fmt.Printf(shortVersionBanner, "")
+
+	container := BuildContainer()
+	err := container.Invoke(func(m *migrations.Migrations) {
+		m.Up()
+	})
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	err = container.Invoke(func(server *server.Server,
+		graceful *graceful_service.GracefulService,
+		back *l.LogBackend,
+		initialService *initial.InitialService) {
+
+		l.Initialize(back)
+		go server.Start()
+
+		graceful.Wait()
+	})
+
+	if err != nil {
+		panic(err.Error())
+	}
 }

@@ -1,0 +1,5905 @@
+basePath: /api/v1
+consumes:
+- application/json
+definitions:
+  AccessItem:
+    properties:
+      actions:
+        items:
+          type: string
+        type: array
+        x-go-name: Actions
+      description:
+        type: string
+        x-go-name: Description
+      method:
+        type: string
+        x-go-name: Method
+      role_name:
+        type: string
+        x-go-name: RoleName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AccessLevels:
+    additionalProperties:
+      $ref: '#/definitions/AccessItem'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AccessList:
+    additionalProperties:
+      $ref: '#/definitions/AccessLevels'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AccessListDiff:
+    additionalProperties:
+      additionalProperties:
+        type: boolean
+      type: object
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AuthSignInResponse:
+    properties:
+      access_token:
+        type: string
+        x-go-name: AccessToken
+      current_user:
+        $ref: '#/definitions/CurrentUser'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  CurrentUser:
+    description: Current User represents the user for this application
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      current_sign_in_at:
+        format: date-time
+        type: string
+        x-go-name: CurrentSignInAt
+      email:
+        type: string
+        x-go-name: Email
+      first_name:
+        type: string
+        x-go-name: FirstName
+      history:
+        items:
+          $ref: '#/definitions/UserHistory'
+        type: array
+        x-go-name: History
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      lang:
+        type: string
+        x-go-name: Lang
+      last_name:
+        type: string
+        x-go-name: LastName
+      last_sign_in_at:
+        format: date-time
+        type: string
+        x-go-name: LastSignInAt
+      meta:
+        items:
+          $ref: '#/definitions/UserByIdModelMeta'
+        type: array
+        x-go-name: Meta
+      nickname:
+        type: string
+        x-go-name: Nickname
+      role:
+        $ref: '#/definitions/Role'
+      sign_in_count:
+        format: int64
+        type: integer
+        x-go-name: SignInCount
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Device:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/DeviceAction'
+        type: array
+        x-go-name: Actions
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/ParentDevice'
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      is_group:
+        type: boolean
+        x-go-name: IsGroup
+      name:
+        type: string
+        x-go-name: Name
+      node:
+        $ref: '#/definitions/Node'
+      properties:
+        $ref: '#/definitions/DeviceProperties'
+      states:
+        items:
+          $ref: '#/definitions/DeviceState'
+        type: array
+        x-go-name: States
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceAction:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceActionDevice'
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/DeviceActionScript'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceActionDevice:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceActionScript:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceProperties:
+    allOf:
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        data_bits:
+          format: int64
+          type: integer
+          x-go-name: DataBits
+        parity:
+          type: string
+          x-go-name: Parity
+        slave_id:
+          format: int64
+          type: integer
+          x-go-name: SlaveId
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        device:
+          format: int64
+          type: integer
+          x-go-name: Device
+        sleep:
+          format: int64
+          type: integer
+          x-go-name: Sleep
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        data_bits:
+          format: int64
+          type: integer
+          x-go-name: DataBits
+        parity:
+          type: string
+          x-go-name: Parity
+        slave_id:
+          format: int64
+          type: integer
+          x-go-name: SlaveId
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        device:
+          format: int64
+          type: integer
+          x-go-name: Device
+        sleep:
+          format: int64
+          type: integer
+          x-go-name: Sleep
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        data_bits:
+          format: int64
+          type: integer
+          x-go-name: DataBits
+        parity:
+          type: string
+          x-go-name: Parity
+        slave_id:
+          format: int64
+          type: integer
+          x-go-name: SlaveId
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        device:
+          format: int64
+          type: integer
+          x-go-name: Device
+        sleep:
+          format: int64
+          type: integer
+          x-go-name: Sleep
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - type: object
+    description: |-
+      An AllOfModel is composed out of embedded structs but it should build
+      an allOf property
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceShort:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceState:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceStateDevice'
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      system_name:
+        type: string
+        x-go-name: SystemName
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeviceStateDevice:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Error:
+    properties:
+      code:
+        $ref: '#/definitions/ResponseType'
+      errors:
+        $ref: '#/definitions/ErrorErrors'
+      message:
+        description: описание ошибки
+        type: string
+        x-go-name: Message
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ErrorErrors:
+    items:
+      $ref: '#/definitions/ErrorErrorsItems'
+    type: array
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ErrorErrorsItems:
+    properties:
+      code:
+        description: тип ишибки
+        type: string
+        x-go-name: Code
+      field:
+        description: поле вызвавшее ошибку
+        type: string
+        x-go-name: Field
+      message:
+        description: описание
+        type: string
+        x-go-name: Message
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ExecScript:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      lang:
+        type: string
+        x-go-name: Lang
+      name:
+        type: string
+        x-go-name: Name
+      source:
+        type: string
+        x-go-name: Source
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Flow:
+    properties:
+      connections:
+        items:
+          $ref: '#/definitions/FlowConnection'
+        type: array
+        x-go-name: Connections
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      flow_elements:
+        items:
+          $ref: '#/definitions/FlowElement'
+        type: array
+        x-go-name: FlowElements
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workers:
+        items:
+          $ref: '#/definitions/FlowWorker'
+        type: array
+        x-go-name: Workers
+      workflow:
+        $ref: '#/definitions/FlowWorkflow'
+      workflow_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowId
+      workflow_scenario_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowScenarioId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowConnection:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      direction:
+        type: string
+        x-go-name: Direction
+      element_from:
+        type: string
+        x-go-name: ElementFrom
+      element_to:
+        type: string
+        x-go-name: ElementTo
+      flow_id:
+        format: int64
+        type: integer
+        x-go-name: FlowId
+      graph_settings:
+        type: string
+        x-go-name: GraphSettings
+      name:
+        type: string
+        x-go-name: Name
+      point_from:
+        format: int64
+        type: integer
+        x-go-name: PointFrom
+      point_to:
+        format: int64
+        type: integer
+        x-go-name: PointTo
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      uuid:
+        type: string
+        x-go-name: Uuid
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowElement:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      flow_id:
+        format: int64
+        type: integer
+        x-go-name: FlowId
+      flow_link:
+        format: int64
+        type: integer
+        x-go-name: FlowLink
+      graph_settings:
+        type: string
+        x-go-name: GraphSettings
+      name:
+        type: string
+        x-go-name: Name
+      prototype_type:
+        type: string
+        x-go-name: PrototypeType
+      script:
+        $ref: '#/definitions/Script'
+      script_id:
+        format: int64
+        type: integer
+        x-go-name: ScriptId
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      uuid:
+        type: string
+        x-go-name: Uuid
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowShort:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workers:
+        items:
+          properties:
+            id:
+              format: int64
+              type: integer
+              x-go-name: Id
+          type: object
+        type: array
+        x-go-name: Workers
+      workflow:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+        x-go-name: Workflow
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowWorker:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device_action:
+        $ref: '#/definitions/DeviceAction'
+      device_action_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceActionId
+      flow_id:
+        format: int64
+        type: integer
+        x-go-name: FlowId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      time:
+        type: string
+        x-go-name: Time
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workflow:
+        $ref: '#/definitions/FlowWorkflow'
+      workflow_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowWorkflow:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Image:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        type: string
+        x-go-name: Image
+      mime_type:
+        type: string
+        x-go-name: MimeType
+      name:
+        type: string
+        x-go-name: Name
+      size:
+        format: int64
+        type: integer
+        x-go-name: Size
+      thumb:
+        type: string
+        x-go-name: Thumb
+      title:
+        type: string
+        x-go-name: Title
+      url:
+        type: string
+        x-go-name: Url
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Log:
+    properties:
+      body:
+        type: string
+        x-go-name: Body
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      level:
+        type: string
+        x-go-name: Level
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Map:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      options:
+        $ref: '#/definitions/MapOptions'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapDeviceAction:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device_action:
+        $ref: '#/definitions/DeviceAction'
+      device_action_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceActionId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
+      map_device_id:
+        format: int64
+        type: integer
+        x-go-name: MapDeviceId
+      type:
+        type: string
+        x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapDeviceState:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device_state:
+        $ref: '#/definitions/DeviceState'
+      device_state_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceStateId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
+      map_device_id:
+        format: int64
+        type: integer
+        x-go-name: MapDeviceId
+      style:
+        type: string
+        x-go-name: Style
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapElement:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      graph_settings:
+        $ref: '#/definitions/MapElementGraphSettings'
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      layer_id:
+        format: int64
+        type: integer
+        x-go-name: LayerId
+      map_id:
+        format: int64
+        type: integer
+        x-go-name: MapId
+      name:
+        type: string
+        x-go-name: Name
+      prototype:
+        $ref: '#/definitions/Prototype'
+      prototype_id:
+        format: int64
+        type: integer
+        x-go-name: PrototypeId
+      prototype_type:
+        type: string
+        x-go-name: PrototypeType
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapElementGraphSettings:
+    properties:
+      height:
+        format: int64
+        type: integer
+        x-go-name: Height
+      position:
+        $ref: '#/definitions/MapElementGraphSettingsPosition'
+      width:
+        format: int64
+        type: integer
+        x-go-name: Width
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapElementGraphSettingsPosition:
+    properties:
+      left:
+        format: int64
+        type: integer
+        x-go-name: Left
+      top:
+        format: int64
+        type: integer
+        x-go-name: Top
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapFull:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      layers:
+        items:
+          $ref: '#/definitions/MapLayer'
+        type: array
+        x-go-name: Layers
+      name:
+        type: string
+        x-go-name: Name
+      options:
+        $ref: '#/definitions/MapOptions'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapLayer:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      elements:
+        items:
+          $ref: '#/definitions/MapElement'
+        type: array
+        x-go-name: Elements
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      map:
+        $ref: '#/definitions/Map'
+      map_id:
+        format: int64
+        type: integer
+        x-go-name: MapId
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapOptions:
+    properties:
+      element_option_text:
+        type: boolean
+        x-go-name: ElementOptionText
+      element_state_text:
+        type: boolean
+        x-go-name: ElementStateText
+      zoom:
+        format: double
+        type: number
+        x-go-name: Zoom
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewDevice:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/ParentDevice'
+      name:
+        type: string
+        x-go-name: Name
+      node:
+        $ref: '#/definitions/NewDeviceNode'
+      properties:
+        $ref: '#/definitions/DeviceProperties'
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewDeviceAction:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceActionDevice'
+      name:
+        type: string
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/DeviceActionScript'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewDeviceNode:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewDeviceState:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceStateDevice'
+      system_name:
+        type: string
+        x-go-name: SystemName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewFlow:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      scenario:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+        type: object
+        x-go-name: Scenario
+      status:
+        type: string
+        x-go-name: Status
+      workflow:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+        type: object
+        x-go-name: Workflow
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewImage:
+    properties:
+      image:
+        type: string
+        x-go-name: Image
+      mime_type:
+        type: string
+        x-go-name: MimeType
+      name:
+        type: string
+        x-go-name: Name
+      size:
+        format: int64
+        type: integer
+        x-go-name: Size
+      thumb:
+        type: string
+        x-go-name: Thumb
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewLog:
+    properties:
+      Level:
+        type: string
+      body:
+        type: string
+        x-go-name: Body
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewMap:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      options:
+        $ref: '#/definitions/MapOptions'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewMapElement:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      graph_settings:
+        $ref: '#/definitions/MapElementGraphSettings'
+      layer:
+        $ref: '#/definitions/MapLayer'
+      layer_id:
+        format: int64
+        type: integer
+        x-go-name: LayerId
+      map:
+        $ref: '#/definitions/Map'
+      map_id:
+        format: int64
+        type: integer
+        x-go-name: MapId
+      name:
+        type: string
+        x-go-name: Name
+      prototype:
+        $ref: '#/definitions/Prototype'
+      prototype_id:
+        format: int64
+        type: integer
+        x-go-name: PrototypeId
+      prototype_type:
+        type: string
+        x-go-name: PrototypeType
+      status:
+        type: string
+        x-go-name: Status
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewMapLayer:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      map:
+        $ref: '#/definitions/Map'
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewNode:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      ip:
+        type: string
+        x-go-name: IP
+      name:
+        type: string
+        x-go-name: Name
+      port:
+        format: int64
+        type: integer
+        x-go-name: Port
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewRole:
+    properties:
+      Parent:
+        properties:
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewScript:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      lang:
+        type: string
+        x-go-name: Lang
+      name:
+        type: string
+        x-go-name: Name
+      source:
+        type: string
+        x-go-name: Source
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewUser:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      first_name:
+        type: string
+        x-go-name: FirstName
+      image:
+        $ref: '#/definitions/NewUserImage'
+      lang:
+        type: string
+        x-go-name: Lang
+      last_name:
+        type: string
+        x-go-name: LastName
+      meta:
+        items:
+          $ref: '#/definitions/NewUserMeta'
+        type: array
+        x-go-name: Meta
+      nickname:
+        type: string
+        x-go-name: Nickname
+      password:
+        type: string
+        x-go-name: Password
+      password_repeat:
+        type: string
+        x-go-name: PasswordRepeat
+      role:
+        $ref: '#/definitions/NewUserRole'
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewUserImage:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewUserMeta:
+    properties:
+      key:
+        type: string
+        x-go-name: Key
+      value:
+        type: string
+        x-go-name: Value
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewUserRole:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewWorkflow:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewWorkflowScenario:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      system_name:
+        type: string
+        x-go-name: SystemName
+      workflow_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Node:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      ip:
+        type: string
+        x-go-name: Ip
+      name:
+        type: string
+        x-go-name: Name
+      port:
+        format: int64
+        type: integer
+        x-go-name: Port
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ParentDevice:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Prototype:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/MapDeviceAction'
+        type: array
+        x-go-name: Actions
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device:
+        $ref: '#/definitions/Device'
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
+      states:
+        items:
+          $ref: '#/definitions/MapDeviceState'
+        type: array
+        x-go-name: States
+      style:
+        type: string
+        x-go-name: Style
+      system_name:
+        type: string
+        x-go-name: SystemName
+      text:
+        type: string
+        x-go-name: Text
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  RedactorConnector:
+    properties:
+      direction:
+        type: string
+        x-go-name: Direction
+      end:
+        properties:
+          object:
+            type: string
+            x-go-name: Object
+          point:
+            format: int64
+            type: integer
+            x-go-name: Point
+        type: object
+        x-go-name: End
+      flow_type:
+        type: string
+        x-go-name: FlowType
+      id:
+        type: string
+        x-go-name: Id
+      start:
+        properties:
+          object:
+            type: string
+            x-go-name: Object
+          point:
+            format: int64
+            type: integer
+            x-go-name: Point
+        type: object
+        x-go-name: Start
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  RedactorFlow:
+    properties:
+      connectors:
+        items:
+          $ref: '#/definitions/RedactorConnector'
+        type: array
+        x-go-name: Connectors
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      objects:
+        items:
+          $ref: '#/definitions/RedactorObject'
+        type: array
+        x-go-name: Objects
+      scenario:
+        $ref: '#/definitions/WorkflowScenario'
+      status:
+        type: string
+        x-go-name: Status
+      update_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workers:
+        items:
+          $ref: '#/definitions/Worker'
+        type: array
+        x-go-name: Workers
+      workflow:
+        $ref: '#/definitions/RedactorWorkflowModel'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  RedactorObject:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      error:
+        type: string
+        x-go-name: Error
+      flow_link:
+        $ref: '#/definitions/Flow'
+      id:
+        type: string
+        x-go-name: Id
+      position:
+        properties:
+          left:
+            format: int64
+            type: integer
+            x-go-name: Left
+          top:
+            format: int64
+            type: integer
+            x-go-name: Top
+        type: object
+        x-go-name: Position
+      prototype_type:
+        type: string
+        x-go-name: PrototypeType
+      script:
+        $ref: '#/definitions/Script'
+      status:
+        type: string
+        x-go-name: Status
+      title:
+        type: string
+        x-go-name: Title
+      type:
+        properties:
+          action:
+            type: string
+            x-go-name: Action
+          end:
+            type: object
+            x-go-name: End
+          name:
+            type: string
+            x-go-name: Name
+          start:
+            type: object
+            x-go-name: Start
+          status:
+            type: string
+            x-go-name: Status
+        type: object
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  RedactorWorkflowModel:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  ResponseType:
+    type: string
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Role:
+    properties:
+      Parent:
+        properties:
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+      access_list:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+        x-go-name: AccessList
+      children:
+        items:
+          $ref: '#/definitions/Role'
+        type: array
+        x-go-name: Children
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Script:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      lang:
+        type: string
+        x-go-name: Lang
+      name:
+        type: string
+        x-go-name: Name
+      source:
+        type: string
+        x-go-name: Source
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  SortMapElement:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  SortMapLayer:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateDevice:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/ParentDevice'
+      name:
+        type: string
+        x-go-name: Name
+      node:
+        $ref: '#/definitions/NewDeviceNode'
+      properties:
+        $ref: '#/definitions/DeviceProperties'
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateDeviceAction:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceActionDevice'
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/DeviceActionScript'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateDeviceState:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      device:
+        $ref: '#/definitions/DeviceStateDevice'
+      system_name:
+        type: string
+        x-go-name: SystemName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateFlow:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      scenario:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+        type: object
+        x-go-name: Scenario
+      status:
+        type: string
+        x-go-name: Status
+      workflow:
+        properties:
+          id:
+            format: int64
+            type: integer
+            x-go-name: Id
+        type: object
+        x-go-name: Workflow
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateImage:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        type: string
+        x-go-name: Image
+      mime_type:
+        type: string
+        x-go-name: MimeType
+      name:
+        type: string
+        x-go-name: Name
+      size:
+        format: int64
+        type: integer
+        x-go-name: Size
+      thumb:
+        type: string
+        x-go-name: Thumb
+      title:
+        type: string
+        x-go-name: Title
+      url:
+        type: string
+        x-go-name: Url
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateMap:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      options:
+        $ref: '#/definitions/MapOptions'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateMapElement:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      graph_settings:
+        $ref: '#/definitions/MapElementGraphSettings'
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      layer_id:
+        format: int64
+        type: integer
+        x-go-name: LayerId
+      map_id:
+        format: int64
+        type: integer
+        x-go-name: MapId
+      name:
+        type: string
+        x-go-name: Name
+      prototype:
+        $ref: '#/definitions/Prototype'
+      prototype_id:
+        format: int64
+        type: integer
+        x-go-name: PrototypeId
+      prototype_type:
+        type: string
+        x-go-name: PrototypeType
+      status:
+        type: string
+        x-go-name: Status
+      weight:
+        format: int64
+        type: integer
+        x-go-name: Weight
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateMapLayer:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      map:
+        $ref: '#/definitions/Map'
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateNode:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      ip:
+        type: string
+        x-go-name: IP
+      name:
+        type: string
+        x-go-name: Name
+      port:
+        format: int64
+        type: integer
+        x-go-name: Port
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateRole:
+    properties:
+      Parent:
+        properties:
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateScript:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      lang:
+        type: string
+        x-go-name: Lang
+      name:
+        type: string
+        x-go-name: Name
+      source:
+        type: string
+        x-go-name: Source
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateUser:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      first_name:
+        type: string
+        x-go-name: FirstName
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/NewUserImage'
+      lang:
+        type: string
+        x-go-name: Lang
+      last_name:
+        type: string
+        x-go-name: LastName
+      meta:
+        items:
+          $ref: '#/definitions/NewUserMeta'
+        type: array
+        x-go-name: Meta
+      nickname:
+        type: string
+        x-go-name: Nickname
+      password:
+        type: string
+        x-go-name: Password
+      password_repeat:
+        type: string
+        x-go-name: PasswordRepeat
+      role:
+        $ref: '#/definitions/NewUserRole'
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateWorkflow:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateWorkflowScenario:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      scripts:
+        items:
+          $ref: '#/definitions/Script'
+        type: array
+        x-go-name: Scripts
+      system_name:
+        type: string
+        x-go-name: SystemName
+      workflow_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UserByIdModelMeta:
+    properties:
+      key:
+        type: string
+        x-go-name: Key
+      value:
+        type: string
+        x-go-name: Value
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UserByIdModelParent:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      nickname:
+        type: string
+        x-go-name: Nickname
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UserFull:
+    properties:
+      authentication_token:
+        type: string
+        x-go-name: AuthenticationToken
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      current_sign_in_at:
+        format: date-time
+        type: string
+        x-go-name: CurrentSignInAt
+      current_sign_in_ip:
+        type: string
+        x-go-name: CurrentSignInIp
+      deleted_at:
+        format: date-time
+        type: string
+        x-go-name: DeletedAt
+      email:
+        type: string
+        x-go-name: Email
+      first_name:
+        type: string
+        x-go-name: FirstName
+      history:
+        items:
+          $ref: '#/definitions/UserHistory'
+        type: array
+        x-go-name: History
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      lang:
+        type: string
+        x-go-name: Lang
+      last_name:
+        type: string
+        x-go-name: LastName
+      last_sign_in_at:
+        format: date-time
+        type: string
+        x-go-name: LastSignInAt
+      last_sign_in_ip:
+        type: string
+        x-go-name: LastSignInIp
+      meta:
+        items:
+          $ref: '#/definitions/UserByIdModelMeta'
+        type: array
+        x-go-name: Meta
+      nickname:
+        type: string
+        x-go-name: Nickname
+      reset_password_sent_at:
+        format: date-time
+        type: string
+        x-go-name: ResetPasswordSentAt
+      role:
+        $ref: '#/definitions/Role'
+      role_name:
+        type: string
+        x-go-name: RoleName
+      sign_in_count:
+        format: int64
+        type: integer
+        x-go-name: SignInCount
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      user:
+        $ref: '#/definitions/UserByIdModelParent'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UserHistory:
+    properties:
+      ip:
+        type: string
+        x-go-name: Ip
+      time:
+        format: date-time
+        type: string
+        x-go-name: Time
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UserShot:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      email:
+        type: string
+        x-go-name: Email
+      first_name:
+        type: string
+        x-go-name: FirstName
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      lang:
+        type: string
+        x-go-name: Lang
+      last_name:
+        type: string
+        x-go-name: LastName
+      nickname:
+        type: string
+        x-go-name: Nickname
+      role:
+        $ref: '#/definitions/Role'
+      role_name:
+        type: string
+        x-go-name: RoleName
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      user:
+        $ref: '#/definitions/UserByIdModelParent'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UserUpdateStatusRequest:
+    properties:
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Worker:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device_action:
+        $ref: '#/definitions/DeviceAction'
+      device_action_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceActionId
+      flow:
+        $ref: '#/definitions/Flow'
+      flow_id:
+        format: int64
+        type: integer
+        x-go-name: FlowId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      time:
+        type: string
+        x-go-name: Time
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workflow:
+        $ref: '#/definitions/Workflow'
+      workflow_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Workflow:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      scenario:
+        $ref: '#/definitions/WorkflowScenario'
+      scenarios:
+        items:
+          $ref: '#/definitions/WorkflowScenario'
+        type: array
+        x-go-name: Scenarios
+      scripts:
+        items:
+          $ref: '#/definitions/Script'
+        type: array
+        x-go-name: Scripts
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  WorkflowScenario:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      scripts:
+        items:
+          $ref: '#/definitions/Script'
+        type: array
+        x-go-name: Scripts
+      system_name:
+        type: string
+        x-go-name: SystemName
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      workflow_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  WorkflowUpdateWorkflowScenario:
+    properties:
+      workflow_scenario_id:
+        format: int64
+        type: integer
+        x-go-name: WorkflowScenarioId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+info:
+  contact:
+    email: support@e154.ru
+    name: Alex Filippov
+    url: https://e154.github.io/smart-home/
+  description: This documentation describes APIs found under https://github.com/e154/smart-home
+  license:
+    name: MIT
+    url: https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
+  title: Smart home
+  version: 1.0.0
+paths:
+  /:
+    get:
+      consumes:
+      - text/plain
+      operationId: index
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Success response
+      summary: index page
+      tags:
+      - index
+  /access_list:
+    get:
+      operationId: authGetAccessList
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              access_list:
+                $ref: '#/definitions/AccessList'
+            type: object
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get user access list
+      tags:
+      - auth
+  /device:
+    post:
+      operationId: deviceAdd
+      parameters:
+      - description: device params
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/NewDevice'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Device'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new device
+      tags:
+      - device
+  /device/{id}:
+    delete:
+      operationId: deviceDeleteById
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete device by id
+      tags:
+      - device
+    get:
+      operationId: deviceGetById
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Device'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device by id
+      tags:
+      - device
+    put:
+      operationId: deviceUpdateById
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update device params
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateDevice'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Device'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update device by id
+      tags:
+      - device
+  /device_action:
+    post:
+      operationId: deviceActionAdd
+      parameters:
+      - description: device action params
+        in: body
+        name: device_action
+        required: true
+        schema:
+          $ref: '#/definitions/NewDeviceAction'
+          type: object
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/DeviceAction'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new device action
+      tags:
+      - device_action
+  /device_action/{id}:
+    delete:
+      operationId: deviceActionDeleteById
+      parameters:
+      - description: DeviceAction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete device action by id
+      tags:
+      - device_action
+    get:
+      operationId: deviceActionGetById
+      parameters:
+      - description: DeviceAction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeviceAction'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device action by id
+      tags:
+      - device_action
+    put:
+      operationId: deviceActionUpdateById
+      parameters:
+      - description: DeviceAction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update device action params
+        in: body
+        name: device_action
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateDeviceAction'
+          type: object
+      responses:
+        "200":
+          schema:
+            $ref: '#/definitions/DeviceAction'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update device action by id
+      tags:
+      - device_action
+  /device_action1/search:
+    get:
+      operationId: deviceActionSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/DeviceActionSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search device actions
+      tags:
+      - device_action
+  /device_actions/{id}:
+    get:
+      operationId: deviceActionGetListByDeviceId
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          schema:
+            items:
+              $ref: '#/definitions/DeviceAction'
+            type: array
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device actions by device id
+      tags:
+      - device_action
+  /device_state:
+    post:
+      operationId: deviceStateAdd
+      parameters:
+      - description: device state params
+        in: body
+        name: device_state
+        required: true
+        schema:
+          $ref: '#/definitions/NewDeviceState'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeviceState'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new device state
+      tags:
+      - device_state
+  /device_state/{id}:
+    delete:
+      operationId: deviceStateDeleteById
+      parameters:
+      - description: DeviceState ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete device state by id
+      tags:
+      - device_state
+    get:
+      operationId: deviceStateGetById
+      parameters:
+      - description: DeviceState ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeviceState'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device state by id
+      tags:
+      - device_state
+    put:
+      operationId: deviceStateUpdateById
+      parameters:
+      - description: DeviceState ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update device state params
+        in: body
+        name: device_state
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateDeviceState'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeviceState'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update device state by id
+      tags:
+      - device_state
+  /device_states/{id}:
+    get:
+      operationId: deviceStateList
+      parameters:
+      - description: Device ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/DeviceState'
+            type: array
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device state list by device id
+      tags:
+      - device_state
+  /devices:
+    get:
+      operationId: deviceList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/DeviceList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get device list
+      tags:
+      - device
+  /devices/search:
+    get:
+      operationId: deviceSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/DeviceSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search device
+      tags:
+      - device
+  /flow:
+    post:
+      operationId: flowAdd
+      parameters:
+      - description: flow params
+        in: body
+        name: flow
+        required: true
+        schema:
+          $ref: '#/definitions/NewFlow'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Flow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new flow
+      tags:
+      - flow
+  /flow/{id}:
+    delete:
+      operationId: flowDeleteById
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete flow by id
+      tags:
+      - flow
+    get:
+      operationId: flowGetById
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Flow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get flow by id
+      tags:
+      - flow
+    put:
+      operationId: flowUpdateById
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update flow params
+        in: body
+        name: flow
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateFlow'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Flow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update flow by id
+      tags:
+      - flow
+  /flow/{id}/redactor:
+    get:
+      operationId: flowGetRedactor
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/RedactorFlow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get flow redactor data by flow id
+      tags:
+      - flow
+    put:
+      operationId: flowUpdateRedactor
+      parameters:
+      - description: Flow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: flow redactor params
+        in: body
+        name: flow
+        required: true
+        schema:
+          $ref: '#/definitions/RedactorFlow'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/RedactorFlow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update flow by id
+      tags:
+      - flow
+  /flows:
+    get:
+      operationId: flowList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/FlowList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get flow list
+      tags:
+      - flow
+  /flows/search:
+    get:
+      operationId: flowSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/FlowSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search flow
+      tags:
+      - flow
+  /image:
+    post:
+      operationId: imageAdd
+      parameters:
+      - description: image params
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/NewImage'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Image'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new image
+      tags:
+      - image
+  /image/{id}:
+    delete:
+      operationId: imageDeleteById
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete image by id
+      tags:
+      - image
+    get:
+      operationId: imageGetById
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Image'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get image by id
+      tags:
+      - image
+    put:
+      operationId: imageUpdateById
+      parameters:
+      - description: Image ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update image params
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateImage'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Image'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update image by id
+      tags:
+      - image
+  /image/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: imageUpload
+      parameters:
+      - description: image file
+        in: formData
+        items:
+          type: file
+        name: file
+        required: true
+        type: array
+      responses:
+        "200":
+          $ref: '#/responses/NewObjectSuccess'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: upload image files
+      tags:
+      - image
+  /images:
+    get:
+      operationId: imageList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/ImageList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get image list
+      tags:
+      - image
+  /log:
+    post:
+      operationId: logAdd
+      parameters:
+      - description: log params
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/NewLog'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Log'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new log
+      tags:
+      - log
+  /log/{id}:
+    delete:
+      operationId: logDeleteById
+      parameters:
+      - description: Log ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete log by id
+      tags:
+      - log
+    get:
+      operationId: logGetById
+      parameters:
+      - description: Log ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Log'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get log by id
+      tags:
+      - log
+  /logs:
+    get:
+      operationId: logList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      - default: id
+        description: query
+        in: query
+        name: query
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/LogList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get log list
+      tags:
+      - log
+  /logs/search:
+    get:
+      operationId: logSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/LogSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search log
+      tags:
+      - log
+  /map:
+    post:
+      operationId: mapAdd
+      parameters:
+      - description: map params
+        in: body
+        name: map
+        required: true
+        schema:
+          $ref: '#/definitions/NewMap'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Map'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new map
+      tags:
+      - map
+  /map/{id}:
+    delete:
+      operationId: mapDeleteById
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete map by id
+      tags:
+      - map
+    get:
+      operationId: mapGetById
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Map'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map by id
+      tags:
+      - map
+    put:
+      operationId: mapUpdateById
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update map params
+        in: body
+        name: map
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateMap'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Map'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update map by id
+      tags:
+      - map
+  /map/{id}/full:
+    get:
+      operationId: mapFullGetById
+      parameters:
+      - description: Map ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapFull'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map full by id
+      tags:
+      - map
+  /map_element:
+    post:
+      operationId: mapElementAdd
+      parameters:
+      - description: element params
+        in: body
+        name: map_element
+        required: true
+        schema:
+          $ref: '#/definitions/NewMapElement'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapElement'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new map element
+      tags:
+      - map_element
+  /map_element/{id}:
+    delete:
+      operationId: mapElementDeleteById
+      parameters:
+      - description: MapElement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete map element by id
+      tags:
+      - map_element
+    get:
+      operationId: mapElementGetById
+      parameters:
+      - description: MapElement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapElement'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map element by id
+      tags:
+      - map_element
+    put:
+      operationId: mapElementUpdateById
+      parameters:
+      - description: MapElement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update map element params
+        in: body
+        name: map_element
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateMapElement'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapElement'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update map element by id
+      tags:
+      - map_element
+  /map_element/sort:
+    put:
+      operationId: mapElementUpdateById
+      parameters:
+      - description: sort params
+        in: body
+        name: sort_params
+        required: true
+        schema:
+          $ref: '#/definitions/SortMapElement'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: sort map elements
+      tags:
+      - map_element
+  /map_elements:
+    get:
+      operationId: mapElementList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapElement'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map element list
+      tags:
+      - map_element
+  /map_layer:
+    post:
+      operationId: mapLayerAdd
+      parameters:
+      - description: layer params
+        in: body
+        name: map_layer
+        required: true
+        schema:
+          $ref: '#/definitions/NewMapLayer'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapLayer'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new map layer
+      tags:
+      - map_layer
+  /map_layer/{id}:
+    delete:
+      operationId: mapLayerDeleteById
+      parameters:
+      - description: MapLayer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete map layer by id
+      tags:
+      - map_layer
+    get:
+      operationId: mapLayerGetById
+      parameters:
+      - description: MapLayer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapLayer'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map layer by id
+      tags:
+      - map_layer
+    put:
+      operationId: mapLayerUpdateById
+      parameters:
+      - description: MapLayer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: layer params
+        in: body
+        name: map_layer
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateMapLayer'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapLayer'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update map layer
+      tags:
+      - map_layer
+  /map_layer/sort:
+    put:
+      operationId: mapLayerUpdateById
+      parameters:
+      - description: sort params
+        in: body
+        name: sort_params
+        required: true
+        schema:
+          $ref: '#/definitions/SortMapLayer'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: sort map layers
+      tags:
+      - map_layer
+  /map_layers:
+    get:
+      operationId: mapLayerList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/MapLayerList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map layer list
+      tags:
+      - map_layer
+  /maps:
+    get:
+      operationId: mapList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/MapList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get map list
+      tags:
+      - map
+  /maps/search:
+    get:
+      operationId: mapSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MapSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search map
+      tags:
+      - map
+  /node:
+    post:
+      operationId: nodeAdd
+      parameters:
+      - description: node params
+        in: body
+        name: node
+        required: true
+        schema:
+          $ref: '#/definitions/NewNode'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Node'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new node
+      tags:
+      - node
+  /node/{id}:
+    delete:
+      operationId: nodeDeleteById
+      parameters:
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete node by id
+      tags:
+      - node
+    get:
+      operationId: nodeGetById
+      parameters:
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Node'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get node by id
+      tags:
+      - node
+    put:
+      operationId: nodeUpdateById
+      parameters:
+      - description: Node ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update node params
+        in: body
+        name: node
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateNode'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Node'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update node by id
+      tags:
+      - node
+  /nodes:
+    get:
+      operationId: nodeList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/NodeList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get node list
+      tags:
+      - node
+  /nodes/search:
+    get:
+      operationId: nodeSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/NodeSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search node
+      tags:
+      - node
+  /recovery:
+    post:
+      operationId: authRecovery
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "500":
+          $ref: '#/responses/Error'
+      summary: recovery access
+      tags:
+      - auth
+  /reset:
+    post:
+      operationId: authReset
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "500":
+          $ref: '#/responses/Error'
+      summary: reset access
+      tags:
+      - auth
+  /role:
+    post:
+      operationId: roleAdd
+      parameters:
+      - description: role params
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/NewRole'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Role'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new role
+      tags:
+      - role
+  /role/{name}:
+    delete:
+      operationId: roleDeleteById
+      parameters:
+      - description: Role ID
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete role by name
+      tags:
+      - role
+    get:
+      operationId: roleGetById
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Role'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get role by name
+      tags:
+      - role
+    put:
+      operationId: roleUpdateById
+      parameters:
+      - description: Role ID
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Update role params
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateRole'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Role'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update role by name
+      tags:
+      - role
+  /role/{name}/access_list:
+    get:
+      operationId: roleGetById
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              access_list:
+                $ref: '#/definitions/AccessList'
+            type: object
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get access list by role name
+      tags:
+      - role
+    put:
+      operationId: roleUpdateById
+      parameters:
+      - description: Role name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Update access list params
+        in: body
+        name: access_list_diff
+        required: true
+        schema:
+          $ref: '#/definitions/AccessListDiff'
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update role access list
+      tags:
+      - role
+  /roles:
+    get:
+      operationId: roleList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/RoleList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get role list
+      tags:
+      - role
+  /roles/search:
+    get:
+      operationId: roleSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/RoleSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search role
+      tags:
+      - role
+  /script:
+    post:
+      operationId: scriptAdd
+      parameters:
+      - description: script params
+        in: body
+        name: script
+        required: true
+        schema:
+          $ref: '#/definitions/NewScript'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Script'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new script
+      tags:
+      - script
+  /script/{id}:
+    delete:
+      operationId: scriptDeleteById
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete script by id
+      tags:
+      - script
+    get:
+      operationId: scriptGetById
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Script'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get script by id
+      tags:
+      - script
+    put:
+      operationId: scriptUpdateById
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update script params
+        in: body
+        name: script
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateScript'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Script'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update script by id
+      tags:
+      - script
+  /script/{id}/exec:
+    post:
+      operationId: scriptExecById
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/ScriptExec'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Execute script by id
+      tags:
+      - script
+  /script/{id}/exec_src:
+    post:
+      operationId: scriptExecSrc
+      parameters:
+      - description: source script
+        in: body
+        name: script
+        required: true
+        schema:
+          $ref: '#/definitions/ExecScript'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/ScriptExec'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Exec script from request params
+      tags:
+      - script
+  /scripts:
+    get:
+      operationId: scriptList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/ScriptList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get script list
+      tags:
+      - script
+  /scripts/search:
+    get:
+      operationId: scriptSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/ScriptSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search script
+      tags:
+      - script
+  /signin:
+    post:
+      operationId: authSignin
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AuthSignInResponse'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - BasicAuth: []
+      summary: sign in
+      tags:
+      - auth
+  /signout:
+    post:
+      operationId: authSignout
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: sign out
+      tags:
+      - auth
+  /user:
+    post:
+      operationId: userAdd
+      parameters:
+      - description: user params
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/NewUser'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserFull'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new user
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      operationId: userDeleteById
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete user by id
+      tags:
+      - user
+    get:
+      operationId: userGetById
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserFull'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get user by id
+      tags:
+      - user
+    put:
+      operationId: userUpdateById
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update user params
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateUser'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserFull'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update user by id
+      tags:
+      - user
+  /user/{id}/update_status:
+    put:
+      operationId: userUpdateStatus
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: status params
+        in: body
+        name: user_status
+        required: true
+        schema:
+          $ref: '#/definitions/UserUpdateStatusRequest'
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update user status
+      tags:
+      - user
+  /users:
+    get:
+      operationId: userList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/UserList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get user list
+      tags:
+      - user
+  /workflow:
+    post:
+      operationId: workflowAdd
+      parameters:
+      - description: workflow params
+        in: body
+        name: workflow
+        required: true
+        schema:
+          $ref: '#/definitions/NewWorkflow'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Workflow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new workflow
+      tags:
+      - workflow
+  /workflow/{id}:
+    delete:
+      operationId: workflowDeleteById
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete workflow by id
+      tags:
+      - workflow
+    get:
+      operationId: workflowGetById
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Workflow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get workflow by id
+      tags:
+      - workflow
+    put:
+      operationId: workflowUpdateById
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update workflow params
+        in: body
+        name: workflow
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateWorkflow'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Workflow'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update workflow by id
+      tags:
+      - workflow
+  /workflow/{id}/scenario:
+    post:
+      operationId: workflowScenarioAdd
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: workflow scenario params
+        in: body
+        name: workflow_scenario
+        required: true
+        schema:
+          $ref: '#/definitions/NewWorkflowScenario'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowScenario'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new workflow scenario
+      tags:
+      - workflow_scenario
+  /workflow/{id}/scenario/{scenario_id}:
+    delete:
+      operationId: workflowScenarioDeleteById
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Workflow scenario ID
+        in: path
+        name: scenario_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete workflow scenario by id
+      tags:
+      - workflow_scenario
+    get:
+      operationId: workflowScenarioGetById
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: WorkflowScenario ID
+        in: path
+        name: scenario_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowScenario'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get workflow scenario by id
+      tags:
+      - workflow_scenario
+    put:
+      operationId: workflowScenarioUpdateById
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: WorkflowScenario ID
+        in: path
+        name: scenario_id
+        required: true
+        type: integer
+      - description: Update workflow scenario params
+        in: body
+        name: workflowScenario
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateWorkflowScenario'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WorkflowScenario'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update workflow scenario by id
+      tags:
+      - workflow_scenario
+  /workflow/{id}/scenarios:
+    get:
+      operationId: workflowScenarioList
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/WorkflowScenarios'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get workflow scenario list
+      tags:
+      - workflow_scenario
+  /workflow/{id}/scenarios/search:
+    get:
+      operationId: workflowScenarioSearch
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/WorkflowScenarioSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search workflow scenario
+      tags:
+      - workflow_scenario
+  /workflow/{id}/update_scenario:
+    put:
+      operationId: workflowUpdateScenario
+      parameters:
+      - description: Workflow ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update workflow scenario params
+        in: body
+        name: workflowUpdateWorkflowScenario
+        required: true
+        schema:
+          $ref: '#/definitions/WorkflowUpdateWorkflowScenario'
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update workflow scenario
+      tags:
+      - workflow
+  /workflows:
+    get:
+      operationId: workflowList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/WorkflowList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get workflow list
+      tags:
+      - workflow
+  /workflows/search:
+    get:
+      operationId: workflowSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/WorkflowSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search workflow
+      tags:
+      - workflow
+produces:
+- application/json
+responses:
+  DeviceActionList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/DeviceAction'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  DeviceActionSearch:
+    schema:
+      properties:
+        device_actions:
+          items:
+            $ref: '#/definitions/DeviceAction'
+          type: array
+          x-go-name: DeviceActions
+      type: object
+  DeviceList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Device'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  DeviceSearch:
+    schema:
+      properties:
+        devices:
+          items:
+            $ref: '#/definitions/DeviceShort'
+          type: array
+          x-go-name: Devices
+      type: object
+  Error:
+    description: Error response
+    schema:
+      properties:
+        code:
+          $ref: '#/definitions/ResponseType'
+        errors:
+          $ref: '#/definitions/ErrorErrors'
+        message:
+          description: описание ошибки
+          type: string
+          x-go-name: Message
+      type: object
+  FlowList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/FlowShort'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  FlowSearch:
+    schema:
+      properties:
+        flows:
+          items:
+            $ref: '#/definitions/Flow'
+          type: array
+          x-go-name: Flows
+      type: object
+  ImageList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Image'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  LogList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Log'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  LogSearch:
+    schema:
+      properties:
+        logs:
+          items:
+            $ref: '#/definitions/Log'
+          type: array
+          x-go-name: Logs
+      type: object
+  MapElementList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MapElement'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MapLayerList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MapLayer'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MapList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Map'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MapSearch:
+    schema:
+      properties:
+        maps:
+          items:
+            $ref: '#/definitions/Map'
+          type: array
+          x-go-name: Maps
+      type: object
+  NewObjectSuccess:
+    description: Success with id response
+    schema:
+      properties:
+        id:
+          format: int64
+          type: integer
+          x-go-name: Id
+      type: object
+  NodeList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Node'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  NodeSearch:
+    schema:
+      properties:
+        nodes:
+          items:
+            $ref: '#/definitions/Node'
+          type: array
+          x-go-name: Nodes
+      type: object
+  RoleList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Role'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  RoleSearch:
+    schema:
+      properties:
+        roles:
+          items:
+            $ref: '#/definitions/Role'
+          type: array
+          x-go-name: Roles
+      type: object
+  ScriptExec:
+    schema:
+      properties:
+        result:
+          type: string
+          x-go-name: Result
+      type: object
+  ScriptList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Script'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  ScriptSearch:
+    schema:
+      properties:
+        scripts:
+          items:
+            $ref: '#/definitions/Script'
+          type: array
+          x-go-name: Scripts
+      type: object
+  Success:
+    description: Success response
+    schema:
+      type: object
+  UserList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/UserShot'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  UserSearch:
+    schema:
+      properties:
+        users:
+          items:
+            $ref: '#/definitions/UserShot'
+          type: array
+          x-go-name: Users
+      type: object
+  WorkflowList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Workflow'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  WorkflowScenarioSearch:
+    schema:
+      properties:
+        scenarios:
+          items:
+            $ref: '#/definitions/WorkflowScenario'
+          type: array
+          x-go-name: Scenarios
+      type: object
+  WorkflowScenarios:
+    schema:
+      properties:
+        scenarios:
+          items:
+            $ref: '#/definitions/WorkflowScenario'
+          type: array
+          x-go-name: Scenarios
+      type: object
+  WorkflowSearch:
+    schema:
+      properties:
+        workflows:
+          items:
+            $ref: '#/definitions/Workflow'
+          type: array
+          x-go-name: Workflows
+      type: object
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  BasicAuth:
+    type: basic
+swagger: "2.0"

@@ -50,20 +50,17 @@ __init() {
     go install $(go list ./... | grep -v "/vendor\|/database")
     go get -u github.com/jteeuwen/go-bindata/...
 
-    cp ${ROOT}/conf/app.sample.conf ${ROOT}/conf/app.conf
-    cp ${ROOT}/conf/dev/app.sample.conf ${ROOT}/conf/dev/app.conf
-    cp ${ROOT}/conf/dev/db.sample.conf ${ROOT}/conf/dev/db.conf
+    cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
+    cp ${ROOT}/conf/dbconfig.dev.yml ${ROOT}/conf/dbconfig.yml
 
-    __mysql_help
+    __pg_help
 }
 
 __clean() {
 
     rm -rf ${ROOT}/build
     rm -rf ${ROOT}/tmp
-    rm -rf ${ROOT}/vendor/bin
-    rm -rf ${ROOT}/vendor/pkg
-    rm -rf ${ROOT}/vendor/src
+    rm -rf ${ROOT}/vendor
     rm -rf ${TMP_DIR}
 }
 
@@ -71,36 +68,46 @@ __build() {
 
     __check_os
 
-    mkdir -p ${TMP_DIR}
+    mkdir -p ${TMP_DIR}/conf
+    mkdir -p ${TMP_DIR}/data
 
     cd ${ROOT}
     go build -o ${TMP_DIR}/${EXEC}-${OS_TYPE}-${OS_ARCH}
 
-    cp -r ${ROOT}/conf ${TMP_DIR}
-    sed 's/dev\/app.conf/prod\/app.conf/' ${ROOT}/conf/app.sample.conf > ${TMP_DIR}/conf/app.sample.conf
+
+    cp ${ROOT}/conf/access_list.json ${TMP_DIR}/conf
+    cp ${ROOT}/conf/config.dev.json ${TMP_DIR}/conf
+    cp ${ROOT}/conf/dbconfig.dev.yml ${TMP_DIR}/conf
     cp ${ROOT}/LICENSE ${TMP_DIR}
-    cp ${ROOT}/README.md ${TMP_DIR}
+    cp ${ROOT}/README* ${TMP_DIR}
     cp ${ROOT}/contributors.txt ${TMP_DIR}
-    cp ${ROOT}/bin/${EXEC} ${TMP_DIR}
+    cp ${ROOT}/bin/server ${TMP_DIR}
+    cp -r ${ROOT}/data/icons ${TMP_DIR}/data
+    cp -r ${ROOT}/data/scripts ${TMP_DIR}/data
+    cp -r ${ROOT}/assets ${TMP_DIR}
+    cp -r ${ROOT}/snapshots ${TMP_DIR}
     cd ${TMP_DIR}
 #    echo "tar: ${ARCHIVE} copy to ${HOME}"
 #    tar -zcf ${HOME}/${ARCHIVE} .
 }
 
-__mysql_help() {
+__pg_help() {
     cat <<EOF
 
 #
-# please install database
+# please install postgres database
 #
 
-mysql -u root -p
-CREATE DATABASE smarthome;
-CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
-GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
-FLUSH PRIVILEGES;
-use smarthome
-source /opt/smart-home/server/dump.sql
+su - postgres
+
+createuser smart_home;
+create database smart_home;
+
+psql ( enter the password for postgressql)
+
+alter user smart_home with encrypted password 'smart_home';
+grant all privileges on database smart_home to smart_home;
+
 EOF
 }
 

@@ -12,25 +12,28 @@ env:
 
 services:
   - docker
-  - mysql
+  - postgresql
 
 before_install:
-  - mysql -e 'CREATE DATABASE smarthome;'
+  - psql -c 'CREATE DATABASE smart_home;' -U postgres
+  - psql -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/karalabe/xgo
   - go env && pwd
-  - go get github.com/spf13/hugo
   - npm install -g gulp
 
 install:
-  - go get github.com/FiloSottile/gvt
+  - go get -u github.com/golang/dep/cmd/dep
   - go get github.com/lib/pq
-  - go get github.com/rubenv/sql-migrate/...
+  - wget https://github.com/gohugoio/hugo/releases/download/v0.34/hugo_0.34_Linux-64bit.deb
+  - sudo dpkg -i hugo*.deb
+  - hugo version
 
 script:
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
   - ./bin/travis.sh --init
-  - ./bin/travis.sh --migrate
   - ./bin/travis.sh --build
 
 deploy:

@@ -14,7 +14,7 @@ if [ -z "$UNAME" ]; then
   exit 1
 fi
 
-cd $BASEDIR
+cd ${BASEDIR}
 
 main() {
 
@@ -31,7 +31,7 @@ __check_os() {
             OS_TYPE="linux"
         ;;
         (Darwin)
-            OS_TYPE="darwin-10.6"
+            OS_TYPE="darwin"
         ;;
     esac
 

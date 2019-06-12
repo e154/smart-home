@@ -5,22 +5,22 @@ set -o errexit
 main() {
 
     case "${COMMAND}" in
-        --new)
+        new)
         __new
         ;;
-        --up)
+        up)
         __up
         ;;
-        --down)
+        down)
         __down
         ;;
-        --status)
+        status)
         __status
         ;;
-        --gen)
+        gen)
         __gen
         ;;
-        --help)
+        help)
         __help
         ;;
         *)
@@ -33,7 +33,7 @@ main() {
 
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ENV=development
-CONFIG=./bin/dbconfig.yml
+CONFIG=./conf/dbconfig.yml
 
 MIGRATION_NAME=$2
 COMMAND=$1
@@ -43,7 +43,7 @@ __new() {
 
     NOW=$(date +"%Y%m%d_%H%M%S")
 
-    cat  > $BASEDIR/../database/migrations/"${NOW}_${MIGRATION_NAME}.sql" <<EOF
+    cat  > $BASEDIR/../migrations/"${NOW}_${MIGRATION_NAME}.sql" <<EOF
 -- +migrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 
@@ -77,7 +77,7 @@ __gen() {
     fi
 
     # go get -u github.com/jteeuwen/go-bindata/...
-    ${BD} -pkg database -o ${BASEDIR}/../database/migrations.go database/migrations
+    ${BD} -pkg database -o ${BASEDIR}/../system/migrations/assets/assets.go migrations
 }
 
 __help() {
@@ -86,11 +86,11 @@ Usage: migrate.sh [options]
 
 OPTIONS:
 
-  --new - new migration
-  --up - up migration
-  --down - down migration
-  --status - reset migration
-  --gen - generate migration sources
+  new - new migration
+  up - up migration
+  down - down migration
+  status - reset migration
+  gen - generate migration sources
 
   -h / --help - show this help text and exit 0
 
