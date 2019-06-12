@@ -4,6 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common"
 )
 
 type Node struct {
@@ -20,7 +21,8 @@ func GetNodeAdaptor(d *gorm.DB) *Node {
 
 func (n *Node) Add(node *m.Node) (id int64, err error) {
 
-	dbNode := n.toDb(node)
+	var dbNode *db.Node
+	dbNode, err = n.toDb(node)
 	if id, err = n.table.Add(dbNode); err != nil {
 		return
 	}
@@ -57,7 +59,9 @@ func (n *Node) GetById(nodeId int64) (node *m.Node, err error) {
 }
 
 func (n *Node) Update(node *m.Node) (err error) {
-	dbNode := n.toDb(node)
+
+	var dbNode *db.Node
+	dbNode, err = n.toDb(node)
 	err = n.table.Update(dbNode)
 	return
 }
@@ -97,22 +101,36 @@ func (n *Node) Search(query string, limit, offset int) (list []*m.Node, total in
 	return
 }
 
+func (a *Node) GetByLogin(login string) (ver *m.Node, err error) {
+
+	var dbVer *db.Node
+	if dbVer, err = a.table.GetByLogin(login); err != nil {
+		return
+	}
+
+	ver = a.fromDb(dbVer)
+
+	return
+}
+
 func (n *Node) fromDb(dbNode *db.Node) (node *m.Node) {
 	node = &m.Node{
-		Id: dbNode.Id,
-		Name: dbNode.Name,
-		Ip: dbNode.Ip,
-		Port: dbNode.Port,
-		Status: dbNode.Status,
+		Id:          dbNode.Id,
+		Name:        dbNode.Name,
+		Ip:          dbNode.Ip,
+		Port:        dbNode.Port,
+		Status:      dbNode.Status,
 		Description: dbNode.Description,
-		CreatedAt: dbNode.CreatedAt,
-		UpdatedAt: dbNode.UpdatedAt,
+		Login:       dbNode.Login,
+		Password:    dbNode.Password,
+		CreatedAt:   dbNode.CreatedAt,
+		UpdatedAt:   dbNode.UpdatedAt,
 	}
 
 	return
 }
 
-func (n *Node) toDb(node *m.Node) (dbNode *db.Node) {
+func (n *Node) toDb(node *m.Node) (dbNode *db.Node, err error) {
 	dbNode = &db.Node{
 		Id:          node.Id,
 		Name:        node.Name,
@@ -120,6 +138,14 @@ func (n *Node) toDb(node *m.Node) (dbNode *db.Node) {
 		Port:        node.Port,
 		Status:      node.Status,
 		Description: node.Description,
+		Login:       node.Login,
 	}
+
+	if node.Password != "" {
+		if dbNode.Password, err = common.HashPassword(node.Password); err != nil {
+			return
+		}
+	}
+
 	return
 }

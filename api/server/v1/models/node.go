@@ -9,6 +9,8 @@ type NewNode struct {
 	Name        string `json:"name"`
 	IP          string `json:"ip"`
 	Description string `json:"description"`
+	Login       string `json:"login"`
+	Password    string `json:"password"`
 }
 
 // swagger:model
@@ -19,6 +21,8 @@ type UpdateNode struct {
 	Status      string `json:"status"`
 	IP          string `json:"ip"`
 	Description string `json:"description"`
+	Login       string `json:"login"`
+	Password    string `json:"password"`
 }
 
 // swagger:model
@@ -29,6 +33,7 @@ type Node struct {
 	Port        int       `json:"port"`
 	Status      string    `json:"status"`
 	Description string    `json:"description"`
+	Login       string    `json:"login"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

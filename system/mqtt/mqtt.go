@@ -12,15 +12,19 @@ var (
 )
 
 type Mqtt struct {
-	cfg     *MqttConfig
-	server  *service.Server
-	clients []*Client
+	cfg           *MqttConfig
+	server        *service.Server
+	clients       []*Client
+	authenticator *Authenticator
 }
 
 func NewMqtt(cfg *MqttConfig,
-	graceful *graceful_service.GracefulService) (mqtt *Mqtt) {
+	graceful *graceful_service.GracefulService,
+	authenticator *Authenticator) (mqtt *Mqtt) {
+
 	mqtt = &Mqtt{
-		cfg: cfg,
+		cfg:           cfg,
+		authenticator: authenticator,
 	}
 
 	go mqtt.runServer()
@@ -52,7 +56,7 @@ func (m *Mqtt) runServer() {
 		KeepAlive:        m.cfg.SrvKeepAlive,
 		ConnectTimeout:   m.cfg.SrvConnectTimeout,
 		SessionsProvider: m.cfg.SrvSessionsProvider,
-		Authenticator:    m.cfg.SrvAuthenticator,
+		Authenticator:    m.authenticator.Name(),
 		TopicsProvider:   m.cfg.SrvTopicsProvider,
 	}
 
@@ -69,7 +73,7 @@ func (m *Mqtt) NewClient(topic string) (c *Client, err error) {
 
 	log.Infof("new queue client %s topic(%s)", uri, topic)
 
-	if c, err = NewClient(uri, topic); err != nil {
+	if c, err = NewClient(uri, topic, m.authenticator); err != nil {
 		return
 	}
 

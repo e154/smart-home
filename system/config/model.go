@@ -19,7 +19,6 @@ type AppConfig struct {
 	MqttKeepAlive        int     `json:"mqtt_keep_alive"`
 	MqttConnectTimeout   int     `json:"mqtt_connect_timeout"`
 	MqttSessionsProvider string  `json:"mqtt_sessions_provider"`
-	MqttAuthenticator    string  `json:"mqtt_authenticator"`
 	MqttTopicsProvider   string  `json:"mqtt_topics_provider"`
 	MqttPort             int     `json:"mqtt_port"`
 }

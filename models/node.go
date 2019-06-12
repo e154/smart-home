@@ -12,6 +12,8 @@ type Node struct {
 	Port        int       `json:"port" valid:"Range(1, 65535);Required"`
 	Status      string    `json:"status" valid:"Required"`
 	Description string    `json:"description"`
+	Login       string    `json:"login" valid:"MaxSize(254);Required"`
+	Password    string    `json:"password"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

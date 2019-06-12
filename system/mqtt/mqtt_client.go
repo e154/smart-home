@@ -9,12 +9,14 @@ import (
 )
 
 type Client struct {
-	qos        byte
-	topic, uri string
-	client     *service.Client
+	qos           byte
+	topic, uri    string
+	client        *service.Client
+	authenticator *Authenticator
 }
 
-func NewClient(uri, topic string) (client *Client, err error) {
+func NewClient(uri, topic string,
+	authenticator *Authenticator) (client *Client, err error) {
 
 	var qos byte = 0x0
 
@@ -22,10 +24,11 @@ func NewClient(uri, topic string) (client *Client, err error) {
 	c := &service.Client{}
 
 	client = &Client{
-		qos:        qos,
-		topic:      topic,
-		client:     c,
-		uri:        uri,
+		qos:           qos,
+		topic:         topic,
+		client:        c,
+		uri:           uri,
+		authenticator: authenticator,
 	}
 
 	return
@@ -42,10 +45,10 @@ func (c *Client) Connect() (err error) {
 	msg.SetCleanSession(true)
 	msg.SetClientId([]byte(fmt.Sprintf("mqclient%d%d", os.Getpid(), time.Now().Unix())))
 	msg.SetKeepAlive(300)
+	msg.SetUsername([]byte("local"))
+	msg.SetPassword([]byte(c.authenticator.LocalClientUuid()))
 	//msg.SetWillTopic([]byte("will"))
 	//msg.SetWillMessage([]byte("send me home"))
-	//msg.SetUsername([]byte("surgemq"))
-	//msg.SetPassword([]byte("verysecret"))
 
 	// Connects to the remote server at 127.0.0.1 port 1883
 	if err = c.client.Connect(c.uri, msg); err != nil {

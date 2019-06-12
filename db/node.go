@@ -17,6 +17,8 @@ type Node struct {
 	Port        int
 	Status      string
 	Description string
+	Login       string
+	Password    string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -47,13 +49,18 @@ func (n Nodes) GetById(nodeId int64) (node *Node, err error) {
 }
 
 func (n Nodes) Update(m *Node) (err error) {
-	err = n.Db.Model(&Node{Id: m.Id}).Updates(map[string]interface{}{
+	q := map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
 		"ip":          m.Ip,
 		"status":      m.Status,
 		"port":        m.Port,
-	}).Error
+		"login":       m.Login,
+	}
+	if m.Password != "" {
+		q["password"] = m.Password
+	}
+	err = n.Db.Model(&Node{Id: m.Id}).Updates(q).Error
 	return
 }
 
@@ -94,3 +101,15 @@ func (n *Nodes) Search(query string, limit, offset int) (list []*Node, total int
 
 	return
 }
+
+func (n *Nodes) GetByLogin(login string) (node *Node, err error) {
+
+	node = &Node{}
+	err = n.Db.Model(node).
+		Where("login = ?", login).
+		First(&node).
+		Error
+
+	return
+}
+

@@ -49,6 +49,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(services.NewServices)
 	container.Provide(mqtt.NewMqtt)
 	container.Provide(mqtt.NewMqttConfig)
+	container.Provide(mqtt.NewAuthenticator)
 	container.Provide(access_list.NewAccessListService)
 	container.Provide(rbac.NewAccessFilter)
 	container.Provide(stream.NewStreamService)

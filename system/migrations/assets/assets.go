@@ -12,6 +12,8 @@
 // migrations/20181223_231535_add_variables.sql
 // migrations/20190122_002953_add_map.sql
 // migrations/20190309_123940_add_logs.sql
+// migrations/20190610_215124_add_passw_to_node.sql
+// migrations/20190612_105234_add_passw_to_node.sql
 // DO NOT EDIT!
 
 package database
@@ -319,6 +321,46 @@ func migrations20190309_123940_add_logsSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20190610_215124_add_passw_to_nodeSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xcf\x31\x6a\x03\x41\x0c\x85\xe1\x7e\x4e\xf1\x3a\x17\x61\x4f\xe0\x36\x65\x9a\x10\x7c\x80\xf1\x48\xb1\x45\x64\x69\x18\x69\xd9\x3d\x7e\x30\x66\x83\x8b\x85\xb8\x15\xfa\xe1\x7b\xd3\x84\xb7\x9b\x5c\x46\x4d\xc6\xa9\x97\x69\xc2\xd7\xe7\x07\xc4\x10\xdc\x52\xdc\x70\x38\xf5\x03\x24\xc0\x2b\xb7\x39\x99\xb0\x5c\xd9\x90\x57\x09\x3c\xba\xfb\x93\x04\x6a\xef\x2a\x4c\xa5\x6a\xf2\x40\xd6\xb3\x32\xcc\x89\xa3\x00\x95\x08\xcd\x75\xbe\x19\xd4\x2f\x62\x48\x5e\x13\x36\xab\x1e\xff\xfb\xef\x35\x62\xf1\x41\xcf\x49\x79\x46\xbf\xfb\x62\x1b\xfb\xcf\x7c\x3f\xbe\xa4\x1e\xae\xca\x84\x73\x6d\x3f\xbb\x12\x1a\xde\x37\x8a\x7c\x83\x57\x89\x8c\xc7\x88\x7d\xfa\x7e\xb0\xad\x38\x96\xf2\x1b\x00\x00\xff\xff\x65\xf0\x5d\xf3\x71\x01\x00\x00")
+
+func migrations20190610_215124_add_passw_to_nodeSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20190610_215124_add_passw_to_nodeSql,
+		"migrations/20190610_215124_add_passw_to_node.sql",
+	)
+}
+
+func migrations20190610_215124_add_passw_to_nodeSql() (*asset, error) {
+	bytes, err := migrations20190610_215124_add_passw_to_nodeSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20190610_215124_add_passw_to_node.sql", size: 369, mode: os.FileMode(420), modTime: time.Unix(1560178650, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20190612_105234_add_passw_to_nodeSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xcc\x31\x0a\x02\x31\x10\x85\xe1\x7e\x4e\xf1\xba\x2d\x24\xb7\xb0\xb4\x11\xd9\x03\xc4\xe4\xe1\x0e\xc6\x24\xec\x8c\xac\xc7\x97\x20\x8a\xe5\xb6\x8f\xf7\x7f\x21\xe0\xf0\xd0\xdb\x1a\x9d\x98\xbb\x84\x80\xcb\xf9\x04\xad\x30\x26\xd7\x56\x31\xcd\x7d\x82\x1a\xf8\x62\x7a\x3a\x33\xb6\x85\x15\xbe\xa8\xe1\xd3\x8d\x93\x1a\x62\xef\x45\x99\x45\xfe\xc5\x63\xdb\xea\xd7\xfc\x81\x63\xdc\x45\xae\xad\x14\x66\x5c\x63\xba\x8b\xc8\x3b\x00\x00\xff\xff\xce\x2e\x9c\x5a\xaa\x00\x00\x00")
+
+func migrations20190612_105234_add_passw_to_nodeSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20190612_105234_add_passw_to_nodeSql,
+		"migrations/20190612_105234_add_passw_to_node.sql",
+	)
+}
+
+func migrations20190612_105234_add_passw_to_nodeSql() (*asset, error) {
+	bytes, err := migrations20190612_105234_add_passw_to_nodeSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20190612_105234_add_passw_to_node.sql", size: 170, mode: os.FileMode(420), modTime: time.Unix(1560311554, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -383,6 +425,8 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20181223_231535_add_variables.sql": migrations20181223_231535_add_variablesSql,
 	"migrations/20190122_002953_add_map.sql": migrations20190122_002953_add_mapSql,
 	"migrations/20190309_123940_add_logs.sql": migrations20190309_123940_add_logsSql,
+	"migrations/20190610_215124_add_passw_to_node.sql": migrations20190610_215124_add_passw_to_nodeSql,
+	"migrations/20190612_105234_add_passw_to_node.sql": migrations20190612_105234_add_passw_to_nodeSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -438,6 +482,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20181223_231535_add_variables.sql": &bintree{migrations20181223_231535_add_variablesSql, map[string]*bintree{}},
 		"20190122_002953_add_map.sql": &bintree{migrations20190122_002953_add_mapSql, map[string]*bintree{}},
 		"20190309_123940_add_logs.sql": &bintree{migrations20190309_123940_add_logsSql, map[string]*bintree{}},
+		"20190610_215124_add_passw_to_node.sql": &bintree{migrations20190610_215124_add_passw_to_nodeSql, map[string]*bintree{}},
+		"20190612_105234_add_passw_to_node.sql": &bintree{migrations20190612_105234_add_passw_to_nodeSql, map[string]*bintree{}},
 	}},
 }}
 

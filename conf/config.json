@@ -17,7 +17,6 @@
   "mqtt_keep_alive": 300,
   "mqtt_connect_timeout": 2,
   "mqtt_sessions_provider": "mem",
-  "mqtt_authenticator": "mockSuccess",
   "mqtt_topics_provider": "mem",
   "mqtt_port": 1883
 }
