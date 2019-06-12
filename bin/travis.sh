@@ -129,7 +129,7 @@ __build() {
     # build
     cd ${TMP_DIR}
 
-    BRANCH="$(git name-rev --name-only HEAD)"
+#    BRANCH="$(git name-rev --name-only HEAD)"
 
     if [[ $BRANCH == *"tags/"* ]]; then
       BRANCH="master"
