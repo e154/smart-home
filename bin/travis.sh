@@ -132,7 +132,7 @@ __build() {
     BRANCH="$(git name-rev --name-only HEAD)"
     echo "BRANCH ${BRANCH}"
 
-    if [[ $BRANCH == *"undefined"* ]]; then
+    if [[ $BRANCH == *"tags/"* ]]; then
       BRANCH="master"
     fi
 
