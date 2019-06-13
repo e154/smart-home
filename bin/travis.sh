@@ -130,11 +130,12 @@ __build() {
     cd ${TMP_DIR}
 
     BRANCH="$(git name-rev --name-only HEAD)"
-    echo "BRANCH ${BRANCH}"
 
     if [[ $BRANCH == *"tags/"* ]]; then
       BRANCH="master"
     fi
+
+    echo "BRANCH ${BRANCH}"
 
     echo ""
     echo "build command:"
