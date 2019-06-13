@@ -147,7 +147,7 @@ __build() {
     echo "xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags='${GOBUILD_LDFLAGS}' ${PACKAGE}"
     echo ""
 
-    xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
+    xgo --out=${EXEC} --branch=${BRANCH} --targets=darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
 
     cp -r ${ROOT}/assets ${TMP_DIR}
     cp -r ${ROOT}/conf ${TMP_DIR}
