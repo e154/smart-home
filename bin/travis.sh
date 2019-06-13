@@ -75,6 +75,10 @@ __test() {
 
 __init() {
 
+    openssl aes-256-cbc -K $encrypted_2d23256896fe_key -iv $encrypted_2d23256896fe_iv -in github_deploy_key.enc -out github_deploy_key -d
+    chmod 600 github_deploy_key
+    ssh-add github_deploy_key
+
     mkdir -p ${TMP_DIR}
     cd ${ROOT}
     dep ensure

@@ -34,8 +34,6 @@ script:
 
 deploy:
   provider: releases
-  api_key:
-    secure: iBI7Ztq9L8k6obkMEN7uTsffSxwthBNbu4qW7G1+N9nO4n52bb1a0Em/1LI+u0/gSLlfaU5aNdTTjiMiRJlKnNXks4eESKka2YsYfkx8Ebs75i2e5OjZmi2nrK1JJk6kLug47cREVvmATGlzTPi9g1pC8ZaM06Hc0n3yD7FTyH+v2EXQgY0CbNDSvjQQ7heSlqC6N1gmpkDZfNh5zznDmqFowO96OoRIpSgdw/4CUbOjQ/iQ5NiYsCQybR6x6Xf4lxqDm4ho56AUJBQkQsK3H6qqxXlIK1c66ojTUhAvtoiKnEfDzOZskPcpzaDwdPF2AUW9HLyi3kG3nKVZPSoTQYCbZdnAO+SEj8Z8DhFcoTBhdbCSiENJd4fbeD1g6267pgn2W6/vTMro/JQYPRlY1x45GbCuEFWuvRW5ILCPLWMR8T3sa1d4R2GOmG8sDHweh6ch4IZ99NdmImmQZVvCnKSI+E0KyMhgJFrWkzX5udHFQu0BX7P4ExR+bJJriFZ1lh6M5mZecv+uBigP9sRovKPIysKvG+1ZEbj6Tc+/PlsO8Nsh3KoQhjeJ7zre0A3yNNU67kHtUyoEK1GIxpmqzh9CqHhI93UON67JfmS+gsPyB6LLMNJlJwElsjI9LZD1KrUii/Ky5qujTCTOL1LIqgA9K7zl78GMvzZbev63AE4=
   file: $HOME/smart-home-server.tar.gz
   skip_cleanup: true
   on:
@@ -51,7 +49,3 @@ notifications:
   email:
     on_success: never
     on_failure: always
-
-dd:
-  - openssl aes-256-cbc -K $encrypted_2d23256896fe_key -iv $encrypted_2d23256896fe_iv
-    -in github_deploy_key.enc -out github_deploy_key -d
