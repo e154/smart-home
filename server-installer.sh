@@ -16,7 +16,7 @@ GIT_REPO="smart-home"
 INSTALL_DIR="/opt/smart-home"
 ARCHIVE="server.tar.gz"
 DOWNLOAD_URL="$( curl -s https://api.github.com/repos/${GIT_USER}/${GIT_REPO}/releases/latest | jq -r ".assets[].browser_download_url" )"
-#DOWNLOAD_URL="https://github.com/e154/smart-home/releases/download/v0.0.4/smart-home-server.tar.gz"
+#DOWNLOAD_URL="https://github.com/e154/smart-home-old/releases/download/v0.0.4/smart-home-server.tar.gz"
 COMMAND=$1
 
 JQ=`which jq`
