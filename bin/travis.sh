@@ -142,7 +142,7 @@ __build() {
     echo "xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags='${GOBUILD_LDFLAGS}' ${PACKAGE}"
     echo ""
 
-    xgo --out=${EXEC} --branch=${BRANCH} --targets=darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
+    xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${PACKAGE}
 
     mkdir -p ${TMP_DIR}/api/server/v1/docs/swagger
     cp ${ROOT}/api/server/v1/docs/swagger/swagger.yaml ${TMP_DIR}/api/server/v1/docs/swagger/
