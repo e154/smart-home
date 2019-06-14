@@ -75,11 +75,6 @@ __test() {
 
 __init() {
 
-    echo '' > github_deploy_key.enc
-    openssl aes-256-cbc -K $encrypted_2d23256896fe_key -iv $encrypted_2d23256896fe_iv -in github_deploy_key.enc -out github_deploy_key -d
-    chmod 600 github_deploy_key
-    ssh-add github_deploy_key
-
     mkdir -p ${TMP_DIR}
     cd ${ROOT}
     dep ensure
@@ -109,7 +104,7 @@ __docs_deploy() {
     git config --global user.email "support@e154.ru"
     git config --global user.name "delta54"
 
-    git remote add upstream "https://$GH_TOKEN@github.com/e154/smart-home.git"
+    git remote add upstream "https://${GITHUB_OAUTH_TOKEN}@github.com/e154/smart-home.git"
     git fetch upstream
     git reset upstream/gh-pages
 
