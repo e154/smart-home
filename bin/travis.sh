@@ -147,7 +147,6 @@ __build() {
     mkdir -p ${TMP_DIR}/api/server/v1/docs/swagger
     cp ${ROOT}/api/server/v1/docs/swagger/swagger.yaml ${TMP_DIR}/api/server/v1/docs/swagger/
 
-    cp -r ${ROOT}/assets ${TMP_DIR}
     cp -r ${ROOT}/conf ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}
     cp -r ${ROOT}/snapshots ${TMP_DIR}
