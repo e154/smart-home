@@ -1,9 +1,9 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
 type Variable struct {
@@ -54,8 +54,12 @@ func (n *Variable) GetByName(name string) (variables *m.Variable, err error) {
 	return
 }
 
-func (n *Variable) Update(variables *m.Variable) (err error) {
-	dbVariable := n.toDb(variables)
+func (n *Variable) Update(variable *m.Variable) (err error) {
+	if _, err = n.table.GetByName(variable.Name); err != nil {
+		err = n.Add(variable)
+		return
+	}
+	dbVariable := n.toDb(variable)
 	err = n.table.Update(dbVariable)
 	return
 }

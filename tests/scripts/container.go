@@ -9,6 +9,7 @@ import (
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/dig"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
@@ -52,6 +53,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(stream.NewHub)
 	container.Provide(telemetry.NewTelemetry)
 	container.Provide(logging.NewLogBackend)
+	container.Provide(gate_client.NewGateClient)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()
