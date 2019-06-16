@@ -187,7 +187,7 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 		to := path.Join(fullPath, image.Image)
 		if exist := common.FileExist(to); !exist {
 
-			os.MkdirAll(fullPath, os.ModePerm)
+			_ = os.MkdirAll(fullPath, os.ModePerm)
 
 			switch {
 			case strings.Contains(image.Name, "button"):
@@ -200,6 +200,8 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 				subDir = "temp"
 			case strings.Contains(image.Name, "fan"):
 				subDir = "fan"
+			case strings.Contains(image.Name, "map"):
+				subDir = "map"
 			}
 
 			from := path.Join("data", "icons", subDir, image.Name)
