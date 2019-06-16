@@ -81,7 +81,7 @@ curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin -
 
 #### Database postgresql
 
-System ** Smart Home ** works with Postgresql ** database **. Create a database and database user with full rights to this database.
+System **Smart Home** works with **Postgresql database**. Create a database and database user with full rights to this database.
 Connection parameters to the database must be specified in the configuration file. Updating the server version may require updating the database.
 , migrations will start automatically, manual intervention is not required.
 
