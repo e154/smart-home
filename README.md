@@ -4,7 +4,8 @@
 [Configurator](https://github.com/e154/smart-home-configurator/) |
 [Node](https://github.com/e154/smart-home-node/) |
 [Development Tools](https://github.com/e154/smart-home-tools/) |
-[Smart home Socket](https://github.com/e154/smart-home-socket/)
+[Smart home Socket](https://github.com/e154/smart-home-socket/) |
+[Modbus device controller](https://github.com/e154/smart-home-modbus-ctrl-v1/)
 
 [![Build Status](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
 [![Coverage Status](https://coveralls.io/repos/github/e154/smart-home/badge.svg?branch=master)](https://coveralls.io/github/e154/smart-home?branch=master)
@@ -23,14 +24,12 @@ System of nodes - microservices. And you will be able to interact with these dev
 In your local network. Create scripts, and respond to events in the web interface of the configurator through a flexible scripting system.
 Manage the state of devices from any subnet where the management server is available.
 
-> The project is in active development stage.
-
 - [Supported system](#supported-system)
 - [Quick installation](#quick-installation)
     - [Server](#server)
     - [Configurator](#configurator)
     - [Node](#node)
-    - [Mysql](#database-mysql)
+    - [Mysql](#database-postgresql)
 - [Installation for development](#installation-for-development)
     - [Server](#main-server-install)
 - [Testing](#testing)
@@ -80,22 +79,81 @@ curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev
 curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
 ```
 
-#### Database mysql
+#### Database postgresql
+
+System ** Smart Home ** works with Postgresql ** database **. Create a database and database user with full rights to this database.
+Connection parameters to the database must be specified in the configuration file. Updating the server version may require updating the database.
+, migrations will start automatically, manual intervention is not required.
 
 ```bash
-mysql -u root -p
-CREATE DATABASE smarthome;
-CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
-GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
-FLUSH PRIVILEGES;
-use smarthome
-source /opt/smart-home/server/dump.sql
+sudo -u postgres psql
+postgres=# create database mydb;
+postgres=# create user myuser with encrypted password 'mypass';
+postgres=# grant all privileges on database mydb to myuser;
 ```
 
 Run server
 
 ```bash
-/opt/smart-home/server/server
+./server
+
+ ___                _     _  _
+/ __|_ __  __ _ _ _| |_  | || |___ _ __  ___
+\__ \ '  \/ _' | '_|  _| | __ / _ \ '  \/ -_)
+|___/_|_|_\__,_|_|  \__| |_||_\___/_|_|_\___|
+
+
+2019/06/16 17:11:49 Graceful shutdown service started
+2019/06/16 17:11:49 database connect dbname=mydb user=myuser password=mypass host=127.0.0.1 port=5432 sslmode=disable
+2019/06/16 17:11:49 pq: permission denied to create extension "pgcrypto" handling 20181113_013141_workflow_elements.sql
+2019/06/16 17:11:49 Applied 3 migrations!
+2019/06/16 17:11:49 Serving server at tcp://[::]:1883
+2019/06/16 17:11:49 subscribe get_image_list
+2019/06/16 17:11:49 subscribe get_filter_list
+2019/06/16 17:11:49 subscribe remove_image
+INFO[0000] SRT.server.server.go:49.Start() > Serving server at http://[::]:3000
+INFO[0000] SRT.telemetry.telemetry.go:37.Run() > Run
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe dashboard.get.nodes.status
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe t.get.flows.status
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe dashboard.get.telemetry
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe map.get.devices.states
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe map.get.telemetry
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.worker
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.action
+```
+
+it may happen that you need to grant superuser privileges in the permissions of the database user.
+
+```bash
+postgres=# alter user myuser with superuser;
+```
+
+
+```bash
+bash-3.2$ ./server
+
+ ___                _     _  _
+/ __|_ __  __ _ _ _| |_  | || |___ _ __  ___
+\__ \ '  \/ _' | '_|  _| | __ / _ \ '  \/ -_)
+|___/_|_|_\__,_|_|  \__| |_||_\___/_|_|_\___|
+
+
+2019/06/16 17:23:45 Graceful shutdown service started
+2019/06/16 17:23:45 database connect dbname=mydb user=myuser password=mypass host=127.0.0.1 port=5432 sslmode=disable
+2019/06/16 17:23:46 Applied 10 migrations!
+2019/06/16 17:23:46 Serving server at tcp://[::]:1883
+2019/06/16 17:23:46 subscribe get_image_list
+2019/06/16 17:23:46 subscribe get_filter_list
+2019/06/16 17:23:46 subscribe remove_image
+INFO[0000] SRT.server.server.go:49.Start() > Serving server at http://[::]:3000
+INFO[0000] SRT.telemetry.telemetry.go:37.Run() > Run
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe dashboard.get.nodes.status
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe t.get.flows.status
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe dashboard.get.telemetry
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe map.get.devices.states
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe map.get.telemetry
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.worker
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.action
 ```
 
 Server can by run on the port: **3000**
@@ -124,8 +182,6 @@ The same commands, but without binding to the console
 
 It's all:)
 
-PS very soon an example will be added hello world
-
 ### Installation for development
 
 #### main server install
@@ -148,11 +204,8 @@ go build
 editing configuration files
 
 ```bash
-cp conf/app.sample.conf conf/api.conf
-cp conf/dev/app.sample.conf conf/dev/app.conf
-cp conf/dev/db.sample.conf conf/dev/db.conf
-cp conf/prod/app.sample.conf conf/prod/app.conf
-cp conf/prod/db.sample.conf conf/prod/db.conf
+cp conf/config.dev.json conf/config.json
+cp conf/dbconfig.dev.yml conf/dbconfig.yml
 ```
 
 manually create the database and run the command
