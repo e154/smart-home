@@ -29,7 +29,7 @@ Manage the state of devices from any subnet where the management server is avail
     - [Server](#server)
     - [Configurator](#configurator)
     - [Node](#node)
-    - [Mysql](#database-postgresql)
+    - [Postgresql](#database-postgresql)
 - [Installation for development](#installation-for-development)
     - [Server](#main-server-install)
 - [Testing](#testing)
