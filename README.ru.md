@@ -4,7 +4,8 @@
 [Конфигуратор](https://github.com/e154/smart-home-configurator/) |
 [Узел](https://github.com/e154/smart-home-node/) |
 [Инструменты настройки](https://github.com/e154/smart-home-tools/) |
-[Пример устройства](https://github.com/e154/smart-home-socket/)
+[Пример устройства](https://github.com/e154/smart-home-socket/) |
+[Modbus контроллер](https://github.com/e154/smart-home-modbus-ctrl-v1/)
 
 [![Статус сборки](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
 [![Статус покрытия тестами](https://coveralls.io/repos/github/e154/smart-home/badge.svg?branch=master)](https://coveralls.io/github/e154/smart-home?branch=master)
@@ -25,14 +26,12 @@
 Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора через гибкую систему скриптов.
 Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.
 
-> Проект находится в состоянии активной разработке.
-
 - [Поддерживаемые системы](#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC%D1%8B%D0%B5-%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D1%8B)
 - [Быстрая установка](#%D0%91%D1%8B%D1%81%D1%82%D1%80%D0%B0%D1%8F-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0)
     - [Сервер](#%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80)
     - [Конфигуратор](#%D0%9A%D0%BE%D0%BD%D1%84%D0%B8%D0%B3%D1%83%D1%80%D0%B0%D1%82%D0%BE%D1%80)
     - [Узел связи](#%D0%A3%D0%B7%D0%B5%D0%BB-%D1%81%D0%B2%D1%8F%D0%B7%D0%B8)
-    - [База](#%D0%91%D0%B0%D0%B7%D0%B0-mysql)
+    - [База](#%D0%91%D0%B0%D0%B7%D0%B0-postgresql)
 - [Установка для разработки](#%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D0%B4%D0%BB%D1%8F-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8)
     - [Сервер](#%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80-1)
 - [Тестирование](#%D0%A2%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
@@ -82,22 +81,81 @@ curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev
 curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
 ```
 
-#### База mysql
+#### База postgresql
+
+Система **Умный дом** работает с базой данных **Postgresql**. Создайте базу и пользователя базы данных с полными правами на эту базу.
+Параметры подключения к базе должны быть указаны в файле конфигурации. При обновлении версии сервера возможно потребуются обновление базы
+, миграции запустятся автоматически, ручное вмешательство не потребуется.
 
 ```bash
-mysql -u root -p
-CREATE DATABASE smarthome;
-CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
-GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
-FLUSH PRIVILEGES;
-use smarthome
-source /opt/smart-home/server/dump.sql
+sudo -u postgres psql
+postgres=# create database mydb;
+postgres=# create user myuser with encrypted password 'mypass';
+postgres=# grant all privileges on database mydb to myuser;
 ```
 
 Запуск сервера
 
 ```bash
-/opt/smart-home/server/server
+./server
+
+ ___                _     _  _
+/ __|_ __  __ _ _ _| |_  | || |___ _ __  ___
+\__ \ '  \/ _' | '_|  _| | __ / _ \ '  \/ -_)
+|___/_|_|_\__,_|_|  \__| |_||_\___/_|_|_\___|
+
+
+2019/06/16 17:11:49 Graceful shutdown service started
+2019/06/16 17:11:49 database connect dbname=mydb user=myuser password=mypass host=127.0.0.1 port=5432 sslmode=disable
+2019/06/16 17:11:49 pq: permission denied to create extension "pgcrypto" handling 20181113_013141_workflow_elements.sql
+2019/06/16 17:11:49 Applied 3 migrations!
+2019/06/16 17:11:49 Serving server at tcp://[::]:1883
+2019/06/16 17:11:49 subscribe get_image_list
+2019/06/16 17:11:49 subscribe get_filter_list
+2019/06/16 17:11:49 subscribe remove_image
+INFO[0000] SRT.server.server.go:49.Start() > Serving server at http://[::]:3000
+INFO[0000] SRT.telemetry.telemetry.go:37.Run() > Run
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe dashboard.get.nodes.status
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe t.get.flows.status
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe dashboard.get.telemetry
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe map.get.devices.states
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe map.get.telemetry
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.worker
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.action
+```
+
+может случится так что в правах доступа пользователя базы данных потребуется выдать привилегии суперпользователя.
+
+```bash
+postgres=# alter user myuser with superuser;
+```
+
+
+```bash
+bash-3.2$ ./server
+
+ ___                _     _  _
+/ __|_ __  __ _ _ _| |_  | || |___ _ __  ___
+\__ \ '  \/ _' | '_|  _| | __ / _ \ '  \/ -_)
+|___/_|_|_\__,_|_|  \__| |_||_\___/_|_|_\___|
+
+
+2019/06/16 17:23:45 Graceful shutdown service started
+2019/06/16 17:23:45 database connect dbname=mydb user=myuser password=mypass host=127.0.0.1 port=5432 sslmode=disable
+2019/06/16 17:23:46 Applied 10 migrations!
+2019/06/16 17:23:46 Serving server at tcp://[::]:1883
+2019/06/16 17:23:46 subscribe get_image_list
+2019/06/16 17:23:46 subscribe get_filter_list
+2019/06/16 17:23:46 subscribe remove_image
+INFO[0000] SRT.server.server.go:49.Start() > Serving server at http://[::]:3000
+INFO[0000] SRT.telemetry.telemetry.go:37.Run() > Run
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe dashboard.get.nodes.status
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe t.get.flows.status
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe dashboard.get.telemetry
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe map.get.devices.states
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe map.get.telemetry
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.worker
+INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.action
 ```
 
 сервер запустится на порту **3000**
@@ -126,8 +184,6 @@ source /opt/smart-home/server/dump.sql
 
 Это все:)
 
-PS совсем скоро добавится пример hello world
-
 ### Установка для разработки
 
 #### Сервер
@@ -150,17 +206,8 @@ go build
 Редактируем файлы конфигурации
 
 ```bash
-cp conf/app.sample.conf conf/api.conf
-cp conf/dev/app.sample.conf conf/dev/app.conf
-cp conf/dev/db.sample.conf conf/dev/db.conf
-cp conf/prod/app.sample.conf conf/prod/app.conf
-cp conf/prod/db.sample.conf conf/prod/db.conf
-```
-
-вручную создадим базу smart_home, и запустим команду миграции
-
-```bash
-./smart-home migrate
+cp conf/config.dev.json conf/config.json
+cp conf/dbconfig.dev.yml conf/dbconfig.yml
 ```
 
 Запус сервера
