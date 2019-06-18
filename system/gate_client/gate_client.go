@@ -3,6 +3,7 @@ package gate_client
 import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/op/go-logging"
 )
@@ -21,7 +22,8 @@ type GateClient struct {
 	wsClient *WsClient
 }
 
-func NewGateClient(adaptors *adaptors.Adaptors) (gate *GateClient) {
+func NewGateClient(adaptors *adaptors.Adaptors,
+	graceful *graceful_service.GracefulService, ) (gate *GateClient) {
 	gate = &GateClient{
 		adaptors: adaptors,
 		settings: &Settings{
@@ -30,11 +32,17 @@ func NewGateClient(adaptors *adaptors.Adaptors) (gate *GateClient) {
 		wsClient: NewWsClient(adaptors),
 	}
 
+	graceful.Subscribe(gate)
+
 	if err := gate.LoadSettings(); err != nil {
 		log.Error(err.Error())
 	}
 
 	return
+}
+
+func (g *GateClient) Shutdown() {
+	g.wsClient.Close()
 }
 
 func (g *GateClient) Connect() {
@@ -43,10 +51,7 @@ func (g *GateClient) Connect() {
 		return
 	}
 
-	log.Info("Connect")
-
 	g.wsClient.Connect(g.settings)
-
 }
 
 func (g *GateClient) GetToken() (token string, err error) {
