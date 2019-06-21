@@ -1,7 +1,6 @@
 package gate_client
 
 import (
-	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/gorilla/websocket"
 	"net/url"
@@ -10,7 +9,7 @@ import (
 )
 
 const (
-	writeWait      = 10 * time.Second
+	writeWait = 10 * time.Second
 )
 
 type WsClient struct {
@@ -21,19 +20,18 @@ type WsClient struct {
 	enabled     bool
 	settings    *Settings
 	delta       time.Duration
+	cb          IWsCallback
 }
 
-func NewWsClient(adaptors *adaptors.Adaptors) *WsClient {
+func NewWsClient(adaptors *adaptors.Adaptors,
+	cb IWsCallback) *WsClient {
 	client := &WsClient{
 		adaptors:  adaptors,
 		interrupt: make(chan struct{}, 1),
+		cb:        cb,
 	}
 	go client.worker()
 	return client
-}
-
-func (client *WsClient) GetToken() (token string, err error) {
-	return
 }
 
 func (client *WsClient) Close() {
@@ -103,8 +101,6 @@ func (client *WsClient) connect() {
 	}
 	client.isConnected = true
 
-	log.Info("Connect successfully")
-
 	var messageType int
 	var message []byte
 
@@ -117,18 +113,35 @@ func (client *WsClient) connect() {
 			}
 			switch messageType {
 			case websocket.TextMessage:
-				fmt.Printf("recv: %s\n", string(message))
+				//fmt.Printf("recv: %s\n", string(message))
+				client.cb.onMessage(message)
 			default:
 				log.Errorf("unknown message type(%v)", messageType)
 			}
 		}
 	}()
 
+	go client.cb.onConnected()
+
+	log.Info("Connect successfully")
+
 	<-client.interrupt
-	err = client.Write(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+	err = client.write(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+
+	go client.cb.onClosed()
 }
 
-func (client *WsClient) Write(opCode int, payload []byte) error {
-	_ = client.conn.SetWriteDeadline(time.Now().Add(writeWait))
-	return client.conn.WriteMessage(opCode, payload)
+func (client *WsClient) write(opCode int, payload []byte) (err error) {
+
+	if !client.isConnected {
+		err = ErrGateNotConnected
+		return
+	}
+
+	if err = client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+		return
+	}
+
+	err = client.conn.WriteMessage(opCode, payload)
+	return
 }

@@ -1,10 +1,13 @@
 package gate_client
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/uuid"
+	"github.com/gorilla/websocket"
 	"github.com/op/go-logging"
 )
 
@@ -13,13 +16,15 @@ const (
 )
 
 var (
-	log = logging.MustGetLogger("gate")
+	log                 = logging.MustGetLogger("gate")
+	ErrGateNotConnected = fmt.Errorf("gate not connected")
 )
 
 type GateClient struct {
-	adaptors *adaptors.Adaptors
-	settings *Settings
-	wsClient *WsClient
+	adaptors    *adaptors.Adaptors
+	settings    *Settings
+	wsClient    *WsClient
+	subscribers map[string]func(payload interface{})
 }
 
 func NewGateClient(adaptors *adaptors.Adaptors,
@@ -29,8 +34,10 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 		settings: &Settings{
 			Id: uuid.NewV4(),
 		},
-		wsClient: NewWsClient(adaptors),
+		subscribers: make(map[string]func(payload interface{})),
 	}
+
+	gate.wsClient = NewWsClient(adaptors, gate)
 
 	graceful.Subscribe(gate)
 
@@ -54,9 +61,12 @@ func (g *GateClient) Connect() {
 	g.wsClient.Connect(g.settings)
 }
 
-func (g *GateClient) GetToken() (token string, err error) {
-	token, err = g.wsClient.GetToken()
-	return
+func (g *GateClient) registerClient() {
+
+	params := map[string]interface{}{"server_id": g.settings.Id}
+	g.Send("register_server", params, func(payload interface{}) {
+		fmt.Println(payload)
+	})
 }
 
 func (g *GateClient) LoadSettings() (err error) {
@@ -88,4 +98,63 @@ func (g *GateClient) SaveSettings() (err error) {
 	err = g.adaptors.Variable.Update(variable)
 
 	return
+}
+
+func (g *GateClient) onMessage(message []byte) {
+
+	fmt.Println(string(message))
+
+	re := map[string]interface{}{}
+	if err := json.Unmarshal(message, &re); err != nil {
+		return
+	}
+
+	for key, value := range re {
+
+		switch key {
+
+		default:
+			for command, f := range g.subscribers {
+				if key == command {
+					f(value)
+				}
+			}
+		}
+	}
+}
+
+func (g *GateClient) onConnected() {
+	g.registerClient()
+}
+
+func (g *GateClient) onClosed() {
+
+}
+
+func (g *GateClient) Subscribe(command string, f func(payload interface{})) {
+	if g.subscribers[command] != nil {
+		delete(g.subscribers, command)
+	}
+	g.subscribers[command] = f
+}
+
+func (g *GateClient) UnSubscribe(command string) {
+	if g.subscribers[command] != nil {
+		delete(g.subscribers, command)
+	}
+}
+
+func (g *GateClient) Send(command string, params map[string]interface{}, f func(payload interface{})) {
+
+	messageId := uuid.NewV4().String()
+	g.Subscribe(messageId, f)
+
+	params["id"] = messageId
+
+	payload, _ := json.Marshal(&map[string]interface{}{command: params})
+	if err := g.wsClient.write(websocket.TextMessage, payload); err != nil {
+		log.Error(err.Error())
+	}
+
+	g.UnSubscribe(messageId)
 }
