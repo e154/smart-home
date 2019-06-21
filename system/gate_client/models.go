@@ -1,11 +1,9 @@
 package gate_client
 
-import "github.com/e154/smart-home/system/uuid"
-
 type Settings struct {
-	Id      uuid.UUID `json:"id"`
-	Address string    `json:"address"`
-	Enabled bool      `json:"enabled"`
+	GateServerToken string `json:"gate_server_token"`
+	Address         string `json:"address"`
+	Enabled         bool   `json:"enabled"`
 }
 
 func (s Settings) Valid() bool {

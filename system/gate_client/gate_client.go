@@ -9,6 +9,7 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/op/go-logging"
+	"reflect"
 )
 
 const (
@@ -30,10 +31,8 @@ type GateClient struct {
 func NewGateClient(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService, ) (gate *GateClient) {
 	gate = &GateClient{
-		adaptors: adaptors,
-		settings: &Settings{
-			Id: uuid.NewV4(),
-		},
+		adaptors:    adaptors,
+		settings:    &Settings{},
 		subscribers: make(map[string]func(payload interface{})),
 	}
 
@@ -61,11 +60,39 @@ func (g *GateClient) Connect() {
 	g.wsClient.Connect(g.settings)
 }
 
-func (g *GateClient) registerClient() {
+func (g *GateClient) registerServer() {
 
-	params := map[string]interface{}{"server_id": g.settings.Id}
+	if g.settings.GateServerToken != "" {
+		return
+	}
+
+	params := map[string]interface{}{}
 	g.Send("register_server", params, func(payload interface{}) {
-		fmt.Println(payload)
+
+		v, ok := reflect.ValueOf(payload).Interface().(map[string]interface{})
+		if !ok {
+			log.Error("bad reflect casting")
+			return
+		}
+
+		g.settings.GateServerToken = v["token"].(string)
+
+		_ = g.SaveSettings()
+	})
+}
+
+func (g *GateClient) registerMobile() {
+
+	params := map[string]interface{}{}
+	g.Send("register_mobile", params, func(payload interface{}) {
+
+		v, ok := reflect.ValueOf(payload).Interface().(map[string]interface{})
+		if !ok {
+			log.Error("bad reflect casting")
+			return
+		}
+
+		fmt.Println("mobile token ", v["token"])
 	})
 }
 
@@ -106,17 +133,20 @@ func (g *GateClient) onMessage(message []byte) {
 
 	re := map[string]interface{}{}
 	if err := json.Unmarshal(message, &re); err != nil {
+		log.Error(err.Error())
 		return
 	}
 
-	for key, value := range re {
+	var id string
+	for key, v := range re {
 
-		switch key {
+		if key == "id" {
+			id = v.(string)
 
-		default:
 			for command, f := range g.subscribers {
-				if key == command {
-					f(value)
+				if id == command {
+					f(re)
+					g.UnSubscribe(command)
 				}
 			}
 		}
@@ -124,7 +154,8 @@ func (g *GateClient) onMessage(message []byte) {
 }
 
 func (g *GateClient) onConnected() {
-	g.registerClient()
+	g.registerServer()
+	//g.registerMobile()
 }
 
 func (g *GateClient) onClosed() {
@@ -155,6 +186,4 @@ func (g *GateClient) Send(command string, params map[string]interface{}, f func(
 	if err := g.wsClient.write(websocket.TextMessage, payload); err != nil {
 		log.Error(err.Error())
 	}
-
-	g.UnSubscribe(messageId)
 }

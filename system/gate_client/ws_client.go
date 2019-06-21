@@ -3,6 +3,7 @@ package gate_client
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/gorilla/websocket"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -96,7 +97,11 @@ func (client *WsClient) connect() {
 	}()
 
 	u := url.URL{Scheme: "ws", Host: client.settings.Address, Path: "ws"}
-	if client.conn, _, err = websocket.DefaultDialer.Dial(u.String(), nil); err != nil {
+	requestHeader := http.Header{
+		"X-API-Key": {client.settings.GateServerToken},
+	}
+
+	if client.conn, _, err = websocket.DefaultDialer.Dial(u.String(), requestHeader); err != nil {
 		return
 	}
 	client.isConnected = true
