@@ -5,3 +5,7 @@ type IWsCallback interface {
 	onConnected()
 	onClosed()
 }
+
+const (
+	ClientTypeServer = "server"
+)

@@ -102,6 +102,7 @@ func (client *WsClient) connect() {
 	if client.settings.GateServerToken != "" {
 		requestHeader = http.Header{
 			"X-API-Key": {client.settings.GateServerToken},
+			"X-Client-Type": {ClientTypeServer},
 		}
 	}
 
