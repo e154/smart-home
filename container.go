@@ -22,7 +22,6 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/services"
 	"github.com/e154/smart-home/system/stream"
-	streamControllers "github.com/e154/smart-home/system/stream/controllers"
 	"github.com/e154/smart-home/system/telemetry"
 )
 
@@ -58,7 +57,6 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(stream.NewStreamService)
 	container.Provide(stream.NewHub)
 	container.Provide(telemetry.NewTelemetry)
-	container.Provide(streamControllers.NewStreamControllers)
 	container.Provide(logging.NewLogBackend)
 	container.Provide(endpoint.NewEndpoint)
 	container.Provide(gate_client.NewGateClient)

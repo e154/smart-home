@@ -81,10 +81,6 @@ func (c *Core) Run() (err error) {
 
 	c.telemetry.Run(c)
 
-	// register steam actions
-	c.streamService.Subscribe("do.worker", streamDoWorker(c))
-	c.streamService.Subscribe("do.action", streamDoAction(c))
-
 	return
 }
 

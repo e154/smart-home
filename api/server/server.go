@@ -9,7 +9,6 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
-	streamControllers "github.com/e154/smart-home/system/stream/controllers"
 	"github.com/gin-gonic/gin"
 	"github.com/op/go-logging"
 	"net/http"
@@ -65,7 +64,6 @@ func NewServer(cfg *ServerConfig,
 	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,
 	streamService *stream.StreamService,
-	streamControllers *streamControllers.StreamControllers,
 	core *core.Core) (newServer *Server) {
 
 	logger := &ServerLogger{log}

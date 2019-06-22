@@ -1,12 +1,9 @@
 package core
 
 import (
-	"sync"
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
-	"reflect"
-	"github.com/e154/smart-home/system/stream"
-	"encoding/json"
+	"sync"
 )
 
 type Worker struct {
@@ -104,41 +101,5 @@ func (w *Worker) Do() {
 		if err := w.flow.NewMessage(message); err != nil {
 			log.Error(err.Error())
 		}
-	}
-}
-
-// ------------------------------------------------
-// stream
-// ------------------------------------------------
-func streamDoWorker(core *Core) func(client *stream.Client, value interface{}) {
-
-	return func(client *stream.Client, value interface{}) {
-
-		v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-		if !ok {
-			return
-		}
-
-		var workerId float64
-		var err error
-
-		if workerId, ok = v["worker_id"].(float64); !ok {
-			log.Warning("bad id param")
-			return
-		}
-
-		var worker *m.Worker
-		if worker, err = core.adaptors.Worker.GetById(int64(workerId)); err != nil {
-			client.Notify("error", err.Error())
-			return
-		}
-
-		if err = core.DoWorker(worker); err != nil {
-			client.Notify("error", err.Error())
-			return
-		}
-
-		msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
-		client.Send <- msg
 	}
 }
