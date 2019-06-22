@@ -37,8 +37,10 @@ func NewWebSocket(adaptors *adaptors.Adaptors,
 
 func (s *WebSocket) Start() {
 	log.Infof("Serving websocket service")
+	s.Controllers.Start()
 }
 
 func (s *WebSocket) Shutdown() {
 	log.Info("Server exiting")
+	s.Controllers.Stop()
 }

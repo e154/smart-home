@@ -12,14 +12,17 @@ type ControllerWorker struct {
 }
 
 func NewControllerWorker(common *ControllerCommon) *ControllerWorker {
-	worker := &ControllerWorker{
+	return &ControllerWorker{
 		ControllerCommon: common,
 	}
+}
 
-	// register methods
-	common.stream.Subscribe("do.worker", worker.DoWorker)
+func (c *ControllerWorker) Start() {
+	c.stream.Subscribe("do.worker", c.DoWorker)
+}
 
-	return worker
+func (c *ControllerWorker) Stop() {
+	c.stream.UnSubscribe("do.worker")
 }
 
 // Stream

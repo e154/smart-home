@@ -9,17 +9,19 @@ type ControllerDashboard struct {
 }
 
 func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
-	board := &ControllerDashboard{
+	return &ControllerDashboard{
 		ControllerCommon: common,
 	}
+}
 
-	// register methods
+func (c *ControllerDashboard) Start() {
 	//stream.Subscribe("dashboard.get.nodes.status", board.NodesStatus)
 	//stream.Subscribe("t.get.flows.status", board.FlowsStatus)
 	//stream.Subscribe("dashboard.get.telemetry", board.Telemetry)
+}
 
+func (c *ControllerDashboard) Stop() {
 
-	return board
 }
 
 func (n *ControllerDashboard) NodesStatus(client *stream.Client, value interface{}) {

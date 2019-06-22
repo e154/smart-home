@@ -14,14 +14,18 @@ type ControllerAction struct {
 }
 
 func NewControllerAction(common *ControllerCommon) *ControllerAction {
-	worker := &ControllerAction{
+	return &ControllerAction{
 		ControllerCommon: common,
 	}
+}
 
-	// register methods
-	common.stream.Subscribe("do.action", worker.DoAction)
+func (c *ControllerAction) Start() {
+	c.stream.Subscribe("do.action", c.DoAction)
+}
 
-	return worker
+
+func (c *ControllerAction) Stop() {
+	c.stream.UnSubscribe("do.action")
 }
 
 // Stream

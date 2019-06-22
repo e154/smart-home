@@ -18,6 +18,7 @@ type Controllers struct {
 	Worker    *ControllerWorker
 	Action    *ControllerAction
 	Dashboard *ControllerDashboard
+	Map       *ControllerMap
 }
 
 func NewControllers(adaptors *adaptors.Adaptors,
@@ -31,5 +32,22 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Worker:    NewControllerWorker(common),
 		Action:    NewControllerAction(common),
 		Dashboard: NewControllerDashboard(common),
+		Map:       NewControllerMap(common),
 	}
+}
+
+func (s *Controllers) Start() {
+	s.Image.Start()
+	s.Worker.Start()
+	s.Action.Start()
+	s.Dashboard.Start()
+	s.Map.Start()
+}
+
+func (s *Controllers) Stop() {
+	s.Image.Stop()
+	s.Worker.Stop()
+	s.Action.Stop()
+	s.Dashboard.Stop()
+	s.Map.Stop()
 }

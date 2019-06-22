@@ -12,17 +12,22 @@ type ControllerImage struct {
 	*ControllerCommon
 }
 
-func NewControllerImage(common *ControllerCommon,) *ControllerImage {
-	image := &ControllerImage{
+func NewControllerImage(common *ControllerCommon, ) *ControllerImage {
+	return &ControllerImage{
 		ControllerCommon: common,
 	}
+}
 
-	// register methods
-	common.stream.Subscribe("get_image_list", image.GetImageList)
-	common.stream.Subscribe("get_filter_list", image.GetFilterList)
-	common.stream.Subscribe("remove_image", image.RemoveImage)
+func (c *ControllerImage) Start() {
+	c.stream.Subscribe("get_image_list", c.GetImageList)
+	c.stream.Subscribe("get_filter_list", c.GetFilterList)
+	c.stream.Subscribe("remove_image", c.RemoveImage)
+}
 
-	return image
+func (c *ControllerImage) Stop() {
+	c.stream.UnSubscribe("get_image_list")
+	c.stream.UnSubscribe("get_filter_list")
+	c.stream.UnSubscribe("remove_image")
 }
 
 // Stream
