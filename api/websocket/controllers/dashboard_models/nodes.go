@@ -50,7 +50,7 @@ func (n *Nodes) Update() {
 	n.Status = make(map[int64]string)
 
 	for _, node := range nodes {
-		n.Status[node.Id] = node.Status
+		n.Status[node.Id] = node.ConnStatus
 	}
 }
 
