@@ -1,4 +1,4 @@
-package dashboard
+package dashboard_models
 
 type Uptime struct {
 	Total uint64 `json:"total"`

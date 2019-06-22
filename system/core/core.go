@@ -9,6 +9,7 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/telemetry"
 	"github.com/op/go-logging"
 	"sync"
 )
@@ -21,13 +22,6 @@ type IGetMap interface {
 	GetMap() *Map
 }
 
-type ITelemetry interface {
-	Broadcast(pack string)
-	BroadcastOne(pack string, deviceId int64, elementName string)
-	Run(core *Core)
-	Stop()
-}
-
 type Core struct {
 	sync.Mutex
 	nodes         map[int64]*Node
@@ -36,7 +30,7 @@ type Core struct {
 	scripts       *scripts.ScriptService
 	cron          *cr.Cron
 	mqtt          *mqtt.Mqtt
-	telemetry     ITelemetry
+	telemetry     telemetry.ITelemetry
 	streamService *stream.StreamService
 	Map           *Map
 }
@@ -46,7 +40,7 @@ func NewCore(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
 	cron *cr.Cron,
 	mqtt *mqtt.Mqtt,
-	telemetry ITelemetry,
+	telemetry telemetry.ITelemetry,
 	streamService *stream.StreamService) (core *Core, err error) {
 
 	core = &Core{
@@ -79,8 +73,6 @@ func (c *Core) Run() (err error) {
 		return
 	}
 
-	c.telemetry.Run(c)
-
 	return
 }
 
@@ -97,8 +89,6 @@ func (b *Core) Stop() (err error) {
 			return
 		}
 	}
-
-	b.telemetry.Stop()
 
 	// unregister steam actions
 	b.streamService.UnSubscribe("do.worker")

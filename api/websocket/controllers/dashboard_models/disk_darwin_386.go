@@ -1,4 +1,4 @@
-package dashboard
+package dashboard_models
 
 func NewDisk() (_disk *Disk) {
 

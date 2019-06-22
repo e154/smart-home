@@ -1,6 +1,6 @@
 //+build linux windows darwin,!386
 
-package dashboard
+package dashboard_models
 
 import (
 	"github.com/shirou/gopsutil/disk"

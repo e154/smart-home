@@ -1,4 +1,4 @@
-package dashboard
+package dashboard_models
 
 import (
 	"encoding/json"
@@ -19,11 +19,13 @@ type Nodes struct {
 	core       *core.Core         `json:"-"`
 }
 
-func NewNode(adaptors *adaptors.Adaptors) (node *Nodes) {
+func NewNode(adaptors *adaptors.Adaptors,
+	core *core.Core) (node *Nodes) {
 
 	node = &Nodes{
 		Status:   make(map[int64]string),
 		adaptors: adaptors,
+		core:     core,
 	}
 
 	return
@@ -65,7 +67,7 @@ func (n *Nodes) Broadcast() (interface{}, bool) {
 
 // only on request: 'dashboard.get.nodes.status'
 //
-func (n *Nodes) streamNodesStatus(client *stream.Client, value interface{}) {
+func (n *Nodes) NodesStatus(client *stream.Client, value interface{}) {
 	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
 	if !ok {
 		return

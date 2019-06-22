@@ -1,6 +1,6 @@
 // +build linux,!mips64,!mips64le darwin windows
 
-package dashboard
+package dashboard_models
 
 import (
 	"github.com/shirou/gopsutil/host"

@@ -1,4 +1,4 @@
-package dashboard
+package dashboard_models
 
 import (
 	"encoding/json"
@@ -6,7 +6,12 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/op/go-logging"
 	"reflect"
+)
+
+var (
+	log = logging.MustGetLogger("models")
 )
 
 type Devices struct {
@@ -16,10 +21,12 @@ type Devices struct {
 	core     *core.Core               `json:"-"`
 }
 
-func NewDevices(adaptors *adaptors.Adaptors) *Devices {
+func NewDevices(adaptors *adaptors.Adaptors,
+	core *core.Core) *Devices {
 	return &Devices{
 		Status:   make(map[int64]*m.DeviceState),
 		adaptors: adaptors,
+		core:     core,
 	}
 }
 

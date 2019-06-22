@@ -1,4 +1,4 @@
-package telemetry_map
+package map_models
 
 import (
 	"encoding/json"
@@ -26,10 +26,12 @@ type Devices struct {
 	core        *core.Core
 }
 
-func NewDevices(adaptors *adaptors.Adaptors) *Devices {
+func NewDevices(adaptors *adaptors.Adaptors,
+	core *core.Core) *Devices {
 	return &Devices{
 		DeviceStats: make(map[string]*DeviceState),
 		adaptors:    adaptors,
+		core:        core,
 	}
 }
 
@@ -86,7 +88,7 @@ func (d *Devices) BroadcastOne(deviceId int64, elementName string) (interface{},
 
 // only on request: 'map.get.devices.states'
 //
-func (d *Devices) streamGetDevicesStates(client *stream.Client, value interface{}) {
+func (d *Devices) GetDevicesStates(client *stream.Client, value interface{}) {
 
 	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
 	if !ok {

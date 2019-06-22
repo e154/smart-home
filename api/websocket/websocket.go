@@ -8,6 +8,7 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/telemetry"
 	"github.com/op/go-logging"
 )
 
@@ -24,10 +25,11 @@ func NewWebSocket(adaptors *adaptors.Adaptors,
 	endpoint *endpoint.Endpoint,
 	scripts *scripts.ScriptService,
 	core *core.Core,
-	graceful *graceful_service.GracefulService) *WebSocket {
+	graceful *graceful_service.GracefulService,
+	telemetry *telemetry.Telemetry) *WebSocket {
 
 	server := &WebSocket{
-		Controllers: NewControllers(adaptors, stream, scripts, core, endpoint),
+		Controllers: NewControllers(adaptors, stream, scripts, core, endpoint, telemetry),
 	}
 
 	graceful.Subscribe(server)
