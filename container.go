@@ -4,6 +4,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/server/v1/controllers"
+	"github.com/e154/smart-home/api/websocket"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/backup"
@@ -30,6 +31,7 @@ func BuildContainer() (container *dig.Container) {
 	container = dig.New()
 	container.Provide(server.NewServer)
 	container.Provide(server.NewServerConfig)
+	container.Provide(websocket.NewWebSocket)
 	container.Provide(controllers.NewControllersV1)
 	container.Provide(config.ReadConfig)
 	container.Provide(graceful_service.NewGracefulService)

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/e154/smart-home/api/server"
+	"github.com/e154/smart-home/api/websocket"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
@@ -89,10 +90,12 @@ func start() {
 		graceful *graceful_service.GracefulService,
 		back *l.LogBackend,
 		initialService *initial.InitialService,
-		gate *gate_client.GateClient) {
+		gate *gate_client.GateClient,
+		ws *websocket.WebSocket) {
 
 		l.Initialize(back)
 		go server.Start()
+		go ws.Start()
 		go gate.Connect()
 
 		graceful.Wait()
