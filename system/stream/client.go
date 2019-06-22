@@ -1,7 +1,6 @@
 package stream
 
 import (
-	"encoding/json"
 	//"gopkg.in/igm/sockjs-go.v2/sockjs"
 	"github.com/gorilla/websocket"
 	"time"
@@ -28,11 +27,9 @@ type Client struct {
 	Send chan []byte
 }
 
-func (c *Client) UpdateInfo(info interface{}) {
-	v, ok := info.(map[string]interface{})
-	if !ok {
-		return
-	}
+func (c *Client) UpdateInfo(msg Message) {
+
+	v := msg.Payload
 
 	width, ok := v["width"].(float64)
 	if ok {
@@ -66,10 +63,16 @@ func (c *Client) UpdateInfo(info interface{}) {
 
 func (c *Client) Notify(t, b string) {
 
-	msg, _ := json.Marshal(&map[string]interface{}{"type": "notify", "value": &map[string]interface{}{"type": t, "body": b}})
+	msg := &Message{
+		Type:    Notify,
+		Forward: Request,
+		Payload: map[string]interface{}{
+			"type": t,
+			"body": b,
+		},
+	}
 
-	c.Send <- msg
-
+	c.Send <- msg.Pack()
 }
 
 func (c *Client) Write(opCode int, payload []byte) error {
@@ -86,7 +89,7 @@ func (c *Client) WritePump() {
 	defer func() {
 		ticker.Stop()
 		if c.Connect != nil {
-			c.Connect.Close()
+			_ = c.Connect.Close()
 		}
 	}()
 

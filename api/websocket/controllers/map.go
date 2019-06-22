@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	mapModels "github.com/e154/smart-home/api/websocket/controllers/map_models"
 	"github.com/e154/smart-home/system/stream"
 )
@@ -31,7 +30,7 @@ func (c *ControllerMap) Stop() {
 }
 
 func (c *ControllerMap) BroadcastOne(pack string, deviceId int64, elementName string) {
-	var body interface{}
+	var body map[string]interface{}
 	var ok bool
 
 	switch pack {
@@ -46,7 +45,7 @@ func (c *ControllerMap) BroadcastOne(pack string, deviceId int64, elementName st
 
 func (c *ControllerMap) Broadcast(pack string) {
 
-	var body interface{}
+	var body map[string]interface{}
 	var ok bool
 
 	switch pack {
@@ -59,19 +58,18 @@ func (c *ControllerMap) Broadcast(pack string) {
 	}
 }
 
-func (t *ControllerMap) sendMsg(body interface{}) {
+func (t *ControllerMap) sendMsg(payload map[string]interface{}) {
 
-	msg, _ := json.Marshal(map[string]interface{}{
-		"type": "broadcast",
-		"value": map[string]interface{}{
-			"type": "map.telemetry",
-			"body": body,
-		},
-	})
+	msg := &stream.Message{
+		Command: "map.telemetry",
+		Type:    stream.Broadcast,
+		Forward: stream.Request,
+		Payload: payload,
+	}
 
-	t.stream.Broadcast(msg)
+	t.stream.Broadcast(msg.Pack())
 }
 
-func (m *ControllerMap) streamTelemetry(client *stream.Client, value interface{}) {
+func (m *ControllerMap) streamTelemetry(client *stream.Client, message stream.Message) {
 
 }

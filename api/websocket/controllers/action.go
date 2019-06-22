@@ -1,12 +1,10 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/stream"
-	"reflect"
 )
 
 type ControllerAction struct {
@@ -29,12 +27,10 @@ func (c *ControllerAction) Stop() {
 }
 
 // Stream
-func (c *ControllerAction) DoAction(client *stream.Client, value interface{}) {
+func (c *ControllerAction) DoAction(client *stream.Client, message stream.Message) {
 
-	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-	if !ok {
-		return
-	}
+	v := message.Payload
+	var ok bool
 
 	var deviceActionId, deviceId float64
 	var err error
@@ -92,10 +88,8 @@ func (c *ControllerAction) DoAction(client *stream.Client, value interface{}) {
 
 	// do action
 	if _, err = action.Do(); err != nil {
-		log.Error(err.Error())
+		c.Err(client, message, err)
 	}
 
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
-	client.Send <- msg
-
+	client.Send <- message.Success().Pack()
 }

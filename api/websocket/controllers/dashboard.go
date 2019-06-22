@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"encoding/json"
 	dashboardModel "github.com/e154/smart-home/api/websocket/controllers/dashboard_models"
 	"github.com/e154/smart-home/system/stream"
-	"reflect"
 	"time"
 )
 
@@ -67,7 +65,7 @@ func (c *ControllerDashboard) Stop() {
 
 func (t *ControllerDashboard) BroadcastOne(pack string, deviceId int64, elementName string) {
 
-	var body interface{}
+	var body map[string]interface{}
 	var ok bool
 
 	switch pack {
@@ -82,7 +80,7 @@ func (t *ControllerDashboard) BroadcastOne(pack string, deviceId int64, elementN
 
 func (t *ControllerDashboard) Broadcast(pack string) {
 
-	var body interface{}
+	var body map[string]interface{}
 	var ok bool
 
 	switch pack {
@@ -92,22 +90,21 @@ func (t *ControllerDashboard) Broadcast(pack string) {
 		body, ok = t.devices.Broadcast()
 	}
 
-	if (ok) {
+	if ok {
 		t.sendMsg(body)
 	}
 }
 
-func (t *ControllerDashboard) sendMsg(body interface{}) {
+func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
 
-	msg, _ := json.Marshal(map[string]interface{}{
-		"type": "broadcast",
-		"value": map[string]interface{}{
-			"type": "dashboard.telemetry",
-			"body": body,
-		},
-	})
+	msg := &stream.Message{
+		Command: "dashboard.telemetry",
+		Type:    stream.Broadcast,
+		Forward: stream.Request,
+		Payload: payload,
+	}
 
-	t.stream.Broadcast(msg)
+	t.stream.Broadcast(msg.Pack())
 }
 
 // every time send:
@@ -119,12 +116,19 @@ func (t *ControllerDashboard) broadcastAll() {
 	t.Cpu.Update()
 	t.Uptime.Update()
 
-	t.sendMsg(map[string]interface{}{
-		"memory": t.Memory,
-		"cpu":    map[string]interface{}{"usage": t.Cpu.Usage, "all": t.Cpu.All},
-		"time":   time.Now(),
-		"uptime": t.Uptime,
-	})
+	msg := &stream.Message{
+		Command: "dashboard.telemetry",
+		Type:    stream.Broadcast,
+		Forward: stream.Request,
+		Payload: map[string]interface{}{
+			"memory": t.Memory,
+			"cpu":    map[string]interface{}{"usage": t.Cpu.Usage, "all": t.Cpu.All},
+			"time":   time.Now(),
+			"uptime": t.Uptime,
+		},
+	}
+
+	t.stream.Broadcast(msg.Pack())
 }
 
 func (t *ControllerDashboard) GetStates() *ControllerDashboard {
@@ -141,22 +145,23 @@ func (t *ControllerDashboard) GetStates() *ControllerDashboard {
 
 // only on request: 'dashboard.get.telemetry'
 //
-func (t *ControllerDashboard) Telemetry(client *stream.Client, value interface{}) {
-	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-	if !ok {
-		return
-	}
+func (t *ControllerDashboard) Telemetry(client *stream.Client, message stream.Message) {
 
 	states := t.GetStates()
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "dashboard.telemetry":
-	map[string]interface{}{
-		"memory":  states.Memory,
-		"cpu":     map[string]interface{}{"usage": t.Cpu.Usage, "info": t.Cpu.Cpuinfo, "all": t.Cpu.All},
-		"time":    time.Now(),
-		"uptime":  states.Uptime,
-		"disk":    states.Disk,
-		"nodes":   states.Nodes,
-		"devices": states.devices,
-	}})
-	client.Send <- msg
+	msg := &stream.Message{
+		Id: message.Id,
+		Command: "dashboard.telemetry",
+		Forward: stream.Response,
+		Payload: map[string]interface{}{
+			"memory":  states.Memory,
+			"cpu":     map[string]interface{}{"usage": t.Cpu.Usage, "info": t.Cpu.Cpuinfo, "all": t.Cpu.All},
+			"time":    time.Now(),
+			"uptime":  states.Uptime,
+			"disk":    states.Disk,
+			"nodes":   states.Nodes,
+			"devices": states.devices,
+		},
+	}
+
+	client.Send <- msg.Pack()
 }

@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/stream"
 	"os"
-	"reflect"
 )
 
 type ControllerImage struct {
@@ -31,17 +29,10 @@ func (c *ControllerImage) Stop() {
 }
 
 // Stream
-func (c *ControllerImage) GetImageList(client *stream.Client, value interface{}) {
+func (c *ControllerImage) GetImageList(client *stream.Client, message stream.Message) {
 	//fmt.Println("get_image_list")
 
-	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-	if !ok {
-		return
-	}
-
-	var filter string
-	if filter, ok = v["filter"].(string); ok {
-	}
+	filter, _ := message.Payload["filter"].(string)
 
 	images, err := c.adaptors.Image.GetAllByDate(filter)
 	if err != nil {
@@ -50,15 +41,12 @@ func (c *ControllerImage) GetImageList(client *stream.Client, value interface{})
 		return
 	}
 
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "images": images})
-	client.Send <- msg
+	payload := map[string]interface{}{"images": images,}
+	response := message.Response(payload)
+	client.Send <- response.Pack()
 }
 
-func (c *ControllerImage) GetFilterList(client *stream.Client, value interface{}) {
-	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-	if !ok {
-		return
-	}
+func (c *ControllerImage) GetFilterList(client *stream.Client, message stream.Message) {
 
 	filterList, err := c.adaptors.Image.GetFilterList()
 	if err != nil {
@@ -67,18 +55,15 @@ func (c *ControllerImage) GetFilterList(client *stream.Client, value interface{}
 		return
 	}
 
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "filter_list": filterList})
-	client.Send <- msg
+	payload := map[string]interface{}{"filter_list": filterList,}
+	response := message.Response(payload)
+	client.Send <- response.Pack()
 }
 
-func (c *ControllerImage) RemoveImage(client *stream.Client, value interface{}) {
-	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-	if !ok {
-		return
-	}
+func (c *ControllerImage) RemoveImage(client *stream.Client, message stream.Message) {
 
-	var fileId float64
-	if fileId, ok = v["image_id"].(float64); !ok {
+	fileId, ok := message.Payload["image_id"].(float64)
+	if !ok {
 		client.Notify("error", "image remove: bad image id request")
 		log.Warning("image remove: bad image id request")
 		return
@@ -97,8 +82,7 @@ func (c *ControllerImage) RemoveImage(client *stream.Client, value interface{}) 
 	}
 
 	filePath := common.GetFullPath(image.Image)
-	os.Remove(filePath)
+	_ = os.Remove(filePath)
 
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
-	client.Send <- msg
+	client.Send <- message.Success().Pack()
 }

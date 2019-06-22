@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"encoding/json"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/stream"
-	"reflect"
 )
 
 type ControllerWorker struct {
@@ -26,12 +24,10 @@ func (c *ControllerWorker) Stop() {
 }
 
 // Stream
-func (c *ControllerWorker) DoWorker(client *stream.Client, value interface{}) {
+func (c *ControllerWorker) DoWorker(client *stream.Client, message stream.Message) {
 
-	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-	if !ok {
-		return
-	}
+	v := message.Payload
+	var ok bool
 
 	var workerId float64
 	var err error
@@ -52,7 +48,5 @@ func (c *ControllerWorker) DoWorker(client *stream.Client, value interface{}) {
 		return
 	}
 
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "status": "ok"})
-	client.Send <- msg
-
+	client.Send <- message.Success().Pack()
 }

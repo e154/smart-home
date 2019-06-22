@@ -1,11 +1,9 @@
 package dashboard_models
 
 import (
-	"encoding/json"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/stream"
-	"reflect"
 	"sync"
 	"time"
 )
@@ -56,7 +54,7 @@ func (n *Nodes) Update() {
 	}
 }
 
-func (n *Nodes) Broadcast() (interface{}, bool) {
+func (n *Nodes) Broadcast() (map[string]interface{}, bool) {
 
 	n.Update()
 
@@ -67,14 +65,11 @@ func (n *Nodes) Broadcast() (interface{}, bool) {
 
 // only on request: 'dashboard.get.nodes.status'
 //
-func (n *Nodes) NodesStatus(client *stream.Client, value interface{}) {
-	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-	if !ok {
-		return
-	}
+func (n *Nodes) NodesStatus(client *stream.Client, message stream.Message) {
 
 	n.Update()
 
-	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "nodes": n})
-	client.Send <- msg
+	payload := map[string]interface{}{"nodes": n,}
+	response := message.Response(payload)
+	client.Send <- response.Pack()
 }

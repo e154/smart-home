@@ -12,7 +12,7 @@ func (f *Flow) Update() {
 
 }
 
-func FlowsStatus(client *stream.Client, value interface{}) {
+func FlowsStatus(client *stream.Client, message stream.Message) {
 
 	return
 }

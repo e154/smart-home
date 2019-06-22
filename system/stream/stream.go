@@ -33,7 +33,7 @@ func (s *StreamService) Broadcast(message []byte) {
 	s.Hub.Broadcast(message)
 }
 
-func (s *StreamService) Subscribe(command string, f func(client *Client, value interface{})) {
+func (s *StreamService) Subscribe(command string, f func(client *Client, msg Message)) {
 	s.Hub.Subscribe(command, f)
 }
 

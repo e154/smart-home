@@ -11,9 +11,6 @@ type Uptime struct {
 	Idle  uint64 `json:"idle"`
 }
 
-func (u *Uptime) Update() (*Uptime, error) {
-
+func (u *Uptime) Update() {
 	u.Total, _ = host.Uptime()
-
-	return u, nil
 }

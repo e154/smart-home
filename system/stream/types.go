@@ -16,6 +16,8 @@ const (
 	Response      = "response"
 	StatusSuccess = "success"
 	StatusError   = "error"
+	Notify        = "notify"
+	Broadcast     = "broadcast"
 )
 
 type Message struct {
@@ -24,6 +26,7 @@ type Message struct {
 	Payload map[string]interface{} `json:"payload"`
 	Forward string                 `json:"forward"`
 	Status  string                 `json:"status"`
+	Type    string                 `json:"type"`
 }
 
 func NewMessage(b []byte) (message Message, err error) {
@@ -44,6 +47,7 @@ func (m *Message) Response(payload map[string]interface{}) *Message {
 		Id:      m.Id,
 		Payload: payload,
 		Forward: Response,
+		Status:  StatusSuccess,
 	}
 	return msg
 }

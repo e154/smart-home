@@ -40,7 +40,7 @@ func (d *Devices) Update() {
 	d.Status = d.core.Map.GetDevicesStates()
 }
 
-func (d *Devices) Broadcast() (interface{}, bool) {
+func (d *Devices) Broadcast() (map[string]interface{}, bool) {
 
 	d.Update()
 
@@ -49,7 +49,7 @@ func (d *Devices) Broadcast() (interface{}, bool) {
 	}, true
 }
 
-func (d *Devices) BroadcastOne(deviceId int64, elementName string) (interface{}, bool) {
+func (d *Devices) BroadcastOne(deviceId int64, elementName string) (map[string]interface{}, bool) {
 
 	d.Status = d.core.Map.GetDevicesStates()
 	state, ok := d.Status[deviceId]

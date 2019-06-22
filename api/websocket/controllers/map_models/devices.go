@@ -1,13 +1,11 @@
 package map_models
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/stream"
-	"reflect"
 	"sync"
 )
 
@@ -59,7 +57,7 @@ func (d *Devices) Update() {
 	d.Unlock()
 }
 
-func (d *Devices) Broadcast() (interface{}, bool) {
+func (d *Devices) Broadcast() (map[string]interface{}, bool) {
 
 	d.Update()
 
@@ -68,7 +66,7 @@ func (d *Devices) Broadcast() (interface{}, bool) {
 	}, true
 }
 
-func (d *Devices) BroadcastOne(deviceId int64, elementName string) (interface{}, bool) {
+func (d *Devices) BroadcastOne(deviceId int64, elementName string) (map[string]interface{}, bool) {
 
 	d.Update()
 
@@ -88,21 +86,19 @@ func (d *Devices) BroadcastOne(deviceId int64, elementName string) (interface{},
 
 // only on request: 'map.get.devices.states'
 //
-func (d *Devices) GetDevicesStates(client *stream.Client, value interface{}) {
-
-	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
-	if !ok {
-		return
-	}
+func (d *Devices) GetDevicesStates(client *stream.Client, message stream.Message) {
 
 	d.Update()
 
-	msg, _ := json.Marshal(map[string]interface{}{
-		"id":     v["id"],
-		"states": d,
-	})
+	msg := &stream.Message{
+		Id:      message.Id,
+		Forward: stream.Response,
+		Payload: map[string]interface{}{
+			"states": d,
+		},
+	}
 
-	client.Send <- msg
+	client.Send <- msg.Pack()
 }
 
 func (d *Devices) key(deviceId int64, elementName string) string {
