@@ -156,6 +156,7 @@ __build() {
 
     cp ${ROOT}/bin/server ${TMP_DIR}
     cp ${ROOT}/bin/server-installer.sh ${TMP_DIR}
+    chmod +x ${TMP_DIR}/data/scripts/ping.sh
 
     cd ${TMP_DIR}
     echo "tar: ${ARCHIVE} copy to ${HOME}"
