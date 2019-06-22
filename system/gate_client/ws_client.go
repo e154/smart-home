@@ -57,12 +57,15 @@ func (client *WsClient) Connect(settings *Settings) {
 func (client *WsClient) worker() {
 	client.delta = time.Second
 	for {
+		if !client.enabled ||
+			client.settings == nil ||
+			client.settings.Address == "" {
+			time.Sleep(time.Second * 5)
+			continue
+		}
 		client.delta += time.Second
 		log.Debugf("Wait time %v ...", client.delta)
 		time.Sleep(client.delta)
-		if !client.enabled {
-			continue
-		}
 		client.connect()
 	}
 }
@@ -98,12 +101,11 @@ func (client *WsClient) connect() {
 
 	u := url.URL{Scheme: "ws", Host: client.settings.Address, Path: "ws"}
 
-	var requestHeader http.Header
+	requestHeader := http.Header{
+		"X-Client-Type": {ClientTypeServer},
+	}
 	if client.settings.GateServerToken != "" {
-		requestHeader = http.Header{
-			"X-API-Key": {client.settings.GateServerToken},
-			"X-Client-Type": {ClientTypeServer},
-		}
+		requestHeader.Add("X-API-Key", client.settings.GateServerToken)
 	}
 
 	if client.conn, _, err = websocket.DefaultDialer.Dial(u.String(), requestHeader); err != nil {
@@ -133,7 +135,7 @@ func (client *WsClient) connect() {
 
 	go client.cb.onConnected()
 
-	log.Info("Connect successfully")
+	log.Infof("Connect %v successfully", u.String())
 
 	<-client.interrupt
 	err = client.write(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))

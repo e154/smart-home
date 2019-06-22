@@ -9,7 +9,6 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/op/go-logging"
-	"reflect"
 )
 
 const (
@@ -25,7 +24,7 @@ type GateClient struct {
 	adaptors    *adaptors.Adaptors
 	settings    *Settings
 	wsClient    *WsClient
-	subscribers map[string]func(payload interface{})
+	subscribers map[uuid.UUID]func(msg Message)
 }
 
 func NewGateClient(adaptors *adaptors.Adaptors,
@@ -33,7 +32,7 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 	gate = &GateClient{
 		adaptors:    adaptors,
 		settings:    &Settings{},
-		subscribers: make(map[string]func(payload interface{})),
+		subscribers: make(map[uuid.UUID]func(msg Message)),
 	}
 
 	gate.wsClient = NewWsClient(adaptors, gate)
@@ -66,16 +65,15 @@ func (g *GateClient) registerServer() {
 		return
 	}
 
-	params := map[string]interface{}{}
-	g.Send("register_server", params, func(payload interface{}) {
+	payload := map[string]interface{}{}
+	g.Send("register_server", payload, func(msg Message) {
 
-		v, ok := reflect.ValueOf(payload).Interface().(map[string]interface{})
-		if !ok {
-			log.Error("bad reflect casting")
+		if _, ok := msg.Payload["token"]; !ok {
+			log.Errorf("no token in message payload")
 			return
 		}
 
-		g.settings.GateServerToken = v["token"].(string)
+		g.settings.GateServerToken = msg.Payload["token"].(string)
 
 		_ = g.SaveSettings()
 	})
@@ -84,15 +82,14 @@ func (g *GateClient) registerServer() {
 func (g *GateClient) registerMobile() {
 
 	params := map[string]interface{}{}
-	g.Send("register_mobile", params, func(payload interface{}) {
+	g.Send("register_mobile", params, func(msg Message) {
 
-		v, ok := reflect.ValueOf(payload).Interface().(map[string]interface{})
-		if !ok {
-			log.Error("bad reflect casting")
+		if _, ok := msg.Payload["token"]; !ok {
+			log.Errorf("no token in message payload")
 			return
 		}
 
-		fmt.Println("mobile token ", v["token"])
+		fmt.Println("mobile token ", msg.Payload["token"])
 	})
 }
 
@@ -111,6 +108,10 @@ func (g *GateClient) LoadSettings() (err error) {
 		log.Error(err.Error())
 	}
 
+	if g.settings.Address == "" {
+		log.Info("no gate address")
+	}
+
 	return
 }
 
@@ -127,28 +128,20 @@ func (g *GateClient) SaveSettings() (err error) {
 	return
 }
 
-func (g *GateClient) onMessage(message []byte) {
+func (g *GateClient) onMessage(b []byte) {
 
-	fmt.Println(string(message))
+	fmt.Printf("message(%v)\n", string(b))
 
-	re := map[string]interface{}{}
-	if err := json.Unmarshal(message, &re); err != nil {
+	msg, err := NewMessage(b)
+	if err != nil {
 		log.Error(err.Error())
 		return
 	}
 
-	var id string
-	for key, v := range re {
-
-		if key == "id" {
-			id = v.(string)
-
-			for command, f := range g.subscribers {
-				if id == command {
-					f(re)
-					g.UnSubscribe(command)
-				}
-			}
+	for command, f := range g.subscribers {
+		if msg.Id == command {
+			f(msg)
+			g.UnSubscribe(msg.Id)
 		}
 	}
 }
@@ -162,28 +155,31 @@ func (g *GateClient) onClosed() {
 
 }
 
-func (g *GateClient) Subscribe(command string, f func(payload interface{})) {
-	if g.subscribers[command] != nil {
-		delete(g.subscribers, command)
+func (g *GateClient) Subscribe(id uuid.UUID, f func(msg Message)) {
+	if g.subscribers[id] != nil {
+		delete(g.subscribers, id)
 	}
-	g.subscribers[command] = f
+	g.subscribers[id] = f
 }
 
-func (g *GateClient) UnSubscribe(command string) {
-	if g.subscribers[command] != nil {
-		delete(g.subscribers, command)
+func (g *GateClient) UnSubscribe(id uuid.UUID) {
+	if g.subscribers[id] != nil {
+		delete(g.subscribers, id)
 	}
 }
 
-func (g *GateClient) Send(command string, params map[string]interface{}, f func(payload interface{})) {
+func (g *GateClient) Send(command string, payload map[string]interface{}, f func(msg Message)) {
 
-	messageId := uuid.NewV4().String()
-	g.Subscribe(messageId, f)
+	message := Message{
+		Id:      uuid.NewV4(),
+		Command: command,
+		Payload: payload,
+	}
 
-	params["id"] = messageId
+	g.Subscribe(message.Id, f)
 
-	payload, _ := json.Marshal(&map[string]interface{}{command: params})
-	if err := g.wsClient.write(websocket.TextMessage, payload); err != nil {
+	msg, _ := json.Marshal(message)
+	if err := g.wsClient.write(websocket.TextMessage, msg); err != nil {
 		log.Error(err.Error())
 	}
 }
