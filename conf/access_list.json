@@ -693,5 +693,14 @@
       "method": "delete",
       "description": ""
     }
+  },
+  "gate": {
+    "read": {
+      "actions": [
+        "/api/v1/gate"
+      ],
+      "method": "get",
+      "description": ""
+    }
   }
 }

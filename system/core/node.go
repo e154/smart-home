@@ -193,11 +193,10 @@ func (n *Node) Disconnect() {
 }
 
 func (n *Node) ping(msg *message.PublishMessage) (err error) {
-	fmt.Println(n.stat)
+
 	_ = json.Unmarshal(msg.Payload(), n.stat)
 	n.lastPing = time.Now()
 
-	fmt.Println(n.stat)
 	switch n.stat.Status {
 	case "busy":
 		n.ConnStatus = "wait"

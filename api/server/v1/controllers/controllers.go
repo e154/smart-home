@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/endpoint"
+	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/endpoint"
 )
 
 type ControllersV1 struct {
@@ -27,6 +27,7 @@ type ControllersV1 struct {
 	WorkflowScenario *ControllerWorkflowScenario
 	Flow             *ControllerFlow
 	Log              *ControllerLog
+	Gate             *ControllerGate
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -54,5 +55,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		WorkflowScenario: NewControllerWorkflowScenario(common),
 		Flow:             NewControllerFlow(common),
 		Log:              NewControllerLog(common),
+		Gate:             NewControllerGate(common),
 	}
 }

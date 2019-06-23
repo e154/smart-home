@@ -22,6 +22,12 @@ const (
 	StatusError   = "error"
 )
 
+const (
+	GateStatusWait      = "wait"
+	GateStatusDisabled  = "disabled"
+	GateStatusConnected = "connected"
+)
+
 type Message struct {
 	Id      uuid.UUID              `json:"id"`
 	Command string                 `json:"command"`

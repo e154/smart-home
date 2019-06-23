@@ -183,3 +183,7 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, f func
 		log.Error(err.Error())
 	}
 }
+
+func (g *GateClient) Status() string {
+	return g.wsClient.status
+}

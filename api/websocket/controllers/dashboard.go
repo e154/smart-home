@@ -10,6 +10,7 @@ type ControllerDashboard struct {
 	*ControllerCommon
 	quit          chan bool
 	Nodes         *dashboardModel.Nodes
+	Gate          *dashboardModel.Gate
 	telemetryTime int
 	Memory        *dashboardModel.Memory
 	Cpu           *dashboardModel.Cpu
@@ -29,12 +30,14 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 		Disk:             dashboardModel.NewDisk(),
 		Nodes:            dashboardModel.NewNode(common.adaptors, common.core),
 		devices:          dashboardModel.NewDevices(common.adaptors, common.core),
+		Gate:             dashboardModel.NewGate(common.gate),
 	}
 }
 
 func (c *ControllerDashboard) Start() {
 	c.telemetry.Subscribe("dashboard", c)
 	c.stream.Subscribe("dashboard.get.nodes.status", c.Nodes.NodesStatus)
+	c.stream.Subscribe("dashboard.get.gate.status", c.Gate.GatesStatus)
 	c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
 	c.stream.Subscribe("dashboard.get.telemetry", c.Telemetry)
 
@@ -149,7 +152,7 @@ func (t *ControllerDashboard) Telemetry(client *stream.Client, message stream.Me
 
 	states := t.GetStates()
 	msg := &stream.Message{
-		Id: message.Id,
+		Id:      message.Id,
 		Command: "dashboard.telemetry",
 		Forward: stream.Response,
 		Payload: map[string]interface{}{

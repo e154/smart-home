@@ -22,6 +22,7 @@ type WsClient struct {
 	settings    *Settings
 	delta       time.Duration
 	cb          IWsCallback
+	status      string
 }
 
 func NewWsClient(adaptors *adaptors.Adaptors,
@@ -39,6 +40,7 @@ func (client *WsClient) Close() {
 	client.enabled = false
 	if client.isConnected {
 		log.Info("Close")
+		client.status = GateStatusDisabled
 		client.interrupt <- struct{}{}
 	}
 }
@@ -63,6 +65,7 @@ func (client *WsClient) worker() {
 			time.Sleep(time.Second * 5)
 			continue
 		}
+		client.status = GateStatusWait
 		client.delta += time.Second
 		log.Debugf("Wait time %v ...", client.delta)
 		time.Sleep(client.delta)
@@ -140,6 +143,7 @@ func (client *WsClient) connect() {
 	<-client.interrupt
 	err = client.write(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 
+	client.status = GateStatusConnected
 	go client.cb.onClosed()
 }
 

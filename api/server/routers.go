@@ -159,4 +159,6 @@ func (s *Server) setControllers() {
 	v1.GET("/logs", s.af.Auth, s.ControllersV1.Log.GetList)
 	v1.GET("/logs/search", s.af.Auth, s.ControllersV1.Log.Search)
 
+	// gate
+	v1.GET("/gate/:id", s.af.Auth, s.ControllersV1.Gate.GetList)
 }
