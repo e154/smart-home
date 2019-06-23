@@ -2,8 +2,10 @@ package gate_client
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/uuid"
@@ -47,6 +49,10 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 }
 
 func (g *GateClient) Shutdown() {
+	g.wsClient.Close()
+}
+
+func (g *GateClient) Close() {
 	g.wsClient.Close()
 }
 
@@ -130,7 +136,7 @@ func (g *GateClient) SaveSettings() (err error) {
 
 func (g *GateClient) onMessage(b []byte) {
 
-	fmt.Printf("message(%v)\n", string(b))
+	//fmt.Printf("message(%v)\n", string(b))
 
 	msg, err := NewMessage(b)
 	if err != nil {
@@ -168,7 +174,14 @@ func (g *GateClient) UnSubscribe(id uuid.UUID) {
 	}
 }
 
-func (g *GateClient) Send(command string, payload map[string]interface{}, f func(msg Message)) {
+func (g *GateClient) Send(command string, payload map[string]interface{}, f func(msg Message)) (err error) {
+
+	if g.wsClient.status != GateStatusConnected {
+		err = errors.New("gate not connected")
+		return
+	}
+
+	done := make(chan struct{})
 
 	message := Message{
 		Id:      uuid.NewV4(),
@@ -176,14 +189,76 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, f func
 		Payload: payload,
 	}
 
-	g.Subscribe(message.Id, f)
+	g.Subscribe(message.Id, func(msg Message) {
+		f(msg)
+		done <- struct{}{}
+	})
 
 	msg, _ := json.Marshal(message)
 	if err := g.wsClient.write(websocket.TextMessage, msg); err != nil {
 		log.Error(err.Error())
 	}
+	<- done
+
+	return
 }
 
 func (g *GateClient) Status() string {
 	return g.wsClient.status
+}
+
+func (g *GateClient) GetSettings() (*Settings, error) {
+	return g.settings, nil
+}
+
+func (g *GateClient) UpdateSettings(settings *Settings) (err error) {
+	g.settings = settings
+	if err = g.SaveSettings(); err != nil {
+		return
+	}
+	if !g.settings.Enabled {
+		g.Close()
+	}
+	return
+}
+
+func (g *GateClient) GetMobileList() (list *MobileList, err error) {
+
+	list = &MobileList{
+		TokenList: make([]string, 0),
+	}
+
+	payload := map[string]interface{}{}
+	g.Send("mobile_token_list", payload, func(msg Message) {
+		if err = msg.IsError(); err != nil {
+			return
+		}
+		if err = common.Copy(&list, msg.Payload, common.JsonEngine); err != nil {
+			return
+		}
+	})
+
+	return
+}
+
+func (g *GateClient) DeleteMobile(token string) (list *MobileList, err error) {
+
+	payload := map[string]interface{}{
+		"token": token,
+	}
+	g.Send("remove_mobile", payload, func(msg Message) {
+		err = msg.IsError()
+	})
+
+	return
+}
+
+func (g *GateClient) AddMobile() (list *MobileList, err error) {
+
+	payload := map[string]interface{}{}
+	g.Send("register_mobile", payload, func(msg Message) {
+		err = msg.IsError()
+	})
+
+	return
 }

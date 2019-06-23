@@ -2,6 +2,7 @@ package gate_client
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/e154/smart-home/system/uuid"
 )
 
@@ -78,4 +79,16 @@ func (m *Message) Error(err error) *Message {
 		Status:  StatusError,
 	}
 	return msg
+}
+
+func (m *Message) IsError() (err error) {
+	fmt.Println(m)
+	if m.Status != StatusError {
+		return
+	}
+	if _, ok := m.Payload["error"]; !ok {
+		return
+	}
+	err = fmt.Errorf("%v", m.Payload["error"])
+	return
 }

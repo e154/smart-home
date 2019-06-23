@@ -33,3 +33,12 @@ func (g *Gate) GatesStatus(client *stream.Client, message stream.Message) {
 
 	return
 }
+
+func (g *Gate) Broadcast() (map[string]interface{}, bool) {
+
+	g.Update()
+
+	return map[string]interface{}{
+		"gate_status": g.status,
+	}, true
+}

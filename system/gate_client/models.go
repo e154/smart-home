@@ -12,3 +12,8 @@ func (s Settings) Valid() bool {
 	}
 	return false
 }
+
+type MobileList struct {
+	Total     int64    `json:"total"`
+	TokenList []string `json:"token_list"`
+}

@@ -14,22 +14,25 @@ const (
 )
 
 type WsClient struct {
-	adaptors    *adaptors.Adaptors
-	isConnected bool
-	conn        *websocket.Conn
-	interrupt   chan struct{}
-	enabled     bool
-	settings    *Settings
-	delta       time.Duration
-	cb          IWsCallback
-	status      string
+	adaptors        *adaptors.Adaptors
+	isConnected     bool
+	conn            *websocket.Conn
+	interrupt       chan struct{}
+	enabled         bool
+	settings        *Settings
+	delta           time.Duration
+	cb              IWsCallback
+	status          string
+	inProgress      bool
+	closeProgress   bool
+	connectProgress bool
 }
 
 func NewWsClient(adaptors *adaptors.Adaptors,
 	cb IWsCallback) *WsClient {
 	client := &WsClient{
 		adaptors:  adaptors,
-		interrupt: make(chan struct{}, 1),
+		interrupt: make(chan struct{}),
 		cb:        cb,
 	}
 	go client.worker()
@@ -37,6 +40,10 @@ func NewWsClient(adaptors *adaptors.Adaptors,
 }
 
 func (client *WsClient) Close() {
+	if !client.isConnected || client.closeProgress {
+		return
+	}
+	client.closeProgress = true
 	client.enabled = false
 	if client.isConnected {
 		log.Info("Close")
@@ -46,13 +53,14 @@ func (client *WsClient) Close() {
 }
 
 func (client *WsClient) Connect(settings *Settings) {
-	if client.isConnected {
+	if client.isConnected || client.connectProgress {
 		return
 	}
 
 	log.Info("Connect")
 
 	client.enabled = true
+	client.connectProgress = true
 	client.settings = settings
 }
 
@@ -75,11 +83,15 @@ func (client *WsClient) worker() {
 
 func (client *WsClient) connect() {
 
-	if client.isConnected {
+	if client.isConnected || client.inProgress {
 		return
 	}
 
 	startTime := time.Now()
+	client.inProgress = true
+
+	var loseChan chan struct{}
+	loseChan = make(chan struct{})
 
 	var err error
 	defer func() {
@@ -88,6 +100,8 @@ func (client *WsClient) connect() {
 			log.Infof("Connect channel closed after %v sec", since)
 		}
 
+		client.closeProgress = false
+		client.inProgress = false
 		client.isConnected = false
 		if client.conn != nil {
 			_ = client.conn.Close()
@@ -97,7 +111,7 @@ func (client *WsClient) connect() {
 			if strings.Contains(err.Error(), "connection refused") {
 				return
 			}
-			log.Error(err.Error())
+			log.Debug(err.Error())
 		}
 
 	}()
@@ -115,6 +129,8 @@ func (client *WsClient) connect() {
 		return
 	}
 	client.isConnected = true
+	client.connectProgress = false
+	client.status = GateStatusConnected
 
 	var messageType int
 	var message []byte
@@ -123,8 +139,8 @@ func (client *WsClient) connect() {
 		for {
 			if messageType, message, err = client.conn.ReadMessage(); err != nil {
 				//log.Error(err.Error())
-				client.interrupt <- struct{}{}
-				return
+				loseChan <- struct{}{}
+				break
 			}
 			switch messageType {
 			case websocket.TextMessage:
@@ -140,10 +156,14 @@ func (client *WsClient) connect() {
 
 	log.Infof("Connect %v successfully", u.String())
 
-	<-client.interrupt
+	select {
+	case <-client.interrupt:
+	case <-loseChan:
+		close(loseChan)
+	}
+
 	err = client.write(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 
-	client.status = GateStatusConnected
 	go client.cb.onClosed()
 }
 

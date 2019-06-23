@@ -1,10 +1,11 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/core"
-	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
 )
 
@@ -29,13 +30,15 @@ type Endpoint struct {
 	Workflow         *WorkflowEndpoint
 	WorkflowScenario *WorkflowScenarioEndpoint
 	User             *UserEndpoint
+	Gate             *GateEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	scriptService *scripts.ScriptService,
-	accessList *access_list.AccessListService) *Endpoint {
-	common := NewCommonEndpoint(adaptors, core, accessList, scriptService)
+	accessList *access_list.AccessListService,
+	gate *gate_client.GateClient) *Endpoint {
+	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate)
 	return &Endpoint{
 		Auth:             NewAuthEndpoint(common),
 		Device:           NewDeviceEndpoint(common),
@@ -53,5 +56,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Workflow:         NewWorkflowEndpoint(common),
 		WorkflowScenario: NewWorkflowScenarioEndpoint(common),
 		User:             NewUserEndpoint(common),
+		Gate:             NewGateEndpoint(common),
 	}
 }

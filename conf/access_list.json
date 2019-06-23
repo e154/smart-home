@@ -695,11 +695,33 @@
     }
   },
   "gate": {
-    "read": {
+    "read_gate": {
+      "actions": [
+        "/api/v1/gate",
+        "/api/v1/gate/mobiles"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "create_mobile": {
+      "actions": [
+        "/api/v1/gate/mobile"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "update_gate": {
       "actions": [
         "/api/v1/gate"
       ],
-      "method": "get",
+      "method": "put",
+      "description": ""
+    },
+    "delete_mobile": {
+      "actions": [
+        "/api/v1/gate/mobile/[\\w]+"
+      ],
+      "method": "delete",
       "description": ""
     }
   }

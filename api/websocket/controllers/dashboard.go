@@ -126,7 +126,6 @@ func (t *ControllerDashboard) broadcastAll() {
 		Payload: map[string]interface{}{
 			"memory": t.Memory,
 			"cpu":    map[string]interface{}{"usage": t.Cpu.Usage, "all": t.Cpu.All},
-			"time":   time.Now(),
 			"uptime": t.Uptime,
 		},
 	}

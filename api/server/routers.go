@@ -1,9 +1,9 @@
 package server
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/swaggo/gin-swagger/swaggerFiles"
 	"github.com/gin-gonic/gin"
-	"github.com/e154/smart-home/common"
 )
 
 func (s *Server) setControllers() {
@@ -160,5 +160,9 @@ func (s *Server) setControllers() {
 	v1.GET("/logs/search", s.af.Auth, s.ControllersV1.Log.Search)
 
 	// gate
-	v1.GET("/gate/:id", s.af.Auth, s.ControllersV1.Gate.GetList)
+	v1.GET("/gate", s.af.Auth, s.ControllersV1.Gate.GetSettings)
+	v1.PUT("/gate", s.af.Auth, s.ControllersV1.Gate.UpdateSettings)
+	v1.GET("/gate/mobiles", s.af.Auth, s.ControllersV1.Gate.GetMobileList)
+	v1.POST("/gate/mobile", s.af.Auth, s.ControllersV1.Gate.AddMobile)
+	v1.DELETE("/gate/mobile/:token", s.af.Auth, s.ControllersV1.Gate.DeleteMobile)
 }
