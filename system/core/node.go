@@ -1,14 +1,14 @@
 package core
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/surgemq/message"
-	"encoding/json"
-	"fmt"
-	"time"
 	"sync"
-	"errors"
+	"time"
 )
 
 type Nodes []*Node
@@ -16,7 +16,7 @@ type Nodes []*Node
 type Node struct {
 	*m.Node
 	errors      int64
-	connStatus  string
+	ConnStatus  string
 	qClient     *mqtt.Client
 	IsConnected bool
 	lastPing    time.Time
@@ -30,9 +30,10 @@ func NewNode(model *m.Node,
 	mqtt *mqtt.Mqtt) *Node {
 
 	node := &Node{
-		Node: model,
-		ch:   make(map[int64]chan *NodeResponse, 0),
-		stat: &NodeStatModel{},
+		Node:       model,
+		ConnStatus: "disabled",
+		ch:         make(map[int64]chan *NodeResponse, 0),
+		stat:       &NodeStatModel{},
 	}
 
 	topic := fmt.Sprintf("/home/%s", model.Name)
@@ -192,7 +193,17 @@ func (n *Node) Disconnect() {
 }
 
 func (n *Node) ping(msg *message.PublishMessage) (err error) {
-	json.Unmarshal(msg.Payload(), n.stat)
+
+	_ = json.Unmarshal(msg.Payload(), n.stat)
 	n.lastPing = time.Now()
+
+	switch n.stat.Status {
+	case "busy":
+		n.ConnStatus = "wait"
+	case "enabled":
+		n.ConnStatus = "connected"
+	default:
+		n.ConnStatus = "enabled"
+	}
 	return
 }

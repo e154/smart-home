@@ -104,6 +104,13 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeleteGateMobile:
+    properties:
+      token:
+        type: string
+        x-go-name: Token
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Device:
     properties:
       actions:
@@ -696,6 +703,32 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  GateMobileList:
+    properties:
+      token_list:
+        items:
+          type: string
+        type: array
+        x-go-name: TokenList
+      total:
+        format: int64
+        type: integer
+        x-go-name: Total
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  GateSettings:
+    properties:
+      address:
+        type: string
+        x-go-name: Address
+      enabled:
+        type: boolean
+        x-go-name: Enabled
+      gate_server_token:
+        type: string
+        x-go-name: GateServerToken
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
     properties:
       created_at:
@@ -1191,9 +1224,18 @@ definitions:
       ip:
         type: string
         x-go-name: IP
+      login:
+        type: string
+        x-go-name: Login
       name:
         type: string
         x-go-name: Name
+      password:
+        type: string
+        x-go-name: Password
+      password_repeat:
+        type: string
+        x-go-name: PasswordRepeat
       port:
         format: int64
         type: integer
@@ -1340,6 +1382,9 @@ definitions:
       ip:
         type: string
         x-go-name: Ip
+      login:
+        type: string
+        x-go-name: Login
       name:
         type: string
         x-go-name: Name
@@ -1751,6 +1796,19 @@ definitions:
         x-go-name: Workflow
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateGateSettings:
+    properties:
+      address:
+        type: string
+        x-go-name: Address
+      enabled:
+        type: boolean
+        x-go-name: Enabled
+      gate_server_token:
+        type: string
+        x-go-name: GateServerToken
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateImage:
     properties:
       id:
@@ -1868,9 +1926,18 @@ definitions:
       ip:
         type: string
         x-go-name: IP
+      login:
+        type: string
+        x-go-name: Login
       name:
         type: string
         x-go-name: Name
+      password:
+        type: string
+        x-go-name: Password
+      password_repeat:
+        type: string
+        x-go-name: PasswordRepeat
       port:
         format: int64
         type: integer
@@ -3102,6 +3169,126 @@ paths:
       summary: search flow
       tags:
       - flow
+  /gate:
+    get:
+      operationId: gateGetSettings
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GateSettings'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get gate settings
+      tags:
+      - gate
+    put:
+      operationId: gateUpdateSettings
+      parameters:
+      - description: Update gate params
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateGateSettings'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update gate settings
+      tags:
+      - gate
+  /gate/mobile:
+    post:
+      operationId: gateAddMobile
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new mobile client
+      tags:
+      - gate
+  /gate/mobile/{token}:
+    delete:
+      operationId: gateDeleteMobile
+      parameters:
+      - description: mobile token
+        in: path
+        name: token
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete mobile by token
+      tags:
+      - gate
+  /gate/mobiles:
+    get:
+      operationId: gateGetMobileList
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GateMobileList'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get gate mobile list
+      tags:
+      - gate
   /image:
     post:
       operationId: imageAdd
@@ -3717,7 +3904,43 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: update map element by id
+      summary: full update map element by id
+      tags:
+      - map_element
+  /map_element/{id}/element_only:
+    put:
+      operationId: mapElementUpdateById
+      parameters:
+      - description: MapElement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update map element params
+        in: body
+        name: map_element
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateMapElement'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MapElement'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update map element only by id
       tags:
       - map_element
   /map_element/sort:

@@ -35,6 +35,15 @@ GOBUILD_LDFLAGS="\
         -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} \
 "
 
+#
+# docker params
+#
+DEPLOY_IMAGE=smart-home-${EXEC}
+DOCKER_VERSION=${VERSION_VALUE}
+IMAGE=smart-home-${EXEC}
+DOCKER_ACCOUNT=e154
+DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${DOCKER_VERSION}
+DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
 main() {
 
@@ -57,6 +66,9 @@ main() {
     ;;
     --build)
     __build
+    ;;
+    --docker_deploy)
+    __docker_deploy
     ;;
     *)
     echo "Error: Invalid argument '$1'" >&2
@@ -147,7 +159,6 @@ __build() {
     mkdir -p ${TMP_DIR}/api/server/v1/docs/swagger
     cp ${ROOT}/api/server/v1/docs/swagger/swagger.yaml ${TMP_DIR}/api/server/v1/docs/swagger/
 
-    cp -r ${ROOT}/assets ${TMP_DIR}
     cp -r ${ROOT}/conf ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}
     cp -r ${ROOT}/snapshots ${TMP_DIR}
@@ -157,12 +168,29 @@ __build() {
 
     cp ${ROOT}/bin/server ${TMP_DIR}
     cp ${ROOT}/bin/server-installer.sh ${TMP_DIR}
+    chmod +x ${TMP_DIR}/data/scripts/ping.sh
 
     cd ${TMP_DIR}
     echo "tar: ${ARCHIVE} copy to ${HOME}"
 
     # create arch
     tar -zcf ${HOME}/${ARCHIVE} .
+}
+
+__docker_deploy() {
+
+    cd ${TMP_DIR}
+
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      # build image
+    docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+    # set tag to builded image
+    docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
+    docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
+    # push tagged image
+    docker push ${DOCKER_IMAGE_VER}
+    docker push ${DOCKER_IMAGE_LATEST}
 }
 
 main "$@"

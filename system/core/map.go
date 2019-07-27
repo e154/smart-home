@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/e154/smart-home/system/telemetry"
 	"sync"
 	m "github.com/e154/smart-home/models"
 	"fmt"
@@ -8,7 +9,7 @@ import (
 )
 
 type Map struct {
-	telemetry ITelemetry
+	telemetry telemetry.ITelemetry
 	elements  sync.Map
 }
 

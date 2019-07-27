@@ -1,9 +1,9 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
 	"fmt"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type Variables struct {
@@ -29,8 +29,9 @@ func (n Variables) Add(variable *Variable) (err error) {
 
 func (n Variables) GetByName(name string) (variable *Variable, err error) {
 	variable = &Variable{}
-	err = n.Db.Model(&Variable{Name: name}).
-		Find(&variable).
+	err = n.Db.Model(variable).
+		Where("name = ?", name).
+		First(&variable).
 		Error
 	return
 }

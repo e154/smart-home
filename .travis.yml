@@ -37,6 +37,7 @@ deploy:
   api_key: $GITHUB_OAUTH_TOKEN
   file: $HOME/smart-home-server.tar.gz
   skip_cleanup: true
+  script: bash ./bin/travis.sh --docker_deploy
   on:
     tags: true
     branch: master
