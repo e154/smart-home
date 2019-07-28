@@ -33,19 +33,28 @@ script:
   - "./bin/travis.sh --build"
 
 deploy:
-  provider: releases
-  api_key: $GITHUB_OAUTH_TOKEN
-  file: $HOME/smart-home-server.tar.gz
-  skip_cleanup: true
-  script: bash ./bin/travis.sh --docker_deploy
-  on:
-    tags: true
-    branch: master
-    repo: e154/smart-home
-  branches:
-    only:
-      - master
-      - /^v\d+(\.\d+)+$/
+  - provider: script
+    script: bash ./bin/travis.sh --docker_deploy
+    on:
+      tags: true
+      branch: master
+      repo: e154/smart-home
+    branches:
+      only:
+        - master
+        - /^v\d+(\.\d+)+$/
+  - provider: releases
+    api_key: $GITHUB_OAUTH_TOKEN
+    file: $HOME/smart-home-server.tar.gz
+    skip_cleanup: true
+    on:
+      tags: true
+      branch: master
+      repo: e154/smart-home
+    branches:
+      only:
+        - master
+        - /^v\d+(\.\d+)+$/
 
 notifications:
   email:
