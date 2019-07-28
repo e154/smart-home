@@ -39,8 +39,7 @@ GOBUILD_LDFLAGS="\
 # docker params
 #
 DEPLOY_IMAGE=smart-home-${EXEC}
-#DOCKER_VERSION=${VERSION_VALUE}
-DOCKER_VERSION=v0.0.8
+DOCKER_VERSION=${VERSION_VALUE}
 IMAGE=smart-home-${EXEC}
 DOCKER_ACCOUNT=e154
 DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${DOCKER_VERSION}
@@ -184,7 +183,7 @@ __docker_deploy() {
 
     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-      # build image
+    # build image
     docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
     # set tag to builded image
     docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
