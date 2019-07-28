@@ -24,6 +24,7 @@ System of nodes - microservices. And you will be able to interact with these dev
 In your local network. Create scripts, and respond to events in the web interface of the configurator through a flexible scripting system.
 Manage the state of devices from any subnet where the management server is available.
 
+- [Demo access](#demo-access)
 - [Supported system](#supported-system)
 - [Quick installation](#quick-installation)
     - [Server](#server)
@@ -37,6 +38,13 @@ Manage the state of devices from any subnet where the management server is avail
 - [Contributors](#contributors)
 - [See also](#see-also)
 - [License](#license)
+
+### Demo access
+
+[demo dashboard](https://board.e154.ru)
+[swagger](https://sh.e154.ru/api/v1/swagger)
+user: admin@e154.ru
+pass: admin
 
 ### Supported system
     

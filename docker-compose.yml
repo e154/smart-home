@@ -1,0 +1,23 @@
+version: '2'
+services:
+  smart-home-server:
+    image: e154/smart-home-server
+    ports:
+      - '3000:3000'
+    environment:
+      - PG_USER=postgres
+      - PG_PASS=postgres
+  smart-home-configurator:
+    image: 'e154/smart-home-configurator:latest'
+    ports:
+      - '8080:8080'
+    environment:
+      - API_ADDR=smart-home-server
+  smart-home-node:
+    image: e154/smart-home-node
+    environment:
+      - MQTT_IP=smart-home-server
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgres
