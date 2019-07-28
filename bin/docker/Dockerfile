@@ -1,7 +1,7 @@
 FROM debian
 MAINTAINER Filippov Alex <af@suretly.com>
 
-ENV APP_DIR /opt/smart-home
+ENV APP_DIR /opt/smart-home-server
 RUN sed 's/main$/main universe/' -i /etc/apt/sources.list \
     && apt-get update \
     && apt-get upgrade -y \
@@ -27,6 +27,6 @@ ENV PG_DEBUG="false"
 ENV MODE="release"
 ENV AUTO_MIGRATE="true"
 
-VOLUME /opt/smart-home-server/snapshots
-VOLUME /opt/smart-home-server/data
-VOLUME /opt/smart-home-server/conf
+VOLUME $APP_DIR/snapshots
+VOLUME $APP_DIR/data
+VOLUME $APP_DIR/conf
