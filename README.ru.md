@@ -43,10 +43,11 @@
 
 ### Demo access
 
-[панель управления](https://board.e154.ru)
-[swagger](https://sh.e154.ru/api/v1/swagger)
-пользователь: admin@e154.ru
-пароль: admin
+[dashboard](http://board.e154.ru) (http://board.e154.ru) <br />
+[swagger](http://sh.e154.ru/api/v1/swagger) (http://sh.e154.ru/api/v1/swagger)
+
+user: admin@e154.ru <br />
+pass: admin
 
 ### Поддерживаемые системы
     
