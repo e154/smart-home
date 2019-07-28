@@ -165,6 +165,7 @@ __build() {
     cp ${ROOT}/LICENSE ${TMP_DIR}
     cp ${ROOT}/README* ${TMP_DIR}
     cp ${ROOT}/contributors.txt ${TMP_DIR}
+    cp ${ROOT}/bin/docker/Dockerfile ${TMP_DIR}
 
     cp ${ROOT}/bin/server ${TMP_DIR}
     cp ${ROOT}/bin/server-installer.sh ${TMP_DIR}
@@ -181,10 +182,12 @@ __docker_deploy() {
 
     cd ${TMP_DIR}
 
+    ls -ll
+
     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
     # build image
-    docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+    docker build -f ${TMP_DIR}/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
     # set tag to builded image
     docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
     docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
