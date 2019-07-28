@@ -34,7 +34,7 @@ script:
 
 deploy:
   - provider: script
-    script: bash ./bin/travis.sh --docker_deploy
+    script: cd $HOME && bash $HOME/bin/travis.sh --docker_deploy
     on:
       tags: true
       branch: master
