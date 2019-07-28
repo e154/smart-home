@@ -41,8 +41,8 @@ Manage the state of devices from any subnet where the management server is avail
 
 ### Demo access
 
-[dashboard](http://board.e154.ru) (http://board.e154.ru) <br />
-[swagger](http://sh.e154.ru/api/v1/swagger) (http://sh.e154.ru/api/v1/swagger)
+[dashboard](https://board.e154.ru) (https://board.e154.ru) <br />
+[swagger](https://sh.e154.ru/api/v1/swagger) (https://sh.e154.ru/api/v1/swagger)
 
 user: admin@e154.ru <br />
 pass: admin
