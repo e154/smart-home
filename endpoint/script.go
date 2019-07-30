@@ -1,11 +1,14 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
-	"github.com/e154/smart-home/system/scripts"
-	m "github.com/e154/smart-home/models"
 	"errors"
+	"fmt"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/validation"
+	"strconv"
+	"strings"
 )
 
 type ScriptEndpoint struct {
@@ -47,6 +50,32 @@ func (n *ScriptEndpoint) Add(params *m.Script) (result *m.Script, errs []*valida
 func (n *ScriptEndpoint) GetById(scriptId int64) (result *m.Script, err error) {
 
 	result, err = n.adaptors.Script.GetById(scriptId)
+
+	return
+}
+
+func (n *ScriptEndpoint) Copy(scriptId int64) (script *m.Script, err error) {
+
+	if script, err = n.adaptors.Script.GetById(scriptId); err != nil {
+		return
+	}
+
+	script.Id = 0
+
+	const cpy = "[CPY]"
+	if res := strings.Split(script.Name, cpy); len(res) > 1 {
+		num, _ := strconv.ParseInt(res[1], 10, 32)
+		script.Name = fmt.Sprintf("%s%s%d", res[0], cpy, num+1)
+	} else {
+		script.Name = fmt.Sprintf("%s%s", script.Name, cpy)
+	}
+
+	var id int64
+	if id, err = n.adaptors.Script.Add(script); err != nil {
+		return
+	}
+
+	script, err = n.adaptors.Script.GetById(id)
 
 	return
 }

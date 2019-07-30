@@ -75,7 +75,7 @@ func (client *WsClient) worker() {
 		}
 		client.status = GateStatusWait
 		client.delta += time.Second
-		log.Debugf("Wait time %v ...", client.delta)
+		//log.Debugf("Wait time %v ...", client.delta)
 		time.Sleep(client.delta)
 		client.connect()
 	}

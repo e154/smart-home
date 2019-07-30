@@ -47,6 +47,7 @@ func (s *Server) setControllers() {
 	v1.DELETE("/script/:id", s.af.Auth, s.ControllersV1.Script.Delete)
 	v1.GET("/scripts", s.af.Auth, s.ControllersV1.Script.GetList)
 	v1.POST("/script/:id/exec", s.af.Auth, s.ControllersV1.Script.Exec)
+	v1.POST("/script/:id/copy", s.af.Auth, s.ControllersV1.Script.Copy)
 	v1.POST("/script/:id/exec_src", s.af.Auth, s.ControllersV1.Script.ExecSrc)
 	v1.GET("/scripts/search", s.af.Auth, s.ControllersV1.Script.Search)
 

@@ -4866,6 +4866,35 @@ paths:
       summary: update script by id
       tags:
       - script
+  /script/{id}/copy:
+    post:
+      operationId: scriptCopyById
+      parameters:
+      - description: Script ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Script'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: copy script by id
+      tags:
+      - script
   /script/{id}/exec:
     post:
       operationId: scriptExecById
