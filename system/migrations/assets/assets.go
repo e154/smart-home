@@ -13,6 +13,7 @@
 // migrations/20190122_002953_add_map.sql
 // migrations/20190309_123940_add_logs.sql
 // migrations/20190610_215124_add_passw_to_node.sql
+// migrations/20190730_175759_update_node.sql
 // DO NOT EDIT!
 
 package database
@@ -95,7 +96,7 @@ func migrations20170121_004649_nodesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20170121_004649_nodes.sql", size: 781, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20170121_004649_nodes.sql", size: 781, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -115,7 +116,7 @@ func migrations20170121_005244_workflowsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20170121_005244_workflows.sql", size: 2822, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20170121_005244_workflows.sql", size: 2822, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -135,7 +136,7 @@ func migrations20181109_220911_workflow_add_scenarioSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20181109_220911_workflow_add_scenario.sql", size: 428, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20181109_220911_workflow_add_scenario.sql", size: 428, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -155,7 +156,7 @@ func migrations20181113_013141_workflow_elementsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20181113_013141_workflow_elements.sql", size: 11875, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20181113_013141_workflow_elements.sql", size: 11875, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -175,7 +176,7 @@ func migrations20181114_214137_devicesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20181114_214137_devices.sql", size: 2920, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20181114_214137_devices.sql", size: 2920, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -195,7 +196,7 @@ func migrations20181114_225604_device_groupSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20181114_225604_device_group.sql", size: 486, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20181114_225604_device_group.sql", size: 486, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -215,7 +216,7 @@ func migrations20181119_092050_add_workersSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20181119_092050_add_workers.sql", size: 932, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20181119_092050_add_workers.sql", size: 932, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -235,7 +236,7 @@ func migrations20181219_205800_add_imagesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20181219_205800_add_images.sql", size: 375, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20181219_205800_add_images.sql", size: 375, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -255,7 +256,7 @@ func migrations20181219_205810_add_usersSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20181219_205810_add_users.sql", size: 3090, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20181219_205810_add_users.sql", size: 3090, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -275,7 +276,7 @@ func migrations20181223_231535_add_variablesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20181223_231535_add_variables.sql", size: 428, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20181223_231535_add_variables.sql", size: 428, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -295,7 +296,7 @@ func migrations20190122_002953_add_mapSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20190122_002953_add_map.sql", size: 4338, mode: os.FileMode(420), modTime: time.Unix(1559385035, 0)}
+	info := bindataFileInfo{name: "migrations/20190122_002953_add_map.sql", size: 4338, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -315,7 +316,7 @@ func migrations20190309_123940_add_logsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20190309_123940_add_logs.sql", size: 607, mode: os.FileMode(420), modTime: time.Unix(1552917779, 0)}
+	info := bindataFileInfo{name: "migrations/20190309_123940_add_logs.sql", size: 607, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -335,7 +336,27 @@ func migrations20190610_215124_add_passw_to_nodeSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20190610_215124_add_passw_to_node.sql", size: 389, mode: os.FileMode(420), modTime: time.Unix(1560316863, 0)}
+	info := bindataFileInfo{name: "migrations/20190610_215124_add_passw_to_node.sql", size: 389, mode: os.FileMode(420), modTime: time.Unix(1560521754, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20190730_175759_update_nodeSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x94\xcf\xb1\x4a\x04\x41\x10\x04\xd0\x7c\xbe\xa2\xb2\x53\x64\x13\xe1\xa2\x4d\x0d\x4d\x44\xee\x03\xfa\x66\x5a\xb7\x71\xb6\x7b\xe8\xe9\xf5\xee\xf3\x65\x11\x75\x93\x05\x2f\x2d\xaa\xe0\xd5\x30\xe0\x61\x96\x77\xa7\x60\x9c\x5a\x1a\x06\xbc\xbe\x3c\x43\x14\x9d\x73\x88\x29\x0e\xa7\x76\x80\x74\xf0\x95\xf3\x12\x5c\x70\x99\x58\x11\x93\x74\x7c\xef\xd6\x92\x74\x50\x6b\x55\xb8\x24\xaa\xc1\x8e\xa0\x73\x65\xa8\x15\xee\x09\x00\x8a\x5b\x43\xb6\xba\xcc\x0a\x79\x03\x5f\xa5\x47\x87\xb4\xf1\xa6\x7e\x33\x8f\x31\xa5\xad\xf9\xc9\x2e\xfa\xa3\xfe\x25\xaf\xe1\xbf\xd0\x6e\xb5\x72\xc1\x99\xf2\xc7\x0e\x84\x4a\xd9\x38\xd4\xe2\xcf\x8e\x4f\xf2\x3c\x91\xdf\x3d\x1e\x8f\xf7\x7b\x47\x76\xf7\xeb\x17\xe8\x32\xb3\x4b\x1e\x53\xfa\x0a\x00\x00\xff\xff\x43\xb9\x66\x89\x88\x01\x00\x00")
+
+func migrations20190730_175759_update_nodeSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20190730_175759_update_nodeSql,
+		"migrations/20190730_175759_update_node.sql",
+	)
+}
+
+func migrations20190730_175759_update_nodeSql() (*asset, error) {
+	bytes, err := migrations20190730_175759_update_nodeSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20190730_175759_update_node.sql", size: 392, mode: os.FileMode(420), modTime: time.Unix(1564484404, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -405,6 +426,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20190122_002953_add_map.sql": migrations20190122_002953_add_mapSql,
 	"migrations/20190309_123940_add_logs.sql": migrations20190309_123940_add_logsSql,
 	"migrations/20190610_215124_add_passw_to_node.sql": migrations20190610_215124_add_passw_to_nodeSql,
+	"migrations/20190730_175759_update_node.sql": migrations20190730_175759_update_nodeSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -461,6 +483,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20190122_002953_add_map.sql": &bintree{migrations20190122_002953_add_mapSql, map[string]*bintree{}},
 		"20190309_123940_add_logs.sql": &bintree{migrations20190309_123940_add_logsSql, map[string]*bintree{}},
 		"20190610_215124_add_passw_to_node.sql": &bintree{migrations20190610_215124_add_passw_to_nodeSql, map[string]*bintree{}},
+		"20190730_175759_update_node.sql": &bintree{migrations20190730_175759_update_nodeSql, map[string]*bintree{}},
 	}},
 }}
 

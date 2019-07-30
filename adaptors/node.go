@@ -117,8 +117,6 @@ func (n *Node) fromDb(dbNode *db.Node) (node *m.Node) {
 	node = &m.Node{
 		Id:                dbNode.Id,
 		Name:              dbNode.Name,
-		Ip:                dbNode.Ip,
-		Port:              dbNode.Port,
 		Status:            dbNode.Status,
 		Description:       dbNode.Description,
 		Login:             dbNode.Login,
@@ -134,8 +132,6 @@ func (n *Node) toDb(node *m.Node) (dbNode *db.Node, err error) {
 	dbNode = &db.Node{
 		Id:          node.Id,
 		Name:        node.Name,
-		Ip:          node.Ip,
-		Port:        node.Port,
 		Status:      node.Status,
 		Description: node.Description,
 		Login:       node.Login,

@@ -4,7 +4,6 @@ package core
 //
 // node
 //	 .name()
-//	 .ip()
 //	 .status()
 //	 .stat()
 //	 .description()
@@ -24,10 +23,6 @@ func (n *NodeBind) IsConnected() bool {
 
 func (n *NodeBind) Name() string {
 	return n.node.Name
-}
-
-func (n *NodeBind) Ip() string {
-	return n.node.Ip
 }
 
 func (n *NodeBind) Status() string {
