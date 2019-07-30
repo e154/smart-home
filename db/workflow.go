@@ -1,10 +1,10 @@
 package db
 
 import (
-	"time"
+	"database/sql"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"database/sql"
+	"time"
 )
 
 type Workflows struct {
@@ -17,6 +17,7 @@ type Workflow struct {
 	Description        string
 	Status             string
 	WorkflowScenarioId *int64
+	WorkflowScenario   *WorkflowScenario
 	Scenarios          []*WorkflowScenario
 	Scripts            []*Script
 	CreatedAt          time.Time

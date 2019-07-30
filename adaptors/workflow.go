@@ -197,11 +197,15 @@ func (n *Workflow) fromDb(dbWorkflow *db.Workflow) (workflow *m.Workflow) {
 	// scenario
 	scenarioAdaptor := GetWorkflowScenarioAdaptor(n.db)
 	if dbWorkflow.WorkflowScenarioId != nil {
-		for _, dbScenario := range dbWorkflow.Scenarios {
-			if dbScenario.Id == *dbWorkflow.WorkflowScenarioId {
-				workflow.Scenario = scenarioAdaptor.fromDb(dbScenario)
-				break
+		if dbWorkflow.WorkflowScenario == nil {
+			for _, dbScenario := range dbWorkflow.Scenarios {
+				if dbScenario.Id == *dbWorkflow.WorkflowScenarioId {
+					workflow.Scenario = scenarioAdaptor.fromDb(dbScenario)
+					break
+				}
 			}
+		} else {
+			workflow.Scenario = scenarioAdaptor.fromDb(dbWorkflow.WorkflowScenario)
 		}
 	}
 

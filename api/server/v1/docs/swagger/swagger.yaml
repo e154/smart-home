@@ -591,6 +591,11 @@ definitions:
         x-go-name: Uuid
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  FlowList:
+    items:
+      $ref: '#/definitions/FlowShort'
+    type: array
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   FlowShort:
     properties:
       created_at:

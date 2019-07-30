@@ -15,6 +15,7 @@
 // migrations/20190610_215124_add_passw_to_node.sql
 // migrations/20190730_175759_update_node.sql
 // migrations/20190730_193837_update_user.sql
+// migrations/20190730_235533_fix_workflow_scenario_ref.sql
 // DO NOT EDIT!
 
 package database
@@ -382,6 +383,26 @@ func migrations20190730_193837_update_userSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20190730_235533_fix_workflow_scenario_refSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x90\xb1\x4e\xc3\x30\x14\x45\x77\x7f\xc5\xdd\xda\x0a\x65\x61\xed\x64\xe2\x57\x54\x61\x39\xc5\x71\x06\xa6\x28\x24\x2e\x7d\x6a\x88\xa3\x38\x28\xfd\x7c\x14\x10\x51\xa5\x4a\x80\x27\xeb\xea\xbc\x33\x9c\x24\xc1\xdd\x3b\xbf\x0d\xd5\xe8\x51\xf4\x22\x49\x90\x3f\x6b\x70\x87\xe8\xeb\x91\x43\x87\x55\xd1\xaf\xc0\x11\xfe\xe2\xeb\x8f\xd1\x37\x98\x4e\xbe\xc3\x78\xe2\x88\xef\xbb\x19\xe2\x88\xaa\xef\x5b\xf6\x8d\x90\xda\x91\x85\x93\x0f\x9a\x30\x85\xe1\x7c\x6c\xc3\x14\x05\x00\x28\x9b\x1d\x90\x66\x26\x77\x56\xee\x8d\x03\x1f\xe1\x2f\x1c\xc7\xb8\x70\xe5\x7d\xb9\x7c\x63\xed\xbb\x6a\xe0\x10\xcb\xe3\x79\xfb\x8b\x55\x2a\x75\x2d\xfd\x4b\x85\x5d\x66\x69\xff\x68\xf0\x44\x2f\x58\xdf\x20\x25\x37\x9b\x2f\xed\xfc\x2c\xed\xc8\x92\x49\x29\xc7\xad\x0b\x6b\x6e\x36\xc8\x0c\x8a\x83\x92\x8e\x90\xca\x3c\x95\x8a\xe6\x45\x91\x26\x47\xc8\xc9\xc1\x14\x5a\x6f\x85\xb8\xae\xac\xc2\xd4\xfd\x74\x5e\x22\xcf\xe3\xbf\x32\x0f\xa1\x6d\x7d\x83\xd7\xaa\x3e\x0b\xf1\x19\x00\x00\xff\xff\x93\x6b\x0f\x9b\xbd\x01\x00\x00")
+
+func migrations20190730_235533_fix_workflow_scenario_refSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20190730_235533_fix_workflow_scenario_refSql,
+		"migrations/20190730_235533_fix_workflow_scenario_ref.sql",
+	)
+}
+
+func migrations20190730_235533_fix_workflow_scenario_refSql() (*asset, error) {
+	bytes, err := migrations20190730_235533_fix_workflow_scenario_refSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20190730_235533_fix_workflow_scenario_ref.sql", size: 445, mode: os.FileMode(420), modTime: time.Unix(1564506385, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -449,6 +470,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20190610_215124_add_passw_to_node.sql": migrations20190610_215124_add_passw_to_nodeSql,
 	"migrations/20190730_175759_update_node.sql": migrations20190730_175759_update_nodeSql,
 	"migrations/20190730_193837_update_user.sql": migrations20190730_193837_update_userSql,
+	"migrations/20190730_235533_fix_workflow_scenario_ref.sql": migrations20190730_235533_fix_workflow_scenario_refSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -507,6 +529,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20190610_215124_add_passw_to_node.sql": &bintree{migrations20190610_215124_add_passw_to_nodeSql, map[string]*bintree{}},
 		"20190730_175759_update_node.sql": &bintree{migrations20190730_175759_update_nodeSql, map[string]*bintree{}},
 		"20190730_193837_update_user.sql": &bintree{migrations20190730_193837_update_userSql, map[string]*bintree{}},
+		"20190730_235533_fix_workflow_scenario_ref.sql": &bintree{migrations20190730_235533_fix_workflow_scenario_refSql, map[string]*bintree{}},
 	}},
 }}
 
