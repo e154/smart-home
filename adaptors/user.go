@@ -198,14 +198,14 @@ func (n *User) NewToken(u *m.User) (token string, err error) {
 
 	for {
 		token = common.RandStr(50, common.Alphanum)
-		u.AuthenticationToken = token
+		u.AuthenticationToken = &token
 
 		if _, err = n.GetByAuthenticationToken(token); err != nil {
 			break
 		}
 	}
 
-	err = n.table.UpdateAuthenticationToken(u.Id, u.AuthenticationToken)
+	err = n.table.UpdateAuthenticationToken(u.Id, *u.AuthenticationToken)
 
 	return
 }

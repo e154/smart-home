@@ -14,6 +14,7 @@
 // migrations/20190309_123940_add_logs.sql
 // migrations/20190610_215124_add_passw_to_node.sql
 // migrations/20190730_175759_update_node.sql
+// migrations/20190730_193837_update_user.sql
 // DO NOT EDIT!
 
 package database
@@ -361,6 +362,26 @@ func migrations20190730_175759_update_nodeSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20190730_193837_update_userSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xcf\xb1\x4e\x43\x31\x0c\x85\xe1\x3d\x4f\x71\xb6\x0e\xe8\x3e\x41\x57\x46\x16\x84\x3a\xa3\x34\x39\xe5\x5a\x75\x9d\x28\x76\xd4\xfb\xf8\xa8\x20\x50\x17\x50\x57\xcb\xe7\x97\xbe\x65\xc1\xd3\x45\x3e\x46\x0e\xe2\xd0\xd3\xb2\xe0\xed\xf5\x05\x62\x70\x96\x90\x66\xd8\x1d\xfa\x0e\xe2\xe0\xc6\x32\x83\x15\xd7\x95\x86\x58\xc5\xf1\xbd\xbb\x3d\x89\x23\xf7\xae\xc2\x9a\xb2\x06\x07\x22\x1f\x95\x98\xce\xe1\x09\x00\xea\x68\x1d\xa5\xe9\xbc\x18\xe4\x04\x6e\xe2\xe1\xc8\x33\x56\x5a\x48\xf9\xaa\xbc\x47\x3b\xd3\xf6\x7f\x14\x72\xad\x77\x01\x6b\xf1\x5f\x04\xc1\x2d\x50\x79\xca\x53\x03\x36\x55\xf7\x29\xdd\x53\x9f\xdb\xd5\x7e\xb0\xbf\xd2\xdb\xf1\x21\xeb\x68\xaa\xac\x38\xe6\x72\x4e\x29\x7d\x06\x00\x00\xff\xff\x62\x13\xc8\x7a\x43\x01\x00\x00")
+
+func migrations20190730_193837_update_userSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20190730_193837_update_userSql,
+		"migrations/20190730_193837_update_user.sql",
+	)
+}
+
+func migrations20190730_193837_update_userSql() (*asset, error) {
+	bytes, err := migrations20190730_193837_update_userSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20190730_193837_update_user.sql", size: 323, mode: os.FileMode(420), modTime: time.Unix(1564490368, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -427,6 +448,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20190309_123940_add_logs.sql": migrations20190309_123940_add_logsSql,
 	"migrations/20190610_215124_add_passw_to_node.sql": migrations20190610_215124_add_passw_to_nodeSql,
 	"migrations/20190730_175759_update_node.sql": migrations20190730_175759_update_nodeSql,
+	"migrations/20190730_193837_update_user.sql": migrations20190730_193837_update_userSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -484,6 +506,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20190309_123940_add_logs.sql": &bintree{migrations20190309_123940_add_logsSql, map[string]*bintree{}},
 		"20190610_215124_add_passw_to_node.sql": &bintree{migrations20190610_215124_add_passw_to_nodeSql, map[string]*bintree{}},
 		"20190730_175759_update_node.sql": &bintree{migrations20190730_175759_update_nodeSql, map[string]*bintree{}},
+		"20190730_193837_update_user.sql": &bintree{migrations20190730_193837_update_userSql, map[string]*bintree{}},
 	}},
 }}
 

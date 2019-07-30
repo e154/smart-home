@@ -2,9 +2,9 @@ package models
 
 import (
 	"database/sql"
-	"time"
-	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
 const HistoryMax = 8
@@ -18,7 +18,7 @@ type User struct {
 	Email               string         `json:"email" valid:"Required;Email"`
 	Status              string         `json:"status" valid:"MaxSize(255)"`
 	ResetPasswordToken  string         `json:"-,omitempty"`
-	AuthenticationToken string         `json:"authentication_token,omitempty"`
+	AuthenticationToken *string        `json:"authentication_token,omitempty"`
 	Image               *Image         `json:"image,omitempty"`
 	ImageId             sql.NullInt64  `json:"image_id"`
 	SignInCount         int64          `json:"sign_in_count,omitempty"`
