@@ -9,7 +9,6 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
 	l "github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/migrations"
 	"github.com/op/go-logging"
 	"os"
 )
@@ -78,15 +77,7 @@ func start() {
 	fmt.Printf(shortVersionBanner, "")
 
 	container := BuildContainer()
-	err := container.Invoke(func(m *migrations.Migrations) {
-		m.Up()
-	})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	err = container.Invoke(func(server *server.Server,
+	err := container.Invoke(func(server *server.Server,
 		graceful *graceful_service.GracefulService,
 		back *l.LogBackend,
 		initialService *initial.InitialService,
