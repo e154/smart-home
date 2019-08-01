@@ -380,6 +380,62 @@ func (c ControllerScript) Exec(ctx *gin.Context) {
 	resp.Item("result", result).Send(ctx)
 }
 
+// swagger:operation POST /script/{id}/copy scriptCopyById
+// ---
+// parameters:
+// - description: Script ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: copy script by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - script
+// responses:
+//   "200":
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/Script'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerScript) Copy(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	script, err := c.endpoint.Script.Copy(int64(aid))
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	result := &models.Script{}
+	common.Copy(&result, &script, common.JsonEngine)
+
+	resp := NewSuccess()
+	resp.SetData(result).Send(ctx)
+}
+
 // swagger:operation POST /script/{id}/exec_src scriptExecSrc
 // ---
 // parameters:

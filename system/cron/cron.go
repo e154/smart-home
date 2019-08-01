@@ -1,11 +1,11 @@
 package cron
 
 import (
-	"time"
-	"strings"
-	"strconv"
 	"log"
+	"strconv"
+	"strings"
 	"sync"
+	"time"
 )
 
 const (
@@ -58,7 +58,7 @@ func (c *Cron) rangeParse(str string) (result []int) {
 		min, _ := strconv.ParseInt(args[0], 0, 10)
 		max, _ := strconv.ParseInt(args[1], 0, 60)
 		if len(args) != 0 {
-			for i:=min;i<=max;i++ {
+			for i := min; i <= max; i++ {
 				result = append(result, int(i))
 			}
 		}
@@ -88,7 +88,7 @@ func (c *Cron) timeParser(t string) (result map[int][]int) {
 	// ------------------------------------------------------
 	if args[WEEKDAY] == "*" {
 		result[WEEKDAY] = []int{}
-		for i:=0;i<7;i++ {
+		for i := 0; i < 7; i++ {
 			result[WEEKDAY] = append(result[WEEKDAY], i)
 		}
 
@@ -101,7 +101,7 @@ func (c *Cron) timeParser(t string) (result map[int][]int) {
 	// ------------------------------------------------------
 	if args[MONTH] == "*" {
 		result[MONTH] = []int{}
-		for i:=1;i<13;i++ {
+		for i := 1; i < 13; i++ {
 			result[MONTH] = append(result[MONTH], i)
 		}
 
@@ -114,7 +114,7 @@ func (c *Cron) timeParser(t string) (result map[int][]int) {
 	// ------------------------------------------------------
 	if args[DAY] == "*" {
 		result[DAY] = []int{}
-		for i:=1;i<32;i++ {
+		for i := 1; i < 32; i++ {
 			result[DAY] = append(result[DAY], i)
 		}
 
@@ -127,7 +127,7 @@ func (c *Cron) timeParser(t string) (result map[int][]int) {
 	// ------------------------------------------------------
 	if args[HOUR] == "*" {
 		result[HOUR] = []int{}
-		for i:=0;i<24;i++ {
+		for i := 0; i < 24; i++ {
 			result[HOUR] = append(result[HOUR], i)
 		}
 
@@ -140,7 +140,7 @@ func (c *Cron) timeParser(t string) (result map[int][]int) {
 	// ------------------------------------------------------
 	if args[MINUTE] == "*" {
 		result[MINUTE] = []int{}
-		for i:=0;i<60;i++ {
+		for i := 0; i < 60; i++ {
 			result[MINUTE] = append(result[MINUTE], i)
 		}
 
@@ -153,7 +153,7 @@ func (c *Cron) timeParser(t string) (result map[int][]int) {
 	// ------------------------------------------------------
 	if args[SECOND] == "*" {
 		result[SECOND] = []int{}
-		for i:=0;i<60;i++ {
+		for i := 0; i < 60; i++ {
 			result[SECOND] = append(result[SECOND], i)
 		}
 
@@ -167,7 +167,12 @@ func (c *Cron) timeParser(t string) (result map[int][]int) {
 
 func (c *Cron) NewTask(t string, h func()) *Task {
 	_time := c.timeParser(t)
-	task := &Task{_time: _time, _func:h, cron: c, enabled: true}
+	task := &Task{
+		_time:   _time,
+		_func:   h,
+		cron:    c,
+		enabled: true,
+	}
 
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -221,9 +226,9 @@ func (c *Cron) Run() *Cron {
 		for {
 
 			select {
-			case t := <- ticker.C:
+			case t := <-ticker.C:
 				c.timePrepare(t)
-			case <- c.quit:
+			case <-c.quit:
 				ticker.Stop()
 				close(c.quit)
 				c.isRun = false

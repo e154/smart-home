@@ -1,13 +1,13 @@
 package core
 
 import (
-	"sync"
 	"errors"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/scripts"
-	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	cr "github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/scripts"
+	"sync"
 )
 
 type Workflow struct {
@@ -227,7 +227,7 @@ func (wf *Workflow) UpdateScenario() (err error) {
 	}
 
 	// exit if scenario is loaded
-	if wf.model.Scenario.SystemName == model.Scenario.SystemName {
+	if wf.model.Scenario == nil || wf.model.Scenario.SystemName == model.Scenario.SystemName {
 		return
 	}
 

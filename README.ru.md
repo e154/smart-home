@@ -8,7 +8,7 @@
 [Modbus контроллер](https://github.com/e154/smart-home-modbus-ctrl-v1/)
 
 [![Статус сборки](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
-[![Статус покрытия тестами](https://coveralls.io/repos/github/e154/smart-home/badge.svg?branch=master)](https://coveralls.io/github/e154/smart-home?branch=master)
+![status](https://img.shields.io/badge/status-beta-yellow.svg)
 
 <img align="right" width="302" height="248" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
 

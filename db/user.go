@@ -1,11 +1,11 @@
 package db
 
 import (
-	"time"
-	"encoding/json"
-	"github.com/jinzhu/gorm"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type Users struct {
@@ -21,7 +21,7 @@ type User struct {
 	Email               string
 	Status              string
 	ResetPasswordToken  string
-	AuthenticationToken string
+	AuthenticationToken *string
 	Image               *Image
 	ImageId             sql.NullInt64
 	SignInCount         int64

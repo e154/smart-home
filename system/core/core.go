@@ -188,8 +188,6 @@ func (b *Core) ReloadNode(node *m.Node) (err error) {
 
 	b.Lock()
 	b.nodes[node.Id].Status = node.Status
-	b.nodes[node.Id].Ip = node.Ip
-	b.nodes[node.Id].Port = node.Port
 	//b.nodes[node.Id].SetConnectStatus("wait")
 	b.Unlock()
 

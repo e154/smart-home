@@ -10,16 +10,12 @@ func nodes(adaptors *adaptors.Adaptors) (node1, node2 *m.Node) {
 
 	node1 = &m.Node{
 		Name:     "node1",
-		Ip:       "127.0.0.1",
-		Port:     3001,
 		Status:   "enabled",
 		Login:    "node1",
 		Password: "node1",
 	}
 	node2 = &m.Node{
 		Name:     "node2",
-		Ip:       "127.0.0.1",
-		Port:     3002,
 		Status:   "disabled",
 		Login:    "node2",
 		Password: "node2",

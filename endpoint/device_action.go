@@ -1,9 +1,9 @@
 package endpoint
 
 import (
+	"errors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
-	"errors"
 )
 
 type DeviceActionEndpoint struct {
@@ -39,6 +39,10 @@ func (d *DeviceActionEndpoint) Update(params *m.DeviceAction) (result *m.DeviceA
 	if action, err = d.adaptors.DeviceAction.GetById(params.Id); err != nil {
 		return
 	}
+
+	action.Name = params.Name
+	action.Description = params.Description
+	action.ScriptId = params.ScriptId
 
 	// validation
 	_, errs = action.Valid()

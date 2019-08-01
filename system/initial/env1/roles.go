@@ -52,7 +52,7 @@ func roles(adaptors *adaptors.Adaptors,
 	// add admin
 	adminUser := &m.User{
 		Nickname:          "admin",
-		RoleName:          "admin",
+		RoleName:          adminRole.Name,
 		Email:             "admin@e154.ru",
 		Lang:              "en",
 		Status:            "active",
@@ -64,5 +64,22 @@ func roles(adaptors *adaptors.Adaptors,
 	So(ok, ShouldEqual, true)
 
 	adminUser.Id, err = adaptors.User.Add(adminUser)
+	So(err, ShouldBeNil)
+
+	// add demo user
+	demoUser := &m.User{
+		Nickname:          "demo",
+		RoleName:          demoRole.Name,
+		Email:             "demo@e154.ru",
+		Lang:              "en",
+		Status:            "active",
+	}
+	err = demoUser.SetPass("demo")
+	So(err, ShouldBeNil)
+
+	ok, _ = demoUser.Valid()
+	So(ok, ShouldEqual, true)
+
+	demoUser.Id, err = adaptors.User.Add(demoUser)
 	So(err, ShouldBeNil)
 }

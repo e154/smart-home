@@ -13,8 +13,6 @@ type Nodes struct {
 type Node struct {
 	Id                int64 `gorm:"primary_key"`
 	Name              string
-	Ip                string
-	Port              int
 	Status            string
 	Description       string
 	Login             string
@@ -52,9 +50,7 @@ func (n Nodes) Update(m *Node) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
-		"ip":          m.Ip,
 		"status":      m.Status,
-		"port":        m.Port,
 		"login":       m.Login,
 	}
 	if m.EncryptedPassword != "" {

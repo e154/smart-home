@@ -10,8 +10,12 @@ type FlowShort struct {
 	Description string `json:"description"`
 	Status      string `json:"status"`
 	Workflow    struct {
-		Id   int64  `json:"id"`
-		Name string `json:"name"`
+		Id       int64  `json:"id"`
+		Name     string `json:"name"`
+		Scenario struct {
+			Id   int    `json:"id"`
+			Name string `json:"name"`
+		} `json:"scenario,omitempty"`
 	} `json:"workflow"`
 	Workers []struct {
 		Id int64 `json:"id"`

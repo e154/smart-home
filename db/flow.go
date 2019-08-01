@@ -1,10 +1,10 @@
 package db
 
 import (
-	"time"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	. "github.com/e154/smart-home/common"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type Flows struct {
@@ -152,6 +152,12 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 		Related(&flow.Connections).
 		Related(&flow.FlowElements).
 		Related(&flow.Workflow)
+
+	if flow.Workflow.WorkflowScenarioId != nil {
+		flow.Workflow.WorkflowScenario = &WorkflowScenario{}
+		n.Db.Model(flow).
+			Related(flow.Workflow.WorkflowScenario)
+	}
 
 	// scripts
 	var scriptIds []int64

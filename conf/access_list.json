@@ -224,6 +224,13 @@
       "method": "post",
       "description": ""
     },
+    "copy": {
+      "actions": [
+        "/api/v1/script/[0-9+]/copy"
+      ],
+      "method": "post",
+      "description": ""
+    },
     "exec_script": {
       "actions": [
         "/api/v1/script/[0-9]+/exec"
