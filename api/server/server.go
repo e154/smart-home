@@ -59,6 +59,10 @@ func (s *Server) Shutdown() {
 	log.Info("Server exiting")
 }
 
+func (s *Server) GetEngine() *gin.Engine {
+	return s.engine
+}
+
 func NewServer(cfg *ServerConfig,
 	ctrls *controllers.ControllersV1,
 	graceful *graceful_service.GracefulService,
