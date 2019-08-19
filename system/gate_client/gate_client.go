@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/uuid"
@@ -144,6 +145,11 @@ func (g *GateClient) onMessage(b []byte) {
 		return
 	}
 
+	if msg.Command == "mobile_gate_proxy" {
+		g.RequestFromMobileProxy(msg)
+		return
+	}
+
 	for command, f := range g.subscribers {
 		if msg.Id == command {
 			f(msg)
@@ -261,4 +267,24 @@ func (g *GateClient) AddMobile() (list *MobileList, err error) {
 	})
 
 	return
+}
+
+func (g *GateClient) RequestFromMobileProxy(message Message) {
+
+	if g.wsClient.status != GateStatusConnected {
+		return
+	}
+
+	debug.Println(message)
+
+	response := Message{
+		Id:      uuid.NewV4(),
+		Command: message.Id.String(),
+		Payload: map[string]interface{}{},
+	}
+
+	msg, _ := json.Marshal(response)
+	if err := g.wsClient.write(websocket.TextMessage, msg); err != nil {
+		log.Error(err.Error())
+	}
 }
