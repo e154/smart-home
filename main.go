@@ -5,7 +5,6 @@ import (
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/websocket"
 	"github.com/e154/smart-home/system/backup"
-	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
 	l "github.com/e154/smart-home/system/logging"
@@ -82,14 +81,12 @@ func start() {
 		graceful *graceful_service.GracefulService,
 		back *l.LogBackend,
 		initialService *initial.InitialService,
-		gate *gate_client.GateClient,
 		ws *websocket.WebSocket,
 		streamProxy *stream_proxy.StreamProxy) {
 
 		l.Initialize(back)
 		go server.Start()
 		go ws.Start()
-		go gate.Connect()
 		go streamProxy.Start()
 
 		graceful.Wait()
