@@ -123,6 +123,7 @@ func (client *WsClient) connect() {
 	}
 	if client.settings.GateServerToken != "" {
 		requestHeader.Add("X-API-Key", client.settings.GateServerToken)
+		//log.Debugf("X-API-Key: %v", client.settings.GateServerToken)
 	}
 
 	if client.conn, _, err = websocket.DefaultDialer.Dial(u.String(), requestHeader); err != nil {

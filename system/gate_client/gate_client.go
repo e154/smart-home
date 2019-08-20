@@ -140,7 +140,7 @@ func (g *GateClient) SaveSettings() (err error) {
 
 func (g *GateClient) onMessage(b []byte) {
 
-	//fmt.Printf("message(%v)\n", string(b))
+	//log.Debugf("message(%v)\n", string(b))
 
 	msg, err := NewMessage(b)
 	if err != nil {
