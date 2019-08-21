@@ -319,10 +319,12 @@ func (g *GateClient) execRequest(requestParams *StreamRequestModel) (response *S
 
 	request, _ := http.NewRequest(requestParams.Method, requestParams.URI, nil)
 	request.Header = requestParams.Header
+	request.RequestURI = requestParams.URI
 
 	//fmt.Println("----------")
 	//fmt.Println("Request")
 	//fmt.Println("----------")
+	//debug.Println(request.RequestURI)
 	//debug.Println(request.Header)
 
 	recorder := httptest.NewRecorder()
