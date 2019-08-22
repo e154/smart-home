@@ -1,5 +1,7 @@
 package common
 
+import "github.com/gin-gonic/gin"
+
 type ScriptLang string
 
 const (
@@ -49,3 +51,7 @@ const (
 	LogLevelInfo      = LogLevel("Info")
 	LogLevelDebug     = LogLevel("Debug")
 )
+
+type GinEngine interface {
+	GetEngine() *gin.Engine
+}

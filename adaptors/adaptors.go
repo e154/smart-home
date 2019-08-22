@@ -45,9 +45,7 @@ func NewAdaptors(db *gorm.DB,
 	migrations *migrations.Migrations) (adaptors *Adaptors) {
 
 	if cfg.AutoMigrate {
-		if err := migrations.Up(); err != nil {
-			panic(err.Error())
-		}
+		migrations.Up()
 	}
 
 	adaptors = &Adaptors{

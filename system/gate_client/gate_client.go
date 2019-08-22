@@ -9,8 +9,11 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/uuid"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/op/go-logging"
+	"net/http"
+	"net/http/httptest"
 )
 
 const (
@@ -27,10 +30,11 @@ type GateClient struct {
 	settings    *Settings
 	wsClient    *WsClient
 	subscribers map[uuid.UUID]func(msg Message)
+	engine      *gin.Engine
 }
 
 func NewGateClient(adaptors *adaptors.Adaptors,
-	graceful *graceful_service.GracefulService, ) (gate *GateClient) {
+	graceful *graceful_service.GracefulService) (gate *GateClient) {
 	gate = &GateClient{
 		adaptors:    adaptors,
 		settings:    &Settings{},
@@ -136,11 +140,16 @@ func (g *GateClient) SaveSettings() (err error) {
 
 func (g *GateClient) onMessage(b []byte) {
 
-	//fmt.Printf("message(%v)\n", string(b))
+	//log.Debugf("message(%v)\n", string(b))
 
 	msg, err := NewMessage(b)
 	if err != nil {
 		log.Error(err.Error())
+		return
+	}
+
+	if msg.Command == "mobile_gate_proxy" {
+		g.RequestFromMobileProxy(msg)
 		return
 	}
 
@@ -198,7 +207,7 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, f func
 	if err := g.wsClient.write(websocket.TextMessage, msg); err != nil {
 		log.Error(err.Error())
 	}
-	<- done
+	<-done
 
 	return
 }
@@ -259,6 +268,92 @@ func (g *GateClient) AddMobile() (list *MobileList, err error) {
 	g.Send("register_mobile", payload, func(msg Message) {
 		err = msg.IsError()
 	})
+
+	return
+}
+
+func (g *GateClient) RequestFromMobileProxy(message Message) {
+
+	if g.wsClient.status != GateStatusConnected {
+		return
+	}
+
+	//debug.Println(message.Payload["request"])
+
+	if _, ok := message.Payload["request"]; !ok {
+		log.Error("no request field from payload")
+		return
+	}
+
+	requestParams := &StreamRequestModel{}
+	if err := common.Copy(&requestParams, message.Payload["request"], common.JsonEngine); err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	payloadResponse := g.execRequest(requestParams)
+
+	response := Message{
+		Id:      uuid.NewV4(),
+		Command: message.Id.String(),
+		Payload: map[string]interface{}{
+			"response": payloadResponse,
+		},
+	}
+
+	msg, _ := json.Marshal(response)
+	if err := g.wsClient.write(websocket.TextMessage, msg); err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (g *GateClient) SetEngine(engine *gin.Engine) {
+	g.engine = engine
+}
+
+func (g *GateClient) execRequest(requestParams *StreamRequestModel) (response *StreamResponseModel) {
+
+	if g.engine == nil {
+		return
+	}
+
+	request, _ := http.NewRequest(requestParams.Method, requestParams.URI, nil)
+	request.Header = requestParams.Header
+	request.RequestURI = requestParams.URI
+
+	//fmt.Println("----------")
+	//fmt.Println("Request")
+	//fmt.Println("----------")
+	//debug.Println(request.RequestURI)
+	//debug.Println(request.Header)
+
+	recorder := httptest.NewRecorder()
+	g.engine.ServeHTTP(recorder, request)
+
+	//fmt.Println("----------")
+	//fmt.Println("response")
+	//fmt.Println("----------")
+	//fmt.Println(recorder.Code)
+	//fmt.Println(recorder.Header())
+	//fmt.Println(recorder.Body)
+
+	code := recorder.Code
+	header := recorder.Header()
+	body := recorder.Body.Bytes()
+
+	//if err != nil {
+	//	log.Error(err.Error())
+	//	code = 500
+	//	body = []byte(err.Error())
+	//	header = http.Header{}
+	//	header.Set("Content-Type", "text/plain")
+	//}
+
+	response = &StreamResponseModel{
+		Code:   code,
+		Body:   body,
+		Header: header,
+	}
 
 	return
 }

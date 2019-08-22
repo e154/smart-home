@@ -2,22 +2,44 @@ version: '2'
 services:
   smart-home-server:
     image: e154/smart-home-server
-    ports:
-      - '3000:3000'
     environment:
-      - PG_USER=postgres
-      - PG_PASS=postgres
-  smart-home-configurator:
-    image: 'e154/smart-home-configurator:latest'
-    ports:
-      - '8080:8080'
-    environment:
-      - API_ADDR=smart-home-server
+      PG_USER: postgres
+      PG_PASS: postgres
+    stdin_open: true
+    volumes:
+      - /opt/smart-home-server/conf
+      - /opt/smart-home-server/data
+      - /opt/smart-home-server/snapshots
+    tty: true
+    links:
+      - postgres:postgres
+    volumes_from:
+      - smart-home-server-data
   smart-home-node:
     image: e154/smart-home-node
     environment:
-      - MQTT_IP=smart-home-server
+      MQTT_IP: smart-home-server
+      NAME: node2
+      TOPIC: node2
+      MQTT_USERNAME: node2
+      MQTT_PASSWORD: node2
+  smart-home-server-data:
+    image: e154/smart-home-server
+    entrypoint:
+      - /bin/true
+    volumes:
+      - /opt/smart-home-server/conf
+      - /opt/smart-home-server/data
+      - /opt/smart-home-server/snapshots
+    links:
+      - postgres:postgres
+  smart-home-configurator:
+    image: e154/smart-home-configurator:latest
+    environment:
+      API_ADDR: smart-home-server
+    links:
+      - smart-home-server:smart-home-server
   postgres:
     image: postgres
     environment:
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_PASSWORD: postgres

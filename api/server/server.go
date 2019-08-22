@@ -6,6 +6,7 @@ import (
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
@@ -29,6 +30,7 @@ type Server struct {
 	af            *rbac.AccessFilter
 	streamService *stream.StreamService
 	core          *core.Core
+	gateClient    *gate_client.GateClient
 }
 
 func (s *Server) Start() {
@@ -45,6 +47,11 @@ func (s *Server) Start() {
 		}
 	}()
 
+	go func() {
+		s.gateClient.SetEngine(s.engine)
+		s.gateClient.Connect()
+	}()
+
 	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
 
 	go s.core.Run()
@@ -59,12 +66,17 @@ func (s *Server) Shutdown() {
 	log.Info("Server exiting")
 }
 
+func (s *Server) GetEngine() *gin.Engine {
+	return s.engine
+}
+
 func NewServer(cfg *ServerConfig,
 	ctrls *controllers.ControllersV1,
 	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,
 	streamService *stream.StreamService,
-	core *core.Core) (newServer *Server) {
+	core *core.Core,
+	gateClient *gate_client.GateClient) (newServer *Server) {
 
 	logger := &ServerLogger{log}
 
@@ -89,6 +101,7 @@ func NewServer(cfg *ServerConfig,
 		af:            accessFilter,
 		streamService: streamService,
 		core:          core,
+		gateClient:    gateClient,
 	}
 
 	newServer.graceful.Subscribe(newServer)
