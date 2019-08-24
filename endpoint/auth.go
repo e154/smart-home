@@ -1,13 +1,13 @@
 package endpoint
 
 import (
+	"encoding/hex"
 	"errors"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"encoding/hex"
-	"time"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/e154/smart-home/system/access_list"
+	"time"
 )
 
 const (
@@ -41,9 +41,9 @@ func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, 
 		return
 	}
 
-	if _, err = a.adaptors.User.NewToken(user); err != nil {
-		return
-	}
+	//if _, err = a.adaptors.User.NewToken(user); err != nil {
+	//	return
+	//}
 
 	// ger hmac key
 	var variable *m.Variable
@@ -63,13 +63,18 @@ func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, 
 		return
 	}
 
-	//key := common.GetKey("hmacKey")
+	now := time.Now()
 	data := map[string]interface{}{
-		"auth": user.AuthenticationToken,
-		"nbf":  time.Now().Unix(),
+		"userId": user.Id,
+		"iss":    "server",
+		"nbf":    now.Unix(),
+		"iat":    now.Unix(),
+		"exp":    now.AddDate(0, 1, 0).Unix(),
 	}
 
-	if accessToken, err = GetHmacToken(data, hmacKey); err != nil {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(data))
+
+	if accessToken, err = token.SignedString(hmacKey); err != nil {
 		return
 	}
 
@@ -89,19 +94,5 @@ func (a *AuthEndpoint) Reset() {}
 
 func (a *AuthEndpoint) AccessList(user *m.User, accessListService *access_list.AccessListService) (accessList *access_list.AccessList, err error) {
 	accessList = accessListService.List
-	return
-}
-
-func GetHmacToken(data map[string]interface{}, key []byte) (tokenString string, err error) {
-
-	// Create a new token object, specifying signing method and the claims
-	// you would like it to contain.
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(data))
-
-	// Sign and get the complete encoded token as a string using the secret
-	if tokenString, err = token.SignedString(key); err != nil {
-		return
-	}
-
 	return
 }

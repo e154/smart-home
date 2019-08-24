@@ -1,6 +1,7 @@
 package gate_client
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +15,7 @@ import (
 	"github.com/op/go-logging"
 	"net/http"
 	"net/http/httptest"
+	"time"
 )
 
 const (
@@ -76,7 +78,11 @@ func (g *GateClient) registerServer() {
 	}
 
 	payload := map[string]interface{}{}
-	g.Send("register_server", payload, func(msg Message) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+
+	g.Send("register_server", payload, ctx, func(msg Message) {
 
 		if _, ok := msg.Payload["token"]; !ok {
 			log.Errorf("no token in message payload")
@@ -89,10 +95,10 @@ func (g *GateClient) registerServer() {
 	})
 }
 
-func (g *GateClient) registerMobile() {
+func (g *GateClient) registerMobile(ctx *gin.Context) {
 
 	params := map[string]interface{}{}
-	g.Send("register_mobile", params, func(msg Message) {
+	g.Send("register_mobile", params, ctx, func(msg Message) {
 
 		if _, ok := msg.Payload["token"]; !ok {
 			log.Errorf("no token in message payload")
@@ -183,7 +189,7 @@ func (g *GateClient) UnSubscribe(id uuid.UUID) {
 	}
 }
 
-func (g *GateClient) Send(command string, payload map[string]interface{}, f func(msg Message)) (err error) {
+func (g *GateClient) Send(command string, payload map[string]interface{}, ctx context.Context, f func(msg Message)) (err error) {
 
 	if g.wsClient.status != GateStatusConnected {
 		err = errors.New("gate not connected")
@@ -207,7 +213,12 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, f func
 	if err := g.wsClient.write(websocket.TextMessage, msg); err != nil {
 		log.Error(err.Error())
 	}
-	<-done
+
+	select {
+	case <-time.After(2 * time.Second):
+	case <-done:
+	case <-ctx.Done():
+	}
 
 	return
 }
@@ -231,14 +242,14 @@ func (g *GateClient) UpdateSettings(settings *Settings) (err error) {
 	return
 }
 
-func (g *GateClient) GetMobileList() (list *MobileList, err error) {
+func (g *GateClient) GetMobileList(ctx context.Context) (list *MobileList, err error) {
 
 	list = &MobileList{
 		TokenList: make([]string, 0),
 	}
 
 	payload := map[string]interface{}{}
-	g.Send("mobile_token_list", payload, func(msg Message) {
+	g.Send("mobile_token_list", payload, ctx, func(msg Message) {
 		if err = msg.IsError(); err != nil {
 			return
 		}
@@ -250,22 +261,22 @@ func (g *GateClient) GetMobileList() (list *MobileList, err error) {
 	return
 }
 
-func (g *GateClient) DeleteMobile(token string) (list *MobileList, err error) {
+func (g *GateClient) DeleteMobile(token string, ctx context.Context) (list *MobileList, err error) {
 
 	payload := map[string]interface{}{
 		"token": token,
 	}
-	g.Send("remove_mobile", payload, func(msg Message) {
+	g.Send("remove_mobile", payload, ctx, func(msg Message) {
 		err = msg.IsError()
 	})
 
 	return
 }
 
-func (g *GateClient) AddMobile() (list *MobileList, err error) {
+func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error) {
 
 	payload := map[string]interface{}{}
-	g.Send("register_mobile", payload, func(msg Message) {
+	g.Send("register_mobile", payload, ctx, func(msg Message) {
 		err = msg.IsError()
 	})
 

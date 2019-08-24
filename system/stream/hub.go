@@ -152,14 +152,18 @@ func (h *Hub) Clients() (clients []*Client) {
 
 func (h *Hub) Subscribe(command string, f func(client *Client, msg Message)) {
 	log.Infof("subscribe %s", command)
+	h.Lock()
 	if h.subscribers[command] != nil {
 		delete(h.subscribers, command)
 	}
 	h.subscribers[command] = f
+	h.Unlock()
 }
 
 func (h *Hub) UnSubscribe(command string) {
+	h.Lock()
 	if h.subscribers[command] != nil {
 		delete(h.subscribers, command)
 	}
+	h.Unlock()
 }

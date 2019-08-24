@@ -7,18 +7,18 @@ import (
 
 type Gate struct {
 	gate   *gate_client.GateClient
-	status string
+	Status string `json:"status"`
 }
 
 func NewGate(gate *gate_client.GateClient) *Gate {
 	return &Gate{
 		gate:   gate,
-		status: gate_client.GateStatusWait,
+		Status: gate_client.GateStatusWait,
 	}
 }
 
 func (g *Gate) Update() {
-	g.status = g.gate.Status()
+	g.Status = g.gate.Status()
 }
 
 // only on request: 'dashboard.get.gate.status'
@@ -27,7 +27,7 @@ func (g *Gate) GatesStatus(client *stream.Client, message stream.Message) {
 
 	g.Update()
 
-	payload := map[string]interface{}{"gate_status": g.status}
+	payload := map[string]interface{}{"gate_status": g.Status}
 	response := message.Response(payload)
 	client.Send <- response.Pack()
 
@@ -39,6 +39,6 @@ func (g *Gate) Broadcast() (map[string]interface{}, bool) {
 	g.Update()
 
 	return map[string]interface{}{
-		"gate_status": g.status,
+		"gate_status": g.Status,
 	}, true
 }

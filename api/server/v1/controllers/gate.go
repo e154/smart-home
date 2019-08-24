@@ -130,7 +130,7 @@ func (c ControllerGate) UpdateSettings(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerGate) GetMobileList(ctx *gin.Context) {
 
-	list, err := c.endpoint.Gate.GetMobileList()
+	list, err := c.endpoint.Gate.GetMobileList(ctx)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -178,7 +178,7 @@ func (c ControllerGate) DeleteMobile(ctx *gin.Context) {
 		return
 	}
 
-	if _, err := c.endpoint.Gate.DeleteMobile(token); err != nil {
+	if _, err := c.endpoint.Gate.DeleteMobile(token, ctx); err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
@@ -209,7 +209,7 @@ func (c ControllerGate) DeleteMobile(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerGate) AddMobile(ctx *gin.Context) {
 
-	if _, err := c.endpoint.Gate.AddMobile(); err != nil {
+	if _, err := c.endpoint.Gate.AddMobile(ctx); err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}

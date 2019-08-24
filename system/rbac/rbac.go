@@ -1,18 +1,19 @@
 package rbac
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/gin-gonic/gin"
-	"strings"
-	"github.com/op/go-logging"
-	"errors"
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/op/go-logging"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -117,13 +118,28 @@ func (f *AccessFilter) getAccessList(token string) (user *m.User, accessList acc
 		return
 	}
 
-	var ok bool
-	if token, ok = claims["auth"].(string); !ok {
-		log.Warning("no auth var in token")
+	//var ok bool
+	//if token, ok = claims["auth"].(string); !ok {
+	//	log.Warning("no auth var in token")
+	//	return
+	//}
+	//
+	//if user, err = f.adaptors.User.GetByAuthenticationToken(token); err != nil {
+	//	return
+	//}
+
+	id, ok := claims["userId"]
+	if !ok {
+		err = fmt.Errorf("no userId var in token")
 		return
 	}
 
-	if user, err = f.adaptors.User.GetByAuthenticationToken(token); err != nil {
+	var userId int64
+	if userId, err = strconv.ParseInt(fmt.Sprintf("%v", id), 10, 0); err != nil {
+		return
+	}
+
+	if user, err = f.adaptors.User.GetById(userId); err != nil {
 		return
 	}
 
