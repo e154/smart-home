@@ -1,6 +1,10 @@
 package endpoint
 
-import "github.com/e154/smart-home/system/gate_client"
+import (
+	"context"
+	"github.com/e154/smart-home/system/gate_client"
+	"github.com/gin-gonic/gin"
+)
 
 type GateEndpoint struct {
 	*CommonEndpoint
@@ -23,6 +27,7 @@ func (d *GateEndpoint) UpdateSettings(settings *gate_client.Settings) (err error
 	}
 
 	if settings.Enabled {
+		d.gate.Close()
 		d.gate.Connect()
 	} else {
 		d.gate.Close()
@@ -31,17 +36,17 @@ func (d *GateEndpoint) UpdateSettings(settings *gate_client.Settings) (err error
 	return
 }
 
-func (d *GateEndpoint) GetMobileList() (list *gate_client.MobileList, err error) {
-	list, err = d.gate.GetMobileList()
+func (d *GateEndpoint) GetMobileList(ctx *gin.Context) (list *gate_client.MobileList, err error) {
+	list, err = d.gate.GetMobileList(ctx)
 	return
 }
 
-func (d *GateEndpoint) DeleteMobile(token string) (list *gate_client.MobileList, err error) {
-	list, err = d.gate.DeleteMobile(token)
+func (d *GateEndpoint) DeleteMobile(token string, ctx context.Context) (list *gate_client.MobileList, err error) {
+	list, err = d.gate.DeleteMobile(token, ctx)
 	return
 }
 
-func (d *GateEndpoint) AddMobile() (list *gate_client.MobileList, err error) {
-	list, err = d.gate.AddMobile()
+func (d *GateEndpoint) AddMobile(ctx context.Context) (list *gate_client.MobileList, err error) {
+	list, err = d.gate.AddMobile(ctx)
 	return
 }
