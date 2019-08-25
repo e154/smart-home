@@ -2,13 +2,16 @@
 
 [Project site](https://e154.github.io/smart-home/) |
 [Configurator](https://github.com/e154/smart-home-configurator/) |
+[Mobile Gate](https://github.com/e154/smart-home-gate/) |
 [Node](https://github.com/e154/smart-home-node/) |
 [Development Tools](https://github.com/e154/smart-home-tools/) |
 [Smart home Socket](https://github.com/e154/smart-home-socket/) |
-[Modbus device controller](https://github.com/e154/smart-home-modbus-ctrl-v1/)
+[Modbus device controller](https://github.com/e154/smart-home-modbus-ctrl-v1/) |
+[Mobile app](https://github.com/e154/smart-home-app/)
 
 [![Build Status](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
 ![status](https://img.shields.io/badge/status-beta-yellow.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <img align="right" width="220" height="auto" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
 
@@ -17,12 +20,16 @@ Attention! The project is under active development.
 
 ### Overview
 
-Basic principles Underlying the system being developed, ease of configuration and content, cheapness and availability of the component base.
-So you can manage a lot of devices based on AVR microcontrollers and not only.
-A distributed network does not have geographic boundaries and allows you to manage devices anywhere in the Internet through
-System of nodes - microservices. And you will be able to interact with these devices in the way that they are
-In your local network. Create scripts, and respond to events in the web interface of the configurator through a flexible scripting system.
-Manage the state of devices from any subnet where the management server is available.
+With the help of the software package **Smart Home** you can control many devices.
+Distributed network of devices based on software package **Smart Home** has no geographical boundaries and allows
+manage devices anywhere in the Internet through a system of nodes - microservices.
+You will be able to interact with these devices as if they were on your local network.
+Create scripts and reactions to events in the web interface of the configurator through a flexible scripting system.
+
+The system does not require a permanent connection to the Internet, it is completely autonomous and has no dependencies on external
+services.
+
+The basic principles underlying the system being developed are ease of setup, low cost of content and accessibility of the component base.
 
 - [Demo access](#demo-access)
 - [Supported system](#supported-system)
@@ -31,8 +38,11 @@ Manage the state of devices from any subnet where the management server is avail
     - [Configurator](#configurator)
     - [Node](#node)
     - [Postgresql](#database-postgresql)
+    - [Backup and restore settings](#backup-and-restore-settings)
+    - [Mobile gate](#mobile-gate)
 - [Installation for development](#installation-for-development)
     - [Server](#main-server-install)
+- [Docker](#docker)
 - [Testing](#testing)
 - [Support](#support)
 - [Contributors](#contributors)
@@ -46,6 +56,9 @@ Manage the state of devices from any subnet where the management server is avail
 
 user: admin@e154.ru <br />
 pass: admin
+
+user: user@e154.ru <br />
+pass: user
 
 ### Supported system
     
@@ -72,20 +85,30 @@ Schematic smart home map
 
 #### Server
 
+on linux
 ```bash
 curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install
 ```
 
 #### Configurator
 
+on linux
 ```bash
 curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev/stdin --install
 ```
 
 #### Node
 
+on linux
 ```bash
 curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
+```
+
+#### Mobile gate
+
+on linux
+```bash
+curl -sSL http://e154.github.io/smart-home/gate-installer.sh | bash /dev/stdin --install
 ```
 
 #### Database postgresql
@@ -99,6 +122,23 @@ sudo -u postgres psql
 postgres=# create database mydb;
 postgres=# create user myuser with encrypted password 'mypass';
 postgres=# grant all privileges on database mydb to myuser;
+```
+
+##### Backup and restore settings
+
+reset setting
+```bash
+./server -reset
+```
+
+backup, in the snapshots directory an archive will be created with a copy of the database, and the downloaded images
+```bash
+./server -backup
+```
+
+restore settings from a previously created archive
+```bash
+./server -restore 2019-08-25T18:13:11.17.zip
 ```
 
 Run server
@@ -181,12 +221,19 @@ Run node
 /opt/smart-home/node/node
 ```
 
+Run mobile gate
+
+```bash
+/opt/smart-home/gate/gate
+```
+
 The same commands, but without binding to the console
 
 ```bash
 /opt/smart-home/server/server > /dev/null 2>&1 &
 /opt/smart-home/configurator/configurator > /dev/null 2>&1 &
 /opt/smart-home/node/node > /dev/null 2>&1 &
+/opt/smart-home/gate/gate > /dev/null 2>&1 &
 ```
 
 It's all:)
@@ -234,6 +281,17 @@ for test
 ```bash
 ./examples/scripts/auth.sh
 ```
+
+### Docker
+
+```bash
+git clone https://github.com/e154/smart-home
+cd smart-home
+docker-compose up
+```
+
+connect to the database, create two smart-home databases, smart-home-gate
+
 
 It's all
 
