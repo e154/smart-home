@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -14,6 +15,7 @@ const (
 )
 
 type WsClient struct {
+	sync.Mutex
 	adaptors        *adaptors.Adaptors
 	isConnected     bool
 	conn            *websocket.Conn
@@ -170,15 +172,20 @@ func (client *WsClient) connect() {
 
 func (client *WsClient) write(opCode int, payload []byte) (err error) {
 
+	client.Lock()
 	if !client.isConnected {
+		client.Unlock()
 		err = ErrGateNotConnected
 		return
 	}
 
 	if err = client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+		client.Unlock()
 		return
 	}
 
 	err = client.conn.WriteMessage(opCode, payload)
+	client.Unlock()
+
 	return
 }

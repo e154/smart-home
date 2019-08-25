@@ -47,7 +47,10 @@ func (h *Hub) AddClient(client *Client) {
 		log.Infof("websocket session from ip: %s closed", client.Ip)
 	}()
 
+	h.Lock()
 	h.sessions[client] = true
+	h.Unlock()
+
 	switch client.ConnType {
 	//case SOCKJS:
 	//	log.Infof("new sockjs session established, from ip: %s", client.Ip)
@@ -92,15 +95,19 @@ func (h *Hub) Run() {
 	for {
 		select {
 		case m := <-h.broadcast:
+			h.Lock()
 			for client := range h.sessions {
 				client.Send <- m
 			}
+			h.Unlock()
 		case <-h.interrupt:
 			//fmt.Println("Close websocket client session")
+			h.Lock()
 			for client := range h.sessions {
 				client.Close()
 				delete(h.sessions, client)
 			}
+			h.Unlock()
 		}
 
 	}
