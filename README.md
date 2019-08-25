@@ -2,7 +2,7 @@
 
 [Project site](https://e154.github.io/smart-home/) |
 [Configurator](https://github.com/e154/smart-home-configurator/) |
-[Mobile Gate](https://e154.github.io/smart-home-gate/) |
+[Mobile Gate](https://github.io/e154/smart-home-gate/) |
 [Node](https://github.com/e154/smart-home-node/) |
 [Development Tools](https://github.com/e154/smart-home-tools/) |
 [Smart home Socket](https://github.com/e154/smart-home-socket/) |
