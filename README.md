@@ -57,7 +57,7 @@ The basic principles underlying the system being developed are ease of setup, lo
 user: admin@e154.ru <br />
 pass: admin
 
-user: user:e154.ru
+user: user@e154.ru <br />
 pass: user
 
 ### Supported system
