@@ -2,7 +2,7 @@
 
 [Сайт проекта](https://e154.github.io/smart-home/) |
 [Конфигуратор](https://github.com/e154/smart-home-configurator/) |
-[Мобильный шлюз](https://e154.github.io/smart-home-gate/) |
+[Мобильный шлюз](https://github.com/e154/smart-home-gate/) |
 [Узел](https://github.com/e154/smart-home-node/) |
 [Пример устройства](https://github.com/e154/smart-home-socket/) |
 [Modbus контроллер](https://github.com/e154/smart-home-modbus-ctrl-v1/) |
