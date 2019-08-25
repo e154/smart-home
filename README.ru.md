@@ -2,13 +2,16 @@
 
 [Сайт проекта](https://e154.github.io/smart-home/) |
 [Конфигуратор](https://github.com/e154/smart-home-configurator/) |
+[Мобильный шлюз](https://e154.github.io/smart-home-gate/) |
 [Узел](https://github.com/e154/smart-home-node/) |
 [Инструменты настройки](https://github.com/e154/smart-home-tools/) |
 [Пример устройства](https://github.com/e154/smart-home-socket/) |
-[Modbus контроллер](https://github.com/e154/smart-home-modbus-ctrl-v1/)
+[Modbus контроллер](https://github.com/e154/smart-home-modbus-ctrl-v1/) |
+[Мобильный клиент](https://github.com/e154/smart-home-app/)
 
 [![Статус сборки](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
 ![status](https://img.shields.io/badge/status-beta-yellow.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <img align="right" width="302" height="248" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
 
@@ -16,15 +19,17 @@
 ---------
 
 ### Описание
- 
-Основные принципы лежащие в основе разрабатываемой системы - простота настройки, дешевизна содержания и доступность компонентной базы.
 
-С помощью программного комплекса **Умный дом** Вы сможете управлять множеством устройствами на базе AVR микроконтроллеров и не только. 
-Распределённая сеть устройств на основе програмного комплекса **Умный дом** не имеег географических границ и позволяет 
-управлять устройствами в любой точке сети интернет через систему узлов - микросервисов. 
-Вы сможете взаимодействовать с этим устройствами так, как буд-то они в Вашей локальной сети. 
+С помощью программного комплекса **Умный дом** Вы сможете управлять множеством устройств.
+Распределённая сеть устройств на основе програмного комплекса **Умный дом** не имеет географических границ и позволяет
+управлять устройствами в любой точке сети интернет через систему узлов - микросервисов.
+Вы сможете взаимодействовать с этим устройствами так, как буд-то они в Вашей локальной сети.
 Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора через гибкую систему скриптов.
-Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.
+
+Система не требует постоянного подключения к сети интернет, она полностью автономна и не имеет зависимостей от внешних
+сервисов.
+
+Основные принципы лежащие в основе разрабатываемой системы - простота настройки, дешевизна содержания и доступность компонентной базы.
 
 - [Demo](#demo-access)
 - [Поддерживаемые системы](#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC%D1%8B%D0%B5-%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D1%8B)
@@ -33,8 +38,11 @@
     - [Конфигуратор](#%D0%9A%D0%BE%D0%BD%D1%84%D0%B8%D0%B3%D1%83%D1%80%D0%B0%D1%82%D0%BE%D1%80)
     - [Узел связи](#%D0%A3%D0%B7%D0%B5%D0%BB-%D1%81%D0%B2%D1%8F%D0%B7%D0%B8)
     - [База](#%D0%91%D0%B0%D0%B7%D0%B0-postgresql)
+    - [Сброс и восстановление настроек](#%D1%81%D0%B1%D1%80%D0%BE%D1%81-%D0%B8-%D0%B2%D0%BE%D1%81%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BA)
+    - [Мобильный шлюз](#%D0%BC%D0%BE%D0%B1%D0%B8%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9-%D1%88%D0%BB%D1%8E%D0%B7)
 - [Установка для разработки](#%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D0%B4%D0%BB%D1%8F-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8)
     - [Сервер](#%D0%A1%D0%B5%D1%80%D0%B2%D0%B5%D1%80-1)
+- [Docker](#docker)
 - [Тестирование](#%D0%A2%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
 - [Поддержка](#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D0%B0)
 - [Разработчики](#%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%D0%B8)
@@ -48,6 +56,9 @@
 
 user: admin@e154.ru <br />
 pass: admin
+
+user: user:e154.ru
+pass: user
 
 ### Поддерживаемые системы
     
@@ -74,20 +85,30 @@ pass: admin
 
 #### Сервер
 
+в среде Linux
 ```bash
 curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install
 ```
 
 #### Конфигуратор
 
+в среде Linux
 ```bash
 curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev/stdin --install
 ```
 
 #### Узел связи
 
+в среде Linux
 ```bash
 curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
+```
+
+#### Мобильный шлюз
+
+в среде Linux
+```bash
+curl -sSL http://e154.github.io/smart-home/gate-installer.sh | bash /dev/stdin --install
 ```
 
 #### База postgresql
@@ -101,6 +122,23 @@ sudo -u postgres psql
 postgres=# create database mydb;
 postgres=# create user myuser with encrypted password 'mypass';
 postgres=# grant all privileges on database mydb to myuser;
+```
+
+##### Сброс и восстановление настроек
+
+сброс настроек
+```bash
+./server -reset
+```
+
+резервное копирование, в директории snapshots будет создан архив с копией базы, и загруженных изображений
+```bash
+./server -backup
+```
+
+восстановление настроек из ранее созданного архива
+```bash
+./server -restore 2019-08-25T18:13:11.17.zip
 ```
 
 Запуск сервера
@@ -183,12 +221,19 @@ INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.action
 /opt/smart-home/node/node
 ```
 
+Запуск шлюза
+
+```bash
+/opt/smart-home/gate/gate
+```
+
 Те же команды, но без привязки к консоли
 
 ```bash
 /opt/smart-home/server/server > /dev/null 2>&1 &
 /opt/smart-home/configurator/configurator > /dev/null 2>&1 &
 /opt/smart-home/node/node > /dev/null 2>&1 &
+/opt/smart-home/gate/gate > /dev/null 2>&1 &
 ```
 
 Это все:)
@@ -232,6 +277,17 @@ cp conf/dbconfig.dev.yml conf/dbconfig.yml
 ./examples/scripts/auth.sh
 ```
 
+### Docker
+
+```bash
+git clone https://github.com/e154/smart-home
+cd smart-home
+docker-compose up
+```
+
+подключитесь к БД, создайте две базы smart-home, smart-home-gate
+
+
 Это все.
 
 ### Тестирование
@@ -262,8 +318,9 @@ go test ./tests -v
 
 * [OpenHub](https://www.openhab.org)
 
-### Коммерческие аналоги
+### Подобные решения
 
+* [OpenHub](https://www.openhab.org)
 * [iridiummobile](http://www.iridiummobile.net) 
 * [amx](https://www.amx.com/en-US)
 

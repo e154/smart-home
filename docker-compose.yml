@@ -1,7 +1,28 @@
 version: '2'
 services:
+  smart-home-gate-data:
+    image: e154/smart-home-gate:latest
+    entrypoint:
+      - /bin/true
+    volumes:
+      - /opt/smart-home-gate/conf
+    links:
+      - postgres:postgres
+  smart-home-gate:
+    image: e154/smart-home-gate:latest
+    environment:
+      PG_USER: postgres
+      PG_PASS: postgres
+    stdin_open: true
+    volumes:
+      - /opt/smart-home-gate/conf
+    tty: true
+    links:
+      - postgres:postgres
+    volumes_from:
+      - smart-home-gate-data
   smart-home-server:
-    image: e154/smart-home-server
+    image: e154/smart-home-server:latest
     environment:
       PG_USER: postgres
       PG_PASS: postgres
@@ -16,7 +37,7 @@ services:
     volumes_from:
       - smart-home-server-data
   smart-home-node:
-    image: e154/smart-home-node
+    image: e154/smart-home-node:latest
     environment:
       MQTT_IP: smart-home-server
       NAME: node2
@@ -24,7 +45,7 @@ services:
       MQTT_USERNAME: node2
       MQTT_PASSWORD: node2
   smart-home-server-data:
-    image: e154/smart-home-server
+    image: e154/smart-home-server:latest
     entrypoint:
       - /bin/true
     volumes:

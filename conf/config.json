@@ -11,7 +11,7 @@
   "pg_max_idle_conns": 10,
   "pg_max_open_conns": 50,
   "pg_conn_max_life_time": 30,
-  "auto_migrate": false,
+  "auto_migrate": true,
   "snapshot_dir": "snapshots",
   "mode": "release",
   "mqtt_keep_alive": 300,
