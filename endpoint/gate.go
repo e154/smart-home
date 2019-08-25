@@ -27,13 +27,16 @@ func (d *GateEndpoint) UpdateSettings(settings *gate_client.Settings) (err error
 		return
 	}
 
-	if settings.Enabled {
-		d.gate.Close()
-		time.Sleep(time.Second)
-		d.gate.Connect()
-	} else {
-		d.gate.Close()
-	}
+	go func() {
+		if settings.Enabled {
+			d.gate.Close()
+			time.Sleep(time.Second)
+			d.gate.Connect()
+
+		} else {
+			d.gate.Close()
+		}
+	}()
 
 	return
 }

@@ -9,12 +9,14 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/op/go-logging"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"time"
 )
 
@@ -28,19 +30,23 @@ var (
 )
 
 type GateClient struct {
+	sync.Mutex
 	adaptors    *adaptors.Adaptors
 	settings    *Settings
 	wsClient    *WsClient
 	subscribers map[uuid.UUID]func(msg Message)
 	engine      *gin.Engine
+	stream      *stream.StreamService
 }
 
 func NewGateClient(adaptors *adaptors.Adaptors,
-	graceful *graceful_service.GracefulService) (gate *GateClient) {
+	graceful *graceful_service.GracefulService,
+	stream *stream.StreamService) (gate *GateClient) {
 	gate = &GateClient{
 		adaptors:    adaptors,
 		settings:    &Settings{},
 		subscribers: make(map[uuid.UUID]func(msg Message)),
+		stream:      stream,
 	}
 
 	gate.wsClient = NewWsClient(adaptors, gate)
@@ -71,7 +77,21 @@ func (g *GateClient) Connect() {
 	g.wsClient.Connect(g.settings)
 }
 
-func (g *GateClient) registerServer() {
+func (g *GateClient) BroadcastAccessToken() {
+
+	broadcastMsg := &stream.Message{
+		Command: "gate.access_token",
+		Type:    stream.Broadcast,
+		Forward: stream.Request,
+		Payload: map[string]interface{}{
+			"accessToken": g.settings.GateServerToken,
+		},
+	}
+	g.stream.Broadcast(broadcastMsg.Pack())
+
+}
+
+func (g *GateClient) RegisterServer() {
 
 	if g.settings.GateServerToken != "" {
 		return
@@ -82,7 +102,7 @@ func (g *GateClient) registerServer() {
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cancel()
 
-	g.Send("register_server", payload, ctx, func(msg Message) {
+	_ = g.Send("register_server", payload, ctx, func(msg Message) {
 
 		if _, ok := msg.Payload["token"]; !ok {
 			log.Errorf("no token in message payload")
@@ -98,7 +118,7 @@ func (g *GateClient) registerServer() {
 func (g *GateClient) registerMobile(ctx *gin.Context) {
 
 	params := map[string]interface{}{}
-	g.Send("register_mobile", params, ctx, func(msg Message) {
+	_ = g.Send("register_mobile", params, ctx, func(msg Message) {
 
 		if _, ok := msg.Payload["token"]; !ok {
 			log.Errorf("no token in message payload")
@@ -168,8 +188,8 @@ func (g *GateClient) onMessage(b []byte) {
 }
 
 func (g *GateClient) onConnected() {
-	g.registerServer()
-	//g.registerMobile()
+	g.RegisterServer()
+	g.BroadcastAccessToken()
 }
 
 func (g *GateClient) onClosed() {
@@ -177,16 +197,20 @@ func (g *GateClient) onClosed() {
 }
 
 func (g *GateClient) Subscribe(id uuid.UUID, f func(msg Message)) {
+	g.Lock()
 	if g.subscribers[id] != nil {
 		delete(g.subscribers, id)
 	}
 	g.subscribers[id] = f
+	g.Unlock()
 }
 
 func (g *GateClient) UnSubscribe(id uuid.UUID) {
+	g.Lock()
 	if g.subscribers[id] != nil {
 		delete(g.subscribers, id)
 	}
+	g.Unlock()
 }
 
 func (g *GateClient) Send(command string, payload map[string]interface{}, ctx context.Context, f func(msg Message)) (err error) {
@@ -249,7 +273,7 @@ func (g *GateClient) GetMobileList(ctx context.Context) (list *MobileList, err e
 	}
 
 	payload := map[string]interface{}{}
-	g.Send("mobile_token_list", payload, ctx, func(msg Message) {
+	_ = g.Send("mobile_token_list", payload, ctx, func(msg Message) {
 		if err = msg.IsError(); err != nil {
 			return
 		}
@@ -266,7 +290,7 @@ func (g *GateClient) DeleteMobile(token string, ctx context.Context) (list *Mobi
 	payload := map[string]interface{}{
 		"token": token,
 	}
-	g.Send("remove_mobile", payload, ctx, func(msg Message) {
+	_ = g.Send("remove_mobile", payload, ctx, func(msg Message) {
 		err = msg.IsError()
 	})
 
@@ -276,7 +300,7 @@ func (g *GateClient) DeleteMobile(token string, ctx context.Context) (list *Mobi
 func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error) {
 
 	payload := map[string]interface{}{}
-	g.Send("register_mobile", payload, ctx, func(msg Message) {
+	_ = g.Send("register_mobile", payload, ctx, func(msg Message) {
 		err = msg.IsError()
 	})
 
