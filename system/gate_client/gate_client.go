@@ -13,6 +13,7 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/jinzhu/copier"
 	"github.com/op/go-logging"
 	"net/http"
 	"net/http/httptest"
@@ -65,11 +66,12 @@ func (g *GateClient) Shutdown() {
 }
 
 func (g *GateClient) Close() {
+	log.Info("Close")
 	g.wsClient.Close()
 }
 
 func (g *GateClient) Connect() {
-
+	log.Info("Connect")
 	if !g.settings.Valid() {
 		return
 	}
@@ -78,6 +80,7 @@ func (g *GateClient) Connect() {
 }
 
 func (g *GateClient) BroadcastAccessToken() {
+	log.Info("Broadcast access token")
 
 	broadcastMsg := &stream.Message{
 		Command: "gate.access_token",
@@ -92,7 +95,7 @@ func (g *GateClient) BroadcastAccessToken() {
 }
 
 func (g *GateClient) RegisterServer() {
-
+	log.Info("Register server")
 	if g.settings.GateServerToken != "" {
 		return
 	}
@@ -256,7 +259,9 @@ func (g *GateClient) GetSettings() (*Settings, error) {
 }
 
 func (g *GateClient) UpdateSettings(settings *Settings) (err error) {
-	g.settings = settings
+	if err = copier.Copy(&g.settings, &settings); err != nil {
+		return
+	}
 	if err = g.SaveSettings(); err != nil {
 		return
 	}

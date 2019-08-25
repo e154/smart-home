@@ -113,6 +113,9 @@ func (client *WsClient) connect() {
 			if strings.Contains(err.Error(), "connection refused") {
 				return
 			}
+			if strings.Contains(err.Error(), "bad handshake") {
+				return
+			}
 			log.Debug(err.Error())
 		}
 
