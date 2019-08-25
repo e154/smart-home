@@ -20,8 +20,8 @@ Attention! The project is under active development.
 
 ### Overview
 
-With the help of the software package ** Smart Home ** you can control many devices.
-Distributed network of devices based on software package ** Smart Home ** has no geographical boundaries and allows
+With the help of the software package **Smart Home** you can control many devices.
+Distributed network of devices based on software package **Smart Home** has no geographical boundaries and allows
 manage devices anywhere in the Internet through a system of nodes - microservices.
 You will be able to interact with these devices as if they were on your local network.
 Create scripts and reactions to events in the web interface of the configurator through a flexible scripting system.
