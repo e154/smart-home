@@ -116,6 +116,9 @@ func (client *WsClient) connect() {
 			if strings.Contains(err.Error(), "bad handshake") {
 				return
 			}
+			if strings.Contains(err.Error(), "use of closed network connection") {
+				return
+			}
 			log.Debug(err.Error())
 		}
 

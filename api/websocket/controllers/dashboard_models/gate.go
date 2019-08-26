@@ -8,7 +8,7 @@ import (
 type Gate struct {
 	gate        *gate_client.GateClient
 	Status      string `json:"status"`
-	AccessToken string `json:"access_token"`
+	AccessToken string `json:"-"`
 }
 
 func NewGate(gate *gate_client.GateClient) *Gate {
@@ -31,7 +31,13 @@ func (g *Gate) Update() {
 //
 func (g *Gate) GatesStatus(client *stream.Client, message stream.Message) {
 
-	payload, _ := g.Broadcast()
+	g.Update()
+
+	payload := map[string]interface{}{
+		"gate_status":  g.Status,
+		"access_token": g.AccessToken,
+	}
+
 	response := message.Response(payload)
 	client.Send <- response.Pack()
 
@@ -43,7 +49,6 @@ func (g *Gate) Broadcast() (map[string]interface{}, bool) {
 	g.Update()
 
 	return map[string]interface{}{
-		"gate_status":  g.Status,
-		"access_token": g.AccessToken,
+		"gate_status": g.Status,
 	}, true
 }
