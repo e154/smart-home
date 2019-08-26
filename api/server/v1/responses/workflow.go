@@ -8,7 +8,7 @@ import (
 type WorkflowList struct {
 	// in:body
 	Body struct {
-		Items []*models.Workflow `json:"items"`
+		Items []*models.WorkflowShort `json:"items"`
 		Meta  struct {
 			Limit       int64 `json:"limit"`
 			ObjectCount int64 `json:"object_count"`

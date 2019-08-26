@@ -591,11 +591,6 @@ definitions:
         x-go-name: Uuid
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  FlowList:
-    items:
-      $ref: '#/definitions/FlowShort'
-    type: array
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   FlowShort:
     properties:
       created_at:
@@ -638,6 +633,17 @@ definitions:
           name:
             type: string
             x-go-name: Name
+          scenario:
+            properties:
+              id:
+                format: int64
+                type: integer
+                x-go-name: Id
+              name:
+                type: string
+                x-go-name: Name
+            type: object
+            x-go-name: Scenario
         type: object
         x-go-name: Workflow
     type: object
@@ -2342,6 +2348,60 @@ definitions:
         format: int64
         type: integer
         x-go-name: WorkflowId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  WorkflowScenarioShort:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      system_name:
+        type: string
+        x-go-name: SystemName
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  WorkflowShort:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
+      scenario:
+        $ref: '#/definitions/WorkflowScenarioShort'
+      scenarios:
+        items:
+          $ref: '#/definitions/WorkflowScenarioShort'
+        type: array
+        x-go-name: Scenarios
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   WorkflowUpdateWorkflowScenario:
@@ -6105,7 +6165,7 @@ responses:
       properties:
         items:
           items:
-            $ref: '#/definitions/Workflow'
+            $ref: '#/definitions/WorkflowShort'
           type: array
           x-go-name: Items
         meta:

@@ -265,7 +265,7 @@ func (c ControllerWorkflow) GetList(ctx *gin.Context) {
 		return
 	}
 
-	result := make([]*models.Workflow, 0)
+	result := make([]*models.WorkflowShort, 0)
 	common.Copy(&result, &items, common.JsonEngine)
 
 	resp := NewSuccess()
