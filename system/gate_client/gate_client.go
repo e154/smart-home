@@ -79,6 +79,12 @@ func (g *GateClient) Connect() {
 	g.wsClient.Connect(g.settings)
 }
 
+func (g *GateClient) Restart() {
+	g.Close()
+	g.Connect()
+	g.BroadcastAccessToken()
+}
+
 func (g *GateClient) BroadcastAccessToken() {
 	log.Info("Broadcast access token")
 
@@ -113,6 +119,8 @@ func (g *GateClient) RegisterServer() {
 		}
 
 		g.settings.GateServerToken = msg.Payload["token"].(string)
+
+		g.Restart()
 
 		_ = g.SaveSettings()
 	})
@@ -192,7 +200,6 @@ func (g *GateClient) onMessage(b []byte) {
 
 func (g *GateClient) onConnected() {
 	g.RegisterServer()
-	g.BroadcastAccessToken()
 }
 
 func (g *GateClient) onClosed() {

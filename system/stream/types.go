@@ -21,7 +21,7 @@ const (
 )
 
 type Message struct {
-	Id      uuid.UUID              `json:"id"`
+	Id      uuid.UUID              `json:"id,omitempty"`
 	Command string                 `json:"command"`
 	Payload map[string]interface{} `json:"payload"`
 	Forward string                 `json:"forward"`
