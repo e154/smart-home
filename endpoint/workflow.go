@@ -78,9 +78,9 @@ func (n *WorkflowEndpoint) Update(params *m.Workflow,
 	return
 }
 
-func (n *WorkflowEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Workflow, total int64, err error) {
+func (n *WorkflowEndpoint) GetList(limit, offset int64, order, sortBy string, onlyEnabled bool) (result []*m.Workflow, total int64, err error) {
 
-	result, total, err = n.adaptors.Workflow.List(limit, offset, order, sortBy)
+	result, total, err = n.adaptors.Workflow.List(limit, offset, order, sortBy, onlyEnabled)
 
 	return
 }

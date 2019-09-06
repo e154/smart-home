@@ -259,7 +259,7 @@ func (c ControllerWorkflow) Update(ctx *gin.Context) {
 func (c ControllerWorkflow) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.endpoint.Workflow.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.Workflow.GetList(int64(limit), int64(offset), order, sortBy, false)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

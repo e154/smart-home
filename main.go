@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/api/mobile"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/websocket"
 	"github.com/e154/smart-home/system/backup"
@@ -82,10 +83,12 @@ func start() {
 		back *l.LogBackend,
 		initialService *initial.InitialService,
 		ws *websocket.WebSocket,
-		streamProxy *stream_proxy.StreamProxy) {
+		streamProxy *stream_proxy.StreamProxy,
+		mobileServer *mobile.MobileServer) {
 
 		l.Initialize(back)
 		go server.Start()
+		go mobileServer.Start()
 		go ws.Start()
 		go streamProxy.Start()
 

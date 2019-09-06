@@ -1,11 +1,11 @@
-package server
+package mobile
 
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/api/server/v1/controllers"
+	"github.com/e154/smart-home/api/mobile/v1/controllers"
 	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
@@ -19,19 +19,19 @@ var (
 	log = logging.MustGetLogger("server")
 )
 
-type Server struct {
-	Config        *ServerConfig
-	ControllersV1 *controllers.ControllersV1
+type MobileServer struct {
+	Config        *MobileServerConfig
+	ControllersV1 *controllers.MobileControllersV1
 	engine        *gin.Engine
 	server        *http.Server
 	graceful      *graceful_service.GracefulService
-	logger        *ServerLogger
+	logger        *MobileServerLogger
 	af            *rbac.AccessFilter
 	streamService *stream.StreamService
-	core          *core.Core
+	gateClient    *gate_client.GateClient
 }
 
-func (s *Server) Start() {
+func (s *MobileServer) Start() {
 
 	s.server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", s.Config.Host, s.Config.Port),
@@ -45,32 +45,35 @@ func (s *Server) Start() {
 		}
 	}()
 
-	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
+	go func() {
+		s.gateClient.SetEngine(s.engine)
+		s.gateClient.Connect()
+	}()
 
-	go s.core.Run()
+	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
 }
 
-func (s *Server) Shutdown() {
+func (s *MobileServer) Shutdown() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if err := s.server.Shutdown(ctx); err != nil {
 		log.Error(err.Error())
 	}
-	log.Info("Server exiting")
+	log.Info("MobileServer exiting")
 }
 
-func (s *Server) GetEngine() *gin.Engine {
+func (s *MobileServer) GetEngine() *gin.Engine {
 	return s.engine
 }
 
-func NewServer(cfg *ServerConfig,
-	ctrls *controllers.ControllersV1,
+func NewMobileServer(cfg *MobileServerConfig,
+	ctrls *controllers.MobileControllersV1,
 	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,
 	streamService *stream.StreamService,
-	core *core.Core) (newServer *Server) {
+	gateClient *gate_client.GateClient) (newServer *MobileServer) {
 
-	logger := &ServerLogger{log}
+	logger := &MobileServerLogger{log}
 
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = logger
@@ -84,7 +87,7 @@ func NewServer(cfg *ServerConfig,
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 
-	newServer = &Server{
+	newServer = &MobileServer{
 		Config:        cfg,
 		ControllersV1: ctrls,
 		engine:        engine,
@@ -92,7 +95,7 @@ func NewServer(cfg *ServerConfig,
 		logger:        logger,
 		af:            accessFilter,
 		streamService: streamService,
-		core:          core,
+		gateClient:    gateClient,
 	}
 
 	newServer.graceful.Subscribe(newServer)
