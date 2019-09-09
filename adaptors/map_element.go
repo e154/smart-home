@@ -39,7 +39,6 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 		ver.PrototypeType = common.PrototypeTypeImage
 	case ver.Prototype.MapDevice != nil:
 		deviceAdaptor := GetMapDeviceAdaptor(tx)
-		ver.Prototype.MapDevice.SystemName = ver.Name
 		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
 			tx.Rollback()
 			return
@@ -154,7 +153,6 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		ver.PrototypeId, err = imageAdaptor.Add(mapImage)
 	case common.PrototypeTypeDevice:
 		deviceAdaptor := GetMapDeviceAdaptor(tx)
-		ver.Prototype.MapDevice.SystemName = ver.Name
 		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
 			log.Error(err.Error())
 			tx.Rollback()
