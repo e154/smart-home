@@ -4,7 +4,6 @@
 [Configurator](https://github.com/e154/smart-home-configurator/) |
 [Mobile Gate](https://github.com/e154/smart-home-gate/) |
 [Node](https://github.com/e154/smart-home-node/) |
-[Development Tools](https://github.com/e154/smart-home-tools/) |
 [Smart home Socket](https://github.com/e154/smart-home-socket/) |
 [Modbus device controller](https://github.com/e154/smart-home-modbus-ctrl-v1/) |
 [Mobile app](https://github.com/e154/smart-home-app/)
