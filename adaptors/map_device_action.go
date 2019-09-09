@@ -1,9 +1,9 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
 type MapDeviceAction struct {
@@ -31,6 +31,9 @@ func (n *MapDeviceAction) Add(ver *m.MapDeviceAction) (id int64, err error) {
 func (n *MapDeviceAction) AddMultiple(items []*m.MapDeviceAction) (err error) {
 
 	for _, ver := range items {
+		if ver.Image == nil {
+			continue
+		}
 		dbVer := n.toDb(ver)
 		if _, err = n.table.Add(dbVer); err != nil {
 			return
@@ -73,6 +76,12 @@ func (n *MapDeviceAction) toDb(ver *m.MapDeviceAction) (dbVer *db.MapDeviceActio
 		ImageId:        ver.ImageId,
 		Type:           ver.Type,
 		DeviceActionId: ver.DeviceActionId,
+	}
+	if ver.DeviceAction != nil && ver.DeviceAction.Id != 0 {
+		dbVer.DeviceActionId = ver.DeviceAction.Id
+	}
+	if ver.Image != nil && ver.Image.Id != 0 {
+		dbVer.ImageId = ver.Image.Id
 	}
 	return
 }

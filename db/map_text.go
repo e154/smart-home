@@ -50,25 +50,18 @@ func (n MapTexts) Sort(m *MapText) (err error) {
 }
 
 func (n MapTexts) Delete(id int64) (err error) {
-	tx := n.Db.Begin()
-	if err = tx.Delete(&MapText{Id: id}).Error; err != nil {
-		tx.Rollback()
+
+	if err = n.Db.Delete(&MapText{Id: id}).Error; err != nil {
 		return
 	}
 
 	if id != 0 {
-		err = tx.Model(&MapElement{}).
+		err = n.Db.Model(&MapElement{}).
 			Where("prototype_id = ? and prototype_type = 'text'", id).
 			Update("prototype_id", "").
 			Error
 	}
 
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-
-	tx.Commit()
 	return
 }
 
