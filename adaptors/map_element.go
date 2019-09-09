@@ -23,39 +23,50 @@ func GetMapElementAdaptor(d *gorm.DB) *MapElement {
 
 func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		return
+	}
+
 	switch {
 	case ver.Prototype.MapText != nil:
-		textAdaptor := GetMapTextAdaptor(n.db)
+		textAdaptor := GetMapTextAdaptor(tx)
 		ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
 		ver.PrototypeType = common.PrototypeTypeText
 	case ver.Prototype.MapImage != nil:
-		imageAdaptor := GetMapImageAdaptor(n.db)
+		imageAdaptor := GetMapImageAdaptor(tx)
 		ver.PrototypeId, err = imageAdaptor.Add(ver.Prototype.MapImage)
 		ver.PrototypeType = common.PrototypeTypeImage
 	case ver.Prototype.MapDevice != nil:
-		deviceAdaptor := GetMapDeviceAdaptor(n.db)
+		deviceAdaptor := GetMapDeviceAdaptor(tx)
+		ver.Prototype.MapDevice.SystemName = ver.Name
 		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
+			tx.Rollback()
 			return
 		}
 
 		ver.PrototypeType = common.PrototypeTypeDevice
 		//actions
-		deviceAction := GetMapDeviceActionAdaptor(n.db)
+		deviceAction := GetMapDeviceActionAdaptor(tx)
 		//err = deviceAction.AddMultiple(t.Actions)
 		for _, action := range ver.Prototype.MapDevice.Actions {
 			action.MapDeviceId = ver.PrototypeId
 			if action.Id, err = deviceAction.Add(action); err != nil {
 				log.Error(err.Error())
+				tx.Rollback()
+				return
 			}
 		}
 
 		//states
-		stateAdaptor := GetMapDeviceStateAdaptor(n.db)
+		stateAdaptor := GetMapDeviceStateAdaptor(tx)
 		//err = stateAdaptor.AddMultiple(t.States)
 		for _, state := range ver.Prototype.MapDevice.States {
 			state.MapDeviceId = ver.PrototypeId
 			if state.Id, err = stateAdaptor.Add(state); err != nil {
 				log.Error(err.Error())
+				tx.Rollback()
+				return
 			}
 		}
 	default:
@@ -63,11 +74,17 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 	}
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
 	dbVer := n.toDb(ver)
-	if id, err = n.table.Add(dbVer); err != nil {
+	table := db.MapElements{Db: tx}
+	if id, err = table.Add(dbVer); err != nil {
+		return
+	}
+
+	if err = tx.Commit().Error; err != nil {
 		return
 	}
 
@@ -137,6 +154,7 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		ver.PrototypeId, err = imageAdaptor.Add(mapImage)
 	case common.PrototypeTypeDevice:
 		deviceAdaptor := GetMapDeviceAdaptor(tx)
+		ver.Prototype.MapDevice.SystemName = ver.Name
 		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
 			log.Error(err.Error())
 			tx.Rollback()
