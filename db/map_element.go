@@ -32,6 +32,8 @@ type MapElement struct {
 	GraphSettings json.RawMessage `gorm:"type:jsonb;not null"`
 	Status        StatusType
 	Weight        int64
+	ZoneId        *int64
+	Zone          *ZoneTag
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -50,7 +52,9 @@ func (n MapElements) Add(v *MapElement) (id int64, err error) {
 
 func (n MapElements) GetById(mapId int64) (v *MapElement, err error) {
 	v = &MapElement{Id: mapId}
-	if err = n.Db.First(&v).Error; err != nil {
+	if err = n.Db.
+		Preload("Zone").
+		First(&v).Error; err != nil {
 		return
 	}
 
@@ -165,6 +169,7 @@ func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort strin
 
 	q = n.Db.Model(&MapElement{}).
 		Where("prototype_type = 'device'").
+		Preload("Zone").
 		Limit(limit).
 		Offset(offset)
 

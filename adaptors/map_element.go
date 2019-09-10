@@ -307,6 +307,12 @@ func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 		UpdatedAt:     dbVer.UpdatedAt,
 	}
 
+	// Zone tag
+	if dbVer.Zone != nil {
+		zoneAdaptor := GetZoneTagAdaptor(n.db)
+		ver.Zone = zoneAdaptor.fromDb(dbVer.Zone)
+	}
+
 	// GraphSettings
 	graphSettings, _ := dbVer.GraphSettings.MarshalJSON()
 	json.Unmarshal(graphSettings, &ver.GraphSettings)
@@ -344,6 +350,10 @@ func (n *MapElement) toDb(ver *m.MapElement) (dbVer *db.MapElement) {
 		MapId:         ver.MapId,
 		Weight:        ver.Weight,
 		Status:        ver.Status,
+	}
+
+	if ver.Zone != nil && ver.Zone.Id != 0 {
+		dbVer.ZoneId = &ver.Zone.Id
 	}
 
 	graphSettings, _ := json.Marshal(ver.GraphSettings)

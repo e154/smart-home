@@ -1,10 +1,10 @@
 package adaptors
 
 import (
-	"github.com/op/go-logging"
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/jinzhu/gorm"
+	"github.com/op/go-logging"
 )
 
 var (
@@ -38,6 +38,7 @@ type Adaptors struct {
 	MapDeviceState   *MapDeviceState
 	MapDeviceAction  *MapDeviceAction
 	Log              *Log
+	ZoneTag          *ZoneTag
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -75,6 +76,7 @@ func NewAdaptors(db *gorm.DB,
 		MapDeviceState:   GetMapDeviceStateAdaptor(db),
 		MapDeviceAction:  GetMapDeviceActionAdaptor(db),
 		Log:              GetLogAdaptor(db),
+		ZoneTag:          GetZoneTagAdaptor(db),
 	}
 
 	return

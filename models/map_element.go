@@ -1,11 +1,11 @@
 package models
 
 import (
-	"time"
-	"github.com/e154/smart-home/system/validation"
+	"encoding/json"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/null"
-	"encoding/json"
+	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
 type MapElementGraphSettingsPosition struct {
@@ -74,6 +74,7 @@ type MapElement struct {
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`
 	Status        StatusType              `json:"status" valid:"Required"`
 	Weight        int64                   `json:"weight"`
+	Zone          *ZoneTag                `json:"zone"`
 	CreatedAt     time.Time               `json:"created_at"`
 	UpdatedAt     time.Time               `json:"updated_at"`
 }
