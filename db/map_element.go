@@ -1,11 +1,11 @@
 package db
 
 import (
+	"encoding/json"
+	"fmt"
+	. "github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"time"
-	"encoding/json"
-	. "github.com/e154/smart-home/common"
-	"fmt"
 )
 
 type MapElements struct {
@@ -148,6 +148,76 @@ func (n *MapElements) List(limit, offset int64, orderBy, sort string) (list []*M
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
 		Error
+
+	return
+}
+
+func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort string) (list []*MapElement, total int64, err error) {
+
+	list = make([]*MapElement, 0)
+
+	q := n.Db.Model(&MapElement{}).
+		Where("prototype_type = 'device'")
+
+	if err = q.Count(&total).Error; err != nil {
+		return
+	}
+
+	q = n.Db.Model(&MapElement{}).
+		Where("prototype_type = 'device'").
+		Limit(limit).
+		Offset(offset)
+
+	if orderBy != "" && sort != "" {
+		q = q.
+			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	err = q.
+		Find(&list).
+		Error
+
+	if err != nil {
+		return
+	}
+
+	deviceIds := make([]int64, 0)
+	for _, e := range list {
+		deviceIds = append(deviceIds, e.PrototypeId)
+	}
+
+	devices := make([]*MapDevice, 0)
+	if len(deviceIds) > 0 {
+		err = n.Db.Model(&MapDevice{}).
+			Where("id in (?)", deviceIds).
+			Preload("Image").
+			Preload("States").
+			Preload("States.Image").
+			Preload("States.DeviceState").
+			Preload("Actions").
+			Preload("Actions.Image").
+			Preload("Actions.DeviceAction").
+			Preload("Device").
+			Preload("Device.States").
+			Preload("Device.Actions").
+			Find(&devices).
+			Error
+
+		if err != nil {
+			return
+		}
+	}
+
+	for _, e := range list {
+		for _, device := range devices {
+			if device.Id == e.PrototypeId {
+				e.Prototype = Prototype{
+					MapDevice: device,
+				}
+				continue
+			}
+		}
+	}
 
 	return
 }

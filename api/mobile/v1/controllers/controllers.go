@@ -9,8 +9,9 @@ import (
 )
 
 type MobileControllersV1 struct {
-	Auth             *ControllerAuth
-	Workflow         *ControllerWorkflow
+	Auth     *ControllerAuth
+	Workflow *ControllerWorkflow
+	Map      *ControllerMap
 }
 
 func NewMobileControllersV1(adaptors *adaptors.Adaptors,
@@ -20,7 +21,8 @@ func NewMobileControllersV1(adaptors *adaptors.Adaptors,
 	command *endpoint.Endpoint) *MobileControllersV1 {
 	common := NewControllerCommon(adaptors, core, accessList, command)
 	return &MobileControllersV1{
-		Auth:             NewControllerAuth(common),
-		Workflow:         NewControllerWorkflow(common),
+		Auth:     NewControllerAuth(common),
+		Workflow: NewControllerWorkflow(common),
+		Map:      NewControllerMap(common),
 	}
 }

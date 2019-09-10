@@ -25,6 +25,9 @@ func (s *MobileServer) setControllers() {
 	v1.POST("/reset", s.ControllersV1.Auth.Reset)
 	v1.GET("/access_list", s.af.Auth, s.ControllersV1.Auth.AccessList)
 
+	// map
+	v1.GET("/map/active_elements", s.af.Auth, s.ControllersV1.Map.GetActiveElements)
+
 	// mobile
 	v1.GET("/workflows", s.af.Auth, s.ControllersV1.Workflow.GetList)
 	v1.GET("/workflow/:id", s.af.Auth, s.ControllersV1.Workflow.GetById)

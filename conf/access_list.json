@@ -426,7 +426,8 @@
     "read_map_element": {
       "actions": [
         "/api/v1/map_element",
-        "/api/v1/map_element/[0-9]+"
+        "/api/v1/map_element/[0-9]+",
+        "/api/v1/active_elements"
       ],
       "method": "get",
       "description": ""

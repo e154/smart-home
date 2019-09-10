@@ -275,6 +275,23 @@ func (n *MapElement) List(limit, offset int64, orderBy, sort string) (list []*m.
 	return
 }
 
+func (n *MapElement) GetActiveElements(sortBy, order string, limit, offset int) (result []*m.MapElement, total int64, err error) {
+
+	var dbList []*db.MapElement
+	if dbList, total, err = n.table.GetActiveElements(int64(limit), int64(offset), order, sortBy); err != nil {
+		return
+	}
+
+	result = make([]*m.MapElement, 0)
+
+	for _, dbVer := range dbList {
+		ver := n.fromDb(dbVer)
+		result = append(result, ver)
+	}
+
+	return
+}
+
 func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 	ver = &m.MapElement{
 		Id:            dbVer.Id,

@@ -2,9 +2,9 @@ package endpoint
 
 import (
 	"errors"
-	"github.com/e154/smart-home/system/validation"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type MapEndpoint struct {
@@ -38,6 +38,13 @@ func (m *MapEndpoint) Add(params *m.Map) (result *m.Map, errs []*validation.Erro
 func (m *MapEndpoint) GetById(id int64) (result *m.Map, err error) {
 
 	result, err = m.adaptors.Map.GetById(id)
+
+	return
+}
+
+func (m *MapEndpoint) GetActiveElements(sortBy, order string, limit, offset int) (result []*m.MapElement, total int64, err error) {
+
+	result, total, err = m.adaptors.MapElement.GetActiveElements(sortBy, order, limit, offset)
 
 	return
 }
