@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/e154/smart-home/api/mobile/v1/models"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	"github.com/gin-gonic/gin"
 )
 
@@ -72,9 +70,9 @@ func (c ControllerMap) GetActiveElements(ctx *gin.Context) {
 	result := make([]*models.MapElement, 0)
 	_ = common.Copy(&result, &items, common.JsonEngine)
 
-	fmt.Println("<<<<<<<<<")
-	debug.Println(items)
-	fmt.Println(">>>>>>>>>>")
+	//fmt.Println("<<<<<<<<<")
+	//debug.Println(items)
+	//fmt.Println(">>>>>>>>>>")
 
 	resp := NewSuccess()
 	resp.Page(limit, offset, total, result).Send(ctx)
