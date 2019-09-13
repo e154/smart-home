@@ -19,16 +19,16 @@ func addMaps(adaptors *adaptors.Adaptors,
 
 	// zones
 	// ------------------------------------------------
-	mainHallZone := &m.ZoneTag{
+	mainHallZone := &m.MapZone{
 		Name: "Main Hall",
 	}
-	mainHallZone.Id, err = adaptors.ZoneTag.Add(mainHallZone)
+	mainHallZone.Id, err = adaptors.MapZone.Add(mainHallZone)
 	So(err, ShouldBeNil)
 
-	kitchenZone := &m.ZoneTag{
+	kitchenZone := &m.MapZone{
 		Name: "Kitchen",
 	}
-	kitchenZone.Id, err = adaptors.ZoneTag.Add(kitchenZone)
+	kitchenZone.Id, err = adaptors.MapZone.Add(kitchenZone)
 	So(err, ShouldBeNil)
 
 	// map 1

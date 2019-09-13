@@ -33,7 +33,7 @@ type MapElement struct {
 	Status        StatusType
 	Weight        int64
 	ZoneId        *int64
-	Zone          *ZoneTag
+	Zone          *MapZone
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }

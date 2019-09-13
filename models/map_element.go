@@ -74,7 +74,7 @@ type MapElement struct {
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`
 	Status        StatusType              `json:"status" valid:"Required"`
 	Weight        int64                   `json:"weight"`
-	Zone          *ZoneTag                `json:"zone"`
+	Zone          *MapZone                `json:"zone"`
 	CreatedAt     time.Time               `json:"created_at"`
 	UpdatedAt     time.Time               `json:"updated_at"`
 }

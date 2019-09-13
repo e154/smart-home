@@ -309,7 +309,7 @@ func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 
 	// Zone tag
 	if dbVer.Zone != nil {
-		zoneAdaptor := GetZoneTagAdaptor(n.db)
+		zoneAdaptor := GetMapZoneAdaptor(n.db)
 		ver.Zone = zoneAdaptor.fromDb(dbVer.Zone)
 	}
 

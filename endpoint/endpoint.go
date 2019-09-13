@@ -24,6 +24,7 @@ type Endpoint struct {
 	Map              *MapEndpoint
 	MapElement       *MapElementEndpoint
 	MapLayer         *MapLayerEndpoint
+	MapZone          *MapZoneEndpoint
 	Node             *NodeEndpoint
 	Role             *RoleEndpoint
 	Script           *ScriptEndpoint
@@ -57,5 +58,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		WorkflowScenario: NewWorkflowScenarioEndpoint(common),
 		User:             NewUserEndpoint(common),
 		Gate:             NewGateEndpoint(common),
+		MapZone:          NewMapZoneEndpoint(common),
 	}
 }

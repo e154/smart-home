@@ -28,6 +28,7 @@ type ControllersV1 struct {
 	Flow             *ControllerFlow
 	Log              *ControllerLog
 	Gate             *ControllerGate
+	MapZone          *ControllerMapZone
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -56,5 +57,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Flow:             NewControllerFlow(common),
 		Log:              NewControllerLog(common),
 		Gate:             NewControllerGate(common),
+		MapZone:          NewControllerMapZone(common),
 	}
 }
