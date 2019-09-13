@@ -1,8 +1,8 @@
 package models
 
 import (
-	"time"
 	"encoding/json"
+	"time"
 )
 
 type MapElementGraphSettingsPosition struct {
@@ -72,6 +72,7 @@ type MapElement struct {
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`
 	Status        string                  `json:"status"`
 	Weight        int                     `json:"weight"`
+	Zone          *MapZone                `json:"zone"`
 	CreatedAt     time.Time               `json:"created_at"`
 	UpdatedAt     time.Time               `json:"updated_at"`
 }
