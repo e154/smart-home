@@ -107,6 +107,7 @@ type UpdateMapElement struct {
 	Weight        int                     `json:"weight"`
 }
 
+// swagger:model
 type SortMapElement struct {
 	Id     int64 `json:"id"`
 	Weight int64 `json:"weight"`

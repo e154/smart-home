@@ -69,6 +69,7 @@ func (d *UpdateUser) Valid() (ok bool, errs []*validation.Error) {
 	return
 }
 
+// swagger:model
 type UserUpdateStatusRequest struct {
 	Status string `json:"status"`
 }

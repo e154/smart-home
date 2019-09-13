@@ -1,5 +1,6 @@
 package models
 
+// swagger:model
 type NewMapZone struct {
 	Name string `json:"name"`
 }

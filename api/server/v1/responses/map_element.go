@@ -8,7 +8,7 @@ import (
 type MapElementList struct {
 	// in:body
 	Body struct {
-		Items []*models.MapActiveElement `json:"items"`
+		Items []*models.MapElement `json:"items"`
 		Meta  struct {
 			Limit       int64 `json:"limit"`
 			ObjectCount int64 `json:"object_count"`
