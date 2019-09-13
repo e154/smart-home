@@ -84,7 +84,7 @@ func (c ControllerMapZone) Add(ctx *gin.Context) {
 //   in: path
 //   name: name
 //   required: true
-//   type: text
+//   type: string
 // summary: delete map_zone by name
 // description:
 // security:
@@ -107,6 +107,10 @@ func (c ControllerMapZone) Add(ctx *gin.Context) {
 func (c ControllerMapZone) Delete(ctx *gin.Context) {
 
 	name := ctx.Param("name")
+	if name == "" {
+		NewError(404, "record not found").Send(ctx)
+		return
+	}
 	if err := c.endpoint.MapZone.Delete(name); err != nil {
 		code := 500
 		if err.Error() == "record not found" {

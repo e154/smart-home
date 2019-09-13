@@ -732,5 +732,28 @@
       "method": "delete",
       "description": ""
     }
+  },
+  "map_zone": {
+    "read": {
+      "actions": [
+        "/api/v1/map_zone/[\\w]+"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "create": {
+      "actions": [
+        "/api/v1/map_zone"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "delete": {
+      "actions": [
+        "/api/v1/map_zone/[\\w]+"
+      ],
+      "method": "delete",
+      "description": ""
+    }
   }
 }

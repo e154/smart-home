@@ -3,6 +3,7 @@ package endpoint
 import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
+	"strings"
 )
 
 type MapZoneEndpoint struct {
@@ -23,6 +24,9 @@ func (n *MapZoneEndpoint) Add(zone *m.MapZone) (result *m.MapZone, errs []*valid
 	}
 
 	if zone.Id, err = n.adaptors.MapZone.Add(zone); err != nil {
+		if strings.Contains(err.Error(), "duplicate key value violates") {
+			err = nil
+		}
 		return
 	}
 

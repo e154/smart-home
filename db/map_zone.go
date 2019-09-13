@@ -58,7 +58,7 @@ func (n MapZones) Delete(name string) (err error) {
 		err = fmt.Errorf("zero name")
 		return
 	}
-	err = n.Db.Model(&MapZone{}).
-		Delete("name = ?", name).Error
+
+	err = n.Db.Delete(&MapZone{}, "name = ?", name).Error
 	return
 }
