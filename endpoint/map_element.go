@@ -63,6 +63,8 @@ func (n *MapElementEndpoint) Update(params *m.MapElement) (result *m.MapElement,
 
 	result, err = n.adaptors.MapElement.GetById(m.Id)
 
+	_ = n.adaptors.MapZone.Clean()
+
 	return
 }
 
@@ -90,6 +92,8 @@ func (n *MapElementEndpoint) UpdateElement(params *m.MapElement) (result *m.MapE
 	}
 
 	result, err = n.adaptors.MapElement.GetById(m.Id)
+
+	_ = n.adaptors.MapZone.Clean()
 
 	return
 }

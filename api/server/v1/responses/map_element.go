@@ -1,7 +1,7 @@
 package responses
 
 import (
-	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/e154/smart-home/api/mobile/v1/models"
 )
 
 // swagger:response MapElementList

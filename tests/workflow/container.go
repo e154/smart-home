@@ -2,6 +2,8 @@ package workflow
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/api/mobile"
+	mobileControllers "github.com/e154/smart-home/api/mobile/v1/controllers"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/system/access_list"
@@ -27,6 +29,9 @@ func BuildContainer() (container *dig.Container) {
 	container = dig.New()
 	container.Provide(server.NewServer)
 	container.Provide(server.NewServerConfig)
+	container.Provide(mobile.NewMobileServer)
+	container.Provide(mobile.NewMobileServerConfig)
+	container.Provide(mobileControllers.NewMobileControllersV1)
 	container.Provide(controllers.NewControllersV1)
 	//container.Provide(config.ReadConfig)
 	container.Provide(graceful_service.NewGracefulService)

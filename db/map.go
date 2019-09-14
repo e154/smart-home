@@ -47,6 +47,7 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 		Where("id = ?", mapId).
 		Preload("Layers").
 		Preload("Layers.Elements").
+		Preload("Layers.Elements.Zone").
 		Preload("Layers.Map").
 		Find(&v).
 		Error

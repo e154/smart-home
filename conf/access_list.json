@@ -426,7 +426,8 @@
     "read_map_element": {
       "actions": [
         "/api/v1/map_element",
-        "/api/v1/map_element/[0-9]+"
+        "/api/v1/map_element/[0-9]+",
+        "/api/v1/active_elements"
       ],
       "method": "get",
       "description": ""
@@ -727,6 +728,29 @@
     "delete_mobile": {
       "actions": [
         "/api/v1/gate/mobile/[\\w]+"
+      ],
+      "method": "delete",
+      "description": ""
+    }
+  },
+  "map_zone": {
+    "read": {
+      "actions": [
+        "/api/v1/map_zone/[\\w]+"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "create": {
+      "actions": [
+        "/api/v1/map_zone"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "delete": {
+      "actions": [
+        "/api/v1/map_zone/[\\w]+"
       ],
       "method": "delete",
       "description": ""

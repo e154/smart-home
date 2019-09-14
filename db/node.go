@@ -1,9 +1,9 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
 	"fmt"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type Nodes struct {
@@ -72,10 +72,16 @@ func (n *Nodes) List(limit, offset int64, orderBy, sort string) (list []*Node, t
 	}
 
 	list = make([]*Node, 0)
-	err = n.Db.
+	q := n.Db.Model(&Node{}).
 		Limit(limit).
-		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sort, orderBy)).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.
+			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	err = q.
 		Find(&list).
 		Error
 

@@ -33,6 +33,7 @@ type UpdateMapLayer struct {
 	Status      string `json:"status"`
 }
 
+// swagger:model
 type SortMapLayer struct {
 	Id     int64 `json:"id"`
 	Weight int64 `json:"weight"`

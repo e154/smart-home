@@ -82,4 +82,21 @@ func roles(adaptors *adaptors.Adaptors,
 
 	demoUser.Id, err = adaptors.User.Add(demoUser)
 	So(err, ShouldBeNil)
+
+	// add base user
+	baseUser := &m.User{
+		Nickname:          "user",
+		RoleName:          userRole.Name,
+		Email:             "user@e154.ru",
+		Lang:              "en",
+		Status:            "active",
+	}
+	err = baseUser.SetPass("user")
+	So(err, ShouldBeNil)
+
+	ok, _ = baseUser.Valid()
+	So(ok, ShouldEqual, true)
+
+	baseUser.Id, err = adaptors.User.Add(baseUser)
+	So(err, ShouldBeNil)
 }

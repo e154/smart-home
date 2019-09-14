@@ -44,4 +44,6 @@ type AccessLevels map[string]AccessItem
 
 // swagger:model
 type AccessList map[string]AccessLevels
+
+// swagger:model
 type AccessListDiff map[string]map[string]bool

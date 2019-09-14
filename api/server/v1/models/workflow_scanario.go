@@ -14,6 +14,15 @@ type WorkflowScenario struct {
 }
 
 // swagger:model
+type WorkflowScenarioShort struct {
+	Id         int64     `json:"id"`
+	Name       string    `json:"name"`
+	SystemName string    `json:"system_name"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+// swagger:model
 type NewWorkflowScenario struct {
 	Name       string `json:"name"`
 	SystemName string `json:"system_name"`

@@ -2,10 +2,10 @@ package env1
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	. "github.com/e154/smart-home/system/initial/assertions"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/null"
+	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
 func addMaps(adaptors *adaptors.Adaptors,
@@ -16,6 +16,20 @@ func addMaps(adaptors *adaptors.Adaptors,
 	deviceStates map[string]*m.DeviceState) (maps []*m.Map) {
 
 	var err error
+
+	// zones
+	// ------------------------------------------------
+	mainHallZone := &m.MapZone{
+		Name: "Main Hall",
+	}
+	mainHallZone.Id, err = adaptors.MapZone.Add(mainHallZone)
+	So(err, ShouldBeNil)
+
+	kitchenZone := &m.MapZone{
+		Name: "Kitchen",
+	}
+	kitchenZone.Id, err = adaptors.MapZone.Add(kitchenZone)
+	So(err, ShouldBeNil)
 
 	// map 1
 	// ------------------------------------------------
@@ -139,6 +153,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 				Left: 329,
 			},
 		},
+		Zone: mainHallZone,
 	}
 	ok, _ = mapElementLight1.Valid()
 	So(ok, ShouldEqual, true)
@@ -192,6 +207,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 				Left: 541,
 			},
 		},
+		Zone: mainHallZone,
 	}
 	ok, _ = mapElementLight2.Valid()
 	So(ok, ShouldEqual, true)
@@ -245,6 +261,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 				Left: 630,
 			},
 		},
+		Zone: mainHallZone,
 	}
 	ok, _ = mapElementLight3.Valid()
 	So(ok, ShouldEqual, true)
@@ -298,6 +315,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 				Left: 564,
 			},
 		},
+		Zone: kitchenZone,
 	}
 	ok, _ = mapElementLight4.Valid()
 	So(ok, ShouldEqual, true)
@@ -351,6 +369,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 				Left: 734,
 			},
 		},
+		Zone: kitchenZone,
 	}
 	ok, _ = mapElementFan1.Valid()
 	So(ok, ShouldEqual, true)
@@ -391,6 +410,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 				Left: 288,
 			},
 		},
+		Zone: kitchenZone,
 	}
 	ok, _ = mapElementTemp1.Valid()
 	So(ok, ShouldEqual, true)
@@ -431,6 +451,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 				Left: 468,
 			},
 		},
+		Zone: mainHallZone,
 	}
 	ok, _ = mapElementTemp2.Valid()
 	So(ok, ShouldEqual, true)

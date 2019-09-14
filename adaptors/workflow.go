@@ -74,9 +74,9 @@ func (n *Workflow) Delete(workflowId int64) (err error) {
 	return
 }
 
-func (n *Workflow) List(limit, offset int64, orderBy, sort string) (list []*m.Workflow, total int64, err error) {
+func (n *Workflow) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Workflow, total int64, err error) {
 	var dbList []*db.Workflow
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, onlyEnabled); err != nil {
 		return
 	}
 

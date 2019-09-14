@@ -31,6 +31,9 @@ func (n *MapDeviceState) Add(ver *m.MapDeviceState) (id int64, err error) {
 func (n *MapDeviceState) AddMultiple(items []*m.MapDeviceState) (err error) {
 
 	for _, ver := range items {
+		if ver.Image == nil {
+			continue
+		}
 		dbVer := n.toDb(ver)
 		if _, err = n.table.Add(dbVer); err != nil {
 			return
@@ -73,6 +76,12 @@ func (n *MapDeviceState) toDb(ver *m.MapDeviceState) (dbVer *db.MapDeviceState) 
 		MapDeviceId:   ver.MapDeviceId,
 		ImageId:       ver.ImageId,
 		Style:         ver.Style,
+	}
+	if ver.DeviceState != nil && ver.DeviceState.Id != 0 {
+		dbVer.DeviceStateId = ver.DeviceState.Id
+	}
+	if ver.Image != nil && ver.Image.Id != 0 {
+		dbVer.ImageId = ver.Image.Id
 	}
 	return
 }

@@ -78,17 +78,23 @@ func (n Workflows) Delete(workflowId int64) (err error) {
 	return
 }
 
-func (n *Workflows) List(limit, offset int64, orderBy, sort string) (list []*Workflow, total int64, err error) {
+func (n *Workflows) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*Workflow, total int64, err error) {
 
 	if err = n.Db.Model(Workflow{}).Count(&total).Error; err != nil {
 		return
 	}
 
 	list = make([]*Workflow, 0)
-	err = n.Db.
+	q := n.Db.
 		Limit(limit).
 		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sort, orderBy)).
+		Order(fmt.Sprintf("%s %s", sort, orderBy))
+
+	if onlyEnabled {
+		q = q.Where("status = ?", "enabled")
+	}
+
+	err = q.
 		Find(&list).
 		Error
 

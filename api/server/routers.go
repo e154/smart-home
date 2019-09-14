@@ -135,6 +135,11 @@ func (s *Server) setControllers() {
 	v1.GET("/map_elements", s.af.Auth, s.ControllersV1.MapElement.GetList)
 	v1.PUT("/map_elements/sort", s.af.Auth, s.ControllersV1.MapElement.Sort)
 
+	// map zone
+	v1.POST("/map_zone", s.af.Auth, s.ControllersV1.MapZone.Add)
+	v1.DELETE("/map_zone/:name", s.af.Auth, s.ControllersV1.MapZone.Delete)
+	v1.GET("/map_zone/search", s.af.Auth, s.ControllersV1.MapZone.Search)
+
 	// images
 	v1.POST("/image", s.af.Auth, s.ControllersV1.Image.Add)
 	v1.GET("/image/:id", s.af.Auth, s.ControllersV1.Image.GetById)
