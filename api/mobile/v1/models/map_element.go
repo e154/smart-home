@@ -79,7 +79,7 @@ type MapElement struct {
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`
 	Status        string                  `json:"status"`
 	Weight        int                     `json:"weight"`
-	Zone          *ZoneTag                `json:"zone,omitempty"`
+	Zone          *MapZone                `json:"zone,omitempty"`
 }
 
 type SortMapElement struct {
