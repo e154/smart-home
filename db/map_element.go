@@ -123,6 +123,7 @@ func (n MapElements) Update(m *MapElement) (err error) {
 		"graph_settings": m.GraphSettings,
 		"status":         m.Status,
 		"weight":         m.Weight,
+		"zone_id":        m.ZoneId,
 	}).Error
 	return
 }

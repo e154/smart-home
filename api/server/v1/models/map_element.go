@@ -91,6 +91,7 @@ type NewMapElement struct {
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`
 	Status        string                  `json:"status"`
 	Weight        int                     `json:"weight"`
+	Zone          *MapZone                `json:"zone"`
 }
 
 // swagger:model
@@ -106,6 +107,7 @@ type UpdateMapElement struct {
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`
 	Status        string                  `json:"status"`
 	Weight        int                     `json:"weight"`
+	Zone          *MapZone                `json:"zone"`
 }
 
 // swagger:model

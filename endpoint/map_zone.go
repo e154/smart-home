@@ -25,9 +25,15 @@ func (n *MapZoneEndpoint) Add(zone *m.MapZone) (result *m.MapZone, errs []*valid
 
 	if zone.Id, err = n.adaptors.MapZone.Add(zone); err != nil {
 		if strings.Contains(err.Error(), "duplicate key value violates") {
-			err = nil
+			result, err = n.adaptors.MapZone.GetByName(zone.Name)
 		}
 		return
+
+	} else {
+		result = &m.MapZone{
+			Id:   zone.Id,
+			Name: zone.Name,
+		}
 	}
 
 	return

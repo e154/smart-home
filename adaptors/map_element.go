@@ -354,6 +354,8 @@ func (n *MapElement) toDb(ver *m.MapElement) (dbVer *db.MapElement) {
 
 	if ver.Zone != nil && ver.Zone.Id != 0 {
 		dbVer.ZoneId = &ver.Zone.Id
+	} else {
+		dbVer.ZoneId = nil
 	}
 
 	graphSettings, _ := json.Marshal(ver.GraphSettings)

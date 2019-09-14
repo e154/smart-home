@@ -62,3 +62,17 @@ func (n MapZones) Delete(name string) (err error) {
 	err = n.Db.Delete(&MapZone{}, "name = ?", name).Error
 	return
 }
+
+func (n MapZones) Clean() (err error) {
+
+	err = n.Db.Exec(`delete 
+from map_zones
+where id not in (
+    select DISTINCT me.zone_id
+    from map_elements me
+    where me.zone_id notnull
+    )
+`).Error
+
+	return
+}

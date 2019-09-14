@@ -61,6 +61,13 @@ func (n *MapZone) Search(query string, limit, offset int) (list []*m.MapZone, to
 	return
 }
 
+func (n *MapZone) Clean() (err error) {
+
+	err = n.table.Clean()
+
+	return
+}
+
 func (n *MapZone) toDb(tag *m.MapZone) *db.MapZone {
 	return &db.MapZone{
 		Id:   tag.Id,
