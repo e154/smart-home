@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"github.com/e154/smart-home-old/api/log"
 )
 
 type MapElementGraphSettingsPosition struct {
@@ -44,7 +43,7 @@ func (n *Prototype) UnmarshalJSON(data []byte) (err error) {
 
 	device := &MapDevice{}
 	if err = json.Unmarshal(data, device); err != nil {
-		log.Error(err)
+		log.Error(err.Error())
 	}
 
 	if (device.Device != nil && device.Device.Id != 0 && device.DeviceId != 0) ||
