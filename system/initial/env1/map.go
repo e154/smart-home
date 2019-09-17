@@ -139,6 +139,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	ok, _ = devLight1.Valid()
 	mapElementLight1 := &m.MapElement{
 		Name: "dev1_light1",
+		Description: "Light1 in the hall",
 		Prototype: m.Prototype{
 			MapDevice: devLight1,
 		},
@@ -193,6 +194,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	}
 	mapElementLight2 := &m.MapElement{
 		Name: "dev1_light2",
+		Description: "Light2 in the hall",
 		Prototype: m.Prototype{
 			MapDevice: devLight2,
 		},
@@ -247,6 +249,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	}
 	mapElementLight3 := &m.MapElement{
 		Name: "dev1_light3",
+		Description: "Light3 in the hall",
 		Prototype: m.Prototype{
 			MapDevice: devLight3,
 		},
@@ -301,6 +304,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	}
 	mapElementLight4 := &m.MapElement{
 		Name: "dev1_light4",
+		Description: "Light in the kitchen",
 		Prototype: m.Prototype{
 			MapDevice: devLight4,
 		},
@@ -355,6 +359,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	}
 	mapElementFan1 := &m.MapElement{
 		Name: "dev1_fan1",
+		Description: "fan in the kitchen",
 		Prototype: m.Prototype{
 			MapDevice: devFan1,
 		},
@@ -395,7 +400,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	}
 	mapElementTemp1 := &m.MapElement{
 		Name:        "dev1_temp1",
-		Description: "temperature sensor room1",
+		Description: "temp sensor in the kitchen",
 		Prototype: m.Prototype{
 			MapDevice: dev1Temp1,
 		},
@@ -436,7 +441,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 	}
 	mapElementTemp2 := &m.MapElement{
 		Name:        "dev1_temp2",
-		Description: "temperature sensor room2",
+		Description: "temp sensor in the hall",
 		Prototype: m.Prototype{
 			MapDevice: dev1Temp2,
 		},
