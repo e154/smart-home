@@ -30,5 +30,6 @@ type DeviceAction struct {
 	Name        string              `json:"name" valid:"MaxSize(254);Required"`
 	Description string              `json:"description"`
 	Device      *DeviceActionDevice `json:"device"`
+	DeviceId    int64               `json:"device_id"`
 	Script      *DeviceActionScript `json:"script"`
 }

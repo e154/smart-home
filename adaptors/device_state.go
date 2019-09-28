@@ -1,9 +1,9 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
 type DeviceState struct {
@@ -87,6 +87,7 @@ func (n *DeviceState) fromDb(dbVer *db.DeviceState) (ver *m.DeviceState) {
 		Id:          dbVer.Id,
 		Description: dbVer.Description,
 		SystemName:  dbVer.SystemName,
+		DeviceId:    dbVer.DeviceId,
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
 	}
