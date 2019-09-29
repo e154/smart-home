@@ -174,3 +174,12 @@ func (h *Hub) UnSubscribe(command string) {
 	}
 	h.Unlock()
 }
+
+func (h *Hub) Subscriber(command string) (f func(client *Client, msg Message)) {
+	h.Lock()
+	if h.subscribers[command] != nil {
+		f = h.subscribers[command]
+	}
+	h.Unlock()
+	return
+}
