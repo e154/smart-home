@@ -15,3 +15,6 @@ const (
 	Broadcast     = "broadcast"
 )
 
+type BroadcastClient interface {
+	Broadcast(message []byte)
+}

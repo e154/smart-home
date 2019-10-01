@@ -58,6 +58,8 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 		log.Error(err.Error())
 	}
 
+	stream.GateClient(gate)
+
 	return
 }
 
@@ -302,6 +304,16 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, ctx co
 	}
 
 	return
+}
+
+func (g *GateClient) Broadcast(message []byte) {
+	if g.wsClient.status != GateStatusConnected {
+		return
+	}
+
+	if err := g.wsClient.write(websocket.TextMessage, message); err != nil {
+		log.Error(err.Error())
+	}
 }
 
 func (g *GateClient) Status() string {

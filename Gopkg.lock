@@ -42,6 +42,14 @@
   version = "v3.2.0"
 
 [[projects]]
+  digest = "1:194d67bdb62b12db5057218e0303b7d6995b542d52104cb4fca641769d12cf90"
+  name = "github.com/francoispqt/gojay"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "1398296d938f9fae26750ddc2fe356b6d897f799"
+  version = "v1.2.13"
+
+[[projects]]
   branch = "master"
   digest = "1:36fe9527deed01d2a317617e59304eb2c4ce9f8a24115bcc5c2e37b3aee5bae4"
   name = "github.com/gin-contrib/sse"
@@ -146,14 +154,6 @@
   revision = "3605ed457bf7f8caa1371b4fafadadc026673479"
 
 [[projects]]
-  digest = "1:a2cff208d4759f6ba1b1cd228587b0a1869f95f22542ec9cd17fff64430113c7"
-  name = "github.com/jessevdk/go-flags"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
-  version = "v1.4.0"
-
-[[projects]]
   branch = "master"
   digest = "1:5c3444689562053b027ef3b96372e306adbe0d7d109b6cdd48d01eb80f8bab14"
   name = "github.com/jinzhu/copier"
@@ -202,22 +202,6 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:ca955a9cd5b50b0f43d2cc3aeb35c951473eeca41b34eb67507f1dbcc0542394"
-  name = "github.com/kr/pretty"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "73f6ac0b30a98e433b289500d779f50c1a6f0712"
-  version = "v0.1.0"
-
-[[projects]]
-  digest = "1:15b5cc79aad436d47019f814fde81a10221c740dc8ddf769221a65097fb6c2e9"
-  name = "github.com/kr/text"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f"
-  version = "v0.1.0"
-
-[[projects]]
   digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
   name = "github.com/lib/pq"
   packages = [
@@ -255,14 +239,6 @@
   pruneopts = "UT"
   revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
   version = "v0.0.4"
-
-[[projects]]
-  branch = "master"
-  digest = "1:d2db15ed9dfd347a6b29257bb032cc090f36a604daf292fa2f41df9fa840e912"
-  name = "github.com/mcuadros/go-candyjs"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "d703dfa5153a4276b8a4783d985793595228073d"
 
 [[projects]]
   digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
@@ -445,9 +421,13 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
+  digest = "1:001a4e7a40e50ff2ef32e2556bca50c4f77daa457db3ac6afc8bea9bb2122cfb"
   name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
+  packages = [
+    "bcrypt",
+    "blowfish",
+    "ssh/terminal",
+  ]
   pruneopts = "UT"
   revision = "c126467f60eb25f8f27e5a981f32a87e3965053f"
 
@@ -500,22 +480,6 @@
   version = "v0.3.0"
 
 [[projects]]
-  branch = "v1"
-  digest = "1:af715ae33cc1f5695c4b2a4e4b21d008add8802a99e15bb467ac7c32edb5000d"
-  name = "gopkg.in/check.v1"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "788fd78401277ebd861206a03c884797c6ec5541"
-
-[[projects]]
-  branch = "v3"
-  digest = "1:a7817feb7f5d8b30937af21182124eca77e3ee4bd75f23ed955c525be2642256"
-  name = "gopkg.in/e154/go-duktape.v3"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "4f7041e2de473562693d11ff52b68128648cdb65"
-
-[[projects]]
   digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
   name = "gopkg.in/go-playground/validator.v8"
   packages = ["."]
@@ -556,16 +520,15 @@
   input-imports = [
     "github.com/bouk/monkey",
     "github.com/dgrijalva/jwt-go",
+    "github.com/francoispqt/gojay",
     "github.com/gin-gonic/gin",
     "github.com/gorilla/mux",
     "github.com/gorilla/websocket",
     "github.com/iancoleman/strcase",
-    "github.com/jessevdk/go-flags",
     "github.com/jinzhu/copier",
     "github.com/jinzhu/gorm",
     "github.com/lib/pq",
     "github.com/lox/go-servejs",
-    "github.com/mcuadros/go-candyjs",
     "github.com/mitchellh/mapstructure",
     "github.com/olebedev/go-duktape",
     "github.com/op/go-logging",
@@ -584,13 +547,13 @@
     "github.com/smartystreets/goconvey/convey",
     "github.com/smartystreets/goconvey/convey/reporting",
     "github.com/surgemq/message",
+    "github.com/surgemq/surgemq/auth",
     "github.com/surgemq/surgemq/service",
     "github.com/swaggo/swag",
     "github.com/t-tiger/gorm-bulk-insert",
+    "golang.org/x/crypto/bcrypt",
     "golang.org/x/net/context",
     "golang.org/x/net/webdav",
-    "gopkg.in/check.v1",
-    "gopkg.in/e154/go-duktape.v3",
     "launchpad.net/goamz/aws",
     "launchpad.net/goamz/s3",
   ]

@@ -15,16 +15,16 @@ var (
 )
 
 type Devices struct {
-	Total    int64                    `json:"total"`
-	Status   map[int64]*m.DeviceState `json:"status"`
-	adaptors *adaptors.Adaptors       `json:"-"`
-	core     *core.Core               `json:"-"`
+	Total    int64                             `json:"total"`
+	Status   map[int64]*m.DashboardDeviceState `json:"status"`
+	adaptors *adaptors.Adaptors                `json:"-"`
+	core     *core.Core                        `json:"-"`
 }
 
 func NewDevices(adaptors *adaptors.Adaptors,
 	core *core.Core) *Devices {
 	return &Devices{
-		Status:   make(map[int64]*m.DeviceState),
+		Status:   make(map[int64]*m.DashboardDeviceState),
 		adaptors: adaptors,
 		core:     core,
 	}

@@ -19,6 +19,7 @@ const (
 type Hub struct {
 	sessions    map[*Client]bool
 	subscribers map[string]func(client *Client, msg Message)
+	gateClient  BroadcastClient
 	sync.Mutex
 	broadcast chan []byte
 	interrupt chan os.Signal
@@ -145,6 +146,12 @@ func (h *Hub) Broadcast(message []byte) {
 	h.Lock()
 	h.broadcast <- message
 	h.Unlock()
+
+	go func() {
+		if h.gateClient != nil {
+			h.gateClient.Broadcast(message)
+		}
+	}()
 }
 
 func (h *Hub) Clients() (clients []*Client) {
