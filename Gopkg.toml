@@ -59,3 +59,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/t-tiger/gorm-bulk-insert"
+
+[[constraint]]
+  name = "github.com/francoispqt/gojay"
+  version = "1.2.13"

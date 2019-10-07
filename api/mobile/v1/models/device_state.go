@@ -24,4 +24,5 @@ type DeviceState struct {
 	Description string             `json:"description"`
 	SystemName  string             `json:"system_name" valid:"MaxSize(254);Required"`
 	Device      *DeviceStateDevice `json:"device" valid:"Required"`
+	DeviceId    int64              `json:"device_id"`
 }

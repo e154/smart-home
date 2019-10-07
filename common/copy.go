@@ -1,17 +1,19 @@
 package common
 
 import (
-	"github.com/jinzhu/copier"
-	"encoding/json"
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
+	"github.com/francoispqt/gojay"
+	"github.com/jinzhu/copier"
 )
 
 type CopyEngine string
 
 const (
-	JsonEngine = CopyEngine("json")
-	GobEngine  = CopyEngine("gob")
+	JsonEngine  = CopyEngine("json")
+	GobEngine   = CopyEngine("gob")
+	GojayEngine = CopyEngine("gojay")
 )
 
 func gobCopy(to, from interface{}) (err error) {
@@ -32,6 +34,15 @@ func jsonCopy(to, from interface{}) (err error) {
 	return
 }
 
+func gojayCopy(to, from interface{}) (err error) {
+	var b []byte
+	if b, err = gojay.Marshal(from); err != nil {
+		return
+	}
+	err = gojay.Unmarshal(b, to)
+	return
+}
+
 func Copy(to, from interface{}, params ...CopyEngine) (err error) {
 
 	if len(params) == 0 {
@@ -44,6 +55,9 @@ func Copy(to, from interface{}, params ...CopyEngine) (err error) {
 		err = jsonCopy(to, from)
 	case GobEngine:
 		err = gobCopy(to, from)
+	default:
+		err = gojayCopy(to, from)
+
 	}
 
 	return

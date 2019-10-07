@@ -1,11 +1,11 @@
 package core
 
 import (
-	"github.com/e154/smart-home/system/telemetry"
-	"sync"
-	m "github.com/e154/smart-home/models"
 	"fmt"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/telemetry"
 	"strings"
+	"sync"
 )
 
 type Map struct {
@@ -34,12 +34,17 @@ func (b *Map) SetElementState(device *m.Device, elementName, systemName string) 
 	}
 }
 
-func (b *Map) GetDevicesStates() (states map[int64]*m.DeviceState) {
-	states = make(map[int64]*m.DeviceState)
+func (b *Map) GetDevicesStates() (states map[int64]*m.DashboardDeviceState) {
+	states = make(map[int64]*m.DashboardDeviceState)
 
 	b.elements.Range(func(key, value interface{}) bool {
 		element := value.(*MapElement)
-		states[element.Device.Id] = element.State
+		states[element.Device.Id] = &m.DashboardDeviceState{
+			Id:          element.State.Id,
+			Description: element.State.Description,
+			SystemName:  element.State.SystemName,
+			DeviceId:    element.State.DeviceId,
+		}
 		return true
 	})
 

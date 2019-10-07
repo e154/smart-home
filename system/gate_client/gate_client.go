@@ -58,6 +58,8 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 		log.Error(err.Error())
 	}
 
+	stream.GateClient(gate)
+
 	return
 }
 
@@ -190,11 +192,58 @@ func (g *GateClient) onMessage(b []byte) {
 		return
 	}
 
+	// check local subscribers
 	for command, f := range g.subscribers {
 		if msg.Id == command {
 			f(msg)
 			g.UnSubscribe(msg.Id)
+			return
 		}
+	}
+
+	// check subscriber on stream server
+	if f := g.stream.Hub.Subscriber(msg.Command); f != nil {
+
+		streamMsg := stream.Message{}
+		_ = common.Copy(&streamMsg, &msg)
+		streamClient := &stream.Client{
+			ConnType: stream.WEBSOCK,
+			Connect:  g.wsClient.conn,
+			Send:     make(chan []byte),
+		}
+
+		wg := sync.WaitGroup{}
+		wg.Add(2)
+
+		go func() {
+			for {
+				select {
+				case message, ok := <-streamClient.Send:
+
+					if !ok {
+						_ = streamClient.Write(websocket.CloseMessage, []byte{})
+						return
+					}
+					if err := streamClient.Write(websocket.TextMessage, message); err != nil {
+						return
+					}
+
+					goto END
+				}
+			}
+			END:
+			wg.Done()
+		}()
+
+		go func() {
+			f(streamClient, streamMsg)
+			wg.Done()
+		}()
+
+		// check channels
+		wg.Wait()
+		close(streamClient.Send)
+		log.Debugf("client was success")
 	}
 }
 
@@ -255,6 +304,16 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, ctx co
 	}
 
 	return
+}
+
+func (g *GateClient) Broadcast(message []byte) {
+	if g.wsClient.status != GateStatusConnected {
+		return
+	}
+
+	if err := g.wsClient.write(websocket.TextMessage, message); err != nil {
+		log.Error(err.Error())
+	}
 }
 
 func (g *GateClient) Status() string {

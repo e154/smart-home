@@ -71,7 +71,7 @@ func (c ControllerMap) GetActiveElements(ctx *gin.Context) {
 	_ = common.Copy(&result, &items, common.JsonEngine)
 
 	//fmt.Println("<<<<<<<<<")
-	//debug.Println(items)
+	//debug.Println(result)
 	//fmt.Println(">>>>>>>>>>")
 
 	resp := NewSuccess()

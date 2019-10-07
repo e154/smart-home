@@ -14,15 +14,21 @@ type MapDeviceState struct {
 
 func (n MapDeviceState) MarshalJSON() (b []byte, err error) {
 
-	b, err = json.Marshal(map[string]interface{}{
+	data := map[string]interface{}{
 		"id":              n.Id,
 		"system_name":     n.DeviceState.SystemName,
 		"description":     n.DeviceState.Description,
 		"device_state_id": n.DeviceStateId,
-		"device_id":       n.MapDeviceId,
+		"map_device_id":   n.MapDeviceId,
 		"image":           n.Image,
 		"style":           n.Style,
-	})
+	}
+
+	if n.DeviceState != nil {
+		data["device_id"] = n.DeviceState.DeviceId
+	}
+
+	b, err = json.Marshal(data)
 
 	return
 }

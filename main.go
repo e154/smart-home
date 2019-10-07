@@ -9,7 +9,6 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
 	l "github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/stream_proxy"
 	"github.com/op/go-logging"
 	"os"
 )
@@ -83,14 +82,13 @@ func start() {
 		back *l.LogBackend,
 		initialService *initial.InitialService,
 		ws *websocket.WebSocket,
-		streamProxy *stream_proxy.StreamProxy,
 		mobileServer *mobile.MobileServer) {
 
 		l.Initialize(back)
 		go server.Start()
 		go mobileServer.Start()
 		go ws.Start()
-		go streamProxy.Start()
+		//go streamProxy.Start()
 
 		graceful.Wait()
 	})
