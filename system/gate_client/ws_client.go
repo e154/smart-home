@@ -124,7 +124,18 @@ func (client *WsClient) connect() {
 
 	}()
 
-	u := url.URL{Scheme: "ws", Host: client.settings.Address, Path: "ws"}
+	var uri *url.URL
+	if uri, err = url.Parse(client.settings.Address); err != nil {
+		return
+	}
+
+	uri.Path = "ws"
+
+	if uri.Scheme == "http" {
+		uri.Scheme = "ws"
+	} else {
+		uri.Scheme = "wss"
+	}
 
 	requestHeader := http.Header{
 		"X-Client-Type": {ClientTypeServer},
@@ -134,7 +145,7 @@ func (client *WsClient) connect() {
 		//log.Debugf("X-API-Key: %v", client.settings.GateServerToken)
 	}
 
-	if client.conn, _, err = websocket.DefaultDialer.Dial(u.String(), requestHeader); err != nil {
+	if client.conn, _, err = websocket.DefaultDialer.Dial(uri.String(), requestHeader); err != nil {
 		return
 	}
 	client.isConnected = true
@@ -163,7 +174,7 @@ func (client *WsClient) connect() {
 
 	go client.cb.onConnected()
 
-	log.Infof("Connect %v successfully", u.String())
+	log.Infof("Connect %v successfully", uri.String())
 
 	select {
 	case <-client.interrupt:

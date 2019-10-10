@@ -17,6 +17,7 @@ import (
 	"github.com/op/go-logging"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"sync"
 	"time"
 )
@@ -325,6 +326,16 @@ func (g *GateClient) GetSettings() (*Settings, error) {
 }
 
 func (g *GateClient) UpdateSettings(settings *Settings) (err error) {
+
+	var uri *url.URL
+	if uri, err = url.Parse(settings.Address); err != nil {
+		return
+	}
+
+	log.Infof("update gate settings, address: %v, enabled: %v", settings.Address, settings.Enabled)
+
+	settings.Address = uri.String()
+
 	if err = copier.Copy(&g.settings, &settings); err != nil {
 		return
 	}
