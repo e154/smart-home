@@ -1,10 +1,10 @@
 package mqtt
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/op/go-logging"
 	"github.com/surgemq/surgemq/service"
-	"github.com/e154/smart-home/system/graceful_service"
-	"fmt"
 )
 
 var (

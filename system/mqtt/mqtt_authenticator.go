@@ -2,11 +2,11 @@ package mqtt
 
 import (
 	"fmt"
-	"github.com/surgemq/surgemq/auth"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
+	"github.com/surgemq/surgemq/auth"
 )
 
 var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
@@ -29,7 +29,7 @@ func NewAuthenticator(adaptors *adaptors.Adaptors) *Authenticator {
 
 func (a *Authenticator) Authenticate(login string, pass interface{}) (err error) {
 
-	//fmt.Println(login, pass)
+	log.Infof("login: %v, pass: %v", login, pass)
 
 	password, ok := pass.(string)
 	if !ok || password == "" {
