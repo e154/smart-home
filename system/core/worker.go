@@ -1,9 +1,11 @@
 package core
 
 import (
+	"context"
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
 	"sync"
+	"time"
 )
 
 type Worker struct {
@@ -12,23 +14,25 @@ type Worker struct {
 	CronTask *cr.Task
 	cron     *cr.Cron
 	sync.Mutex
-	isRuning bool
-	actions  map[int64]*Action
+	isRuning   bool
+	actions    map[int64]*Action
+	cancelFunc map[int64]context.CancelFunc
 }
 
 func NewWorker(model *m.Worker, flow *Flow, cron *cr.Cron) (worker *Worker) {
 
 	worker = &Worker{
-		Model:   model,
-		flow:    flow,
-		cron:    cron,
-		actions: make(map[int64]*Action),
+		Model:      model,
+		flow:       flow,
+		cron:       cron,
+		actions:    make(map[int64]*Action),
+		cancelFunc: make(map[int64]context.CancelFunc),
 	}
 
 	return
 }
 
-func (w *Worker) RemoveTask() (err error) {
+func (w *Worker) RemoveTask() () {
 
 	if w.CronTask == nil {
 		return
@@ -38,6 +42,10 @@ func (w *Worker) RemoveTask() (err error) {
 
 	// remove task from cron
 	w.cron.RemoveTask(w.CronTask)
+
+	for _, cancel := range w.cancelFunc {
+		cancel()
+	}
 
 	return
 }
@@ -98,8 +106,29 @@ func (w *Worker) Do() {
 
 		message := action.Message.Copy()
 
-		if err := w.flow.NewMessage(message); err != nil {
-			log.Error(err.Error())
+		// create context
+		ctx, cancelFunc := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+		ctx = context.WithValue(ctx, "msg", message)
+
+		w.cancelFunc[action.Device.Id] = cancelFunc
+
+		done := make(chan struct{})
+		go func() {
+			if err := w.flow.NewMessage(ctx); err != nil {
+				log.Errorf("flow '%v' end with error: '%+v'", action.flow.Model.Name, ctx.Err())
+			}
+			done <- struct{}{}
+		}()
+
+		select {
+		case <-done:
+			close(done)
+		case <-ctx.Done():
+
+		}
+
+		if _, ok := w.cancelFunc[action.Device.Id]; ok {
+			delete(w.cancelFunc, action.Device.Id)
 		}
 	}
 }

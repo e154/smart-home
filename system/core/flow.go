@@ -1,14 +1,15 @@
 package core
 
 import (
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
+	"context"
 	"errors"
-	. "github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/uuid"
-	cr "github.com/e154/smart-home/system/cron"
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	. "github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	cr "github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/uuid"
 )
 
 type Flow struct {
@@ -78,7 +79,7 @@ func (f *Flow) Remove() {
 	}
 }
 
-func (f *Flow) NewMessage(message *Message) (err error) {
+func (f *Flow) NewMessage(ctx context.Context) (err error) {
 
 	var _element *FlowElement
 
@@ -130,7 +131,10 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 				// send message to linked flow
 				if element.Model.PrototypeType == "Flow" && element.Model.FlowLink != nil {
 					if flow, ok := f.workflow.Flows[*element.Model.FlowLink]; ok {
-						go flow.NewMessage(message)
+						go func() {
+							childCtx, _ := context.WithCancel(ctx)
+							_ = flow.NewMessage(childCtx)
+						}()
 					}
 
 				} else {
@@ -142,12 +146,25 @@ func (f *Flow) NewMessage(message *Message) (err error) {
 		return
 	}
 
+	var message *Message
+
 	var runElement func(*FlowElement)
 	var returnMessage *Message
 	runElement = func(element *FlowElement) {
+
+		if err = ctx.Err(); err != nil {
+			return
+		}
+
 		var ok, isScripted bool
 		isScripted = element.ScriptEngine != nil
-		if ok, returnMessage, err = element.Run(message); err != nil {
+
+		childCtx, _ := context.WithCancel(ctx)
+		if message != nil {
+			childCtx = context.WithValue(childCtx, "msg", message)
+		}
+
+		if ok, returnMessage, err = element.Run(childCtx); err != nil {
 			log.Error(err.Error())
 			return
 		}
