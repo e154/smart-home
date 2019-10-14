@@ -1,16 +1,16 @@
 package workflow
 
 import (
-	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/core"
-	m "github.com/e154/smart-home/models"
-	. "github.com/e154/smart-home/common"
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/debug"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 // create node
@@ -33,7 +33,7 @@ import (
 func Test4(t *testing.T) {
 
 	Convey("add scripts", t, func(ctx C) {
-		container.Invoke(func(adaptors *adaptors.Adaptors,
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
 			c *core.Core) {
@@ -43,10 +43,10 @@ func Test4(t *testing.T) {
 
 			// add node
 			node := &m.Node{
-				Name:   "node",
-				Ip:     "127.0.0.1",
-				Port:   3001,
-				Status: "enabled",
+				Name:     "node",
+				Login:    "node",
+				Password: "node",
+				Status:   "enabled",
 			}
 			ok, _ := node.Valid()
 			So(ok, ShouldEqual, true)
