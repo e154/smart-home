@@ -40,16 +40,18 @@ func Test2(t *testing.T) {
 		})
 	})
 
-	Convey("add scripts", t, func(ctx C) {
+	Convey("run core", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
 			c *core.Core) {
 
 			// clear database
+			// ------------------------------------------------
 			migrations.Purge()
 
 			// create scripts
+			// ------------------------------------------------
 			script1 := &m.Script{
 				Lang:        "coffeescript",
 				Name:        "test1",
@@ -124,6 +126,7 @@ func Test2(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// create workflow
+			// ------------------------------------------------
 			workflow := &m.Workflow{
 				Name:        "main workflow",
 				Description: "main workflow desc",
@@ -138,6 +141,7 @@ func Test2(t *testing.T) {
 			workflow.Id = wfId
 
 			// add workflow scenario
+			// ------------------------------------------------
 			wfScenario1 := &m.WorkflowScenario{
 				Name:       "wf scenario 1",
 				SystemName: "wf_scenario_1",

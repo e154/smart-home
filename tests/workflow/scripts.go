@@ -75,6 +75,10 @@ const coffeeScript7 = `
 # workflow script
 
 print "run workflow script (script 7)"
+
+on_enter =->
+	print 'on_enter'
+on_exit =->
 `
 
 const coffeeScript8 = `
