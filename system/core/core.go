@@ -284,7 +284,7 @@ func (b *Core) InitWorkflows() (err error) {
 // добавление рабочего процесс
 func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 
-	log.Infof("Add workflow: %s", workflow.Name)
+	log.Infof("Add workflow: '%s'", workflow.Name)
 
 	if _, ok := b.workflows[workflow.Id]; ok {
 		return
@@ -302,6 +302,8 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 }
 
 func (wf *Core) GetWorkflow(workflowId int64) (workflow *Workflow, err error) {
+
+	log.Infof("GetWorkflow: id(%v)", workflowId)
 
 	if _, ok := wf.workflows[workflowId]; !ok {
 		err = errors.New("not found")

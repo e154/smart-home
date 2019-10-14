@@ -44,6 +44,8 @@ func NewWorkflow(model *m.Workflow,
 
 func (wf *Workflow) Run() (err error) {
 
+	log.Infof("Run workflow '%v'", wf.model.Name)
+
 	if err = wf.runScripts(); err != nil {
 		return
 	}
@@ -88,6 +90,8 @@ func (wf *Workflow) Restart() (err error) {
 // получаем все связанные процессы
 func (wf *Workflow) initFlows() (err error) {
 
+	log.Infof("Get flows")
+
 	var flows []*m.Flow
 	if flows, err = wf.adaptors.Flow.GetAllEnabledByWorkflow(wf.model.Id); err != nil {
 		return
@@ -113,7 +117,7 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 		return
 	}
 
-	log.Infof("Add flow: %s", flow.Name)
+	log.Infof("Add flow: '%s'", flow.Name)
 
 	wf.Lock()
 	if _, ok := wf.Flows[flow.Id]; ok {
@@ -147,7 +151,7 @@ func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
 
 func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 
-	log.Infof("Remove flow: %s", flow.Name)
+	log.Infof("Remove flow: '%s'", flow.Name)
 
 	wf.Lock()
 	defer wf.Unlock()
@@ -163,6 +167,8 @@ func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 }
 
 func (wf *Workflow) GetFLow(flowId int64) (flow *Flow, err error) {
+
+	log.Infof("GetFLow: id(%v)", flowId)
 
 	if _, ok := wf.Flows[flowId]; !ok {
 		err = errors.New("not found")

@@ -29,8 +29,6 @@ on_exit =->
     print "description " + wf.getDescription()
 `
 
-
-
 const coffeeScript4 = `
 main =->
     print "workflow scenario script 4"
@@ -95,4 +93,23 @@ print "run workflow script (script 10)"
 
 const coffeeScript11 = `
 print "run workflow script (script 11)"
+`
+
+const coffeeScript12 = `
+print "run workflow script (script 12)"
+IC.store('script12')
+`
+
+const coffeeScript13 = `
+print "run workflow script (script 13)"
+IC.store('script13')
+`
+
+const coffeeScript14 = `
+print "run workflow script (script 14)"
+IC.store('script14')
+`
+
+const coffeeScript15 = `
+print "run workflow script (script 15)"
 `
