@@ -1,5 +1,7 @@
 package workflow
 
+// test1, test2
+// ------------------------------------------------
 const coffeeScript1 = `
 main =->
     wf = IC.Workflow()
@@ -79,6 +81,8 @@ on_enter =->
 on_exit =->
 `
 
+// test3
+// ------------------------------------------------
 const coffeeScript8 = `
 print "run workflow script (script 8)"
 `
@@ -87,6 +91,8 @@ const coffeeScript9 = `
 print "run workflow script (script 9)"
 `
 
+// test 4
+// ------------------------------------------------
 const coffeeScript10 = `
 print "run workflow script (script 10)"
 `
@@ -95,21 +101,87 @@ const coffeeScript11 = `
 print "run workflow script (script 11)"
 `
 
+// test6, test7
+// ------------------------------------------------
 const coffeeScript12 = `
 print "run workflow script (script 12)"
 IC.store('script12')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
 `
 
 const coffeeScript13 = `
 print "run workflow script (script 13)"
 IC.store('script13')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
 `
 
 const coffeeScript14 = `
 print "run workflow script (script 14)"
 IC.store('script14')
+print "message:", message.getVar('val')
 `
 
-const coffeeScript15 = `
-print "run workflow script (script 15)"
+// test8
+// ------------------------------------------------
+const coffeeScript16 = `
+print "run workflow script (script 16)"
+IC.store('script16')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
 `
+
+const coffeeScript17 = `
+print "run workflow script (script 17)"
+IC.store('script17')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
+`
+
+const coffeeScript18 = `
+print "run workflow script (script 18)"
+IC.store('script18')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
+`
+
+const coffeeScript19 = `
+print "run workflow script (script 19)"
+IC.store('script19')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
+`
+
+const coffeeScript20 = `
+print "run workflow script (script 20)"
+IC.store('script20')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
+`
+
+const coffeeScript21 = `
+print "run workflow script (script 21)"
+IC.store('script21')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
+`
+
+// test8...
+// ------------------------------------------------

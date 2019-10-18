@@ -128,18 +128,7 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 					}
 				}
 
-				// send message to linked flow
-				if element.Model.PrototypeType == "Flow" && element.Model.FlowLink != nil {
-					if flow, ok := f.workflow.Flows[*element.Model.FlowLink]; ok {
-						go func() {
-							childCtx, _ := context.WithCancel(ctx)
-							_ = flow.NewMessage(childCtx)
-						}()
-					}
-
-				} else {
-					elements = append(elements, element)
-				}
+				elements = append(elements, element)
 			}
 		}
 
@@ -167,6 +156,14 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 		if ok, returnMessage, err = element.Run(childCtx); err != nil {
 			log.Error(err.Error())
 			return
+		}
+
+		// send message to linked flow
+		if element.Model.PrototypeType == "Flow" && element.Model.FlowLink != nil {
+			if flow, ok := f.workflow.Flows[*element.Model.FlowLink]; ok {
+				childCtx, _ := context.WithCancel(ctx)
+				_ = flow.NewMessage(childCtx)
+			}
 		}
 
 		// copy message

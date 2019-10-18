@@ -26,6 +26,11 @@ func Test5(t *testing.T) {
 			scriptService *scripts.ScriptService,
 			c *core.Core) {
 
+			// stop core
+			// ------------------------------------------------
+			err := c.Stop()
+			So(err, ShouldBeNil)
+
 			// clear database
 			migrations.Purge()
 
@@ -39,7 +44,6 @@ func Test5(t *testing.T) {
 			ok, _ := node.Valid()
 			So(ok, ShouldEqual, true)
 
-			var err error
 			node.Id, err = adaptors.Node.Add(node)
 			So(err, ShouldBeNil)
 

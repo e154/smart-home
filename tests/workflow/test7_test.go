@@ -22,23 +22,26 @@ import (
 //
 // +----------+     +----------+    +----------+
 // | handler  |     |  task    |    |  emitter |
-// | script12 +-----> script13 +----> script14 |
+// | script12 +--X--> script13 +----> script14 |
 // |          |     |          |    |          |
 // +----------+     +----------+    +----------+
 //
-func Test6(t *testing.T) {
+// reset flow process after handler
+//
+func Test7(t *testing.T) {
+
+	var cancelFunc context.CancelFunc
 
 	var story = make([]string, 0)
-	var scriptCounter string
 
 	store = func(i interface{}) {
 		cmd := fmt.Sprintf("%v", i)
 
 		story = append(story, cmd)
-	}
 
-	store2 = func(i interface{}) {
-		scriptCounter = fmt.Sprintf("%v", i)
+		if cmd == "script12" {
+			cancelFunc()
+		}
 	}
 
 	Convey("break flow process", t, func(ctx C) {
@@ -254,15 +257,16 @@ func Test6(t *testing.T) {
 
 			// create context
 			var ctx context.Context
-			ctx, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+			ctx, cancelFunc = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
 			ctx = context.WithValue(ctx, "msg", message)
 
-			Println("send message ...")
-			err = flowCore.NewMessage(ctx)
-			So(err, ShouldBeNil)
+			for i:=0;i<5;i++ {
+				Println("send message ...")
+				err = flowCore.NewMessage(ctx)
+				So(err, ShouldNotBeNil)
+			}
 
-			So(len(story), ShouldEqual, 3)
-			So(scriptCounter, ShouldEqual, "3")
+			So(len(story), ShouldEqual, 1)
 		})
 	})
 }

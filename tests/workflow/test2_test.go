@@ -46,6 +46,11 @@ func Test2(t *testing.T) {
 			scriptService *scripts.ScriptService,
 			c *core.Core) {
 
+			// stop core
+			// ------------------------------------------------
+			err := c.Stop()
+			So(err, ShouldBeNil)
+
 			// clear database
 			// ------------------------------------------------
 			migrations.Purge()

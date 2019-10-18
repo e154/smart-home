@@ -1,10 +1,8 @@
 package workflow
 
 import (
-	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	. "github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/migrations"
@@ -38,6 +36,11 @@ func Test4(t *testing.T) {
 			scriptService *scripts.ScriptService,
 			c *core.Core) {
 
+			// stop core
+			// ------------------------------------------------
+			err := c.Stop()
+			So(err, ShouldBeNil)
+
 			// clear database
 			migrations.Purge()
 
@@ -51,7 +54,6 @@ func Test4(t *testing.T) {
 			ok, _ := node.Valid()
 			So(ok, ShouldEqual, true)
 
-			var err error
 			node.Id, err = adaptors.Node.Add(node)
 			So(err, ShouldBeNil)
 
@@ -215,9 +217,9 @@ func Test4(t *testing.T) {
 			flow1, err = adaptors.Flow.GetById(flow1.Id)
 			So(err, ShouldBeNil)
 
-			fmt.Println("----")
-			debug.Println(flow1)
-			fmt.Println("----")
+			//fmt.Println("----")
+			//debug.Println(flow1)
+			//fmt.Println("----")
 		})
 	})
 }
