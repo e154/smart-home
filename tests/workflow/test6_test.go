@@ -269,8 +269,11 @@ func Test6(t *testing.T) {
 			ctx, cancelFunc = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
 			ctx = context.WithValue(ctx, "msg", message)
 
-			err = flowCore.NewMessage(ctx)
-			So(err, ShouldNotBeNil)
+			for i:=0;i<5;i++ {
+				Println("send message ...")
+				err = flowCore.NewMessage(ctx)
+				So(err, ShouldNotBeNil)
+			}
 
 			So(len(story), ShouldEqual, 1)
 		})
