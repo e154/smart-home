@@ -127,7 +127,7 @@ IC.store('script14')
 print "message:", message.getVar('val')
 `
 
-// test8
+// test8, test9, test10
 // ------------------------------------------------
 const coffeeScript16 = `
 print "run workflow script (script 16)"
