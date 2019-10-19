@@ -131,7 +131,7 @@ func (n *WorkflowEndpoint) UpdateScenario(workflowId int64, workflowScenarioId i
 		return
 	}
 
-	n.core.UpdateWorkflowScenario(workflow)
+	err = n.core.UpdateWorkflowScenario(workflow)
 
 	return
 }

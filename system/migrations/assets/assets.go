@@ -18,6 +18,7 @@
 // migrations/20190730_235533_fix_workflow_scenario_ref.sql
 // migrations/20190910_234100_add_map_element_zone_attr.sql
 // migrations/20190913_172212_rename_zone_tags.sql
+// migrations/20191012_010345_update_device_actions_2_scripts_fk.sql
 // DO NOT EDIT!
 
 package database
@@ -440,7 +441,27 @@ func migrations20190913_172212_rename_zone_tagsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20190913_172212_rename_zone_tags.sql", size: 263, mode: os.FileMode(420), modTime: time.Unix(1568370197, 0)}
+	info := bindataFileInfo{name: "migrations/20190913_172212_rename_zone_tags.sql", size: 263, mode: os.FileMode(420), modTime: time.Unix(1568376221, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20191012_010345_update_device_actions_2_scripts_fkSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x90\x31\x4f\xc3\x30\x10\x85\x77\xff\x8a\xb7\xb5\x15\xca\xc2\xda\xc9\x24\x57\x54\x11\xa5\x90\x38\x03\x53\x94\x26\x57\x6a\xd5\xb5\x2d\xdb\x28\xfc\x7c\x14\x0a\x15\x48\x08\x71\xe3\xa7\xf7\x9e\x4e\x5f\x96\xe1\xe6\xac\x5f\x42\x9f\x18\xad\x17\x59\x86\xe6\xa9\x84\xb6\x88\x3c\x24\xed\x2c\x16\xad\x5f\x40\x47\xf0\x1b\x0f\xaf\x89\x47\x4c\x47\xb6\x48\x47\x1d\x71\xe9\xcd\x21\x1d\xd1\x7b\x6f\x34\x8f\xa2\x37\x89\x03\x52\xbf\x37\x8c\x83\x71\x53\xc7\x86\xcf\x6c\x53\x14\x00\x30\x06\xe7\x31\x38\x1b\x53\xe8\xb5\x4d\x1f\x6c\xbe\x1f\xc9\xee\xb6\x8b\x43\xd0\x3e\xc5\xee\x70\x5a\x0b\x21\x4b\x45\x35\x94\xbc\x2b\xe9\x97\x49\x59\x14\xc8\x77\x55\xa3\x6a\xb9\xad\xd4\x1f\x4b\xd8\xec\x6a\xda\xde\x57\x78\xa0\x67\x2c\x2f\xbc\xd3\xe3\xea\xfa\x44\x4d\x1b\xaa\xa9\xca\xa9\xc1\x67\x0b\x4b\x3d\xae\xb0\xab\xd0\x3e\x16\x52\x11\x72\xd9\xe4\xb2\xa0\x99\x14\x54\x92\x22\x34\xa4\x50\xb5\x65\xb9\x16\xe2\xbb\xca\xc2\x4d\xf6\x4b\xe6\xd5\xe4\x0c\xff\xe5\x32\x38\x63\x78\xc4\xbe\x1f\x4e\xe2\x3d\x00\x00\xff\xff\x87\xf6\xb2\xea\xa1\x01\x00\x00")
+
+func migrations20191012_010345_update_device_actions_2_scripts_fkSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20191012_010345_update_device_actions_2_scripts_fkSql,
+		"migrations/20191012_010345_update_device_actions_2_scripts_fk.sql",
+	)
+}
+
+func migrations20191012_010345_update_device_actions_2_scripts_fkSql() (*asset, error) {
+	bytes, err := migrations20191012_010345_update_device_actions_2_scripts_fkSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20191012_010345_update_device_actions_2_scripts_fk.sql", size: 417, mode: os.FileMode(420), modTime: time.Unix(1570818188, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -515,6 +536,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20190730_235533_fix_workflow_scenario_ref.sql": migrations20190730_235533_fix_workflow_scenario_refSql,
 	"migrations/20190910_234100_add_map_element_zone_attr.sql": migrations20190910_234100_add_map_element_zone_attrSql,
 	"migrations/20190913_172212_rename_zone_tags.sql": migrations20190913_172212_rename_zone_tagsSql,
+	"migrations/20191012_010345_update_device_actions_2_scripts_fk.sql": migrations20191012_010345_update_device_actions_2_scripts_fkSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -576,6 +598,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20190730_235533_fix_workflow_scenario_ref.sql": &bintree{migrations20190730_235533_fix_workflow_scenario_refSql, map[string]*bintree{}},
 		"20190910_234100_add_map_element_zone_attr.sql": &bintree{migrations20190910_234100_add_map_element_zone_attrSql, map[string]*bintree{}},
 		"20190913_172212_rename_zone_tags.sql": &bintree{migrations20190913_172212_rename_zone_tagsSql, map[string]*bintree{}},
+		"20191012_010345_update_device_actions_2_scripts_fk.sql": &bintree{migrations20191012_010345_update_device_actions_2_scripts_fkSql, map[string]*bintree{}},
 	}},
 }}
 

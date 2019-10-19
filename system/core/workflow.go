@@ -44,11 +44,19 @@ func NewWorkflow(model *m.Workflow,
 
 func (wf *Workflow) Run() (err error) {
 
-	wf.runScripts()
+	log.Infof("Run workflow '%v'", wf.model.Name)
 
-	wf.enterScenario()
+	if err = wf.runScripts(); err != nil {
+		return
+	}
 
-	err = wf.initFlows()
+	if err = wf.enterScenario(); err != nil {
+		return
+	}
+
+	if err = wf.initFlows(); err != nil {
+		return
+	}
 
 	return
 }
@@ -66,7 +74,10 @@ func (wf *Workflow) Stop() (err error) {
 
 func (wf *Workflow) Restart() (err error) {
 
-	wf.Stop()
+	if err = wf.Stop(); err != nil {
+		return
+	}
+
 	err = wf.Run()
 
 	return
@@ -79,13 +90,17 @@ func (wf *Workflow) Restart() (err error) {
 // получаем все связанные процессы
 func (wf *Workflow) initFlows() (err error) {
 
+	log.Infof("Get flows")
+
 	var flows []*m.Flow
 	if flows, err = wf.adaptors.Flow.GetAllEnabledByWorkflow(wf.model.Id); err != nil {
 		return
 	}
 
 	for _, flow := range flows {
-		wf.AddFlow(flow)
+		if err = wf.AddFlow(flow); err != nil {
+			log.Error(err.Error())
+		}
 	}
 
 	return
@@ -102,7 +117,7 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 		return
 	}
 
-	log.Infof("Add flow: %s", flow.Name)
+	log.Infof("Add flow: '%s'", flow.Name)
 
 	wf.Lock()
 	if _, ok := wf.Flows[flow.Id]; ok {
@@ -125,8 +140,7 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 
 func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
 
-	err = wf.RemoveFlow(flow)
-	if err != nil {
+	if err = wf.RemoveFlow(flow); err != nil {
 		return
 	}
 
@@ -137,7 +151,7 @@ func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
 
 func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 
-	log.Infof("Remove flow: %s", flow.Name)
+	log.Infof("Remove flow: '%s'", flow.Name)
 
 	wf.Lock()
 	defer wf.Unlock()
@@ -153,6 +167,8 @@ func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 }
 
 func (wf *Workflow) GetFLow(flowId int64) (flow *Flow, err error) {
+
+	log.Infof("GetFLow: id(%v)", flowId)
 
 	if _, ok := wf.Flows[flowId]; !ok {
 		err = errors.New("not found")
@@ -184,7 +200,7 @@ func (wf *Workflow) SetScenario(systemName string) (err error) {
 			return
 		}
 
-		wf.UpdateScenario()
+		err = wf.UpdateScenario()
 
 		break
 	}
@@ -198,7 +214,7 @@ func (wf *Workflow) enterScenario() (err error) {
 		return
 	}
 
-	log.Infof("Workflow '%s': enter scenario", wf.model.Name)
+	log.Infof("Workflow '%s', scenario '%s'", wf.model.Name, wf.model.Scenario.Name)
 
 	err = wf.runScenarioScripts(wf.model.Scenario, "on_enter")
 
@@ -211,9 +227,13 @@ func (wf *Workflow) exitScenario() (err error) {
 		return
 	}
 
-	log.Infof("Workflow '%s': exit from scenario", wf.model.Name)
+	log.Infof("Workflow '%s', scenario '%s'", wf.model.Name, wf.model.Scenario.Name)
 
-	err = wf.runScenarioScripts(wf.model.Scenario, "on_exit")
+	if wf.model.Scenario != nil {
+		if err = wf.runScenarioScripts(wf.model.Scenario, "on_exit"); err != nil {
+			return
+		}
+	}
 
 	return
 }
@@ -231,17 +251,15 @@ func (wf *Workflow) UpdateScenario() (err error) {
 		return
 	}
 
-	log.Infof("Workflow '%s': update scenario", wf.model.Name)
+	log.Infof("Workflow '%s': change scenario to '%s'", wf.model.Name, model.Scenario.Name)
 
-	if wf.model.Scenario != nil {
-		if err = wf.runScenarioScripts(wf.model.Scenario, "on_exit"); err != nil {
-			return
-		}
+	if err = wf.Stop(); err != nil {
+		return
 	}
 
 	*wf.model = *model
 
-	err = wf.enterScenario()
+	err = wf.Run()
 
 	return
 }

@@ -1,10 +1,11 @@
 package core
 
 import (
+	"context"
+	"errors"
+	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/adaptors"
-	"errors"
 )
 
 type FlowElement struct {
@@ -59,9 +60,17 @@ func (m *FlowElement) Before(message *Message) error {
 }
 
 // run internal process
-func (m *FlowElement) Run(msg *Message) (b bool, returnMessage *Message, err error) {
+func (m *FlowElement) Run(ctx context.Context) (b bool, returnMessage *Message, err error) {
 
-	message := msg.Copy()
+	if err = ctx.Err(); err != nil {
+		return
+	}
+
+	message, ok := ctx.Value("msg").(*Message)
+	if !ok {
+		err = errors.New("bad message object")
+		return
+	}
 
 	m.status = IN_PROCESS
 

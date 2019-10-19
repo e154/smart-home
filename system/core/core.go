@@ -111,7 +111,9 @@ func (b *Core) Restart() (err error) {
 }
 
 func (b *Core) Shutdown() {
-	b.Stop()
+	if err := b.Stop(); err != nil {
+		log.Error(err.Error())
+	}
 }
 
 // ------------------------------------------------
@@ -126,7 +128,9 @@ func (c *Core) initNodes() (err error) {
 	}
 
 	for _, modelNode := range nodes {
-		c.AddNode(modelNode)
+		if _, err = c.AddNode(modelNode); err != nil {
+			log.Error(err.Error())
+		}
 	}
 
 	return
@@ -182,7 +186,9 @@ func (b *Core) ReloadNode(node *m.Node) (err error) {
 	log.Infof("Reload node: \"%s\"", node.Name)
 
 	if _, ok := b.nodes[node.Id]; !ok {
-		b.AddNode(node)
+		if _, err = b.AddNode(node); err != nil {
+			log.Error(err.Error())
+		}
 		return
 	}
 
@@ -278,7 +284,7 @@ func (b *Core) InitWorkflows() (err error) {
 // добавление рабочего процесс
 func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 
-	log.Infof("Add workflow: %s", workflow.Name)
+	log.Infof("Add workflow: '%s'", workflow.Name)
 
 	if _, ok := b.workflows[workflow.Id]; ok {
 		return
@@ -296,6 +302,8 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 }
 
 func (wf *Core) GetWorkflow(workflowId int64) (workflow *Workflow, err error) {
+
+	log.Infof("GetWorkflow: id(%v)", workflowId)
 
 	if _, ok := wf.workflows[workflowId]; !ok {
 		err = errors.New("not found")
@@ -316,7 +324,7 @@ func (b *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	b.workflows[workflow.Id].Stop()
+	err = b.workflows[workflow.Id].Stop()
 	delete(b.workflows, workflow.Id)
 
 	return
@@ -462,32 +470,36 @@ func (b *Core) UpdateFlowFromDevice(device *m.Device) (err error) {
 
 func (b *Core) UpdateWorker(_worker *m.Worker) (err error) {
 
-	//	for _, workflow := range b.workflows {
-	//		for _, flow := range workflow.Flows {
-	//			for _, worker := range flow.Workers {
-	//				if worker.Model.Id == _worker.Id {
-	//					flow.UpdateWorker(_worker)
-	//					break
-	//				}
-	//			}
-	//		}
-	//	}
-	//
+	for _, workflow := range b.workflows {
+		for _, flow := range workflow.Flows {
+			for _, worker := range flow.Workers {
+				if worker.Model.Id == _worker.Id {
+					if err = flow.UpdateWorker(_worker); err != nil {
+						log.Error(err.Error())
+					}
+					break
+				}
+			}
+		}
+	}
+
 	return
 }
 
 func (b *Core) RemoveWorker(_worker *m.Worker) (err error) {
 
-	//	for _, workflow := range b.workflows {
-	//		for _, flow := range workflow.Flows {
-	//			for _, worker := range flow.Workers {
-	//				if worker.Model.Id == _worker.Id {
-	//					flow.RemoveWorker(_worker)
-	//					break
-	//				}
-	//			}
-	//		}
-	//	}
+	for _, workflow := range b.workflows {
+		for _, flow := range workflow.Flows {
+			for _, worker := range flow.Workers {
+				if worker.Model.Id == _worker.Id {
+					if err = flow.RemoveWorker(_worker); err != nil {
+						log.Error(err.Error())
+					}
+					break
+				}
+			}
+		}
+	}
 
 	return
 }

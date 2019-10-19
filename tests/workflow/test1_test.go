@@ -24,7 +24,7 @@ func Test1(t *testing.T) {
 
 	var script1, script2, script3, script4 *m.Script
 	Convey("add scripts", t, func(ctx C) {
-		container.Invoke(func(adaptors *adaptors.Adaptors,
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService) {
 
@@ -98,7 +98,7 @@ func Test1(t *testing.T) {
 	var workflow *m.Workflow
 	Convey("add workflow", t, func(ctx C) {
 
-		container.Invoke(func(adaptors *adaptors.Adaptors) {
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors) {
 
 			// create workflow
 			workflow = &m.Workflow{
@@ -122,7 +122,7 @@ func Test1(t *testing.T) {
 	var wfScenario1, wfScenario2 *m.WorkflowScenario
 	Convey("add workflow scenarios", t, func(ctx C) {
 
-		container.Invoke(func(adaptors *adaptors.Adaptors) {
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors) {
 
 			wfScenario1 = &m.WorkflowScenario{
 				Name:       "wf scenario 1",
@@ -154,7 +154,7 @@ func Test1(t *testing.T) {
 	})
 
 	Convey("check workflow", t, func(ctx C) {
-		container.Invoke(func(adaptors *adaptors.Adaptors) {
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors) {
 			wf, err := adaptors.Workflow.GetById(workflow.Id)
 			So(err, ShouldBeNil)
 
@@ -170,7 +170,7 @@ func Test1(t *testing.T) {
 
 	Convey("run workflow", t, func(ctx C) {
 
-		container.Invoke(func(adaptors *adaptors.Adaptors,
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			scriptService *scripts.ScriptService,
 			cron *cr.Cron,
 			c *core.Core) {

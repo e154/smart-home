@@ -1,14 +1,16 @@
 package workflow
 
 import (
-	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/migrations"
+	"context"
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
+	"testing"
+	"time"
 )
 
 //
@@ -27,7 +29,7 @@ func Test2(t *testing.T) {
 
 	var store interface{}
 	Convey("add scripts", t, func(ctx C) {
-		container.Invoke(func(adaptors *adaptors.Adaptors,
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
 			c *core.Core) {
@@ -38,16 +40,23 @@ func Test2(t *testing.T) {
 		})
 	})
 
-	Convey("add scripts", t, func(ctx C) {
-		container.Invoke(func(adaptors *adaptors.Adaptors,
+	Convey("run core", t, func(ctx C) {
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
 			c *core.Core) {
 
+			// stop core
+			// ------------------------------------------------
+			err := c.Stop()
+			So(err, ShouldBeNil)
+
 			// clear database
+			// ------------------------------------------------
 			migrations.Purge()
 
 			// create scripts
+			// ------------------------------------------------
 			script1 := &m.Script{
 				Lang:        "coffeescript",
 				Name:        "test1",
@@ -122,6 +131,7 @@ func Test2(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// create workflow
+			// ------------------------------------------------
 			workflow := &m.Workflow{
 				Name:        "main workflow",
 				Description: "main workflow desc",
@@ -136,6 +146,7 @@ func Test2(t *testing.T) {
 			workflow.Id = wfId
 
 			// add workflow scenario
+			// ------------------------------------------------
 			wfScenario1 := &m.WorkflowScenario{
 				Name:       "wf scenario 1",
 				SystemName: "wf_scenario_1",
@@ -221,8 +232,13 @@ func Test2(t *testing.T) {
 			flowCore, err := workflowCore.GetFLow(flow1.Id)
 			So(err, ShouldBeNil)
 
-			msg := core.NewMessage()
-			err = flowCore.NewMessage(msg)
+			message := core.NewMessage()
+
+			// create context
+			ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+			ctx = context.WithValue(ctx, "msg", message)
+
+			err = flowCore.NewMessage(ctx)
 			So(err, ShouldBeNil)
 
 			So(store, ShouldEqual, "b")

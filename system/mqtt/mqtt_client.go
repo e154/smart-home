@@ -1,9 +1,9 @@
 package mqtt
 
 import (
-	"github.com/surgemq/surgemq/service"
-	"github.com/surgemq/message"
 	"fmt"
+	"github.com/surgemq/message"
+	"github.com/surgemq/surgemq/service"
 	"os"
 	"time"
 )

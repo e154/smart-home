@@ -1,14 +1,14 @@
 package workflow
 
 import (
-	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/core"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/models/devices"
+	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 // create node
@@ -21,25 +21,29 @@ import (
 func Test5(t *testing.T) {
 
 	Convey("add scripts", t, func(ctx C) {
-		container.Invoke(func(adaptors *adaptors.Adaptors,
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
 			c *core.Core) {
+
+			// stop core
+			// ------------------------------------------------
+			err := c.Stop()
+			So(err, ShouldBeNil)
 
 			// clear database
 			migrations.Purge()
 
 			// add node
 			node := &m.Node{
-				Name:   "node",
-				Ip:     "127.0.0.1",
-				Port:   3001,
-				Status: "enabled",
+				Name:     "node",
+				Login:    "node",
+				Password: "node",
+				Status:   "enabled",
 			}
 			ok, _ := node.Valid()
 			So(ok, ShouldEqual, true)
 
-			var err error
 			node.Id, err = adaptors.Node.Add(node)
 			So(err, ShouldBeNil)
 
@@ -55,10 +59,10 @@ func Test5(t *testing.T) {
 			So(ok, ShouldEqual, true)
 
 			smartBusConfig1 := &DevSmartBusConfig{
-				Baud: 19200,
-				Timeout: 457,
+				Baud:     19200,
+				Timeout:  457,
 				StopBits: 2,
-				Sleep: 0,
+				Sleep:    0,
 			}
 
 			ok, _ = parentDevice.SetProperties(smartBusConfig1)
