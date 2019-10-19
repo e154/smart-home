@@ -19,6 +19,7 @@
 // migrations/20190910_234100_add_map_element_zone_attr.sql
 // migrations/20190913_172212_rename_zone_tags.sql
 // migrations/20191012_010345_update_device_actions_2_scripts_fk.sql
+// migrations/20191019_150307_fix_constraints.sql
 // DO NOT EDIT!
 
 package database
@@ -121,7 +122,7 @@ func migrations20170121_005244_workflowsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20170121_005244_workflows.sql", size: 2822, mode: os.FileMode(420), modTime: time.Unix(1568213048, 0)}
+	info := bindataFileInfo{name: "migrations/20170121_005244_workflows.sql", size: 2822, mode: os.FileMode(420), modTime: time.Unix(1571472528, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -466,6 +467,26 @@ func migrations20191012_010345_update_device_actions_2_scripts_fkSql() (*asset, 
 	return a, nil
 }
 
+var _migrations20191019_150307_fix_constraintsSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xac\x92\x3f\x4f\xc3\x30\x10\xc5\x77\x7f\x8a\xb7\x75\x40\x59\x58\x3b\x05\xc8\x80\x14\x52\x91\xba\xb3\x15\x9c\x2b\x3d\xc5\xd8\x96\xcf\xc8\x7c\x7c\x54\x55\xe1\x7f\x05\xa8\x5d\xcf\x3f\xdb\xef\x9d\x7e\x55\x85\x8b\x27\x7e\x4c\x43\x26\x6c\xa2\xaa\x2a\xac\xef\x5b\xb0\x87\x90\xcd\x1c\x3c\x16\x9b\xb8\x00\x0b\xe8\x85\xec\x73\xa6\x11\x65\x47\x1e\x79\xc7\x82\xc3\xbd\x3d\xc4\x82\x21\x46\xc7\x34\x2a\x55\xb7\xba\xe9\xa1\xeb\xab\xb6\x41\x09\x69\xda\xba\x50\x8c\x58\xf2\x43\xe2\x60\xc4\x26\x8e\x59\x14\x00\xf4\x4d\x57\xdf\x35\xb8\x5e\x75\x6b\xdd\xd7\xb7\x9d\xfe\xce\x8b\xb9\x34\xf3\x50\xcc\x76\x82\x5e\x1d\x7f\xf4\x0b\xbb\x3c\x29\xca\xe1\xf4\x53\x90\xf9\x9b\xdf\x63\xbc\x93\xcb\xa3\x0b\x39\xe7\x1e\xfe\x55\xff\x5c\xad\x7f\x2c\xfb\xd1\xa7\x9b\x50\xfc\x6c\xd4\x9b\x4e\xfb\xe1\x9f\x84\x4a\xc1\x39\x1a\xf1\x30\xd8\x49\x29\xf5\x1a\x00\x00\xff\xff\x41\x67\xec\x4d\xa8\x02\x00\x00")
+
+func migrations20191019_150307_fix_constraintsSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20191019_150307_fix_constraintsSql,
+		"migrations/20191019_150307_fix_constraints.sql",
+	)
+}
+
+func migrations20191019_150307_fix_constraintsSql() (*asset, error) {
+	bytes, err := migrations20191019_150307_fix_constraintsSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20191019_150307_fix_constraints.sql", size: 680, mode: os.FileMode(420), modTime: time.Unix(1571472628, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -537,6 +558,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20190910_234100_add_map_element_zone_attr.sql": migrations20190910_234100_add_map_element_zone_attrSql,
 	"migrations/20190913_172212_rename_zone_tags.sql": migrations20190913_172212_rename_zone_tagsSql,
 	"migrations/20191012_010345_update_device_actions_2_scripts_fk.sql": migrations20191012_010345_update_device_actions_2_scripts_fkSql,
+	"migrations/20191019_150307_fix_constraints.sql": migrations20191019_150307_fix_constraintsSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -599,6 +621,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20190910_234100_add_map_element_zone_attr.sql": &bintree{migrations20190910_234100_add_map_element_zone_attrSql, map[string]*bintree{}},
 		"20190913_172212_rename_zone_tags.sql": &bintree{migrations20190913_172212_rename_zone_tagsSql, map[string]*bintree{}},
 		"20191012_010345_update_device_actions_2_scripts_fk.sql": &bintree{migrations20191012_010345_update_device_actions_2_scripts_fkSql, map[string]*bintree{}},
+		"20191019_150307_fix_constraints.sql": &bintree{migrations20191019_150307_fix_constraintsSql, map[string]*bintree{}},
 	}},
 }}
 
