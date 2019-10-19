@@ -183,5 +183,32 @@ message.setVar('val', c)
 IC.store2(c)
 `
 
+const coffeeScript22 = `
+print "run workflow script (script 22)"
+IC.store('script22')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
+`
+
+const coffeeScript23 = `
+print "run workflow script (script 23)"
+IC.store('script23')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
+`
+
+const coffeeScript24 = `
+print "run workflow script (script 24)"
+IC.store('script24')
+print "message:", message.getVar('val')
+c = message.getVar('val') + 1
+message.setVar('val', c)
+IC.store2(c)
+`
+
 // test8...
 // ------------------------------------------------
