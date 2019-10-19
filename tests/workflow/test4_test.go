@@ -21,9 +21,11 @@ import (
 // add workflow scenarios (wf_scenario_1)
 //
 // add flow (flow1)
-//
-// flow add elements
-// 				[handler + script11]
+// +----------+
+// | handler  |
+// | script11 |
+// |          |
+// +----------+
 //
 // add worker
 //

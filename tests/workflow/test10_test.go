@@ -427,19 +427,19 @@ func Test10(t *testing.T) {
 			message.SetVar("val", 1)
 
 			// create context
-			var ctx context.Context
-			ctx, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
-			ctx = context.WithValue(ctx, "msg", message)
+			var ctx1 context.Context
+			ctx1, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+			ctx1 = context.WithValue(ctx1, "msg", message)
 
 			for i := 0; i < 1; i++ {
-				Println("send message ...")
-				err = flowCore.NewMessage(ctx)
-				//So(err, ShouldBeNil)
+				ctx.Println("send message ...")
+				err = flowCore.NewMessage(ctx1)
+				So(err, ShouldNotBeNil)
+				ctx.Println(err.Error())
 			}
 
-			Println(len(story))
-			Println(scriptCounter)
-			//So(scriptCounter, ShouldEqual, "7")
+			So(len(story), ShouldEqual, 4)
+			So(scriptCounter, ShouldEqual, "5")
 		})
 	})
 }

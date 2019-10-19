@@ -432,7 +432,7 @@ func Test8(t *testing.T) {
 				So(err, ShouldBeNil)
 			}
 
-			Println(len(story))
+			So(len(story), ShouldEqual, 0)
 			So(scriptCounter, ShouldEqual, "7")
 		})
 	})

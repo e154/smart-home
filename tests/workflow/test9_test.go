@@ -80,7 +80,7 @@ func Test9(t *testing.T) {
 			// ------------------------------------------------
 			err := c.Stop()
 			So(err, ShouldBeNil)
-			
+
 			// clear database
 			// ------------------------------------------------
 			migrations.Purge()
@@ -441,7 +441,7 @@ func Test9(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			}
 
-			Println(len(story))
+			So(len(story), ShouldEqual, 2)
 			So(scriptCounter, ShouldEqual, "3")
 		})
 	})
