@@ -40,5 +40,6 @@ func (w *WorkflowBind) GetScenarioName() string {
 }
 
 func (w *WorkflowBind) SetScenario(system_name string) {
+	//bug if call this method from scenario
 	w.wf.SetScenario(system_name)
 }

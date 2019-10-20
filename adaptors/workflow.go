@@ -1,10 +1,10 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
+	"errors"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"errors"
+	"github.com/jinzhu/gorm"
 	"go/types"
 )
 
@@ -64,7 +64,7 @@ func (n *Workflow) Update(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	err = n.UpdateScripts(workflow)
+	//err = n.UpdateScripts(workflow)
 
 	return
 }

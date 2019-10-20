@@ -70,6 +70,9 @@ main() {
     --docker_deploy)
     __docker_deploy
     ;;
+    --test)
+    __test
+    ;;
     *)
     echo "Error: Invalid argument '$1'" >&2
     exit 1
@@ -194,6 +197,13 @@ __docker_deploy() {
     # push tagged image
     docker push ${DOCKER_IMAGE_VER}
     docker push ${DOCKER_IMAGE_LATEST}
+}
+
+__test() {
+    cd ${ROOT}
+
+    go test -v ./tests/scripts
+    go test -v ./tests/workflow
 }
 
 main "$@"

@@ -1,6 +1,7 @@
 package scripts
 
 import (
+	"fmt"
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/e154/smart-home/system/migrations"
@@ -11,9 +12,14 @@ import (
 
 func Test2(t *testing.T) {
 
+	var state string
+	store = func(i interface{}) {
+		state = fmt.Sprintf("%v", i)
+	}
+
 	var script1 *m.Script
 	Convey("require external library", t, func(ctx C) {
-		container.Invoke(func(adaptors *adaptors.Adaptors,
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService) {
 
@@ -34,7 +40,7 @@ func Test2(t *testing.T) {
 			_, err = engine1.Do()
 			So(err, ShouldBeNil)
 
-			So(store, ShouldEqual, "123-bar-Jan")
+			So(state, ShouldEqual, "123-bar-Jan")
 		})
 	})
 }

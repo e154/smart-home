@@ -44,9 +44,11 @@ func Test4(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// clear database
+			// ------------------------------------------------
 			migrations.Purge()
 
 			// add node
+			// ------------------------------------------------
 			node := &m.Node{
 				Name:     "node",
 				Login:    "node",
@@ -60,6 +62,7 @@ func Test4(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// add parent device
+			// ------------------------------------------------
 			parentDevice := &m.Device{
 				Name:       "device",
 				Status:     "enabled",
@@ -99,6 +102,7 @@ func Test4(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// add script
+			// ------------------------------------------------
 			script10 := &m.Script{
 				Lang:        "coffeescript",
 				Name:        "test10",
@@ -136,6 +140,7 @@ func Test4(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// add device action
+			// ------------------------------------------------
 			deviceAction := &m.DeviceAction{
 				Name:     "deviceAction",
 				DeviceId: parentDevice.Id,
@@ -172,6 +177,11 @@ func Test4(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// add flow1
+			// +----------+
+			// | handler  |
+			// | script11 |
+			// |          |
+			// +----------+
 			flow1 := &m.Flow{
 				Name:               "flow1",
 				Status:             Enabled,
