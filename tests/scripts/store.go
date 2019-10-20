@@ -2,11 +2,11 @@ package scripts
 
 import "github.com/e154/smart-home/system/scripts"
 
-var store interface{}
+var store = func(interface{}) {}
 
 func storeRegisterCallback(scriptService *scripts.ScriptService) {
 	scriptService.PushFunctions("store", func(value interface{}) {
-		store = value
+		store(value)
 	})
 }
 

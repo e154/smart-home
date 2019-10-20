@@ -186,17 +186,18 @@ func (wf *Workflow) GetFLow(flowId int64) (flow *Flow, err error) {
 
 func (wf *Workflow) SetScenario(systemName string) (err error) {
 
+	log.Infof("workflow(%s) set scenario '%s'", wf.model.Name, systemName)
+
 	var scenario *m.WorkflowScenario
 	for _, scenario = range wf.model.Scenarios {
 		if scenario.SystemName != systemName {
 			continue
 		}
 
-		workflow := &m.Workflow{}
-		*workflow = *wf.model
+		workflow := *wf.model
 		workflow.Scenario = scenario
 
-		if err = wf.adaptors.Workflow.Update(workflow); err != nil {
+		if err = wf.adaptors.Workflow.Update(&workflow); err != nil {
 			return
 		}
 
@@ -216,7 +217,7 @@ func (wf *Workflow) enterScenario() (err error) {
 
 	log.Infof("Workflow '%s', scenario '%s'", wf.model.Name, wf.model.Scenario.Name)
 
-	err = wf.runScenarioScripts(wf.model.Scenario, "on_enter")
+	err = wf.runScenarioScripts("on_enter")
 
 	return
 }
@@ -227,12 +228,8 @@ func (wf *Workflow) exitScenario() (err error) {
 		return
 	}
 
-	log.Infof("Workflow '%s', scenario '%s'", wf.model.Name, wf.model.Scenario.Name)
-
 	if wf.model.Scenario != nil {
-		if err = wf.runScenarioScripts(wf.model.Scenario, "on_exit"); err != nil {
-			return
-		}
+		err = wf.runScenarioScripts("on_exit")
 	}
 
 	return
@@ -251,7 +248,7 @@ func (wf *Workflow) UpdateScenario() (err error) {
 		return
 	}
 
-	log.Infof("Workflow '%s': change scenario to '%s'", wf.model.Name, model.Scenario.Name)
+	log.Infof("Workflow '%s' change scenario to '%s'", wf.model.Name, model.Scenario.Name)
 
 	if err = wf.Stop(); err != nil {
 		return
@@ -264,12 +261,13 @@ func (wf *Workflow) UpdateScenario() (err error) {
 	return
 }
 
-func (wf *Workflow) runScenarioScripts(scenario *m.WorkflowScenario, f string) (err error) {
+func (wf *Workflow) runScenarioScripts(f string) (err error) {
+	log.Infof("run scenario: %s", f)
 
-	for _, scenarioScript := range scenario.Scripts {
-
+	for _, scenarioScript := range wf.model.Scenario.Scripts {
 		if err = wf.engine.EvalString(scenarioScript.Compiled); err != nil {
-			log.Errorf("compile script %d, message: %s", scenarioScript.Id, err.Error())
+			log.Errorf("eval script(%d), message: %s", scenarioScript.Id, err.Error())
+			continue
 		}
 
 		if _, err = wf.engine.DoCustom(f); err != nil {

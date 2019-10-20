@@ -1,6 +1,6 @@
 -- +migrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE EXTENSION pgcrypto;
+CREATE EXTENSION if not exists pgcrypto;
 SELECT gen_random_uuid();
 create type flows_status as enum ('enabled', 'disabled');
 

@@ -88,7 +88,6 @@ func start() {
 		go server.Start()
 		go mobileServer.Start()
 		go ws.Start()
-		//go streamProxy.Start()
 
 		graceful.Wait()
 	})

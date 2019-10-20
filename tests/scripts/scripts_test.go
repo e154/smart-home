@@ -1,14 +1,14 @@
 package scripts
 
 import (
-	"time"
-	"os"
-	"testing"
 	"github.com/e154/smart-home/system/dig"
-	"github.com/e154/smart-home/system/migrations"
-	"path/filepath"
-	"github.com/sirupsen/logrus"
 	l "github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/system/migrations"
+	"github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
 )
 
 func init() {

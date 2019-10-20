@@ -170,7 +170,11 @@ func (n *Workflows) DependencyLoading(workflow *Workflow) (err error) {
 }
 
 func (n *Workflows) AddScript(workflowId, scriptId int64) (err error) {
-	err = n.Db.Create(&WorkflowScripts{WorkflowId: workflowId, ScriptId: scriptId}).Error
+	err = n.Db.Create(&WorkflowScripts{
+		WorkflowId: workflowId,
+		ScriptId:   scriptId,
+		Weight:     0,
+	}).Error
 	return
 }
 

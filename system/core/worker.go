@@ -115,8 +115,13 @@ func (w *Worker) Do() {
 		done := make(chan struct{})
 		go func() {
 			if err := w.flow.NewMessage(ctx); err != nil {
+				log.Errorf("flow '%v' end with error: '%+v'", action.flow.Model.Name, err.Error())
+			}
+
+			if ctx.Err() != nil {
 				log.Errorf("flow '%v' end with error: '%+v'", action.flow.Model.Name, ctx.Err())
 			}
+
 			done <- struct{}{}
 		}()
 

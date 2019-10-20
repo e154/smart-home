@@ -81,6 +81,11 @@ func (f *Flow) Remove() {
 
 func (f *Flow) NewMessage(ctx context.Context) (err error) {
 
+	// circular dependency search
+	if ctx, err = f.defineCircularConnection(ctx); err != nil {
+		return
+	}
+
 	var _element *FlowElement
 
 	// find message handler
@@ -162,7 +167,9 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 		if element.Model.PrototypeType == "Flow" && element.Model.FlowLink != nil {
 			if flow, ok := f.workflow.Flows[*element.Model.FlowLink]; ok {
 				childCtx, _ := context.WithCancel(ctx)
-				_ = flow.NewMessage(childCtx)
+				if err = flow.NewMessage(childCtx); err != nil {
+					return
+				}
 			}
 		}
 
@@ -346,6 +353,8 @@ func (f *Flow) NewScript(s ...*m.Script) (engine *scripts.Engine, err error) {
 
 	javascript := engine.Get().(*scripts.Javascript)
 	ctx := javascript.Ctx()
+
+	// flow
 	if b := ctx.GetGlobalString("IC"); !b {
 		return
 	}
@@ -355,6 +364,52 @@ func (f *Flow) NewScript(s ...*m.Script) (engine *scripts.Engine, err error) {
 	})
 	ctx.PutPropString(-3, "Flow")
 	ctx.Pop()
+
+	// workflow
+	if b := ctx.GetGlobalString("IC"); !b {
+		return
+	}
+	ctx.PushObject()
+	ctx.PushGoFunction(func() *WorkflowBind {
+		return &WorkflowBind{wf: f.workflow}
+	})
+	ctx.PutPropString(-3, "Workflow")
+	ctx.Pop()
+
+	return
+}
+
+func (f *Flow) defineCircularConnection(ctx context.Context) (newCtx context.Context, err error) {
+
+	if v := ctx.Value("parents"); v != nil {
+		if parents, ok := v.([]int64); ok {
+			var exist bool
+			for _, parentId := range parents {
+				if parentId == f.Model.Id {
+					exist = true
+				}
+			}
+
+			if exist {
+				depends := fmt.Sprintf("%d", parents[0])
+				for _, parentId := range parents[1:] {
+					depends = fmt.Sprintf("%s -> %d", depends, parentId)
+				}
+				err = fmt.Errorf("circular relationship detected: %s -> flow(%d)", depends, f.Model.Id)
+				return
+			}
+
+			parents = append(parents, f.Model.Id)
+			newCtx = context.WithValue(ctx, "parents", parents)
+
+		} else {
+			err = fmt.Errorf("bad parent context value: parents(%v)", parents)
+		}
+
+		return
+	}
+
+	newCtx = context.WithValue(ctx, "parents", []int64{f.Model.Id})
 
 	return
 }

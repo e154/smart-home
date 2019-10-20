@@ -1,10 +1,10 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
-	m "github.com/e154/smart-home/models"
 	"errors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type WorkflowEndpoint struct {
@@ -47,7 +47,7 @@ func (n *WorkflowEndpoint) GetById(workflowId int64) (result *m.Workflow, err er
 }
 
 func (n *WorkflowEndpoint) Update(params *m.Workflow,
-	) (result *m.Workflow, errs []*validation.Error, err error) {
+) (result *m.Workflow, errs []*validation.Error, err error) {
 
 	var workflow *m.Workflow
 	if workflow, err = n.adaptors.Workflow.GetById(params.Id); err != nil {
@@ -65,6 +65,10 @@ func (n *WorkflowEndpoint) Update(params *m.Workflow,
 	}
 
 	if err = n.adaptors.Workflow.Update(workflow); err != nil {
+		return
+	}
+
+	if err = n.adaptors.Workflow.UpdateScripts(workflow); err != nil {
 		return
 	}
 
@@ -133,5 +137,13 @@ func (n *WorkflowEndpoint) UpdateScenario(workflowId int64, workflowScenarioId i
 
 	err = n.core.UpdateWorkflowScenario(workflow)
 
+	return
+}
+
+func (n WorkflowEndpoint) AddScript(workflow *m.Workflow, script *m.Script) (err error) {
+	if err = n.adaptors.Workflow.AddScript(workflow, script); err != nil {
+		return
+	}
+	workflow.Scripts = append(workflow.Scripts, script)
 	return
 }

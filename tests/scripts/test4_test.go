@@ -1,72 +1,54 @@
 package scripts
 
 import (
-	"testing"
-	"github.com/e154/smart-home/common/debug"
 	"fmt"
-	"encoding/json"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
-
-type A struct {
-	A string `json:"a"`
-	C string `json:"c"`
-	D string `json:"d"`
-}
-
-type B struct {
-	B string `json:"b"`
-	C string `json:"c"`
-}
-
-type D struct {
-	*A
-	*B
-}
-
-type F struct {
-	C *D `json:"c"`
-}
-
-func (n D) MarshalJSON() (b []byte, err error) {
-	switch {
-	case n.A != nil:
-		b, err = json.Marshal(n.A)
-	case n.B != nil:
-		b, err = json.Marshal(n.B)
-	default:
-		err = fmt.Errorf("empty prototype")
-		return
-	}
-	return
-}
 
 func Test4(t *testing.T) {
 
-	a := &A{
-		A: "A",
-		C: "C",
-		D: "D",
+	var state string
+	store = func(i interface{}) {
+		state = fmt.Sprintf("%v", i)
 	}
 
-	//b := &B{
-	//	B: "B",
-	//	C: "G",
-	//}
+	Convey("javascript PushStruct", t, func(ctx C) {
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+			migratxions *migrations.Migrations,
+			scriptService *scripts.ScriptService) {
 
-	c := &D{
-		A: a,
-		//B: b,
-	}
+			storeRegisterCallback(scriptService)
 
-	f := &F{
-		C: c,
-	}
+			script1 := &m.Script{
+				Lang:   common.ScriptLangCoffee,
+			}
+			engine, err := scriptService.NewEngine(script1)
+			So(err, ShouldBeNil)
 
-	debug.Println(c)
-	debug.Println(c.A)
-	fmt.Println("---")
-	fmt.Println(c)
-	fmt.Println(c.A)
-	fmt.Println("---")
-	debug.Println(f)
+			for i:=0;i<2;i++ {
+				_, err = engine.PushStruct("test", &MyStruct{
+					Int:     42,
+					Float64: 21.0,
+					Nested:  &MyStruct{Int: 21},
+				})
+				So(err, ShouldBeNil)
+			}
+
+			err = engine.EvalString(`IC.store([
+				test.int,
+				test.multiply(2),
+				test.nested.int,
+				test.nested.multiply(3)
+			])`)
+			So(err, ShouldBeNil)
+
+			So(state, ShouldEqual, fmt.Sprintf("[42 84 21 63]"))
+		})
+	})
 }

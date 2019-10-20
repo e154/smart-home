@@ -20,7 +20,7 @@ import (
 //
 // add flow (flow1)
 // +----------+     +----------+    +----------+
-// | handler  |     |  task    |    |  emitter |
+// | handler  |     | flowlink |    |  emitter |
 // | script16 +-----> script17 +----> script18 |
 // |          |     |          |    |          |
 // +----------+     +----------+    +----------+
@@ -32,36 +32,42 @@ import (
 // |          |     |          |    |          |
 // +----------+     +----------+    +----------+
 //
-// send message flow2 to flow1
-// +-----------+
-// |   flow2   |
-// |-----------|
-// |           |
-// |           +----------+
-// |           |          |
-// +-----------+          |
-//                  +-----v-----+
-//                  |   flow1   |
-//                  |-----------|
-//                  |           |
-//                  |           |
-//                  |           |
-//                  +-----------+
+// add flow (flow3)
+// +----------+     +----------+    +----------+
+// | handler  |     | flowlink |    |  emitter |
+// | script22 +-----> script23 +----> script24 |
+// |          |     |          |    |          |
+// +----------+     +----------+    +----------+
 //
-func Test8(t *testing.T) {
+// send message flow1 to flow2 to flow3
+// +-----------+    +-----------+    +-----------+
+// |           |    |           |    |           |
+// |-----------|    |-----------|    |-----------|
+// |           |    |           |    |           |
+// |   flow1   +---->   flow2   +---->   flow3   |
+// |           |    |           |    |           |
+// |           |    |           |    |           |
+// +-----------+    +-----------+    +------+----+
+//       ^                                  |
+//       |                                  |
+//       +----------------------------------+
+//
+func Test11(t *testing.T) {
 
 	var story = make([]string, 0)
 	var scriptCounter string
 
 	store = func(i interface{}) {
+		cmd := fmt.Sprintf("%v", i)
 
+		story = append(story, cmd)
 	}
 
 	store2 = func(i interface{}) {
 		scriptCounter = fmt.Sprintf("%v", i)
 	}
 
-	Convey("add scripts", t, func(ctx C) {
+	Convey("detect circle flow link", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
@@ -176,6 +182,54 @@ func Test8(t *testing.T) {
 			script21, err = adaptors.Script.GetById(script21Id)
 			So(err, ShouldBeNil)
 
+			script22 := &m.Script{
+				Lang:        "coffeescript",
+				Name:        "test22",
+				Source:      coffeeScript22,
+				Description: "test22",
+			}
+
+			engine22, err := scriptService.NewEngine(script22)
+			So(err, ShouldBeNil)
+			err = engine22.Compile()
+			So(err, ShouldBeNil)
+			script22Id, err := adaptors.Script.Add(script22)
+			So(err, ShouldBeNil)
+			script22, err = adaptors.Script.GetById(script22Id)
+			So(err, ShouldBeNil)
+
+			script23 := &m.Script{
+				Lang:        "coffeescript",
+				Name:        "test23",
+				Source:      coffeeScript23,
+				Description: "test23",
+			}
+
+			engine23, err := scriptService.NewEngine(script23)
+			So(err, ShouldBeNil)
+			err = engine23.Compile()
+			So(err, ShouldBeNil)
+			script23Id, err := adaptors.Script.Add(script23)
+			So(err, ShouldBeNil)
+			script23, err = adaptors.Script.GetById(script23Id)
+			So(err, ShouldBeNil)
+
+			script24 := &m.Script{
+				Lang:        "coffeescript",
+				Name:        "test24",
+				Source:      coffeeScript24,
+				Description: "test24",
+			}
+
+			engine24, err := scriptService.NewEngine(script24)
+			So(err, ShouldBeNil)
+			err = engine24.Compile()
+			So(err, ShouldBeNil)
+			script24Id, err := adaptors.Script.Add(script24)
+			So(err, ShouldBeNil)
+			script24, err = adaptors.Script.GetById(script24Id)
+			So(err, ShouldBeNil)
+
 			// add workflow
 			// ------------------------------------------------
 			workflow := &m.Workflow{
@@ -206,6 +260,32 @@ func Test8(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			err = adaptors.Workflow.SetScenario(workflow, wfScenario1)
+			So(err, ShouldBeNil)
+
+			// init flow 2
+			flow2 := &m.Flow{
+				Name:               "flow2",
+				Status:             Enabled,
+				WorkflowId:         workflow.Id,
+				WorkflowScenarioId: wfScenario1.Id,
+			}
+			ok, _ = flow2.Valid()
+			So(ok, ShouldEqual, true)
+
+			flow2.Id, err = adaptors.Flow.Add(flow2)
+			So(err, ShouldBeNil)
+
+			// init flow 3
+			flow3 := &m.Flow{
+				Name:               "flow3",
+				Status:             Enabled,
+				WorkflowId:         workflow.Id,
+				WorkflowScenarioId: wfScenario1.Id,
+			}
+			ok, _ = flow3.Valid()
+			So(ok, ShouldEqual, true)
+
+			flow3.Id, err = adaptors.Flow.Add(flow3)
 			So(err, ShouldBeNil)
 
 			// add flow (flow1)
@@ -254,10 +334,11 @@ func Test8(t *testing.T) {
 				},
 			}
 			feTask1 := &m.FlowElement{
-				Name:          "task",
+				Name:          "flow",
 				FlowId:        flow1.Id,
 				Status:        Enabled,
-				PrototypeType: FlowElementsPrototypeTask,
+				PrototypeType: FlowElementsPrototypeFlow,
+				FlowLink:      &flow2.Id,
 				ScriptId:      &script17Id,
 				GraphSettings: m.FlowElementGraphSettings{
 					Position: m.FlowElementGraphSettingsPosition{
@@ -313,17 +394,6 @@ func Test8(t *testing.T) {
 			// | script19 +-----> script20 +----> script21 |
 			// |          |     |          |    |          |
 			// +----------+     +----------+    +----------+
-			flow2 := &m.Flow{
-				Name:               "flow2",
-				Status:             Enabled,
-				WorkflowId:         workflow.Id,
-				WorkflowScenarioId: wfScenario1.Id,
-			}
-			ok, _ = flow2.Valid()
-			So(ok, ShouldEqual, true)
-
-			flow2.Id, err = adaptors.Flow.Add(flow2)
-			So(err, ShouldBeNil)
 
 			// add handler
 			feHandler2 := &m.FlowElement{
@@ -358,7 +428,7 @@ func Test8(t *testing.T) {
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeFlow,
 				ScriptId:      &script20Id,
-				FlowLink:      &flow1.Id,
+				FlowLink:      &flow3.Id,
 				GraphSettings: m.FlowElementGraphSettings{
 					Position: m.FlowElementGraphSettingsPosition{
 						Top:  160,
@@ -407,6 +477,95 @@ func Test8(t *testing.T) {
 			connect4.Uuid, err = adaptors.Connection.Add(connect4)
 			So(err, ShouldBeNil)
 
+			// add flow (flow3)
+			// +----------+     +----------+    +----------+
+			// | handler  |     | flowlink |    |  emitter |
+			// | script22 +-----> script23 +----> script24 |
+			// |          |     |          |    |          |
+			// +----------+     +----------+    +----------+
+
+			// add handler
+			feHandler3 := &m.FlowElement{
+				Name:          "handler3",
+				FlowId:        flow3.Id,
+				Status:        Enabled,
+				PrototypeType: FlowElementsPrototypeMessageHandler,
+				ScriptId:      &script22Id,
+				GraphSettings: m.FlowElementGraphSettings{
+					Position: m.FlowElementGraphSettingsPosition{
+						Top:  180,
+						Left: 180,
+					},
+				},
+			}
+			feEmitter3 := &m.FlowElement{
+				Name:          "emitter3",
+				FlowId:        flow3.Id,
+				Status:        Enabled,
+				PrototypeType: FlowElementsPrototypeMessageEmitter,
+				ScriptId:      &script23Id,
+				GraphSettings: m.FlowElementGraphSettings{
+					Position: m.FlowElementGraphSettingsPosition{
+						Top:  180,
+						Left: 560,
+					},
+				},
+			}
+			flowLink3 := &m.FlowElement{
+				Name:          "flow",
+				FlowId:        flow3.Id,
+				Status:        Enabled,
+				PrototypeType: FlowElementsPrototypeFlow,
+				ScriptId:      &script24Id,
+				FlowLink:      &flow1.Id,
+				GraphSettings: m.FlowElementGraphSettings{
+					Position: m.FlowElementGraphSettingsPosition{
+						Top:  160,
+						Left: 340,
+					},
+				},
+			}
+			ok, _ = feHandler3.Valid()
+			So(ok, ShouldEqual, true)
+			ok, _ = feEmitter3.Valid()
+			So(ok, ShouldEqual, true)
+			ok, _ = flowLink3.Valid()
+			So(ok, ShouldEqual, true)
+
+			feHandler3.Uuid, err = adaptors.FlowElement.Add(feHandler3)
+			So(err, ShouldBeNil)
+			feEmitter3.Uuid, err = adaptors.FlowElement.Add(feEmitter3)
+			So(err, ShouldBeNil)
+			flowLink3.Uuid, err = adaptors.FlowElement.Add(flowLink3)
+			So(err, ShouldBeNil)
+
+			connect5 := &m.Connection{
+				Name:        "con5",
+				ElementFrom: feHandler3.Uuid,
+				ElementTo:   flowLink3.Uuid,
+				FlowId:      flow3.Id,
+				PointFrom:   1,
+				PointTo:     10,
+			}
+			connect6 := &m.Connection{
+				Name:        "con4",
+				ElementFrom: flowLink3.Uuid,
+				ElementTo:   feEmitter3.Uuid,
+				FlowId:      flow3.Id,
+				PointFrom:   4,
+				PointTo:     3,
+			}
+
+			ok, _ = connect5.Valid()
+			So(ok, ShouldEqual, true)
+			ok, _ = connect6.Valid()
+			So(ok, ShouldEqual, true)
+
+			connect5.Uuid, err = adaptors.Connection.Add(connect5)
+			So(err, ShouldBeNil)
+			connect6.Uuid, err = adaptors.Connection.Add(connect6)
+			So(err, ShouldBeNil)
+
 			// get flow
 			// ------------------------------------------------
 			err = c.Run()
@@ -422,17 +581,18 @@ func Test8(t *testing.T) {
 			message.SetVar("val", 1)
 
 			// create context
-			var ctx context.Context
-			ctx, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
-			ctx = context.WithValue(ctx, "msg", message)
+			var ctx1 context.Context
+			ctx1, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+			ctx1 = context.WithValue(ctx1, "msg", message)
 
 			for i := 0; i < 1; i++ {
-				Println("send message ...")
-				err = flowCore.NewMessage(ctx)
-				So(err, ShouldBeNil)
+				ctx.Println("send message ...")
+				err = flowCore.NewMessage(ctx1)
+				So(err, ShouldNotBeNil)
+				ctx.Println(err.Error())
 			}
 
-			So(len(story), ShouldEqual, 0)
+			So(len(story), ShouldEqual, 6)
 			So(scriptCounter, ShouldEqual, "7")
 		})
 	})

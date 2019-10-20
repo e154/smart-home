@@ -19,9 +19,11 @@ import (
 // add workflow scenarios (wf_scenario_1 + script7)
 //
 // add flow (flow1)
-//
-// flow add elements
-// 				[emitter] -----> [handler]
+// +----------+    +----------+
+// | handler  |    |  emitter |
+// | script6  +---->  script5 |
+// |          |    |          |
+// +----------+    +----------+
 //
 // run core
 //

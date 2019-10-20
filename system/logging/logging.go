@@ -6,7 +6,7 @@ import (
 
 var (
 	format = logging.MustStringFormatter(
-		"SRT.%{module}.%{shortfile}.%{shortfunc}() > %{message}",
+		"%{module}.%{shortfile}.%{shortfunc}() > %{message}",
 	)
 )
 
