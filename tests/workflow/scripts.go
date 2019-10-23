@@ -1,5 +1,32 @@
 package workflow
 
+var coffeeScripts = map[string]string{
+	"coffeeScript1": coffeeScript1,
+	"coffeeScript2": coffeeScript2,
+	"coffeeScript3": coffeeScript3,
+	"coffeeScript4": coffeeScript4,
+	"coffeeScript5": coffeeScript5,
+	"coffeeScript6": coffeeScript6,
+	"coffeeScript7": coffeeScript7,
+	"coffeeScript8": coffeeScript8,
+	"coffeeScript9": coffeeScript9,
+	"coffeeScript10": coffeeScript10,
+	"coffeeScript11": coffeeScript11,
+	"coffeeScript12": coffeeScript12,
+	"coffeeScript13": coffeeScript13,
+	"coffeeScript14": coffeeScript14,
+	//"coffeeScript15": coffeeScript15,
+	"coffeeScript16": coffeeScript16,
+	"coffeeScript17": coffeeScript17,
+	"coffeeScript18": coffeeScript18,
+	"coffeeScript19": coffeeScript19,
+	"coffeeScript20": coffeeScript20,
+	"coffeeScript21": coffeeScript21,
+	"coffeeScript22": coffeeScript22,
+	"coffeeScript23": coffeeScript23,
+	"coffeeScript24": coffeeScript24,
+}
+
 // test1, test2
 // ------------------------------------------------
 const coffeeScript1 = `

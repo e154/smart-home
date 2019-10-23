@@ -47,6 +47,13 @@ func (w *Worker) RemoveTask() () {
 		cancel()
 	}
 
+	//for {
+	//	time.Sleep(time.Second)
+	//	if !w.isRuning {
+	//		break
+	//	}
+	//}
+
 	return
 }
 
@@ -69,7 +76,12 @@ func (w *Worker) AddAction(action *Action) {
 
 func (w *Worker) RemoveActions() {
 	w.Lock()
-	w.actions = nil
+	for i, action := range w.actions {
+		if cancel, ok := w.cancelFunc[action.Device.Id]; ok {
+			cancel()
+		}
+		delete(w.actions, i)
+	}
 	w.Unlock()
 }
 

@@ -22,7 +22,7 @@ import (
 //
 func Test1(t *testing.T) {
 
-	var script1, script2, script3, script4 *m.Script
+	var _scripts map[string]*m.Script
 	Convey("add scripts", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
@@ -32,66 +32,7 @@ func Test1(t *testing.T) {
 			migrations.Purge()
 
 			// create scripts
-			script1 = &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test1",
-				Source:      coffeeScript1,
-				Description: "test1",
-			}
-			script2 = &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test2",
-				Source:      coffeeScript2,
-				Description: "test2",
-			}
-			script3 = &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test3",
-				Source:      coffeeScript3,
-				Description: "test3",
-			}
-			script4 = &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test4",
-				Source:      coffeeScript4,
-				Description: "test4",
-			}
-
-			engine1, err := scriptService.NewEngine(script1)
-			So(err, ShouldBeNil)
-			err = engine1.Compile()
-			So(err, ShouldBeNil)
-			script1Id, err := adaptors.Script.Add(script1)
-			So(err, ShouldBeNil)
-			script1, err = adaptors.Script.GetById(script1Id)
-			So(err, ShouldBeNil)
-
-			engine2, err := scriptService.NewEngine(script2)
-			So(err, ShouldBeNil)
-			err = engine2.Compile()
-			So(err, ShouldBeNil)
-			script2Id, err := adaptors.Script.Add(script2)
-			So(err, ShouldBeNil)
-			script2, err = adaptors.Script.GetById(script2Id)
-			So(err, ShouldBeNil)
-
-			engine3, err := scriptService.NewEngine(script3)
-			So(err, ShouldBeNil)
-			err = engine3.Compile()
-			So(err, ShouldBeNil)
-			script3Id, err := adaptors.Script.Add(script3)
-			So(err, ShouldBeNil)
-			script3, err = adaptors.Script.GetById(script3Id)
-			So(err, ShouldBeNil)
-
-			engine4, err := scriptService.NewEngine(script4)
-			So(err, ShouldBeNil)
-			err = engine4.Compile()
-			So(err, ShouldBeNil)
-			script4Id, err := adaptors.Script.Add(script4)
-			So(err, ShouldBeNil)
-			script4, err = adaptors.Script.GetById(script4Id)
-			So(err, ShouldBeNil)
+			_scripts = GetScripts(ctx, scriptService, adaptors, 1,2,3,4)
 		})
 	})
 
@@ -111,10 +52,10 @@ func Test1(t *testing.T) {
 			So(err, ShouldBeNil)
 			workflow.Id = wfId
 
-			err = adaptors.Workflow.AddScript(workflow, script1)
+			err = adaptors.Workflow.AddScript(workflow, _scripts["script1"])
 			So(err, ShouldBeNil)
 
-			err = adaptors.Workflow.AddScript(workflow, script2)
+			err = adaptors.Workflow.AddScript(workflow, _scripts["script2"])
 			So(err, ShouldBeNil)
 		})
 	})
@@ -138,13 +79,13 @@ func Test1(t *testing.T) {
 			wfScenarioId1, err := adaptors.WorkflowScenario.Add(wfScenario1)
 			So(err, ShouldBeNil)
 			wfScenario1.Id = wfScenarioId1
-			err = adaptors.WorkflowScenario.AddScript(wfScenario1, script3)
+			err = adaptors.WorkflowScenario.AddScript(wfScenario1, _scripts["script3"])
 			So(err, ShouldBeNil)
 
 			wfScenarioId2, err := adaptors.WorkflowScenario.Add(wfScenario2)
 			So(err, ShouldBeNil)
 			wfScenario2.Id = wfScenarioId2
-			err = adaptors.WorkflowScenario.AddScript(wfScenario2, script4)
+			err = adaptors.WorkflowScenario.AddScript(wfScenario2, _scripts["script4"])
 			So(err, ShouldBeNil)
 
 			workflow.Scenario = wfScenario1

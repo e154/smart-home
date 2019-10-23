@@ -14,12 +14,13 @@ type Workflow struct {
 	Storage
 	model *m.Workflow
 	sync.Mutex
-	adaptors *adaptors.Adaptors
-	scripts  *scripts.ScriptService
-	Flows    map[int64]*Flow
-	engine   *scripts.Engine
-	cron     *cr.Cron
-	core     *Core
+	adaptors     *adaptors.Adaptors
+	scripts      *scripts.ScriptService
+	Flows        map[int64]*Flow
+	engine       *scripts.Engine
+	cron         *cr.Cron
+	core         *Core
+	nextScenario *m.WorkflowScenario
 }
 
 func NewWorkflow(model *m.Workflow,
@@ -67,7 +68,7 @@ func (wf *Workflow) Stop() (err error) {
 		wf.RemoveFlow(flow.Model)
 	}
 
-	err = wf.exitScenario()
+	//err = wf.exitScenario()
 
 	return
 }
@@ -151,8 +152,6 @@ func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
 
 func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 
-	log.Infof("Remove flow: '%s'", flow.Name)
-
 	wf.Lock()
 	defer wf.Unlock()
 
@@ -201,10 +200,21 @@ func (wf *Workflow) SetScenario(systemName string) (err error) {
 			return
 		}
 
-		err = wf.UpdateScenario()
+		wf.nextScenario = scenario
 
 		break
 	}
+
+	//wg := sync.WaitGroup{}
+	//wg.Add(len(wf.Flows))
+	//
+	//for _, flow := range wf.Flows {
+	//	go flow.setScenario(wg)
+	//}
+	//
+	//wg.Wait()
+	//
+	wf.UpdateScenario()
 
 	return
 }

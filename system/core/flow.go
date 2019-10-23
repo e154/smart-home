@@ -27,6 +27,7 @@ type Flow struct {
 	Workers       map[int64]*Worker
 	cron          *cr.Cron
 	core          *Core
+	nextScenario  bool
 }
 
 func NewFlow(model *m.Flow,
@@ -413,3 +414,13 @@ func (f *Flow) defineCircularConnection(ctx context.Context) (newCtx context.Con
 
 	return
 }
+
+//func (f *Flow) setScenario(wg sync.WaitGroup) {
+//	f.nextScenario = true
+//
+//	for _, worker := range f.Workers {
+//		worker.RemoveTask()
+//	}
+//
+//	wg.Done()
+//}

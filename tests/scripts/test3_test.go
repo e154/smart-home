@@ -35,21 +35,11 @@ func Test3(t *testing.T) {
 
 			// scripts
 			// ------------------------------------------------
-			script3 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test3",
-				Source:      coffeeScript3,
-				Description: "test3",
-			}
-
-			engine3, err := scriptService.NewEngine(script3)
-			So(err, ShouldBeNil)
-			err = engine3.Compile()
-			So(err, ShouldBeNil)
+			scripts := GetScripts(ctx, scriptService, adaptors, 3)
 
 			// execute script
 			// ------------------------------------------------
-			err = engine.EvalString(script3.Compiled)
+			err = engine.EvalString(scripts["script3"].Compiled)
 			So(err, ShouldBeNil)
 
 			_, err = engine.DoCustom("on_enter")
