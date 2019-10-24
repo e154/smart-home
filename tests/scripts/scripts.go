@@ -99,20 +99,19 @@ on_enter =->
 	IC.store(wf.getName())
 	IC.store(wf.getDescription())
 	IC.store(wf.getVar('var'))
-	#wf.setScenario('wf_scenario_2')
+	wf.setScenario('wf_scenario_2')
 	wf.setVar('var2', 'fee')
 
 on_exit =->
-	IC.store('exit from wf_scenario_1')
+
 `
 
 const coffeeScript7 = `
+print "workflow scenario script 7"
+
 on_enter =->
-	wf = IC.Workflow()
-	IC.store('enter to wf_scenario_2')
 
 on_exit =->
-	wf = IC.Workflow()
 
 `
 
@@ -123,7 +122,7 @@ wf = IC.Workflow()
 IC.store(wf.getName())
 IC.store(wf.getDescription())
 IC.store(wf.getVar('var2'))
-#wf.setScenario('wf_scenario_2')
+wf.setScenario('wf_scenario_2')
 
 `
 

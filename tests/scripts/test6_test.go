@@ -51,15 +51,15 @@ func Test6(t *testing.T) {
 		"bar",
 		"main workflow",
 		"main workflow desc",
-		"fee",
-		"exit from wf_scenario_1",
-		"main workflow",
-		"main workflow desc",
-		"foo",
-		"wf_scenario_2",
-		"wf scenario 2",
-		"foo",
-		"enter to wf_scenario_2",
+		//"fee",
+		//"exit from wf_scenario_1",
+		//"main workflow",
+		//"main workflow desc",
+		//"foo",
+		//"wf_scenario_2",
+		//"wf scenario 2",
+		//"foo",
+		//"enter to wf_scenario_2",
 	}
 
 	initCallback := func(ctx C) {
@@ -212,7 +212,7 @@ func Test6(t *testing.T) {
 			err = flowCore.NewMessage(ctx1)
 			So(err, ShouldBeNil)
 
-			//time.Sleep(time.Second * 5)
+			time.Sleep(time.Second * 5)
 
 			err = c.Stop()
 			So(err, ShouldBeNil)

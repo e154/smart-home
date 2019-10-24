@@ -10,6 +10,7 @@ import (
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
+	"time"
 )
 
 type Flow struct {
@@ -20,7 +21,6 @@ type Flow struct {
 	FlowElements  []*FlowElement
 	cursor        uuid.UUID
 	Node          *Node
-	quit          chan bool
 	adaptors      *adaptors.Adaptors
 	scriptService *scripts.ScriptService
 	scriptEngine  *scripts.Engine
@@ -28,6 +28,7 @@ type Flow struct {
 	cron          *cr.Cron
 	core          *Core
 	nextScenario  bool
+	isRuning      bool
 }
 
 func NewFlow(model *m.Flow,
@@ -40,7 +41,6 @@ func NewFlow(model *m.Flow,
 	flow = &Flow{
 		Model:         model,
 		workflow:      workflow,
-		quit:          make(chan bool),
 		adaptors:      adaptors,
 		scriptService: scripts,
 		Workers:       make(map[int64]*Worker),
@@ -74,13 +74,44 @@ func NewFlow(model *m.Flow,
 }
 
 func (f *Flow) Remove() {
-	//f.quit <- true
+
+	log.Infof("Remove flow '%v'", f.Model.Name)
+
 	for _, worker := range f.Workers {
 		f.RemoveWorker(worker.Model)
 	}
+
+	timeout := time.After(3 * time.Second)
+	for {
+		time.Sleep(time.Second * 1)
+		if !f.isRuning {
+			log.Infof("flow %v ... ok", f.Model.Id)
+			break
+		}
+
+		select {
+		case <-timeout:
+			return
+		default:
+
+		}
+	}
+
 }
 
 func (f *Flow) NewMessage(ctx context.Context) (err error) {
+
+	if f.isRuning {
+		return
+	}
+
+	f.Lock()
+	defer func() {
+		f.isRuning = false
+		f.Unlock()
+	}()
+
+	f.isRuning = true
 
 	// circular dependency search
 	if ctx, err = f.defineCircularConnection(ctx); err != nil {
@@ -190,15 +221,6 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 	return
 }
 
-func (f *Flow) loop() {
-	//for {
-	//	select {
-	//	case <-f.quit:
-	//		break
-	//	}
-	//}
-}
-
 // ------------------------------------------------
 // Workers
 // ------------------------------------------------
@@ -297,7 +319,7 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 	}
 
 	f.Workers[model.Id] = worker
-	f.Workers[model.Id].RegTask()
+	f.Workers[model.Id].Start()
 
 	return
 }
@@ -329,7 +351,7 @@ func (f *Flow) RemoveWorker(worker *m.Worker) (err error) {
 	}
 
 	// stop cron task
-	f.Workers[worker.Id].RemoveTask()
+	f.Workers[worker.Id].Stop()
 
 	// delete worker
 	delete(f.Workers, worker.Id)
@@ -414,13 +436,3 @@ func (f *Flow) defineCircularConnection(ctx context.Context) (newCtx context.Con
 
 	return
 }
-
-//func (f *Flow) setScenario(wg sync.WaitGroup) {
-//	f.nextScenario = true
-//
-//	for _, worker := range f.Workers {
-//		worker.RemoveTask()
-//	}
-//
-//	wg.Done()
-//}
