@@ -1,6 +1,7 @@
 package scripts
 
 import (
+	"context"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	. "github.com/e154/smart-home/common"
@@ -17,49 +18,43 @@ import (
 // workflow javascript bindings
 //
 // create workflow
-// 				(script4, script5)
+// 				(script18, script19)
 //
 // add workflow scenarios
-// 				(wfScenario1 + script6)
-// 				(wfScenario2 + script7)
+// 				(wfScenario1 + script20)
+// 				(wfScenario2 + script21)
 //
 // add flow (flow1)
 // +----------+
 // | handler  |
-// | script8  |
+// | script22 |
 // |          |
 // +----------+
 //
 // add flow (flow2)
 // +----------+
 // | handler  |
-// | script17 |
+// | script23 |
 // |          |
 // +----------+
 //
 // select scenario from:
-//				- workflow scenario script
+//				- flow script
 //
-func Test6(t *testing.T) {
+func Test8(t *testing.T) {
 
 	counter := 0
 
 	pool := []string{
-		"main workflow",
-		"main workflow desc",
-		"foo",
-		"wf_scenario_1",
-		"wf scenario 1",
-		"foo",
-		"main workflow",
-		"main workflow desc",
-		"bar",
-		"main workflow",
-		"main workflow desc",
-		"foo",
-		"wf_scenario_2",
-		"wf scenario 2",
-		"foo",
+		"enter script18",
+		"enter script19",
+		"enter script20",
+		"enter script22",
+		"exit script20",
+		"enter script18",
+		"enter script19",
+		"enter script21",
+		"exit script21",
 	}
 
 	initCallback := func(ctx C) {
@@ -103,7 +98,7 @@ func Test6(t *testing.T) {
 			// ------------------------------------------------
 			storeRegisterCallback(scriptService)
 
-			scripts := GetScripts(ctx, scriptService, adaptors, 4, 5, 6, 7, 8, 17)
+			scripts := GetScripts(ctx, scriptService, adaptors, 18,19,20,21,22,23)
 
 			// workflow
 			// ------------------------------------------------
@@ -117,10 +112,10 @@ func Test6(t *testing.T) {
 			So(err, ShouldBeNil)
 			workflow.Id = wfId
 
-			err = adaptors.Workflow.AddScript(workflow, scripts["script4"])
+			err = adaptors.Workflow.AddScript(workflow, scripts["script18"])
 			So(err, ShouldBeNil)
 
-			err = adaptors.Workflow.AddScript(workflow, scripts["script5"])
+			err = adaptors.Workflow.AddScript(workflow, scripts["script19"])
 			So(err, ShouldBeNil)
 
 			// add workflow scenario
@@ -134,7 +129,7 @@ func Test6(t *testing.T) {
 			wfScenario1.Id, err = adaptors.WorkflowScenario.Add(wfScenario1)
 			So(err, ShouldBeNil)
 
-			err = adaptors.WorkflowScenario.AddScript(wfScenario1, scripts["script6"])
+			err = adaptors.WorkflowScenario.AddScript(wfScenario1, scripts["script20"])
 			So(err, ShouldBeNil)
 
 			wfScenario2 := &m.WorkflowScenario{
@@ -146,7 +141,7 @@ func Test6(t *testing.T) {
 			wfScenario2.Id, err = adaptors.WorkflowScenario.Add(wfScenario2)
 			So(err, ShouldBeNil)
 
-			err = adaptors.WorkflowScenario.AddScript(wfScenario2, scripts["script7"])
+			err = adaptors.WorkflowScenario.AddScript(wfScenario2, scripts["script21"])
 			So(err, ShouldBeNil)
 
 			err = adaptors.Workflow.SetScenario(workflow, wfScenario1)
@@ -155,7 +150,7 @@ func Test6(t *testing.T) {
 			// add flow1
 			// +----------+
 			// | handler  |
-			// | script7  |
+			// | script22 |
 			// |          |
 			// +----------+
 			flow1 := &m.Flow{
@@ -176,7 +171,7 @@ func Test6(t *testing.T) {
 				FlowId:        flow1.Id,
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeMessageHandler,
-				ScriptId:      &scripts["script8"].Id,
+				ScriptId:      &scripts["script22"].Id,
 			}
 
 			ok, _ = feHandler.Valid()
@@ -188,7 +183,7 @@ func Test6(t *testing.T) {
 			// add flow2
 			// +----------+
 			// | handler  |
-			// | script8  |
+			// | script23 |
 			// |          |
 			// +----------+
 			flow2 := &m.Flow{
@@ -209,7 +204,7 @@ func Test6(t *testing.T) {
 				FlowId:        flow2.Id,
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeMessageHandler,
-				ScriptId:      &scripts["script17"].Id,
+				ScriptId:      &scripts["script23"].Id,
 			}
 
 			ok, _ = feHandler2.Valid()
@@ -223,29 +218,25 @@ func Test6(t *testing.T) {
 			err = c.Run()
 			So(err, ShouldBeNil)
 
-			//time.Sleep(time.Second * 2)
-
 			workflowCore, err := c.GetWorkflow(workflow.Id)
 			So(err, ShouldBeNil)
 
-			//time.Sleep(time.Second * 2)
+			flowCore, err := workflowCore.GetFLow(flow1.Id)
+			So(err, ShouldBeNil)
 
-			_, err = workflowCore.GetFLow(flow1.Id)
-			So(err, ShouldNotBeNil)
+			message := core.NewMessage()
+			message.SetVar("val", 1)
 
-			//message := core.NewMessage()
-			//message.SetVar("val", 1)
-			//
-			//// create context
-			//var ctx1 context.Context
-			//ctx1, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
-			//ctx1 = context.WithValue(ctx1, "msg", message)
-			//
-			//Println("send message ...")
-			//err = flowCore.NewMessage(ctx1)
-			//So(err, ShouldBeNil)
+			// create context
+			var ctx1 context.Context
+			ctx1, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+			ctx1 = context.WithValue(ctx1, "msg", message)
 
-			time.Sleep(time.Second * 2)
+			Println("send message ...")
+			err = flowCore.NewMessage(ctx1)
+			So(err, ShouldBeNil)
+
+			time.Sleep(time.Second * 5)
 
 			err = c.Stop()
 			So(err, ShouldBeNil)

@@ -54,6 +54,12 @@ func (wf *Workflow) Run() (err error) {
 
 	wf.isRuning = true
 
+	defer func() {
+		if err != nil {
+			wf.isRuning = false
+		}
+	}()
+
 	log.Infof("Run workflow '%v'", wf.model.Name)
 
 	if err = wf.runScripts(); err != nil {
@@ -163,8 +169,8 @@ func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
 
 func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 
-	wf.Lock()
-	defer wf.Unlock()
+	//wf.Lock()
+	//defer wf.Unlock()
 
 	if _, ok := wf.Flows[flow.Id]; !ok {
 		return
@@ -249,6 +255,8 @@ func (wf *Workflow) enterScenario() (err error) {
 		return
 	}
 
+	wf.scenarioEntered = true
+
 	time.Sleep(time.Second)
 
 	if wf.nextScenario == nil {
@@ -275,12 +283,15 @@ func (wf *Workflow) enterScenario() (err error) {
 func (wf *Workflow) exitScenario() (err error) {
 
 	if wf.model.Scenario == nil {
+		wf.scenarioEntered = false
 		return
 	}
 
 	if wf.model.Scenario != nil {
 		err = wf.runScenarioScripts("on_exit")
 	}
+
+	wf.scenarioEntered = false
 
 	return
 }

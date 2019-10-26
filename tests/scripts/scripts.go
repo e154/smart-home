@@ -1,15 +1,15 @@
 package scripts
 
 var coffeeScripts = map[string]string{
-	"coffeeScript1": coffeeScript1,
-	"coffeeScript2": coffeeScript2,
-	"coffeeScript3": coffeeScript3,
-	"coffeeScript4": coffeeScript4,
-	"coffeeScript5": coffeeScript5,
-	"coffeeScript6": coffeeScript6,
-	"coffeeScript7": coffeeScript7,
-	"coffeeScript8": coffeeScript8,
-	"coffeeScript9": coffeeScript9,
+	"coffeeScript1":  coffeeScript1,
+	"coffeeScript2":  coffeeScript2,
+	"coffeeScript3":  coffeeScript3,
+	"coffeeScript4":  coffeeScript4,
+	"coffeeScript5":  coffeeScript5,
+	"coffeeScript6":  coffeeScript6,
+	"coffeeScript7":  coffeeScript7,
+	"coffeeScript8":  coffeeScript8,
+	"coffeeScript9":  coffeeScript9,
 	"coffeeScript10": coffeeScript10,
 	"coffeeScript11": coffeeScript11,
 	"coffeeScript12": coffeeScript12,
@@ -17,6 +17,13 @@ var coffeeScripts = map[string]string{
 	"coffeeScript14": coffeeScript14,
 	"coffeeScript15": coffeeScript15,
 	"coffeeScript16": coffeeScript16,
+	"coffeeScript17": coffeeScript17,
+	"coffeeScript18": coffeeScript18,
+	"coffeeScript19": coffeeScript19,
+	"coffeeScript20": coffeeScript20,
+	"coffeeScript21": coffeeScript21,
+	"coffeeScript22": coffeeScript22,
+	"coffeeScript23": coffeeScript23,
 }
 
 // test1
@@ -118,11 +125,10 @@ on_exit =->
 const coffeeScript8 = `
 print "run flow script (script 8)"
 
-wf = IC.Workflow()
-IC.store(wf.getName())
-IC.store(wf.getDescription())
-IC.store(wf.getVar('var2'))
-wf.setScenario('wf_scenario_2')
+`
+
+const coffeeScript17 = `
+print "run flow script (script 17)"
 
 `
 
@@ -217,6 +223,58 @@ print "run flow script (script 16)"
 
 IC.So(message.getVar('flow_var'), 'ShouldEqual', 123)
 message.setVar('val', 123)
+`
+
+// test8
+// ------------------------------------------------
+const coffeeScript18 = `
+print "run workflow script (script 18)"
+
+IC.store('enter script18')
+`
+
+const coffeeScript19 = `
+print "run workflow script (script 19)"
+
+IC.store('enter script19')
+`
+
+const coffeeScript20 = `
+print "workflow scenario script 20"
+
+on_enter =->
+	IC.store('enter script20')
+
+on_exit =->
+	IC.store('exit script20')
+
+`
+
+const coffeeScript21 = `
+print "workflow scenario script 21"
+
+on_enter =->
+	IC.store('enter script21')
+
+on_exit =->
+	IC.store('exit script21')
+
+`
+
+const coffeeScript22 = `
+print "run flow script (script 22)"
+
+IC.store('enter script22')
+
+wf = IC.Workflow()
+wf.setScenario('wf_scenario_2')
+print "text after select scenario...."
+`
+
+const coffeeScript23 = `
+print "run flow script (script 23)"
+
+IC.store('enter script23')
 `
 
 // test...

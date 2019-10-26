@@ -200,6 +200,7 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 			if flow, ok := f.workflow.Flows[*element.Model.FlowLink]; ok {
 				childCtx, _ := context.WithCancel(ctx)
 				if err = flow.NewMessage(childCtx); err != nil {
+					log.Error(err.Error())
 					return
 				}
 			}

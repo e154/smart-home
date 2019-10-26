@@ -245,99 +245,99 @@ func Test7(t *testing.T) {
 			// | script14 +-----> script15 +----> script16 |
 			// |          |     |          |    |          |
 			// +----------+     +----------+    +----------+
-			flow2 := &m.Flow{
-				Name:               "flow2",
-				Description:        "flow2 desc",
-				Status:             Enabled,
-				WorkflowId:         workflow.Id,
-				WorkflowScenarioId: wfScenario1.Id,
-			}
-			ok, _ = flow2.Valid()
-			So(ok, ShouldEqual, true)
-
-			flow2.Id, err = adaptors.Flow.Add(flow2)
-			So(err, ShouldBeNil)
-
-			// add handler
-			feHandler2 := &m.FlowElement{
-				Name:          "handler",
-				FlowId:        flow2.Id,
-				Status:        Enabled,
-				PrototypeType: FlowElementsPrototypeMessageHandler,
-				ScriptId:      &scripts["script14"].Id,
-				GraphSettings: m.FlowElementGraphSettings{
-					Position: m.FlowElementGraphSettingsPosition{
-						Top:  180,
-						Left: 180,
-					},
-				},
-			}
-			feEmitter2 := &m.FlowElement{
-				Name:          "emitter",
-				FlowId:        flow2.Id,
-				Status:        Enabled,
-				PrototypeType: FlowElementsPrototypeMessageEmitter,
-				ScriptId:      &scripts["script16"].Id,
-				GraphSettings: m.FlowElementGraphSettings{
-					Position: m.FlowElementGraphSettingsPosition{
-						Top:  180,
-						Left: 560,
-					},
-				},
-			}
-			feTask2 := &m.FlowElement{
-				Name:          "task",
-				FlowId:        flow2.Id,
-				Status:        Enabled,
-				PrototypeType: FlowElementsPrototypeTask,
-				ScriptId:      &scripts["script15"].Id,
-				GraphSettings: m.FlowElementGraphSettings{
-					Position: m.FlowElementGraphSettingsPosition{
-						Top:  160,
-						Left: 340,
-					},
-				},
-			}
-			ok, _ = feHandler2.Valid()
-			So(ok, ShouldEqual, true)
-			ok, _ = feEmitter2.Valid()
-			So(ok, ShouldEqual, true)
-			ok, _ = feTask2.Valid()
-			So(ok, ShouldEqual, true)
-
-			feHandler2.Uuid, err = adaptors.FlowElement.Add(feHandler2)
-			So(err, ShouldBeNil)
-			feEmitter2.Uuid, err = adaptors.FlowElement.Add(feEmitter2)
-			So(err, ShouldBeNil)
-			feTask2.Uuid, err = adaptors.FlowElement.Add(feTask2)
-			So(err, ShouldBeNil)
-
-			connect3 := &m.Connection{
-				Name:        "con3",
-				ElementFrom: feHandler2.Uuid,
-				ElementTo:   feTask2.Uuid,
-				FlowId:      flow2.Id,
-				PointFrom:   1,
-				PointTo:     10,
-			}
-			connect4 := &m.Connection{
-				Name:        "con4",
-				ElementFrom: feTask2.Uuid,
-				ElementTo:   feEmitter2.Uuid,
-				FlowId:      flow2.Id,
-				PointFrom:   4,
-				PointTo:     3,
-			}
-
-			ok, _ = connect3.Valid()
-			So(ok, ShouldEqual, true)
-			ok, _ = connect4.Valid()
-			So(ok, ShouldEqual, true)
-
-			connect3.Uuid, err = adaptors.Connection.Add(connect3)
-			So(err, ShouldBeNil)
-			connect4.Uuid, err = adaptors.Connection.Add(connect4)
-			So(err, ShouldBeNil)
+			//flow2 := &m.Flow{
+			//	Name:               "flow2",
+			//	Description:        "flow2 desc",
+			//	Status:             Enabled,
+			//	WorkflowId:         workflow.Id,
+			//	WorkflowScenarioId: wfScenario1.Id,
+			//}
+			//ok, _ = flow2.Valid()
+			//So(ok, ShouldEqual, true)
+			//
+			//flow2.Id, err = adaptors.Flow.Add(flow2)
+			//So(err, ShouldBeNil)
+			//
+			//// add handler
+			//feHandler2 := &m.FlowElement{
+			//	Name:          "handler",
+			//	FlowId:        flow2.Id,
+			//	Status:        Enabled,
+			//	PrototypeType: FlowElementsPrototypeMessageHandler,
+			//	ScriptId:      &scripts["script14"].Id,
+			//	GraphSettings: m.FlowElementGraphSettings{
+			//		Position: m.FlowElementGraphSettingsPosition{
+			//			Top:  180,
+			//			Left: 180,
+			//		},
+			//	},
+			//}
+			//feEmitter2 := &m.FlowElement{
+			//	Name:          "emitter",
+			//	FlowId:        flow2.Id,
+			//	Status:        Enabled,
+			//	PrototypeType: FlowElementsPrototypeMessageEmitter,
+			//	ScriptId:      &scripts["script16"].Id,
+			//	GraphSettings: m.FlowElementGraphSettings{
+			//		Position: m.FlowElementGraphSettingsPosition{
+			//			Top:  180,
+			//			Left: 560,
+			//		},
+			//	},
+			//}
+			//feTask2 := &m.FlowElement{
+			//	Name:          "task",
+			//	FlowId:        flow2.Id,
+			//	Status:        Enabled,
+			//	PrototypeType: FlowElementsPrototypeTask,
+			//	ScriptId:      &scripts["script15"].Id,
+			//	GraphSettings: m.FlowElementGraphSettings{
+			//		Position: m.FlowElementGraphSettingsPosition{
+			//			Top:  160,
+			//			Left: 340,
+			//		},
+			//	},
+			//}
+			//ok, _ = feHandler2.Valid()
+			//So(ok, ShouldEqual, true)
+			//ok, _ = feEmitter2.Valid()
+			//So(ok, ShouldEqual, true)
+			//ok, _ = feTask2.Valid()
+			//So(ok, ShouldEqual, true)
+			//
+			//feHandler2.Uuid, err = adaptors.FlowElement.Add(feHandler2)
+			//So(err, ShouldBeNil)
+			//feEmitter2.Uuid, err = adaptors.FlowElement.Add(feEmitter2)
+			//So(err, ShouldBeNil)
+			//feTask2.Uuid, err = adaptors.FlowElement.Add(feTask2)
+			//So(err, ShouldBeNil)
+			//
+			//connect3 := &m.Connection{
+			//	Name:        "con3",
+			//	ElementFrom: feHandler2.Uuid,
+			//	ElementTo:   feTask2.Uuid,
+			//	FlowId:      flow2.Id,
+			//	PointFrom:   1,
+			//	PointTo:     10,
+			//}
+			//connect4 := &m.Connection{
+			//	Name:        "con4",
+			//	ElementFrom: feTask2.Uuid,
+			//	ElementTo:   feEmitter2.Uuid,
+			//	FlowId:      flow2.Id,
+			//	PointFrom:   4,
+			//	PointTo:     3,
+			//}
+			//
+			//ok, _ = connect3.Valid()
+			//So(ok, ShouldEqual, true)
+			//ok, _ = connect4.Valid()
+			//So(ok, ShouldEqual, true)
+			//
+			//connect3.Uuid, err = adaptors.Connection.Add(connect3)
+			//So(err, ShouldBeNil)
+			//connect4.Uuid, err = adaptors.Connection.Add(connect4)
+			//So(err, ShouldBeNil)
 
 			// run
 			// ------------------------------------------------
@@ -350,8 +350,8 @@ func Test7(t *testing.T) {
 			flowCore1, err := workflowCore.GetFLow(flow1.Id)
 			So(err, ShouldBeNil)
 
-			flowCore2, err := workflowCore.GetFLow(flow2.Id)
-			So(err, ShouldBeNil)
+			//flowCore2, err := workflowCore.GetFLow(flow2.Id)
+			//So(err, ShouldBeNil)
 
 			// flow1
 			for i := 0; i < 2; i++ {
@@ -367,17 +367,22 @@ func Test7(t *testing.T) {
 			}
 
 			// flow2
-			message := core.NewMessage()
-			message.SetVar("val", 2)
+			//message := core.NewMessage()
+			//message.SetVar("val", 2)
+			//
+			//ctx2, _ := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+			//ctx2 = context.WithValue(ctx2, "msg", message)
+			//
+			//ctx.Println("send message ...")
+			//err = flowCore2.NewMessage(ctx2)
+			//So(err, ShouldBeNil)
+			//
+			//So(message.GetVar("val"), ShouldEqual, 123)
 
-			ctx2, _ := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
-			ctx2 = context.WithValue(ctx2, "msg", message)
+			time.Sleep(time.Second * 5)
 
-			ctx.Println("send message ...")
-			err = flowCore2.NewMessage(ctx2)
+			err = c.Stop()
 			So(err, ShouldBeNil)
-
-			So(message.GetVar("val"), ShouldEqual, 123)
 		})
 	})
 }

@@ -24,7 +24,6 @@ import (
 //
 // select scenario from:
 //				- workflow scenario script
-//				- flow script
 //
 func Test5(t *testing.T) {
 
@@ -42,15 +41,10 @@ func Test5(t *testing.T) {
 		"bar",
 		"main workflow",
 		"main workflow desc",
-		//"fee",
-		//"exit from wf_scenario_1",
-		//"main workflow",
-		//"main workflow desc",
-		//"foo",
-		//"wf_scenario_2",
-		//"wf scenario 2",
-		//"foo",
-		//"enter to wf_scenario_2",
+		"foo",
+		"wf_scenario_2",
+		"wf scenario 2",
+		"foo",
 	}
 
 	initCallback := func(ctx C) {
@@ -94,7 +88,7 @@ func Test5(t *testing.T) {
 			// ------------------------------------------------
 			storeRegisterCallback(scriptService)
 
-			scripts := GetScripts(ctx, scriptService, adaptors, 4, 5, 6, 7, 8)
+			scripts := GetScripts(ctx, scriptService, adaptors, 4, 5, 6, 7)
 
 			// workflow
 			// ------------------------------------------------
