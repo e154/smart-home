@@ -33,6 +33,7 @@ func NewWorkflow(model *m.Workflow,
 	core *Core) (workflow *Workflow) {
 
 	workflow = &Workflow{
+		Storage:  NewStorage(),
 		model:    model,
 		adaptors: adaptors,
 		scripts:  scripts,
@@ -40,8 +41,6 @@ func NewWorkflow(model *m.Workflow,
 		cron:     cron,
 		core:     core,
 	}
-
-	workflow.pull = make(map[string]interface{})
 
 	return
 }

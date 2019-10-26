@@ -1,8 +1,9 @@
 package core
 
 func NewMessage() (m *Message) {
-	m = &Message{}
-	m.pull = make(map[string]interface{})
+	m = &Message{
+		Storage: NewStorage(),
+	}
 	return
 }
 

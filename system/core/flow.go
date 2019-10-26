@@ -10,6 +10,7 @@ import (
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
+	"sync"
 	"time"
 )
 
@@ -28,7 +29,8 @@ type Flow struct {
 	cron          *cr.Cron
 	core          *Core
 	nextScenario  bool
-	isRuning      bool
+	sync.Mutex
+	isRunning bool
 }
 
 func NewFlow(model *m.Flow,
@@ -39,6 +41,7 @@ func NewFlow(model *m.Flow,
 	core *Core) (flow *Flow, err error) {
 
 	flow = &Flow{
+		Storage:       NewStorage(),
 		Model:         model,
 		workflow:      workflow,
 		adaptors:      adaptors,
@@ -47,8 +50,6 @@ func NewFlow(model *m.Flow,
 		cron:          cron,
 		core:          core,
 	}
-
-	flow.pull = make(map[string]interface{})
 
 	if flow.scriptEngine, err = flow.NewScript(); err != nil {
 		return
@@ -84,7 +85,7 @@ func (f *Flow) Remove() {
 	timeout := time.After(3 * time.Second)
 	for {
 		time.Sleep(time.Second * 1)
-		if !f.isRuning {
+		if !f.isRunning {
 			log.Infof("flow %v ... ok", f.Model.Id)
 			break
 		}
@@ -101,22 +102,23 @@ func (f *Flow) Remove() {
 
 func (f *Flow) NewMessage(ctx context.Context) (err error) {
 
-	if f.isRuning {
-		return
-	}
-
-	f.Lock()
-	defer func() {
-		f.isRuning = false
-		f.Unlock()
-	}()
-
-	f.isRuning = true
-
 	// circular dependency search
 	if ctx, err = f.defineCircularConnection(ctx); err != nil {
 		return
 	}
+
+	if f.isRunning {
+		err = errors.New("flow is running")
+		return
+	}
+
+	//f.Lock()
+	defer func() {
+		f.isRunning = false
+		//f.Unlock()
+	}()
+
+	f.isRunning = true
 
 	var _element *FlowElement
 
@@ -200,7 +202,6 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 			if flow, ok := f.workflow.Flows[*element.Model.FlowLink]; ok {
 				childCtx, _ := context.WithCancel(ctx)
 				if err = flow.NewMessage(childCtx); err != nil {
-					log.Error(err.Error())
 					return
 				}
 			}

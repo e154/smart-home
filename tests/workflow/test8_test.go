@@ -427,13 +427,16 @@ func Test8(t *testing.T) {
 			ctx = context.WithValue(ctx, "msg", message)
 
 			for i := 0; i < 1; i++ {
-				Println("send message ...")
+				// send message ...
 				err = flowCore.NewMessage(ctx)
 				So(err, ShouldBeNil)
 			}
 
 			So(len(story), ShouldEqual, 0)
 			So(scriptCounter, ShouldEqual, "7")
+
+			err = c.Stop()
+			So(err, ShouldBeNil)
 		})
 	})
 }

@@ -63,6 +63,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()
 		conf.PgName = "smart_home_test"
+		conf.Logging = false
 		return
 	})
 

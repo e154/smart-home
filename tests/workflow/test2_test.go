@@ -244,6 +244,9 @@ func Test2(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(store, ShouldEqual, "b")
+
+			err = c.Stop()
+			So(err, ShouldBeNil)
 		})
 	})
 }

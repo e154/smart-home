@@ -1,14 +1,14 @@
 package workflow
 
 import (
-	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/core"
 	cr "github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
 //
@@ -120,12 +120,12 @@ func Test1(t *testing.T) {
 			workflow, err = adaptors.Workflow.GetById(workflow.Id)
 			So(err, ShouldBeNil)
 
-			wf := core.NewWorkflow(workflow, adaptors, scriptService, cron, c)
-			err = wf.Run()
-			So(err, ShouldBeNil)
-
-			err = wf.Stop()
-			So(err, ShouldBeNil)
+			//wf := core.NewWorkflow(workflow, adaptors, scriptService, cron, c)
+			//err = wf.Run()
+			//So(err, ShouldBeNil)
+			//
+			//err = wf.Stop()
+			//So(err, ShouldBeNil)
 		})
 	})
 }

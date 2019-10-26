@@ -232,7 +232,7 @@ func Test8(t *testing.T) {
 			ctx1, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
 			ctx1 = context.WithValue(ctx1, "msg", message)
 
-			Println("send message ...")
+			// send message ...
 			err = flowCore.NewMessage(ctx1)
 			So(err, ShouldBeNil)
 

@@ -197,9 +197,8 @@ func Test3(t *testing.T) {
 			flow1, err = adaptors.Flow.GetById(flow1.Id)
 			So(err, ShouldBeNil)
 
-			//fmt.Println("----")
-			//debug.Println(flow1)
-			//fmt.Println("----")
+			err = c.Stop()
+			So(err, ShouldBeNil)
 		})
 	})
 }

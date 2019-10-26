@@ -48,13 +48,13 @@ require('data/scripts/util.js')
 require('data/scripts/vars.js')
 
 # var foo
-print 'foo value:', foo
+#print 'foo value:', foo
 
 # var bar
-print 'bar value:', bar
+#print 'bar value:', bar
 
 # func from external lib
-print 'run external function: ', area(4)
+#print 'run external function: ', area(4)
 
 console.log months[0]
 
@@ -74,7 +74,7 @@ on_exit =->
 // test5,6
 // ------------------------------------------------
 const coffeeScript4 = `
-print "run workflow script (script 4)"
+#print "run workflow script (script 4)"
 wf = IC.Workflow()
 
 # name
@@ -90,7 +90,7 @@ IC.store(wf.getScenarioName())
 `
 
 const coffeeScript5 = `
-print "run workflow script (script 5)"
+#print "run workflow script (script 5)"
 
 wf = IC.Workflow()
 IC.store(wf.getVar('var'))
@@ -99,7 +99,7 @@ wf.setVar('var', 'bar')
 `
 
 const coffeeScript6 = `
-print "workflow scenario script 6"
+#print "workflow scenario script 6"
 
 on_enter =->
 	wf = IC.Workflow()
@@ -114,7 +114,7 @@ on_exit =->
 `
 
 const coffeeScript7 = `
-print "workflow scenario script 7"
+#print "workflow scenario script 7"
 
 on_enter =->
 
@@ -123,35 +123,43 @@ on_exit =->
 `
 
 const coffeeScript8 = `
-print "run flow script (script 8)"
+#print "run flow script (script 8)"
 
 `
 
 const coffeeScript17 = `
-print "run flow script (script 17)"
+#print "run flow script (script 17)"
 
 `
 
 // test7
 // ------------------------------------------------
 const coffeeScript9 = `
-print "run workflow script (script 9)"
+#print "run workflow script (script 9)"
+
+IC.store('enter script9')
 
 wf = IC.Workflow()
 wf.setVar('workflow_var', 'foo')
 `
 const coffeeScript10 = `
+#print "run workflow script (script 10)"
+
 on_enter =->
+	IC.store('enter script10')
 	wf = IC.Workflow()
 	IC.So(wf.getVar('workflow_var'), 'ShouldEqual', 'foo')
 	wf.setVar('workflow_var', 'bar')
-	
+
 on_exit =->
-	
+	IC.store('exit script10')
+
 `
 
 const coffeeScript11 = `
-print "run flow script (script 11)"
+#print "run flow script (script 11)"
+
+IC.store('enter script11')
 
 wf = IC.Workflow()
 flow = IC.Flow()
@@ -174,7 +182,9 @@ IC.So(message.getVar('flow_var'), 'ShouldEqual', 'foo2')
 IC.So(message.getVar('val'), 'ShouldEqual', 1)
 `
 const coffeeScript12 = `
-print "run flow script (script 12)"
+#print "run flow script (script 12)"
+
+IC.store('enter script12')
 
 IC.So(message.getVar('flow_var'), 'ShouldEqual', 'foo2')
 message.setVar('flow_var', 'foo3')
@@ -183,7 +193,9 @@ IC.store(flow.getVar('var1'))
 flow.setVar('var1', 'bar')
 `
 const coffeeScript13 = `
-print "run flow script (script 13)"
+#print "run flow script (script 13)"
+
+IC.store('enter script13')
 
 IC.So(message.getVar('flow_var'), 'ShouldEqual', 'foo3')
 
@@ -193,7 +205,9 @@ IC.store(flow.getVar('var1'))
 `
 
 const coffeeScript14 = `
-print "run flow script (script 14)"
+#print "run flow script (script 14)"
+
+IC.store('enter script14')
 
 wf = IC.Workflow()
 flow = IC.Flow()
@@ -213,13 +227,17 @@ IC.So(message.getVar('val'), 'ShouldEqual', 2)
 `
 
 const coffeeScript15 = `
-print "run flow script (script 15)"
+#print "run flow script (script 15)"
+
+IC.store('enter script15')
 
 IC.So(message.getVar('flow_var'), 'ShouldEqual', 123)
 `
 
 const coffeeScript16 = `
-print "run flow script (script 16)"
+#print "run flow script (script 16)"
+
+IC.store('enter script16')
 
 IC.So(message.getVar('flow_var'), 'ShouldEqual', 123)
 message.setVar('val', 123)
@@ -228,19 +246,19 @@ message.setVar('val', 123)
 // test8
 // ------------------------------------------------
 const coffeeScript18 = `
-print "run workflow script (script 18)"
+#print "run workflow script (script 18)"
 
 IC.store('enter script18')
 `
 
 const coffeeScript19 = `
-print "run workflow script (script 19)"
+#print "run workflow script (script 19)"
 
 IC.store('enter script19')
 `
 
 const coffeeScript20 = `
-print "workflow scenario script 20"
+#print "workflow scenario script 20"
 
 on_enter =->
 	IC.store('enter script20')
@@ -251,7 +269,7 @@ on_exit =->
 `
 
 const coffeeScript21 = `
-print "workflow scenario script 21"
+#print "workflow scenario script 21"
 
 on_enter =->
 	IC.store('enter script21')
@@ -262,17 +280,17 @@ on_exit =->
 `
 
 const coffeeScript22 = `
-print "run flow script (script 22)"
+#print "run flow script (script 22)"
 
 IC.store('enter script22')
 
 wf = IC.Workflow()
 wf.setScenario('wf_scenario_2')
-print "text after select scenario...."
+#print "text after select scenario...."
 `
 
 const coffeeScript23 = `
-print "run flow script (script 23)"
+#print "run flow script (script 23)"
 
 IC.store('enter script23')
 `
