@@ -83,14 +83,13 @@ func (w *Worker) AddAction(action *Action) {
 }
 
 func (w *Worker) removeActions() {
-	w.Lock()
+
 	for i, action := range w.actions {
 		if cancel, ok := w.cancelFunc[action.Device.Id]; ok {
 			cancel()
 		}
 		delete(w.actions, i)
 	}
-	w.Unlock()
 }
 
 // Run worker script, and send result to flow as message struct

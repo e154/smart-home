@@ -45,9 +45,11 @@ func Test3(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// clear database
+			// ------------------------------------------------
 			migrations.Purge()
 
 			// add node
+			// ------------------------------------------------
 			node := &m.Node{
 				Name:     "node",
 				Login:    "node",
@@ -61,6 +63,7 @@ func Test3(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// add device
+			// ------------------------------------------------
 			device := &m.Device{
 				Name:       "device",
 				Status:     "enabled",
@@ -76,6 +79,7 @@ func Test3(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// add script
+			// ------------------------------------------------
 			script8 := &m.Script{
 				Lang:        "coffeescript",
 				Name:        "test8",
@@ -149,6 +153,9 @@ func Test3(t *testing.T) {
 			wfScenario1.Id, err = adaptors.WorkflowScenario.Add(wfScenario1)
 			So(err, ShouldBeNil)
 
+			err = adaptors.Workflow.SetScenario(workflow, wfScenario1.Id)
+			So(err, ShouldBeNil)
+
 			// add flow1
 			flow1 := &m.Flow{
 				Name:               "flow1",
@@ -194,7 +201,8 @@ func Test3(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// get flow
-			flow1, err = adaptors.Flow.GetById(flow1.Id)
+			// ------------------------------------------------
+			err = c.Run()
 			So(err, ShouldBeNil)
 
 			err = c.Stop()
