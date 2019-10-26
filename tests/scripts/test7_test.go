@@ -1,4 +1,4 @@
-package workflow
+package scripts
 
 import (
 	"context"
@@ -14,58 +14,95 @@ import (
 	"time"
 )
 
-// create workflow
 //
-// add workflow scenarios (wf_scenario_1)
+// workflow javascript bindings
+//
+// create workflow
+// 				(script9)
+//
+// add workflow scenario
+// 				(wfScenario1 + script10)
 //
 // add flow (flow1)
 // +----------+     +----------+    +----------+
-// | handler  |     |  task    |    |  emitter |
-// | script16 +-----> script17 +----> script18 |
+// | handler  |     |   task   |    |  emitter |
+// | script11 +-----> script12 +----> script13 |
 // |          |     |          |    |          |
 // +----------+     +----------+    +----------+
 //
 // add flow (flow2)
 // +----------+     +----------+    +----------+
-// | handler  |     | flowlink |    |  emitter |
-// | script19 +-----> script20 +----> script21 |
+// | handler  |     |   task   |    |  emitter |
+// | script14 +-----> script15 +----> script16 |
 // |          |     |          |    |          |
 // +----------+     +----------+    +----------+
 //
-// send message flow2 to flow1
-// +-----------+
-// |   flow2   |
-// |-----------|
-// |           |
-// |           +----------+
-// |           |          |
-// +-----------+          |
-//                  +-----v-----+
-//                  |   flow1   |
-//                  |-----------|
-//                  |           |
-//                  |           |
-//                  |           |
-//                  +-----------+
+// scope of variables between flows and workflow and scenarios
 //
-func Test8(t *testing.T) {
+func Test7(t *testing.T) {
 
-	var story = make([]string, 0)
-	var scriptCounter string
+	counter := 0
 
-	store = func(i interface{}) {
-
+	pool := []string{
+		"enter script9",
+		"enter script10",
+		"enter script11",
+		"<nil>",
+		"foo",
+		"enter script12",
+		"foo",
+		"enter script13",
+		"bar",
+		"bar",
+		"enter script11",
+		"bar",
+		"foo",
+		"enter script12",
+		"foo",
+		"enter script13",
+		"bar",
+		"bar",
+		"enter script14",
+		"enter script15",
+		"enter script16",
+		"exit script10",
 	}
 
-	store2 = func(i interface{}) {
-		scriptCounter = fmt.Sprintf("%v", i)
+	initCallback := func(ctx C, scriptService *scripts.ScriptService) {
+		store = func(i interface{}) {
+			v := fmt.Sprintf("%v", i)
+			//fmt.Println("v:", v)
+
+			if counter >= len(pool) {
+				fmt.Println("========= WARNING =========")
+				fmt.Printf("counter(%d), v: %v\n", counter, v)
+				return
+			}
+
+			switch counter {
+			default:
+				ctx.So(v, ShouldEqual, pool[counter])
+			}
+
+			counter++
+		}
+
+		scriptService.PushFunctions("So", func(actual interface{}, assert string, expected interface{}) {
+			switch assert {
+			case "ShouldEqual":
+				So(actual, ShouldEqual, expected)
+			}
+
+		})
 	}
 
-	Convey("add scripts", t, func(ctx C) {
+	Convey("workflow bind", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
 			c *core.Core) {
+
+			initCallback(ctx, scriptService)
 
 			// stop core
 			// ------------------------------------------------
@@ -76,107 +113,13 @@ func Test8(t *testing.T) {
 			// ------------------------------------------------
 			migrations.Purge()
 
-			// add device
+			// scripts
 			// ------------------------------------------------
-			script16 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test16",
-				Source:      coffeeScript16,
-				Description: "test16",
-			}
-
-			engine16, err := scriptService.NewEngine(script16)
-			So(err, ShouldBeNil)
-			err = engine16.Compile()
-			So(err, ShouldBeNil)
-			script16Id, err := adaptors.Script.Add(script16)
-			So(err, ShouldBeNil)
-			script16, err = adaptors.Script.GetById(script16Id)
-			So(err, ShouldBeNil)
-
 			storeRegisterCallback(scriptService)
 
-			script17 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test17",
-				Source:      coffeeScript17,
-				Description: "test17",
-			}
+			scripts := GetScripts(ctx, scriptService, adaptors, 9, 10, 11, 12, 13, 14, 15, 16)
 
-			engine17, err := scriptService.NewEngine(script17)
-			So(err, ShouldBeNil)
-			err = engine17.Compile()
-			So(err, ShouldBeNil)
-			script17Id, err := adaptors.Script.Add(script17)
-			So(err, ShouldBeNil)
-			script17, err = adaptors.Script.GetById(script17Id)
-			So(err, ShouldBeNil)
-
-			script18 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test18",
-				Source:      coffeeScript18,
-				Description: "test18",
-			}
-
-			engine18, err := scriptService.NewEngine(script18)
-			So(err, ShouldBeNil)
-			err = engine18.Compile()
-			So(err, ShouldBeNil)
-			script18Id, err := adaptors.Script.Add(script18)
-			So(err, ShouldBeNil)
-			script18, err = adaptors.Script.GetById(script18Id)
-			So(err, ShouldBeNil)
-
-			script19 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test19",
-				Source:      coffeeScript19,
-				Description: "test19",
-			}
-
-			engine19, err := scriptService.NewEngine(script19)
-			So(err, ShouldBeNil)
-			err = engine19.Compile()
-			So(err, ShouldBeNil)
-			script19Id, err := adaptors.Script.Add(script19)
-			So(err, ShouldBeNil)
-			script19, err = adaptors.Script.GetById(script19Id)
-			So(err, ShouldBeNil)
-
-			script20 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test20",
-				Source:      coffeeScript20,
-				Description: "test20",
-			}
-
-			engine20, err := scriptService.NewEngine(script20)
-			So(err, ShouldBeNil)
-			err = engine20.Compile()
-			So(err, ShouldBeNil)
-			script20Id, err := adaptors.Script.Add(script20)
-			So(err, ShouldBeNil)
-			script20, err = adaptors.Script.GetById(script20Id)
-			So(err, ShouldBeNil)
-
-			script21 := &m.Script{
-				Lang:        "coffeescript",
-				Name:        "test21",
-				Source:      coffeeScript21,
-				Description: "test21",
-			}
-
-			engine21, err := scriptService.NewEngine(script21)
-			So(err, ShouldBeNil)
-			err = engine21.Compile()
-			So(err, ShouldBeNil)
-			script21Id, err := adaptors.Script.Add(script21)
-			So(err, ShouldBeNil)
-			script21, err = adaptors.Script.GetById(script21Id)
-			So(err, ShouldBeNil)
-
-			// add workflow
+			// workflow
 			// ------------------------------------------------
 			workflow := &m.Workflow{
 				Name:        "main workflow",
@@ -184,12 +127,12 @@ func Test8(t *testing.T) {
 				Status:      "enabled",
 			}
 
-			ok, _ := workflow.Valid()
-			So(ok, ShouldEqual, true)
-
 			wfId, err := adaptors.Workflow.Add(workflow)
 			So(err, ShouldBeNil)
 			workflow.Id = wfId
+
+			err = adaptors.Workflow.AddScript(workflow, scripts["script9"])
+			So(err, ShouldBeNil)
 
 			// add workflow scenario
 			// ------------------------------------------------
@@ -199,10 +142,10 @@ func Test8(t *testing.T) {
 				WorkflowId: workflow.Id,
 			}
 
-			ok, _ = wfScenario1.Valid()
-			So(ok, ShouldEqual, true)
-
 			wfScenario1.Id, err = adaptors.WorkflowScenario.Add(wfScenario1)
+			So(err, ShouldBeNil)
+
+			err = adaptors.WorkflowScenario.AddScript(wfScenario1, scripts["script10"])
 			So(err, ShouldBeNil)
 
 			err = adaptors.Workflow.SetScenario(workflow, wfScenario1)
@@ -211,16 +154,17 @@ func Test8(t *testing.T) {
 			// add flow (flow1)
 			// +----------+     +----------+    +----------+
 			// | handler  |     |  task    |    |  emitter |
-			// | script16 +-----> script17 +----> script18 |
+			// | script11 +-----> script12 +----> script13 |
 			// |          |     |          |    |          |
 			// +----------+     +----------+    +----------+
 			flow1 := &m.Flow{
 				Name:               "flow1",
+				Description:        "flow1 desc",
 				Status:             Enabled,
 				WorkflowId:         workflow.Id,
 				WorkflowScenarioId: wfScenario1.Id,
 			}
-			ok, _ = flow1.Valid()
+			ok, _ := flow1.Valid()
 			So(ok, ShouldEqual, true)
 
 			flow1.Id, err = adaptors.Flow.Add(flow1)
@@ -232,7 +176,7 @@ func Test8(t *testing.T) {
 				FlowId:        flow1.Id,
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeMessageHandler,
-				ScriptId:      &script16Id,
+				ScriptId:      &scripts["script11"].Id,
 				GraphSettings: m.FlowElementGraphSettings{
 					Position: m.FlowElementGraphSettingsPosition{
 						Top:  180,
@@ -245,7 +189,7 @@ func Test8(t *testing.T) {
 				FlowId:        flow1.Id,
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeMessageEmitter,
-				ScriptId:      &script18Id,
+				ScriptId:      &scripts["script13"].Id,
 				GraphSettings: m.FlowElementGraphSettings{
 					Position: m.FlowElementGraphSettingsPosition{
 						Top:  180,
@@ -258,7 +202,7 @@ func Test8(t *testing.T) {
 				FlowId:        flow1.Id,
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeTask,
-				ScriptId:      &script17Id,
+				ScriptId:      &scripts["script12"].Id,
 				GraphSettings: m.FlowElementGraphSettings{
 					Position: m.FlowElementGraphSettingsPosition{
 						Top:  160,
@@ -309,12 +253,13 @@ func Test8(t *testing.T) {
 
 			// add flow (flow2)
 			// +----------+     +----------+    +----------+
-			// | handler  |     | flowlink |    |  emitter |
-			// | script19 +-----> script20 +----> script21 |
+			// | handler  |     |   task   |    |  emitter |
+			// | script14 +-----> script15 +----> script16 |
 			// |          |     |          |    |          |
 			// +----------+     +----------+    +----------+
 			flow2 := &m.Flow{
 				Name:               "flow2",
+				Description:        "flow2 desc",
 				Status:             Enabled,
 				WorkflowId:         workflow.Id,
 				WorkflowScenarioId: wfScenario1.Id,
@@ -327,11 +272,11 @@ func Test8(t *testing.T) {
 
 			// add handler
 			feHandler2 := &m.FlowElement{
-				Name:          "handler2",
+				Name:          "handler",
 				FlowId:        flow2.Id,
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeMessageHandler,
-				ScriptId:      &script19Id,
+				ScriptId:      &scripts["script14"].Id,
 				GraphSettings: m.FlowElementGraphSettings{
 					Position: m.FlowElementGraphSettingsPosition{
 						Top:  180,
@@ -340,11 +285,11 @@ func Test8(t *testing.T) {
 				},
 			}
 			feEmitter2 := &m.FlowElement{
-				Name:          "emitter2",
+				Name:          "emitter",
 				FlowId:        flow2.Id,
 				Status:        Enabled,
 				PrototypeType: FlowElementsPrototypeMessageEmitter,
-				ScriptId:      &script21Id,
+				ScriptId:      &scripts["script16"].Id,
 				GraphSettings: m.FlowElementGraphSettings{
 					Position: m.FlowElementGraphSettingsPosition{
 						Top:  180,
@@ -352,13 +297,12 @@ func Test8(t *testing.T) {
 					},
 				},
 			}
-			flowLink2 := &m.FlowElement{
-				Name:          "flow",
+			feTask2 := &m.FlowElement{
+				Name:          "task",
 				FlowId:        flow2.Id,
 				Status:        Enabled,
-				PrototypeType: FlowElementsPrototypeFlow,
-				ScriptId:      &script20Id,
-				FlowLink:      &flow1.Id,
+				PrototypeType: FlowElementsPrototypeTask,
+				ScriptId:      &scripts["script15"].Id,
 				GraphSettings: m.FlowElementGraphSettings{
 					Position: m.FlowElementGraphSettingsPosition{
 						Top:  160,
@@ -370,27 +314,27 @@ func Test8(t *testing.T) {
 			So(ok, ShouldEqual, true)
 			ok, _ = feEmitter2.Valid()
 			So(ok, ShouldEqual, true)
-			ok, _ = flowLink2.Valid()
+			ok, _ = feTask2.Valid()
 			So(ok, ShouldEqual, true)
 
 			feHandler2.Uuid, err = adaptors.FlowElement.Add(feHandler2)
 			So(err, ShouldBeNil)
 			feEmitter2.Uuid, err = adaptors.FlowElement.Add(feEmitter2)
 			So(err, ShouldBeNil)
-			flowLink2.Uuid, err = adaptors.FlowElement.Add(flowLink2)
+			feTask2.Uuid, err = adaptors.FlowElement.Add(feTask2)
 			So(err, ShouldBeNil)
 
 			connect3 := &m.Connection{
 				Name:        "con3",
 				ElementFrom: feHandler2.Uuid,
-				ElementTo:   flowLink2.Uuid,
+				ElementTo:   feTask2.Uuid,
 				FlowId:      flow2.Id,
 				PointFrom:   1,
 				PointTo:     10,
 			}
 			connect4 := &m.Connection{
 				Name:        "con4",
-				ElementFrom: flowLink2.Uuid,
+				ElementFrom: feTask2.Uuid,
 				ElementTo:   feEmitter2.Uuid,
 				FlowId:      flow2.Id,
 				PointFrom:   4,
@@ -407,7 +351,7 @@ func Test8(t *testing.T) {
 			connect4.Uuid, err = adaptors.Connection.Add(connect4)
 			So(err, ShouldBeNil)
 
-			// get flow
+			// run
 			// ------------------------------------------------
 			err = c.Run()
 			So(err, ShouldBeNil)
@@ -415,25 +359,39 @@ func Test8(t *testing.T) {
 			workflowCore, err := c.GetWorkflow(workflow.Id)
 			So(err, ShouldBeNil)
 
-			flowCore, err := workflowCore.GetFLow(flow2.Id)
+			flowCore1, err := workflowCore.GetFLow(flow1.Id)
 			So(err, ShouldBeNil)
 
-			message := core.NewMessage()
-			message.SetVar("val", 1)
+			flowCore2, err := workflowCore.GetFLow(flow2.Id)
+			So(err, ShouldBeNil)
 
-			// create context
-			var ctx context.Context
-			ctx, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
-			ctx = context.WithValue(ctx, "msg", message)
+			// flow1
+			for i := 0; i < 2; i++ {
+				message := core.NewMessage()
+				message.SetVar("val", 1)
 
-			for i := 0; i < 1; i++ {
+				ctx1, _ := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+				ctx1 = context.WithValue(ctx1, "msg", message)
+
 				// send message ...
-				err = flowCore.NewMessage(ctx)
+				err = flowCore1.NewMessage(ctx1)
 				So(err, ShouldBeNil)
 			}
 
-			So(len(story), ShouldEqual, 0)
-			So(scriptCounter, ShouldEqual, "7")
+			// flow2
+			message := core.NewMessage()
+			message.SetVar("val", 2)
+
+			ctx2, _ := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+			ctx2 = context.WithValue(ctx2, "msg", message)
+
+			// send message ...
+			err = flowCore2.NewMessage(ctx2)
+			So(err, ShouldBeNil)
+
+			So(message.GetVar("val"), ShouldEqual, 123)
+
+			//time.Sleep(time.Second * 5)
 
 			err = c.Stop()
 			So(err, ShouldBeNil)

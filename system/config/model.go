@@ -21,6 +21,7 @@ type AppConfig struct {
 	MqttSessionsProvider string  `json:"mqtt_sessions_provider"`
 	MqttTopicsProvider   string  `json:"mqtt_topics_provider"`
 	MqttPort             int     `json:"mqtt_port"`
+	Logging              bool    `json:"logging"`
 }
 
 type RunMode string

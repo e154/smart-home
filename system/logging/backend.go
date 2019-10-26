@@ -1,32 +1,37 @@
 package logging
 
 import (
-	"os"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/config"
 	"github.com/op/go-logging"
 	"github.com/sirupsen/logrus"
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/common"
+	"os"
 )
 
 type LogBackend struct {
 	L        *logrus.Logger
 	adaptors *adaptors.Adaptors
 	oldLog   *m.Log
+	logging  bool
 }
 
-func NewLogBackend(
-	logger *logrus.Logger,
-	adaptors *adaptors.Adaptors) (back *LogBackend) {
+func NewLogBackend(logger *logrus.Logger, adaptors *adaptors.Adaptors, conf *config.AppConfig) (back *LogBackend) {
 	back = &LogBackend{
 		L:        logger,
 		adaptors: adaptors,
+		logging:  conf.Logging,
 	}
 	back.L.Out = os.Stdout
 	return
 }
 
 func (b *LogBackend) Log(level logging.Level, calldepth int, rec *logging.Record) (err error) {
+
+	if !b.logging {
+		return
+	}
 
 	var logLevel common.LogLevel
 	s := rec.Formatted(calldepth + 1)

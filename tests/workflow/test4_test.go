@@ -176,6 +176,9 @@ func Test4(t *testing.T) {
 			wfScenario1.Id, err = adaptors.WorkflowScenario.Add(wfScenario1)
 			So(err, ShouldBeNil)
 
+			err = adaptors.Workflow.SetScenario(workflow, wfScenario1.Id)
+			So(err, ShouldBeNil)
+
 			// add flow1
 			// +----------+
 			// | handler  |
@@ -226,12 +229,12 @@ func Test4(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// get flow
-			flow1, err = adaptors.Flow.GetById(flow1.Id)
+			// ------------------------------------------------
+			err = c.Run()
 			So(err, ShouldBeNil)
 
-			//fmt.Println("----")
-			//debug.Println(flow1)
-			//fmt.Println("----")
+			err = c.Stop()
+			So(err, ShouldBeNil)
 		})
 	})
 }

@@ -48,6 +48,8 @@ import (
 //       			|           |
 //       			+-----------+
 //
+// detect circle flow link
+//
 func Test10(t *testing.T) {
 
 	var story = make([]string, 0)
@@ -431,15 +433,19 @@ func Test10(t *testing.T) {
 			ctx1, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
 			ctx1 = context.WithValue(ctx1, "msg", message)
 
-			for i := 0; i < 1; i++ {
-				ctx.Println("send message ...")
-				err = flowCore.NewMessage(ctx1)
-				So(err, ShouldNotBeNil)
-				ctx.Println(err.Error())
-			}
+			// send message ...
+			circularErr := flowCore.NewMessage(ctx1)
+			So(circularErr, ShouldNotBeNil)
 
 			So(len(story), ShouldEqual, 4)
 			So(scriptCounter, ShouldEqual, "5")
+
+			err = c.Stop()
+			So(err, ShouldBeNil)
+
+			ctx.Println("")
+			ctx.Println(circularErr.Error())
+			ctx.Println("")
 		})
 	})
 }

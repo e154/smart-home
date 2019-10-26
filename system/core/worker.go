@@ -32,28 +32,43 @@ func NewWorker(model *m.Worker, flow *Flow, cron *cr.Cron) (worker *Worker) {
 	return
 }
 
-func (w *Worker) RemoveTask() () {
+func (w *Worker) Start() {
+	w.CronTask = w.cron.NewTask(w.Model.Time, func() {
+		w.Do()
+	})
+}
+
+func (w *Worker) Stop() () {
+
+	w.Lock()
+	defer w.Unlock()
 
 	if w.CronTask == nil {
 		return
 	}
 
 	w.CronTask.Disable()
-
-	// remove task from cron
 	w.cron.RemoveTask(w.CronTask)
+	w.CronTask = nil
 
-	for _, cancel := range w.cancelFunc {
-		cancel()
+	w.removeActions()
+
+	for {
+		time.Sleep(time.Millisecond * 500)
+		if !w.isRuning {
+			log.Infof("worker %v ... ok", w.Model.Id)
+			break
+		}
+
+		select {
+		case <-time.After(3 * time.Second):
+			return
+		default:
+
+		}
 	}
 
 	return
-}
-
-func (w *Worker) Actions() map[int64]*Action {
-	w.Lock()
-	defer w.Unlock()
-	return w.actions
 }
 
 func (w *Worker) AddAction(action *Action) {
@@ -67,16 +82,14 @@ func (w *Worker) AddAction(action *Action) {
 	w.actions[action.Device.Id] = action
 }
 
-func (w *Worker) RemoveActions() {
-	w.Lock()
-	w.actions = nil
-	w.Unlock()
-}
+func (w *Worker) removeActions() {
 
-func (w *Worker) RegTask() {
-	w.CronTask = w.cron.NewTask(w.Model.Time, func() {
-		w.Do()
-	})
+	for i, action := range w.actions {
+		if cancel, ok := w.cancelFunc[action.Device.Id]; ok {
+			cancel()
+		}
+		delete(w.actions, i)
+	}
 }
 
 // Run worker script, and send result to flow as message struct

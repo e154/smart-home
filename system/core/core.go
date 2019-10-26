@@ -324,7 +324,9 @@ func (b *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	err = b.workflows[workflow.Id].Stop()
+	if err = b.workflows[workflow.Id].Stop(); err != nil {
+		log.Error(err.Error())
+	}
 	delete(b.workflows, workflow.Id)
 
 	return

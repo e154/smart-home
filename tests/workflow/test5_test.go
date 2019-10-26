@@ -72,9 +72,8 @@ func Test5(t *testing.T) {
 			parentDevice, err = adaptors.Device.GetById(parentDevice.Id)
 			So(err, ShouldBeNil)
 
-			//fmt.Println("----")
-			//debug.Println(parentDevice)
-			//fmt.Println("----")
+			err = c.Stop()
+			So(err, ShouldBeNil)
 		})
 	})
 }

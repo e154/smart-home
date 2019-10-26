@@ -3,6 +3,7 @@ package scripts
 import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/migrations"
@@ -22,10 +23,24 @@ import (
 // 				(wfScenario1 + script6)
 // 				(wfScenario2 + script7)
 //
+// add flow (flow1)
+// +----------+
+// | handler  |
+// | script8  |
+// |          |
+// +----------+
+//
+// add flow (flow2)
+// +----------+
+// | handler  |
+// | script17 |
+// |          |
+// +----------+
+//
 // select scenario from:
 //				- workflow scenario script
 //
-func Test5(t *testing.T) {
+func Test6(t *testing.T) {
 
 	counter := 0
 
@@ -88,7 +103,7 @@ func Test5(t *testing.T) {
 			// ------------------------------------------------
 			storeRegisterCallback(scriptService)
 
-			scripts := GetScripts(ctx, scriptService, adaptors, 4, 5, 6, 7)
+			scripts := GetScripts(ctx, scriptService, adaptors, 4, 5, 6, 7, 8, 17)
 
 			// workflow
 			// ------------------------------------------------
@@ -137,12 +152,100 @@ func Test5(t *testing.T) {
 			err = adaptors.Workflow.SetScenario(workflow, wfScenario1)
 			So(err, ShouldBeNil)
 
+			// add flow1
+			// +----------+
+			// | handler  |
+			// | script7  |
+			// |          |
+			// +----------+
+			flow1 := &m.Flow{
+				Name:               "flow1",
+				Status:             Enabled,
+				WorkflowId:         workflow.Id,
+				WorkflowScenarioId: wfScenario1.Id,
+			}
+
+			ok, _ := flow1.Valid()
+			So(ok, ShouldEqual, true)
+
+			flow1.Id, err = adaptors.Flow.Add(flow1)
+			So(err, ShouldBeNil)
+
+			feHandler := &m.FlowElement{
+				Name:          "handler",
+				FlowId:        flow1.Id,
+				Status:        Enabled,
+				PrototypeType: FlowElementsPrototypeMessageHandler,
+				ScriptId:      &scripts["script8"].Id,
+			}
+
+			ok, _ = feHandler.Valid()
+			So(ok, ShouldEqual, true)
+
+			feHandler.Uuid, err = adaptors.FlowElement.Add(feHandler)
+			So(err, ShouldBeNil)
+
+			// add flow2
+			// +----------+
+			// | handler  |
+			// | script8  |
+			// |          |
+			// +----------+
+			flow2 := &m.Flow{
+				Name:               "flow2",
+				Status:             Enabled,
+				WorkflowId:         workflow.Id,
+				WorkflowScenarioId: wfScenario2.Id,
+			}
+
+			ok, _ = flow2.Valid()
+			So(ok, ShouldEqual, true)
+
+			flow2.Id, err = adaptors.Flow.Add(flow2)
+			So(err, ShouldBeNil)
+
+			feHandler2 := &m.FlowElement{
+				Name:          "handler",
+				FlowId:        flow2.Id,
+				Status:        Enabled,
+				PrototypeType: FlowElementsPrototypeMessageHandler,
+				ScriptId:      &scripts["script17"].Id,
+			}
+
+			ok, _ = feHandler2.Valid()
+			So(ok, ShouldEqual, true)
+
+			feHandler2.Uuid, err = adaptors.FlowElement.Add(feHandler2)
+			So(err, ShouldBeNil)
+
 			// run
 			// ------------------------------------------------
 			err = c.Run()
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Second * 1)
+			//time.Sleep(time.Second * 2)
+
+			workflowCore, err := c.GetWorkflow(workflow.Id)
+			So(err, ShouldBeNil)
+
+			//time.Sleep(time.Second * 2)
+
+			_, err = workflowCore.GetFLow(flow1.Id)
+			So(err, ShouldNotBeNil)
+
+			//message := core.NewMessage()
+			//message.SetVar("val", 1)
+			//
+			//// create context
+			//var ctx1 context.Context
+			//ctx1, _ = context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+			//ctx1 = context.WithValue(ctx1, "msg", message)
+			//
+			//Println("send message ...")
+			//err = flowCore.NewMessage(ctx1)
+			//So(err, ShouldBeNil)
+
+			time.Sleep(time.Second * 2)
 
 			err = c.Stop()
 			So(err, ShouldBeNil)

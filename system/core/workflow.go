@@ -8,18 +8,22 @@ import (
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/scripts"
 	"sync"
+	"time"
 )
 
 type Workflow struct {
 	Storage
 	model *m.Workflow
 	sync.Mutex
-	adaptors *adaptors.Adaptors
-	scripts  *scripts.ScriptService
-	Flows    map[int64]*Flow
-	engine   *scripts.Engine
-	cron     *cr.Cron
-	core     *Core
+	adaptors        *adaptors.Adaptors
+	scripts         *scripts.ScriptService
+	Flows           map[int64]*Flow
+	engine          *scripts.Engine
+	cron            *cr.Cron
+	core            *Core
+	nextScenario    *m.WorkflowScenario
+	isRuning        bool
+	scenarioEntered bool
 }
 
 func NewWorkflow(model *m.Workflow,
@@ -29,6 +33,7 @@ func NewWorkflow(model *m.Workflow,
 	core *Core) (workflow *Workflow) {
 
 	workflow = &Workflow{
+		Storage:  NewStorage(),
 		model:    model,
 		adaptors: adaptors,
 		scripts:  scripts,
@@ -37,12 +42,22 @@ func NewWorkflow(model *m.Workflow,
 		core:     core,
 	}
 
-	workflow.pull = make(map[string]interface{})
-
 	return
 }
 
 func (wf *Workflow) Run() (err error) {
+
+	if wf.isRuning {
+		return
+	}
+
+	wf.isRuning = true
+
+	defer func() {
+		if err != nil {
+			wf.isRuning = false
+		}
+	}()
 
 	log.Infof("Run workflow '%v'", wf.model.Name)
 
@@ -68,6 +83,8 @@ func (wf *Workflow) Stop() (err error) {
 	}
 
 	err = wf.exitScenario()
+
+	wf.isRuning = false
 
 	return
 }
@@ -151,10 +168,8 @@ func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
 
 func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 
-	log.Infof("Remove flow: '%s'", flow.Name)
-
-	wf.Lock()
-	defer wf.Unlock()
+	//wf.Lock()
+	//defer wf.Unlock()
 
 	if _, ok := wf.Flows[flow.Id]; !ok {
 		return
@@ -201,10 +216,28 @@ func (wf *Workflow) SetScenario(systemName string) (err error) {
 			return
 		}
 
-		err = wf.UpdateScenario()
+		wf.nextScenario = scenario
 
 		break
 	}
+
+	if !wf.scenarioEntered {
+		return
+	}
+
+	wg := sync.WaitGroup{}
+	wg.Add(len(wf.Flows))
+
+	go func() {
+		for _, flow := range wf.Flows {
+			wf.RemoveFlow(flow.Model)
+			wg.Done()
+		}
+	}()
+
+	wg.Wait()
+
+	wf.UpdateScenario()
 
 	return
 }
@@ -217,7 +250,31 @@ func (wf *Workflow) enterScenario() (err error) {
 
 	log.Infof("Workflow '%s', scenario '%s'", wf.model.Name, wf.model.Scenario.Name)
 
-	err = wf.runScenarioScripts("on_enter")
+	if err = wf.runScenarioScripts("on_enter"); err != nil {
+		return
+	}
+
+	wf.scenarioEntered = true
+
+	time.Sleep(time.Second)
+
+	if wf.nextScenario == nil {
+		return
+	}
+
+	wg := sync.WaitGroup{}
+	wg.Add(len(wf.Flows))
+
+	go func() {
+		for _, flow := range wf.Flows {
+			wf.RemoveFlow(flow.Model)
+			wg.Done()
+		}
+	}()
+
+	wg.Wait()
+
+	wf.UpdateScenario()
 
 	return
 }
@@ -225,12 +282,15 @@ func (wf *Workflow) enterScenario() (err error) {
 func (wf *Workflow) exitScenario() (err error) {
 
 	if wf.model.Scenario == nil {
+		wf.scenarioEntered = false
 		return
 	}
 
 	if wf.model.Scenario != nil {
 		err = wf.runScenarioScripts("on_exit")
 	}
+
+	wf.scenarioEntered = false
 
 	return
 }
@@ -256,6 +316,7 @@ func (wf *Workflow) UpdateScenario() (err error) {
 
 	*wf.model = *model
 
+	wf.nextScenario = nil
 	err = wf.Run()
 
 	return
