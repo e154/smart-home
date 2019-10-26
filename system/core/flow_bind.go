@@ -30,5 +30,8 @@ func (f *FlowBind) GetVar(key string) interface{} {
 }
 
 func (f *FlowBind) Node() *NodeBind {
-	return &NodeBind{node:f.flow.Node}
+	if f.flow.Node == nil {
+		return nil
+	}
+	return &NodeBind{node: f.flow.Node}
 }

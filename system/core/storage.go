@@ -1,28 +1,36 @@
 package core
 
-import "sync"
+import (
+	"sync"
+)
 
 type Storage struct {
-	sync.Mutex
+	mx   *sync.Mutex
 	pull map[string]interface{}
 }
 
-func (s *Storage) GetVar(key string) interface{} {
-
-	s.Lock()
-	defer s.Unlock()
-
-	if v, ok := s.pull[key]; ok {
-		return v
+func NewStorage() Storage {
+	return Storage{
+		mx:   &sync.Mutex{},
+		pull: make(map[string]interface{}),
 	}
+}
 
-	return nil
+func (s *Storage) GetVar(key string) (value interface{}) {
+
+	s.mx.Lock()
+	if v, ok := s.pull[key]; ok {
+		value = v
+	} else {
+		value = nil
+	}
+	s.mx.Unlock()
+	return
 }
 
 func (s *Storage) SetVar(key string, value interface{}) {
 
-	s.Lock()
-	defer s.Unlock()
-
+	s.mx.Lock()
 	s.pull[key] = value
+	s.mx.Unlock()
 }

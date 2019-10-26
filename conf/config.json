@@ -18,5 +18,6 @@
   "mqtt_connect_timeout": 2,
   "mqtt_sessions_provider": "mem",
   "mqtt_topics_provider": "mem",
-  "mqtt_port": 1883
+  "mqtt_port": 1883,
+  "logging": true
 }

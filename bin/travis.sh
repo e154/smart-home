@@ -70,9 +70,6 @@ main() {
     --docker_deploy)
     __docker_deploy
     ;;
-    --test)
-    __test
-    ;;
     *)
     echo "Error: Invalid argument '$1'" >&2
     exit 1
