@@ -1,6 +1,7 @@
 package notify
 
 import (
+	"github.com/e154/smart-home/system/email_service"
 	mb "github.com/e154/smart-home/system/messagebird"
 	"github.com/e154/smart-home/system/telegram"
 	tw "github.com/e154/smart-home/system/twilio"
@@ -11,6 +12,7 @@ type Worker struct {
 	cfg            *NotifyConfig
 	mbClient       *mb.MBClient
 	twClient       *tw.TWClient
+	emailClient    *email_service.EmailService
 	telegramClient *telegram.Telegram
 	inProcess      bool
 }
@@ -34,6 +36,10 @@ func NewWorker(cfg *NotifyConfig) *Worker {
 	}
 
 	// email
+	emailConfig := email_service.NewEmailServiceConfig(cfg.EmailAuth, cfg.EmailPass, cfg.EmailSmtp, cfg.EmailPort, cfg.EmailSender)
+	if emailClient, err := email_service.NewEmailService(emailConfig); err == nil {
+		worker.emailClient = emailClient
+	}
 
 	// telegram
 	telegramClient := telegram.NewTelegramConfig(cfg.TelegramToken)
@@ -90,6 +96,25 @@ func (n *Worker) sendTelegram(msg *Telegram) {
 	}
 
 	if err := n.telegramClient.SendMsg(msg.Text, msg.Channel); err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (n *Worker) sendEmail(msg *Email) {
+
+	if n.emailClient == nil {
+		return
+	}
+
+	email := &email_service.Email{
+		From:     msg.From,
+		To:       msg.To,
+		Subject:  msg.Subject,
+		Template: msg.Template,
+		Data:     msg.Data,
+	}
+
+	if err := n.emailClient.Send(email); err != nil {
 		log.Error(err.Error())
 	}
 }
