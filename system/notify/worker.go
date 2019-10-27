@@ -1,17 +1,18 @@
 package notify
 
 import (
-	"bitbucket.org/suretly_team/notify-service/system/twilio"
 	mb "github.com/e154/smart-home/system/messagebird"
+	"github.com/e154/smart-home/system/telegram"
 	tw "github.com/e154/smart-home/system/twilio"
 	"time"
 )
 
 type Worker struct {
-	cfg       *NotifyConfig
-	mbClient  *mb.MBClient
-	twClient  *tw.TWClient
-	inProcess bool
+	cfg            *NotifyConfig
+	mbClient       *mb.MBClient
+	twClient       *tw.TWClient
+	telegramClient *telegram.Telegram
+	inProcess      bool
 }
 
 func NewWorker(cfg *NotifyConfig) *Worker {
@@ -35,6 +36,10 @@ func NewWorker(cfg *NotifyConfig) *Worker {
 	// email
 
 	// telegram
+	telegramClient := telegram.NewTelegramConfig(cfg.TelegramToken)
+	if telegramClient, err := telegram.NewTelegram(telegramClient); err == nil {
+		worker.telegramClient = telegramClient
+	}
 
 	return worker
 }
@@ -67,7 +72,7 @@ func (n *Worker) sendSms(msg *SMS) {
 		log.Error(err.Error())
 	}
 
-	if status == twilio.StatusDelivered {
+	if status == tw.StatusDelivered {
 		return
 	}
 
@@ -75,5 +80,16 @@ func (n *Worker) sendSms(msg *SMS) {
 		if _, err := n.mbClient.SendSMS(msg.Phone, msg.Text); err != nil {
 			log.Error(err.Error())
 		}
+	}
+}
+
+func (n *Worker) sendTelegram(msg *Telegram) {
+
+	if n.telegramClient == nil {
+		return
+	}
+
+	if err := n.telegramClient.SendMsg(msg.Text, msg.Channel); err != nil {
+		log.Error(err.Error())
 	}
 }

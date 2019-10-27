@@ -73,7 +73,6 @@ func (n *Notify) Start() {
 	// workers
 	n.workers = []*Worker{
 		NewWorker(n.cfg),
-		NewWorker(n.cfg),
 	}
 
 	// stats
