@@ -138,6 +138,14 @@
   version = "v1.7.2"
 
 [[projects]]
+  digest = "1:345ad428d03cc89fa5498d61383d0d7f39afbe8731ca135c0ec92782285121d3"
+  name = "github.com/gorilla/schema"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "124d17ef95858a10835ce95502446cb5a9e9f715"
+  version = "v1.1.0"
+
+[[projects]]
   digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
   name = "github.com/gorilla/websocket"
   packages = ["."]
@@ -241,6 +249,18 @@
   version = "v0.0.4"
 
 [[projects]]
+  digest = "1:a5d5e7ecdc316f455d6733d41098fe6cbd51d21d1ced2baa9d698ce7299c59b2"
+  name = "github.com/messagebird/go-rest-api"
+  packages = [
+    ".",
+    "balance",
+    "sms",
+  ]
+  pruneopts = "UT"
+  revision = "f1a991ff10ee0731a24cf3e84d20e444de4e44e0"
+  version = "5.4.0"
+
+[[projects]]
   digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
@@ -280,6 +300,14 @@
   version = "v1"
 
 [[projects]]
+  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
+
+[[projects]]
   digest = "1:77b730fa4c2d98f3ddf492acbea351eb6b0560fa5eace4105a6fc33ff937bb1b"
   name = "github.com/rakyll/statik"
   packages = ["fs"]
@@ -310,6 +338,14 @@
   ]
   pruneopts = "UT"
   revision = "3f452fc0ebebbb784fdab91f7bc79a31dcacab5c"
+
+[[projects]]
+  branch = "master"
+  digest = "1:b12f30136b94e4e2d0d5fc3f39901df683ad24d93434f718bf16a81ed5aa0a29"
+  name = "github.com/sfreiberg/gotwilio"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f6f740c7bffc9556aee9e8c62d38b112bc8d3a78"
 
 [[projects]]
   digest = "1:772b258c49e7eb2d46983b28c108f4300291d7b44709ffbd12f50012397fd5a6"
@@ -529,15 +565,20 @@
     "github.com/jinzhu/gorm",
     "github.com/lib/pq",
     "github.com/lox/go-servejs",
+    "github.com/messagebird/go-rest-api",
+    "github.com/messagebird/go-rest-api/balance",
+    "github.com/messagebird/go-rest-api/sms",
     "github.com/mitchellh/mapstructure",
     "github.com/olebedev/go-duktape",
     "github.com/op/go-logging",
+    "github.com/pkg/errors",
     "github.com/rakyll/statik/fs",
     "github.com/ribice/golang-swaggerui-example",
     "github.com/ribice/golang-swaggerui-example/cmd/api",
     "github.com/ribice/golang-swaggerui-example/cmd/swagger",
     "github.com/ribice/golang-swaggerui-example/cmd/swaggerui",
     "github.com/rubenv/sql-migrate",
+    "github.com/sfreiberg/gotwilio",
     "github.com/shirou/gopsutil/cpu",
     "github.com/shirou/gopsutil/disk",
     "github.com/shirou/gopsutil/host",

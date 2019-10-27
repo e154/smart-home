@@ -23,7 +23,7 @@ var (
 func TestMain(m *testing.M) {
 
 	container = BuildContainer()
-	container.Invoke(func(migrations *migrations.Migrations,
+	err := container.Invoke(func(migrations *migrations.Migrations,
 		lx *logrus.Logger,back *l.LogBackend) {
 
 		l.Initialize(back)
@@ -32,4 +32,8 @@ func TestMain(m *testing.M) {
 
 		os.Exit(m.Run())
 	})
+
+	if err != nil {
+		print(err.Error())
+	}
 }

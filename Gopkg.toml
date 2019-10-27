@@ -63,3 +63,7 @@
 [[constraint]]
   name = "github.com/francoispqt/gojay"
   version = "1.2.13"
+
+[[constraint]]
+  name = "github.com/messagebird/go-rest-api"
+  version = "5.4.0"

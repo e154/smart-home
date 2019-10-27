@@ -17,6 +17,7 @@ import (
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/services"
@@ -59,6 +60,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(telemetry.NewTelemetry)
 	container.Provide(logging.NewLogBackend)
 	container.Provide(gate_client.NewGateClient)
+	container.Provide(notify.NewNotify)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()
