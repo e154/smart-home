@@ -6,6 +6,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
 	"time"
 )
@@ -19,22 +20,24 @@ const (
 )
 
 type Notify struct {
-	adaptor     *adaptors.Adaptors
-	cfg         *NotifyConfig
-	appCfg      *config.AppConfig
-	stat        *NotifyStat
-	isStarted   bool
-	stopPrecess bool
-	ticker      *time.Ticker
-	workers     []*Worker
-	queue       chan interface{}
-	stopQueue   chan struct{}
+	adaptor       *adaptors.Adaptors
+	cfg           *NotifyConfig
+	appCfg        *config.AppConfig
+	stat          *NotifyStat
+	isStarted     bool
+	stopPrecess   bool
+	scriptService *scripts.ScriptService
+	ticker        *time.Ticker
+	workers       []*Worker
+	queue         chan interface{}
+	stopQueue     chan struct{}
 }
 
 func NewNotify(
 	adaptor *adaptors.Adaptors,
 	appCfg *config.AppConfig,
-	graceful *graceful_service.GracefulService, ) *Notify {
+	graceful *graceful_service.GracefulService,
+	scriptService *scripts.ScriptService) *Notify {
 
 	notify := &Notify{
 		adaptor:   adaptor,
@@ -46,6 +49,10 @@ func NewNotify(
 	graceful.Subscribe(notify)
 
 	notify.Start()
+
+	scriptService.PushStruct("Notify", &NotifyBind{
+		notify: notify,
+	})
 
 	return notify
 }

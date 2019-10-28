@@ -6,7 +6,6 @@ import (
 	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts/bind"
 	"github.com/op/go-logging"
 )
@@ -20,8 +19,7 @@ type ScriptService struct {
 	pull *Pull
 }
 
-func NewScriptService(cfg *config.AppConfig,
-	notify *notify.Notify) (service *ScriptService) {
+func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 
 	pull := &Pull{
 		functions:  make(map[string]interface{}),
@@ -33,7 +31,6 @@ func NewScriptService(cfg *config.AppConfig,
 		pull: pull,
 	}
 
-	service.PushStruct("Notify", bind.NewNotifyBind(notify))
 	service.PushStruct("Log", &bind.LogBind{})
 	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
