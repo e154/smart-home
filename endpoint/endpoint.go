@@ -32,6 +32,7 @@ type Endpoint struct {
 	WorkflowScenario *WorkflowScenarioEndpoint
 	User             *UserEndpoint
 	Gate             *GateEndpoint
+	Template         *TemplateEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
@@ -59,5 +60,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		User:             NewUserEndpoint(common),
 		Gate:             NewGateEndpoint(common),
 		MapZone:          NewMapZoneEndpoint(common),
+		Template:         NewTemplateEndpoint(common),
 	}
 }

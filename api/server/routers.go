@@ -171,4 +171,11 @@ func (s *Server) setControllers() {
 	v1.GET("/gate/mobiles", s.af.Auth, s.ControllersV1.Gate.GetMobileList)
 	v1.POST("/gate/mobile", s.af.Auth, s.ControllersV1.Gate.AddMobile)
 	v1.DELETE("/gate/mobile/:token", s.af.Auth, s.ControllersV1.Gate.DeleteMobile)
+
+	// templates
+	v1.POST("/template", s.af.Auth, s.ControllersV1.Template.Add)
+	v1.GET("/template/:name", s.af.Auth, s.ControllersV1.Template.GetByName)
+	v1.PUT("/template/:name", s.af.Auth, s.ControllersV1.Template.Update)
+	v1.DELETE("/template/:name", s.af.Auth, s.ControllersV1.Template.Delete)
+
 }
