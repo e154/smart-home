@@ -43,11 +43,11 @@ func (n Templates) UpdateOrCreate(tpl *Template) error {
 	return nil
 }
 
-func (n Templates) GetByName(name string) (*Template, error) {
+func (n Templates) GetByName(name, itemType string) (*Template, error) {
 
 	tpl := &Template{}
 	err := n.Db.Model(tpl).
-		Where("name = ?", name).
+		Where("name = ? and type = ?", name, itemType).
 		First(&tpl).Error
 
 	if err != nil {
@@ -117,7 +117,7 @@ func (n Templates) Delete(name string) (err error) {
 func (n Templates) GetItemsTree() (tree *TemplateTree, err error) {
 
 	var items []*Template
-	if items, err = n.GetItems(); err != nil {
+	if items, err = n.GetList("item"); err != nil {
 		return
 	}
 
@@ -134,10 +134,10 @@ func (n Templates) GetItemsTree() (tree *TemplateTree, err error) {
 	return
 }
 
-func (n Templates) GetItems() ([]*Template, error) {
+func (n Templates) GetList(templateType string) ([]*Template, error) {
 	items := make([]*Template, 0)
 	err := n.Db.Model(&Template{}).
-		Where("type = 'item'").
+		Where("type = ?", templateType).
 		Find(&items).
 		Error
 

@@ -30,6 +30,7 @@ type ControllersV1 struct {
 	Gate             *ControllerGate
 	MapZone          *ControllerMapZone
 	Template         *ControllerTemplate
+	TemplateItem     *ControllerTemplateItem
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -60,5 +61,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Gate:             NewControllerGate(common),
 		MapZone:          NewControllerMapZone(common),
 		Template:         NewControllerTemplate(common),
+		TemplateItem:     NewControllerTemplateItem(common),
 	}
 }

@@ -175,7 +175,18 @@ func (s *Server) setControllers() {
 	// templates
 	v1.POST("/template", s.af.Auth, s.ControllersV1.Template.Add)
 	v1.GET("/template/:name", s.af.Auth, s.ControllersV1.Template.GetByName)
+	v1.GET("/templates", s.af.Auth, s.ControllersV1.Template.GetList)
 	v1.PUT("/template/:name", s.af.Auth, s.ControllersV1.Template.Update)
 	v1.DELETE("/template/:name", s.af.Auth, s.ControllersV1.Template.Delete)
+	v1.GET("/templates/search", s.af.Auth, s.ControllersV1.Template.Search)
+	v1.GET("/templates/preview", s.af.Auth, s.ControllersV1.Template.Preview)
 
+	// template items
+	v1.POST("/template_item", s.af.Auth, s.ControllersV1.TemplateItem.Add)
+	v1.GET("/template_item/:name", s.af.Auth, s.ControllersV1.TemplateItem.GetByName)
+	v1.GET("/template_items", s.af.Auth, s.ControllersV1.TemplateItem.GetList)
+	v1.GET("/template_items/tree", s.af.Auth, s.ControllersV1.TemplateItem.GetTree)
+	v1.PUT("/template_items/tree", s.af.Auth, s.ControllersV1.TemplateItem.UpdateTree)
+	v1.PUT("/template_item/:name", s.af.Auth, s.ControllersV1.TemplateItem.Update)
+	v1.DELETE("/template_item/:name", s.af.Auth, s.ControllersV1.TemplateItem.Delete)
 }

@@ -30,10 +30,10 @@ func (n *Template) UpdateOrCreate(ver *m.Template) (err error) {
 	return
 }
 
-func (n *Template) GetItems() (items []*m.Template, err error) {
+func (n *Template) GetList(templateType m.TemplateType) (items []*m.Template, err error) {
 
 	var dbItems []*db.Template
-	if dbItems, err = n.table.GetItems(); err != nil {
+	if dbItems, err = n.table.GetList(templateType.String()); err != nil {
 		return
 	}
 
@@ -48,7 +48,18 @@ func (n *Template) GetItems() (items []*m.Template, err error) {
 func (n *Template) GetByName(name string) (ver *m.Template, err error) {
 
 	var dbVer *db.Template
-	if dbVer, err = n.table.GetByName(name); err != nil {
+	if dbVer, err = n.table.GetByName(name, "template"); err != nil {
+		return
+	}
+
+	ver = n.fromDb(dbVer)
+	return
+}
+
+func (n *Template) GetItemByName(name string) (ver *m.Template, err error) {
+
+	var dbVer *db.Template
+	if dbVer, err = n.table.GetByName(name, "item"); err != nil {
 		return
 	}
 
@@ -93,6 +104,22 @@ func (n *Template) UpdateItemsTree(tree []*m.TemplateTree) (err error) {
 
 	return
 }
+
+func (n *Template) Search(query string, limit, offset int) (list []*m.Template, total int64, err error) {
+	var dbList []*db.Template
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Template, 0)
+	for _, dbVer := range dbList {
+		ver := n.fromDb(dbVer)
+		list = append(list, ver)
+	}
+
+	return
+}
+
 
 func (n *Template) fromDb(dbVer *db.Template) (ver *m.Template) {
 	ver = &m.Template{

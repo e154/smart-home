@@ -7,15 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ControllerTemplate struct {
+type ControllerTemplateItem struct {
 	*ControllerCommon
 }
 
-func NewControllerTemplate(common *ControllerCommon) *ControllerTemplate {
-	return &ControllerTemplate{ControllerCommon: common}
+func NewControllerTemplateItem(common *ControllerCommon) *ControllerTemplateItem {
+	return &ControllerTemplateItem{ControllerCommon: common}
 }
 
-// swagger:operation POST /template templateAdd
+// swagger:operation POST /template_item templateAddItem
 // ---
 // parameters:
 // - description: template params
@@ -23,7 +23,7 @@ func NewControllerTemplate(common *ControllerCommon) *ControllerTemplate {
 //   name: template
 //   required: true
 //   schema:
-//     $ref: '#/definitions/NewTemplate'
+//     $ref: '#/definitions/NewTemplateItem'
 //     type: object
 // summary: add new template item
 // description:
@@ -42,9 +42,9 @@ func NewControllerTemplate(common *ControllerCommon) *ControllerTemplate {
 //     description: "Forbidden"
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerTemplate) Add(ctx *gin.Context) {
+func (c ControllerTemplateItem) Add(ctx *gin.Context) {
 
-	params := &models.NewTemplate{}
+	params := &models.NewTemplateItem{}
 	if err := ctx.ShouldBindJSON(params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -53,7 +53,7 @@ func (c ControllerTemplate) Add(ctx *gin.Context) {
 
 	template := &m.Template{}
 	_ = common.Copy(&template, &params, common.JsonEngine)
-	template.Type = m.TemplateTypeTemplate
+	template.Type = m.TemplateTypeItem
 
 	errs, err := c.endpoint.Template.UpdateOrCreate(template)
 	if len(errs) > 0 {
@@ -71,15 +71,15 @@ func (c ControllerTemplate) Add(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// swagger:operation GET /template/{name} templateGetByName
+// swagger:operation GET /template_item/{name} templateGetItemByName
 // ---
 // parameters:
-// - description: Template Name
+// - description: TemplateItem Name
 //   in: path
 //   name: name
 //   required: true
 //   type: string
-// summary: get template by name
+// summary: get template item by name
 // description:
 // security:
 // - ApiKeyAuth: []
@@ -89,7 +89,7 @@ func (c ControllerTemplate) Add(ctx *gin.Context) {
 //   "200":
 //     description: OK
 //     schema:
-//       $ref: '#/definitions/Template'
+//       $ref: '#/definitions/TemplateItem'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -100,7 +100,7 @@ func (c ControllerTemplate) Add(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerTemplate) GetByName(ctx *gin.Context) {
+func (c ControllerTemplateItem) GetByName(ctx *gin.Context) {
 
 	name := ctx.Param("name")
 	if name == "" {
@@ -108,7 +108,7 @@ func (c ControllerTemplate) GetByName(ctx *gin.Context) {
 		return
 	}
 
-	tree, err := c.endpoint.Template.GetItemsTree()
+	item, err := c.endpoint.Template.GetItemByName(name)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -118,14 +118,14 @@ func (c ControllerTemplate) GetByName(ctx *gin.Context) {
 		return
 	}
 
-	result := &models.Template{}
-	_ = common.Copy(&result, &tree, common.JsonEngine)
+	result := &models.TemplateItem{}
+	_ = common.Copy(&result, &item, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
 }
 
-// swagger:operation PUT /template/{name} templateUpdateByName
+// swagger:operation PUT /template_item/{name} templateUpdateItemByName
 // ---
 // parameters:
 // - description: Template Name
@@ -138,7 +138,7 @@ func (c ControllerTemplate) GetByName(ctx *gin.Context) {
 //   name: template
 //   required: true
 //   schema:
-//     $ref: '#/definitions/UpdateTemplate'
+//     $ref: '#/definitions/UpdateTemplateItem'
 //     type: object
 // summary: update template by id
 // description:
@@ -161,7 +161,7 @@ func (c ControllerTemplate) GetByName(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerTemplate) Update(ctx *gin.Context) {
+func (c ControllerTemplateItem) Update(ctx *gin.Context) {
 
 	name := ctx.Param("name")
 	if name == "" {
@@ -195,9 +195,9 @@ func (c ControllerTemplate) Update(ctx *gin.Context) {
 	resp.SetData(template).Send(ctx)
 }
 
-// swagger:operation GET /templates templateList
+// swagger:operation GET /template_items templateGetItemList
 // ---
-// summary: get template list
+// summary: get template item list
 // description:
 // security:
 // - ApiKeyAuth: []
@@ -205,38 +205,38 @@ func (c ControllerTemplate) Update(ctx *gin.Context) {
 // - template
 // responses:
 //   "200":
-//	   $ref: '#/responses/TemplateList'
+//	   $ref: '#/responses/TemplateItemSortedList'
 //   "401":
 //     description: "Unauthorized"
 //   "403":
 //     description: "Forbidden"
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerTemplate) GetList(ctx *gin.Context) {
+func (c ControllerTemplateItem) GetList(ctx *gin.Context) {
 
-	total, items, err := c.endpoint.Template.GetList()
+	total, items, err := c.endpoint.Template.GetItemsSortedList()
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
-	result := make([]*models.Template, 0)
-	common.Copy(&result, &items)
-
 	resp := NewSuccess()
-	resp.Page(999, 0, total, result).Send(ctx)
+	resp.SetData(map[string]interface{}{
+		"items": items,
+		"total": total,
+	}).Send(ctx)
 	return
 }
 
-// swagger:operation DELETE /template/{name} templateDeleteByName
+// swagger:operation DELETE /template_item/{name} templateDeleteItemByName
 // ---
 // parameters:
-// - description: Template Name
+// - description: TemplateItem Name
 //   in: path
 //   name: name
 //   required: true
 //   type: string
-// summary: delete template by string
+// summary: delete template item by string
 // description:
 // security:
 // - ApiKeyAuth: []
@@ -255,7 +255,7 @@ func (c ControllerTemplate) GetList(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerTemplate) Delete(ctx *gin.Context) {
+func (c ControllerTemplateItem) Delete(ctx *gin.Context) {
 
 	name := ctx.Param("name")
 	if name == "" {
@@ -276,104 +276,96 @@ func (c ControllerTemplate) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// swagger:operation GET /templates/search templateSearch
+// swagger:operation GET /template_items/tree templateGetItemsTree
 // ---
-// summary: search template
+// parameters:
+// summary: get template items tree
 // description:
 // security:
 // - ApiKeyAuth: []
 // tags:
 // - template
-// parameters:
-// - description: query
-//   in: query
-//   name: query
-//   type: string
-// - default: 10
-//   description: limit
-//   in: query
-//   name: limit
-//   required: true
-//   type: integer
-// - default: 0
-//   description: offset
-//   in: query
-//   name: offset
-//   required: true
-//   type: integer
 // responses:
 //   "200":
-//	   $ref: '#/responses/TemplateSearch'
+//     description: OK
+//     schema:
+//       $ref: '#/definitions/TemplateTree'
+//   "400":
+//	   $ref: '#/responses/Error'
 //   "401":
 //     description: "Unauthorized"
 //   "403":
 //     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerTemplate) Search(ctx *gin.Context) {
+func (c ControllerTemplateItem) GetTree(ctx *gin.Context) {
 
-	query, limit, offset := c.select2(ctx)
-	items, _, err := c.endpoint.Template.Search(query, limit, offset)
+	tree, err := c.endpoint.Template.GetItemsTree()
 	if err != nil {
-		NewError(500, err).Send(ctx)
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
 		return
 	}
 
-	result := make([]*models.Template, 0)
-	common.Copy(&result, &items)
+	result := &models.TemplateTree{}
+	_ = common.Copy(&result, &tree, common.JsonEngine)
 
 	resp := NewSuccess()
-	resp.Item("templates", result)
-	resp.Send(ctx)
+	resp.SetData(result).Send(ctx)
 }
 
-
-// swagger:operation GET /templates/preview templatePreview
+// swagger:operation PUT /template_items/tree templateUpdateItemsTree
 // ---
-// summary: preview template
-// description:
-// security:
-// - ApiKeyAuth: []
-// tags:
-// - template
 // parameters:
 // - description: Update item params
 //   in: body
 //   name: template
 //   required: true
 //   schema:
-//     $ref: '#/definitions/TemplatePreview'
+//     $ref: '#/definitions/UpdateTemplateTree'
 //     type: object
+// summary: update template by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - template
 // responses:
 //   "200":
 //	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
 //   "401":
 //     description: "Unauthorized"
 //   "403":
 //     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerTemplate) Preview(ctx *gin.Context) {
+func (c ControllerTemplateItem) UpdateTree(ctx *gin.Context) {
 
-	params := &models.TemplatePreview{}
+	params := make(models.UpdateTemplateTree, 0)
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	if len(params.Items) == 0 {
-		return
-	}
+	tree := make([]*m.TemplateTree, 0, len(params))
+	_ = common.Copy(&tree, &params, common.JsonEngine)
 
-	templatePreview := &m.TemplatePreview{}
-	common.Copy(&templatePreview, &params)
-
-	data, err := c.endpoint.Template.Preview(templatePreview)
+	err := c.endpoint.Template.UpdateItemsTree(tree)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
-	ctx.String(200, data)
+	resp := NewSuccess()
+	resp.Send(ctx)
 }

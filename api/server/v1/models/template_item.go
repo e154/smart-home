@@ -3,7 +3,7 @@ package models
 import "time"
 
 // swagger:model
-type NewTemplate struct {
+type NewTemplateItem struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	Content     string  `json:"content"`
@@ -13,7 +13,7 @@ type NewTemplate struct {
 }
 
 // swagger:model
-type UpdateTemplate struct {
+type UpdateTemplateItem struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	Content     string  `json:"content"`
@@ -23,7 +23,7 @@ type UpdateTemplate struct {
 }
 
 // swagger:model
-type Template struct {
+type TemplateItem struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	Content     string    `json:"content"`
@@ -34,14 +34,13 @@ type Template struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-type TemplateField struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+// swagger:model
+type TemplateTree struct {
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Status      string          `json:"status"`
+	Nodes       []*TemplateTree `json:"nodes"`
 }
 
 // swagger:model
-type TemplatePreview struct {
-	Items  []string         `json:"items"`
-	Title  string           `json:"title"`
-	Fields []*TemplateField `json:"fields"`
-}
+type UpdateTemplateTree []*TemplateTree
