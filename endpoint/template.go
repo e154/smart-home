@@ -4,7 +4,9 @@ import (
 	"fmt"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
+	"github.com/pkg/errors"
 	"regexp"
+	"sort"
 	"strings"
 	"unicode/utf8"
 )
@@ -32,8 +34,27 @@ func (t *TemplateEndpoint) UpdateOrCreate(params *m.Template) (errs []*validatio
 	return
 }
 
+func (t *TemplateEndpoint) UpdateStatus(params *m.Template) (errs []*validation.Error, err error) {
+
+	_, errs = params.Valid()
+	if len(errs) > 0 {
+		return
+	}
+
+	if err = t.adaptors.Template.UpdateStatus(params); err != nil {
+		return
+	}
+	return
+}
+
 func (t *TemplateEndpoint) GetByName(name string) (result *m.Template, err error) {
-	result, err = t.adaptors.Template.GetByName(name)
+	if result, err = t.adaptors.Template.GetByName(name); err != nil {
+		return
+	}
+
+	if _, e := result.GetMarkers(); e != nil {
+		err = errors.Wrap(e, "get markers")
+	}
 	return
 }
 
@@ -72,24 +93,28 @@ func (t *TemplateEndpoint) Search(query string, limit, offset int) (result []*m.
 	return
 }
 
-func (t *TemplateEndpoint) Preview(templatePreview *m.TemplatePreview) (data string, err error) {
-
-	var template *m.TemplatePreview
+func (t *TemplateEndpoint) Preview(template *m.TemplateContent) (data string, err error) {
 
 	var items []*m.Template
 	if items, err = t.adaptors.Template.GetList(m.TemplateTypeItem); err != nil {
 		return
 	}
 
-	result := m.Templates{}
-	for _, item := range templatePreview.Items {
-		m.TemplateGetParents(items, &result, item)
+	parents := m.Templates{}
+	for _, item := range template.Items {
+		m.TemplateGetParents(items, &parents, item)
 	}
 
-	//sort.Sort(result)
+	for _, item := range parents {
+		p := make(m.Templates, 0)
+		m.TemplateGetParents(parents, &p, item.Name)
+		item.ParentsCount = len(p)
+	}
+
+	sort.Sort(parents)
 
 	// замена [xxxx:block] на реальные блоки
-	for key, item := range result {
+	for key, item := range parents {
 		if item.Status != "active" {
 			continue
 		}
@@ -108,7 +133,7 @@ func (t *TemplateEndpoint) Preview(templatePreview *m.TemplatePreview) (data str
 	for _, m := range markers {
 		marker := reg2.FindStringSubmatch(m)[2]
 
-		var f string = m
+		f := m
 		for _, field := range template.Fields {
 			if field.Name == marker {
 				if utf8.RuneCountInString(field.Value) > 0 {

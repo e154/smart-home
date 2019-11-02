@@ -1,11 +1,11 @@
 package env1
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/scripts"
-	"fmt"
 )
 
 func addScripts(adaptors *adaptors.Adaptors,

@@ -30,7 +30,7 @@ func NewControllerTemplateItem(common *ControllerCommon) *ControllerTemplateItem
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - template
+// - template_item
 // responses:
 //   "200":
 //	   $ref: '#/responses/Success'
@@ -84,7 +84,7 @@ func (c ControllerTemplateItem) Add(ctx *gin.Context) {
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - template
+// - template_item
 // responses:
 //   "200":
 //     description: OK
@@ -145,7 +145,7 @@ func (c ControllerTemplateItem) GetByName(ctx *gin.Context) {
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - template
+// - template_item
 // responses:
 //   "200":
 //     description: OK
@@ -195,6 +195,75 @@ func (c ControllerTemplateItem) Update(ctx *gin.Context) {
 	resp.SetData(template).Send(ctx)
 }
 
+
+// swagger:operation PUT /template_item/status/{name} templateUpdateStatusItemByName
+// ---
+// parameters:
+// - description: Template Name
+//   in: path
+//   name: name
+//   required: true
+//   type: string
+// - description: Update item params
+//   in: body
+//   name: template
+//   required: true
+//   schema:
+//     $ref: '#/definitions/UpdateTemplateItemStatus'
+//     type: object
+// summary: update template by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - template_item
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerTemplateItem) UpdateStatus(ctx *gin.Context) {
+
+	name := ctx.Param("name")
+	if name == "" {
+		NewError(400, "bad param name").Send(ctx)
+		return
+	}
+
+	params := &models.UpdateTemplateItemStatus{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	template := &m.Template{}
+	_ = common.Copy(&template, &params, common.JsonEngine)
+
+	errs, err := c.endpoint.Template.UpdateStatus(template)
+	if len(errs) > 0 {
+		err400 := NewError(400)
+		err400.ValidationToErrors(errs).Send(ctx)
+		return
+	}
+
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
+}
+
 // swagger:operation GET /template_items templateGetItemList
 // ---
 // summary: get template item list
@@ -202,7 +271,7 @@ func (c ControllerTemplateItem) Update(ctx *gin.Context) {
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - template
+// - template_item
 // responses:
 //   "200":
 //	   $ref: '#/responses/TemplateItemSortedList'
@@ -241,7 +310,7 @@ func (c ControllerTemplateItem) GetList(ctx *gin.Context) {
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - template
+// - template_item
 // responses:
 //   "200":
 //	   $ref: '#/responses/Success'
@@ -284,7 +353,7 @@ func (c ControllerTemplateItem) Delete(ctx *gin.Context) {
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - template
+// - template_item
 // responses:
 //   "200":
 //     description: OK
@@ -334,7 +403,7 @@ func (c ControllerTemplateItem) GetTree(ctx *gin.Context) {
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - template
+// - template_item
 // responses:
 //   "200":
 //	   $ref: '#/responses/Success'

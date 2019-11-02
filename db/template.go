@@ -43,6 +43,15 @@ func (n Templates) UpdateOrCreate(tpl *Template) error {
 	return nil
 }
 
+func (n Templates) Create(tpl *Template) error {
+
+	if err := n.Db.Create(tpl).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
+}
+
 func (n Templates) GetByName(name, itemType string) (*Template, error) {
 
 	tpl := &Template{}
@@ -101,6 +110,17 @@ func (n Templates) Update(m *Template) error {
 		"type":        m.Type,
 		"content":     m.Content,
 		"parent":      m.ParentName,
+	}).Error
+
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	return nil
+}
+
+func (n Templates) UpdateStatus(m *Template) error {
+	err := n.Db.Model(&Template{Name: m.Name}).Updates(map[string]interface{}{
+		"status": m.Status,
 	}).Error
 
 	if err != nil {

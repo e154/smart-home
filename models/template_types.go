@@ -20,7 +20,7 @@ func (t TemplateType) String() string {
 
 const (
 	TemplateStatusActive   = TemplateStatus("active")
-	TemplateStatusUnactive = TemplateStatus("unactive")
+	TemplateStatusUnactive = TemplateStatus("inactive")
 	TemplateTypeItem       = TemplateType("item")
 	TemplateTypeTemplate   = TemplateType("template")
 )

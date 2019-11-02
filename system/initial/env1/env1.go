@@ -2,8 +2,8 @@ package env1
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	. "github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/access_list"
+	. "github.com/e154/smart-home/system/scripts"
 )
 
 // env1
@@ -45,4 +45,8 @@ func Init(adaptors *adaptors.Adaptors,
 	// maps
 	// ------------------------------------------------
 	addMaps(adaptors, scripts, devList, imageList, deviceActions, deviceStates)
+
+	// templates
+	// ------------------------------------------------
+	addTemplates(adaptors)
 }

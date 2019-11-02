@@ -30,6 +30,7 @@ type Template struct {
 	Status      string    `json:"status"`
 	Type        string    `json:"type"`
 	ParentName  *string   `json:"parent"`
+	Markers     []string  `json:"markers"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
@@ -40,7 +41,7 @@ type TemplateField struct {
 }
 
 // swagger:model
-type TemplatePreview struct {
+type TemplateContent struct {
 	Items  []string         `json:"items"`
 	Title  string           `json:"title"`
 	Fields []*TemplateField `json:"fields"`

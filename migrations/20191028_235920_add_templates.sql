@@ -1,7 +1,7 @@
 -- +migrate Up
 -- SQL in section 'Up' is executed when this migration is applied
 create type template_type as enum ('item', 'template');
-create type template_status as enum ('active', 'unactive');
+create type template_status as enum ('active', 'inactive');
 
 CREATE TABLE templates
 (

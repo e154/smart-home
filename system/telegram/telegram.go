@@ -89,7 +89,7 @@ func (c *Telegram) start() {
 	}
 }
 
-func (c *Telegram) stop() {
+func (c *Telegram) Stop() {
 	c.stopPrecess = true
 	c.isStarted = false
 

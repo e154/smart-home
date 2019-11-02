@@ -108,18 +108,18 @@ func (c ControllerTemplate) GetByName(ctx *gin.Context) {
 		return
 	}
 
-	tree, err := c.endpoint.Template.GetItemsTree()
+	template, err := c.endpoint.Template.GetByName(name)
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404
 		}
-		NewError(code, err).Send(ctx)
+		NewError(code, err.Error()).Send(ctx)
 		return
 	}
 
 	result := &models.Template{}
-	_ = common.Copy(&result, &tree, common.JsonEngine)
+	_ = common.Copy(&result, &template, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
@@ -328,7 +328,7 @@ func (c ControllerTemplate) Search(ctx *gin.Context) {
 }
 
 
-// swagger:operation GET /templates/preview templatePreview
+// swagger:operation POST /templates/preview templatePreview
 // ---
 // summary: preview template
 // description:
@@ -342,7 +342,7 @@ func (c ControllerTemplate) Search(ctx *gin.Context) {
 //   name: template
 //   required: true
 //   schema:
-//     $ref: '#/definitions/TemplatePreview'
+//     $ref: '#/definitions/TemplateContent'
 //     type: object
 // responses:
 //   "200":
@@ -355,7 +355,7 @@ func (c ControllerTemplate) Search(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerTemplate) Preview(ctx *gin.Context) {
 
-	params := &models.TemplatePreview{}
+	params := &models.TemplateContent{}
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -366,7 +366,7 @@ func (c ControllerTemplate) Preview(ctx *gin.Context) {
 		return
 	}
 
-	templatePreview := &m.TemplatePreview{}
+	templatePreview := &m.TemplateContent{}
 	common.Copy(&templatePreview, &params)
 
 	data, err := c.endpoint.Template.Preview(templatePreview)

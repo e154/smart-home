@@ -133,6 +133,9 @@ func (n *Notify) stop() {
 	}
 	n.ticker = nil
 
+	for _, worker := range n.workers {
+		worker.Stop()
+	}
 	n.workers = make([]*Worker, 0)
 
 	n.isStarted = false
@@ -167,6 +170,10 @@ func (n *Notify) getCfg() {
 	}
 }
 
+func (n *Notify) GetCfg() *NotifyConfig {
+	return n.cfg
+}
+
 func (n *Notify) initCfg() {
 	log.Infof("init config")
 
@@ -174,10 +181,12 @@ func (n *Notify) initCfg() {
 	n.UpdateCfg(n.cfg)
 }
 
-func (n *Notify) UpdateCfg(cfg *NotifyConfig) {
+func (n *Notify) UpdateCfg(cfg *NotifyConfig) (err error) {
 
-	b, err := json.Marshal(cfg)
-	if err != nil {
+	log.Infof("update settings")
+
+	var b []byte
+	if b, err = json.Marshal(cfg); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -191,6 +200,7 @@ func (n *Notify) UpdateCfg(cfg *NotifyConfig) {
 	if err = n.adaptor.Variable.Update(variable); err != nil {
 		log.Error(err.Error())
 	}
+	return
 }
 
 func (n *Notify) Stat() *NotifyStat {

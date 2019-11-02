@@ -31,6 +31,7 @@ type ControllersV1 struct {
 	MapZone          *ControllerMapZone
 	Template         *ControllerTemplate
 	TemplateItem     *ControllerTemplateItem
+	Notify           *ControllerNotify
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -62,5 +63,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		MapZone:          NewControllerMapZone(common),
 		Template:         NewControllerTemplate(common),
 		TemplateItem:     NewControllerTemplateItem(common),
+		Notify:           NewControllerNotify(common),
 	}
 }

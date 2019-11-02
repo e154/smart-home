@@ -23,6 +23,12 @@ type UpdateTemplateItem struct {
 }
 
 // swagger:model
+type UpdateTemplateItemStatus struct {
+	Name   string `json:"name"`
+	Status string `json:"status"`
+}
+
+// swagger:model
 type TemplateItem struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`

@@ -15,6 +15,7 @@ type Worker struct {
 	emailClient    *email_service.EmailService
 	telegramClient *telegram.Telegram
 	inProcess      bool
+	isStarted      bool
 }
 
 func NewWorker(cfg *NotifyConfig) *Worker {
@@ -23,31 +24,50 @@ func NewWorker(cfg *NotifyConfig) *Worker {
 		cfg: cfg,
 	}
 
+	return worker
+}
+
+func (n *Worker) Start() {
+
+	if n.isStarted {
+		return
+	}
+
 	// messagebird
-	mbConfig := mb.NewMBClientConfig(cfg.MbAccessKey, cfg.MbName)
+	mbConfig := mb.NewMBClientConfig(n.cfg.MbAccessKey, n.cfg.MbName)
 	if mbClient, err := mb.NewMBClient(mbConfig); err == nil {
-		worker.mbClient = mbClient
+		n.mbClient = mbClient
 	}
 
 	// twilio
-	twConfig := tw.NewTWConfig(cfg.TWFrom, cfg.TWSid, cfg.TWAuthToken)
+	twConfig := tw.NewTWConfig(n.cfg.TWFrom, n.cfg.TWSid, n.cfg.TWAuthToken)
 	if twClient, err := tw.NewTWClient(twConfig); err == nil {
-		worker.twClient = twClient
+		n.twClient = twClient
 	}
 
 	// email
-	emailConfig := email_service.NewEmailServiceConfig(cfg.EmailAuth, cfg.EmailPass, cfg.EmailSmtp, cfg.EmailPort, cfg.EmailSender)
+	emailConfig := email_service.NewEmailServiceConfig(n.cfg.EmailAuth, n.cfg.EmailPass, n.cfg.EmailSmtp, n.cfg.EmailPort, n.cfg.EmailSender)
 	if emailClient, err := email_service.NewEmailService(emailConfig); err == nil {
-		worker.emailClient = emailClient
+		n.emailClient = emailClient
 	}
 
 	// telegram
-	telegramClient := telegram.NewTelegramConfig(cfg.TelegramToken)
+	telegramClient := telegram.NewTelegramConfig(n.cfg.TelegramToken)
 	if telegramClient, err := telegram.NewTelegram(telegramClient); err == nil {
-		worker.telegramClient = telegramClient
+		n.telegramClient = telegramClient
+	}
+	n.isStarted = true
+}
+
+func (n *Worker) Stop() {
+	if !n.isStarted {
+		return
+	}
+	if n.telegramClient != nil {
+		n.telegramClient.Stop()
 	}
 
-	return worker
+	n.isStarted = false
 }
 
 func (n *Worker) send(msg interface{}) {
