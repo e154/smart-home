@@ -1,6 +1,8 @@
 package endpoint
 
-import "github.com/e154/smart-home/system/notify"
+import (
+	"github.com/e154/smart-home/system/notify"
+)
 
 type NotifyEndpoint struct {
 	*CommonEndpoint
