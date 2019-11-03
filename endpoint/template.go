@@ -1,14 +1,9 @@
 package endpoint
 
 import (
-	"fmt"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/pkg/errors"
-	"regexp"
-	"sort"
-	"strings"
-	"unicode/utf8"
 )
 
 type TemplateEndpoint struct {
@@ -100,57 +95,7 @@ func (t *TemplateEndpoint) Preview(template *m.TemplateContent) (data string, er
 		return
 	}
 
-	parents := m.Templates{}
-	for _, item := range template.Items {
-		m.TemplateGetParents(items, &parents, item)
-	}
-
-	for _, item := range parents {
-		p := make(m.Templates, 0)
-		m.TemplateGetParents(parents, &p, item.Name)
-		item.ParentsCount = len(p)
-	}
-
-	sort.Sort(parents)
-
-	// замена [xxxx:block] на реальные блоки
-	for key, item := range parents {
-		if item.Status != "active" {
-			continue
-		}
-
-		if key == 0 {
-			data = item.Content
-		} else {
-			data = strings.Replace(data, fmt.Sprintf("[%s:block]", item.Name), item.Content, -1)
-		}
-	}
-
-	// поиск маркера [xxx:content] и замена на контейнер с возможностью редактирования
-	reg := regexp.MustCompile(`(\[{1}[a-z]{2,64}\:content\]{1})`)
-	reg2 := regexp.MustCompile(`(\[{1})([a-z]{2,64})(\:)([content]+)([\]]{1})`)
-	markers := reg.FindAllString(data, -1)
-	for _, m := range markers {
-		marker := reg2.FindStringSubmatch(m)[2]
-
-		f := m
-		for _, field := range template.Fields {
-			if field.Name == marker {
-				if utf8.RuneCountInString(field.Value) > 0 {
-					f = field.Value
-				}
-			}
-		}
-
-		data = strings.Replace(data, m, fmt.Sprintf("<div class=\"edit_inline\" data-id=\"%s\">%s</div>", marker, f), -1)
-	}
-
-	// скрыть не использованные маркеры [xxxx:block] блоков
-	reg = regexp.MustCompile(`(\[{1}[a-z]{2,64}\:block\]{1})`)
-	blocks := reg.FindAllString(data, -1)
-	for _, block := range blocks {
-		data = strings.Replace(data, block, "", -1)
-	}
+	data, err = m.PreviewTemplate(items, template)
 
 	return
 }

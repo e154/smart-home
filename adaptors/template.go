@@ -2,15 +2,10 @@ package adaptors
 
 import (
 	"errors"
-	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
-	"regexp"
-	"sort"
-	"strings"
-	"unicode/utf8"
 )
 
 type Template struct {
@@ -163,65 +158,7 @@ func (n *Template) Render(name string, params map[string]interface{}) (render *m
 		return
 	}
 
-	result := make(m.Templates, 0)
-	for _, item := range template.Items {
-		m.TemplateGetParents(items, &result, item)
-	}
-
-	sort.Sort(result)
-	var buf string
-
-	// замена [xxxx:block] на реальные блоки
-	for key, item := range result {
-		if item.Status != "active" {
-			continue
-		}
-
-		if key == 0 {
-			buf = item.Content
-		} else {
-			buf = strings.Replace(buf, fmt.Sprintf("[%s:block]", item.Name), item.Content, -1)
-		}
-	}
-
-	// поиск маркера [xxx:content] и замена на контейнер с возможностью редактирования
-	reg := regexp.MustCompile(`(\[{1}[a-z]{2,64}\:content\]{1})`)
-	reg2 := regexp.MustCompile(`(\[{1})([a-z]{2,64})(\:)([content]+)([\]]{1})`)
-	markers := reg.FindAllString(buf, -1)
-	var f string
-	for _, m := range markers {
-		marker := reg2.FindStringSubmatch(m)[2]
-
-		f = m
-		for _, field := range template.Fields {
-			if field.Name == marker {
-				if utf8.RuneCountInString(field.Value) > 0 {
-					f = field.Value
-				}
-			}
-		}
-
-		buf = strings.Replace(buf, m, f, -1)
-	}
-
-	// скрыть не использованные маркеры [xxxx:block] блоков
-	reg = regexp.MustCompile(`(\[{1}[a-z]{2,64}\:block\]{1})`)
-	blocks := reg.FindAllString(buf, -1)
-	for _, block := range blocks {
-		buf = strings.Replace(buf, block, "", -1)
-	}
-
-	// заполнение формы
-	title := template.Title
-	for k, v := range params {
-		buf = strings.Replace(buf, fmt.Sprintf("[%s]", k), v.(string), -1)
-		title = strings.Replace(title, fmt.Sprintf("[%s]", k), v.(string), -1)
-	}
-
-	render = &m.TemplateRender{
-		Subject: title,
-		Body:    buf,
-	}
+	render, err = m.RenderTemplate(items, template, params)
 
 	return
 }

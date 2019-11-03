@@ -34,8 +34,8 @@ func (d *Template) TableName() string {
 
 func (n Templates) UpdateOrCreate(tpl *Template) error {
 
-	if err := n.Update(tpl); err != nil {
-		if err = n.Db.Create(tpl).Error; err != nil {
+	if err := n.Db.Create(tpl).Error; err != nil {
+		if err := n.Update(tpl); err != nil {
 			return errors.New(err.Error())
 		}
 	}

@@ -8,91 +8,164 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	. "github.com/smartystreets/goconvey/convey"
-	"io/ioutil"
-	"path/filepath"
-	"strings"
 	"testing"
 )
 
 func TestTemplate(t *testing.T) {
+
+	const subject = "Lorem ipsum dolor sit amet"
+	const body = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 
 	Convey("add user", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			endpoint *endpoint.Endpoint) {
 
-			//count, items, err := endpoint.Template.GetItemsSortedList()
-			//So(err, ShouldBeNil)
-			//
-			//fmt.Println(count)
-			//fmt.Println(items)
-
-			dataDir := filepath.Join("data", "templates")
-
-			files, err := ioutil.ReadDir(dataDir)
+			// clear database
+			// ------------------------------------------------
+			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
-			for _, file := range files {
-				fmt.Println(file)
-				if file.IsDir() {
-					continue
-				}
-
-				b, err := ioutil.ReadFile(filepath.Join(dataDir, file.Name()))
-				So(err, ShouldBeNil)
-
-				templateType := m.TemplateTypeItem
-				var parent *string
-
-				name := strings.Replace(file.Name(), ".html", "", -1)
-
-				switch name {
-
-				case "header":
-					parent = common.String("main")
-				case "main":
-				case "body":
-					parent = common.String("message")
-				case "google":
-					parent = common.String("social")
-				case "message":
-					parent = common.String("main")
-				case "callout":
-					parent = common.String("main")
-				case "contacts":
-					parent = common.String("footer")
-				case "footer":
-					parent = common.String("social")
-				case "social":
-					parent = common.String("footer")
-				case "facebook":
-					parent = common.String("social")
-				case "privacy":
-					parent = common.String("main")
-				case "title":
-					parent = common.String("message")
-				case "twitter":
-					parent = common.String("social")
-				case "vk":
-					parent = common.String("social")
-				case "password_reset":
-					templateType = m.TemplateTypeTemplate
-				case "register_admin_created":
-					templateType = m.TemplateTypeTemplate
-				}
-
-				template := &m.Template{
-					Name:       name,
-					Content:    string(b),
+			// add templates
+			// ------------------------------------------------
+			templates := []*m.Template{
+				{
+					Name:       "main",
+					Content:    "[message:block]",
 					Status:     m.TemplateStatusActive,
-					Type:       templateType,
-					ParentName: parent,
-				}
-
-				err = adaptors.Template.UpdateOrCreate(template)
-				So(err, ShouldBeNil)
-				return
+					Type:       m.TemplateTypeItem,
+					ParentName: nil,
+				},
+				{
+					Name:       "message",
+					Content:    "[title:block][body:block]",
+					Status:     m.TemplateStatusActive,
+					Type:       m.TemplateTypeItem,
+					ParentName: common.String("main"),
+				},
+				{
+					Name:       "title",
+					Content:    "[title:content] [var1]",
+					Status:     m.TemplateStatusActive,
+					Type:       m.TemplateTypeItem,
+					ParentName: common.String("message"),
+				},
+				{
+					Name:       "body",
+					Content:    "[body:content] [var2]",
+					Status:     m.TemplateStatusActive,
+					Type:       m.TemplateTypeItem,
+					ParentName: common.String("message"),
+				},
+				{
+					Name: "template1",
+					Content: fmt.Sprintf(`{
+  "items": [
+    "title",
+    "body"
+  ],
+  "title": "%s",
+  "fields": [
+    {
+      "name": "title",
+      "value": "Lorem ipsum dolor sit amet,"
+    },
+    {
+      "name": "body",
+      "value": ", sed do eiusmod tempor incididunt"
+    }
+  ]
+}`, subject),
+					Status:     m.TemplateStatusActive,
+					Type:       m.TemplateTypeTemplate,
+					ParentName: nil,
+				},
+				{
+					Name:       "sms_body",
+					Content:    "[code:block]",
+					Status:     m.TemplateStatusActive,
+					Type:       m.TemplateTypeItem,
+					ParentName: nil,
+				},
+				{
+					Name:       "code",
+					Content:    "[code:content] [code]",
+					Status:     m.TemplateStatusActive,
+					Type:       m.TemplateTypeItem,
+					ParentName: common.String("sms_body"),
+				},
+				{
+					Name: "template2",
+					Content: fmt.Sprintf(`{
+ "items": [
+   "code"
+ ],
+ "title": "",
+ "fields": [
+	{
+     "name": "code",
+     "value": "Activate code:"
+   }
+]
+}`),
+					Status:     m.TemplateStatusActive,
+					Type:       m.TemplateTypeTemplate,
+					ParentName: nil,
+				},
+				{
+					Name:       "sms_warning",
+					Content:    "some warning message",
+					Status:     m.TemplateStatusActive,
+					Type:       m.TemplateTypeItem,
+					ParentName: nil,
+				},
+				{
+					Name: "template3",
+					Content: fmt.Sprintf(`{
+ "items": [
+   "sms_warning"
+ ],
+ "title": "",
+ "fields": []
+}`),
+					Status:     m.TemplateStatusActive,
+					Type:       m.TemplateTypeTemplate,
+					ParentName: nil,
+				},
 			}
+
+			for _, template := range templates {
+				err := adaptors.Template.UpdateOrCreate(template)
+				So(err, ShouldBeNil)
+			}
+
+			// Lorem ipsum dolor sit amet
+			// ------------------------------------------------
+			render, err := adaptors.Template.Render("template1", map[string]interface{}{
+				"var1": "consectetur adipiscing elit",
+				"var2": "ut labore et dolore magna aliqua.",
+			})
+			So(err, ShouldBeNil)
+			So(render.Subject, ShouldEqual, subject)
+			So(render.Body, ShouldEqual, body)
+
+			// Activate code: 12345
+			// ------------------------------------------------
+			render, err = adaptors.Template.Render("template2", map[string]interface{}{
+				"code": 12345,
+			})
+			So(err, ShouldBeNil)
+			So(render.Subject, ShouldEqual, "")
+			So(render.Body, ShouldEqual, "Activate code: 12345")
+
+			// warning message
+			// ------------------------------------------------
+			render, err = adaptors.Template.Render("template3", nil)
+			So(err, ShouldBeNil)
+			So(render.Subject, ShouldEqual, "")
+			So(render.Body, ShouldEqual, "some warning message")
+
+			//...
 		})
 	})
 }
