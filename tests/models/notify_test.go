@@ -1,15 +1,11 @@
 package models
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/notify"
 	. "github.com/smartystreets/goconvey/convey"
-	"io/ioutil"
 	"testing"
-	"time"
 )
 
 func TestNotify(t *testing.T) {
@@ -26,27 +22,27 @@ func TestNotify(t *testing.T) {
 			notifyService *notify.Notify) {
 
 			// read config file
-			var file []byte
-			file, err = ioutil.ReadFile(path)
-			So(err, ShouldBeNil)
-
-			conf := &notify.NotifyConfig{}
-			err = json.Unmarshal(file, &conf)
-			So(err, ShouldBeNil)
-
-			notifyService.UpdateCfg(conf)
-			notifyService.Restart()
-
-			sms := notify.NewSMS()
-			sms.Phone = "+16152059974"
-			sms.Text = "test"
-			notifyService.Send(sms)
-
-			time.Sleep(time.Second * 1)
-
-			fmt.Println(notifyService.Stat())
-
-			time.Sleep(time.Second * 3)
+			//var file []byte
+			//file, err = ioutil.ReadFile(path)
+			//So(err, ShouldBeNil)
+			//
+			//conf := &notify.NotifyConfig{}
+			//err = json.Unmarshal(file, &conf)
+			//So(err, ShouldBeNil)
+			//
+			//notifyService.UpdateCfg(conf)
+			//notifyService.Restart()
+			//
+			//sms := notify.NewSMS()
+			//sms.Phone = "+16152059974"
+			//sms.Text = "test"
+			//notifyService.Send(sms)
+			//
+			//time.Sleep(time.Second * 1)
+			//
+			//fmt.Println(notifyService.Stat())
+			//
+			//time.Sleep(time.Second * 3)
 		})
 
 		if err != nil {

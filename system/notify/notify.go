@@ -50,7 +50,7 @@ func NewNotify(
 
 	notify.Start()
 
-	scriptService.PushStruct("Notify", &NotifyBind{
+	scriptService.PushStruct("Notifr", &NotifyBind{
 		notify: notify,
 	})
 
@@ -111,7 +111,7 @@ func (n *Notify) Start() {
 		}
 	}()
 
-	log.Infof("Notify service started")
+	log.Infof("Notifr service started")
 }
 
 func (n *Notify) stop() {
@@ -140,7 +140,7 @@ func (n *Notify) stop() {
 
 	n.isStarted = false
 
-	log.Infof("Notify service stopped")
+	log.Infof("Notifr service stopped")
 }
 
 func (n *Notify) Restart() {

@@ -97,14 +97,14 @@ func (n *Template) Delete(name string) (err error) {
 	return
 }
 
-func (n *Template) GetItemsTree() (tree *m.TemplateTree, err error) {
+func (n *Template) GetItemsTree() (tree []*m.TemplateTree, err error) {
 
-	var dbTree *db.TemplateTree
+	var dbTree []*db.TemplateTree
 	if dbTree, err = n.table.GetItemsTree(); err != nil {
 		return
 	}
 
-	tree = &m.TemplateTree{}
+	tree = make([]*m.TemplateTree, 0, len(dbTree))
 	err = common.Copy(&tree, &dbTree, common.JsonEngine)
 
 	return

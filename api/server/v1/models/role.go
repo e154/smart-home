@@ -8,7 +8,7 @@ type NewRole struct {
 	Description string `json:"description"`
 	Parent      struct {
 		Name string `json:"name"`
-	}
+	} `json:"parent"`
 }
 
 // swagger:model
@@ -17,7 +17,7 @@ type UpdateRole struct {
 	Description string `json:"description"`
 	Parent      struct {
 		Name string `json:"name"`
-	}
+	} `json:"parent"`
 }
 
 // swagger:model
@@ -26,7 +26,7 @@ type Role struct {
 	Description string `json:"description"`
 	Parent      struct {
 		Name string `json:"name"`
-	}
+	} `json:"parent"`
 	Children   []*Role             `json:"children"`
 	AccessList map[string][]string `json:"access_list"`
 	CreatedAt  time.Time           `json:"created_at"`

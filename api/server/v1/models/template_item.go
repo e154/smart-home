@@ -41,12 +41,15 @@ type TemplateItem struct {
 }
 
 // swagger:model
-type TemplateTree struct {
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Status      string          `json:"status"`
-	Nodes       []*TemplateTree `json:"nodes"`
+type TemplateTreeBranch struct {
+	Name        string                `json:"name"`
+	Description string                `json:"description"`
+	Status      string                `json:"status"`
+	Nodes       []*TemplateTreeBranch `json:"nodes"`
 }
 
 // swagger:model
-type UpdateTemplateTree []*TemplateTree
+type UpdateTemplateTree []*TemplateTreeBranch
+
+// swagger:model
+type TemplateTree []*TemplateTreeBranch

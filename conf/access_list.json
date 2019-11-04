@@ -263,105 +263,6 @@
       "description": ""
     }
   },
-  "notifr": {
-    "read_notifr_template": {
-      "actions": [
-        "/api/v1/email/template/[\\w]+",
-        "/api/v1/email/template",
-        "/api/v1/email/template/search"
-      ],
-      "method": "get",
-      "description": ""
-    },
-    "create_notifr_template": {
-      "actions": [
-        "/api/v1/email/template"
-      ],
-      "method": "post",
-      "description": ""
-    },
-    "update_notifr_template": {
-      "actions": [
-        "/api/v1/email/template/[\\w]+"
-      ],
-      "method": "put",
-      "description": ""
-    },
-    "delete_notifr_template": {
-      "actions": [
-        "/api/v1/email/template/[\\w]+"
-      ],
-      "method": "delete",
-      "description": ""
-    },
-    "preview_notifr": {
-      "actions": [
-        "/api/v1/email/preview"
-      ],
-      "method": "post",
-      "description": ""
-    },
-    "read_notifr_item": {
-      "actions": [
-        "/api/v1/email/item/[\\w]+",
-        "/api/v1/email/items",
-        "/api/v1/email/items/tree"
-      ],
-      "method": "get",
-      "description": ""
-    },
-    "create_notifr_item": {
-      "actions": [
-        "/api/v1/email/item",
-        "/api/v1/email/items/tree"
-      ],
-      "method": "post",
-      "description": ""
-    },
-    "update_notifr_item": {
-      "actions": [
-        "/api/v1/email/item/[\\w]+"
-      ],
-      "method": "put",
-      "description": ""
-    },
-    "delete_notifr_item": {
-      "actions": [
-        "/api/v1/email/item/[\\w]+"
-      ],
-      "method": "delete",
-      "description": ""
-    },
-    "show_notify": {
-      "actions": [
-        "/api/v1/notifr/[0-9]+",
-        "/api/v1/notifr"
-      ],
-      "method": "get",
-      "description": ""
-    },
-    "create_notify": {
-      "actions": [
-        "/api/v1/notifr"
-      ],
-      "method": "post",
-      "description": ""
-    },
-    "repeat_notify": {
-      "actions": [
-        "/api/v1/notifr/[0-9]+/repeat"
-      ],
-      "method": "post",
-      "description": ""
-    },
-    "delete_notify": {
-      "actions": [
-        "/api/v1/notifr/[0-9]+"
-      ],
-      "method": "delete",
-      "description": ""
-    }
-  },
   "map": {
     "read_map": {
       "actions": [
@@ -753,6 +654,68 @@
         "/api/v1/map_zone/[\\w]+"
       ],
       "method": "delete",
+      "description": ""
+    }
+  },
+  "template": {
+    "read": {
+      "actions": [
+        "/api/v1/template/[\\w]+",
+        "/api/v1/template_item/[\\w]+",
+        "/api/v1/template_items/tree",
+        "/api/v1/template_items",
+        "/api/v1/templates"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "preview": {
+      "actions": [
+        "/api/v1/templates/preview"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "create": {
+      "actions": [
+        "/api/v1/template",
+        "/api/v1/template_item"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "update": {
+      "actions": [
+        "/api/v1/template",
+        "/api/v1/template_item/[\\w]+",
+        "/api/v1/template_items/status/[\\w]+",
+        "/api/v1/template_items/tree"
+      ],
+      "method": "put",
+      "description": ""
+    },
+    "delete": {
+      "actions": [
+        "/api/v1/template/[\\w]+",
+        "/api/v1/template_item/[\\w]+"
+      ],
+      "method": "delete",
+      "description": ""
+    }
+  },
+  "notifr": {
+    "read_config": {
+      "actions": [
+        "/api/v1/notifr/config"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "update_config": {
+      "actions": [
+        "/api/v1/notifr/config"
+      ],
+      "method": "put",
       "description": ""
     }
   }

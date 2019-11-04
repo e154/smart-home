@@ -71,7 +71,10 @@ func TemplateGetParents(items Templates, result *Templates, s string) {
 	}
 }
 
+// TODO add recursive search
 func (i *Template) GetMarkers() (markers []string, err error) {
+
+	markers = make([]string, 0)
 
 	if i.Type != TemplateTypeTemplate {
 		return
@@ -79,7 +82,6 @@ func (i *Template) GetMarkers() (markers []string, err error) {
 
 	tpl := &TemplateContent{}
 	if err = json.Unmarshal([]byte(i.Content), tpl); err != nil {
-		fmt.Println(err.Error())
 		return
 	}
 
@@ -162,8 +164,8 @@ func RenderTemplate(items []*Template, template *TemplateContent, params map[str
 	}
 
 	// поиск маркера [xxx:content] и замена на контейнер с возможностью редактирования
-	reg := regexp.MustCompile(`(\[{1}[a-z]{2,64}\:content\]{1})`)
-	reg2 := regexp.MustCompile(`(\[{1})([a-z]{2,64})(\:)([content]+)([\]]{1})`)
+	reg := regexp.MustCompile(`(\[{1}[a-zA-Z0-9_\-]{2,64}\:content\]{1})`)
+	reg2 := regexp.MustCompile(`(\[{1})([a-zA-Z0-9_\-]{2,64})(\:)([content]+)([\]]{1})`)
 	markers := reg.FindAllString(buf, -1)
 	for _, m := range markers {
 		marker := reg2.FindStringSubmatch(m)[2]
@@ -181,7 +183,7 @@ func RenderTemplate(items []*Template, template *TemplateContent, params map[str
 	}
 
 	// скрыть не использованные маркеры [xxxx:block] блоков
-	reg = regexp.MustCompile(`(\[{1}[a-z]{2,64}\:block\]{1})`)
+	reg = regexp.MustCompile(`(\[{1}[a-zA-Z0-9_\-]{2,64}\:block\]{1})`)
 	blocks := reg.FindAllString(buf, -1)
 	for _, block := range blocks {
 		buf = strings.Replace(buf, block, "", -1)
@@ -233,8 +235,8 @@ func PreviewTemplate(items []*Template, template *TemplateContent) (data string,
 	}
 
 	// поиск маркера [xxx:content] и замена на контейнер с возможностью редактирования
-	reg := regexp.MustCompile(`(\[{1}[a-z]{2,64}\:content\]{1})`)
-	reg2 := regexp.MustCompile(`(\[{1})([a-z]{2,64})(\:)([content]+)([\]]{1})`)
+	reg := regexp.MustCompile(`(\[{1}[a-zA-Z0-9_\-]{2,64}\:content\]{1})`)
+	reg2 := regexp.MustCompile(`(\[{1})([a-zA-Z0-9_\-]{2,64})(\:)([content]+)([\]]{1})`)
 	markers := reg.FindAllString(data, -1)
 	for _, m := range markers {
 		marker := reg2.FindStringSubmatch(m)[2]
@@ -252,7 +254,7 @@ func PreviewTemplate(items []*Template, template *TemplateContent) (data string,
 	}
 
 	// скрыть не использованные маркеры [xxxx:block] блоков
-	reg = regexp.MustCompile(`(\[{1}[a-z]{2,64}\:block\]{1})`)
+	reg = regexp.MustCompile(`(\[{1}[a-zA-Z0-9_\-]{2,64}\:block\]{1})`)
 	blocks := reg.FindAllString(data, -1)
 	for _, block := range blocks {
 		data = strings.Replace(data, block, "", -1)

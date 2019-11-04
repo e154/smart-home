@@ -73,7 +73,7 @@ func (t *TemplateEndpoint) Delete(name string) (err error) {
 	return
 }
 
-func (t *TemplateEndpoint) GetItemsTree() (tree *m.TemplateTree, err error) {
+func (t *TemplateEndpoint) GetItemsTree() (tree []*m.TemplateTree, err error) {
 	tree, err = t.adaptors.Template.GetItemsTree()
 	return
 }

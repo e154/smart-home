@@ -3,34 +3,34 @@ package controllers
 import (
 	"github.com/e154/smart-home/api/server/v1/models"
 	"github.com/e154/smart-home/common"
-	notify2 "github.com/e154/smart-home/system/notify"
+	"github.com/e154/smart-home/system/notify"
 	"github.com/gin-gonic/gin"
 )
 
-type ControllerNotify struct {
+type ControllerNotifr struct {
 	*ControllerCommon
 }
 
-func NewControllerNotify(common *ControllerCommon) *ControllerNotify {
-	return &ControllerNotify{ControllerCommon: common}
+func NewControllerNotifr(common *ControllerCommon) *ControllerNotifr {
+	return &ControllerNotifr{ControllerCommon: common}
 }
 
-// swagger:operation PUT /notify/config notifyUpdateSettings
+// swagger:operation PUT /notifr/config notifyUpdateSettings
 // ---
 // parameters:
-// - description: Update notify params
+// - description: Update notifr params
 //   in: body
-//   name: notify
+//   name: notifr
 //   required: true
 //   schema:
-//     $ref: '#/definitions/UpdateNotify'
+//     $ref: '#/definitions/UpdateNotifr'
 //     type: object
-// summary: update notify settings
+// summary: update notifr settings
 // description:
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - notify
+// - notifr
 // responses:
 //   "200":
 //	   $ref: '#/responses/Success'
@@ -44,19 +44,19 @@ func NewControllerNotify(common *ControllerCommon) *ControllerNotify {
 //	   $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerNotify) Update(ctx *gin.Context) {
+func (c ControllerNotifr) Update(ctx *gin.Context) {
 
-	params := &models.UpdateNotify{}
+	params := &models.UpdateNotifr{}
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	config := &notify2.NotifyConfig{}
-	_ = common.Copy(&config, &params, common.JsonEngine)
+	settings := &notify.NotifyConfig{}
+	_ = common.Copy(&settings, &params, common.JsonEngine)
 
-	err := c.endpoint.Notify.UpdateSettings(config)
+	err := c.endpoint.Notify.UpdateSettings(settings)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -66,20 +66,20 @@ func (c ControllerNotify) Update(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// swagger:operation GET /notify/config notifyGetSettings
+// swagger:operation GET /notifr/config notifyGetSettings
 // ---
 // parameters:
-// summary: get notify settings
+// summary: get notifr settings
 // description:
 // security:
 // - ApiKeyAuth: []
 // tags:
-// - notify
+// - notifr
 // responses:
 //   "200":
 //     description: OK
 //     schema:
-//       $ref: '#/definitions/Notify'
+//       $ref: '#/definitions/Notifr'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -90,16 +90,16 @@ func (c ControllerNotify) Update(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 //   "500":
 //	   $ref: '#/responses/Error'
-func (c ControllerNotify) GetSettings(ctx *gin.Context) {
+func (c ControllerNotifr) GetSettings(ctx *gin.Context) {
 
-	notify, err := c.endpoint.Notify.GetSettings()
+	settings, err := c.endpoint.Notify.GetSettings()
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
 	result := &models.Notify{}
-	common.Copy(&result, &notify, common.JsonEngine)
+	common.Copy(&result, &settings, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)

@@ -134,22 +134,26 @@ func (n Templates) Delete(name string) (err error) {
 	return
 }
 
-func (n Templates) GetItemsTree() (tree *TemplateTree, err error) {
+func (n Templates) GetItemsTree() (tree []*TemplateTree, err error) {
 
 	var items []*Template
 	if items, err = n.GetList("item"); err != nil {
 		return
 	}
 
-	tree = &TemplateTree{}
+	tree = make([]*TemplateTree, 0)
 	for _, item := range items {
 		if item.ParentName == nil {
-			tree.Description = item.Description
-			tree.Name = item.Name
+			branch := &TemplateTree{
+				Description: item.Description,
+				Name:        item.Name,
+				Nodes:       make([]*TemplateTree, 0),
+				Status:      item.Status,
+			}
+			n.renderTreeRecursive(items, branch, branch.Name)
+			tree = append(tree, branch)
 		}
 	}
-
-	n.renderTreeRecursive(items, tree, tree.Name)
 
 	return
 }
@@ -210,6 +214,18 @@ func (n Templates) UpdateItemsTree(tree []*TemplateTree, parent string) error {
 		if parent != "" {
 			go n.emailItemParentUpdate(v.Name, parent)
 		}
+
+		err := n.Db.Model(&Template{Name: v.Name}).Updates(map[string]interface{}{
+			"parent": nil,
+		}).Error
+		if err != nil {
+			return errors.New(err.Error())
+		}
+
+		if len(v.Nodes) == 0 {
+			continue
+		}
+
 		n.updateTreeRecursive(v.Nodes, v.Name)
 	}
 

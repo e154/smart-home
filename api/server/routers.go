@@ -192,6 +192,6 @@ func (s *Server) setControllers() {
 	v1.DELETE("/template_item/:name", s.af.Auth, s.ControllersV1.TemplateItem.Delete)
 
 	// notify
-	v1.GET("/notify/config", s.af.Auth, s.ControllersV1.Notify.GetSettings)
-	v1.PUT("/notify/config", s.af.Auth, s.ControllersV1.Notify.Update)
+	v1.GET("/notifr/config", s.af.Auth, s.ControllersV1.Notifr.GetSettings)
+	v1.PUT("/notifr/config", s.af.Auth, s.ControllersV1.Notifr.Update)
 }
