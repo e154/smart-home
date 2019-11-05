@@ -40,6 +40,8 @@ type Adaptors struct {
 	Log              *Log
 	MapZone          *MapZone
 	Template         *Template
+	Message          *Message
+	MessageDelivery  *MessageDelivery
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -79,6 +81,8 @@ func NewAdaptors(db *gorm.DB,
 		Log:              GetLogAdaptor(db),
 		MapZone:          GetMapZoneAdaptor(db),
 		Template:         GetTemplateAdaptor(db),
+		Message:          GetMessageAdaptor(db),
+		MessageDelivery:  GetMessageDeliveryAdaptor(db),
 	}
 
 	return

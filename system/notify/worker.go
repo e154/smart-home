@@ -1,6 +1,9 @@
 package notify
 
 import (
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/email_service"
 	mb "github.com/e154/smart-home/system/messagebird"
 	"github.com/e154/smart-home/system/telegram"
@@ -14,14 +17,17 @@ type Worker struct {
 	twClient       *tw.TWClient
 	emailClient    *email_service.EmailService
 	telegramClient *telegram.Telegram
+	adaptor        *adaptors.Adaptors
 	inProcess      bool
 	isStarted      bool
 }
 
-func NewWorker(cfg *NotifyConfig) *Worker {
+func NewWorker(cfg *NotifyConfig,
+	adaptor *adaptors.Adaptors) *Worker {
 
 	worker := &Worker{
-		cfg: cfg,
+		cfg:     cfg,
+		adaptor: adaptor,
 	}
 
 	return worker
@@ -70,13 +76,24 @@ func (n *Worker) Stop() {
 	n.isStarted = false
 }
 
+func (n *Worker) sendMessageDelivery(msg *m.MessageDelivery) {
+	switch msg.Message.Type {
+	case m.MessageTypeEmail:
+		go n.sendEmail(msg)
+	case m.MessageTypeSMS:
+		go n.sendSms(msg)
+	default:
+		log.Errorf("unknown message type %v", msg.Message.Type)
+	}
+}
+
 func (n *Worker) send(msg interface{}) {
 
 	n.inProcess = true
 
 	switch v := msg.(type) {
-	case *SMS:
-		n.sendSms(v)
+	case *m.MessageDelivery:
+		n.sendMessageDelivery(v)
 	default:
 		log.Errorf("unknown message type %v", v)
 	}
@@ -84,27 +101,46 @@ func (n *Worker) send(msg interface{}) {
 	n.inProcess = false
 }
 
-func (n *Worker) sendSms(msg *SMS) {
+func (n *Worker) sendSms(msg *m.MessageDelivery) {
 
-	msgId, err := n.twClient.SendSMS(msg.Phone, msg.Text)
-	if err != nil {
-		log.Error(err.Error())
-	}
+	text := *msg.Message.SmsText
 
-	time.Sleep(25 * time.Second)
+	if n.twClient != nil {
+		msgId, err := n.twClient.SendSMS(msg.Address, text)
+		if err != nil {
+			n.setError(msg, err)
+		}
 
-	var status string
-	if status, err = n.twClient.GetStatus(msgId); err != nil {
-		log.Error(err.Error())
-	}
+		time.Sleep(15 * time.Second)
 
-	if status == tw.StatusDelivered {
-		return
+		var status string
+		if status, err = n.twClient.GetStatus(msgId); err != nil {
+			n.setError(msg, err)
+		}
+
+		if status == tw.StatusDelivered {
+			n.setSucceed(msg)
+			return
+		}
 	}
 
 	if n.mbClient != nil {
-		if _, err := n.mbClient.SendSMS(msg.Phone, msg.Text); err != nil {
-			log.Error(err.Error())
+		msgId, err := n.mbClient.SendSMS(msg.Address, text)
+		if err != nil {
+			n.setError(msg, err)
+			return
+		}
+
+		time.Sleep(15 * time.Second)
+
+		var status string
+		if status, err = n.mbClient.GetStatus(msgId); err != nil {
+			n.setError(msg, err)
+			return
+		}
+
+		if status == mb.StatusDelivered {
+			n.setSucceed(msg)
 		}
 	}
 }
@@ -120,21 +156,33 @@ func (n *Worker) sendTelegram(msg *Telegram) {
 	}
 }
 
-func (n *Worker) sendEmail(msg *Email) {
+func (n *Worker) sendEmail(msg *m.MessageDelivery) {
 
 	if n.emailClient == nil {
 		return
 	}
 
 	email := &email_service.Email{
-		From:     msg.From,
-		To:       msg.To,
-		Subject:  msg.Subject,
-		Template: msg.Template,
-		Data:     msg.Data,
+		From:    common.StringValue(msg.Message.EmailFrom),
+		Subject: common.StringValue(msg.Message.EmailSubject),
+		To:      msg.Address,
 	}
 
 	if err := n.emailClient.Send(email); err != nil {
-		log.Error(err.Error())
+		n.setError(msg, err)
+		return
 	}
+
+	n.setSucceed(msg)
+}
+
+func (n *Worker) setSucceed(msg *m.MessageDelivery) {
+	msg.Status = m.MessageStatusSucceed
+	_ = n.adaptor.MessageDelivery.SetStatus(msg)
+}
+
+func (n *Worker) setError(msg *m.MessageDelivery, err error) {
+	msg.Status = m.MessageStatusError
+	msg.ErrorMessageBody = common.String(err.Error())
+	_ = n.adaptor.MessageDelivery.SetStatus(msg)
 }

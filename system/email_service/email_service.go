@@ -31,12 +31,6 @@ func (e EmailService) Send(email *Email) error {
 
 	email.From = e.cfg.Sender
 
-	if email.Template == "" {
-		email.Template = "base"
-	}
-
-	body := email.Subject
-
 	m := gomail.NewMessage()
 	m.SetHeaders(map[string][]string{
 		"From":     {email.From},
@@ -44,7 +38,8 @@ func (e EmailService) Send(email *Email) error {
 		"To":       {email.To},
 		"Subject":  {email.Subject},
 	})
-	m.SetBody("text/html", body)
+
+	m.SetBody("text/html", email.Body)
 
 	d := gomail.NewPlainDialer(e.cfg.Smtp, e.cfg.Port, e.cfg.Auth, e.cfg.Pass)
 	if err := d.DialAndSend(m); err != nil {

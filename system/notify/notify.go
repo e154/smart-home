@@ -54,6 +54,10 @@ func NewNotify(
 		notify: notify,
 	})
 
+	scriptService.PushStruct("Template", &TemplateBind{
+		adaptor: adaptor,
+	})
+
 	return notify
 }
 
@@ -79,7 +83,7 @@ func (n *Notify) Start() {
 
 	// workers
 	n.workers = []*Worker{
-		NewWorker(n.cfg),
+		NewWorker(n.cfg, n.adaptor),
 	}
 
 	// stats
@@ -110,6 +114,12 @@ func (n *Notify) Start() {
 			}
 		}
 	}()
+
+	for _, worker := range n.workers {
+		worker.Start()
+	}
+
+	n.read()
 
 	log.Infof("Notifr service started")
 }
@@ -153,7 +163,50 @@ func (n Notify) Send(msg interface{}) {
 		return
 	}
 
-	n.queue <- msg
+	switch v := msg.(type) {
+	case IMessage:
+		n.save(v)
+	default:
+		log.Errorf("unknown message type %v", v)
+	}
+}
+
+func (n *Notify) save(t IMessage) {
+
+	addresses, message := t.Save()
+
+	messageId, err := n.adaptor.Message.Add(message)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	message.Id = messageId
+
+	for _, address := range addresses {
+		messageDelivery := &m.MessageDelivery{
+			Message:   message,
+			MessageId: message.Id,
+			Status:    m.MessageStatusInProgress,
+			Address:   address,
+		}
+		if messageDelivery.Id, err = n.adaptor.MessageDelivery.Add(messageDelivery); err != nil {
+			log.Error(err.Error())
+		}
+
+		n.queue <- messageDelivery
+	}
+}
+
+func (n *Notify) read() {
+
+	messageDeliveries, _, err := n.adaptor.MessageDelivery.GetAllUncompleted(99, 0)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	for _, msg := range messageDeliveries {
+		n.queue <- msg
+	}
 }
 
 func (n *Notify) getCfg() {
