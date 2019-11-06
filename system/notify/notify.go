@@ -290,3 +290,14 @@ func (n *Notify) updateStat() {
 
 	n.stat = stat
 }
+
+func (n *Notify) Repeat(msg *m.MessageDelivery) {
+	if !n.isStarted && n.stopPrecess {
+		return
+	}
+
+	msg.Status = m.MessageStatusInProgress
+	_ = n.adaptor.MessageDelivery.SetStatus(msg)
+
+	n.queue <- msg
+}

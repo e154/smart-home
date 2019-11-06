@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type ControllerNotifr struct {
@@ -23,7 +24,7 @@ func NewControllerNotifr(common *ControllerCommon) *ControllerNotifr {
 //   name: notifr
 //   required: true
 //   schema:
-//     $ref: '#/definitions/UpdateNotifr'
+//     $ref: '#/definitions/UpdateNotifrConfig'
 //     type: object
 // summary: update notifr settings
 // description:
@@ -46,7 +47,7 @@ func NewControllerNotifr(common *ControllerCommon) *ControllerNotifr {
 //	   $ref: '#/responses/Error'
 func (c ControllerNotifr) Update(ctx *gin.Context) {
 
-	params := &models.UpdateNotifr{}
+	params := &models.UpdateNotifrConfig{}
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -79,7 +80,7 @@ func (c ControllerNotifr) Update(ctx *gin.Context) {
 //   "200":
 //     description: OK
 //     schema:
-//       $ref: '#/definitions/Notifr'
+//       $ref: '#/definitions/NotifrConfig'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -98,9 +99,162 @@ func (c ControllerNotifr) GetSettings(ctx *gin.Context) {
 		return
 	}
 
-	result := &models.Notify{}
-	common.Copy(&result, &settings, common.JsonEngine)
+	result := &models.NotifrConfig{}
+	_ = common.Copy(&result, &settings, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
+}
+
+// swagger:operation GET /notifrs notifrList
+// ---
+// summary: get notification list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - notifr
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/MessageDeliveryList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerNotifr) GetList(ctx *gin.Context) {
+
+	_, sortBy, order, limit, offset := c.list(ctx)
+	notifications, total, err := c.endpoint.MessageDelivery.GetList(int64(limit), int64(offset), order, sortBy)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	result := make([]*models.MessageDelivery, 0)
+	_ = common.Copy(&result, &notifications)
+
+	resp := NewSuccess()
+	resp.Page(limit, offset, total, result).Send(ctx)
+	return
+}
+
+// swagger:operation DELETE /notifr/{id} notifrDeleteById
+// ---
+// parameters:
+// - description: notification ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: delete notification by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - notifr
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerNotifr) Delete(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	if err := c.endpoint.MessageDelivery.Delete(int64(aid)); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
+}
+
+// swagger:operation POST /notifr/{id}/repeat notifyRepeatMessage
+// ---
+// parameters:
+// - description: notification ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: repeat notification by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - notifr
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerNotifr) Repeat(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	if err = c.endpoint.Notify.Repeat(int64(aid)); err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
 }

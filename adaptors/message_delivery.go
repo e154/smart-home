@@ -56,6 +56,23 @@ func (n *MessageDelivery) GetAllUncompleted(limit, offset int64) (list []*m.Mess
 	return
 }
 
+func (n *MessageDelivery) Delete(id int64) (err error) {
+	err = n.table.Delete(id)
+	return
+}
+
+func (n *MessageDelivery) GetById(id int64) (ver *m.MessageDelivery, err error) {
+
+	var dbVer *db.MessageDelivery
+	if dbVer, err = n.table.GetById(id); err != nil {
+		return
+	}
+
+	ver = n.fromDb(dbVer)
+
+	return
+}
+
 func (n *MessageDelivery) fromDb(dbVer *db.MessageDelivery) (ver *m.MessageDelivery) {
 
 	ver = &m.MessageDelivery{

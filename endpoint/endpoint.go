@@ -35,6 +35,7 @@ type Endpoint struct {
 	Gate             *GateEndpoint
 	Template         *TemplateEndpoint
 	Notify           *NotifyEndpoint
+	MessageDelivery  *MessageDeliveryEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
@@ -65,5 +66,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		MapZone:          NewMapZoneEndpoint(common),
 		Template:         NewTemplateEndpoint(common),
 		Notify:           NewNotifyEndpoint(common),
+		MessageDelivery:  NewMessageDeliveryEndpoint(common),
 	}
 }

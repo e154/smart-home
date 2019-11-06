@@ -1,6 +1,7 @@
 package endpoint
 
 import (
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/notify"
 )
 
@@ -25,5 +26,17 @@ func (n *NotifyEndpoint) UpdateSettings(cfg *notify.NotifyConfig) (err error) {
 	}
 
 	n.notify.Restart()
+	return
+}
+
+func (n *NotifyEndpoint) Repeat(id int64) (err error) {
+
+	var msg *m.MessageDelivery
+	if msg, err = n.adaptors.MessageDelivery.GetById(id); err != nil {
+		return
+	}
+
+	n.notify.Repeat(msg)
+
 	return
 }

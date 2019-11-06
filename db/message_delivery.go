@@ -80,3 +80,20 @@ func (n MessageDeliveries) SetStatus(msg *MessageDelivery) (err error) {
 		}).Error
 	return
 }
+
+func (n MessageDeliveries) Delete(id int64) (err error) {
+	err = n.Db.Delete(&MessageDelivery{Id: id}).Error
+	return
+}
+
+func (n MessageDeliveries) GetById(id int64) (msg *MessageDelivery, err error) {
+
+	msg = &MessageDelivery{}
+	err = n.Db.Model(msg).
+		Where("id = ?", id).
+		Preload("Message").
+		First(&msg).
+		Error
+
+	return
+}

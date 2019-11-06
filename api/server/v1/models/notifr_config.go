@@ -1,7 +1,7 @@
 package models
 
 // swagger:model
-type UpdateNotifr struct {
+type UpdateNotifrConfig struct {
 	MbAccessKey   string `json:"mb_access_key"`
 	MbName        string `json:"mb_name"`
 	TWFrom        string `json:"tw_from"`
@@ -16,7 +16,7 @@ type UpdateNotifr struct {
 }
 
 // swagger:model
-type Notify struct {
+type NotifrConfig struct {
 	MbAccessKey   string `json:"mb_access_key"`
 	MbName        string `json:"mb_name"`
 	TWFrom        string `json:"tw_from"`

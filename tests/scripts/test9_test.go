@@ -118,7 +118,7 @@ func Test9(t *testing.T) {
 			_, err = engine24.DoCustom("main")
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Second * 30)
+			time.Sleep(time.Second * 5)
 		})
 	})
 }

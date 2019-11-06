@@ -111,16 +111,24 @@ func (n *Worker) sendSms(msg *m.MessageDelivery) {
 			n.setError(msg, err)
 		}
 
-		time.Sleep(15 * time.Second)
+		ticker := time.NewTicker(time.Second)
 
 		var status string
-		if status, err = n.twClient.GetStatus(msgId); err != nil {
-			n.setError(msg, err)
-		}
 
-		if status == tw.StatusDelivered {
-			n.setSucceed(msg)
-			return
+		i := 0
+		for range ticker.C {
+			if i > 15 {
+				ticker.Stop()
+			}
+			if status, err = n.twClient.GetStatus(msgId); err != nil {
+				n.setError(msg, err)
+			}
+			if status == tw.StatusDelivered {
+				n.setSucceed(msg)
+				ticker.Stop()
+				return
+			}
+			i++
 		}
 	}
 
@@ -131,16 +139,26 @@ func (n *Worker) sendSms(msg *m.MessageDelivery) {
 			return
 		}
 
-		time.Sleep(15 * time.Second)
+		ticker := time.NewTicker(time.Second)
 
 		var status string
-		if status, err = n.mbClient.GetStatus(msgId); err != nil {
-			n.setError(msg, err)
-			return
-		}
 
-		if status == mb.StatusDelivered {
-			n.setSucceed(msg)
+		i := 0
+		for range ticker.C {
+			if i > 15 {
+				ticker.Stop()
+			}
+			if status, err = n.mbClient.GetStatus(msgId); err != nil {
+				n.setError(msg, err)
+				ticker.Stop()
+				return
+			}
+			if status == mb.StatusDelivered {
+				n.setSucceed(msg)
+				ticker.Stop()
+				return
+			}
+			i++
 		}
 	}
 }
