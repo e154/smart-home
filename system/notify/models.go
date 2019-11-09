@@ -14,6 +14,8 @@ type NotifyConfig struct {
 	EmailSmtp     string `json:"email_smtp"`
 	EmailPort     int    `json:"email_port"`
 	EmailSender   string `json:"email_sender"`
+	SlackToken    string `json:"slack_token"`
+	SlackUserName string `json:"slack_user_name"`
 }
 
 type NotifyStat struct {

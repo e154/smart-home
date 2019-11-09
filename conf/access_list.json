@@ -717,6 +717,13 @@
       ],
       "method": "put",
       "description": ""
+    },
+    "create_notify": {
+      "actions": [
+        "/api/v1/notifr"
+      ],
+      "method": "post",
+      "description": ""
     }
   }
 }

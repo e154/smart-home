@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/e154/smart-home/api/server/v1/models"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -251,6 +252,56 @@ func (c ControllerNotifr) Repeat(ctx *gin.Context) {
 	}
 
 	if err = c.endpoint.Notify.Repeat(int64(aid)); err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
+}
+
+// swagger:operation POST /notifr notifySendNewMessage
+// ---
+// parameters:
+// - description: message object
+//   in: body
+//   required: true
+//   schema:
+//     $ref: '#/definitions/NewNotifrMessage'
+//     type: object
+// summary: repeat notification by id
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - notifr
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerNotifr) Send(ctx *gin.Context) {
+
+	params := &models.NewNotifrMessage{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	message := &m.NewNotifrMessage{}
+	_ = common.Copy(&message, &params, common.JsonEngine)
+
+	err := c.endpoint.Notify.Send(message)
+	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}

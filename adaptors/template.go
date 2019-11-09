@@ -134,6 +134,7 @@ func (n *Template) Search(query string, limit, offset int) (list []*m.Template, 
 	list = make([]*m.Template, 0)
 	for _, dbVer := range dbList {
 		ver := n.fromDb(dbVer)
+		ver.GetMarkers()
 		list = append(list, ver)
 	}
 

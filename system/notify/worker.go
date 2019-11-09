@@ -6,6 +6,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/email_service"
 	mb "github.com/e154/smart-home/system/messagebird"
+	"github.com/e154/smart-home/system/slack"
 	"github.com/e154/smart-home/system/telegram"
 	tw "github.com/e154/smart-home/system/twilio"
 	"time"
@@ -17,6 +18,7 @@ type Worker struct {
 	twClient       *tw.TWClient
 	emailClient    *email_service.EmailService
 	telegramClient *telegram.Telegram
+	slackClient    *slack.Slack
 	adaptor        *adaptors.Adaptors
 	inProcess      bool
 	isStarted      bool
@@ -58,10 +60,17 @@ func (n *Worker) Start() {
 	}
 
 	// telegram
-	telegramClient := telegram.NewTelegramConfig(n.cfg.TelegramToken)
-	if telegramClient, err := telegram.NewTelegram(telegramClient); err == nil {
+	telegramConfig := telegram.NewTelegramConfig(n.cfg.TelegramToken)
+	if telegramClient, err := telegram.NewTelegram(telegramConfig); err == nil {
 		n.telegramClient = telegramClient
 	}
+
+	// slack
+	slackConfig := slack.NewSlackConfig(n.cfg.SlackToken, n.cfg.SlackUserName)
+	if slackClient, err := slack.NewSlack(slackConfig); err == nil {
+		n.slackClient = slackClient
+	}
+
 	n.isStarted = true
 }
 
@@ -82,6 +91,8 @@ func (n *Worker) sendMessageDelivery(msg *m.MessageDelivery) {
 		go n.sendEmail(msg)
 	case m.MessageTypeSMS:
 		go n.sendSms(msg)
+	case m.MessageTypeSlack:
+		go n.sendSlack(msg)
 	default:
 		log.Errorf("unknown message type %v", msg.Message.Type)
 	}
@@ -174,6 +185,21 @@ func (n *Worker) sendTelegram(msg *Telegram) {
 	}
 }
 
+func (n *Worker) sendSlack(msg *m.MessageDelivery) {
+
+	if n.slackClient == nil {
+		return
+	}
+
+	slackMessage := &slack.SlackMessage{
+		Text:    common.StringValue(msg.Message.SlackText),
+		Channel: msg.Address,
+	}
+	if err := n.slackClient.SendMsg(slackMessage); err != nil {
+		log.Error(err.Error())
+	}
+}
+
 func (n *Worker) sendEmail(msg *m.MessageDelivery) {
 
 	if n.emailClient == nil {
@@ -182,8 +208,9 @@ func (n *Worker) sendEmail(msg *m.MessageDelivery) {
 
 	email := &email_service.Email{
 		From:    common.StringValue(msg.Message.EmailFrom),
-		Subject: common.StringValue(msg.Message.EmailSubject),
 		To:      msg.Address,
+		Subject: common.StringValue(msg.Message.EmailSubject),
+		Body:    common.StringValue(msg.Message.EmailBody),
 	}
 
 	if err := n.emailClient.Send(email); err != nil {

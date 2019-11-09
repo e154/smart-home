@@ -197,4 +197,5 @@ func (s *Server) setControllers() {
 	v1.GET("/notifrs", s.af.Auth, s.ControllersV1.Notifr.GetList)
 	v1.DELETE("/notifr/:id", s.af.Auth, s.ControllersV1.Notifr.Delete)
 	v1.POST("/notifr/:id/repeat", s.af.Auth, s.ControllersV1.Notifr.Repeat)
+	v1.POST("/notifr", s.af.Auth, s.ControllersV1.Notifr.Send)
 }

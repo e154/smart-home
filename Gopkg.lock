@@ -292,6 +292,19 @@
   version = "1.0.1"
 
 [[projects]]
+  digest = "1:3b68aaa159109450b5c0c79e40a02347db7ceb10bb8758687898f7e57d355cf7"
+  name = "github.com/nlopes/slack"
+  packages = [
+    ".",
+    "internal/errorsx",
+    "internal/timex",
+    "slackutilsx",
+  ]
+  pruneopts = "UT"
+  revision = "1af34b6bda3d43878255fff7bd2884ea0c23295e"
+  version = "v0.6.0"
+
+[[projects]]
   branch = "v3"
   digest = "1:47360765b64ba68cc23420ec2967c7cca5b1d8a438493ac55945ef58e7560bc2"
   name = "github.com/olebedev/go-duktape"
@@ -602,6 +615,7 @@
     "github.com/messagebird/go-rest-api/balance",
     "github.com/messagebird/go-rest-api/sms",
     "github.com/mitchellh/mapstructure",
+    "github.com/nlopes/slack",
     "github.com/olebedev/go-duktape",
     "github.com/op/go-logging",
     "github.com/pkg/errors",
