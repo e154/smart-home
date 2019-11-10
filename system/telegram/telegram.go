@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"github.com/Syfaro/telegram-bot-api"
+	"github.com/e154/smart-home/common"
 	"github.com/op/go-logging"
 	"github.com/pkg/errors"
 )
@@ -11,13 +12,15 @@ var (
 )
 
 type Telegram struct {
-	bot         *tgbotapi.BotAPI
-	isStarted   bool
-	stopPrecess bool
-	stopQueue   chan struct{}
+	bot          *tgbotapi.BotAPI
+	isStarted    bool
+	stopPrecess  bool
+	stopQueue    chan struct{}
+	chatId       *int64
+	updateChatId func(chatId int64)
 }
 
-func NewTelegram(cfg *TelegramConfig) (*Telegram, error) {
+func NewTelegram(cfg *TelegramConfig, updateChatId func(chatId int64)) (*Telegram, error) {
 
 	if cfg.Token == "" {
 		return nil, errors.New("bad parameters")
@@ -31,8 +34,10 @@ func NewTelegram(cfg *TelegramConfig) (*Telegram, error) {
 	log.Infof("Authorized on account %s", bot.Self.UserName)
 
 	client := &Telegram{
-		bot:       bot,
-		stopQueue: make(chan struct{}),
+		bot:          bot,
+		stopQueue:    make(chan struct{}),
+		updateChatId: updateChatId,
+		chatId:       cfg.ChatId,
 	}
 
 	go client.start()
@@ -66,18 +71,25 @@ func (c *Telegram) start() {
 			// ID чата/диалога.
 			// Может быть идентификатором как чата с пользователем
 			// (тогда он равен UserID) так и публичного чата/канала
-			ChatID := update.Message.Chat.ID
+			chatID := update.Message.Chat.ID
+
+			if c.chatId == nil {
+				c.chatId = common.Int64(chatID)
+				if c.updateChatId != nil {
+					c.updateChatId(chatID)
+				}
+			}
 
 			// Текст сообщения
 			Text := update.Message.Text
 
-			log.Infof("[%s] %d %s", UserName, ChatID, Text)
+			log.Infof("[%s] %d %s", UserName, chatID, Text)
 
 			// Ответим пользователю его же сообщением
 			reply := Text
 
 			// Созадаем сообщение
-			msg := tgbotapi.NewMessage(ChatID, reply)
+			msg := tgbotapi.NewMessage(chatID, reply)
 
 			// и отправляем его
 			c.bot.Send(msg)

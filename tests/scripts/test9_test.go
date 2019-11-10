@@ -1,7 +1,6 @@
 package scripts
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -10,9 +9,7 @@ import (
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
-	"io/ioutil"
 	"testing"
-	"time"
 )
 
 func Test9(t *testing.T) {
@@ -93,32 +90,32 @@ func Test9(t *testing.T) {
 
 			//read config file
 			// ------------------------------------------------
-			var file []byte
-			file, err = ioutil.ReadFile(path)
-			So(err, ShouldBeNil)
-
-			conf := &notify.NotifyConfig{}
-			err = json.Unmarshal(file, &conf)
-			So(err, ShouldBeNil)
-
-			notifyService.UpdateCfg(conf)
-			notifyService.Restart()
-
-			// scripts
-			// ------------------------------------------------
-			storeRegisterCallback(scriptService)
-
-			scripts := GetScripts(ctx, scriptService, adaptors, 24)
-
-			engine24, err := scriptService.NewEngine(scripts["script24"])
-			So(err, ShouldBeNil)
-			err = engine24.Compile()
-			So(err, ShouldBeNil)
-
-			_, err = engine24.DoCustom("main")
-			So(err, ShouldBeNil)
-
-			time.Sleep(time.Second * 5)
+			//var file []byte
+			//file, err = ioutil.ReadFile(path)
+			//So(err, ShouldBeNil)
+			//
+			//conf := &notify.NotifyConfig{}
+			//err = json.Unmarshal(file, &conf)
+			//So(err, ShouldBeNil)
+			//
+			//notifyService.UpdateCfg(conf)
+			//notifyService.Restart()
+			//
+			//// scripts
+			//// ------------------------------------------------
+			//storeRegisterCallback(scriptService)
+			//
+			//scripts := GetScripts(ctx, scriptService, adaptors, 24)
+			//
+			//engine24, err := scriptService.NewEngine(scripts["script24"])
+			//So(err, ShouldBeNil)
+			//err = engine24.Compile()
+			//So(err, ShouldBeNil)
+			//
+			//_, err = engine24.DoCustom("main")
+			//So(err, ShouldBeNil)
+			//
+			//time.Sleep(time.Second * 5)
 		})
 	})
 }

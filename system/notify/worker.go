@@ -60,8 +60,8 @@ func (n *Worker) Start() {
 	}
 
 	// telegram
-	telegramConfig := telegram.NewTelegramConfig(n.cfg.TelegramToken)
-	if telegramClient, err := telegram.NewTelegram(telegramConfig); err == nil {
+	telegramConfig := telegram.NewTelegramConfig(n.cfg.TelegramToken, n.cfg.TelegramChatId)
+	if telegramClient, err := telegram.NewTelegram(telegramConfig, n.updateTelegramChatId); err == nil {
 		n.telegramClient = telegramClient
 	}
 
@@ -232,4 +232,8 @@ func (n *Worker) setError(msg *m.MessageDelivery, err error) {
 	msg.Status = m.MessageStatusError
 	msg.ErrorMessageBody = common.String(err.Error())
 	_ = n.adaptor.MessageDelivery.SetStatus(msg)
+}
+
+func (n *Worker) updateTelegramChatId(chatId int64) {
+	//TODO save config...
 }

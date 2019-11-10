@@ -2,36 +2,38 @@ package models
 
 // swagger:model
 type UpdateNotifrConfig struct {
-	MbAccessKey   string `json:"mb_access_key"`
-	MbName        string `json:"mb_name"`
-	TWFrom        string `json:"tw_from"`
-	TWSid         string `json:"tw_sid"`
-	TWAuthToken   string `json:"tw_auth_token"`
-	TelegramToken string `json:"telegram_token"`
-	EmailAuth     string `json:"email_auth"`
-	EmailPass     string `json:"email_pass"`
-	EmailSmtp     string `json:"email_smtp"`
-	EmailPort     int    `json:"email_port"`
-	EmailSender   string `json:"email_sender"`
-	SlackToken    string `json:"slack_token"`
-	SlackUserName string `json:"slack_user_name"`
+	MbAccessKey    string `json:"mb_access_key"`
+	MbName         string `json:"mb_name"`
+	TWFrom         string `json:"tw_from"`
+	TWSid          string `json:"tw_sid"`
+	TWAuthToken    string `json:"tw_auth_token"`
+	TelegramToken  string `json:"telegram_token"`
+	TelegramChatId int64  `json:"telegram_chat_id"`
+	EmailAuth      string `json:"email_auth"`
+	EmailPass      string `json:"email_pass"`
+	EmailSmtp      string `json:"email_smtp"`
+	EmailPort      int    `json:"email_port"`
+	EmailSender    string `json:"email_sender"`
+	SlackToken     string `json:"slack_token"`
+	SlackUserName  string `json:"slack_user_name"`
 }
 
 // swagger:model
 type NotifrConfig struct {
-	MbAccessKey   string `json:"mb_access_key"`
-	MbName        string `json:"mb_name"`
-	TWFrom        string `json:"tw_from"`
-	TWSid         string `json:"tw_sid"`
-	TWAuthToken   string `json:"tw_auth_token"`
-	TelegramToken string `json:"telegram_token"`
-	EmailAuth     string `json:"email_auth"`
-	EmailPass     string `json:"email_pass"`
-	EmailSmtp     string `json:"email_smtp"`
-	EmailPort     int    `json:"email_port"`
-	EmailSender   string `json:"email_sender"`
-	SlackToken    string `json:"slack_token"`
-	SlackUserName string `json:"slack_user_name"`
+	MbAccessKey    string `json:"mb_access_key"`
+	MbName         string `json:"mb_name"`
+	TWFrom         string `json:"tw_from"`
+	TWSid          string `json:"tw_sid"`
+	TWAuthToken    string `json:"tw_auth_token"`
+	TelegramToken  string `json:"telegram_token"`
+	TelegramChatId int64  `json:"telegram_chat_id"`
+	EmailAuth      string `json:"email_auth"`
+	EmailPass      string `json:"email_pass"`
+	EmailSmtp      string `json:"email_smtp"`
+	EmailPort      int    `json:"email_port"`
+	EmailSender    string `json:"email_sender"`
+	SlackToken     string `json:"slack_token"`
+	SlackUserName  string `json:"slack_user_name"`
 }
 
 // swagger:model
