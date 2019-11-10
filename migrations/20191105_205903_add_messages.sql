@@ -1,6 +1,6 @@
 -- +migrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-create type message_type as enum ('sms', 'email', 'ui_notify', 'telegram_notify');
+create type message_type as enum ('sms', 'email', 'ui_notify', 'telegram_notify', 'slack');
 
 create table messages
 (
@@ -11,6 +11,7 @@ create table messages
     email_body    text         NULL,
     sms_text      text         NULL,
     ui_text       text         NULL,
+    slack_text    text         NULL,
     telegram_text text         NULL,
     created_at    TIMESTAMPTZ  NOT NULL,
     updated_at    TIMESTAMPTZ  NOT NULL

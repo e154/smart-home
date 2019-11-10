@@ -1,11 +1,11 @@
 package adaptors
 
 import (
-	"errors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 type Template struct {
@@ -134,8 +134,28 @@ func (n *Template) Search(query string, limit, offset int) (list []*m.Template, 
 	list = make([]*m.Template, 0)
 	for _, dbVer := range dbList {
 		ver := n.fromDb(dbVer)
-		ver.GetMarkers()
+		_ = n.GetMarkers(ver)
 		list = append(list, ver)
+	}
+
+	return
+}
+
+func (n *Template) GetMarkers(template *m.Template) (err error) {
+
+	var templateContent *m.TemplateContent
+	var items m.Templates
+
+	if templateContent, err = template.GetTemplate(); err != nil {
+		return
+	}
+
+	if items, err = n.GetList(m.TemplateTypeItem); err != nil {
+		return
+	}
+
+	if _, e := template.GetMarkers(items, templateContent); e != nil {
+		err = errors.Wrap(e, "get markers")
 	}
 
 	return

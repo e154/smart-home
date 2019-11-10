@@ -17,7 +17,7 @@ type Slack struct {
 
 func NewSlack(cfg *SlackConfig) (*Slack, error) {
 
-	if cfg.Token == "" && cfg.UserName == "" {
+	if cfg.Token == "" {
 		return nil, errors.New("bad parameters")
 	}
 
@@ -29,14 +29,16 @@ func NewSlack(cfg *SlackConfig) (*Slack, error) {
 
 func (c *Slack) SendMsg(message *SlackMessage) (err error) {
 
-	params := slack.PostMessageParameters{}
-	if message.User != "" {
-		params.Username = message.User
+	options := []slack.MsgOption{
+		slack.MsgOptionText(message.Text, false),
 	}
 
-	options := slack.MsgOptionPost()
+	if c.cfg.UserName != "" {
+		options = append(options, slack.MsgOptionUsername(c.cfg.UserName))
+	}
+
 	var channelID, timestamp string
-	if channelID, timestamp, err = c.api.PostMessage(message.Channel, options); err != nil {
+	if channelID, timestamp, err = c.api.PostMessage(message.Channel, options...); err != nil {
 		log.Error(err.Error())
 		return
 	}

@@ -71,50 +71,69 @@ func TemplateGetParents(items Templates, result *Templates, s string) {
 	}
 }
 
-// TODO add recursive search
-func (i *Template) GetMarkers() (markers []string, err error) {
+func (i *Template) GetMarkers(items []*Template, template *TemplateContent) (markers []string, err error) {
 
-	markers = make([]string, 0)
-
-	if i.Type != TemplateTypeTemplate {
-		return
+	parents := Templates{}
+	for _, item := range template.Items {
+		TemplateGetParents(items, &parents, item)
 	}
 
-	tpl := &TemplateContent{}
-	if err = json.Unmarshal([]byte(i.Content), tpl); err != nil {
-		return
+	for _, item := range parents {
+		p := make(Templates, 0)
+		TemplateGetParents(parents, &p, item.Name)
+		item.ParentsCount = len(p)
 	}
 
-	reg, _ := regexp.CompilePOSIX(`\[{1}([a-zA-Z\-_0-9:]*)\]{1}`)
+	sort.Sort(parents)
 
-	var findMarkers func(string)
+	var buf string
 
-	findMarkers = func(s string) {
+	// замена [xxxx:block] на реальные блоки
+	for key, item := range parents {
+		if item.Status != "active" {
+			continue
+		}
 
-		ms := reg.FindAllStringSubmatch(s, -1)
-		for _, m := range ms {
-			if strings.Contains(m[1], "content") || strings.Contains(m[1], "block") {
-				continue
-			}
-
-			var exist bool
-			for _, _m := range markers {
-				if _m == m[1] {
-					exist = true
-				}
-			}
-
-			if !exist {
-				markers = append(markers, m[1])
-			}
+		if key == 0 {
+			buf = item.Content
+		} else {
+			buf = strings.Replace(buf, fmt.Sprintf("[%s:block]", item.Name), item.Content, -1)
 		}
 	}
 
-	for _, field := range tpl.Fields {
-		findMarkers(field.Value)
+	// поиск маркера [xxx:content] и замена на контейнер с возможностью редактирования
+	reg := regexp.MustCompile(`(\[{1}[a-zA-Z0-9_\-]{2,64}\:content\]{1})`)
+	reg2 := regexp.MustCompile(`(\[{1})([a-zA-Z0-9_\-]{2,64})(\:)([content]+)([\]]{1})`)
+	contentMarkers := reg.FindAllString(buf, -1)
+	for _, m := range contentMarkers {
+		marker := reg2.FindStringSubmatch(m)[2]
+
+		f := m
+		for _, field := range template.Fields {
+			if field.Name == marker {
+				if utf8.RuneCountInString(field.Value) > 0 {
+					f = field.Value
+				}
+			}
+		}
+
+		buf = strings.Replace(buf, m, f, -1)
 	}
 
-	findMarkers(tpl.Title)
+	// скрыть не использованные маркеры [xxxx:block] блоков
+	reg = regexp.MustCompile(`(\[{1}[a-zA-Z0-9_\-]{2,64}\:block|content\]{1})`)
+	blocks := reg.FindAllString(buf, -1)
+	for _, block := range blocks {
+		buf = strings.Replace(buf, block, "", -1)
+	}
+
+	reg, _ = regexp.CompilePOSIX(`(\[{1}([a-zA-Z\-_0-9:]*)\]{1})`)
+	markers = reg.FindAllString(buf, -1)
+	for k, item := range markers {
+		item = strings.Replace(item, "[", "", -1)
+		item = strings.Replace(item, "]", "", -1)
+		markers[k] = item
+	}
 
 	i.Markers = markers
 

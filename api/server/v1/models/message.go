@@ -11,6 +11,7 @@ type Message struct {
 	EmailBody    *string   `json:"email_body"`
 	SmsText      *string   `json:"sms_text"`
 	UiText       *string   `json:"ui_text"`
+	SlackText    *string   `json:"slack_text"`
 	TelegramText *string   `json:"telegram_text"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`

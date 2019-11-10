@@ -16,6 +16,7 @@ type Message struct {
 	EmailSubject *string
 	EmailBody    *string
 	SmsText      *string
+	SlackText    *string
 	UiText       *string
 	TelegramText *string
 	Statuses     []*MessageDelivery

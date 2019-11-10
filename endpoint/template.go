@@ -3,7 +3,6 @@ package endpoint
 import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
-	"github.com/pkg/errors"
 )
 
 type TemplateEndpoint struct {
@@ -47,9 +46,7 @@ func (t *TemplateEndpoint) GetByName(name string) (result *m.Template, err error
 		return
 	}
 
-	if _, e := result.GetMarkers(); e != nil {
-		err = errors.Wrap(e, "get markers")
-	}
+	err = t.adaptors.Template.GetMarkers(result)
 	return
 }
 

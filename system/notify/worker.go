@@ -198,6 +198,8 @@ func (n *Worker) sendSlack(msg *m.MessageDelivery) {
 	if err := n.slackClient.SendMsg(slackMessage); err != nil {
 		log.Error(err.Error())
 	}
+
+	n.setSucceed(msg)
 }
 
 func (n *Worker) sendEmail(msg *m.MessageDelivery) {
