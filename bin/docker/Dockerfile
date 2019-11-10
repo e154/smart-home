@@ -1,5 +1,5 @@
 FROM debian
-MAINTAINER Filippov Alex <af@suretly.com>
+MAINTAINER Filippov Alex <support@e154.ru>
 
 ENV APP_DIR /opt/smart-home-server
 RUN sed 's/main$/main universe/' -i /etc/apt/sources.list \

@@ -20,25 +20,28 @@ type Adaptors struct {
 	DeviceAction     *DeviceAction
 	DeviceState      *DeviceState
 	Flow             *Flow
-	FlowElement     *FlowElement
-	Connection      *Connection
-	Worker          *Worker
-	Role            *Role
-	Permission      *Permission
-	User            *User
-	UserMeta        *UserMeta
-	Image           *Image
-	Variable        *Variable
-	Map             *Map
-	MapLayer        *MapLayer
-	MapText         *MapText
-	MapImage        *MapImage
-	MapDevice       *MapDevice
-	MapElement      *MapElement
-	MapDeviceState  *MapDeviceState
-	MapDeviceAction *MapDeviceAction
-	Log             *Log
-	MapZone         *MapZone
+	FlowElement      *FlowElement
+	Connection       *Connection
+	Worker           *Worker
+	Role             *Role
+	Permission       *Permission
+	User             *User
+	UserMeta         *UserMeta
+	Image            *Image
+	Variable         *Variable
+	Map              *Map
+	MapLayer         *MapLayer
+	MapText          *MapText
+	MapImage         *MapImage
+	MapDevice        *MapDevice
+	MapElement       *MapElement
+	MapDeviceState   *MapDeviceState
+	MapDeviceAction  *MapDeviceAction
+	Log              *Log
+	MapZone          *MapZone
+	Template         *Template
+	Message          *Message
+	MessageDelivery  *MessageDelivery
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -77,6 +80,9 @@ func NewAdaptors(db *gorm.DB,
 		MapDeviceAction:  GetMapDeviceActionAdaptor(db),
 		Log:              GetLogAdaptor(db),
 		MapZone:          GetMapZoneAdaptor(db),
+		Template:         GetTemplateAdaptor(db),
+		Message:          GetMessageAdaptor(db),
+		MessageDelivery:  GetMessageDeliveryAdaptor(db),
 	}
 
 	return

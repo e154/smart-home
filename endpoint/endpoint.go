@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
 )
@@ -32,14 +33,18 @@ type Endpoint struct {
 	WorkflowScenario *WorkflowScenarioEndpoint
 	User             *UserEndpoint
 	Gate             *GateEndpoint
+	Template         *TemplateEndpoint
+	Notify           *NotifyEndpoint
+	MessageDelivery  *MessageDeliveryEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	scriptService *scripts.ScriptService,
 	accessList *access_list.AccessListService,
-	gate *gate_client.GateClient) *Endpoint {
-	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate)
+	gate *gate_client.GateClient,
+	notify *notify.Notify) *Endpoint {
+	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify)
 	return &Endpoint{
 		Auth:             NewAuthEndpoint(common),
 		Device:           NewDeviceEndpoint(common),
@@ -59,5 +64,8 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		User:             NewUserEndpoint(common),
 		Gate:             NewGateEndpoint(common),
 		MapZone:          NewMapZoneEndpoint(common),
+		Template:         NewTemplateEndpoint(common),
+		Notify:           NewNotifyEndpoint(common),
+		MessageDelivery:  NewMessageDeliveryEndpoint(common),
 	}
 }

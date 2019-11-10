@@ -171,4 +171,31 @@ func (s *Server) setControllers() {
 	v1.GET("/gate/mobiles", s.af.Auth, s.ControllersV1.Gate.GetMobileList)
 	v1.POST("/gate/mobile", s.af.Auth, s.ControllersV1.Gate.AddMobile)
 	v1.DELETE("/gate/mobile/:token", s.af.Auth, s.ControllersV1.Gate.DeleteMobile)
+
+	// templates
+	v1.POST("/template", s.af.Auth, s.ControllersV1.Template.Add)
+	v1.GET("/template/:name", s.af.Auth, s.ControllersV1.Template.GetByName)
+	v1.GET("/templates", s.af.Auth, s.ControllersV1.Template.GetList)
+	v1.PUT("/template/:name", s.af.Auth, s.ControllersV1.Template.Update)
+	v1.DELETE("/template/:name", s.af.Auth, s.ControllersV1.Template.Delete)
+	v1.GET("/templates/search", s.af.Auth, s.ControllersV1.Template.Search)
+	v1.POST("/templates/preview", s.af.Auth, s.ControllersV1.Template.Preview)
+
+	// template items
+	v1.POST("/template_item", s.af.Auth, s.ControllersV1.TemplateItem.Add)
+	v1.GET("/template_item/:name", s.af.Auth, s.ControllersV1.TemplateItem.GetByName)
+	v1.GET("/template_items", s.af.Auth, s.ControllersV1.TemplateItem.GetList)
+	v1.GET("/template_items/tree", s.af.Auth, s.ControllersV1.TemplateItem.GetTree)
+	v1.PUT("/template_items/tree", s.af.Auth, s.ControllersV1.TemplateItem.UpdateTree)
+	v1.PUT("/template_item/:name", s.af.Auth, s.ControllersV1.TemplateItem.Update)
+	v1.PUT("/template_items/status/:name", s.af.Auth, s.ControllersV1.TemplateItem.UpdateStatus)
+	v1.DELETE("/template_item/:name", s.af.Auth, s.ControllersV1.TemplateItem.Delete)
+
+	// notify
+	v1.GET("/notifr/config", s.af.Auth, s.ControllersV1.Notifr.GetSettings)
+	v1.PUT("/notifr/config", s.af.Auth, s.ControllersV1.Notifr.Update)
+	v1.GET("/notifrs", s.af.Auth, s.ControllersV1.Notifr.GetList)
+	v1.DELETE("/notifr/:id", s.af.Auth, s.ControllersV1.Notifr.Delete)
+	v1.POST("/notifr/:id/repeat", s.af.Auth, s.ControllersV1.Notifr.Repeat)
+	v1.POST("/notifr", s.af.Auth, s.ControllersV1.Notifr.Send)
 }

@@ -6,6 +6,8 @@ import (
 	mobileControllers "github.com/e154/smart-home/api/mobile/v1/controllers"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/server/v1/controllers"
+	"github.com/e154/smart-home/api/websocket"
+	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/config"
@@ -17,7 +19,9 @@ import (
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/orm"
+	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/services"
 	"github.com/e154/smart-home/system/stream"
@@ -32,6 +36,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(mobile.NewMobileServer)
 	container.Provide(mobile.NewMobileServerConfig)
 	container.Provide(mobileControllers.NewMobileControllersV1)
+	container.Provide(websocket.NewWebSocket)
 	container.Provide(controllers.NewControllersV1)
 	//container.Provide(config.ReadConfig)
 	container.Provide(graceful_service.NewGracefulService)
@@ -54,15 +59,19 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(mqtt.NewMqttConfig)
 	container.Provide(mqtt.NewAuthenticator)
 	container.Provide(access_list.NewAccessListService)
+	container.Provide(rbac.NewAccessFilter)
 	container.Provide(stream.NewStreamService)
 	container.Provide(stream.NewHub)
 	container.Provide(telemetry.NewTelemetry)
 	container.Provide(logging.NewLogBackend)
+	container.Provide(endpoint.NewEndpoint)
 	container.Provide(gate_client.NewGateClient)
+	container.Provide(notify.NewNotify)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()
 		conf.PgName = "smart_home_test"
+		conf.Logging = false
 		return
 	})
 

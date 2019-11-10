@@ -1,21 +1,19 @@
 package models
 
 import (
-	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/access_list"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/common/debug"
-	"fmt"
+	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/migrations"
+	. "github.com/smartystreets/goconvey/convey"
 	"strings"
+	"testing"
 )
 
 func TestUser(t *testing.T) {
 
 	Convey("add user", t, func(ctx C) {
-		container.Invoke(func(adaptors *adaptors.Adaptors,
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			accessList *access_list.AccessListService) {
 
@@ -24,7 +22,7 @@ func TestUser(t *testing.T) {
 
 			// add role
 			userRole := &m.Role{
-				Name:   "user_role",
+				Name: "user_role",
 			}
 			err := adaptors.Role.Add(userRole)
 			So(err, ShouldBeNil)
@@ -50,18 +48,18 @@ func TestUser(t *testing.T) {
 
 			const (
 				nickname = "user"
-				email = "email@mail.com"
+				email    = "email@mail.com"
 			)
 
 			// add user
 			user := &m.User{
 				Nickname: nickname,
 				RoleName: "user_role",
-				Email: email,
-				Lang: "en",
+				Email:    email,
+				Lang:     "en",
 				Meta: []*m.UserMeta{
 					&m.UserMeta{
-						Key: "phone1",
+						Key:   "phone1",
 						Value: "+18004001234",
 					},
 				},
@@ -78,8 +76,8 @@ func TestUser(t *testing.T) {
 			user, err = adaptors.User.GetById(user.Id)
 			So(err, ShouldBeNil)
 
-			debug.Println(user)
-			fmt.Println("----")
+			//debug.Println(user)
+			//fmt.Println("----")
 
 			So(user.Nickname, ShouldEqual, nickname)
 			So(user.Email, ShouldEqual, email)

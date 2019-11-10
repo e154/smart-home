@@ -1,13 +1,13 @@
 package scripts
 
 import (
-	"fmt"
 	"errors"
-	"github.com/op/go-logging"
-	"github.com/e154/smart-home/system/config"
-	m "github.com/e154/smart-home/models"
+	"fmt"
 	. "github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/scripts/bind"
+	"github.com/op/go-logging"
 )
 
 var (
@@ -26,8 +26,11 @@ func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 		structures: make(map[string]interface{}),
 	}
 
-	service = &ScriptService{cfg: cfg, pull: pull}
-	//service.PushStruct("Notifr", &bind.NotifrBind{})
+	service = &ScriptService{
+		cfg:  cfg,
+		pull: pull,
+	}
+
 	service.PushStruct("Log", &bind.LogBind{})
 	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)

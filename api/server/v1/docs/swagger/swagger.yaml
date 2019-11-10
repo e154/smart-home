@@ -164,6 +164,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceAction:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -178,8 +182,12 @@ definitions:
         x-go-name: Name
       script:
         $ref: '#/definitions/DeviceActionScript'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceActionDevice:
     properties:
       id:
@@ -517,6 +525,10 @@ definitions:
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceStateDevice'
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
       id:
         format: int64
         type: integer
@@ -1032,6 +1044,8 @@ definitions:
         format: int64
         type: integer
         x-go-name: Weight
+      zone:
+        $ref: '#/definitions/MapZone'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElementGraphSettings:
@@ -1083,10 +1097,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapLayer:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -1111,16 +1121,12 @@ definitions:
       status:
         type: string
         x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
         x-go-name: Weight
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapOptions:
     properties:
       element_option_text:
@@ -1144,6 +1150,77 @@ definitions:
       name:
         type: string
         x-go-name: Name
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Message:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      email_body:
+        type: string
+        x-go-name: EmailBody
+      email_from:
+        type: string
+        x-go-name: EmailFrom
+      email_subject:
+        type: string
+        x-go-name: EmailSubject
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      sms_text:
+        type: string
+        x-go-name: SmsText
+      telegram_text:
+        type: string
+        x-go-name: TelegramText
+      type:
+        type: string
+        x-go-name: Type
+      ui_text:
+        type: string
+        x-go-name: UiText
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MessageDelivery:
+    properties:
+      address:
+        type: string
+        x-go-name: Address
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      error_message_body:
+        type: string
+        x-go-name: ErrorMessageBody
+      error_message_status:
+        type: string
+        x-go-name: ErrorMessageStatus
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      message:
+        $ref: '#/definitions/Message'
+      message_id:
+        format: int64
+        type: integer
+        x-go-name: MessageId
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDevice:
@@ -1181,7 +1258,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceNode:
     properties:
       id:
@@ -1313,6 +1390,8 @@ definitions:
         format: int64
         type: integer
         x-go-name: Weight
+      zone:
+        $ref: '#/definitions/MapZone'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMapLayer:
@@ -1329,7 +1408,7 @@ definitions:
         type: string
         x-go-name: Status
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewMapZone:
     properties:
       name:
@@ -1368,18 +1447,19 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewRole:
     properties:
-      Parent:
-        properties:
-          name:
-            type: string
-            x-go-name: Name
-        type: object
       description:
         type: string
         x-go-name: Description
       name:
         type: string
         x-go-name: Name
+      parent:
+        properties:
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+        x-go-name: Parent
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewScript:
@@ -1396,6 +1476,50 @@ definitions:
       source:
         type: string
         x-go-name: Source
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewTemplate:
+    properties:
+      content:
+        type: string
+        x-go-name: Content
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      parent:
+        type: string
+        x-go-name: ParentName
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewTemplateItem:
+    properties:
+      content:
+        type: string
+        x-go-name: Content
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      parent:
+        type: string
+        x-go-name: ParentName
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewUser:
@@ -1520,6 +1644,44 @@ definitions:
         format: date-time
         type: string
         x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NotifrConfig:
+    properties:
+      email_auth:
+        type: string
+        x-go-name: EmailAuth
+      email_pass:
+        type: string
+        x-go-name: EmailPass
+      email_port:
+        format: int64
+        type: integer
+        x-go-name: EmailPort
+      email_sender:
+        type: string
+        x-go-name: EmailSender
+      email_smtp:
+        type: string
+        x-go-name: EmailSmtp
+      mb_access_key:
+        type: string
+        x-go-name: MbAccessKey
+      mb_name:
+        type: string
+        x-go-name: MbName
+      telegram_token:
+        type: string
+        x-go-name: TelegramToken
+      tw_auth_token:
+        type: string
+        x-go-name: TWAuthToken
+      tw_from:
+        type: string
+        x-go-name: TWFrom
+      tw_sid:
+        type: string
+        x-go-name: TWSid
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   ParentDevice:
@@ -1746,12 +1908,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Role:
     properties:
-      Parent:
-        properties:
-          name:
-            type: string
-            x-go-name: Name
-        type: object
       access_list:
         additionalProperties:
           items:
@@ -1774,6 +1930,13 @@ definitions:
       name:
         type: string
         x-go-name: Name
+      parent:
+        properties:
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+        x-go-name: Parent
       updated_at:
         format: date-time
         type: string
@@ -1830,6 +1993,121 @@ definitions:
         format: int64
         type: integer
         x-go-name: Weight
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Template:
+    properties:
+      content:
+        type: string
+        x-go-name: Content
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      markers:
+        items:
+          type: string
+        type: array
+        x-go-name: Markers
+      name:
+        type: string
+        x-go-name: Name
+      parent:
+        type: string
+        x-go-name: ParentName
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  TemplateContent:
+    properties:
+      fields:
+        items:
+          $ref: '#/definitions/TemplateField'
+        type: array
+        x-go-name: Fields
+      items:
+        items:
+          type: string
+        type: array
+        x-go-name: Items
+      title:
+        type: string
+        x-go-name: Title
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  TemplateField:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      value:
+        type: string
+        x-go-name: Value
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  TemplateItem:
+    properties:
+      content:
+        type: string
+        x-go-name: Content
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      parent:
+        type: string
+        x-go-name: ParentName
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  TemplateTree:
+    items:
+      $ref: '#/definitions/TemplateTreeBranch'
+    type: array
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  TemplateTreeBranch:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      nodes:
+        items:
+          $ref: '#/definitions/TemplateTreeBranch'
+        type: array
+        x-go-name: Nodes
+      status:
+        type: string
+        x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateDevice:
@@ -1975,7 +2253,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateMapElement:
     properties:
       description:
@@ -2014,6 +2292,8 @@ definitions:
         format: int64
         type: integer
         x-go-name: Weight
+      zone:
+        $ref: '#/definitions/MapZone'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateMapLayer:
@@ -2034,7 +2314,7 @@ definitions:
         type: string
         x-go-name: Status
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateNode:
     properties:
       description:
@@ -2068,20 +2348,59 @@ definitions:
         x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateNotifrConfig:
+    properties:
+      email_auth:
+        type: string
+        x-go-name: EmailAuth
+      email_pass:
+        type: string
+        x-go-name: EmailPass
+      email_port:
+        format: int64
+        type: integer
+        x-go-name: EmailPort
+      email_sender:
+        type: string
+        x-go-name: EmailSender
+      email_smtp:
+        type: string
+        x-go-name: EmailSmtp
+      mb_access_key:
+        type: string
+        x-go-name: MbAccessKey
+      mb_name:
+        type: string
+        x-go-name: MbName
+      telegram_token:
+        type: string
+        x-go-name: TelegramToken
+      tw_auth_token:
+        type: string
+        x-go-name: TWAuthToken
+      tw_from:
+        type: string
+        x-go-name: TWFrom
+      tw_sid:
+        type: string
+        x-go-name: TWSid
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateRole:
     properties:
-      Parent:
-        properties:
-          name:
-            type: string
-            x-go-name: Name
-        type: object
       description:
         type: string
         x-go-name: Description
       name:
         type: string
         x-go-name: Name
+      parent:
+        properties:
+          name:
+            type: string
+            x-go-name: Name
+        type: object
+        x-go-name: Parent
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateScript:
@@ -2103,6 +2422,65 @@ definitions:
         type: string
         x-go-name: Source
     type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateTemplate:
+    properties:
+      content:
+        type: string
+        x-go-name: Content
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      parent:
+        type: string
+        x-go-name: ParentName
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateTemplateItem:
+    properties:
+      content:
+        type: string
+        x-go-name: Content
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      parent:
+        type: string
+        x-go-name: ParentName
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateTemplateItemStatus:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateTemplateTree:
+    items:
+      $ref: '#/definitions/TemplateTreeBranch'
+    type: array
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateUser:
     properties:
@@ -2522,17 +2900,6 @@ definitions:
         x-go-name: WorkflowScenarioId
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  ZoneTag:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
 info:
   contact:
     email: support@e154.ru
@@ -4745,6 +5112,97 @@ paths:
       summary: search node
       tags:
       - node
+  /notifr/config:
+    get:
+      operationId: notifyGetSettings
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/NotifrConfig'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get notifr settings
+      tags:
+      - notifr
+    put:
+      operationId: notifyUpdateSettings
+      parameters:
+      - description: Update notifr params
+        in: body
+        name: notifr
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateNotifrConfig'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update notifr settings
+      tags:
+      - notifr
+  /notifrs:
+    get:
+      operationId: notifrList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/MessageDeliveryList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get notification list
+      tags:
+      - notifr
   /recovery:
     post:
       operationId: authRecovery
@@ -5337,6 +5795,418 @@ paths:
       summary: sign out
       tags:
       - auth
+  /template:
+    post:
+      operationId: templateAdd
+      parameters:
+      - description: template params
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/NewTemplate'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new template item
+      tags:
+      - template
+  /template/{name}:
+    delete:
+      operationId: templateDeleteByName
+      parameters:
+      - description: Template Name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete template by string
+      tags:
+      - template
+    get:
+      operationId: templateGetByName
+      parameters:
+      - description: Template Name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Template'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get template by name
+      tags:
+      - template
+    put:
+      operationId: templateUpdateByName
+      parameters:
+      - description: Template Name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Update item params
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateTemplate'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Template'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update template by id
+      tags:
+      - template
+  /template_item:
+    post:
+      operationId: templateAddItem
+      parameters:
+      - description: template params
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/NewTemplateItem'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new template item
+      tags:
+      - template_item
+  /template_item/{name}:
+    delete:
+      operationId: templateDeleteItemByName
+      parameters:
+      - description: TemplateItem Name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete template item by string
+      tags:
+      - template_item
+    get:
+      operationId: templateGetItemByName
+      parameters:
+      - description: TemplateItem Name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/TemplateItem'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get template item by name
+      tags:
+      - template_item
+    put:
+      operationId: templateUpdateItemByName
+      parameters:
+      - description: Template Name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Update item params
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateTemplateItem'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Template'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update template by id
+      tags:
+      - template_item
+  /template_item/status/{name}:
+    put:
+      operationId: templateUpdateStatusItemByName
+      parameters:
+      - description: Template Name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Update item params
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateTemplateItemStatus'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update template by id
+      tags:
+      - template_item
+  /template_items:
+    get:
+      operationId: templateGetItemList
+      responses:
+        "200":
+          $ref: '#/responses/TemplateItemSortedList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get template item list
+      tags:
+      - template_item
+  /template_items/tree:
+    get:
+      operationId: templateGetItemsTree
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/TemplateTree'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get template items tree
+      tags:
+      - template_item
+    put:
+      operationId: templateUpdateItemsTree
+      parameters:
+      - description: Update item params
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateTemplateTree'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update template by id
+      tags:
+      - template_item
+  /templates:
+    get:
+      operationId: templateList
+      responses:
+        "200":
+          $ref: '#/responses/TemplateList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get template list
+      tags:
+      - template
+  /templates/preview:
+    post:
+      operationId: templatePreview
+      parameters:
+      - description: Update item params
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/TemplateContent'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: preview template
+      tags:
+      - template
+  /templates/search:
+    get:
+      operationId: templateSearch
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/TemplateSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search template
+      tags:
+      - template
   /user:
     post:
       operationId: userAdd
@@ -6249,6 +7119,31 @@ responses:
           type: array
           x-go-name: MapZones
       type: object
+  MessageDeliveryList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MessageDelivery'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
   NewObjectSuccess:
     description: Success with id response
     schema:
@@ -6370,6 +7265,78 @@ responses:
   Success:
     description: Success response
     schema:
+      type: object
+  TemplateItemList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/TemplateItem'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  TemplateItemSortedList:
+    schema:
+      properties:
+        items:
+          items:
+            type: string
+          type: array
+          x-go-name: Items
+        total:
+          format: int64
+          type: integer
+          x-go-name: Total
+      type: object
+  TemplateList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Template'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  TemplateSearch:
+    schema:
+      properties:
+        templates:
+          items:
+            $ref: '#/definitions/Template'
+          type: array
+          x-go-name: Templates
       type: object
   UserList:
     schema:

@@ -2,9 +2,9 @@ package env1
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
-	. "github.com/e154/smart-home/common"
 )
 
 func addWorkflow(adaptors *adaptors.Adaptors,
@@ -78,7 +78,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		PrototypeType: FlowElementsPrototypeMessageHandler,
 		GraphSettings: m.FlowElementGraphSettings{
 			Position: m.FlowElementGraphSettingsPosition{
-				Top: 180,
+				Top:  180,
 				Left: 180,
 			},
 		},
@@ -90,7 +90,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		PrototypeType: FlowElementsPrototypeMessageEmitter,
 		GraphSettings: m.FlowElementGraphSettings{
 			Position: m.FlowElementGraphSettingsPosition{
-				Top: 180,
+				Top:  180,
 				Left: 560,
 			},
 		},
@@ -103,7 +103,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		ScriptId:      &scripts["base_script"].Id,
 		GraphSettings: m.FlowElementGraphSettings{
 			Position: m.FlowElementGraphSettingsPosition{
-				Top: 160,
+				Top:  160,
 				Left: 340,
 			},
 		},
@@ -187,7 +187,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		PrototypeType: FlowElementsPrototypeMessageHandler,
 		GraphSettings: m.FlowElementGraphSettings{
 			Position: m.FlowElementGraphSettingsPosition{
-				Top: 180,
+				Top:  180,
 				Left: 180,
 			},
 		},
@@ -199,7 +199,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		PrototypeType: FlowElementsPrototypeMessageEmitter,
 		GraphSettings: m.FlowElementGraphSettings{
 			Position: m.FlowElementGraphSettingsPosition{
-				Top: 180,
+				Top:  180,
 				Left: 560,
 			},
 		},
@@ -212,7 +212,7 @@ func addWorkflow(adaptors *adaptors.Adaptors,
 		ScriptId:      &scripts["base_script"].Id,
 		GraphSettings: m.FlowElementGraphSettings{
 			Position: m.FlowElementGraphSettingsPosition{
-				Top: 160,
+				Top:  160,
 				Left: 340,
 			},
 		},

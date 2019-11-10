@@ -24,6 +24,7 @@ var coffeeScripts = map[string]string{
 	"coffeeScript21": coffeeScript21,
 	"coffeeScript22": coffeeScript22,
 	"coffeeScript23": coffeeScript23,
+	"coffeeScript24": coffeeScript24,
 }
 
 // test1
@@ -293,6 +294,19 @@ const coffeeScript23 = `
 #print "run flow script (script 23)"
 
 IC.store('enter script23')
+`
+
+const coffeeScript24 = `
+print "run flow script (script 24)"
+
+main =->
+	tpl = IC.Template.render('template2', {'code':'12345'})
+	sms = IC.Notifr.newSMS()
+	sms.addPhone('+79133819546')
+	sms.setRender(tpl)
+	IC.Notifr.send(sms)
+	''
+
 `
 
 // test...

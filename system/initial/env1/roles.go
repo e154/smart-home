@@ -3,9 +3,9 @@ package env1
 import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/access_list"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"strings"
-	"github.com/e154/smart-home/system/access_list"
 )
 
 func roles(adaptors *adaptors.Adaptors,
@@ -28,7 +28,8 @@ func roles(adaptors *adaptors.Adaptors,
 	for pack, item := range *accessList.List {
 		for right := range item {
 			if strings.Contains(right, "read") ||
-				strings.Contains(right, "view") {
+				strings.Contains(right, "view") ||
+				strings.Contains(right, "preview") {
 				permission := &m.Permission{
 					RoleName:    demoRole.Name,
 					PackageName: pack,
@@ -51,11 +52,11 @@ func roles(adaptors *adaptors.Adaptors,
 
 	// add admin
 	adminUser := &m.User{
-		Nickname:          "admin",
-		RoleName:          adminRole.Name,
-		Email:             "admin@e154.ru",
-		Lang:              "en",
-		Status:            "active",
+		Nickname: "admin",
+		RoleName: adminRole.Name,
+		Email:    "admin@e154.ru",
+		Lang:     "en",
+		Status:   "active",
 	}
 	err = adminUser.SetPass("admin")
 	So(err, ShouldBeNil)
@@ -68,11 +69,11 @@ func roles(adaptors *adaptors.Adaptors,
 
 	// add demo user
 	demoUser := &m.User{
-		Nickname:          "demo",
-		RoleName:          demoRole.Name,
-		Email:             "demo@e154.ru",
-		Lang:              "en",
-		Status:            "active",
+		Nickname: "demo",
+		RoleName: demoRole.Name,
+		Email:    "demo@e154.ru",
+		Lang:     "en",
+		Status:   "active",
 	}
 	err = demoUser.SetPass("demo")
 	So(err, ShouldBeNil)
@@ -85,11 +86,11 @@ func roles(adaptors *adaptors.Adaptors,
 
 	// add base user
 	baseUser := &m.User{
-		Nickname:          "user",
-		RoleName:          userRole.Name,
-		Email:             "user@e154.ru",
-		Lang:              "en",
-		Status:            "active",
+		Nickname: "user",
+		RoleName: userRole.Name,
+		Email:    "user@e154.ru",
+		Lang:     "en",
+		Status:   "active",
 	}
 	err = baseUser.SetPass("user")
 	So(err, ShouldBeNil)

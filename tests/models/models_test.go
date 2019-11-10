@@ -1,14 +1,14 @@
 package models
 
 import (
-	"time"
-	"os"
-	"testing"
 	"github.com/e154/smart-home/system/dig"
-	"github.com/e154/smart-home/system/migrations"
-	"path/filepath"
-	"github.com/sirupsen/logrus"
 	l "github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/system/migrations"
+	"github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
 )
 
 func init() {
@@ -23,8 +23,9 @@ var (
 func TestMain(m *testing.M) {
 
 	container = BuildContainer()
-	container.Invoke(func(migrations *migrations.Migrations,
-		lx *logrus.Logger,back *l.LogBackend) {
+	err := container.Invoke(func(migrations *migrations.Migrations,
+		lx *logrus.Logger,
+		back *l.LogBackend) {
 
 		l.Initialize(back)
 
@@ -32,4 +33,8 @@ func TestMain(m *testing.M) {
 
 		os.Exit(m.Run())
 	})
+
+	if err != nil {
+		print(err.Error())
+	}
 }
