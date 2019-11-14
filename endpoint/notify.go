@@ -82,14 +82,17 @@ func (n *NotifyEndpoint) Send(params *m.NewNotifrMessage) (err error) {
 		n.notify.Send(message)
 
 	case "slack":
-		message := notify.NewSlackMessage()
-		message.Text = common.StringValue(params.SlackText)
-		message.Channel = params.Address
+		message := notify.NewSlackMessage(common.StringValue(params.SlackText), params.Address)
 		if render != nil {
 			message.SetRender(render)
 		}
 		n.notify.Send(message)
-
+	case "telegram_notify":
+		message := notify.NewTelegram(common.StringValue(params.TelegramText))
+		if render != nil {
+			message.SetRender(render)
+		}
+		n.notify.Send(message)
 	}
 
 	return

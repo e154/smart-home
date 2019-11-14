@@ -5,7 +5,8 @@ package notify
 // IC.Notifr()
 //	 .newSMS()
 //	 .newEmail()
-//	 .newSlack()
+//	 .newSlack(channel, text)
+//	 .newTelegram(text)
 //	 .send(msg)
 //
 type NotifyBind struct {
@@ -20,8 +21,12 @@ func (b *NotifyBind) NewEmail() *Email {
 	return NewEmail()
 }
 
-func (b *NotifyBind) NewSlack() *SlackMessage {
-	return NewSlackMessage()
+func (b *NotifyBind) NewSlack(channel, text string) *SlackMessage {
+	return NewSlackMessage(channel, text)
+}
+
+func (b *NotifyBind) NewTelegram(text string) *Telegram {
+	return NewTelegram(text)
 }
 
 func (b *NotifyBind) Send(msg interface{}) {

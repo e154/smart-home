@@ -1,7 +1,6 @@
 package notify
 
 import (
-	"encoding/json"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
@@ -13,10 +12,6 @@ import (
 
 var (
 	log = logging.MustGetLogger("notify")
-)
-
-const (
-	notifyVarName = "notify"
 )
 
 type Notify struct {
@@ -44,6 +39,7 @@ func NewNotify(
 		appCfg:    appCfg,
 		queue:     make(chan interface{}),
 		stopQueue: make(chan struct{}),
+		cfg:       NewNotifyConfig(adaptor),
 	}
 
 	graceful.Subscribe(notify)
@@ -73,11 +69,7 @@ func (n *Notify) Start() {
 	}
 
 	// update config
-	n.getCfg()
-
-	if n.cfg == nil {
-		n.initCfg()
-	}
+	n.cfg.Get()
 
 	n.isStarted = true
 
@@ -209,51 +201,12 @@ func (n *Notify) read() {
 	}
 }
 
-func (n *Notify) getCfg() {
-
-	v, err := n.adaptor.Variable.GetByName(notifyVarName)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	n.cfg = &NotifyConfig{}
-	if err = json.Unmarshal([]byte(v.Value), n.cfg); err != nil {
-		log.Error(err.Error())
-	}
-}
-
 func (n *Notify) GetCfg() *NotifyConfig {
 	return n.cfg
 }
 
-func (n *Notify) initCfg() {
-	log.Infof("init config")
-
-	n.cfg = &NotifyConfig{}
-	n.UpdateCfg(n.cfg)
-}
-
-func (n *Notify) UpdateCfg(cfg *NotifyConfig) (err error) {
-
-	log.Infof("update settings")
-
-	var b []byte
-	if b, err = json.Marshal(cfg); err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	variable := &m.Variable{
-		Name:     notifyVarName,
-		Value:    string(b),
-		Autoload: false,
-	}
-
-	if err = n.adaptor.Variable.Update(variable); err != nil {
-		log.Error(err.Error())
-	}
-	return
+func (n *Notify) UpdateCfg(cfg *NotifyConfig) error {
+	return n.cfg.Update()
 }
 
 func (n *Notify) Stat() *NotifyStat {
