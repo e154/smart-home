@@ -13,6 +13,7 @@ taxonomies:
 Languages:
   ru:
     languageName: "Русский"
+    apiUrl: "https://sh.e154.ru/api/v1/swagger/swagger.yml"
     params:
       name: "Your name"
       description: "Your description"
@@ -73,6 +74,12 @@ Languages:
         - title: "IC.Log"
           url: "#ic_log"
 
+        - title: "IC.Template()"
+          url: "#ic_template"
+
+        - title: "IC.Notifr()"
+          url: "#ic_notifr"
+
         - title: "IC.CurrentNode()"
           url: "#ic_current_node"
         - title: "IC.CurrentDevice()"
@@ -91,10 +98,10 @@ Languages:
           url: "#device"
         - title: "Device{}"
           url: "#device"
-        - title: "Node{}"
-          url: "#node"
         - title: "MapElement{}"
           url: "#map_element"
+        - title: "Node{}"
+          url: "#node"
 
     getting_started_menu:
       links:
@@ -223,6 +230,7 @@ Languages:
 
   en:
     languageName: "English"
+    apiUrl: "https://sh.e154.ru/api/v1/swagger/swagger.yml"
     params:
       name: "Smart home"
       description: "Smart home system"
@@ -282,6 +290,12 @@ Languages:
         - title: "IC.Log"
           url: "#ic_log"
 
+        - title: "IC.Template()"
+          url: "#ic_template"
+
+        - title: "IC.Notifr()"
+          url: "#ic_notifr"
+
         - title: "IC.CurrentNode()"
           url: "#ic_current_node"
         - title: "IC.CurrentDevice()"
@@ -300,10 +314,10 @@ Languages:
           url: "#device"
         - title: "Device{}"
           url: "#device"
-        - title: "Node{}"
-          url: "#node"
         - title: "MapElement{}"
           url: "#map_element"
+        - title: "Node{}"
+          url: "#node"
 
     getting_started_menu:
       links:

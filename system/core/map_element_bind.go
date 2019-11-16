@@ -3,9 +3,9 @@ package core
 // Javascript Binding
 //
 // mapElement
-//	.setState()
+//	.setState(name)
 //	.getState()
-//	.setOptions()
+//	.setOptions(options)
 //	.getOptions()
 //
 type MapElementBind struct {
