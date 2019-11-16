@@ -77,7 +77,7 @@ pass: user
 
 Схематическая карта связанных устройств комплекса **Умны дом**
 
-<img src="doc/static/img/default_network.png" alt="smart-home map" width="630">
+<img src="doc/static/img/smart-home-network.svg" alt="smart-home map" width="630">
 
 ### Быстрая установка
 
