@@ -124,29 +124,10 @@
 <li>Нода</li>
 </ul>
 
-<h2 id="migrate-mysql">Обновление базы mysql</h2>
+<h2 id="migrate-postgres">Обновление базы postgres</h2>
 
-<p>База поддерживает версионирование, перед обновление структуры нужно создать резервную копию</p>
-
-<pre><code class="language-bash">./opt/smart-home/server/examples/scripts/backup.sh
-Starting backup to 19-02-2017-22-06-30-dump.sql...
-</code></pre>
-
-<p>Скрипт создаст копию действующей базы в <em>/opt/smart-home/backup</em></p>
-
-<p>Запуск обновления базы:</p>
-
-<pre><code class="language-bash">cd /opt/smart-home/server/
-./server-linux-amd64 migrate
-2017/02/19 01:59:37 GOPATH: /home/delta54/workspace/golang/src/github.com/e154/smart-home/migrate.go 81 /home/delta54/workspace/golang
-2017/02/19 01:59:37 Using 'mysql' as 'driver'
-2017/02/19 01:59:37 Using 'smarthome:smarthome@tcp(127.0.0.1:3306)/smarthome_dev?charset=utf8' as 'conn'
-2017/02/19 01:59:37 Running all outstanding migrations
-2017/02/19 01:59:40 |&gt; 2017/02/19 01:59:38 [I] total success upgrade: 0  migration
-2017/02/19 01:59:40 Migration successful!
-</code></pre>
-
-<p>Сообщение <em>Migration successful</em> говорит о успешно выполненной миграции</p>
+<p>система базы данных имеет внтренный миханизм миграций. При подключении сервер проверяет текущую версию,
+и запускает миграции если сервер их имеет. Ручное вмешательство для обновления БД не требуется.</p>
 
                         
                     </div>
@@ -257,8 +238,8 @@ Starting backup to 19-02-2017-22-06-30-dump.sql...
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#install-mysql">
-                        Install mysql
+                    <a class="bd-toc-link" href="#install-postgres">
+                        Install postgres
                     </a>
                 </li>
                 
@@ -281,8 +262,8 @@ Starting backup to 19-02-2017-22-06-30-dump.sql...
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#migrate-mysql">
-                Migrate mysql
+            <a class="bd-toc-link" href="#migrate-postgres">
+                Migrate postgres
             </a>
             <ul class="nav bd-sidenav">
                 

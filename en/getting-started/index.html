@@ -124,31 +124,34 @@
 Создавать сценарии, и реакции на события в веб интерфейсе конфигуртора через гибкую систему скриптов.
 Управлять состоянием устройств из любой подсети, где доступен управляющий сервер.</p>
 
-<p>Пример простого устройства <a href="https://github.com/e154/smart-home-socket">умная розетка</a>, позволяет управлять нагрузкой 220в 14А ампер.
+<p>Пример простого устройства <a href="https://github.com/e154/smart-home-modbus-ctrl-v1/">контроллер</a>, позволяет управлять нагрузкой 220в 14А ампер.
 На базе которого легко построить решение для управления светом, рольставнями, воротами, датчики протечки, утечки газа, и много
 другого</p>
 
 <p>Программный комплекс <strong>Умный дом</strong> имеет модульную структуру, и состоит из следующих частей:</p>
 
-<p><strong>Сервер</strong> - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
+<p><strong><a href="https://github.com/e154/smart-home" target="_blank">Сервер</a></strong> - Основной системный модуль, предоставление api для внешних служб, контроль доступа,
 исполнение процессов, логирование, оповещенние, реакция на события, исполнени сценариев.</p>
 
-<p><strong>Конфигуратор</strong> - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
+<p><strong><a href="https://github.com/e154/smart-home-configurator" target="_blank">Конфигуратор</a></strong> - Клиентский модуль подключается к серверу по API, позволяет конфигурировать
 систему под свои нужды, требуется как првило на этапе конфигурации.</p>
 
-<p><strong>Нода</strong> - посредник связи сервера с активными устройствами, позволяет связать один сервер с
+<p><strong><a href="https://github.com/e154/smart-home-node" target="_blank">Нода</a></strong> - посредник связи сервера с активными устройствами, позволяет связать один сервер с
 множеством териториально удалённых устройств по сети интернет, локальной сети, или по различным шифрованным туннелям.
-Работает по принципу клиент сервер. Стартует и ожидает соединения на заданном ADDRESS:PORT. Сервер подключается к ноде
-по требованию сценария, либо доступности последней.</p>
+Работает по принципу клиент сервер.</p>
 
-<p><del><strong>Монитор</strong> - мобильное клиентское приложение android, ios.</del>(в разработке)</p>
+<p><strong><a href="https://github.com/e154/smart-home-gate" target="_blank">Мобильный шлюз</a></strong> - Сервис позволяющий, получить доступ к умному дому для мобильных коиентов</p>
+
+<p><strong><a href="https://github.com/e154/smart-home-app" target="_blank">Мобильное приложение</a></strong> - кромплтформенное клиентское приложение для взаимодействия с Вашими устройствами в android, ios.</p>
 
 <p>Для работы <strong>системы умного дома</strong> требуется запущенный сервер, и минимум одна локальная нода, либо одна запущенная
 нода в том же сегменте сети. Конфигуратор требуется только на этапе конфигурации.</p>
 
-<p>На данный момент общение с исполнительными устройствами возможно только по адаптированному портоколу modbus.
+<p>Умный дом позволяет работать с устройствами чере протокол MODBUS, SMARTBUS, или выполнение произвольный комманд/скриптов, с последующей обраблткой ответа.
 В дальнейшем этот список будет расширен. Если Вам требуется добавить какой-то свой вид связи, напишите нам, либо
-создайте реквест с предложением в репозиторий <a href="https://github.com/e154/smart-home">Сервер</a>, <a href="https://github.com/e154/smart-home-node">Нода</a>.</p>
+создайте реквест с предложением в репозиторий <a href="https://github.com/e154/smart-home">Сервер</a>, <a href="https://github.com/e154/smart-home-node">Нода</a></p>
+
+<p>Пример минимального устройства работающего на шине MODBUS <a href="https://github.com/e154/smart-home-modbus-ctrl-v1/">контроллер</a>.</p>
 
 <p>Модифицированный modbus подразумевает соответствующее установленное ПО на ваше исполнительное устройство, простой пример устройства
 со схемой и программой прошивки для <strong>AVR mega 168pu</strong> управляющего розетой, легко поддающееся модификации под более сложные задачи можно
@@ -157,6 +160,24 @@
 <p>Схематичная сеть <strong>системы умного дома</strong>:</p>
 
 <p><img src="/smart-home/img/smart-home-network.svg" alt="Схематичная сеть умного дома" title="Схематичная сеть умного дома" /></p>
+
+<h3 class="page-header">Преимущества</h3>
+
+<ol>
+<li>Законченное решение умных вещей, и для автоматизации процессов - сервер,конфигуратор,ноды,шлюз,мобильное приложение</li>
+<li>Открытое API</li>
+<li>Кроссплатформенность Linux,MacOS,Windows …</li>
+<li>Удобный WEB конфигуратор для тонкой настройки</li>
+<li>Мобильное приложение для управления устройствами</li>
+<li>Система ролей для разделения прав доступа</li>
+<li>Программы на javaScript, coffeeScript, typeScript</li>
+<li>Система уведомлений SMS, Email, Slack, Telegram</li>
+<li>Если MODBUS мало можно работать через вызовы внешних программ/скриптов, что сильно расширяет возможности</li>
+<li>Автономная система, если не требуются уведомления и доступ из вне</li>
+<li>Быстрое резервное копирование всех данных, и восстановление - буквально в две команды</li>
+<li>Есть Docker образы для повышения безопасности системы</li>
+<li>Минимальное потребление ресурсов, позволяет развернуть комплекс на слабом железе</li>
+</ol>
 
                             
                                 
@@ -266,7 +287,7 @@
 <li><strong>dump.sql</strong> - дамп sql базы данных</li>
 <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
 <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
-<li><strong>server-</strong> - Платформо зависимый исполняемый файл</li>
+<li><strong>server</strong> - Платформо зависимый исполняемый файл</li>
 </ul>
 
 <h3 id="configurator">Конфигуратор</h3>
@@ -300,7 +321,7 @@
 <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
 <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
 <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
-<li><strong>configurator-</strong> - Платформо зависимый исполняемый файл</li>
+<li><strong>configurator</strong> - Платформо зависимый исполняемый файл</li>
 </ul>
 
 <h3 id="node">Нода</h3>
@@ -330,7 +351,7 @@
 <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
 <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
 <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
-<li><strong>node-</strong> - Платформо зависимый исполняемый файл
+<li><strong>node</strong> - Платформо зависимый исполняемый файл
 <br /></li>
 </ul>
 
@@ -341,7 +362,7 @@
 <li>Подразумевается что у это первая установка в систему</li>
 <li>Установка будет проходить в автоматическом режиме</li>
 <li>Директория установки /opt/smart-home</li>
-<li>После установки потребуется настроить подключение к серверу баз данных mysql</li>
+<li>После установки потребуется настроить подключение к серверу баз данных postgresql</li>
 </ul>
 
 <p>Установка сервера</p>
@@ -359,15 +380,12 @@
 <pre><code class="language-bash">curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
 </code></pre>
 
-<p>Нвстройка сервера баз данных mysql</p>
+<p>Нвстройка сервера баз данных postgresql</p>
 
-<pre><code class="language-bash">mysql -u root -p
-CREATE DATABASE smarthome;
-CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
-GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
-FLUSH PRIVILEGES;
-use smarthome
-source /opt/smart-home/server/dump.sql
+<pre><code class="language-bash">sudo -u postgres psql
+postgres=# create database smart_home;
+postgres=# create user smart_home with encrypted password 'smart_home';
+postgres=# grant all privileges on database smart_home to smart_home;
 </code></pre>
 
 <p>Запуск сервера</p>
@@ -410,7 +428,7 @@ source /opt/smart-home/server/dump.sql
 <li><a href="#install-server-conf">Настройка сервера</a></li>
 <li><a href="#install-configuration-conf">Настройка конфигуратора</a></li>
 <li><a href="#install-node-conf">Настройка ноды</a></li>
-<li><a href="#install-mysql">База mysql</a>
+<li><a href="#install-postgres">База postgres</a>
 <br /></li>
 </ul>
 
@@ -474,40 +492,32 @@ tree
 <h3 id="install-server-conf">Настройка сервера</h3>
 
 <pre><code class="language-bash">cd /opt/smart-home/server
-sed 's/dev\/app.conf/prod\/app.conf/' conf/app.sample.conf &gt; conf/app.conf
-cp conf/prod/app.sample.conf conf/prod/app.conf
-cp conf/prod/db.sample.conf conf/prod/db.conf
+cp conf/config.dev.conf conf/config.conf
 </code></pre>
 
-<p>Основные значения:</p>
+<p>Важные поля:</p>
 
 <ul>
-<li><strong>httpaddr</strong> - адрес сервера REST API</li>
-<li><strong>httpport</strong> - порт сервера REST API</li>
-<li><strong>data_dir</strong> - директория хранения общих файлов</li>
-<li><strong>db_user</strong> - пользователь для соединени mysql</li>
-<li><strong>db_pass</strong> - пароль доступка к mysql</li>
-<li><strong>db_host</strong> - адрес сервера mysql</li>
-<li><strong>db_name</strong> - название базы mysql</li>
-<li><strong>db_port</strong> - порт сервера mysql<br /></li>
+<li><strong>server_host</strong> - адрес сервера REST API</li>
+<li><strong>server_port</strong> - порт сервера REST API</li>
+<li><strong>pg_user</strong> - пользователь для соединени postgresql</li>
+<li><strong>pg_pass</strong> - пароль доступка к postgresql</li>
+<li><strong>pg_host</strong> - адрес сервера postgresql</li>
+<li><strong>pg_name</strong> - название базы postgresql</li>
+<li><strong>pg_port</strong> - порт сервера postgresql<br /></li>
 </ul>
 
-<p>Для работы сервера требуется подключение к базе mysql. Отредактируйте файл <em>/opt/smart-home/server/conf/prod/db.conf</em></p>
-
-<pre><code class="language-bash">db_user = smarthome
-db_pass = smarthome
-db_host = &quot;127.0.0.1&quot;
-db_name = smarthome
-db_port = &quot;3306&quot;
-db_type = mysql
+<pre><code class="language-bash">pg_user = smart_home
+pg_pass = smart_home
+pg_host = &quot;127.0.0.1&quot;
+pg_name = smart_home
+pg_port = &quot;5432&quot;
 </code></pre>
 
 <h3 id="install-configuration-conf">Настройка конфигуратора</h3>
 
 <pre><code class="language-bash">cd /opt/smart-home/configurator
-sed 's/dev\/app.conf/prod\/app.conf/' conf/app.sample.conf &gt; conf/app.conf
-cp conf/prod/app.sample.conf conf/prod/app.conf
-cp conf/prod/db.sample.conf conf/prod/db.conf
+cp conf/config.dev.conf conf/config.conf
 </code></pre>
 
 <p>Основные значения:</p>
@@ -515,61 +525,47 @@ cp conf/prod/db.sample.conf conf/prod/db.conf
 <ul>
 <li><strong>httpaddr</strong> - адрес веб интерфеса конфигуратора</li>
 <li><strong>httpport</strong> - порт веб интерфеса конфигуратора</li>
-<li><strong>serveraddr</strong> - порт сервера REST API</li>
-<li><strong>serverport</strong> - порт сервера REST API</li>
-<li><strong>data_dir</strong> - директория хранения общих файлов
+<li><strong>api_addr</strong> - порт сервера REST API</li>
+<li><strong>api_port</strong> - порт сервера REST API</li>
+<li><strong>api_scheme</strong> - схема общения с сервером
 <br /></li>
 </ul>
 
 <h3 id="install-node-conf">Настройка ноды</h3>
 
 <pre><code class="language-bash">cd /opt/smart-home/node
-cp conf/node.sample.conf conf/node.conf
+cp conf/config.dev.conf conf/config.conf
 </code></pre>
 
 <p>Основные значения:</p>
 
 <ul>
-<li><strong>app_version</strong> - версия внутреннего api ноды</li>
-<li><strong>ip</strong> - адрес ожидания соединения от сервера</li>
-<li><strong>port</strong> - порт ожидания соединения от сервера</li>
-<li><strong>baud</strong> - скорость работы порта ввода вывода, используется если с сервера пришёл запрос на
-        обращение к устройству, но baud не был указан</li>
-<li><strong>timeout</strong> - используется при обработке ошибок связи с устройствами</li>
-<li><strong>stopbits</strong> - стоп бит, используется в общении с устройствами
+<li><strong>name</strong> - системное назание ноды (прим. node1)</li>
+<li><strong>topic</strong> - канал для общения с сервером (прим. node1)</li>
+<li><strong>mqtt_keep_alive</strong> - тонкие настройки (прим. 300)</li>
+<li><strong>mqtt_connect_timeout</strong> - тонкие настройки (прим. 2)</li>
+<li><strong>mqtt_sessions_provider</strong> - тонкие настройки (прим. &ldquo;mem&rdquo;)</li>
+<li><strong>mqtt_topics_provider</strong> - тонкие настройки (прим. &ldquo;mem)</li>
+<li><strong>mqtt_username</strong> - пользователь указанный при регистрации ноды на сервере</li>
+<li><strong>mqtt_password</strong> - павроль указанный при регистрации ноды на сервере</li>
+<li><strong>mqtt_ip</strong> - ip адрес сервера <strong>умный дом</strong></li>
+<li><strong>mqtt_port</strong> - порт для подключения нод к <strong>умный дом</strong></li>
+<li><strong>serial</strong> - спискок портов которые будет слушать нода для поиска устройств
 <br /></li>
 </ul>
 
-<h3 id="install-mysql">База mysql</h3>
+<h3 id="install-postgres">База postgres</h3>
 
-<p>Подключение к консоли mysql, потребуется пароль рута:</p>
+<p>Подключение к консоли Postgresql, потребуется пароль рута:</p>
 
-<pre><code class="language-bash">mysql -u root -p
+<pre><code class="language-bash">sudo -u postgres psql
+postgres=# create database smart_home;
+postgres=# create user smart_home with encrypted password 'smart_home';
+postgres=# grant all privileges on database smart_home to smart_home;
 </code></pre>
 
-<p>Создание базы сервера <strong>умный дом</strong>:</p>
-
-<pre><code class="language-bash">CREATE DATABASE smarthome;
-</code></pre>
-
-<p>Создание нового пользователя, с соответствующими правами <strong>smarthome</strong> из консоли mysql</p>
-
-<ul>
-<li><strong>smarthome</strong> - пользователь</li>
-<li><strong>smarthome</strong> - пароль
-<br /></li>
-</ul>
-
-<pre><code class="language-bash">CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
-GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
-FLUSH PRIVILEGES;
-</code></pre>
-
-<p>импорт базы</p>
-
-<pre><code class="language-bash">use smarthome
-source /opt/smart-home/server/dump.sql
-</code></pre>
+<p>система базы данных имеет внтренный миханизм миграций. При подключении сервер проверяет текущую версию,
+и запускает миграции если сервер их имеет.</p>
 
 <h3 id="install-exec">Запуск</h3>
 
@@ -601,29 +597,10 @@ source /opt/smart-home/server/dump.sql
 <li>Нода</li>
 </ul>
 
-<h2 id="migrate-mysql">Обновление базы mysql</h2>
+<h2 id="migrate-postgres">Обновление базы postgres</h2>
 
-<p>База поддерживает версионирование, перед обновление структуры нужно создать резервную копию</p>
-
-<pre><code class="language-bash">./opt/smart-home/server/examples/scripts/backup.sh
-Starting backup to 19-02-2017-22-06-30-dump.sql...
-</code></pre>
-
-<p>Скрипт создаст копию действующей базы в <em>/opt/smart-home/backup</em></p>
-
-<p>Запуск обновления базы:</p>
-
-<pre><code class="language-bash">cd /opt/smart-home/server/
-./server-linux-amd64 migrate
-2017/02/19 01:59:37 GOPATH: /home/delta54/workspace/golang/src/github.com/e154/smart-home/migrate.go 81 /home/delta54/workspace/golang
-2017/02/19 01:59:37 Using 'mysql' as 'driver'
-2017/02/19 01:59:37 Using 'smarthome:smarthome@tcp(127.0.0.1:3306)/smarthome_dev?charset=utf8' as 'conn'
-2017/02/19 01:59:37 Running all outstanding migrations
-2017/02/19 01:59:40 |&gt; 2017/02/19 01:59:38 [I] total success upgrade: 0  migration
-2017/02/19 01:59:40 Migration successful!
-</code></pre>
-
-<p>Сообщение <em>Migration successful</em> говорит о успешно выполненной миграции</p>
+<p>система базы данных имеет внтренный миханизм миграций. При подключении сервер проверяет текущую версию,
+и запускает миграции если сервер их имеет. Ручное вмешательство для обновления БД не требуется.</p>
 
                             
                                 <h2 id="service">Автозапуск</h2>
@@ -824,8 +801,8 @@ cp -r conf /opt/smart-home/node
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#install-mysql">
-                        Install mysql
+                    <a class="bd-toc-link" href="#install-postgres">
+                        Install postgres
                     </a>
                 </li>
                 
@@ -848,8 +825,8 @@ cp -r conf /opt/smart-home/node
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#migrate-mysql">
-                Migrate mysql
+            <a class="bd-toc-link" href="#migrate-postgres">
+                Migrate postgres
             </a>
             <ul class="nav bd-sidenav">
                 

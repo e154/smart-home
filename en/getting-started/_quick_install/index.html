@@ -117,7 +117,7 @@
 <li>Подразумевается что у это первая установка в систему</li>
 <li>Установка будет проходить в автоматическом режиме</li>
 <li>Директория установки /opt/smart-home</li>
-<li>После установки потребуется настроить подключение к серверу баз данных mysql</li>
+<li>После установки потребуется настроить подключение к серверу баз данных postgresql</li>
 </ul>
 
 <p>Установка сервера</p>
@@ -135,15 +135,12 @@
 <pre><code class="language-bash">curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
 </code></pre>
 
-<p>Нвстройка сервера баз данных mysql</p>
+<p>Нвстройка сервера баз данных postgresql</p>
 
-<pre><code class="language-bash">mysql -u root -p
-CREATE DATABASE smarthome;
-CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
-GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
-FLUSH PRIVILEGES;
-use smarthome
-source /opt/smart-home/server/dump.sql
+<pre><code class="language-bash">sudo -u postgres psql
+postgres=# create database smart_home;
+postgres=# create user smart_home with encrypted password 'smart_home';
+postgres=# grant all privileges on database smart_home to smart_home;
 </code></pre>
 
 <p>Запуск сервера</p>
@@ -281,8 +278,8 @@ source /opt/smart-home/server/dump.sql
                 </li>
                 
                 <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#install-mysql">
-                        Install mysql
+                    <a class="bd-toc-link" href="#install-postgres">
+                        Install postgres
                     </a>
                 </li>
                 
@@ -305,8 +302,8 @@ source /opt/smart-home/server/dump.sql
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#migrate-mysql">
-                Migrate mysql
+            <a class="bd-toc-link" href="#migrate-postgres">
+                Migrate postgres
             </a>
             <ul class="nav bd-sidenav">
                 

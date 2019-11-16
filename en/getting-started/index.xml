@@ -36,11 +36,11 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/en/getting-started/_quick_install/</guid>
-      <description>Быстрая установка  Подразумевается что у это первая установка в систему Установка будет проходить в автоматическом режиме Директория установки /opt/smart-home После установки потребуется настроить подключение к серверу баз данных mysql  Установка сервера
+      <description>Быстрая установка  Подразумевается что у это первая установка в систему Установка будет проходить в автоматическом режиме Директория установки /opt/smart-home После установки потребуется настроить подключение к серверу баз данных postgresql  Установка сервера
 curl -sSL http://e154.github.io/smart-home/server-installer.sh | bash /dev/stdin --install  Установка конфигуратор
 curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev/stdin --install  Установка узла связи
-curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install  Нвстройка сервера баз данных mysql
-mysql -u root -p CREATE DATABASE smarthome; CREATE USER &#39;smarthome&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;smarthome&#39;; GRANT ALL PRIVILEGES ON smarthome .</description>
+curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install  Нвстройка сервера баз данных postgresql
+sudo -u postgres psql postgres=# create database smart_home; postgres=# create user smart_home with encrypted password &#39;smart_home&#39;; postgres=# grant all privileges on database smart_home to smart_home;  Запуск сервера</description>
     </item>
     
     <item>
@@ -51,7 +51,7 @@ mysql -u root -p CREATE DATABASE smarthome; CREATE USER &#39;smarthome&#39;@&#39
       <guid>https://e154.github.io/smart-home/en/getting-started/_install/</guid>
       <description>Установка Будет произведена базовая установка системы Умный дом на сервер под операционной системой linux Debian. С не значительными изменениями установка будет подобна для других операционных систем.
 План действий:
- Создание директорий Скачивание и распаковка Настройка сервера Настройка конфигуратора Настройка ноды База mysql     Информация о системе на которой производилось развёртывание:
+ Создание директорий Скачивание и распаковка Настройка сервера Настройка конфигуратора Настройка ноды База postgres     Информация о системе на которой производилось развёртывание:
 delta54@darkstar:tmp$ uname -a Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u2 (2016-10-19) x86_64 GNU/Linux  delta54@darkstar:tmp$ cat /etc/*release* PRETTY_NAME=&amp;quot;Debian GNU/Linux 8 (jessie)&amp;quot;  Создание директорий Рекомендуемая директория установки сервера /opt/smart-home, в неё и будет производиться дальнейшая установка.</description>
     </item>
     
@@ -63,10 +63,7 @@ delta54@darkstar:tmp$ uname -a Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.
       <guid>https://e154.github.io/smart-home/en/getting-started/_update/</guid>
       <description>Обновление Обновление системных компонентов заключается в полной замене всех исполняемых файлов, и возмножно частичной коррекции конфигурационных файлов.
 Правило замены справедливо для следующих компонентов:
- Сервер Конфигуратор Нода  Обновление базы mysql База поддерживает версионирование, перед обновление структуры нужно создать резервную копию
-./opt/smart-home/server/examples/scripts/backup.sh Starting backup to 19-02-2017-22-06-30-dump.sql...  Скрипт создаст копию действующей базы в /opt/smart-home/backup
-Запуск обновления базы:
-cd /opt/smart-home/server/ ./server-linux-amd64 migrate 2017/02/19 01:59:37 GOPATH: /home/delta54/workspace/golang/src/github.com/e154/smart-home/migrate.go 81 /home/delta54/workspace/golang 2017/02/19 01:59:37 Using &#39;mysql&#39; as &#39;driver&#39; 2017/02/19 01:59:37 Using &#39;smarthome:smarthome@tcp(127.</description>
+ Сервер Конфигуратор Нода  Обновление базы postgres система базы данных имеет внтренный миханизм миграций. При подключении сервер проверяет текущую версию, и запускает миграции если сервер их имеет. Ручное вмешательство для обновления БД не требуется.</description>
     </item>
     
     <item>
