@@ -9,6 +9,7 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/op/go-logging"
 	"net/http"
@@ -83,6 +84,10 @@ func NewServer(cfg *ServerConfig,
 
 	engine := gin.New()
 	engine.Use(gin.Recovery())
+	//cors
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	engine.Use(cors.New(corsConfig))
 
 	newServer = &Server{
 		Config:        cfg,
