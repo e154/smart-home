@@ -18,6 +18,7 @@ type Telegram struct {
 	stopQueue    chan struct{}
 	chatId       *int64
 	updateChatId func(chatId int64)
+	commandPool  chan Command
 }
 
 func NewTelegram(cfg *TelegramConfig, updateChatId func(chatId int64)) (*Telegram, error) {
@@ -38,6 +39,7 @@ func NewTelegram(cfg *TelegramConfig, updateChatId func(chatId int64)) (*Telegra
 		stopQueue:    make(chan struct{}),
 		updateChatId: updateChatId,
 		chatId:       cfg.ChatId,
+		commandPool:  make(chan Command),
 	}
 
 	go client.start()
@@ -61,44 +63,44 @@ func (c *Telegram) start() {
 		return
 	}
 
-	for {
-		select {
-		case update := <-updates:
+	go func() {
+		for {
+			select {
+			case update := <-updates:
 
-			// Пользователь, который написал боту
-			UserName := update.Message.From.UserName
+				userName := update.Message.From.UserName
+				chatID := update.Message.Chat.ID
+				text := update.Message.Text
 
-			// ID чата/диалога.
-			// Может быть идентификатором как чата с пользователем
-			// (тогда он равен UserID) так и публичного чата/канала
-			chatID := update.Message.Chat.ID
-
-			if c.chatId == nil {
-				c.chatId = common.Int64(chatID)
-				if c.updateChatId != nil {
-					c.updateChatId(chatID)
+				if c.chatId == nil {
+					c.chatId = common.Int64(chatID)
+					if c.updateChatId != nil {
+						c.updateChatId(chatID)
+					}
 				}
+
+				c.commandPool <- Command{
+					ChatId:   chatID,
+					Text:     text,
+					UserName: userName,
+				}
+
+			case <-c.stopQueue:
+				return
 			}
-
-			// Текст сообщения
-			Text := update.Message.Text
-
-			log.Infof("[%s] %d %s", UserName, chatID, Text)
-
-			// Ответим пользователю его же сообщением
-			reply := Text
-
-			// Созадаем сообщение
-			msg := tgbotapi.NewMessage(chatID, reply)
-
-			// и отправляем его
-			c.bot.Send(msg)
-
-		case <-c.stopQueue:
-			return
-
 		}
-	}
+	}()
+
+	go func() {
+		for {
+			select {
+			case v := <-c.commandPool:
+				c.commandHandler(v)
+			case <-c.stopQueue:
+				return
+			}
+		}
+	}()
 }
 
 func (c *Telegram) Stop() {
@@ -107,14 +109,21 @@ func (c *Telegram) Stop() {
 
 	c.bot.StopReceivingUpdates()
 	c.stopQueue <- struct{}{}
+	c.stopQueue <- struct{}{}
 
 	c.stopPrecess = false
 }
 
-func (c *Telegram) SendMsg(body string, channels []string) error {
+func (c *Telegram) SendMsg(body string) error {
 
 	if !c.isStarted {
 		return errors.New("bot not started")
+	}
+
+	if c.chatId != nil {
+		msg := tgbotapi.NewMessage(common.Int64Value(c.chatId), body)
+		_, err := c.bot.Send(msg)
+		return err
 	}
 
 	return nil

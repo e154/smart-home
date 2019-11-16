@@ -180,7 +180,7 @@ func (n *Worker) sendTelegram(msg *Telegram) {
 		return
 	}
 
-	if err := n.telegramClient.SendMsg(msg.Text, msg.Channel); err != nil {
+	if err := n.telegramClient.SendMsg(msg.Text); err != nil {
 		log.Error(err.Error())
 	}
 }
@@ -235,5 +235,8 @@ func (n *Worker) setError(msg *m.MessageDelivery, err error) {
 }
 
 func (n *Worker) updateTelegramChatId(chatId int64) {
-	//TODO save config...
+
+	log.Infof("save chatId: %v", chatId)
+	n.cfg.TelegramChatId = common.Int64(chatId)
+	_ = n.cfg.Update()
 }

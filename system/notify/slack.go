@@ -10,8 +10,8 @@ type SlackMessage struct {
 	Text    string `json:"text"`
 }
 
-func NewSlackMessage() *SlackMessage {
-	return &SlackMessage{}
+func NewSlackMessage(channel, text string) *SlackMessage {
+	return &SlackMessage{Channel: channel, Text: text}
 }
 
 func (s *SlackMessage) SetRender(render *m.TemplateRender) {

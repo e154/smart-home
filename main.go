@@ -9,6 +9,7 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
 	l "github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/version"
 	"github.com/op/go-logging"
 	"os"
 )
@@ -23,7 +24,7 @@ func main() {
 	for _, arg := range args {
 		switch arg {
 		case "-v", "--version":
-			fmt.Printf(shortVersionBanner, GetHumanVersion())
+			fmt.Printf(version.ShortVersionBanner, version.GetHumanVersion())
 			return
 		case "-backup":
 			container := BuildContainer()
@@ -64,7 +65,7 @@ func main() {
 			})
 			return
 		default:
-			fmt.Printf(verboseVersionBanner, "v2", os.Args[0])
+			fmt.Printf(version.VerboseVersionBanner, "v2", os.Args[0])
 			return
 		}
 	}
@@ -74,7 +75,7 @@ func main() {
 
 func start() {
 
-	fmt.Printf(shortVersionBanner, "")
+	fmt.Printf(version.ShortVersionBanner, "")
 
 	container := BuildContainer()
 	err := container.Invoke(func(server *server.Server,

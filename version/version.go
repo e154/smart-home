@@ -1,4 +1,4 @@
-package main
+package version
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ var (
 	DockerImageString = "?"
 )
 
-const verboseVersionBanner string = `
+const VerboseVersionBanner string = `
  ___                _     _  _
 / __|_ __  __ _ _ _| |_  | || |___ _ __  ___
 \__ \ '  \/ _' | '_|  _| | __ / _ \ '  \/ -_)
@@ -30,7 +30,7 @@ options:
 help	    - show this help text
 `
 
-const shortVersionBanner = `
+const ShortVersionBanner = `
  ___                _     _  _
 / __|_ __  __ _ _ _| |_  | || |___ _ __  ___
 \__ \ '  \/ _' | '_|  _| | __ / _ \ '  \/ -_)
