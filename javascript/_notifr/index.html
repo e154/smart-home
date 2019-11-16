@@ -45,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             
-                <a class="navbar-brand page-scroll" href="#page-top">Smart home</a>
+                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
             
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -62,26 +62,26 @@
 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en">Home</a>
+                    <a href="https://e154.github.io/smart-home/">Домой</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
+                    <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/api">api</a>
+                    <a href="https://e154.github.io/smart-home/api">api</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
+                    <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
                 </li>
                 
 
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/javascript/_etc/">Русский</a>
+                    <a href="https://e154.github.io/smart-home/en/javascript/_notifr/">English</a>
                 </li>
                 
                 
@@ -98,7 +98,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>etc</h1>
+            <h1>notifr</h1>
             
         </div>
     </div>
@@ -113,12 +113,24 @@
                         
                             
 
-<h2 id="ic_current_node">IC.CurrentNode()</h2>
+<h2 id="ic_notifr">IC.Notifr()</h2>
 
-<p>Получить текущую ноду. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Отправка уведомлений</p>
 
-<pre><code class="language-coffeescript">node = IC.CurrentNode()
-print 'current node', node
+<h3 id="ic_notifr_new_sms">.newSMS()</h3>
+
+<p>смс сообщение</p>
+
+<pre><code class="language-coffeescript">msg = IC.Notifr().newSMS()
+msg.AddPhone(&quot;+1-222-333-44-55&quot;)
+msg.Text = &quot;hola&quot;
+
+# optional
+#tpl = IC.Template()
+#render = tpl.render(name, {'key':'val'})
+#msg.setRender(render)
+
+IC.Notifr().send(msg)
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -133,18 +145,28 @@ print 'current node', node
 
 <tbody>
 <tr>
-<td><code>node</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
+<td><code>msg</code></td>
+<td>type: Object, смс объект <a href="#sms">sms</a></td>
 </tr>
 </tbody>
 </table>
 
-<h2 id="ic_current_device">IC.CurrentDevice()</h2>
+<h3 id="ic_notifr_new_email">.newEmail()</h3>
 
-<p>Получить текущее утройство. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Email сообщение</p>
 
-<pre><code class="language-coffeescript">device = IC.CurrentDevice()
-print 'current device', device
+<pre><code class="language-coffeescript">msg = IC.Notifr().newEmail()
+msg.From = &quot;&quot;
+msg.To = &quot;&quot;
+msg.Subject = &quot;&quot;
+msg.Body = &quot;&quot;
+
+# optional
+#tpl = IC.Template()
+#render = tpl.render(name, {'key':'val'})
+#msg.setRender(render)
+
+IC.Notifr().send(msg)
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -159,18 +181,24 @@ print 'current device', device
 
 <tbody>
 <tr>
-<td><code>device</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#device">Device</a></td>
+<td><code>msg</code></td>
+<td>type: Object, email объект <a href="#email">email</a></td>
 </tr>
 </tbody>
 </table>
 
-<h2 id="ic_runmode">IC.Runmode</h2>
+<h3 id="ic_notifr_new_slack">.newSlack(channel, text)</h3>
 
-<p>Текущий режим, <em>prod</em> | <em>dev</em></p>
+<p>сообщение в slack чат</p>
 
-<pre><code class="language-coffeescript">runmode = IC.Runmode
-print 'runmode', runmode
+<pre><code class="language-coffeescript">msg = IC.Notifr().newSlack(@main, 'hola')
+
+# optional
+#tpl = IC.Template()
+#render = tpl.render(name, {'key':'val'})
+#msg.setRender(render)
+
+IC.Notifr().send(msg)
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -185,8 +213,83 @@ print 'runmode', runmode
 
 <tbody>
 <tr>
-<td><code>runmode</code></td>
-<td>type: string</td>
+<td><code>msg</code></td>
+<td>type: Object, slack объект <a href="#slack">slack</a></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_notifr_new_telegram">.newTelegram(text)</h3>
+
+<p>сообщение в телеграм канал</p>
+
+<pre><code class="language-coffeescript">msg = IC.Notifr().newTelegram(text)
+
+# optional
+#tpl = IC.Template()
+#render = tpl.render(name, {'key':'val'})
+#msg.setRender(render)
+
+IC.Notifr().send(msg)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>text</code></td>
+<td>type: string, текст сообщения</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>msg</code></td>
+<td>type: Object, telegram объект <a href="#telegram">telegram</a></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_notifr_send">.send(msg)</h3>
+
+<p>сообщение в телеграм канал</p>
+
+<pre><code class="language-coffeescript">IC.Notifr().send(msg)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>msg</code></td>
+<td>type: Object, объект сообщения (sms,email,slack,telegram)</td>
 </tr>
 </tbody>
 </table>
@@ -202,7 +305,7 @@ print 'runmode', runmode
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#overview">
-                Overview
+                Обзор
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -220,7 +323,7 @@ print 'runmode', runmode
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#ic_workflow">
-                Functions
+                Функции
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -310,7 +413,7 @@ print 'runmode', runmode
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#ic_runmode">
-                Constants
+                Константы
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -337,7 +440,7 @@ print 'runmode', runmode
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#device">
-                Object list
+                Список объектов
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -399,29 +502,29 @@ print 'runmode', runmode
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en">Home</a>
+                <a href="https://e154.github.io/smart-home/">Домой</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
+                <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en/api">api</a>
+                <a href="https://e154.github.io/smart-home/api">api</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
+                <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
             </li>
             
 
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/javascript/_etc/">ru</a>
+                <a href="https://e154.github.io/smart-home/en/javascript/_notifr/">en</a>
             </li>
             
             
@@ -429,10 +532,10 @@ print 'runmode', runmode
         </ul>
 
         
-        <div>Developed with the support of <a href='http://e154.ru'>e154.ru</a></div>
+        <div>Разработано при поддержке <a href='http://e154.ru'>e154.ru</a></div>
         
         
-        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        <p>Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
         
 
     </div>

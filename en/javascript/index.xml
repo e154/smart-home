@@ -78,6 +78,32 @@ log = IC.Log  На выходе
     </item>
     
     <item>
+      <title>template</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_template/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_template/</guid>
+      <description> IC.Template() Возвращает генератор шаблонов
+.render(name, options) Получить наименование устройства.
+tpl = IC.Template() render = tpl.render(name, {&#39;key&#39;:&#39;val&#39;})  На входе
+   Значение Описание     name type: string, наименование шаблона   options type: Object, лъект для заполнения шаблона    На выходе
+   Значение Описание     render type: Object, шаблон    </description>
+    </item>
+    
+    <item>
+      <title>notifr</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_notifr/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_notifr/</guid>
+      <description>IC.Notifr() Отправка уведомлений
+.newSMS() смс сообщение
+msg = IC.Notifr().newSMS() msg.AddPhone(&amp;quot;+1-222-333-44-55&amp;quot;) msg.Text = &amp;quot;hola&amp;quot; # optional #tpl = IC.Template() #render = tpl.render(name, {&#39;key&#39;:&#39;val&#39;}) #msg.setRender(render) IC.Notifr().send(msg)  На выходе
+   Значение Описание     msg type: Object, смс объект sms    .newEmail() Email сообщение
+msg = IC.Notifr().newEmail() msg.From = &amp;quot;&amp;quot; msg.To = &amp;quot;&amp;quot; msg.Subject = &amp;quot;&amp;quot; msg.Body = &amp;quot;&amp;quot; # optional #tpl = IC.Template() #render = tpl.</description>
+    </item>
+    
+    <item>
       <title>etc</title>
       <link>https://e154.github.io/smart-home/en/javascript/_etc/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -91,12 +117,61 @@ device = IC.CurrentDevice() print &#39;current device&#39;, device  На вых�
     </item>
     
     <item>
+      <title>device</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_device/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_device/</guid>
+      <description>Device{} Получить текущее устройство. Может вырнуть null если скрипт запускается вне контекста Workflow
+Доступные методы приведены далее:
+.getName() Получить наименование устройства.
+name = dev.getName()  На выходе
+   Значение Описание     name type: string    .getDescription() Получить описание устройства.
+description = dev.getDescription()  На выходе
+   Значение Описание     description type: string    .runCommand(name, args) Выполнить комманду на устройстве.</description>
+    </item>
+    
+    <item>
+      <title>map_element</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_map_element/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_map_element/</guid>
+      <description>MapElement{} Объект карты
+Доступные методы приведены далее:
+.setState(name) Получить наименование устройства.
+mapElement.setState(name)  На входе
+   Значение Описание     name type: string    .getState() Получить наименование устройства.
+state = mapElement.getState()  На выходе
+   Значение Описание     state type: string    .setOptions(options) Получить наименование устройства.
+mapElement.setOptions(options)  На входе
+   Значение Описание     options type: json string    .</description>
+    </item>
+    
+    <item>
+      <title>node</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_node/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_node/</guid>
+      <description>Node{} Объект ноды
+Доступные методы приведены далее:
+.name() Получить наименование устройства.
+name = node.name()  На выходе
+   Значение Описание     name type: string    .description() Получить наименование устройства.
+description = node.description()  На выходе
+   Значение Описание     description type: string    .status() Получить наименование устройства.
+status = node.status()  На выходе
+   Значение Описание     status type: string    .</description>
+    </item>
+    
+    <item>
       <title>objects</title>
       <link>https://e154.github.io/smart-home/en/javascript/_objects/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/en/javascript/_objects/</guid>
-      <description> Список объектов Device{}    Свойство Описание     getName type: method, именование устройства   getDescription type: method, описание устройства   getAddress type: method, адрес устройства    Node{}    Свойство Описание     Send type: method, послать сообщение   Name type: method, наименование ноды   Description type: method, описание ноды   Ip type: method, IP адрес ноды   Status type: method, состояние ноды    MapElement{}    Свойство Описание     setState type: method, выставить состояние   getState type: method, получить состояние   setOptions type: method, указать список опций   getOptions type: method, получить список опций    </description>
+      <description></description>
     </item>
     
     <item>

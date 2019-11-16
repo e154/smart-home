@@ -81,7 +81,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/javascript/_etc/">Русский</a>
+                    <a href="https://e154.github.io/smart-home/javascript/_map_element/">Русский</a>
                 </li>
                 
                 
@@ -98,7 +98,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>etc</h1>
+            <h1>map_element</h1>
             
         </div>
     </div>
@@ -113,15 +113,20 @@
                         
                             
 
-<h2 id="ic_current_node">IC.CurrentNode()</h2>
+<h2 id="map_element">MapElement{}</h2>
 
-<p>Получить текущую ноду. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Объект карты</p>
 
-<pre><code class="language-coffeescript">node = IC.CurrentNode()
-print 'current node', node
+<p>Доступные методы приведены далее:</p>
+
+<h3 id="map_element_set_state">.setState(name)</h3>
+
+<p>Получить наименование устройства.</p>
+
+<pre><code class="language-coffeescript">mapElement.setState(name)
 </code></pre>
 
-<p><strong>На выходе</strong></p>
+<p><strong>На входе</strong></p>
 
 <table>
 <thead>
@@ -133,18 +138,17 @@ print 'current node', node
 
 <tbody>
 <tr>
-<td><code>node</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
+<td><code>name</code></td>
+<td>type: string</td>
 </tr>
 </tbody>
 </table>
 
-<h2 id="ic_current_device">IC.CurrentDevice()</h2>
+<h3 id="map_element_get_state">.getState()</h3>
 
-<p>Получить текущее утройство. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Получить наименование устройства.</p>
 
-<pre><code class="language-coffeescript">device = IC.CurrentDevice()
-print 'current device', device
+<pre><code class="language-coffeescript">state = mapElement.getState()
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -159,18 +163,42 @@ print 'current device', device
 
 <tbody>
 <tr>
-<td><code>device</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#device">Device</a></td>
+<td><code>state</code></td>
+<td>type: string</td>
 </tr>
 </tbody>
 </table>
 
-<h2 id="ic_runmode">IC.Runmode</h2>
+<h3 id="map_element_set_options">.setOptions(options)</h3>
 
-<p>Текущий режим, <em>prod</em> | <em>dev</em></p>
+<p>Получить наименование устройства.</p>
 
-<pre><code class="language-coffeescript">runmode = IC.Runmode
-print 'runmode', runmode
+<pre><code class="language-coffeescript">mapElement.setOptions(options)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>options</code></td>
+<td>type: json string</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="map_element_get_options">.getOptions()</h3>
+
+<p>Получить наименование устройства.</p>
+
+<pre><code class="language-coffeescript">options = mapElement.getOptions()
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -185,7 +213,7 @@ print 'runmode', runmode
 
 <tbody>
 <tr>
-<td><code>runmode</code></td>
+<td><code>options</code></td>
 <td>type: string</td>
 </tr>
 </tbody>
@@ -421,7 +449,7 @@ print 'runmode', runmode
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/javascript/_etc/">ru</a>
+                <a href="https://e154.github.io/smart-home/javascript/_map_element/">ru</a>
             </li>
             
             

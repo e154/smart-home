@@ -157,6 +157,34 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_template/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_template/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_template/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_notifr/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_notifr/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_notifr/"
+                />
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/en/javascript/_etc/</loc>
     <xhtml:link
                 rel="alternate"
@@ -185,16 +213,16 @@
   </url>
   
   <url>
-    <loc>https://e154.github.io/smart-home/en/javascript/_objects/</loc>
+    <loc>https://e154.github.io/smart-home/en/javascript/_device/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="ru"
-                href="https://e154.github.io/smart-home/javascript/_objects/"
+                href="https://e154.github.io/smart-home/javascript/_device/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://e154.github.io/smart-home/en/javascript/_objects/"
+                href="https://e154.github.io/smart-home/en/javascript/_device/"
                 />
   </url>
   
@@ -213,6 +241,34 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_map_element/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_map_element/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_map_element/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_node/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_node/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_node/"
+                />
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/en/getting-started/_install_from_source/</loc>
     <xhtml:link
                 rel="alternate"
@@ -223,6 +279,20 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://e154.github.io/smart-home/en/getting-started/_install_from_source/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_objects/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_objects/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_objects/"
                 />
   </url>
   

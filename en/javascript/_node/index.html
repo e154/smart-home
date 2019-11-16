@@ -81,7 +81,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/javascript/_etc/">Русский</a>
+                    <a href="https://e154.github.io/smart-home/javascript/_node/">Русский</a>
                 </li>
                 
                 
@@ -98,7 +98,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>etc</h1>
+            <h1>node</h1>
             
         </div>
     </div>
@@ -113,12 +113,17 @@
                         
                             
 
-<h2 id="ic_current_node">IC.CurrentNode()</h2>
+<h2 id="node">Node{}</h2>
 
-<p>Получить текущую ноду. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Объект ноды</p>
 
-<pre><code class="language-coffeescript">node = IC.CurrentNode()
-print 'current node', node
+<p>Доступные методы приведены далее:</p>
+
+<h3 id="node_name">.name()</h3>
+
+<p>Получить наименование устройства.</p>
+
+<pre><code class="language-coffeescript">name = node.name()
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -133,60 +138,83 @@ print 'current node', node
 
 <tbody>
 <tr>
-<td><code>node</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="ic_current_device">IC.CurrentDevice()</h2>
-
-<p>Получить текущее утройство. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
-
-<pre><code class="language-coffeescript">device = IC.CurrentDevice()
-print 'current device', device
-</code></pre>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>device</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#device">Device</a></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="ic_runmode">IC.Runmode</h2>
-
-<p>Текущий режим, <em>prod</em> | <em>dev</em></p>
-
-<pre><code class="language-coffeescript">runmode = IC.Runmode
-print 'runmode', runmode
-</code></pre>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>runmode</code></td>
+<td><code>name</code></td>
 <td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="node_description">.description()</h3>
+
+<p>Получить наименование устройства.</p>
+
+<pre><code class="language-coffeescript">description = node.description()
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>description</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="node_status">.status()</h3>
+
+<p>Получить наименование устройства.</p>
+
+<pre><code class="language-coffeescript">status = node.status()
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>status</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="node_isConnected">.isConnected()</h3>
+
+<p>Получить наименование устройства.</p>
+
+<pre><code class="language-coffeescript">ok = node.isConnected()
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>isConnected</code></td>
+<td>type: bool</td>
 </tr>
 </tbody>
 </table>
@@ -421,7 +449,7 @@ print 'runmode', runmode
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/javascript/_etc/">ru</a>
+                <a href="https://e154.github.io/smart-home/javascript/_node/">ru</a>
             </li>
             
             

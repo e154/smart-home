@@ -115,9 +115,9 @@ flow = IC.Flow() if flow name = flow.getName() print &#39;flow name&#39;, name  
       <guid>https://e154.github.io/smart-home/javascript/_map/</guid>
       <description>IC.Map* Возвращает объект карты
 map = IC.Map  Доступные методы приведены далее:
-.SetElementState(element, state) IC.Map.SetElementState(device, state)  На входе
-   Значение Описание     element type: Object, ссылка на объект карты   state type: string, системное наименование состояния    .GetElement(device) element = IC.Map.GetElement(device)  На входе
-   Значение Описание     device type: Object, ссылка на объект Device{}    На выходе</description>
+.SetElementState(device, elementName, newState) IC.Map.SetElementState(device, state)  На входе
+   Значение Описание     device type: Object, ссылка на объект Device{}   elementName type: string, наименование элемента   stnewStateate type: string, системное наименование состояния    .GetElement(device, elementName) elements = IC.Map.GetElement(device, elementName)  На входе
+   Значение Описание     device type: Object, ссылка на объект Device{}   elementName type: string, наименование элемента    На выходе</description>
     </item>
     
     <item>
@@ -142,6 +142,32 @@ delta54@darkstar:tmp$ uname -a Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.
 log = IC.Log  На выходе
    Значение Описание     log type: Object, ссылка на экземпляр *Log    Доступные методы приведены далее:
 .info() IC.Log.info(&#39;Info message&#39;)  .warn() IC.Log.warn(&#39;Warning message&#39;)  .error() IC.Log.error(&#39;Error message&#39;)  .debug() IC.Log.debug(&#39;Debug message&#39;)  </description>
+    </item>
+    
+    <item>
+      <title>template</title>
+      <link>https://e154.github.io/smart-home/javascript/_template/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_template/</guid>
+      <description> IC.Template() Возвращает генератор шаблонов
+.render(name, options) Получить наименование устройства.
+tpl = IC.Template() render = tpl.render(name, {&#39;key&#39;:&#39;val&#39;})  На входе
+   Значение Описание     name type: string, наименование шаблона   options type: Object, лъект для заполнения шаблона    На выходе
+   Значение Описание     render type: Object, шаблон TemplateRender    </description>
+    </item>
+    
+    <item>
+      <title>notifr</title>
+      <link>https://e154.github.io/smart-home/javascript/_notifr/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_notifr/</guid>
+      <description>IC.Notifr() Отправка уведомлений
+.newSMS() смс сообщение
+msg = IC.Notifr().newSMS() msg.AddPhone(&amp;quot;+1-222-333-44-55&amp;quot;) msg.Text = &amp;quot;hola&amp;quot; # optional #tpl = IC.Template() #render = tpl.render(name, {&#39;key&#39;:&#39;val&#39;}) #msg.setRender(render) IC.Notifr().send(msg)  На выходе
+   Значение Описание     msg type: Object, смс объект sms    .newEmail() Email сообщение
+msg = IC.Notifr().newEmail() msg.From = &amp;quot;&amp;quot; msg.To = &amp;quot;&amp;quot; msg.Subject = &amp;quot;&amp;quot; msg.Body = &amp;quot;&amp;quot; # optional #tpl = IC.Template() #render = tpl.</description>
     </item>
     
     <item>
@@ -172,12 +198,18 @@ cd /opt/smart-home/server/ ./server-linux-amd64 migrate 2017/02/19 01:59:37 GOPA
     </item>
     
     <item>
-      <title>objects</title>
-      <link>https://e154.github.io/smart-home/javascript/_objects/</link>
+      <title>device</title>
+      <link>https://e154.github.io/smart-home/javascript/_device/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://e154.github.io/smart-home/javascript/_objects/</guid>
-      <description> Список объектов Device{}    Свойство Описание     getName type: method, именование устройства   getDescription type: method, описание устройства   getAddress type: method, адрес устройства    Node{}    Свойство Описание     Send type: method, послать сообщение   Name type: method, наименование ноды   Description type: method, описание ноды   Ip type: method, IP адрес ноды   Status type: method, состояние ноды    MapElement{}    Свойство Описание     setState type: method, выставить состояние   getState type: method, получить состояние   setOptions type: method, указать список опций   getOptions type: method, получить список опций    </description>
+      <guid>https://e154.github.io/smart-home/javascript/_device/</guid>
+      <description>Device{} Получить текущее устройство. Может вырнуть null если скрипт запускается вне контекста Workflow
+Доступные методы приведены далее:
+.getName() Получить наименование устройства.
+name = dev.getName()  На выходе
+   Значение Описание     name type: string    .getDescription() Получить описание устройства.
+description = dev.getDescription()  На выходе
+   Значение Описание     description type: string    .runCommand(name, args) Выполнить комманду на устройстве.</description>
     </item>
     
     <item>
@@ -192,6 +224,40 @@ cd /opt/smart-home/server/ sudo ./server-linux-amd64 remove  </description>
     </item>
     
     <item>
+      <title>map_element</title>
+      <link>https://e154.github.io/smart-home/javascript/_map_element/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_map_element/</guid>
+      <description>MapElement{} Объект карты
+Доступные методы приведены далее:
+.setState(name) Получить наименование устройства.
+mapElement.setState(name)  На входе
+   Значение Описание     name type: string    .getState() Получить наименование устройства.
+state = mapElement.getState()  На выходе
+   Значение Описание     state type: string    .setOptions(options) Получить наименование устройства.
+mapElement.setOptions(options)  На входе
+   Значение Описание     options type: json string    .</description>
+    </item>
+    
+    <item>
+      <title>node</title>
+      <link>https://e154.github.io/smart-home/javascript/_node/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_node/</guid>
+      <description>Node{} Объект ноды
+Доступные методы приведены далее:
+.name() Получить наименование устройства.
+name = node.name()  На выходе
+   Значение Описание     name type: string    .description() Получить наименование устройства.
+description = node.description()  На выходе
+   Значение Описание     description type: string    .status() Получить наименование устройства.
+status = node.status()  На выходе
+   Значение Описание     status type: string    .</description>
+    </item>
+    
+    <item>
       <title>overview</title>
       <link>https://e154.github.io/smart-home/getting-started/_install_from_source/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -200,6 +266,15 @@ cd /opt/smart-home/server/ sudo ./server-linux-amd64 remove  </description>
       <description>Сборка из исходного кода Все микросервисы написаны на языке Golang. Прежде чем продолжить разверните у себя последнюю стабильную версию языка download.
 Установка будет производиться в операционной системе Debian GNU/Linux 8 (jessie). Сборка в корне домашней директории, в папке smart-home
 sudo mkdir -p /opt/smart-home sudo chown $USER:$USER /opt/smart-home -R mkdir -p /opt/smart-home/server mkdir -p /opt/smart-home/configurator mkdir -p /opt/smart-home/node mkdir ~/smart-home go get github.com/FiloSottile/gvt go get github.com/beego/bee sudo npm install -g bower sudo npm install -g hulp  Сборка сервера cd ~/smart-home git clone git@github.</description>
+    </item>
+    
+    <item>
+      <title>objects</title>
+      <link>https://e154.github.io/smart-home/javascript/_objects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/javascript/_objects/</guid>
+      <description></description>
     </item>
     
     <item>

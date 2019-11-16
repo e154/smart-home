@@ -45,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             
-                <a class="navbar-brand page-scroll" href="#page-top">Smart home</a>
+                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
             
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -62,26 +62,26 @@
 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en">Home</a>
+                    <a href="https://e154.github.io/smart-home/">Домой</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
+                    <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/api">api</a>
+                    <a href="https://e154.github.io/smart-home/api">api</a>
                 </li>
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
+                    <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
                 </li>
                 
 
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/javascript/_etc/">Русский</a>
+                    <a href="https://e154.github.io/smart-home/en/javascript/_device/">English</a>
                 </li>
                 
                 
@@ -98,7 +98,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>etc</h1>
+            <h1>device</h1>
             
         </div>
     </div>
@@ -113,12 +113,18 @@
                         
                             
 
-<h2 id="ic_current_node">IC.CurrentNode()</h2>
+<h2 id="device">Device{}</h2>
 
-<p>Получить текущую ноду. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Получить текущее устройство. Может вырнуть <em>null</em> если скрипт запускается
+вне контекста <a href="#ic_workflow">Workflow</a></p>
 
-<pre><code class="language-coffeescript">node = IC.CurrentNode()
-print 'current node', node
+<p>Доступные методы приведены далее:</p>
+
+<h3 id="deice_get_name">.getName()</h3>
+
+<p>Получить наименование устройства.</p>
+
+<pre><code class="language-coffeescript">name = dev.getName()
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -133,60 +139,137 @@ print 'current node', node
 
 <tbody>
 <tr>
-<td><code>node</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="ic_current_device">IC.CurrentDevice()</h2>
-
-<p>Получить текущее утройство. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
-
-<pre><code class="language-coffeescript">device = IC.CurrentDevice()
-print 'current device', device
-</code></pre>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>device</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#device">Device</a></td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="ic_runmode">IC.Runmode</h2>
-
-<p>Текущий режим, <em>prod</em> | <em>dev</em></p>
-
-<pre><code class="language-coffeescript">runmode = IC.Runmode
-print 'runmode', runmode
-</code></pre>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>runmode</code></td>
+<td><code>name</code></td>
 <td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="deice_get_description">.getDescription()</h3>
+
+<p>Получить описание устройства.</p>
+
+<pre><code class="language-coffeescript">description = dev.getDescription()
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>description</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="deice_run_command">.runCommand(name, args)</h3>
+
+<p>Выполнить комманду на устройстве.</p>
+
+<pre><code class="language-coffeescript">description = dev.runCommand(name, ['foo','bar'])
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>args</code></td>
+<td>type: array</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="deice_mod_bus">.modBus(func, address, count, command)</h3>
+
+<p>Выполнить комманду на modbus устройстве.</p>
+
+<pre><code class="language-coffeescript">COMMAND = []
+FUNC = 'ReadHoldingRegisters'
+ADDRESS = 0
+COUNT = 16
+res = device.modBus(FUNC, ADDRESS, COUNT, COMMAND)
+if res.error
+  print 'error: ', res.error
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>func</code></td>
+<td>type: string, вызываемая функция</td>
+</tr>
+
+<tr>
+<td><code>address</code></td>
+<td>type: int, адрес устройства</td>
+</tr>
+
+<tr>
+<td><code>count</code></td>
+<td>type: int</td>
+</tr>
+
+<tr>
+<td><code>command</code></td>
+<td>type: array(int)</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="deice_smart_bus">.smartBus(command)</h3>
+
+<p>Выполнить комманду на smartbus устройстве.</p>
+
+<pre><code class="language-coffeescript">COMMAND = []
+res = device.smartBus(COMMAND)
+if res.error
+  print 'error: ', res.error
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>command</code></td>
+<td>type: array(int)</td>
 </tr>
 </tbody>
 </table>
@@ -202,7 +285,7 @@ print 'runmode', runmode
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#overview">
-                Overview
+                Обзор
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -220,7 +303,7 @@ print 'runmode', runmode
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#ic_workflow">
-                Functions
+                Функции
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -310,7 +393,7 @@ print 'runmode', runmode
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#ic_runmode">
-                Constants
+                Константы
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -337,7 +420,7 @@ print 'runmode', runmode
         
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#device">
-                Object list
+                Список объектов
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -399,29 +482,29 @@ print 'runmode', runmode
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en">Home</a>
+                <a href="https://e154.github.io/smart-home/">Домой</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en/getting-started">Getting started</a>
+                <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en/api">api</a>
+                <a href="https://e154.github.io/smart-home/api">api</a>
             </li>
             
 
             <li>
-                <a href="https://e154.github.io/smart-home/en/javascript">Javascript</a>
+                <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
             </li>
             
 
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/javascript/_etc/">ru</a>
+                <a href="https://e154.github.io/smart-home/en/javascript/_device/">en</a>
             </li>
             
             
@@ -429,10 +512,10 @@ print 'runmode', runmode
         </ul>
 
         
-        <div>Developed with the support of <a href='http://e154.ru'>e154.ru</a></div>
+        <div>Разработано при поддержке <a href='http://e154.ru'>e154.ru</a></div>
         
         
-        <p>Code licensed <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, docs <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
+        <p>Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
         
 
     </div>

@@ -424,10 +424,6 @@ aside.javascript blockquote > h4 {
   color: #18a3fa;
   font-weight: 600;
 }
-aside.javascript blockquote,
-aside.javascript pre {
-  padding-left: 15px;
-}
 aside.javascript blockquote + h1,
 aside.javascript pre + h1,
 aside.javascript blockquote + h2,

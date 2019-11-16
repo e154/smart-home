@@ -81,7 +81,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/javascript/_etc/">Русский</a>
+                    <a href="https://e154.github.io/smart-home/javascript/_notifr/">Русский</a>
                 </li>
                 
                 
@@ -98,7 +98,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>etc</h1>
+            <h1>notifr</h1>
             
         </div>
     </div>
@@ -113,12 +113,24 @@
                         
                             
 
-<h2 id="ic_current_node">IC.CurrentNode()</h2>
+<h2 id="ic_notifr">IC.Notifr()</h2>
 
-<p>Получить текущую ноду. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Отправка уведомлений</p>
 
-<pre><code class="language-coffeescript">node = IC.CurrentNode()
-print 'current node', node
+<h3 id="ic_notifr_new_sms">.newSMS()</h3>
+
+<p>смс сообщение</p>
+
+<pre><code class="language-coffeescript">msg = IC.Notifr().newSMS()
+msg.AddPhone(&quot;+1-222-333-44-55&quot;)
+msg.Text = &quot;hola&quot;
+
+# optional
+#tpl = IC.Template()
+#render = tpl.render(name, {'key':'val'})
+#msg.setRender(render)
+
+IC.Notifr().send(msg)
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -133,18 +145,28 @@ print 'current node', node
 
 <tbody>
 <tr>
-<td><code>node</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
+<td><code>msg</code></td>
+<td>type: Object, смс объект <a href="#sms">sms</a></td>
 </tr>
 </tbody>
 </table>
 
-<h2 id="ic_current_device">IC.CurrentDevice()</h2>
+<h3 id="ic_notifr_new_email">.newEmail()</h3>
 
-<p>Получить текущее утройство. Выражение может вырнуть <em>null</em> если скрипт исполняется вне контекста <a href="#ic_workflow">Workflow</a></p>
+<p>Email сообщение</p>
 
-<pre><code class="language-coffeescript">device = IC.CurrentDevice()
-print 'current device', device
+<pre><code class="language-coffeescript">msg = IC.Notifr().newEmail()
+msg.From = &quot;&quot;
+msg.To = &quot;&quot;
+msg.Subject = &quot;&quot;
+msg.Body = &quot;&quot;
+
+# optional
+#tpl = IC.Template()
+#render = tpl.render(name, {'key':'val'})
+#msg.setRender(render)
+
+IC.Notifr().send(msg)
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -159,18 +181,24 @@ print 'current device', device
 
 <tbody>
 <tr>
-<td><code>device</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#device">Device</a></td>
+<td><code>msg</code></td>
+<td>type: Object, email объект <a href="#email">email</a></td>
 </tr>
 </tbody>
 </table>
 
-<h2 id="ic_runmode">IC.Runmode</h2>
+<h3 id="ic_notifr_new_slack">.newSlack(channel, text)</h3>
 
-<p>Текущий режим, <em>prod</em> | <em>dev</em></p>
+<p>сообщение в slack чат</p>
 
-<pre><code class="language-coffeescript">runmode = IC.Runmode
-print 'runmode', runmode
+<pre><code class="language-coffeescript">msg = IC.Notifr().newSlack(@main, 'hola')
+
+# optional
+#tpl = IC.Template()
+#render = tpl.render(name, {'key':'val'})
+#msg.setRender(render)
+
+IC.Notifr().send(msg)
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -185,8 +213,83 @@ print 'runmode', runmode
 
 <tbody>
 <tr>
-<td><code>runmode</code></td>
-<td>type: string</td>
+<td><code>msg</code></td>
+<td>type: Object, slack объект <a href="#slack">slack</a></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_notifr_new_telegram">.newTelegram(text)</h3>
+
+<p>сообщение в телеграм канал</p>
+
+<pre><code class="language-coffeescript">msg = IC.Notifr().newTelegram(text)
+
+# optional
+#tpl = IC.Template()
+#render = tpl.render(name, {'key':'val'})
+#msg.setRender(render)
+
+IC.Notifr().send(msg)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>text</code></td>
+<td>type: string, текст сообщения</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>msg</code></td>
+<td>type: Object, telegram объект <a href="#telegram">telegram</a></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_notifr_send">.send(msg)</h3>
+
+<p>сообщение в телеграм канал</p>
+
+<pre><code class="language-coffeescript">IC.Notifr().send(msg)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>msg</code></td>
+<td>type: Object, объект сообщения (sms,email,slack,telegram)</td>
 </tr>
 </tbody>
 </table>
@@ -421,7 +524,7 @@ print 'runmode', runmode
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/javascript/_etc/">ru</a>
+                <a href="https://e154.github.io/smart-home/javascript/_notifr/">ru</a>
             </li>
             
             
