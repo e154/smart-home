@@ -13,6 +13,7 @@ taxonomies:
 Languages:
   ru:
     languageName: "Русский"
+    apiUrl: "http://127.0.0.1:3000/api/v1"
     params:
       name: "Your name"
       description: "Your description"
@@ -223,6 +224,7 @@ Languages:
 
   en:
     languageName: "English"
+    apiUrl: "http://127.0.0.1:3000/api/v1"
     params:
       name: "Smart home"
       description: "Smart home system"
