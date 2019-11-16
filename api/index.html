@@ -12,7 +12,7 @@
 <!-- Favicon -->
 
 <!-- Bootstrap Core CSS -->
-<link rel="stylesheet" href="https://e154.github.io/smart-home/css/bootstrap.min.css" type="text/css">
+<link rel="stylesheet" href="https://e154.github.io/smart-home/css/bootstrap.css" type="text/css">
 <!-- Custom Fonts -->
 <link rel="stylesheet" href="https://e154.github.io/smart-home/font-awesome/css/font-awesome.min.css" type="text/css">
 <!-- Plugin CSS -->
@@ -29,6 +29,9 @@
 <![endif]-->
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/jquery.fancybox.min.css" type="text/css">
 <link rel="stylesheet" href="https://e154.github.io/smart-home/css/magnific-popup.css" type="text/css">
+
+
+        <link href="https://e154.github.io/smart-home/css/swagger-ui.css" rel="stylesheet" type="text/css">
     </head>
     <body id="page-top">
         
@@ -105,468 +108,7 @@
 
         
 
-        <aside class="api clearfix">
-                <div class="col-lg-2 col-md-3 hidden-sm hidden-xs nav-bar-column">
-                    
-                        <!-- api menu -->
-<nav class="bs-docs-sidebar bd-sidebar" id="docsNavbarContent">
-    <ul class="nav">
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#overview">
-                Обзор
-            </a>
-            <ul class="nav bd-sidenav">
-                
-                <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#security">
-                        Безопасность
-                    </a>
-                </li>
-                
-                <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#errors">
-                        Ошибки
-                    </a>
-                </li>
-                
-                <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#http-methods">
-                        HTTP методы
-                    </a>
-                </li>
-                
-                <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#cors">
-                        CORS
-                    </a>
-                </li>
-                
-            </ul>
-        </li>
-        
-        <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#authorization">
-                Авторизация
-            </a>
-            <ul class="nav bd-sidenav">
-                
-                <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#signin">
-                        Вход
-                    </a>
-                </li>
-                
-                <li class="bd-toc-item ">
-                    <a class="bd-toc-link" href="#signout">
-                        Выход
-                    </a>
-                </li>
-                
-            </ul>
-        </li>
-        
-    </ul>
-</nav>
-
-                    
-                </div>
-
-                <div class="col-lg-10 col-md-9" role="main">
-                    <div class="right-panel-background"></div>
-
-                    
-                        
-                            
-
-<h2 id="overview">Обзор</h2>
-
-<p><strong>Smart home</strong> <strong>API</strong> позволяет управлять системой <strong>Smart home</strong>, производить настройку конфигурации. Исполнять комманды на устройствах подключенных к системе.</p>
-
-<p><strong>Smart home</strong> <strong>API</strong> организован на основе <strong>REST</strong> запросов по верх HTTP протокола.
-Такая связка была выбрана исключительно из простоты поддержания, и разработки нового функционала.
-Все запросы должны быть в формате JSON и кодировке UTF-8 <em>(Content-Type: application/json; charset=utf-8)</em>.
-Заголовок Accept будут игнорироваться для всех запросов.</p>
-
-<pre><code class="language-bash">$ curl -i http://localhost:3000/api/v1/signin
-</code></pre>
-
-<h2 id="security">Безопасность</h2>
-
-<p>Сервер <strong>Smart home</strong> имеет систему контроля доступа основанную на ролях. Любое действие или команда по <strong>API</strong> будут проходить проверку на право доступа
-Идентификация пользователя и роли происходит по <a href="https://jwt.io">JWT</a> токену указанному в <strong>access_token</strong> заголовке запроса.
-Все запросы кроме, запросов связанных с авторизацией, должны содержать в теле заглоловок <strong>access_token</strong>:</p>
-
-<blockquote>
-<p>Пример токена авторизации</p>
-</blockquote>
-
-<pre><code class="language-bash">access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-</code></pre>
-
-<h1 id="errors">Ошибки</h1>
-
-<p>При возникновении ошибки Вы получите её код в теле ответа.</p>
-
-<table>
-<thead>
-<tr>
-<th>Поле</th>
-<th>Тип</th>
-<th>Значение</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>message</code></td>
-<td>строка</td>
-<td>Текст ошибки</td>
-</tr>
-
-<tr>
-<td><code>status</code></td>
-<td>строка</td>
-<td>Системное название</td>
-</tr>
-</tbody>
-</table>
-
-<pre><code class="language-bash">HTTP/1.1 404 Not Found
-Date: Mon, 21 Apr 2014 13:26:48 GMT
-Content-Type: application/json; charset=utf-8:
-</code></pre>
-
-<pre><code class="language-json">{
-    &quot;message&quot;: &quot;Описание ошибки&quot;,
-    &quot;status&quot;: &quot;error&quot;
-}
-</code></pre>
-
-<table>
-<thead>
-<tr>
-<th>Код ошибки</th>
-<th>Описание</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>400</code></td>
-<td>Bad Request &ndash; Плохой запрос</td>
-</tr>
-
-<tr>
-<td><code>401</code></td>
-<td>Unauthorized &ndash; <strong>API</strong> токен не верный</td>
-</tr>
-
-<tr>
-<td><code>403</code></td>
-<td>Forbidden &ndash; Доступ запрещен, возможно не хватает прав</td>
-</tr>
-
-<tr>
-<td><code>404</code></td>
-<td>Not Found &ndash; Контент не найден</td>
-</tr>
-
-<tr>
-<td><code>500</code></td>
-<td>Internal Server Error &ndash; Ошибка на сервере</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="http-methods">HTTP методы</h2>
-
-<p>Сервер <strong>Smart home</strong> <strong>REST API</strong> поддерживает данный список HTTP методов для каждого действия:</p>
-
-<table>
-<thead>
-<tr>
-<th>Метод</th>
-<th>Действие</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>GET</code></td>
-<td>Получить ресурс</td>
-</tr>
-
-<tr>
-<td><code>POST</code></td>
-<td>Создать ресурс</td>
-</tr>
-
-<tr>
-<td><code>PUT</code></td>
-<td>Обновить ресурс</td>
-</tr>
-
-<tr>
-<td><code>DELETE</code></td>
-<td>Удалить ресурс</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="cors">Cross Origin Resource Sharing (CORS)</h2>
-
-<p>Сервер <strong>Smart home</strong> API version 1.0 поддерживает Cross Origin Resource Sharing (CORS) запросы для AJAX.</p>
-
-<pre><code class="language-bash">$ curl -i http://localhost:3000/api/v1/signin
-HTTP/1.1 200 OK
-Access-Control-Allow-Credentials: true
-Access-Control-Allow-Headers: Content-Type,access_token
-Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,UPDATE
-Access-Control-Allow-Origin: *
-</code></pre>
-
-                        
-                            
-
-<h2 id="authorization">Авторизация</h2>
-
-<p>Все запросы к серверу должны сопровождаться авторизационным токеном.</p>
-
-<pre><code class="language-bash">#!/usr/bin/env bash
-URL=http://localhost:3000/api/v1
-TOKEN=&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;
-
-curl -H &quot;access_token:${TOKEN}&quot; -X GET -s ${URL}/user/1
-</code></pre>
-
-<ul>
-<li>Токен регистрируется на 24 часа, по истечении которых становится не действительным, затем снова требуется авторизация.</li>
-<li>Пароль должен состоять не менне чем из 6 символов.</li>
-<li>Авторизация в только что установленной системе возможна только, по одной из двух учетных записей</li>
-</ul>
-
-<p>Учетные записи существующие после установки сервера</p>
-
-<ul>
-<li><strong>email</strong>: demo@e154.ru</li>
-<li><strong>password</strong>: demodemo</li>
-<li><strong>email</strong>: admin@e154.ru</li>
-<li><strong>password</strong>: adminadmin</li>
-</ul>
-
-<h2 id="signin">Вход</h2>
-
-<p>Вход - генерация JWT токена, происходит <code>GET</code> запросом.</p>
-
-<blockquote>
-<p>Генерация токена</p>
-
-<p><span class="method get">GET</span> http://localhost:3000/api/v1/signin</p>
-
-<p>Заголовки запроса</p>
-</blockquote>
-
-<pre><code class="language-bash">Content-Type: application/json
-Authorization: Basic [basic token]
-</code></pre>
-
-<pre><code class="language-bash">#!/usr/bin/env bash
-
-EMAIL=&quot;admin@e154.ru&quot;
-PASSWORD=&quot;adminadmin&quot;
-URL=http://localhost:3000/api/v1
-
-curl -H &quot;Content-Type: application/json; charset=utf-8&quot; -u &quot;${EMAIL}:${PASSWORD}&quot; -s ${URL}/signin
-</code></pre>
-
-<p>Значение полей в результате положительного ответа</p>
-
-<table>
-<thead>
-<tr>
-<th>Поле</th>
-<th>Тип</th>
-<th>Значение</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>access_token</code></td>
-<td>строка</td>
-<td>JWT токен</td>
-</tr>
-
-<tr>
-<td><code>current_user</code></td>
-<td>объект</td>
-<td>Параметры текущеко пользователя</td>
-</tr>
-</tbody>
-</table>
-
-<blockquote>
-<p><code>200</code> положительный ответ</p>
-</blockquote>
-
-<pre><code class="language-json">{
-  &quot;access_token&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;,
-  &quot;current_user&quot;: {
-    &quot;avatar&quot;: null,
-    &quot;email&quot;: &quot;admin@e154.ru&quot;,
-    &quot;first_name&quot;: &quot;&quot;,
-    &quot;history&quot;: &quot;[{\&quot;ip\&quot;:\&quot;127.0.0.1\&quot;,\&quot;time\&quot;:\&quot;2017-01-27T11:40:59.018428538+07:00\&quot;},
-    {\&quot;ip\&quot;:\&quot;127.0.0.1\&quot;,\&quot;time\&quot;:\&quot;2017-01-29T16:50:25.846523732+07:00\&quot;}    
-    &quot;id&quot;: 1,
-    &quot;last_name&quot;: &quot;&quot;,
-    &quot;meta&quot;: [
-      {
-        &quot;id&quot;: 49,
-        &quot;key&quot;: &quot;phone1&quot;,
-        &quot;value&quot;: &quot;&quot;
-      },
-      {
-        &quot;id&quot;: 50,
-        &quot;key&quot;: &quot;phone2&quot;,
-        &quot;value&quot;: &quot;&quot;
-      },
-      {
-        &quot;id&quot;: 51,
-        &quot;key&quot;: &quot;phone3&quot;,
-        &quot;value&quot;: &quot;&quot;
-      },
-      {
-        &quot;id&quot;: 52,
-        &quot;key&quot;: &quot;autograph&quot;,
-        &quot;value&quot;: &quot;&quot;
-      }
-    ],
-    &quot;nickname&quot;: &quot;admin&quot;,
-    &quot;role&quot;: {
-      &quot;name&quot;: &quot;admin&quot;,
-      &quot;description&quot;: &quot;&quot;,
-      &quot;parent&quot;: {
-        &quot;name&quot;: &quot;user&quot;,
-        &quot;description&quot;: &quot;&quot;,
-        &quot;parent&quot;: null,
-        &quot;children&quot;: null,
-        &quot;access_list&quot;: null,
-        &quot;created_at&quot;: &quot;0001-01-01T00:00:00Z&quot;,
-        &quot;update_at&quot;: &quot;0001-01-01T00:00:00Z&quot;
-      },
-      &quot;children&quot;: null,
-      &quot;access_list&quot;: {
-        &quot;dashboard&quot;: [
-          &quot;create&quot;,
-          &quot;update&quot;,
-          &quot;delete&quot;,
-          &quot;read&quot;
-        ],
-        &quot;device&quot;: [
-          &quot;update&quot;,
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;read&quot;
-        ],
-        &quot;device_action&quot;: [
-          &quot;create&quot;,
-          &quot;read&quot;,
-          &quot;delete&quot;
-        ],
-        &quot;device_state&quot;: [
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;update&quot;,
-          &quot;read&quot;
-        ],
-        &quot;flow&quot;: [
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;update&quot;,
-          &quot;read&quot;
-        ],
-        &quot;image&quot;: [
-          &quot;read&quot;,
-          &quot;upload&quot;,
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;update&quot;
-        ],
-        &quot;log&quot;: [
-          &quot;read&quot;
-        ],
-        &quot;map&quot;: [
-          &quot;read_map_layer&quot;,
-          &quot;read_map&quot;,
-          &quot;read_map_element&quot;
-        ],
-        &quot;node&quot;: [
-          &quot;read&quot;
-        ],
-        &quot;notifr&quot;: [
-          &quot;preview_notifr&quot;,
-          &quot;read_notifr_item&quot;,
-          &quot;read_notifr_template&quot;
-        ],
-        &quot;script&quot;: [
-          &quot;update&quot;,
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;exec_script&quot;,
-          &quot;read&quot;
-        ],
-        &quot;user&quot;: [
-          &quot;read_role&quot;,
-          &quot;read_role_access_list&quot;,
-          &quot;read&quot;
-        ],
-        &quot;worker&quot;: [
-          &quot;delete&quot;,
-          &quot;create&quot;,
-          &quot;update&quot;,
-          &quot;read&quot;
-        ],
-        &quot;workflow&quot;: [
-          &quot;create&quot;,
-          &quot;delete&quot;,
-          &quot;read&quot;,
-          &quot;update&quot;
-        ],
-        &quot;ws&quot;: [
-          &quot;read&quot;
-        ]
-      },
-      &quot;created_at&quot;: &quot;2017-01-15T12:20:58+07:00&quot;,
-      &quot;update_at&quot;: &quot;2017-01-15T12:21:29+07:00&quot;
-    },
-    &quot;sign_in_count&quot;: 121
-  }
-}
-</code></pre>
-
-<blockquote>
-<p><code>401</code> ошибка</p>
-</blockquote>
-
-<pre><code class="language-json">{
-  &quot;message&quot;: &quot;Пользователь не найден&quot;,
-  &quot;status&quot;: &quot;error&quot;
-}
-</code></pre>
-
-<h2 id="signout">Выход</h2>
-
-<blockquote>
-<p><code>POST</code> <a href="http://localhost/api/v1/signout">http://localhost/api/v1/signout</a></p>
-</blockquote>
-
-                        
-                    
-
-                </div>
-
-        </aside>
+        <div id="swagger-ui"></div>
 
         
             <!-- footer -->
@@ -639,6 +181,33 @@ curl -H &quot;Content-Type: application/json; charset=utf-8&quot; -u &quot;${EMA
 <!-- Custom Theme JavaScript -->
 <script src="https://e154.github.io/smart-home/js/scripts.min.js"></script>
 
+
+        <!-- swagger js -->
+        <script src="https://e154.github.io/smart-home/js/swagger-ui-bundle.js"> </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.2.2/swagger-ui-standalone-preset.js"> </script>
+
+        
+            <script>
+                window.onload = function() {
+                    var url = "https:\/\/sh.e154.ru\/api\/v1\/swagger\/swagger.yml";
+                    const ui = SwaggerUIBundle({
+                        url: url,
+                        dom_id: '#swagger-ui',
+                        deepLinking: true,
+                        presets: [
+                            SwaggerUIBundle.presets.apis,
+                            SwaggerUIStandalonePreset
+                        ],
+                        plugins: [
+                            SwaggerUIBundle.plugins.DownloadUrl
+                        ],
+                        layout: "StandaloneLayout"
+                    });
+
+                    window.ui = ui
+                }
+            </script>
+        
 
         
 
