@@ -74,6 +74,12 @@ Languages:
         - title: "IC.Log"
           url: "#ic_log"
 
+        - title: "IC.Template()"
+          url: "#ic_template"
+
+        - title: "IC.Notifr()"
+          url: "#ic_notifr"
+
         - title: "IC.CurrentNode()"
           url: "#ic_current_node"
         - title: "IC.CurrentDevice()"
@@ -92,10 +98,10 @@ Languages:
           url: "#device"
         - title: "Device{}"
           url: "#device"
-        - title: "Node{}"
-          url: "#node"
         - title: "MapElement{}"
           url: "#map_element"
+        - title: "Node{}"
+          url: "#node"
 
     getting_started_menu:
       links:
@@ -284,6 +290,12 @@ Languages:
         - title: "IC.Log"
           url: "#ic_log"
 
+        - title: "IC.Template()"
+          url: "#ic_template"
+
+        - title: "IC.Notifr()"
+          url: "#ic_notifr"
+
         - title: "IC.CurrentNode()"
           url: "#ic_current_node"
         - title: "IC.CurrentDevice()"
@@ -302,10 +314,10 @@ Languages:
           url: "#device"
         - title: "Device{}"
           url: "#device"
-        - title: "Node{}"
-          url: "#node"
         - title: "MapElement{}"
           url: "#map_element"
+        - title: "Node{}"
+          url: "#node"
 
     getting_started_menu:
       links:

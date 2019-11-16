@@ -100,7 +100,7 @@ if wf
 
 **Значение** | **Описание**
 -------------|--------------
-  `scenario` | type: string
+  `scenario system name` | type: string
 
 ### .setScenario(name) {#ic_workflow_set_scenario}
 
@@ -117,3 +117,19 @@ if wf
 **Значение** | **Описание**
 -------------|--------------
   `name`     | type: string
+
+### .getScenarioName() {#ic_workflow_get_scenario}
+
+Получить активный сценарий для текущего [Workflow](#ic_workflow)
+
+```coffeescript
+wf = IC.Workflow()
+if wf
+  scenario = wf.getScenarioName()
+```
+
+**На выходе**
+
+**Значение** | **Описание**
+-------------|--------------
+  `scenario name` | type: string

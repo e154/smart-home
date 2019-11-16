@@ -41,6 +41,23 @@ if flow
   `name`     | type: string
 
 
+### .getDescription() {#ic_flow_get_description}
+
+Получить описание текущего Flow процесса.
+
+```coffeescript
+flow = IC.Flow()
+if flow
+ name = flow.getDescription()
+ print 'flow description', name
+```
+
+**На выходе**
+
+**Значение** | **Описание**
+-------------|--------------
+  `description`     | type: string
+
 ### .setVar(key, value) {#ic_flow_set_var}
 
 Запомнить переменнную в хранилище [Flow](#ic_flow). Хранилище позволяет 
