@@ -20,8 +20,7 @@ mkdir -p /opt/smart-home/server
 mkdir -p /opt/smart-home/configurator
 mkdir -p /opt/smart-home/node
 mkdir ~/smart-home
-go get github.com/FiloSottile/gvt
-go get github.com/beego/bee
+go get -u github.com/golang/dep/cmd/dep
 sudo npm install -g bower
 sudo npm install -g hulp
 ```
@@ -32,12 +31,12 @@ sudo npm install -g hulp
 cd ~/smart-home    
 git clone git@github.com:e154/smart-home.git
 cd smart-home
-gvt restore
+dep ensure
 go build -o server
 cp -r conf /opt/smart-home/server
 cp -r data /opt/smart-home
 cp server /opt/smart-home/server
-sed 's/dev\/app.sample.conf/prod\/app.sample.conf/' conf/app.sample.conf > /opt/smart-home/server/conf/app.sample.conf
+cp conf/config.dev.conf /opt/smart-home/server/conf/config.conf
 ```
 
 ### Сборка конфигуратора {#install-from-source-configurator}
@@ -46,11 +45,11 @@ sed 's/dev\/app.sample.conf/prod\/app.sample.conf/' conf/app.sample.conf > /opt/
 cd ~/smart-home    
 git clone git@github.com:e154/smart-home-configurator.git
 cd smart-home-configurator
-gvt restore
+dep ensure
 go build -o configurator
 cp configurator /opt/smart-home/configurator
 cp -r conf /opt/smart-home/configurator
-sed 's/dev\/app.sample.conf/prod\/app.sample.conf/' conf/app.sample.conf > /opt/smart-home/configurator/conf/app.sample.conf
+cp conf/config.dev.conf /opt/smart-home/configurator/conf/config.conf
 
 cd static_source
 npm install
@@ -74,7 +73,7 @@ cp -r build /opt/smart-home/configurator
 cd ~/smart-home    
 git clone git@github.com:e154/smart-home-node.git
 cd smart-home-node
-gvt restore
+dep ensure
 go build -o node
 cp node /opt/smart-home/node
 cp -r conf /opt/smart-home/node
