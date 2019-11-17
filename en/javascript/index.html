@@ -566,9 +566,9 @@ if flow
 
 <p>Доступные методы приведены далее:</p>
 
-<h3 id="ic_map_set_element_state">.SetElementState(element, state)</h3>
+<h3 id="ic_map_set_element_state">.SetElementState(deviceModel, elementName, newState)</h3>
 
-<pre><code class="language-coffeescript">IC.Map.SetElementState(device, state)
+<pre><code class="language-coffeescript">IC.Map.SetElementState(device.getModel(), state)
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -583,20 +583,71 @@ if flow
 
 <tbody>
 <tr>
-<td><code>element</code></td>
-<td>type: Object, ссылка на объект карты</td>
+<td><code>deviceModel</code></td>
+<td>type: Object, ссылка на объект <a href="#device">DeviceModel{}</a></td>
 </tr>
 
 <tr>
-<td><code>state</code></td>
+<td><code>elementName</code></td>
+<td>type: string, наименование элемента</td>
+</tr>
+
+<tr>
+<td><code>stnewStateate</code></td>
 <td>type: string, системное наименование состояния</td>
 </tr>
 </tbody>
 </table>
 
-<h3 id="ic_map_get_element">.GetElement(device)</h3>
+<h3 id="ic_map_get_element">.GetElement(device, elementName)</h3>
 
-<pre><code class="language-coffeescript">element = IC.Map.GetElement(device)
+<pre><code class="language-coffeescript">elements = IC.Map.GetElement(device, elementName)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>device</code></td>
+<td>type: Object, ссылка на объект <a href="#device">Device{}</a></td>
+</tr>
+
+<tr>
+<td><code>elementName</code></td>
+<td>type: string, наименование элемента</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>elements</code></td>
+<td>type: Object, ссылка на объектов <a href="#map_element">MapElement{}</a></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ic_map_get_element-1">.GetElements(device)</h3>
+
+<pre><code class="language-coffeescript">elements = IC.Map.GetElement(device)
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -629,8 +680,8 @@ if flow
 
 <tbody>
 <tr>
-<td><code>element</code></td>
-<td>type: Object, ссылка на объект <a href="#map_element">MapElement{}</a></td>
+<td><code>elements</code></td>
+<td>type: Array, массив объектов <a href="#map_element">MapElement{}</a></td>
 </tr>
 </tbody>
 </table>
