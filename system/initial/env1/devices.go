@@ -19,12 +19,12 @@ func devices(node1 *m.Node,
 	device1 := &m.Device{
 		Name:       "device1",
 		Status:     "enabled",
-		Type:       DevTypeModbus,
+		Type:       DevTypeModbusRtu,
 		Node:       node1,
 		Properties: []byte("{}"),
 	}
 
-	modBusConfig := &DevModBusConfig{
+	modBusConfig := &DevModBusRtuConfig{
 		SlaveId:  1,
 		Baud:     19200,
 		DataBits: 8,
@@ -405,13 +405,13 @@ func devices(node1 *m.Node,
 	device3 := &m.Device{
 		Name:       "device3",
 		Status:     "enabled",
-		Type:       DevTypeModbus,
+		Type:       DevTypeModbusRtu,
 		Node:       node1,
 		IsGroup:    true,
 		Properties: []byte("{}"),
 	}
 
-	modBusConfig = &DevModBusConfig{
+	modBusConfig = &DevModBusRtuConfig{
 		Baud:     115200,
 		DataBits: 8,
 		StopBits: 2,
@@ -434,7 +434,7 @@ func devices(node1 *m.Node,
 	device4 := &m.Device{
 		Name:       "device4",
 		Status:     "enabled",
-		Type:       DevTypeModbus,
+		Type:       DevTypeModbusRtu,
 		Device:     device3,
 		Properties: []byte("{\"slave_id\": 2}"),
 	}
