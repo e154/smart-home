@@ -15,17 +15,17 @@ map = IC.Map
   
 Доступные методы приведены далее:
 
-### .SetElementState(device, elementName, newState) {#ic_map_set_element_state}
+### .SetElementState(deviceModel, elementName, newState) {#ic_map_set_element_state}
 
 ```coffeescript
-IC.Map.SetElementState(device, state)
+IC.Map.SetElementState(device.getModel(), state)
 ```
 
 **На входе**
 
 **Значение**            | **Описание**
 ------------------------|--------------
-  `device`              | type: Object, ссылка на объект [Device{}](#device)
+  `deviceModel`         | type: Object, ссылка на объект [DeviceModel{}](#device)
   `elementName`         | type: string, наименование элемента
   `stnewStateate`       | type: string, системное наименование состояния
 
