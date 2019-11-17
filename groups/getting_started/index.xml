@@ -72,7 +72,7 @@ cd /opt/smart-home/server/ sudo ./server-linux-amd64 remove  </description>
       <guid>https://e154.github.io/smart-home/getting-started/_install_from_source/</guid>
       <description>Сборка из исходного кода Все микросервисы написаны на языке Golang. Прежде чем продолжить разверните у себя последнюю стабильную версию языка download.
 Установка будет производиться в операционной системе Debian GNU/Linux 8 (jessie). Сборка в корне домашней директории, в папке smart-home
-sudo mkdir -p /opt/smart-home sudo chown $USER:$USER /opt/smart-home -R mkdir -p /opt/smart-home/server mkdir -p /opt/smart-home/configurator mkdir -p /opt/smart-home/node mkdir ~/smart-home go get github.com/FiloSottile/gvt go get github.com/beego/bee sudo npm install -g bower sudo npm install -g hulp  Сборка сервера cd ~/smart-home git clone git@github.</description>
+sudo mkdir -p /opt/smart-home sudo chown $USER:$USER /opt/smart-home -R mkdir -p /opt/smart-home/server mkdir -p /opt/smart-home/configurator mkdir -p /opt/smart-home/node mkdir ~/smart-home go get -u github.com/golang/dep/cmd/dep sudo npm install -g bower sudo npm install -g hulp  Сборка сервера cd ~/smart-home git clone git@github.</description>
     </item>
     
     <item>

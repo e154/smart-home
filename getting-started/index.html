@@ -263,7 +263,6 @@
 <pre><code class="language-bash">├── conf
 ├── contributors.txt
 ├── data
-├── dump.sql
 ├── LICENSE
 ├── README.md
 ├── server-darwin-10.6-386
@@ -284,7 +283,6 @@
 <li><strong>conf</strong> - директория конфигурационных файлов</li>
 <li><strong>contributors.txt</strong> - текстовый файл, список разработчиков системы умный дом</li>
 <li><strong>data</strong> - директория хранения рабочих файлов иконки, изображения</li>
-<li><strong>dump.sql</strong> - дамп sql базы данных</li>
 <li><strong>LICENSE</strong> - текстовый файл лицензионного соглашения</li>
 <li><strong>README.md</strong> - текстовый файл краткой вводной информации</li>
 <li><strong>server</strong> - Платформо зависимый исполняемый файл</li>
@@ -634,8 +632,7 @@ mkdir -p /opt/smart-home/server
 mkdir -p /opt/smart-home/configurator
 mkdir -p /opt/smart-home/node
 mkdir ~/smart-home
-go get github.com/FiloSottile/gvt
-go get github.com/beego/bee
+go get -u github.com/golang/dep/cmd/dep
 sudo npm install -g bower
 sudo npm install -g hulp
 </code></pre>
@@ -645,12 +642,12 @@ sudo npm install -g hulp
 <pre><code class="language-bash">cd ~/smart-home    
 git clone git@github.com:e154/smart-home.git
 cd smart-home
-gvt restore
+dep ensure
 go build -o server
 cp -r conf /opt/smart-home/server
 cp -r data /opt/smart-home
 cp server /opt/smart-home/server
-sed 's/dev\/app.sample.conf/prod\/app.sample.conf/' conf/app.sample.conf &gt; /opt/smart-home/server/conf/app.sample.conf
+cp conf/config.dev.conf /opt/smart-home/server/conf/config.conf
 </code></pre>
 
 <h3 id="install-from-source-configurator">Сборка конфигуратора</h3>
@@ -658,11 +655,11 @@ sed 's/dev\/app.sample.conf/prod\/app.sample.conf/' conf/app.sample.conf &gt; /o
 <pre><code class="language-bash">cd ~/smart-home    
 git clone git@github.com:e154/smart-home-configurator.git
 cd smart-home-configurator
-gvt restore
+dep ensure
 go build -o configurator
 cp configurator /opt/smart-home/configurator
 cp -r conf /opt/smart-home/configurator
-sed 's/dev\/app.sample.conf/prod\/app.sample.conf/' conf/app.sample.conf &gt; /opt/smart-home/configurator/conf/app.sample.conf
+cp conf/config.dev.conf /opt/smart-home/configurator/conf/config.conf
 
 cd static_source
 npm install
@@ -685,7 +682,7 @@ cp -r build /opt/smart-home/configurator
 <pre><code class="language-bash">cd ~/smart-home    
 git clone git@github.com:e154/smart-home-node.git
 cd smart-home-node
-gvt restore
+dep ensure
 go build -o node
 cp node /opt/smart-home/node
 cp -r conf /opt/smart-home/node
