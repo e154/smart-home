@@ -68,7 +68,7 @@ func (d *Device) SmartBus(command []byte) (result *DevSmartBusResponse) {
 	return
 }
 
-func (d *Device) ModbusBus(f string, address, count uint16, command []uint16) (result *DevModBusResponse) {
+func (d *Device) ModBus(f string, address, count uint16, command []uint16) (result *DevModBusResponse) {
 
 	request := &DevModBusRequest{
 		Function: f,
@@ -88,7 +88,7 @@ func (d *Device) ModbusBus(f string, address, count uint16, command []uint16) (r
 	nodeResult, err := d.node.Send(d.dev, data)
 	if err != nil {
 		result.Error = err.Error()
-		log.Error(err.Error())
+		//log.Error(err.Error())
 		return
 	}
 
