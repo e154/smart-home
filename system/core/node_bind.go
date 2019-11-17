@@ -18,7 +18,7 @@ type NodeBind struct {
 //}
 
 func (n *NodeBind) IsConnected() bool {
-	return n.node.IsConnected
+	return n.node.IsConnected()
 }
 
 func (n *NodeBind) Name() string {
