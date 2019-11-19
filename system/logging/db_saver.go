@@ -1,7 +1,6 @@
 package logging
 
 import (
-	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
@@ -45,11 +44,8 @@ func (l *LogDbSaver) Start() {
 		}()
 
 		update := func() {
-			newLogList := logList
+			_ = l.adaptors.Log.AddMultiple(logList)
 			logList = make([]*m.Log, 0, 50)
-			if err := l.adaptors.Log.AddMultiple(newLogList); err != nil {
-				fmt.Println(err.Error())
-			}
 		}
 
 		for {
