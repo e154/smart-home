@@ -206,6 +206,8 @@ func (n *Notify) GetCfg() *NotifyConfig {
 }
 
 func (n *Notify) UpdateCfg(cfg *NotifyConfig) error {
+	cfg.adaptor = n.adaptor
+	n.cfg = cfg
 	return n.cfg.Update()
 }
 
