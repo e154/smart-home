@@ -1,6 +1,7 @@
 package notify
 
 import (
+	"encoding/json"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
@@ -198,6 +199,20 @@ func (n *Notify) read() {
 
 	for _, msg := range messageDeliveries {
 		n.queue <- msg
+	}
+}
+
+func (n *Notify) getCfg() {
+
+	v, err := n.adaptor.Variable.GetByName(notifyVarName)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	n.cfg = &NotifyConfig{}
+	if err = json.Unmarshal([]byte(v.Value), n.cfg); err != nil {
+		log.Error(err.Error())
 	}
 }
 
