@@ -201,6 +201,20 @@ func (n *Notify) read() {
 	}
 }
 
+func (n *Notify) getCfg() {
+
+	v, err := n.adaptor.Variable.GetByName(notifyVarName)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	n.cfg = &NotifyConfig{}
+	if err = json.Unmarshal([]byte(v.Value), n.cfg); err != nil {
+		log.Error(err.Error())
+	}
+}
+
 func (n *Notify) GetCfg() *NotifyConfig {
 	return n.cfg
 }
