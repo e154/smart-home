@@ -1,13 +1,13 @@
 package models
 
 import (
-	"time"
-	"github.com/e154/smart-home/system/validation"
 	"encoding/json"
+	"fmt"
 	. "github.com/e154/smart-home/common"
 	. "github.com/e154/smart-home/models/devices"
+	"github.com/e154/smart-home/system/validation"
 	"github.com/mitchellh/mapstructure"
-	"fmt"
+	"time"
 )
 
 type Device struct {
@@ -38,8 +38,10 @@ func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 
 	var out interface{}
 	switch d.Type {
-	case DevTypeModbus:
-		out = &DevModBusConfig{}
+	case DevTypeModbusRtu:
+		out = &DevModBusRtuConfig{}
+	case DevTypeModbusTcp:
+		out = &DevModBusTcpConfig{}
 	case DevTypeSmartBus:
 		out = &DevSmartBusConfig{}
 	case DevTypeCommand:
@@ -73,8 +75,11 @@ func (d *Device) SetProperties(properties interface{}) (ok bool, errs []*validat
 	var dType DeviceType
 
 	switch v := properties.(type) {
-	case *DevModBusConfig:
-		dType = DevTypeModbus
+	case *DevModBusRtuConfig:
+		dType = DevTypeModbusRtu
+		ok, errs = v.Valid()
+	case *DevModBusTcpConfig:
+		dType = DevTypeModbusTcp
 		ok, errs = v.Valid()
 	case *DevSmartBusConfig:
 		dType = DevTypeSmartBus
@@ -103,8 +108,12 @@ func (d *Device) SetPropertiesFromMap(properties map[string]interface{}) (ok boo
 
 	var out interface{}
 	switch d.Type {
-	case DevTypeModbus:
-		out = &DevModBusConfig{}
+	case DevTypeModbusRtu:
+		out = &DevModBusRtuConfig{}
+	case DevTypeModbusTcp:
+		out = &DevModBusTcpConfig{}
+	//case DevTypeModbus:
+	//	out = &DevModBusConfig{}
 	case DevTypeSmartBus:
 		out = &DevSmartBusConfig{}
 	case DevTypeCommand:

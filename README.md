@@ -31,6 +31,7 @@ services.
 
 The basic principles underlying the system being developed are ease of setup, low cost of content and accessibility of the component base.
 
+- [Features](#features)
 - [Demo access](#demo-access)
 - [Supported system](#supported-system)
 - [Quick installation](#quick-installation)
@@ -48,6 +49,22 @@ The basic principles underlying the system being developed are ease of setup, lo
 - [Contributors](#contributors)
 - [See also](#see-also)
 - [License](#license)
+
+### Features
+
+1. The ultimate smart thing solution - server, configurator, nodes, gateway, mobile application
+2. Open API
+3. Cross-platform Linux, MacOS, Windows ...
+4. Convenient WEB-configurator for fine-tuning
+5. Mobile application for equipment management
+6. Role system for separation of access rights
+7. Programs in javaScript, coffeeScript, typeScript
+8. Notification system SMS, Email, Slack, Telegram
+9. If MODBUS is small, you can work through calling external programs / scripts, which greatly expands the possibilities
+10. Autonomous system.
+11. Quick backup of all data, and recovery - literally in two teams
+12. Have Docker images to enhance system security
+13. Minimum consumption of resources.
 
 ### Demo access
 

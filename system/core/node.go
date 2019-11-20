@@ -15,13 +15,11 @@ type Nodes []*Node
 
 type Node struct {
 	*m.Node
-	errors      int64
-	ConnStatus  string
-	qClient     *mqtt.Client
-	IsConnected bool
-	lastPing    time.Time
-	quit        bool
-	stat        *NodeStatModel
+	errors     int64
+	ConnStatus string
+	mqttClient *mqtt.Client
+	lastPing   time.Time
+	stat       *NodeStatModel
 	sync.Mutex
 	ch map[int64]chan *NodeResponse
 }
@@ -29,30 +27,18 @@ type Node struct {
 func NewNode(model *m.Node,
 	mqtt *mqtt.Mqtt) *Node {
 
+	mqttClient, err := mqtt.NewClient(fmt.Sprintf("/home/%s", model.Name))
+	if err != nil {
+		log.Error(err.Error())
+	}
+
 	node := &Node{
 		Node:       model,
 		ConnStatus: "disabled",
 		ch:         make(map[int64]chan *NodeResponse, 0),
 		stat:       &NodeStatModel{},
+		mqttClient: mqttClient,
 	}
-
-	topic := fmt.Sprintf("/home/%s", model.Name)
-	mqttClient, err := mqtt.NewClient(topic)
-	if err != nil {
-		log.Error(err.Error())
-	}
-
-	node.qClient = mqttClient
-
-	go func() {
-		for ; ; {
-			if node.quit {
-				break
-			}
-			time.Sleep(time.Second)
-			node.IsConnected = time.Now().Sub(node.lastPing).Seconds() < 2 && node.stat.Thread > 0
-		}
-	}()
 
 	return node
 }
@@ -77,7 +63,7 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err 
 	}
 
 	data, _ := json.Marshal(msg)
-	if err = n.qClient.Publish(data); err != nil {
+	if err = n.mqttClient.Publish(data); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -167,18 +153,18 @@ func (n *Node) onPublish(msg *message.PublishMessage) (err error) {
 
 func (n *Node) Connect() *Node {
 
-	if err := n.qClient.Connect(); err != nil {
+	if err := n.mqttClient.Connect(); err != nil {
 		log.Error(err.Error())
 	}
 
 	time.Sleep(time.Second)
 
 	topic := fmt.Sprintf("/home/%s", n.Name)
-	if err := n.qClient.Subscribe(topic+"/resp", nil, n.onPublish); err != nil {
+	if err := n.mqttClient.Subscribe(topic+"/resp", nil, n.onPublish); err != nil {
 		log.Warning(err.Error())
 	}
 
-	if err := n.qClient.Subscribe(topic+"/ping", nil, n.ping); err != nil {
+	if err := n.mqttClient.Subscribe(topic+"/ping", nil, n.ping); err != nil {
 		log.Warning(err.Error())
 	}
 
@@ -186,24 +172,27 @@ func (n *Node) Connect() *Node {
 }
 
 func (n *Node) Disconnect() {
-	n.quit = true
-	if n.qClient != nil {
-		n.qClient.Disconnect()
+	if n.mqttClient != nil {
+		n.mqttClient.Disconnect()
 	}
 }
 
 func (n *Node) ping(msg *message.PublishMessage) (err error) {
 
+	_ = n.mqttClient.Pong()
+
 	_ = json.Unmarshal(msg.Payload(), n.stat)
 	n.lastPing = time.Now()
 
 	switch n.stat.Status {
-	case "busy":
-		n.ConnStatus = "wait"
 	case "enabled":
 		n.ConnStatus = "connected"
 	default:
 		n.ConnStatus = "enabled"
 	}
 	return
+}
+
+func (n *Node) IsConnected() bool {
+	return time.Now().Sub(n.lastPing).Seconds() < 2
 }

@@ -64,6 +64,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(stream.NewHub)
 	container.Provide(telemetry.NewTelemetry)
 	container.Provide(logging.NewLogBackend)
+	container.Provide(logging.NewLogDbSaver)
 	container.Provide(endpoint.NewEndpoint)
 	container.Provide(gate_client.NewGateClient)
 	container.Provide(notify.NewNotify)

@@ -10,7 +10,7 @@ groups:
 * Подразумевается что у это первая установка в систему
 * Установка будет проходить в автоматическом режиме
 * Директория установки /opt/smart-home
-* После установки потребуется настроить подключение к серверу баз данных mysql 
+* После установки потребуется настроить подключение к серверу баз данных postgresql 
 
 Установка сервера
 
@@ -30,16 +30,13 @@ curl -sSL http://e154.github.io/smart-home/configurator-installer.sh | bash /dev
 curl -sSL http://e154.github.io/smart-home/node-installer.sh | bash /dev/stdin --install
 ```
 
-Нвстройка сервера баз данных mysql
+Нвстройка сервера баз данных postgresql
 
 ```bash
-mysql -u root -p
-CREATE DATABASE smarthome;
-CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
-GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
-FLUSH PRIVILEGES;
-use smarthome
-source /opt/smart-home/server/dump.sql
+sudo -u postgres psql
+postgres=# create database smart_home;
+postgres=# create user smart_home with encrypted password 'smart_home';
+postgres=# grant all privileges on database smart_home to smart_home;
 ```
 
 Запуск сервера

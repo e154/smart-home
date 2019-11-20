@@ -9,6 +9,7 @@ import (
 //
 // Device
 //	.getName()
+//	.getModel()
 //	.getDescription()
 //	.runCommand(command []string)
 //	.smartBus(command []byte)
@@ -51,6 +52,6 @@ func (d *DeviceBind) ModBus(f string, address, count uint16, command []uint16) (
 		dev: d.model,
 		node: d.node,
 	}
-	result = dev.ModbusBus(f, address, count, command)
+	result = dev.ModBus(f, address, count, command)
 	return
 }

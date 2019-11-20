@@ -1,9 +1,10 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
+	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
 type Log struct {
@@ -24,6 +25,19 @@ func (n *Log) Add(ver *m.Log) (id int64, err error) {
 	if id, err = n.table.Add(dbVer); err != nil {
 		return
 	}
+
+	return
+}
+
+func (n *Log) AddMultiple(items []*m.Log) (err error) {
+
+	insertRecords := make([]interface{}, 0, len(items))
+	for _, ver := range items {
+		dbVer := n.toDb(ver)
+		insertRecords = append(insertRecords, *dbVer)
+	}
+
+	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
 
 	return
 }

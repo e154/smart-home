@@ -72,7 +72,7 @@ func (c *Telegram) start() {
 				chatID := update.Message.Chat.ID
 				text := update.Message.Text
 
-				if c.chatId == nil {
+				if c.chatId == nil || common.Int64Value(c.chatId) == 0 {
 					c.chatId = common.Int64(chatID)
 					if c.updateChatId != nil {
 						c.updateChatId(chatID)
@@ -120,7 +120,7 @@ func (c *Telegram) SendMsg(body string) error {
 		return errors.New("bot not started")
 	}
 
-	if c.chatId != nil {
+	if c.chatId != nil && common.Int64Value(c.chatId) != 0 {
 		msg := tgbotapi.NewMessage(common.Int64Value(c.chatId), body)
 		_, err := c.bot.Send(msg)
 		return err

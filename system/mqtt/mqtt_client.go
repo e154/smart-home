@@ -95,3 +95,22 @@ func (c *Client) Publish(v []byte) (err error) {
 
 	return
 }
+
+
+func (c *Client) Pong() (err error) {
+
+	// Creates a new PUBLISH message with the appropriate contents for publishing
+	pubmsg := message.NewPublishMessage()
+	if err = pubmsg.SetTopic([]byte(c.topic + "/pong")); err != nil {
+		return
+	}
+	pubmsg.SetPayload([]byte("pong"))
+	if err = pubmsg.SetQoS(c.qos); err != nil {
+		return
+	}
+
+	// Publishes to the server by sending the message
+	c.client.Publish(pubmsg, nil)
+
+	return
+}

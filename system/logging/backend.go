@@ -1,7 +1,6 @@
 package logging
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
@@ -11,17 +10,17 @@ import (
 )
 
 type LogBackend struct {
-	L        *logrus.Logger
-	adaptors *adaptors.Adaptors
-	oldLog   *m.Log
-	logging  bool
+	L       *logrus.Logger
+	dbSaver *LogDbSaver
+	oldLog  *m.Log
+	logging bool
 }
 
-func NewLogBackend(logger *logrus.Logger, adaptors *adaptors.Adaptors, conf *config.AppConfig) (back *LogBackend) {
+func NewLogBackend(logger *logrus.Logger, dbSaver *LogDbSaver, conf *config.AppConfig) (back *LogBackend) {
 	back = &LogBackend{
-		L:        logger,
-		adaptors: adaptors,
-		logging:  conf.Logging,
+		L:       logger,
+		dbSaver: dbSaver,
+		logging: conf.Logging,
 	}
 	back.L.Out = os.Stdout
 	return
@@ -58,7 +57,6 @@ func (b *LogBackend) Log(level logging.Level, calldepth int, rec *logging.Record
 		logLevel = "Debug"
 	}
 
-	//TODO optimise
 	if b.oldLog != nil {
 		if b.oldLog.Body == rec.Message() && b.oldLog.Level == logLevel {
 			return
@@ -73,7 +71,7 @@ func (b *LogBackend) Log(level logging.Level, calldepth int, rec *logging.Record
 
 	b.oldLog = record
 
-	_, err = b.adaptors.Log.Add(record)
+	b.dbSaver.Save(*record)
 
 	return nil
 }

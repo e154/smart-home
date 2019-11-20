@@ -95,7 +95,7 @@ func (w *Worker) removeActions() {
 // Run worker script, and send result to flow as message struct
 func (w *Worker) Do() {
 
-	if w.isRuning || !w.flow.Node.IsConnected {
+	if w.isRuning || !w.flow.Node.IsConnected() {
 		return
 	}
 

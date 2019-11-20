@@ -17,7 +17,7 @@ groups:
 *   <a href="#install-server-conf">Настройка сервера</a>
 *   <a href="#install-configuration-conf">Настройка конфигуратора</a>
 *   <a href="#install-node-conf">Настройка ноды</a>
-*   <a href="#install-mysql">База mysql</a>
+*   <a href="#install-postgres">База postgres</a>
     
 
 <div class="row">
@@ -88,101 +88,78 @@ tree
 
 ```bash
 cd /opt/smart-home/server
-sed 's/dev\/app.conf/prod\/app.conf/' conf/app.sample.conf > conf/app.conf
-cp conf/prod/app.sample.conf conf/prod/app.conf
-cp conf/prod/db.sample.conf conf/prod/db.conf
+cp conf/config.dev.conf conf/config.conf
 ```
 
-Основные значения:
+Важные поля:
     
-*   **httpaddr** - адрес сервера REST API
-*   **httpport** - порт сервера REST API
-*   **data_dir** - директория хранения общих файлов
-*   **db_user** - пользователь для соединени mysql
-*   **db_pass** - пароль доступка к mysql
-*   **db_host** - адрес сервера mysql
-*   **db_name** - название базы mysql
-*   **db_port** - порт сервера mysql    
-
-Для работы сервера требуется подключение к базе mysql. Отредактируйте файл */opt/smart-home/server/conf/prod/db.conf*
+*   **server_host** - адрес сервера REST API
+*   **server_port** - порт сервера REST API
+*   **pg_user** - пользователь для соединени postgresql
+*   **pg_pass** - пароль доступка к postgresql
+*   **pg_host** - адрес сервера postgresql
+*   **pg_name** - название базы postgresql
+*   **pg_port** - порт сервера postgresql    
 
 ```bash
-db_user = smarthome
-db_pass = smarthome
-db_host = "127.0.0.1"
-db_name = smarthome
-db_port = "3306"
-db_type = mysql
+pg_user = smart_home
+pg_pass = smart_home
+pg_host = "127.0.0.1"
+pg_name = smart_home
+pg_port = "5432"
 ```
 
 <h3 id="install-configuration-conf">Настройка конфигуратора</h3>
 
 ```bash
 cd /opt/smart-home/configurator
-sed 's/dev\/app.conf/prod\/app.conf/' conf/app.sample.conf > conf/app.conf
-cp conf/prod/app.sample.conf conf/prod/app.conf
-cp conf/prod/db.sample.conf conf/prod/db.conf
+cp conf/config.dev.conf conf/config.conf
 ```
 
 Основные значения:
     
 *   **httpaddr** - адрес веб интерфеса конфигуратора
 *   **httpport** - порт веб интерфеса конфигуратора
-*   **serveraddr** - порт сервера REST API
-*   **serverport** - порт сервера REST API
-*   **data_dir** - директория хранения общих файлов
+*   **api_addr** - порт сервера REST API
+*   **api_port** - порт сервера REST API
+*   **api_scheme** - схема общения с сервером
     
 
 <h3 id="install-node-conf">Настройка ноды</h3>
 
 ```bash
 cd /opt/smart-home/node
-cp conf/node.sample.conf conf/node.conf
+cp conf/config.dev.conf conf/config.conf
 ```
 
 Основные значения:
     
-*   **app_version** - версия внутреннего api ноды
-*   **ip** - адрес ожидания соединения от сервера
-*   **port** - порт ожидания соединения от сервера
-*   **baud** - скорость работы порта ввода вывода, используется если с сервера пришёл запрос на
-            обращение к устройству, но baud не был указан
-*   **timeout** - используется при обработке ошибок связи с устройствами
-*   **stopbits** - стоп бит, используется в общении с устройствами
+*   **name** - системное назание ноды (прим. node1)
+*   **topic** - канал для общения с сервером (прим. node1)
+*   **mqtt_keep_alive** - тонкие настройки (прим. 300)
+*   **mqtt_connect_timeout** - тонкие настройки (прим. 2)
+*   **mqtt_sessions_provider** - тонкие настройки (прим. "mem")
+*   **mqtt_topics_provider** - тонкие настройки (прим. "mem)
+*   **mqtt_username** - пользователь указанный при регистрации ноды на сервере
+*   **mqtt_password** - павроль указанный при регистрации ноды на сервере
+*   **mqtt_ip** - ip адрес сервера **умный дом**
+*   **mqtt_port** - порт для подключения нод к **умный дом**
+*   **serial** - спискок портов которые будет слушать нода для поиска устройств
     
 
-<h3 id="install-mysql">База mysql</h3>
+<h3 id="install-postgres">База postgres</h3>
 
-Подключение к консоли mysql, потребуется пароль рута:
-
-```bash
-mysql -u root -p
-```
-
-Создание базы сервера **умный дом**:
+Подключение к консоли Postgresql, потребуется пароль рута:
 
 ```bash
-CREATE DATABASE smarthome;
+sudo -u postgres psql
+postgres=# create database smart_home;
+postgres=# create user smart_home with encrypted password 'smart_home';
+postgres=# grant all privileges on database smart_home to smart_home;
 ```
 
-Создание нового пользователя, с соответствующими правами **smarthome** из консоли mysql
-    
-*   **smarthome** - пользователь
-*   **smarthome** - пароль
-    
-
-```bash
-CREATE USER 'smarthome'@'localhost' IDENTIFIED BY 'smarthome';
-GRANT ALL PRIVILEGES ON smarthome . * TO 'smarthome'@'localhost';
-FLUSH PRIVILEGES;
-```
-
-импорт базы
-
-```bash
-use smarthome
-source /opt/smart-home/server/dump.sql
-```
+система базы данных имеет внтренный миханизм миграций. При подключении сервер проверяет текущую версию, 
+и запускает миграции если сервер их имеет.
 
 <h3 id="install-exec">Запуск</h3>
 

@@ -1,5 +1,9 @@
 package core
 
+import (
+	m "github.com/e154/smart-home/models"
+)
+
 // Javascript Binding
 //
 // map
@@ -11,12 +15,12 @@ type MapBind struct {
 	Map *Map
 }
 
-func (e *MapBind) SetElementState(device *DeviceBind, elementName, newState string) {
+func (e *MapBind) SetElementState(device *m.Device, elementName, newState string) {
 	if device == nil {
 		log.Error("device is nil")
 		return
 	}
-	e.Map.SetElementState(device.model, elementName, newState)
+	e.Map.SetElementState(device, elementName, newState)
 }
 
 func (e *MapBind) GetElement(device *DeviceBind, elementName string) (element *MapElementBind) {

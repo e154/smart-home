@@ -15,23 +15,44 @@ map = IC.Map
   
 Доступные методы приведены далее:
 
-### .SetElementState(element, state) {#ic_map_set_element_state}
+### .SetElementState(deviceModel, elementName, newState) {#ic_map_set_element_state}
 
 ```coffeescript
-IC.Map.SetElementState(device, state)
+IC.Map.SetElementState(device.getModel(), state)
+```
+
+**На входе**
+
+**Значение**            | **Описание**
+------------------------|--------------
+  `deviceModel`         | type: Object, ссылка на объект [DeviceModel{}](#device)
+  `elementName`         | type: string, наименование элемента
+  `stnewStateate`       | type: string, системное наименование состояния
+
+### .GetElement(device, elementName) {#ic_map_get_element}
+
+```coffeescript
+elements = IC.Map.GetElement(device, elementName)
 ```
 
 **На входе**
 
 **Значение**    | **Описание**
 ----------------|--------------
-  `element`      | type: Object, ссылка на объект карты
-  `state`       | type: string, системное наименование состояния
+  `device`      | type: Object, ссылка на объект [Device{}](#device)
+  `elementName` | type: string, наименование элемента
 
-### .GetElement(device) {#ic_map_get_element}
+
+**На выходе**
+
+**Значение**    | **Описание**
+----------------|--------------
+ `elements`     | type: Object, ссылка на объектов [MapElement{}](#map_element)
+
+### .GetElements(device) {#ic_map_get_element}
 
 ```coffeescript
-element = IC.Map.GetElement(device)
+elements = IC.Map.GetElement(device)
 ```
 
 **На входе**
@@ -40,9 +61,8 @@ element = IC.Map.GetElement(device)
 ----------------|--------------
   `device`      | type: Object, ссылка на объект [Device{}](#device)
 
-
 **На выходе**
 
 **Значение**    | **Описание**
 ----------------|--------------
- `element`      | type: Object, ссылка на объект [MapElement{}](#map_element)
+ `elements`     | type: Array, массив объектов [MapElement{}](#map_element)

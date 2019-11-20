@@ -1,9 +1,9 @@
 package core
 
 import (
+	"encoding/json"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/models/devices"
-	"encoding/json"
 )
 
 type Device struct {
@@ -68,7 +68,16 @@ func (d *Device) SmartBus(command []byte) (result *DevSmartBusResponse) {
 	return
 }
 
-func (d *Device) ModbusBus(f string, address, count uint16, command []uint16) (result *DevModBusResponse) {
+func (d *Device) ModBus(f string, address, count uint16, command []uint16) (result *DevModBusResponse) {
+
+	if d.dev.Type == DevTypeModbusRtu && d.node.stat.Thread == 0 {
+		result = &DevModBusResponse{
+			BaseResponse: BaseResponse{
+				Error: "no serial device",
+			},
+		}
+		return
+	}
 
 	request := &DevModBusRequest{
 		Function: f,
@@ -88,7 +97,7 @@ func (d *Device) ModbusBus(f string, address, count uint16, command []uint16) (r
 	nodeResult, err := d.node.Send(d.dev, data)
 	if err != nil {
 		result.Error = err.Error()
-		log.Error(err.Error())
+		//log.Error(err.Error())
 		return
 	}
 
