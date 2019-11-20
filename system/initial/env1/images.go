@@ -175,6 +175,30 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 			Size:     5799,
 			Name:     "fan_v1_original.svg",
 		},
+		"door_v1_closed": {
+			Image:    "0490d1cb3b1c9b266b2637c90fb9d47b.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     895,
+			Name:     "door_v1_closed.svg",
+		},
+		"door_v1_open1": {
+			Image:    "e769c2c9982555cd256b35d8f5271069.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1078,
+			Name:     "door_v1_open1.svg",
+		},
+		"door_v1_open2": {
+			Image:    "142eea447aedfaf3a64a55fd45dc50c7.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1149,
+			Name:     "door_v1_open2.svg",
+		},
+		"door_v1_open3": {
+			Image:    "12f29921854b025ede8b8f1795ab1d71.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1106,
+			Name:     "door_v1_open3.svg",
+		},
 	}
 
 	var err error
