@@ -1,13 +1,13 @@
 package env1
 
 import (
-	"os"
-	"strings"
-	"path"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	. "github.com/e154/smart-home/system/initial/assertions"
 	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/system/initial/assertions"
+	"os"
+	"path"
+	"strings"
 )
 
 func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
@@ -176,28 +176,40 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 			Name:     "fan_v1_original.svg",
 		},
 		"door_v1_closed": {
-			Image:    "0490d1cb3b1c9b266b2637c90fb9d47b.svg",
+			Image:    "2e3e5c74775360e0274576ba6c83f044.svg",
 			MimeType: "text/html; charset=utf-8",
-			Size:     895,
+			Size:     509,
 			Name:     "door_v1_closed.svg",
 		},
-		"door_v1_open1": {
-			Image:    "e769c2c9982555cd256b35d8f5271069.svg",
+		"door_v1_closed_r": {
+			Image:    "221f451b426188a2df987163a2ab5715.svg",
 			MimeType: "text/html; charset=utf-8",
-			Size:     1078,
-			Name:     "door_v1_open1.svg",
+			Size:     508,
+			Name:     "door_v1_closed_r.svg",
 		},
-		"door_v1_open2": {
-			Image:    "142eea447aedfaf3a64a55fd45dc50c7.svg",
+		"door_v1_closed_def": {
+			Image:    "dd2a735b71b2899869e36c54f140b3fa.svg",
 			MimeType: "text/html; charset=utf-8",
-			Size:     1149,
-			Name:     "door_v1_open2.svg",
+			Size:     509,
+			Name:     "door_v1_closed_def.svg",
 		},
-		"door_v1_open3": {
-			Image:    "12f29921854b025ede8b8f1795ab1d71.svg",
+		"door_v1_opened1": {
+			Image:    "74cb4de3f70bb7a7e5d651ee6a23bffc.svg",
 			MimeType: "text/html; charset=utf-8",
-			Size:     1106,
-			Name:     "door_v1_open3.svg",
+			Size:     725,
+			Name:     "door_v1_opened1.svg",
+		},
+		"door_v1_opened2": {
+			Image:    "def90d2778eb6e4465f5808889e2a92c.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     862,
+			Name:     "door_v1_opened2.svg",
+		},
+		"door_v1_opened3": {
+			Image:    "fe7c9ecdbbdedc99ab16070da52251a4.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1179,
+			Name:     "door_v1_opened3.svg",
 		},
 	}
 
