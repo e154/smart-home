@@ -1,10 +1,14 @@
 package mqtt
 
 import (
+	"context"
 	"fmt"
+	"github.com/DrmagicE/gmqtt"
+	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/op/go-logging"
-	"github.com/surgemq/surgemq/service"
+	"net"
+	"time"
 )
 
 var (
@@ -13,7 +17,7 @@ var (
 
 type Mqtt struct {
 	cfg           *MqttConfig
-	server        *service.Server
+	server        *gmqtt.Server
 	clients       []*Client
 	authenticator *Authenticator
 }
@@ -35,36 +39,39 @@ func NewMqtt(cfg *MqttConfig,
 }
 
 func (m *Mqtt) Shutdown() {
-	//if m.server != nil {
-	//	m.server.Close()
-	//}
-
-	//for _, client := range m.clients {
-	//	if client == nil {
-	//		continue
-	//	}
-	//	client.Disconnect()
-	//}
-
 	log.Info("Server exiting")
+	m.server.Stop(context.Background())
 }
 
 func (m *Mqtt) runServer() {
 
-	// Create a new server
-	m.server = &service.Server{
-		KeepAlive:        m.cfg.SrvKeepAlive,
-		ConnectTimeout:   m.cfg.SrvConnectTimeout,
-		SessionsProvider: m.cfg.SrvSessionsProvider,
-		Authenticator:    m.authenticator.Name(),
-		TopicsProvider:   m.cfg.SrvTopicsProvider,
+	config := gmqtt.Config{
+		RetryInterval:              20 * time.Second,
+		RetryCheckInterval:         20 * time.Second,
+		SessionExpiryInterval:      0,
+		SessionExpireCheckInterval: 0,
+		QueueQos0Messages:          true,
+		MaxInflight:                32,
+		MaxAwaitRel:                100,
+		MaxMsgQueue:                1000,
+		DeliverMode:                gmqtt.OnlyOnce,
 	}
+
+	// Create a new server
+	m.server = gmqtt.NewServer(config)
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.SrvPort)
 
-	if err := m.server.ListenAndServe(fmt.Sprintf("tcp://0.0.0.0:%d", m.cfg.SrvPort)); err != nil {
+	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.SrvPort))
+	if err != nil {
 		log.Error(err.Error())
 	}
+
+	m.server.AddTCPListenner(ln)
+
+	m.hooks()
+
+	m.server.Run()
 }
 
 func (m *Mqtt) NewClient(topic string) (c *Client, err error) {
@@ -80,4 +87,20 @@ func (m *Mqtt) NewClient(topic string) (c *Client, err error) {
 	m.clients = append(m.clients, c)
 
 	return
+}
+
+func (m *Mqtt) hooks() {
+
+	//authentication
+	m.server.RegisterOnConnect(func(cs gmqtt.ChainStore, client gmqtt.Client) (code uint8) {
+
+		username := client.OptionsReader().Username()
+		password := client.OptionsReader().Password()
+
+		if err := m.authenticator.Authenticate(username, password); err != nil {
+			return packets.CodeBadUsernameorPsw
+		}
+
+		return packets.CodeAccepted
+	})
 }

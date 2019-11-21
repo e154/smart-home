@@ -2,6 +2,19 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:0b7f3239929b96ed3960e646a8852e225adf7d59928f2d66b7b56752d5ef213b"
+  name = "github.com/DrmagicE/gmqtt"
+  packages = [
+    ".",
+    "logger",
+    "pkg/packets",
+    "plugin/management",
+  ]
+  pruneopts = "UT"
+  revision = "6f817756a9d60f6f5c2d4f073e5cf21b39bb0d2e"
+
+[[projects]]
   digest = "1:d1665c44bd5db19aaee18d1b6233c99b0b9a986e8bccb24ef54747547a48027f"
   name = "github.com/PuerkitoBio/purell"
   packages = ["."]
@@ -607,6 +620,9 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/DrmagicE/gmqtt",
+    "github.com/DrmagicE/gmqtt/pkg/packets",
+    "github.com/DrmagicE/gmqtt/plugin/management",
     "github.com/Syfaro/telegram-bot-api",
     "github.com/bouk/monkey",
     "github.com/dgrijalva/jwt-go",
