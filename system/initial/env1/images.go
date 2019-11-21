@@ -1,13 +1,13 @@
 package env1
 
 import (
-	"os"
-	"strings"
-	"path"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	. "github.com/e154/smart-home/system/initial/assertions"
 	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/system/initial/assertions"
+	"os"
+	"path"
+	"strings"
 )
 
 func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
@@ -174,6 +174,42 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 			MimeType: "text/html; charset=utf-8",
 			Size:     5799,
 			Name:     "fan_v1_original.svg",
+		},
+		"door_v1_closed": {
+			Image:    "2e3e5c74775360e0274576ba6c83f044.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     509,
+			Name:     "door_v1_closed.svg",
+		},
+		"door_v1_closed_r": {
+			Image:    "221f451b426188a2df987163a2ab5715.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     508,
+			Name:     "door_v1_closed_r.svg",
+		},
+		"door_v1_closed_def": {
+			Image:    "dd2a735b71b2899869e36c54f140b3fa.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     509,
+			Name:     "door_v1_closed_def.svg",
+		},
+		"door_v1_opened1": {
+			Image:    "74cb4de3f70bb7a7e5d651ee6a23bffc.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     725,
+			Name:     "door_v1_opened1.svg",
+		},
+		"door_v1_opened2": {
+			Image:    "def90d2778eb6e4465f5808889e2a92c.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     862,
+			Name:     "door_v1_opened2.svg",
+		},
+		"door_v1_opened3": {
+			Image:    "fe7c9ecdbbdedc99ab16070da52251a4.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1179,
+			Name:     "door_v1_opened3.svg",
 		},
 	}
 
