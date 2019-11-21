@@ -24,13 +24,17 @@ func (d *DeviceBind) GetName() string {
 	return d.model.Name
 }
 
+func (d *DeviceBind) GetModel() *m.Device {
+	return d.model
+}
+
 func (d *DeviceBind) GetDescription() string {
 	return d.model.Description
 }
 
 func (d *DeviceBind) RunCommand(name string, args []string) (result *DevCommandResponse) {
 	dev := &Device{
-		dev: d.model,
+		dev:  d.model,
 		node: d.node,
 	}
 	result = dev.RunCommand(name, args)
@@ -40,7 +44,7 @@ func (d *DeviceBind) RunCommand(name string, args []string) (result *DevCommandR
 
 func (d *DeviceBind) SmartBus(command []byte) (result *DevSmartBusResponse) {
 	dev := &Device{
-		dev: d.model,
+		dev:  d.model,
 		node: d.node,
 	}
 	result = dev.SmartBus(command)
@@ -49,7 +53,7 @@ func (d *DeviceBind) SmartBus(command []byte) (result *DevSmartBusResponse) {
 
 func (d *DeviceBind) ModBus(f string, address, count uint16, command []uint16) (result *DevModBusResponse) {
 	dev := &Device{
-		dev: d.model,
+		dev:  d.model,
 		node: d.node,
 	}
 	result = dev.ModBus(f, address, count, command)
