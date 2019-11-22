@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 const path = "conf/config.json"
@@ -95,27 +96,56 @@ func checkEnv(conf *AppConfig) {
 		conf.Mode = RunMode(mode)
 	}
 
-	if mqttKeepAlive := os.Getenv("MQTT_KEEP_ALIVE"); mqttKeepAlive != "" {
-		v, _ := strconv.ParseInt(mqttKeepAlive, 10, 32)
-		conf.MqttKeepAlive = int(v)
-	}
-
-	if mqttConnectTimeout := os.Getenv("MQTT_CONNECT_TIMEOUT"); mqttConnectTimeout != "" {
-		v, _ := strconv.ParseInt(mqttConnectTimeout, 10, 32)
-		conf.MqttConnectTimeout = int(v)
-	}
-
-	if mqttSessionsProvider := os.Getenv("MQTT_SESSIONS_PROVIDER"); mqttSessionsProvider != "" {
-		conf.MqttSessionsProvider = mqttSessionsProvider
-	}
-
-	if mqttTopicsProvider := os.Getenv("MQTT_TOPICS_PROVIDER"); mqttTopicsProvider != "" {
-		conf.MqttTopicsProvider = mqttTopicsProvider
-	}
-
 	if mqttPort := os.Getenv("MQTT_PORT"); mqttPort != "" {
 		v, _ := strconv.ParseInt(mqttPort, 10, 32)
 		conf.MqttPort = int(v)
 	}
 
+	if mqttRetryInterval := os.Getenv("MQTT_RETRY_INTERVAL"); mqttRetryInterval != "" {
+		v, _ := strconv.ParseInt(mqttRetryInterval, 10, 32)
+		conf.MqttRetryInterval = time.Duration(v)
+	}
+
+	if mqttRetryCheckInterval := os.Getenv("MQTT_RETRY_CHECK_INTERVAL"); mqttRetryCheckInterval != "" {
+		v, _ := strconv.ParseInt(mqttRetryCheckInterval, 10, 32)
+		conf.MqttRetryCheckInterval = time.Duration(v)
+	}
+
+	if mqttSessionExpiryInterval := os.Getenv("MQTT_SESSION_EXPIRY_INTERVAL"); mqttSessionExpiryInterval != "" {
+		v, _ := strconv.ParseInt(mqttSessionExpiryInterval, 10, 32)
+		conf.MqttSessionExpiryInterval = time.Duration(v)
+	}
+
+	if mqttSessionExpireCheckInterval := os.Getenv("MQTT_SESSION_EXPIRE_CHECK_INTERVAL"); mqttSessionExpireCheckInterval != "" {
+		v, _ := strconv.ParseInt(mqttSessionExpireCheckInterval, 10, 32)
+		conf.MqttSessionExpireCheckInterval = time.Duration(v)
+	}
+
+	if mqttQueueQos0Messages := os.Getenv("MQTT_QUEUE_QOS_0_MESSAGES"); mqttQueueQos0Messages != "" {
+		conf.MqttQueueQos0Messages, _ = strconv.ParseBool(mqttQueueQos0Messages)
+	}
+
+	if mqttKeepAlive := os.Getenv("MQTT_MAX_INFLIGHT"); mqttKeepAlive != "" {
+		v, _ := strconv.ParseInt(mqttKeepAlive, 10, 32)
+		conf.MqttMaxInflight = int(v)
+	}
+
+	if mqttMaxAwaitRel := os.Getenv("MQTT_MAX_AWAIT_REL"); mqttMaxAwaitRel != "" {
+		v, _ := strconv.ParseInt(mqttMaxAwaitRel, 10, 32)
+		conf.MqttMaxAwaitRel = int(v)
+	}
+
+	if mqttMaxMsgQueue := os.Getenv("MQTT_MAX_MSG_QUEUE"); mqttMaxMsgQueue != "" {
+		v, _ := strconv.ParseInt(mqttMaxMsgQueue, 10, 32)
+		conf.MqttMaxMsgQueue = int(v)
+	}
+
+	if mqttDeliverMode := os.Getenv("MQTT_DELIVER_MODE"); mqttDeliverMode != "" {
+		v, _ := strconv.ParseInt(mqttDeliverMode, 10, 32)
+		conf.MqttDeliverMode = int(v)
+	}
+
+	if logging := os.Getenv("LOGGING"); logging != "" {
+		conf.Logging, _ = strconv.ParseBool(logging)
+	}
 }

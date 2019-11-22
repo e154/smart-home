@@ -46,23 +46,23 @@ func (m *Mqtt) Shutdown() {
 func (m *Mqtt) runServer() {
 
 	config := gmqtt.Config{
-		RetryInterval:              20 * time.Second,
-		RetryCheckInterval:         20 * time.Second,
-		SessionExpiryInterval:      0,
-		SessionExpireCheckInterval: 0,
-		QueueQos0Messages:          true,
-		MaxInflight:                32,
-		MaxAwaitRel:                100,
-		MaxMsgQueue:                1000,
-		DeliverMode:                gmqtt.OnlyOnce,
+		RetryInterval:              m.cfg.RetryInterval * time.Second,
+		RetryCheckInterval:         m.cfg.RetryCheckInterval * time.Second,
+		SessionExpiryInterval:      m.cfg.SessionExpiryInterval,
+		SessionExpireCheckInterval: m.cfg.SessionExpireCheckInterval,
+		QueueQos0Messages:          m.cfg.QueueQos0Messages,
+		MaxInflight:                m.cfg.MaxInflight,
+		MaxAwaitRel:                m.cfg.MaxAwaitRel,
+		MaxMsgQueue:                m.cfg.MaxMsgQueue,
+		DeliverMode:                m.cfg.DeliverMode,
 	}
 
 	// Create a new server
 	m.server = gmqtt.NewServer(config)
 
-	log.Infof("Serving server at tcp://[::]:%d", m.cfg.SrvPort)
+	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
 
-	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.SrvPort))
+	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.Port))
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -76,7 +76,7 @@ func (m *Mqtt) runServer() {
 
 func (m *Mqtt) NewClient(topic string) (c *Client, err error) {
 
-	uri := fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.SrvPort)
+	uri := fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.Port)
 
 	log.Infof("new queue client %s topic(%s)", uri, topic)
 
