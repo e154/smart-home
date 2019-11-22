@@ -6,6 +6,7 @@ import (
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
 	"net"
 	"time"
@@ -24,12 +25,15 @@ type Mqtt struct {
 
 func NewMqtt(cfg *MqttConfig,
 	graceful *graceful_service.GracefulService,
-	authenticator *Authenticator) (mqtt *Mqtt) {
+	authenticator *Authenticator,
+	scripts *scripts.ScriptService, ) (mqtt *Mqtt) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,
 		authenticator: authenticator,
 	}
+
+	scripts.PushStruct("Map", NewMqttBind(mqtt))
 
 	go mqtt.runServer()
 
