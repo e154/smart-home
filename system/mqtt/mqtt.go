@@ -33,7 +33,7 @@ func NewMqtt(cfg *MqttConfig,
 		authenticator: authenticator,
 	}
 
-	scripts.PushStruct("Map", NewMqttBind(mqtt))
+	scripts.PushStruct("Mqtt", NewMqttBind(mqtt))
 
 	go mqtt.runServer()
 
