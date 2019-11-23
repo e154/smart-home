@@ -179,6 +179,8 @@ func (n *Node) Disconnect() {
 
 func (n *Node) ping(msg *message.PublishMessage) (err error) {
 
+	fmt.Println("ping")
+
 	_ = n.mqttClient.Pong()
 
 	_ = json.Unmarshal(msg.Payload(), n.stat)

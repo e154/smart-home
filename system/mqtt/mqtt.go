@@ -107,4 +107,16 @@ func (m *Mqtt) hooks() {
 
 		return packets.CodeAccepted
 	})
+
+	//m.server.RegisterOnConnected(func(cs gmqtt.ChainStore, client gmqtt.Client) {
+	//	log.Debug("connected...")
+	//})
+	//
+	//m.server.RegisterOnSessionCreated(func(cs gmqtt.ChainStore, client gmqtt.Client) {
+	//	log.Debug("session created...")
+	//})
+	//
+	//m.server.RegisterOnSessionResumed(func(cs gmqtt.ChainStore, client gmqtt.Client) {
+	//	log.Debug("session resumed...")
+	//})
 }
