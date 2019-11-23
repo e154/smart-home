@@ -26,14 +26,14 @@ type Mqtt struct {
 func NewMqtt(cfg *MqttConfig,
 	graceful *graceful_service.GracefulService,
 	authenticator *Authenticator,
-	scripts *scripts.ScriptService, ) (mqtt *Mqtt) {
+	scriptService *scripts.ScriptService ) (mqtt *Mqtt) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,
 		authenticator: authenticator,
 	}
 
-	scripts.PushStruct("Mqtt", NewMqttBind(mqtt))
+	scriptService.PushStruct("Mqtt", NewMqttBind(mqtt))
 
 	go mqtt.runServer()
 
