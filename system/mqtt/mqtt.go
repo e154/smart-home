@@ -122,4 +122,12 @@ func (m *Mqtt) hooks() {
 	//m.server.RegisterOnSessionResumed(func(cs gmqtt.ChainStore, client gmqtt.Client) {
 	//	log.Debug("session resumed...")
 	//})
+
+	m.server.RegisterOnSubscribe(func(cs gmqtt.ChainStore, client gmqtt.Client, topic packets.Topic) (qos uint8) {
+		log.Debugf("subscribe: %v", topic.Name)
+		if topic.Name == "test/nosubscribe" {
+			return packets.SUBSCRIBE_FAILURE
+		}
+		return topic.Qos
+	})
 }
