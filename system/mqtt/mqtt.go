@@ -3,9 +3,9 @@ package mqtt
 import (
 	"context"
 	"fmt"
-	"github.com/DrmagicE/gmqtt"
-	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/mqtt/gmqtt"
+	"github.com/e154/smart-home/system/mqtt/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
 	"net"
@@ -26,7 +26,7 @@ type Mqtt struct {
 func NewMqtt(cfg *MqttConfig,
 	graceful *graceful_service.GracefulService,
 	authenticator *Authenticator,
-	scriptService *scripts.ScriptService ) (mqtt *Mqtt) {
+	scriptService *scripts.ScriptService) (mqtt *Mqtt) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,

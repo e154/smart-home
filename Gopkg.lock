@@ -2,19 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  digest = "1:0b7f3239929b96ed3960e646a8852e225adf7d59928f2d66b7b56752d5ef213b"
-  name = "github.com/DrmagicE/gmqtt"
-  packages = [
-    ".",
-    "logger",
-    "pkg/packets",
-    "plugin/management",
-  ]
-  pruneopts = "UT"
-  revision = "6f817756a9d60f6f5c2d4f073e5cf21b39bb0d2e"
-
-[[projects]]
   digest = "1:d1665c44bd5db19aaee18d1b6233c99b0b9a986e8bccb24ef54747547a48027f"
   name = "github.com/PuerkitoBio/purell"
   packages = ["."]
@@ -45,14 +32,6 @@
   pruneopts = "UT"
   revision = "9860bdfd3a171ceafb6e1eafa163482a6ef92643"
   version = "v4.6.4"
-
-[[projects]]
-  digest = "1:d8abdc866ebbe05fa3bce50863e23afd4c73c804b90c908caa864e86df1db8a1"
-  name = "github.com/bouk/monkey"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "5df1f207ff77e025801505ae4d903133a0b4353f"
-  version = "v1.0.0"
 
 [[projects]]
   digest = "1:76dc72490af7174349349838f2fe118996381b31ea83243812a97e5a0fd5ed55"
@@ -159,14 +138,6 @@
   revision = "d547d1d9531ed93dbdebcbff7f83e7c876a1e0ee"
 
 [[projects]]
-  digest = "1:3af6be4fee7c08f81f13d36f04ffb63ad4b6b5aaba12cce96095c7c2863d4912"
-  name = "github.com/gorilla/mux"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "ed099d42384823742bba0bf9a72b53b55c9e2e38"
-  version = "v1.7.2"
-
-[[projects]]
   digest = "1:345ad428d03cc89fa5498d61383d0d7f39afbe8731ca135c0ec92782285121d3"
   name = "github.com/gorilla/schema"
   packages = ["."]
@@ -251,14 +222,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2ce1c52ce80ce9ac0d2ac4c2f78b32b7e9fad95aae5558a21e79f86d7c41b28a"
-  name = "github.com/lox/go-servejs"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "b196cd09c2b3ffb1883b484cc584e8c380a4b00d"
-
-[[projects]]
-  branch = "master"
   digest = "1:84a5a2b67486d5d67060ac393aa255d05d24ed5ee41daecd5635ec22657b6492"
   name = "github.com/mailru/easyjson"
   packages = [
@@ -326,14 +289,6 @@
   version = "v0.6.0"
 
 [[projects]]
-  branch = "v3"
-  digest = "1:47360765b64ba68cc23420ec2967c7cca5b1d8a438493ac55945ef58e7560bc2"
-  name = "github.com/olebedev/go-duktape"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "ccb656ba24c2a193e5650299767e2df1554725fd"
-
-[[projects]]
   digest = "1:5b3b29ce0e569f62935d9541dff2e16cc09df981ebde48e82259076a73a3d0c7"
   name = "github.com/op/go-logging"
   packages = ["."]
@@ -348,27 +303,6 @@
   pruneopts = "UT"
   revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
   version = "v0.8.1"
-
-[[projects]]
-  digest = "1:77b730fa4c2d98f3ddf492acbea351eb6b0560fa5eace4105a6fc33ff937bb1b"
-  name = "github.com/rakyll/statik"
-  packages = ["fs"]
-  pruneopts = "UT"
-  revision = "3bac566d30cdbeddef402a80f3d6305860e59f12"
-  version = "v0.1.6"
-
-[[projects]]
-  branch = "master"
-  digest = "1:207fa20d9fe5d2a98c59ed1b512fa079ab212fe3c498ce2305cb31b603c3ae53"
-  name = "github.com/ribice/golang-swaggerui-example"
-  packages = [
-    ".",
-    "cmd/api",
-    "cmd/swagger",
-    "cmd/swaggerui",
-  ]
-  pruneopts = "UT"
-  revision = "1e7622a30e509a4e004dcf14d10ac93fbe08fc8d"
 
 [[projects]]
   branch = "master"
@@ -605,50 +539,27 @@
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
   version = "v2.2.1"
 
-[[projects]]
-  branch = "(default)"
-  digest = "1:c3371eecf014177a2355875b7f706a6ea61b587d7c0428db9460433dfd0ea83e"
-  name = "launchpad.net/goamz"
-  packages = [
-    "aws",
-    "s3",
-  ]
-  pruneopts = "UT"
-  revision = "martin.packman@canonical.com-20140813150539-umttn7s536u85eiz"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/DrmagicE/gmqtt",
-    "github.com/DrmagicE/gmqtt/pkg/packets",
-    "github.com/DrmagicE/gmqtt/plugin/management",
     "github.com/Syfaro/telegram-bot-api",
-    "github.com/bouk/monkey",
     "github.com/dgrijalva/jwt-go",
     "github.com/francoispqt/gojay",
     "github.com/gin-contrib/cors",
     "github.com/gin-gonic/gin",
-    "github.com/gorilla/mux",
     "github.com/gorilla/websocket",
     "github.com/iancoleman/strcase",
     "github.com/jinzhu/copier",
     "github.com/jinzhu/gorm",
     "github.com/lib/pq",
-    "github.com/lox/go-servejs",
     "github.com/messagebird/go-rest-api",
     "github.com/messagebird/go-rest-api/balance",
     "github.com/messagebird/go-rest-api/sms",
     "github.com/mitchellh/mapstructure",
     "github.com/nlopes/slack",
-    "github.com/olebedev/go-duktape",
     "github.com/op/go-logging",
     "github.com/pkg/errors",
-    "github.com/rakyll/statik/fs",
-    "github.com/ribice/golang-swaggerui-example",
-    "github.com/ribice/golang-swaggerui-example/cmd/api",
-    "github.com/ribice/golang-swaggerui-example/cmd/swagger",
-    "github.com/ribice/golang-swaggerui-example/cmd/swaggerui",
     "github.com/rubenv/sql-migrate",
     "github.com/sfreiberg/gotwilio",
     "github.com/shirou/gopsutil/cpu",
@@ -668,8 +579,6 @@
     "golang.org/x/net/context",
     "golang.org/x/net/webdav",
     "gopkg.in/gomail.v2",
-    "launchpad.net/goamz/aws",
-    "launchpad.net/goamz/s3",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
