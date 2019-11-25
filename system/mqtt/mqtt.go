@@ -3,9 +3,9 @@ package mqtt
 import (
 	"context"
 	"fmt"
+	"github.com/DrmagicE/gmqtt"
+	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/system/graceful_service"
-	"github.com/e154/smart-home/system/mqtt/gmqtt"
-	"github.com/e154/smart-home/system/mqtt/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
 	"net"
@@ -72,10 +72,12 @@ func (m *Mqtt) runServer() {
 	}
 
 	m.server.AddTCPListenner(ln)
+	//m.server.AddPlugins(management.New(":8081", nil))
 
-	m.server.AddPlugins(management.New(":8081", nil))
-
-	m.hooks()
+	m.server.RegisterOnConnect(m.OnConnect)
+	m.server.RegisterOnConnected(m.OnConnected)
+	m.server.RegisterOnSessionCreated(m.OnSessionCreated)
+	m.server.RegisterOnSessionResumed(m.OnSessionResumed)
 
 	m.server.Run()
 }
@@ -83,7 +85,6 @@ func (m *Mqtt) runServer() {
 func (m *Mqtt) NewClient(topic string) (c *Client, err error) {
 
 	uri := fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.Port)
-
 	log.Infof("new queue client %s topic(%s)", uri, topic)
 
 	if c, err = NewClient(uri, topic, m.authenticator); err != nil {
@@ -95,30 +96,27 @@ func (m *Mqtt) NewClient(topic string) (c *Client, err error) {
 	return
 }
 
-func (m *Mqtt) hooks() {
+func (m *Mqtt) OnConnected(cs gmqtt.ChainStore, client gmqtt.Client) {
+	log.Debug("connected...")
+}
+
+func (m *Mqtt) OnSessionCreated(cs gmqtt.ChainStore, client gmqtt.Client) {
+	log.Debug("session created...")
+}
+
+func (m *Mqtt) OnSessionResumed(cs gmqtt.ChainStore, client gmqtt.Client) {
+	log.Debug("session resumed...")
+}
+
+func (m *Mqtt) OnConnect(cs gmqtt.ChainStore, client gmqtt.Client) (code uint8) {
+
+	username := client.OptionsReader().Username()
+	password := client.OptionsReader().Password()
 
 	//authentication
-	m.server.RegisterOnConnect(func(cs gmqtt.ChainStore, client gmqtt.Client) (code uint8) {
+	if err := m.authenticator.Authenticate(username, password); err != nil {
+		return packets.CodeBadUsernameorPsw
+	}
 
-		username := client.OptionsReader().Username()
-		password := client.OptionsReader().Password()
-
-		if err := m.authenticator.Authenticate(username, password); err != nil {
-			return packets.CodeBadUsernameorPsw
-		}
-
-		return packets.CodeAccepted
-	})
-
-	//m.server.RegisterOnConnected(func(cs gmqtt.ChainStore, client gmqtt.Client) {
-	//	log.Debug("connected...")
-	//})
-	//
-	//m.server.RegisterOnSessionCreated(func(cs gmqtt.ChainStore, client gmqtt.Client) {
-	//	log.Debug("session created...")
-	//})
-	//
-	//m.server.RegisterOnSessionResumed(func(cs gmqtt.ChainStore, client gmqtt.Client) {
-	//	log.Debug("session resumed...")
-	//})
+	return packets.CodeAccepted
 }

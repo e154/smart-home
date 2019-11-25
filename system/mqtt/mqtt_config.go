@@ -1,7 +1,7 @@
 package mqtt
 
 import (
-	"github.com/e154/smart-home/system/mqtt/gmqtt"
+	"github.com/DrmagicE/gmqtt"
 	"github.com/e154/smart-home/system/config"
 	"time"
 )

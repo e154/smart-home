@@ -47,8 +47,6 @@ func (c *Client) Connect() (err error) {
 	msg.SetKeepAlive(300)
 	msg.SetUsername([]byte("local"))
 	msg.SetPassword([]byte(c.authenticator.LocalClientUuid()))
-	//msg.SetWillTopic([]byte("will"))
-	//msg.SetWillMessage([]byte("send me home"))
 
 	// Connects to the remote server at 127.0.0.1 port 1883
 	if err = c.client.Connect(c.uri, msg); err != nil {
@@ -86,25 +84,6 @@ func (c *Client) Publish(v []byte) (err error) {
 		return
 	}
 	pubmsg.SetPayload(v)
-	if err = pubmsg.SetQoS(c.qos); err != nil {
-		return
-	}
-
-	// Publishes to the server by sending the message
-	c.client.Publish(pubmsg, nil)
-
-	return
-}
-
-
-func (c *Client) Pong() (err error) {
-
-	// Creates a new PUBLISH message with the appropriate contents for publishing
-	pubmsg := message.NewPublishMessage()
-	if err = pubmsg.SetTopic([]byte(c.topic + "/pong")); err != nil {
-		return
-	}
-	pubmsg.SetPayload([]byte("pong"))
 	if err = pubmsg.SetQoS(c.qos); err != nil {
 		return
 	}
