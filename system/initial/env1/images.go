@@ -238,6 +238,8 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 				subDir = "fan"
 			case strings.Contains(image.Name, "map"):
 				subDir = "map"
+			case strings.Contains(image.Name, "door"):
+				subDir = "door"
 			}
 
 			from := path.Join("data", "icons", subDir, image.Name)
