@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
+	"github.com/DrmagicE/gmqtt/plugin/management"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
@@ -68,10 +69,12 @@ func (m *Mqtt) runServer() {
 
 	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.Port))
 	if err != nil {
-		log.Error(err.Error())
+		panic(err.Error())
 	}
 
 	m.server.AddTCPListenner(ln)
+
+	m.server.AddPlugins(management.New(":8081", nil))
 
 	m.hooks()
 
