@@ -3,10 +3,9 @@ package mqtt
 import (
 	"context"
 	"fmt"
-	"github.com/DrmagicE/gmqtt"
-	"github.com/DrmagicE/gmqtt/pkg/packets"
-	"github.com/DrmagicE/gmqtt/plugin/management"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/mqtt/gmqtt"
+	"github.com/e154/smart-home/system/mqtt/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
 	"net"
@@ -27,7 +26,7 @@ type Mqtt struct {
 func NewMqtt(cfg *MqttConfig,
 	graceful *graceful_service.GracefulService,
 	authenticator *Authenticator,
-	scriptService *scripts.ScriptService ) (mqtt *Mqtt) {
+	scriptService *scripts.ScriptService) (mqtt *Mqtt) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,
@@ -69,7 +68,7 @@ func (m *Mqtt) runServer() {
 
 	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.Port))
 	if err != nil {
-		panic(err.Error())
+		log.Error(err.Error())
 	}
 
 	m.server.AddTCPListenner(ln)
@@ -122,12 +121,4 @@ func (m *Mqtt) hooks() {
 	//m.server.RegisterOnSessionResumed(func(cs gmqtt.ChainStore, client gmqtt.Client) {
 	//	log.Debug("session resumed...")
 	//})
-
-	m.server.RegisterOnSubscribe(func(cs gmqtt.ChainStore, client gmqtt.Client, topic packets.Topic) (qos uint8) {
-		log.Debugf("subscribe: %v", topic.Name)
-		if topic.Name == "test/nosubscribe" {
-			return packets.SUBSCRIBE_FAILURE
-		}
-		return topic.Qos
-	})
 }
