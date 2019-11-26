@@ -3,13 +3,12 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0b7f3239929b96ed3960e646a8852e225adf7d59928f2d66b7b56752d5ef213b"
+  digest = "1:d726c3d2449c6a729f9a3af15a2340b1fb79eee187b29d7ae61f95356fa514eb"
   name = "github.com/DrmagicE/gmqtt"
   packages = [
     ".",
     "logger",
     "pkg/packets",
-    "plugin/management",
   ]
   pruneopts = "UT"
   revision = "6f817756a9d60f6f5c2d4f073e5cf21b39bb0d2e"
@@ -191,6 +190,14 @@
   revision = "3605ed457bf7f8caa1371b4fafadadc026673479"
 
 [[projects]]
+  digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
   branch = "master"
   digest = "1:5c3444689562053b027ef3b96372e306adbe0d7d109b6cdd48d01eb80f8bab14"
   name = "github.com/jinzhu/copier"
@@ -237,6 +244,14 @@
   pruneopts = "UT"
   revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
   version = "v1.0.1"
+
+[[projects]]
+  branch = "move=glog"
+  digest = "1:30f1488e75532d0ff4aad0cb36c9bd9b7b9ea8140e494f3902c3c77e9bc38e84"
+  name = "github.com/koron/netx"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "46fe5d298e3d82f9eafca6783f58941f4e1f30bf"
 
 [[projects]]
   digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
@@ -446,9 +461,33 @@
   version = "1.6.3"
 
 [[projects]]
+  digest = "1:e096613fb7cf34743d49af87d197663cfccd61876e2219853005a57baedfa562"
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f2b07da1e2c38d5f12845a4f607e2e1018cbb1f5"
+  version = "v0.0.5"
+
+[[projects]]
+  digest = "1:524b71991fc7d9246cc7dc2d9e0886ccb97648091c63e30eef619e6862c955dd"
+  name = "github.com/spf13/pflag"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2e9d26c8c37aae03e3f9d4e90b7116f5accb7cab"
+  version = "v1.0.5"
+
+[[projects]]
   branch = "master"
   digest = "1:11395ff810f2ada545e57e8ba7ac23e5081662f4e105d8501506e55958bd5286"
   name = "github.com/surge/glog"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2578deb2b95c665e6b1ebabf304ce2085c9e1985"
+
+[[projects]]
+  branch = "master"
+  digest = "1:11395ff810f2ada545e57e8ba7ac23e5081662f4e105d8501506e55958bd5286"
+  name = "github.com/surgebase/glog"
   packages = ["."]
   pruneopts = "UT"
   revision = "2578deb2b95c665e6b1ebabf304ce2085c9e1985"
@@ -519,11 +558,17 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:80b14d5e8dc8ecc95154e3747028cfa3be6d590a85a60d0a633203419bbc9a19"
+  digest = "1:c84b10b445d1d77339bcb1e1d48590e6aba13873a944247b49bf936d0aa1eda1"
   name = "golang.org/x/net"
   packages = [
+    "bpf",
     "context",
+    "icmp",
     "idna",
+    "internal/iana",
+    "internal/socket",
+    "ipv4",
+    "ipv6",
     "webdav",
     "webdav/internal/xml",
   ]
@@ -633,6 +678,7 @@
     "github.com/iancoleman/strcase",
     "github.com/jinzhu/copier",
     "github.com/jinzhu/gorm",
+    "github.com/koron/netx",
     "github.com/lib/pq",
     "github.com/lox/go-servejs",
     "github.com/messagebird/go-rest-api",
@@ -658,6 +704,7 @@
     "github.com/smartystreets/assertions",
     "github.com/smartystreets/goconvey/convey",
     "github.com/smartystreets/goconvey/convey/reporting",
+    "github.com/spf13/cobra",
     "github.com/surgemq/message",
     "github.com/surgemq/surgemq/auth",
     "github.com/surgemq/surgemq/service",

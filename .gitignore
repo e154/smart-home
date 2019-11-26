@@ -21,3 +21,4 @@ snapshots/*
 bee.json
 /api/server/golang-swaggerui-example/
 /conf/notify.json
+/cmd/pingmq/pingmq
