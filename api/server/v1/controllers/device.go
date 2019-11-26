@@ -234,7 +234,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 	}
 
 	result := &models.Device{}
-	_ = common.Copy(&result, &device)
+	_ = common.Copy(&result, &device, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
