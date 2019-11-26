@@ -1160,7 +1160,7 @@ if res.error
   print 'error: ', res.error
 </code></pre>
 
-<p><strong>На выходе</strong></p>
+<p><strong>На входе</strong></p>
 
 <table>
 <thead>
@@ -1189,6 +1189,66 @@ if res.error
 <tr>
 <td><code>command</code></td>
 <td>type: array(int)</td>
+</tr>
+</tbody>
+</table>
+
+<p>варианты значения поля <code>func</code></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>1 битные функции</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>ReadCoils</td>
+</tr>
+
+<tr>
+<td>ReadDiscreteInputs</td>
+</tr>
+
+<tr>
+<td>WriteSingleCoil</td>
+</tr>
+
+<tr>
+<td>WriteMultipleCoils</td>
+</tr>
+</tbody>
+</table>
+
+<p>варианты значения поля <code>func</code></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>16 битные функции</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>ReadInputRegisters</td>
+</tr>
+
+<tr>
+<td>ReadHoldingRegisters</td>
+</tr>
+
+<tr>
+<td>ReadWriteMultipleRegisters</td>
+</tr>
+
+<tr>
+<td>WriteSingleRegister</td>
+</tr>
+
+<tr>
+<td>WriteMultipleRegisters</td>
 </tr>
 </tbody>
 </table>
