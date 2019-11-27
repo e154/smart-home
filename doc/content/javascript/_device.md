@@ -70,15 +70,33 @@ if res.error
   print 'error: ', res.error
 ```
 
-**На выходе**
+**На входе**
 
 **Значение**    | **Описание**
 ----------------|--------------
-  `func`        | type: string, вызываемая функция 
+  `func`        | type: string, вызываемая функция
   `address`     | type: int, адрес устройства
   `count`       | type: int
   `command`     | type: array(int) 
 
+варианты значения поля `func`
+
+**1 битные функции**|
+--------------------|
+ReadCoils           |
+ReadDiscreteInputs  |
+WriteSingleCoil     |
+WriteMultipleCoils  |
+
+варианты значения поля `func`
+
+**16 битные функции**       |
+----------------------------|
+ReadInputRegisters          |
+ReadHoldingRegisters        |
+ReadWriteMultipleRegisters  |
+WriteSingleRegister         |
+WriteMultipleRegisters      |
 
 ### .smartBus(command) {#deice_smart_bus}
 

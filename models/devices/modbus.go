@@ -34,6 +34,7 @@ type DevModBusRtuConfig struct {
 
 type DevModBusTcpConfig struct {
 	Validation
+	SlaveId     int    `json:"slave_id" mapstructure:"slave_id"`
 	AddressPort string `json:"address_port" mapstructure:"address_port"`
 }
 

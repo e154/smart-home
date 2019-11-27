@@ -46,6 +46,8 @@ func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 		out = &DevSmartBusConfig{}
 	case DevTypeCommand:
 		out = &DevCommandConfig{}
+	case DevTypeMqtt:
+		out = &DevMqttConfig{}
 	case DevTypeDefault:
 
 	default:
@@ -61,9 +63,15 @@ func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 	}
 
 	switch v := out.(type) {
+	case *DevModBusRtuConfig:
+		ok, errs = v.Valid()
+	case *DevModBusTcpConfig:
+		ok, errs = v.Valid()
 	case *DevSmartBusConfig:
 		ok, errs = v.Valid()
 	case *DevCommandConfig:
+		ok, errs = v.Valid()
+	case *DevMqttConfig:
 		ok, errs = v.Valid()
 	}
 
@@ -83,6 +91,9 @@ func (d *Device) SetProperties(properties interface{}) (ok bool, errs []*validat
 		ok, errs = v.Valid()
 	case *DevSmartBusConfig:
 		dType = DevTypeSmartBus
+		ok, errs = v.Valid()
+	case *DevMqttConfig:
+		dType = DevTypeMqtt
 		ok, errs = v.Valid()
 	case *DevCommandConfig:
 		dType = DevTypeCommand
@@ -112,12 +123,12 @@ func (d *Device) SetPropertiesFromMap(properties map[string]interface{}) (ok boo
 		out = &DevModBusRtuConfig{}
 	case DevTypeModbusTcp:
 		out = &DevModBusTcpConfig{}
-	//case DevTypeModbus:
-	//	out = &DevModBusConfig{}
 	case DevTypeSmartBus:
 		out = &DevSmartBusConfig{}
 	case DevTypeCommand:
 		out = &DevCommandConfig{}
+	case DevTypeMqtt:
+		out = &DevMqttConfig{}
 	default:
 		log.Warningf("unknown device config %v", d.Type)
 		err = fmt.Errorf("unknown device config %v", d.Type)

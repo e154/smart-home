@@ -2,6 +2,18 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:d726c3d2449c6a729f9a3af15a2340b1fb79eee187b29d7ae61f95356fa514eb"
+  name = "github.com/DrmagicE/gmqtt"
+  packages = [
+    ".",
+    "logger",
+    "pkg/packets",
+  ]
+  pruneopts = "UT"
+  revision = "6f817756a9d60f6f5c2d4f073e5cf21b39bb0d2e"
+
+[[projects]]
   digest = "1:d1665c44bd5db19aaee18d1b6233c99b0b9a986e8bccb24ef54747547a48027f"
   name = "github.com/PuerkitoBio/purell"
   packages = ["."]
@@ -146,12 +158,12 @@
   revision = "d547d1d9531ed93dbdebcbff7f83e7c876a1e0ee"
 
 [[projects]]
-  digest = "1:3af6be4fee7c08f81f13d36f04ffb63ad4b6b5aaba12cce96095c7c2863d4912"
+  digest = "1:cbec35fe4d5a4fba369a656a8cd65e244ea2c743007d8f6c1ccb132acf9d1296"
   name = "github.com/gorilla/mux"
   packages = ["."]
   pruneopts = "UT"
-  revision = "ed099d42384823742bba0bf9a72b53b55c9e2e38"
-  version = "v1.7.2"
+  revision = "00bdffe0f3c77e27d2cf6f5c70232a2d3e4d9c15"
+  version = "v1.7.3"
 
 [[projects]]
   digest = "1:345ad428d03cc89fa5498d61383d0d7f39afbe8731ca135c0ec92782285121d3"
@@ -176,6 +188,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "3605ed457bf7f8caa1371b4fafadadc026673479"
+
+[[projects]]
+  digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
 
 [[projects]]
   branch = "master"
@@ -224,6 +244,14 @@
   pruneopts = "UT"
   revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
   version = "v1.0.1"
+
+[[projects]]
+  branch = "move=glog"
+  digest = "1:30f1488e75532d0ff4aad0cb36c9bd9b7b9ea8140e494f3902c3c77e9bc38e84"
+  name = "github.com/koron/netx"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "46fe5d298e3d82f9eafca6783f58941f4e1f30bf"
 
 [[projects]]
   digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
@@ -314,11 +342,11 @@
 
 [[projects]]
   branch = "v3"
-  digest = "1:47360765b64ba68cc23420ec2967c7cca5b1d8a438493ac55945ef58e7560bc2"
+  digest = "1:9a616c5b6667d3de5380dfc2adefb956e9f3b3448fb2196fc81664e2240bce74"
   name = "github.com/olebedev/go-duktape"
   packages = ["."]
   pruneopts = "UT"
-  revision = "ccb656ba24c2a193e5650299767e2df1554725fd"
+  revision = "1e4459ed25ff207bef4c6693fa17a4d11575f6a7"
 
 [[projects]]
   digest = "1:5b3b29ce0e569f62935d9541dff2e16cc09df981ebde48e82259076a73a3d0c7"
@@ -433,9 +461,33 @@
   version = "1.6.3"
 
 [[projects]]
+  digest = "1:e096613fb7cf34743d49af87d197663cfccd61876e2219853005a57baedfa562"
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f2b07da1e2c38d5f12845a4f607e2e1018cbb1f5"
+  version = "v0.0.5"
+
+[[projects]]
+  digest = "1:524b71991fc7d9246cc7dc2d9e0886ccb97648091c63e30eef619e6862c955dd"
+  name = "github.com/spf13/pflag"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2e9d26c8c37aae03e3f9d4e90b7116f5accb7cab"
+  version = "v1.0.5"
+
+[[projects]]
   branch = "master"
   digest = "1:11395ff810f2ada545e57e8ba7ac23e5081662f4e105d8501506e55958bd5286"
   name = "github.com/surge/glog"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2578deb2b95c665e6b1ebabf304ce2085c9e1985"
+
+[[projects]]
+  branch = "master"
+  digest = "1:11395ff810f2ada545e57e8ba7ac23e5081662f4e105d8501506e55958bd5286"
+  name = "github.com/surgebase/glog"
   packages = ["."]
   pruneopts = "UT"
   revision = "2578deb2b95c665e6b1ebabf304ce2085c9e1985"
@@ -506,11 +558,17 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:80b14d5e8dc8ecc95154e3747028cfa3be6d590a85a60d0a633203419bbc9a19"
+  digest = "1:c84b10b445d1d77339bcb1e1d48590e6aba13873a944247b49bf936d0aa1eda1"
   name = "golang.org/x/net"
   packages = [
+    "bpf",
     "context",
+    "icmp",
     "idna",
+    "internal/iana",
+    "internal/socket",
+    "ipv4",
+    "ipv6",
     "webdav",
     "webdav/internal/xml",
   ]
@@ -607,6 +665,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/DrmagicE/gmqtt",
+    "github.com/DrmagicE/gmqtt/pkg/packets",
     "github.com/Syfaro/telegram-bot-api",
     "github.com/bouk/monkey",
     "github.com/dgrijalva/jwt-go",
@@ -618,6 +678,7 @@
     "github.com/iancoleman/strcase",
     "github.com/jinzhu/copier",
     "github.com/jinzhu/gorm",
+    "github.com/koron/netx",
     "github.com/lib/pq",
     "github.com/lox/go-servejs",
     "github.com/messagebird/go-rest-api",
@@ -643,6 +704,7 @@
     "github.com/smartystreets/assertions",
     "github.com/smartystreets/goconvey/convey",
     "github.com/smartystreets/goconvey/convey/reporting",
+    "github.com/spf13/cobra",
     "github.com/surgemq/message",
     "github.com/surgemq/surgemq/auth",
     "github.com/surgemq/surgemq/service",

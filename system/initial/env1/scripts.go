@@ -389,14 +389,14 @@ fetchStatus =->
     if res.error
         print 'error: ', res.error
         objects.forEach (obj)->
-            IC.Map.setElementState device, obj.name, 'ERROR'
+            IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
             return
         return
     else 
         # print 'ok: ', res.result
         objects.forEach (obj)->
             newStatus = getStatus(res.result[obj.id])
-            IC.Map.setElementState device, obj.name, obj.systemName + newStatus
+            IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
             return
         return
     

@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"strconv"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type ControllerDevice struct {
@@ -234,7 +234,7 @@ func (c ControllerDevice) UpdateDevice(ctx *gin.Context) {
 	}
 
 	result := &models.Device{}
-	_ = common.Copy(&result, &device)
+	_ = common.Copy(&result, &device, common.JsonEngine)
 
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)

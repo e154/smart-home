@@ -118,10 +118,6 @@ definitions:
           $ref: '#/definitions/DeviceAction'
         type: array
         x-go-name: Actions
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -141,8 +137,6 @@ definitions:
       name:
         type: string
         x-go-name: Name
-      node:
-        $ref: '#/definitions/Node'
       properties:
         $ref: '#/definitions/DeviceProperties'
       states:
@@ -156,12 +150,8 @@ definitions:
       type:
         type: string
         x-go-name: Type
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceAction:
     properties:
       created_at:
@@ -195,7 +185,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceActionScript:
     properties:
       id:
@@ -203,7 +193,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceProperties:
     allOf:
     - properties:
@@ -280,52 +270,13 @@ definitions:
           x-go-name: Timeout
       type: object
     - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
+        address_port:
           type: string
-          x-go-name: Parity
+          x-go-name: AddressPort
         slave_id:
           format: int64
           type: integer
           x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
       type: object
     - properties:
         baud:
@@ -351,153 +302,20 @@ definitions:
       type: object
     - type: object
     - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
+        address:
           type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
+          x-go-name: Address
+        password:
           type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
+          x-go-name: Password
+        user:
           type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
+          x-go-name: User
       type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
     description: |-
       An AllOfModel is composed out of embedded structs but it should build
       an allOf property
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceShort:
     properties:
       description:
@@ -517,18 +335,18 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceState:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceStateDevice'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
       id:
         format: int64
         type: integer
@@ -536,8 +354,12 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceStateDevice:
     properties:
       id:
@@ -882,18 +704,38 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       id:
         format: int64
         type: integer
         x-go-name: Id
+      image:
+        type: string
+        x-go-name: Image
+      mime_type:
+        type: string
+        x-go-name: MimeType
+      name:
+        type: string
+        x-go-name: Name
+      size:
+        format: int64
+        type: integer
+        x-go-name: Size
       thumb:
         type: string
         x-go-name: Thumb
+      title:
+        type: string
+        x-go-name: Title
       url:
         type: string
         x-go-name: Url
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Log:
     properties:
       body:
@@ -926,6 +768,37 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+  MapDevice:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/MapDeviceAction'
+        type: array
+        x-go-name: Actions
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
+      states:
+        items:
+          $ref: '#/definitions/MapDeviceState'
+        type: array
+        x-go-name: States
+      system_name:
+        type: string
+        x-go-name: SystemName
     type: object
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapDeviceAction:
@@ -965,10 +838,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapDeviceState:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       device_state:
         $ref: '#/definitions/DeviceState'
       device_state_id:
@@ -992,18 +861,10 @@ definitions:
       style:
         type: string
         x-go-name: Style
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapElement:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -1036,10 +897,6 @@ definitions:
       status:
         type: string
         x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
@@ -1047,7 +904,7 @@ definitions:
       zone:
         $ref: '#/definitions/MapZone'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapElementGraphSettings:
     properties:
       height:
@@ -1076,6 +933,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapFull:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -1093,8 +954,12 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapLayer:
     properties:
       description:
@@ -1151,7 +1016,7 @@ definitions:
         type: string
         x-go-name: Name
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   Message:
     properties:
       created_at:
@@ -1171,6 +1036,9 @@ definitions:
         format: int64
         type: integer
         x-go-name: Id
+      slack_text:
+        type: string
+        x-go-name: SlackText
       sms_text:
         type: string
         x-go-name: SmsText
@@ -1244,7 +1112,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDeviceAction:
     properties:
       description:
@@ -1266,7 +1134,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDeviceState:
     properties:
       description:
@@ -1278,7 +1146,7 @@ definitions:
         type: string
         x-go-name: SystemName
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewFlow:
     properties:
       description:
@@ -1351,7 +1219,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMapElement:
     properties:
       description:
@@ -1408,7 +1276,7 @@ definitions:
         type: string
         x-go-name: Status
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMapZone:
     properties:
       name:
@@ -1443,6 +1311,42 @@ definitions:
       status:
         type: string
         x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewNotifrMessage:
+    properties:
+      address:
+        type: string
+        x-go-name: Address
+      body_type:
+        type: string
+        x-go-name: BodyType
+      email_body:
+        type: string
+        x-go-name: EmailBody
+      email_from:
+        type: string
+        x-go-name: EmailFrom
+      email_subject:
+        type: string
+        x-go-name: EmailSubject
+      params:
+        additionalProperties:
+          type: string
+        type: object
+        x-go-name: Params
+      slack_text:
+        type: string
+        x-go-name: SlackText
+      sms_text:
+        type: string
+        x-go-name: SmsText
+      template:
+        type: string
+        x-go-name: Template
+      type:
+        type: string
+        x-go-name: Type
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewRole:
@@ -1670,6 +1574,16 @@ definitions:
       mb_name:
         type: string
         x-go-name: MbName
+      slack_token:
+        type: string
+        x-go-name: SlackToken
+      slack_user_name:
+        type: string
+        x-go-name: SlackUserName
+      telegram_chat_id:
+        format: int64
+        type: integer
+        x-go-name: TelegramChatId
       telegram_token:
         type: string
         x-go-name: TelegramToken
@@ -1691,7 +1605,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Prototype:
     properties:
       actions:
@@ -2131,7 +2045,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateDeviceAction:
     properties:
       description:
@@ -2161,7 +2075,7 @@ definitions:
         type: string
         x-go-name: SystemName
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateFlow:
     properties:
       description:
@@ -2253,7 +2167,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateMapElement:
     properties:
       description:
@@ -2314,7 +2228,7 @@ definitions:
         type: string
         x-go-name: Status
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateNode:
     properties:
       description:
@@ -2372,6 +2286,16 @@ definitions:
       mb_name:
         type: string
         x-go-name: MbName
+      slack_token:
+        type: string
+        x-go-name: SlackToken
+      slack_user_name:
+        type: string
+        x-go-name: SlackUserName
+      telegram_chat_id:
+        format: int64
+        type: integer
+        x-go-name: TelegramChatId
       telegram_token:
         type: string
         x-go-name: TelegramToken
@@ -5112,6 +5036,88 @@ paths:
       summary: search node
       tags:
       - node
+  /notifr:
+    post:
+      operationId: notifySendNewMessage
+      parameters:
+      - description: message object
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/NewNotifrMessage'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: repeat notification by id
+      tags:
+      - notifr
+  /notifr/{id}:
+    delete:
+      operationId: notifrDeleteById
+      parameters:
+      - description: notification ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete notification by id
+      tags:
+      - notifr
+  /notifr/{id}/repeat:
+    post:
+      operationId: notifyRepeatMessage
+      parameters:
+      - description: notification ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: repeat notification by id
+      tags:
+      - notifr
   /notifr/config:
     get:
       operationId: notifyGetSettings

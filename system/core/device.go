@@ -27,6 +27,15 @@ func (d *Device) RunCommand(name string, args []string) (result *DevCommandRespo
 	}
 
 	nodeResult, err := d.node.Send(d.dev, data)
+	if err != nil {
+		result.Error = err.Error()
+		return
+	}
+
+	if nodeResult.Response == nil || len(nodeResult.Response) == 0 {
+		result.Error = "return nil result from response"
+		return
+	}
 
 	if err = json.Unmarshal(nodeResult.Response, result); err != nil {
 		result.Error = err.Error()
