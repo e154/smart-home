@@ -46,6 +46,7 @@ type MqttSubscription struct {
 	At       time.Time `json:"at"`
 }
 
+// swagger:model
 type NewMqttPublish struct {
 	Topic   string `json:"topic"`
 	Qos     int    `json:"qos"`

@@ -82,7 +82,7 @@ func (m *Management) OnUnsubscribedWrapper(unsubscribe gmqtt.OnUnsubscribed) gmq
 
 // GetClients
 func (m *Management) GetClients(limit, offset int) (list []*ClientInfo, total int, err error) {
-	list, err = m.monitor.GetClients(offset, limit)
+	list, total, err = m.monitor.GetClients(offset, limit)
 	return
 }
 
@@ -94,7 +94,7 @@ func (m *Management) GetClient(clientId string) (client *ClientInfo, err error) 
 
 //GetSessions
 func (m *Management) GetSessions(limit, offset int) (list []*SessionInfo, total int, err error) {
-	list, err = m.monitor.GetSessions(offset, limit)
+	list, total, err = m.monitor.GetSessions(offset, limit)
 	return
 }
 
@@ -106,7 +106,7 @@ func (m *Management) GetSession(clientId string) (session *SessionInfo, err erro
 
 //GetSubscriptions
 func (m *Management) GetSubscriptions(clientId string, limit, offset int) (list []*SubscriptionInfo, total int, err error) {
-	list, err = m.monitor.GetClientSubscriptions(clientId, offset, limit)
+	list, total, err = m.monitor.GetClientSubscriptions(clientId, offset, limit)
 	return
 }
 

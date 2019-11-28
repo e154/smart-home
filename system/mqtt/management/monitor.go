@@ -71,18 +71,20 @@ func (m *monitor) deleteClientSubscriptions(clientID string) {
 }
 
 // GetClientSubscriptions
-func (m *monitor) GetClientSubscriptions(clientID string, offset, n int) ([]*SubscriptionInfo, error) {
+func (m *monitor) GetClientSubscriptions(clientID string, offset, n int) ([]*SubscriptionInfo, int, error) {
 	m.subMu.Lock()
 	defer m.subMu.Unlock()
 	rs := make([]*SubscriptionInfo, 0)
 	var err error
+	var total int
 	if _, ok := m.subscriptions[clientID]; ok {
 		fn := func(elem *list.Element) {
 			rs = append(rs, elem.Value.(*SubscriptionInfo))
 		}
+		total = m.subscriptions[clientID].rows.Len()
 		err = m.subscriptions[clientID].iterate(fn, offset, n)
 	}
-	return rs, err
+	return rs, total, err
 }
 
 
@@ -208,15 +210,16 @@ func (m *monitor) getClientByID(clientID string) (gmqtt.Client, error) {
 }
 
 // GetClients
-func (m *monitor) GetClients(offset, n int) ([]*ClientInfo, error) {
+func (m *monitor) GetClients(offset, n int) ([]*ClientInfo, int, error) {
 	rs := make([]*ClientInfo, 0)
 	fn := func(elem *list.Element) {
 		rs = append(rs, newClientInfo(elem.Value.(gmqtt.Client)))
 	}
 	m.clientMu.Lock()
 	m.clientList.iterate(fn, offset, n)
+	total := m.clientList.rows.Len()
 	m.clientMu.Unlock()
-	return rs, nil
+	return rs, total, nil
 }
 
 // GetSessionByID
@@ -231,13 +234,14 @@ func (m *monitor) GetSessionByID(clientID string) (*SessionInfo, error) {
 }
 
 // GetSessions
-func (m *monitor) GetSessions(offset, n int) ([]*SessionInfo, error) {
+func (m *monitor) GetSessions(offset, n int) ([]*SessionInfo, int, error) {
 	rs := make([]*SessionInfo, 0)
 	fn := func(elem *list.Element) {
 		rs = append(rs, newSessionInfo(elem.Value.(gmqtt.Client), m.config))
 	}
 	m.clientMu.Lock()
 	m.clientList.iterate(fn, offset, n)
+	total := m.clientList.rows.Len()
 	m.clientMu.Unlock()
-	return rs, nil
+	return rs, total, nil
 }

@@ -48,7 +48,9 @@ func NewMqtt(cfg *MqttConfig,
 
 func (m *Mqtt) Shutdown() {
 	log.Info("Server exiting")
-	m.server.Stop(context.Background())
+	if m.server != nil {
+		_ = m.server.Stop(context.Background())
+	}
 }
 
 func (m *Mqtt) runServer() {
