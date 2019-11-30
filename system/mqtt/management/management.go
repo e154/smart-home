@@ -18,6 +18,8 @@ func NewManagement() *Management {
 }
 
 func (m *Management) Load(service gmqtt.ServerService) error {
+	m.service = service
+	m.monitor.config = service.GetConfig()
 	return nil
 }
 
