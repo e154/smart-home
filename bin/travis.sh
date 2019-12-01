@@ -67,9 +67,6 @@ main() {
     --build)
     __build
     ;;
-    --build_pingmq)
-    __build_pingmq
-    ;;
     --docker_deploy)
     __docker_deploy
     ;;
@@ -147,10 +144,14 @@ __build_pingmq() {
     echo ""
 
     xgo --out=${TMP_DIR} --targets=linux/*,windows/*,darwin/* .
+
+    cp ${ROOT}/bin/pingmq ${TMP_DIR}
+
 }
 
 __build() {
 
+    __build_pingmq
     __docs_deploy
 
     # build
