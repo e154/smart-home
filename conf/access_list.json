@@ -725,5 +725,39 @@
       "method": "post",
       "description": ""
     }
+  },
+  "mqtt": {
+    "close_client": {
+      "actions": [
+        "/api/v1/mqtt/client/[\\w]+"
+      ],
+      "method": "delete",
+      "description": ""
+    },
+    "close_topic": {
+      "actions": [
+        "/api/v1/mqtt/client/[\\w]+/topic"
+      ],
+      "method": "delete",
+      "description": ""
+    },
+    "read": {
+      "actions": [
+        "/api/v1/mqtt/client/[\\w]+",
+        "/api/v1/mqtt/client/[\\w]+/session",
+        "/api/v1/mqtt/client/[\\w]+/subscriptions",
+        "/api/v1/mqtt/clients",
+        "/api/v1/mqtt/sessions"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "publish": {
+      "actions": [
+        "/api/v1/mqtt/publish"
+      ],
+      "method": "post",
+      "description": ""
+    }
   }
 }

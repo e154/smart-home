@@ -134,8 +134,24 @@ __docs_deploy() {
     set -o errexit
 }
 
+__build_pingmq() {
+
+    cd ${ROOT}/cmd/pingmq
+
+    echo ""
+    echo "build command:"
+    echo "xgo --out=${TMP_DIR} --targets=linux/*,windows/*,darwin/* ."
+    echo ""
+
+    xgo --out=${TMP_DIR} --targets=linux/*,windows/*,darwin/* .
+
+    cp ${ROOT}/bin/pingmq ${TMP_DIR}
+
+}
+
 __build() {
 
+    __build_pingmq
     __docs_deploy
 
     # build
@@ -172,6 +188,9 @@ __build() {
     chmod +x ${TMP_DIR}/data/scripts/ping.sh
 
     cd ${TMP_DIR}
+
+    ls -l
+
     echo "tar: ${ARCHIVE} copy to ${HOME}"
 
     # create arch

@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
@@ -36,6 +37,7 @@ type Endpoint struct {
 	Template         *TemplateEndpoint
 	Notify           *NotifyEndpoint
 	MessageDelivery  *MessageDeliveryEndpoint
+	Mqtt             *MqttEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
@@ -43,8 +45,9 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	scriptService *scripts.ScriptService,
 	accessList *access_list.AccessListService,
 	gate *gate_client.GateClient,
-	notify *notify.Notify) *Endpoint {
-	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify)
+	notify *notify.Notify,
+	mqtt *mqtt.Mqtt) *Endpoint {
+	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify, mqtt)
 	return &Endpoint{
 		Auth:             NewAuthEndpoint(common),
 		Device:           NewDeviceEndpoint(common),
@@ -67,5 +70,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Template:         NewTemplateEndpoint(common),
 		Notify:           NewNotifyEndpoint(common),
 		MessageDelivery:  NewMessageDeliveryEndpoint(common),
+		Mqtt:             NewMqttEndpoint(common),
 	}
 }

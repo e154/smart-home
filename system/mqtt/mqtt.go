@@ -6,6 +6,7 @@ import (
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/mqtt/management"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/op/go-logging"
 	"net"
@@ -21,6 +22,7 @@ type Mqtt struct {
 	server        *gmqtt.Server
 	clients       []*Client
 	authenticator *Authenticator
+	management    *management.Management
 }
 
 func NewMqtt(cfg *MqttConfig,
@@ -31,8 +33,10 @@ func NewMqtt(cfg *MqttConfig,
 	mqtt = &Mqtt{
 		cfg:           cfg,
 		authenticator: authenticator,
+		management:    management.NewManagement(),
 	}
 
+	// javascript binding
 	scriptService.PushStruct("Mqtt", NewMqttBind(mqtt))
 
 	go mqtt.runServer()
@@ -44,7 +48,9 @@ func NewMqtt(cfg *MqttConfig,
 
 func (m *Mqtt) Shutdown() {
 	log.Info("Server exiting")
-	m.server.Stop(context.Background())
+	if m.server != nil {
+		_ = m.server.Stop(context.Background())
+	}
 }
 
 func (m *Mqtt) runServer() {
@@ -72,7 +78,9 @@ func (m *Mqtt) runServer() {
 	}
 
 	m.server.AddTCPListenner(ln)
-	//m.server.AddPlugins(management.New(":8081", nil))
+
+	// management
+	m.server.AddPlugins(m.management)
 
 	m.server.RegisterOnConnect(m.OnConnect)
 	m.server.RegisterOnConnected(m.OnConnected)
@@ -119,4 +127,8 @@ func (m *Mqtt) OnConnect(cs gmqtt.ChainStore, client gmqtt.Client) (code uint8) 
 	}
 
 	return packets.CodeAccepted
+}
+
+func (m *Mqtt) Management() IManagement {
+	return m.management
 }

@@ -154,15 +154,15 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceAction:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceActionDevice'
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
       id:
         format: int64
         type: integer
@@ -172,12 +172,8 @@ definitions:
         x-go-name: Name
       script:
         $ref: '#/definitions/DeviceActionScript'
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceActionDevice:
     properties:
       id:
@@ -185,7 +181,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceActionScript:
     properties:
       id:
@@ -367,7 +363,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Error:
     properties:
       code:
@@ -770,37 +766,6 @@ definitions:
         $ref: '#/definitions/MapOptions'
     type: object
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapDevice:
-    properties:
-      actions:
-        items:
-          $ref: '#/definitions/MapDeviceAction'
-        type: array
-        x-go-name: Actions
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      image:
-        $ref: '#/definitions/Image'
-      image_id:
-        format: int64
-        type: integer
-        x-go-name: ImageId
-      states:
-        items:
-          $ref: '#/definitions/MapDeviceState'
-        type: array
-        x-go-name: States
-      system_name:
-        type: string
-        x-go-name: SystemName
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapDeviceAction:
     properties:
       created_at:
@@ -865,6 +830,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapElement:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -897,6 +866,10 @@ definitions:
       status:
         type: string
         x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
@@ -904,7 +877,7 @@ definitions:
       zone:
         $ref: '#/definitions/MapZone'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElementGraphSettings:
     properties:
       height:
@@ -918,7 +891,7 @@ definitions:
         type: integer
         x-go-name: Width
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapElementGraphSettingsPosition:
     properties:
       left:
@@ -930,7 +903,7 @@ definitions:
         type: integer
         x-go-name: Top
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapFull:
     properties:
       created_at:
@@ -962,6 +935,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapLayer:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -986,12 +963,16 @@ definitions:
       status:
         type: string
         x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
         x-go-name: Weight
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapOptions:
     properties:
       element_option_text:
@@ -1005,7 +986,7 @@ definitions:
         type: number
         x-go-name: Zoom
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapZone:
     properties:
       id:
@@ -1016,7 +997,7 @@ definitions:
         type: string
         x-go-name: Name
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Message:
     properties:
       created_at:
@@ -1091,6 +1072,131 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MqttClient:
+    properties:
+      clean_session:
+        type: boolean
+        x-go-name: CleanSession
+      client_id:
+        type: string
+        x-go-name: ClientID
+      connected_at:
+        format: date-time
+        type: string
+        x-go-name: ConnectedAt
+      disconnected_at:
+        format: date-time
+        type: string
+        x-go-name: DisconnectedAt
+      keep_alive:
+        format: uint16
+        type: integer
+        x-go-name: KeepAlive
+      local_addr:
+        type: string
+        x-go-name: LocalAddr
+      password:
+        type: string
+        x-go-name: Password
+      remote_addr:
+        type: string
+        x-go-name: RemoteAddr
+      username:
+        type: string
+        x-go-name: Username
+      will_flag:
+        type: boolean
+        x-go-name: WillFlag
+      will_payload:
+        type: string
+        x-go-name: WillPayload
+      will_qos:
+        format: uint8
+        type: integer
+        x-go-name: WillQos
+      will_retain:
+        type: boolean
+        x-go-name: WillRetain
+      will_topic:
+        type: string
+        x-go-name: WillTopic
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MqttSession:
+    properties:
+      await_rel_len:
+        format: int64
+        type: integer
+        x-go-name: AwaitRelLen
+      clean_session:
+        type: boolean
+        x-go-name: CleanSession
+      client_id:
+        type: string
+        x-go-name: ClientID
+      connected_at:
+        format: date-time
+        type: string
+        x-go-name: ConnectedAt
+      disconnected_at:
+        format: date-time
+        type: string
+        x-go-name: DisconnectedAt
+      inflight_len:
+        format: int64
+        type: integer
+        x-go-name: InflightLen
+      max_await_rel:
+        format: int64
+        type: integer
+        x-go-name: MaxAwaitRel
+      max_inflight:
+        format: int64
+        type: integer
+        x-go-name: MaxInflight
+      max_msg_queue:
+        format: int64
+        type: integer
+        x-go-name: MaxMsgQueue
+      msg_delivered_total:
+        format: int64
+        type: integer
+        x-go-name: MsgDeliveredTotal
+      msg_dropped_total:
+        format: int64
+        type: integer
+        x-go-name: MsgDroppedTotal
+      msg_queue_len:
+        format: int64
+        type: integer
+        x-go-name: MsgQueueLen
+      status:
+        type: string
+        x-go-name: Status
+      subscriptions:
+        format: int64
+        type: integer
+        x-go-name: Subscriptions
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MqttSubscription:
+    properties:
+      at:
+        format: date-time
+        type: string
+        x-go-name: At
+      client_id:
+        type: string
+        x-go-name: ClientID
+      name:
+        type: string
+        x-go-name: Name
+      qos:
+        format: uint8
+        type: integer
+        x-go-name: Qos
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDevice:
     properties:
       description:
@@ -1112,7 +1218,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceAction:
     properties:
       description:
@@ -1126,7 +1232,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDeviceNode:
     properties:
       id:
@@ -1134,7 +1240,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceState:
     properties:
       description:
@@ -1146,7 +1252,7 @@ definitions:
         type: string
         x-go-name: SystemName
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewFlow:
     properties:
       description:
@@ -1282,6 +1388,26 @@ definitions:
       name:
         type: string
         x-go-name: Name
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewMqttPublish:
+    properties:
+      payload:
+        items:
+          format: uint8
+          type: integer
+        type: array
+        x-go-name: Payload
+      qos:
+        format: int64
+        type: integer
+        x-go-name: Qos
+      retain:
+        type: boolean
+        x-go-name: Retain
+      topic:
+        type: string
+        x-go-name: Topic
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewNode:
@@ -2045,7 +2171,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateDeviceAction:
     properties:
       description:
@@ -2063,7 +2189,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateDeviceState:
     properties:
       description:
@@ -4843,6 +4969,244 @@ paths:
       summary: search map
       tags:
       - map
+  /mqtt/client/{id}:
+    delete:
+      operationId: mqttCloseClient
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: close client
+      tags:
+      - mqtt
+    get:
+      operationId: mqttClientGetById
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MqttClient'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get client by ID
+      tags:
+      - mqtt
+  /mqtt/client/{id}/session:
+    get:
+      operationId: mqttClientGetById
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MqttSession'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get session by client ID
+      tags:
+      - mqtt
+  /mqtt/client/{id}/subscriptions:
+    get:
+      operationId: mqttSubscriptionList
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MqttSubscriptionList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get subscription list
+      tags:
+      - mqtt
+  /mqtt/client/{id}/topic:
+    delete:
+      operationId: mqttUnsubscribeTopic
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: topic
+        in: query
+        name: topic
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete mqtt by id
+      tags:
+      - mqtt
+  /mqtt/clients:
+    get:
+      operationId: mqttClientList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MqttClientList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get client list
+      tags:
+      - mqtt
+  /mqtt/publish:
+    post:
+      operationId: mqttPublish
+      parameters:
+      - description: publish params
+        in: body
+        name: mqtt
+        required: true
+        schema:
+          $ref: '#/definitions/NewMqttPublish'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: publish
+      tags:
+      - mqtt
+  /mqtt/sessions:
+    get:
+      operationId: mqttSessionList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MqttSessionList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get session list
+      tags:
+      - mqtt
   /node:
     post:
       operationId: nodeAdd
@@ -7131,6 +7495,81 @@ responses:
         items:
           items:
             $ref: '#/definitions/MessageDelivery'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MqttClientList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MqttClient'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MqttSessionList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MqttSession'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MqttSubscriptionList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MqttSubscription'
           type: array
           x-go-name: Items
         meta:
