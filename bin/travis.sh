@@ -67,6 +67,9 @@ main() {
     --build)
     __build
     ;;
+    --build_pingmq)
+    __build_pingmq
+    ;;
     --docker_deploy)
     __docker_deploy
     ;;
@@ -132,6 +135,18 @@ __docs_deploy() {
     echo -e "Done documentation deploy.\n"
 
     set -o errexit
+}
+
+__build_pingmq() {
+
+    cd ${ROOT}/cmd/pingmq
+
+    echo ""
+    echo "build command:"
+    echo "xgo --out=${TMP_DIR} --targets=linux/*,windows/*,darwin/* ."
+    echo ""
+
+    xgo --out=${TMP_DIR} --targets=linux/*,windows/*,darwin/* .
 }
 
 __build() {
