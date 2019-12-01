@@ -188,6 +188,9 @@ __build() {
     chmod +x ${TMP_DIR}/data/scripts/ping.sh
 
     cd ${TMP_DIR}
+
+    ls -l
+
     echo "tar: ${ARCHIVE} copy to ${HOME}"
 
     # create arch
