@@ -42,6 +42,7 @@ type Adaptors struct {
 	Template         *Template
 	Message          *Message
 	MessageDelivery  *MessageDelivery
+	FlowSubscription *FlowSubscription
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -83,6 +84,7 @@ func NewAdaptors(db *gorm.DB,
 		Template:         GetTemplateAdaptor(db),
 		Message:          GetMessageAdaptor(db),
 		MessageDelivery:  GetMessageDeliveryAdaptor(db),
+		FlowSubscription: GetFlowSubscriptionAdaptor(db),
 	}
 
 	return

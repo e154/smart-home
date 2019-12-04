@@ -22,6 +22,7 @@ type Flow struct {
 	Connections        []*Connection
 	FlowElements       []*FlowElement
 	Workers            []*Worker
+	Subscriptions      []*FlowSubscription
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 }
@@ -146,12 +147,14 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 	flow.Connections = make([]*Connection, 0)
 	flow.FlowElements = make([]*FlowElement, 0)
 	flow.Workers = make([]*Worker, 0)
+	flow.Subscriptions = make([]*FlowSubscription, 0)
 	flow.Workflow = &Workflow{}
 
 	n.Db.Model(flow).
 		Related(&flow.Connections).
 		Related(&flow.FlowElements).
-		Related(&flow.Workflow)
+		Related(&flow.Workflow).
+		Related(&flow.Subscriptions)
 
 	if flow.Workflow.WorkflowScenarioId != nil {
 		flow.Workflow.WorkflowScenario = &WorkflowScenario{}

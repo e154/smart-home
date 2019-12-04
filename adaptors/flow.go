@@ -125,6 +125,7 @@ func (n *Flow) fromDb(dbFlow *db.Flow) (flow *m.Flow) {
 		Workers:            make([]*m.Worker, 0),
 		FlowElements:       make([]*m.FlowElement, 0),
 		Connections:        make([]*m.Connection, 0),
+		Subscriptions:      make([]*m.FlowSubscription, 0),
 		CreatedAt:          dbFlow.CreatedAt,
 		UpdatedAt:          dbFlow.UpdatedAt,
 	}
@@ -159,6 +160,15 @@ func (n *Flow) fromDb(dbFlow *db.Flow) (flow *m.Flow) {
 		for _, dbConn := range dbFlow.Connections {
 			con := connectionAdaptor.fromDb(dbConn)
 			flow.Connections = append(flow.Connections, con)
+		}
+	}
+
+	// Subscriptions
+	if len(dbFlow.Subscriptions) > 0 {
+		subscriptionsAdaptor := GetFlowSubscriptionAdaptor(n.db)
+		for _, dbVer := range dbFlow.Subscriptions {
+			con := subscriptionsAdaptor.fromDb(dbVer)
+			flow.Subscriptions = append(flow.Subscriptions, con)
 		}
 	}
 
