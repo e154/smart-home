@@ -386,3 +386,54 @@ func (c ControllerMqtt) CloseClient(ctx *gin.Context) {
 	NewSuccess().Send(ctx)
 	return
 }
+
+// swagger:operation GET /mqtt/search_topic mqttSearchTopic
+// ---
+// summary: search mqtt topic
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - mqtt
+// parameters:
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/MqttSearchSubscriptionResult'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerMqtt) SearchTopic(ctx *gin.Context) {
+
+	query, limit, offset := c.select2(ctx)
+	items, _, err := c.endpoint.Mqtt.SearchTopic(query, limit, offset)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	subscriptions := make([]*models.MqttSubscription, 0)
+	_ = common.Copy(&subscriptions, &items, common.JsonEngine)
+
+	resp := NewSuccess()
+	resp.Item("subscriptions", subscriptions)
+	resp.Send(ctx)
+}

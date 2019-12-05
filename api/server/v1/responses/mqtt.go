@@ -40,3 +40,11 @@ type MqttSubscriptionList struct {
 		} `json:"meta"`
 	}
 }
+
+// swagger:response MqttSearchSubscriptionResult
+type MqttSearchSubscriptionResult struct {
+	// in:body
+	Body struct {
+		Subscriptions []*models.MqttSubscription `json:"subscriptions"`
+	}
+}

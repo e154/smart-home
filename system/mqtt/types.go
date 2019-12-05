@@ -12,4 +12,5 @@ type IManagement interface {
 	Unsubscribe(clientId, topic string) (err error)
 	Publish(topic string, qos int, payload []byte, retain bool) (err error)
 	CloseClient(clientId string) (err error)
+	SearchTopic(query string) (result []*management.SubscriptionInfo, err error)
 }
