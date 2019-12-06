@@ -6,6 +6,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"sync"
 	"time"
@@ -21,6 +22,7 @@ type Workflow struct {
 	engine          *scripts.Engine
 	cron            *cr.Cron
 	core            *Core
+	mqtt            *mqtt.Mqtt
 	nextScenario    *m.WorkflowScenario
 	isRuning        bool
 	scenarioEntered bool
@@ -30,7 +32,8 @@ func NewWorkflow(model *m.Workflow,
 	adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
 	cron *cr.Cron,
-	core *Core) (workflow *Workflow) {
+	core *Core,
+	mqtt *mqtt.Mqtt) (workflow *Workflow) {
 
 	workflow = &Workflow{
 		Storage:  NewStorage(),
@@ -40,6 +43,7 @@ func NewWorkflow(model *m.Workflow,
 		Flows:    make(map[int64]*Flow),
 		cron:     cron,
 		core:     core,
+		mqtt:     mqtt,
 	}
 
 	return
@@ -143,7 +147,7 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 	wf.Unlock()
 
 	var model *Flow
-	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts, wf.cron, wf.core); err != nil {
+	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts, wf.cron, wf.core, wf.mqtt); err != nil {
 		log.Error(err.Error())
 		return
 	}

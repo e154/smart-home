@@ -290,7 +290,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b)
+	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt)
 
 	if err = wf.Run(); err != nil {
 		return
