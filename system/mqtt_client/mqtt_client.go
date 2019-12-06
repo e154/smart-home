@@ -85,6 +85,16 @@ func (c *Client) Unsubscribe(topic string) (err error) {
 	return
 }
 
+func (c *Client) UnsubscribeAll() {
+
+	for topic, _ := range c.subscribes {
+		if token := c.client.Unsubscribe(topic); token.Error() != nil {
+			log.Error(token.Error().Error())
+		}
+	}
+	c.subscribes = make(map[string]Subscribe)
+}
+
 func (c *Client) Publish(topic string, payload interface{}) (err error) {
 	if c.client != nil && (c.client.IsConnected()) {
 		c.client.Publish(topic, c.cfg.Qos, false, payload)

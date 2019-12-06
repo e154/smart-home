@@ -9,9 +9,10 @@ import (
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
-	"github.com/surgemq/message"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"sync"
 	"time"
 )
@@ -31,7 +32,7 @@ type Flow struct {
 	cron          *cr.Cron
 	core          *Core
 	nextScenario  bool
-	//mqttClient    *mqtt_client.Client
+	mqttClient    *mqtt_client.Client
 	sync.Mutex
 	isRunning bool
 }
@@ -76,18 +77,25 @@ func NewFlow(model *m.Flow,
 	err = flow.InitWorkers()
 
 	// mqtt subscriptions
-	//topic := fmt.Sprintf("/flow/%d", flow.Model.Id)
-	//if flow.mqttClient, err = mqtt.NewClient(topic); err == nil {
-	//	if err = flow.mqttClient.Connect(); err != nil {
-	//		log.Warning(err.Error())
-	//		return
-	//	}
-	//	//for _, sub := range flow.Model.Subscriptions {
-	//	//	if err = flow.mqttClient.Subscribe(sub.Topic, nil, flow.onPublish); err != nil {
-	//	//		log.Warning(err.Error())
-	//	//	}
-	//	//}
-	//}
+	if flow.mqttClient, err = mqtt.NewClient(nil); err == nil {
+		if err = flow.mqttClient.Connect(); err != nil {
+			log.Warning(err.Error())
+			return
+		}
+
+		for _, subParams := range flow.Model.Subscriptions {
+
+			sub := mqtt_client.Subscribe{
+				Qos:      0,
+				Callback: flow.onPublish,
+			}
+
+			topic := fmt.Sprintf("%s", subParams.Topic)
+			if err := flow.mqttClient.Subscribe(topic, sub); err != nil {
+				log.Warning(err.Error())
+			}
+		}
+	}
 
 	return
 }
@@ -100,13 +108,9 @@ func (f *Flow) Remove() {
 		f.RemoveWorker(worker.Model)
 	}
 
-	//if f.mqttClient != nil {
-	//	for _, sub := range f.Model.Subscriptions {
-	//		if err := f.mqttClient.Unsubscribe(sub.Topic, nil); err != nil {
-	//			log.Warningf(err.Error())
-	//		}
-	//	}
-	//}
+	if f.mqttClient != nil {
+		f.mqttClient.UnsubscribeAll()
+	}
 
 	timeout := time.After(3 * time.Second)
 	for {
@@ -465,7 +469,6 @@ func (f *Flow) defineCircularConnection(ctx context.Context) (newCtx context.Con
 	return
 }
 
-func (f *Flow) onPublish(msg *message.PublishMessage) (err error) {
+func (f *Flow) onPublish(client MQTT.Client, msg MQTT.Message) {
 
-	return nil
 }

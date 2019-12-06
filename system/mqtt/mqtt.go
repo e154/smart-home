@@ -107,7 +107,9 @@ func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err er
 
 	cfg.Username = "local"
 	cfg.Password = m.authenticator.Id.String()
-	cfg.ClientID = uuid.NewV4().String()
+	if cfg.ClientID == "" {
+		cfg.ClientID = uuid.NewV4().String()
+	}
 	cfg.Broker = fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.Port)
 
 	if c, err = mqtt_client.NewClient(cfg); err != nil {
