@@ -18,7 +18,7 @@ type Node struct {
 	*m.Node
 	errors     int64
 	ConnStatus string
-	mqttClient *mqtt_client.Client2
+	mqttClient *mqtt_client.Client
 	lastPing   time.Time
 	stat       *NodeStatModel
 	sync.Mutex

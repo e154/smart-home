@@ -23,7 +23,7 @@ var (
 type Mqtt struct {
 	cfg           *MqttConfig
 	server        *gmqtt.Server
-	clients       []*mqtt_client.Client2
+	clients       []*mqtt_client.Client
 	authenticator *mqtt_authenticator.Authenticator
 	management    *management.Management
 }
@@ -93,7 +93,7 @@ func (m *Mqtt) runServer() {
 	m.server.Run()
 }
 
-func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client2, err error) {
+func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err error) {
 
 	if cfg == nil {
 		cfg = &mqtt_client.Config{
@@ -110,7 +110,7 @@ func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client2, err e
 	cfg.ClientID = uuid.NewV4().String()
 	cfg.Broker = fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.Port)
 
-	if c, err = mqtt_client.NewClient2(cfg); err != nil {
+	if c, err = mqtt_client.NewClient(cfg); err != nil {
 		return
 	}
 

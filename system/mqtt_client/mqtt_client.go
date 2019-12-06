@@ -10,17 +10,17 @@ var (
 	log = logging.MustGetLogger("mqtt_client")
 )
 
-type Client2 struct {
+type Client struct {
 	cfg        *Config
 	client     MQTT.Client
 	subscribes map[string]Subscribe
 }
 
-func NewClient2(cfg *Config) (client *Client2, err error) {
+func NewClient(cfg *Config) (client *Client, err error) {
 
 	log.Infof("new queue client(%s) uri(%s)", cfg.ClientID, cfg.Broker)
 
-	client = &Client2{
+	client = &Client{
 		cfg:        cfg,
 		subscribes: make(map[string]Subscribe),
 	}
@@ -42,7 +42,7 @@ func NewClient2(cfg *Config) (client *Client2, err error) {
 	return
 }
 
-func (c *Client2) Connect() (err error) {
+func (c *Client) Connect() (err error) {
 
 	log.Infof("Connect to server %s", c.cfg.Broker)
 
@@ -53,7 +53,7 @@ func (c *Client2) Connect() (err error) {
 	return
 }
 
-func (c *Client2) Disconnect() {
+func (c *Client) Disconnect() {
 	if c.client == nil {
 		return
 	}
@@ -63,7 +63,7 @@ func (c *Client2) Disconnect() {
 	c.client = nil
 }
 
-func (c *Client2) Subscribe(topic string, params Subscribe) (err error) {
+func (c *Client) Subscribe(topic string, params Subscribe) (err error) {
 
 	if _, ok := c.subscribes[topic]; !ok {
 		c.subscribes[topic] = params
@@ -76,7 +76,7 @@ func (c *Client2) Subscribe(topic string, params Subscribe) (err error) {
 	return
 }
 
-func (c *Client2) Unsubscribe(topic string) (err error) {
+func (c *Client) Unsubscribe(topic string) (err error) {
 
 	if token := c.client.Unsubscribe(topic); token.Wait() && token.Error() != nil {
 		log.Error(token.Error().Error())
@@ -85,18 +85,18 @@ func (c *Client2) Unsubscribe(topic string) (err error) {
 	return
 }
 
-func (c *Client2) Publish(topic string, payload interface{}) (err error) {
+func (c *Client) Publish(topic string, payload interface{}) (err error) {
 	if c.client != nil && (c.client.IsConnected()) {
 		c.client.Publish(topic, c.cfg.Qos, false, payload)
 	}
 	return
 }
 
-func (c *Client2) IsConnected() bool {
+func (c *Client) IsConnected() bool {
 	return c.client.IsConnectionOpen()
 }
 
-func (c *Client2) onConnectionLostHandler(client MQTT.Client, e error) {
+func (c *Client) onConnectionLostHandler(client MQTT.Client, e error) {
 
 	log.Debug("connection lost...")
 
@@ -107,7 +107,7 @@ func (c *Client2) onConnectionLostHandler(client MQTT.Client, e error) {
 	}
 }
 
-func (c *Client2) onConnect(client MQTT.Client) {
+func (c *Client) onConnect(client MQTT.Client) {
 
 	log.Debug("connected...")
 

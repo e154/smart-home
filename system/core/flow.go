@@ -31,7 +31,7 @@ type Flow struct {
 	cron          *cr.Cron
 	core          *Core
 	nextScenario  bool
-	//mqttClient    *mqtt.Client
+	//mqttClient    *mqtt_client.Client
 	sync.Mutex
 	isRunning bool
 }
