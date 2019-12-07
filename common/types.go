@@ -37,7 +37,7 @@ const (
 	PrototypeTypeText   = PrototypeType("text")
 	PrototypeTypeImage  = PrototypeType("image")
 	PrototypeTypeDevice = PrototypeType("device")
-	PrototypeTypeEmpty = PrototypeType("")
+	PrototypeTypeEmpty  = PrototypeType("")
 )
 
 type LogLevel string

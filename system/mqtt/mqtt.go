@@ -105,8 +105,8 @@ func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err er
 		}
 	}
 
-	cfg.Username = "local"
-	cfg.Password = m.authenticator.Id.String()
+	cfg.Username = m.authenticator.Login()
+	cfg.Password = m.authenticator.Password()
 	if cfg.ClientID == "" {
 		cfg.ClientID = uuid.NewV4().String()
 	}

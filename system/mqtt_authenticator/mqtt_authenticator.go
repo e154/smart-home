@@ -19,14 +19,16 @@ var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
 type Authenticator struct {
 	adaptors *adaptors.Adaptors
 	name     string
-	Id       uuid.UUID
+	login    string
+	password string
 }
 
 func NewAuthenticator(adaptors *adaptors.Adaptors) *Authenticator {
 	a := &Authenticator{
-		name:     "base",
 		adaptors: adaptors,
-		Id:       uuid.NewV4(),
+		name:     "base",
+		login:    "local",
+		password: uuid.NewV4().String(),
 	}
 	a.Register()
 	return a
@@ -41,7 +43,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 		err = ErrBadLoginOrPassword
 	}
 
-	if login == "local" && pass == a.Id.String() {
+	if login == a.login && pass == a.password {
 		return
 	}
 
@@ -66,6 +68,10 @@ func (a Authenticator) Name() string {
 	return a.name
 }
 
-func (a Authenticator) LocalClientUuid() string {
-	return a.Id.String()
+func (a Authenticator) Password() string {
+	return a.password
+}
+
+func (a Authenticator) Login() string {
+	return a.login
 }

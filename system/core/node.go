@@ -133,22 +133,14 @@ func (n *Node) Connect() *Node {
 	time.Sleep(time.Second)
 
 	// /home/node/resp
-	sub1 := mqtt_client.Subscribe{
-		Qos:      0,
-		Callback: n.onPublish,
-	}
 	topic := fmt.Sprintf("/home/%s/resp", n.Name)
-	if err := n.mqttClient.Subscribe(topic, sub1); err != nil {
+	if err := n.mqttClient.Subscribe(topic, 0, n.onPublish); err != nil {
 		log.Warning(err.Error())
 	}
 
 	// /home/node/ping
-	sub2 := mqtt_client.Subscribe{
-		Qos:      0,
-		Callback: n.ping,
-	}
 	topic = fmt.Sprintf("/home/%s/ping", n.Name)
-	if err := n.mqttClient.Subscribe(topic, sub2); err != nil {
+	if err := n.mqttClient.Subscribe(topic, 0, n.ping); err != nil {
 		log.Warning(err.Error())
 	}
 

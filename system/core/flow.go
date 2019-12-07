@@ -85,13 +85,8 @@ func NewFlow(model *m.Flow,
 
 		for _, subParams := range flow.Model.Subscriptions {
 
-			sub := mqtt_client.Subscribe{
-				Qos:      0,
-				Callback: flow.onPublish,
-			}
-
 			topic := fmt.Sprintf("%s", subParams.Topic)
-			if err := flow.mqttClient.Subscribe(topic, sub); err != nil {
+			if err := flow.mqttClient.Subscribe(topic, 0, flow.onPublish); err != nil {
 				log.Warning(err.Error())
 			}
 		}
@@ -109,7 +104,7 @@ func (f *Flow) Remove() {
 	}
 
 	if f.mqttClient != nil {
-		f.mqttClient.UnsubscribeAll()
+		f.mqttClient.Disconnect()
 	}
 
 	timeout := time.After(3 * time.Second)

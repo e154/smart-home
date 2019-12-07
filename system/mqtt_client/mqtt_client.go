@@ -58,18 +58,22 @@ func (c *Client) Disconnect() {
 		return
 	}
 
+	c.UnsubscribeAll()
 	c.subscribes = make(map[string]Subscribe)
 	c.client.Disconnect(250)
 	c.client = nil
 }
 
-func (c *Client) Subscribe(topic string, params Subscribe) (err error) {
+func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) (err error) {
 
 	if _, ok := c.subscribes[topic]; !ok {
-		c.subscribes[topic] = params
+		c.subscribes[topic] = Subscribe{
+			Qos:      qos,
+			Callback: callback,
+		}
 	}
 
-	if token := c.client.Subscribe(topic, params.Qos, params.Callback); token.Wait() && token.Error() != nil {
+	if token := c.client.Subscribe(topic, qos, callback); token.Wait() && token.Error() != nil {
 		log.Error(token.Error().Error())
 		return token.Error()
 	}
