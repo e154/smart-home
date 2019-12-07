@@ -496,27 +496,6 @@
   revision = "2578deb2b95c665e6b1ebabf304ce2085c9e1985"
 
 [[projects]]
-  branch = "master"
-  digest = "1:84dfee0fc72c46f52cb4e4322f8cbb73345d601405f0683285b85038c8d110e8"
-  name = "github.com/surgemq/message"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "2b7ca1ac6121420133f8df6b94a976d5ca35339a"
-
-[[projects]]
-  branch = "master"
-  digest = "1:b318ea1e887063cae478a14c2ebb224c4225b69971122bbd076601b848bb9f45"
-  name = "github.com/surgemq/surgemq"
-  packages = [
-    "auth",
-    "service",
-    "sessions",
-    "topics",
-  ]
-  pruneopts = "UT"
-  revision = "782e2da078054c9a245f7f78c3f9a0994b5c21c2"
-
-[[projects]]
   digest = "1:f7e7c41b7c708912d83dc5e4acd1392402733e18f5a6aebbe217e0f9e10057f2"
   name = "github.com/swaggo/swag"
   packages = ["."]

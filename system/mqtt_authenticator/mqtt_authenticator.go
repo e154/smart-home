@@ -7,7 +7,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/op/go-logging"
-	"github.com/surgemq/surgemq/auth"
 )
 
 var (
@@ -30,7 +29,6 @@ func NewAuthenticator(adaptors *adaptors.Adaptors) *Authenticator {
 		login:    "local",
 		password: uuid.NewV4().String(),
 	}
-	a.Register()
 	return a
 }
 
@@ -56,11 +54,6 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 		err = ErrBadLoginOrPassword
 	}
 
-	return
-}
-
-func (a *Authenticator) Register() {
-	auth.Register(a.name, a)
 	return
 }
 
