@@ -23,13 +23,12 @@ type Authenticator struct {
 }
 
 func NewAuthenticator(adaptors *adaptors.Adaptors) *Authenticator {
-	a := &Authenticator{
+	return &Authenticator{
 		adaptors: adaptors,
 		name:     "base",
 		login:    "local",
 		password: uuid.NewV4().String(),
 	}
-	return a
 }
 
 func (a *Authenticator) Authenticate(login string, pass interface{}) (err error) {
