@@ -2,10 +2,10 @@ package endpoint
 
 import (
 	"errors"
-	"github.com/e154/smart-home/system/validation"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type FlowEndpoint struct {
@@ -343,17 +343,18 @@ func (n *FlowEndpoint) ExportToRedactor(f *m.Flow) (redactorFlow *m.RedactorFlow
 	}
 
 	redactorFlow = &m.RedactorFlow{
-		Id:          f.Id,
-		Name:        f.Name,
-		Status:      f.Status,
-		Description: f.Description,
-		Workflow:    f.Workflow,
-		Scenario:    scenario,
-		Workers:     make([]*m.Worker, 0),
-		Objects:     make([]*m.RedactorObject, 0),
-		Connectors:  make([]*m.RedactorConnector, 0),
-		CreatedAt:   f.CreatedAt,
-		UpdatedAt:   f.UpdatedAt,
+		Id:            f.Id,
+		Name:          f.Name,
+		Status:        f.Status,
+		Description:   f.Description,
+		Workflow:      f.Workflow,
+		Subscriptions: f.Subscriptions,
+		Scenario:      scenario,
+		Workers:       make([]*m.Worker, 0),
+		Objects:       make([]*m.RedactorObject, 0),
+		Connectors:    make([]*m.RedactorConnector, 0),
+		CreatedAt:     f.CreatedAt,
+		UpdatedAt:     f.UpdatedAt,
 	}
 
 	// elements

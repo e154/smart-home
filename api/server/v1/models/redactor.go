@@ -52,15 +52,16 @@ type RedactorObject struct {
 
 // swagger:model
 type RedactorFlow struct {
-	Id          int64                  `json:"id"`
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Status      string                 `json:"status"`
-	Objects     []*RedactorObject      `json:"objects"`
-	Connectors  []*RedactorConnector   `json:"connectors"`
-	CreatedAt   time.Time              `json:"created_at"`
-	UpdatedAt   time.Time              `json:"update_at"`
-	Workflow    *RedactorWorkflowModel `json:"workflow"`
-	Scenario    *WorkflowScenario      `json:"scenario"`
-	Workers     []*Worker              `json:"workers"`
+	Id            int64                  `json:"id"`
+	Name          string                 `json:"name"`
+	Description   string                 `json:"description"`
+	Status        string                 `json:"status"`
+	Objects       []*RedactorObject      `json:"objects"`
+	Connectors    []*RedactorConnector   `json:"connectors"`
+	CreatedAt     time.Time              `json:"created_at"`
+	UpdatedAt     time.Time              `json:"update_at"`
+	Workflow      *RedactorWorkflowModel `json:"workflow"`
+	Subscriptions []*FlowSubscription    `json:"subscriptions"`
+	Scenario      *WorkflowScenario      `json:"scenario"`
+	Workers       []*Worker              `json:"workers"`
 }
