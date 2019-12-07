@@ -30,7 +30,7 @@ func (f *FlowSubscriptions) Add(sub *FlowSubscription) (err error) {
 	return
 }
 
-func (f *FlowSubscriptions) Delete(id int64) (err error) {
-	err = f.db.Delete(&FlowSubscription{}, "id = ?", id).Error
+func (f *FlowSubscriptions) Delete(ids []int64) (err error) {
+	err = f.db.Delete(&FlowSubscription{}, "id in (?)", ids).Error
 	return
 }

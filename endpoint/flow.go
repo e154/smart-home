@@ -316,6 +316,36 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 		}
 	}
 
+	// subscriptions
+	subscriptionsTodoRemove := make([]int64, 0)
+	for _, oldSub := range oldFlow.Subscriptions {
+		exist := false
+		for _, newSub := range params.Subscriptions {
+			if newSub.Topic == oldSub.Topic {
+				exist = true
+			}
+		}
+		if !exist {
+			subscriptionsTodoRemove = append(subscriptionsTodoRemove, oldSub.Id)
+		}
+	}
+
+	if err := f.adaptors.FlowSubscription.Remove(subscriptionsTodoRemove); err != nil {
+		log.Error(err.Error())
+	}
+
+	for _, sub := range params.Subscriptions {
+		if sub.Id == 0 {
+			flowSubscription := &m.FlowSubscription{
+				Topic:  sub.Topic,
+				FlowId: newFlow.Id,
+			}
+			if err = f.adaptors.FlowSubscription.Add(flowSubscription); err != nil {
+				log.Error(err.Error())
+			}
+		}
+	}
+
 	// exit
 	if newFlow, err = f.adaptors.Flow.GetById(params.Id); err != nil {
 		return

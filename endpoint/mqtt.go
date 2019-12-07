@@ -105,6 +105,25 @@ func (m *MqttEndpoint) SearchTopic(query string, limit, offset int) (result []*m
 		err = ErrMqttServerNoWorked
 		return
 	}
-	result, err = m.mqtt.Management().SearchTopic(query)
+
+	if result, err = m.mqtt.Management().SearchTopic(query); err != nil {
+		return
+	}
+
+	// add custom text as topic
+	var exist bool
+	for _, sub := range result {
+		if sub.Name == query {
+			exist = true
+		}
+	}
+
+	if !exist {
+		sub := &management.SubscriptionInfo{
+			Name: query,
+		}
+		result = append(result, sub)
+	}
+
 	return
 }

@@ -18,11 +18,22 @@ func GetFlowSubscriptionAdaptor(Db *gorm.DB) *FlowSubscription {
 	}
 }
 
+func (f *FlowSubscription) Add(sub *m.FlowSubscription) (err error) {
+	err = f.table.Add(f.toDb(sub))
+	return
+}
+
+func (f *FlowSubscription) Remove(ids []int64) (err error) {
+	err = f.table.Delete(ids)
+	return
+}
+
 func (f *FlowSubscription) fromDb(dbVer *db.FlowSubscription) (ver *m.FlowSubscription) {
 
 	ver = &m.FlowSubscription{
-		Id:    dbVer.Id,
-		Topic: dbVer.Topic,
+		Id:     dbVer.Id,
+		FlowId: dbVer.FlowId,
+		Topic:  dbVer.Topic,
 	}
 
 	return
@@ -31,8 +42,9 @@ func (f *FlowSubscription) fromDb(dbVer *db.FlowSubscription) (ver *m.FlowSubscr
 func (f *FlowSubscription) toDb(ver *m.FlowSubscription) (dbVer *db.FlowSubscription) {
 
 	dbVer = &db.FlowSubscription{
-		Id:    ver.Id,
-		Topic: ver.Topic,
+		Id:     ver.Id,
+		FlowId: ver.FlowId,
+		Topic:  ver.Topic,
 	}
 
 	return
