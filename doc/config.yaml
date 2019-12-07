@@ -100,6 +100,8 @@ Languages:
           url: "#device"
         - title: "MapElement{}"
           url: "#map_element"
+        - title: "Message{}"
+          url: "#message"
         - title: "Node{}"
           url: "#node"
 
@@ -316,6 +318,8 @@ Languages:
           url: "#device"
         - title: "MapElement{}"
           url: "#map_element"
+        - title: "Message{}"
+          url: "#message"
         - title: "Node{}"
           url: "#node"
 

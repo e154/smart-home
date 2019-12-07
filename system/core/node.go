@@ -133,14 +133,12 @@ func (n *Node) Connect() *Node {
 	time.Sleep(time.Second)
 
 	// /home/node/resp
-	topic := fmt.Sprintf("/home/%s/resp", n.Name)
-	if err := n.mqttClient.Subscribe(topic, 0, n.onPublish); err != nil {
+	if err := n.mqttClient.Subscribe(n.topic("resp"), 0, n.onPublish); err != nil {
 		log.Warning(err.Error())
 	}
 
 	// /home/node/ping
-	topic = fmt.Sprintf("/home/%s/ping", n.Name)
-	if err := n.mqttClient.Subscribe(topic, 0, n.ping); err != nil {
+	if err := n.mqttClient.Subscribe(n.topic("ping"), 0, n.ping); err != nil {
 		log.Warning(err.Error())
 	}
 
@@ -191,9 +189,12 @@ func (n *Node) ping(client MQTT.Client, msg MQTT.Message) {
 func (n *Node) MqttPublish(msg interface{}) {
 
 	data, _ := json.Marshal(msg)
-	topic := fmt.Sprintf("/home/%s/req", n.Node.Name)
-	if err := n.mqttClient.Publish(topic, data); err != nil {
+	if err := n.mqttClient.Publish(n.topic("req"), data); err != nil {
 		log.Error(err.Error())
 		return
 	}
+}
+
+func (n *Node) topic(r string) string {
+	return fmt.Sprintf("/home/node/%s/%s", n.Node.Name, r)
 }

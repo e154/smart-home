@@ -466,4 +466,36 @@ func (f *Flow) defineCircularConnection(ctx context.Context) (newCtx context.Con
 
 func (f *Flow) onPublish(client MQTT.Client, msg MQTT.Message) {
 
+	if f.isRunning {
+		return
+	}
+
+	message := NewMessage()
+	message.SetVar("mqtt_payload", string(msg.Payload()))
+	message.SetVar("mqtt_topic", msg.Topic())
+	message.Mqtt = true
+
+	// create context
+	ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	ctx = context.WithValue(ctx, "msg", message)
+
+	done := make(chan struct{})
+	go func() {
+		if err := f.NewMessage(ctx); err != nil {
+			log.Errorf("flow '%v' end with error: '%+v'", f.Model.Name, err.Error())
+		}
+
+		if ctx.Err() != nil {
+			log.Errorf("flow '%v' end with error: '%+v'", f.Model.Name, ctx.Err())
+		}
+
+		done <- struct{}{}
+	}()
+
+	select {
+	case <-done:
+		close(done)
+	case <-ctx.Done():
+
+	}
 }

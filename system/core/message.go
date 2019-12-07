@@ -2,16 +2,17 @@ package core
 
 func NewMessage() (m *Message) {
 	m = &Message{
-		Storage: NewStorage(),
+		storage: NewStorage(),
 	}
 	return
 }
 
 type Message struct {
-	Error string
-	Storage
+	Error     string
+	storage   Storage
 	Success   bool
 	Direction bool
+	Mqtt      bool
 }
 
 func (m *Message) clearError() {
@@ -31,14 +32,22 @@ func (m *Message) Ok() {
 }
 
 func (m *Message) Clear() {
-	m.pull = make(map[string]interface{})
+	m.storage.pull = make(map[string]interface{})
 	m.Error = ""
 }
 
 func (m *Message) Copy() (msg *Message) {
 	msg = NewMessage()
-	for k, v := range m.pull {
-		msg.SetVar(k, v)
+	for k, v := range m.storage.pull {
+		msg.storage.SetVar(k, v)
 	}
 	return
+}
+
+func (m *Message) GetVar(key string) (value interface{}) {
+	return m.storage.GetVar(key)
+}
+
+func (m *Message) SetVar(key string, value interface{}) {
+	m.storage.SetVar(key, value)
 }
