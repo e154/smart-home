@@ -81,7 +81,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/javascript/_map_element/">Русский</a>
+                    <a href="https://e154.github.io/smart-home/javascript/_message/">Русский</a>
                 </li>
                 
                 
@@ -98,7 +98,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>map_element</h1>
+            <h1>message</h1>
             
         </div>
     </div>
@@ -113,17 +113,48 @@
                         
                             
 
-<h2 id="map_element">MapElement{}</h2>
+<h2 id="message">message</h2>
 
-<p>Объект карты</p>
+<p><strong>message</strong> - транспортный объект для передачи состояния(переменные и объекты вызова) между сущностями в
+конструкторе процессов <strong>Flow editor</strong></p>
 
-<p>Доступные методы приведены далее:</p>
+<p>Доступные свойства и методы:</p>
 
-<h3 id="map_element_set_state">.setState(name)</h3>
+<h3 id="setvar-key-value">.setVar(key, value)</h3>
 
-<p>Получить наименование устройства.</p>
+<pre><code class="language-coffeescript">message.setVar('foo', 'bar')
+</code></pre>
 
-<pre><code class="language-coffeescript">mapElement.setState(name)
+<p>определение переменной в хранилище</p>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>key</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>value</code></td>
+<td>type: interface</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="getvar-key">.getVar(key)</h3>
+
+<p>получение переменной из хранилища</p>
+
+<pre><code class="language-coffeescript">value = message.getVar('foo')
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -138,18 +169,11 @@
 
 <tbody>
 <tr>
-<td><code>name</code></td>
+<td><code>key</code></td>
 <td>type: string</td>
 </tr>
 </tbody>
 </table>
-
-<h3 id="map_element_get_state">.getState()</h3>
-
-<p>Получить наименование устройства.</p>
-
-<pre><code class="language-coffeescript">state = mapElement.getState()
-</code></pre>
 
 <p><strong>На выходе</strong></p>
 
@@ -163,17 +187,17 @@
 
 <tbody>
 <tr>
-<td><code>state</code></td>
-<td>type: string</td>
+<td><code>value</code></td>
+<td>type: interface</td>
 </tr>
 </tbody>
 </table>
 
-<h3 id="map_element_set_options">.setOptions(options)</h3>
+<h3 id="seterror-error">.setError(error)</h3>
 
-<p>Получить наименование устройства.</p>
+<p>сохранение состояния ошибки</p>
 
-<pre><code class="language-coffeescript">mapElement.setOptions(options)
+<pre><code class="language-coffeescript">message.setError('some error')
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -188,17 +212,17 @@
 
 <tbody>
 <tr>
-<td><code>options</code></td>
-<td>type: json string</td>
+<td><code>error</code></td>
+<td>type: string</td>
 </tr>
 </tbody>
 </table>
 
-<h3 id="map_element_get_options">.getOptions()</h3>
+<h3 id="error">.error</h3>
 
-<p>Получить наименование устройства.</p>
+<p>переменная хранения состояния отрицательного результата</p>
 
-<pre><code class="language-coffeescript">options = mapElement.getOptions()
+<pre><code class="language-coffeescript">err = message.error
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -213,8 +237,134 @@
 
 <tbody>
 <tr>
-<td><code>options</code></td>
+<td><code>err</code></td>
 <td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="ok">.ok()</h3>
+
+<p>сохронение состояния положительного результата</p>
+
+<pre><code class="language-coffeescript">message.ok()
+</code></pre>
+
+<h3 id="success">.success</h3>
+
+<p>флаг положительного результата</p>
+
+<pre><code class="language-coffeescript">value = message.success
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>value</code></td>
+<td>type: bool</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="clear">.clear()</h3>
+
+<p>очистка состояний ошибки и хранилища переменных</p>
+
+<pre><code class="language-coffeescript">message.clear()
+</code></pre>
+
+<h3 id="setdir-dir">.setdir(dir)</h3>
+
+<p>установка флага для указания желаемго направления движения процесса в <strong>Flow engine</strong></p>
+
+<pre><code class="language-coffeescript">message.setdir(dir)
+</code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>dir</code></td>
+<td>type: bool</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="direction">.direction</h3>
+
+<p>получение состояние направления движения</p>
+
+<pre><code class="language-coffeescript">value = message.direction
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>value</code></td>
+<td>type: bool</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="mqtt">.mqtt</h3>
+
+<p>флаг вызывающей стороны текущего процесса <strong>Flow</strong></p>
+
+<pre><code class="language-coffeescript">value = message.mqtt
+topic = message.getVar('mqtt_topic')
+payload = JSON.parse(message.getVar('mqtt_payload'))
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>value</code></td>
+<td>type: bool</td>
+</tr>
+
+<tr>
+<td><code>topic</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>payload</code></td>
+<td>type: Object</td>
 </tr>
 </tbody>
 </table>
@@ -458,7 +608,7 @@
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/javascript/_map_element/">ru</a>
+                <a href="https://e154.github.io/smart-home/javascript/_message/">ru</a>
             </li>
             
             

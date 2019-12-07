@@ -255,6 +255,20 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/javascript/_message/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_message/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_message/"
+                />
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/javascript/_node/</loc>
     <xhtml:link
                 rel="alternate"

@@ -238,6 +238,21 @@ mapElement.setOptions(options)  На входе
     </item>
     
     <item>
+      <title>message</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_message/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_message/</guid>
+      <description>message message - транспортный объект для передачи состояния(переменные и объекты вызова) между сущностями в конструкторе процессов Flow editor
+Доступные свойства и методы:
+.setVar(key, value) message.setVar(&#39;foo&#39;, &#39;bar&#39;)  определение переменной в хранилище
+На входе
+   Значение Описание     key type: string   value type: interface    .getVar(key) получение переменной из хранилища
+value = message.getVar(&#39;foo&#39;)  На входе
+   Значение Описание     key type: string    На выходе</description>
+    </item>
+    
+    <item>
       <title>node</title>
       <link>https://e154.github.io/smart-home/en/javascript/_node/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
