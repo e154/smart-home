@@ -19,20 +19,22 @@ import (
 
 type Flow struct {
 	Storage
-	Model         *m.Flow
-	workflow      *Workflow
-	Connections   []*m.Connection
-	FlowElements  []*FlowElement
-	cursor        uuid.UUID
-	Node          *Node
-	adaptors      *adaptors.Adaptors
-	scriptService *scripts.ScriptService
-	scriptEngine  *scripts.Engine
-	Workers       map[int64]*Worker
-	cron          *cr.Cron
-	core          *Core
-	nextScenario  bool
-	mqttClient    *mqtt_client.Client
+	Model            *m.Flow
+	workflow         *Workflow
+	Connections      []*m.Connection
+	FlowElements     []*FlowElement
+	cursor           uuid.UUID
+	Node             *Node
+	adaptors         *adaptors.Adaptors
+	scriptService    *scripts.ScriptService
+	scriptEngine     *scripts.Engine
+	Workers          map[int64]*Worker
+	cron             *cr.Cron
+	core             *Core
+	nextScenario     bool
+	mqttClient       *mqtt_client.Client
+	mqttMessageQueue chan *Message
+	mqttWorkerQuit   chan struct{}
 	sync.Mutex
 	isRunning bool
 }
@@ -46,14 +48,16 @@ func NewFlow(model *m.Flow,
 	mqtt *mqtt.Mqtt) (flow *Flow, err error) {
 
 	flow = &Flow{
-		Storage:       NewStorage(),
-		Model:         model,
-		workflow:      workflow,
-		adaptors:      adaptors,
-		scriptService: scripts,
-		Workers:       make(map[int64]*Worker),
-		cron:          cron,
-		core:          core,
+		Storage:          NewStorage(),
+		Model:            model,
+		workflow:         workflow,
+		adaptors:         adaptors,
+		scriptService:    scripts,
+		Workers:          make(map[int64]*Worker),
+		cron:             cron,
+		core:             core,
+		mqttMessageQueue: make(chan *Message),
+		mqttWorkerQuit:   make(chan struct{}),
 	}
 
 	if flow.scriptEngine, err = flow.NewScript(); err != nil {
@@ -76,6 +80,8 @@ func NewFlow(model *m.Flow,
 	// add worker
 	err = flow.InitWorkers()
 
+	go flow.mqttMessageWorker()
+
 	// mqtt subscriptions
 	if flow.mqttClient, err = mqtt.NewClient(nil); err == nil {
 		if err = flow.mqttClient.Connect(); err != nil {
@@ -86,7 +92,7 @@ func NewFlow(model *m.Flow,
 		for _, subParams := range flow.Model.Subscriptions {
 
 			topic := fmt.Sprintf("%s", subParams.Topic)
-			if err := flow.mqttClient.Subscribe(topic, 0, flow.onPublish); err != nil {
+			if err := flow.mqttClient.Subscribe(topic, 0, flow.mqttOnPublish); err != nil {
 				log.Warning(err.Error())
 			}
 		}
@@ -102,6 +108,8 @@ func (f *Flow) Remove() {
 	for _, worker := range f.Workers {
 		f.RemoveWorker(worker.Model)
 	}
+
+	f.mqttWorkerQuit <- struct{}{}
 
 	if f.mqttClient != nil {
 		f.mqttClient.Disconnect()
@@ -123,6 +131,8 @@ func (f *Flow) Remove() {
 		}
 	}
 
+	close(f.mqttMessageQueue)
+	close(f.mqttWorkerQuit)
 }
 
 func (f *Flow) NewMessage(ctx context.Context) (err error) {
@@ -464,16 +474,19 @@ func (f *Flow) defineCircularConnection(ctx context.Context) (newCtx context.Con
 	return
 }
 
-func (f *Flow) onPublish(client MQTT.Client, msg MQTT.Message) {
-
-	if f.isRunning {
-		return
-	}
+func (f *Flow) mqttOnPublish(client MQTT.Client, msg MQTT.Message) {
 
 	message := NewMessage()
 	message.SetVar("mqtt_payload", string(msg.Payload()))
 	message.SetVar("mqtt_topic", msg.Topic())
+	message.SetVar("mqtt_qos", msg.Qos())
+	message.SetVar("mqtt_duplicate", msg.Duplicate())
 	message.Mqtt = true
+
+	f.mqttMessageQueue <- message
+}
+
+func (f *Flow) mqttNewMessage(message *Message) {
 
 	// create context
 	ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
@@ -497,5 +510,24 @@ func (f *Flow) onPublish(client MQTT.Client, msg MQTT.Message) {
 		close(done)
 	case <-ctx.Done():
 
+	}
+}
+
+func (f *Flow) mqttMessageWorker() {
+
+	for {
+
+		if f.isRunning {
+			time.Sleep(time.Millisecond * 500)
+			continue
+		}
+
+		select {
+		case <-f.mqttWorkerQuit:
+			return
+
+		case message := <-f.mqttMessageQueue:
+			f.mqttNewMessage(message)
+		}
 	}
 }
