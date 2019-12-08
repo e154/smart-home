@@ -70,7 +70,7 @@ func (n FlowElements) Update(m *FlowElement) (err error) {
 }
 
 func (n FlowElements) Delete(ids []uuid.UUID) (err error) {
-	err = n.Db.Delete(&FlowElement{}, "uuid in ?", ids).Error
+	err = n.Db.Delete(&FlowElement{}, "uuid in (?)", ids).Error
 	return
 }
 
