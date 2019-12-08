@@ -394,7 +394,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 			},
 			{
 				DeviceStateId: deviceStates["dev1_temp1_off"].Id,
-				ImageId:       imageList["temp_v1_r"].Id,
+				ImageId:       imageList["temp_v1_def"].Id,
 			},
 		},
 	}
@@ -435,7 +435,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 			},
 			{
 				DeviceStateId: deviceStates["dev1_temp2_off"].Id,
-				ImageId:       imageList["temp_v1_r"].Id,
+				ImageId:       imageList["temp_v1_def"].Id,
 			},
 		},
 	}
@@ -490,6 +490,88 @@ func addMaps(adaptors *adaptors.Adaptors,
 	ok, _ = mapElementText1.Valid()
 	So(ok, ShouldEqual, true)
 	mapElementText1.Id, err = adaptors.MapElement.Add(mapElementText1)
+	So(err, ShouldBeNil)
+
+	// map element main gate
+	// ------------------------------------------------
+	dev1MainGate := &m.MapDevice{
+		SystemName: "DEV1_DOOR_MAIN",
+		DeviceId:   devices[0].Id,
+		ImageId:    imageList["door_v1_closed_def"].Id,
+		States: []*m.MapDeviceState{
+			{
+				DeviceStateId: deviceStates["state_main_gate_opened"].Id,
+				ImageId:       imageList["door_v1_opened2"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["state_main_gate_closed"].Id,
+				ImageId:       imageList["door_v1_closed"].Id,
+			},
+		},
+	}
+	mapElementMainGate := &m.MapElement{
+		Name:        "dev1_door_main",
+		Description: "main gate",
+		Prototype: m.Prototype{
+			MapDevice: dev1MainGate,
+		},
+		MapId:   map1.Id,
+		LayerId: baseLayer.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  74,
+				Left: 362,
+			},
+		},
+		Zone: mainHallZone,
+	}
+	ok, _ = mapElementMainGate.Valid()
+	So(ok, ShouldEqual, true)
+	mapElementMainGate.Id, err = adaptors.MapElement.Add(mapElementMainGate)
+	So(err, ShouldBeNil)
+
+	// map element second gate
+	// ------------------------------------------------
+	dev1SecondGate := &m.MapDevice{
+		SystemName: "DEV1_DOOR_SECOND",
+		DeviceId:   devices[0].Id,
+		ImageId:    imageList["door_v1_closed_def"].Id,
+		States: []*m.MapDeviceState{
+			{
+				DeviceStateId: deviceStates["state_second_gate_opened"].Id,
+				ImageId:       imageList["door_v1_opened2"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["state_second_gate_closed"].Id,
+				ImageId:       imageList["door_v1_closed"].Id,
+			},
+		},
+	}
+	mapElementSecondGate := &m.MapElement{
+		Name:        "dev1_door_second",
+		Description: "second gate",
+		Prototype: m.Prototype{
+			MapDevice: dev1SecondGate,
+		},
+		MapId:   map1.Id,
+		LayerId: baseLayer.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  292,
+				Left: 430,
+			},
+		},
+		Zone: mainHallZone,
+	}
+	ok, _ = mapElementSecondGate.Valid()
+	So(ok, ShouldEqual, true)
+	mapElementSecondGate.Id, err = adaptors.MapElement.Add(mapElementSecondGate)
 	So(err, ShouldBeNil)
 
 	return

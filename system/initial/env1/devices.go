@@ -3,8 +3,8 @@ package env1
 import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
-	. "github.com/e154/smart-home/system/initial/assertions"
 	. "github.com/e154/smart-home/models/devices"
+	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
 func devices(node1 *m.Node,
@@ -19,18 +19,20 @@ func devices(node1 *m.Node,
 	device1 := &m.Device{
 		Name:       "device1",
 		Status:     "enabled",
-		Type:       DevTypeModbusRtu,
+		Type:       DevTypeModbusTcp,
 		Node:       node1,
 		Properties: []byte("{}"),
 	}
 
-	modBusConfig := &DevModBusRtuConfig{
-		SlaveId:  1,
-		Baud:     19200,
-		DataBits: 8,
-		StopBits: 1,
-		Parity:   "none",
-		Timeout:  100,
+	modBusConfig := &DevModBusTcpConfig{
+		//SlaveId:  1,
+		//Baud:     19200,
+		//DataBits: 8,
+		//StopBits: 1,
+		//Parity:   "none",
+		//Timeout:  100,
+		AddressPort: "127.0.0.1:502",
+		SlaveId: 1,
 	}
 
 	ok, _ := device1.SetProperties(modBusConfig)
@@ -258,6 +260,26 @@ func devices(node1 *m.Node,
 		Description: "device temp 2 off",
 		DeviceId:    device1.Id,
 	}
+	stateMainGateOpened := &m.DeviceState{
+		SystemName:  "DOOR_MAIN_OPENED",
+		Description: "door opened",
+		DeviceId:    device1.Id,
+	}
+	stateMainGateClosed := &m.DeviceState{
+		SystemName:  "DOOR_MAIN_CLOSED",
+		Description: "door closed",
+		DeviceId:    device1.Id,
+	}
+	stateSecondGateOpened := &m.DeviceState{
+		SystemName:  "DOOR_SECOND_OPENED",
+		Description: "door opened",
+		DeviceId:    device1.Id,
+	}
+	stateSecondGateClosed := &m.DeviceState{
+		SystemName:  "DOOR_SECOND_CLOSED",
+		Description: "door closed",
+		DeviceId:    device1.Id,
+	}
 	ok, _ = stateDev1Enabled.Valid()
 	So(ok, ShouldEqual, true)
 	ok, _ = stateDev1Disabled.Valid()
@@ -287,6 +309,14 @@ func devices(node1 *m.Node,
 	ok, _ = stateDev1Temp2On.Valid()
 	So(ok, ShouldEqual, true)
 	ok, _ = stateDev1Temp2Off.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateMainGateOpened.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateMainGateClosed.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateSecondGateOpened.Valid()
+	So(ok, ShouldEqual, true)
+	ok, _ = stateSecondGateClosed.Valid()
 	So(ok, ShouldEqual, true)
 
 	stateDev1Enabled.Id, err = adaptors.DeviceState.Add(stateDev1Enabled)
@@ -323,6 +353,14 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 	stateDev1Temp2Off.Id, err = adaptors.DeviceState.Add(stateDev1Temp2Off)
 	So(err, ShouldBeNil)
+	stateMainGateOpened.Id, err = adaptors.DeviceState.Add(stateMainGateOpened)
+	So(err, ShouldBeNil)
+	stateMainGateClosed.Id, err = adaptors.DeviceState.Add(stateMainGateClosed)
+	So(err, ShouldBeNil)
+	stateSecondGateOpened.Id, err = adaptors.DeviceState.Add(stateSecondGateOpened)
+	So(err, ShouldBeNil)
+	stateSecondGateClosed.Id, err = adaptors.DeviceState.Add(stateSecondGateClosed)
+	So(err, ShouldBeNil)
 
 	deviceStates["dev1_enabled"] = stateDev1Enabled
 	deviceStates["dev1_disabled"] = stateDev1Disabled
@@ -341,6 +379,10 @@ func devices(node1 *m.Node,
 	deviceStates["dev1_temp1_off"] = stateDev1Temp1Off
 	deviceStates["dev1_temp2_on"] = stateDev1Temp2On
 	deviceStates["dev1_temp2_off"] = stateDev1Temp2Off
+	deviceStates["state_main_gate_opened"] = stateMainGateOpened
+	deviceStates["state_main_gate_closed"] = stateMainGateClosed
+	deviceStates["state_second_gate_opened"] = stateSecondGateOpened
+	deviceStates["state_second_gate_closed"] = stateSecondGateClosed
 
 	// device 2
 	// ------------------------------------------------
@@ -411,14 +453,14 @@ func devices(node1 *m.Node,
 		Properties: []byte("{}"),
 	}
 
-	modBusConfig = &DevModBusRtuConfig{
+	modBusConfigDev3 := &DevModBusRtuConfig{
 		Baud:     115200,
 		DataBits: 8,
 		StopBits: 2,
 		Parity:   "none",
 	}
 
-	ok, _ = device3.SetProperties(modBusConfig)
+	ok, _ = device3.SetProperties(modBusConfigDev3)
 	So(ok, ShouldEqual, true)
 
 	ok, _ = device3.Valid()

@@ -368,8 +368,16 @@ objects = [
     {name:'dev1_light2', id:1,systemName:'LIGHT_2_'}
     {name:'dev1_light4', id:3,systemName:'LIGHT_4_'}
     {name:'dev1_fan1', id:4,systemName:'FAN_1_'}
+]
+
+temps = [
     {name:'dev1_temp1', id:5,systemName:'TEMP_1_'}
     {name:'dev1_temp2', id:6,systemName:'TEMP_2_'}
+]
+
+doors = [
+    {name:'dev1_door_main', id:7,systemName:'DOOR_MAIN_'}
+    {name:'dev1_door_second', id:8,systemName:'DOOR_SECOND_'}
 ]
 
 getStatus =(status)->
@@ -377,6 +385,12 @@ getStatus =(status)->
 		return 'ON'
 	else
 		return 'OFF'
+
+doorStatus =(status)->
+	if status == 1
+		return 'OPENED'
+	else
+		return 'CLOSED'
 
 fetchStatus =->
 
@@ -396,6 +410,11 @@ fetchStatus =->
         # print 'ok: ', res.result
         objects.forEach (obj)->
             newStatus = getStatus(res.result[obj.id])
+            IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
+            return
+            
+        doors.forEach (obj)->
+            newStatus = doorStatus(res.result[obj.id])
             IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
             return
         return
