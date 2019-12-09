@@ -362,8 +362,9 @@ func addScripts(adaptors *adaptors.Adaptors,
 }
 
 const MbDev1ConditionCheckV1 = `
+
 objects = [
-    {name:'dev1_light1',id:0,systemName:'LIGHT_1_'}
+    {name:'dev1_light1', id:0,systemName:'LIGHT_1_'}
     {name:'dev1_light3', id:2,systemName:'LIGHT_3_'}
     {name:'dev1_light2', id:1,systemName:'LIGHT_2_'}
     {name:'dev1_light4', id:3,systemName:'LIGHT_4_'}
@@ -405,6 +406,12 @@ fetchStatus =->
         objects.forEach (obj)->
             IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
             return
+        temps.forEach (obj)->
+            IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
+            return
+        doors.forEach (obj)->
+            IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
+            return
         return
     else 
         # print 'ok: ', res.result
@@ -417,6 +424,15 @@ fetchStatus =->
             newStatus = doorStatus(res.result[obj.id])
             IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
             return
+        
+        temps.forEach (obj)->
+            IC.Map.setElementState device.getModel(), obj.name, obj.systemName + 'ON'
+
+            element = IC.Map.getElement device.getModel(), obj.name
+            temp = if res.result[obj.id] then res.result[obj.id] else 0
+            element.setOptions {'text': temp}
+            return
+
         return
     
 main =->

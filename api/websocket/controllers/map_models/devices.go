@@ -6,7 +6,12 @@ import (
 	"github.com/e154/smart-home/api/websocket/controllers/models"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/op/go-logging"
 	"sync"
+)
+
+var (
+	log = logging.MustGetLogger("map_models")
 )
 
 type Devices struct {
@@ -37,13 +42,16 @@ func (d *Devices) Update() {
 
 	d.Lock()
 	d.DeviceStats = make(map[string]*models.DeviceState)
+	var status *models.DeviceStateStatus
 	for _, mapElement := range mapElements {
 
-		status := &models.DeviceStateStatus{
-			Id:          mapElement.State.Id,
-			DeviceId:    mapElement.State.DeviceId,
-			SystemName:  mapElement.State.SystemName,
-			Description: mapElement.State.Description,
+		if mapElement.State != nil {
+			status = &models.DeviceStateStatus{
+				Id:          mapElement.State.Id,
+				DeviceId:    mapElement.State.DeviceId,
+				SystemName:  mapElement.State.SystemName,
+				Description: mapElement.State.Description,
+			}
 		}
 
 		deviceId := mapElement.Device.Id

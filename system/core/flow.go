@@ -131,8 +131,8 @@ func (f *Flow) Remove() {
 		}
 	}
 
-	close(f.mqttMessageQueue)
-	close(f.mqttWorkerQuit)
+	//close(f.mqttMessageQueue)
+	//close(f.mqttWorkerQuit)
 }
 
 func (f *Flow) NewMessage(ctx context.Context) (err error) {

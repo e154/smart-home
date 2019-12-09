@@ -390,11 +390,15 @@ func addMaps(adaptors *adaptors.Adaptors,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_temp1_on"].Id,
-				ImageId:       imageList["temp_v1_y"].Id,
+				ImageId:       imageList["temp_v1_original"].Id,
 			},
 			{
 				DeviceStateId: deviceStates["dev1_temp1_off"].Id,
 				ImageId:       imageList["temp_v1_def"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["temp_v1_r"].Id,
 			},
 		},
 	}
@@ -431,11 +435,15 @@ func addMaps(adaptors *adaptors.Adaptors,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_temp2_on"].Id,
-				ImageId:       imageList["temp_v1_y"].Id,
+				ImageId:       imageList["temp_v1_original"].Id,
 			},
 			{
 				DeviceStateId: deviceStates["dev1_temp2_off"].Id,
 				ImageId:       imageList["temp_v1_def"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["temp_v1_r"].Id,
 			},
 		},
 	}
@@ -507,6 +515,10 @@ func addMaps(adaptors *adaptors.Adaptors,
 				DeviceStateId: deviceStates["state_main_gate_closed"].Id,
 				ImageId:       imageList["door_v1_closed"].Id,
 			},
+			{
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["door_v1_closed_r"].Id,
+			},
 		},
 	}
 	mapElementMainGate := &m.MapElement{
@@ -547,6 +559,10 @@ func addMaps(adaptors *adaptors.Adaptors,
 			{
 				DeviceStateId: deviceStates["state_second_gate_closed"].Id,
 				ImageId:       imageList["door_v1_closed"].Id,
+			},
+			{
+				DeviceStateId: deviceStates["dev1_error"].Id,
+				ImageId:       imageList["door_v1_closed_r"].Id,
 			},
 		},
 	}
