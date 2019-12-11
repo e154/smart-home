@@ -1,4 +1,4 @@
-package mqtt
+package mqtt_authenticator
 
 import (
 	"fmt"
@@ -6,7 +6,11 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
-	"github.com/surgemq/surgemq/auth"
+	"github.com/op/go-logging"
+)
+
+var (
+	log = logging.MustGetLogger("mqtt_authenticator")
 )
 
 var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
@@ -14,17 +18,17 @@ var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
 type Authenticator struct {
 	adaptors *adaptors.Adaptors
 	name     string
-	uuid     uuid.UUID
+	login    string
+	password string
 }
 
 func NewAuthenticator(adaptors *adaptors.Adaptors) *Authenticator {
-	a := &Authenticator{
-		name:     "base",
+	return &Authenticator{
 		adaptors: adaptors,
-		uuid:     uuid.NewV4(),
+		name:     "base",
+		login:    "local",
+		password: uuid.NewV4().String(),
 	}
-	a.Register()
-	return a
 }
 
 func (a *Authenticator) Authenticate(login string, pass interface{}) (err error) {
@@ -36,7 +40,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 		err = ErrBadLoginOrPassword
 	}
 
-	if login == "local" && pass == a.uuid.String() {
+	if login == a.login && pass == a.password {
 		return
 	}
 
@@ -52,15 +56,14 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 	return
 }
 
-func (a *Authenticator) Register() {
-	auth.Register(a.name, a)
-	return
-}
-
 func (a Authenticator) Name() string {
 	return a.name
 }
 
-func (a Authenticator) LocalClientUuid() string {
-	return a.uuid.String()
+func (a Authenticator) Password() string {
+	return a.password
+}
+
+func (a Authenticator) Login() string {
+	return a.login
 }

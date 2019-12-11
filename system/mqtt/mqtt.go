@@ -7,7 +7,10 @@ import (
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/mqtt/management"
+	"github.com/e154/smart-home/system/mqtt_authenticator"
+	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/uuid"
 	"github.com/op/go-logging"
 	"net"
 	"time"
@@ -20,14 +23,14 @@ var (
 type Mqtt struct {
 	cfg           *MqttConfig
 	server        *gmqtt.Server
-	clients       []*Client
-	authenticator *Authenticator
+	clients       []*mqtt_client.Client
+	authenticator *mqtt_authenticator.Authenticator
 	management    *management.Management
 }
 
 func NewMqtt(cfg *MqttConfig,
 	graceful *graceful_service.GracefulService,
-	authenticator *Authenticator,
+	authenticator *mqtt_authenticator.Authenticator,
 	scriptService *scripts.ScriptService) (mqtt *Mqtt) {
 
 	mqtt = &Mqtt{
@@ -90,12 +93,26 @@ func (m *Mqtt) runServer() {
 	m.server.Run()
 }
 
-func (m *Mqtt) NewClient(topic string) (c *Client, err error) {
+func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err error) {
 
-	uri := fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.Port)
-	log.Infof("new queue client %s topic(%s)", uri, topic)
+	if cfg == nil {
+		cfg = &mqtt_client.Config{
+			KeepAlive:      5,
+			PingTimeout:    5,
+			ConnectTimeout: 5,
+			Qos:            0,
+			CleanSession:   true,
+		}
+	}
 
-	if c, err = NewClient(uri, topic, m.authenticator); err != nil {
+	cfg.Username = m.authenticator.Login()
+	cfg.Password = m.authenticator.Password()
+	if cfg.ClientID == "" {
+		cfg.ClientID = uuid.NewV4().String()
+	}
+	cfg.Broker = fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.Port)
+
+	if c, err = mqtt_client.NewClient(cfg); err != nil {
 		return
 	}
 

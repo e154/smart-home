@@ -62,6 +62,17 @@
   version = "v3.2.0"
 
 [[projects]]
+  digest = "1:bb89a2542933056fcebc2950bb15ec636e623cc43c96597288aa2009f15b0ce1"
+  name = "github.com/eclipse/paho.mqtt.golang"
+  packages = [
+    ".",
+    "packets",
+  ]
+  pruneopts = "UT"
+  revision = "adca289fdcf8c883800aafa545bc263452290bae"
+  version = "v1.2.0"
+
+[[projects]]
   digest = "1:194d67bdb62b12db5057218e0303b7d6995b542d52104cb4fca641769d12cf90"
   name = "github.com/francoispqt/gojay"
   packages = ["."]
@@ -485,35 +496,6 @@
   revision = "2578deb2b95c665e6b1ebabf304ce2085c9e1985"
 
 [[projects]]
-  branch = "master"
-  digest = "1:11395ff810f2ada545e57e8ba7ac23e5081662f4e105d8501506e55958bd5286"
-  name = "github.com/surgebase/glog"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "2578deb2b95c665e6b1ebabf304ce2085c9e1985"
-
-[[projects]]
-  branch = "master"
-  digest = "1:84dfee0fc72c46f52cb4e4322f8cbb73345d601405f0683285b85038c8d110e8"
-  name = "github.com/surgemq/message"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "2b7ca1ac6121420133f8df6b94a976d5ca35339a"
-
-[[projects]]
-  branch = "master"
-  digest = "1:b318ea1e887063cae478a14c2ebb224c4225b69971122bbd076601b848bb9f45"
-  name = "github.com/surgemq/surgemq"
-  packages = [
-    "auth",
-    "service",
-    "sessions",
-    "topics",
-  ]
-  pruneopts = "UT"
-  revision = "782e2da078054c9a245f7f78c3f9a0994b5c21c2"
-
-[[projects]]
   digest = "1:f7e7c41b7c708912d83dc5e4acd1392402733e18f5a6aebbe217e0f9e10057f2"
   name = "github.com/swaggo/swag"
   packages = ["."]
@@ -558,7 +540,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c84b10b445d1d77339bcb1e1d48590e6aba13873a944247b49bf936d0aa1eda1"
+  digest = "1:2ebea596a8d6f1e7b7daf02a43d371e240244dbcbf9ebff05939899aa26824cb"
   name = "golang.org/x/net"
   packages = [
     "bpf",
@@ -567,10 +549,13 @@
     "idna",
     "internal/iana",
     "internal/socket",
+    "internal/socks",
     "ipv4",
     "ipv6",
+    "proxy",
     "webdav",
     "webdav/internal/xml",
+    "websocket",
   ]
   pruneopts = "UT"
   revision = "c10e9556a7bc0e7c942242b606f0acf024ad5d6a"
@@ -670,6 +655,7 @@
     "github.com/Syfaro/telegram-bot-api",
     "github.com/bouk/monkey",
     "github.com/dgrijalva/jwt-go",
+    "github.com/eclipse/paho.mqtt.golang",
     "github.com/francoispqt/gojay",
     "github.com/gin-contrib/cors",
     "github.com/gin-gonic/gin",

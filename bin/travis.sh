@@ -47,10 +47,6 @@ DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
 main() {
 
-  export DEBIAN_FRONTEND=noninteractive
-
-  : ${INSTALL_MODE:=stable}
-
   case "$1" in
     --test)
     __test

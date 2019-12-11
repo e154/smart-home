@@ -362,14 +362,23 @@ func addScripts(adaptors *adaptors.Adaptors,
 }
 
 const MbDev1ConditionCheckV1 = `
+
 objects = [
-    {name:'dev1_light1',id:0,systemName:'LIGHT_1_'}
+    {name:'dev1_light1', id:0,systemName:'LIGHT_1_'}
     {name:'dev1_light3', id:2,systemName:'LIGHT_3_'}
     {name:'dev1_light2', id:1,systemName:'LIGHT_2_'}
     {name:'dev1_light4', id:3,systemName:'LIGHT_4_'}
     {name:'dev1_fan1', id:4,systemName:'FAN_1_'}
+]
+
+temps = [
     {name:'dev1_temp1', id:5,systemName:'TEMP_1_'}
     {name:'dev1_temp2', id:6,systemName:'TEMP_2_'}
+]
+
+doors = [
+    {name:'dev1_door_main', id:7,systemName:'DOOR_MAIN_'}
+    {name:'dev1_door_second', id:8,systemName:'DOOR_SECOND_'}
 ]
 
 getStatus =(status)->
@@ -377,6 +386,12 @@ getStatus =(status)->
 		return 'ON'
 	else
 		return 'OFF'
+
+doorStatus =(status)->
+	if status == 1
+		return 'OPENED'
+	else
+		return 'CLOSED'
 
 fetchStatus =->
 
@@ -391,6 +406,12 @@ fetchStatus =->
         objects.forEach (obj)->
             IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
             return
+        temps.forEach (obj)->
+            IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
+            return
+        doors.forEach (obj)->
+            IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
+            return
         return
     else 
         # print 'ok: ', res.result
@@ -398,6 +419,20 @@ fetchStatus =->
             newStatus = getStatus(res.result[obj.id])
             IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
             return
+            
+        doors.forEach (obj)->
+            newStatus = doorStatus(res.result[obj.id])
+            IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
+            return
+        
+        temps.forEach (obj)->
+            IC.Map.setElementState device.getModel(), obj.name, obj.systemName + 'ON'
+
+            element = IC.Map.getElement device.getModel(), obj.name
+            temp = if res.result[obj.id] then res.result[obj.id] else 0
+            element.setOptions {'text': temp}
+            return
+
         return
     
 main =->

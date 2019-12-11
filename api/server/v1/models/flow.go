@@ -76,16 +76,17 @@ type UpdateFlow struct {
 
 // swagger:model
 type Flow struct {
-	Id                 int64             `json:"id"`
-	Name               string            `json:"name" valid:"MaxSize(254);Required"`
-	Description        string            `json:"description" valid:"MaxSize(254)"`
-	Status             string            `json:"status" valid:"Required"`
-	Workflow           *FlowWorkflow     `json:"workflow"`
-	WorkflowId         int64             `json:"workflow_id" valid:"Required"`
-	WorkflowScenarioId int64             `json:"workflow_scenario_id" valid:"Required"`
-	Connections        []*FlowConnection `json:"connections"`
-	FlowElements       []*FlowElement    `json:"flow_elements"`
-	Workers            []*FlowWorker     `json:"workers"`
-	CreatedAt          time.Time         `json:"created_at"`
-	UpdatedAt          time.Time         `json:"updated_at"`
+	Id                 int64               `json:"id"`
+	Name               string              `json:"name" valid:"MaxSize(254);Required"`
+	Description        string              `json:"description" valid:"MaxSize(254)"`
+	Status             string              `json:"status" valid:"Required"`
+	Workflow           *FlowWorkflow       `json:"workflow"`
+	WorkflowId         int64               `json:"workflow_id" valid:"Required"`
+	WorkflowScenarioId int64               `json:"workflow_scenario_id" valid:"Required"`
+	Connections        []*FlowConnection   `json:"connections"`
+	FlowElements       []*FlowElement      `json:"flow_elements"`
+	Workers            []*FlowWorker       `json:"workers"`
+	Subscriptions      []*FlowSubscription `json:"subscriptions"`
+	CreatedAt          time.Time           `json:"created_at"`
+	UpdatedAt          time.Time           `json:"updated_at"`
 }

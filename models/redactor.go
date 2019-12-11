@@ -1,9 +1,9 @@
 package models
 
 import (
-	"time"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/uuid"
+	"time"
 )
 
 type RedactorGrapSettings struct {
@@ -51,15 +51,16 @@ type RedactorObject struct {
 }
 
 type RedactorFlow struct {
-	Id          int64                `json:"id"`
-	Name        string               `json:"name"`
-	Description string               `json:"description"`
-	Status      StatusType           `json:"status"`
-	Objects     []*RedactorObject    `json:"objects"`
-	Connectors  []*RedactorConnector `json:"connectors"`
-	CreatedAt   time.Time            `json:"created_at"`
-	UpdatedAt   time.Time            `json:"update_at"`
-	Workflow    *Workflow            `json:"workflow"`
-	Scenario    *WorkflowScenario    `json:"scenario"`
-	Workers     []*Worker            `json:"workers"`
+	Id            int64                `json:"id"`
+	Name          string               `json:"name"`
+	Description   string               `json:"description"`
+	Status        StatusType           `json:"status"`
+	Objects       []*RedactorObject    `json:"objects"`
+	Connectors    []*RedactorConnector `json:"connectors"`
+	CreatedAt     time.Time            `json:"created_at"`
+	UpdatedAt     time.Time            `json:"update_at"`
+	Workflow      *Workflow            `json:"workflow"`
+	Subscriptions []*FlowSubscription  `json:"subscriptions"`
+	Scenario      *WorkflowScenario    `json:"scenario"`
+	Workers       []*Worker            `json:"workers"`
 }

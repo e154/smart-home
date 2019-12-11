@@ -3,6 +3,7 @@ package management
 import (
 	"container/list"
 	"errors"
+	"strings"
 	"sync"
 	"time"
 
@@ -87,6 +88,24 @@ func (m *monitor) GetClientSubscriptions(clientID string, offset, n int) ([]*Sub
 	return rs, total, err
 }
 
+// SearchTopic
+func (m *monitor) SearchTopic(query string) (rs []*SubscriptionInfo, err error) {
+	m.subMu.Lock()
+	defer m.subMu.Unlock()
+	rs = make([]*SubscriptionInfo, 0)
+	var info *SubscriptionInfo
+	for _, sub := range m.subscriptions {
+		fn := func(elem *list.Element) {
+			info = elem.Value.(*SubscriptionInfo)
+			if !strings.Contains(info.Name, query) {
+				return
+			}
+			rs = append(rs, info )
+		}
+		err = sub.iterate(fn, 0, 999)
+	}
+	return
+}
 
 func newQuickList() *quickList {
 	return &quickList{

@@ -180,3 +180,9 @@ func (m *Management) CloseClient(clientId string) (err error) {
 
 	return
 }
+
+//SearchTopic
+func (m *Management) SearchTopic(query string) (result []*SubscriptionInfo, err error) {
+	result, err = m.monitor.SearchTopic(query)
+	return
+}

@@ -99,3 +99,31 @@ func (m *MqttEndpoint) CloseClient(clientId string) (err error) {
 	err = m.mqtt.Management().CloseClient(clientId)
 	return
 }
+
+func (m *MqttEndpoint) SearchTopic(query string, limit, offset int) (result []*management.SubscriptionInfo, total int64, err error) {
+	if m.mqtt.Management() == nil {
+		err = ErrMqttServerNoWorked
+		return
+	}
+
+	if result, err = m.mqtt.Management().SearchTopic(query); err != nil {
+		return
+	}
+
+	// add custom text as topic
+	var exist bool
+	for _, sub := range result {
+		if sub.Name == query {
+			exist = true
+		}
+	}
+
+	if !exist {
+		sub := &management.SubscriptionInfo{
+			Name: query,
+		}
+		result = append(result, sub)
+	}
+
+	return
+}

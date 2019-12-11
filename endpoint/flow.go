@@ -2,10 +2,10 @@ package endpoint
 
 import (
 	"errors"
-	"github.com/e154/smart-home/system/validation"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type FlowEndpoint struct {
@@ -316,6 +316,36 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 		}
 	}
 
+	// subscriptions
+	subscriptionsTodoRemove := make([]int64, 0)
+	for _, oldSub := range oldFlow.Subscriptions {
+		exist := false
+		for _, newSub := range params.Subscriptions {
+			if newSub.Topic == oldSub.Topic {
+				exist = true
+			}
+		}
+		if !exist {
+			subscriptionsTodoRemove = append(subscriptionsTodoRemove, oldSub.Id)
+		}
+	}
+
+	if err := f.adaptors.FlowSubscription.Remove(subscriptionsTodoRemove); err != nil {
+		log.Error(err.Error())
+	}
+
+	for _, sub := range params.Subscriptions {
+		if sub.Id == 0 {
+			flowSubscription := &m.FlowSubscription{
+				Topic:  sub.Topic,
+				FlowId: newFlow.Id,
+			}
+			if err = f.adaptors.FlowSubscription.Add(flowSubscription); err != nil {
+				log.Error(err.Error())
+			}
+		}
+	}
+
 	// exit
 	if newFlow, err = f.adaptors.Flow.GetById(params.Id); err != nil {
 		return
@@ -343,17 +373,18 @@ func (n *FlowEndpoint) ExportToRedactor(f *m.Flow) (redactorFlow *m.RedactorFlow
 	}
 
 	redactorFlow = &m.RedactorFlow{
-		Id:          f.Id,
-		Name:        f.Name,
-		Status:      f.Status,
-		Description: f.Description,
-		Workflow:    f.Workflow,
-		Scenario:    scenario,
-		Workers:     make([]*m.Worker, 0),
-		Objects:     make([]*m.RedactorObject, 0),
-		Connectors:  make([]*m.RedactorConnector, 0),
-		CreatedAt:   f.CreatedAt,
-		UpdatedAt:   f.UpdatedAt,
+		Id:            f.Id,
+		Name:          f.Name,
+		Status:        f.Status,
+		Description:   f.Description,
+		Workflow:      f.Workflow,
+		Subscriptions: f.Subscriptions,
+		Scenario:      scenario,
+		Workers:       make([]*m.Worker, 0),
+		Objects:       make([]*m.RedactorObject, 0),
+		Connectors:    make([]*m.RedactorConnector, 0),
+		CreatedAt:     f.CreatedAt,
+		UpdatedAt:     f.UpdatedAt,
 	}
 
 	// elements

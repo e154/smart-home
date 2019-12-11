@@ -39,11 +39,13 @@ func (b *Map) GetDevicesStates() (states map[int64]*m.DashboardDeviceState) {
 
 	b.elements.Range(func(key, value interface{}) bool {
 		element := value.(*MapElement)
-		states[element.Device.Id] = &m.DashboardDeviceState{
-			Id:          element.State.Id,
-			Description: element.State.Description,
-			SystemName:  element.State.SystemName,
-			DeviceId:    element.State.DeviceId,
+		if element.State != nil {
+			states[element.Device.Id] = &m.DashboardDeviceState{
+				Id:          element.State.Id,
+				Description: element.State.Description,
+				SystemName:  element.State.SystemName,
+				DeviceId:    element.State.DeviceId,
+			}
 		}
 		return true
 	})

@@ -23,8 +23,8 @@ func (e *MapBind) SetElementState(device *m.Device, elementName, newState string
 	e.Map.SetElementState(device, elementName, newState)
 }
 
-func (e *MapBind) GetElement(device *DeviceBind, elementName string) (element *MapElementBind) {
-	element = &MapElementBind{e.Map.GetElement(device.model, elementName)}
+func (e *MapBind) GetElement(device *m.Device, elementName string) (element *MapElementBind) {
+	element = &MapElementBind{e.Map.GetElement(device, elementName)}
 	return
 }
 

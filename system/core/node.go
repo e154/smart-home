@@ -6,7 +6,8 @@ import (
 	"fmt"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/surgemq/message"
+	"github.com/e154/smart-home/system/mqtt_client"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"sync"
 	"time"
 )
@@ -17,17 +18,16 @@ type Node struct {
 	*m.Node
 	errors     int64
 	ConnStatus string
-	mqttClient *mqtt.Client
+	mqttClient *mqtt_client.Client
 	lastPing   time.Time
 	stat       *NodeStatModel
 	sync.Mutex
 	ch map[int64]chan *NodeResponse
 }
 
-func NewNode(model *m.Node,
-	mqtt *mqtt.Mqtt) *Node {
+func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 
-	mqttClient, err := mqtt.NewClient(fmt.Sprintf("/home/%s", model.Name))
+	mqttClient, err := mqtt.NewClient(nil)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -62,11 +62,7 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err 
 		Command:    command,
 	}
 
-	data, _ := json.Marshal(msg)
-	if err = n.mqttClient.Publish(data); err != nil {
-		log.Error(err.Error())
-		return
-	}
+	n.MqttPublish(msg)
 
 	// wait response
 	ticker := time.NewTicker(time.Second * 1)
@@ -128,29 +124,6 @@ func (n *Node) delCh(deviceId int64) {
 	delete(n.ch, deviceId)
 }
 
-//func (n *NodeModel) onComplete(msg, ack message.Message, err error) error {
-//	log.Debug("onComplete")
-//	return nil
-//}
-
-func (n *Node) onPublish(msg *message.PublishMessage) (err error) {
-
-	resp := &NodeResponse{}
-	if err = json.Unmarshal(msg.Payload(), resp); err != nil {
-		return
-	}
-
-	n.Lock()
-	defer n.Unlock()
-	if _, ok := n.ch[resp.DeviceId]; !ok {
-		return
-	}
-
-	n.ch[resp.DeviceId] <- resp
-
-	return
-}
-
 func (n *Node) Connect() *Node {
 
 	if err := n.mqttClient.Connect(); err != nil {
@@ -159,12 +132,13 @@ func (n *Node) Connect() *Node {
 
 	time.Sleep(time.Second)
 
-	topic := fmt.Sprintf("/home/%s", n.Name)
-	if err := n.mqttClient.Subscribe(topic+"/resp", nil, n.onPublish); err != nil {
+	// /home/node/resp
+	if err := n.mqttClient.Subscribe(n.topic("resp"), 0, n.onPublish); err != nil {
 		log.Warning(err.Error())
 	}
 
-	if err := n.mqttClient.Subscribe(topic+"/ping", nil, n.ping); err != nil {
+	// /home/node/ping
+	if err := n.mqttClient.Subscribe(n.topic("ping"), 0, n.ping); err != nil {
 		log.Warning(err.Error())
 	}
 
@@ -177,7 +151,28 @@ func (n *Node) Disconnect() {
 	}
 }
 
-func (n *Node) ping(msg *message.PublishMessage) (err error) {
+func (n *Node) IsConnected() bool {
+	return time.Now().Sub(n.lastPing).Seconds() < 2
+}
+
+func (n *Node) onPublish(client MQTT.Client, msg MQTT.Message) {
+
+	resp := &NodeResponse{}
+	if err := json.Unmarshal(msg.Payload(), resp); err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	n.Lock()
+	defer n.Unlock()
+	if _, ok := n.ch[resp.DeviceId]; !ok {
+		return
+	}
+
+	n.ch[resp.DeviceId] <- resp
+}
+
+func (n *Node) ping(client MQTT.Client, msg MQTT.Message) {
 
 	_ = json.Unmarshal(msg.Payload(), n.stat)
 	n.lastPing = time.Now()
@@ -191,6 +186,15 @@ func (n *Node) ping(msg *message.PublishMessage) (err error) {
 	return
 }
 
-func (n *Node) IsConnected() bool {
-	return time.Now().Sub(n.lastPing).Seconds() < 2
+func (n *Node) MqttPublish(msg interface{}) {
+
+	data, _ := json.Marshal(msg)
+	if err := n.mqttClient.Publish(n.topic("req"), data); err != nil {
+		log.Error(err.Error())
+		return
+	}
+}
+
+func (n *Node) topic(r string) string {
+	return fmt.Sprintf("/home/node/%s/%s", n.Node.Name, r)
 }
