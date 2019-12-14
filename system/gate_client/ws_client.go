@@ -11,7 +11,9 @@ import (
 )
 
 const (
-	writeWait = 10 * time.Second
+	writeWait  = 10 * time.Second
+	pongWait   = 10 * time.Second
+	pingPeriod = (pongWait * 9) / 10
 )
 
 type WsClient struct {
@@ -95,8 +97,14 @@ func (client *WsClient) connect() {
 	var loseChan chan struct{}
 	loseChan = make(chan struct{})
 
+	var tickerQuit chan struct{}
+	tickerQuit = make(chan struct{})
+	ticker := time.NewTicker(pingPeriod)
+
 	var err error
 	defer func() {
+		ticker.Stop()
+
 		if since := time.Since(startTime).Seconds(); since > 10 {
 			client.delta = time.Second
 			log.Infof("Connect channel closed after %v sec", since)
@@ -152,6 +160,12 @@ func (client *WsClient) connect() {
 	client.connectProgress = false
 	client.status = GateStatusConnected
 
+	_ = client.conn.SetReadDeadline(time.Now().Add(pongWait))
+	client.conn.SetPongHandler(func(appData string) error {
+		_ = client.conn.SetReadDeadline(time.Now().Add(pongWait))
+		return nil
+	})
+
 	var messageType int
 	var message []byte
 
@@ -160,6 +174,7 @@ func (client *WsClient) connect() {
 			if messageType, message, err = client.conn.ReadMessage(); err != nil {
 				//log.Error(err.Error())
 				loseChan <- struct{}{}
+				tickerQuit <- struct{}{}
 				break
 			}
 			switch messageType {
@@ -167,7 +182,21 @@ func (client *WsClient) connect() {
 				//fmt.Printf("recv: %s\n", string(message))
 				client.cb.onMessage(message)
 			default:
-				log.Errorf("unknown message type(%v)", messageType)
+				log.Warningf("unknown message type(%v)", messageType)
+			}
+		}
+	}()
+
+	go func() {
+		for {
+			select {
+			case <-tickerQuit:
+				close(tickerQuit)
+				return
+			case <-ticker.C:
+				if err := client.write(websocket.PingMessage, []byte{}); err != nil {
+					return
+				}
 			}
 		}
 	}()
