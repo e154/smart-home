@@ -33,22 +33,26 @@ var (
 
 type GateClient struct {
 	sync.Mutex
-	adaptors    *adaptors.Adaptors
-	settings    *Settings
-	wsClient    *WsClient
-	subscribers map[uuid.UUID]func(msg Message)
-	engine      *gin.Engine
-	stream      *stream.StreamService
+	adaptors        *adaptors.Adaptors
+	settings        *Settings
+	wsClient        *WsClient
+	subscribers     map[uuid.UUID]func(msg Message)
+	engine          *gin.Engine
+	stream          *stream.StreamService
+	messagePoolQuit chan struct{}
+	messagePool     chan Message
 }
 
 func NewGateClient(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
 	stream *stream.StreamService) (gate *GateClient) {
 	gate = &GateClient{
-		adaptors:    adaptors,
-		settings:    &Settings{},
-		subscribers: make(map[uuid.UUID]func(msg Message)),
-		stream:      stream,
+		adaptors:        adaptors,
+		settings:        &Settings{},
+		subscribers:     make(map[uuid.UUID]func(msg Message)),
+		stream:          stream,
+		messagePoolQuit: make(chan struct{}),
+		messagePool:     make(chan Message),
 	}
 
 	gate.wsClient = NewWsClient(adaptors, gate)
@@ -61,10 +65,22 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 
 	stream.GateClient(gate)
 
+	go func() {
+		for {
+			select {
+			case <-gate.messagePoolQuit:
+				return
+			case v := <-gate.messagePool:
+				gate._onMessage(v)
+			}
+		}
+	}()
+
 	return
 }
 
 func (g *GateClient) Shutdown() {
+	g.messagePoolQuit <- struct{}{}
 	g.wsClient.Close()
 }
 
@@ -188,6 +204,12 @@ func (g *GateClient) onMessage(b []byte) {
 		return
 	}
 
+	g.messagePool <- msg
+
+}
+
+func (g *GateClient) _onMessage(msg Message) {
+
 	if msg.Command == "mobile_gate_proxy" {
 		g.RequestFromMobileProxy(msg)
 		return
@@ -232,7 +254,7 @@ func (g *GateClient) onMessage(b []byte) {
 					goto END
 				}
 			}
-			END:
+		END:
 			wg.Done()
 		}()
 
@@ -244,7 +266,7 @@ func (g *GateClient) onMessage(b []byte) {
 		// check channels
 		wg.Wait()
 		close(streamClient.Send)
-		log.Debugf("client was success")
+		//log.Debugf("client was success")
 	}
 }
 
