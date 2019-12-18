@@ -93,10 +93,7 @@ func (m *FlowElement) Run(ctx context.Context) (b bool, returnMessage *Message, 
 	//run script if exist
 	if m.Model.Script != nil {
 
-		if _, err = m.ScriptEngine.PushStruct("message", message); err != nil {
-			m.status = ERROR
-			return
-		}
+		m.ScriptEngine.PushGlobalProxy("message", message)
 
 		if err = m.ScriptEngine.EvalString(m.Model.Script.Compiled); err != nil {
 			m.status = ERROR

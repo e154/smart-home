@@ -404,31 +404,31 @@ fetchStatus =->
     if res.error
         print 'error: ', res.error
         objects.forEach (obj)->
-            IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
+            IC.Map.setElementState device, obj.name, 'ERROR'
             return
         temps.forEach (obj)->
-            IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
+            IC.Map.setElementState device, obj.name, 'ERROR'
             return
         doors.forEach (obj)->
-            IC.Map.setElementState device.getModel(), obj.name, 'ERROR'
+            IC.Map.setElementState device, obj.name, 'ERROR'
             return
         return
     else 
         # print 'ok: ', res.result
         objects.forEach (obj)->
             newStatus = getStatus(res.result[obj.id])
-            IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
+            IC.Map.setElementState device, obj.name, obj.systemName + newStatus
             return
             
         doors.forEach (obj)->
             newStatus = doorStatus(res.result[obj.id])
-            IC.Map.setElementState device.getModel(), obj.name, obj.systemName + newStatus
+            IC.Map.setElementState device, obj.name, obj.systemName + newStatus
             return
         
         temps.forEach (obj)->
-            IC.Map.setElementState device.getModel(), obj.name, obj.systemName + 'ON'
+            IC.Map.setElementState device, obj.name, obj.systemName + 'ON'
 
-            element = IC.Map.getElement device.getModel(), obj.name
+            element = IC.Map.getElement device, obj.name
             temp = if res.result[obj.id] then res.result[obj.id] else 0
             element.setOptions {'text': temp}
             return

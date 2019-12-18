@@ -25,6 +25,7 @@ var coffeeScripts = map[string]string{
 	"coffeeScript22": coffeeScript22,
 	"coffeeScript23": coffeeScript23,
 	"coffeeScript24": coffeeScript24,
+	"coffeeScript25": coffeeScript25,
 }
 
 // test1
@@ -307,6 +308,33 @@ main =->
 	IC.Notifr.send(sms)
 	''
 
+`
+
+//bar
+//&{foo <nil>}
+//foo
+//<nil>
+const coffeeScript25 = `
+"use strict";
+
+IC.So(bar.bar, 'ShouldEqual', 'bar')
+IC.So(bar.foo, 'ShouldEqual', '&{foo <nil>}')
+IC.So(bar.foo.bar, 'ShouldEqual', 'foo')
+IC.So(bar.foo.foo, 'ShouldEqual', '<nil>')
+
+IC.So(IC.bar2.bar, 'ShouldEqual', 'bar')
+IC.So(IC.bar2.foo, 'ShouldEqual', '&{foo <nil>}')
+IC.So(IC.bar2.foo.bar, 'ShouldEqual', 'foo')
+IC.So(IC.bar2.foo.foo, 'ShouldEqual', '<nil>')
+
+IC.So(bar2.bar, 'ShouldEqual', 'bar')
+IC.So(bar2.foo, 'ShouldEqual', '&{foo <nil>}')
+IC.So(bar2.foo.bar, 'ShouldEqual', 'foo')
+IC.So(bar2.foo.foo, 'ShouldEqual', '<nil>')
+
+IC.external('bar', bar)
+IC.external('bar2', bar2)
+IC.external('IC.bar2', IC.bar2)
 `
 
 // test...

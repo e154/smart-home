@@ -12,6 +12,7 @@ type Magic interface {
 	DoCustom(string) (string, error)
 	Compile() error
 	PushStruct(string, interface{}) (int, error)
+	PushGlobalProxy(string, interface{}) int
 	PushFunction(string, interface{}) (int, error)
 	EvalString(string) (error)
 	Close()
@@ -31,6 +32,10 @@ func (s *Engine) Compile() error {
 
 func (s *Engine) PushStruct(name string, i interface{}) (int, error) {
 	return s.script.PushStruct(name, i)
+}
+
+func (s *Engine) PushGlobalProxy(name string, i interface{}) int {
+	return s.script.PushGlobalProxy(name, i)
 }
 
 func (s *Engine) PushFunction(name string, i interface{}) (int, error) {
