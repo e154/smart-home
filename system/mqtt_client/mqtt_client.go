@@ -32,10 +32,16 @@ func NewClient(cfg *Config) (client *Client, err error) {
 		SetPingTimeout(time.Duration(cfg.PingTimeout) * time.Second).
 		SetConnectTimeout(time.Duration(cfg.ConnectTimeout) * time.Second).
 		SetCleanSession(cfg.CleanSession).
-		SetUsername(cfg.Username).
-		SetPassword(cfg.Password).
 		SetOnConnectHandler(client.onConnect).
 		SetConnectionLostHandler(client.onConnectionLostHandler)
+
+	if cfg.Username != "" {
+		opts.SetUsername(cfg.Username)
+	}
+
+	if cfg.Password != "" {
+		opts.SetPassword(cfg.Password)
+	}
 
 	client.client = MQTT.NewClient(opts)
 

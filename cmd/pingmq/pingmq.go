@@ -28,6 +28,8 @@ package main
 import (
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
+	"github.com/e154/smart-home/system/mqtt_client"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"log"
 	"net"
 	"os"
@@ -37,8 +39,6 @@ import (
 
 	"github.com/koron/netx"
 	"github.com/spf13/cobra"
-	"github.com/surgemq/message"
-	"github.com/surgemq/surgemq/service"
 )
 
 type strlist []string
@@ -89,7 +89,7 @@ publishing the result to any clients subscribed to two topics:
 	clientTopics strlist
 
 	s *gmqtt.Server
-	c *service.Client
+	c *mqtt_client.Client
 	p *netx.Pinger
 
 	wg sync.WaitGroup
@@ -183,50 +183,42 @@ func server(cmd *cobra.Command, args []string) {
 }
 
 func client(cmd *cobra.Command, args []string) {
-	// Instantiates a new Client
-	c = &service.Client{}
 
-	// Creates a new MQTT CONNECT message and sets the proper parameters
-	msg := message.NewConnectMessage()
-	msg.SetVersion(4)
-	msg.SetCleanSession(true)
-	msg.SetClientId([]byte(fmt.Sprintf("pingmqclient%d%d", os.Getpid(), time.Now().Unix())))
-	msg.SetKeepAlive(300)
-	if user != "" {
-		msg.SetUsernameFlag(true)
-		msg.SetUsername([]byte(user))
+	cfg := &mqtt_client.Config{
+		CleanSession: true,
+		Broker:       clientURI,
+		KeepAlive:    300,
+		Username:     user,
+		Password:     password,
+		ClientID:     fmt.Sprintf("pingmqclient%d%d", os.Getpid(), time.Now().Unix()),
 	}
-	if password != "" {
-		msg.SetPasswordFlag(true)
-		msg.SetPassword([]byte(password))
+	c, err := mqtt_client.NewClient(cfg)
+	if err != nil {
+		log.Fatalln(err.Error())
+		return
 	}
 
-	// Connects to the remote server at 127.0.0.1 port 1883
-	if err := c.Connect(clientURI, msg); err != nil {
-		log.Fatal(err)
+	if err = c.Connect(); err != nil {
+		log.Fatalln(err.Error())
+		return
 	}
-
-	// Creates a new SUBSCRIBE message to subscribe to topic "abc"
-	submsg := message.NewSubscribeMessage()
 
 	for _, t := range clientTopics {
-		submsg.AddTopic([]byte(t), 0)
+		c.Subscribe(t, 0, onPublish)
 	}
-
-	c.Subscribe(submsg, nil, onPublish)
 
 	<-done
 }
 
-func onPublish(msg *message.PublishMessage) error {
+func onPublish(i mqtt.Client, msg mqtt.Message) {
+
 	pr := &netx.PingResult{}
 	if err := pr.GobDecode(msg.Payload()); err != nil {
 		fmt.Println(string(msg.Payload()))
-		return nil
+		return
 	}
 
 	log.Println(pr)
-	return nil
 }
 
 func main() {

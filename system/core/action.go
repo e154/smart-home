@@ -37,13 +37,13 @@ func NewAction(device *m.Device,
 
 func (a *Action) Do() (res string, err error) {
 
-	a.ScriptEngine.PushStruct("device", &DeviceBind{
+	a.ScriptEngine.PushGlobalProxy("device", &DeviceBind{
 		model: a.Device,
 		node:  a.Node,
 	})
 
 	if a.flow != nil {
-		a.ScriptEngine.PushStruct("flow", &FlowBind{flow: a.flow})
+		a.ScriptEngine.PushGlobalProxy("flow", &FlowBind{flow: a.flow})
 	}
 
 	a.Message.Clear()
@@ -69,7 +69,7 @@ func (a *Action) NewScript() (err error) {
 	}
 
 	a.Message = NewMessage()
-	a.ScriptEngine.PushStruct("message", a.Message)
+	a.ScriptEngine.PushGlobalProxy("message", a.Message)
 
 	// bind
 	javascript := a.ScriptEngine.Get().(*scripts.Javascript)

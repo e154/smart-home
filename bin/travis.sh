@@ -132,16 +132,17 @@ __docs_deploy() {
 
 __build_pingmq() {
 
-    cd ${ROOT}/cmd/pingmq
+    cd ${TMP_DIR}
 
     echo ""
     echo "build command:"
-    echo "xgo --out=${TMP_DIR} --targets=linux/*,windows/*,darwin/* ."
+    echo "xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq"
     echo ""
 
-    xgo --out=${TMP_DIR} --targets=linux/*,windows/*,darwin/* .
+    xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq
 
-    cp ${ROOT}/bin/pingmq ${TMP_DIR}
+    chmod +x ${ROOT}/bin/pingmq
+    cp ${ROOT}/bin/pingmq ${EXEC}
 
 }
 

@@ -176,6 +176,10 @@ func (j *Javascript) PushStruct(name string, s interface{}) (int, error) {
 	return j.ctx.PushGlobalStruct(name, s)
 }
 
+func (j *Javascript) PushGlobalProxy(name string, s interface{}) int {
+	return j.ctx.PushGlobalProxy(name, s)
+}
+
 func (j *Javascript) PushFunction(name string, s interface{}) (int, error) {
 	return j.ctx.PushGlobalGoFunction(name, s)
 }
@@ -264,7 +268,7 @@ func (j *Javascript) bind() {
 			return
 		}
 		j.ctx.PushObject()
-		j.ctx.PushStruct(structure)
+		j.ctx.PushProxy(structure)
 		j.ctx.PutPropString(-3, name)
 		j.ctx.Pop()
 	}
