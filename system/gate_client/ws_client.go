@@ -60,6 +60,10 @@ func (client *WsClient) connect() {
 		return
 	}
 
+	if !client.settings.Enabled {
+		return
+	}
+
 	var err error
 	ticker := time.NewTicker(pingPeriod)
 

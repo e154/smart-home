@@ -341,6 +341,9 @@ func (g *GateClient) Broadcast(message []byte) {
 
 func (g *GateClient) Status() string {
 	status := g.wsClient.status
+	if g.wsClient.settings == nil || !g.wsClient.settings.Enabled {
+		return "disabled"
+	}
 	if status == "quit" {
 		return "wait"
 	}
