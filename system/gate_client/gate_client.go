@@ -127,7 +127,7 @@ func (g *GateClient) RegisterServer() {
 
 	payload := map[string]interface{}{}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	_ = g.Send("register_server", payload, ctx, func(msg Message) {
@@ -314,6 +314,7 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, ctx co
 		f(msg)
 		done <- struct{}{}
 	})
+	defer g.UnSubscribe(message.Id)
 
 	msg, _ := json.Marshal(message)
 	if err := g.wsClient.write(websocket.TextMessage, msg); err != nil {
