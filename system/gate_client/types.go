@@ -18,7 +18,8 @@ const (
 )
 
 const (
-	GateStatusWait      = "wait"
-	GateStatusDisabled  = "disabled"
-	GateStatusConnected = "connected"
+	GateStatusWait         = "wait"
+	GateStatusConnected    = "connected"
+	GateStatusNotConnected = "disabled"
+	GateStatusQuit         = "quit"
 )

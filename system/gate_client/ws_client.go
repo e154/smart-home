@@ -1,7 +1,6 @@
 package gate_client
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"net/url"
@@ -18,101 +17,61 @@ const (
 
 type WsClient struct {
 	sync.Mutex
-	adaptors        *adaptors.Adaptors
-	isConnected     bool
-	conn            *websocket.Conn
-	interrupt       chan struct{}
-	enabled         bool
-	settings        *Settings
-	delta           time.Duration
-	cb              IWsCallback
-	status          string
-	inProgress      bool
-	closeProgress   bool
-	connectProgress bool
+	conn       *websocket.Conn
+	settings   *Settings
+	delta      time.Duration
+	status     string
+	interrupt  chan struct{}
+	quitWorker chan struct{}
+	cb         IWsCallback
+	reConnect  bool
 }
 
-func NewWsClient(adaptors *adaptors.Adaptors,
+func NewWsClient(
 	cb IWsCallback) *WsClient {
 	client := &WsClient{
-		adaptors:  adaptors,
-		interrupt: make(chan struct{}),
-		cb:        cb,
+		interrupt:  make(chan struct{}),
+		quitWorker: make(chan struct{}),
+		cb:         cb,
 	}
-	go client.worker()
+
+	go func() {
+		for {
+			if client.status == GateStatusQuit {
+				return
+			}
+			client.connect()
+			time.Sleep(time.Second)
+		}
+	}()
 	return client
 }
 
-func (client *WsClient) Close() {
-	if !client.isConnected || client.closeProgress {
-		return
-	}
-	client.closeProgress = true
-	client.enabled = false
-	if client.isConnected {
-		log.Info("Close")
-		client.status = GateStatusDisabled
-		client.interrupt <- struct{}{}
-	}
-}
-
-func (client *WsClient) Connect(settings *Settings) {
-	if client.isConnected || client.connectProgress {
-		return
-	}
-
-	log.Info("Connect")
-
-	client.enabled = true
-	client.connectProgress = true
+func (client *WsClient) UpdateSettings(settings *Settings) {
 	client.settings = settings
-}
-
-func (client *WsClient) worker() {
-	client.delta = time.Second
-	for {
-		if !client.enabled ||
-			client.settings == nil ||
-			client.settings.Address == "" {
-			time.Sleep(time.Second * 5)
-			continue
-		}
-		client.status = GateStatusWait
-		client.delta += time.Second
-		//log.Debugf("Wait time %v ...", client.delta)
-		time.Sleep(client.delta)
-		client.connect()
-	}
+	client.reConnect = true
 }
 
 func (client *WsClient) connect() {
 
-	if client.isConnected || client.inProgress {
+	client.status = GateStatusWait
+
+	if client.settings == nil || !client.settings.Valid() {
 		return
 	}
 
-	startTime := time.Now()
-	client.inProgress = true
-
-	var loseChan chan struct{}
-	loseChan = make(chan struct{})
-
-	var tickerQuit chan struct{}
-	tickerQuit = make(chan struct{})
+	var err error
 	ticker := time.NewTicker(pingPeriod)
 
-	var err error
 	defer func() {
+		client.status = GateStatusNotConnected
+
+		client.reConnect = false
+
 		ticker.Stop()
 
-		if since := time.Since(startTime).Seconds(); since > 10 {
-			client.delta = time.Second
-			log.Infof("Connect channel closed after %v sec", since)
-		}
+		go client.cb.onClosed()
 
-		client.closeProgress = false
-		client.inProgress = false
-		client.isConnected = false
 		if client.conn != nil {
 			_ = client.conn.Close()
 		}
@@ -129,7 +88,6 @@ func (client *WsClient) connect() {
 			}
 			log.Debug(err.Error())
 		}
-
 	}()
 
 	var uri *url.URL
@@ -156,75 +114,85 @@ func (client *WsClient) connect() {
 	if client.conn, _, err = websocket.DefaultDialer.Dial(uri.String(), requestHeader); err != nil {
 		return
 	}
-	client.isConnected = true
-	client.connectProgress = false
+
+	log.Info("gate connected ...")
 	client.status = GateStatusConnected
 
-	_ = client.conn.SetReadDeadline(time.Now().Add(pongWait))
-	client.conn.SetPongHandler(func(appData string) error {
+	loseChan := make(chan struct{})
+	var messageType int
+	var message []byte
+
+	client.conn.SetCloseHandler(func(code int, text string) error {
+		log.Warning("connection closed")
+
+		loseChan <- struct{}{}
+		return nil
+	})
+
+	go client.cb.onConnected()
+
+	if err = client.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+		return
+	}
+
+	client.conn.SetPongHandler(func(string) error {
 		_ = client.conn.SetReadDeadline(time.Now().Add(pongWait))
 		return nil
 	})
 
-	var messageType int
-	var message []byte
-
 	go func() {
+		defer close(loseChan)
 		for {
+
 			if messageType, message, err = client.conn.ReadMessage(); err != nil {
 				//log.Error(err.Error())
 				loseChan <- struct{}{}
-				tickerQuit <- struct{}{}
 				break
 			}
 			switch messageType {
 			case websocket.TextMessage:
 				//fmt.Printf("recv: %s\n", string(message))
-				client.cb.onMessage(message)
+				go client.cb.onMessage(message)
 			default:
 				log.Warningf("unknown message type(%v)", messageType)
 			}
 		}
 	}()
 
-	go func() {
-		for {
-			select {
-			case <-tickerQuit:
-				close(tickerQuit)
+	for {
+		select {
+		case <-ticker.C:
+			if client.reConnect {
 				return
-			case <-ticker.C:
-				if err := client.write(websocket.PingMessage, []byte{}); err != nil {
-					return
-				}
 			}
+			if err := client.write(websocket.PingMessage, []byte{}); err != nil {
+				log.Error(err.Error())
+				return
+			}
+		case <-client.interrupt:
+		case <-loseChan:
+
 		}
-	}()
-
-	go client.cb.onConnected()
-
-	log.Infof("Connect %v successfully", uri.String())
-
-	select {
-	case <-client.interrupt:
-	case <-loseChan:
-		close(loseChan)
 	}
+}
 
-	err = client.write(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-
-	go client.cb.onClosed()
+func (client *WsClient) Close() {
+	if client.status == GateStatusQuit {
+		return
+	}
+	client.status = GateStatusQuit
+	if client.status == GateStatusConnected {
+		client.interrupt <- struct{}{}
+	}
 }
 
 func (client *WsClient) write(opCode int, payload []byte) (err error) {
 
-	client.Lock()
-	if !client.isConnected {
-		client.Unlock()
-		err = ErrGateNotConnected
+	if client.status != GateStatusConnected {
 		return
 	}
 
+	client.Lock()
 	if err = client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 		client.Unlock()
 		return

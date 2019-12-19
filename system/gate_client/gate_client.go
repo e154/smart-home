@@ -55,7 +55,7 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 		messagePool:     make(chan Message),
 	}
 
-	gate.wsClient = NewWsClient(adaptors, gate)
+	gate.wsClient = NewWsClient(gate)
 
 	graceful.Subscribe(gate)
 
@@ -95,7 +95,7 @@ func (g *GateClient) Connect() {
 		return
 	}
 
-	g.wsClient.Connect(g.settings)
+	g.wsClient.UpdateSettings(g.settings)
 }
 
 func (g *GateClient) Restart() {
@@ -340,7 +340,11 @@ func (g *GateClient) Broadcast(message []byte) {
 }
 
 func (g *GateClient) Status() string {
-	return g.wsClient.status
+	status := g.wsClient.status
+	if status == "quit" {
+		return "wait"
+	}
+	return status
 }
 
 func (g *GateClient) GetSettings() (*Settings, error) {
