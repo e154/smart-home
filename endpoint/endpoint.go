@@ -38,6 +38,7 @@ type Endpoint struct {
 	Notify           *NotifyEndpoint
 	MessageDelivery  *MessageDeliveryEndpoint
 	Mqtt             *MqttEndpoint
+	Version          *VersionEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
@@ -71,5 +72,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Notify:           NewNotifyEndpoint(common),
 		MessageDelivery:  NewMessageDeliveryEndpoint(common),
 		Mqtt:             NewMqttEndpoint(common),
+		Version:          NewVersionEndpoint(common),
 	}
 }

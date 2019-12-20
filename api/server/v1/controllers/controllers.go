@@ -33,6 +33,7 @@ type ControllersV1 struct {
 	TemplateItem     *ControllerTemplateItem
 	Notifr           *ControllerNotifr
 	Mqtt             *ControllerMqtt
+	Version          *ControllerVersion
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -66,5 +67,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		TemplateItem:     NewControllerTemplateItem(common),
 		Notifr:           NewControllerNotifr(common),
 		Mqtt:             NewControllerMqtt(common),
+		Version:          NewControllerVersion(common),
 	}
 }
