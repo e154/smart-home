@@ -209,4 +209,7 @@ func (s *Server) setControllers() {
 	v1.POST("/mqtt/publish", s.af.Auth, s.ControllersV1.Mqtt.Publish)
 	v1.GET("/mqtt/sessions", s.af.Auth, s.ControllersV1.Mqtt.GetSessions)
 	v1.GET("/mqtt/search_topic", s.af.Auth, s.ControllersV1.Mqtt.SearchTopic)
+
+	// version
+	v1.GET("/version", s.ControllersV1.Version.Version)
 }
