@@ -13,7 +13,7 @@
   "pg_conn_max_life_time": 30,
   "auto_migrate": true,
   "snapshot_dir": "snapshots",
-  "mode": "release",
+  "mode": "debug",
   "mqtt_port": 1883,
   "mqtt_retry_interval": 20,
   "mqtt_retry_check_interval": 20,

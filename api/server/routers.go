@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/swaggo/gin-swagger/swaggerFiles"
 	"github.com/gin-gonic/gin"
 )
@@ -212,4 +213,14 @@ func (s *Server) setControllers() {
 
 	// version
 	v1.GET("/version", s.ControllersV1.Version.Version)
+
+	// debug
+	if s.Config.RunMode == config.DebugMode {
+		v1.GET("/debug/pprof", s.ControllersV1.Debug.PprofIndex)
+		v1.GET("/debug/pprof/cmdline", s.ControllersV1.Debug.PprofCmdline)
+		v1.GET("/debug/pprof/symbol", s.ControllersV1.Debug.PprofSymbol)
+		v1.GET("/debug/pprof/trace", s.ControllersV1.Debug.PprofTrace)
+		v1.GET("/debug/pprof/profile", s.ControllersV1.Debug.PprofProfile)
+		v1.GET("/debug/pprof/profile/:handler", s.ControllersV1.Debug.PprofProfile)
+	}
 }

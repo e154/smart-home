@@ -111,20 +111,57 @@ definitions:
         x-go-name: Token
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DevCommandConfig:
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DevModBusTcpConfig:
+  DevModBusConfig:
     properties:
-      address_port:
+      baud:
+        format: int64
+        type: integer
+        x-go-name: Baud
+      data_bits:
+        format: int64
+        type: integer
+        x-go-name: DataBits
+      parity:
         type: string
-        x-go-name: AddressPort
+        x-go-name: Parity
       slave_id:
         format: int64
         type: integer
         x-go-name: SlaveId
+      stop_bits:
+        format: int64
+        type: integer
+        x-go-name: StopBits
+      timeout:
+        format: int64
+        type: integer
+        x-go-name: Timeout
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+  DevSmartBusConfig:
+    properties:
+      baud:
+        format: int64
+        type: integer
+        x-go-name: Baud
+      device:
+        format: int64
+        type: integer
+        x-go-name: Device
+      sleep:
+        format: int64
+        type: integer
+        x-go-name: Sleep
+      stop_bits:
+        format: int64
+        type: integer
+        x-go-name: StopBits
+      timeout:
+        format: int64
+        type: integer
+        x-go-name: Timeout
+    type: object
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   Device:
     properties:
       actions:
@@ -209,7 +246,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceActionScript:
     properties:
       id:
@@ -220,74 +257,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceProperties:
     allOf:
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
-          type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        address_port:
-          type: string
-          x-go-name: AddressPort
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        address:
-          type: string
-          x-go-name: Address
-        password:
-          type: string
-          x-go-name: Password
-        user:
-          type: string
-          x-go-name: User
-      type: object
     - properties:
         baud:
           format: int64
@@ -362,15 +331,15 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceState:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceStateDevice'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
       id:
         format: int64
         type: integer
@@ -378,8 +347,12 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceStateDevice:
     properties:
       id:
@@ -740,38 +713,18 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       id:
         format: int64
         type: integer
         x-go-name: Id
-      image:
-        type: string
-        x-go-name: Image
-      mime_type:
-        type: string
-        x-go-name: MimeType
-      name:
-        type: string
-        x-go-name: Name
-      size:
-        format: int64
-        type: integer
-        x-go-name: Size
       thumb:
         type: string
         x-go-name: Thumb
-      title:
-        type: string
-        x-go-name: Title
       url:
         type: string
         x-go-name: Url
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   Log:
     properties:
       body:
@@ -792,6 +745,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Map:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -804,8 +761,12 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapDevice:
     properties:
       actions:
@@ -813,12 +774,6 @@ definitions:
           $ref: '#/definitions/MapDeviceAction'
         type: array
         x-go-name: Actions
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      device:
-        $ref: '#/definitions/Device'
       device_id:
         format: int64
         type: integer
@@ -841,12 +796,8 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapDeviceAction:
     properties:
       device_action:
@@ -903,6 +854,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapElement:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -935,6 +890,10 @@ definitions:
       status:
         type: string
         x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
@@ -942,7 +901,7 @@ definitions:
       zone:
         $ref: '#/definitions/MapZone'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElementGraphSettings:
     properties:
       height:
@@ -998,25 +957,12 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MapImage:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      image:
-        $ref: '#/definitions/Image'
-      image_id:
-        format: int64
-        type: integer
-        x-go-name: ImageId
-      style:
-        type: string
-        x-go-name: Style
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapLayer:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -1041,12 +987,16 @@ definitions:
       status:
         type: string
         x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
         x-go-name: Weight
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapOptions:
     properties:
       element_option_text:
@@ -1060,7 +1010,7 @@ definitions:
         type: number
         x-go-name: Zoom
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapText:
     properties:
       id:
@@ -1320,7 +1270,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceNode:
     properties:
       id:
@@ -1328,7 +1278,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceState:
     properties:
       description:
@@ -1819,7 +1769,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Prototype:
     properties:
       actions:
@@ -3115,6 +3065,74 @@ paths:
       summary: get user access list
       tags:
       - auth
+  /debug/pprof:
+    get:
+      description: Index responds with the pprof-formatted profile named by the request.
+      operationId: debugPprofIndex
+      responses:
+        "200":
+          description: Success
+          examples:
+            text/html: <html><body>some text</body></html>
+      tags:
+      - debug
+  /debug/pprof/cmdline:
+    get:
+      description: Cmdline responds with the running program's command line, with
+        arguments separated by NUL bytes. The package initialization registers it
+        as /debug/pprof/cmdline.
+      operationId: debugPprofCmdline
+      responses:
+        "200":
+          description: Success
+          examples:
+            text/html: <html><body>some text</body></html>
+      tags:
+      - debug
+  /debug/pprof/profile/{handler}:
+    get:
+      description: Profile responds with the pprof-formatted cpu profile. Profiling
+        lasts for duration specified in seconds GET parameter, or for 30 seconds if
+        not specified. The package initialization registers it as /debug/pprof/profile.
+      operationId: debugPprofProfile
+      parameters:
+      - description: handler
+        in: path
+        name: handler
+        type: string
+      responses:
+        "200":
+          description: Success
+          examples:
+            text/html: <html><body>some text</body></html>
+      tags:
+      - debug
+  /debug/pprof/symbol:
+    get:
+      description: Symbol looks up the program counters listed in the request, responding
+        with a table mapping program counters to function names. The package initialization
+        registers it as /debug/pprof/symbol.
+      operationId: debugPprofSymbol
+      responses:
+        "200":
+          description: Success
+          examples:
+            text/html: <html><body>some text</body></html>
+      tags:
+      - debug
+  /debug/pprof/trace:
+    get:
+      description: Trace responds with the execution trace in binary form. Tracing
+        lasts for duration specified in seconds GET parameter, or for 1 second if
+        not specified. The package initialization registers it as /debug/pprof/trace.
+      operationId: debugPprofTrace
+      responses:
+        "200":
+          description: Success
+          examples:
+            text/html: <html><body>some text</body></html>
+      tags:
+      - debug
   /device:
     post:
       operationId: deviceAdd
