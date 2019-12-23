@@ -128,3 +128,69 @@ func (c ControllerWorkflow) GetList(ctx *gin.Context) {
 	resp.Page(limit, offset, total, result).Send(ctx)
 	return
 }
+
+// Workflow godoc
+// swagger:operation PUT /workflow/{id}/update_scenario workflowUpdateScenario
+// ---
+// parameters:
+// - description: Workflow ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - description: Update workflow scenario params
+//   in: body
+//   name: workflowUpdateWorkflowScenario
+//   required: true
+//   schema:
+//     $ref: '#/definitions/WorkflowUpdateWorkflowScenario'
+// summary: update workflow scenario
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - workflow
+// responses:
+//   "200":
+//     $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerWorkflow) UpdateScenario(ctx *gin.Context) {
+
+	aid, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	workflowScenario := &models.WorkflowUpdateWorkflowScenario{}
+	if err := ctx.ShouldBindJSON(&workflowScenario); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	err = c.endpoint.Workflow.UpdateScenario(int64(aid), workflowScenario.WorkflowScenarioId)
+	if err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
+
+	return
+}

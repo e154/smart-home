@@ -1,6 +1,7 @@
 package gate_client
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -464,7 +465,7 @@ func (g *GateClient) execRequest(requestParams *StreamRequestModel) (response *S
 		return
 	}
 
-	request, _ := http.NewRequest(requestParams.Method, requestParams.URI, nil)
+	request, _ := http.NewRequest(requestParams.Method, requestParams.URI, bytes.NewBuffer(requestParams.Body))
 	request.Header = requestParams.Header
 	request.RequestURI = requestParams.URI
 

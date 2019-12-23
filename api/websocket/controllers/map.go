@@ -3,6 +3,7 @@ package controllers
 import (
 	mapModels "github.com/e154/smart-home/api/websocket/controllers/map_models"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/telemetry"
 )
 
 type ControllerMap struct {
@@ -29,13 +30,13 @@ func (c *ControllerMap) Stop() {
 	c.stream.UnSubscribe("map.get.telemetry")
 }
 
-func (c *ControllerMap) BroadcastOne(pack string, deviceId int64, elementName string) {
+func (c *ControllerMap) BroadcastOne(param interface{}) {
 	var body map[string]interface{}
 	var ok bool
 
-	switch pack {
-	case "devices":
-		body, ok = c.devices.BroadcastOne(deviceId, elementName)
+	switch v := param.(type) {
+	case telemetry.Device:
+		body, ok = c.devices.BroadcastOne(v.Id, v.ElementName)
 	}
 
 	if ok {
@@ -43,13 +44,13 @@ func (c *ControllerMap) BroadcastOne(pack string, deviceId int64, elementName st
 	}
 }
 
-func (c *ControllerMap) Broadcast(pack string) {
+func (c *ControllerMap) Broadcast(param interface{}) {
 
 	var body map[string]interface{}
 	var ok bool
 
-	switch pack {
-	case "devices":
+	switch param.(type) {
+	case telemetry.Device:
 		body, ok = c.devices.Broadcast()
 	}
 

@@ -154,7 +154,7 @@ func (b *Core) AddNode(node *m.Node) (n *Node, err error) {
 	b.nodes[node.Id] = n.Connect()
 	b.Unlock()
 
-	b.telemetry.Broadcast("nodes")
+	b.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
@@ -176,7 +176,7 @@ func (b *Core) RemoveNode(node *m.Node) (err error) {
 	delete(b.nodes, node.Id)
 	b.Unlock()
 
-	b.telemetry.Broadcast("nodes")
+	b.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
@@ -214,7 +214,7 @@ func (b *Core) ConnectNode(node *m.Node) (err error) {
 		b.nodes[node.Id].Connect()
 	}
 
-	b.telemetry.Broadcast("nodes")
+	b.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
@@ -227,7 +227,7 @@ func (b *Core) DisconnectNode(node *m.Node) (err error) {
 		b.nodes[node.Id].Disconnect()
 	}
 
-	b.telemetry.Broadcast("nodes")
+	b.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
@@ -290,7 +290,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt)
+	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.telemetry)
 
 	if err = wf.Run(); err != nil {
 		return

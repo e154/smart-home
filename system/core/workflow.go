@@ -8,6 +8,7 @@ import (
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/telemetry"
 	"sync"
 	"time"
 )
@@ -26,6 +27,7 @@ type Workflow struct {
 	nextScenario    *m.WorkflowScenario
 	isRuning        bool
 	scenarioEntered bool
+	telemetry       telemetry.ITelemetry
 }
 
 func NewWorkflow(model *m.Workflow,
@@ -33,17 +35,19 @@ func NewWorkflow(model *m.Workflow,
 	scripts *scripts.ScriptService,
 	cron *cr.Cron,
 	core *Core,
-	mqtt *mqtt.Mqtt) (workflow *Workflow) {
+	mqtt *mqtt.Mqtt,
+	telemetry telemetry.ITelemetry) (workflow *Workflow) {
 
 	workflow = &Workflow{
-		Storage:  NewStorage(),
-		model:    model,
-		adaptors: adaptors,
-		scripts:  scripts,
-		Flows:    make(map[int64]*Flow),
-		cron:     cron,
-		core:     core,
-		mqtt:     mqtt,
+		Storage:   NewStorage(),
+		model:     model,
+		adaptors:  adaptors,
+		scripts:   scripts,
+		Flows:     make(map[int64]*Flow),
+		cron:      cron,
+		core:      core,
+		mqtt:      mqtt,
+		telemetry: telemetry,
 	}
 
 	return
@@ -72,6 +76,8 @@ func (wf *Workflow) Run() (err error) {
 	if err = wf.enterScenario(); err != nil {
 		return
 	}
+
+	wf.telemetry.BroadcastOne(telemetry.WorkflowScenario{WorkflowId: wf.model.Id, ScenarioId: wf.model.Scenario.Id})
 
 	if err = wf.initFlows(); err != nil {
 		return

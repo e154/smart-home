@@ -34,14 +34,14 @@ func (s *Telemetry) UnSubscribe(command string) {
 	}
 }
 
-func (t *Telemetry) Broadcast(pack string) {
+func (t *Telemetry) Broadcast(param interface{}) {
 	for _, f := range t.subscribers {
-		f.Broadcast(pack)
+		f.Broadcast(param)
 	}
 }
 
-func (t *Telemetry) BroadcastOne(pack string, deviceId int64, elementName string) {
+func (t *Telemetry) BroadcastOne(param interface{}) {
 	for _, f := range t.subscribers {
-		f.BroadcastOne(pack, deviceId, elementName)
+		f.BroadcastOne(param)
 	}
 }

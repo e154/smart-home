@@ -1,8 +1,9 @@
 package core
 
 import (
-	m "github.com/e154/smart-home/models"
 	"fmt"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/telemetry"
 )
 
 type MapElement struct {
@@ -26,7 +27,7 @@ func (e *MapElement) SetState(systemName string) {
 
 		e.State = state
 
-		e.Map.telemetry.BroadcastOne("devices", e.Device.Id, e.ElementName)
+		e.Map.telemetry.BroadcastOne(telemetry.Device{Id: e.Device.Id, ElementName: e.ElementName})
 	}
 }
 
@@ -43,7 +44,7 @@ func (e *MapElement) SetOptions(options interface{}) {
 
 	e.Options = options
 
-	e.Map.telemetry.BroadcastOne("devices", e.Device.Id, e.ElementName)
+	e.Map.telemetry.BroadcastOne(telemetry.Device{Id: e.Device.Id, ElementName: e.ElementName})
 }
 
 func (e *MapElement) GetOptions() interface{} {

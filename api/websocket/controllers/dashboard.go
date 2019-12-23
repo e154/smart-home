@@ -3,6 +3,7 @@ package controllers
 import (
 	dashboardModel "github.com/e154/smart-home/api/websocket/controllers/dashboard_models"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/telemetry"
 	"time"
 )
 
@@ -17,6 +18,7 @@ type ControllerDashboard struct {
 	Uptime        *dashboardModel.Uptime
 	Disk          *dashboardModel.Disk
 	devices       *dashboardModel.Devices
+	Workflow      *dashboardModel.Workflow
 }
 
 func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
@@ -31,6 +33,7 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 		Nodes:            dashboardModel.NewNode(common.adaptors, common.core),
 		devices:          dashboardModel.NewDevices(common.adaptors, common.core),
 		Gate:             dashboardModel.NewGate(common.gate),
+		Workflow:         dashboardModel.NewWorkflow(common.adaptors, common.core),
 	}
 }
 
@@ -67,14 +70,16 @@ func (c *ControllerDashboard) Stop() {
 	c.quit <- true
 }
 
-func (t *ControllerDashboard) BroadcastOne(pack string, deviceId int64, elementName string) {
+func (t *ControllerDashboard) BroadcastOne(params interface{}) {
 
 	var body map[string]interface{}
 	var ok bool
 
-	switch pack {
-	case "devices":
-		body, ok = t.devices.BroadcastOne(deviceId, elementName)
+	switch v := params.(type) {
+	case telemetry.WorkflowScenario:
+		body, ok = t.Workflow.BroadcastOne(v)
+	case telemetry.Device:
+		body, ok = t.devices.BroadcastOne(v.Id, v.ElementName)
 	}
 
 	if ok {
@@ -82,16 +87,18 @@ func (t *ControllerDashboard) BroadcastOne(pack string, deviceId int64, elementN
 	}
 }
 
-func (t *ControllerDashboard) Broadcast(pack string) {
+func (t *ControllerDashboard) Broadcast(params interface{}) {
 
 	var body map[string]interface{}
 	var ok bool
 
-	switch pack {
-	case "nodes":
+	switch params.(type) {
+	case telemetry.Node:
 		body, ok = t.Nodes.Broadcast()
-	case "devices":
+	case telemetry.Device:
 		body, ok = t.devices.Broadcast()
+	case telemetry.WorkflowScenario:
+		body, ok = t.Workflow.Broadcast()
 	}
 
 	if ok {

@@ -31,4 +31,5 @@ func (s *MobileServer) setControllers() {
 	// mobile
 	v1.GET("/workflows", s.af.Auth, s.ControllersV1.Workflow.GetList)
 	v1.GET("/workflow/:id", s.af.Auth, s.ControllersV1.Workflow.GetById)
+	v1.PUT("/workflow/:id/update_scenario", s.af.Auth, s.ControllersV1.Workflow.UpdateScenario)
 }
