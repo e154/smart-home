@@ -29,6 +29,7 @@ type AppConfig struct {
 	MqttMaxMsgQueue                int           `json:"mqtt_max_msg_queue"`
 	MqttDeliverMode                int           `json:"mqtt_deliver_mode"`
 	Logging                        bool          `json:"logging"`
+	MetricPort                     int           `json:"metric_port"`
 }
 
 type RunMode string

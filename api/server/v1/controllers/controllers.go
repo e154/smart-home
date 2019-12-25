@@ -34,7 +34,6 @@ type ControllersV1 struct {
 	Notifr           *ControllerNotifr
 	Mqtt             *ControllerMqtt
 	Version          *ControllerVersion
-	Debug            *ControllerDebug
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -69,6 +68,5 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Notifr:           NewControllerNotifr(common),
 		Mqtt:             NewControllerMqtt(common),
 		Version:          NewControllerVersion(common),
-		Debug:            NewControllerDebug(common),
 	}
 }

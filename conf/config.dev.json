@@ -24,5 +24,6 @@
   "mqtt_max_await_rel": 100,
   "mqtt_max_msg_queue": 1000,
   "mqtt_deliver_mode": 1,
-  "logging": true
+  "logging": true,
+  "metric_port": 2112
 }
