@@ -70,12 +70,12 @@ func (c *ControllerDashboard) Stop() {
 	c.quit <- true
 }
 
-func (t *ControllerDashboard) BroadcastOne(params interface{}) {
+func (t *ControllerDashboard) BroadcastOne(param interface{}) {
 
 	var body map[string]interface{}
 	var ok bool
 
-	switch v := params.(type) {
+	switch v := param.(type) {
 	case telemetry.WorkflowScenario:
 		body, ok = t.Workflow.BroadcastOne(v)
 	case telemetry.Device:
@@ -87,12 +87,12 @@ func (t *ControllerDashboard) BroadcastOne(params interface{}) {
 	}
 }
 
-func (t *ControllerDashboard) Broadcast(params interface{}) {
+func (t *ControllerDashboard) Broadcast(param interface{}) {
 
 	var body map[string]interface{}
 	var ok bool
 
-	switch params.(type) {
+	switch param.(type) {
 	case telemetry.Node:
 		body, ok = t.Nodes.Broadcast()
 	case telemetry.Device:

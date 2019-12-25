@@ -315,6 +315,34 @@ func (wf *Core) GetWorkflow(workflowId int64) (workflow *Workflow, err error) {
 	return
 }
 
+func (wf *Core) GetStatusAllWorkflow() (statusList []m.DashboardWorkflowStatus) {
+
+	statusList = make([]m.DashboardWorkflowStatus, 0, len(wf.workflows))
+	for _, workflow := range wf.workflows {
+		statusList = append(statusList, m.DashboardWorkflowStatus{
+			Id:         workflow.model.Id,
+			ScenarioId: workflow.model.Scenario.Id,
+		})
+	}
+
+	return
+}
+
+func (wf *Core) GetStatusWorkflow(workflowId int64) (status m.DashboardWorkflowStatus, err error) {
+
+	var workflow *Workflow
+	if workflow, err = wf.GetWorkflow(workflowId); err != nil {
+		return
+	}
+
+	status = m.DashboardWorkflowStatus{
+		Id:         workflow.model.Id,
+		ScenarioId: workflow.model.Scenario.Id,
+	}
+
+	return
+}
+
 // нельзя удалить workflow, если присутствуют связанные сущности
 func (b *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 
