@@ -136,20 +136,19 @@ __build_pingmq() {
 
     echo ""
     echo "build command:"
-    echo "xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq"
+    echo "xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq"
     echo ""
 
-    xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq
+    xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq
 
     chmod +x ${ROOT}/bin/pingmq
-    cp ${ROOT}/bin/pingmq ${EXEC}
+    cp ${ROOT}/bin/pingmq ${TMP_DIR}
 
 }
 
 __build() {
 
     __build_pingmq
-    __docs_deploy
 
     # build
     cd ${TMP_DIR}
@@ -203,7 +202,7 @@ __docker_deploy() {
     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
     # build image
-    docker build -f ${TMP_DIR}/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+    docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
     # set tag to builded image
     docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
     docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
