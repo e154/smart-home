@@ -19,10 +19,10 @@ type Node struct {
 	errors     int64
 	ConnStatus string
 	mqttClient *mqtt_client.Client
-	lastPing   time.Time
 	stat       *NodeStatModel
 	sync.Mutex
-	ch map[int64]chan *NodeResponse
+	lastPing time.Time
+	ch       map[int64]chan *NodeResponse
 }
 
 func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
@@ -152,6 +152,8 @@ func (n *Node) Disconnect() {
 }
 
 func (n *Node) IsConnected() bool {
+	n.Lock()
+	defer n.Unlock()
 	return time.Now().Sub(n.lastPing).Seconds() < 2
 }
 
@@ -175,7 +177,10 @@ func (n *Node) onPublish(client MQTT.Client, msg MQTT.Message) {
 func (n *Node) ping(client MQTT.Client, msg MQTT.Message) {
 
 	_ = json.Unmarshal(msg.Payload(), n.stat)
+
+	n.Lock()
 	n.lastPing = time.Now()
+	n.Unlock()
 
 	switch n.stat.Status {
 	case "enabled":

@@ -14,11 +14,15 @@ const goProxyPtrProp = "\xff" + "goProxyPtrProp"
 type Context struct {
 	storage *storage
 	*duktape.Context
+	p *proxy
 }
 
 // NewContext returns a new Context
 func NewContext() *Context {
-	ctx := &Context{Context: duktape.New()}
+	ctx := &Context{
+		Context: duktape.New(),
+		p:       &proxy{},
+	}
 	ctx.storage = newStorage()
 	ctx.pushGlobalCandyJSObject()
 
@@ -107,15 +111,15 @@ func (ctx *Context) PushProxy(v interface{}) int {
 	ctx.Dup(obj)
 
 	ctx.PushObject()
-	ctx.PushGoFunction(p.enumerate)
+	ctx.PushGoFunction(ctx.p.enumerate)
 	ctx.PutPropString(-2, "enumerate")
-	ctx.PushGoFunction(p.enumerate)
+	ctx.PushGoFunction(ctx.p.enumerate)
 	ctx.PutPropString(-2, "ownKeys")
-	ctx.PushGoFunction(p.get)
+	ctx.PushGoFunction(ctx.p.get)
 	ctx.PutPropString(-2, "get")
-	ctx.PushGoFunction(p.set)
+	ctx.PushGoFunction(ctx.p.set)
 	ctx.PutPropString(-2, "set")
-	ctx.PushGoFunction(p.has)
+	ctx.PushGoFunction(ctx.p.has)
 	ctx.PutPropString(-2, "has")
 	ctx.New(2)
 
@@ -538,4 +542,10 @@ func (ctx *Context) handleReturnError(out []reflect.Value) ([]reflect.Value, err
 	}
 
 	return out, nil
+}
+
+func (ctx *Context) Gc() {
+	// Force a mark-and-sweep garbage collection round.
+	ctx.Context.Gc(0)
+	ctx.p = &proxy{}
 }

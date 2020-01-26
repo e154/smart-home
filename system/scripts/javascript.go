@@ -192,6 +192,10 @@ func (j *Javascript) Ctx() *candyjs.Context {
 	return j.ctx
 }
 
+func (j *Javascript) Gc() {
+	j.ctx.Gc()
+}
+
 func (j *Javascript) bind() {
 
 	// Javascript Binding

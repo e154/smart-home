@@ -332,9 +332,12 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, ctx co
 }
 
 func (g *GateClient) Broadcast(message []byte) {
+	g.wsClient.mx.Lock()
 	if g.wsClient.status != GateStatusConnected {
+		g.wsClient.mx.Unlock()
 		return
 	}
+	g.wsClient.mx.Unlock()
 
 	if err := g.wsClient.write(websocket.TextMessage, message); err != nil {
 		log.Error(err.Error())
@@ -342,10 +345,14 @@ func (g *GateClient) Broadcast(message []byte) {
 }
 
 func (g *GateClient) Status() string {
+	g.wsClient.mx.Lock()
 	status := g.wsClient.status
 	if g.wsClient.settings == nil || !g.wsClient.settings.Enabled {
+		g.wsClient.mx.Unlock()
 		return "disabled"
 	}
+	g.wsClient.mx.Unlock()
+
 	if status == "quit" {
 		return "wait"
 	}

@@ -11,8 +11,6 @@ import (
 var ErrUndefinedProperty = errors.New("undefined property")
 
 var (
-	p = &proxy{}
-
 	//internalKeys map contains the keys that are called by duktape and cannot
 	//throw an error, the value of the map is the value returned when this keys
 	//are requested.

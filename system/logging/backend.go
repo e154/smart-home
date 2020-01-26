@@ -7,20 +7,23 @@ import (
 	"github.com/op/go-logging"
 	"github.com/sirupsen/logrus"
 	"os"
+	"sync"
 )
 
 type LogBackend struct {
-	L       *logrus.Logger
 	dbSaver *LogDbSaver
 	oldLog  *m.Log
 	logging bool
+	mx      *sync.Mutex
+	L       *logrus.Logger
 }
 
 func NewLogBackend(logger *logrus.Logger, dbSaver *LogDbSaver, conf *config.AppConfig) (back *LogBackend) {
 	back = &LogBackend{
-		L:       logger,
 		dbSaver: dbSaver,
 		logging: conf.Logging,
+		mx:      &sync.Mutex{},
+		L:       logger,
 	}
 	back.L.Out = os.Stdout
 	return
@@ -31,6 +34,9 @@ func (b *LogBackend) Log(level logging.Level, calldepth int, rec *logging.Record
 	if !b.logging {
 		return
 	}
+
+	b.mx.Lock()
+	defer b.mx.Unlock()
 
 	var logLevel common.LogLevel
 	s := rec.Formatted(calldepth + 1)

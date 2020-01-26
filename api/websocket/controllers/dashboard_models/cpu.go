@@ -2,6 +2,7 @@ package dashboard_models
 
 import (
 	"github.com/shirou/gopsutil/cpu"
+	"sync"
 )
 
 type Processors struct {
@@ -28,6 +29,7 @@ func NewCpu() (_cpu *Cpu) {
 }
 
 type Cpu struct {
+	sync.Mutex
 	Cpuinfo				*Processors 		`json:"processors"`
 	All					float64				`json:"all"`
 	Usage				map[int]float64		`json:"usage"`
@@ -44,6 +46,7 @@ func (m *Cpu) Update() {
 		return
 	}
 
+	m.Lock()
 	timeStats, _ := cpu.Times(false)
 	total := timeStats[0].Total()
 	diff_idle := float64(timeStats[0].Idle - m.all_cpu_prev_idle)
@@ -51,5 +54,5 @@ func (m *Cpu) Update() {
 	m.All = 100 * (diff_total - diff_idle) / diff_total
 	m.all_cpu_prev_total = total
 	m.all_cpu_prev_idle = timeStats[0].Idle
-
+	m.Unlock()
 }

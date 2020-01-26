@@ -28,15 +28,16 @@ type Flow struct {
 	adaptors         *adaptors.Adaptors
 	scriptService    *scripts.ScriptService
 	scriptEngine     *scripts.Engine
-	Workers          map[int64]*Worker
 	cron             *cr.Cron
 	core             *Core
 	nextScenario     bool
 	mqttClient       *mqtt_client.Client
 	mqttMessageQueue chan *Message
 	mqttWorkerQuit   chan struct{}
+	message          *Message
 	sync.Mutex
 	isRunning bool
+	Workers   map[int64]*Worker
 }
 
 func NewFlow(model *m.Flow,
@@ -58,6 +59,7 @@ func NewFlow(model *m.Flow,
 		core:             core,
 		mqttMessageQueue: make(chan *Message),
 		mqttWorkerQuit:   make(chan struct{}),
+		message:          NewMessage(),
 	}
 
 	if flow.scriptEngine, err = flow.NewScript(); err != nil {
@@ -142,18 +144,21 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 		return
 	}
 
+	defer func() {
+		f.Lock()
+		f.isRunning = false
+		f.Unlock()
+	}()
+
+	f.Lock()
 	if f.isRunning {
 		err = errors.New("flow is running")
+		f.Unlock()
 		return
 	}
 
-	//f.Lock()
-	defer func() {
-		f.isRunning = false
-		//f.Unlock()
-	}()
-
 	f.isRunning = true
+	f.Unlock()
 
 	var _element *FlowElement
 
@@ -209,10 +214,11 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 		return
 	}
 
-	var message *Message
+	if msg, ok := ctx.Value("msg").(*Message); ok {
+		f.SetMessage(msg)
+	}
 
 	var runElement func(*FlowElement)
-	var returnMessage *Message
 	runElement = func(element *FlowElement) {
 
 		if err = ctx.Err(); err != nil {
@@ -223,11 +229,8 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 		isScripted = element.ScriptEngine != nil
 
 		childCtx, _ := context.WithCancel(ctx)
-		if message != nil {
-			childCtx = context.WithValue(childCtx, "msg", message)
-		}
 
-		if ok, returnMessage, err = element.Run(childCtx); err != nil {
+		if ok, err = element.Run(childCtx); err != nil {
 			log.Error(err.Error())
 			return
 		}
@@ -236,15 +239,12 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 		if element.Model.PrototypeType == "Flow" && element.Model.FlowLink != nil {
 			if flow, ok := f.workflow.Flows[*element.Model.FlowLink]; ok {
 				childCtx, _ := context.WithCancel(ctx)
+				childCtx = context.WithValue(childCtx, "msg", f.message)
 				if err = flow.NewMessage(childCtx); err != nil {
 					return
 				}
+				f.SetMessage(flow.message)
 			}
-		}
-
-		// copy message
-		if returnMessage != nil {
-			message = returnMessage
 		}
 
 		elements := getNextElements(element, isScripted, ok)
@@ -277,9 +277,12 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 
 	log.Infof("Add worker: \"%s\"", model.Name)
 
+	f.Lock()
 	if _, ok := f.Workers[model.Id]; ok {
+		f.Unlock()
 		return
 	}
+	f.Unlock()
 
 	if len(f.FlowElements) == 0 {
 		err = errors.New("no flow elements")
@@ -363,9 +366,11 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 
 func (f *Flow) UpdateWorker(worker *m.Worker) (err error) {
 
+	f.Lock()
 	if _, ok := f.Workers[worker.Id]; !ok {
 		err = fmt.Errorf("worker id:%d not found", worker.Id)
 	}
+	f.Unlock()
 
 	if err = f.RemoveWorker(worker); err != nil {
 		log.Warningf("error: %s", err.Error())
@@ -435,6 +440,9 @@ func (f *Flow) NewScript(s ...*m.Script) (engine *scripts.Engine, err error) {
 	})
 	ctx.PutPropString(-3, "Workflow")
 	ctx.Pop()
+
+	// message
+	engine.PushGlobalProxy("message", f.message)
 
 	return
 }
@@ -517,10 +525,13 @@ func (f *Flow) mqttMessageWorker() {
 
 	for {
 
+		f.Lock()
 		if f.isRunning {
 			time.Sleep(time.Millisecond * 500)
+			f.Unlock()
 			continue
 		}
+		f.Unlock()
 
 		select {
 		case <-f.mqttWorkerQuit:
@@ -530,4 +541,16 @@ func (f *Flow) mqttMessageWorker() {
 			f.mqttNewMessage(message)
 		}
 	}
+}
+
+func (f *Flow) SetMessage(msg *Message) {
+	f.Lock()
+	f.message.Update(msg)
+	f.Unlock()
+}
+
+func (f *Flow) GetMessage() *Message {
+	f.Lock()
+	defer f.Unlock()
+	return f.message.Copy()
 }

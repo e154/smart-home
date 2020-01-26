@@ -24,7 +24,6 @@ type MobileServer struct {
 	ControllersV1 *controllers.MobileControllersV1
 	engine        *gin.Engine
 	server        *http.Server
-	graceful      *graceful_service.GracefulService
 	logger        *MobileServerLogger
 	af            *rbac.AccessFilter
 	streamService *stream.StreamService
@@ -54,6 +53,8 @@ func (s *MobileServer) Start() {
 }
 
 func (s *MobileServer) Shutdown() {
+	log.Info("Shutdown")
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if err := s.server.Shutdown(ctx); err != nil {
@@ -91,14 +92,13 @@ func NewMobileServer(cfg *MobileServerConfig,
 		Config:        cfg,
 		ControllersV1: ctrls,
 		engine:        engine,
-		graceful:      graceful,
 		logger:        logger,
 		af:            accessFilter,
 		streamService: streamService,
 		gateClient:    gateClient,
 	}
 
-	newServer.graceful.Subscribe(newServer)
+	graceful.Subscribe(newServer)
 
 	newServer.setControllers()
 

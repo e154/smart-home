@@ -2,26 +2,34 @@ package cron
 
 import (
 	"strings"
+	"sync"
 )
 
 type Task struct {
 	_time	map[int][]int
 	_func	func()
 	cron	*Cron
+	sync.Mutex
 	enabled bool
 }
 
 func (t *Task) Enable() *Task {
+	t.Lock()
 	t.enabled = true
+	t.Unlock()
 	return t
 }
 
 func (t *Task) Disable() *Task {
+	t.Lock()
 	t.enabled = false
+	t.Unlock()
 	return t
 }
 
 func (t *Task) Enabled() bool {
+	t.Lock()
+	defer t.Unlock()
 	return t.enabled
 }
 

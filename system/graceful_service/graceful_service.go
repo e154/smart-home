@@ -33,8 +33,7 @@ func NewGracefulService(cfg *GracefulServiceConfig,
 func (p GracefulService) Wait() {
 
 	var gracefulStop = make(chan os.Signal)
-	signal.Notify(gracefulStop, syscall.SIGTERM)
-	signal.Notify(gracefulStop, syscall.SIGINT)
+	signal.Notify(gracefulStop, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		<-gracefulStop

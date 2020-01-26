@@ -95,11 +95,12 @@ func (w *Worker) removeActions() {
 // Run worker script, and send result to flow as message struct
 func (w *Worker) Do() {
 
+	w.Lock()
 	if w.isRuning || !w.flow.Node.IsConnected() {
+		w.Unlock()
 		return
 	}
 
-	w.Lock()
 	defer func() {
 		w.isRuning = false
 		w.Unlock()
@@ -113,26 +114,24 @@ func (w *Worker) Do() {
 			continue
 		}
 
-		if action.Message.Error != "" {
+		if w.flow.message.Error != "" {
 			continue
 		}
 
-		message := action.Message.Copy()
-
 		// create context
 		ctx, cancelFunc := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
-		ctx = context.WithValue(ctx, "msg", message)
+		ctx = context.WithValue(ctx, "msg", w.flow.message.Copy())
 
 		w.cancelFunc[action.Device.Id] = cancelFunc
 
 		done := make(chan struct{})
 		go func() {
 			if err := w.flow.NewMessage(ctx); err != nil {
-				log.Errorf("flow '%v' end with error: '%+v'", action.flow.Model.Name, err.Error())
+				//log.Errorf("flow '%v' end with error: '%+v'", action.flow.Model.Name, err.Error())
 			}
 
 			if ctx.Err() != nil {
-				log.Errorf("flow '%v' end with error: '%+v'", action.flow.Model.Name, ctx.Err())
+				//log.Errorf("flow '%v' end with error: '%+v'", action.flow.Model.Name, ctx.Err())
 			}
 
 			done <- struct{}{}

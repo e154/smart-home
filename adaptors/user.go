@@ -1,15 +1,15 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
+	"encoding/json"
+	"errors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"encoding/json"
-	"time"
-	"github.com/e154/smart-home/common"
-	"unicode/utf8"
+	"github.com/jinzhu/gorm"
 	"strings"
-	"errors"
+	"time"
+	"unicode/utf8"
 )
 
 type User struct {

@@ -44,7 +44,9 @@ func NewHub() *Hub {
 func (h *Hub) AddClient(client *Client) {
 
 	defer func() {
+		h.Lock()
 		delete(h.sessions, client)
+		h.Unlock()
 		log.Infof("websocket session from ip: %s closed", client.Ip)
 	}()
 

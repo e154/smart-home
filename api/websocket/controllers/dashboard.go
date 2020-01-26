@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	dashboardModel "github.com/e154/smart-home/api/websocket/controllers/dashboard_models"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/telemetry"
@@ -14,6 +15,7 @@ type ControllerDashboard struct {
 	Gate          *dashboardModel.Gate
 	telemetryTime int
 	Memory        *dashboardModel.Memory
+	AppMemory     *dashboardModel.AppMemory
 	Cpu           *dashboardModel.Cpu
 	Uptime        *dashboardModel.Uptime
 	Disk          *dashboardModel.Disk
@@ -28,6 +30,7 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 		quit:             make(chan bool),
 		Cpu:              dashboardModel.NewCpu(),
 		Memory:           &dashboardModel.Memory{},
+		AppMemory:        &dashboardModel.AppMemory{},
 		Uptime:           &dashboardModel.Uptime{},
 		Disk:             dashboardModel.NewDisk(),
 		Nodes:            dashboardModel.NewNode(common.adaptors, common.core),
@@ -44,6 +47,8 @@ func (c *ControllerDashboard) Start() {
 	c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
 	c.stream.Subscribe("dashboard.get.telemetry", c.Telemetry)
 
+	//i := 0
+
 	go func() {
 		for {
 			select {
@@ -53,9 +58,15 @@ func (c *ControllerDashboard) Start() {
 
 			}
 
+			//if i >= 10 {
+			//	runtime.GC()
+			//	i = 0
+			//}
+
 			c.broadcastAll()
 
 			time.Sleep(time.Second * time.Duration(c.telemetryTime))
+			//i++
 		}
 	}()
 }
@@ -123,35 +134,39 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
 //
 func (t *ControllerDashboard) broadcastAll() {
 
-	t.Memory.Update()
-	t.Cpu.Update()
-	t.Uptime.Update()
-	t.Gate.Update()
-
-	msg := &stream.Message{
-		Command: "dashboard.telemetry",
-		Type:    stream.Broadcast,
-		Forward: stream.Request,
-		Payload: map[string]interface{}{
-			"memory": t.Memory,
-			"cpu":    map[string]interface{}{"usage": t.Cpu.Usage, "all": t.Cpu.All},
-			"uptime": t.Uptime,
-			"gate":   t.Gate,
-		},
-	}
-
-	t.stream.Broadcast(msg.Pack())
+	//t.Memory.Update()
+	t.AppMemory.Update()
+	//t.Cpu.Update()
+	//t.Uptime.Update()
+	//t.Gate.Update()
+	//
+	fmt.Println(t.AppMemory)
+	//
+	//msg := &stream.Message{
+	//	Command: "dashboard.telemetry",
+	//	Type:    stream.Broadcast,
+	//	Forward: stream.Request,
+	//	Payload: map[string]interface{}{
+	//		"memory":     t.Memory,
+	//		"app_memory": t.AppMemory,
+	//		"cpu":        map[string]interface{}{"usage": t.Cpu.Usage, "all": t.Cpu.All},
+	//		"uptime":     t.Uptime,
+	//		"gate":       t.Gate,
+	//	},
+	//}
+	//
+	//t.stream.Broadcast(msg.Pack())
 }
 
 func (t *ControllerDashboard) GetStates() *ControllerDashboard {
 
-	t.Memory.Update()
-	t.Cpu.Update()
-	t.Uptime.Update()
-	t.Disk.Update()
-	t.Nodes.Update()
-	t.devices.Update()
-	t.Gate.Update()
+	//t.Memory.Update()
+	//t.Cpu.Update()
+	//t.Uptime.Update()
+	//t.Disk.Update()
+	//t.Nodes.Update()
+	//t.devices.Update()
+	//t.Gate.Update()
 
 	return t
 }

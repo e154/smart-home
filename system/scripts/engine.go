@@ -16,6 +16,7 @@ type Magic interface {
 	PushFunction(string, interface{}) (int, error)
 	EvalString(string) (error)
 	Close()
+	Gc()
 }
 
 type Engine struct {
@@ -32,6 +33,10 @@ func (s *Engine) Compile() error {
 
 func (s *Engine) PushStruct(name string, i interface{}) (int, error) {
 	return s.script.PushStruct(name, i)
+}
+
+func (s *Engine) Gc() {
+	s.script.Gc()
 }
 
 func (s *Engine) PushGlobalProxy(name string, i interface{}) int {

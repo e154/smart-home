@@ -18,10 +18,6 @@ var (
 	log = logging.MustGetLogger("core")
 )
 
-type IGetMap interface {
-	GetMap() *Map
-}
-
 type Core struct {
 	sync.Mutex
 	nodes         map[int64]*Node
@@ -33,6 +29,7 @@ type Core struct {
 	telemetry     telemetry.ITelemetry
 	streamService *stream.StreamService
 	Map           *Map
+	isRunning     bool
 }
 
 func NewCore(adaptors *adaptors.Adaptors,
@@ -65,6 +62,13 @@ func NewCore(adaptors *adaptors.Adaptors,
 }
 
 func (c *Core) Run() (err error) {
+
+	if c.safeIsRunning() {
+		return
+	}
+
+	c.isRunning = true
+
 	if err = c.initNodes(); err != nil {
 		return
 	}
@@ -78,6 +82,18 @@ func (c *Core) Run() (err error) {
 
 func (b *Core) Stop() (err error) {
 
+	if !b.safeIsRunning() {
+		return
+	}
+
+	defer func() {
+		b.isRunning = false
+	}()
+
+	// unregister steam actions
+	b.streamService.UnSubscribe("do.worker")
+	b.streamService.UnSubscribe("do.action")
+
 	for _, workflow := range b.workflows {
 		if err = b.DeleteWorkflow(workflow.model); err != nil {
 			return
@@ -88,23 +104,6 @@ func (b *Core) Stop() (err error) {
 		if err = b.RemoveNode(&m.Node{Id: node.Id, Name: node.Name}); err != nil {
 			return
 		}
-	}
-
-	// unregister steam actions
-	b.streamService.UnSubscribe("do.worker")
-	b.streamService.UnSubscribe("do.action")
-
-	return
-}
-
-func (b *Core) Restart() (err error) {
-
-	if err = b.Stop(); err != nil {
-		log.Error(err.Error())
-	}
-
-	if err = b.Run(); err != nil {
-		log.Error(err.Error())
 	}
 
 	return
@@ -136,25 +135,19 @@ func (c *Core) initNodes() (err error) {
 	return
 }
 
-func (b *Core) AddNode(node *m.Node) (n *Node, err error) {
+func (c *Core) AddNode(node *m.Node) (n *Node, err error) {
 
-	if _, exist := b.nodes[node.Id]; exist {
-		err = b.ReloadNode(node)
+	if _, exist := c.safeGetNode(node.Id); exist {
+		err = c.ReloadNode(node)
 		return
 	}
 
 	log.Infof("Add node: \"%s\"", node.Name)
 
-	if _, ok := b.nodes[node.Id]; ok {
-		return
-	}
+	n = NewNode(node, c.mqtt)
+	c.safeUpdateNodeMap(node.Id, n.Connect())
 
-	b.Lock()
-	n = NewNode(node, b.mqtt)
-	b.nodes[node.Id] = n.Connect()
-	b.Unlock()
-
-	b.telemetry.Broadcast(telemetry.Node{})
+	go c.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
@@ -163,71 +156,75 @@ func (b *Core) RemoveNode(node *m.Node) (err error) {
 
 	log.Infof("Remove node: \"%s\"", node.Name)
 
-	if _, exist := b.nodes[node.Id]; !exist {
-		return
-	}
-
-	b.Lock()
-	if _, ok := b.nodes[node.Id]; ok {
-		b.nodes[node.Id].Disconnect()
-		delete(b.nodes, node.Id)
-	}
-
-	delete(b.nodes, node.Id)
-	b.Unlock()
+	err = b.removeNode(node)
 
 	b.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
 
-func (b *Core) ReloadNode(node *m.Node) (err error) {
+func (c *Core) removeNode(node *m.Node) (err error) {
+
+	n, exist := c.safeGetNode(node.Id)
+	if !exist {
+		err = errors.New("not found")
+		return
+	}
+
+	n.Disconnect()
+
+	c.Lock()
+	delete(c.nodes, node.Id)
+	c.Unlock()
+
+	return
+}
+
+func (c *Core) ReloadNode(node *m.Node) (err error) {
 
 	log.Infof("Reload node: \"%s\"", node.Name)
 
-	if _, ok := b.nodes[node.Id]; !ok {
-		if _, err = b.AddNode(node); err != nil {
+	n, exist := c.safeGetNode(node.Id)
+	if !exist {
+		if _, err = c.AddNode(node); err != nil {
 			log.Error(err.Error())
 		}
 		return
 	}
 
-	b.Lock()
-	b.nodes[node.Id].Status = node.Status
-	//b.nodes[node.Id].SetConnectStatus("wait")
-	b.Unlock()
+	n.Status = node.Status
 
-	if b.nodes[node.Id].Status == "disabled" {
-		b.nodes[node.Id].Disconnect()
+	if n.Status == "disabled" {
+		n.Disconnect()
 	} else {
-		b.nodes[node.Id].Connect()
+		n.Connect()
 	}
 
 	return
 }
 
-func (b *Core) ConnectNode(node *m.Node) (err error) {
+func (c *Core) ConnectNode(node *m.Node) (err error) {
 
 	log.Infof("Connect to node: \"%s\"", node.Name)
 
-	if _, ok := b.nodes[node.Id]; ok {
-		b.nodes[node.Id].Connect()
+	if n, exist := c.safeGetNode(node.Id); exist {
+		n.Connect()
 	}
 
-	b.telemetry.Broadcast(telemetry.Node{})
+	c.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
 
-func (b *Core) DisconnectNode(node *m.Node) (err error) {
+func (c *Core) DisconnectNode(node *m.Node) (err error) {
 
 	log.Infof("Disconnect from node: \"%s\"", node.Name)
 
-	if _, ok := b.nodes[node.Id]; ok {
-		b.nodes[node.Id].Disconnect()
+	if n, exist := c.safeGetNode(node.Id); exist {
+		n.Disconnect()
 	}
 
-	b.telemetry.Broadcast(telemetry.Node{})
+	c.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
@@ -245,16 +242,11 @@ func (b *Core) GetNodes() (nodes map[int64]*Node) {
 	return
 }
 
-func (b *Core) GetNodeById(nodeId int64) *Node {
+func (c *Core) GetNodeById(nodeId int64) *Node {
 
-	b.Lock()
-	for id, node := range b.nodes {
-		if id == nodeId {
-			b.Unlock()
-			return node
-		}
+	if n, exist := c.safeGetNode(nodeId); exist {
+		return n
 	}
-	b.Unlock()
 
 	return nil
 }
@@ -286,7 +278,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 
 	log.Infof("Add workflow: '%s'", workflow.Name)
 
-	if _, ok := b.workflows[workflow.Id]; ok {
+	if _, ok := b.safeGetWorkflow(workflow.Id); ok {
 		return
 	}
 
@@ -296,29 +288,31 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	b.workflows[workflow.Id] = wf
+	b.safeUpdateWorkflowMap(workflow.Id, wf)
 
 	return
 }
 
-func (wf *Core) GetWorkflow(workflowId int64) (workflow *Workflow, err error) {
+func (b *Core) GetWorkflow(workflowId int64) (workflow *Workflow, err error) {
 
 	log.Infof("GetWorkflow: id(%v)", workflowId)
 
-	if _, ok := wf.workflows[workflowId]; !ok {
+	var ok bool
+	if workflow, ok = b.safeGetWorkflow(workflowId); !ok {
 		err = errors.New("not found")
 		return
 	}
 
-	workflow = wf.workflows[workflowId]
-
 	return
 }
 
-func (wf *Core) GetStatusAllWorkflow() (statusList []m.DashboardWorkflowStatus) {
+func (b *Core) GetStatusAllWorkflow() (statusList []m.DashboardWorkflowStatus) {
 
-	statusList = make([]m.DashboardWorkflowStatus, 0, len(wf.workflows))
-	for _, workflow := range wf.workflows {
+	b.Lock()
+	defer b.Unlock()
+
+	statusList = make([]m.DashboardWorkflowStatus, 0, len(b.workflows))
+	for _, workflow := range b.workflows {
 		statusList = append(statusList, m.DashboardWorkflowStatus{
 			Id:         workflow.model.Id,
 			ScenarioId: workflow.model.Scenario.Id,
@@ -328,10 +322,11 @@ func (wf *Core) GetStatusAllWorkflow() (statusList []m.DashboardWorkflowStatus) 
 	return
 }
 
-func (wf *Core) GetStatusWorkflow(workflowId int64) (status m.DashboardWorkflowStatus, err error) {
+func (c *Core) GetStatusWorkflow(workflowId int64) (status m.DashboardWorkflowStatus, err error) {
 
-	var workflow *Workflow
-	if workflow, err = wf.GetWorkflow(workflowId); err != nil {
+	workflow, ok := c.safeGetWorkflow(workflowId)
+	if !ok {
+		err = errors.New("not found")
 		return
 	}
 
@@ -344,42 +339,51 @@ func (wf *Core) GetStatusWorkflow(workflowId int64) (status m.DashboardWorkflowS
 }
 
 // нельзя удалить workflow, если присутствуют связанные сущности
-func (b *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
+func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 
 	log.Infof("Remove workflow: %s", workflow.Name)
 
-	if _, ok := b.workflows[workflow.Id]; !ok {
+	wf, ok := c.safeGetWorkflow(workflow.Id)
+	if !ok {
+		err = errors.New("not found")
 		return
 	}
 
-	if err = b.workflows[workflow.Id].Stop(); err != nil {
+	if err = wf.Stop(); err != nil {
 		log.Error(err.Error())
 	}
-	delete(b.workflows, workflow.Id)
+
+	c.Lock()
+	delete(c.workflows, workflow.Id)
+	c.Unlock()
 
 	return
 }
 
-func (b *Core) UpdateWorkflowScenario(workflow *m.Workflow) (err error) {
+func (c *Core) UpdateWorkflowScenario(workflow *m.Workflow) (err error) {
 
-	if _, ok := b.workflows[workflow.Id]; !ok {
+	wf, ok := c.safeGetWorkflow(workflow.Id)
+	if !ok {
+		err = errors.New("not found")
 		return
 	}
 
-	err = b.workflows[workflow.Id].UpdateScenario()
+	err = wf.UpdateScenario()
 
 	return
 }
 
-func (b *Core) UpdateWorkflow(workflow *m.Workflow) (err error) {
+func (c *Core) UpdateWorkflow(workflow *m.Workflow) (err error) {
 
 	if workflow.Status == "enabled" {
-		if _, ok := b.workflows[workflow.Id]; !ok {
-			err = b.AddWorkflow(workflow)
+		if _, ok := c.safeGetWorkflow(workflow.Id); ok {
+			err = c.AddWorkflow(workflow)
+			return
 		}
 	} else {
-		if _, ok := b.workflows[workflow.Id]; ok {
-			err = b.DeleteWorkflow(workflow)
+		if _, ok := c.safeGetWorkflow(workflow.Id); ok {
+			err = c.DeleteWorkflow(workflow)
+			return
 		}
 	}
 
@@ -390,62 +394,55 @@ func (b *Core) UpdateWorkflow(workflow *m.Workflow) (err error) {
 // Flows
 // ------------------------------------------------
 
-func (b *Core) AddFlow(flow *m.Flow) (err error) {
+func (c *Core) AddFlow(flow *m.Flow) (err error) {
 
-	if _, ok := b.workflows[flow.WorkflowId]; !ok {
+	wf, ok := c.safeGetWorkflow(flow.WorkflowId)
+	if !ok {
+		err = errors.New("not found")
 		return
 	}
 
-	if err = b.workflows[flow.WorkflowId].AddFlow(flow); err != nil {
+	if err = wf.AddFlow(flow); err != nil {
 		return
 	}
 
 	return
 }
 
-func (b *Core) GetFlow(id int64) (*Flow, error) {
+func (c *Core) GetFlow(id int64) (*Flow, error) {
 
 	var flow *m.Flow
 	var err error
-	if flow, err = b.adaptors.Flow.GetById(id); err != nil {
+	if flow, err = c.adaptors.Flow.GetById(id); err != nil {
 		return nil, err
 	}
 
-	if _, ok := b.workflows[flow.WorkflowId]; !ok {
+	wf, ok := c.safeGetWorkflow(flow.WorkflowId)
+	if !ok {
 		return nil, nil
 	}
 
-	if flow, ok := b.workflows[flow.WorkflowId].Flows[id]; ok {
-		return flow, nil
-	}
-
-	return nil, nil
+	return wf.GetFLow(id)
 }
 
-func (b *Core) UpdateFlow(flow *m.Flow) (err error) {
+func (c *Core) UpdateFlow(flow *m.Flow) error {
 
-	if _, ok := b.workflows[flow.WorkflowId]; !ok {
-		return
+	wf, ok := c.safeGetWorkflow(flow.WorkflowId)
+	if !ok {
+		return nil
 	}
 
-	if err = b.workflows[flow.WorkflowId].UpdateFlow(flow); err != nil {
-		return
-	}
-
-	return
+	return wf.UpdateFlow(flow)
 }
 
-func (b *Core) RemoveFlow(flow *m.Flow) (err error) {
+func (c *Core) RemoveFlow(flow *m.Flow) error {
 
-	if _, ok := b.workflows[flow.WorkflowId]; !ok {
-		return
+	wf, ok := c.safeGetWorkflow(flow.WorkflowId)
+	if !ok {
+		return nil
 	}
 
-	if err = b.workflows[flow.WorkflowId].RemoveFlow(flow); err != nil {
-		return
-	}
-
-	return
+	return wf.RemoveFlow(flow)
 }
 
 // ------------------------------------------------
@@ -500,50 +497,78 @@ func (b *Core) UpdateFlowFromDevice(device *m.Device) (err error) {
 
 func (b *Core) UpdateWorker(_worker *m.Worker) (err error) {
 
+	//b.Lock()
+	//defer b.Unlock()
+
 	for _, workflow := range b.workflows {
-		for _, flow := range workflow.Flows {
-			for _, worker := range flow.Workers {
-				if worker.Model.Id == _worker.Id {
-					if err = flow.UpdateWorker(_worker); err != nil {
-						log.Error(err.Error())
-					}
-					break
-				}
-			}
-		}
+		_ = workflow.UpdateWorker(_worker)
 	}
 
 	return
 }
 
-func (b *Core) RemoveWorker(_worker *m.Worker) (err error) {
+func (b *Core) RemoveWorker(worker *m.Worker) (err error) {
+
+	//b.Lock()
+	//defer b.Unlock()
 
 	for _, workflow := range b.workflows {
-		for _, flow := range workflow.Flows {
-			for _, worker := range flow.Workers {
-				if worker.Model.Id == _worker.Id {
-					if err = flow.RemoveWorker(_worker); err != nil {
-						log.Error(err.Error())
-					}
-					break
-				}
-			}
-		}
+		_ = workflow.RemoveWorker(worker)
 	}
 
 	return
 }
 
-func (b *Core) DoWorker(model *m.Worker) (err error) {
+func (b *Core) DoWorker(worker *m.Worker) (err error) {
+
+	//b.Lock()
+	//defer b.Unlock()
 
 	for _, workflow := range b.workflows {
-		for _, flow := range workflow.Flows {
-			if worker, ok := flow.Workers[model.Id]; ok {
-				worker.Do()
-				break
-			}
-		}
+		_ = workflow.DoWorker(worker)
 	}
 
 	return
+}
+
+// ------------------------------------------------
+// safe methods
+// ------------------------------------------------
+
+func (b *Core) safeIsRunning() bool {
+	b.Lock()
+	defer b.Unlock()
+	return b.isRunning
+}
+
+func (b *Core) safeSetIsRunning(v bool) {
+	b.Lock()
+	b.isRunning = v
+	b.Unlock()
+}
+
+func (c *Core) safeGetWorkflow(k int64) (w *Workflow, ok bool) {
+	c.Lock()
+	w, ok = c.workflows[k]
+	c.Unlock()
+	return
+}
+
+func (c *Core) safeUpdateWorkflowMap(k int64, w *Workflow) {
+	c.Lock()
+	c.workflows[k] = w
+	c.Unlock()
+}
+
+func (c *Core) safeGetNode(k int64) (w *Node, ok bool) {
+	c.Lock()
+	w, ok = c.nodes[k]
+	c.Unlock()
+	return
+}
+
+func (c *Core) safeUpdateNodeMap(k int64, n *Node) {
+	c.Lock()
+	c.nodes[k] = n
+	c.Unlock()
 }

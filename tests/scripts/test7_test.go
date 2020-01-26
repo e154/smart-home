@@ -389,7 +389,7 @@ func Test7(t *testing.T) {
 			err = flowCore2.NewMessage(ctx2)
 			So(err, ShouldBeNil)
 
-			So(message.GetVar("val"), ShouldEqual, 123)
+			So(flowCore2.GetMessage().GetVar("val"), ShouldEqual, 123)
 
 			//time.Sleep(time.Second * 5)
 

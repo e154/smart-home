@@ -16,15 +16,17 @@ const (
 )
 
 type WsClient struct {
-	sync.Mutex
-	conn       *websocket.Conn
 	settings   *Settings
 	delta      time.Duration
-	status     string
 	interrupt  chan struct{}
 	quitWorker chan struct{}
 	cb         IWsCallback
 	reConnect  bool
+	mx         *sync.Mutex
+	status     string
+	counter    int
+	sync.Mutex
+	conn *websocket.Conn
 }
 
 func NewWsClient(
@@ -33,13 +35,18 @@ func NewWsClient(
 		interrupt:  make(chan struct{}),
 		quitWorker: make(chan struct{}),
 		cb:         cb,
+		mx:         &sync.Mutex{},
 	}
 
 	go func() {
 		for {
+			client.mx.Lock()
 			if client.status == GateStatusQuit {
+				client.mx.Unlock()
 				return
 			}
+			client.mx.Unlock()
+
 			client.connect()
 			time.Sleep(time.Second)
 		}
@@ -48,27 +55,37 @@ func NewWsClient(
 }
 
 func (client *WsClient) UpdateSettings(settings *Settings) {
+	client.mx.Lock()
 	client.settings = settings
 	client.reConnect = true
+	client.mx.Unlock()
 }
 
 func (client *WsClient) connect() {
 
+	client.mx.Lock()
 	client.status = GateStatusWait
 
 	if client.settings == nil || !client.settings.Valid() {
+		client.mx.Unlock()
 		return
 	}
 
 	if !client.settings.Enabled {
+		client.mx.Unlock()
 		return
 	}
+	client.mx.Unlock()
 
 	var err error
 	ticker := time.NewTicker(pingPeriod)
-
+	client.counter++
 	defer func() {
+		client.counter--
+
+		client.mx.Lock()
 		client.status = GateStatusNotConnected
+		client.mx.Unlock()
 
 		client.reConnect = false
 
@@ -120,7 +137,9 @@ func (client *WsClient) connect() {
 	}
 
 	log.Info("gate connected ...")
+	client.mx.Lock()
 	client.status = GateStatusConnected
+	client.mx.Unlock()
 
 	loseChan := make(chan struct{})
 	var messageType int
@@ -175,12 +194,16 @@ func (client *WsClient) connect() {
 			}
 		case <-client.interrupt:
 		case <-loseChan:
-
+			return
 		}
 	}
 }
 
 func (client *WsClient) Close() {
+
+	client.mx.Lock()
+	defer client.mx.Unlock()
+
 	if client.status == GateStatusQuit {
 		return
 	}
@@ -191,10 +214,12 @@ func (client *WsClient) Close() {
 }
 
 func (client *WsClient) write(opCode int, payload []byte) (err error) {
-
+	client.mx.Lock()
 	if client.status != GateStatusConnected {
+		client.mx.Unlock()
 		return
 	}
+	client.mx.Unlock()
 
 	client.Lock()
 	if err = client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {

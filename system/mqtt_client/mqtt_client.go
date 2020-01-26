@@ -3,6 +3,7 @@ package mqtt_client
 import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/op/go-logging"
+	"sync"
 	"time"
 )
 
@@ -13,6 +14,7 @@ var (
 type Client struct {
 	cfg        *Config
 	client     MQTT.Client
+	mx         *sync.Mutex
 	subscribes map[string]Subscribe
 }
 
@@ -22,6 +24,7 @@ func NewClient(cfg *Config) (client *Client, err error) {
 
 	client = &Client{
 		cfg:        cfg,
+		mx:         &sync.Mutex{},
 		subscribes: make(map[string]Subscribe),
 	}
 
@@ -65,19 +68,23 @@ func (c *Client) Disconnect() {
 	}
 
 	c.UnsubscribeAll()
+	c.mx.Lock()
 	c.subscribes = make(map[string]Subscribe)
+	c.mx.Unlock()
 	c.client.Disconnect(250)
 	c.client = nil
 }
 
 func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) (err error) {
 
+	c.mx.Lock()
 	if _, ok := c.subscribes[topic]; !ok {
 		c.subscribes[topic] = Subscribe{
 			Qos:      qos,
 			Callback: callback,
 		}
 	}
+	c.mx.Unlock()
 
 	if token := c.client.Subscribe(topic, qos, callback); token.Wait() && token.Error() != nil {
 		log.Error(token.Error().Error())
@@ -97,12 +104,14 @@ func (c *Client) Unsubscribe(topic string) (err error) {
 
 func (c *Client) UnsubscribeAll() {
 
+	c.mx.Lock()
 	for topic, _ := range c.subscribes {
 		if token := c.client.Unsubscribe(topic); token.Error() != nil {
 			log.Error(token.Error().Error())
 		}
 	}
 	c.subscribes = make(map[string]Subscribe)
+	c.mx.Unlock()
 }
 
 func (c *Client) Publish(topic string, payload interface{}) (err error) {
@@ -120,20 +129,24 @@ func (c *Client) onConnectionLostHandler(client MQTT.Client, e error) {
 
 	log.Debug("connection lost...")
 
+	c.mx.Lock()
 	for topic, _ := range c.subscribes {
 		if token := c.client.Unsubscribe(topic); token.Error() != nil {
 			log.Error(token.Error().Error())
 		}
 	}
+	c.mx.Unlock()
 }
 
 func (c *Client) onConnect(client MQTT.Client) {
 
 	log.Debug("connected...")
 
+	c.mx.Lock()
 	for topic, subscribe := range c.subscribes {
 		if token := c.client.Subscribe(topic, subscribe.Qos, subscribe.Callback); token.Wait() && token.Error() != nil {
 			log.Error(token.Error().Error())
 		}
 	}
+	c.mx.Unlock()
 }

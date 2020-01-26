@@ -34,3 +34,14 @@ func (s *Storage) SetVar(key string, value interface{}) {
 	s.pull[key] = value
 	s.mx.Unlock()
 }
+
+func (s *Storage) copy(newPull map[string]interface{}) {
+	s.mx.Lock()
+	for key, _ := range s.pull {
+		delete(s.pull, key)
+	}
+	for k, v := range newPull {
+		s.pull[k] = v
+	}
+	s.mx.Unlock()
+}
