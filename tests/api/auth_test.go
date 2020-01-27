@@ -20,7 +20,7 @@ func TestAuth(t *testing.T) {
 
 	var accessToken string
 
-	Convey("/signin", t, func(ctx C) {
+	Convey("POST /signin", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
@@ -60,11 +60,13 @@ func TestAuth(t *testing.T) {
 
 			for _, req := range reqParams {
 				//fmt.Println(req.Login, req.Pass)
-				res := client.Signin(req.Login, req.Pass)
+				client.BasicAuth(req.Login, req.Pass)
+				res := client.Signin()
 				ctx.So(res.Code, ShouldEqual, req.RespCode)
 			}
 
-			res := client.Signin("admin@e154.ru", "admin")
+			client.BasicAuth("admin@e154.ru", "admin")
+			res := client.Signin()
 			ctx.So(res.Code, ShouldEqual, 200)
 
 			currentUser := &models.AuthSignInResponse{}
@@ -88,7 +90,7 @@ func TestAuth(t *testing.T) {
 		}
 	})
 
-	Convey("/access_list", t, func(ctx C) {
+	Convey("GET /access_list", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
@@ -156,7 +158,7 @@ func TestAuth(t *testing.T) {
 		}
 	})
 
-	Convey("/recovery", t, func(ctx C) {
+	Convey("POST /recovery", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
@@ -168,7 +170,7 @@ func TestAuth(t *testing.T) {
 		}
 	})
 
-	Convey("/reset", t, func(ctx C) {
+	Convey("POST /reset", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
@@ -180,7 +182,7 @@ func TestAuth(t *testing.T) {
 		}
 	})
 
-	Convey("/signout", t, func(ctx C) {
+	Convey("POST /signout", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService *scripts.ScriptService,
@@ -194,6 +196,8 @@ func TestAuth(t *testing.T) {
 
 			err := core.Stop()
 			So(err, ShouldBeNil)
+
+			server.Shutdown()
 		})
 		if err != nil {
 			panic(err.Error())
