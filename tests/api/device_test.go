@@ -173,7 +173,19 @@ func TestDevice(t *testing.T) {
 			core *core.Core) {
 
 			client := NewClient(server.GetEngine())
+
+			// negative
+			client.SetToken("asdqwe")
+			res := client.GetDevice(1)
+			ctx.So(res.Code, ShouldEqual, 401)
+			client.SetToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODI4MjQzMTUsImlhdCI6MTU4MDE0NTkxNSwiaXNzIjoic2VydmVyIiwibmJmIjoxNTgwMTQ1OTE1LCJ1c2VySWQiOjF9.p9jcO7pu6afExwNkwF6F2y-mK3eJZOQWubcs4BhAQw2")
+			res = client.GetDevice(1)
+			ctx.So(res.Code, ShouldEqual, 403)
+
+			// positive
 			client.SetToken(accessToken)
+			res = client.GetDevice(404)
+			ctx.So(res.Code, ShouldEqual, 404)
 
 			for _, req := range devices {
 
