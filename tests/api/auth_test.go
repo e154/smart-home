@@ -1,9 +1,7 @@
 package api
 
 import (
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/server/v1/models"
@@ -47,16 +45,7 @@ func TestAuth(t *testing.T) {
 				RespCode int
 			}
 
-			// request params
-			signin := func(login, pass string) (w *httptest.ResponseRecorder) {
-				request, _ := http.NewRequest("POST", "/api/v1/signin", nil)
-				request.Header.Add("accept", "application/json")
-				auth := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", login, pass)))
-				request.Header.Set("authorization", "Basic "+auth)
-				w = httptest.NewRecorder()
-				server.GetEngine().ServeHTTP(w, request)
-				return
-			}
+			client := NewClient(server.GetEngine())
 
 			reqParams := []signinReqParams{
 				{"guest@e154.ru", "guest", 401},
@@ -71,11 +60,11 @@ func TestAuth(t *testing.T) {
 
 			for _, req := range reqParams {
 				//fmt.Println(req.Login, req.Pass)
-				res := signin(req.Login, req.Pass)
+				res := client.Signin(req.Login, req.Pass)
 				ctx.So(res.Code, ShouldEqual, req.RespCode)
 			}
 
-			res := signin("admin@e154.ru", "admin")
+			res := client.Signin("admin@e154.ru", "admin")
 			ctx.So(res.Code, ShouldEqual, 200)
 
 			currentUser := &models.AuthSignInResponse{}
@@ -198,17 +187,9 @@ func TestAuth(t *testing.T) {
 			server *server.Server,
 			core *core.Core) {
 
-			// request params
-			req := func(token string) (w *httptest.ResponseRecorder) {
-				request, _ := http.NewRequest("POST", "/api/v1/signout", nil)
-				request.Header.Add("accept", "application/json")
-				request.Header.Set("Authorization", token)
-				w = httptest.NewRecorder()
-				server.GetEngine().ServeHTTP(w, request)
-				return
-			}
-
-			res := req(accessToken)
+			client := NewClient(server.GetEngine())
+			client.SetToken(accessToken)
+			res := client.Signout()
 			ctx.So(res.Code, ShouldEqual, 200)
 
 			err := core.Stop()
