@@ -50,7 +50,7 @@ func (n *Nodes) Update() {
 	}
 
 	for _, node := range nodes {
-		n.Status[node.Id] = node.ConnStatus
+		n.Status[node.Id] = node.GetConnStatus()
 	}
 
 	n.lastUpdate = time.Now()
