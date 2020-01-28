@@ -20,7 +20,7 @@ type Node struct {
 	mqttClient *mqtt_client.Client
 	stat       *NodeStatModel
 	sync.Mutex
-	ConnStatus string
+	connStatus string
 	lastPing   time.Time
 	ch         map[int64]chan *NodeResponse
 }
@@ -34,7 +34,7 @@ func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 
 	node := &Node{
 		Node:       model,
-		ConnStatus: "disabled",
+		connStatus: "disabled",
 		ch:         make(map[int64]chan *NodeResponse, 0),
 		stat:       &NodeStatModel{},
 		mqttClient: mqttClient,
@@ -180,14 +180,15 @@ func (n *Node) ping(client MQTT.Client, msg MQTT.Message) {
 
 	n.Lock()
 	n.lastPing = time.Now()
-	n.Unlock()
 
 	switch n.stat.Status {
 	case "enabled":
-		n.ConnStatus = "connected"
+		n.connStatus = "connected"
 	default:
-		n.ConnStatus = "enabled"
+		n.connStatus = "enabled"
 	}
+	n.Unlock()
+
 	return
 }
 
@@ -207,5 +208,5 @@ func (n *Node) topic(r string) string {
 func (n *Node) GetConnStatus() string {
 	n.Lock()
 	defer n.Unlock()
-	return n.ConnStatus
+	return n.connStatus
 }
