@@ -30,6 +30,7 @@ type Core struct {
 	streamService *stream.StreamService
 	Map           *Map
 	isRunning     bool
+	stopLock      sync.Mutex
 }
 
 func NewCore(adaptors *adaptors.Adaptors,
@@ -81,14 +82,15 @@ func (c *Core) Run() (err error) {
 }
 
 func (b *Core) Stop() (err error) {
+	b.stopLock.Lock()
+	defer func() {
+		b.stopLock.Unlock()
+		b.isRunning = false
+	}()
 
 	if !b.safeIsRunning() {
 		return
 	}
-
-	defer func() {
-		b.isRunning = false
-	}()
 
 	// unregister steam actions
 	b.streamService.UnSubscribe("do.worker")
