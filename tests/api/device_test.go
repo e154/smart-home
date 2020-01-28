@@ -5,6 +5,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/e154/smart-home/api/server/v1/responses"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/migrations"
@@ -322,19 +323,6 @@ func TestDevice(t *testing.T) {
 			server *server.Server,
 			core *core.Core) {
 
-		})
-		if err != nil {
-			panic(err.Error())
-		}
-	})
-
-	Convey("GET /devices", t, func(ctx C) {
-		err := container.Invoke(func(adaptors *adaptors.Adaptors,
-			migrations *migrations.Migrations,
-			scriptService *scripts.ScriptService,
-			server *server.Server,
-			core *core.Core) {
-
 			client := NewClient(server.GetEngine())
 
 			// negative
@@ -355,6 +343,49 @@ func TestDevice(t *testing.T) {
 
 			res = client.DeleteDevice(1)
 			ctx.So(res.Code, ShouldEqual, 404)
+		})
+		if err != nil {
+			panic(err.Error())
+		}
+	})
+
+	Convey("GET /devices", t, func(ctx C) {
+		err := container.Invoke(func(adaptors *adaptors.Adaptors,
+			migrations *migrations.Migrations,
+			scriptService *scripts.ScriptService,
+			server *server.Server,
+			core *core.Core) {
+
+			client := NewClient(server.GetEngine())
+
+			// negative
+			client.SetToken(invalidToken1)
+			res := client.GetDeviceList(5, 0, "DESC", "id")
+			ctx.So(res.Code, ShouldEqual, 401)
+			client.SetToken(invalidToken2)
+			res = client.GetDeviceList(5, 0, "DESC", "id")
+			ctx.So(res.Code, ShouldEqual, 403)
+
+			// positive
+			client.SetToken(accessToken)
+
+			listGetter := func(limit, offset, realLimit, realOffset int) {
+				res = client.GetDeviceList(limit, offset, "DESC", "id")
+				ctx.So(res.Code, ShouldEqual, 200)
+
+				deviceList := responses.DeviceList{}
+				err := json.Unmarshal(res.Body.Bytes(), &deviceList.Body)
+				ctx.So(err, ShouldBeNil)
+
+				ctx.So(len(deviceList.Body.Items), ShouldEqual, realLimit)
+				ctx.So(deviceList.Body.Meta.Limit, ShouldEqual, limit)
+				ctx.So(deviceList.Body.Meta.Offset, ShouldEqual, realOffset)
+			}
+
+			listGetter(5, 0, 5, 0)
+			listGetter(1, 3, 1, 3)
+			listGetter(7, 0, 6, 0)
+
 		})
 		if err != nil {
 			panic(err.Error())

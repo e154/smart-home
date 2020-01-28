@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 )
 
 const (
@@ -89,3 +90,17 @@ func (c *Client) DeleteDevice(deviceId int64) *httptest.ResponseRecorder {
 	return c.req("DELETE", fmt.Sprintf("/api/v1/device/%d", deviceId), nil)
 }
 
+func (c *Client) GetDeviceList(limit, offset int, order, sort string) *httptest.ResponseRecorder {
+	uri, _ := url.Parse("/api/v1/devices")
+	params := url.Values{}
+	params.Add("limit", fmt.Sprintf("%d", limit))
+	params.Add("offset", fmt.Sprintf("%d", offset))
+	if order != "" {
+		params.Add("order", order)
+	}
+	if sort != "" {
+		params.Add("sort_by", sort)
+	}
+	uri.RawQuery = params.Encode()
+	return c.req("GET", uri.String(), nil)
+}
