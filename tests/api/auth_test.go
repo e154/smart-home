@@ -10,15 +10,11 @@ import (
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
 )
 
 func TestAuth(t *testing.T) {
-
-	var accessToken string
 
 	Convey("POST /signin", t, func(ctx C) {
 		err := container.Invoke(func(adaptors *adaptors.Adaptors,
@@ -97,20 +93,14 @@ func TestAuth(t *testing.T) {
 			server *server.Server,
 			core *core.Core) {
 
-			// request params
-			req := func(token string) (w *httptest.ResponseRecorder) {
-				request, _ := http.NewRequest("GET", "/api/v1/access_list", nil)
-				request.Header.Add("accept", "application/json")
-				request.Header.Set("Authorization", token)
-				w = httptest.NewRecorder()
-				server.GetEngine().ServeHTTP(w, request)
-				return
-			}
+			client := NewClient(server.GetEngine())
 
-			res := req("qweqweasd1")
+			client.SetToken(invalidToken1)
+			res := client.GetAccessList()
 			ctx.So(res.Code, ShouldEqual, 401)
 
-			res = req(accessToken)
+			client.SetToken(accessToken)
+			res = client.GetAccessList()
 			ctx.So(res.Code, ShouldEqual, 200)
 
 			type AccessList struct {

@@ -10,6 +10,15 @@ import (
 	"net/http/httptest"
 )
 
+const (
+	invalidToken1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+	invalidToken2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODI4MjQzMTUsImlhdCI6MTU4MDE0NTkxNSwiaXNzIjoic2VydmVyIiwibmJmIjoxNTgwMTQ1OTE1LCJ1c2VySWQiOjF9.p9jcO7pu6afExwNkwF6F2y-mK3eJZOQWubcs4BhAQw2"
+)
+
+var (
+	accessToken string
+)
+
 type Client struct {
 	engine    *gin.Engine
 	token     string
@@ -59,6 +68,10 @@ func (c *Client) Signout() *httptest.ResponseRecorder {
 	return c.req("POST", "/api/v1/signout", nil)
 }
 
+func (c *Client) GetAccessList() *httptest.ResponseRecorder {
+	return c.req("GET", "/api/v1/access_list", nil)
+}
+
 // device
 func (c *Client) NewDevice(device interface{}) *httptest.ResponseRecorder {
 	return c.req("POST", "/api/v1/device", device)
@@ -67,3 +80,12 @@ func (c *Client) NewDevice(device interface{}) *httptest.ResponseRecorder {
 func (c *Client) GetDevice(deviceId int64) *httptest.ResponseRecorder {
 	return c.req("GET", fmt.Sprintf("/api/v1/device/%d", deviceId), nil)
 }
+
+func (c *Client) UpdateDevice(deviceId int64, device interface{}) *httptest.ResponseRecorder {
+	return c.req("PUT", fmt.Sprintf("/api/v1/device/%d", deviceId), device)
+}
+
+func (c *Client) DeleteDevice(deviceId int64) *httptest.ResponseRecorder {
+	return c.req("DELETE", fmt.Sprintf("/api/v1/device/%d", deviceId), nil)
+}
+

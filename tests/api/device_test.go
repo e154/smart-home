@@ -16,8 +16,6 @@ import (
 
 func TestDevice(t *testing.T) {
 
-	var accessToken string
-
 	type newDeviceRequest struct {
 		ResponseCode int
 		Device       models.NewDevice
@@ -88,6 +86,53 @@ func TestDevice(t *testing.T) {
 				Properties: models.DeviceProperties{
 					DevMqttConfig: &models.DevMqttConfig{
 						Address: "127.0.0.1", User: "user", Password: "pass",
+					},
+				},
+			},
+		},
+	}
+
+	type updateDeviceRequest struct {
+		ResponseCode int
+		Device       models.UpdateDevice
+	}
+
+	updateDevices := []updateDeviceRequest{
+		{
+			ResponseCode: 200,
+			Device: models.UpdateDevice{
+				Name: "device1", Description: "device desc", Status: "enabled", Type: "default",
+			},
+		},
+		{
+			ResponseCode: 200,
+			Device: models.UpdateDevice{
+				Name: "device2", Description: "device2 desc", Status: "disabled", Type: "modbus_rtu",
+				Properties: models.DeviceProperties{
+					DevModBusRtuConfig: &models.DevModBusRtuConfig{
+						SlaveId: 1, Baud: 115200, DataBits: 8, StopBits: 2, Parity: "none", Timeout: 100,
+					},
+				},
+			},
+		},
+		{
+			ResponseCode: 200,
+			Device: models.UpdateDevice{
+				Name: "device1", Description: "device2 desc", Status: "enabled", Type: "modbus_tcp",
+				Properties: models.DeviceProperties{
+					DevModBusTcpConfig: &models.DevModBusTcpConfig{
+						SlaveId: 1, AddressPort: "127.0.0.1:502",
+					},
+				},
+			},
+		},
+		{
+			ResponseCode: 500,
+			Device: models.UpdateDevice{
+				Name: "device1", Description: "device2 desc", Status: "custom", Type: "modbus_tcp",
+				Properties: models.DeviceProperties{
+					DevModBusTcpConfig: &models.DevModBusTcpConfig{
+						SlaveId: 1, AddressPort: "127.0.0.1:502",
 					},
 				},
 			},
@@ -175,14 +220,14 @@ func TestDevice(t *testing.T) {
 			client := NewClient(server.GetEngine())
 
 			// negative
-			client.SetToken("asdqwe")
+			client.SetToken(invalidToken1)
 			res := client.GetDevice(1)
 			ctx.So(res.Code, ShouldEqual, 401)
-			client.SetToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODI4MjQzMTUsImlhdCI6MTU4MDE0NTkxNSwiaXNzIjoic2VydmVyIiwibmJmIjoxNTgwMTQ1OTE1LCJ1c2VySWQiOjF9.p9jcO7pu6afExwNkwF6F2y-mK3eJZOQWubcs4BhAQw2")
+			client.SetToken(invalidToken2)
 			res = client.GetDevice(1)
 			ctx.So(res.Code, ShouldEqual, 403)
 
-			// positive
+			// negative
 			client.SetToken(accessToken)
 			res = client.GetDevice(404)
 			ctx.So(res.Code, ShouldEqual, 404)
@@ -225,6 +270,45 @@ func TestDevice(t *testing.T) {
 			server *server.Server,
 			core *core.Core) {
 
+			client := NewClient(server.GetEngine())
+
+			device := &models.UpdateDevice{
+				Name: "device1", Description: "device desc", Status: "enabled", Type: "modbus_rtu",
+				Properties: models.DeviceProperties{
+					DevModBusRtuConfig: &models.DevModBusRtuConfig{
+						SlaveId: 1, Baud: 115200, DataBits: 8, StopBits: 2, Parity: "none", Timeout: 100,
+					},
+				},
+			}
+
+			// negative
+			client.SetToken(invalidToken1)
+			res := client.UpdateDevice(1, device)
+			ctx.So(res.Code, ShouldEqual, 401)
+			client.SetToken(invalidToken2)
+			res = client.UpdateDevice(1, device)
+			ctx.So(res.Code, ShouldEqual, 403)
+
+			//
+			client.SetToken(accessToken)
+			res = client.UpdateDevice(404, device)
+			ctx.So(res.Code, ShouldEqual, 404)
+
+			for _, device := range updateDevices {
+				res := client.UpdateDevice(1, device.Device)
+				ctx.So(res.Code, ShouldEqual, device.ResponseCode)
+
+				res = client.GetDevice(1)
+				ctx.So(res.Code, ShouldEqual, 200)
+
+				d := &models.UpdateDevice{}
+				err := json.Unmarshal(res.Body.Bytes(), d)
+				ctx.So(err, ShouldBeNil)
+				ctx.So(d.Name, ShouldEqual, device.Device.Name)
+				ctx.So(d.Description, ShouldEqual, device.Device.Description)
+				ctx.So(d.Type, ShouldEqual, device.Device.Type)
+				ctx.So(d.Status, ShouldBeIn, []string{device.Device.Status, "enabled"})
+			}
 		})
 		if err != nil {
 			panic(err.Error())
@@ -251,6 +335,26 @@ func TestDevice(t *testing.T) {
 			server *server.Server,
 			core *core.Core) {
 
+			client := NewClient(server.GetEngine())
+
+			// negative
+			client.SetToken(invalidToken1)
+			res := client.DeleteDevice(404)
+			ctx.So(res.Code, ShouldEqual, 401)
+			client.SetToken(invalidToken2)
+			res = client.DeleteDevice(404)
+			ctx.So(res.Code, ShouldEqual, 403)
+
+			//
+			client.SetToken(accessToken)
+			res = client.DeleteDevice(404)
+			ctx.So(res.Code, ShouldEqual, 404)
+
+			res = client.DeleteDevice(1)
+			ctx.So(res.Code, ShouldEqual, 200)
+
+			res = client.DeleteDevice(1)
+			ctx.So(res.Code, ShouldEqual, 404)
 		})
 		if err != nil {
 			panic(err.Error())
