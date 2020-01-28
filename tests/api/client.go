@@ -104,3 +104,13 @@ func (c *Client) GetDeviceList(limit, offset int, order, sort string) *httptest.
 	uri.RawQuery = params.Encode()
 	return c.req("GET", uri.String(), nil)
 }
+
+func (c *Client) SearchDevice(query string, limit, offset int) *httptest.ResponseRecorder {
+	uri, _ := url.Parse("/api/v1/devices/search")
+	params := url.Values{}
+	params.Add("query", query)
+	params.Add("limit", fmt.Sprintf("%d", limit))
+	params.Add("offset", fmt.Sprintf("%d", offset))
+	uri.RawQuery = params.Encode()
+	return c.req("GET", uri.String(), nil)
+}

@@ -399,6 +399,39 @@ func TestDevice(t *testing.T) {
 			server *server.Server,
 			core *core.Core) {
 
+			client := NewClient(server.GetEngine())
+
+			// negative
+			client.SetToken(invalidToken1)
+			res := client.SearchDevice("device1", 5, 0)
+			ctx.So(res.Code, ShouldEqual, 401)
+			client.SetToken(invalidToken2)
+			res = client.SearchDevice("device1", 5, 0)
+			ctx.So(res.Code, ShouldEqual, 403)
+
+			// positive
+			client.SetToken(accessToken)
+
+			listGetter := func(query string, result int) {
+				res = client.SearchDevice(query, 10, 0)
+				ctx.So(res.Code, ShouldEqual, 200)
+
+				deviceList := responses.DeviceSearch{}
+				err := json.Unmarshal(res.Body.Bytes(), &deviceList.Body)
+				ctx.So(err, ShouldBeNil)
+
+				ctx.So(len(deviceList.Body.Devices), ShouldEqual, result)
+			}
+
+			listGetter("device1", 0)
+			listGetter("device2", 1)
+			listGetter("device3", 1)
+			listGetter("device4", 0)
+			listGetter("device5", 1)
+			listGetter("device6", 2)
+			listGetter("device7", 1)
+			listGetter("device", 6)
+
 			err := core.Stop()
 			So(err, ShouldBeNil)
 

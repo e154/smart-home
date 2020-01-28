@@ -199,7 +199,6 @@ func (n *Devices) RemoveAction(deviceId, actionId int64) (err error) {
 
 func (n *Devices) Search(query string, limit, offset int) (list []*Device, total int64, err error) {
 
-	fmt.Println(query)
 	q := n.Db.Model(&Device{}).
 		Where("name LIKE ?", "%"+query+"%").
 		Order("name ASC")
