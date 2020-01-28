@@ -42,15 +42,19 @@ func (n *Nodes) Update() {
 	_, total, _ := n.adaptors.Node.List(999, 0, "", "")
 
 	nodes := n.core.GetNodes()
-	status := make(map[int64]string)
-	for _, node := range nodes {
-		status[node.Id] = node.ConnStatus
-	}
 
 	n.Lock()
+
+	for key, _ := range n.Status {
+		delete(n.Status, key)
+	}
+
+	for _, node := range nodes {
+		n.Status[node.Id] = node.ConnStatus
+	}
+
 	n.lastUpdate = time.Now()
 	n.Total = total
-	n.Status = status
 	n.Unlock()
 }
 

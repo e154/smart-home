@@ -131,11 +131,12 @@ func (h *Hub) Recv(client *Client, b []byte) {
 		client.UpdateInfo(msg)
 
 	default:
-		for command, f := range h.subscribers {
 
-			if msg.Command == command {
-				f(client, msg)
-			}
+		h.Lock()
+		f, ok := h.subscribers[msg.Command]
+		h.Unlock()
+		if ok {
+			f(client, msg)
 		}
 	}
 }

@@ -17,12 +17,12 @@ type Nodes []*Node
 type Node struct {
 	*m.Node
 	errors     int64
-	ConnStatus string
 	mqttClient *mqtt_client.Client
 	stat       *NodeStatModel
 	sync.Mutex
-	lastPing time.Time
-	ch       map[int64]chan *NodeResponse
+	ConnStatus string
+	lastPing   time.Time
+	ch         map[int64]chan *NodeResponse
 }
 
 func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
@@ -202,4 +202,10 @@ func (n *Node) MqttPublish(msg interface{}) {
 
 func (n *Node) topic(r string) string {
 	return fmt.Sprintf("/home/node/%s/%s", n.Node.Name, r)
+}
+
+func (n *Node) GetConnStatus() string {
+	n.Lock()
+	defer n.Unlock()
+	return n.ConnStatus
 }

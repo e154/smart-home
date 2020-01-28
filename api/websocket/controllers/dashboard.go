@@ -1,15 +1,18 @@
 package controllers
 
 import (
+	"encoding/json"
 	dashboardModel "github.com/e154/smart-home/api/websocket/controllers/dashboard_models"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/telemetry"
+	"sync"
 	"time"
 )
 
 type ControllerDashboard struct {
 	*ControllerCommon
 	quit          chan bool
+	sync.Mutex
 	Nodes         *dashboardModel.Nodes
 	Gate          *dashboardModel.Gate
 	telemetryTime int
@@ -133,6 +136,7 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
 //
 func (t *ControllerDashboard) broadcastAll() {
 
+	t.Lock()
 	t.Memory.Update()
 	t.AppMemory.Update()
 	t.Cpu.Update()
@@ -153,12 +157,14 @@ func (t *ControllerDashboard) broadcastAll() {
 			"gate":       t.Gate,
 		},
 	}
+	t.Unlock()
 
 	t.stream.Broadcast(msg.Pack())
 }
 
 func (t *ControllerDashboard) GetStates() *ControllerDashboard {
 
+	t.Lock()
 	t.Memory.Update()
 	t.Cpu.Update()
 	t.Uptime.Update()
@@ -166,6 +172,7 @@ func (t *ControllerDashboard) GetStates() *ControllerDashboard {
 	t.Nodes.Update()
 	t.devices.Update()
 	t.Gate.Update()
+	t.Unlock()
 
 	return t
 }
@@ -175,6 +182,8 @@ func (t *ControllerDashboard) GetStates() *ControllerDashboard {
 func (t *ControllerDashboard) Telemetry(client *stream.Client, message stream.Message) {
 
 	states := t.GetStates()
+
+	t.Lock()
 	msg := &stream.Message{
 		Id:      message.Id,
 		Command: "dashboard.telemetry",
@@ -190,6 +199,8 @@ func (t *ControllerDashboard) Telemetry(client *stream.Client, message stream.Me
 			"gate":    states.Gate,
 		},
 	}
+	b, _ := json.Marshal(msg)
+	t.Unlock()
 
-	client.Send <- msg.Pack()
+	client.Send <- b
 }
