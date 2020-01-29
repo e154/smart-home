@@ -174,6 +174,29 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 	deviceActions["mb_dev1_turn_off_fan1_v1"] = deviceAction11
 
+	// controll all lights
+	deviceAction12 := &m.DeviceAction{
+		Name:     "turn on all lights",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_on_all_lights_v1"].Id,
+	}
+	ok, _ = deviceAction12.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction12.Id, err = adaptors.DeviceAction.Add(deviceAction12)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_on_all_lights_v1"] = deviceAction12
+
+	deviceAction13 := &m.DeviceAction{
+		Name:     "turn off all lights",
+		DeviceId: device1.Id,
+		ScriptId: scripts["mb_dev1_turn_off_all_lights_v1"].Id,
+	}
+	ok, _ = deviceAction13.Valid()
+	So(ok, ShouldEqual, true)
+	deviceAction13.Id, err = adaptors.DeviceAction.Add(deviceAction13)
+	So(err, ShouldBeNil)
+	deviceActions["mb_dev1_turn_off_all_lights_v1"] = deviceAction13
+
 	// states
 	stateDev1Enabled := &m.DeviceState{
 		SystemName:  "ENABLED",
