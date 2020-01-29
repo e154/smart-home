@@ -623,7 +623,7 @@ if flow
 
 <h3 id="ic_map_set_element_state">.SetElementState(device, elementName, newState)</h3>
 
-<pre><code class="language-coffeescript">IC.Map.SetElementState(device, state)
+<pre><code class="language-coffeescript">IC.Map.SetElementState(device, 'dev1_light1', 'ERROR')
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -648,7 +648,7 @@ if flow
 </tr>
 
 <tr>
-<td><code>stnewStateate</code></td>
+<td><code>newState</code></td>
 <td>type: string, системное наименование состояния</td>
 </tr>
 </tbody>
@@ -656,7 +656,7 @@ if flow
 
 <h3 id="ic_map_get_element">.GetElement(device, elementName)</h3>
 
-<pre><code class="language-coffeescript">elements = IC.Map.GetElement(device, elementName)
+<pre><code class="language-coffeescript">elements = IC.Map.GetElement(device, 'dev1_light1')
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -702,7 +702,7 @@ if flow
 
 <h3 id="ic_map_get_element-1">.GetElements(device)</h3>
 
-<pre><code class="language-coffeescript">elements = IC.Map.GetElement(device)
+<pre><code class="language-coffeescript">elements = IC.Map.GetElements(device)
 </code></pre>
 
 <p><strong>На входе</strong></p>

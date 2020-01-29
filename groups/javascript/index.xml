@@ -60,8 +60,8 @@ flow = IC.Flow() if flow name = flow.getName() print &#39;flow name&#39;, name  
       <guid>https://e154.github.io/smart-home/javascript/_map/</guid>
       <description>IC.Map* Возвращает объект карты
 map = IC.Map  Доступные методы приведены далее:
-.SetElementState(device, elementName, newState) IC.Map.SetElementState(device, state)  На входе
-   Значение Описание     device type: Object, ссылка на объект DeviceModel{}   elementName type: string, наименование элемента   stnewStateate type: string, системное наименование состояния    .GetElement(device, elementName) elements = IC.Map.GetElement(device, elementName)  На входе
+.SetElementState(device, elementName, newState) IC.Map.SetElementState(device, &#39;dev1_light1&#39;, &#39;ERROR&#39;)  На входе
+   Значение Описание     device type: Object, ссылка на объект DeviceModel{}   elementName type: string, наименование элемента   newState type: string, системное наименование состояния    .GetElement(device, elementName) elements = IC.Map.GetElement(device, &#39;dev1_light1&#39;)  На входе
    Значение Описание     device type: Object, ссылка на объект Device{}   elementName type: string, наименование элемента    На выходе</description>
     </item>
     
