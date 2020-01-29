@@ -1,4 +1,4 @@
-// +build linux,!mips64,!mips64le darwin !windows
+// +build linux,!mips64,!mips64le darwin
 
 package dashboard_models
 
