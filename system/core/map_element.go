@@ -4,9 +4,11 @@ import (
 	"fmt"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/telemetry"
+	"sync"
 )
 
 type MapElement struct {
+	sync.Mutex
 	Map         *Map
 	Options     interface{}
 	Device      *m.Device
@@ -15,6 +17,8 @@ type MapElement struct {
 }
 
 func (e *MapElement) SetState(systemName string) {
+	e.Lock()
+	defer e.Unlock()
 
 	for _, state := range e.Device.States {
 		if state.SystemName != systemName {
@@ -32,11 +36,15 @@ func (e *MapElement) SetState(systemName string) {
 }
 
 func (e *MapElement) GetState() interface{} {
+	e.Lock()
+	defer e.Unlock()
 
 	return e.State
 }
 
 func (e *MapElement) SetOptions(options interface{}) {
+	e.Lock()
+	defer e.Unlock()
 
 	if fmt.Sprint(e.Options) == fmt.Sprint(options) {
 		return
@@ -48,6 +56,8 @@ func (e *MapElement) SetOptions(options interface{}) {
 }
 
 func (e *MapElement) GetOptions() interface{} {
+	e.Lock()
+	defer e.Unlock()
 
 	return e.Options
 }

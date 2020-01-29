@@ -4,6 +4,7 @@ import (
 	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
+	"sync"
 )
 
 type Action struct {
@@ -13,6 +14,7 @@ type Action struct {
 	flow          *Flow
 	scriptService *scripts.ScriptService
 	script        *m.Script
+	doLock        sync.Mutex
 }
 
 func NewAction(device *m.Device,
@@ -35,9 +37,9 @@ func NewAction(device *m.Device,
 }
 
 func (a *Action) Do() (res string, err error) {
-
-	/*res,*/ err = a.ScriptEngine.EvalString(a.script.Compiled)
-	//a.Message.SetVar("result", res)
+	a.doLock.Lock()
+	err = a.ScriptEngine.EvalString(a.script.Compiled)
+	a.doLock.Unlock()
 	return
 }
 
