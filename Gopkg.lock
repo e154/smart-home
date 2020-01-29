@@ -54,14 +54,6 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:d83a0c69ae2f09a89d2c2a05d1158c522947d681c26cd5a0c25a39ca8ed031a9"
-  name = "github.com/bouk/monkey"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "5df1f207ff77e025801505ae4d903133a0b4353f"
-  version = "v1.0.0"
-
-[[projects]]
   digest = "1:7a6852b35eb5bbc184561443762d225116ae630c26a7c4d90546619f1e7d2ad2"
   name = "github.com/dgrijalva/jwt-go"
   packages = ["."]
@@ -183,14 +175,6 @@
   revision = "d547d1d9531ed93dbdebcbff7f83e7c876a1e0ee"
 
 [[projects]]
-  digest = "1:3c8c26bb118e3f02230d4f5f30b972dbfe0c6b371acea8f190aa99ceaaae7028"
-  name = "github.com/gorilla/mux"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "00bdffe0f3c77e27d2cf6f5c70232a2d3e4d9c15"
-  version = "v1.7.3"
-
-[[projects]]
   digest = "1:8667b93602cec2cecaac9dbaa729a34341e1ed727b8aaa78f1b0a5a68d06c4a6"
   name = "github.com/gorilla/schema"
   packages = ["."]
@@ -291,14 +275,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d460ba265371bce72b330249ab6008020f45b24a77b3dab1b44f0a6880bbd67c"
-  name = "github.com/lox/go-servejs"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "b196cd09c2b3ffb1883b484cc584e8c380a4b00d"
-
-[[projects]]
-  branch = "master"
   digest = "1:84a5a2b67486d5d67060ac393aa255d05d24ed5ee41daecd5635ec22657b6492"
   name = "github.com/mailru/easyjson"
   packages = [
@@ -374,14 +350,6 @@
   version = "v0.6.0"
 
 [[projects]]
-  branch = "v3"
-  digest = "1:b51860081f3f05b5901c70e5609c8cdfbf40bdd0a7f8cecb7ca4c6da2b9e3c64"
-  name = "github.com/olebedev/go-duktape"
-  packages = ["."]
-  pruneopts = "NUT"
-  revision = "1e4459ed25ff207bef4c6693fa17a4d11575f6a7"
-
-[[projects]]
   digest = "1:797acf41ee0e3b0ac7077b07ccde71ffdee36b3c8636eccf1a4de7a1d199d253"
   name = "github.com/op/go-logging"
   packages = ["."]
@@ -440,27 +408,6 @@
   pruneopts = "NUT"
   revision = "6d489fc7f1d9cd890a250f3ea3431b1744b9623f"
   version = "v0.0.8"
-
-[[projects]]
-  digest = "1:77b730fa4c2d98f3ddf492acbea351eb6b0560fa5eace4105a6fc33ff937bb1b"
-  name = "github.com/rakyll/statik"
-  packages = ["fs"]
-  pruneopts = "NUT"
-  revision = "3bac566d30cdbeddef402a80f3d6305860e59f12"
-  version = "v0.1.6"
-
-[[projects]]
-  branch = "master"
-  digest = "1:35236b074fef7c523a2ad33c11a0a548d552f806ca8d07f75462fdf5ded402fa"
-  name = "github.com/ribice/golang-swaggerui-example"
-  packages = [
-    ".",
-    "cmd/api",
-    "cmd/swagger",
-    "cmd/swaggerui",
-  ]
-  pruneopts = "NUT"
-  revision = "1e7622a30e509a4e004dcf14d10ac93fbe08fc8d"
 
 [[projects]]
   branch = "master"
@@ -702,35 +649,26 @@
     "github.com/DrmagicE/gmqtt",
     "github.com/DrmagicE/gmqtt/pkg/packets",
     "github.com/Syfaro/telegram-bot-api",
-    "github.com/bouk/monkey",
     "github.com/dgrijalva/jwt-go",
     "github.com/eclipse/paho.mqtt.golang",
     "github.com/francoispqt/gojay",
     "github.com/gin-contrib/cors",
     "github.com/gin-gonic/gin",
-    "github.com/gorilla/mux",
     "github.com/gorilla/websocket",
     "github.com/iancoleman/strcase",
     "github.com/jinzhu/copier",
     "github.com/jinzhu/gorm",
     "github.com/koron/netx",
     "github.com/lib/pq",
-    "github.com/lox/go-servejs",
     "github.com/messagebird/go-rest-api",
     "github.com/messagebird/go-rest-api/balance",
     "github.com/messagebird/go-rest-api/sms",
     "github.com/mitchellh/mapstructure",
     "github.com/nlopes/slack",
-    "github.com/olebedev/go-duktape",
     "github.com/op/go-logging",
     "github.com/pkg/errors",
     "github.com/prometheus/client_golang/prometheus",
     "github.com/prometheus/client_golang/prometheus/promhttp",
-    "github.com/rakyll/statik/fs",
-    "github.com/ribice/golang-swaggerui-example",
-    "github.com/ribice/golang-swaggerui-example/cmd/api",
-    "github.com/ribice/golang-swaggerui-example/cmd/swagger",
-    "github.com/ribice/golang-swaggerui-example/cmd/swaggerui",
     "github.com/rubenv/sql-migrate",
     "github.com/sfreiberg/gotwilio",
     "github.com/shirou/gopsutil/cpu",
