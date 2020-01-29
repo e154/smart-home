@@ -1,5 +1,3 @@
-// +build !windows
-
 package dashboard_models
 
 import (
