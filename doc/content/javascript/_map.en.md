@@ -18,7 +18,7 @@ map = IC.Map
 ### .SetElementState(device, elementName, newState) {#ic_map_set_element_state}
 
 ```coffeescript
-IC.Map.SetElementState(device, state)
+IC.Map.SetElementState(device, 'dev1_light1', 'ERROR')
 ```
 
 **На входе**
@@ -27,12 +27,12 @@ IC.Map.SetElementState(device, state)
 ------------------------|--------------
   `device`              | type: Object, ссылка на объект [DeviceModel{}](#device)
   `elementName`         | type: string, наименование элемента
-  `stnewStateate`       | type: string, системное наименование состояния
+  `newState`            | type: string, системное наименование состояния
 
 ### .GetElement(device, elementName) {#ic_map_get_element}
 
 ```coffeescript
-elements = IC.Map.GetElement(device, elementName)
+elements = IC.Map.GetElement(device, 'dev1_light1')
 ```
 
 **На входе**
@@ -52,7 +52,7 @@ elements = IC.Map.GetElement(device, elementName)
 ### .GetElements(device) {#ic_map_get_element}
 
 ```coffeescript
-elements = IC.Map.GetElement(device)
+elements = IC.Map.GetElements(device)
 ```
 
 **На входе**
