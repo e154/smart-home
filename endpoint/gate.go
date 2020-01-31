@@ -17,12 +17,12 @@ func NewGateEndpoint(common *CommonEndpoint) *GateEndpoint {
 	}
 }
 
-func (d *GateEndpoint) GetSettings() (settings *gate_client.Settings, err error) {
+func (d *GateEndpoint) GetSettings() (settings gate_client.Settings, err error) {
 	settings, err = d.gate.GetSettings()
 	return
 }
 
-func (d *GateEndpoint) UpdateSettings(settings *gate_client.Settings) (err error) {
+func (d *GateEndpoint) UpdateSettings(settings gate_client.Settings) (err error) {
 	if err = d.gate.UpdateSettings(settings); err != nil {
 		return
 	}

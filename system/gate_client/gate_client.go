@@ -14,7 +14,6 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/jinzhu/copier"
 	"github.com/op/go-logging"
 	"net/http"
 	"net/http/httptest"
@@ -35,13 +34,14 @@ var (
 type GateClient struct {
 	sync.Mutex
 	adaptors        *adaptors.Adaptors
-	settings        *Settings
 	wsClient        *WsClient
 	subscribers     map[uuid.UUID]func(msg Message)
 	engine          *gin.Engine
 	stream          *stream.StreamService
 	messagePoolQuit chan struct{}
 	messagePool     chan Message
+	settingsLock    sync.Mutex
+	settings        *Settings
 }
 
 func NewGateClient(adaptors *adaptors.Adaptors,
@@ -86,17 +86,23 @@ func (g *GateClient) Shutdown() {
 }
 
 func (g *GateClient) Close() {
+	g.settingsLock.Lock()
+	defer g.settingsLock.Unlock()
+
 	log.Info("Close")
 	g.wsClient.Close()
 }
 
 func (g *GateClient) Connect() {
+	g.settingsLock.Lock()
+	defer g.settingsLock.Unlock()
+
 	log.Info("Connect")
 	if !g.settings.Valid() {
 		return
 	}
 
-	g.wsClient.UpdateSettings(g.settings)
+	g.wsClient.UpdateSettings(*g.settings)
 }
 
 func (g *GateClient) Restart() {
@@ -121,10 +127,14 @@ func (g *GateClient) BroadcastAccessToken() {
 }
 
 func (g *GateClient) RegisterServer() {
+
+	g.settingsLock.Lock()
 	log.Info("Register server")
 	if g.settings.GateServerToken != "" {
+		g.settingsLock.Unlock()
 		return
 	}
+	g.settingsLock.Unlock()
 
 	payload := map[string]interface{}{}
 
@@ -138,11 +148,13 @@ func (g *GateClient) RegisterServer() {
 			return
 		}
 
+		g.settingsLock.Lock()
 		g.settings.GateServerToken = msg.Payload["token"].(string)
+		g.settingsLock.Unlock()
 
 		g.Restart()
 
-		_ = g.SaveSettings()
+		_ = g.saveSettings()
 	})
 }
 
@@ -165,12 +177,13 @@ func (g *GateClient) LoadSettings() (err error) {
 
 	var variable *m.Variable
 	if variable, err = g.adaptors.Variable.GetByName(gateVarName); err != nil {
-		if err = g.SaveSettings(); err != nil {
+		if err = g.saveSettings(); err != nil {
 			log.Error(err.Error())
 		}
 		return
 	}
 
+	g.settingsLock.Lock()
 	if err = variable.GetObj(g.settings); err != nil {
 		log.Error(err.Error())
 	}
@@ -178,11 +191,15 @@ func (g *GateClient) LoadSettings() (err error) {
 	if g.settings.Address == "" {
 		log.Info("no gate address")
 	}
+	g.settingsLock.Unlock()
 
 	return
 }
 
-func (g *GateClient) SaveSettings() (err error) {
+func (g *GateClient) saveSettings() (err error) {
+	g.settingsLock.Lock()
+	defer g.settingsLock.Unlock()
+
 	log.Info("Save settings")
 
 	variable := m.NewVariable(gateVarName)
@@ -191,6 +208,39 @@ func (g *GateClient) SaveSettings() (err error) {
 	}
 
 	err = g.adaptors.Variable.Update(variable)
+
+	return
+}
+
+func (g *GateClient) GetSettings() (Settings, error) {
+	g.settingsLock.Lock()
+	defer g.settingsLock.Unlock()
+
+	return *g.settings, nil
+}
+
+func (g *GateClient) UpdateSettings(settings Settings) (err error) {
+
+	var uri *url.URL
+	if uri, err = url.Parse(settings.Address); err != nil {
+		return
+	}
+
+	log.Infof("update gate settings, address: %v, enabled: %v", settings.Address, settings.Enabled)
+
+	settings.Address = uri.String()
+
+	g.settingsLock.Lock()
+	g.settings.GateServerToken = settings.GateServerToken
+	g.settings.Address = settings.Address
+	g.settings.Enabled = settings.Enabled
+	g.settingsLock.Unlock()
+
+	g.wsClient.UpdateSettings(settings)
+
+	if err = g.saveSettings(); err != nil {
+		return
+	}
 
 	return
 }
@@ -347,7 +397,7 @@ func (g *GateClient) Broadcast(message []byte) {
 func (g *GateClient) Status() string {
 	g.wsClient.mx.Lock()
 	status := g.wsClient.status
-	if g.wsClient.settings == nil || !g.wsClient.settings.Enabled {
+	if !g.wsClient.settings.Enabled {
 		g.wsClient.mx.Unlock()
 		return "disabled"
 	}
@@ -357,33 +407,6 @@ func (g *GateClient) Status() string {
 		return "wait"
 	}
 	return status
-}
-
-func (g *GateClient) GetSettings() (*Settings, error) {
-	return g.settings, nil
-}
-
-func (g *GateClient) UpdateSettings(settings *Settings) (err error) {
-
-	var uri *url.URL
-	if uri, err = url.Parse(settings.Address); err != nil {
-		return
-	}
-
-	log.Infof("update gate settings, address: %v, enabled: %v", settings.Address, settings.Enabled)
-
-	settings.Address = uri.String()
-
-	if err = copier.Copy(&g.settings, &settings); err != nil {
-		return
-	}
-	if err = g.SaveSettings(); err != nil {
-		return
-	}
-	if !g.settings.Enabled {
-		g.Close()
-	}
-	return
 }
 
 func (g *GateClient) GetMobileList(ctx context.Context) (list *MobileList, err error) {

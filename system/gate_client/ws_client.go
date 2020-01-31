@@ -4,7 +4,6 @@ import (
 	"github.com/gorilla/websocket"
 	"net/http"
 	"net/url"
-	"strings"
 	"sync"
 	"time"
 )
@@ -16,7 +15,7 @@ const (
 )
 
 type WsClient struct {
-	settings   *Settings
+	settings   Settings
 	delta      time.Duration
 	interrupt  chan struct{}
 	quitWorker chan struct{}
@@ -54,11 +53,12 @@ func NewWsClient(
 	return client
 }
 
-func (client *WsClient) UpdateSettings(settings *Settings) {
+func (client *WsClient) UpdateSettings(settings Settings) {
 	client.mx.Lock()
+	defer client.mx.Unlock()
+
 	client.settings = settings
 	client.reConnect = true
-	client.mx.Unlock()
 }
 
 func (client *WsClient) connect() {
@@ -66,7 +66,7 @@ func (client *WsClient) connect() {
 	client.mx.Lock()
 	client.status = GateStatusWait
 
-	if client.settings == nil || !client.settings.Valid() {
+	if !client.settings.Valid() {
 		client.mx.Unlock()
 		return
 	}
@@ -85,9 +85,8 @@ func (client *WsClient) connect() {
 
 		client.mx.Lock()
 		client.status = GateStatusNotConnected
-		client.mx.Unlock()
-
 		client.reConnect = false
+		client.mx.Unlock()
 
 		ticker.Stop()
 
@@ -97,18 +96,18 @@ func (client *WsClient) connect() {
 			_ = client.conn.Close()
 		}
 
-		if err != nil {
-			if strings.Contains(err.Error(), "connection refused") {
-				return
-			}
-			if strings.Contains(err.Error(), "bad handshake") {
-				return
-			}
-			if strings.Contains(err.Error(), "use of closed network connection") {
-				return
-			}
-			log.Debug(err.Error())
-		}
+		//if err != nil {
+		//	if strings.Contains(err.Error(), "connection refused") {
+		//		return
+		//	}
+		//	if strings.Contains(err.Error(), "bad handshake") {
+		//		return
+		//	}
+		//	if strings.Contains(err.Error(), "use of closed network connection") {
+		//		return
+		//	}
+		//	log.Debug(err.Error())
+		//}
 	}()
 
 	var uri *url.URL
@@ -185,9 +184,13 @@ func (client *WsClient) connect() {
 	for {
 		select {
 		case <-ticker.C:
+			client.mx.Lock()
 			if client.reConnect {
+				client.mx.Unlock()
 				return
 			}
+			client.mx.Unlock()
+
 			if err := client.write(websocket.PingMessage, []byte{}); err != nil {
 				log.Error(err.Error())
 				return
@@ -231,4 +234,11 @@ func (client *WsClient) write(opCode int, payload []byte) (err error) {
 	client.Unlock()
 
 	return
+}
+
+func (client *WsClient) Status() string {
+	client.mx.Lock()
+	defer client.mx.Unlock()
+
+	return client.status
 }

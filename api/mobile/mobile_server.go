@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/e154/smart-home/api/mobile/v1/controllers"
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
@@ -79,11 +78,11 @@ func NewMobileServer(cfg *MobileServerConfig,
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = logger
 	gin.DefaultErrorWriter = logger
-	if cfg.RunMode == config.ReleaseMode {
+	//if cfg.RunMode == config.ReleaseMode {
 		gin.SetMode(gin.ReleaseMode)
-	} else {
-		gin.SetMode(gin.DebugMode)
-	}
+	//} else {
+	//	gin.SetMode(gin.DebugMode)
+	//}
 
 	engine := gin.New()
 	engine.Use(gin.Recovery())
