@@ -340,6 +340,7 @@ go test ./tests -v
 * [OpenHub](https://www.openhab.org)
 * [iridiummobile](http://www.iridiummobile.net) 
 * [amx](https://www.amx.com/en-US)
+* [Home Assistant](https://www.home-assistant.io/integrations/)
 
 ### Лицензия
 
