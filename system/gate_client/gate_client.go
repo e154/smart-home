@@ -27,8 +27,7 @@ const (
 )
 
 var (
-	log                 = logging.MustGetLogger("gate")
-	ErrGateNotConnected = fmt.Errorf("gate not connected")
+	log = logging.MustGetLogger("gate")
 )
 
 type GateClient struct {
@@ -217,7 +216,6 @@ func (g *GateClient) UpdateSettings(settings Settings) (err error) {
 		return
 	}
 	g.settingsLock.Unlock()
-
 
 	var uri *url.URL
 	if uri, err = url.Parse(settings.Address); err != nil {
