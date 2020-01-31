@@ -1,6 +1,7 @@
 package gate_client
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"net/url"
@@ -186,6 +187,8 @@ func (client *WsClient) connect() {
 		case <-ticker.C:
 			client.mx.Lock()
 			if client.reConnect {
+				//_ = client.write(websocket.CloseMessage, []byte{})
+				fmt.Println("reconnect...")
 				client.mx.Unlock()
 				return
 			}
@@ -217,6 +220,7 @@ func (client *WsClient) Close() {
 }
 
 func (client *WsClient) write(opCode int, payload []byte) (err error) {
+
 	client.mx.Lock()
 	if client.status != GateStatusConnected {
 		client.mx.Unlock()
@@ -225,13 +229,13 @@ func (client *WsClient) write(opCode int, payload []byte) (err error) {
 	client.mx.Unlock()
 
 	client.Lock()
+	defer client.Unlock()
+
 	if err = client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-		client.Unlock()
 		return
 	}
 
 	err = client.conn.WriteMessage(opCode, payload)
-	client.Unlock()
 
 	return
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 type GateEndpoint struct {
@@ -26,17 +25,6 @@ func (d *GateEndpoint) UpdateSettings(settings gate_client.Settings) (err error)
 	if err = d.gate.UpdateSettings(settings); err != nil {
 		return
 	}
-
-	go func() {
-		if settings.Enabled {
-			d.gate.Close()
-			time.Sleep(time.Second)
-			d.gate.Connect()
-
-		} else {
-			d.gate.Close()
-		}
-	}()
 
 	return
 }

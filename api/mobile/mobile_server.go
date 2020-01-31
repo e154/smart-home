@@ -45,7 +45,6 @@ func (s *MobileServer) Start() {
 
 	go func() {
 		s.gateClient.SetEngine(s.engine)
-		s.gateClient.Connect()
 	}()
 
 	log.Infof("Serving server at http://[::]:%d", s.Config.Port)

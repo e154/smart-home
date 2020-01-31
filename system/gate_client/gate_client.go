@@ -60,7 +60,7 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 
 	graceful.Subscribe(gate)
 
-	if err := gate.LoadSettings(); err != nil {
+	if err := gate.loadSettings(); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -93,21 +93,8 @@ func (g *GateClient) Close() {
 	g.wsClient.Close()
 }
 
-func (g *GateClient) Connect() {
-	g.settingsLock.Lock()
-	defer g.settingsLock.Unlock()
-
-	log.Info("Connect")
-	if !g.settings.Valid() {
-		return
-	}
-
-	g.wsClient.UpdateSettings(*g.settings)
-}
-
 func (g *GateClient) Restart() {
 	g.Close()
-	g.Connect()
 	g.BroadcastAccessToken()
 }
 
@@ -172,7 +159,7 @@ func (g *GateClient) registerMobile(ctx *gin.Context) {
 	})
 }
 
-func (g *GateClient) LoadSettings() (err error) {
+func (g *GateClient) loadSettings() (err error) {
 	log.Info("Load settings")
 
 	var variable *m.Variable
@@ -184,6 +171,8 @@ func (g *GateClient) LoadSettings() (err error) {
 	}
 
 	g.settingsLock.Lock()
+	defer g.settingsLock.Unlock()
+
 	if err = variable.GetObj(g.settings); err != nil {
 		log.Error(err.Error())
 	}
@@ -191,7 +180,8 @@ func (g *GateClient) LoadSettings() (err error) {
 	if g.settings.Address == "" {
 		log.Info("no gate address")
 	}
-	g.settingsLock.Unlock()
+
+	g.wsClient.UpdateSettings(*g.settings)
 
 	return
 }
@@ -220,6 +210,14 @@ func (g *GateClient) GetSettings() (Settings, error) {
 }
 
 func (g *GateClient) UpdateSettings(settings Settings) (err error) {
+
+	g.settingsLock.Lock()
+	if g.settings.Equal(settings) {
+		g.settingsLock.Unlock()
+		return
+	}
+	g.settingsLock.Unlock()
+
 
 	var uri *url.URL
 	if uri, err = url.Parse(settings.Address); err != nil {
@@ -348,7 +346,7 @@ func (g *GateClient) UnSubscribe(id uuid.UUID) {
 
 func (g *GateClient) Send(command string, payload map[string]interface{}, ctx context.Context, f func(msg Message)) (err error) {
 
-	if g.wsClient.status != GateStatusConnected {
+	if g.wsClient.Status() != GateStatusConnected {
 		err = errors.New("gate not connected")
 		return
 	}
@@ -382,12 +380,9 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, ctx co
 }
 
 func (g *GateClient) Broadcast(message []byte) {
-	g.wsClient.mx.Lock()
-	if g.wsClient.status != GateStatusConnected {
-		g.wsClient.mx.Unlock()
+	if g.wsClient.Status() != GateStatusConnected {
 		return
 	}
-	g.wsClient.mx.Unlock()
 
 	if err := g.wsClient.write(websocket.TextMessage, message); err != nil {
 		log.Error(err.Error())
@@ -395,13 +390,11 @@ func (g *GateClient) Broadcast(message []byte) {
 }
 
 func (g *GateClient) Status() string {
-	g.wsClient.mx.Lock()
-	status := g.wsClient.status
-	if !g.wsClient.settings.Enabled {
-		g.wsClient.mx.Unlock()
+
+	status := g.wsClient.Status()
+	if !g.settings.Enabled {
 		return "disabled"
 	}
-	g.wsClient.mx.Unlock()
 
 	if status == "quit" {
 		return "wait"
@@ -452,7 +445,7 @@ func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error
 
 func (g *GateClient) RequestFromMobileProxy(message Message) {
 
-	if g.wsClient.status != GateStatusConnected {
+	if g.wsClient.Status() != GateStatusConnected {
 		return
 	}
 

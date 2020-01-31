@@ -15,6 +15,12 @@ func (s Settings) Valid() bool {
 	return false
 }
 
+func (s Settings) Equal(v Settings) bool {
+	return s.GateServerToken == v.GateServerToken &&
+		s.Address == v.Address &&
+		s.Enabled == v.Enabled
+}
+
 type MobileList struct {
 	Total     int64    `json:"total"`
 	TokenList []string `json:"token_list"`
