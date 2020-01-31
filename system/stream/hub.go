@@ -44,7 +44,9 @@ func NewHub() *Hub {
 func (h *Hub) AddClient(client *Client) {
 
 	defer func() {
+		h.Lock()
 		delete(h.sessions, client)
+		h.Unlock()
 		log.Infof("websocket session from ip: %s closed", client.Ip)
 	}()
 
@@ -129,11 +131,12 @@ func (h *Hub) Recv(client *Client, b []byte) {
 		client.UpdateInfo(msg)
 
 	default:
-		for command, f := range h.subscribers {
 
-			if msg.Command == command {
-				f(client, msg)
-			}
+		h.Lock()
+		f, ok := h.subscribers[msg.Command]
+		h.Unlock()
+		if ok {
+			f(client, msg)
 		}
 	}
 }

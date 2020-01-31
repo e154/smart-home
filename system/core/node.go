@@ -17,12 +17,12 @@ type Nodes []*Node
 type Node struct {
 	*m.Node
 	errors     int64
-	ConnStatus string
 	mqttClient *mqtt_client.Client
-	lastPing   time.Time
 	stat       *NodeStatModel
 	sync.Mutex
-	ch map[int64]chan *NodeResponse
+	connStatus string
+	lastPing   time.Time
+	ch         map[int64]chan *NodeResponse
 }
 
 func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
@@ -34,7 +34,7 @@ func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 
 	node := &Node{
 		Node:       model,
-		ConnStatus: "disabled",
+		connStatus: "disabled",
 		ch:         make(map[int64]chan *NodeResponse, 0),
 		stat:       &NodeStatModel{},
 		mqttClient: mqttClient,
@@ -152,6 +152,8 @@ func (n *Node) Disconnect() {
 }
 
 func (n *Node) IsConnected() bool {
+	n.Lock()
+	defer n.Unlock()
 	return time.Now().Sub(n.lastPing).Seconds() < 2
 }
 
@@ -175,14 +177,18 @@ func (n *Node) onPublish(client MQTT.Client, msg MQTT.Message) {
 func (n *Node) ping(client MQTT.Client, msg MQTT.Message) {
 
 	_ = json.Unmarshal(msg.Payload(), n.stat)
+
+	n.Lock()
 	n.lastPing = time.Now()
 
 	switch n.stat.Status {
 	case "enabled":
-		n.ConnStatus = "connected"
+		n.connStatus = "connected"
 	default:
-		n.ConnStatus = "enabled"
+		n.connStatus = "enabled"
 	}
+	n.Unlock()
+
 	return
 }
 
@@ -197,4 +203,10 @@ func (n *Node) MqttPublish(msg interface{}) {
 
 func (n *Node) topic(r string) string {
 	return fmt.Sprintf("/home/node/%s/%s", n.Node.Name, r)
+}
+
+func (n *Node) GetConnStatus() string {
+	n.Lock()
+	defer n.Unlock()
+	return n.connStatus
 }

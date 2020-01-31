@@ -53,22 +53,16 @@ func NewFlowElement(model *m.FlowElement,
 	return
 }
 
-func (m *FlowElement) Before(message *Message) error {
+func (m *FlowElement) Before() error {
 
 	m.status = DONE
-	return m.Prototype.Before(message, m.Flow)
+	return m.Prototype.Before(m.Flow)
 }
 
 // run internal process
-func (m *FlowElement) Run(ctx context.Context) (b bool, returnMessage *Message, err error) {
+func (m *FlowElement) Run(ctx context.Context) (b bool, err error) {
 
 	if err = ctx.Err(); err != nil {
-		return
-	}
-
-	message, ok := ctx.Value("msg").(*Message)
-	if !ok {
-		err = errors.New("bad message object")
 		return
 	}
 
@@ -77,39 +71,34 @@ func (m *FlowElement) Run(ctx context.Context) (b bool, returnMessage *Message, 
 	//???
 	m.Flow.cursor = m.Model.Uuid
 
-	if err = m.Before(message); err != nil {
+	if err = m.Before(); err != nil {
 		m.status = ERROR
 		return
 	}
 
-	if err = m.Prototype.Run(message, m.Flow); err != nil {
+	if err = m.Prototype.Run(m.Flow); err != nil {
 		m.status = ERROR
 		return
 	}
-
-	returnMessage = &Message{}
-	*returnMessage = *message
 
 	//run script if exist
 	if m.Model.Script != nil {
-
-		m.ScriptEngine.PushGlobalProxy("message", message)
 
 		if err = m.ScriptEngine.EvalString(m.Model.Script.Compiled); err != nil {
 			m.status = ERROR
 			return
 		}
 
-		if message.Error != "" {
-			err = errors.New(message.Error)
+		if m.Flow.message.Error != "" {
+			err = errors.New(m.Flow.message.Error)
 			m.status = ERROR
 			return
 		}
 
-		b = message.Success
+		b = m.Flow.message.Success
 	}
 
-	if err = m.After(message); err != nil {
+	if err = m.After(); err != nil {
 		m.status = ERROR
 		return
 	}
@@ -119,9 +108,9 @@ func (m *FlowElement) Run(ctx context.Context) (b bool, returnMessage *Message, 
 	return
 }
 
-func (m *FlowElement) After(message *Message) error {
+func (m *FlowElement) After() error {
 	m.status = DONE
-	return m.Prototype.After(message, m.Flow)
+	return m.Prototype.After(m.Flow)
 }
 
 func (m *FlowElement) GetStatus() (status Status) {

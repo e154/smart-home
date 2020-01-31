@@ -26,6 +26,7 @@ var coffeeScripts = map[string]string{
 	"coffeeScript23": coffeeScript23,
 	"coffeeScript24": coffeeScript24,
 	"coffeeScript25": coffeeScript25,
+	"coffeeScript26": coffeeScript26,
 }
 
 // test1
@@ -335,6 +336,15 @@ IC.So(bar2.foo.foo, 'ShouldEqual', '<nil>')
 IC.external('bar', bar)
 IC.external('bar2', bar2)
 IC.external('IC.bar2', IC.bar2)
+`
+
+const coffeeScript26 = `
+"use strict";
+
+IC.store(bar2.bar)
+IC.store(bar2.foo)
+IC.store(bar2.foo.bar)
+IC.store(bar2.foo.foo)
 `
 
 // test...

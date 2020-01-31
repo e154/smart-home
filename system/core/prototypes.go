@@ -1,9 +1,9 @@
 package core
 
 type ActionPrototypes interface {
-	After(*Message, *Flow) error
-	Run(*Message, *Flow) error
-	Before(*Message, *Flow) error
+	After(*Flow) error
+	Run(*Flow) error
+	Before(*Flow) error
 	Type() string
 }
 

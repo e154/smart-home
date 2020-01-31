@@ -19,13 +19,12 @@ const (
 
 func NewCron() *Cron {
 	return &Cron{
-		mutex: &sync.Mutex{},
 		tasks: make(map[*Task]bool),
 	}
 }
 
 type Cron struct {
-	mutex     *sync.Mutex
+	sync.Mutex
 	tasks     map[*Task]bool
 	isRun     bool
 	quit      chan bool
@@ -174,23 +173,23 @@ func (c *Cron) NewTask(t string, h func()) *Task {
 		enabled: true,
 	}
 
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
+	c.Lock()
 	c.tasks[task] = false
+	c.Unlock()
 
 	return task
 }
 
 func (c *Cron) RemoveTask(task *Task) {
+
+	c.Lock()
 	if _, ok := c.tasks[task]; !ok {
+		c.Unlock()
 		return
 	}
 
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
 	delete(c.tasks, task)
+	c.Unlock()
 }
 
 func (c *Cron) timePrepare(t time.Time) {
@@ -206,8 +205,12 @@ func (c *Cron) timePrepare(t time.Time) {
 
 	// tasks
 	//-----------------------------------
+
+	c.Lock()
+	defer c.Unlock()
+
 	for task, _ := range c.tasks {
-		if !task.enabled {
+		if !task.Enabled() {
 			continue
 		}
 		go task.exec(ct)

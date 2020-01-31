@@ -13,13 +13,13 @@ ARCHIVE="smart-home-${EXEC}.tar.gz"
 #
 # build version variables
 #
-PACKAGE="github.com/e154/smart-home/version"
-VERSION_VAR="${PACKAGE}.VersionString"
-REV_VAR="${PACKAGE}.RevisionString"
-REV_URL_VAR="${PACKAGE}.RevisionURLString"
-GENERATED_VAR="${PACKAGE}.GeneratedString"
-DEVELOPERS_VAR="${PACKAGE}.DevelopersString"
-BUILD_NUMBER_VAR="${PACKAGE}.BuildNumString"
+PACKAGE="github.com/e154/smart-home"
+VERSION_VAR="${PACKAGE}/version.VersionString"
+REV_VAR="${PACKAGE}/version.RevisionString"
+REV_URL_VAR="${PACKAGE}/version.RevisionURLString"
+GENERATED_VAR="${PACKAGE}/version.GeneratedString"
+DEVELOPERS_VAR="${PACKAGE}/version.DevelopersString"
+BUILD_NUMBER_VAR="${PACKAGE}/version.BuildNumString"
 VERSION_VALUE="$(git describe --always --dirty --tags 2>/dev/null)"
 REV_VALUE="$(git rev-parse HEAD 2> /dev/null || echo "???")"
 REV_URL_VALUE="https://${PACKAGE}/commit/${REV_VALUE}"
@@ -136,20 +136,19 @@ __build_pingmq() {
 
     echo ""
     echo "build command:"
-    echo "xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq"
+    echo "xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq"
     echo ""
 
-    xgo --out=${EXEC} --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq
+    xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq
 
     chmod +x ${ROOT}/bin/pingmq
-    cp ${ROOT}/bin/pingmq ${EXEC}
+    cp ${ROOT}/bin/pingmq ${TMP_DIR}
 
 }
 
 __build() {
 
     __build_pingmq
-    __docs_deploy
 
     # build
     cd ${TMP_DIR}
@@ -203,7 +202,7 @@ __docker_deploy() {
     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
     # build image
-    docker build -f ${TMP_DIR}/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
+    docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
     # set tag to builded image
     docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
     docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
@@ -215,6 +214,7 @@ __docker_deploy() {
 __test() {
     cd ${ROOT}
 
+    go test -v ./tests/api
     go test -v ./tests/scripts
     go test -v ./tests/workflow
 }

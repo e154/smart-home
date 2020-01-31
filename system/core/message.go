@@ -51,3 +51,11 @@ func (m *Message) GetVar(key string) (value interface{}) {
 func (m *Message) SetVar(key string, value interface{}) {
 	m.storage.SetVar(key, value)
 }
+
+func (m *Message) Update(newMsg *Message) {
+	m.Error = newMsg.Error
+	m.Success = newMsg.Success
+	m.Direction = newMsg.Direction
+	m.Mqtt = newMsg.Mqtt
+	m.storage.copy(newMsg.storage.pull)
+}

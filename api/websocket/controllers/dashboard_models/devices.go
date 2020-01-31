@@ -6,25 +6,20 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/op/go-logging"
 	"reflect"
 )
 
-var (
-	log = logging.MustGetLogger("models")
-)
-
 type Devices struct {
-	Total    int64                             `json:"total"`
-	Status   map[int64]*m.DashboardDeviceState `json:"status"`
-	adaptors *adaptors.Adaptors                `json:"-"`
-	core     *core.Core                        `json:"-"`
+	Total    int64                              `json:"total"`
+	Status   map[int64]*m.DashboardDeviceStatus `json:"status"`
+	adaptors *adaptors.Adaptors                 `json:"-"`
+	core     *core.Core                         `json:"-"`
 }
 
 func NewDevices(adaptors *adaptors.Adaptors,
 	core *core.Core) *Devices {
 	return &Devices{
-		Status:   make(map[int64]*m.DashboardDeviceState),
+		Status:   make(map[int64]*m.DashboardDeviceStatus),
 		adaptors: adaptors,
 		core:     core,
 	}

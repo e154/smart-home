@@ -4,14 +4,16 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
+	"sync"
 	"time"
 )
 
 type LogDbSaver struct {
-	adaptors  *adaptors.Adaptors
-	isStarted bool
-	pool      chan m.Log
-	quit      chan struct{}
+	adaptors *adaptors.Adaptors
+	pool     chan m.Log
+	quit     chan struct{}
+	sync.Mutex
+	isRunning bool
 }
 
 func NewLogDbSaver(adaptors *adaptors.Adaptors,
@@ -31,7 +33,7 @@ func NewLogDbSaver(adaptors *adaptors.Adaptors,
 
 func (l *LogDbSaver) Start() {
 
-	if l.isStarted {
+	if l.safeIsRunning() {
 		return
 	}
 
@@ -65,22 +67,34 @@ func (l *LogDbSaver) Start() {
 		}
 	}()
 
-	l.isStarted = true
+	l.safeSetIsRunning(true)
 }
 
 func (l *LogDbSaver) Shutdown() {
-	if !l.isStarted {
+	if !l.safeIsRunning() {
 		return
 	}
-	l.isStarted = false
+	l.safeSetIsRunning(false)
 	l.quit <- struct{}{}
 	close(l.quit)
 	close(l.pool)
 }
 
 func (l *LogDbSaver) Save(log m.Log) {
-	if !l.isStarted {
+	if !l.safeIsRunning() {
 		return
 	}
 	l.pool <- log
+}
+
+func (l *LogDbSaver) safeIsRunning() bool {
+	l.Lock()
+	defer l.Unlock()
+	return l.isRunning
+}
+
+func (l *LogDbSaver) safeSetIsRunning(v bool) {
+	l.Lock()
+	l.isRunning = v
+	l.Unlock()
 }

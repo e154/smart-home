@@ -1,7 +1,18 @@
 package telemetry
 
 type ITelemetry interface {
-	Broadcast(pack string)
-	BroadcastOne(pack string, deviceId int64, elementName string)
+	Broadcast(interface{})
+	BroadcastOne(interface{})
 }
 
+type Device struct {
+	Id          int64
+	ElementName string
+}
+
+type Node struct{}
+
+type WorkflowScenario struct {
+	WorkflowId int64
+	ScenarioId int64
+}

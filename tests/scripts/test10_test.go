@@ -8,6 +8,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+	"time"
 )
 
 func Test10(t *testing.T) {
@@ -35,16 +36,15 @@ func Test10(t *testing.T) {
 			script1 = &m.Script{
 				Lang:        "coffeescript",
 				Name:        "test10",
-				Source:      coffeeScript25,
+				Source:      coffeeScripts["coffeeScript25"],
 				Description: "test10",
 			}
 
-			foo := &Foo{
-				Bar: "foo",
-			}
 			bar := &Foo{
 				Bar: "bar",
-				Foo: foo,
+				Foo: &Foo{
+					Bar: "foo",
+				},
 			}
 
 			scriptService.PushStruct("bar2", bar)
@@ -67,13 +67,33 @@ func Test10(t *testing.T) {
 			_, err = engine.PushStruct("bar", bar)
 			So(err, ShouldBeNil)
 
-			engine.PushGlobalProxy("bar2", bar)
+			counter := engine.PushGlobalProxy("bar2", bar)
+			//fmt.Println(counter)
+			So(counter, ShouldEqual, 12)
+
+			counter = engine.PushGlobalProxy("bar2", bar)
+			//fmt.Println(counter)
+			So(counter, ShouldEqual, 12)
 
 			err = engine.Compile()
 			So(err, ShouldBeNil)
 
 			_, err = engine.Do()
 			So(err, ShouldBeNil)
+
+			engine.Gc()
+
+			counter = engine.PushGlobalProxy("bar2", bar)
+			//fmt.Println(counter)
+			So(counter, ShouldEqual, 15)
+
+			err = engine.Compile()
+			So(err, ShouldBeNil)
+
+			_, err = engine.Do()
+			So(err, ShouldBeNil)
+
+			time.Sleep(time.Second * 2)
 		})
 	})
 }

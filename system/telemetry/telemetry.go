@@ -2,6 +2,7 @@ package telemetry
 
 import (
 	"github.com/op/go-logging"
+	"sync"
 )
 
 var (
@@ -9,6 +10,7 @@ var (
 )
 
 type Telemetry struct {
+	sync.Mutex
 	subscribers map[string]ITelemetry
 }
 
@@ -22,6 +24,8 @@ func NewTelemetry() (t2 *Telemetry, t1 ITelemetry) {
 
 func (s *Telemetry) Subscribe(command string, f ITelemetry) {
 	log.Infof("subscribe %s", command)
+	s.Lock()
+	defer s.Unlock()
 	if s.subscribers[command] != nil {
 		delete(s.subscribers, command)
 	}
@@ -29,19 +33,25 @@ func (s *Telemetry) Subscribe(command string, f ITelemetry) {
 }
 
 func (s *Telemetry) UnSubscribe(command string) {
+	s.Lock()
+	defer s.Unlock()
 	if _, ok := s.subscribers[command]; ok {
 		delete(s.subscribers, command)
 	}
 }
 
-func (t *Telemetry) Broadcast(pack string) {
+func (t *Telemetry) Broadcast(param interface{}) {
+	t.Lock()
+	defer t.Unlock()
 	for _, f := range t.subscribers {
-		f.Broadcast(pack)
+		f.Broadcast(param)
 	}
 }
 
-func (t *Telemetry) BroadcastOne(pack string, deviceId int64, elementName string) {
+func (t *Telemetry) BroadcastOne(param interface{}) {
+	t.Lock()
+	defer t.Unlock()
 	for _, f := range t.subscribers {
-		f.BroadcastOne(pack, deviceId, elementName)
+		f.BroadcastOne(param)
 	}
 }

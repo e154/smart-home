@@ -47,6 +47,11 @@ func (f *AccessFilter) Auth(ctx *gin.Context) {
 		return
 	}
 
+	if len(strings.Split(accessToken, ".")) != 3 {
+		ctx.AbortWithError(401, errors.New("access token invalid"))
+		return
+	}
+
 	// get access list
 	var accessList access_list.AccessList
 	var user *m.User

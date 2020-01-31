@@ -148,4 +148,9 @@ func checkEnv(conf *AppConfig) {
 	if logging := os.Getenv("LOGGING"); logging != "" {
 		conf.Logging, _ = strconv.ParseBool(logging)
 	}
+
+	if metricPort := os.Getenv("METRIC_PORT"); metricPort != "" {
+		v, _ := strconv.ParseInt(metricPort, 10, 32)
+		conf.MetricPort = int(v)
+	}
 }

@@ -1,10 +1,10 @@
 package gate_client
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"net/url"
-	"strings"
 	"sync"
 	"time"
 )
@@ -16,15 +16,17 @@ const (
 )
 
 type WsClient struct {
-	sync.Mutex
-	conn       *websocket.Conn
-	settings   *Settings
+	settings   Settings
 	delta      time.Duration
-	status     string
 	interrupt  chan struct{}
 	quitWorker chan struct{}
 	cb         IWsCallback
 	reConnect  bool
+	mx         *sync.Mutex
+	status     string
+	counter    int
+	sync.Mutex
+	conn *websocket.Conn
 }
 
 func NewWsClient(
@@ -33,13 +35,18 @@ func NewWsClient(
 		interrupt:  make(chan struct{}),
 		quitWorker: make(chan struct{}),
 		cb:         cb,
+		mx:         &sync.Mutex{},
 	}
 
 	go func() {
 		for {
+			client.mx.Lock()
 			if client.status == GateStatusQuit {
+				client.mx.Unlock()
 				return
 			}
+			client.mx.Unlock()
+
 			client.connect()
 			time.Sleep(time.Second)
 		}
@@ -47,30 +54,40 @@ func NewWsClient(
 	return client
 }
 
-func (client *WsClient) UpdateSettings(settings *Settings) {
+func (client *WsClient) UpdateSettings(settings Settings) {
+	client.mx.Lock()
+	defer client.mx.Unlock()
+
 	client.settings = settings
 	client.reConnect = true
 }
 
 func (client *WsClient) connect() {
 
+	client.mx.Lock()
 	client.status = GateStatusWait
 
-	if client.settings == nil || !client.settings.Valid() {
+	if !client.settings.Valid() {
+		client.mx.Unlock()
 		return
 	}
 
 	if !client.settings.Enabled {
+		client.mx.Unlock()
 		return
 	}
+	client.mx.Unlock()
 
 	var err error
 	ticker := time.NewTicker(pingPeriod)
-
+	client.counter++
 	defer func() {
-		client.status = GateStatusNotConnected
+		client.counter--
 
+		client.mx.Lock()
+		client.status = GateStatusNotConnected
 		client.reConnect = false
+		client.mx.Unlock()
 
 		ticker.Stop()
 
@@ -80,18 +97,18 @@ func (client *WsClient) connect() {
 			_ = client.conn.Close()
 		}
 
-		if err != nil {
-			if strings.Contains(err.Error(), "connection refused") {
-				return
-			}
-			if strings.Contains(err.Error(), "bad handshake") {
-				return
-			}
-			if strings.Contains(err.Error(), "use of closed network connection") {
-				return
-			}
-			log.Debug(err.Error())
-		}
+		//if err != nil {
+		//	if strings.Contains(err.Error(), "connection refused") {
+		//		return
+		//	}
+		//	if strings.Contains(err.Error(), "bad handshake") {
+		//		return
+		//	}
+		//	if strings.Contains(err.Error(), "use of closed network connection") {
+		//		return
+		//	}
+		//	log.Debug(err.Error())
+		//}
 	}()
 
 	var uri *url.URL
@@ -120,7 +137,9 @@ func (client *WsClient) connect() {
 	}
 
 	log.Info("gate connected ...")
+	client.mx.Lock()
 	client.status = GateStatusConnected
+	client.mx.Unlock()
 
 	loseChan := make(chan struct{})
 	var messageType int
@@ -166,21 +185,31 @@ func (client *WsClient) connect() {
 	for {
 		select {
 		case <-ticker.C:
+			client.mx.Lock()
 			if client.reConnect {
+				//_ = client.write(websocket.CloseMessage, []byte{})
+				fmt.Println("reconnect...")
+				client.mx.Unlock()
 				return
 			}
+			client.mx.Unlock()
+
 			if err := client.write(websocket.PingMessage, []byte{}); err != nil {
 				log.Error(err.Error())
 				return
 			}
 		case <-client.interrupt:
 		case <-loseChan:
-
+			return
 		}
 	}
 }
 
 func (client *WsClient) Close() {
+
+	client.mx.Lock()
+	defer client.mx.Unlock()
+
 	if client.status == GateStatusQuit {
 		return
 	}
@@ -192,18 +221,28 @@ func (client *WsClient) Close() {
 
 func (client *WsClient) write(opCode int, payload []byte) (err error) {
 
+	client.mx.Lock()
 	if client.status != GateStatusConnected {
+		client.mx.Unlock()
 		return
 	}
+	client.mx.Unlock()
 
 	client.Lock()
+	defer client.Unlock()
+
 	if err = client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
-		client.Unlock()
 		return
 	}
 
 	err = client.conn.WriteMessage(opCode, payload)
-	client.Unlock()
 
 	return
+}
+
+func (client *WsClient) Status() string {
+	client.mx.Lock()
+	defer client.mx.Unlock()
+
+	return client.status
 }

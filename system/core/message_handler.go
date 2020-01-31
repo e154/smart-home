@@ -3,17 +3,17 @@ package core
 //ActionPrototypes
 type MessageHandler struct{}
 
-func (m *MessageHandler) After(message *Message, flow *Flow) (err error) {
+func (m *MessageHandler) After(flow *Flow) (err error) {
 	//log.Infof("MessageHandler.after: %v", message)
 	return
 }
 
-func (m *MessageHandler) Run(message *Message, flow *Flow) (err error) {
+func (m *MessageHandler) Run(flow *Flow) (err error) {
 	//log.Infof("MessageHandler.run: %v", message)
 	return
 }
 
-func (m *MessageHandler) Before(message *Message, flow *Flow) (err error) {
+func (m *MessageHandler) Before(flow *Flow) (err error) {
 	//log.Infof("MessageHandler.before: %v", message)
 	return
 }

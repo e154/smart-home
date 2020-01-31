@@ -35,23 +35,27 @@ func (n *Nodes) Update() {
 		return
 	}
 
-	n.Lock()
-	defer n.Unlock()
-
 	if time.Now().Sub(n.lastUpdate).Seconds() < 15 {
 		return
 	}
 
-	n.lastUpdate = time.Now()
+	_, total, _ := n.adaptors.Node.List(999, 0, "", "")
 
-	_, n.Total, _ = n.adaptors.Node.List(999, 0, "", "")
 	nodes := n.core.GetNodes()
 
-	n.Status = make(map[int64]string)
+	n.Lock()
+
+	for key, _ := range n.Status {
+		delete(n.Status, key)
+	}
 
 	for _, node := range nodes {
-		n.Status[node.Id] = node.ConnStatus
+		n.Status[node.Id] = node.GetConnStatus()
 	}
+
+	n.lastUpdate = time.Now()
+	n.Total = total
+	n.Unlock()
 }
 
 func (n *Nodes) Broadcast() (map[string]interface{}, bool) {

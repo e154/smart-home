@@ -33,6 +33,7 @@ install:
 script:
   - "./bin/travis.sh --init"
   - "./bin/travis.sh --test"
+  - "./bin/travis.sh --docs-deploy"
   - "./bin/travis.sh --build"
 
 deploy:

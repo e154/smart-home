@@ -1,16 +1,22 @@
-// +build linux,!mips64,!mips64le darwin windows
+// +build linux,!mips64,!mips64le darwin
 
 package dashboard_models
 
 import (
 	"github.com/shirou/gopsutil/host"
+	"sync"
 )
 
 type Uptime struct {
+	sync.Mutex
 	Total uint64 `json:"total"`
 	Idle  uint64 `json:"idle"`
 }
 
 func (u *Uptime) Update() {
-	u.Total, _ = host.Uptime()
+
+	total, _ := host.Uptime()
+	u.Lock()
+	u.Total = total
+	u.Unlock()
 }

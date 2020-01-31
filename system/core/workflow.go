@@ -8,14 +8,15 @@ import (
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/telemetry"
 	"sync"
 	"time"
 )
 
 type Workflow struct {
 	Storage
-	model *m.Workflow
 	sync.Mutex
+	model           *m.Workflow
 	adaptors        *adaptors.Adaptors
 	scripts         *scripts.ScriptService
 	Flows           map[int64]*Flow
@@ -24,8 +25,9 @@ type Workflow struct {
 	core            *Core
 	mqtt            *mqtt.Mqtt
 	nextScenario    *m.WorkflowScenario
-	isRuning        bool
+	isRunning       bool
 	scenarioEntered bool
+	telemetry       telemetry.ITelemetry
 }
 
 func NewWorkflow(model *m.Workflow,
@@ -33,17 +35,19 @@ func NewWorkflow(model *m.Workflow,
 	scripts *scripts.ScriptService,
 	cron *cr.Cron,
 	core *Core,
-	mqtt *mqtt.Mqtt) (workflow *Workflow) {
+	mqtt *mqtt.Mqtt,
+	telemetry telemetry.ITelemetry) (workflow *Workflow) {
 
 	workflow = &Workflow{
-		Storage:  NewStorage(),
-		model:    model,
-		adaptors: adaptors,
-		scripts:  scripts,
-		Flows:    make(map[int64]*Flow),
-		cron:     cron,
-		core:     core,
-		mqtt:     mqtt,
+		Storage:   NewStorage(),
+		model:     model,
+		adaptors:  adaptors,
+		scripts:   scripts,
+		Flows:     make(map[int64]*Flow),
+		cron:      cron,
+		core:      core,
+		mqtt:      mqtt,
+		telemetry: telemetry,
 	}
 
 	return
@@ -51,15 +55,15 @@ func NewWorkflow(model *m.Workflow,
 
 func (wf *Workflow) Run() (err error) {
 
-	if wf.isRuning {
+	if wf.isRunning {
 		return
 	}
 
-	wf.isRuning = true
+	wf.isRunning = true
 
 	defer func() {
 		if err != nil {
-			wf.isRuning = false
+			wf.isRunning = false
 		}
 	}()
 
@@ -72,6 +76,8 @@ func (wf *Workflow) Run() (err error) {
 	if err = wf.enterScenario(); err != nil {
 		return
 	}
+
+	wf.telemetry.BroadcastOne(telemetry.WorkflowScenario{WorkflowId: wf.model.Id, ScenarioId: wf.model.Scenario.Id})
 
 	if err = wf.initFlows(); err != nil {
 		return
@@ -88,7 +94,7 @@ func (wf *Workflow) Stop() (err error) {
 
 	err = wf.exitScenario()
 
-	wf.isRuning = false
+	wf.isRunning = false
 
 	return
 }
@@ -113,8 +119,12 @@ func (wf *Workflow) initFlows() (err error) {
 
 	log.Infof("Get flows")
 
+	wf.Lock()
+	workflowId := wf.model.Id
+	wf.Unlock()
+
 	var flows []*m.Flow
-	if flows, err = wf.adaptors.Flow.GetAllEnabledByWorkflow(wf.model.Id); err != nil {
+	if flows, err = wf.adaptors.Flow.GetAllEnabledByWorkflow(workflowId); err != nil {
 		return
 	}
 
@@ -140,11 +150,9 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 
 	log.Infof("Add flow: '%s'", flow.Name)
 
-	wf.Lock()
-	if _, ok := wf.Flows[flow.Id]; ok {
+	if _, ok := wf.safeGetFlow(flow.Id); ok {
 		return
 	}
-	wf.Unlock()
 
 	var model *Flow
 	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts, wf.cron, wf.core, wf.mqtt); err != nil {
@@ -152,9 +160,7 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 		return
 	}
 
-	wf.Lock()
-	wf.Flows[flow.Id] = model
-	wf.Unlock()
+	wf.safeUpdateFlowMap(flow.Id, model)
 
 	return
 }
@@ -172,14 +178,15 @@ func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
 
 func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 
-	//wf.Lock()
-	//defer wf.Unlock()
+	log.Infof("RemoveFlow: Name(%v)", flow.Name)
 
-	if _, ok := wf.Flows[flow.Id]; !ok {
+	f, ok := wf.safeGetFlow(flow.Id)
+	if !ok {
 		return
 	}
 
-	wf.Flows[flow.Id].Remove()
+	f.Remove()
+
 	delete(wf.Flows, flow.Id)
 
 	return
@@ -189,12 +196,11 @@ func (wf *Workflow) GetFLow(flowId int64) (flow *Flow, err error) {
 
 	log.Infof("GetFLow: id(%v)", flowId)
 
-	if _, ok := wf.Flows[flowId]; !ok {
+	var ok bool
+	if flow, ok = wf.safeGetFlow(flowId); !ok {
 		err = errors.New("not found")
 		return
 	}
-
-	flow = wf.Flows[flowId]
 
 	return
 }
@@ -205,10 +211,15 @@ func (wf *Workflow) GetFLow(flowId int64) (flow *Flow, err error) {
 
 func (wf *Workflow) SetScenario(systemName string) (err error) {
 
-	log.Infof("workflow(%s) set scenario '%s'", wf.model.Name, systemName)
+	wf.Lock()
+	name := wf.model.Name
+	scenarios := wf.model.Scenarios
+	wf.Unlock()
+
+	log.Infof("workflow(%s) set scenario '%s'", name, systemName)
 
 	var scenario *m.WorkflowScenario
-	for _, scenario = range wf.model.Scenarios {
+	for _, scenario = range scenarios {
 		if scenario.SystemName != systemName {
 			continue
 		}
@@ -230,7 +241,10 @@ func (wf *Workflow) SetScenario(systemName string) (err error) {
 	}
 
 	wg := sync.WaitGroup{}
+
+	wf.Lock()
 	wg.Add(len(wf.Flows))
+	wf.Unlock()
 
 	go func() {
 		for _, flow := range wf.Flows {
@@ -248,11 +262,15 @@ func (wf *Workflow) SetScenario(systemName string) (err error) {
 
 func (wf *Workflow) enterScenario() (err error) {
 
-	if wf.model.Scenario == nil {
+	wf.Lock()
+	scenario := wf.model.Scenario
+	wf.Unlock()
+
+	if scenario == nil {
 		return
 	}
 
-	log.Infof("Workflow '%s', scenario '%s'", wf.model.Name, wf.model.Scenario.Name)
+	log.Infof("Workflow '%s', scenario '%s'", wf.model.Name, scenario.Name)
 
 	if err = wf.runScenarioScripts("on_enter"); err != nil {
 		return
@@ -380,4 +398,83 @@ func (wf *Workflow) runScripts() (err error) {
 func (wf *Workflow) NewScript(model *m.Script) (engine *scripts.Engine, err error) {
 	engine, err = wf.scripts.NewEngine(model)
 	return
+}
+
+// ------------------------------------------------
+// Workers
+// ------------------------------------------------
+
+func (wf *Workflow) UpdateWorker(_worker *m.Worker) (err error) {
+
+	for _, flow := range wf.Flows {
+		for _, worker := range flow.Workers {
+			if worker.Model.Id == _worker.Id {
+				if err = flow.UpdateWorker(_worker); err != nil {
+					log.Error(err.Error())
+				}
+				break
+			}
+		}
+	}
+
+	return
+}
+
+func (wf *Workflow) RemoveWorker(_worker *m.Worker) (err error) {
+
+	wf.Lock()
+	defer wf.Unlock()
+
+	for _, flow := range wf.Flows {
+		for _, worker := range flow.Workers {
+			if worker.Model.Id == _worker.Id {
+				if err = flow.RemoveWorker(_worker); err != nil {
+					log.Error(err.Error())
+				}
+				break
+			}
+		}
+	}
+	return
+}
+
+func (wf *Workflow) DoWorker(model *m.Worker) (err error) {
+
+	for _, flow := range wf.Flows {
+		if worker, ok := flow.Workers[model.Id]; ok {
+			worker.Do()
+			break
+		}
+	}
+
+	return
+}
+
+// ------------------------------------------------
+// safe methods
+// ------------------------------------------------
+
+func (b *Workflow) safeIsRunning() bool {
+	b.Lock()
+	defer b.Unlock()
+	return b.isRunning
+}
+
+func (b *Workflow) safeSetIsRunning(v bool) {
+	b.Lock()
+	b.isRunning = v
+	b.Unlock()
+}
+
+func (c *Workflow) safeGetFlow(k int64) (w *Flow, ok bool) {
+	c.Lock()
+	defer c.Unlock()
+	w, ok = c.Flows[k]
+	return
+}
+
+func (c *Workflow) safeUpdateFlowMap(k int64, w *Flow) {
+	c.Lock()
+	c.Flows[k] = w
+	c.Unlock()
 }

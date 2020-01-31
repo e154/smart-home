@@ -92,7 +92,7 @@ func (c ControllerGate) UpdateSettings(ctx *gin.Context) {
 		return
 	}
 
-	settings := &gate_client.Settings{}
+	settings := gate_client.Settings{}
 	_ = common.Copy(&settings, &n)
 
 	if err := c.endpoint.Gate.UpdateSettings(settings); err != nil {

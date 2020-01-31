@@ -3,12 +3,12 @@ package stream
 import (
 	//"gopkg.in/igm/sockjs-go.v2/sockjs"
 	"github.com/gorilla/websocket"
+	"sync"
 	"time"
 )
 
 type Client struct {
 	ConnType  ConnectType
-	Connect   *websocket.Conn
 	Ip        string
 	Referer   string
 	UserAgent string
@@ -25,6 +25,9 @@ type Client struct {
 
 	// message buffered channel
 	Send chan []byte
+
+	writeLock sync.Mutex
+	Connect   *websocket.Conn
 }
 
 func (c *Client) UpdateInfo(msg Message) {
@@ -76,7 +79,9 @@ func (c *Client) Notify(t, b string) {
 }
 
 func (c *Client) Write(opCode int, payload []byte) error {
-	c.Connect.SetWriteDeadline(time.Now().Add(writeWait))
+	c.writeLock.Lock()
+	defer c.writeLock.Unlock()
+	_ = c.Connect.SetWriteDeadline(time.Now().Add(writeWait))
 	return c.Connect.WriteMessage(opCode, payload)
 }
 

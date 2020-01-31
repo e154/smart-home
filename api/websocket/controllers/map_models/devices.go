@@ -38,10 +38,15 @@ func (d *Devices) Update() {
 	}
 
 	mapElements := d.core.Map.GetAllElements()
-	d.Total = int64(len(mapElements))
 
 	d.Lock()
-	d.DeviceStats = make(map[string]*models.DeviceState)
+	d.Total = int64(len(mapElements))
+
+	// clear map
+	for key, _ := range d.DeviceStats {
+		delete(d.DeviceStats, key)
+	}
+
 	var status *models.DeviceStateStatus
 	for _, mapElement := range mapElements {
 

@@ -4,16 +4,17 @@ import (
 	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
+	"sync"
 )
 
 type Action struct {
 	Device        *m.Device
 	Node          *Node
 	ScriptEngine  *scripts.Engine
-	Message       *Message
 	flow          *Flow
 	scriptService *scripts.ScriptService
 	script        *m.Script
+	doLock        sync.Mutex
 }
 
 func NewAction(device *m.Device,
@@ -36,19 +37,9 @@ func NewAction(device *m.Device,
 }
 
 func (a *Action) Do() (res string, err error) {
-
-	a.ScriptEngine.PushGlobalProxy("device", &DeviceBind{
-		model: a.Device,
-		node:  a.Node,
-	})
-
-	if a.flow != nil {
-		a.ScriptEngine.PushGlobalProxy("flow", &FlowBind{flow: a.flow})
-	}
-
-	a.Message.Clear()
-	/*res,*/ err = a.ScriptEngine.EvalString(a.script.Compiled)
-	//a.Message.SetVar("result", res)
+	a.doLock.Lock()
+	err = a.ScriptEngine.EvalString(a.script.Compiled)
+	a.doLock.Unlock()
 	return
 }
 
@@ -66,10 +57,15 @@ func (a *Action) NewScript() (err error) {
 		if a.ScriptEngine, err = a.scriptService.NewEngine(model); err != nil {
 			return
 		}
+
+		a.ScriptEngine.PushGlobalProxy("message", NewMessage())
 	}
 
-	a.Message = NewMessage()
-	a.ScriptEngine.PushGlobalProxy("message", a.Message)
+	// bind device
+	a.ScriptEngine.PushGlobalProxy("device", &DeviceBind{
+		model: a.Device,
+		node:  a.Node,
+	})
 
 	// bind
 	javascript := a.ScriptEngine.Get().(*scripts.Javascript)

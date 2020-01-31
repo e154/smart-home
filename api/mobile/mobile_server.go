@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/e154/smart-home/api/mobile/v1/controllers"
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
@@ -24,7 +23,6 @@ type MobileServer struct {
 	ControllersV1 *controllers.MobileControllersV1
 	engine        *gin.Engine
 	server        *http.Server
-	graceful      *graceful_service.GracefulService
 	logger        *MobileServerLogger
 	af            *rbac.AccessFilter
 	streamService *stream.StreamService
@@ -47,13 +45,14 @@ func (s *MobileServer) Start() {
 
 	go func() {
 		s.gateClient.SetEngine(s.engine)
-		s.gateClient.Connect()
 	}()
 
 	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
 }
 
 func (s *MobileServer) Shutdown() {
+	log.Info("Shutdown")
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if err := s.server.Shutdown(ctx); err != nil {
@@ -78,11 +77,11 @@ func NewMobileServer(cfg *MobileServerConfig,
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = logger
 	gin.DefaultErrorWriter = logger
-	if cfg.RunMode == config.ReleaseMode {
+	//if cfg.RunMode == config.ReleaseMode {
 		gin.SetMode(gin.ReleaseMode)
-	} else {
-		gin.SetMode(gin.DebugMode)
-	}
+	//} else {
+	//	gin.SetMode(gin.DebugMode)
+	//}
 
 	engine := gin.New()
 	engine.Use(gin.Recovery())
@@ -91,14 +90,13 @@ func NewMobileServer(cfg *MobileServerConfig,
 		Config:        cfg,
 		ControllersV1: ctrls,
 		engine:        engine,
-		graceful:      graceful,
 		logger:        logger,
 		af:            accessFilter,
 		streamService: streamService,
 		gateClient:    gateClient,
 	}
 
-	newServer.graceful.Subscribe(newServer)
+	graceful.Subscribe(newServer)
 
 	newServer.setControllers()
 

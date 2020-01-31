@@ -326,6 +326,49 @@ func addMaps(adaptors *adaptors.Adaptors,
 	mapElementLight4.Id, err = adaptors.MapElement.Add(mapElementLight4)
 	So(err, ShouldBeNil)
 
+
+	// controller all lights
+	// ------------------------------------------------
+	devLightCtrl := &m.MapDevice{
+		SystemName: "DEV1_LIGHT_CTRL",
+		DeviceId:   devices[0].Id,
+		ImageId:    imageList["lamp_v1_def"].Id,
+		States: []*m.MapDeviceState{},
+		Actions: []*m.MapDeviceAction{
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_on_all_lights_v1"].Id,
+				ImageId:        imageList["button_v1_on"].Id,
+			},
+			{
+				DeviceActionId: deviceActions["mb_dev1_turn_off_all_lights_v1"].Id,
+				ImageId:        imageList["button_v1_off"].Id,
+			},
+		},
+	}
+	mapElementLightCtrl := &m.MapElement{
+		Name: "dev1_light_ctrl",
+		Description: "controller all lights",
+		Prototype: m.Prototype{
+			MapDevice: devLightCtrl,
+		},
+		MapId:   map1.Id,
+		LayerId: baseLayer.Id,
+		Status:  Enabled,
+		GraphSettings: m.MapElementGraphSettings{
+			Width:  null.NewInt64(33),
+			Height: null.NewInt64(33),
+			Position: m.MapElementGraphSettingsPosition{
+				Top:  81,
+				Left: 67,
+			},
+		},
+		Zone: kitchenZone,
+	}
+	ok, _ = mapElementLightCtrl.Valid()
+	So(ok, ShouldEqual, true)
+	mapElementLightCtrl.Id, err = adaptors.MapElement.Add(mapElementLightCtrl)
+	So(err, ShouldBeNil)
+
 	// fan5
 	// ------------------------------------------------
 	devFan1 := &m.MapDevice{
@@ -474,11 +517,11 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// map element text1
 	// ------------------------------------------------
 	mapText1 := &m.MapText{
-		Text: "workflow:",
+		Text: "controller all lights",
 	}
 
 	mapElementText1 := &m.MapElement{
-		Name: "text1",
+		Name: "controller all lights",
 		Prototype: m.Prototype{
 			MapText: mapText1,
 		},
@@ -486,11 +529,9 @@ func addMaps(adaptors *adaptors.Adaptors,
 		LayerId: baseLayer.Id,
 		Status:  Enabled,
 		GraphSettings: m.MapElementGraphSettings{
-			Width:  null.NewInt64(33),
-			Height: null.NewInt64(33),
 			Position: m.MapElementGraphSettingsPosition{
-				Top:  30,
-				Left: 30,
+				Top:  134,
+				Left: 46,
 			},
 		},
 	}
