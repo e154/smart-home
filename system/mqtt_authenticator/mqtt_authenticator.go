@@ -14,6 +14,7 @@ var (
 )
 
 var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
+var ErrPrincipalDisabled = fmt.Errorf("principal disabled")
 
 type Authenticator struct {
 	adaptors *adaptors.Adaptors
@@ -46,6 +47,11 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 
 	var node *m.Node
 	if node, err = a.adaptors.Node.GetByLogin(login); err != nil {
+		return
+	}
+
+	if node.Status == "disabled" {
+		err = ErrPrincipalDisabled
 		return
 	}
 

@@ -32,3 +32,15 @@ type NodeStatModel struct {
 	Max       int64      `json:"max"`
 	StartedAt time.Time  `json:"started_at"`
 }
+
+type NodeStat struct {
+	Status      NodeStatus `json:"status"`
+	Thread      int        `json:"thread"`
+	Rps         int64      `json:"rps"`
+	Min         int64      `json:"min"`
+	Max         int64      `json:"max"`
+	StartedAt   time.Time  `json:"started_at"`
+	LastPing    time.Time  `json:"last_ping"`
+	ConnStatus  string     `json:"conn_status"`
+	IsConnected bool       `json:"is_connected"`
+}

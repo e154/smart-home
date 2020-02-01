@@ -117,8 +117,8 @@ func (c *Client) UnsubscribeAll() {
 		if token := c.client.Unsubscribe(topic); token.Error() != nil {
 			log.Error(token.Error().Error())
 		}
+		delete(c.subscribes, topic)
 	}
-	c.subscribes = make(map[string]Subscribe)
 }
 
 func (c *Client) Publish(topic string, payload interface{}) (err error) {

@@ -132,12 +132,13 @@ func (client *WsClient) connect() {
 		//log.Debugf("X-API-Key: %v", client.settings.GateServerToken)
 	}
 
+	client.mx.Lock()
 	if client.conn, _, err = websocket.DefaultDialer.Dial(uri.String(), requestHeader); err != nil {
+		client.mx.Unlock()
 		return
 	}
 
 	log.Info("gate connected ...")
-	client.mx.Lock()
 	client.status = GateStatusConnected
 	client.mx.Unlock()
 

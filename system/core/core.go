@@ -174,6 +174,7 @@ func (c *Core) removeNode(node *m.Node) (err error) {
 	}
 
 	n.Disconnect()
+	n.Remove()
 
 	c.Lock()
 	delete(c.nodes, node.Id)
@@ -194,11 +195,16 @@ func (c *Core) ReloadNode(node *m.Node) (err error) {
 		return
 	}
 
-	n.Status = node.Status
+	n.UpdateOptions(node)
 
-	if n.Status == "disabled" {
+	if n.GetConnStatus() == "connected" {
 		n.Disconnect()
-	} else {
+	}
+
+	if n.Status != "disabled" {
+		if n.GetConnStatus() == "connected" {
+			n.Disconnect()
+		}
 		n.Connect()
 	}
 

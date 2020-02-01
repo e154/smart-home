@@ -80,6 +80,9 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 }
 
 func (g *GateClient) Shutdown() {
+	g.settingsLock.Lock()
+	defer g.settingsLock.Unlock()
+
 	g.messagePoolQuit <- struct{}{}
 	g.wsClient.Close()
 }

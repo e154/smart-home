@@ -16,31 +16,68 @@ type Nodes []*Node
 
 type Node struct {
 	*m.Node
-	errors     int64
 	mqttClient *mqtt_client.Client
-	stat       *NodeStatModel
+	mqtt       *mqtt.Mqtt
 	sync.Mutex
-	connStatus string
-	lastPing   time.Time
-	ch         map[int64]chan *NodeResponse
+	stat NodeStat
+	quit chan struct{}
+	ch   map[int64]chan *NodeResponse
 }
 
 func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 
-	mqttClient, err := mqtt.NewClient(nil)
-	if err != nil {
-		log.Error(err.Error())
+	node := &Node{
+		Node: model,
+		//connStatus: "disabled",
+		stat: NodeStat{
+			ConnStatus: "disabled",
+			LastPing:   time.Now(),
+		},
+		ch:   make(map[int64]chan *NodeResponse, 0),
+		mqtt: mqtt,
+		quit: make(chan struct{}),
 	}
 
-	node := &Node{
-		Node:       model,
-		connStatus: "disabled",
-		ch:         make(map[int64]chan *NodeResponse, 0),
-		stat:       &NodeStatModel{},
-		mqttClient: mqttClient,
-	}
+	go func() {
+		ticker := time.NewTicker(time.Second * 1)
+		defer ticker.Stop()
+
+		for {
+			time.Sleep(time.Millisecond * 100)
+			select {
+			case <-ticker.C:
+				node.Lock()
+				node.stat.IsConnected = time.Now().Sub(node.stat.LastPing).Seconds() < 2
+
+				if node.Node.Status == "enabled" {
+					if node.stat.IsConnected {
+						node.stat.ConnStatus = "connected"
+					} else {
+						if time.Now().Sub(node.stat.LastPing).Seconds() < 5 {
+							node.stat.ConnStatus = "busy"
+						} else {
+							node.stat.ConnStatus = "error"
+						}
+					}
+				} else {
+					node.stat.ConnStatus = "disabled"
+				}
+
+				node.Unlock()
+			case <-node.quit:
+				close(node.quit)
+				return
+			default:
+
+			}
+		}
+	}()
 
 	return node
+}
+
+func (n *Node) Remove() {
+	n.quit <- struct{}{}
 }
 
 func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err error) {
@@ -126,7 +163,12 @@ func (n *Node) delCh(deviceId int64) {
 
 func (n *Node) Connect() *Node {
 
-	if err := n.mqttClient.Connect(); err != nil {
+	var err error
+	if n.mqttClient, err = n.mqtt.NewClient(nil); err != nil {
+		log.Error(err.Error())
+	}
+
+	if err = n.mqttClient.Connect(); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -149,12 +191,14 @@ func (n *Node) Disconnect() {
 	if n.mqttClient != nil {
 		n.mqttClient.Disconnect()
 	}
+
+	_ = n.mqtt.Management().CloseClient(n.Node.Login)
 }
 
 func (n *Node) IsConnected() bool {
 	n.Lock()
 	defer n.Unlock()
-	return time.Now().Sub(n.lastPing).Seconds() < 2
+	return n.stat.IsConnected
 }
 
 func (n *Node) onPublish(client MQTT.Client, msg MQTT.Message) {
@@ -176,17 +220,19 @@ func (n *Node) onPublish(client MQTT.Client, msg MQTT.Message) {
 
 func (n *Node) ping(client MQTT.Client, msg MQTT.Message) {
 
-	_ = json.Unmarshal(msg.Payload(), n.stat)
+	var stat NodeStatModel
+	_ = json.Unmarshal(msg.Payload(), &stat)
 
 	n.Lock()
-	n.lastPing = time.Now()
 
-	switch n.stat.Status {
-	case "enabled":
-		n.connStatus = "connected"
-	default:
-		n.connStatus = "enabled"
-	}
+	//n.stat.Status = stat.Status //????
+	n.stat.Thread = stat.Thread
+	n.stat.Rps = stat.Rps
+	n.stat.Min = stat.Min
+	n.stat.Max = stat.Max
+	n.stat.StartedAt = stat.StartedAt
+	n.stat.LastPing = time.Now()
+
 	n.Unlock()
 
 	return
@@ -208,5 +254,17 @@ func (n *Node) topic(r string) string {
 func (n *Node) GetConnStatus() string {
 	n.Lock()
 	defer n.Unlock()
-	return n.connStatus
+	return n.stat.ConnStatus
+}
+
+func (n *Node) GetStat() NodeStat {
+	n.Lock()
+	defer n.Unlock()
+	return n.stat
+}
+
+func (n *Node) UpdateOptions(params *m.Node) {
+	n.Lock()
+	n.Node = params
+	n.Unlock()
 }
