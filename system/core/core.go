@@ -195,18 +195,7 @@ func (c *Core) ReloadNode(node *m.Node) (err error) {
 		return
 	}
 
-	n.UpdateOptions(node)
-
-	if n.GetConnStatus() == "connected" {
-		n.Disconnect()
-	}
-
-	if n.Status != "disabled" {
-		if n.GetConnStatus() == "connected" {
-			n.Disconnect()
-		}
-		n.Connect()
-	}
+	n.UpdateClientParams(node)
 
 	return
 }

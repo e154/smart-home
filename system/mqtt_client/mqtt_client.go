@@ -12,9 +12,9 @@ var (
 )
 
 type Client struct {
-	cfg    *Config
-	client MQTT.Client
+	cfg *Config
 	sync.Mutex
+	client     MQTT.Client
 	subscribes map[string]Subscribe
 }
 
@@ -75,9 +75,8 @@ func (c *Client) Disconnect() {
 
 	c.UnsubscribeAll()
 
-	c.subscribes = make(map[string]Subscribe)
 	c.client.Disconnect(250)
-	c.client = nil
+	//c.client = nil
 }
 
 func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) (err error) {

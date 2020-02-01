@@ -16,12 +16,12 @@ type Nodes []*Node
 
 type Node struct {
 	*m.Node
+	sync.Mutex
 	mqttClient *mqtt_client.Client
 	mqtt       *mqtt.Mqtt
-	sync.Mutex
-	stat NodeStat
-	quit chan struct{}
-	ch   map[int64]chan *NodeResponse
+	stat       NodeStat
+	quit       chan struct{}
+	ch         map[int64]chan *NodeResponse
 }
 
 func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
@@ -53,11 +53,7 @@ func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 					if node.stat.IsConnected {
 						node.stat.ConnStatus = "connected"
 					} else {
-						if time.Now().Sub(node.stat.LastPing).Seconds() < 5 {
-							node.stat.ConnStatus = "busy"
-						} else {
-							node.stat.ConnStatus = "error"
-						}
+						node.stat.ConnStatus = "wait"
 					}
 				} else {
 					node.stat.ConnStatus = "disabled"
@@ -163,16 +159,22 @@ func (n *Node) delCh(deviceId int64) {
 
 func (n *Node) Connect() *Node {
 
+	n.Lock()
+	defer n.Unlock()
+
 	var err error
-	if n.mqttClient, err = n.mqtt.NewClient(nil); err != nil {
-		log.Error(err.Error())
+	if n.mqttClient == nil {
+		log.Info("create new mqtt client...")
+		if n.mqttClient, err = n.mqtt.NewClient(nil); err != nil {
+			log.Error(err.Error())
+		}
 	}
 
-	if err = n.mqttClient.Connect(); err != nil {
-		log.Error(err.Error())
+	if !n.mqttClient.IsConnected() {
+		if err = n.mqttClient.Connect(); err != nil {
+			log.Error(err.Error())
+		}
 	}
-
-	time.Sleep(time.Second)
 
 	// /home/node/resp
 	if err := n.mqttClient.Subscribe(n.topic("resp"), 0, n.onPublish); err != nil {
@@ -188,11 +190,14 @@ func (n *Node) Connect() *Node {
 }
 
 func (n *Node) Disconnect() {
+	n.Lock()
+	defer n.Unlock()
+
 	if n.mqttClient != nil {
 		n.mqttClient.Disconnect()
+		//n.mqttClient = nil
 	}
 
-	_ = n.mqtt.Management().CloseClient(n.Node.Login)
 }
 
 func (n *Node) IsConnected() bool {
@@ -241,6 +246,10 @@ func (n *Node) ping(client MQTT.Client, msg MQTT.Message) {
 func (n *Node) MqttPublish(msg interface{}) {
 
 	data, _ := json.Marshal(msg)
+
+	n.Lock()
+	defer n.Unlock()
+
 	if err := n.mqttClient.Publish(n.topic("req"), data); err != nil {
 		log.Error(err.Error())
 		return
@@ -263,8 +272,28 @@ func (n *Node) GetStat() NodeStat {
 	return n.stat
 }
 
-func (n *Node) UpdateOptions(params *m.Node) {
+func (n *Node) UpdateClientParams(params *m.Node) {
 	n.Lock()
+	loginId := n.Node.Login
 	n.Node = params
+
+	// unsubscribe all mqtt client
+	if n.mqttClient != nil {
+		n.mqttClient.UnsubscribeAll()
+	}
+
 	n.Unlock()
+
+	// close outer node connection
+	if _, err := n.mqtt.Management().GetClient(loginId); err != nil {
+		log.Error(err.Error())
+	} else {
+		_ = n.mqtt.Management().CloseClient(loginId)
+	}
+
+
+	if n.Status != "disabled" {
+		n.Connect()
+	}
+
 }
