@@ -73,7 +73,22 @@ func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 }
 
 func (n *Node) Remove() {
+	n.Lock()
+	defer n.Unlock()
+
+	log.Infof("Remove node %v", n.Id)
+
 	n.quit <- struct{}{}
+
+	if n.mqttClient != nil {
+		n.mqttClient.UnsubscribeAll()
+		n.mqttClient.Disconnect()
+		n.mqttClient = nil
+	}
+
+	//if _, err := n.mqtt.Management().GetClient(n.Node.Login); err == nil {
+	//	_ = n.mqtt.Management().CloseClient(n.Node.Login)
+	//}
 }
 
 func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err error) {
@@ -290,7 +305,6 @@ func (n *Node) UpdateClientParams(params *m.Node) {
 	} else {
 		_ = n.mqtt.Management().CloseClient(loginId)
 	}
-
 
 	if n.Status != "disabled" {
 		n.Connect()

@@ -41,6 +41,7 @@ type GateClient struct {
 	messagePool     chan Message
 	settingsLock    sync.Mutex
 	settings        *Settings
+	quit            bool
 }
 
 func NewGateClient(adaptors *adaptors.Adaptors,
@@ -71,6 +72,12 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 			case <-gate.messagePoolQuit:
 				return
 			case v := <-gate.messagePool:
+				gate.settingsLock.Lock()
+				if gate.quit {
+					gate.settingsLock.Unlock()
+					return
+				}
+				gate.settingsLock.Unlock()
 				gate._onMessage(v)
 			}
 		}
@@ -83,6 +90,9 @@ func (g *GateClient) Shutdown() {
 	g.settingsLock.Lock()
 	defer g.settingsLock.Unlock()
 
+	log.Info("Stopping")
+
+	g.quit = true
 	g.messagePoolQuit <- struct{}{}
 	g.wsClient.Close()
 }
@@ -119,7 +129,7 @@ func (g *GateClient) RegisterServer() {
 
 	g.settingsLock.Lock()
 	log.Info("Register server")
-	if g.settings.GateServerToken != "" {
+	if g.settings.GateServerToken != "" || g.quit {
 		g.settingsLock.Unlock()
 		return
 	}
@@ -139,7 +149,10 @@ func (g *GateClient) RegisterServer() {
 
 		g.settingsLock.Lock()
 		g.settings.GateServerToken = msg.Payload["token"].(string)
+		settings := *g.settings
 		g.settingsLock.Unlock()
+
+		g.wsClient.UpdateSettings(settings)
 
 		g.Restart()
 

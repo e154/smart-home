@@ -2,6 +2,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
@@ -68,15 +69,17 @@ func (c *Core) Run() (err error) {
 		return
 	}
 
+	c.Lock()
 	c.isRunning = true
+	c.Unlock()
 
-	if err = c.initNodes(); err != nil {
-		return
-	}
-
-	if err = c.InitWorkflows(); err != nil {
-		return
-	}
+	//if err = c.initNodes(); err != nil {
+	//	return
+	//}
+	//
+	//if err = c.InitWorkflows(); err != nil {
+	//	return
+	//}
 
 	return
 }
@@ -158,7 +161,9 @@ func (b *Core) RemoveNode(node *m.Node) (err error) {
 
 	log.Infof("Remove node: \"%s\"", node.Name)
 
-	err = b.removeNode(node)
+	if err = b.removeNode(node); err != nil {
+		return
+	}
 
 	b.telemetry.Broadcast(telemetry.Node{})
 
@@ -173,7 +178,21 @@ func (c *Core) removeNode(node *m.Node) (err error) {
 		return
 	}
 
-	n.Disconnect()
+	// check flow if use this node
+	exist = false
+	for _, wf := range c.workflows {
+		for _, flow := range wf.Flows {
+			if flow.Node.Id == node.Id {
+				exist = true
+			}
+		}
+	}
+
+	if exist {
+		err = fmt.Errorf("node %d used in on or more flows", node.Id)
+		return
+	}
+
 	n.Remove()
 
 	c.Lock()
@@ -530,7 +549,7 @@ func (b *Core) DoWorker(worker *m.Worker) (err error) {
 
 // ------------------------------------------------
 // safe methods
-// ------------------------------------------------
+// -------------------------------------A-----------
 
 func (b *Core) safeIsRunning() bool {
 	b.Lock()
@@ -561,6 +580,28 @@ func (c *Core) safeGetNode(k int64) (w *Node, ok bool) {
 	c.Lock()
 	w, ok = c.nodes[k]
 	c.Unlock()
+	return
+}
+
+func (c *Core) safeGetOrAddNode(k int64) (w *Node, ok bool) {
+	c.Lock()
+	defer c.Unlock()
+
+	if w, ok = c.nodes[k]; !ok {
+
+		if node, err := c.adaptors.Node.GetById(k); err == nil {
+			ok = true
+
+			w = NewNode(node, c.mqtt)
+			c.safeUpdateNodeMap(node.Id, w.Connect())
+
+			go c.telemetry.Broadcast(telemetry.Node{})
+
+		} else {
+			log.Error(err.Error())
+			return
+		}
+	}
 	return
 }
 

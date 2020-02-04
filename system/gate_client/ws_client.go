@@ -16,15 +16,16 @@ const (
 )
 
 type WsClient struct {
-	settings   Settings
-	delta      time.Duration
-	interrupt  chan struct{}
-	quitWorker chan struct{}
-	cb         IWsCallback
-	reConnect  bool
-	mx         *sync.Mutex
-	status     string
-	counter    int
+	settings       Settings
+	settingsLoaded bool
+	delta          time.Duration
+	interrupt      chan struct{}
+	quitWorker     chan struct{}
+	cb             IWsCallback
+	reConnect      bool
+	mx             *sync.Mutex
+	status         string
+	counter        int
 	sync.Mutex
 	conn *websocket.Conn
 }
@@ -41,14 +42,28 @@ func NewWsClient(
 	go func() {
 		for {
 			client.mx.Lock()
-			if client.status == GateStatusQuit {
-				client.mx.Unlock()
-				return
-			}
+			status := client.status
+			settingsLoaded := client.settingsLoaded
 			client.mx.Unlock()
 
-			client.connect()
+			if status == GateStatusQuit {
+				return
+			}
+
 			time.Sleep(time.Second)
+
+			switch status {
+			case GateStatusWait, GateStatusNotConnected:
+			case "":
+				if !settingsLoaded {
+					continue
+				}
+			default:
+				log.Infof("unknown status %v", status)
+				continue
+			}
+
+			client.connect()
 		}
 	}()
 	return client
@@ -60,6 +75,7 @@ func (client *WsClient) UpdateSettings(settings Settings) {
 
 	client.settings = settings
 	client.reConnect = true
+	client.settingsLoaded = true
 }
 
 func (client *WsClient) connect() {
@@ -138,7 +154,7 @@ func (client *WsClient) connect() {
 		return
 	}
 
-	log.Info("gate connected ...")
+	log.Info("endpoint %v connected ...", uri.String())
 	client.status = GateStatusConnected
 	client.mx.Unlock()
 
@@ -146,12 +162,12 @@ func (client *WsClient) connect() {
 	var messageType int
 	var message []byte
 
-	client.conn.SetCloseHandler(func(code int, text string) error {
-		log.Warning("connection closed")
-
-		loseChan <- struct{}{}
-		return nil
-	})
+	//client.conn.SetCloseHandler(func(code int, text string) error {
+	//	log.Warning("connection closed")
+	//
+	//	loseChan <- struct{}{}
+	//	return nil
+	//})
 
 	go client.cb.onConnected()
 
@@ -200,6 +216,8 @@ func (client *WsClient) connect() {
 				return
 			}
 		case <-client.interrupt:
+			log.Info("Disconnected...")
+			return
 		case <-loseChan:
 			return
 		}
@@ -214,9 +232,11 @@ func (client *WsClient) Close() {
 	if client.status == GateStatusQuit {
 		return
 	}
-	client.status = GateStatusQuit
-	if client.status == GateStatusConnected {
-		client.interrupt <- struct{}{}
+	if client.status != GateStatusQuit {
+		client.status = GateStatusQuit
+		if client.status == GateStatusConnected {
+			client.interrupt <- struct{}{}
+		}
 	}
 }
 

@@ -20,6 +20,6 @@ const (
 const (
 	GateStatusWait         = "wait"
 	GateStatusConnected    = "connected"
-	GateStatusNotConnected = "disabled"
+	GateStatusNotConnected = "not connected"
 	GateStatusQuit         = "quit"
 )

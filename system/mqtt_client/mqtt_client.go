@@ -67,16 +67,18 @@ func (c *Client) Connect() (err error) {
 func (c *Client) Disconnect() {
 
 	c.Lock()
-	defer c.Unlock()
-
 	if c.client == nil {
+		c.Unlock()
 		return
 	}
+	c.Unlock()
 
 	c.UnsubscribeAll()
 
+	c.Lock()
 	c.client.Disconnect(250)
 	//c.client = nil
+	c.Unlock()
 }
 
 func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) (err error) {
@@ -111,6 +113,8 @@ func (c *Client) Unsubscribe(topic string) (err error) {
 }
 
 func (c *Client) UnsubscribeAll() {
+	c.Lock()
+	defer c.Unlock()
 
 	for topic, _ := range c.subscribes {
 		if token := c.client.Unsubscribe(topic); token.Error() != nil {

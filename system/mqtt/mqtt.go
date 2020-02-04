@@ -42,7 +42,7 @@ func NewMqtt(cfg *MqttConfig,
 	// javascript binding
 	scriptService.PushStruct("Mqtt", NewMqttBind(mqtt))
 
-	go mqtt.runServer()
+	mqtt.runServer()
 
 	graceful.Subscribe(mqtt)
 
@@ -90,7 +90,7 @@ func (m *Mqtt) runServer() {
 	m.server.RegisterOnSessionCreated(m.OnSessionCreated)
 	m.server.RegisterOnSessionResumed(m.OnSessionResumed)
 
-	m.server.Run()
+	go m.server.Run()
 }
 
 func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err error) {

@@ -327,19 +327,12 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 
 	// get node
 	// ------------------------------------------------
-	nodes := f.core.GetNodes()
 	nodeId := model.DeviceAction.Device.Node.Id
-	if _, ok := nodes[nodeId]; ok {
-		f.Node = nodes[nodeId]
-	} else {
-		// autoload nodes
-		var node *m.Node
-		if node, err = f.adaptors.Node.GetById(nodeId); err == nil {
-			f.Node, _ = f.core.AddNode(node)
-		} else {
-			log.Error(err.Error())
-			return
-		}
+	var ok bool
+	if f.Node, ok = f.core.safeGetOrAddNode(nodeId); !ok {
+		err = fmt.Errorf("node %d not found", nodeId)
+		log.Error(err.Error())
+		return
 	}
 
 	// generate new worker
