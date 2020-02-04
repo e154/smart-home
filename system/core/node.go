@@ -43,7 +43,6 @@ func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 		defer ticker.Stop()
 
 		for {
-			time.Sleep(time.Millisecond * 100)
 			select {
 			case <-ticker.C:
 				node.Lock()
@@ -58,13 +57,14 @@ func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 				} else {
 					node.stat.ConnStatus = "disabled"
 				}
-
 				node.Unlock()
-			case <-node.quit:
+
+			case _, ok := <-node.quit:
+				if !ok {
+					return
+				}
 				close(node.quit)
 				return
-			default:
-
 			}
 		}
 	}()

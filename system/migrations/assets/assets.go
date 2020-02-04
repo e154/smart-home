@@ -23,6 +23,7 @@
 // migrations/20191028_235920_add_templates.sql
 // migrations/20191105_205903_add_messages.sql
 // migrations/20191204_232940_add_flow_subscribe.sql
+// migrations/20200205_000239_update_device_node_constraint.sql
 // DO NOT EDIT!
 
 package database
@@ -545,7 +546,27 @@ func migrations20191204_232940_add_flow_subscribeSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20191204_232940_add_flow_subscribe.sql", size: 694, mode: os.FileMode(420), modTime: time.Unix(1575477874, 0)}
+	info := bindataFileInfo{name: "migrations/20191204_232940_add_flow_subscribe.sql", size: 694, mode: os.FileMode(420), modTime: time.Unix(1580232275, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20200205_000239_update_device_node_constraintSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xdc\x90\x31\x4f\xc3\x30\x10\x46\x77\xff\x8a\x6f\x6b\x2b\x94\x85\xb5\x93\x89\xaf\xa8\x22\x4a\xc1\x71\x07\xa6\xc8\x8d\x0f\x6a\x35\xd8\x51\x6c\x28\x3f\x1f\xa5\x85\x0a\x24\x06\x66\xd6\xa7\xef\xdd\x49\xaf\x28\x70\xf5\xe2\x9f\x47\x9b\x19\xdb\x41\x14\x05\x9a\x87\x0a\x3e\x20\x71\x97\x7d\x0c\x98\x6d\x87\x19\x7c\x02\xbf\x73\xf7\x9a\xd9\xe1\xb8\xe7\x80\xbc\xf7\x09\x67\x6f\x1a\xf9\x04\x3b\x0c\xbd\x67\x27\x6c\x9f\x79\x44\xb6\xbb\x9e\xe1\xf8\xcd\x77\x9c\x04\x00\xb8\x31\x0e\xe8\x62\x48\x79\xb4\x3e\xe4\x13\x3b\xf1\xf3\xa6\xbd\x6e\x43\x74\x9c\xda\xa7\xc3\x52\x08\x59\x19\xd2\x30\xf2\xa6\xa2\x1f\x47\xa4\x52\x28\x37\x75\x63\xb4\x5c\xd7\xe6\x17\x17\xab\x8d\xa6\xf5\x6d\x8d\x3b\x7a\xc4\x7c\xa2\xad\x77\x8b\xcb\x33\x4d\x2b\xd2\x54\x97\xd4\xe0\x64\x60\xee\xdd\x02\x9b\x1a\xdb\x7b\x25\x0d\xa1\x94\x4d\x29\x15\x4d\x44\x51\x45\x86\xa0\xa9\x31\x7a\x5d\x9a\xa5\x10\xdf\x53\xa9\x78\x0c\x5f\xb1\x2e\xa5\x26\xf8\xa7\x56\x63\xec\x7b\x76\xd8\xd9\xee\xf0\xdf\x7a\x7d\x92\xa5\xf8\x08\x00\x00\xff\xff\x73\x48\x00\xce\x59\x02\x00\x00")
+
+func migrations20200205_000239_update_device_node_constraintSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20200205_000239_update_device_node_constraintSql,
+		"migrations/20200205_000239_update_device_node_constraint.sql",
+	)
+}
+
+func migrations20200205_000239_update_device_node_constraintSql() (*asset, error) {
+	bytes, err := migrations20200205_000239_update_device_node_constraintSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20200205_000239_update_device_node_constraint.sql", size: 601, mode: os.FileMode(420), modTime: time.Unix(1580835855, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -625,6 +646,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20191028_235920_add_templates.sql": migrations20191028_235920_add_templatesSql,
 	"migrations/20191105_205903_add_messages.sql": migrations20191105_205903_add_messagesSql,
 	"migrations/20191204_232940_add_flow_subscribe.sql": migrations20191204_232940_add_flow_subscribeSql,
+	"migrations/20200205_000239_update_device_node_constraint.sql": migrations20200205_000239_update_device_node_constraintSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -691,6 +713,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20191028_235920_add_templates.sql": &bintree{migrations20191028_235920_add_templatesSql, map[string]*bintree{}},
 		"20191105_205903_add_messages.sql": &bintree{migrations20191105_205903_add_messagesSql, map[string]*bintree{}},
 		"20191204_232940_add_flow_subscribe.sql": &bintree{migrations20191204_232940_add_flow_subscribeSql, map[string]*bintree{}},
+		"20200205_000239_update_device_node_constraint.sql": &bintree{migrations20200205_000239_update_device_node_constraintSql, map[string]*bintree{}},
 	}},
 }}
 

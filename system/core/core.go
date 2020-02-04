@@ -73,13 +73,13 @@ func (c *Core) Run() (err error) {
 	c.isRunning = true
 	c.Unlock()
 
-	//if err = c.initNodes(); err != nil {
-	//	return
-	//}
-	//
-	//if err = c.InitWorkflows(); err != nil {
-	//	return
-	//}
+	if err = c.initNodes(); err != nil {
+		return
+	}
+
+	if err = c.InitWorkflows(); err != nil {
+		return
+	}
 
 	return
 }
@@ -174,7 +174,6 @@ func (c *Core) removeNode(node *m.Node) (err error) {
 
 	n, exist := c.safeGetNode(node.Id)
 	if !exist {
-		err = errors.New("not found")
 		return
 	}
 
