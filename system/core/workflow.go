@@ -55,6 +55,16 @@ func NewWorkflow(model *m.Workflow,
 
 func (wf *Workflow) Run() (err error) {
 
+	if wf.model == nil {
+		err = errors.New("workflow model is nil")
+		return
+	}
+
+	if wf.model.Scenario == nil {
+		err = errors.New("workflow scenario is nil")
+		return
+	}
+
 	if wf.isRunning {
 		return
 	}

@@ -297,6 +297,10 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
+	if workflow.Scenario == nil {
+		return
+	}
+
 	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.telemetry)
 
 	if err = wf.Run(); err != nil {
