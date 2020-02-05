@@ -58,6 +58,18 @@ func (n *Workflow) GetById(workflowId int64) (workflow *m.Workflow, err error) {
 	return
 }
 
+func (n *Workflow) GetByWorkflowScenarioId(workflowScenarioId int64) (workflow *m.Workflow, err error) {
+
+	var dbWorkflow *db.Workflow
+	if dbWorkflow, err = n.table.GetByWorkflowScenarioId(workflowScenarioId); err != nil {
+		return
+	}
+
+	workflow = n.fromDb(dbWorkflow)
+
+	return
+}
+
 func (n *Workflow) Update(workflow *m.Workflow) (err error) {
 	dbWorkflow := n.toDb(workflow)
 	if err = n.table.Update(dbWorkflow); err != nil {

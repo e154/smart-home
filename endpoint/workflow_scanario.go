@@ -1,11 +1,11 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
-	m "github.com/e154/smart-home/models"
 	"errors"
 	"fmt"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type WorkflowScenarioEndpoint struct {
@@ -21,7 +21,7 @@ func NewWorkflowScenarioEndpoint(common *CommonEndpoint) *WorkflowScenarioEndpoi
 func (n *WorkflowScenarioEndpoint) GetById(workflowId, scenarioId int64) (result *m.WorkflowScenario, err error) {
 
 	result, err = n.adaptors.WorkflowScenario.GetById(scenarioId)
-	
+
 	return
 }
 
@@ -38,7 +38,17 @@ func (n *WorkflowScenarioEndpoint) Add(params *m.WorkflowScenario) (result *m.Wo
 		return
 	}
 
-	result, err = n.adaptors.WorkflowScenario.GetById(id)
+	if result, err = n.adaptors.WorkflowScenario.GetById(id); err != nil {
+		return
+	}
+
+	// reload workflow
+	var worflow *m.Workflow
+	if worflow, err = n.adaptors.Workflow.GetById(result.WorkflowId); err != nil {
+		return
+	}
+
+	_ = n.core.UpdateWorkflow(worflow)
 
 	return
 }
@@ -57,7 +67,17 @@ func (n *WorkflowScenarioEndpoint) Delete(workflowScenarioId int64) (err error) 
 		return
 	}
 
-	err = n.adaptors.WorkflowScenario.Delete(workflowScenarioId)
+	// reload workflow
+	var worflow *m.Workflow
+	if worflow, err = n.adaptors.Workflow.GetByWorkflowScenarioId(workflowScenarioId); err != nil {
+		return
+	}
+
+	if err = n.adaptors.WorkflowScenario.Delete(workflowScenarioId); err != nil {
+		return
+	}
+
+	_ = n.core.UpdateWorkflow(worflow)
 
 	return
 }
@@ -81,7 +101,7 @@ func (n *WorkflowScenarioEndpoint) Update(params *m.WorkflowScenario) (result *m
 		err = fmt.Errorf("record not found")
 	}
 
-	common.Copy(&workflowScenario, &params, common.JsonEngine)
+	_ = common.Copy(&workflowScenario, &params, common.JsonEngine)
 
 	// validation
 	_, errs = workflowScenario.Valid()
@@ -93,7 +113,17 @@ func (n *WorkflowScenarioEndpoint) Update(params *m.WorkflowScenario) (result *m
 		return
 	}
 
-	result, err = n.adaptors.WorkflowScenario.GetById(workflowScenario.Id)
+	if result, err = n.adaptors.WorkflowScenario.GetById(workflowScenario.Id); err != nil {
+		return
+	}
+
+	// reload workflow
+	var worflow *m.Workflow
+	if worflow, err = n.adaptors.Workflow.GetById(result.WorkflowId); err != nil {
+		return
+	}
+
+	_ = n.core.UpdateWorkflow(worflow)
 
 	return
 }

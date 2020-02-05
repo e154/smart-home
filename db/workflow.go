@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"
@@ -59,6 +60,23 @@ func (n Workflows) GetById(workflowId int64) (workflow *Workflow, err error) {
 	if err = n.Db.First(&workflow).Error; err != nil {
 		return
 	}
+	err = n.DependencyLoading(workflow)
+	return
+}
+
+func (n Workflows) GetByWorkflowScenarioId(workflowScenarioId int64) (workflow *Workflow, err error) {
+	result := make([]*Workflow, 0)
+	if err = n.Db.Raw(`select w.*
+		from workflow_scenarios ws
+	left join workflows w on ws.workflow_id = w.id
+	where ws.id = ?`, workflowScenarioId).Scan(&result).Error; err != nil {
+		return
+	}
+	if len(result) == 0 {
+		err = errors.New("not found")
+		return
+	}
+	workflow = result[0]
 	err = n.DependencyLoading(workflow)
 	return
 }
