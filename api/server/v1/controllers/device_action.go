@@ -325,7 +325,7 @@ func (c ControllerDeviceAction) GetActionList(ctx *gin.Context) {
 	resp.SetData(actions).Send(ctx)
 }
 
-// swagger:operation GET /device_action1/search deviceActionSearch
+// swagger:operation GET /device_action/search deviceActionSearch
 // ---
 // summary: search device actions
 // description:
