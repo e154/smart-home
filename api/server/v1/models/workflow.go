@@ -11,10 +11,11 @@ type NewWorkflow struct {
 
 // swagger:model
 type UpdateWorkflow struct {
-	Id          int64  `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
+	Id          int64    `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Status      string   `json:"status"`
+	Scripts     []Script `json:"scripts"`
 }
 
 // swagger:model

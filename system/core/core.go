@@ -364,7 +364,6 @@ func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 
 	wf, ok := c.safeGetWorkflow(workflow.Id)
 	if !ok {
-		err = errors.New("not found")
 		return
 	}
 
@@ -395,14 +394,15 @@ func (c *Core) UpdateWorkflowScenario(workflow *m.Workflow) (err error) {
 func (c *Core) UpdateWorkflow(workflow *m.Workflow) (err error) {
 
 	if workflow.Status == "enabled" {
-		if _, ok := c.safeGetWorkflow(workflow.Id); ok {
-			err = c.AddWorkflow(workflow)
-			return
+		if wf, ok := c.safeGetWorkflow(workflow.Id); ok {
+			if err = c.DeleteWorkflow(wf.model); err != nil {
+				log.Error(err.Error())
+			}
 		}
+		err = c.AddWorkflow(workflow)
 	} else {
 		if _, ok := c.safeGetWorkflow(workflow.Id); ok {
-			err = c.DeleteWorkflow(workflow)
-			return
+			_ = c.DeleteWorkflow(workflow)
 		}
 	}
 

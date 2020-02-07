@@ -48,6 +48,16 @@ func (n *WorkflowScenarioEndpoint) Add(params *m.WorkflowScenario) (result *m.Wo
 		return
 	}
 
+	if worflow.Scenario == nil {
+		if len(worflow.Scenarios) > 0 {
+			worflow.Scenario = worflow.Scenarios[0]
+		}
+	}
+
+	if err = n.adaptors.Workflow.Update(worflow); err != nil {
+		return
+	}
+
 	_ = n.core.UpdateWorkflow(worflow)
 
 	return

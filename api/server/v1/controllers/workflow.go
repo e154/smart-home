@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	m "github.com/e154/smart-home/models"
-	"strconv"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type ControllerWorkflow struct {
