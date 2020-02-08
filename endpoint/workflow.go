@@ -148,12 +148,7 @@ func (n *WorkflowEndpoint) UpdateScenario(workflowId int64, workflowScenarioId i
 		return
 	}
 
-	// update core
-	if workflow, err = n.adaptors.Workflow.GetById(workflow.Id); err != nil {
-		return
-	}
-
-	err = n.core.UpdateWorkflowScenario(workflow)
+	err = n.core.UpdateWorkflowScenario(workflowId)
 
 	return
 }

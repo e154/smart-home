@@ -100,12 +100,15 @@ func (n Workflows) GetByWorkflowScenarioId(workflowScenarioId int64) (workflow *
 }
 
 func (n Workflows) Update(m *Workflow) (err error) {
-	err = n.Db.Model(&Workflow{Id: m.Id}).Updates(map[string]interface{}{
-		"name":                 m.Name,
-		"description":          m.Description,
-		"status":               m.Status,
-		"workflow_scenario_id": m.WorkflowScenarioId,
-	}).Error
+	updateParams := map[string]interface{}{
+		"name":        m.Name,
+		"description": m.Description,
+		"status":      m.Status,
+	}
+	if m.WorkflowScenarioId != nil {
+		updateParams["workflow_scenario_id"] = m.WorkflowScenarioId
+	}
+	err = n.Db.Model(&Workflow{Id: m.Id}).Updates(updateParams).Error
 	return
 }
 

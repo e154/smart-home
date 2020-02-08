@@ -316,6 +316,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 	}
 
 	if workflow.Scenario == nil {
+		log.Warningf("No selected scenario for workflow: '%s', exiting...", workflow.Name)
 		return
 	}
 
@@ -396,9 +397,9 @@ func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 	return
 }
 
-func (c *Core) UpdateWorkflowScenario(workflow *m.Workflow) (err error) {
+func (c *Core) UpdateWorkflowScenario(workflowId int64) (err error) {
 
-	wf, ok := c.safeGetWorkflow(workflow.Id)
+	wf, ok := c.safeGetWorkflow(workflowId)
 	if !ok {
 		err = errors.New("not found")
 		return
