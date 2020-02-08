@@ -353,7 +353,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 	}
 
 	for _, sub := range params.Subscriptions {
-		if sub.Id == 0 {
+		if sub.Id == 0 && sub.Topic != "" {
 			flowSubscription := &m.FlowSubscription{
 				Topic:  sub.Topic,
 				FlowId: newFlow.Id,
