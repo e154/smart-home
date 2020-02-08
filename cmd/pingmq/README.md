@@ -28,3 +28,7 @@ One can also subscribe to a specific IP by using the following command.
 $ ./pingmq client -t /ping/+/8.8.8.8
 8 bytes from 8.8.8.8: seq=1 ttl=56 tos=32 time=21.753711ms
 ```
+
+### LICENSE
+
+[GPLv3 Public License](https://github.com/e154/smart-home/blob/master/LICENSE)

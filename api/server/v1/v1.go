@@ -1,10 +1,28 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 // Smart home
 //
 // This documentation describes APIs found under https://github.com/e154/smart-home
 //
 //     BasePath: /api/v1
 //     Version: 1.0.0
-//     License: MIT https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
+//     License: GPLv3 https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
 //     Contact: Alex Filippov <support@e154.ru> https://e154.github.io/smart-home/
 //
 //     Consumes:

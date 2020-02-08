@@ -113,7 +113,7 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   DevCommandConfig:
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DevModBusConfig:
     properties:
       baud:
@@ -141,6 +141,17 @@ definitions:
         x-go-name: Timeout
     type: object
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+  DevModBusTcpConfig:
+    properties:
+      address_port:
+        type: string
+        x-go-name: AddressPort
+      slave_id:
+        format: int64
+        type: integer
+        x-go-name: SlaveId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DevSmartBusConfig:
     properties:
       baud:
@@ -164,7 +175,7 @@ definitions:
         type: integer
         x-go-name: Timeout
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Device:
     properties:
       actions:
@@ -294,10 +305,78 @@ definitions:
           x-go-name: Timeout
       type: object
     - type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        data_bits:
+          format: int64
+          type: integer
+          x-go-name: DataBits
+        parity:
+          type: string
+          x-go-name: Parity
+        slave_id:
+          format: int64
+          type: integer
+          x-go-name: SlaveId
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - properties:
+        address_port:
+          type: string
+          x-go-name: AddressPort
+        slave_id:
+          format: int64
+          type: integer
+          x-go-name: SlaveId
+      type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        device:
+          format: int64
+          type: integer
+          x-go-name: Device
+        sleep:
+          format: int64
+          type: integer
+          x-go-name: Sleep
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - type: object
+    - properties:
+        address:
+          type: string
+          x-go-name: Address
+        password:
+          type: string
+          x-go-name: Password
+        user:
+          type: string
+          x-go-name: User
+      type: object
     description: |-
       An AllOfModel is composed out of embedded structs but it should build
       an allOf property
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceShort:
     properties:
       description:
@@ -702,18 +781,38 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       id:
         format: int64
         type: integer
         x-go-name: Id
+      image:
+        type: string
+        x-go-name: Image
+      mime_type:
+        type: string
+        x-go-name: MimeType
+      name:
+        type: string
+        x-go-name: Name
+      size:
+        format: int64
+        type: integer
+        x-go-name: Size
       thumb:
         type: string
         x-go-name: Thumb
+      title:
+        type: string
+        x-go-name: Title
       url:
         type: string
         x-go-name: Url
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Log:
     properties:
       body:
@@ -756,6 +855,37 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapDevice:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/MapDeviceAction'
+        type: array
+        x-go-name: Actions
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
+      states:
+        items:
+          $ref: '#/definitions/MapDeviceState'
+        type: array
+        x-go-name: States
+      system_name:
+        type: string
+        x-go-name: SystemName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapDeviceAction:
     properties:
       created_at:
@@ -793,6 +923,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapDeviceState:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       device_state:
         $ref: '#/definitions/DeviceState'
       device_state_id:
@@ -816,10 +950,18 @@ definitions:
       style:
         type: string
         x-go-name: Style
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElement:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -852,6 +994,10 @@ definitions:
       status:
         type: string
         x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
@@ -859,7 +1005,7 @@ definitions:
       zone:
         $ref: '#/definitions/MapZone'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElementGraphSettings:
     properties:
       height:
@@ -888,10 +1034,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapFull:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -909,12 +1051,8 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapImage:
     properties:
       id:
@@ -931,9 +1069,13 @@ definitions:
         type: string
         x-go-name: Style
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapLayer:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -958,12 +1100,16 @@ definitions:
       status:
         type: string
         x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
         x-go-name: Weight
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapOptions:
     properties:
       element_option_text:
@@ -1223,7 +1369,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceAction:
     properties:
       description:
@@ -1237,7 +1383,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDeviceNode:
     properties:
       id:
@@ -1245,7 +1391,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDeviceState:
     properties:
       description:
@@ -1257,7 +1403,7 @@ definitions:
         type: string
         x-go-name: SystemName
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewFlow:
     properties:
       description:
@@ -1330,7 +1476,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewMapElement:
     properties:
       description:
@@ -1387,7 +1533,7 @@ definitions:
         type: string
         x-go-name: Status
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewMapZone:
     properties:
       name:
@@ -1736,7 +1882,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Prototype:
     properties:
       actions:
@@ -1744,6 +1890,12 @@ definitions:
           $ref: '#/definitions/MapDeviceAction'
         type: array
         x-go-name: Actions
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device:
+        $ref: '#/definitions/Device'
       device_id:
         format: int64
         type: integer
@@ -1772,8 +1924,12 @@ definitions:
       text:
         type: string
         x-go-name: Text
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   RedactorConnector:
     properties:
       direction:
@@ -2189,7 +2345,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateDeviceState:
     properties:
       description:
@@ -2293,7 +2449,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateMapElement:
     properties:
       description:
@@ -2585,6 +2741,11 @@ definitions:
       name:
         type: string
         x-go-name: Name
+      scripts:
+        items:
+          $ref: '#/definitions/Script'
+        type: array
+        x-go-name: Scripts
       status:
         type: string
         x-go-name: Status
@@ -2982,7 +3143,7 @@ info:
     url: https://e154.github.io/smart-home/
   description: This documentation describes APIs found under https://github.com/e154/smart-home
   license:
-    name: MIT
+    name: GPLv3
     url: https://raw.githubusercontent.com/e154/smart-home/master/LICENSE
   title: Smart home
   version: 1.0.0

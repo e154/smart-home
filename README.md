@@ -11,7 +11,7 @@
 [![Build Status](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home)
 [![Go Report Card](https://goreportcard.com/badge/github.com/e154/smart-home)](https://goreportcard.com/report/github.com/e154/smart-home)
 ![status](https://img.shields.io/badge/status-beta-yellow.svg)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 <img align="right" width="220" height="auto" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
 
@@ -344,4 +344,4 @@ Thank you for your understanding!
 
 ### LICENSE
 
-[MIT Public License](https://github.com/e154/smart-home/blob/master/LICENSE)
+[GPLv3 Public License](https://github.com/e154/smart-home/blob/master/LICENSE)
