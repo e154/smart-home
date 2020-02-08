@@ -107,9 +107,9 @@ func (wf *Workflow) Run() (err error) {
 
 	wf.telemetry.BroadcastOne(telemetry.WorkflowScenario{WorkflowId: wf.model.Id, ScenarioId: wf.model.Scenario.Id})
 
-	//if err = wf.initFlows(); err != nil {
-	//	return
-	//}
+	if err = wf.initFlows(); err != nil {
+		return
+	}
 
 	return
 }
