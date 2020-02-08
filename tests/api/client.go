@@ -22,7 +22,9 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/e154/smart-home/api/server/v1/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
@@ -78,6 +80,35 @@ func (c *Client) req(meth, uri string, data interface{}) (w *httptest.ResponseRe
 	return
 }
 
+func (c *Client) LoginAsAdmin() (err error) {
+	err = c.login("admin@e154.ru", "admin")
+	return
+}
+
+func (c *Client) LoginAsUser() (err error) {
+	err = c.login("user@e154.ru", "user")
+	return
+}
+
+func (c *Client) login(login, pass string) (err error) {
+
+	c.SetToken("")
+	c.BasicAuth(login, pass)
+	res := c.Signin()
+	if res.Code != 200 {
+		err = errors.New("error response code")
+		return
+	}
+	currentUser := &models.AuthSignInResponse{}
+	if err = json.Unmarshal(res.Body.Bytes(), currentUser); err != nil {
+		return
+	}
+
+	// positive
+	c.SetToken(currentUser.AccessToken)
+	return
+}
+
 // auth
 func (c *Client) Signin() *httptest.ResponseRecorder {
 	return c.req("POST", "/api/v1/signin", nil)
@@ -89,6 +120,15 @@ func (c *Client) Signout() *httptest.ResponseRecorder {
 
 func (c *Client) GetAccessList() *httptest.ResponseRecorder {
 	return c.req("GET", "/api/v1/access_list", nil)
+}
+
+// device state
+func (c *Client) NewDeviceState(device interface{}) *httptest.ResponseRecorder {
+	return c.req("POST", "/api/v1/device_state", device)
+}
+
+func (c *Client) GetDeviceState(stateId int64) *httptest.ResponseRecorder {
+	return c.req("GET", fmt.Sprintf("/api/v1/device_state/%d", stateId), nil)
 }
 
 // device

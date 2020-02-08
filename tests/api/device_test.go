@@ -24,6 +24,8 @@ import (
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/server/v1/models"
 	"github.com/e154/smart-home/api/server/v1/responses"
+	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/models/devices"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/migrations"
@@ -193,17 +195,10 @@ func TestDevice(t *testing.T) {
 			ctx.So(res.Code, ShouldEqual, 401)
 
 			// login
-			client.SetToken("")
-			client.BasicAuth("admin@e154.ru", "admin")
-			res = client.Signin()
-			ctx.So(res.Code, ShouldEqual, 200)
-			currentUser := &models.AuthSignInResponse{}
-			err = json.Unmarshal(res.Body.Bytes(), currentUser)
+			err = client.LoginAsAdmin()
 			ctx.So(err, ShouldBeNil)
-			accessToken = currentUser.AccessToken
 
 			// positive
-			client.SetToken(accessToken)
 			res = client.NewDevice(deviceDefault)
 			ctx.So(res.Code, ShouldEqual, 200)
 
@@ -459,4 +454,34 @@ func TestDevice(t *testing.T) {
 			panic(err.Error())
 		}
 	})
+}
+
+func AddDevice(adaptors *adaptors.Adaptors, node *m.Node) (deviceId int64, err error) {
+
+	device1 := &m.Device{
+		Name:       "device1",
+		Status:     "enabled",
+		Type:       DevTypeModbusTcp,
+		Node:       node,
+		Properties: []byte("{}"),
+	}
+
+	modBusConfig := &DevModBusTcpConfig{
+		AddressPort: "127.0.0.1:502",
+		SlaveId:     1,
+	}
+
+	ok, _ := device1.SetProperties(modBusConfig)
+	So(ok, ShouldEqual, true)
+
+	ok, _ = device1.Valid()
+	So(ok, ShouldEqual, true)
+
+	if device1.Id, err = adaptors.Device.Add(device1); err != nil {
+		return
+	}
+
+	deviceId = device1.Id
+
+	return
 }
