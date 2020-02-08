@@ -1,3 +1,21 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package gate_client
 
 import (
@@ -16,15 +34,16 @@ const (
 )
 
 type WsClient struct {
-	settings   Settings
-	delta      time.Duration
-	interrupt  chan struct{}
-	quitWorker chan struct{}
-	cb         IWsCallback
-	reConnect  bool
-	mx         *sync.Mutex
-	status     string
-	counter    int
+	settings       Settings
+	settingsLoaded bool
+	delta          time.Duration
+	interrupt      chan struct{}
+	quitWorker     chan struct{}
+	cb             IWsCallback
+	reConnect      bool
+	mx             *sync.Mutex
+	status         string
+	counter        int
 	sync.Mutex
 	conn *websocket.Conn
 }
@@ -41,14 +60,28 @@ func NewWsClient(
 	go func() {
 		for {
 			client.mx.Lock()
-			if client.status == GateStatusQuit {
-				client.mx.Unlock()
-				return
-			}
+			status := client.status
+			settingsLoaded := client.settingsLoaded
 			client.mx.Unlock()
 
-			client.connect()
+			if status == GateStatusQuit {
+				return
+			}
+
 			time.Sleep(time.Second)
+
+			switch status {
+			case GateStatusWait, GateStatusNotConnected:
+			case "":
+				if !settingsLoaded {
+					continue
+				}
+			default:
+				log.Infof("unknown status %v", status)
+				continue
+			}
+
+			client.connect()
 		}
 	}()
 	return client
@@ -60,6 +93,7 @@ func (client *WsClient) UpdateSettings(settings Settings) {
 
 	client.settings = settings
 	client.reConnect = true
+	client.settingsLoaded = true
 }
 
 func (client *WsClient) connect() {
@@ -132,12 +166,13 @@ func (client *WsClient) connect() {
 		//log.Debugf("X-API-Key: %v", client.settings.GateServerToken)
 	}
 
+	client.mx.Lock()
 	if client.conn, _, err = websocket.DefaultDialer.Dial(uri.String(), requestHeader); err != nil {
+		client.mx.Unlock()
 		return
 	}
 
-	log.Info("gate connected ...")
-	client.mx.Lock()
+	log.Info("endpoint %v connected ...", uri.String())
 	client.status = GateStatusConnected
 	client.mx.Unlock()
 
@@ -145,12 +180,12 @@ func (client *WsClient) connect() {
 	var messageType int
 	var message []byte
 
-	client.conn.SetCloseHandler(func(code int, text string) error {
-		log.Warning("connection closed")
-
-		loseChan <- struct{}{}
-		return nil
-	})
+	//client.conn.SetCloseHandler(func(code int, text string) error {
+	//	log.Warning("connection closed")
+	//
+	//	loseChan <- struct{}{}
+	//	return nil
+	//})
 
 	go client.cb.onConnected()
 
@@ -199,6 +234,8 @@ func (client *WsClient) connect() {
 				return
 			}
 		case <-client.interrupt:
+			log.Info("Disconnected...")
+			return
 		case <-loseChan:
 			return
 		}
@@ -213,9 +250,11 @@ func (client *WsClient) Close() {
 	if client.status == GateStatusQuit {
 		return
 	}
-	client.status = GateStatusQuit
-	if client.status == GateStatusConnected {
-		client.interrupt <- struct{}{}
+	if client.status != GateStatusQuit {
+		client.status = GateStatusQuit
+		if client.status == GateStatusConnected {
+			client.interrupt <- struct{}{}
+		}
 	}
 }
 

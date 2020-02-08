@@ -1,3 +1,21 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package core
 
 import (
@@ -327,19 +345,12 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 
 	// get node
 	// ------------------------------------------------
-	nodes := f.core.GetNodes()
 	nodeId := model.DeviceAction.Device.Node.Id
-	if _, ok := nodes[nodeId]; ok {
-		f.Node = nodes[nodeId]
-	} else {
-		// autoload nodes
-		var node *m.Node
-		if node, err = f.adaptors.Node.GetById(nodeId); err == nil {
-			f.Node, _ = f.core.AddNode(node)
-		} else {
-			log.Error(err.Error())
-			return
-		}
+	var ok bool
+	if f.Node, ok = f.core.safeGetOrAddNode(nodeId); !ok {
+		err = fmt.Errorf("node %d not found", nodeId)
+		log.Error(err.Error())
+		return
 	}
 
 	// generate new worker

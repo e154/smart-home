@@ -1,11 +1,29 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package endpoint
 
 import (
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
-	m "github.com/e154/smart-home/models"
 	"errors"
 	"fmt"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type WorkflowScenarioEndpoint struct {
@@ -21,7 +39,7 @@ func NewWorkflowScenarioEndpoint(common *CommonEndpoint) *WorkflowScenarioEndpoi
 func (n *WorkflowScenarioEndpoint) GetById(workflowId, scenarioId int64) (result *m.WorkflowScenario, err error) {
 
 	result, err = n.adaptors.WorkflowScenario.GetById(scenarioId)
-	
+
 	return
 }
 
@@ -38,7 +56,27 @@ func (n *WorkflowScenarioEndpoint) Add(params *m.WorkflowScenario) (result *m.Wo
 		return
 	}
 
-	result, err = n.adaptors.WorkflowScenario.GetById(id)
+	if result, err = n.adaptors.WorkflowScenario.GetById(id); err != nil {
+		return
+	}
+
+	// reload workflow
+	var worflow *m.Workflow
+	if worflow, err = n.adaptors.Workflow.GetById(result.WorkflowId); err != nil {
+		return
+	}
+
+	if worflow.Scenario == nil {
+		if len(worflow.Scenarios) > 0 {
+			worflow.Scenario = worflow.Scenarios[0]
+		}
+	}
+
+	if err = n.adaptors.Workflow.Update(worflow); err != nil {
+		return
+	}
+
+	_ = n.core.UpdateWorkflow(worflow)
 
 	return
 }
@@ -57,7 +95,17 @@ func (n *WorkflowScenarioEndpoint) Delete(workflowScenarioId int64) (err error) 
 		return
 	}
 
-	err = n.adaptors.WorkflowScenario.Delete(workflowScenarioId)
+	// reload workflow
+	var worflow *m.Workflow
+	if worflow, err = n.adaptors.Workflow.GetByWorkflowScenarioId(workflowScenarioId); err != nil {
+		return
+	}
+
+	if err = n.adaptors.WorkflowScenario.Delete(workflowScenarioId); err != nil {
+		return
+	}
+
+	_ = n.core.UpdateWorkflow(worflow)
 
 	return
 }
@@ -81,7 +129,7 @@ func (n *WorkflowScenarioEndpoint) Update(params *m.WorkflowScenario) (result *m
 		err = fmt.Errorf("record not found")
 	}
 
-	common.Copy(&workflowScenario, &params, common.JsonEngine)
+	_ = common.Copy(&workflowScenario, &params, common.JsonEngine)
 
 	// validation
 	_, errs = workflowScenario.Valid()
@@ -93,7 +141,17 @@ func (n *WorkflowScenarioEndpoint) Update(params *m.WorkflowScenario) (result *m
 		return
 	}
 
-	result, err = n.adaptors.WorkflowScenario.GetById(workflowScenario.Id)
+	if result, err = n.adaptors.WorkflowScenario.GetById(workflowScenario.Id); err != nil {
+		return
+	}
+
+	// reload workflow
+	var worflow *m.Workflow
+	if worflow, err = n.adaptors.Workflow.GetById(result.WorkflowId); err != nil {
+		return
+	}
+
+	_ = n.core.UpdateWorkflow(worflow)
 
 	return
 }

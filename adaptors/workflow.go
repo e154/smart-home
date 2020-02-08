@@ -1,3 +1,21 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package adaptors
 
 import (
@@ -50,6 +68,18 @@ func (n *Workflow) GetById(workflowId int64) (workflow *m.Workflow, err error) {
 
 	var dbWorkflow *db.Workflow
 	if dbWorkflow, err = n.table.GetById(workflowId); err != nil {
+		return
+	}
+
+	workflow = n.fromDb(dbWorkflow)
+
+	return
+}
+
+func (n *Workflow) GetByWorkflowScenarioId(workflowScenarioId int64) (workflow *m.Workflow, err error) {
+
+	var dbWorkflow *db.Workflow
+	if dbWorkflow, err = n.table.GetByWorkflowScenarioId(workflowScenarioId); err != nil {
 		return
 	}
 

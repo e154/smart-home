@@ -1,7 +1,26 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"
@@ -59,6 +78,23 @@ func (n Workflows) GetById(workflowId int64) (workflow *Workflow, err error) {
 	if err = n.Db.First(&workflow).Error; err != nil {
 		return
 	}
+	err = n.DependencyLoading(workflow)
+	return
+}
+
+func (n Workflows) GetByWorkflowScenarioId(workflowScenarioId int64) (workflow *Workflow, err error) {
+	result := make([]*Workflow, 0)
+	if err = n.Db.Raw(`select w.*
+		from workflow_scenarios ws
+	left join workflows w on ws.workflow_id = w.id
+	where ws.id = ?`, workflowScenarioId).Scan(&result).Error; err != nil {
+		return
+	}
+	if len(result) == 0 {
+		err = errors.New("not found")
+		return
+	}
+	workflow = result[0]
 	err = n.DependencyLoading(workflow)
 	return
 }

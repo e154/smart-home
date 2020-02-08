@@ -1,7 +1,26 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package core
 
 import (
 	"errors"
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
@@ -68,7 +87,9 @@ func (c *Core) Run() (err error) {
 		return
 	}
 
+	c.Lock()
 	c.isRunning = true
+	c.Unlock()
 
 	if err = c.initNodes(); err != nil {
 		return
@@ -158,7 +179,9 @@ func (b *Core) RemoveNode(node *m.Node) (err error) {
 
 	log.Infof("Remove node: \"%s\"", node.Name)
 
-	err = b.removeNode(node)
+	if err = b.removeNode(node); err != nil {
+		return
+	}
 
 	b.telemetry.Broadcast(telemetry.Node{})
 
@@ -169,11 +192,25 @@ func (c *Core) removeNode(node *m.Node) (err error) {
 
 	n, exist := c.safeGetNode(node.Id)
 	if !exist {
-		err = errors.New("not found")
 		return
 	}
 
-	n.Disconnect()
+	// check flow if use this node
+	exist = false
+	for _, wf := range c.workflows {
+		for _, flow := range wf.Flows {
+			if flow.Node.Id == node.Id {
+				exist = true
+			}
+		}
+	}
+
+	if exist {
+		err = fmt.Errorf("node %d used in on or more flows", node.Id)
+		return
+	}
+
+	n.Remove()
 
 	c.Lock()
 	delete(c.nodes, node.Id)
@@ -194,13 +231,7 @@ func (c *Core) ReloadNode(node *m.Node) (err error) {
 		return
 	}
 
-	n.Status = node.Status
-
-	if n.Status == "disabled" {
-		n.Disconnect()
-	} else {
-		n.Connect()
-	}
+	n.UpdateClientParams(node)
 
 	return
 }
@@ -284,6 +315,10 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
+	if workflow.Scenario == nil {
+		return
+	}
+
 	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.telemetry)
 
 	if err = wf.Run(); err != nil {
@@ -347,7 +382,6 @@ func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 
 	wf, ok := c.safeGetWorkflow(workflow.Id)
 	if !ok {
-		err = errors.New("not found")
 		return
 	}
 
@@ -378,14 +412,15 @@ func (c *Core) UpdateWorkflowScenario(workflow *m.Workflow) (err error) {
 func (c *Core) UpdateWorkflow(workflow *m.Workflow) (err error) {
 
 	if workflow.Status == "enabled" {
-		if _, ok := c.safeGetWorkflow(workflow.Id); ok {
-			err = c.AddWorkflow(workflow)
-			return
+		if wf, ok := c.safeGetWorkflow(workflow.Id); ok {
+			if err = c.DeleteWorkflow(wf.model); err != nil {
+				log.Error(err.Error())
+			}
 		}
+		err = c.AddWorkflow(workflow)
 	} else {
 		if _, ok := c.safeGetWorkflow(workflow.Id); ok {
-			err = c.DeleteWorkflow(workflow)
-			return
+			_ = c.DeleteWorkflow(workflow)
 		}
 	}
 
@@ -535,7 +570,7 @@ func (b *Core) DoWorker(worker *m.Worker) (err error) {
 
 // ------------------------------------------------
 // safe methods
-// ------------------------------------------------
+// -------------------------------------A-----------
 
 func (b *Core) safeIsRunning() bool {
 	b.Lock()
@@ -566,6 +601,28 @@ func (c *Core) safeGetNode(k int64) (w *Node, ok bool) {
 	c.Lock()
 	w, ok = c.nodes[k]
 	c.Unlock()
+	return
+}
+
+func (c *Core) safeGetOrAddNode(k int64) (w *Node, ok bool) {
+	c.Lock()
+	defer c.Unlock()
+
+	if w, ok = c.nodes[k]; !ok {
+
+		if node, err := c.adaptors.Node.GetById(k); err == nil {
+			ok = true
+
+			w = NewNode(node, c.mqtt)
+			c.safeUpdateNodeMap(node.Id, w.Connect())
+
+			go c.telemetry.Broadcast(telemetry.Node{})
+
+		} else {
+			log.Error(err.Error())
+			return
+		}
+	}
 	return
 }
 
