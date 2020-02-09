@@ -32,8 +32,8 @@ func NewMqttBind(mqtt *Mqtt) *MqttBind {
 }
 
 func (m MqttBind) Publish(topic string, payload []byte, qos uint8, retain bool) {
-	if m.mqtt.server == nil {
+	if m.mqtt == nil {
 		return
 	}
-	m.mqtt.server.Publish(topic, payload, qos, retain)
+	m.mqtt.Publish(topic, payload, qos, retain)
 }
