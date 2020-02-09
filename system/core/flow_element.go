@@ -83,7 +83,7 @@ func (f *FlowElement) Before(ctx context.Context) (newCtx context.Context, err e
 		return
 	}
 
-	f.status = DONE
+	f.status = Done
 
 	return
 }
@@ -95,18 +95,18 @@ func (f *FlowElement) Run(ctx context.Context) (newCtx context.Context, b bool, 
 		return
 	}
 
-	f.status = IN_PROCESS
+	f.status = InProcess
 
 	//???
 	f.Flow.cursor = f.Model.Uuid
 
 	if newCtx, err = f.Before(ctx); err != nil {
-		f.status = ERROR
+		f.status = Error
 		return
 	}
 
 	if err = f.Prototype.Run(f.Flow); err != nil {
-		f.status = ERROR
+		f.status = Error
 		return
 	}
 
@@ -114,13 +114,13 @@ func (f *FlowElement) Run(ctx context.Context) (newCtx context.Context, b bool, 
 	if f.Model.Script != nil {
 
 		if err = f.ScriptEngine.EvalString(f.Model.Script.Compiled); err != nil {
-			f.status = ERROR
+			f.status = Error
 			return
 		}
 
 		if f.Flow.message.Error != "" {
 			err = errors.New(f.Flow.message.Error)
-			f.status = ERROR
+			f.status = Error
 			return
 		}
 
@@ -128,17 +128,17 @@ func (f *FlowElement) Run(ctx context.Context) (newCtx context.Context, b bool, 
 	}
 
 	if err = f.After(); err != nil {
-		f.status = ERROR
+		f.status = Error
 		return
 	}
 
-	f.status = ENDED
+	f.status = Ended
 
 	return
 }
 
 func (f *FlowElement) After() error {
-	f.status = DONE
+	f.status = Done
 	return f.Prototype.After(f.Flow)
 }
 
