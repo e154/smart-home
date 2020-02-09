@@ -105,6 +105,7 @@ func (c *Client) login(login, pass string) (err error) {
 	}
 
 	// positive
+	accessToken = currentUser.AccessToken
 	c.SetToken(currentUser.AccessToken)
 	return
 }

@@ -162,18 +162,18 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 		return
 	}
 
-	defer func() {
-		f.Lock()
-		f.isRunning = false
-		f.Unlock()
-	}()
-
 	f.Lock()
 	if f.isRunning {
 		err = errors.New("flow is running")
 		f.Unlock()
 		return
 	}
+
+	defer func() {
+		f.Lock()
+		f.isRunning = false
+		f.Unlock()
+	}()
 
 	f.isRunning = true
 	f.Unlock()
@@ -248,8 +248,8 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 
 		childCtx, _ := context.WithCancel(ctx)
 
-		if ok, err = element.Run(childCtx); err != nil {
-			log.Error(err.Error())
+		if ctx, ok, err = element.Run(childCtx); err != nil {
+			//log.Error(err.Error())
 			return
 		}
 

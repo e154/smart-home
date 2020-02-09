@@ -168,13 +168,19 @@ func TestDevice(t *testing.T) {
 			core *core.Core,
 			accessList *access_list.AccessListService, ) {
 
+			// stop core
+			// ------------------------------------------------
+			err := core.Stop()
+			So(err, ShouldBeNil)
+
 			// clear database
-			err := migrations.Purge()
+			err = migrations.Purge()
 			ctx.So(err, ShouldBeNil)
 
 			// add roles
 			AddRoles(adaptors, accessList, ctx)
 
+			//
 			go server.Start()
 
 			time.Sleep(time.Second * 1)
