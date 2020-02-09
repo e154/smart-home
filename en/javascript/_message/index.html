@@ -339,6 +339,8 @@
 <pre><code class="language-coffeescript">value = message.mqtt
 topic = message.getVar('mqtt_topic')
 payload = JSON.parse(message.getVar('mqtt_payload'))
+qos = message.getVar('mqtt_qos')
+duplicate = message.getVar('mqtt_duplicate')
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -365,6 +367,16 @@ payload = JSON.parse(message.getVar('mqtt_payload'))
 <tr>
 <td><code>payload</code></td>
 <td>type: Object</td>
+</tr>
+
+<tr>
+<td><code>qos</code></td>
+<td>type: byte</td>
+</tr>
+
+<tr>
+<td><code>duplicate</code></td>
+<td>type: bool</td>
 </tr>
 </tbody>
 </table>
@@ -426,6 +438,15 @@ payload = JSON.parse(message.getVar('mqtt_payload'))
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#ic_map">
                 IC.Map()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_mqtt">
+                IC.Mqtt()
             </a>
             <ul class="nav bd-sidenav">
                 

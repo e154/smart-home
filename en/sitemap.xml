@@ -129,6 +129,20 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/en/javascript/_mqtt/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_mqtt/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_mqtt/"
+                />
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/en/getting-started/_install/</loc>
     <xhtml:link
                 rel="alternate"

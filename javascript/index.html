@@ -744,6 +744,79 @@ if flow
                             
                                 
 
+<h2 id="ic_mqtt">IC.Mqtt()</h2>
+
+<p>Объект mqtt клиента</p>
+
+<pre><code class="language-coffeescript">mqtt = IC.Mqtt()
+return if !mqtt
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>mqtt</code></td>
+<td>type: Object, ссылка на экземпляр *Mqtt</td>
+</tr>
+</tbody>
+</table>
+
+<p>Доступные методы приведены далее:</p>
+
+<h3 id="ic_mqtt_publish">.publish(topic, payload, qos, retain)</h3>
+
+<p>Отправить сообщение в канал</p>
+
+<pre><code class="language-coffeescript">mqtt = IC.Mqtt()
+if mqtt
+ mqtt.publish(topic, payload, qos, retain)
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>topic</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>payload</code></td>
+<td>type: []byte</td>
+</tr>
+
+<tr>
+<td><code>qos</code></td>
+<td>type: uint8</td>
+</tr>
+
+<tr>
+<td><code>retain</code></td>
+<td>type: bool</td>
+</tr>
+</tbody>
+</table>
+
+                            
+                                
+
 <h2 id="ic_log">IC.Log</h2>
 
 <p>Логирование состояния.</p>
@@ -1674,6 +1747,8 @@ if res.error
 <pre><code class="language-coffeescript">value = message.mqtt
 topic = message.getVar('mqtt_topic')
 payload = JSON.parse(message.getVar('mqtt_payload'))
+qos = message.getVar('mqtt_qos')
+duplicate = message.getVar('mqtt_duplicate')
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -1700,6 +1775,16 @@ payload = JSON.parse(message.getVar('mqtt_payload'))
 <tr>
 <td><code>payload</code></td>
 <td>type: Object</td>
+</tr>
+
+<tr>
+<td><code>qos</code></td>
+<td>type: byte</td>
+</tr>
+
+<tr>
+<td><code>duplicate</code></td>
+<td>type: bool</td>
 </tr>
 </tbody>
 </table>
@@ -1873,6 +1958,15 @@ payload = JSON.parse(message.getVar('mqtt_payload'))
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#ic_map">
                 IC.Map()
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#ic_mqtt">
+                IC.Mqtt()
             </a>
             <ul class="nav bd-sidenav">
                 
