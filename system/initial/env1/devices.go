@@ -50,7 +50,7 @@ func devices(node1 *m.Node,
 		//Parity:   "none",
 		//Timeout:  100,
 		AddressPort: "127.0.0.1:502",
-		SlaveId: 1,
+		SlaveId:     1,
 	}
 
 	ok, _ := device1.SetProperties(modBusConfig)
@@ -529,6 +529,34 @@ func devices(node1 *m.Node,
 	So(err, ShouldBeNil)
 
 	devices = append(devices, device4)
+
+	// devices5
+	// ------------------------------------------------
+	device5 := &m.Device{
+		Name:       "device5",
+		Status:     "enabled",
+		Type:       DevTypeModbusTcp,
+		Node:       node1,
+		Properties: []byte("{}"),
+	}
+
+	ok, _ = device5.SetProperties(&DevModBusRtuConfig{
+		SlaveId:  1,
+		Baud:     19200,
+		DataBits: 8,
+		StopBits: 1,
+		Parity:   "none",
+		Timeout:  100,
+	})
+	So(ok, ShouldEqual, true)
+
+	ok, _ = device5.Valid()
+	So(ok, ShouldEqual, true)
+
+	device5.Id, err = adaptors.Device.Add(device5)
+	So(err, ShouldBeNil)
+
+	devices = append(devices, device5)
 
 	return
 }
