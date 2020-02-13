@@ -157,8 +157,10 @@ func (f *Flow) Remove() {
 
 func (f *Flow) NewMessage(ctx context.Context) (err error) {
 
-	// circular dependency search
-	if ctx, err = f.defineCircularConnection(ctx); err != nil {
+	f.Lock()
+	if f.isRunning {
+		err = errors.New("flow is running")
+		f.Unlock()
 		return
 	}
 
@@ -168,10 +170,8 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 		f.Unlock()
 	}()
 
-	f.Lock()
-	if f.isRunning {
-		err = errors.New("flow is running")
-		f.Unlock()
+	// circular dependency search
+	if ctx, err = f.defineCircularConnection(ctx); err != nil {
 		return
 	}
 
@@ -248,8 +248,8 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 
 		childCtx, _ := context.WithCancel(ctx)
 
-		if ok, err = element.Run(childCtx); err != nil {
-			log.Error(err.Error())
+		if ctx, ok, err = element.Run(childCtx); err != nil {
+			//log.Error(err.Error())
 			return
 		}
 

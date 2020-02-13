@@ -47,9 +47,16 @@ type Server struct {
 	af            *rbac.AccessFilter
 	streamService *stream.StreamService
 	core          *core.Core
+	isStarted     bool
 }
 
 func (s *Server) Start() {
+
+	if s.isStarted {
+		return
+	}
+
+	s.isStarted = true
 
 	s.server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", s.Config.Host, s.Config.Port),
@@ -69,6 +76,12 @@ func (s *Server) Start() {
 }
 
 func (s *Server) Shutdown() {
+
+	if !s.isStarted {
+		return
+	}
+	s.isStarted = false
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if err := s.server.Shutdown(ctx); err != nil {
@@ -94,7 +107,7 @@ func NewServer(cfg *ServerConfig,
 	gin.DefaultWriter = logger
 	gin.DefaultErrorWriter = logger
 	//if cfg.RunMode == config.ReleaseMode {
-		gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.ReleaseMode)
 	//} else {
 	//	gin.SetMode(gin.DebugMode)
 	//}

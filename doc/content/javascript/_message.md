@@ -140,6 +140,8 @@ value = message.direction
 value = message.mqtt
 topic = message.getVar('mqtt_topic')
 payload = JSON.parse(message.getVar('mqtt_payload'))
+qos = message.getVar('mqtt_qos')
+duplicate = message.getVar('mqtt_duplicate')
 ```
 
 **На выходе**
@@ -148,5 +150,7 @@ payload = JSON.parse(message.getVar('mqtt_payload'))
 -------------|--------------
   `value`    | type: bool
   `topic`    | type: string
-  `payload`    | type: Object
+  `payload`  | type: Object
+  `qos`      | type: byte
+  `duplicate`| type: bool
 

@@ -98,7 +98,7 @@ func (wf *Workflow) Run() (err error) {
 	log.Infof("Run workflow '%v'", wf.model.Name)
 
 	if err = wf.runScripts(); err != nil {
-		return
+		//return
 	}
 
 	if err = wf.enterScenario(); err != nil {

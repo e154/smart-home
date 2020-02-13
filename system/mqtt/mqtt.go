@@ -167,3 +167,7 @@ func (m *Mqtt) OnConnect(cs gmqtt.ChainStore, client gmqtt.Client) (code uint8) 
 func (m *Mqtt) Management() IManagement {
 	return m.management
 }
+
+func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) {
+	m.server.Publish(topic, payload, qos, retain)
+}

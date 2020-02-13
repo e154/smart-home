@@ -43,6 +43,9 @@ var coffeeScripts = map[string]string{
 	"coffeeScript22": coffeeScript22,
 	"coffeeScript23": coffeeScript23,
 	"coffeeScript24": coffeeScript24,
+	"coffeeScript25": coffeeScript25,
+	"coffeeScript26": coffeeScript26,
+	"coffeeScript27": coffeeScript27,
 }
 
 // test1, test2
@@ -255,6 +258,18 @@ IC.store('script24')
 c = message.getVar('val') + 1
 message.setVar('val', c)
 IC.store2(c)
+`
+
+const coffeeScript25 = `
+#print "run workflow script (script 25)"
+`
+
+const coffeeScript26 = `
+#print "run workflow script (script 26)"
+`
+
+const coffeeScript27 = `
+#print "run workflow script (script 27)"
 `
 
 // test8...

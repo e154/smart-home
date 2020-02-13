@@ -19,10 +19,10 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/system/validation"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/common"
 	"errors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type DeviceStateEndpoint struct {

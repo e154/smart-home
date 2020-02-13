@@ -71,6 +71,9 @@ Languages:
         - title: "IC.Map()"
           url: "#ic_map"
 
+        - title: "IC.Mqtt()"
+          url: "#ic_mqtt"
+
         - title: "IC.Log"
           url: "#ic_log"
 
@@ -288,6 +291,9 @@ Languages:
 
         - title: "IC.Map()"
           url: "#ic_map"
+
+        - title: "IC.Mqtt()"
+          url: "#ic_mqtt"
 
         - title: "IC.Log"
           url: "#ic_log"
