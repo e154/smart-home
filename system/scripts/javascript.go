@@ -171,6 +171,7 @@ func (j *Javascript) DoCustom(f string) (result string, err error) {
 	}
 
 	defer func() {
+		j.ctx.Gc()
 		if r := recover(); r != nil {
 			log.Fatalf("Script: Recovered in %s", r)
 		}
@@ -203,6 +204,7 @@ func (j *Javascript) PushFunction(name string, s interface{}) (int, error) {
 }
 
 func (j *Javascript) EvalString(str string) error {
+	defer j.ctx.Gc()
 	return j.ctx.PevalString(str)
 }
 
