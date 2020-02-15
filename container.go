@@ -43,9 +43,9 @@ import (
 	"github.com/e154/smart-home/system/orm"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/services"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/telemetry"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 func BuildContainer() (container *dig.Container) {
@@ -74,7 +74,6 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(initial.NewInitialService)
 	container.Provide(backup.NewBackupConfig)
 	container.Provide(backup.NewBackup)
-	container.Provide(services.NewServices)
 	container.Provide(mqtt.NewMqtt)
 	container.Provide(mqtt.NewMqttConfig)
 	container.Provide(mqtt_authenticator.NewAuthenticator)
@@ -90,6 +89,8 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(notify.NewNotify)
 	container.Provide(metrics.NewMetricServer)
 	container.Provide(metrics.NewMetricConfig)
+	container.Provide(zigbee2mqtt.NewZigbee2mqttConfig)
+	container.Provide(zigbee2mqtt.NewZigbee2mqtt)
 
 	return
 }
