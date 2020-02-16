@@ -20,12 +20,12 @@ package core
 
 // Javascript Binding
 //
-// IC.Flow()
-//	 .getName()
-//	 .getDescription()
-//	 .setVar(string, interface)
-//	 .getVar(string)
-//	 .node()
+// Flow
+//	 .GetName()
+//	 .GetDescription()
+//	 .SetVar(string, interface)
+//	 .GetVar(string)
+//	 .Node()
 //
 type FlowBind struct {
 	flow *Flow

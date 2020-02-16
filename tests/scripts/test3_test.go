@@ -57,14 +57,14 @@ func Test3(t *testing.T) {
 
 			// execute script
 			// ------------------------------------------------
-			err = engine.EvalString(scripts["script3"].Compiled)
+			_, err = engine.EvalString(scripts["script3"].Compiled)
 			So(err, ShouldBeNil)
 
-			_, err = engine.DoCustom("on_enter")
+			_, err = engine.AssertFunction("on_enter")
 			So(err, ShouldBeNil)
 			So(state, ShouldEqual, "on_enter")
 
-			_, err = engine.DoCustom("on_exit")
+			_, err = engine.AssertFunction("on_exit")
 			So(err, ShouldBeNil)
 			So(state, ShouldEqual, "on_exit")
 		})

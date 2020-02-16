@@ -71,10 +71,8 @@ func Test10(t *testing.T) {
 				//fmt.Printf("varName: %v\n", varName)
 				switch varName {
 				case "bar":
-					So(f.Foo.Bar, ShouldEqual, "")
-				case "bar2":
 					So(f.Foo.Bar, ShouldEqual, "foo")
-				case "IC.bar2":
+				case "bar2":
 					So(f.Foo.Bar, ShouldEqual, "foo")
 				}
 			})
@@ -82,16 +80,9 @@ func Test10(t *testing.T) {
 			engine, err := scriptService.NewEngine(script1)
 			So(err, ShouldBeNil)
 
-			_, err = engine.PushStruct("bar", bar)
-			So(err, ShouldBeNil)
-
-			counter := engine.PushGlobalProxy("bar2", bar)
-			//fmt.Println(counter)
-			So(counter, ShouldEqual, 12)
-
-			counter = engine.PushGlobalProxy("bar2", bar)
-			//fmt.Println(counter)
-			So(counter, ShouldEqual, 12)
+			engine.PushStruct("bar", bar)
+			engine.PushStruct("bar2", bar)
+			engine.PushStruct("bar2", bar)
 
 			err = engine.Compile()
 			So(err, ShouldBeNil)
@@ -99,11 +90,7 @@ func Test10(t *testing.T) {
 			_, err = engine.Do()
 			So(err, ShouldBeNil)
 
-			engine.Gc()
-
-			counter = engine.PushGlobalProxy("bar2", bar)
-			//fmt.Println(counter)
-			So(counter, ShouldEqual, 15)
+			engine.PushStruct("bar2", bar)
 
 			err = engine.Compile()
 			So(err, ShouldBeNil)

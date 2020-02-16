@@ -43,7 +43,6 @@ import (
 	"github.com/e154/smart-home/system/orm"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/services"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/telemetry"
 )
@@ -74,7 +73,6 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(initial.NewInitialService)
 	container.Provide(backup.NewBackupConfig)
 	container.Provide(backup.NewBackup)
-	container.Provide(services.NewServices)
 	container.Provide(mqtt.NewMqtt)
 	container.Provide(mqtt.NewMqttConfig)
 	container.Provide(mqtt_authenticator.NewAuthenticator)

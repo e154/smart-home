@@ -20,12 +20,12 @@ package core
 
 // Javascript Binding
 //
-// node
-//	 .name()
-//	 .status()
-//	 .stat()
-//	 .description()
-//	 .isConnected()
+// Node
+//	 .Name()
+//	 .Status()
+//	 .Stat()
+//	 .Description()
+//	 .IsConnected()
 //
 type NodeBind struct {
 	node *Node

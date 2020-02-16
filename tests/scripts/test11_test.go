@@ -97,7 +97,7 @@ func Test11(t *testing.T) {
 			So(err, ShouldBeNil)
 
 
-			engine.PushGlobalProxy("bar2", bar2)
+			engine.PushStruct("bar2", bar2)
 
 			err = engine.Compile()
 		 	So(err, ShouldBeNil)
