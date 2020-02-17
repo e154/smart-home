@@ -113,18 +113,18 @@
                         
                             
 
-<h2 id="ic_map">IC.Map*</h2>
+<h2 id="map">Map*</h2>
 
 <p>Возвращает объект карты</p>
 
-<pre><code class="language-coffeescript">map = IC.Map
+<pre><code class="language-coffeescript">map = Map
 </code></pre>
 
 <p>Доступные методы приведены далее:</p>
 
-<h3 id="ic_map_set_element_state">.SetElementState(device, elementName, newState)</h3>
+<h3 id="map_set_element_state">.SetElementState(device, elementName, newState)</h3>
 
-<pre><code class="language-coffeescript">IC.Map.SetElementState(device, 'dev1_light1', 'ERROR')
+<pre><code class="language-coffeescript">Map.SetElementState(device, 'dev1_light1', 'ERROR')
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -155,9 +155,9 @@
 </tbody>
 </table>
 
-<h3 id="ic_map_get_element">.GetElement(device, elementName)</h3>
+<h3 id="map_get_element">.GetElement(device, elementName)</h3>
 
-<pre><code class="language-coffeescript">elements = IC.Map.GetElement(device, 'dev1_light1')
+<pre><code class="language-coffeescript">elements = Map.GetElement(device, 'dev1_light1')
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -201,9 +201,9 @@
 </tbody>
 </table>
 
-<h3 id="ic_map_get_element-1">.GetElements(device)</h3>
+<h3 id="map_get_element-1">.GetElements(device)</h3>
 
-<pre><code class="language-coffeescript">elements = IC.Map.GetElements(device)
+<pre><code class="language-coffeescript">elements = Map.GetElements(device)
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -261,7 +261,7 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_workflow">
+            <a class="bd-toc-link" href="#workflow">
                 
             </a>
             <ul class="nav bd-sidenav">
@@ -270,7 +270,7 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_workflow">
+            <a class="bd-toc-link" href="#workflow">
                 Функции
             </a>
             <ul class="nav bd-sidenav">
@@ -279,8 +279,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_workflow">
-                IC.Workflow()
+            <a class="bd-toc-link" href="#workflow">
+                Workflow
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -288,8 +288,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_flow">
-                IC.Flow()
+            <a class="bd-toc-link" href="#flow">
+                Flow
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -297,8 +297,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_map">
-                IC.Map()
+            <a class="bd-toc-link" href="#map">
+                Map
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -306,8 +306,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_mqtt">
-                IC.Mqtt()
+            <a class="bd-toc-link" href="#mqtt">
+                Mqtt
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -315,8 +315,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_log">
-                IC.Log
+            <a class="bd-toc-link" href="#log">
+                Log
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -324,8 +324,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_template">
-                IC.Template()
+            <a class="bd-toc-link" href="#template">
+                Template()
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -333,8 +333,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_notifr">
-                IC.Notifr()
+            <a class="bd-toc-link" href="#notifr">
+                Notifr()
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -342,8 +342,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_current_node">
-                IC.CurrentNode()
+            <a class="bd-toc-link" href="#current_node">
+                CurrentNode()
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -351,8 +351,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_current_device">
-                IC.CurrentDevice()
+            <a class="bd-toc-link" href="#current_device">
+                CurrentDevice()
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -360,7 +360,7 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_runmode">
+            <a class="bd-toc-link" href="#runmode">
                 
             </a>
             <ul class="nav bd-sidenav">
@@ -369,7 +369,7 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_runmode">
+            <a class="bd-toc-link" href="#runmode">
                 Константы
             </a>
             <ul class="nav bd-sidenav">
@@ -378,8 +378,8 @@
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_runmode">
-                IC.Runmode
+            <a class="bd-toc-link" href="#runmode">
+                Runmode
             </a>
             <ul class="nav bd-sidenav">
                 

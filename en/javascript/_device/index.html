@@ -116,15 +116,15 @@
 <h2 id="device">Device{}</h2>
 
 <p>Получить текущее устройство. Может вырнуть <em>null</em> если скрипт запускается
-вне контекста <a href="#ic_workflow">Workflow</a></p>
+вне контекста <a href="#workflow">Workflow</a></p>
 
 <p>Доступные методы приведены далее:</p>
 
-<h3 id="deice_get_name">.getName()</h3>
+<h3 id="deice_get_name">.GetName()</h3>
 
 <p>Получить наименование устройства.</p>
 
-<pre><code class="language-coffeescript">name = dev.getName()
+<pre><code class="language-coffeescript">name = dev.GetName()
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -145,11 +145,11 @@
 </tbody>
 </table>
 
-<h3 id="deice_get_description">.getDescription()</h3>
+<h3 id="deice_get_description">.GetDescription()</h3>
 
 <p>Получить описание устройства.</p>
 
-<pre><code class="language-coffeescript">description = dev.getDescription()
+<pre><code class="language-coffeescript">description = dev.GetDescription()
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -170,11 +170,11 @@
 </tbody>
 </table>
 
-<h3 id="deice_run_command">.runCommand(name, args)</h3>
+<h3 id="deice_run_command">.RunCommand(name, args)</h3>
 
 <p>Выполнить комманду на устройстве.</p>
 
-<pre><code class="language-coffeescript">description = dev.runCommand(name, ['foo','bar'])
+<pre><code class="language-coffeescript">description = dev.RunCommand(name, ['foo','bar'])
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -200,15 +200,15 @@
 </tbody>
 </table>
 
-<h3 id="deice_mod_bus">.modBus(func, address, count, command)</h3>
+<h3 id="deice_mod_bus">.ModBus(func, address, count, command)</h3>
 
-<p>Выполнить комманду на modbus устройстве.</p>
+<p>Выполнить комманду на ModBus устройстве.</p>
 
 <pre><code class="language-coffeescript">COMMAND = []
 FUNC = 'ReadHoldingRegisters'
 ADDRESS = 0
 COUNT = 16
-res = device.modBus(FUNC, ADDRESS, COUNT, COMMAND)
+res = device.ModBus(FUNC, ADDRESS, COUNT, COMMAND)
 if res.error
   print 'error: ', res.error
 </code></pre>
@@ -306,12 +306,12 @@ if res.error
 </tbody>
 </table>
 
-<h3 id="deice_smart_bus">.smartBus(command)</h3>
+<h3 id="deice_smart_bus">.SmartBus(command)</h3>
 
-<p>Выполнить комманду на smartbus устройстве.</p>
+<p>Выполнить комманду на SmartBus устройстве.</p>
 
 <pre><code class="language-coffeescript">COMMAND = []
-res = device.smartBus(COMMAND)
+res = device.SmartBus(COMMAND)
 if res.error
   print 'error: ', res.error
 </code></pre>
@@ -353,7 +353,7 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_workflow">
+            <a class="bd-toc-link" href="#workflow">
                 
             </a>
             <ul class="nav bd-sidenav">
@@ -362,7 +362,7 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_workflow">
+            <a class="bd-toc-link" href="#workflow">
                 Functions
             </a>
             <ul class="nav bd-sidenav">
@@ -371,8 +371,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_workflow">
-                IC.Workflow()
+            <a class="bd-toc-link" href="#workflow">
+                Workflow
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -380,8 +380,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_flow">
-                IC.Flow()
+            <a class="bd-toc-link" href="#flow">
+                Flow
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -389,8 +389,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_map">
-                IC.Map()
+            <a class="bd-toc-link" href="#map">
+                Map
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -398,8 +398,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_mqtt">
-                IC.Mqtt()
+            <a class="bd-toc-link" href="#mqtt">
+                Mqtt
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -407,8 +407,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_log">
-                IC.Log
+            <a class="bd-toc-link" href="#log">
+                Log
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -416,8 +416,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_template">
-                IC.Template()
+            <a class="bd-toc-link" href="#template">
+                Template()
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -425,8 +425,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_notifr">
-                IC.Notifr()
+            <a class="bd-toc-link" href="#notifr">
+                Notifr()
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -434,8 +434,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_current_node">
-                IC.CurrentNode()
+            <a class="bd-toc-link" href="#current_node">
+                CurrentNode()
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -443,8 +443,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_current_device">
-                IC.CurrentDevice()
+            <a class="bd-toc-link" href="#current_device">
+                CurrentDevice()
             </a>
             <ul class="nav bd-sidenav">
                 
@@ -452,7 +452,7 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_runmode">
+            <a class="bd-toc-link" href="#runmode">
                 
             </a>
             <ul class="nav bd-sidenav">
@@ -461,7 +461,7 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_runmode">
+            <a class="bd-toc-link" href="#runmode">
                 Constants
             </a>
             <ul class="nav bd-sidenav">
@@ -470,8 +470,8 @@ if res.error
         </li>
         
         <li class="bd-toc-item ">
-            <a class="bd-toc-link" href="#ic_runmode">
-                IC.Runmode
+            <a class="bd-toc-link" href="#runmode">
+                Runmode
             </a>
             <ul class="nav bd-sidenav">
                 
