@@ -5,13 +5,13 @@ groups:
     - javascript
 ---
 
-## IC.Flow() {#ic_flow}
+## Flow {#flow}
 
 Получить текущий процесс. Может вырнуть *null* если скрипт запускается 
-вне контекста [Workflow](#ic_workflow)
+вне контекста [Workflow](#workflow)
 
 ```coffeescript
-flow = IC.Flow()
+flow = Flow
 return if !flow
 ```
 
@@ -23,14 +23,14 @@ return if !flow
   
 Доступные методы приведены далее:
 
-### .getName() {#ic_flow_get_name}
+### .GetName() {#flow_get_name}
 
 Получить наименование текущего Flow процесса.
 
 ```coffeescript
-flow = IC.Flow()
+flow = Flow
 if flow
- name = flow.getName()
+ name = flow.GetName()
  print 'flow name', name
 ```
 
@@ -41,15 +41,15 @@ if flow
   `name`     | type: string
 
 
-### .setVar(key, value) {#ic_flow_set_var}
+### .SetVar(key, value) {#flow_set_var}
 
-Запомнить переменнную в хранилище [Flow](#ic_flow). Хранилище позволяет 
-сохранять состояния на время жизни [Flow](#ic_flow)
+Запомнить переменнную в хранилище [Flow](#flow). Хранилище позволяет 
+сохранять состояния на время жизни [Flow](#flow)
 
 ```coffeescript
-flow = IC.Flow()
+flow = Flow
 if flow
- flow.setVar("key", "value")
+ flow.SetVar("key", "value")
 ```
 
 **На входе**
@@ -59,14 +59,14 @@ if flow
   `key`      | type: string
   `value`    | type: interface
 
-### .getVar(key) {#ic_flow_get_var}
+### .GetVar(key) {#flow_get_var}
 
 Получить ранее записанную переменную
 
 ```coffeescript
-wf = IC.Flow()
+wf = Flow
 if wf
-  variable = wf.getVar(key)
+  variable = wf.GetVar(key)
 ```
 
 **На входе**
@@ -81,12 +81,12 @@ if wf
 -------------|--------------
   `variable` | type: interface
   
-### .node() {#ic_flow_node}
+### .node() {#flow_node}
 
 Получить ноду
 
 ```coffeescript
-flow = IC.Flow()
+flow = Flow
 if flow
  node = flow.node()
  print 'flow node', node

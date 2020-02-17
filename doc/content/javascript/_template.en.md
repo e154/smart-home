@@ -5,17 +5,16 @@ groups:
     - javascript
 ---
 
-## IC.Template() {#ic_template}
+## Template {#template}
 
 Возвращает генератор шаблонов
 
-### .render(name, options) {#ic_template_render}
+### .Render(name, options) {#template_render}
 
 Получить наименование устройства.
 
 ```coffeescript
-tpl = IC.Template()
-render = tpl.render(name, {'key':'val'})
+render = Template.Render(name, {'key':'val'})
 ```
 
 **На входе**
