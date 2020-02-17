@@ -11,12 +11,12 @@ groups:
   
 Доступные методы приведены далее:
 
-### .name() {#node_name}
+### .Name() {#node_name}
 
 Получить наименование устройства.
 
 ```coffeescript
-name = node.name()
+name = node.Name()
 ```
 
 **На выходе**
@@ -25,12 +25,12 @@ name = node.name()
 -------------|--------------
   `name`     | type: string
 
-### .description() {#node_description}
+### .Description() {#node_description}
 
 Получить наименование устройства.
 
 ```coffeescript
-description = node.description()
+description = node.Description()
 ```
 
 **На выходе**
@@ -39,12 +39,12 @@ description = node.description()
 ----------------|--------------
   `description` | type: string
 
-### .status() {#node_status}
+### .Status() {#node_status}
 
 Получить наименование устройства.
 
 ```coffeescript
-status = node.status()
+status = node.Status()
 ```
 
 **На выходе**
@@ -53,12 +53,12 @@ status = node.status()
 -------------|--------------
   `status`   | type: string
 
-### .isConnected() {#node_isConnected}
+### .IsConnected() {#node_isConnected}
 
 Получить наименование устройства.
 
 ```coffeescript
-ok = node.isConnected()
+ok = node.IsConnected()
 ```
 
 **На выходе**

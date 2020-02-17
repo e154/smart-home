@@ -113,7 +113,7 @@ func (f *FlowElement) Run(ctx context.Context) (newCtx context.Context, b bool, 
 	//run script if exist
 	if f.Model.Script != nil {
 
-		if err = f.ScriptEngine.EvalString(f.Model.Script.Compiled); err != nil {
+		if _, err = f.ScriptEngine.EvalScript(f.Model.Script); err != nil {
 			f.status = Error
 			return
 		}

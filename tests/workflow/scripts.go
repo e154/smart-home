@@ -52,14 +52,14 @@ var coffeeScripts = map[string]string{
 // ------------------------------------------------
 const coffeeScript1 = `
 main =->
-    wf = IC.Workflow()
-    #print wf.getName() + " script1"
+    wf = Workflow
+    #print wf.GetName() + " script1"
 `
 
 const coffeeScript2 = `
 main =->
-    wf = IC.Workflow()
-    #print wf.getName() + " script2"
+    wf = Workflow
+    #print wf.GetName() + " script2"
 `
 
 const coffeeScript3 = `
@@ -67,15 +67,15 @@ main =->
     #print "workflow scenario script 3"
 
 on_enter =->
-    wf = IC.Workflow()
-    #print "enter to " + wf.getName() + " " + wf.getScenarioName()
-    wf.setVar("var1", 123)
-    wf.setScenario("wf_scenario_2")
+    wf = Workflow
+    #print "enter to " + wf.GetName() + " " + wf.GetScenarioName()
+    wf.SetVar("var1", 123)
+    wf.SetScenario("wf_scenario_2")
 
 on_exit =->
-    wf = IC.Workflow()
+    wf = Workflow
 
-    #print "exit from " + wf.getName() + " " + wf.getScenarioName()
+    #print "exit from " + wf.GetName() + " " + wf.GetScenarioName()
     #print "description " + wf.getDescription()
 `
 
@@ -84,16 +84,16 @@ main =->
     #print "workflow scenario script 4"
 
 on_enter =->
-    wf = IC.Workflow()
+    wf = Workflow
 
-    #print "enter to " + wf.getName() + " " + wf.getScenarioName()
-    var1 = wf.getVar("var1")
+    #print "enter to " + wf.GetName() + " " + wf.GetScenarioName()
+    var1 = wf.GetVar("var1")
     #print "var: " + var1
 
 on_exit =->
-    wf = IC.Workflow()
+    wf = Workflow
 
-    #print "exit from " + wf.getName() + " " + wf.getScenarioName()
+    #print "exit from " + wf.GetName() + " " + wf.GetScenarioName()
     #print "description " + wf.getDescription()
 `
 
@@ -104,9 +104,9 @@ const coffeeScript5 = `
 #print "message:", message
 #print "ENV", ENV.a
 
-#print "message.ENV:", message.getVar "ENV"
+#print "message.ENV:", message.GetVar "ENV"
 
-IC.store ENV.a
+store ENV.a
 `
 
 const coffeeScript6 = `
@@ -115,7 +115,7 @@ const coffeeScript6 = `
 ENV = {"a": "b"}
 #print "run message handler script (script 6)"
 
-message.setVar("ENV", ENV) 
+message.SetVar("ENV", ENV) 
 `
 
 const coffeeScript7 = `
@@ -153,111 +153,111 @@ const coffeeScript11 = `
 // ------------------------------------------------
 const coffeeScript12 = `
 #print "run workflow script (script 12)"
-IC.store('script12')
-#print "message:", message.getVar('val')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script12')
+#print "message:", message.GetVar('val')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript13 = `
 #print "run workflow script (script 13)"
-IC.store('script13')
-#print "message:", message.getVar('val')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script13')
+#print "message:", message.GetVar('val')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript14 = `
 #print "run workflow script (script 14)"
-IC.store('script14')
-#print "message:", message.getVar('val')
+store('script14')
+#print "message:", message.GetVar('val')
 `
 
 // test8, test9, test10
 // ------------------------------------------------
 const coffeeScript16 = `
 #print "run workflow script (script 16)"
-IC.store('script16')
-#print "message:", message.getVar('val')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script16')
+#print "message:", message.GetVar('val')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript17 = `
 #print "run workflow script (script 17)"
 
-IC.store('script17')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script17')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript18 = `
 #print "run workflow script (script 18)"
 
-IC.store('script18')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script18')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript19 = `
 #print "run workflow script (script 19)"
 
-IC.store('script19')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script19')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript20 = `
 #print "run workflow script (script 20)"
 
-IC.store('script20')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script20')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript21 = `
 #print "run workflow script (script 21)"
 
-IC.store('script21')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script21')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 // test11
 // ------------------------------------------------
 const coffeeScript22 = `
 #print "run workflow script (script 22)"
-IC.store('script22')
-#print "message:", message.getVar('val')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script22')
+#print "message:", message.GetVar('val')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript23 = `
 #print "run workflow script (script 23)"
-IC.store('script23')
-#print "message:", message.getVar('val')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script23')
+#print "message:", message.GetVar('val')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript24 = `
 #print "run workflow script (script 24)"
-IC.store('script24')
-#print "message:", message.getVar('val')
-c = message.getVar('val') + 1
-message.setVar('val', c)
-IC.store2(c)
+store('script24')
+#print "message:", message.GetVar('val')
+c = message.GetVar('val') + 1
+message.SetVar('val', c)
+store2(c)
 `
 
 const coffeeScript25 = `

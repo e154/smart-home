@@ -12,10 +12,10 @@ groups:
 
 Доступные свойства и методы:
 
-### .setVar(key, value)
+### .SetVar(key, value)
 
 ```coffeescript
-message.setVar('foo', 'bar')
+message.SetVar('foo', 'bar')
 ```
 
 определение переменной в хранилище
@@ -27,12 +27,12 @@ message.setVar('foo', 'bar')
   `key`      | type: string
   `value`    | type: interface
 
-### .getVar(key)
+### .GetVar(key)
 
 получение переменной из хранилища
 
 ```coffeescript
-value = message.getVar('foo')
+value = message.GetVar('foo')
 ```
 
 **На входе**
@@ -47,12 +47,12 @@ value = message.getVar('foo')
 -------------|--------------
   `value`    | type: interface
 
-### .setError(error)
+### .SetError(error)
 
 сохранение состояния ошибки
 
 ```coffeescript
-message.setError('some error')
+message.SetError('some error')
 ```
 
 **На входе**
@@ -61,12 +61,12 @@ message.setError('some error')
 -------------|--------------
   `error`    | type: string
 
-### .error
+### .Error
 
 переменная хранения состояния отрицательного результата
 
 ```coffeescript
-err = message.error
+err = message.Error
 ```
 **На выходе**
 
@@ -74,20 +74,20 @@ err = message.error
 -------------|--------------
   `err`    | type: string
 
-### .ok()
+### .Ok()
 
 сохронение состояния положительного результата
 
 ```coffeescript
-message.ok()
+message.Ok()
 ```
 
-### .success
+### .Success
 
 флаг положительного результата
 
 ```coffeescript
-value = message.success
+value = message.Success
 ```
 
 **На выходе**
@@ -96,20 +96,20 @@ value = message.success
 -------------|--------------
   `value`    | type: bool
 
-### .clear()
+### .Clear()
 
 очистка состояний ошибки и хранилища переменных
 
 ```coffeescript
-message.clear()
+message.Clear()
 ```
 
-### .setdir(dir)
+### .Setdir(dir)
 
 установка флага для указания желаемго направления движения процесса в **Flow engine**
 
 ```coffeescript
-message.setdir(dir)
+message.Setdir(dir)
 ```
 
 **На входе**
@@ -118,12 +118,12 @@ message.setdir(dir)
 -------------|--------------
   `dir`    | type: bool
   
-### .direction
+### .Direction
 
 получение состояние направления движения
 
 ```coffeescript
-value = message.direction
+value = message.Direction
 ```
 
 **На выходе**
@@ -132,16 +132,16 @@ value = message.direction
 -------------|--------------
   `value`    | type: bool
   
-### .mqtt
+### .Mqtt
 
 флаг вызывающей стороны текущего процесса **Flow**
 
 ```coffeescript
-value = message.mqtt
-topic = message.getVar('mqtt_topic')
-payload = JSON.parse(message.getVar('mqtt_payload'))
-qos = message.getVar('mqtt_qos')
-duplicate = message.getVar('mqtt_duplicate')
+value = message.Mqtt
+topic = message.GetVar('mqtt_topic')
+payload = JSON.parse(message.GetVar('mqtt_payload'))
+qos = message.GetVar('mqtt_qos')
+duplicate = message.GetVar('mqtt_duplicate')
 ```
 
 **На выходе**

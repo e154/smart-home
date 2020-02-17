@@ -5,20 +5,20 @@ groups:
     - javascript
 ---
 
-## IC.Map* {#ic_map}
+## Map* {#map}
 
 Возвращает объект карты
 
 ```coffeescript
-map = IC.Map
+map = Map
 ```
   
 Доступные методы приведены далее:
 
-### .SetElementState(device, elementName, newState) {#ic_map_set_element_state}
+### .SetElementState(device, elementName, newState) {#map_set_element_state}
 
 ```coffeescript
-IC.Map.SetElementState(device, 'dev1_light1', 'ERROR')
+Map.SetElementState(device, 'dev1_light1', 'ERROR')
 ```
 
 **На входе**
@@ -29,10 +29,10 @@ IC.Map.SetElementState(device, 'dev1_light1', 'ERROR')
   `elementName`         | type: string, наименование элемента
   `newState`            | type: string, системное наименование состояния
 
-### .GetElement(device, elementName) {#ic_map_get_element}
+### .GetElement(device, elementName) {#map_get_element}
 
 ```coffeescript
-elements = IC.Map.GetElement(device, 'dev1_light1')
+elements = Map.GetElement(device, 'dev1_light1')
 ```
 
 **На входе**
@@ -49,10 +49,10 @@ elements = IC.Map.GetElement(device, 'dev1_light1')
 ----------------|--------------
  `elements`     | type: Object, ссылка на объектов [MapElement{}](#map_element)
 
-### .GetElements(device) {#ic_map_get_element}
+### .GetElements(device) {#map_get_element}
 
 ```coffeescript
-elements = IC.Map.GetElements(device)
+elements = Map.GetElements(device)
 ```
 
 **На входе**

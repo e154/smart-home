@@ -50,19 +50,18 @@ func Test4(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			for i:=0;i<2;i++ {
-				_, err = engine.PushStruct("test", &MyStruct{
+				engine.PushStruct("test", &MyStruct{
 					Int:     42,
 					Float64: 21.0,
 					Nested:  &MyStruct{Int: 21},
 				})
-				So(err, ShouldBeNil)
 			}
 
-			err = engine.EvalString(`IC.store([
-				test.int,
-				test.multiply(2),
-				test.nested.int,
-				test.nested.multiply(3)
+			_, err = engine.EvalString(`store([
+				test.Int,
+				test.Multiply(2),
+				test.Nested.Int,
+				test.Nested.Multiply(3)
 			])`)
 			So(err, ShouldBeNil)
 

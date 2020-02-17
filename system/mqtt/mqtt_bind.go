@@ -20,8 +20,8 @@ package mqtt
 
 // Javascript Binding
 //
-// mqtt
-//	.publish
+// Mqtt
+//	.Publish
 //
 type MqttBind struct {
 	mqtt *Mqtt

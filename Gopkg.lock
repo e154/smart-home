@@ -62,6 +62,39 @@
   version = "v3.2.0"
 
 [[projects]]
+  digest = "1:38b358eb297391577296310b26a8001c8f3a416d4bde90572553451bf7c642d2"
+  name = "github.com/dlclark/regexp2"
+  packages = [
+    ".",
+    "syntax",
+  ]
+  pruneopts = "NUT"
+  revision = "92c702aa5812963ef9193a9624191932d44073d7"
+  version = "v1.2.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:132fdf7a399f36d79c5e6bf53749704e6c51ed5346fb3c248796b3aa4bac372f"
+  name = "github.com/dop251/goja"
+  packages = [
+    ".",
+    "ast",
+    "file",
+    "parser",
+    "token",
+  ]
+  pruneopts = "NUT"
+  revision = "a7d7d48272636167e57a9e34df4e8d9f1801a5cf"
+
+[[projects]]
+  branch = "master"
+  digest = "1:d50fee20579b5aebce31a6d363b366fd30263f68606fdf91f988d17cc3a74349"
+  name = "github.com/dop251/goja_nodejs"
+  packages = ["require"]
+  pruneopts = "NUT"
+  revision = "2d688c7e0ac4abf3ed716587ee5a6d6b0c174b97"
+
+[[projects]]
   digest = "1:96853cc1ec23a26762385dcd7e201013eab7cd358d2d045241d1ff199f0be9d9"
   name = "github.com/eclipse/paho.mqtt.golang"
   packages = [
@@ -151,6 +184,17 @@
   pruneopts = "NUT"
   revision = "5899d5c5e619fda5fa86e14795a835f473ca284c"
   version = "v0.17.2"
+
+[[projects]]
+  digest = "1:7d5c6757be75cd60d5936e26b2894c16bbb555bd8dad4724b0fa19efb3a6f78b"
+  name = "github.com/go-sourcemap/sourcemap"
+  packages = [
+    ".",
+    "internal/base64vlq",
+  ]
+  pruneopts = "NUT"
+  revision = "b019cc30c1eaa584753491b0d8f8c1534bf1eb44"
+  version = "v2.1.2"
 
 [[projects]]
   digest = "1:796f9c63c68774a89eade387a8476e45ec2b34f5649b0726983204202c3649d6"
@@ -579,11 +623,13 @@
   revision = "9b800f95dbbc54abff0acf7ee32d88ba4e328c89"
 
 [[projects]]
-  digest = "1:e33513a825fcd765e97b5de639a2f7547542d1a8245df0cef18e1fd390b778a9"
+  digest = "1:f29482b4e7bf2d7ebf62eda2748b276870b8424f4e7143ba1e45009c941e9e11"
   name = "golang.org/x/text"
   packages = [
+    "cases",
     "collate",
     "collate/build",
+    "internal",
     "internal/colltab",
     "internal/gen",
     "internal/tag",
@@ -650,6 +696,8 @@
     "github.com/DrmagicE/gmqtt/pkg/packets",
     "github.com/Syfaro/telegram-bot-api",
     "github.com/dgrijalva/jwt-go",
+    "github.com/dop251/goja",
+    "github.com/dop251/goja_nodejs/require",
     "github.com/eclipse/paho.mqtt.golang",
     "github.com/francoispqt/gojay",
     "github.com/gin-contrib/cors",

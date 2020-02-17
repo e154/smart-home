@@ -5,14 +5,14 @@ groups:
     - javascript
 ---
 
-## IC.Workflow() {#ic_workflow}
+## Workflow {#workflow}
 
 Получить текущий Workflow. Выражение может вырнуть *null* если скрипт исполняется вне контекста Workflow 
 
 **Синтаксис**
 
 ```coffeescript
-workflow = IC.Workflow()
+workflow = Workflow
 ```
 
 **На выходе**
@@ -24,37 +24,35 @@ workflow = IC.Workflow()
 
 Доступные методы приведены далее: 
 
-### .getName() {#ic_workflow_get_name}
+### .GetName() {#workflow_get_name}
 
 Получить наименование текущего Workflow
 
 **Синтаксис**
 
 ```coffeescript
-wf = IC.Workflow()
-if wf
- name = wf.getName()
+if Workflow
+ name = Workflow.GetName()
  print 'wf name', name
 ```
 
-### .getDescription() {#ic_workflow_get_description}
+### .GetDescription() {#workflow_get_description}
 
-Получить описание текущего [Workflow](#ic_workflow)
+Получить описание текущего [Workflow](#workflow)
 
 ```coffeescript
-wf = IC.Workflow()
-if wf
- descr = wf.getDescription()
+if Workflow
+ descr = Workflow.GetDescription()
  print 'wf descr', descr
 ```
 
-### .setVar(key, value) {#ic_workflow_set_var}
+### .SetVar(key, value) {#workflow_set_var}
 
-Запомнить переменнную в хранилище [Workflow](#ic_workflow). Хранилище позволяет 
-сохрянять состояния на время жизни [Workflow](#ic_workflow)  
+Запомнить переменнную в хранилище [Workflow](#workflow). Хранилище позволяет 
+сохрянять состояния на время жизни [Workflow](#workflow)  
 
 ```coffeescript
-description = IC.Workflow().setVar(key, value)
+description = Workflow.SetVar(key, value)
 ```
 
 **На входе**
@@ -64,14 +62,13 @@ description = IC.Workflow().setVar(key, value)
   `key`      | type: string
   `value`    | type: interface
 
-### .getVar(key) {#ic_workflow_get_var}
+### .GetVar(key) {#workflow_get_var}
 
 Получить ранее записанную переменную
 
 ```coffeescript
-wf = IC.Workflow()
-if wf
-  variable = wf.getVar(key)
+if Workflow
+  variable = Workflow.GetVar(key)
 ```
 
 **На входе**
@@ -86,14 +83,13 @@ if wf
 -------------|--------------
   `variable` | type: interface
 
-### .getScenario() {#ic_workflow_get_scenario}
+### .GetScenario() {#workflow_get_scenario}
 
-Получить активный сценарий для текущего [Workflow](#ic_workflow)
+Получить активный сценарий для текущего [Workflow](#workflow)
 
 ```coffeescript
-wf = IC.Workflow()
-if wf
-  scenario = wf.getScenario()
+if Workflow
+  scenario = Workflow.GetScenario()
 ```
 
 **На выходе**
@@ -102,14 +98,13 @@ if wf
 -------------|--------------
   `scenario` | type: string
 
-### .setScenario(name) {#ic_workflow_set_scenario}
+### .SetScenario(name) {#workflow_set_scenario}
 
-Переключить сценарий для текущего [Workflow](#ic_workflow)
+Переключить сценарий для текущего [Workflow](#workflow)
 
 ```coffeescript
-wf = IC.Workflow()
-if wf
-  scenario = wf.setScenario(name)
+if Workflow
+  scenario = Workflow.SetScenario(name)
 ```
 
 **На входе**

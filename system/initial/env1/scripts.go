@@ -460,48 +460,42 @@ fetchStatus =->
     ADDRESS = 0
     COUNT = 16
     
-    res = device.modBus FUNC, ADDRESS, COUNT, COMMAND
+    res = Device.ModBus FUNC, ADDRESS, COUNT, COMMAND
     if res.error
         print 'error: ', res.error
         objects.forEach (obj)->
-            IC.Map.setElementState device, obj.name, 'ERROR'
+            Map.SetElementState Device, obj.name, 'ERROR'
             return
         temps.forEach (obj)->
-            IC.Map.setElementState device, obj.name, 'ERROR'
+            Map.SetElementState Device, obj.name, 'ERROR'
             return
         doors.forEach (obj)->
-            IC.Map.setElementState device, obj.name, 'ERROR'
+            Map.SetElementState Device, obj.name, 'ERROR'
             return
         return
     else 
         # print 'ok: ', res.result
         objects.forEach (obj)->
-            newStatus = getStatus(res.result[obj.id])
-            IC.Map.setElementState device, obj.name, obj.systemName + newStatus
+            newStatus = getStatus(res.Result[obj.id])
+            Map.SetElementState Device, obj.name, obj.systemName + newStatus
             return
             
         doors.forEach (obj)->
-            newStatus = doorStatus(res.result[obj.id])
-            IC.Map.setElementState device, obj.name, obj.systemName + newStatus
+            newStatus = doorStatus(res.Result[obj.id])
+            Map.SetElementState Device, obj.name, obj.systemName + newStatus
             return
         
         temps.forEach (obj)->
-            IC.Map.setElementState device, obj.name, obj.systemName + 'ON'
+            Map.SetElementState Device, obj.name, obj.systemName + 'ON'
 
-            element = IC.Map.getElement device, obj.name
-            temp = if res.result[obj.id] then res.result[obj.id] else 0
-            element.setOptions {'text': temp}
+            element = Map.GetElement Device, obj.name
+            temp = if res.Result[obj.id] then res.Result[obj.id] else 0
+            element.SetOptions {'text': temp}
             return
 
         return
     
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -510,17 +504,11 @@ const MbDev1TurnOnLight1V1 = `
 # turn on first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 0, 1, [1]
+    res = Device.ModBus 'WriteMultipleRegisters', 0, 1, [1]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -529,17 +517,11 @@ const MbDev1TurnOffLight1V1 = `
 # turn off first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 0, 1, [0]
+    res = Device.ModBus 'WriteMultipleRegisters', 0, 1, [0]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -548,17 +530,11 @@ const MbDev1TurnOnLight2V1 = `
 # turn on first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 1, 1, [1]
+    res = Device.ModBus 'WriteMultipleRegisters', 1, 1, [1]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -567,17 +543,11 @@ const MbDev1TurnOffLight2V1 = `
 # turn off first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 1, 1, [0]
+    res = Device.ModBus 'WriteMultipleRegisters', 1, 1, [0]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -586,17 +556,11 @@ const MbDev1TurnOnLight3V1 = `
 # turn on first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 2, 1, [1]
+    res = Device.ModBus 'WriteMultipleRegisters', 2, 1, [1]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -605,17 +569,11 @@ const MbDev1TurnOffLight3V1 = `
 # turn off first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 2, 1, [0]
+    res = Device.ModBus 'WriteMultipleRegisters', 2, 1, [0]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -624,17 +582,11 @@ const MbDev1TurnOnLight4V1 = `
 # turn on first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 3, 1, [1]
+    res = Device.ModBus 'WriteMultipleRegisters', 3, 1, [1]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -643,17 +595,11 @@ const MbDev1TurnOffLight4V1 = `
 # turn off first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 3, 1, [0]
+    res = Device.ModBus 'WriteMultipleRegisters', 3, 1, [0]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -663,17 +609,11 @@ const MbDev1TurnOnFan1V1 = `
 # turn on first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 4, 1, [1]
+    res = Device.ModBus 'WriteMultipleRegisters', 4, 1, [1]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -682,17 +622,11 @@ const MbDev1TurnOffFan1V1 = `
 # turn off first light
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 4, 1, [0]
+    res = Device.ModBus 'WriteMultipleRegisters', 4, 1, [0]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -703,7 +637,7 @@ main =->
     
     NAME = './data/scripts/ping.sh'
     ARGS = ['ya.ru']
-    result = device.runCommand NAME, ARGS
+    result = Device.RunCommand NAME, ARGS
     print result
 
 main()
@@ -712,13 +646,13 @@ main()
 const WflowScenarioWeekdayV1 = `
 # variables:
 
-#IC.Workflow()
-#    .getName()
-#    .getDescription()
-#    .setVar(string, interface)
-#    .getVar(string)
-#    .getScenario() string
-#    .setScenario(string)
+#Workflow
+#    .GetName()
+#    .GetDescription()
+#    .SetVar(string, interface)
+#    .GetVar(string)
+#    .GetScenario() string
+#    .SetScenario(string)
 
 #
 # workflow script example
@@ -727,7 +661,7 @@ const WflowScenarioWeekdayV1 = `
 on_enter =->
     scenario = 'weekday'
     print WFLOW_VAR1, 'scenario', scenario
-    IC.Workflow().setVar 'scenario', scenario
+    Workflow.SetVar 'scenario', scenario
 
 on_exit =->
     
@@ -736,13 +670,13 @@ on_exit =->
 const WflowScenarioWeekendV1 = `
 # variables:
 
-#IC.Workflow()
-#    .getName()
-#    .getDescription()
-#    .setVar(string, interface)
-#    .getVar(string)
-#    .getScenario() string
-#    .setScenario(string)
+#Workflow
+#    .GetName()
+#    .GetDescription()
+#    .SetVar(string, interface)
+#    .GetVar(string)
+#    .GetScenario() string
+#    .SetScenario(string)
 
 #
 # workflow script example
@@ -751,7 +685,7 @@ const WflowScenarioWeekendV1 = `
 on_enter =->
     scenario = 'weekend'
     print WFLOW_VAR1, 'scenario', scenario
-    IC.Workflow().setVar 'scenario', scenario
+    Workflow.SetVar 'scenario', scenario
 
 on_exit =->
 
@@ -765,13 +699,13 @@ main =->
 const WflowScriptV1 = `
 # variables:
 
-#IC.Workflow()
-#    .getName()
-#    .getDescription()
-#    .setVar(string, interface)
-#    .getVar(string)
-#    .getScenario() string
-#    .setScenario(string)
+#Workflow
+#    .GetName()
+#    .GetDescription()
+#    .SetVar(string, interface)
+#    .GetVar(string)
+#    .GetScenario() string
+#    .SetScenario(string)
 
 #
 # workflow script example
@@ -785,17 +719,11 @@ const MbDev1TurnOnAllLightsV1 = `
 # turn on all lights
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 0, 4, [1,1,1,1]
+    res = Device.ModBus 'WriteMultipleRegisters', 0, 4, [1,1,1,1]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
@@ -805,17 +733,11 @@ const MbDev1TurnOffAllLightsV1 = `
 # turn off all lights
 fetchStatus =->
     
-    res = device.modBus 'WriteMultipleRegisters', 0, 4, [0,0,0,0]
+    res = Device.ModBus 'WriteMultipleRegisters', 0, 4, [0,0,0,0]
     if res.error
         print 'error: ', res.error
 
 main =->
-    
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
-    
-    return if !node || !dev
-    
     fetchStatus()
 
 main()
