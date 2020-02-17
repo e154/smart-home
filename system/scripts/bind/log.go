@@ -27,10 +27,10 @@ var (
 // Javascript Binding
 //
 // IC.Log
-// 	 .info()
-// 	 .warn()
-// 	 .error()
-// 	 .debug()
+// 	 .Info()
+// 	 .Warn()
+// 	 .Error()
+// 	 .Debug()
 //
 type LogBind struct{}
 

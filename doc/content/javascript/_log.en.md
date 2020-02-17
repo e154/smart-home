@@ -5,12 +5,12 @@ groups:
     - javascript
 ---
 
-## IC.Log {#ic_log}
+## Log {#log}
 
 Логирование состояния.
 
 ```coffeescript
-log = IC.Log
+log = Log
 ```
 
 **На выходе**
@@ -21,26 +21,26 @@ log = IC.Log
   
 Доступные методы приведены далее:
 
-### .info() {#ic_log_info}
+### .info() {#log_info}
 
 ```coffeescript
-IC.Log.info('Info message')
+Log.Info('Info message')
 ```
 
-### .warn() {#ic_log_warn}
+### .warn() {#log_warn}
 
 ```coffeescript
-IC.Log.warn('Warning message')
+Log.Warn('Warning message')
 ```
 
-### .error() {#ic_log_error}
+### .error() {#log_error}
 
 ```coffeescript
-IC.Log.error('Error message')
+Log.Error('Error message')
 ```
 
-### .debug() {#ic_log_debug}
+### .debug() {#log_debug}
 
 ```coffeescript
-IC.Log.debug('Debug message')
+Log.Debug('Debug message')
 ```

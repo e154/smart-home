@@ -19,54 +19,88 @@
 package scripts
 
 import (
+	"errors"
 	"fmt"
+	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"io/ioutil"
+	"strconv"
 )
 
-type Magic interface {
+type IScript interface {
 	Init() error
 	Do() (string, error)
-	DoCustom(string) (string, error)
+	AssertFunction(string) (string, error)
 	Compile() error
-	PushStruct(string, interface{}) (int, error)
-	PushGlobalProxy(string, interface{}) int
-	PushFunction(string, interface{}) (int, error)
-	EvalString(string) (error)
+	PushStruct(string, interface{})
+	PushFunction(string, interface{})
+	EvalString(string) (string, error)
 	Close()
-	Gc()
+	CreateProgram(name, source string) (err error)
+	RunProgram(name string) (result string, err error)
 }
 
 type Engine struct {
-	model  *m.Script
-	script Magic
-	buf    []string
-	IsRun  bool
-	pull   *Pull
+	model      *m.Script
+	script     IScript
+	buf        []string
+	IsRun      bool
+	functions  *Pull
+	structures *Pull
+}
+
+func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err error) {
+
+	engine = &Engine{
+		model:      s,
+		buf:        make([]string, 0),
+		functions:  functions,
+		structures: structures,
+	}
+
+	switch s.Lang {
+	case ScriptLangTs, ScriptLangCoffee, ScriptLangJavascript:
+		engine.script = NewJavascript(engine)
+	default:
+		err = errors.New(fmt.Sprintf("undefined language %s", s.Lang))
+		return
+	}
+
+	err = engine.script.Init()
+
+	return
 }
 
 func (s *Engine) Compile() error {
 	return s.script.Compile()
 }
 
-func (s *Engine) PushStruct(name string, i interface{}) (int, error) {
-	return s.script.PushStruct(name, i)
+func (s *Engine) PushStruct(name string, i interface{}) {
+	s.script.PushStruct(name, i)
 }
 
-func (s *Engine) Gc() {
-	s.script.Gc()
+func (s *Engine) PushFunction(name string, i interface{}) {
+	s.script.PushFunction(name, i)
 }
 
-func (s *Engine) PushGlobalProxy(name string, i interface{}) int {
-	return s.script.PushGlobalProxy(name, i)
+func (s *Engine) EvalString(str string) (result string, err error) {
+	result, err = s.script.EvalString(str)
+	return
 }
 
-func (s *Engine) PushFunction(name string, i interface{}) (int, error) {
-	return s.script.PushFunction(name, i)
-}
+func (s *Engine) EvalScript(script *m.Script) (result string, err error) {
+	programName := strconv.Itoa(int(script.Id))
+	if result, err = s.script.RunProgram(programName); err == nil {
+		return
+	}
 
-func (s *Engine) EvalString(str string) error {
-	return s.script.EvalString(str)
+	if err == ErrorProgramNotFound {
+		if err = s.script.CreateProgram(programName, script.Compiled); err != nil {
+			return
+		}
+		result, err = s.script.RunProgram(programName)
+	}
+	return
 }
 
 func (s *Engine) Close() {
@@ -98,14 +132,14 @@ func (s *Engine) Do() (string, error) {
 	return s.script.Do()
 }
 
-func (s *Engine) DoCustom(f string) (result string, err error) {
+func (s *Engine) AssertFunction(f string) (result string, err error) {
 
 	if s.IsRun {
 		return
 	}
 
 	s.IsRun = true
-	result, err = s.script.DoCustom(f)
+	result, err = s.script.AssertFunction(f)
 
 	// reset buffer
 	s.buf = []string{}
@@ -119,7 +153,7 @@ func (s *Engine) Print(v ...interface{}) {
 	s.buf = append(s.buf, fmt.Sprint(v...))
 }
 
-func (s *Engine) Get() Magic {
+func (s *Engine) Get() IScript {
 	return s.script
 }
 

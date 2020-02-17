@@ -5,13 +5,12 @@ groups:
     - javascript
 ---
 
-## IC.Mqtt() {#ic_mqtt}
+## Mqtt {#mqtt}
 
 Объект mqtt клиента
 
 ```coffeescript
-mqtt = IC.Mqtt()
-return if !mqtt
+return if !Mqtt
 ```
 
 **На выходе**
@@ -22,14 +21,13 @@ return if !mqtt
   
 Доступные методы приведены далее:
 
-### .publish(topic, payload, qos, retain) {#ic_mqtt_publish}
+### .Publish(topic, payload, qos, retain) {#mqtt_publish}
 
 Отправить сообщение в канал
 
 ```coffeescript
-mqtt = IC.Mqtt()
-if mqtt
- mqtt.publish(topic, payload, qos, retain)
+if Mqtt
+ Mqtt.Publish(topic, payload, qos, retain)
 ```
 
 **На выходе**

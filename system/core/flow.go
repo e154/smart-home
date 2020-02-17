@@ -427,33 +427,11 @@ func (f *Flow) NewScript(s ...*m.Script) (engine *scripts.Engine, err error) {
 		return
 	}
 
-	javascript := engine.Get().(*scripts.Javascript)
-	ctx := javascript.Ctx()
-
-	// flow
-	if b := ctx.GetGlobalString("IC"); !b {
-		return
-	}
-	ctx.PushObject()
-	ctx.PushGoFunction(func() *FlowBind {
-		return &FlowBind{flow: f}
-	})
-	ctx.PutPropString(-3, "Flow")
-	ctx.Pop()
-
-	// workflow
-	if b := ctx.GetGlobalString("IC"); !b {
-		return
-	}
-	ctx.PushObject()
-	ctx.PushGoFunction(func() *WorkflowBind {
-		return &WorkflowBind{wf: f.workflow}
-	})
-	ctx.PutPropString(-3, "Workflow")
-	ctx.Pop()
+	engine.PushStruct("Flow", &FlowBind{flow: f})
+	engine.PushStruct("Workflow", &WorkflowBind{wf: f.workflow})
 
 	// message
-	engine.PushGlobalProxy("message", f.message)
+	engine.PushStruct("message", f.message)
 
 	return
 }

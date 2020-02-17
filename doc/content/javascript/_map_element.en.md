@@ -11,12 +11,12 @@ groups:
   
 Доступные методы приведены далее:
 
-### .setState(name) {#map_element_set_state}
+### .SetState(name) {#map_element_set_state}
 
 Получить наименование устройства.
 
 ```coffeescript
-mapElement.setState(name)
+mapElement.SetState(name)
 ```
 
 **На входе**
@@ -25,12 +25,12 @@ mapElement.setState(name)
 -------------|--------------
   `name`     | type: string
 
-### .getState() {#map_element_get_state}
+### .GetState() {#map_element_get_state}
 
 Получить наименование устройства.
 
 ```coffeescript
-state = mapElement.getState()
+state = mapElement.GetState()
 ```
 
 **На выходе**
@@ -39,12 +39,12 @@ state = mapElement.getState()
 -------------|--------------
   `state`    | type: string
 
-### .setOptions(options) {#map_element_set_options}
+### .SetOptions(options) {#map_element_set_options}
 
 Получить наименование устройства.
 
 ```coffeescript
-mapElement.setOptions(options)
+mapElement.SetOptions(options)
 ```
 
 **На входе**
@@ -53,12 +53,12 @@ mapElement.setOptions(options)
 -------------|--------------
   `options`  | type: json string
 
-### .getOptions() {#map_element_get_options}
+### .GetOptions() {#map_element_get_options}
 
 Получить наименование устройства.
 
 ```coffeescript
-options = mapElement.getOptions()
+options = mapElement.GetOptions()
 ```
 
 **На выходе**

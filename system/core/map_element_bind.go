@@ -20,11 +20,11 @@ package core
 
 // Javascript Binding
 //
-// mapElement
-//	.setState(name)
-//	.getState()
-//	.setOptions(options)
-//	.getOptions()
+// MapElement
+//	.SetState(name)
+//	.GetState()
+//	.SetOptions(options)
+//	.GetOptions()
 //
 type MapElementBind struct {
 	element *MapElement

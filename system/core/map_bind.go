@@ -20,10 +20,10 @@ package core
 
 // Javascript Binding
 //
-// map
-//	.setElementState(device, elementName, newState)
-//	.getElement(device, elementName) -> MapElementBind
-//	.getElements(device) -> []MapElementBind
+// Map
+//	.SetElementState(device, elementName, newState)
+//	.GetElement(device, elementName) -> MapElementBind
+//	.GetElements(device) -> []MapElementBind
 //
 type MapBind struct {
 	Map *Map

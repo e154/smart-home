@@ -19,9 +19,6 @@
 package scripts
 
 import (
-	"errors"
-	"fmt"
-	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/scripts/bind"
@@ -33,20 +30,17 @@ var (
 )
 
 type ScriptService struct {
-	cfg  *config.AppConfig
-	pull *Pull
+	cfg        *config.AppConfig
+	functions  *Pull
+	structures *Pull
 }
 
 func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 
-	pull := &Pull{
-		functions:  make(map[string]interface{}),
-		structures: make(map[string]interface{}),
-	}
-
 	service = &ScriptService{
-		cfg:  cfg,
-		pull: pull,
+		cfg:        cfg,
+		functions:  NewPull(),
+		structures: NewPull(),
 	}
 
 	service.PushStruct("Log", &bind.LogBind{})
@@ -55,43 +49,14 @@ func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 	return service
 }
 
-func (service ScriptService) NewEngine(s *m.Script) (engine *Engine, err error) {
-
-	engine = &Engine{
-		model: s,
-		buf:   make([]string, 0),
-		pull:  service.pull,
-	}
-
-	switch s.Lang {
-	case ScriptLangTs, ScriptLangCoffee, ScriptLangJavascript:
-		engine.script = &Javascript{engine: engine}
-	default:
-		err = errors.New(fmt.Sprintf("undefined language %s", s.Lang))
-		return
-	}
-
-	//if err == nil {
-	//	log.Infof("Add script: %s (%s)", s.Name, s.Lang)
-	//}
-
-	engine.script.Init()
-
-	return
+func (service ScriptService) NewEngine(s *m.Script) (*Engine, error) {
+	return NewEngine(s, service.structures, service.functions)
 }
 
 func (service *ScriptService) PushStruct(name string, s interface{}) {
-	service.pull.Lock()
-	defer service.pull.Unlock()
-
-	service.pull.structures[name] = s
+	service.structures.Add(name, s)
 }
 
 func (service *ScriptService) PushFunctions(name string, s interface{}) {
-	service.pull.Lock()
-	defer service.pull.Unlock()
-
-	//fmt.Println("push function")
-
-	service.pull.functions[name] = s
+	service.functions.Add(name, s)
 }
