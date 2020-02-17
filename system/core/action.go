@@ -56,7 +56,7 @@ func NewAction(device *m.Device,
 
 func (a *Action) Do() (res string, err error) {
 	a.doLock.Lock()
-	err = a.ScriptEngine.EvalString(a.script.Compiled)
+	res, err = a.ScriptEngine.EvalScript(a.script)
 	a.doLock.Unlock()
 	return
 }
@@ -76,27 +76,16 @@ func (a *Action) NewScript() (err error) {
 			return
 		}
 
-		a.ScriptEngine.PushGlobalProxy("message", NewMessage())
+		a.ScriptEngine.PushStruct("message", NewMessage())
 	}
 
 	// bind device
-	a.ScriptEngine.PushGlobalProxy("device", &DeviceBind{
+	a.ScriptEngine.PushStruct("Device", &DeviceBind{
 		model: a.Device,
 		node:  a.Node,
 	})
 
-	// bind
-	javascript := a.ScriptEngine.Get().(*scripts.Javascript)
-	ctx := javascript.Ctx()
-	if b := ctx.GetGlobalString("IC"); !b {
-		return
-	}
-	ctx.PushObject()
-	ctx.PushGoFunction(func() *ActionBind {
-		return &ActionBind{action: a}
-	})
-	ctx.PutPropString(-3, "Action")
-	ctx.Pop()
+	a.ScriptEngine.PushStruct("Action", &ActionBind{action: a})
 
 	return nil
 }

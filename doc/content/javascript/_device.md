@@ -8,16 +8,16 @@ groups:
 ## Device{} {#device}
 
 Получить текущее устройство. Может вырнуть *null* если скрипт запускается 
-вне контекста [Workflow](#ic_workflow)
+вне контекста [Workflow](#workflow)
   
 Доступные методы приведены далее:
 
-### .getName() {#deice_get_name}
+### .GetName() {#deice_get_name}
 
 Получить наименование устройства.
 
 ```coffeescript
-name = dev.getName()
+name = dev.GetName()
 ```
 
 **На выходе**
@@ -27,12 +27,12 @@ name = dev.getName()
   `name`     | type: string
 
 
-### .getDescription() {#deice_get_description}
+### .GetDescription() {#deice_get_description}
 
 Получить описание устройства.
 
 ```coffeescript
-description = dev.getDescription()
+description = dev.GetDescription()
 ```
 
 **На выходе**
@@ -41,12 +41,12 @@ description = dev.getDescription()
 ----------------|--------------
   `description` | type: string
 
-### .runCommand(name, args) {#deice_run_command}
+### .RunCommand(name, args) {#deice_run_command}
 
 Выполнить комманду на устройстве.
 
 ```coffeescript
-description = dev.runCommand(name, ['foo','bar'])
+description = dev.RunCommand(name, ['foo','bar'])
 ```
 
 **На выходе**
@@ -56,16 +56,16 @@ description = dev.runCommand(name, ['foo','bar'])
   `name`        | type: string
   `args`        | type: array
 
-### .modBus(func, address, count, command) {#deice_mod_bus}
+### .ModBus(func, address, count, command) {#deice_mod_bus}
 
-Выполнить комманду на modbus устройстве.
+Выполнить комманду на ModBus устройстве.
 
 ```coffeescript
 COMMAND = []
 FUNC = 'ReadHoldingRegisters'
 ADDRESS = 0
 COUNT = 16
-res = device.modBus(FUNC, ADDRESS, COUNT, COMMAND)
+res = device.ModBus(FUNC, ADDRESS, COUNT, COMMAND)
 if res.error
   print 'error: ', res.error
 ```
@@ -98,19 +98,3 @@ ReadWriteMultipleRegisters  |
 WriteSingleRegister         |
 WriteMultipleRegisters      |
 
-### .smartBus(command) {#deice_smart_bus}
-
-Выполнить комманду на smartbus устройстве.
-
-```coffeescript
-COMMAND = []
-res = device.smartBus(COMMAND)
-if res.error
-  print 'error: ', res.error
-```
-
-**На выходе**
-
-**Значение**    | **Описание**
-----------------|--------------
-  `command`     | type: array(int) 

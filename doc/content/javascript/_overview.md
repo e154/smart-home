@@ -12,8 +12,6 @@ groups:
 
 ## Методы
 
-Объект IC - глобальный объект, содержащий в себе все функции и константы API SmartHome.
-
 <img src="/smart-home/img/schematic/workflow.svg" alt="smart-home workflow schematic map">
 
 <img src="/smart-home/img/schematic/flow.svg" alt="smart-home flow schematic map">
@@ -44,49 +42,49 @@ fetchStatus =(node, dev)->
     COMMAND = [DEVICE_ADDR, FUNCTION, 0, 0, 0, 5]
     
     # получить инстанс элемента на карте
-    element = IC.Map.getElement dev
+    element = Map.GetElement dev
     
     # можно вывести произвольный текст под элементом
     # для отображения актуального состояния
-    element.setOptions {text: 'some state'}
+    element.SetOptions {text: 'some state'}
     
     # запрос состояния устройства
-    from_node = node.send 'modbus', dev, true, COMMAND
+    from_node = node.Send 'ModBus', dev, true, COMMAND
     
     # запрос завершился c ошибкой    
     if from_node.error
-        message.setError from_node.error
+        message.SetError from_node.error
         
         # указать состояние, элемент автоматически изменит внешний вид
         # в зависимости от настроек состояний
-        element.setState 'ERROR'
+        element.SetState 'ERROR'
         
-        # IC.Log.error "#{dev.name} - error: #{from_node.error}"
+        # Log.Error "#{dev.name} - error: #{from_node.error}"
         return false
        
     # запрос отработал без ошибок, и что-то вернул
     if from_node.result != ""
     
-        # так как тип запроса был modbus 
+        # так как тип запроса был ModBus 
         # для работы с ответом нужно преобразовать его к массиву 
-        result = IC.hex2arr(from_node.result)
+        result = hex2arr(from_node.result)
         
         # в данном случае 1 означает что устройство включено
         # и функционирует, соответствунно сотоянию выставим 
         # состояние элемента карты
         if result[2] == 1
-            element.setState 'ENABLED'
+            element.SetState 'ENABLED'
         else
-            element.setState 'DISABLED'
+            element.SetState 'DISABLED'
     
-    # print 'dev:', DEVICE_ADDR, 'state', element.getState().systemName
+    # print 'dev:', DEVICE_ADDR, 'state', element.GetState().systemName
     
     from_node.result
 
 main =->
     
-    node = IC.CurrentNode()
-    dev = IC.CurrentDevice()
+    node = CurrentNode()
+    dev = CurrentDevice()
     
     return if !node || !dev
     

@@ -26,12 +26,12 @@ import (
 // Javascript Binding
 //
 // Device
-//	.getName()
-//	.getModel()
-//	.getDescription()
-//	.runCommand(command []string)
-//	.smartBus(command []byte)
-//	.modBus(func string, address, count int64, command []byte)
+//	.GetName()
+//	.GetModel()
+//	.GetDescription()
+//	.RunCommand(command []string)
+//	.SmartBus(command []byte)
+//	.ModBus(func string, address, count int64, command []byte)
 //
 type DeviceBind struct {
 	model *m.Device

@@ -25,8 +25,8 @@ import (
 
 // Javascript Binding
 //
-// IC.Template()
-//	 .render('name', {'key':'val'})
+// Template()
+//	 .Render('name', {'key':'val'})
 //
 type TemplateBind struct {
 	adaptor *adaptors.Adaptors

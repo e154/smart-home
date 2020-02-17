@@ -20,14 +20,14 @@ package core
 
 // Javascript Binding
 //
-//IC.Workflow()
-//	 .getName()
-//	 .getDescription()
-//	 .setVar(string, interface)
-//	 .getVar(string)
-//	 .getScenario() string
-//	 .getScenarioName() string
-//	 .setScenario(string)
+//Workflow
+//	 .GetName()
+//	 .GetDescription()
+//	 .SetVar(string, interface)
+//	 .GetVar(string)
+//	 .GetScenario() string
+//	 .GetScenarioName() string
+//	 .SetScenario(string)
 //
 type WorkflowBind struct {
 	wf *Workflow

@@ -24,20 +24,25 @@ import (
 
 type Pull struct {
 	sync.Mutex
-	functions  map[string]interface{}
-	structures map[string]interface{}
+	heap map[string]interface{}
 }
 
-func (p *Pull) GetStruct() map[string]interface{} {
+func NewPull() *Pull {
+	return &Pull{
+		heap: make(map[string]interface{}),
+	}
+}
+
+func (p *Pull) Get(name string) (value interface{}, ok bool) {
+	p.Lock()
+	value, ok = p.heap[name]
+	p.Unlock()
+	return
+}
+
+func (p *Pull) Add(name string, s interface{}) {
 	p.Lock()
 	defer p.Unlock()
 
-	return p.structures
-}
-
-func (p *Pull) Getfunctions() map[string]interface{} {
-	p.Lock()
-	defer p.Unlock()
-
-	return p.functions
+	p.heap[name] = s
 }

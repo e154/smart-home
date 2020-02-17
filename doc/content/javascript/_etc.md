@@ -5,12 +5,12 @@ groups:
     - javascript
 ---
 
-## IC.CurrentNode() {#ic_current_node}
+## CurrentNode() {#current_node}
 
-Получить текущую ноду. Выражение может вырнуть *null* если скрипт исполняется вне контекста [Workflow](#ic_workflow) 
+Получить текущую ноду. Выражение может вырнуть *null* если скрипт исполняется вне контекста [Workflow](#workflow) 
 
 ```coffeescript
-node = IC.CurrentNode()
+node = CurrentNode()
 print 'current node', node
 ```
 
@@ -20,12 +20,12 @@ print 'current node', node
 -------------|--------------
   `node`     | type: Object, ссылка на экземпляр [Node](#node) 
   
-## IC.CurrentDevice() {#ic_current_device}
+## CurrentDevice() {#current_device}
 
-Получить текущее утройство. Выражение может вырнуть *null* если скрипт исполняется вне контекста [Workflow](#ic_workflow)
+Получить текущее утройство. Выражение может вырнуть *null* если скрипт исполняется вне контекста [Workflow](#workflow)
 
 ```coffeescript
-device = IC.CurrentDevice()
+device = CurrentDevice()
 print 'current device', device
 ```
 
@@ -35,12 +35,12 @@ print 'current device', device
 -------------|--------------
   `device`   | type: Object, ссылка на экземпляр [Device](#device) 
   
-## IC.Runmode {#ic_runmode}
+## Runmode {#runmode}
 
 Текущий режим, *prod* | *dev*
 
 ```coffeescript
-runmode = IC.Runmode
+runmode = Runmode
 print 'runmode', runmode
 ```
 

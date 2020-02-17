@@ -20,9 +20,9 @@ package core
 
 // Javascript Binding
 //
-// IC.Action()
-//	 .device()
-//	 .node()
+// Action
+//	 .Device()
+//	 .Node()
 //
 type ActionBind struct {
 	action *Action

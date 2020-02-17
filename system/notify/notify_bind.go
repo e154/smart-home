@@ -20,12 +20,12 @@ package notify
 
 // Javascript Binding
 //
-// IC.Notifr()
-//	 .newSMS()
-//	 .newEmail()
-//	 .newSlack(channel, text)
-//	 .newTelegram(text)
-//	 .send(msg)
+// Notifr()
+//	 .NewSMS()
+//	 .NewEmail()
+//	 .NewSlack(channel, text)
+//	 .NewTelegram(text)
+//	 .Send(msg)
 //
 type NotifyBind struct {
 	notify *Notify

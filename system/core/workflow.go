@@ -373,15 +373,14 @@ func (wf *Workflow) UpdateScenario() (err error) {
 }
 
 func (wf *Workflow) runScenarioScripts(f string) (err error) {
-	log.Infof("run scenario: %s", f)
 
 	for _, scenarioScript := range wf.model.Scenario.Scripts {
-		if err = wf.engine.EvalString(scenarioScript.Compiled); err != nil {
+		if _, err = wf.engine.EvalScript(scenarioScript); err != nil {
 			log.Errorf("eval script(%d), message: %s", scenarioScript.Id, err.Error())
 			continue
 		}
 
-		if _, err = wf.engine.DoCustom(f); err != nil {
+		if _, err = wf.engine.AssertFunction(f); err != nil {
 			log.Errorf("on run script %s scenario, message: %s", f, err.Error())
 		}
 	}
@@ -402,20 +401,10 @@ func (wf *Workflow) runScripts() (err error) {
 		return
 	}
 
-	javascript := wf.engine.Get().(*scripts.Javascript)
-	ctx := javascript.Ctx()
-	if b := ctx.GetGlobalString("IC"); !b {
-		return
-	}
-	ctx.PushObject()
-	ctx.PushGoFunction(func() *WorkflowBind {
-		return &WorkflowBind{wf: wf}
-	})
-	ctx.PutPropString(-3, "Workflow")
-	ctx.Pop()
+	wf.engine.PushStruct("Workflow", &WorkflowBind{wf: wf})
 
 	for _, wfScript := range wf.model.Scripts {
-		if err = wf.engine.EvalString(wfScript.Compiled); err != nil {
+		if _, err = wf.engine.EvalScript(wfScript); err != nil {
 			log.Errorf(err.Error())
 		}
 	}

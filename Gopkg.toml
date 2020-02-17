@@ -76,3 +76,11 @@
 [[constraint]]
   name = "github.com/shirou/gopsutil"
   branch = "master"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/dop251/goja"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/dop251/goja_nodejs"
