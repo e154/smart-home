@@ -19,7 +19,7 @@
 package scripts
 
 import (
-	"github.com/e154/smart-home/system/dig"
+	"go.uber.org/dig"
 	l "github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/sirupsen/logrus"
