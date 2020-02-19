@@ -1,6 +1,6 @@
 language: go
 go:
-  - 1.12.x
+  - 1.13.x
 env:
   global:
     - secure: QE2OIwiBx9JyMEPsWx8+xVqey1jXWnVmDbkNRXSZN285+e5s+SuIuwQ7BuMUgoYtQ80hcRHM1eYHsK3awOHvWSw4iJ/OgHD7NBhR3q/ke7Wc0dKV2lqr7H4CQJK0VtkvL/MWdrVoDQ/re6j61TBw0tD7NROBw4q1jzerpoOCFfHfLq9VrdXSfSePo4M8ApK8MSQCwM2e0+RGeeQFHGKDLfFJXb8HvFo0tqOYDOD2e/VbQcHsBKFXQmWQrkTHcdxt6IuLlvWcaWkFQjcRA6r1kiu5yFhsL1rrfkBQoV+lbCoOPyphCuVjkiaSI8ERvbnqC6FS6W/Lee2e7ihobKizoZ5qbCDCE6qTaPW0Q+rIOAc+yNAi1qc3S+Y/Ig/OQPXzMT0Aa5AHkISSQNIJ76mgwHII49yndw8e6lH5arysdHEdDyue2od9j6FekbdM+lyA/K3uouJS7XLPz5Rc6rZbvp8hhAJUSStsa1Q/0owJiNR8188Y9vldt6gppE9d7CgiDB6fXYh9kt+uVq3+/vOoTMRXOfUBPnITWt08iwIbxmRvXN/Tf5r6T1QUvGZ1LjAKYTwccym5F1QI72+McsFoIHcipAD7bXSydk97W2ZPJ6+yVzopk4OKId933DoGFeE+B1sVTxmG1MYTKKeiZYONdHcuMxHZU61+mJNQF80IIwQ=
@@ -24,7 +24,6 @@ before_install:
   - npm install -g gulp
 
 install:
-  - go get -u github.com/golang/dep/cmd/dep
   - go get github.com/lib/pq
   - wget https://github.com/gohugoio/hugo/releases/download/v0.34/hugo_0.34_Linux-64bit.deb
   - sudo dpkg -i hugo*.deb

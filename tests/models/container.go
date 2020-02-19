@@ -30,7 +30,6 @@ import (
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/core"
-	"github.com/e154/smart-home/system/dig"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
@@ -44,6 +43,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/telemetry"
+	"go.uber.org/dig"
 )
 
 func BuildContainer() (container *dig.Container) {

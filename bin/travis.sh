@@ -103,7 +103,7 @@ __init() {
 
     mkdir -p ${TMP_DIR}
     cd ${ROOT}
-    dep ensure
+    go mod vendor
 }
 
 __clean() {

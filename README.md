@@ -266,13 +266,11 @@ It's all:)
 #### main server install
 
 ```bash
-go get -u github.com/golang/dep/cmd/dep
-
 git clone https://github.com/e154/smart-home $GOPATH/src/github.com/e154/smart-home
 
 cd $GOPATH/src/github.com/e154/smart-home
 
-dep ensure
+go mod vendor
 
 go build
 
