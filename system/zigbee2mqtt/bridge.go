@@ -171,11 +171,24 @@ func (g *Bridge) onBridgeStatePublish(client mqtt.Client, message mqtt.Message) 
 }
 
 func (g *Bridge) onConfigPublish(client mqtt.Client, message mqtt.Message) {
+
+	var topic = strings.Split(message.Topic(), "/")
+
+	switch topic[3] {
+	case "devices":
+		g.onConfigDevicesPublish(client, message)
+		return
+	}
+
 	config := BridgeConfig{}
 	_ = json.Unmarshal(message.Payload(), &config)
 	g.settingsLock.Lock()
 	g.config = config
 	g.settingsLock.Unlock()
+}
+
+func (g *Bridge) onConfigDevicesPublish(client mqtt.Client, message mqtt.Message) {
+
 }
 
 func (g *Bridge) safeGetDevice(friendlyName string) (device Device, err error) {
@@ -288,4 +301,8 @@ func (g *Bridge) Networkmap()     {}
 
 func (g *Bridge) topic(s string) string {
 	return fmt.Sprintf("%s/%s", baseTopic, s)
+}
+
+func (g *Bridge) GetDeviceTopic(friendlyName string) string {
+	return g.topic(friendlyName)
 }
