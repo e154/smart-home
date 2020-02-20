@@ -174,10 +174,12 @@ func (g *Bridge) onConfigPublish(client mqtt.Client, message mqtt.Message) {
 
 	var topic = strings.Split(message.Topic(), "/")
 
-	switch topic[3] {
-	case "devices":
-		g.onConfigDevicesPublish(client, message)
-		return
+	if len(topic) > 2 {
+		switch topic[3] {
+		case "devices":
+			g.onConfigDevicesPublish(client, message)
+			return
+		}
 	}
 
 	config := BridgeConfig{}
