@@ -19,67 +19,47 @@
 package zigbee2mqtt
 
 import (
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/op/go-logging"
-	"sync"
 )
 
 var (
 	log = logging.MustGetLogger("zigbee2mqtt")
 )
 
-
 type Zigbee2mqtt struct {
-	graceful   *graceful_service.GracefulService
-	mqtt       *mqtt.Mqtt
-	mqttLock sync.Mutex
-	mqttClient *mqtt_client.Client
+	graceful  *graceful_service.GracefulService
+	mqtt      *mqtt.Mqtt
+	adaptors  *adaptors.Adaptors
+	bridge    *Bridge
+	isStarted bool
 }
 
 func NewZigbee2mqtt(graceful *graceful_service.GracefulService,
-	mqtt *mqtt.Mqtt) *Zigbee2mqtt {
+	mqtt *mqtt.Mqtt,
+	adaptors *adaptors.Adaptors) *Zigbee2mqtt {
 	return &Zigbee2mqtt{
 		graceful: graceful,
 		mqtt:     mqtt,
+		bridge:   NewBridge(mqtt, adaptors),
+		adaptors: adaptors,
 	}
 }
 
 func (z *Zigbee2mqtt) Start() {
-	z.graceful.Subscribe(z)
-
-	z.mqttLock.Lock()
-	defer z.mqttLock.Unlock()
-
-	var err error
-	if z.mqttClient == nil {
-		log.Info("create new mqtt client...")
-		if z.mqttClient, err = z.mqtt.NewClient(nil); err != nil {
-			log.Error(err.Error())
-		}
+	if z.isStarted {
+		return
 	}
-
-	if !z.mqttClient.IsConnected() {
-		if err = z.mqttClient.Connect(); err != nil {
-			log.Error(err.Error())
-		}
-	}
-
-	//// /home/node/resp
-	//if err := z.mqttClient.Subscribe(z.topic("resp"), 0, z.onPublish); err != nil {
-	//	log.Warning(err.Error())
-	//}
-	//
-	//// /home/node/ping
-	//if err := z.mqttClient.Subscribe(z.topic("ping"), 0, z.ping); err != nil {
-	//	log.Warning(err.Error())
-	//}
-
-	log.Info("Starting...")
+	z.bridge.Start()
+	z.isStarted = true
 }
 
 func (z *Zigbee2mqtt) Shutdown() {
-
-	log.Info("Exiting...")
+	if !z.isStarted {
+		return
+	}
+	z.bridge.Stop()
+	z.isStarted = false
 }

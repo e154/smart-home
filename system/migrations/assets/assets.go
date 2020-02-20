@@ -25,6 +25,7 @@
 // migrations/20191204_232940_add_flow_subscribe.sql
 // migrations/20200205_000239_update_device_node_constraint.sql
 // migrations/20200209_001958_update_flow_subscriptions.sql
+// migrations/20200220_193432_add_zigbee2mqtt_device.sql
 // DO NOT EDIT!
 
 package database
@@ -567,7 +568,7 @@ func migrations20200205_000239_update_device_node_constraintSql() (*asset, error
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20200205_000239_update_device_node_constraint.sql", size: 601, mode: os.FileMode(420), modTime: time.Unix(1580837426, 0)}
+	info := bindataFileInfo{name: "migrations/20200205_000239_update_device_node_constraint.sql", size: 601, mode: os.FileMode(420), modTime: time.Unix(1581958314, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -587,7 +588,27 @@ func migrations20200209_001958_update_flow_subscriptionsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20200209_001958_update_flow_subscriptions.sql", size: 461, mode: os.FileMode(420), modTime: time.Unix(1581182600, 0)}
+	info := bindataFileInfo{name: "migrations/20200209_001958_update_flow_subscriptions.sql", size: 461, mode: os.FileMode(420), modTime: time.Unix(1581958314, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20200220_193432_add_zigbee2mqtt_deviceSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x91\x3d\x4f\x02\x41\x10\x86\xfb\xfd\x15\x6f\x87\x46\xaf\xb1\xa5\x42\xa5\xa3\x51\xa1\x32\x86\x0c\xbb\x03\x4c\xd8\x2f\x77\xe7\xe4\xe3\xd7\x9b\x83\xa0\x90\x5c\x61\x9c\xea\xe6\x99\x99\x37\x97\x7d\x9a\x06\x77\x41\x56\x85\x94\x31\xcb\xa6\x69\xf0\xf6\x32\x81\x44\x54\xb6\x2a\x29\x62\x30\xcb\x03\x48\x05\xef\xd8\xb6\xca\x0e\xdb\x35\x47\xe8\x5a\x2a\x4e\x77\xdd\x92\x54\x50\xce\x5e\xd8\x99\xa7\xd7\xf1\x68\x3a\xc6\x74\xf4\x38\x19\xe3\x20\xab\x05\xf3\x43\xf8\x54\x9d\x3b\xfe\x12\xcb\xd5\xdc\x18\x00\x10\x87\xdf\x52\xde\xa9\x39\x37\x36\xc5\xaa\x85\x24\x6a\xdf\xf9\x3c\x6f\x78\x8f\x5c\x24\x50\xd9\xa3\xfb\x8e\x49\x11\x5b\xef\xef\x8f\x09\x91\x02\x5f\xe5\x9e\xb0\xee\x73\x1f\x0e\xc9\xb1\xef\xc1\x14\xdb\x25\x59\x6d\x0b\x97\x0b\xbc\x6c\xe3\xf1\x4d\xea\x79\xfb\xfd\xe3\x34\xb0\x85\x49\xd9\xcd\x49\xbb\x81\x04\xae\x4a\x21\x63\x2b\xba\x3e\xb6\x38\xa4\xc8\xb8\xae\xeb\xdf\x6e\xb3\xfb\x77\x82\xb9\x1d\x1a\x73\xe9\xf1\x39\x6d\xe3\xd9\xe4\x8f\xc6\x0e\xfe\x49\x64\x49\xde\xb3\xc3\x82\xec\xc6\xb8\x92\x32\x94\x16\x9e\xfb\x5c\xc0\x52\xb5\xe4\x78\x68\xbe\x03\x00\x00\xff\xff\xbc\xa4\x13\x33\x46\x02\x00\x00")
+
+func migrations20200220_193432_add_zigbee2mqtt_deviceSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20200220_193432_add_zigbee2mqtt_deviceSql,
+		"migrations/20200220_193432_add_zigbee2mqtt_device.sql",
+	)
+}
+
+func migrations20200220_193432_add_zigbee2mqtt_deviceSql() (*asset, error) {
+	bytes, err := migrations20200220_193432_add_zigbee2mqtt_deviceSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20200220_193432_add_zigbee2mqtt_device.sql", size: 582, mode: os.FileMode(420), modTime: time.Unix(1582210418, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -669,6 +690,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20191204_232940_add_flow_subscribe.sql": migrations20191204_232940_add_flow_subscribeSql,
 	"migrations/20200205_000239_update_device_node_constraint.sql": migrations20200205_000239_update_device_node_constraintSql,
 	"migrations/20200209_001958_update_flow_subscriptions.sql": migrations20200209_001958_update_flow_subscriptionsSql,
+	"migrations/20200220_193432_add_zigbee2mqtt_device.sql": migrations20200220_193432_add_zigbee2mqtt_deviceSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -737,6 +759,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20191204_232940_add_flow_subscribe.sql": &bintree{migrations20191204_232940_add_flow_subscribeSql, map[string]*bintree{}},
 		"20200205_000239_update_device_node_constraint.sql": &bintree{migrations20200205_000239_update_device_node_constraintSql, map[string]*bintree{}},
 		"20200209_001958_update_flow_subscriptions.sql": &bintree{migrations20200209_001958_update_flow_subscriptionsSql, map[string]*bintree{}},
+		"20200220_193432_add_zigbee2mqtt_device.sql": &bintree{migrations20200220_193432_add_zigbee2mqtt_deviceSql, map[string]*bintree{}},
 	}},
 }}
 

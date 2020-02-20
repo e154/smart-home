@@ -16,31 +16,10 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package zigbee2mqtt
+package adaptors
 
-const (
-	baseTopic = "zigbee2mqtt/bridge"
+import "github.com/pkg/errors"
+
+var (
+	ErrRecordNotFound = errors.New("record not found")
 )
-
-type Gate struct {
-
-}
-
-func (g *Gate) getState() {}
-func (g *Gate) getConfig() {}
-func (g *Gate) getLog() {}
-func (g *Gate) getDevices() {}
-func (g *Gate) configPermitJoin() {}
-func (g *Gate) configLastSeen() {}
-func (g *Gate) configElapsed() {}
-func (g *Gate) configReset() {}
-func (g *Gate) configLogLevel() {}
-func (g *Gate) DeviceOptions() {}
-func (g *Gate) Remove() {}
-func (g *Gate) Ban() {}
-func (g *Gate) Whitelist() {}
-func (g *Gate) Rename() {}
-func (g *Gate) RenameLast() {}
-func (g *Gate) AddGroup() {}
-func (g *Gate) RemoveGroup() {}
-func (g *Gate) Networkmap() {}
