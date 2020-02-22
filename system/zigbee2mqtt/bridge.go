@@ -36,6 +36,7 @@ const (
 )
 
 type Bridge struct {
+	model        *m.Zigbee2mqtt
 	adaptors     *adaptors.Adaptors
 	mqtt         *mqttServer.Mqtt
 	mqttClient   *mqtt_client.Client
@@ -44,15 +45,17 @@ type Bridge struct {
 	state        string // online|offline
 	config       BridgeConfig
 	devicesLock  sync.Mutex
-	devices      map[string]Device
+	devices      map[string]*Device
 }
 
 func NewBridge(mqtt *mqttServer.Mqtt,
-	adaptors *adaptors.Adaptors) *Bridge {
+	adaptors *adaptors.Adaptors,
+	model *m.Zigbee2mqtt) *Bridge {
 	return &Bridge{
 		mqtt:     mqtt,
 		adaptors: adaptors,
-		devices:  make(map[string]Device),
+		devices:  make(map[string]*Device),
+		model:    model,
 	}
 }
 
@@ -142,12 +145,13 @@ func (g *Bridge) onAssistPublish(client mqtt.Client, message mqtt.Message) {
 
 	if err != nil && err.Error() == "record not found" {
 		model := &m.Zigbee2mqttDevice{
-			Id:           friendlyName,
-			Name:         friendlyName,
-			Type:         deviceType,
-			Functions:    []string{function},
-			Model:        deviceInfo.Device.Model,
-			Manufacturer: deviceInfo.Device.Manufacturer,
+			Id:            friendlyName,
+			Zigbee2mqttId: g.model.Id,
+			Name:          friendlyName,
+			Type:          deviceType,
+			Functions:     []string{function},
+			Model:         deviceInfo.Device.Model,
+			Manufacturer:  deviceInfo.Device.Manufacturer,
 		}
 		device = NewDevice(friendlyName, model)
 
@@ -174,7 +178,7 @@ func (g *Bridge) onConfigPublish(client mqtt.Client, message mqtt.Message) {
 
 	var topic = strings.Split(message.Topic(), "/")
 
-	if len(topic) > 2 {
+	if len(topic) > 3 {
 		switch topic[3] {
 		case "devices":
 			g.onConfigDevicesPublish(client, message)
@@ -193,44 +197,36 @@ func (g *Bridge) onConfigDevicesPublish(client mqtt.Client, message mqtt.Message
 
 }
 
-func (g *Bridge) safeGetDevice(friendlyName string) (device Device, err error) {
+func (g *Bridge) safeGetDevice(friendlyName string) (device *Device, err error) {
 
 	g.devicesLock.Lock()
 	defer g.devicesLock.Unlock()
 
-	var ok bool
-	if device, ok = g.devices[friendlyName]; ok {
-		return
-	}
-
 	log.Infof("Get device %v", friendlyName)
 
-	var model *m.Zigbee2mqttDevice
-	if model, err = g.adaptors.Zigbee2mqttDevice.GetById(friendlyName); err != nil {
+	var ok bool
+	if device, ok = g.devices[friendlyName]; !ok {
+		err = adaptors.ErrRecordNotFound
 		return
 	}
-
-	device = NewDevice(friendlyName, model)
-
-	g.devices[friendlyName] = device
 
 	return
 }
 
-func (g *Bridge) safeUpdateDevice(device Device) (err error) {
+func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 	g.devicesLock.Lock()
 	defer g.devicesLock.Unlock()
-
-	log.Infof("Update device %v", device.friendlyName)
 
 	model := device.GetModel()
 
 	if _, err = g.adaptors.Zigbee2mqttDevice.GetById(device.friendlyName); err == nil {
+		log.Infof("update device %v ...", model.Id)
 		if err = g.adaptors.Zigbee2mqttDevice.Update(&model); err != nil {
 			log.Error(err.Error())
 			return
 		}
 	} else {
+		log.Infof("add device %v ...", model.Id)
 		if err = g.adaptors.Zigbee2mqttDevice.Add(&model); err != nil {
 			log.Error(err.Error())
 			return
@@ -244,15 +240,11 @@ func (g *Bridge) safeUpdateDevice(device Device) (err error) {
 
 func (g *Bridge) safeGetDeviceList() (err error) {
 
-	var models []*m.Zigbee2mqttDevice
-	if models, _, err = g.adaptors.Zigbee2mqttDevice.List(999, 0); err != nil {
-		return
-	}
-
 	g.devicesLock.Lock()
 	defer g.devicesLock.Unlock()
 
-	for _, model := range models {
+	for _, model := range g.model.Devices {
+		log.Infof("add device %v ...", model.Id)
 		g.devices[model.Id] = NewDevice(model.Id, model)
 	}
 

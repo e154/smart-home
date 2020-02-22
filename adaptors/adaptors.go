@@ -61,6 +61,7 @@ type Adaptors struct {
 	Message           *Message
 	MessageDelivery   *MessageDelivery
 	FlowSubscription  *FlowSubscription
+	Zigbee2mqtt       *Zigbee2mqtt
 	Zigbee2mqttDevice *Zigbee2mqttDevice
 }
 
@@ -104,6 +105,7 @@ func NewAdaptors(db *gorm.DB,
 		Message:           GetMessageAdaptor(db),
 		MessageDelivery:   GetMessageDeliveryAdaptor(db),
 		FlowSubscription:  GetFlowSubscriptionAdaptor(db),
+		Zigbee2mqtt:       GetZigbee2mqttAdaptor(db),
 		Zigbee2mqttDevice: GetZigbee2mqttDeviceAdaptor(db),
 	}
 

@@ -29,8 +29,8 @@ type Device struct {
 	model        models.Zigbee2mqttDevice
 }
 
-func NewDevice(friendlyName string, model *models.Zigbee2mqttDevice) Device {
-	return Device{
+func NewDevice(friendlyName string, model *models.Zigbee2mqttDevice) *Device {
+	return &Device{
 		friendlyName: friendlyName,
 		modelLock:    &sync.Mutex{},
 		model:        *model,

@@ -97,14 +97,15 @@ func (n *Zigbee2mqttDevice) fromDb(dbVer *db.Zigbee2mqttDevice) (ver *m.Zigbee2m
 
 func (n *Zigbee2mqttDevice) toDb(ver *m.Zigbee2mqttDevice) (dbVer *db.Zigbee2mqttDevice) {
 	dbVer = &db.Zigbee2mqttDevice{
-		Id:           ver.Id,
-		Name:         ver.Name,
-		Type:         ver.Type,
-		Model:        ver.Model,
-		Manufacturer: ver.Manufacturer,
-		Functions:    ver.Functions,
-		CreatedAt:    ver.CreatedAt,
-		UpdatedAt:    ver.UpdatedAt,
+		Id:            ver.Id,
+		Zigbee2mqttId: ver.Zigbee2mqttId,
+		Name:          ver.Name,
+		Type:          ver.Type,
+		Model:         ver.Model,
+		Manufacturer:  ver.Manufacturer,
+		Functions:     ver.Functions,
+		CreatedAt:     ver.CreatedAt,
+		UpdatedAt:     ver.UpdatedAt,
 	}
 	return
 }

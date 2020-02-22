@@ -29,14 +29,16 @@ type Zigbee2mqttDevices struct {
 }
 
 type Zigbee2mqttDevice struct {
-	Id           string `gorm:"primary_key"`
-	Name         string
-	Type         string
-	Model        string
-	Manufacturer string
-	Functions    pq.StringArray `gorm:"type:varchar(100)[]"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	Id            string `gorm:"primary_key"`
+	Zigbee2mqtt   *Zigbee2mqtt
+	Zigbee2mqttId int64
+	Name          string
+	Type          string
+	Model         string
+	Manufacturer  string
+	Functions     pq.StringArray `gorm:"type:varchar(100)[]"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
 func (m *Zigbee2mqttDevice) TableName() string {
@@ -58,11 +60,11 @@ func (z Zigbee2mqttDevices) GetById(id string) (v *Zigbee2mqttDevice, err error)
 
 func (z Zigbee2mqttDevices) Update(m *Zigbee2mqttDevice) (err error) {
 	err = z.Db.Model(&Zigbee2mqttDevice{Id: m.Id}).Updates(map[string]interface{}{
-		"Name":         m.Name,
-		"Type":         m.Type,
-		"Model":        m.Model,
-		"Manufacturer": m.Manufacturer,
-		"Functions":    m.Functions,
+		"Name":          m.Name,
+		"Type":          m.Type,
+		"Model":         m.Model,
+		"Manufacturer":  m.Manufacturer,
+		"Functions":     m.Functions,
 	}).Error
 	return
 }

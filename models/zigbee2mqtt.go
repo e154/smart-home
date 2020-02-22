@@ -19,25 +19,21 @@
 package models
 
 import (
-	"encoding/json"
 	"github.com/e154/smart-home/system/validation"
 	"time"
 )
 
-type Zigbee2mqttDevice struct {
-	Id            string          `json:"id"`
-	Zigbee2mqttId int64           `json:"zigbee2mqtt_id" valid:"Required"`
-	Name          string          `json:"name" valid:"MaxSize(254);Required"`
-	Type          string          `json:"type"`
-	Model         string          `json:"model"`
-	Manufacturer  string          `json:"manufacturer"`
-	Functions     []string        `json:"functions"`
-	Options       json.RawMessage `json:"options"`
-	CreatedAt     time.Time       `json:"created_at"`
-	UpdatedAt     time.Time       `json:"updated_at"`
+type Zigbee2mqtt struct {
+	Id        int64                `json:"id"`
+	Name      string               `json:"name" valid:"MaxSize(254);Required"`
+	Login     string               `json:"login"`
+	Password  string               `json:"password"`
+	Devices   []*Zigbee2mqttDevice `json:"devices"`
+	CreatedAt time.Time            `json:"created_at"`
+	UpdatedAt time.Time            `json:"updated_at"`
 }
 
-func (d *Zigbee2mqttDevice) Valid() (ok bool, errs []*validation.Error) {
+func (d *Zigbee2mqtt) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
 	if ok, _ = valid.Valid(d); !ok {

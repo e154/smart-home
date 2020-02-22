@@ -20,6 +20,7 @@ package zigbee2mqtt
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	models2 "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/op/go-logging"
@@ -33,7 +34,7 @@ type Zigbee2mqtt struct {
 	graceful  *graceful_service.GracefulService
 	mqtt      *mqtt.Mqtt
 	adaptors  *adaptors.Adaptors
-	bridge    *Bridge
+	bridges   []*Bridge
 	isStarted bool
 }
 
@@ -43,7 +44,7 @@ func NewZigbee2mqtt(graceful *graceful_service.GracefulService,
 	return &Zigbee2mqtt{
 		graceful: graceful,
 		mqtt:     mqtt,
-		bridge:   NewBridge(mqtt, adaptors),
+		bridges:  make([]*Bridge, 0),
 		adaptors: adaptors,
 	}
 }
@@ -52,14 +53,38 @@ func (z *Zigbee2mqtt) Start() {
 	if z.isStarted {
 		return
 	}
-	z.bridge.Start()
 	z.isStarted = true
+
+	models, _, err := z.adaptors.Zigbee2mqtt.List(99, 0)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	if len(models) == 0 {
+		model := &models2.Zigbee2mqtt{
+			Name: "zigbee2mqtt",
+		}
+		model.Id, err = z.adaptors.Zigbee2mqtt.Add(model)
+		if err != nil {
+			log.Error(err.Error())
+			return
+		}
+		models = append(models, model)
+	}
+
+	for _, model := range models {
+		bridge := NewBridge(z.mqtt, z.adaptors, model)
+		bridge.Start()
+		z.bridges = append(z.bridges, bridge)
+	}
 }
 
 func (z *Zigbee2mqtt) Shutdown() {
 	if !z.isStarted {
 		return
 	}
-	z.bridge.Stop()
 	z.isStarted = false
+	for _, bridge := range z.bridges {
+		bridge.Stop()
+	}
 }
