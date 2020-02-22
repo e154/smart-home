@@ -19,7 +19,6 @@
 package mqtt
 
 import (
-	"github.com/DrmagicE/gmqtt"
 	"github.com/e154/smart-home/system/config"
 	"time"
 )
@@ -34,7 +33,7 @@ type MqttConfig struct {
 	MaxInflight                int
 	MaxAwaitRel                int
 	MaxMsgQueue                int
-	DeliverMode                gmqtt.DeliverMode
+	//DeliverMode                gmqtt.DeliverMode
 }
 
 func NewMqttConfig(cfg *config.AppConfig) *MqttConfig {
@@ -48,6 +47,6 @@ func NewMqttConfig(cfg *config.AppConfig) *MqttConfig {
 		MaxInflight:                cfg.MqttMaxInflight,
 		MaxAwaitRel:                cfg.MqttMaxAwaitRel,
 		MaxMsgQueue:                cfg.MqttMaxMsgQueue,
-		DeliverMode:                gmqtt.DeliverMode(cfg.MqttDeliverMode),
+		//DeliverMode:                gmqtt.DeliverMode(cfg.MqttDeliverMode),
 	}
 }

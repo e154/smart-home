@@ -3,7 +3,7 @@ module github.com/e154/smart-home
 go 1.13
 
 require (
-	github.com/DrmagicE/gmqtt v0.0.0-20190818051909-6f817756a9d6
+	github.com/DrmagicE/gmqtt v0.1.1
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -26,11 +26,10 @@ require (
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
-	github.com/gorilla/websocket v1.4.0
+	github.com/gorilla/websocket v1.4.1
 	github.com/iancoleman/strcase v0.0.0-20180726023541-3605ed457bf7
 	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
 	github.com/jinzhu/gorm v1.9.11
-	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/koron/netx v0.0.0-20151102071817-46fe5d298e3d
 	github.com/leodido/go-urn v1.2.0 // indirect
@@ -40,10 +39,8 @@ require (
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/nlopes/slack v0.6.0
 	github.com/op/go-logging v0.0.0-20160211212156-b2cb9fa56473
-	github.com/pkg/errors v0.8.1
-	github.com/prometheus/client_golang v1.1.0
-	github.com/prometheus/common v0.9.1 // indirect
-	github.com/prometheus/procfs v0.0.8 // indirect
+	github.com/pkg/errors v0.9.1
+	github.com/prometheus/client_golang v1.4.0
 	github.com/rubenv/sql-migrate v0.0.0-20180704111356-3f452fc0ebeb
 	github.com/sfreiberg/gotwilio v0.0.0-20191023035553-f6f740c7bffc
 	github.com/shirou/gopsutil v2.19.13-0.20200118023139-3964e5b57942+incompatible
@@ -57,13 +54,19 @@ require (
 	github.com/t-tiger/gorm-bulk-insert v0.0.0-20191118105655-ec69ce854cfe
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
+	go.uber.org/atomic v1.5.1 // indirect
 	go.uber.org/dig v1.8.0
-	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4
+	go.uber.org/multierr v1.4.0 // indirect
+	go.uber.org/zap v1.14.0 // indirect
+	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
+	golang.org/x/lint v0.0.0-20200130185559-910be7a94367 // indirect
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
 	golang.org/x/sys v0.0.0-20200217220822-9197077df867 // indirect
+	golang.org/x/tools v0.0.0-20200221152158-fe62aff31966 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20150902115704-41f357289737
 	gopkg.in/gorp.v1 v1.7.1 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
+	honnef.co/go/tools v0.0.1-2020.1.2 // indirect
 )
