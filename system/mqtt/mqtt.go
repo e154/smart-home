@@ -91,6 +91,7 @@ func (m *Mqtt) runServer() {
 		gmqtt.WithHook(gmqtt.Hooks{
 			OnConnect:        m.OnConnect,
 			OnConnected:      m.OnConnected,
+			OnClose:          m.OnClose,
 			OnSessionCreated: m.OnSessionCreated,
 			OnSessionResumed: m.OnSessionResumed,
 		}),
@@ -134,6 +135,10 @@ func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err er
 
 func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
 	log.Debug("connected...")
+}
+
+func (m *Mqtt) OnClose(ctx context.Context, client gmqtt.Client, err error) {
+	log.Debug("disconnected...")
 }
 
 func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {
