@@ -84,11 +84,12 @@ func (n *Zigbee2mqtt) List(limit, offset int64) (list []*m.Zigbee2mqtt, total in
 
 func (n *Zigbee2mqtt) fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt) {
 	ver = &m.Zigbee2mqtt{
-		Id:        dbVer.Id,
-		Login:     dbVer.Login,
-		Name:      dbVer.Name,
-		CreatedAt: dbVer.CreatedAt,
-		UpdatedAt: dbVer.UpdatedAt,
+		Id:         dbVer.Id,
+		Login:      dbVer.Login,
+		Name:       dbVer.Name,
+		PermitJoin: dbVer.PermitJoin,
+		CreatedAt:  dbVer.CreatedAt,
+		UpdatedAt:  dbVer.UpdatedAt,
 	}
 
 	zigbee2mqttDeviceAdaptor := GetZigbee2mqttDeviceAdaptor(n.db)
@@ -102,11 +103,12 @@ func (n *Zigbee2mqtt) fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt) {
 
 func (n *Zigbee2mqtt) toDb(ver *m.Zigbee2mqtt) (dbVer *db.Zigbee2mqtt) {
 	dbVer = &db.Zigbee2mqtt{
-		Id:        ver.Id,
-		Login:     ver.Login,
-		Name:      ver.Name,
-		CreatedAt: ver.CreatedAt,
-		UpdatedAt: ver.UpdatedAt,
+		Id:         ver.Id,
+		Login:      ver.Login,
+		Name:       ver.Name,
+		PermitJoin: ver.PermitJoin,
+		CreatedAt:  ver.CreatedAt,
+		UpdatedAt:  ver.UpdatedAt,
 	}
 	if ver.Password != "" {
 		dbVer.EncryptedPassword, _ = common.HashPassword(ver.Password)

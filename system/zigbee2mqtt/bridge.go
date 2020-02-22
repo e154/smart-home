@@ -26,6 +26,7 @@ import (
 	mqttServer "github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_client"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"regexp"
 	"strings"
 	"sync"
 )
@@ -95,6 +96,8 @@ func (g *Bridge) Start() {
 
 	}
 
+	g.configPermitJoin(g.model.PermitJoin)
+
 	log.Info("Starting...")
 }
 
@@ -144,13 +147,21 @@ func (g *Bridge) onAssistPublish(client mqtt.Client, message mqtt.Message) {
 	}
 
 	if err != nil && err.Error() == "record not found" {
+		r := regexp.MustCompile(`\((.*?)\)`)
+		devModel := r.FindString(deviceInfo.Device.Model)
+		modelDesc := strings.Replace(deviceInfo.Device.Model, devModel, "", -1)
+		devModel = strings.Replace(devModel, "(", "", -1)
+		devModel = strings.Replace(devModel, ")", "", -1)
+
 		model := &m.Zigbee2mqttDevice{
 			Id:            friendlyName,
+			Status:        active,
 			Zigbee2mqttId: g.model.Id,
 			Name:          friendlyName,
 			Type:          deviceType,
 			Functions:     []string{function},
-			Model:         deviceInfo.Device.Model,
+			Model:         devModel,
+			Description:   modelDesc,
 			Manufacturer:  deviceInfo.Device.Manufacturer,
 		}
 		device = NewDevice(friendlyName, model)
@@ -160,7 +171,7 @@ func (g *Bridge) onAssistPublish(client mqtt.Client, message mqtt.Message) {
 	if err == nil {
 		device.AddFunc(function)
 		device.DeviceType(deviceType)
-		device.DeviceInfo(deviceInfo)
+		device.SetStatus(active)
 	}
 
 	if err = g.safeUpdateDevice(device); err != nil {
@@ -255,6 +266,16 @@ func (g *Bridge) onLogPublish(client mqtt.Client, message mqtt.Message) {
 	var lm BridgeLog
 	_ = json.Unmarshal(message.Payload(), &lm)
 	log.Infof("%v, %v, %v", lm.Type, lm.Message, lm.Meta)
+	switch lm.Type {
+	case "device_removed":
+		g.deviceRemoved(lm.Message)
+	case "device_force_removed":
+		g.deviceForceRemoved(lm.Message)
+	case "pairing":
+		if friendlyName, ok := lm.Meta["friendly_name"].(string); ok {
+			g.devicePairing(friendlyName)
+		}
+	}
 }
 
 func (g *Bridge) getState() string {
@@ -273,9 +294,16 @@ func (g *Bridge) getDevices() {
 	g.mqtt.Publish(g.topic("/bridge/config/devices/get"), []byte{}, 0, false)
 }
 
-func (g *Bridge) configPermitJoin() {}
-func (g *Bridge) configLastSeen()   {}
-func (g *Bridge) configElapsed()    {}
+func (g *Bridge) configPermitJoin(tr bool) {
+	var permitJoin = "true"
+	if !tr {
+		permitJoin = "false"
+	}
+	g.mqtt.Publish(g.topic("/bridge/config/permit_join"), []byte(permitJoin), 0, false)
+}
+
+func (g *Bridge) configLastSeen() {}
+func (g *Bridge) configElapsed()  {}
 
 // Resets the ZNP (CC2530/CC2531).
 func (g *Bridge) configReset() {
@@ -284,14 +312,24 @@ func (g *Bridge) configReset() {
 
 func (g *Bridge) configLogLevel() {}
 func (g *Bridge) DeviceOptions()  {}
-func (g *Bridge) Remove()         {}
-func (g *Bridge) Ban()            {}
-func (g *Bridge) Whitelist()      {}
-func (g *Bridge) Rename()         {}
-func (g *Bridge) RenameLast()     {}
-func (g *Bridge) AddGroup()       {}
-func (g *Bridge) RemoveGroup()    {}
-func (g *Bridge) Networkmap()     {}
+
+func (g *Bridge) Remove(friendlyName string) {
+	g.mqtt.Publish(g.topic("/bridge/config/remove"), []byte(friendlyName), 0, false)
+}
+
+func (g *Bridge) Ban(friendlyName string) {
+	g.mqtt.Publish(g.topic("/bridge/config/force_remove"), []byte(friendlyName), 0, false)
+}
+
+func (g *Bridge) Whitelist(friendlyName string) {
+	g.mqtt.Publish(g.topic("/bridge/config/whitelist"), []byte(friendlyName), 0, false)
+}
+
+func (g *Bridge) Rename()      {}
+func (g *Bridge) RenameLast()  {}
+func (g *Bridge) AddGroup()    {}
+func (g *Bridge) RemoveGroup() {}
+func (g *Bridge) Networkmap()  {}
 
 func (g *Bridge) topic(s string) string {
 	return fmt.Sprintf("%s/%s", baseTopic, s)
@@ -299,4 +337,51 @@ func (g *Bridge) topic(s string) string {
 
 func (g *Bridge) GetDeviceTopic(friendlyName string) string {
 	return g.topic(friendlyName)
+}
+
+func (g *Bridge) deviceRemoved(friendlyName string) {
+	device, err := g.safeGetDevice(friendlyName)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	device.SetStatus(removed)
+	if err = g.safeUpdateDevice(device); err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (g *Bridge) deviceForceRemoved(friendlyName string) {
+	device, err := g.safeGetDevice(friendlyName)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	device.SetStatus(banned)
+	if err = g.safeUpdateDevice(device); err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (g *Bridge) devicePairing(friendlyName string) {
+	device, err := g.safeGetDevice(friendlyName)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+	if device.Status() == active {
+		return
+	}
+	device.SetStatus(active)
+	if err = g.safeUpdateDevice(device); err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (g *Bridge) PermitJoin(permitJoin bool) {
+	g.model.PermitJoin = permitJoin
+	if err := g.adaptors.Zigbee2mqtt.Update(g.model); err != nil {
+		return
+	}
+	g.configPermitJoin(g.model.PermitJoin)
 }

@@ -68,3 +68,9 @@ type AssistDeviceInfo struct {
 type AssistDevice struct {
 	Device AssistDeviceInfo `json:"device"`
 }
+
+const (
+	active  = "active"
+	banned  = "banned"
+	removed = "removed"
+)

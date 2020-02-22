@@ -87,11 +87,14 @@ func (n *Zigbee2mqttDevice) fromDb(dbVer *db.Zigbee2mqttDevice) (ver *m.Zigbee2m
 		Name:         dbVer.Name,
 		Type:         dbVer.Type,
 		Model:        dbVer.Model,
+		Description:  dbVer.Description,
 		Manufacturer: dbVer.Manufacturer,
 		Functions:    dbVer.Functions,
+		Status:       dbVer.Status,
 		CreatedAt:    dbVer.CreatedAt,
 		UpdatedAt:    dbVer.UpdatedAt,
 	}
+	ver.GetImageUrl()
 	return
 }
 
@@ -102,8 +105,10 @@ func (n *Zigbee2mqttDevice) toDb(ver *m.Zigbee2mqttDevice) (dbVer *db.Zigbee2mqt
 		Name:          ver.Name,
 		Type:          ver.Type,
 		Model:         ver.Model,
+		Description:   ver.Description,
 		Manufacturer:  ver.Manufacturer,
 		Functions:     ver.Functions,
+		Status:        ver.Status,
 		CreatedAt:     ver.CreatedAt,
 		UpdatedAt:     ver.UpdatedAt,
 	}

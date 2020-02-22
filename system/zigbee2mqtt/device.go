@@ -64,9 +64,20 @@ func (d *Device) GetModel() models.Zigbee2mqttDevice {
 	return d.model
 }
 
-func (d *Device) DeviceInfo(device AssistDevice) {
+func (d *Device) SetStatus(status string) {
 	d.modelLock.Lock()
-	d.model.Model = device.Device.Model
-	d.model.Manufacturer = device.Device.Manufacturer
+	d.model.Status = status
+	d.modelLock.Unlock()
+}
+
+func (d *Device) Status() string {
+	d.modelLock.Lock()
+	defer d.modelLock.Unlock()
+	return d.model.Status
+}
+
+func (d *Device) SetName(name string) {
+	d.modelLock.Lock()
+	d.model.Name = name
 	d.modelLock.Unlock()
 }

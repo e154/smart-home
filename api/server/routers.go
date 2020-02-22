@@ -29,6 +29,7 @@ func (s *Server) setControllers() {
 	r := s.engine
 
 	r.Static("/upload", common.StoragePath())
+	r.Static("/static", common.StaticPath())
 
 	basePath := r.Group("/api")
 

@@ -20,7 +20,9 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/e154/smart-home/system/validation"
+	"path/filepath"
 	"time"
 )
 
@@ -30,9 +32,12 @@ type Zigbee2mqttDevice struct {
 	Name          string          `json:"name" valid:"MaxSize(254);Required"`
 	Type          string          `json:"type"`
 	Model         string          `json:"model"`
+	Description   string          `json:"description"`
 	Manufacturer  string          `json:"manufacturer"`
 	Functions     []string        `json:"functions"`
 	Options       json.RawMessage `json:"options"`
+	ImageUrl      string          `json:"image_url"`
+	Status        string          `json:"status"`
 	CreatedAt     time.Time       `json:"created_at"`
 	UpdatedAt     time.Time       `json:"updated_at"`
 }
@@ -45,4 +50,8 @@ func (d *Zigbee2mqttDevice) Valid() (ok bool, errs []*validation.Error) {
 	}
 
 	return
+}
+
+func (d *Zigbee2mqttDevice) GetImageUrl() {
+	d.ImageUrl = filepath.Join("/static", "devices", fmt.Sprintf("%s.jpg", d.Model))
 }

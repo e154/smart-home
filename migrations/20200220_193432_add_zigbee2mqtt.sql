@@ -7,10 +7,34 @@ CREATE TABLE zigbee2mqtt
     name               text,
     login              text                     null,
     encrypted_password text                     null,
+    permit_join        boolean default true,
     created_at         timestamp with time zone not null,
     updated_at         timestamp with time zone not null
 );
 
+create type zigbee2mqtt_devices_status as enum ('active', 'banned', 'removed');
+
+CREATE TABLE zigbee2mqtt_devices
+(
+    id             text
+        constraint zigbee2mqtt_devices_pkey primary key not null,
+    zigbee2mqtt_id bigint
+        CONSTRAINT zigbee2mqtt_devices_2_zigbee2mqtt_fk REFERENCES zigbee2mqtt (id) ON UPDATE CASCADE ON DELETE RESTRICT,
+    name           text,
+    type           text,
+    model          text,
+    description    text,
+    manufacturer   text,
+    functions      text[],
+    status         zigbee2mqtt_devices_status default 'active',
+    created_at     timestamp with time zone             not null,
+    updated_at     timestamp with time zone             not null
+);
+
+
 -- +migrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
 drop table zigbee2mqtt cascade;
+drop table zigbee2mqtt_devices cascade;
+drop type zigbee2mqtt_devices_status cascade;
+

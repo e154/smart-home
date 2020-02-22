@@ -24,13 +24,14 @@ import (
 )
 
 type Zigbee2mqtt struct {
-	Id        int64                `json:"id"`
-	Name      string               `json:"name" valid:"MaxSize(254);Required"`
-	Login     string               `json:"login"`
-	Password  string               `json:"password"`
-	Devices   []*Zigbee2mqttDevice `json:"devices"`
-	CreatedAt time.Time            `json:"created_at"`
-	UpdatedAt time.Time            `json:"updated_at"`
+	Id         int64                `json:"id"`
+	Name       string               `json:"name" valid:"MaxSize(254);Required"`
+	Login      string               `json:"login"`
+	Password   string               `json:"password"`
+	Devices    []*Zigbee2mqttDevice `json:"devices"`
+	PermitJoin bool                 `json:"permit_join"`
+	CreatedAt  time.Time            `json:"created_at"`
+	UpdatedAt  time.Time            `json:"updated_at"`
 }
 
 func (d *Zigbee2mqtt) Valid() (ok bool, errs []*validation.Error) {
