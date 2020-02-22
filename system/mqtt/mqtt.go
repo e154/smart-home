@@ -85,7 +85,7 @@ func (m *Mqtt) runServer() {
 	m.management = management.New()
 
 	// Create a new server
-	server := gmqtt.NewServer(
+	m.server = gmqtt.NewServer(
 		gmqtt.WithTCPListener(ln),
 		gmqtt.WithPlugin(m.management),
 		gmqtt.WithHook(gmqtt.Hooks{
@@ -102,7 +102,7 @@ func (m *Mqtt) runServer() {
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
 
-	server.Run()
+	m.server.Run()
 }
 
 func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err error) {
