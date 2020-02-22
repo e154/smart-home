@@ -19,6 +19,7 @@
 package management
 
 import (
+	"context"
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/pkg/errors"
@@ -26,18 +27,17 @@ import (
 
 type Management struct {
 	monitor *monitor
-	service gmqtt.ServerService
+	server  gmqtt.Server
 }
 
-func NewManagement() *Management {
-	return &Management{
-		monitor: newMonitor(),
-	}
+func New() *Management {
+	return &Management{}
 }
 
-func (m *Management) Load(service gmqtt.ServerService) error {
-	m.service = service
-	m.monitor.config = service.GetConfig()
+func (m *Management) Load(server gmqtt.Server) error {
+	m.monitor = newMonitor(server.SubscriptionStore())
+	m.server = server
+	m.monitor.config = server.GetConfig()
 	return nil
 }
 
@@ -61,7 +61,7 @@ func (m *Management) Name() string {
 
 // OnSessionCreatedWrapper store the client when session created
 func (m *Management) OnSessionCreatedWrapper(created gmqtt.OnSessionCreated) gmqtt.OnSessionCreated {
-	return func(cs gmqtt.ChainStore, client gmqtt.Client) {
+	return func(cs context.Context, client gmqtt.Client) {
 		m.monitor.addClient(client)
 		created(cs, client)
 	}
@@ -69,7 +69,7 @@ func (m *Management) OnSessionCreatedWrapper(created gmqtt.OnSessionCreated) gmq
 
 // OnSessionResumedWrapper refresh the client when session resumed
 func (m *Management) OnSessionResumedWrapper(resumed gmqtt.OnSessionResumed) gmqtt.OnSessionResumed {
-	return func(cs gmqtt.ChainStore, client gmqtt.Client) {
+	return func(cs context.Context, client gmqtt.Client) {
 		m.monitor.addClient(client)
 		resumed(cs, client)
 	}
@@ -77,7 +77,7 @@ func (m *Management) OnSessionResumedWrapper(resumed gmqtt.OnSessionResumed) gmq
 
 // OnSessionTerminated remove the client when session terminated
 func (m *Management) OnSessionTerminatedWrapper(terminated gmqtt.OnSessionTerminated) gmqtt.OnSessionTerminated {
-	return func(cs gmqtt.ChainStore, client gmqtt.Client, reason gmqtt.SessionTerminatedReason) {
+	return func(cs context.Context, client gmqtt.Client, reason gmqtt.SessionTerminatedReason) {
 		m.monitor.deleteClient(client.OptionsReader().ClientID())
 		m.monitor.deleteClientSubscriptions(client.OptionsReader().ClientID())
 		terminated(cs, client, reason)
@@ -86,7 +86,7 @@ func (m *Management) OnSessionTerminatedWrapper(terminated gmqtt.OnSessionTermin
 
 // OnSubscribedWrapper store the subscription
 func (m *Management) OnSubscribedWrapper(subscribed gmqtt.OnSubscribed) gmqtt.OnSubscribed {
-	return func(cs gmqtt.ChainStore, client gmqtt.Client, topic packets.Topic) {
+	return func(cs context.Context, client gmqtt.Client, topic packets.Topic) {
 		m.monitor.addSubscription(client.OptionsReader().ClientID(), topic)
 		subscribed(cs, client, topic)
 	}
@@ -94,7 +94,7 @@ func (m *Management) OnSubscribedWrapper(subscribed gmqtt.OnSubscribed) gmqtt.On
 
 // OnUnsubscribedWrapper remove the subscription
 func (m *Management) OnUnsubscribedWrapper(unsubscribe gmqtt.OnUnsubscribed) gmqtt.OnUnsubscribed {
-	return func(cs gmqtt.ChainStore, client gmqtt.Client, topicName string) {
+	return func(cs context.Context, client gmqtt.Client, topicName string) {
 		m.monitor.deleteSubscription(client.OptionsReader().ClientID(), topicName)
 		unsubscribe(cs, client, topicName)
 	}
@@ -144,11 +144,9 @@ func (m *Management) Subscribe(clientId, topic string, qos int) (err error) {
 		err = errors.New("invalid clientID")
 		return
 	}
-	m.service.Subscribe(clientId, []packets.Topic{
-		{
-			Qos:  uint8(qos),
-			Name: topic,
-		},
+	m.server.SubscriptionStore().Subscribe(clientId, packets.Topic{
+		Qos:  uint8(qos),
+		Name: topic,
 	})
 	return
 }
@@ -163,7 +161,7 @@ func (m *Management) Unsubscribe(clientId, topic string) (err error) {
 		err = errors.New("invalid clientID")
 		return
 	}
-	m.service.UnSubscribe(clientId, []string{topic})
+	m.server.SubscriptionStore().Unsubscribe(clientId, topic)
 	return
 }
 
@@ -181,7 +179,7 @@ func (m *Management) Publish(topic string, qos int, payload []byte, retain bool)
 		err = errors.New("invalid utf-8 string")
 		return
 	}
-	m.service.Publish(topic, []byte(payload), uint8(qos), retain)
+	m.server.PublishService().Publish(gmqtt.NewMessage(topic, []byte(payload), uint8(qos), gmqtt.Retained(retain)))
 	return
 }
 
@@ -191,7 +189,7 @@ func (m *Management) CloseClient(clientId string) (err error) {
 		err = errors.New("invalid clientID")
 		return
 	}
-	client := m.service.Client(clientId)
+	client := m.server.Client(clientId)
 	if client != nil {
 		client.Close()
 	}

@@ -18,7 +18,13 @@
 
 package mqtt
 
-import "github.com/e154/smart-home/system/mqtt/management"
+import (
+	"context"
+	"github.com/DrmagicE/gmqtt"
+	"github.com/DrmagicE/gmqtt/retained"
+	"github.com/DrmagicE/gmqtt/subscription"
+	"github.com/e154/smart-home/system/mqtt/management"
+)
 
 type IManagement interface {
 	GetClients(limit, offset int) (list []*management.ClientInfo, total int, err error)
@@ -31,4 +37,21 @@ type IManagement interface {
 	Publish(topic string, qos int, payload []byte, retain bool) (err error)
 	CloseClient(clientId string) (err error)
 	SearchTopic(query string) (result []*management.SubscriptionInfo, err error)
+}
+
+type IMQTT interface {
+	Run()
+	Stop(ctx context.Context) error
+	// SubscriptionStore returns the subscription.Store.
+	SubscriptionStore() subscription.Store
+	// RetainedStore returns the retained.Store.
+	RetainedStore() retained.Store
+	// PublishService returns the PublishService
+	PublishService() gmqtt.PublishService
+	// Client return the client specified by clientID.
+	Client(clientID string) gmqtt.Client
+	// GetConfig returns the config of the server
+	GetConfig() gmqtt.Config
+	// GetStatsManager returns StatsManager
+	GetStatsManager() gmqtt.StatsManager
 }
