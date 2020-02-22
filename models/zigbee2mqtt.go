@@ -30,6 +30,7 @@ type Zigbee2mqtt struct {
 	Password   string               `json:"password"`
 	Devices    []*Zigbee2mqttDevice `json:"devices"`
 	PermitJoin bool                 `json:"permit_join"`
+	BaseTopic  string               `json:"base_topic"`
 	CreatedAt  time.Time            `json:"created_at"`
 	UpdatedAt  time.Time            `json:"updated_at"`
 }

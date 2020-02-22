@@ -34,6 +34,7 @@ type Zigbee2mqtt struct {
 	Devices           []*Zigbee2mqttDevice
 	EncryptedPassword string
 	PermitJoin        bool
+	BaseTopic         string
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 }
@@ -62,6 +63,7 @@ func (z Zigbee2mqtts) Update(m *Zigbee2mqtt) (err error) {
 		"Name":              m.Name,
 		"Login":             m.Login,
 		"PermitJoin":        m.PermitJoin,
+		"BaseTopic":         m.BaseTopic,
 		"EncryptedPassword": m.EncryptedPassword,
 	}
 	err = z.Db.Model(&Zigbee2mqtt{Id: m.Id}).Updates(q).Error

@@ -8,10 +8,12 @@ CREATE TABLE zigbee2mqtt
     login              text                     null,
     encrypted_password text                     null,
     permit_join        boolean default true,
+    base_topic         text    default 'zigbee2mqtt',
     created_at         timestamp with time zone not null,
     updated_at         timestamp with time zone not null
 );
 
+create unique index base_topic_at_zigbee2mqtt_unq on zigbee2mqtt (base_topic);
 create type zigbee2mqtt_devices_status as enum ('active', 'banned', 'removed');
 
 CREATE TABLE zigbee2mqtt_devices

@@ -88,6 +88,7 @@ func (n *Zigbee2mqtt) fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt) {
 		Login:      dbVer.Login,
 		Name:       dbVer.Name,
 		PermitJoin: dbVer.PermitJoin,
+		BaseTopic:  dbVer.BaseTopic,
 		CreatedAt:  dbVer.CreatedAt,
 		UpdatedAt:  dbVer.UpdatedAt,
 	}
@@ -107,6 +108,7 @@ func (n *Zigbee2mqtt) toDb(ver *m.Zigbee2mqtt) (dbVer *db.Zigbee2mqtt) {
 		Login:      ver.Login,
 		Name:       ver.Name,
 		PermitJoin: ver.PermitJoin,
+		BaseTopic:  ver.BaseTopic,
 		CreatedAt:  ver.CreatedAt,
 		UpdatedAt:  ver.UpdatedAt,
 	}

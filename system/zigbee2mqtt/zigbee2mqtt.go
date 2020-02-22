@@ -62,7 +62,9 @@ func (z *Zigbee2mqtt) Start() {
 
 	if len(models) == 0 {
 		model := &models2.Zigbee2mqtt{
-			Name: "zigbee2mqtt",
+			Name:       "zigbee2mqtt",
+			BaseTopic:  "zigbee2mqtt",
+			PermitJoin: true,
 		}
 		model.Id, err = z.adaptors.Zigbee2mqtt.Add(model)
 		if err != nil {

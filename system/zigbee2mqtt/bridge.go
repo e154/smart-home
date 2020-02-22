@@ -32,7 +32,6 @@ import (
 )
 
 const (
-	baseTopic          = "zigbee2mqtt"
 	homeassistantTopic = "homeassistant"
 )
 
@@ -82,7 +81,7 @@ func (g *Bridge) Start() {
 	}
 
 	// /zigbee2mqtt/bridge/#
-	if err := g.mqttClient.Subscribe(fmt.Sprintf("%s/bridge/#", baseTopic), 0, g.onBridgePublish); err != nil {
+	if err := g.mqttClient.Subscribe(fmt.Sprintf("%s/bridge/#", g.model.BaseTopic), 0, g.onBridgePublish); err != nil {
 		log.Warning(err.Error())
 	}
 
@@ -332,7 +331,7 @@ func (g *Bridge) RemoveGroup() {}
 func (g *Bridge) Networkmap()  {}
 
 func (g *Bridge) topic(s string) string {
-	return fmt.Sprintf("%s/%s", baseTopic, s)
+	return fmt.Sprintf("%s/%s", g.model.BaseTopic, s)
 }
 
 func (g *Bridge) GetDeviceTopic(friendlyName string) string {
