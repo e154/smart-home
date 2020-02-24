@@ -83,16 +83,17 @@ func (n *Zigbee2mqttDevice) List(limit, offset int64) (list []*m.Zigbee2mqttDevi
 
 func (n *Zigbee2mqttDevice) fromDb(dbVer *db.Zigbee2mqttDevice) (ver *m.Zigbee2mqttDevice) {
 	ver = &m.Zigbee2mqttDevice{
-		Id:           dbVer.Id,
-		Name:         dbVer.Name,
-		Type:         dbVer.Type,
-		Model:        dbVer.Model,
-		Description:  dbVer.Description,
-		Manufacturer: dbVer.Manufacturer,
-		Functions:    dbVer.Functions,
-		Status:       dbVer.Status,
-		CreatedAt:    dbVer.CreatedAt,
-		UpdatedAt:    dbVer.UpdatedAt,
+		Id:            dbVer.Id,
+		Name:          dbVer.Name,
+		Type:          dbVer.Type,
+		Zigbee2mqttId: dbVer.Zigbee2mqttId,
+		Model:         dbVer.Model,
+		Description:   dbVer.Description,
+		Manufacturer:  dbVer.Manufacturer,
+		Functions:     dbVer.Functions,
+		Status:        dbVer.Status,
+		CreatedAt:     dbVer.CreatedAt,
+		UpdatedAt:     dbVer.UpdatedAt,
 	}
 	ver.GetImageUrl()
 	return

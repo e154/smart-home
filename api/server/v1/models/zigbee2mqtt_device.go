@@ -24,17 +24,22 @@ import (
 
 // swagger:model
 type Zigbee2mqttDevice struct {
-	Id            string          `json:"id"`
-	Zigbee2mqttId int64           `json:"zigbee2mqtt_id"`
-	Name          string          `json:"name"`
-	Type          string          `json:"type"`
-	Model         string          `json:"model"`
-	Description   string          `json:"description"`
-	Manufacturer  string          `json:"manufacturer"`
-	Functions     []string        `json:"functions"`
-	ImageUrl      string          `json:"image_url"`
-	Status        string          `json:"status"`
-	CreatedAt     time.Time       `json:"created_at"`
-	UpdatedAt     time.Time       `json:"updated_at"`
+	Id            string    `json:"id"`
+	Zigbee2mqttId int64     `json:"zigbee2mqtt_id"`
+	Name          string    `json:"name"`
+	Type          string    `json:"type"`
+	Model         string    `json:"model"`
+	Description   string    `json:"description"`
+	Manufacturer  string    `json:"manufacturer"`
+	Functions     []string  `json:"functions"`
+	ImageUrl      string    `json:"image_url"`
+	Status        string    `json:"status"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
+// swagger:model
+type Zigbee2mqttDeviceShort struct {
+	Id       string `json:"id"`
+	ImageUrl string `json:"image_url"`
+}
