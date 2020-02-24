@@ -81,6 +81,18 @@ func (n *Zigbee2mqtt) List(limit, offset int64) (list []*m.Zigbee2mqtt, total in
 	return
 }
 
+func (a *Zigbee2mqtt) GetByLogin(login string) (ver *m.Zigbee2mqtt, err error) {
+
+	var dbVer *db.Zigbee2mqtt
+	if dbVer, err = a.table.GetByLogin(login); err != nil {
+		return
+	}
+
+	ver = a.fromDb(dbVer)
+
+	return
+}
+
 func (n *Zigbee2mqtt) fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt) {
 	ver = &m.Zigbee2mqtt{
 		Id:         dbVer.Id,

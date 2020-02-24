@@ -21,6 +21,8 @@ package mqtt_authenticator
 import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/op/go-logging"
 )
@@ -50,30 +52,64 @@ func NewAuthenticator(adaptors *adaptors.Adaptors) *Authenticator {
 
 func (a *Authenticator) Authenticate(login string, pass interface{}) (err error) {
 
-	//log.Infof("login: %v, pass: %v", login, pass)
-	//
-	//password, ok := pass.(string)
-	//if !ok || password == "" {
-	//	err = ErrBadLoginOrPassword
-	//}
-	//
-	//if login == a.login && pass == a.password {
-	//	return
-	//}
-	//
-	//var node *m.Node
-	//if node, err = a.adaptors.Node.GetByLogin(login); err != nil {
-	//	return
-	//}
-	//
-	//if node.Status == "disabled" {
+	log.Infof("login: %v, pass: %v", login, pass)
+
+	password, ok := pass.(string)
+	if !ok || password == "" {
+		err = ErrBadLoginOrPassword
+	}
+
+	if login == a.login && pass == a.password {
+		return
+	}
+
+	// nodes
+	if err = a.checkNode(login, password); err == nil {
+		return
+	}
+
+	// zigbee2mqtt
+	if err = a.checkZigbee2matt(login, password); err == nil {
+		return
+	}
+
+	return
+}
+
+func (a Authenticator) checkZigbee2matt(login, password string) (err error) {
+
+	var bridge *m.Zigbee2mqtt
+	if bridge, err = a.adaptors.Zigbee2mqtt.GetByLogin(login); err != nil {
+		return
+	}
+
+	//if bridge.Status == "disabled" {
 	//	err = ErrPrincipalDisabled
 	//	return
 	//}
-	//
-	//if ok := common.CheckPasswordHash(password, node.EncryptedPassword); !ok {
-	//	err = ErrBadLoginOrPassword
-	//}
+
+	if ok := common.CheckPasswordHash(password, bridge.EncryptedPassword); !ok {
+		err = ErrBadLoginOrPassword
+	}
+
+	return
+}
+
+func (a Authenticator) checkNode(login, password string) (err error) {
+
+	var node *m.Node
+	if node, err = a.adaptors.Node.GetByLogin(login); err != nil {
+		return
+	}
+
+	if node.Status == "disabled" {
+		err = ErrPrincipalDisabled
+		return
+	}
+
+	if ok := common.CheckPasswordHash(password, node.EncryptedPassword); !ok {
+		err = ErrBadLoginOrPassword
+	}
 
 	return
 }

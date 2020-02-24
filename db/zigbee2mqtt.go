@@ -60,10 +60,10 @@ func (z Zigbee2mqtts) GetById(id int64) (v *Zigbee2mqtt, err error) {
 
 func (z Zigbee2mqtts) Update(m *Zigbee2mqtt) (err error) {
 	q := map[string]interface{}{
-		"Name":              m.Name,
-		"Login":             m.Login,
-		"PermitJoin":        m.PermitJoin,
-		"BaseTopic":         m.BaseTopic,
+		"Name":       m.Name,
+		"Login":      m.Login,
+		"PermitJoin": m.PermitJoin,
+		"BaseTopic":  m.BaseTopic,
 	}
 	if m.EncryptedPassword != "" {
 		q["encrypted_password"] = m.EncryptedPassword
@@ -89,6 +89,17 @@ func (z *Zigbee2mqtts) List(limit, offset int64) (list []*Zigbee2mqtt, total int
 		Preload("Devices").
 		Offset(offset).
 		Find(&list).
+		Error
+
+	return
+}
+
+func (z *Zigbee2mqtts) GetByLogin(login string) (bridge *Zigbee2mqtt, err error) {
+
+	bridge = &Zigbee2mqtt{}
+	err = z.Db.Model(bridge).
+		Where("login = ?", login).
+		First(&bridge).
 		Error
 
 	return
