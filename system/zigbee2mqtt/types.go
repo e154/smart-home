@@ -25,17 +25,6 @@ import (
 
 type DeviceType string
 
-const (
-	DeviceTypeBinarySensor = DeviceType("binary_sensor")
-	DeviceTypeSensor       = DeviceType("sensor")
-	DeviceTypeLight        = DeviceType("light")
-	DeviceTypeCover        = DeviceType("cover")
-	DeviceTypeLock         = DeviceType("lock")
-	DeviceTypeClimate      = DeviceType("climate")
-	DeviceTypeFan          = DeviceType("fan")
-	DeviceTypeSwitch       = DeviceType("switch")
-)
-
 type BridgeLog struct {
 	Type    string                 `json:"type"`
 	Message string                 `json:"message"`

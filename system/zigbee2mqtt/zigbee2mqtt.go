@@ -248,3 +248,19 @@ func (z *Zigbee2mqtt) unsafeGetBridge(bridgeId int64) (bridge *Bridge, err error
 	}
 	return
 }
+
+func (z *Zigbee2mqtt) GetTopicByDevice(model *m.Zigbee2mqttDevice) (topic string, err error) {
+
+	z.bridgesLock.Lock()
+	defer z.bridgesLock.Unlock()
+
+	br, ok := z.bridges[model.Zigbee2mqttId]
+	if !ok {
+		err = adaptors.ErrRecordNotFound
+		return
+	}
+
+	br.GetDeviceTopic(model.Id)
+
+	return
+}

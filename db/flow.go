@@ -21,7 +21,6 @@ package db
 import (
 	"fmt"
 	. "github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -31,20 +30,20 @@ type Flows struct {
 }
 
 type Flow struct {
-	Id                     int64 `gorm:"primary_key"`
-	Name                   string
-	Description            string
-	Status                 StatusType
-	Workflow               *Workflow
-	WorkflowId             int64
-	WorkflowScenarioId     int64
-	Connections            []*Connection
-	FlowElements           []*FlowElement
-	Workers                []*Worker
-	Subscriptions          []*FlowSubscription
-	FlowZigbee2mqttDevices []*FlowZigbee2mqttDevice
-	CreatedAt              time.Time
-	UpdatedAt              time.Time
+	Id                 int64 `gorm:"primary_key"`
+	Name               string
+	Description        string
+	Status             StatusType
+	Workflow           *Workflow
+	WorkflowId         int64
+	WorkflowScenarioId int64
+	Connections        []*Connection
+	FlowElements       []*FlowElement
+	Workers            []*Worker
+	Subscriptions      []*FlowSubscription
+	Zigbee2mqttDevices []*Zigbee2mqttDevice
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
 }
 
 func (d *Flow) TableName() string {
@@ -104,7 +103,6 @@ func (n Flows) GetById(flowId int64) (flow *Flow, err error) {
 
 	err = n.DependencyLoading(flow)
 
-	debug.Println(flow)
 	return
 }
 
@@ -170,15 +168,14 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 	flow.FlowElements = make([]*FlowElement, 0)
 	flow.Workers = make([]*Worker, 0)
 	flow.Subscriptions = make([]*FlowSubscription, 0)
-	flow.FlowZigbee2mqttDevices = make([]*FlowZigbee2mqttDevice, 0)
+	flow.Zigbee2mqttDevices = make([]*Zigbee2mqttDevice, 0)
 	flow.Workflow = &Workflow{}
 
 	n.Db.Model(flow).
 		Related(&flow.Connections).
 		Related(&flow.FlowElements).
 		Related(&flow.Workflow).
-		Related(&flow.Subscriptions).
-		Related(&flow.FlowZigbee2mqttDevices)
+		Related(&flow.Subscriptions)
 
 	if flow.Workflow.WorkflowScenarioId != nil {
 		flow.Workflow.WorkflowScenario = &WorkflowScenario{}
@@ -225,6 +222,19 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 		Preload("DeviceAction.Device.Actions").
 		Preload("DeviceAction.Device.Actions.Script").
 		Find(&flow.Workers).
+		Error
+
+	if err != nil {
+		return
+	}
+
+	err = n.Db.Raw(`select *
+from zigbee2mqtt_devices
+where id in (
+    select zigbee2mqtt_device_id
+    from flow_zigbee2mqtt_devices
+    where flow_id = ?
+    )`, flow.Id).Scan(&flow.Zigbee2mqttDevices).
 		Error
 
 	return
