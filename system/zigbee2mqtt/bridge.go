@@ -30,6 +30,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 )
 
 const (
@@ -37,17 +38,21 @@ const (
 )
 
 type Bridge struct {
-	adaptors     *adaptors.Adaptors
-	mqtt         *mqttServer.Mqtt
-	mqttClient   *mqtt_client.Client
-	isStarted    bool
-	settingsLock sync.Mutex
-	state        string // online|offline
-	config       BridgeConfig
-	devicesLock  sync.Mutex
-	devices      map[string]*Device
-	modelLock    sync.Mutex
-	model        *m.Zigbee2mqtt
+	adaptors       *adaptors.Adaptors
+	mqtt           *mqttServer.Mqtt
+	mqttClient     *mqtt_client.Client
+	isStarted      bool
+	settingsLock   sync.Mutex
+	state          string // online|offline
+	config         BridgeConfig
+	devicesLock    sync.Mutex
+	devices        map[string]*Device
+	modelLock      sync.Mutex
+	model          *m.Zigbee2mqtt
+	networkmapLock sync.Mutex
+	scanInProcess  bool
+	lastScan       time.Time
+	networkmap     string
 }
 
 func NewBridge(mqtt *mqttServer.Mqtt,
@@ -189,8 +194,23 @@ func (g *Bridge) onBridgeStatePublish(client mqtt.Client, message mqtt.Message) 
 }
 
 func (g *Bridge) onNetworkmapPublish(client mqtt.Client, message mqtt.Message) {
-	log.Info("method not implemented")
-	fmt.Println(string(message.Payload()))
+
+	var topic = strings.Split(message.Topic(), "/")
+
+	if len(topic) < 4 {
+		return
+	}
+
+	switch topic[3] {
+	case "raw":
+		log.Info("method not implemented")
+	case "graphviz":
+		g.networkmapLock.Lock()
+		g.scanInProcess = false
+		g.lastScan = time.Now()
+		g.networkmap = string(message.Payload())
+		g.networkmapLock.Unlock()
+	}
 }
 
 func (g *Bridge) onConfigPublish(client mqtt.Client, message mqtt.Message) {
@@ -212,9 +232,7 @@ func (g *Bridge) onConfigPublish(client mqtt.Client, message mqtt.Message) {
 	g.settingsLock.Unlock()
 }
 
-func (g *Bridge) onConfigDevicesPublish(client mqtt.Client, message mqtt.Message) {
-
-}
+func (g *Bridge) onConfigDevicesPublish(client mqtt.Client, message mqtt.Message) {}
 
 func (g *Bridge) safeGetDevice(friendlyName string) (device *Device, err error) {
 
@@ -315,7 +333,12 @@ func (g *Bridge) configElapsed()  {}
 
 // Resets the ZNP (CC2530/CC2531).
 func (g *Bridge) configReset() {
-	g.mqtt.Publish(g.topic("/bridge/config/reset	"), []byte{}, 0, false)
+	g.mqtt.Publish(g.topic("/bridge/config/reset"), []byte{}, 0, false)
+}
+
+func (g *Bridge) ConfigReset() {
+	g.configReset()
+	time.Sleep(time.Second * 5)
 }
 
 func (g *Bridge) configLogLevel() {}
@@ -337,10 +360,27 @@ func (g *Bridge) Rename()      {}
 func (g *Bridge) RenameLast()  {}
 func (g *Bridge) AddGroup()    {}
 func (g *Bridge) RemoveGroup() {}
-func (g *Bridge) Networkmap()  {}
+
+func (g *Bridge) UpdateNetworkmap() {
+	g.networkmapLock.Lock()
+	defer g.networkmapLock.Unlock()
+
+	if g.scanInProcess {
+		return
+	}
+	g.scanInProcess = true
+
+	g.mqtt.Publish(g.topic("/bridge/networkmap"), []byte("graphviz"), 0, false)
+}
+
+func (g *Bridge) Networkmap() string {
+	g.networkmapLock.Lock()
+	defer g.networkmapLock.Unlock()
+	return g.networkmap
+}
 
 func (g *Bridge) topic(s string) string {
-	return fmt.Sprintf("%s/%s", g.model.BaseTopic, s)
+	return fmt.Sprintf("%s%s", g.model.BaseTopic, s)
 }
 
 func (g *Bridge) GetDeviceTopic(friendlyName string) string {

@@ -96,3 +96,38 @@ func (n *Zigbee2mqttEndpoint) Delete(id int64) (err error) {
 
 	return
 }
+
+func (n *Zigbee2mqttEndpoint) ResetBridge(id int64) (err error) {
+
+	err = n.zigbee2mqtt.ResetBridge(id)
+
+	return
+}
+
+func (n *Zigbee2mqttEndpoint) DeviceBan(id int64, friendlyName string) (err error) {
+
+	err = n.zigbee2mqtt.BridgeDeviceBan(id, friendlyName)
+
+	return
+}
+
+func (n *Zigbee2mqttEndpoint) DeviceWhitelist(id int64, friendlyName string) (err error) {
+
+	err = n.zigbee2mqtt.BridgeDeviceWhitelist(id, friendlyName)
+
+	return
+}
+
+func (n *Zigbee2mqttEndpoint) Networkmap(id int64) (networkmap string, err error) {
+
+	networkmap, err = n.zigbee2mqtt.BridgeNetworkmap(id)
+
+	return
+}
+
+func (n *Zigbee2mqttEndpoint) UpdateNetworkmap(id int64) (err error) {
+
+	err = n.zigbee2mqtt.BridgeUpdateNetworkmap(id)
+
+	return
+}

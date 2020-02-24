@@ -238,4 +238,9 @@ func (s *Server) setControllers() {
 	v1.PUT("/zigbee2mqtt/:id", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Update)
 	v1.DELETE("/zigbee2mqtt/:id", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Delete)
 	v1.GET("/zigbee2mqtts", s.af.Auth, s.ControllersV1.Zigbee2mqtt.GetList)
+	v1.POST("/zigbee2mqtt/:id/reset", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Reset)
+	v1.POST("/zigbee2mqtt/:id/device_ban", s.af.Auth, s.ControllersV1.Zigbee2mqtt.DeviceBan)
+	v1.POST("/zigbee2mqtt/:id/device_whitelist", s.af.Auth, s.ControllersV1.Zigbee2mqtt.DeviceWhitelist)
+	v1.GET("/zigbee2mqtt/:id/networkmap", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Networkmap)
+	v1.POST("/zigbee2mqtt/:id/update_networkmap", s.af.Auth, s.ControllersV1.Zigbee2mqtt.UpdateNetworkmap)
 }

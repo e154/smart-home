@@ -101,7 +101,7 @@ func (c ControllerZigbee2mqtt) Add(ctx *gin.Context) {
 	resp.SetData(result).Send(ctx)
 }
 
-// swagger:operation GET /zigbee2mqtt/{id} nodeGetById
+// swagger:operation GET /zigbee2mqtt/{id} bridgeGetById
 // ---
 // parameters:
 // - description: get zigbee2mqtt bridge by ID
@@ -348,4 +348,270 @@ func (c ControllerZigbee2mqtt) Delete(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
+// swagger:operation POST /zigbee2mqtt/{id}/reset bridgeResetById
+// ---
+// parameters:
+// - description: reset zigbee2mqtt bridge by ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: reset zigbee2mqtt bridge by ID
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - zigbee2mqtt
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerZigbee2mqtt) Reset(ctx *gin.Context) {
 
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	if err := c.endpoint.Zigbee2mqtt.ResetBridge(int64(aid)); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	NewSuccess().Send(ctx)
+}
+
+// swagger:operation POST /zigbee2mqtt/{id}/device_ban banDevice
+// ---
+// parameters:
+// - description: set device to ban
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - name: friendly_name
+//   in: query
+//   description: device id
+//   required: true
+//   type: text
+// summary: set device to ban
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - zigbee2mqtt
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerZigbee2mqtt) DeviceBan(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	friendlyName := ctx.Param("friendly_name")
+	if friendlyName == "" {
+		NewError(400, "friendly_name is required param").Send(ctx)
+		return
+	}
+
+	if err := c.endpoint.Zigbee2mqtt.DeviceBan(int64(aid), friendlyName); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	NewSuccess().Send(ctx)
+}
+
+// swagger:operation POST /zigbee2mqtt/{id}/device_whitelist deviceWhitelist
+// ---
+// parameters:
+// - description: set device by id to white list
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// - name: friendly_name
+//   in: query
+//   description: device id
+//   required: true
+//   type: text
+// summary: set device by id to white list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - zigbee2mqtt
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerZigbee2mqtt) DeviceWhitelist(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	friendlyName := ctx.Param("friendly_name")
+	if friendlyName == "" {
+		NewError(400, "friendly_name is required param").Send(ctx)
+		return
+	}
+
+	if err := c.endpoint.Zigbee2mqtt.DeviceWhitelist(int64(aid), friendlyName); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	NewSuccess().Send(ctx)
+}
+
+// swagger:operation GET /zigbee2mqtt/{id}/networkmap Networkmap
+// ---
+// parameters:
+// - description: get network map
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: get network map
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - zigbee2mqtt
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerZigbee2mqtt) Networkmap(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	var networkmap string
+	if networkmap, err = c.endpoint.Zigbee2mqtt.Networkmap(int64(aid)); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	ctx.String(200, networkmap)
+}
+
+// swagger:operation POST /zigbee2mqtt/{id}/update_networkmap UpdateNetworkmap
+// ---
+// parameters:
+// - description: update network map
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
+// summary: reset update network map
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - zigbee2mqtt
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerZigbee2mqtt) UpdateNetworkmap(ctx *gin.Context) {
+
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	if err := c.endpoint.Zigbee2mqtt.UpdateNetworkmap(int64(aid)); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	NewSuccess().Send(ctx)
+}

@@ -143,10 +143,10 @@ func (z *Zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
-	if br, ok := z.bridges[model.Id]; ok {
-		br.UpdateModel(model)
+	var bridge *Bridge
+	if bridge, err = z.unsafeGetBridge(model.Id); err == nil {
+		bridge.UpdateModel(model)
 	} else {
-		err = adaptors.ErrRecordNotFound
 		return
 	}
 
@@ -159,19 +159,82 @@ func (z *Zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 	return
 }
 
-func (z *Zigbee2mqtt) DeleteBridge(id int64) (err error) {
+func (z *Zigbee2mqtt) DeleteBridge(bridgeId int64) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
-	if br, ok := z.bridges[id]; ok {
-		br.Stop(context.Background())
-		delete(z.bridges, id)
+	var bridge *Bridge
+	if bridge, err = z.unsafeGetBridge(bridgeId); err == nil {
+		bridge.Stop(context.Background())
+		delete(z.bridges, bridgeId)
 	} else {
-		err = adaptors.ErrRecordNotFound
 		return
 	}
 
-	err = z.adaptors.Zigbee2mqtt.Delete(id)
+	err = z.adaptors.Zigbee2mqtt.Delete(bridgeId)
 
+	return
+}
+
+func (z *Zigbee2mqtt) ResetBridge(bridgeId int64) (err error) {
+	z.bridgesLock.Lock()
+	defer z.bridgesLock.Unlock()
+
+	var bridge *Bridge
+	if bridge, err = z.unsafeGetBridge(bridgeId); err == nil {
+		bridge.ConfigReset()
+	}
+	return
+}
+
+func (z *Zigbee2mqtt) BridgeDeviceBan(bridgeId int64, friendlyName string) (err error) {
+	z.bridgesLock.Lock()
+	defer z.bridgesLock.Unlock()
+
+	var bridge *Bridge
+	if bridge, err = z.unsafeGetBridge(bridgeId); err == nil {
+		bridge.Ban(friendlyName)
+	}
+	return
+}
+
+func (z *Zigbee2mqtt) BridgeDeviceWhitelist(bridgeId int64, friendlyName string) (err error) {
+	z.bridgesLock.Lock()
+	defer z.bridgesLock.Unlock()
+
+	var bridge *Bridge
+	if bridge, err = z.unsafeGetBridge(bridgeId); err == nil {
+		bridge.Whitelist(friendlyName)
+	}
+	return
+}
+
+func (z *Zigbee2mqtt) BridgeNetworkmap(bridgeId int64) (networkmap string, err error) {
+	z.bridgesLock.Lock()
+	defer z.bridgesLock.Unlock()
+
+	var bridge *Bridge
+	if bridge, err = z.unsafeGetBridge(bridgeId); err == nil {
+		networkmap = bridge.Networkmap()
+	}
+	return
+}
+
+func (z *Zigbee2mqtt) BridgeUpdateNetworkmap(bridgeId int64) (err error) {
+	z.bridgesLock.Lock()
+	defer z.bridgesLock.Unlock()
+
+	var bridge *Bridge
+	if bridge, err = z.unsafeGetBridge(bridgeId); err == nil {
+		bridge.UpdateNetworkmap()
+	}
+	return
+}
+
+func (z *Zigbee2mqtt) unsafeGetBridge(bridgeId int64) (bridge *Bridge, err error) {
+	var ok bool
+	if bridge, ok = z.bridges[bridgeId]; !ok {
+		err = adaptors.ErrRecordNotFound
+	}
 	return
 }
