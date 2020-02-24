@@ -403,4 +403,7 @@ func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 
 	g.model.Login = model.Login
 	g.model.BaseTopic = model.BaseTopic
+	g.model.PermitJoin = model.PermitJoin
+
+	g.configPermitJoin(g.model.PermitJoin)
 }
