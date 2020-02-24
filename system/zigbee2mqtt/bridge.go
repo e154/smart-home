@@ -28,7 +28,6 @@ import (
 	mqttServer "github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_client"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -160,41 +159,13 @@ func (g *Bridge) onAssistPublish(client mqtt.Client, message mqtt.Message) {
 	_ = json.Unmarshal(message.Payload(), &deviceInfo)
 
 	device, err := g.safeGetDevice(friendlyName)
-	if err != nil && err.Error() != "record not found" {
-		log.Error(err.Error())
+	if err != nil {
 		return
 	}
 
-	if err != nil && err.Error() == "record not found" {
-		r := regexp.MustCompile(`\((.*?)\)`)
-		devModel := r.FindString(deviceInfo.Device.Model)
-		modelDesc := strings.Replace(deviceInfo.Device.Model, devModel, "", -1)
-		devModel = strings.Replace(devModel, "(", "", -1)
-		devModel = strings.Replace(devModel, ")", "", -1)
-
-		model := &m.Zigbee2mqttDevice{
-			Id:            friendlyName,
-			Status:        active,
-			Zigbee2mqttId: g.model.Id,
-			Name:          friendlyName,
-			Type:          deviceType,
-			Functions:     []string{function},
-			Model:         devModel,
-			Description:   modelDesc,
-			Manufacturer:  deviceInfo.Device.Manufacturer,
-		}
-		device = NewDevice(friendlyName, model)
-
-	}
-
-	fmt.Println("----")
-	fmt.Println(g.model.Id)
-
-	if err == nil {
-		device.AddFunc(function)
-		device.DeviceType(deviceType)
-		device.SetStatus(active)
-	}
+	device.AddFunc(function)
+	device.DeviceType(deviceType)
+	device.SetStatus(active)
 
 	if err = g.safeUpdateDevice(device); err != nil {
 		log.Error(err.Error())
@@ -253,7 +224,7 @@ func (g *Bridge) safeGetDevice(friendlyName string) (device *Device, err error) 
 	g.devicesLock.Lock()
 	defer g.devicesLock.Unlock()
 
-	log.Infof("Get device %v", friendlyName)
+	//log.Infof("Get device %v", friendlyName)
 
 	var ok bool
 	if device, ok = g.devices[friendlyName]; !ok {
@@ -311,9 +282,9 @@ func (g *Bridge) onLogPublish(client mqtt.Client, message mqtt.Message) {
 	case "device_force_removed":
 		g.deviceForceRemoved(lm.Message)
 	case "pairing":
-		if friendlyName, ok := lm.Meta["friendly_name"].(string); ok {
-			g.devicePairing(friendlyName)
-		}
+		params := BridgePairingMeta{}
+		_ = common.Copy(&params, lm.Meta, common.JsonEngine)
+		g.devicePairing(params)
 	}
 }
 
@@ -403,7 +374,6 @@ func (g *Bridge) GetDeviceTopic(friendlyName string) string {
 func (g *Bridge) deviceRemoved(friendlyName string) {
 	device, err := g.safeGetDevice(friendlyName)
 	if err != nil {
-		log.Error(err.Error())
 		return
 	}
 	device.SetStatus(removed)
@@ -424,16 +394,33 @@ func (g *Bridge) deviceForceRemoved(friendlyName string) {
 	}
 }
 
-func (g *Bridge) devicePairing(friendlyName string) {
-	device, err := g.safeGetDevice(friendlyName)
-	if err != nil {
+func (g *Bridge) devicePairing(params BridgePairingMeta) {
+
+	device, err := g.safeGetDevice(params.FriendlyName)
+	if err != nil && err.Error() != "record not found" {
 		log.Error(err.Error())
 		return
 	}
-	if device.Status() == active {
-		return
+
+	if err != nil && err.Error() == "record not found" {
+		model := &m.Zigbee2mqttDevice{
+			Id:            params.FriendlyName,
+			Status:        active,
+			Zigbee2mqttId: g.model.Id,
+			Name:          params.FriendlyName,
+			Model:         params.Model,
+			Description:   params.Description,
+			Manufacturer:  params.Vendor,
+		}
+
+		device = NewDevice(params.FriendlyName, model)
 	}
+
 	device.SetStatus(active)
+	device.SetModel(params.Model)
+	device.SetDescription(params.Description)
+	device.SetVendor(params.Vendor)
+
 	if err = g.safeUpdateDevice(device); err != nil {
 		log.Error(err.Error())
 	}

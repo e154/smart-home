@@ -81,3 +81,21 @@ func (d *Device) SetName(name string) {
 	d.model.Name = name
 	d.modelLock.Unlock()
 }
+
+func (d *Device) SetModel(model string) {
+	d.modelLock.Lock()
+	d.model.Model = model
+	d.modelLock.Unlock()
+}
+
+func (d *Device) SetDescription(desc string) {
+	d.modelLock.Lock()
+	d.model.Description = desc
+	d.modelLock.Unlock()
+}
+
+func (d *Device) SetVendor(vendor string) {
+	d.modelLock.Lock()
+	d.model.Manufacturer = vendor
+	d.modelLock.Unlock()
+}

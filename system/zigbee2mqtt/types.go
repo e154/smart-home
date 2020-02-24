@@ -42,6 +42,14 @@ type BridgeLog struct {
 	Meta    map[string]interface{} `json:"meta"`
 }
 
+type BridgePairingMeta struct {
+	FriendlyName string `json:"friendly_name"`
+	Model        string `json:"model"`
+	Vendor       string `json:"vendor"`
+	Description  string `json:"description"`
+	Supported    bool   `json:"supported"`
+}
+
 type BridgeConfigMeta struct {
 	Transportrev int64 `json:"transportrev"`
 	Product      int64 `json:"product"`
