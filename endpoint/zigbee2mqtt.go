@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 type Zigbee2mqttEndpoint struct {
@@ -51,9 +52,9 @@ func (n *Zigbee2mqttEndpoint) Add(params *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 	return
 }
 
-func (n *Zigbee2mqttEndpoint) GetById(id int64) (result *m.Zigbee2mqtt, err error) {
+func (n *Zigbee2mqttEndpoint) GetById(id int64) (result *zigbee2mqtt.Zigbee2mqttInfo, err error) {
 
-	result, err = n.zigbee2mqtt.GetBridgeById(id)
+	result, err = n.zigbee2mqtt.GetBridgeInfo(id)
 
 	return
 }

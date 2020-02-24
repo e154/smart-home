@@ -126,6 +126,16 @@ func (z *Zigbee2mqtt) GetBridgeById(id int64) (*m.Zigbee2mqtt, error) {
 	return nil, adaptors.ErrRecordNotFound
 }
 
+func (z *Zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error) {
+	z.bridgesLock.Lock()
+	defer z.bridgesLock.Unlock()
+
+	if br, ok := z.bridges[id]; ok {
+		return br.Info(), nil
+	}
+	return nil, adaptors.ErrRecordNotFound
+}
+
 func (z *Zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (models []m.Zigbee2mqtt, total int64, err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()

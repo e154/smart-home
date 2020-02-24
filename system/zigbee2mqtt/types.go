@@ -18,6 +18,11 @@
 
 package zigbee2mqtt
 
+import (
+	m "github.com/e154/smart-home/models"
+	"time"
+)
+
 type DeviceType string
 
 const (
@@ -74,3 +79,11 @@ const (
 	banned  = "banned"
 	removed = "removed"
 )
+
+type Zigbee2mqttInfo struct {
+	ScanInProcess bool          `json:"scan_in_process"`
+	LastScan      time.Time     `json:"last_scan"`
+	Networkmap    string        `json:"networkmap"`
+	Status        string        `json:"status"`
+	Model         m.Zigbee2mqtt `json:"model"`
+}

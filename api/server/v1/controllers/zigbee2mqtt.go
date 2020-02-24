@@ -150,7 +150,7 @@ func (c ControllerZigbee2mqtt) GetById(ctx *gin.Context) {
 		return
 	}
 
-	result := &models.Zigbee2mqtt{}
+	result := &models.Zigbee2mqttInfo{}
 	common.Copy(&result, &bridge, common.JsonEngine)
 
 	resp := NewSuccess()

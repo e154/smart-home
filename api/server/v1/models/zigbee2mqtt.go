@@ -53,3 +53,12 @@ type Zigbee2mqtt struct {
 	CreatedAt  time.Time            `json:"created_at"`
 	UpdatedAt  time.Time            `json:"updated_at"`
 }
+
+// swagger:model
+type Zigbee2mqttInfo struct {
+	ScanInProcess bool        `json:"scan_in_process"`
+	LastScan      time.Time   `json:"last_scan"`
+	Networkmap    string      `json:"networkmap"`
+	Status        string      `json:"status"`
+	Model         Zigbee2mqtt `json:"model"`
+}

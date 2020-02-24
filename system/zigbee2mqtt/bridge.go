@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	mqttServer "github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_client"
@@ -446,4 +447,31 @@ func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 	g.model.PermitJoin = model.PermitJoin
 
 	g.configPermitJoin(g.model.PermitJoin)
+}
+
+func (g *Bridge) Info() (info *Zigbee2mqttInfo) {
+
+	g.networkmapLock.Lock()
+	g.settingsLock.Lock()
+	g.devicesLock.Lock()
+
+	defer func() {
+		g.networkmapLock.Unlock()
+		g.settingsLock.Unlock()
+		g.devicesLock.Unlock()
+	}()
+
+	model := m.Zigbee2mqtt{}
+
+	_ = common.Copy(&model, g.model, common.JsonEngine)
+
+	info = &Zigbee2mqttInfo{
+		ScanInProcess: g.scanInProcess,
+		LastScan:      g.lastScan,
+		Networkmap:    g.networkmap,
+		Status:        g.state,
+		Model:         model,
+	}
+
+	return
 }
