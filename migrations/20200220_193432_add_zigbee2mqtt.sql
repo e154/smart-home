@@ -15,6 +15,7 @@ CREATE TABLE zigbee2mqtt
 
 create unique index base_topic_at_zigbee2mqtt_unq on zigbee2mqtt (base_topic);
 create type zigbee2mqtt_devices_status as enum ('active', 'banned', 'removed');
+create index login_at_zigbee2mqtt_idx on zigbee2mqtt (login);
 
 CREATE TABLE zigbee2mqtt_devices
 (

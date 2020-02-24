@@ -119,13 +119,14 @@ func (n *Zigbee2mqtt) fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt) {
 
 func (n *Zigbee2mqtt) toDb(ver *m.Zigbee2mqtt) (dbVer *db.Zigbee2mqtt) {
 	dbVer = &db.Zigbee2mqtt{
-		Id:         ver.Id,
-		Login:      ver.Login,
-		Name:       ver.Name,
-		PermitJoin: ver.PermitJoin,
-		BaseTopic:  ver.BaseTopic,
-		CreatedAt:  ver.CreatedAt,
-		UpdatedAt:  ver.UpdatedAt,
+		Id:                ver.Id,
+		Login:             ver.Login,
+		Name:              ver.Name,
+		PermitJoin:        ver.PermitJoin,
+		BaseTopic:         ver.BaseTopic,
+		CreatedAt:         ver.CreatedAt,
+		UpdatedAt:         ver.UpdatedAt,
+		EncryptedPassword: "",
 	}
 	if ver.Password != "" {
 		dbVer.EncryptedPassword, _ = common.HashPassword(ver.Password)
