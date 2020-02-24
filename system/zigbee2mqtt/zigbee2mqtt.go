@@ -121,7 +121,8 @@ func (z *Zigbee2mqtt) GetBridgeById(id int64) (*m.Zigbee2mqtt, error) {
 	defer z.bridgesLock.Unlock()
 
 	if br, ok := z.bridges[id]; ok {
-		return br.model, nil
+		model := br.GetModel()
+		return &model, nil
 	}
 	return nil, adaptors.ErrRecordNotFound
 }
@@ -143,7 +144,7 @@ func (z *Zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (mo
 	total = int64(len(z.bridges))
 
 	for _, br := range z.bridges {
-		models = append(models, *br.model)
+		models = append(models, br.GetModel())
 	}
 
 	return
@@ -261,6 +262,17 @@ func (z *Zigbee2mqtt) GetTopicByDevice(model *m.Zigbee2mqttDevice) (topic string
 	}
 
 	br.GetDeviceTopic(model.Id)
+
+	return
+}
+
+func (z *Zigbee2mqtt) DeviceRename(friendlyName, name string) (err error) {
+	z.bridgesLock.Lock()
+	defer z.bridgesLock.Unlock()
+
+	for _, bridge := range z.bridges {
+		_ = bridge.RenameDevice(friendlyName, name)
+	}
 
 	return
 }

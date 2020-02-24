@@ -81,6 +81,21 @@ func (n *Zigbee2mqttDevice) List(limit, offset int64) (list []*m.Zigbee2mqttDevi
 	return
 }
 
+func (n *Zigbee2mqttDevice) Search(query string, limit, offset int) (list []*m.Zigbee2mqttDevice, total int64, err error) {
+	var dbList []*db.Zigbee2mqttDevice
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.Zigbee2mqttDevice, 0)
+	for _, dbNode := range dbList {
+		node := n.fromDb(dbNode)
+		list = append(list, node)
+	}
+
+	return
+}
+
 func (n *Zigbee2mqttDevice) fromDb(dbVer *db.Zigbee2mqttDevice) (ver *m.Zigbee2mqttDevice) {
 	ver = &m.Zigbee2mqttDevice{
 		Id:            dbVer.Id,

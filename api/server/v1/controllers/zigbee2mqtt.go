@@ -615,3 +615,112 @@ func (c ControllerZigbee2mqtt) UpdateNetworkmap(ctx *gin.Context) {
 
 	NewSuccess().Send(ctx)
 }
+
+// swagger:operation PATCH /zigbee2mqtts/device_rename deviceRename
+// ---
+// parameters:
+// - name: friendly_name
+//   in: query
+//   description: device id
+//   required: true
+//   type: string
+// - name: name
+//   in: query
+//   description: new name
+//   required: true
+//   type: string
+// summary: rename device
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - zigbee2mqtt
+// responses:
+//   "200":
+//	   $ref: '#/responses/Success'
+//   "400":
+//	   $ref: '#/responses/Error'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "404":
+//	   $ref: '#/responses/Error'
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerZigbee2mqtt) DeviceRename(ctx *gin.Context) {
+
+	friendlyName := ctx.Query("friendly_name")
+	if friendlyName == "" {
+		NewError(400, "friendly_name is required param").Send(ctx)
+		return
+	}
+
+	name := ctx.Query("name")
+	if name == "" {
+		NewError(400, "name is required param").Send(ctx)
+		return
+	}
+
+	if err := c.endpoint.Zigbee2mqtt.DeviceRename(friendlyName, name); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	NewSuccess().Send(ctx)
+}
+
+// swagger:operation GET /zigbee2mqtts/search_device zigbee2mqttSearchDevice
+// ---
+// summary: search device by name
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - zigbee2mqtt
+// parameters:
+// - description: query
+//   in: query
+//   name: query
+//   type: string
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// responses:
+//   "200":
+//	   $ref: '#/responses/Zigbee2mqttDeviceSearch'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerZigbee2mqtt) Search(ctx *gin.Context) {
+
+	query, limit, offset := c.select2(ctx)
+	items, _, err := c.endpoint.Zigbee2mqtt.SearchDevice(query, limit, offset)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	result := make([]*models.Zigbee2mqttDeviceShort, 0)
+	common.Copy(&result, &items)
+
+	resp := NewSuccess()
+	resp.Item("devices", result)
+	resp.Send(ctx)
+}

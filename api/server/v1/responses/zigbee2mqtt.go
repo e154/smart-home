@@ -34,3 +34,11 @@ type Zigbee2mqttList struct {
 		} `json:"meta"`
 	}
 }
+
+// swagger:response Zigbee2mqttDeviceSearch
+type Zigbee2mqttDeviceSearch struct {
+	// in:body
+	Body struct {
+		Zigbee2mqttDevices []*models.Zigbee2mqttDeviceShort `json:"devices"`
+	}
+}

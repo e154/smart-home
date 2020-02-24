@@ -16,40 +16,15 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package db
+package models
 
-import (
-	"github.com/jinzhu/gorm"
-	"time"
-)
-
-type FlowZigbee2mqttDevices struct {
-	db *gorm.DB
-}
-
-func NewFlowZigbee2mqttDevices(db *gorm.DB) *FlowZigbee2mqttDevices {
-	return &FlowZigbee2mqttDevices{db: db}
-}
+import "time"
 
 type FlowZigbee2mqttDevice struct {
-	Id                  int64 `gorm:"primary_key"`
-	Flow                *Flow
-	FlowId              int64
-	Zigbee2mqttDevice   *Zigbee2mqttDevice
-	Zigbee2mqttDeviceId string
-	CreatedAt           time.Time
-}
-
-func (d *FlowZigbee2mqttDevice) TableName() string {
-	return "flow_zigbee2mqtt_devices"
-}
-
-func (f *FlowZigbee2mqttDevices) Add(sub *FlowZigbee2mqttDevice) (err error) {
-	err = f.db.Create(sub).Error
-	return
-}
-
-func (f *FlowZigbee2mqttDevices) Delete(ids []int64) (err error) {
-	err = f.db.Delete(&FlowZigbee2mqttDevice{}, "id in (?)", ids).Error
-	return
+	Id                  int64              `json:"id"`
+	Flow                *Flow              `json:"flow"`
+	FlowId              int64              `json:"flow_id"`
+	Zigbee2mqttDevice   *Zigbee2mqttDevice `json:"zigbee_2_mqtt_device"`
+	Zigbee2mqttDeviceId string             `json:"zigbee_2_mqtt_device_id"`
+	CreatedAt           time.Time          `json:"created_at"`
 }

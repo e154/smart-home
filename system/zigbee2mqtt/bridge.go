@@ -256,6 +256,16 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 
 	g.devices[device.friendlyName] = device
 
+	//TODO optimize
+	g.modelLock.Lock()
+	g.model.Devices = make([]*m.Zigbee2mqttDevice, len(g.devices))
+	i := 0
+	for _, device := range g.devices {
+		g.model.Devices[i] = &device.model
+		i++
+	}
+	g.modelLock.Unlock()
+
 	return
 }
 
@@ -340,7 +350,20 @@ func (g *Bridge) Whitelist(friendlyName string) {
 	g.mqtt.Publish(g.topic("/bridge/config/whitelist"), []byte(friendlyName), 0, false)
 }
 
-func (g *Bridge) Rename()      {}
+func (g *Bridge) RenameDevice(friendlyName, name string) (err error) {
+
+	var device *Device
+	if device, err = g.safeGetDevice(friendlyName); err != nil {
+		return
+	}
+
+	device.SetName(name)
+
+	err = g.safeUpdateDevice(device)
+
+	return
+}
+
 func (g *Bridge) RenameLast()  {}
 func (g *Bridge) AddGroup()    {}
 func (g *Bridge) RemoveGroup() {}
@@ -471,6 +494,16 @@ func (g *Bridge) Info() (info *Zigbee2mqttInfo) {
 		Status:        g.state,
 		Model:         model,
 	}
+
+	return
+}
+
+func (g *Bridge) GetModel() (model m.Zigbee2mqtt) {
+	g.modelLock.Lock()
+	defer g.modelLock.Unlock()
+
+	model = m.Zigbee2mqtt{}
+	_ = common.Copy(&model, &g.model, common.JsonEngine)
 
 	return
 }

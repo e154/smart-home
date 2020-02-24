@@ -40,6 +40,8 @@ type Zigbee2mqttDevice struct {
 
 // swagger:model
 type Zigbee2mqttDeviceShort struct {
-	Id       string `json:"id"`
-	ImageUrl string `json:"image_url"`
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	ImageUrl    string `json:"image_url"`
 }

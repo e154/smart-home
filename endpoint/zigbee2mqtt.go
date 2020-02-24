@@ -132,3 +132,17 @@ func (n *Zigbee2mqttEndpoint) UpdateNetworkmap(id int64) (err error) {
 
 	return
 }
+
+func (n *Zigbee2mqttEndpoint) DeviceRename(friendlyName, name string) (err error) {
+
+	err = n.zigbee2mqtt.DeviceRename(friendlyName, name)
+
+	return
+}
+
+func (n *Zigbee2mqttEndpoint) SearchDevice(query string, limit, offset int) (result []*m.Zigbee2mqttDevice, total int64, err error) {
+
+	result, total, err = n.adaptors.Zigbee2mqttDevice.Search(query, limit, offset)
+
+	return
+}

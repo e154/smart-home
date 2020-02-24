@@ -111,6 +111,111 @@ definitions:
         x-go-name: Token
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DevCommandConfig:
+    type: object
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+  DevModBusConfig:
+    properties:
+      baud:
+        format: int64
+        type: integer
+        x-go-name: Baud
+      data_bits:
+        format: int64
+        type: integer
+        x-go-name: DataBits
+      parity:
+        type: string
+        x-go-name: Parity
+      slave_id:
+        format: int64
+        type: integer
+        x-go-name: SlaveId
+      stop_bits:
+        format: int64
+        type: integer
+        x-go-name: StopBits
+      timeout:
+        format: int64
+        type: integer
+        x-go-name: Timeout
+    type: object
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+  DevModBusRtuConfig:
+    properties:
+      baud:
+        format: int64
+        type: integer
+        x-go-name: Baud
+      data_bits:
+        format: int64
+        type: integer
+        x-go-name: DataBits
+      parity:
+        type: string
+        x-go-name: Parity
+      slave_id:
+        format: int64
+        type: integer
+        x-go-name: SlaveId
+      stop_bits:
+        format: int64
+        type: integer
+        x-go-name: StopBits
+      timeout:
+        format: int64
+        type: integer
+        x-go-name: Timeout
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DevModBusTcpConfig:
+    properties:
+      address_port:
+        type: string
+        x-go-name: AddressPort
+      slave_id:
+        format: int64
+        type: integer
+        x-go-name: SlaveId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DevMqttConfig:
+    properties:
+      address:
+        type: string
+        x-go-name: Address
+      password:
+        type: string
+        x-go-name: Password
+      user:
+        type: string
+        x-go-name: User
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DevSmartBusConfig:
+    properties:
+      baud:
+        format: int64
+        type: integer
+        x-go-name: Baud
+      device:
+        format: int64
+        type: integer
+        x-go-name: Device
+      sleep:
+        format: int64
+        type: integer
+        x-go-name: Sleep
+      stop_bits:
+        format: int64
+        type: integer
+        x-go-name: StopBits
+      timeout:
+        format: int64
+        type: integer
+        x-go-name: Timeout
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Device:
     properties:
       actions:
@@ -286,238 +391,6 @@ definitions:
           x-go-name: Timeout
       type: object
     - properties:
-        address_port:
-          type: string
-          x-go-name: AddressPort
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        address:
-          type: string
-          x-go-name: Address
-        password:
-          type: string
-          x-go-name: Password
-        user:
-          type: string
-          x-go-name: User
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
-          type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        address_port:
-          type: string
-          x-go-name: AddressPort
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        address:
-          type: string
-          x-go-name: Address
-        password:
-          type: string
-          x-go-name: Password
-        user:
-          type: string
-          x-go-name: User
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
-          type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
-          type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
-          type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
         baud:
           format: int64
           type: integer
@@ -563,18 +436,18 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceState:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceStateDevice'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
       id:
         format: int64
         type: integer
@@ -582,8 +455,12 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceStateDevice:
     properties:
       id:
@@ -591,7 +468,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Error:
     properties:
       code:
@@ -1032,10 +909,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapDeviceState:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       device_state:
         $ref: '#/definitions/DeviceState'
       device_state_id:
@@ -1059,14 +932,14 @@ definitions:
       style:
         type: string
         x-go-name: Style
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapElement:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -1099,6 +972,10 @@ definitions:
       status:
         type: string
         x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
@@ -1106,7 +983,7 @@ definitions:
       zone:
         $ref: '#/definitions/MapZone'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElementGraphSettings:
     properties:
       height:
@@ -1135,10 +1012,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapFull:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -1156,12 +1029,8 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapImage:
     properties:
       id:
@@ -1238,7 +1107,7 @@ definitions:
         type: string
         x-go-name: Text
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapZone:
     properties:
       id:
@@ -1486,7 +1355,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDeviceAction:
     properties:
       description:
@@ -1500,7 +1369,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDeviceNode:
     properties:
       id:
@@ -1520,7 +1389,7 @@ definitions:
         type: string
         x-go-name: SystemName
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewFlow:
     properties:
       description:
@@ -1650,7 +1519,7 @@ definitions:
         type: string
         x-go-name: Status
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMapZone:
     properties:
       name:
@@ -2032,12 +1901,6 @@ definitions:
           $ref: '#/definitions/MapDeviceAction'
         type: array
         x-go-name: Actions
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      device:
-        $ref: '#/definitions/Device'
       device_id:
         format: int64
         type: integer
@@ -2066,12 +1929,8 @@ definitions:
       text:
         type: string
         x-go-name: Text
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   RedactorConnector:
     properties:
       direction:
@@ -2157,6 +2016,11 @@ definitions:
         x-go-name: Workers
       workflow:
         $ref: '#/definitions/RedactorWorkflowModel'
+      zigbee2mqtt_devices:
+        items:
+          $ref: '#/definitions/Zigbee2mqttDeviceShort'
+        type: array
+        x-go-name: Zigbee2mqttDevices
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   RedactorObject:
@@ -2487,7 +2351,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateDeviceState:
     properties:
       description:
@@ -2591,7 +2455,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateMapElement:
     properties:
       description:
@@ -2652,7 +2516,7 @@ definitions:
         type: string
         x-go-name: Status
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateNode:
     properties:
       description:
@@ -3383,12 +3247,18 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Zigbee2mqttDeviceShort:
     properties:
+      description:
+        type: string
+        x-go-name: Description
       id:
         type: string
         x-go-name: Id
       image_url:
         type: string
         x-go-name: ImageUrl
+      name:
+        type: string
+        x-go-name: Name
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Zigbee2mqttInfo:
@@ -8003,6 +7873,72 @@ paths:
       summary: get bridge list
       tags:
       - zigbee2mqtt
+  /zigbee2mqtts/device_rename:
+    patch:
+      operationId: deviceRename
+      parameters:
+      - description: device id
+        in: query
+        name: friendly_name
+        required: true
+        type: string
+      - description: new name
+        in: query
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: rename device
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtts/search_device:
+    get:
+      operationId: zigbee2mqttSearchDevice
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Zigbee2mqttDeviceSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search device by name
+      tags:
+      - zigbee2mqtt
 produces:
 - application/json
 responses:
@@ -8686,6 +8622,15 @@ responses:
             $ref: '#/definitions/Workflow'
           type: array
           x-go-name: Workflows
+      type: object
+  Zigbee2mqttDeviceSearch:
+    schema:
+      properties:
+        devices:
+          items:
+            $ref: '#/definitions/Zigbee2mqttDeviceShort'
+          type: array
+          x-go-name: Zigbee2mqttDevices
       type: object
   Zigbee2mqttList:
     schema:
