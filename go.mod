@@ -8,6 +8,7 @@ require (
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlclark/regexp2 v1.2.0 // indirect
+	github.com/docker/distribution v2.7.1+incompatible
 	github.com/dop251/goja v0.0.0-20200126140343-a7d7d4827263
 	github.com/dop251/goja_nodejs v0.0.0-20200128125109-2d688c7e0ac4
 	github.com/eclipse/paho.mqtt.golang v1.2.0

@@ -19,6 +19,7 @@
 package zigbee2mqtt
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
@@ -36,7 +37,6 @@ const (
 )
 
 type Bridge struct {
-	model        *m.Zigbee2mqtt
 	adaptors     *adaptors.Adaptors
 	mqtt         *mqttServer.Mqtt
 	mqttClient   *mqtt_client.Client
@@ -46,6 +46,8 @@ type Bridge struct {
 	config       BridgeConfig
 	devicesLock  sync.Mutex
 	devices      map[string]*Device
+	modelLock    sync.Mutex
+	model        *m.Zigbee2mqtt
 }
 
 func NewBridge(mqtt *mqttServer.Mqtt,
@@ -100,7 +102,7 @@ func (g *Bridge) Start() {
 	log.Info("Starting...")
 }
 
-func (g *Bridge) Stop() {
+func (g *Bridge) Stop(ctx context.Context) {
 	if !g.isStarted {
 		return
 	}
@@ -120,6 +122,8 @@ func (g *Bridge) onBridgePublish(client mqtt.Client, message mqtt.Message) {
 		g.onLogPublish(client, message)
 	case "config":
 		g.onConfigPublish(client, message)
+	case "networkmap":
+		g.onNetworkmapPublish(client, message)
 	default:
 		log.Warningf("unknown topic %v", topic)
 	}
@@ -182,6 +186,11 @@ func (g *Bridge) onBridgeStatePublish(client mqtt.Client, message mqtt.Message) 
 	g.settingsLock.Lock()
 	g.state = string(message.Payload())
 	g.settingsLock.Unlock()
+}
+
+func (g *Bridge) onNetworkmapPublish(client mqtt.Client, message mqtt.Message) {
+	log.Info("method not implemented")
+	fmt.Println(string(message.Payload()))
 }
 
 func (g *Bridge) onConfigPublish(client mqtt.Client, message mqtt.Message) {
@@ -306,7 +315,7 @@ func (g *Bridge) configElapsed()  {}
 
 // Resets the ZNP (CC2530/CC2531).
 func (g *Bridge) configReset() {
-	g.mqtt.Publish(g.topic("/bridge/config/reset"), []byte{}, 0, false)
+	g.mqtt.Publish(g.topic("/bridge/config/reset	"), []byte{}, 0, false)
 }
 
 func (g *Bridge) configLogLevel() {}
@@ -378,9 +387,20 @@ func (g *Bridge) devicePairing(friendlyName string) {
 }
 
 func (g *Bridge) PermitJoin(permitJoin bool) {
+	g.modelLock.Lock()
+	defer g.modelLock.Unlock()
+
 	g.model.PermitJoin = permitJoin
 	if err := g.adaptors.Zigbee2mqtt.Update(g.model); err != nil {
 		return
 	}
 	g.configPermitJoin(g.model.PermitJoin)
+}
+
+func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
+	g.modelLock.Lock()
+	defer g.modelLock.Unlock()
+
+	g.model.Login = model.Login
+	g.model.BaseTopic = model.BaseTopic
 }

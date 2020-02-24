@@ -26,6 +26,7 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 type CommonEndpoint struct {
@@ -36,6 +37,7 @@ type CommonEndpoint struct {
 	gate          *gate_client.GateClient
 	notify        *notify.Notify
 	mqtt          *mqtt.Mqtt
+	zigbee2mqtt   *zigbee2mqtt.Zigbee2mqtt
 }
 
 func NewCommonEndpoint(adaptors *adaptors.Adaptors,
@@ -44,7 +46,8 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	scriptService *scripts.ScriptService,
 	gate *gate_client.GateClient,
 	notify *notify.Notify,
-	mqtt *mqtt.Mqtt) *CommonEndpoint {
+	mqtt *mqtt.Mqtt,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *CommonEndpoint {
 	return &CommonEndpoint{
 		adaptors:      adaptors,
 		core:          core,
@@ -53,5 +56,6 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 		gate:          gate,
 		notify:        notify,
 		mqtt:          mqtt,
+		zigbee2mqtt:   zigbee2mqtt,
 	}
 }

@@ -231,4 +231,11 @@ func (s *Server) setControllers() {
 
 	// version
 	v1.GET("/version", s.ControllersV1.Version.Version)
+
+	// zigbee2mqtt
+	v1.POST("/zigbee2mqtt", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Add)
+	v1.GET("/zigbee2mqtt/:id", s.af.Auth, s.ControllersV1.Zigbee2mqtt.GetById)
+	v1.PUT("/zigbee2mqtt/:id", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Update)
+	v1.DELETE("/zigbee2mqtt/:id", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Delete)
+	v1.GET("/zigbee2mqtts", s.af.Auth, s.ControllersV1.Zigbee2mqtt.GetList)
 }

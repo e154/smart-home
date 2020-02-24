@@ -57,8 +57,7 @@ func (n *Zigbee2mqtt) GetById(id int64) (ver *m.Zigbee2mqtt, err error) {
 }
 
 func (n *Zigbee2mqtt) Update(ver *m.Zigbee2mqtt) (err error) {
-	dbVer := n.toDb(ver)
-	err = n.table.Update(dbVer)
+	err = n.table.Update(n.toDb(ver))
 	return
 }
 
@@ -93,10 +92,14 @@ func (n *Zigbee2mqtt) fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt) {
 		UpdatedAt:  dbVer.UpdatedAt,
 	}
 
-	zigbee2mqttDeviceAdaptor := GetZigbee2mqttDeviceAdaptor(n.db)
-	for _, dbDev := range dbVer.Devices {
-		dev := zigbee2mqttDeviceAdaptor.fromDb(dbDev)
-		ver.Devices = append(ver.Devices, dev)
+	if len(dbVer.Devices) > 0 {
+		zigbee2mqttDeviceAdaptor := GetZigbee2mqttDeviceAdaptor(n.db)
+		for _, dbDev := range dbVer.Devices {
+			dev := zigbee2mqttDeviceAdaptor.fromDb(dbDev)
+			ver.Devices = append(ver.Devices, dev)
+		}
+	} else {
+		ver.Devices = make([]*m.Zigbee2mqttDevice, 0)
 	}
 
 	return

@@ -64,7 +64,9 @@ func (z Zigbee2mqtts) Update(m *Zigbee2mqtt) (err error) {
 		"Login":             m.Login,
 		"PermitJoin":        m.PermitJoin,
 		"BaseTopic":         m.BaseTopic,
-		"EncryptedPassword": m.EncryptedPassword,
+	}
+	if m.EncryptedPassword != "" {
+		q["encrypted_password"] = m.EncryptedPassword
 	}
 	err = z.Db.Model(&Zigbee2mqtt{Id: m.Id}).Updates(q).Error
 	return
