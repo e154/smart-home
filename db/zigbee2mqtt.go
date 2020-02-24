@@ -60,14 +60,13 @@ func (z Zigbee2mqtts) GetById(id int64) (v *Zigbee2mqtt, err error) {
 
 func (z Zigbee2mqtts) Update(m *Zigbee2mqtt) (err error) {
 	q := map[string]interface{}{
-		"Name":       m.Name,
-		"Login":      m.Login,
-		"PermitJoin": m.PermitJoin,
-		"BaseTopic":  m.BaseTopic,
+		"Name":               m.Name,
+		"Login":              m.Login,
+		"PermitJoin":         m.PermitJoin,
+		"BaseTopic":          m.BaseTopic,
+		"encrypted_password": m.EncryptedPassword,
 	}
-	if m.EncryptedPassword != "" {
-		q["encrypted_password"] = m.EncryptedPassword
-	}
+
 	err = z.Db.Model(&Zigbee2mqtt{Id: m.Id}).Updates(q).Error
 	return
 }

@@ -88,6 +88,10 @@ func (a Authenticator) checkZigbee2matt(login, password string) (err error) {
 	//	return
 	//}
 
+	if bridge.EncryptedPassword == "" && password == "" {
+		return
+	}
+
 	if ok := common.CheckPasswordHash(password, bridge.EncryptedPassword); !ok {
 		err = ErrBadLoginOrPassword
 	}
