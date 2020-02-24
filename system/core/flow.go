@@ -102,8 +102,17 @@ func NewFlow(model *m.Flow,
 
 	go flow.mqttMessageWorker()
 
+	cfg := &mqtt_client.Config{
+		KeepAlive:      5,
+		PingTimeout:    5,
+		ConnectTimeout: 5,
+		Qos:            0,
+		CleanSession:   true,
+		ClientID:       mqtt_client.ClientIdGen("flow", model.Id),
+	}
+
 	// mqtt subscriptions
-	if flow.mqttClient, err = mqtt.NewClient(nil); err == nil {
+	if flow.mqttClient, err = mqtt.NewClient(cfg); err == nil {
 		if err = flow.mqttClient.Connect(); err != nil {
 			log.Warning(err.Error())
 			return

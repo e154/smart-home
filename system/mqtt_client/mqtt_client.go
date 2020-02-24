@@ -19,8 +19,10 @@
 package mqtt_client
 
 import (
+	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/op/go-logging"
+	"strings"
 	"sync"
 	"time"
 )
@@ -185,4 +187,13 @@ func (c *Client) onConnect(client MQTT.Client) {
 			log.Error(token.Error().Error())
 		}
 	}
+}
+
+func ClientIdGen(args ...interface{}) string {
+	var b strings.Builder
+	b.WriteString("smarthome")
+	for _, n := range args {
+		fmt.Fprintf(&b, "_%v", n)
+	}
+	return b.String()
 }

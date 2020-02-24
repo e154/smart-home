@@ -26,6 +26,7 @@
 // migrations/20200205_000239_update_device_node_constraint.sql
 // migrations/20200209_001958_update_flow_subscriptions.sql
 // migrations/20200220_193432_add_zigbee2mqtt.sql
+// migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql
 // DO NOT EDIT!
 
 package database
@@ -613,6 +614,26 @@ func migrations20200220_193432_add_zigbee2mqttSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x92\x4f\x8f\xda\x30\x10\xc5\xef\xfe\x14\x73\x5b\x56\xdd\x5c\xf6\xba\xa7\x6c\xe2\xae\xac\x06\x87\xcd\x1f\xa9\xdb\x8b\x65\xec\x01\x2c\x42\x12\x62\x53\x50\x3f\x7d\xe5\x04\x0a\x15\x89\xd4\x6e\x4e\xd1\x78\xde\xf3\xcf\x33\x2f\x08\xe0\xcb\xce\xac\x3b\xe9\x10\xca\x96\x04\x01\xe4\xef\x09\x98\x1a\x2c\x2a\x67\x9a\x1a\x1e\xca\xf6\x01\x8c\x05\x3c\xa1\x3a\x38\xd4\x70\xdc\x60\x0d\x6e\x63\x2c\x0c\x3a\xdf\x64\x2c\xc8\xb6\xad\x0c\x6a\x42\x54\x87\xde\xcc\xc9\x65\x85\xb0\xaa\x9a\xa3\xf8\x65\xd6\x4b\xc4\xe7\xdd\xde\x39\xa1\xf1\xa7\x51\x68\xc9\x8c\x00\x00\x18\x0d\x23\xdf\x2b\x7b\xcb\x69\xc6\xc2\x04\x16\x19\x9b\x87\xd9\x07\x7c\xa3\x1f\x4f\xbd\xa0\xf7\xbb\x53\xbd\xb2\x37\xc6\x8b\xe1\x9f\xa7\x05\xf0\x32\x49\xc8\xe5\x30\x4a\x79\x5e\x64\xa1\x6f\x98\xa2\x11\xcf\xc2\x1f\x59\xb1\xda\x42\x46\xbf\xd2\x8c\xf2\x88\xe6\x7d\xbb\x85\x99\xd1\x8f\x90\x72\x28\x17\x71\x58\x50\x88\xc2\x3c\x0a\x63\xea\x2b\x31\x4d\xe8\xb5\x32\x00\xde\xbb\x7b\x5c\x87\x27\x77\xe1\xf9\x24\xe0\x88\xf1\xdf\xb4\x23\xb2\xff\x64\x1f\x36\xa7\x85\x74\xb7\xc3\x2d\xd8\x9c\xe6\x45\x38\x5f\x14\x3f\xae\xec\x8f\x2f\x84\x44\x19\xf5\xa6\x25\x67\xef\x25\x05\xc6\x63\xfa\x1d\x5c\xd3\x1a\x25\xa4\x13\x93\x2f\x39\xd4\xfb\xfe\xb2\x94\x4f\xbe\x16\x66\xe7\x35\x3f\x8d\x8f\xd3\x5f\x7e\x9b\xdb\xb8\x39\xd6\x97\xe4\xfe\x89\xad\x2f\xfe\x53\x70\xbb\xa6\xaa\x50\xc3\x52\xaa\x2d\xd1\x5d\xd3\x9e\x93\x6b\x56\x80\x27\x63\x9d\x9d\xc6\x54\xd2\x2a\xa9\xf1\x85\x90\xdf\x01\x00\x00\xff\xff\x80\x29\x0e\x68\x46\x03\x00\x00")
+
+func migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql,
+		"migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql",
+	)
+}
+
+func migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql() (*asset, error) {
+	bytes, err := migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql", size: 838, mode: os.FileMode(420), modTime: time.Unix(1582530783, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -691,6 +712,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20200205_000239_update_device_node_constraint.sql": migrations20200205_000239_update_device_node_constraintSql,
 	"migrations/20200209_001958_update_flow_subscriptions.sql": migrations20200209_001958_update_flow_subscriptionsSql,
 	"migrations/20200220_193432_add_zigbee2mqtt.sql": migrations20200220_193432_add_zigbee2mqttSql,
+	"migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql": migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -760,6 +782,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20200205_000239_update_device_node_constraint.sql": &bintree{migrations20200205_000239_update_device_node_constraintSql, map[string]*bintree{}},
 		"20200209_001958_update_flow_subscriptions.sql": &bintree{migrations20200209_001958_update_flow_subscriptionsSql, map[string]*bintree{}},
 		"20200220_193432_add_zigbee2mqtt.sql": &bintree{migrations20200220_193432_add_zigbee2mqttSql, map[string]*bintree{}},
+		"20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql": &bintree{migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql, map[string]*bintree{}},
 	}},
 }}
 

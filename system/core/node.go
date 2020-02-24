@@ -198,7 +198,17 @@ func (n *Node) Connect() *Node {
 	var err error
 	if n.mqttClient == nil {
 		log.Info("create new mqtt client...")
-		if n.mqttClient, err = n.mqtt.NewClient(nil); err != nil {
+
+		cfg := &mqtt_client.Config{
+			KeepAlive:      5,
+			PingTimeout:    5,
+			ConnectTimeout: 5,
+			Qos:            0,
+			CleanSession:   true,
+			ClientID:       mqtt_client.ClientIdGen("node", n.Id),
+		}
+
+		if n.mqttClient, err = n.mqtt.NewClient(cfg); err != nil {
 			log.Error(err.Error())
 		}
 	}

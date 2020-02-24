@@ -74,10 +74,22 @@ func (g *Bridge) Start() {
 	}
 	g.isStarted = true
 
+	log.Infof("bridge id %v,  base topic: %v", g.model.Id, g.model.BaseTopic)
+
 	var err error
 	if g.mqttClient == nil {
+
+		cfg := &mqtt_client.Config{
+			KeepAlive:      5,
+			PingTimeout:    5,
+			ConnectTimeout: 5,
+			Qos:            0,
+			CleanSession:   true,
+			ClientID:       mqtt_client.ClientIdGen("zigbee2mqtt", g.model.Id),
+		}
+
 		log.Info("create new mqtt client...")
-		if g.mqttClient, err = g.mqtt.NewClient(nil); err != nil {
+		if g.mqttClient, err = g.mqtt.NewClient(cfg); err != nil {
 			log.Error(err.Error())
 		}
 	}
@@ -104,8 +116,6 @@ func (g *Bridge) Start() {
 	}
 
 	g.configPermitJoin(g.model.PermitJoin)
-
-	log.Info("Starting...")
 }
 
 func (g *Bridge) Stop(ctx context.Context) {
@@ -176,6 +186,9 @@ func (g *Bridge) onAssistPublish(client mqtt.Client, message mqtt.Message) {
 		device = NewDevice(friendlyName, model)
 
 	}
+
+	fmt.Println("----")
+	fmt.Println(g.model.Id)
 
 	if err == nil {
 		device.AddFunc(function)
@@ -266,7 +279,6 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 	} else {
 		log.Infof("add device %v ...", model.Id)
 		if err = g.adaptors.Zigbee2mqttDevice.Add(&model); err != nil {
-			log.Error(err.Error())
 			return
 		}
 	}
@@ -385,7 +397,7 @@ func (g *Bridge) topic(s string) string {
 }
 
 func (g *Bridge) GetDeviceTopic(friendlyName string) string {
-	return g.topic(friendlyName)
+	return g.topic("/" + friendlyName)
 }
 
 func (g *Bridge) deviceRemoved(friendlyName string) {
