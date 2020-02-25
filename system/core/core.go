@@ -29,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/telemetry"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"github.com/op/go-logging"
 	"sync"
 )
@@ -50,6 +51,7 @@ type Core struct {
 	Map           *Map
 	isRunning     bool
 	stopLock      sync.Mutex
+	zigbee2mqtt   *zigbee2mqtt.Zigbee2mqtt
 }
 
 func NewCore(adaptors *adaptors.Adaptors,
@@ -58,7 +60,8 @@ func NewCore(adaptors *adaptors.Adaptors,
 	cron *cr.Cron,
 	mqtt *mqtt.Mqtt,
 	telemetry telemetry.ITelemetry,
-	streamService *stream.StreamService) (core *Core, err error) {
+	streamService *stream.StreamService,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) (core *Core, err error) {
 
 	core = &Core{
 		nodes:         make(map[int64]*Node),
@@ -72,6 +75,7 @@ func NewCore(adaptors *adaptors.Adaptors,
 		Map: &Map{
 			telemetry: telemetry,
 		},
+		zigbee2mqtt: zigbee2mqtt,
 	}
 
 	graceful.Subscribe(core)
@@ -320,7 +324,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.telemetry)
+	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.telemetry, b.zigbee2mqtt)
 
 	if err = wf.Run(); err != nil {
 		return

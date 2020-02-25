@@ -365,9 +365,10 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 	}
 
 	// zigbee2mqtt subscriptions
+	var exist bool
 	zigbe2mqttDeviceTodoRemove := make([]string, 0)
 	for _, oldDev := range oldFlow.Zigbee2mqttDevices {
-		exist := false
+		exist = false
 		for _, newDev := range params.Zigbee2mqttDevices {
 			if newDev.Id == oldDev.Id {
 				exist = true
@@ -383,12 +384,20 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 	}
 
 	for _, dev := range params.Zigbee2mqttDevices {
-		flowZigbee2mqttDevice := &m.FlowZigbee2mqttDevice{
-			FlowId:              newFlow.Id,
-			Zigbee2mqttDeviceId: dev.Id,
+		exist = false
+		for _, oldDev := range oldFlow.Zigbee2mqttDevices {
+			if oldDev.Id == dev.Id {
+				exist = true
+			}
 		}
-		if err = f.adaptors.FlowZigbee2mqttDevice.Add(flowZigbee2mqttDevice); err != nil {
-			log.Error(err.Error())
+		if !exist {
+			flowZigbee2mqttDevice := &m.FlowZigbee2mqttDevice{
+				FlowId:              newFlow.Id,
+				Zigbee2mqttDeviceId: dev.Id,
+			}
+			if err = f.adaptors.FlowZigbee2mqttDevice.Add(flowZigbee2mqttDevice); err != nil {
+				log.Error(err.Error())
+			}
 		}
 	}
 

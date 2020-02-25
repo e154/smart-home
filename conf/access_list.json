@@ -759,5 +759,49 @@
       "method": "post",
       "description": ""
     }
+  },
+  "zigbee2mqtt": {
+    "read": {
+      "actions": [
+        "/zigbee2mqtt/[0-9]+",
+        "/zigbee2mqtts",
+        "/zigbee2mqtt/[0-9]+/networkmap",
+        "/zigbee2mqtts/search_device"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "create": {
+      "actions": [
+        "/zigbee2mqtt",
+        "/zigbee2mqtt/[0-9]+/reset",
+        "/zigbee2mqtt/[0-9]+/device_ban",
+        "/zigbee2mqtt/[0-9]+/device_whitelist",
+        "/zigbee2mqtt/[0-9]+/update_networkmap"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "update": {
+      "actions": [
+        "/zigbee2mqtt/[0-9]+"
+      ],
+      "method": "patch",
+      "description": ""
+    },
+    "delete": {
+      "actions": [
+        "/zigbee2mqtt/[0-9]+"
+      ],
+      "method": "delete",
+      "description": ""
+    },
+    "rename_device": {
+      "actions": [
+        "/zigbee2mqtts/device_rename"
+      ],
+      "method": "patch",
+      "description": ""
+    }
   }
 }

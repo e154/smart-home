@@ -22,6 +22,7 @@ import (
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/op/go-logging"
+	"github.com/pkg/errors"
 	"strings"
 	"sync"
 	"time"
@@ -103,6 +104,11 @@ func (c *Client) Disconnect() {
 
 func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) (err error) {
 
+	if topic == "" {
+		err = errors.New("Invalid Topic; empty string")
+		return
+	}
+
 	c.Lock()
 	defer c.Unlock()
 
@@ -111,6 +117,9 @@ func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler)
 			Qos:      qos,
 			Callback: callback,
 		}
+	} else {
+		err = fmt.Errorf("topic %s exist", topic)
+		return
 	}
 
 	if token := c.client.Subscribe(topic, qos, callback); token.Wait() && token.Error() != nil {

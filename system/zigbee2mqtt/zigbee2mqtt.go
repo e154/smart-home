@@ -261,7 +261,7 @@ func (z *Zigbee2mqtt) GetTopicByDevice(model *m.Zigbee2mqttDevice) (topic string
 		return
 	}
 
-	br.GetDeviceTopic(model.Id)
+	topic = br.GetDeviceTopic(model.Id)
 
 	return
 }

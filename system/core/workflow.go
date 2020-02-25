@@ -27,6 +27,7 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/telemetry"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"sync"
 	"time"
 )
@@ -46,6 +47,7 @@ type Workflow struct {
 	isRunning       bool
 	scenarioEntered bool
 	telemetry       telemetry.ITelemetry
+	zigbee2mqtt     *zigbee2mqtt.Zigbee2mqtt
 }
 
 func NewWorkflow(model *m.Workflow,
@@ -54,18 +56,20 @@ func NewWorkflow(model *m.Workflow,
 	cron *cr.Cron,
 	core *Core,
 	mqtt *mqtt.Mqtt,
-	telemetry telemetry.ITelemetry) (workflow *Workflow) {
+	telemetry telemetry.ITelemetry,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) (workflow *Workflow) {
 
 	workflow = &Workflow{
-		Storage:   NewStorage(),
-		model:     model,
-		adaptors:  adaptors,
-		scripts:   scripts,
-		Flows:     make(map[int64]*Flow),
-		cron:      cron,
-		core:      core,
-		mqtt:      mqtt,
-		telemetry: telemetry,
+		Storage:     NewStorage(),
+		model:       model,
+		adaptors:    adaptors,
+		scripts:     scripts,
+		Flows:       make(map[int64]*Flow),
+		cron:        cron,
+		core:        core,
+		mqtt:        mqtt,
+		telemetry:   telemetry,
+		zigbee2mqtt: zigbee2mqtt,
 	}
 
 	return
@@ -183,7 +187,7 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 	}
 
 	var model *Flow
-	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts, wf.cron, wf.core, wf.mqtt); err != nil {
+	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts, wf.cron, wf.core, wf.mqtt, wf.zigbee2mqtt); err != nil {
 		log.Error(err.Error())
 		return
 	}
