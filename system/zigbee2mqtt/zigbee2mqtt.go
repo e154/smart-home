@@ -81,7 +81,10 @@ func (z *Zigbee2mqtt) Start() {
 	for _, model := range models {
 		bridge := NewBridge(z.mqtt, z.adaptors, model)
 		bridge.Start()
+
+		z.bridgesLock.Lock()
 		z.bridges[model.Id] = bridge
+		z.bridgesLock.Unlock()
 	}
 }
 
