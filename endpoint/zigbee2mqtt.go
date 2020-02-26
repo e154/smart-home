@@ -79,7 +79,7 @@ func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mq
 	return
 }
 
-func (n *Zigbee2mqttEndpoint) GetList(limit, offset int64, order, sortBy string) (result []m.Zigbee2mqtt, total int64, err error) {
+func (n *Zigbee2mqttEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*zigbee2mqtt.Zigbee2mqttInfo, total int64, err error) {
 
 	result, total, err = n.zigbee2mqtt.ListBridges(limit, offset, order, sortBy)
 

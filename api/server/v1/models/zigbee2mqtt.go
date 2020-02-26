@@ -23,7 +23,6 @@ import "time"
 // swagger:model
 type NewZigbee2mqtt struct {
 	Name           string `json:"name"`
-	Description    string `json:"description"`
 	Login          string `json:"login"`
 	Password       string `json:"password"`
 	PasswordRepeat string `json:"password_repeat"`
@@ -34,7 +33,6 @@ type NewZigbee2mqtt struct {
 // swagger:model
 type UpdateZigbee2mqtt struct {
 	Name           string `json:"name"`
-	Description    string `json:"description"`
 	Login          string `json:"login"`
 	Password       string `json:"password"`
 	PasswordRepeat string `json:"password_repeat"`

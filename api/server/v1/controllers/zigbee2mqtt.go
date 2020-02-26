@@ -119,7 +119,7 @@ func (c ControllerZigbee2mqtt) Add(ctx *gin.Context) {
 //   "200":
 //     description: OK
 //     schema:
-//       $ref: '#/definitions/Zigbee2mqtt'
+//       $ref: '#/definitions/Zigbee2mqttInfo'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -290,7 +290,7 @@ func (c ControllerZigbee2mqtt) GetList(ctx *gin.Context) {
 		return
 	}
 
-	result := make([]*models.Zigbee2mqtt, 0)
+	result := make([]*models.Zigbee2mqttInfo, 0)
 	common.Copy(&result, &items)
 
 	resp := NewSuccess()

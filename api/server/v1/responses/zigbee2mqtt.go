@@ -26,7 +26,7 @@ import (
 type Zigbee2mqttList struct {
 	// in:body
 	Body struct {
-		Items []*models.Zigbee2mqtt `json:"items"`
+		Items []*models.Zigbee2mqttInfo `json:"items"`
 		Meta  struct {
 			Limit       int64 `json:"limit"`
 			ObjectCount int64 `json:"object_count"`

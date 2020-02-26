@@ -140,14 +140,14 @@ func (z *Zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error) {
 	return nil, adaptors.ErrRecordNotFound
 }
 
-func (z *Zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (models []m.Zigbee2mqtt, total int64, err error) {
+func (z *Zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (models []*Zigbee2mqttInfo, total int64, err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
 	total = int64(len(z.bridges))
 
 	for _, br := range z.bridges {
-		models = append(models, br.GetModel())
+		models = append(models, br.Info())
 	}
 
 	return
