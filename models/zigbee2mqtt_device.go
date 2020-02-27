@@ -51,5 +51,5 @@ func (d *Zigbee2mqttDevice) Valid() (ok bool, errs []*validation.Error) {
 }
 
 func (d *Zigbee2mqttDevice) GetImageUrl() {
-	d.ImageUrl = filepath.Join("/static", "devices", fmt.Sprintf("%s.jpg", d.Model))
+	d.ImageUrl = filepath.Join("/api_static", "devices", fmt.Sprintf("%s.jpg", d.Model))
 }
