@@ -46,8 +46,10 @@ package main
 import (
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
+	mqtt2 "github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_client"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+
 	"log"
 	"net"
 	"os"
@@ -106,7 +108,7 @@ publishing the result to any clients subscribed to two topics:
 	clientURI    string
 	clientTopics strlist
 
-	s *gmqtt.Server
+	s mqtt2.IMQTT
 	c *mqtt_client.Client
 	p *netx.Pinger
 
@@ -175,7 +177,7 @@ func pinger() {
 			}
 
 			// Publishes to the server
-			s.Publish(topic, payload, 0, false)
+			s.PublishService().Publish(gmqtt.NewMessage(topic, payload, 0, gmqtt.Retained(false)))
 		}
 
 		p.Stop()
@@ -185,14 +187,18 @@ func pinger() {
 
 func server(cmd *cobra.Command, args []string) {
 
-	// Create a new server
-	s = gmqtt.NewServer(gmqtt.DefaultConfig)
-
 	log.Printf("Starting server...")
 	go func() {
-		if _, err := net.Listen("tcp", serverURI); err != nil {
+		ln, err := net.Listen("tcp", serverURI)
+		if err != nil {
 			log.Fatal(err.Error())
+			return
 		}
+		// Create a new server
+		s = gmqtt.NewServer(
+			gmqtt.WithTCPListener(ln),
+		)
+
 	}()
 	time.Sleep(300 * time.Millisecond)
 

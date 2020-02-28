@@ -27,6 +27,7 @@ func (s *MobileServer) setControllers() {
 	r := s.engine
 
 	r.Static("/upload", common.StoragePath())
+	r.Static("/api_static", common.StaticPath())
 
 	basePath := r.Group("/api")
 

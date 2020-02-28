@@ -19,17 +19,18 @@
 package common
 
 import (
+	"io"
+	"log"
+	"os"
 	"path/filepath"
 	"unicode/utf8"
-	"os"
-	"log"
-	"io"
 )
 
 const (
-	dataDir  = "./data"
-	fileStoragePath = "./file_storage"
-	depth = 3
+	dataDir         = "data"
+	fileStoragePath = "file_storage"
+	staticPath      = "static"
+	depth           = 3
 )
 
 func GetFileSize(name string) (int64, error) {
@@ -76,6 +77,10 @@ func GetLinkPath(name string) string {
 
 func StoragePath() string {
 	return filepath.Join(dataDir, fileStoragePath)
+}
+
+func StaticPath() string {
+	return filepath.Join(dataDir, staticPath)
 }
 
 func FileExist(path string) (exist bool) {

@@ -28,6 +28,7 @@ import (
 	"github.com/e154/smart-home/system/initial"
 	l "github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"github.com/e154/smart-home/version"
 	"github.com/op/go-logging"
 	"os"
@@ -103,13 +104,15 @@ func start() {
 		initialService *initial.InitialService,
 		ws *websocket.WebSocket,
 		mobileServer *mobile.MobileServer,
-		metric *metrics.MetricServer) {
+		metric *metrics.MetricServer,
+		zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) {
 
 		l.Initialize(back)
 		go server.Start()
 		go mobileServer.Start()
 		go ws.Start()
 		go metric.Start()
+		go zigbee2mqtt.Start()
 
 		graceful.Wait()
 	})

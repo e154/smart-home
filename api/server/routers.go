@@ -29,6 +29,7 @@ func (s *Server) setControllers() {
 	r := s.engine
 
 	r.Static("/upload", common.StoragePath())
+	r.Static("/api_static", common.StaticPath())
 
 	basePath := r.Group("/api")
 
@@ -230,4 +231,18 @@ func (s *Server) setControllers() {
 
 	// version
 	v1.GET("/version", s.ControllersV1.Version.Version)
+
+	// zigbee2mqtt
+	v1.POST("/zigbee2mqtt", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Add)
+	v1.GET("/zigbee2mqtt/:id", s.af.Auth, s.ControllersV1.Zigbee2mqtt.GetById)
+	v1.PUT("/zigbee2mqtt/:id", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Update)
+	v1.DELETE("/zigbee2mqtt/:id", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Delete)
+	v1.GET("/zigbee2mqtts", s.af.Auth, s.ControllersV1.Zigbee2mqtt.GetList)
+	v1.POST("/zigbee2mqtt/:id/reset", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Reset)
+	v1.POST("/zigbee2mqtt/:id/device_ban", s.af.Auth, s.ControllersV1.Zigbee2mqtt.DeviceBan)
+	v1.POST("/zigbee2mqtt/:id/device_whitelist", s.af.Auth, s.ControllersV1.Zigbee2mqtt.DeviceWhitelist)
+	v1.GET("/zigbee2mqtt/:id/networkmap", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Networkmap)
+	v1.POST("/zigbee2mqtt/:id/update_networkmap", s.af.Auth, s.ControllersV1.Zigbee2mqtt.UpdateNetworkmap)
+	v1.PATCH("/zigbee2mqtts/device_rename", s.af.Auth, s.ControllersV1.Zigbee2mqtt.DeviceRename)
+	v1.GET("/zigbee2mqtts/search_device", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Search)
 }

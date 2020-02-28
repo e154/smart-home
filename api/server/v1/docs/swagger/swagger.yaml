@@ -111,9 +111,6 @@ definitions:
         x-go-name: Token
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DevCommandConfig:
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DevModBusConfig:
     properties:
       baud:
@@ -141,41 +138,6 @@ definitions:
         x-go-name: Timeout
     type: object
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  DevModBusTcpConfig:
-    properties:
-      address_port:
-        type: string
-        x-go-name: AddressPort
-      slave_id:
-        format: int64
-        type: integer
-        x-go-name: SlaveId
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DevSmartBusConfig:
-    properties:
-      baud:
-        format: int64
-        type: integer
-        x-go-name: Baud
-      device:
-        format: int64
-        type: integer
-        x-go-name: Device
-      sleep:
-        format: int64
-        type: integer
-        x-go-name: Sleep
-      stop_bits:
-        format: int64
-        type: integer
-        x-go-name: StopBits
-      timeout:
-        format: int64
-        type: integer
-        x-go-name: Timeout
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Device:
     properties:
       actions:
@@ -183,6 +145,10 @@ definitions:
           $ref: '#/definitions/DeviceAction'
         type: array
         x-go-name: Actions
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -202,6 +168,8 @@ definitions:
       name:
         type: string
         x-go-name: Name
+      node:
+        $ref: '#/definitions/Node'
       properties:
         $ref: '#/definitions/DeviceProperties'
       states:
@@ -215,8 +183,12 @@ definitions:
       type:
         type: string
         x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceAction:
     properties:
       description:
@@ -254,7 +226,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceProperties:
     allOf:
     - properties:
@@ -305,78 +277,10 @@ definitions:
           x-go-name: Timeout
       type: object
     - type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
-          type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        address_port:
-          type: string
-          x-go-name: AddressPort
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        address:
-          type: string
-          x-go-name: Address
-        password:
-          type: string
-          x-go-name: Password
-        user:
-          type: string
-          x-go-name: User
-      type: object
     description: |-
       An AllOfModel is composed out of embedded structs but it should build
       an allOf property
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceShort:
     properties:
       description:
@@ -399,15 +303,15 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceState:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceStateDevice'
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
       id:
         format: int64
         type: integer
@@ -415,12 +319,8 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceStateDevice:
     properties:
       id:
@@ -531,6 +431,11 @@ definitions:
         format: int64
         type: integer
         x-go-name: WorkflowScenarioId
+      zigbee2mqtt_devices:
+        items:
+          $ref: '#/definitions/Zigbee2mqttDeviceShort'
+        type: array
+        x-go-name: Zigbee2mqttDevices
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   FlowConnection:
@@ -781,38 +686,18 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       id:
         format: int64
         type: integer
         x-go-name: Id
-      image:
-        type: string
-        x-go-name: Image
-      mime_type:
-        type: string
-        x-go-name: MimeType
-      name:
-        type: string
-        x-go-name: Name
-      size:
-        format: int64
-        type: integer
-        x-go-name: Size
       thumb:
         type: string
         x-go-name: Thumb
-      title:
-        type: string
-        x-go-name: Title
       url:
         type: string
         x-go-name: Url
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   Log:
     properties:
       body:
@@ -833,10 +718,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Map:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -849,12 +730,8 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapDevice:
     properties:
       actions:
@@ -862,6 +739,12 @@ definitions:
           $ref: '#/definitions/MapDeviceAction'
         type: array
         x-go-name: Actions
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      device:
+        $ref: '#/definitions/Device'
       device_id:
         format: int64
         type: integer
@@ -884,14 +767,14 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapDeviceAction:
-    properties:
-      created_at:
+      updated_at:
         format: date-time
         type: string
-        x-go-name: CreatedAt
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MapDeviceAction:
+    properties:
       device_action:
         $ref: '#/definitions/DeviceAction'
       device_action_id:
@@ -915,12 +798,8 @@ definitions:
       type:
         type: string
         x-go-name: Type
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapDeviceState:
     properties:
       created_at:
@@ -958,10 +837,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElement:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -994,10 +869,6 @@ definitions:
       status:
         type: string
         x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
@@ -1005,7 +876,7 @@ definitions:
       zone:
         $ref: '#/definitions/MapZone'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapElementGraphSettings:
     properties:
       height:
@@ -1019,7 +890,7 @@ definitions:
         type: integer
         x-go-name: Width
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElementGraphSettingsPosition:
     properties:
       left:
@@ -1031,7 +902,7 @@ definitions:
         type: integer
         x-go-name: Top
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapFull:
     properties:
       description:
@@ -1072,10 +943,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapLayer:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -1100,16 +967,12 @@ definitions:
       status:
         type: string
         x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
         x-go-name: Weight
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapOptions:
     properties:
       element_option_text:
@@ -1148,7 +1011,7 @@ definitions:
         type: string
         x-go-name: Name
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   Message:
     properties:
       created_at:
@@ -1276,7 +1139,7 @@ definitions:
   MqttSession:
     properties:
       await_rel_len:
-        format: int64
+        format: uint64
         type: integer
         x-go-name: AwaitRelLen
       clean_session:
@@ -1294,7 +1157,7 @@ definitions:
         type: string
         x-go-name: DisconnectedAt
       inflight_len:
-        format: int64
+        format: uint64
         type: integer
         x-go-name: InflightLen
       max_await_rel:
@@ -1309,23 +1172,39 @@ definitions:
         format: int64
         type: integer
         x-go-name: MaxMsgQueue
-      msg_delivered_total:
-        format: int64
-        type: integer
-        x-go-name: MsgDeliveredTotal
-      msg_dropped_total:
-        format: int64
-        type: integer
-        x-go-name: MsgDroppedTotal
       msg_queue_len:
-        format: int64
+        format: uint64
         type: integer
         x-go-name: MsgQueueLen
+      qos0_msg_delivered_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos0MsgDeliveredTotal
+      qos0_msg_dropped_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos0MsgDroppedTotal
+      qos1_msg_delivered_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos1MsgDeliveredTotal
+      qos1_msg_dropped_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos1MsgDroppedTotal
+      qos2_msg_delivered_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos2MsgDeliveredTotal
+      qos2_msg_dropped_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos2MsgDroppedTotal
       status:
         type: string
         x-go-name: Status
       subscriptions:
-        format: int64
+        format: uint64
         type: integer
         x-go-name: Subscriptions
     type: object
@@ -1369,7 +1248,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewDeviceAction:
     properties:
       description:
@@ -1383,7 +1262,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceNode:
     properties:
       id:
@@ -1476,7 +1355,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMapElement:
     properties:
       description:
@@ -1792,6 +1671,31 @@ definitions:
         x-go-name: WorkflowId
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewZigbee2mqtt:
+    properties:
+      base_topic:
+        type: string
+        x-go-name: BaseTopic
+      description:
+        type: string
+        x-go-name: Description
+      login:
+        type: string
+        x-go-name: Login
+      name:
+        type: string
+        x-go-name: Name
+      password:
+        type: string
+        x-go-name: Password
+      password_repeat:
+        type: string
+        x-go-name: PasswordRepeat
+      permit_join:
+        type: boolean
+        x-go-name: PermitJoin
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Node:
     properties:
       created_at:
@@ -2015,6 +1919,11 @@ definitions:
         x-go-name: Workers
       workflow:
         $ref: '#/definitions/RedactorWorkflowModel'
+      zigbee2mqtt_devices:
+        items:
+          $ref: '#/definitions/Zigbee2mqttDeviceShort'
+        type: array
+        x-go-name: Zigbee2mqttDevices
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   RedactorObject:
@@ -2327,7 +2236,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateDeviceAction:
     properties:
       description:
@@ -2345,7 +2254,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateDeviceState:
     properties:
       description:
@@ -2357,7 +2266,7 @@ definitions:
         type: string
         x-go-name: SystemName
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateFlow:
     properties:
       description:
@@ -2774,6 +2683,31 @@ definitions:
         x-go-name: WorkflowId
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateZigbee2mqtt:
+    properties:
+      base_topic:
+        type: string
+        x-go-name: BaseTopic
+      description:
+        type: string
+        x-go-name: Description
+      login:
+        type: string
+        x-go-name: Login
+      name:
+        type: string
+        x-go-name: Name
+      password:
+        type: string
+        x-go-name: Password
+      password_repeat:
+        type: string
+        x-go-name: PasswordRepeat
+      permit_join:
+        type: boolean
+        x-go-name: PermitJoin
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UserByIdModelMeta:
     properties:
       key:
@@ -3134,6 +3068,119 @@ definitions:
         format: int64
         type: integer
         x-go-name: WorkflowScenarioId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Zigbee2mqtt:
+    properties:
+      base_topic:
+        type: string
+        x-go-name: BaseTopic
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      devices:
+        items:
+          $ref: '#/definitions/Zigbee2mqttDevice'
+        type: array
+        x-go-name: Devices
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      login:
+        type: string
+        x-go-name: Login
+      name:
+        type: string
+        x-go-name: Name
+      permit_join:
+        type: boolean
+        x-go-name: PermitJoin
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Zigbee2mqttDevice:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      functions:
+        items:
+          type: string
+        type: array
+        x-go-name: Functions
+      id:
+        type: string
+        x-go-name: Id
+      image_url:
+        type: string
+        x-go-name: ImageUrl
+      manufacturer:
+        type: string
+        x-go-name: Manufacturer
+      model:
+        type: string
+        x-go-name: Model
+      name:
+        type: string
+        x-go-name: Name
+      status:
+        type: string
+        x-go-name: Status
+      type:
+        type: string
+        x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      zigbee2mqtt_id:
+        format: int64
+        type: integer
+        x-go-name: Zigbee2mqttId
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Zigbee2mqttDeviceShort:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        type: string
+        x-go-name: Id
+      image_url:
+        type: string
+        x-go-name: ImageUrl
+      name:
+        type: string
+        x-go-name: Name
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Zigbee2mqttInfo:
+    properties:
+      last_scan:
+        format: date-time
+        type: string
+        x-go-name: LastScan
+      model:
+        $ref: '#/definitions/Zigbee2mqtt'
+      networkmap:
+        type: string
+        x-go-name: Networkmap
+      scan_in_process:
+        type: boolean
+        x-go-name: ScanInProcess
+      status:
+        type: string
+        x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
 info:
@@ -7425,6 +7472,376 @@ paths:
       summary: search workflow
       tags:
       - workflow
+  /zigbee2mqtt:
+    post:
+      operationId: bridgeAdd
+      parameters:
+      - description: zigbee2mqtt params
+        in: body
+        name: zigbee2mqtt
+        required: true
+        schema:
+          $ref: '#/definitions/NewZigbee2mqtt'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Zigbee2mqtt'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new zigbee2mqtt
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtt/{id}:
+    delete:
+      operationId: bridgeDeleteById
+      parameters:
+      - description: Zigbee2mqtt ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete bridge by id
+      tags:
+      - zigbee2mqtt
+    get:
+      operationId: bridgeGetById
+      parameters:
+      - description: get zigbee2mqtt bridge by ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Zigbee2mqttInfo'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get zigbee2mqtt bridge by ID
+      tags:
+      - zigbee2mqtt
+    put:
+      operationId: bridgeUpdateById
+      parameters:
+      - description: Zigbee2mqtt ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update bridge params
+        in: body
+        name: bridge
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateZigbee2mqtt'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Zigbee2mqtt'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update bridge by id
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtt/{id}/device_ban:
+    post:
+      operationId: banDevice
+      parameters:
+      - description: set device to ban
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: device id
+        in: query
+        name: friendly_name
+        required: true
+        type: text
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: set device to ban
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtt/{id}/device_whitelist:
+    post:
+      operationId: deviceWhitelist
+      parameters:
+      - description: set device by id to white list
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: device id
+        in: query
+        name: friendly_name
+        required: true
+        type: text
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: set device by id to white list
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtt/{id}/networkmap:
+    get:
+      operationId: Networkmap
+      parameters:
+      - description: get network map
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get network map
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtt/{id}/reset:
+    post:
+      operationId: bridgeResetById
+      parameters:
+      - description: reset zigbee2mqtt bridge by ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: reset zigbee2mqtt bridge by ID
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtt/{id}/update_networkmap:
+    post:
+      operationId: UpdateNetworkmap
+      parameters:
+      - description: update network map
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: reset update network map
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtts:
+    get:
+      operationId: bridgeList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Zigbee2mqttList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get bridge list
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtts/device_rename:
+    patch:
+      operationId: deviceRename
+      parameters:
+      - description: device id
+        in: query
+        name: friendly_name
+        required: true
+        type: string
+      - description: new name
+        in: query
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: rename device
+      tags:
+      - zigbee2mqtt
+  /zigbee2mqtts/search_device:
+    get:
+      operationId: zigbee2mqttSearchDevice
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Zigbee2mqttDeviceSearch'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search device by name
+      tags:
+      - zigbee2mqtt
 produces:
 - application/json
 responses:
@@ -8108,6 +8525,40 @@ responses:
             $ref: '#/definitions/Workflow'
           type: array
           x-go-name: Workflows
+      type: object
+  Zigbee2mqttDeviceSearch:
+    schema:
+      properties:
+        devices:
+          items:
+            $ref: '#/definitions/Zigbee2mqttDeviceShort'
+          type: array
+          x-go-name: Zigbee2mqttDevices
+      type: object
+  Zigbee2mqttList:
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Zigbee2mqttInfo'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
       type: object
 securityDefinitions:
   ApiKeyAuth:

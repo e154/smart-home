@@ -334,7 +334,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 		}
 	}
 
-	// subscriptions
+	// mqtt topic subscriptions
 	subscriptionsTodoRemove := make([]int64, 0)
 	for _, oldSub := range oldFlow.Subscriptions {
 		exist := false
@@ -359,6 +359,43 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 				FlowId: newFlow.Id,
 			}
 			if err = f.adaptors.FlowSubscription.Add(flowSubscription); err != nil {
+				log.Error(err.Error())
+			}
+		}
+	}
+
+	// zigbee2mqtt subscriptions
+	var exist bool
+	zigbe2mqttDeviceTodoRemove := make([]string, 0)
+	for _, oldDev := range oldFlow.Zigbee2mqttDevices {
+		exist = false
+		for _, newDev := range params.Zigbee2mqttDevices {
+			if newDev.Id == oldDev.Id {
+				exist = true
+			}
+		}
+		if !exist {
+			zigbe2mqttDeviceTodoRemove = append(zigbe2mqttDeviceTodoRemove, oldDev.Id)
+		}
+	}
+
+	if err := f.adaptors.FlowZigbee2mqttDevice.Remove(oldFlow.Id, zigbe2mqttDeviceTodoRemove); err != nil {
+		log.Error(err.Error())
+	}
+
+	for _, dev := range params.Zigbee2mqttDevices {
+		exist = false
+		for _, oldDev := range oldFlow.Zigbee2mqttDevices {
+			if oldDev.Id == dev.Id {
+				exist = true
+			}
+		}
+		if !exist {
+			flowZigbee2mqttDevice := &m.FlowZigbee2mqttDevice{
+				FlowId:              newFlow.Id,
+				Zigbee2mqttDeviceId: dev.Id,
+			}
+			if err = f.adaptors.FlowZigbee2mqttDevice.Add(flowZigbee2mqttDevice); err != nil {
 				log.Error(err.Error())
 			}
 		}
@@ -391,18 +428,19 @@ func (n *FlowEndpoint) ExportToRedactor(f *m.Flow) (redactorFlow *m.RedactorFlow
 	}
 
 	redactorFlow = &m.RedactorFlow{
-		Id:            f.Id,
-		Name:          f.Name,
-		Status:        f.Status,
-		Description:   f.Description,
-		Workflow:      f.Workflow,
-		Subscriptions: f.Subscriptions,
-		Scenario:      scenario,
-		Workers:       make([]*m.Worker, 0),
-		Objects:       make([]*m.RedactorObject, 0),
-		Connectors:    make([]*m.RedactorConnector, 0),
-		CreatedAt:     f.CreatedAt,
-		UpdatedAt:     f.UpdatedAt,
+		Id:                 f.Id,
+		Name:               f.Name,
+		Status:             f.Status,
+		Description:        f.Description,
+		Workflow:           f.Workflow,
+		Subscriptions:      f.Subscriptions,
+		Zigbee2mqttDevices: f.Zigbee2mqttDevices,
+		Scenario:           scenario,
+		Workers:            make([]*m.Worker, 0),
+		Objects:            make([]*m.RedactorObject, 0),
+		Connectors:         make([]*m.RedactorConnector, 0),
+		CreatedAt:          f.CreatedAt,
+		UpdatedAt:          f.UpdatedAt,
 	}
 
 	// elements

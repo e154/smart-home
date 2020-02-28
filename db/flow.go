@@ -41,6 +41,7 @@ type Flow struct {
 	FlowElements       []*FlowElement
 	Workers            []*Worker
 	Subscriptions      []*FlowSubscription
+	Zigbee2mqttDevices []*Zigbee2mqttDevice
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 }
@@ -101,6 +102,7 @@ func (n Flows) GetById(flowId int64) (flow *Flow, err error) {
 	}
 
 	err = n.DependencyLoading(flow)
+
 	return
 }
 
@@ -166,6 +168,7 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 	flow.FlowElements = make([]*FlowElement, 0)
 	flow.Workers = make([]*Worker, 0)
 	flow.Subscriptions = make([]*FlowSubscription, 0)
+	flow.Zigbee2mqttDevices = make([]*Zigbee2mqttDevice, 0)
 	flow.Workflow = &Workflow{}
 
 	n.Db.Model(flow).
@@ -219,6 +222,19 @@ func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 		Preload("DeviceAction.Device.Actions").
 		Preload("DeviceAction.Device.Actions.Script").
 		Find(&flow.Workers).
+		Error
+
+	if err != nil {
+		return
+	}
+
+	err = n.Db.Raw(`select *
+from zigbee2mqtt_devices
+where id in (
+    select zigbee2mqtt_device_id
+    from flow_zigbee2mqtt_devices
+    where flow_id = ?
+    )`, flow.Id).Scan(&flow.Zigbee2mqttDevices).
 		Error
 
 	return

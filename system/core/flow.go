@@ -30,6 +30,7 @@ import (
 	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"sync"
 	"time"
@@ -53,6 +54,7 @@ type Flow struct {
 	mqttMessageQueue chan *Message
 	mqttWorkerQuit   chan struct{}
 	message          *Message
+	zigbee2mqtt      *zigbee2mqtt.Zigbee2mqtt
 	sync.Mutex
 	isRunning bool
 	Workers   map[int64]*Worker
@@ -64,7 +66,8 @@ func NewFlow(model *m.Flow,
 	scripts *scripts.ScriptService,
 	cron *cr.Cron,
 	core *Core,
-	mqtt *mqtt.Mqtt) (flow *Flow, err error) {
+	mqtt *mqtt.Mqtt,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) (flow *Flow, err error) {
 
 	flow = &Flow{
 		Storage:          NewStorage(),
@@ -78,6 +81,7 @@ func NewFlow(model *m.Flow,
 		mqttMessageQueue: make(chan *Message),
 		mqttWorkerQuit:   make(chan struct{}),
 		message:          NewMessage(),
+		zigbee2mqtt:      zigbee2mqtt,
 	}
 
 	if flow.scriptEngine, err = flow.NewScript(); err != nil {
@@ -102,19 +106,43 @@ func NewFlow(model *m.Flow,
 
 	go flow.mqttMessageWorker()
 
-	// mqtt subscriptions
-	if flow.mqttClient, err = mqtt.NewClient(nil); err == nil {
-		if err = flow.mqttClient.Connect(); err != nil {
+	cfg := &mqtt_client.Config{
+		KeepAlive:      5,
+		PingTimeout:    5,
+		ConnectTimeout: 5,
+		Qos:            0,
+		CleanSession:   true,
+		ClientID:       mqtt_client.ClientIdGen("flow", model.Id),
+	}
+
+	// mqtt client
+	if flow.mqttClient, err = mqtt.NewClient(cfg); err != nil {
+		return
+	}
+
+	if err = flow.mqttClient.Connect(); err != nil {
+		log.Warning(err.Error())
+		return
+	}
+
+	// raw topic subscriptions
+	for _, subParams := range flow.Model.Subscriptions {
+
+		topic := fmt.Sprintf("%s", subParams.Topic)
+		if err := flow.mqttClient.Subscribe(topic, 0, flow.mqttOnPublish); err != nil {
 			log.Warning(err.Error())
-			return
 		}
+	}
 
-		for _, subParams := range flow.Model.Subscriptions {
-
-			topic := fmt.Sprintf("%s", subParams.Topic)
-			if err := flow.mqttClient.Subscribe(topic, 0, flow.mqttOnPublish); err != nil {
-				log.Warning(err.Error())
-			}
+	// zigbee2mqtt devices
+	var topic string
+	for _, device := range flow.Model.Zigbee2mqttDevices {
+		if topic, err = zigbee2mqtt.GetTopicByDevice(device); err != nil {
+			log.Error(err.Error())
+			continue
+		}
+		if err := flow.mqttClient.Subscribe(topic, 0, flow.mqttOnPublish); err != nil {
+			log.Warning(err.Error())
 		}
 	}
 

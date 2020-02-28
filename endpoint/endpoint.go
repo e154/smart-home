@@ -26,6 +26,7 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"github.com/op/go-logging"
 )
 
@@ -57,6 +58,7 @@ type Endpoint struct {
 	MessageDelivery  *MessageDeliveryEndpoint
 	Mqtt             *MqttEndpoint
 	Version          *VersionEndpoint
+	Zigbee2mqtt      *Zigbee2mqttEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
@@ -65,8 +67,9 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	accessList *access_list.AccessListService,
 	gate *gate_client.GateClient,
 	notify *notify.Notify,
-	mqtt *mqtt.Mqtt) *Endpoint {
-	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify, mqtt)
+	mqtt *mqtt.Mqtt,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *Endpoint {
+	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify, mqtt, zigbee2mqtt)
 	return &Endpoint{
 		Auth:             NewAuthEndpoint(common),
 		Device:           NewDeviceEndpoint(common),
@@ -91,5 +94,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		MessageDelivery:  NewMessageDeliveryEndpoint(common),
 		Mqtt:             NewMqttEndpoint(common),
 		Version:          NewVersionEndpoint(common),
+		Zigbee2mqtt:      NewZigbee2mqttEndpoint(common),
 	}
 }

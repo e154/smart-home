@@ -23,6 +23,9 @@ import (
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
+	"github.com/e154/smart-home/system/mqtt/prometheus"
+	"net/http"
+
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/mqtt/management"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
@@ -31,7 +34,6 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/op/go-logging"
 	"net"
-	"time"
 )
 
 var (
@@ -40,7 +42,7 @@ var (
 
 type Mqtt struct {
 	cfg           *MqttConfig
-	server        *gmqtt.Server
+	server        IMQTT
 	clients       []*mqtt_client.Client
 	authenticator *mqtt_authenticator.Authenticator
 	management    *management.Management
@@ -54,7 +56,6 @@ func NewMqtt(cfg *MqttConfig,
 	mqtt = &Mqtt{
 		cfg:           cfg,
 		authenticator: authenticator,
-		management:    management.NewManagement(),
 	}
 
 	// javascript binding
@@ -76,39 +77,32 @@ func (m *Mqtt) Shutdown() {
 
 func (m *Mqtt) runServer() {
 
-	config := gmqtt.Config{
-		RetryInterval:              m.cfg.RetryInterval * time.Second,
-		RetryCheckInterval:         m.cfg.RetryCheckInterval * time.Second,
-		SessionExpiryInterval:      m.cfg.SessionExpiryInterval,
-		SessionExpireCheckInterval: m.cfg.SessionExpireCheckInterval,
-		QueueQos0Messages:          m.cfg.QueueQos0Messages,
-		MaxInflight:                m.cfg.MaxInflight,
-		MaxAwaitRel:                m.cfg.MaxAwaitRel,
-		MaxMsgQueue:                m.cfg.MaxMsgQueue,
-		DeliverMode:                m.cfg.DeliverMode,
-	}
-
-	// Create a new server
-	m.server = gmqtt.NewServer(config)
-
-	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
-
 	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.Port))
 	if err != nil {
 		log.Error(err.Error())
 	}
 
-	m.server.AddTCPListenner(ln)
+	m.management = management.New()
 
-	// management
-	m.server.AddPlugins(m.management)
+	// Create a new server
+	m.server = gmqtt.NewServer(
+		gmqtt.WithTCPListener(ln),
+		gmqtt.WithPlugin(m.management),
+		gmqtt.WithHook(gmqtt.Hooks{
+			OnConnect:        m.OnConnect,
+			OnConnected:      m.OnConnected,
+			OnClose:          m.OnClose,
+			OnSessionCreated: m.OnSessionCreated,
+			OnSessionResumed: m.OnSessionResumed,
+		}),
+		gmqtt.WithPlugin(prometheus.New(&http.Server{
+			Addr: ":8082",
+		}, "/metrics")),
+	)
 
-	m.server.RegisterOnConnect(m.OnConnect)
-	m.server.RegisterOnConnected(m.OnConnected)
-	m.server.RegisterOnSessionCreated(m.OnSessionCreated)
-	m.server.RegisterOnSessionResumed(m.OnSessionResumed)
+	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
 
-	go m.server.Run()
+	m.server.Run()
 }
 
 func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err error) {
@@ -139,19 +133,23 @@ func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err er
 	return
 }
 
-func (m *Mqtt) OnConnected(cs gmqtt.ChainStore, client gmqtt.Client) {
+func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
 	log.Debug("connected...")
 }
 
-func (m *Mqtt) OnSessionCreated(cs gmqtt.ChainStore, client gmqtt.Client) {
+func (m *Mqtt) OnClose(ctx context.Context, client gmqtt.Client, err error) {
+	log.Debug("disconnected...")
+}
+
+func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {
 	log.Debug("session created...")
 }
 
-func (m *Mqtt) OnSessionResumed(cs gmqtt.ChainStore, client gmqtt.Client) {
+func (m *Mqtt) OnSessionResumed(ctx context.Context, client gmqtt.Client) {
 	log.Debug("session resumed...")
 }
 
-func (m *Mqtt) OnConnect(cs gmqtt.ChainStore, client gmqtt.Client) (code uint8) {
+func (m *Mqtt) OnConnect(ctx context.Context, client gmqtt.Client) (code uint8) {
 
 	username := client.OptionsReader().Username()
 	password := client.OptionsReader().Password()
@@ -169,5 +167,5 @@ func (m *Mqtt) Management() IManagement {
 }
 
 func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) {
-	m.server.Publish(topic, payload, qos, retain)
+	m.server.PublishService().Publish(gmqtt.NewMessage(topic, payload, qos, gmqtt.Retained(retain)))
 }

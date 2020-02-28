@@ -69,16 +69,17 @@ type RedactorObject struct {
 }
 
 type RedactorFlow struct {
-	Id            int64                `json:"id"`
-	Name          string               `json:"name"`
-	Description   string               `json:"description"`
-	Status        StatusType           `json:"status"`
-	Objects       []*RedactorObject    `json:"objects"`
-	Connectors    []*RedactorConnector `json:"connectors"`
-	CreatedAt     time.Time            `json:"created_at"`
-	UpdatedAt     time.Time            `json:"update_at"`
-	Workflow      *Workflow            `json:"workflow"`
-	Subscriptions []*FlowSubscription  `json:"subscriptions"`
-	Scenario      *WorkflowScenario    `json:"scenario"`
-	Workers       []*Worker            `json:"workers"`
+	Id                 int64                `json:"id"`
+	Name               string               `json:"name"`
+	Description        string               `json:"description"`
+	Status             StatusType           `json:"status"`
+	Objects            []*RedactorObject    `json:"objects"`
+	Connectors         []*RedactorConnector `json:"connectors"`
+	CreatedAt          time.Time            `json:"created_at"`
+	UpdatedAt          time.Time            `json:"update_at"`
+	Workflow           *Workflow            `json:"workflow"`
+	Subscriptions      []*FlowSubscription  `json:"subscriptions"`
+	Zigbee2mqttDevices []*Zigbee2mqttDevice `json:"zigbee2mqtt_devices"`
+	Scenario           *WorkflowScenario    `json:"scenario"`
+	Workers            []*Worker            `json:"workers"`
 }

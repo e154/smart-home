@@ -63,6 +63,44 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 		return
 	}
 
+	// nodes
+	if err = a.checkNode(login, password); err == nil {
+		return
+	}
+
+	// zigbee2mqtt
+	if err = a.checkZigbee2matt(login, password); err == nil {
+		return
+	}
+
+	return
+}
+
+func (a Authenticator) checkZigbee2matt(login, password string) (err error) {
+
+	var bridge *m.Zigbee2mqtt
+	if bridge, err = a.adaptors.Zigbee2mqtt.GetByLogin(login); err != nil {
+		return
+	}
+
+	//if bridge.Status == "disabled" {
+	//	err = ErrPrincipalDisabled
+	//	return
+	//}
+
+	if bridge.EncryptedPassword == "" && password == "" {
+		return
+	}
+
+	if ok := common.CheckPasswordHash(password, bridge.EncryptedPassword); !ok {
+		err = ErrBadLoginOrPassword
+	}
+
+	return
+}
+
+func (a Authenticator) checkNode(login, password string) (err error) {
+
 	var node *m.Node
 	if node, err = a.adaptors.Node.GetByLogin(login); err != nil {
 		return

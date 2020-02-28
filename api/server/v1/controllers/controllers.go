@@ -52,6 +52,7 @@ type ControllersV1 struct {
 	Notifr           *ControllerNotifr
 	Mqtt             *ControllerMqtt
 	Version          *ControllerVersion
+	Zigbee2mqtt      *ControllerZigbee2mqtt
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -86,5 +87,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Notifr:           NewControllerNotifr(common),
 		Mqtt:             NewControllerMqtt(common),
 		Version:          NewControllerVersion(common),
+		Zigbee2mqtt:      NewControllerZigbee2mqtt(common),
 	}
 }
