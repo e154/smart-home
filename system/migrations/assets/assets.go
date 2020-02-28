@@ -609,7 +609,7 @@ func migrations20200220_193432_add_zigbee2mqttSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20200220_193432_add_zigbee2mqtt.sql", size: 1606, mode: os.FileMode(420), modTime: time.Unix(1582519208, 0)}
+	info := bindataFileInfo{name: "migrations/20200220_193432_add_zigbee2mqtt.sql", size: 1606, mode: os.FileMode(420), modTime: time.Unix(1582902752, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -629,7 +629,7 @@ func migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql() (*asset, e
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql", size: 838, mode: os.FileMode(420), modTime: time.Unix(1582530783, 0)}
+	info := bindataFileInfo{name: "migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql", size: 838, mode: os.FileMode(420), modTime: time.Unix(1582902752, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

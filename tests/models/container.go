@@ -43,6 +43,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/telemetry"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/dig"
 )
 
@@ -85,6 +86,8 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(endpoint.NewEndpoint)
 	container.Provide(gate_client.NewGateClient)
 	container.Provide(notify.NewNotify)
+	container.Provide(zigbee2mqtt.NewZigbee2mqttConfig)
+	container.Provide(zigbee2mqtt.NewZigbee2mqtt)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()
