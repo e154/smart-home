@@ -27,7 +27,7 @@ type Zigbee2mqtt struct {
 	Id                int64                `json:"id"`
 	Name              string               `json:"name" valid:"MaxSize(254);Required"`
 	Login             string               `json:"login"`
-	Password          string               `json:"password"`
+	Password          *string              `json:"password"`
 	EncryptedPassword string               `json:"encrypted_password"`
 	Devices           []*Zigbee2mqttDevice `json:"devices"`
 	PermitJoin        bool                 `json:"permit_join"`

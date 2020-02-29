@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"errors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
@@ -66,7 +65,10 @@ func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mq
 		return
 	}
 
-	common.Copy(&bridge, &params, common.JsonEngine)
+	bridge.Password = params.Password
+	bridge.BaseTopic = params.BaseTopic
+	bridge.Login = params.Login
+	bridge.PermitJoin = params.PermitJoin
 
 	// validation
 	_, errs = bridge.Valid()

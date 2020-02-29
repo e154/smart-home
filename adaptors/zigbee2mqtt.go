@@ -95,13 +95,14 @@ func (a *Zigbee2mqtt) GetByLogin(login string) (ver *m.Zigbee2mqtt, err error) {
 
 func (n *Zigbee2mqtt) fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt) {
 	ver = &m.Zigbee2mqtt{
-		Id:         dbVer.Id,
-		Login:      dbVer.Login,
-		Name:       dbVer.Name,
-		PermitJoin: dbVer.PermitJoin,
-		BaseTopic:  dbVer.BaseTopic,
-		CreatedAt:  dbVer.CreatedAt,
-		UpdatedAt:  dbVer.UpdatedAt,
+		Id:                dbVer.Id,
+		Login:             dbVer.Login,
+		Name:              dbVer.Name,
+		PermitJoin:        dbVer.PermitJoin,
+		BaseTopic:         dbVer.BaseTopic,
+		CreatedAt:         dbVer.CreatedAt,
+		UpdatedAt:         dbVer.UpdatedAt,
+		EncryptedPassword: dbVer.EncryptedPassword,
 	}
 
 	if len(dbVer.Devices) > 0 {
@@ -124,12 +125,14 @@ func (n *Zigbee2mqtt) toDb(ver *m.Zigbee2mqtt) (dbVer *db.Zigbee2mqtt) {
 		Name:              ver.Name,
 		PermitJoin:        ver.PermitJoin,
 		BaseTopic:         ver.BaseTopic,
-		CreatedAt:         ver.CreatedAt,
-		UpdatedAt:         ver.UpdatedAt,
-		EncryptedPassword: "",
+		EncryptedPassword: ver.EncryptedPassword,
 	}
-	if ver.Password != "" {
-		dbVer.EncryptedPassword, _ = common.HashPassword(ver.Password)
+	if ver.Password != nil {
+		if *ver.Password == "" {
+			dbVer.EncryptedPassword = ""
+		}  else {
+			dbVer.EncryptedPassword, _ = common.HashPassword(*ver.Password)
+		}
 	}
 	return
 }
