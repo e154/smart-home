@@ -209,9 +209,11 @@ func (c ControllerZigbee2mqtt) Update(ctx *gin.Context) {
 		return
 	}
 
-	if params.Password != params.PasswordRepeat {
-		NewError(400, "bad password repeat").Send(ctx)
-		return
+	if params.Password != nil && params.PasswordRepeat != nil {
+		if *params.Password != *params.PasswordRepeat {
+			NewError(400, "bad password repeat").Send(ctx)
+			return
+		}
 	}
 
 	bridge := &m.Zigbee2mqtt{}

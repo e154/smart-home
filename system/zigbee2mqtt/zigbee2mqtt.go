@@ -159,7 +159,7 @@ func (z *Zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 
 	var bridge *Bridge
 	if bridge, err = z.unsafeGetBridge(model.Id); err == nil {
-		bridge.UpdateModel(model)
+
 	} else {
 		return
 	}
@@ -169,6 +169,7 @@ func (z *Zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 	}
 
 	result, err = z.adaptors.Zigbee2mqtt.GetById(model.Id)
+	bridge.UpdateModel(result)
 
 	return
 }

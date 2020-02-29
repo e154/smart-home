@@ -22,22 +22,22 @@ import "time"
 
 // swagger:model
 type NewZigbee2mqtt struct {
-	Name           string `json:"name"`
-	Login          string `json:"login"`
-	Password       string `json:"password"`
-	PasswordRepeat string `json:"password_repeat"`
-	PermitJoin     bool   `json:"permit_join"`
-	BaseTopic      string `json:"base_topic"`
+	Name           string  `json:"name"`
+	Login          string  `json:"login"`
+	Password       *string `json:"password"`
+	PasswordRepeat *string `json:"password_repeat"`
+	PermitJoin     bool    `json:"permit_join"`
+	BaseTopic      string  `json:"base_topic"`
 }
 
 // swagger:model
 type UpdateZigbee2mqtt struct {
-	Name           string `json:"name"`
-	Login          string `json:"login"`
-	Password       string `json:"password"`
-	PasswordRepeat string `json:"password_repeat"`
-	PermitJoin     bool   `json:"permit_join"`
-	BaseTopic      string `json:"base_topic"`
+	Name           string  `json:"name"`
+	Login          string  `json:"login"`
+	Password       *string `json:"password"`
+	PasswordRepeat *string `json:"password_repeat"`
+	PermitJoin     bool    `json:"permit_join"`
+	BaseTopic      string  `json:"base_topic"`
 }
 
 // swagger:model
