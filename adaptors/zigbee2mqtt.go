@@ -95,13 +95,14 @@ func (a *Zigbee2mqtt) GetByLogin(login string) (ver *m.Zigbee2mqtt, err error) {
 
 func (n *Zigbee2mqtt) fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt) {
 	ver = &m.Zigbee2mqtt{
-		Id:         dbVer.Id,
-		Login:      dbVer.Login,
-		Name:       dbVer.Name,
-		PermitJoin: dbVer.PermitJoin,
-		BaseTopic:  dbVer.BaseTopic,
-		CreatedAt:  dbVer.CreatedAt,
-		UpdatedAt:  dbVer.UpdatedAt,
+		Id:                dbVer.Id,
+		Login:             dbVer.Login,
+		Name:              dbVer.Name,
+		PermitJoin:        dbVer.PermitJoin,
+		BaseTopic:         dbVer.BaseTopic,
+		CreatedAt:         dbVer.CreatedAt,
+		UpdatedAt:         dbVer.UpdatedAt,
+		EncryptedPassword: dbVer.EncryptedPassword,
 	}
 
 	if len(dbVer.Devices) > 0 {
