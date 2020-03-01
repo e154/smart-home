@@ -134,6 +134,13 @@ func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[strin
 		return
 	}
 
+	tx := n.adaptors.Begin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
 	addPerms := make([]*m.Permission, 0)
 	delPerms := make([]string, 0)
 	for packName, pack := range accessListDif {
@@ -149,7 +156,7 @@ func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[strin
 			}
 
 			if len(delPerms) > 0 {
-				if err = n.adaptors.Permission.Delete(packName, delPerms); err != nil {
+				if err = tx.Permission.Delete(packName, delPerms); err != nil {
 					return
 				}
 				delPerms = []string{}
@@ -162,8 +169,10 @@ func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[strin
 	}
 
 	for _, perm := range addPerms {
-		n.adaptors.Permission.Add(perm)
+		tx.Permission.Add(perm)
 	}
+
+	err = tx.Commit()
 
 	return
 }

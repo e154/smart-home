@@ -30,6 +30,8 @@ var (
 )
 
 type Adaptors struct {
+	db                    *gorm.DB
+	isTx                  bool
 	Node                  *Node
 	Script                *Script
 	Workflow              *Workflow
@@ -70,11 +72,12 @@ func NewAdaptors(db *gorm.DB,
 	cfg *config.AppConfig,
 	migrations *migrations.Migrations) (adaptors *Adaptors) {
 
-	if cfg.AutoMigrate {
+	if cfg != nil && migrations != nil && cfg.AutoMigrate {
 		migrations.Up()
 	}
 
 	adaptors = &Adaptors{
+		db:                    db,
 		Node:                  GetNodeAdaptor(db),
 		Script:                GetScriptAdaptor(db),
 		Workflow:              GetWorkflowAdaptor(db),
@@ -112,4 +115,25 @@ func NewAdaptors(db *gorm.DB,
 	}
 
 	return
+}
+
+func (a Adaptors) Begin() (adaptors *Adaptors) {
+	adaptors = NewAdaptors(a.db.Begin(), nil, nil)
+	adaptors.isTx = true
+	return
+}
+
+func (a *Adaptors) Commit() error {
+	if !a.isTx {
+		return nil
+	}
+	a.isTx = false
+	return a.db.Commit().Error
+}
+
+func (a *Adaptors) Rollback() error {
+	if !a.isTx {
+		return nil
+	}
+	return a.db.Rollback().Error
 }
