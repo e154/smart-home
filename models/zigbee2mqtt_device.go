@@ -26,18 +26,18 @@ import (
 )
 
 type Zigbee2mqttDevice struct {
-	Id            string          `json:"id"`
-	Zigbee2mqttId int64           `json:"zigbee2mqtt_id" valid:"Required"`
-	Name          string          `json:"name" valid:"MaxSize(254);Required"`
-	Type          string          `json:"type"`
-	Model         string          `json:"model"`
-	Description   string          `json:"description"`
-	Manufacturer  string          `json:"manufacturer"`
-	Functions     []string        `json:"functions"`
-	ImageUrl      string          `json:"image_url"`
-	Status        string          `json:"status"`
-	CreatedAt     time.Time       `json:"created_at"`
-	UpdatedAt     time.Time       `json:"updated_at"`
+	Id            string    `json:"id"`
+	Zigbee2mqttId int64     `json:"zigbee2mqtt_id" valid:"Required"`
+	Name          string    `json:"name" valid:"MaxSize(254);Required"`
+	Type          string    `json:"type"`
+	Model         string    `json:"model"`
+	Description   string    `json:"description"`
+	Manufacturer  string    `json:"manufacturer"`
+	Functions     []string  `json:"functions"`
+	ImageUrl      string    `json:"image_url"`
+	Status        string    `json:"status"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 func (d *Zigbee2mqttDevice) Valid() (ok bool, errs []*validation.Error) {
@@ -51,5 +51,7 @@ func (d *Zigbee2mqttDevice) Valid() (ok bool, errs []*validation.Error) {
 }
 
 func (d *Zigbee2mqttDevice) GetImageUrl() {
-	d.ImageUrl = filepath.Join("/api_static", "devices", fmt.Sprintf("%s.jpg", d.Model))
+	if d.Model != "" {
+		d.ImageUrl = filepath.Join("/api_static", "devices", fmt.Sprintf("%s.jpg", d.Model))
+	}
 }
