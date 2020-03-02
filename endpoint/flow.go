@@ -162,7 +162,14 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 		return
 	}
 
-	if err = f.adaptors.Flow.Update(newFlow); err != nil {
+	tx := f.adaptors.Begin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err = tx.Flow.Update(newFlow); err != nil {
 		return
 	}
 
@@ -183,7 +190,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 	}
 
 	if len(flowTodoRemove) > 0 {
-		if err = f.adaptors.FlowElement.Delete(flowTodoRemove); err != nil {
+		if err = tx.FlowElement.Delete(flowTodoRemove); err != nil {
 			return
 		}
 	}
@@ -231,7 +238,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 			return
 		}
 
-		if err = f.adaptors.FlowElement.AddOrUpdateFlowElement(fl); err != nil {
+		if err = tx.FlowElement.AddOrUpdateFlowElement(fl); err != nil {
 			return
 		}
 	}
@@ -253,7 +260,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 	}
 
 	if len(connTodoRemove) > 0 {
-		if err = f.adaptors.Connection.Delete(connTodoRemove); err != nil {
+		if err = tx.Connection.Delete(connTodoRemove); err != nil {
 			return
 		}
 	}
@@ -279,7 +286,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 			return
 		}
 
-		if err = f.adaptors.Connection.AddOrUpdateConnection(conn); err != nil {
+		if err = tx.Connection.AddOrUpdateConnection(conn); err != nil {
 			return
 		}
 	}
@@ -302,7 +309,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 
 	for _, worker := range workersTodoRemove {
 		if err = f.core.RemoveWorker(worker); err == nil {
-			if err = f.adaptors.Worker.Delete([]int64{worker.Id}); err != nil {
+			if err = tx.Worker.Delete([]int64{worker.Id}); err != nil {
 				return
 			}
 		}
@@ -324,11 +331,11 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 		}
 
 		if worker.Id == 0 {
-			if _, err = f.adaptors.Worker.Add(worker); err != nil {
+			if _, err = tx.Worker.Add(worker); err != nil {
 				return
 			}
 		} else {
-			if err = f.adaptors.Worker.Update(worker); err != nil {
+			if err = tx.Worker.Update(worker); err != nil {
 				return
 			}
 		}
@@ -348,7 +355,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 		}
 	}
 
-	if err := f.adaptors.FlowSubscription.Remove(subscriptionsTodoRemove); err != nil {
+	if err := tx.FlowSubscription.Remove(subscriptionsTodoRemove); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -358,7 +365,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 				Topic:  sub.Topic,
 				FlowId: newFlow.Id,
 			}
-			if err = f.adaptors.FlowSubscription.Add(flowSubscription); err != nil {
+			if err = tx.FlowSubscription.Add(flowSubscription); err != nil {
 				log.Error(err.Error())
 			}
 		}
@@ -379,7 +386,7 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 		}
 	}
 
-	if err := f.adaptors.FlowZigbee2mqttDevice.Remove(oldFlow.Id, zigbe2mqttDeviceTodoRemove); err != nil {
+	if err := tx.FlowZigbee2mqttDevice.Remove(oldFlow.Id, zigbe2mqttDeviceTodoRemove); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -395,10 +402,14 @@ func (f *FlowEndpoint) UpdateRedactor(params *m.RedactorFlow) (result *m.Redacto
 				FlowId:              newFlow.Id,
 				Zigbee2mqttDeviceId: dev.Id,
 			}
-			if err = f.adaptors.FlowZigbee2mqttDevice.Add(flowZigbee2mqttDevice); err != nil {
+			if err = tx.FlowZigbee2mqttDevice.Add(flowZigbee2mqttDevice); err != nil {
 				log.Error(err.Error())
 			}
 		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		return
 	}
 
 	// exit
