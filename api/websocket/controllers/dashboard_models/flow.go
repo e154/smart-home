@@ -30,7 +30,7 @@ func (f *Flow) Update() {
 
 }
 
-func FlowsStatus(client *stream.Client, message stream.Message) {
+func FlowsStatus(client stream.IStreamClient, message stream.Message) {
 
 	return
 }

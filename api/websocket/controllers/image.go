@@ -47,7 +47,7 @@ func (c *ControllerImage) Stop() {
 }
 
 // Stream
-func (c *ControllerImage) GetImageList(client *stream.Client, message stream.Message) {
+func (c *ControllerImage) GetImageList(client stream.IStreamClient, message stream.Message) {
 	//fmt.Println("get_image_list")
 
 	filter, _ := message.Payload["filter"].(string)
@@ -61,10 +61,10 @@ func (c *ControllerImage) GetImageList(client *stream.Client, message stream.Mes
 
 	payload := map[string]interface{}{"images": images,}
 	response := message.Response(payload)
-	client.Send <- response.Pack()
+	client.Write(response.Pack())
 }
 
-func (c *ControllerImage) GetFilterList(client *stream.Client, message stream.Message) {
+func (c *ControllerImage) GetFilterList(client stream.IStreamClient, message stream.Message) {
 
 	filterList, err := c.adaptors.Image.GetFilterList()
 	if err != nil {
@@ -75,10 +75,10 @@ func (c *ControllerImage) GetFilterList(client *stream.Client, message stream.Me
 
 	payload := map[string]interface{}{"filter_list": filterList,}
 	response := message.Response(payload)
-	client.Send <- response.Pack()
+	client.Write(response.Pack())
 }
 
-func (c *ControllerImage) RemoveImage(client *stream.Client, message stream.Message) {
+func (c *ControllerImage) RemoveImage(client stream.IStreamClient, message stream.Message) {
 
 	fileId, ok := message.Payload["image_id"].(float64)
 	if !ok {
@@ -102,5 +102,5 @@ func (c *ControllerImage) RemoveImage(client *stream.Client, message stream.Mess
 	filePath := common.GetFullPath(image.Image)
 	_ = os.Remove(filePath)
 
-	client.Send <- message.Success().Pack()
+	client.Write(message.Success().Pack())
 }

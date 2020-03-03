@@ -24,6 +24,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/op/go-logging"
 	"net/http"
+	"time"
 )
 
 var (
@@ -51,16 +52,12 @@ func (s *StreamService) Broadcast(message []byte) {
 	s.Hub.Broadcast(message)
 }
 
-func (s *StreamService) Subscribe(command string, f func(client *Client, msg Message)) {
+func (s *StreamService) Subscribe(command string, f func(client IStreamClient, msg Message)) {
 	s.Hub.Subscribe(command, f)
 }
 
 func (s *StreamService) UnSubscribe(command string) {
 	s.Hub.UnSubscribe(command)
-}
-
-func (s *StreamService) AddClient(client *Client) {
-	s.Hub.AddClient(client)
 }
 
 func (w *StreamService) Ws(ctx *gin.Context) {
@@ -81,8 +78,13 @@ func (w *StreamService) Ws(ctx *gin.Context) {
 		return
 	}
 
+	conn.SetReadDeadline(time.Now().Add(pongWait))
+	conn.SetPongHandler(func(string) error {
+		conn.SetReadDeadline(time.Now().Add(pongWait));
+		return nil
+	})
+
 	client := &Client{
-		ConnType:  WEBSOCK,
 		Connect:   conn,
 		Ip:        ctx.ClientIP(),
 		Referer:   ctx.Request.Referer(),

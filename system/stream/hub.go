@@ -36,7 +36,7 @@ const (
 
 type Hub struct {
 	sessions    map[*Client]bool
-	subscribers map[string]func(client *Client, msg Message)
+	subscribers map[string]func(client IStreamClient, msg Message)
 	gateClient  BroadcastClient
 	sync.Mutex
 	broadcast chan []byte
@@ -51,7 +51,7 @@ func NewHub() *Hub {
 	hub := &Hub{
 		sessions:    make(map[*Client]bool),
 		broadcast:   make(chan []byte, maxMessageSize),
-		subscribers: make(map[string]func(client *Client, msg Message)),
+		subscribers: make(map[string]func(client IStreamClient, msg Message)),
 		interrupt:   interrupt,
 	}
 	go hub.Run()
@@ -72,42 +72,21 @@ func (h *Hub) AddClient(client *Client) {
 	h.sessions[client] = true
 	h.Unlock()
 
-	switch client.ConnType {
-	//case SOCKJS:
-	//	log.Infof("new sockjs session established, from ip: %s", client.Ip)
-	//
-	//	for {
-	//		if msg, err := client.Session.Recv(); err == nil {
-	//			h.Recv(client, []byte(msg))
-	//			continue
-	//		}
-	//		break
-	//	}
-	case WEBSOCK:
-		log.Infof("new websocket xsession established, from ip: %s", client.Ip)
+	log.Infof("new websocket xsession established, from ip: %s", client.Ip)
 
-		//client.Connect.SetReadLimit(maxMessageSize)
-		client.Connect.SetReadDeadline(time.Now().Add(pongWait))
-		client.Connect.SetPongHandler(func(string) error {
-			client.Connect.SetReadDeadline(time.Now().Add(pongWait));
-			return nil
-		})
-		for {
-			op, r, err := client.Connect.NextReader()
+	for {
+		op, r, err := client.Connect.NextReader()
+		if err != nil {
+			break
+		}
+		switch op {
+		case websocket.TextMessage:
+			message, err := ioutil.ReadAll(r)
 			if err != nil {
 				break
 			}
-			switch op {
-			case websocket.TextMessage:
-				message, err := ioutil.ReadAll(r)
-				if err != nil {
-					break
-				}
-				h.Recv(client, message)
-			}
+			h.Recv(client, message)
 		}
-	default:
-		log.Warningf("unknown conn type %s", client.ConnType)
 	}
 }
 
@@ -185,7 +164,7 @@ func (h *Hub) Clients() (clients []*Client) {
 	return
 }
 
-func (h *Hub) Subscribe(command string, f func(client *Client, msg Message)) {
+func (h *Hub) Subscribe(command string, f func(client IStreamClient, msg Message)) {
 	log.Infof("subscribe %s", command)
 	h.Lock()
 	if h.subscribers[command] != nil {
@@ -203,7 +182,7 @@ func (h *Hub) UnSubscribe(command string) {
 	h.Unlock()
 }
 
-func (h *Hub) Subscriber(command string) (f func(client *Client, msg Message)) {
+func (h *Hub) Subscriber(command string) (f func(client IStreamClient, msg Message)) {
 	h.Lock()
 	if h.subscribers[command] != nil {
 		f = h.subscribers[command]

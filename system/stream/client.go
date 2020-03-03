@@ -19,14 +19,12 @@
 package stream
 
 import (
-	//"gopkg.in/igm/sockjs-go.v2/sockjs"
 	"github.com/gorilla/websocket"
 	"sync"
 	"time"
 )
 
 type Client struct {
-	ConnType  ConnectType
 	Ip        string
 	Referer   string
 	UserAgent string
@@ -37,13 +35,7 @@ type Client struct {
 	Platform  string
 	Location  string
 	Href      string
-
-	//User *rbac.User
-	//Session  sockjs.Session
-
-	// message buffered channel
-	Send chan []byte
-
+	Send      chan []byte // message buffered channel
 	writeLock sync.Mutex
 	Connect   *websocket.Conn
 }
@@ -96,7 +88,7 @@ func (c *Client) Notify(t, b string) {
 	c.Send <- msg.Pack()
 }
 
-func (c *Client) Write(opCode int, payload []byte) error {
+func (c *Client) selfWrite(opCode int, payload []byte) error {
 	c.writeLock.Lock()
 	defer c.writeLock.Unlock()
 	_ = c.Connect.SetWriteDeadline(time.Now().Add(writeWait))
@@ -120,23 +112,16 @@ func (c *Client) WritePump() {
 		select {
 		case message, ok := <-c.Send:
 
-			switch c.ConnType {
-			//case SOCKJS:
-			//	c.Session.Send(string(message))
-			case WEBSOCK:
-				if !ok {
-					c.Write(websocket.CloseMessage, []byte{})
-					return
-				}
-				if err := c.Write(websocket.TextMessage, message); err != nil {
-					return
-				}
-			default:
-
+			if !ok {
+				c.selfWrite(websocket.CloseMessage, []byte{})
+				return
+			}
+			if err := c.selfWrite(websocket.TextMessage, message); err != nil {
+				return
 			}
 
 		case <-ticker.C:
-			if err := c.Write(websocket.PingMessage, []byte{}); err != nil {
+			if err := c.selfWrite(websocket.PingMessage, []byte{}); err != nil {
 				return
 			}
 		}
@@ -145,8 +130,13 @@ func (c *Client) WritePump() {
 
 func (c *Client) Close() {
 
-	err := c.Write(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+	err := c.selfWrite(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	if err != nil {
 		return
 	}
+}
+
+func (c *Client) Write(payload []byte) (err error) {
+	c.Send <- payload
+	return
 }

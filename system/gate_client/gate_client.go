@@ -52,26 +52,30 @@ type GateClient struct {
 	sync.Mutex
 	adaptors        *adaptors.Adaptors
 	wsClient        *WsClient
-	subscribers     map[uuid.UUID]func(msg Message)
 	engine          *gin.Engine
-	stream          *stream.StreamService
+	streamService   *stream.StreamService
 	messagePoolQuit chan struct{}
-	messagePool     chan Message
+	messagePool     chan stream.Message
 	settingsLock    sync.Mutex
 	settings        *Settings
 	quit            bool
+	selfSubscrLock  sync.Mutex
+	selfSubscribers map[uuid.UUID]func(msg stream.Message)
+	subscrLock      sync.Mutex
+	subscribers     map[string]func(client stream.IStreamClient, msg stream.Message)
 }
 
 func NewGateClient(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
-	stream *stream.StreamService) (gate *GateClient) {
+	streamService *stream.StreamService) (gate *GateClient) {
 	gate = &GateClient{
 		adaptors:        adaptors,
 		settings:        &Settings{},
-		subscribers:     make(map[uuid.UUID]func(msg Message)),
-		stream:          stream,
+		selfSubscribers: make(map[uuid.UUID]func(msg stream.Message)),
+		subscribers:     make(map[string]func(client stream.IStreamClient, msg stream.Message)),
+		streamService:   streamService,
 		messagePoolQuit: make(chan struct{}),
-		messagePool:     make(chan Message),
+		messagePool:     make(chan stream.Message),
 	}
 
 	gate.wsClient = NewWsClient(gate)
@@ -82,7 +86,7 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 		log.Error(err.Error())
 	}
 
-	stream.GateClient(gate)
+	streamService.GateClient(gate)
 
 	go func() {
 		for {
@@ -139,7 +143,7 @@ func (g *GateClient) BroadcastAccessToken() {
 			"accessToken": g.settings.GateServerToken,
 		},
 	}
-	g.stream.Broadcast(broadcastMsg.Pack())
+	g.streamService.Broadcast(broadcastMsg.Pack())
 
 }
 
@@ -158,7 +162,7 @@ func (g *GateClient) RegisterServer() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_ = g.Send("register_server", payload, ctx, func(msg Message) {
+	_ = g.Send("register_server", payload, ctx, func(msg stream.Message) {
 
 		if _, ok := msg.Payload["token"]; !ok {
 			log.Errorf("no token in message payload")
@@ -181,7 +185,7 @@ func (g *GateClient) RegisterServer() {
 func (g *GateClient) registerMobile(ctx *gin.Context) {
 
 	params := map[string]interface{}{}
-	_ = g.Send("register_mobile", params, ctx, func(msg Message) {
+	_ = g.Send("register_mobile", params, ctx, func(msg stream.Message) {
 
 		if _, ok := msg.Payload["token"]; !ok {
 			log.Errorf("no token in message payload")
@@ -279,7 +283,7 @@ func (g *GateClient) onMessage(b []byte) {
 
 	//log.Debugf("message(%v)\n", string(b))
 
-	msg, err := NewMessage(b)
+	msg, err := stream.NewMessage(b)
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -289,65 +293,27 @@ func (g *GateClient) onMessage(b []byte) {
 
 }
 
-func (g *GateClient) _onMessage(msg Message) {
+func (g *GateClient) _onMessage(msg stream.Message) {
 
 	if msg.Command == "mobile_gate_proxy" {
 		g.RequestFromMobileProxy(msg)
 		return
 	}
 
-	// check local subscribers
-	for command, f := range g.subscribers {
+	// check local selfSubscribers
+	for command, f := range g.selfSubscribers {
 		if msg.Id == command {
 			f(msg)
-			g.UnSubscribe(msg.Id)
+			g.selfUnSubscribe(msg.Id)
 			return
 		}
 	}
 
 	// check subscriber on stream server
-	if f := g.stream.Hub.Subscriber(msg.Command); f != nil {
-
-		streamMsg := stream.Message{}
-		_ = common.Copy(&streamMsg, &msg)
-		streamClient := &stream.Client{
-			ConnType: stream.WEBSOCK,
-			Connect:  g.wsClient.conn,
-			Send:     make(chan []byte),
-		}
-
-		wg := sync.WaitGroup{}
-		wg.Add(2)
-
-		go func() {
-			for {
-				select {
-				case message, ok := <-streamClient.Send:
-
-					if !ok {
-						_ = streamClient.Write(websocket.CloseMessage, []byte{})
-						return
-					}
-					if err := streamClient.Write(websocket.TextMessage, message); err != nil {
-						return
-					}
-
-					goto END
-				}
-			}
-		END:
-			wg.Done()
-		}()
-
-		go func() {
-			f(streamClient, streamMsg)
-			wg.Done()
-		}()
-
-		// check channels
-		wg.Wait()
-		close(streamClient.Send)
-		//log.Debugf("client was success")
+	if f, ok := g.subscribers[msg.Command]; ok {
+		f(g.wsClient, msg)
+	} else {
+		log.Warningf("unknown command %v", msg.Command)
 	}
 }
 
@@ -359,24 +325,45 @@ func (g *GateClient) onClosed() {
 
 }
 
-func (g *GateClient) Subscribe(id uuid.UUID, f func(msg Message)) {
-	g.Lock()
-	if g.subscribers[id] != nil {
-		delete(g.subscribers, id)
+func (g *GateClient) selfSubscribe(id uuid.UUID, f func(msg stream.Message)) {
+	g.selfSubscrLock.Lock()
+	defer g.selfSubscrLock.Unlock()
+
+	if g.selfSubscribers[id] != nil {
+		delete(g.selfSubscribers, id)
 	}
-	g.subscribers[id] = f
-	g.Unlock()
+	g.selfSubscribers[id] = f
 }
 
-func (g *GateClient) UnSubscribe(id uuid.UUID) {
-	g.Lock()
-	if g.subscribers[id] != nil {
-		delete(g.subscribers, id)
+func (g *GateClient) selfUnSubscribe(id uuid.UUID) {
+	g.selfSubscrLock.Lock()
+	defer g.selfSubscrLock.Unlock()
+
+	if g.selfSubscribers[id] != nil {
+		delete(g.selfSubscribers, id)
 	}
-	g.Unlock()
 }
 
-func (g *GateClient) Send(command string, payload map[string]interface{}, ctx context.Context, f func(msg Message)) (err error) {
+func (g *GateClient) Subscribe(command string, f func(client stream.IStreamClient, msg stream.Message)) {
+	g.subscrLock.Lock()
+	defer g.subscrLock.Unlock()
+
+	if g.subscribers[command] != nil {
+		delete(g.subscribers, command)
+	}
+	g.subscribers[command] = f
+}
+
+func (g *GateClient) UnSubscribe(command string) {
+	g.subscrLock.Lock()
+	defer g.subscrLock.Unlock()
+
+	if g.subscribers[command] != nil {
+		delete(g.subscribers, command)
+	}
+}
+
+func (g *GateClient) Send(command string, payload map[string]interface{}, ctx context.Context, f func(msg stream.Message)) (err error) {
 
 	if g.wsClient.Status() != GateStatusConnected {
 		err = errors.New("gate not connected")
@@ -385,20 +372,20 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, ctx co
 
 	done := make(chan struct{})
 
-	message := Message{
+	message := stream.Message{
 		Id:      uuid.NewV4(),
 		Command: command,
 		Payload: payload,
 	}
 
-	g.Subscribe(message.Id, func(msg Message) {
+	g.selfSubscribe(message.Id, func(msg stream.Message) {
 		f(msg)
 		done <- struct{}{}
 	})
-	defer g.UnSubscribe(message.Id)
+	defer g.selfUnSubscribe(message.Id)
 
 	msg, _ := json.Marshal(message)
-	if err := g.wsClient.write(websocket.TextMessage, msg); err != nil {
+	if err := g.wsClient.selfWrite(websocket.TextMessage, msg); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -416,7 +403,7 @@ func (g *GateClient) Broadcast(message []byte) {
 		return
 	}
 
-	if err := g.wsClient.write(websocket.TextMessage, message); err != nil {
+	if err := g.wsClient.selfWrite(websocket.TextMessage, message); err != nil {
 		log.Error(err.Error())
 	}
 }
@@ -441,7 +428,7 @@ func (g *GateClient) GetMobileList(ctx context.Context) (list *MobileList, err e
 	}
 
 	payload := map[string]interface{}{}
-	_ = g.Send("mobile_token_list", payload, ctx, func(msg Message) {
+	_ = g.Send("mobile_token_list", payload, ctx, func(msg stream.Message) {
 		if err = msg.IsError(); err != nil {
 			return
 		}
@@ -458,7 +445,7 @@ func (g *GateClient) DeleteMobile(token string, ctx context.Context) (list *Mobi
 	payload := map[string]interface{}{
 		"token": token,
 	}
-	_ = g.Send("remove_mobile", payload, ctx, func(msg Message) {
+	_ = g.Send("remove_mobile", payload, ctx, func(msg stream.Message) {
 		err = msg.IsError()
 	})
 
@@ -468,14 +455,14 @@ func (g *GateClient) DeleteMobile(token string, ctx context.Context) (list *Mobi
 func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error) {
 
 	payload := map[string]interface{}{}
-	_ = g.Send("register_mobile", payload, ctx, func(msg Message) {
+	_ = g.Send("register_mobile", payload, ctx, func(msg stream.Message) {
 		err = msg.IsError()
 	})
 
 	return
 }
 
-func (g *GateClient) RequestFromMobileProxy(message Message) {
+func (g *GateClient) RequestFromMobileProxy(message stream.Message) {
 
 	if g.wsClient.Status() != GateStatusConnected {
 		return
@@ -496,7 +483,7 @@ func (g *GateClient) RequestFromMobileProxy(message Message) {
 
 	payloadResponse := g.execRequest(requestParams)
 
-	response := Message{
+	response := stream.Message{
 		Id:      uuid.NewV4(),
 		Command: message.Id.String(),
 		Payload: map[string]interface{}{
@@ -505,7 +492,7 @@ func (g *GateClient) RequestFromMobileProxy(message Message) {
 	}
 
 	msg, _ := json.Marshal(response)
-	if err := g.wsClient.write(websocket.TextMessage, msg); err != nil {
+	if err := g.wsClient.selfWrite(websocket.TextMessage, msg); err != nil {
 		log.Error(err.Error())
 	}
 }
@@ -523,35 +510,11 @@ func (g *GateClient) execRequest(requestParams *StreamRequestModel) (response *S
 	request, _ := http.NewRequest(requestParams.Method, requestParams.URI, bytes.NewBuffer(requestParams.Body))
 	request.Header = requestParams.Header
 	request.RequestURI = requestParams.URI
-
-	//fmt.Println("----------")
-	//fmt.Println("Request")
-	//fmt.Println("----------")
-	//debug.Println(request.RequestURI)
-	//debug.Println(request.Header)
-
 	recorder := httptest.NewRecorder()
 	g.engine.ServeHTTP(recorder, request)
-
-	//fmt.Println("----------")
-	//fmt.Println("response")
-	//fmt.Println("----------")
-	//fmt.Println(recorder.Code)
-	//fmt.Println(recorder.Header())
-	//fmt.Println(recorder.Body)
-
 	code := recorder.Code
 	header := recorder.Header()
 	body := recorder.Body.Bytes()
-
-	//if err != nil {
-	//	log.Error(err.Error())
-	//	code = 500
-	//	body = []byte(err.Error())
-	//	header = http.Header{}
-	//	header.Set("Content-Type", "text/plain")
-	//}
-
 	response = &StreamResponseModel{
 		Code:   code,
 		Body:   body,

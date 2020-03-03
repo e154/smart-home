@@ -42,7 +42,7 @@ func (c *ControllerWorker) Stop() {
 }
 
 // Stream
-func (c *ControllerWorker) DoWorker(client *stream.Client, message stream.Message) {
+func (c *ControllerWorker) DoWorker(client stream.IStreamClient, message stream.Message) {
 
 	v := message.Payload
 	var ok bool
@@ -66,5 +66,5 @@ func (c *ControllerWorker) DoWorker(client *stream.Client, message stream.Messag
 		return
 	}
 
-	client.Send <- message.Success().Pack()
+	client.Write(message.Success().Pack())
 }

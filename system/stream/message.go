@@ -79,7 +79,7 @@ func (m *Message) Error(err error) *Message {
 }
 
 func (m *Message) IsError() (err error) {
-	fmt.Println(m)
+
 	if m.Status != StatusError {
 		return
 	}

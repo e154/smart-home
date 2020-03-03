@@ -37,15 +37,16 @@ func NewControllerAction(common *ControllerCommon) *ControllerAction {
 
 func (c *ControllerAction) Start() {
 	c.stream.Subscribe("do.action", c.DoAction)
+	c.gate.Subscribe("do.action", c.DoAction)
 }
-
 
 func (c *ControllerAction) Stop() {
 	c.stream.UnSubscribe("do.action")
+	c.gate.UnSubscribe("do.action")
 }
 
 // Stream
-func (c *ControllerAction) DoAction(client *stream.Client, message stream.Message) {
+func (c *ControllerAction) DoAction(client stream.IStreamClient, message stream.Message) {
 
 	v := message.Payload
 	var ok bool
@@ -109,5 +110,5 @@ func (c *ControllerAction) DoAction(client *stream.Client, message stream.Messag
 		c.Err(client, message, err)
 	}
 
-	client.Send <- message.Success().Pack()
+	client.Write(message.Success().Pack())
 }
