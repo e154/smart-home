@@ -66,7 +66,7 @@ The basic principles underlying the system being developed are ease of setup, lo
 6. Role system for separation of access rights
 7. Programs in javaScript, coffeeScript, typeScript
 8. Notification system SMS, Email, Slack, Telegram
-9. modbus, mqtt, zigbee2mqtt, rpc calling
+9. modbus, mqtt, [zigbee2mqtt](http://zigbee2mqtt.io), rpc calling
 10. Autonomous system.
 11. Quick backup of all data, and recovery - literally in two teams
 12. Have Docker images to enhance system security
