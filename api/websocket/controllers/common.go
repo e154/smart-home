@@ -56,7 +56,7 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 	}
 }
 
-func (c *ControllerCommon) Err(client *stream.Client, message stream.Message, err error) {
+func (c *ControllerCommon) Err(client stream.IStreamClient, message stream.Message, err error) {
 	msg := stream.Message{
 		Id: message.Id,
 		Forward: stream.Response,
@@ -65,5 +65,5 @@ func (c *ControllerCommon) Err(client *stream.Client, message stream.Message, er
 			"error": err.Error(),
 		},
 	}
-	client.Send <- msg.Pack()
+	client.Write(msg.Pack())
 }

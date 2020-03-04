@@ -19,7 +19,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	dashboardModel "github.com/e154/smart-home/api/websocket/controllers/dashboard_models"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/telemetry"
@@ -197,7 +196,7 @@ func (t *ControllerDashboard) GetStates() *ControllerDashboard {
 
 // only on request: 'dashboard.get.telemetry'
 //
-func (t *ControllerDashboard) Telemetry(client *stream.Client, message stream.Message) {
+func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message stream.Message) {
 
 	states := t.GetStates()
 
@@ -217,8 +216,8 @@ func (t *ControllerDashboard) Telemetry(client *stream.Client, message stream.Me
 			"gate":    states.Gate,
 		},
 	}
-	b, _ := json.Marshal(msg)
+	b := msg.Pack()
 	t.Unlock()
 
-	client.Send <- b
+	client.Write(b)
 }

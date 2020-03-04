@@ -45,6 +45,7 @@ options:
 -backup	    - backup settings to file
 -restore    - restore settings from backup archive
 -reset      - cleanup and restore base settings
+-demo		- install demo settings
 help	    - show this help text
 `
 

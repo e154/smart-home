@@ -87,11 +87,11 @@ func (n *Nodes) Broadcast() (map[string]interface{}, bool) {
 
 // only on request: 'dashboard.get.nodes.status'
 //
-func (n *Nodes) NodesStatus(client *stream.Client, message stream.Message) {
+func (n *Nodes) NodesStatus(client stream.IStreamClient, message stream.Message) {
 
 	n.Update()
 
 	payload := map[string]interface{}{"nodes": n,}
 	response := message.Response(payload)
-	client.Send <- response.Pack()
+	client.Write(response.Pack())
 }

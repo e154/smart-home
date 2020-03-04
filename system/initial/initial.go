@@ -19,7 +19,6 @@
 package initial
 
 import (
-	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/initial/env1"
@@ -57,8 +56,17 @@ func (n *InitialService) Reset() {
 
 	n.migrations.Purge()
 
+	log.Info("complete")
+}
+
+
+func (n *InitialService) InstallDemoData() {
+
+	log.Info("install demo data")
+
+	n.migrations.Purge()
+
 	env1.Init(n.adaptors, n.accessList, n.scriptService)
 
-	fmt.Println()
 	log.Info("complete")
 }

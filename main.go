@@ -84,6 +84,14 @@ func main() {
 				initialService.Reset()
 			})
 			return
+		case "-demo":
+			container := BuildContainer()
+			container.Invoke(func(
+				initialService *initial.InitialService) {
+
+				initialService.InstallDemoData()
+			})
+			return
 		default:
 			fmt.Printf(version.VerboseVersionBanner, "v2", os.Args[0])
 			return

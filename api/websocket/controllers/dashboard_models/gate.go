@@ -54,7 +54,7 @@ func (g *Gate) Update() {
 
 // only on request: 'dashboard.get.gate.status'
 //
-func (g *Gate) GatesStatus(client *stream.Client, message stream.Message) {
+func (g *Gate) GatesStatus(client stream.IStreamClient, message stream.Message) {
 
 	g.Update()
 
@@ -66,7 +66,7 @@ func (g *Gate) GatesStatus(client *stream.Client, message stream.Message) {
 	g.Unlock()
 
 	response := message.Response(payload)
-	client.Send <- response.Pack()
+	client.Write(response.Pack())
 
 	return
 }

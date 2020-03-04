@@ -20,6 +20,7 @@ package gate_client
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/stream"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"net/url"
@@ -41,11 +42,11 @@ type WsClient struct {
 	quitWorker     chan struct{}
 	cb             IWsCallback
 	reConnect      bool
-	mx             *sync.Mutex
+	setLock        *sync.Mutex
 	status         string
 	counter        int
-	sync.Mutex
-	conn *websocket.Conn
+	connLock       *sync.Mutex
+	conn           *websocket.Conn
 }
 
 func NewWsClient(
@@ -54,15 +55,16 @@ func NewWsClient(
 		interrupt:  make(chan struct{}),
 		quitWorker: make(chan struct{}),
 		cb:         cb,
-		mx:         &sync.Mutex{},
+		setLock:    &sync.Mutex{},
+		connLock:   &sync.Mutex{},
 	}
 
 	go func() {
 		for {
-			client.mx.Lock()
+			client.setLock.Lock()
 			status := client.status
 			settingsLoaded := client.settingsLoaded
-			client.mx.Unlock()
+			client.setLock.Unlock()
 
 			if status == GateStatusQuit {
 				return
@@ -88,8 +90,8 @@ func NewWsClient(
 }
 
 func (client *WsClient) UpdateSettings(settings Settings) {
-	client.mx.Lock()
-	defer client.mx.Unlock()
+	client.setLock.Lock()
+	defer client.setLock.Unlock()
 
 	client.settings = settings
 	client.reConnect = true
@@ -98,19 +100,19 @@ func (client *WsClient) UpdateSettings(settings Settings) {
 
 func (client *WsClient) connect() {
 
-	client.mx.Lock()
+	client.setLock.Lock()
 	client.status = GateStatusWait
 
 	if !client.settings.Valid() {
-		client.mx.Unlock()
+		client.setLock.Unlock()
 		return
 	}
 
 	if !client.settings.Enabled {
-		client.mx.Unlock()
+		client.setLock.Unlock()
 		return
 	}
-	client.mx.Unlock()
+	client.setLock.Unlock()
 
 	var err error
 	ticker := time.NewTicker(pingPeriod)
@@ -118,10 +120,10 @@ func (client *WsClient) connect() {
 	defer func() {
 		client.counter--
 
-		client.mx.Lock()
+		client.setLock.Lock()
 		client.status = GateStatusNotConnected
 		client.reConnect = false
-		client.mx.Unlock()
+		client.setLock.Unlock()
 
 		ticker.Stop()
 
@@ -166,15 +168,15 @@ func (client *WsClient) connect() {
 		//log.Debugf("X-API-Key: %v", client.settings.GateServerToken)
 	}
 
-	client.mx.Lock()
+	client.setLock.Lock()
 	if client.conn, _, err = websocket.DefaultDialer.Dial(uri.String(), requestHeader); err != nil {
-		client.mx.Unlock()
+		client.setLock.Unlock()
 		return
 	}
 
 	log.Info("endpoint %v connected ...", uri.String())
 	client.status = GateStatusConnected
-	client.mx.Unlock()
+	client.setLock.Unlock()
 
 	loseChan := make(chan struct{})
 	var messageType int
@@ -220,16 +222,16 @@ func (client *WsClient) connect() {
 	for {
 		select {
 		case <-ticker.C:
-			client.mx.Lock()
+			client.setLock.Lock()
 			if client.reConnect {
 				//_ = client.write(websocket.CloseMessage, []byte{})
 				fmt.Println("reconnect...")
-				client.mx.Unlock()
+				client.setLock.Unlock()
 				return
 			}
-			client.mx.Unlock()
+			client.setLock.Unlock()
 
-			if err := client.write(websocket.PingMessage, []byte{}); err != nil {
+			if err := client.selfWrite(websocket.PingMessage, []byte{}); err != nil {
 				log.Error(err.Error())
 				return
 			}
@@ -244,8 +246,8 @@ func (client *WsClient) connect() {
 
 func (client *WsClient) Close() {
 
-	client.mx.Lock()
-	defer client.mx.Unlock()
+	client.setLock.Lock()
+	defer client.setLock.Unlock()
 
 	if client.status == GateStatusQuit {
 		return
@@ -258,17 +260,17 @@ func (client *WsClient) Close() {
 	}
 }
 
-func (client *WsClient) write(opCode int, payload []byte) (err error) {
+func (client *WsClient) selfWrite(opCode int, payload []byte) (err error) {
 
-	client.mx.Lock()
+	client.setLock.Lock()
 	if client.status != GateStatusConnected {
-		client.mx.Unlock()
+		client.setLock.Unlock()
 		return
 	}
-	client.mx.Unlock()
+	client.setLock.Unlock()
 
-	client.Lock()
-	defer client.Unlock()
+	client.connLock.Lock()
+	defer client.connLock.Unlock()
 
 	if err = client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 		return
@@ -279,9 +281,28 @@ func (client *WsClient) write(opCode int, payload []byte) (err error) {
 	return
 }
 
+func (client *WsClient) Write(payload []byte) (err error) {
+	err = client.selfWrite(websocket.TextMessage, payload)
+	return
+}
+
 func (client *WsClient) Status() string {
-	client.mx.Lock()
-	defer client.mx.Unlock()
+	client.setLock.Lock()
+	defer client.setLock.Unlock()
 
 	return client.status
+}
+
+func (client *WsClient) Notify(t, b string) {
+
+	msg := &stream.Message{
+		Type:    stream.Notify,
+		Forward: Request,
+		Payload: map[string]interface{}{
+			"type": t,
+			"body": b,
+		},
+	}
+
+	client.selfWrite(websocket.TextMessage, msg.Pack())
 }

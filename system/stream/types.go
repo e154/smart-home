@@ -18,12 +18,6 @@
 
 package stream
 
-type ConnectType string
-
-const (
-	WEBSOCK = ConnectType("websock")
-)
-
 const (
 	Request       = "request"
 	Response      = "response"
@@ -35,4 +29,9 @@ const (
 
 type BroadcastClient interface {
 	Broadcast(message []byte)
+}
+
+type IStreamClient interface {
+	Write(payload []byte) error
+	Notify(t, b string)
 }

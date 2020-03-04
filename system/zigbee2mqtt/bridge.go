@@ -434,6 +434,8 @@ func (g *Bridge) devicePairing(params BridgePairingMeta) {
 			Model:         params.Model,
 			Description:   params.Description,
 			Manufacturer:  params.Vendor,
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
 		}
 		model.GetImageUrl()
 

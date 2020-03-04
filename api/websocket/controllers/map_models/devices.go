@@ -118,7 +118,7 @@ func (d *Devices) BroadcastOne(deviceId int64, elementName string) (map[string]i
 
 // only on request: 'map.get.devices.states'
 //
-func (d *Devices) GetDevicesStates(client *stream.Client, message stream.Message) {
+func (d *Devices) GetDevicesStates(client stream.IStreamClient, message stream.Message) {
 
 	d.Update()
 
@@ -130,7 +130,7 @@ func (d *Devices) GetDevicesStates(client *stream.Client, message stream.Message
 		},
 	}
 
-	client.Send <- msg.Pack()
+	client.Write(msg.Pack())
 }
 
 func (d *Devices) key(deviceId int64, elementName string) string {
