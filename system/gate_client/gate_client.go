@@ -28,6 +28,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
@@ -67,7 +68,8 @@ type GateClient struct {
 
 func NewGateClient(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
-	streamService *stream.StreamService) (gate *GateClient) {
+	streamService *stream.StreamService,
+	metric *metrics.MetricManager) (gate *GateClient) {
 	gate = &GateClient{
 		adaptors:        adaptors,
 		settings:        &Settings{},
@@ -78,7 +80,7 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 		messagePool:     make(chan stream.Message),
 	}
 
-	gate.wsClient = NewWsClient(gate)
+	gate.wsClient = NewWsClient(gate, metric)
 
 	graceful.Subscribe(gate)
 
@@ -410,11 +412,11 @@ func (g *GateClient) Broadcast(message []byte) {
 
 func (g *GateClient) Status() string {
 
-	status := g.wsClient.Status()
 	if !g.settings.Enabled {
 		return "disabled"
 	}
 
+	status := g.wsClient.Status()
 	if status == "quit" {
 		return "wait"
 	}

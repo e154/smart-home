@@ -18,16 +18,18 @@
 
 package metrics
 
-import "sync"
+import (
+	"sync"
+)
 
 type Gate struct {
-	GateStatus  string `json:"gate_status"`
+	Status      string `json:"status"`
 	AccessToken string `json:"access_token"`
 }
 
 type GateManager struct {
 	updateLock  sync.Mutex
-	gateStatus  string
+	status      string
 	accessToken string
 	onUpdate    func(name string)
 }
@@ -36,14 +38,11 @@ func NewGateManager(onUpdate func(name string)) *GateManager {
 	return &GateManager{onUpdate: onUpdate}
 }
 
-func (d *GateManager) Update(gateStatus, accessToken string) {
+func (d *GateManager) Update(status, accessToken string) {
 	d.updateLock.Lock()
-	defer func() {
-		d.updateLock.Unlock()
-	}()
-
-	d.gateStatus = gateStatus
+	d.status = status
 	d.accessToken = accessToken
+	d.updateLock.Unlock()
 }
 
 func (d *GateManager) Snapshot() Gate {
@@ -51,7 +50,7 @@ func (d *GateManager) Snapshot() Gate {
 	defer d.updateLock.Unlock()
 
 	return Gate{
-		GateStatus:  d.gateStatus,
+		Status:      d.status,
 		AccessToken: d.accessToken,
 	}
 }

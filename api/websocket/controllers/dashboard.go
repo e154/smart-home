@@ -31,7 +31,6 @@ type ControllerDashboard struct {
 	quit chan bool
 	sync.Mutex
 	Nodes         *dashboardModel.Nodes
-	Gate          *dashboardModel.Gate
 	telemetryTime int
 	AppMemory     *dashboardModel.AppMemory
 	devices       *dashboardModel.Devices
@@ -46,7 +45,6 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 		AppMemory:        &dashboardModel.AppMemory{},
 		Nodes:            dashboardModel.NewNode(common.adaptors, common.core),
 		devices:          dashboardModel.NewDevices(common.adaptors, common.core),
-		Gate:             dashboardModel.NewGate(common.gate),
 		Workflow:         dashboardModel.NewWorkflow(common.adaptors, common.core),
 	}
 }
@@ -54,7 +52,7 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 func (c *ControllerDashboard) Start() {
 	c.telemetry.Subscribe("dashboard", c)
 	c.stream.Subscribe("dashboard.get.nodes.status", c.Nodes.NodesStatus)
-	c.stream.Subscribe("dashboard.get.gate.status", c.Gate.GatesStatus)
+	c.stream.Subscribe("dashboard.get.gate.status", c.GatesStatus)
 	//c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
 	c.stream.Subscribe("dashboard.get.telemetry", c.Telemetry)
 
@@ -147,7 +145,6 @@ func (t *ControllerDashboard) broadcastAll() {
 
 	t.Lock()
 	t.AppMemory.Update()
-	t.Gate.Update()
 
 	//fmt.Println(t.AppMemory)
 
@@ -160,7 +157,7 @@ func (t *ControllerDashboard) broadcastAll() {
 			"app_memory": t.AppMemory,
 			"cpu":        map[string]interface{}{"all": t.metrics.Cpu.All()},
 			"uptime":     t.metrics.Uptime.Snapshot(),
-			"gate":       t.Gate,
+			"gate":       t.metrics.Gate.Snapshot(),
 		},
 	}
 	t.Unlock()
@@ -173,7 +170,6 @@ func (t *ControllerDashboard) GetStates() *ControllerDashboard {
 	t.Lock()
 	t.Nodes.Update()
 	t.devices.Update()
-	t.Gate.Update()
 	t.Unlock()
 
 	return t
@@ -198,11 +194,28 @@ func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message str
 			"disk":    t.metrics.Disk.Snapshot(),
 			"nodes":   states.Nodes,
 			"devices": states.devices,
-			"gate":    states.Gate,
+			"gate":    t.metrics.Gate.Snapshot(),
 		},
 	}
 	b := msg.Pack()
 	t.Unlock()
 
 	client.Write(b)
+}
+
+// only on request: 'dashboard.get.gate.status'
+//
+func (t *ControllerDashboard) GatesStatus(client stream.IStreamClient, message stream.Message) {
+
+	satus := t.metrics.Gate.Snapshot()
+
+	payload := map[string]interface{}{
+		"status":       satus.Status,
+		"access_token": satus.AccessToken,
+	}
+
+	response := message.Response(payload)
+	client.Write(response.Pack())
+
+	return
 }
