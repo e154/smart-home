@@ -16,19 +16,29 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package dashboard_models
+package metrics
 
-func NewDisk() (_disk *Disk) {
+import "sync"
 
-	_disk = &Disk{}
-
-	return
+type UptimeManager struct {
+	sync.Mutex
+	total uint64
 }
 
-type Disk struct {
+func NewUptimeManager() *UptimeManager {
+	return &UptimeManager{}
+}
+
+func (d *UptimeManager) Start(pause int) {
 
 }
 
-func (d *Disk) Update() {
+func (d *UptimeManager) Stop() {
 
+}
+
+func (d UptimeManager) Snapshot() Uptime {
+	return Uptime{
+		Total: d.total,
+	}
 }

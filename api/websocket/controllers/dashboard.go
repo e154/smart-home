@@ -28,16 +28,12 @@ import (
 
 type ControllerDashboard struct {
 	*ControllerCommon
-	quit          chan bool
+	quit chan bool
 	sync.Mutex
 	Nodes         *dashboardModel.Nodes
 	Gate          *dashboardModel.Gate
 	telemetryTime int
-	Memory        *dashboardModel.Memory
 	AppMemory     *dashboardModel.AppMemory
-	Cpu           *dashboardModel.Cpu
-	Uptime        *dashboardModel.Uptime
-	Disk          *dashboardModel.Disk
 	devices       *dashboardModel.Devices
 	Workflow      *dashboardModel.Workflow
 }
@@ -47,11 +43,7 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 		ControllerCommon: common,
 		telemetryTime:    3,
 		quit:             make(chan bool),
-		Cpu:              dashboardModel.NewCpu(),
-		Memory:           &dashboardModel.Memory{},
 		AppMemory:        &dashboardModel.AppMemory{},
-		Uptime:           &dashboardModel.Uptime{},
-		Disk:             dashboardModel.NewDisk(),
 		Nodes:            dashboardModel.NewNode(common.adaptors, common.core),
 		devices:          dashboardModel.NewDevices(common.adaptors, common.core),
 		Gate:             dashboardModel.NewGate(common.gate),
@@ -63,7 +55,7 @@ func (c *ControllerDashboard) Start() {
 	c.telemetry.Subscribe("dashboard", c)
 	c.stream.Subscribe("dashboard.get.nodes.status", c.Nodes.NodesStatus)
 	c.stream.Subscribe("dashboard.get.gate.status", c.Gate.GatesStatus)
-	c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
+	//c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
 	c.stream.Subscribe("dashboard.get.telemetry", c.Telemetry)
 
 	//i := 0
@@ -94,7 +86,7 @@ func (c *ControllerDashboard) Stop() {
 	c.telemetry.UnSubscribe("dashboard")
 	c.stream.UnSubscribe("dashboard.get.nodes.status")
 	c.stream.UnSubscribe("dashboard.get.gate.status")
-	c.stream.UnSubscribe("t.get.flows.status")
+	//c.stream.UnSubscribe("t.get.flows.status")
 	c.stream.UnSubscribe("dashboard.get.telemetry")
 
 	c.quit <- true
@@ -154,10 +146,7 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
 func (t *ControllerDashboard) broadcastAll() {
 
 	t.Lock()
-	t.Memory.Update()
 	t.AppMemory.Update()
-	t.Cpu.Update()
-	t.Uptime.Update()
 	t.Gate.Update()
 
 	//fmt.Println(t.AppMemory)
@@ -167,10 +156,10 @@ func (t *ControllerDashboard) broadcastAll() {
 		Type:    stream.Broadcast,
 		Forward: stream.Request,
 		Payload: map[string]interface{}{
-			"memory":     t.Memory,
+			"memory":     t.metrics.Memory.Snapshot(),
 			"app_memory": t.AppMemory,
-			"cpu":        map[string]interface{}{"usage": t.Cpu.Usage, "all": t.Cpu.All},
-			"uptime":     t.Uptime,
+			"cpu":        map[string]interface{}{"all": t.metrics.Cpu.All()},
+			"uptime":     t.metrics.Uptime.Snapshot(),
 			"gate":       t.Gate,
 		},
 	}
@@ -182,10 +171,6 @@ func (t *ControllerDashboard) broadcastAll() {
 func (t *ControllerDashboard) GetStates() *ControllerDashboard {
 
 	t.Lock()
-	t.Memory.Update()
-	t.Cpu.Update()
-	t.Uptime.Update()
-	t.Disk.Update()
 	t.Nodes.Update()
 	t.devices.Update()
 	t.Gate.Update()
@@ -206,11 +191,11 @@ func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message str
 		Command: "dashboard.telemetry",
 		Forward: stream.Response,
 		Payload: map[string]interface{}{
-			"memory":  states.Memory,
-			"cpu":     map[string]interface{}{"usage": t.Cpu.Usage, "info": t.Cpu.Cpuinfo, "all": t.Cpu.All},
+			"memory":  t.metrics.Memory.Snapshot(),
+			"cpu":     t.metrics.Cpu.Snapshot(),
 			"time":    time.Now(),
-			"uptime":  states.Uptime,
-			"disk":    states.Disk,
+			"uptime":  t.metrics.Uptime.Snapshot(),
+			"disk":    t.metrics.Disk.Snapshot(),
 			"nodes":   states.Nodes,
 			"devices": states.devices,
 			"gate":    states.Gate,

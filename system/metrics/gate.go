@@ -16,25 +16,42 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-// +build linux,!mips64,!mips64le darwin
+package metrics
 
-package dashboard_models
+import "sync"
 
-import (
-	"github.com/shirou/gopsutil/host"
-	"sync"
-)
-
-type Uptime struct {
-	sync.Mutex
-	Total uint64 `json:"total"`
-	Idle  uint64 `json:"idle"`
+type Gate struct {
+	GateStatus  string `json:"gate_status"`
+	AccessToken string `json:"access_token"`
 }
 
-func (u *Uptime) Update() {
+type GateManager struct {
+	updateLock  sync.Mutex
+	gateStatus  string
+	accessToken string
+	onUpdate    func(name string)
+}
 
-	total, _ := host.Uptime()
-	u.Lock()
-	u.Total = total
-	u.Unlock()
+func NewGateManager(onUpdate func(name string)) *GateManager {
+	return &GateManager{onUpdate: onUpdate}
+}
+
+func (d *GateManager) Update(gateStatus, accessToken string) {
+	d.updateLock.Lock()
+	defer func() {
+		d.updateLock.Unlock()
+	}()
+
+	d.gateStatus = gateStatus
+	d.accessToken = accessToken
+}
+
+func (d *GateManager) Snapshot() Gate {
+	d.updateLock.Lock()
+	defer d.updateLock.Unlock()
+
+	return Gate{
+		GateStatus:  d.gateStatus,
+		AccessToken: d.accessToken,
+	}
 }

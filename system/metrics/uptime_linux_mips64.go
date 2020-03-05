@@ -16,30 +16,29 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package dashboard_models
+package metrics
 
-import (
-	"github.com/shirou/gopsutil/mem"
-	"sync"
-)
+import "sync"
 
-type Memory struct {
+type UptimeManager struct {
 	sync.Mutex
-	SwapTotal uint64 `json:"swap_total"`
-	SwapFree  uint64 `json:"swap_free"`
-	MemTotal  uint64 `json:"mem_total"`
-	MemFree   uint64 `json:"mem_free"`
+	total uint64
 }
 
-func (m *Memory) Update() {
+func NewUptimeManager() *UptimeManager {
+	return &UptimeManager{}
+}
 
-	m.Lock()
-	swap, _ := mem.SwapMemory()
-	m.SwapFree = swap.Free / 1024
-	m.SwapTotal = swap.Total / 1024
+func (d *UptimeManager) Start(pause int) {
 
-	memory, _ := mem.VirtualMemory()
-	m.MemFree = memory.Free / 1024
-	m.MemTotal = memory.Total / 1024
-	m.Unlock()
+}
+
+func (d *UptimeManager) Stop() {
+
+}
+
+func (d UptimeManager) Snapshot() Uptime {
+	return Uptime{
+		Total: d.total,
+	}
 }

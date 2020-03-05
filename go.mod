@@ -8,7 +8,6 @@ require (
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlclark/regexp2 v1.2.0 // indirect
-	github.com/docker/distribution v2.7.1+incompatible
 	github.com/dop251/goja v0.0.0-20200126140343-a7d7d4827263
 	github.com/dop251/goja_nodejs v0.0.0-20200128125109-2d688c7e0ac4
 	github.com/eclipse/paho.mqtt.golang v1.2.0
@@ -41,7 +40,8 @@ require (
 	github.com/nlopes/slack v0.6.0
 	github.com/op/go-logging v0.0.0-20160211212156-b2cb9fa56473
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.4.0
+	github.com/prometheus/client_golang v1.5.0
+	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a
 	github.com/rubenv/sql-migrate v0.0.0-20180704111356-3f452fc0ebeb
 	github.com/sfreiberg/gotwilio v0.0.0-20191023035553-f6f740c7bffc
 	github.com/shirou/gopsutil v2.19.13-0.20200118023139-3964e5b57942+incompatible
@@ -55,7 +55,7 @@ require (
 	github.com/t-tiger/gorm-bulk-insert v0.0.0-20191118105655-ec69ce854cfe
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
-	go.uber.org/atomic v1.5.1 // indirect
+	go.uber.org/atomic v1.5.1
 	go.uber.org/dig v1.8.0
 	go.uber.org/multierr v1.4.0 // indirect
 	go.uber.org/zap v1.14.0 // indirect

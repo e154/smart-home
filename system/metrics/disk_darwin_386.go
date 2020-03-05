@@ -16,21 +16,29 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package dashboard_models
+//+build linux windows darwin,!386
 
-import (
-	"github.com/e154/smart-home/system/stream"
-)
+package metrics
 
-type Flow struct {
-
+type DiskManager struct {
+	root UsageStat
 }
 
-func (f *Flow) Update() {
-
-}
-
-func FlowsStatus(client stream.IStreamClient, message stream.Message) {
-
+func NewDiskManager() (_disk *DiskManager) {
+	_disk = &DiskManager{}
 	return
+}
+
+func (d *DiskManager) Start(pause int) {
+
+}
+
+func (d *DiskManager) Stop() {
+
+}
+
+func (d *DiskManager) Snapshot() DiskManager {
+	return DiskManager{
+		Root: d.root,
+	}
 }

@@ -16,53 +16,29 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-//+build linux windows darwin,!386
+package metrics
 
-package dashboard_models
+import "sync"
 
-import (
-	"github.com/shirou/gopsutil/disk"
-	"sync"
-)
-
-func NewDisk() (_disk *Disk) {
-
-	var state_root *disk.UsageStat
-	//var state_tmp *disk.UsageStat
-	var err error
-
-	_disk = &Disk{}
-
-	if state_root, err = disk.Usage("/"); err == nil {
-		_disk.Root = state_root
-	}
-
-	//if state_tmp, err = disk.Usage("/tmp"); err == nil {
-	//	_disk.Tmp = state_tmp
-	//}
-
-	return
-}
-
-type Disk struct {
+type UptimeManager struct {
 	sync.Mutex
-	Root *disk.UsageStat `json:"root"`
-	//Tmp		*disk.UsageStat		`json:"tmp"`
+	total uint64
 }
 
-func (d *Disk) Update() {
+func NewUptimeManager() *UptimeManager {
+	return &UptimeManager{}
+}
 
-	var state_root *disk.UsageStat
-	//var state_tmp *disk.UsageStat
-	var err error
+func (d *UptimeManager) Start(pause int) {
 
-	if state_root, err = disk.Usage("/"); err == nil {
-		d.Lock()
-		d.Root = state_root
-		d.Unlock()
+}
+
+func (d *UptimeManager) Stop() {
+
+}
+
+func (d UptimeManager) Snapshot() Uptime {
+	return Uptime{
+		Total: d.total,
 	}
-
-	//if state_tmp, err = disk.Usage("/tmp"); err == nil {
-	//	d.Tmp = state_tmp
-	//}
 }

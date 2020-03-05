@@ -87,7 +87,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(endpoint.NewEndpoint)
 	container.Provide(gate_client.NewGateClient)
 	container.Provide(notify.NewNotify)
-	container.Provide(metrics.NewMetricServer)
+	container.Provide(metrics.NewMetricManager)
 	container.Provide(metrics.NewMetricConfig)
 	container.Provide(zigbee2mqtt.NewZigbee2mqttConfig)
 	container.Provide(zigbee2mqtt.NewZigbee2mqtt)

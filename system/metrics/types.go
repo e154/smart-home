@@ -16,14 +16,25 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package dashboard_models
+package metrics
+
+type UsageStat struct {
+	Path              string  `json:"path"`
+	Fstype            string  `json:"fstype"`
+	Total             uint64  `json:"total"`
+	Free              uint64  `json:"free"`
+	Used              uint64  `json:"used"`
+	UsedPercent       float64 `json:"used_percent"`
+	InodesTotal       uint64  `json:"inodes_total"`
+	InodesUsed        uint64  `json:"inodes_used"`
+	InodesFree        uint64  `json:"inodes_free"`
+	InodesUsedPercent float64 `json:"inodes_used_percent"`
+}
+
+type Disk struct {
+	Root UsageStat `json:"root"`
+}
 
 type Uptime struct {
 	Total uint64 `json:"total"`
-	Idle  uint64 `json:"idle"`
-}
-
-func (u *Uptime) Update() (*Uptime, error) {
-
-	return u, nil
 }
