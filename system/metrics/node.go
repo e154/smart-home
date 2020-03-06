@@ -59,7 +59,7 @@ func (d *NodeManager) update(t interface{}) {
 	d.broadcast()
 }
 
-func (d NodeManager) GetStatus(nodeId int64) (status string, err error) {
+func (d *NodeManager) GetStatus(nodeId int64) (status string, err error) {
 
 	var ok bool
 	if status, ok = d.status[nodeId]; ok {
@@ -71,7 +71,7 @@ func (d NodeManager) GetStatus(nodeId int64) (status string, err error) {
 	return
 }
 
-func (d NodeManager) Snapshot() Node {
+func (d *NodeManager) Snapshot() Node {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
 

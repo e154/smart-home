@@ -51,6 +51,8 @@ func NewWorkflowManager(publisher IPublisher) (wf *WorkflowManager) {
 }
 
 func (d *WorkflowManager) GetStatus(workflowId int64) (status WorkflowStatus, err error) {
+	d.updateLock.Lock()
+	defer d.updateLock.Unlock()
 
 	if scenarioId, ok := d.status[workflowId]; ok {
 		status.ScenarioId = scenarioId
@@ -67,8 +69,8 @@ func (d *WorkflowManager) update(t interface{}) {
 	switch v := t.(type) {
 	case WorkflowUpdateScenario:
 		d.updateLock.Lock()
-		defer d.updateLock.Unlock()
 		d.status[v.Id] = v.ScenarioId
+		d.updateLock.Unlock()
 	case WorkflowAdd:
 		d.total.Inc(v.Num)
 	case WorkflowDelete:
