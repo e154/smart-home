@@ -42,6 +42,7 @@ type MetricManager struct {
 	Memory            *MemoryManager
 	Gate              *GateManager
 	Workflow          *WorkflowManager
+	Node *NodeManager
 	graceful          *graceful_service.GracefulService
 }
 
@@ -60,6 +61,7 @@ func NewMetricManager(cfg *MetricConfig,
 
 	metric.Gate = NewGateManager(metric)
 	metric.Workflow = NewWorkflowManager(metric)
+	metric.Node = NewNodeManager(metric)
 
 	return metric
 }

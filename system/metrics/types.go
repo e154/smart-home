@@ -18,6 +18,8 @@
 
 package metrics
 
+import "errors"
+
 type UsageStat struct {
 	Path              string  `json:"path"`
 	Fstype            string  `json:"fstype"`
@@ -38,3 +40,7 @@ type Disk struct {
 type Uptime struct {
 	Total uint64 `json:"total"`
 }
+
+var (
+	ErrRecordNotFound = errors.New("record not found")
+)

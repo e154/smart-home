@@ -19,7 +19,6 @@
 package metrics
 
 import (
-	"errors"
 	"github.com/rcrowley/go-metrics"
 	"sync"
 )
@@ -59,7 +58,7 @@ func (d *WorkflowManager) GetStatus(workflowId int64) (status WorkflowStatus, er
 		return
 	}
 
-	err = errors.New("record not found")
+	err = ErrRecordNotFound
 
 	return
 }
@@ -71,14 +70,14 @@ func (d *WorkflowManager) update(t interface{}) {
 		defer d.updateLock.Unlock()
 		d.status[v.Id] = v.ScenarioId
 	case WorkflowAdd:
-		d.total.Inc(1)
+		d.total.Inc(v.Num)
 	case WorkflowDelete:
-		d.total.Dec(1)
+		d.total.Dec(v.Num)
 	default:
 		return
 	}
 
-	d.Broadcast()
+	d.broadcast()
 }
 
 func (d *WorkflowManager) Snapshot() Workflow {
@@ -98,7 +97,7 @@ func (d *WorkflowManager) Snapshot() Workflow {
 	}
 }
 
-func (d *WorkflowManager) Broadcast() {
+func (d *WorkflowManager) broadcast() {
 	go d.publisher.Broadcast("workflow")
 }
 
@@ -108,9 +107,9 @@ type WorkflowUpdateScenario struct {
 }
 
 type WorkflowAdd struct {
-	Id int64
+	Num int64
 }
 
 type WorkflowDelete struct {
-	Id int64
+	Num int64
 }

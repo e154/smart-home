@@ -49,7 +49,7 @@ func (d *GateManager) update(t interface{}) {
 		return
 	}
 
-	d.Broadcast()
+	d.broadcast()
 }
 
 func (d *GateManager) Snapshot() Gate {
@@ -62,7 +62,7 @@ func (d *GateManager) Snapshot() Gate {
 	}
 }
 
-func (d *GateManager) Broadcast() {
+func (d *GateManager) broadcast() {
 	go d.publisher.Broadcast("gate")
 }
 

@@ -175,10 +175,10 @@ func (c *Core) AddNode(node *m.Node) (n *Node, err error) {
 
 	log.Infof("Add node: \"%s\"", node.Name)
 
-	n = NewNode(node, c.mqtt)
+	n = NewNode(node, c.mqtt, c.metric)
 	c.safeUpdateNodeMap(node.Id, n.Connect())
 
-	go c.telemetry.Broadcast(telemetry.Node{})
+	go c.metric.Update(metrics.NodeAdd{Num: 1})
 
 	return
 }
@@ -191,7 +191,7 @@ func (b *Core) RemoveNode(node *m.Node) (err error) {
 		return
 	}
 
-	b.telemetry.Broadcast(telemetry.Node{})
+	go b.metric.Update(metrics.NodeDelete{Num: 1})
 
 	return
 }
@@ -252,8 +252,6 @@ func (c *Core) ConnectNode(node *m.Node) (err error) {
 		n.Connect()
 	}
 
-	c.telemetry.Broadcast(telemetry.Node{})
-
 	return
 }
 
@@ -264,8 +262,6 @@ func (c *Core) DisconnectNode(node *m.Node) (err error) {
 	if n, exist := c.safeGetNode(node.Id); exist {
 		n.Disconnect()
 	}
-
-	c.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
@@ -334,7 +330,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	go b.metric.Update(metrics.WorkflowAdd{Id: workflow.Id})
+	go b.metric.Update(metrics.WorkflowAdd{Num: 1})
 
 	b.safeUpdateWorkflowMap(workflow.Id, wf)
 
@@ -368,7 +364,7 @@ func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 		log.Error(err.Error())
 	}
 
-	go c.metric.Update(metrics.WorkflowDelete{Id: workflow.Id})
+	go c.metric.Update(metrics.WorkflowDelete{Num: 1})
 
 	c.Lock()
 	delete(c.workflows, workflow.Id)
@@ -594,10 +590,8 @@ func (c *Core) safeGetOrAddNode(k int64) (w *Node, ok bool) {
 		if node, err := c.adaptors.Node.GetById(k); err == nil {
 			ok = true
 
-			w = NewNode(node, c.mqtt)
+			w = NewNode(node, c.mqtt, c.metric)
 			c.safeUpdateNodeMap(node.Id, w.Connect())
-
-			go c.telemetry.Broadcast(telemetry.Node{})
 
 		} else {
 			log.Error(err.Error())
