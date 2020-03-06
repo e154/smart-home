@@ -42,7 +42,7 @@ func NewDiskManager() (manager *DiskManager) {
 	return
 }
 
-func (d *DiskManager) Start(pause int) {
+func (d *DiskManager) start(pause int) {
 	if d.isStarted.Load() {
 		return
 	}
@@ -68,17 +68,11 @@ func (d *DiskManager) Start(pause int) {
 	}()
 }
 
-func (d *DiskManager) Stop() {
+func (d *DiskManager) stop() {
 	if !d.isStarted.Load() {
 		return
 	}
 	d.quit <- struct{}{}
-}
-
-func (d *DiskManager) Root() UsageStat {
-	d.updateLock.Lock()
-	defer d.updateLock.Unlock()
-	return d.root
 }
 
 func (d *DiskManager) Snapshot() Disk {

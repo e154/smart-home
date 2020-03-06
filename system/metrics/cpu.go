@@ -59,7 +59,7 @@ func NewCpuManager() (c *CpuManager) {
 	return
 }
 
-func (c *CpuManager) Start(pause int) {
+func (c *CpuManager) start(pause int) {
 	if c.isStarted.Load() {
 		return
 	}
@@ -83,7 +83,7 @@ func (c *CpuManager) Start(pause int) {
 	}()
 }
 
-func (c *CpuManager) Stop() {
+func (c *CpuManager) stop() {
 	if !c.isStarted.Load() {
 		return
 	}

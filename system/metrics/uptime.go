@@ -43,7 +43,7 @@ func NewUptimeManager() (uptime *UptimeManager) {
 	return
 }
 
-func (d *UptimeManager) Start(pause int) {
+func (d *UptimeManager) start(pause int) {
 	if d.isStarted.Load() {
 		return
 	}
@@ -67,7 +67,7 @@ func (d *UptimeManager) Start(pause int) {
 	}()
 }
 
-func (d *UptimeManager) Stop() {
+func (d *UptimeManager) stop() {
 	if !d.isStarted.Load() {
 		return
 	}

@@ -25,6 +25,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
@@ -52,6 +53,7 @@ type Core struct {
 	isRunning     bool
 	stopLock      sync.Mutex
 	zigbee2mqtt   *zigbee2mqtt.Zigbee2mqtt
+	metric        *metrics.MetricManager
 }
 
 func NewCore(adaptors *adaptors.Adaptors,
@@ -61,7 +63,8 @@ func NewCore(adaptors *adaptors.Adaptors,
 	mqtt *mqtt.Mqtt,
 	telemetry telemetry.ITelemetry,
 	streamService *stream.StreamService,
-	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) (core *Core, err error) {
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
+	metric *metrics.MetricManager) (core *Core, err error) {
 
 	core = &Core{
 		nodes:         make(map[int64]*Node),
@@ -76,6 +79,7 @@ func NewCore(adaptors *adaptors.Adaptors,
 			telemetry: telemetry,
 		},
 		zigbee2mqtt: zigbee2mqtt,
+		metric:      metric,
 	}
 
 	graceful.Subscribe(core)
@@ -324,11 +328,13 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.telemetry, b.zigbee2mqtt)
+	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.telemetry, b.zigbee2mqtt, b.metric)
 
 	if err = wf.Run(); err != nil {
 		return
 	}
+
+	go b.metric.Update(metrics.WorkflowAdd{Id: workflow.Id})
 
 	b.safeUpdateWorkflowMap(workflow.Id, wf)
 
@@ -348,38 +354,6 @@ func (b *Core) GetWorkflow(workflowId int64) (workflow *Workflow, err error) {
 	return
 }
 
-func (b *Core) GetStatusAllWorkflow() (statusList []m.DashboardWorkflowStatus) {
-
-	b.Lock()
-	defer b.Unlock()
-
-	statusList = make([]m.DashboardWorkflowStatus, 0, len(b.workflows))
-	for _, workflow := range b.workflows {
-		statusList = append(statusList, m.DashboardWorkflowStatus{
-			Id:         workflow.model.Id,
-			ScenarioId: workflow.model.Scenario.Id,
-		})
-	}
-
-	return
-}
-
-func (c *Core) GetStatusWorkflow(workflowId int64) (status m.DashboardWorkflowStatus, err error) {
-
-	workflow, ok := c.safeGetWorkflow(workflowId)
-	if !ok {
-		err = errors.New("not found")
-		return
-	}
-
-	status = m.DashboardWorkflowStatus{
-		Id:         workflow.model.Id,
-		ScenarioId: workflow.model.Scenario.Id,
-	}
-
-	return
-}
-
 // нельзя удалить workflow, если присутствуют связанные сущности
 func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 
@@ -393,6 +367,8 @@ func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 	if err = wf.Stop(); err != nil {
 		log.Error(err.Error())
 	}
+
+	go c.metric.Update(metrics.WorkflowDelete{Id: workflow.Id})
 
 	c.Lock()
 	delete(c.workflows, workflow.Id)

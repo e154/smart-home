@@ -314,5 +314,8 @@ func (client *WsClient) updateMetric() {
 		status = "disabled"
 	}
 
-	go client.metric.Gate.Update(status, client.settings.GateServerToken)
+	go client.metric.Update(metrics.GateUpdate{
+		Status:      status,
+		AccessToken: client.settings.GateServerToken,
+	})
 }

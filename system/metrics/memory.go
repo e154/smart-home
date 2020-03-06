@@ -46,7 +46,7 @@ func NewMemoryManager() *MemoryManager {
 	return &MemoryManager{}
 }
 
-func (d *MemoryManager) Start(pause int) {
+func (d *MemoryManager) start(pause int) {
 	if d.isStarted.Load() {
 		return
 	}
@@ -70,7 +70,7 @@ func (d *MemoryManager) Start(pause int) {
 	}()
 }
 
-func (d *MemoryManager) Stop() {
+func (d *MemoryManager) stop() {
 	if !d.isStarted.Load() {
 		return
 	}

@@ -22,50 +22,49 @@ import (
 	"sync"
 )
 
-type Gate struct {
-	Status      string `json:"status"`
-	AccessToken string `json:"access_token"`
+type ISubscriber interface {
+	Broadcast(interface{})
 }
 
-type GateManager struct {
-	updateLock  sync.Mutex
-	status      string
-	accessToken string
-	publisher   IPublisher
+type IPublisher interface {
+	Broadcast(interface{})
 }
 
-func NewGateManager(publisher IPublisher) *GateManager {
-	return &GateManager{publisher: publisher}
+type Publisher struct {
+	sync.Mutex
+	subscribers map[string]ISubscriber
 }
 
-func (d *GateManager) update(t interface{}) {
-	switch v := t.(type) {
-	case GateUpdate:
-		d.updateLock.Lock()
-		d.status = v.Status
-		d.accessToken = v.AccessToken
-		d.updateLock.Unlock()
-	default:
-		return
+func NewPublisher() (t *Publisher) {
+	t = &Publisher{
+		subscribers: make(map[string]ISubscriber),
 	}
 
-	d.Broadcast()
+	return
 }
 
-func (d *GateManager) Snapshot() Gate {
-	d.updateLock.Lock()
-	defer d.updateLock.Unlock()
+func (p *Publisher) Subscribe(command string, f ISubscriber) {
+	log.Infof("subscribe %s", command)
+	p.Lock()
+	defer p.Unlock()
+	if p.subscribers[command] != nil {
+		delete(p.subscribers, command)
+	}
+	p.subscribers[command] = f
+}
 
-	return Gate{
-		Status:      d.status,
-		AccessToken: d.accessToken,
+func (p *Publisher) UnSubscribe(command string) {
+	p.Lock()
+	defer p.Unlock()
+	if _, ok := p.subscribers[command]; ok {
+		delete(p.subscribers, command)
 	}
 }
 
-func (d *GateManager) Broadcast() {
-	go d.publisher.Broadcast("gate")
-}
-
-type GateUpdate struct {
-	Status, AccessToken string
+func (p *Publisher) Broadcast(param interface{}) {
+	p.Lock()
+	defer p.Unlock()
+	for _, f := range p.subscribers {
+		f.Broadcast(param)
+	}
 }

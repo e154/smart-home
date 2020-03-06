@@ -45,12 +45,13 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 		AppMemory:        &dashboardModel.AppMemory{},
 		Nodes:            dashboardModel.NewNode(common.adaptors, common.core),
 		devices:          dashboardModel.NewDevices(common.adaptors, common.core),
-		Workflow:         dashboardModel.NewWorkflow(common.adaptors, common.core),
+		Workflow:         dashboardModel.NewWorkflow(common.metrics),
 	}
 }
 
 func (c *ControllerDashboard) Start() {
 	c.telemetry.Subscribe("dashboard", c)
+	c.metrics.Subscribe("dashboard", c)
 	c.stream.Subscribe("dashboard.get.nodes.status", c.Nodes.NodesStatus)
 	c.stream.Subscribe("dashboard.get.gate.status", c.GatesStatus)
 	//c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
@@ -97,7 +98,7 @@ func (t *ControllerDashboard) BroadcastOne(param interface{}) {
 
 	switch v := param.(type) {
 	case telemetry.WorkflowScenario:
-		body, ok = t.Workflow.BroadcastOne(v)
+		//body, ok = t.Workflow.BroadcastOne(v)
 	case telemetry.Device:
 		body, ok = t.devices.BroadcastOne(v.Id, v.ElementName)
 	}
@@ -112,7 +113,12 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 	var body map[string]interface{}
 	var ok bool
 
-	switch param.(type) {
+	switch v := param.(type) {
+	case string:
+		switch v {
+		case "workflow":
+			body, ok = t.Workflow.Broadcast()
+		}
 	case telemetry.Node:
 		body, ok = t.Nodes.Broadcast()
 	case telemetry.Device:

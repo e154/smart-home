@@ -24,6 +24,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/telemetry"
@@ -48,6 +49,7 @@ type Workflow struct {
 	scenarioEntered bool
 	telemetry       telemetry.ITelemetry
 	zigbee2mqtt     *zigbee2mqtt.Zigbee2mqtt
+	metric          *metrics.MetricManager
 }
 
 func NewWorkflow(model *m.Workflow,
@@ -57,7 +59,8 @@ func NewWorkflow(model *m.Workflow,
 	core *Core,
 	mqtt *mqtt.Mqtt,
 	telemetry telemetry.ITelemetry,
-	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) (workflow *Workflow) {
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
+	metric *metrics.MetricManager) (workflow *Workflow) {
 
 	workflow = &Workflow{
 		Storage:     NewStorage(),
@@ -70,6 +73,7 @@ func NewWorkflow(model *m.Workflow,
 		mqtt:        mqtt,
 		telemetry:   telemetry,
 		zigbee2mqtt: zigbee2mqtt,
+		metric:      metric,
 	}
 
 	return
@@ -303,6 +307,11 @@ func (wf *Workflow) enterScenario() (err error) {
 	}
 
 	log.Infof("Workflow '%s', scenario '%s'", wf.model.Name, scenario.Name)
+
+	go wf.metric.Update(metrics.WorkflowUpdateScenario{
+		Id:         wf.model.Id,
+		ScenarioId: wf.model.Scenario.Id,
+	})
 
 	if err = wf.runScenarioScripts("on_enter"); err != nil {
 		return

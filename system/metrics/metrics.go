@@ -33,6 +33,7 @@ var (
 )
 
 type MetricManager struct {
+	*Publisher
 	cfg               *MetricConfig
 	prometheusHandler http.Handler
 	Cpu               *CpuManager
@@ -40,32 +41,35 @@ type MetricManager struct {
 	Uptime            *UptimeManager
 	Memory            *MemoryManager
 	Gate              *GateManager
+	Workflow          *WorkflowManager
 	graceful          *graceful_service.GracefulService
 }
 
 func NewMetricManager(cfg *MetricConfig,
 	graceful *graceful_service.GracefulService) *MetricManager {
 	metric := &MetricManager{
+		Publisher:         NewPublisher(),
 		cfg:               cfg,
 		prometheusHandler: promhttp.Handler(),
 		Cpu:               NewCpuManager(),
 		Disk:              NewDiskManager(),
 		Uptime:            NewUptimeManager(),
 		Memory:            NewMemoryManager(),
-		graceful: graceful,
+		graceful:          graceful,
 	}
 
-	metric.Gate = NewGateManager(metric.onUpdate)
+	metric.Gate = NewGateManager(metric)
+	metric.Workflow = NewWorkflowManager(metric)
 
 	return metric
 }
 
 func (m *MetricManager) Start() {
 
-	m.Cpu.Start(5)
-	m.Disk.Start(60)
-	m.Uptime.Start(15)
-	m.Memory.Start(3)
+	m.Cpu.start(5)
+	m.Disk.start(60)
+	m.Uptime.start(15)
+	m.Memory.start(3)
 
 	m.graceful.Subscribe(m)
 
@@ -94,12 +98,12 @@ func (m *MetricManager) Start() {
 
 func (m MetricManager) Shutdown() {
 
-	m.Cpu.Stop()
-	m.Disk.Stop()
-	//m.Uptime.Stop()
-	//m.Memory.Stop()
+	m.Cpu.stop()
+	m.Disk.stop()
+	m.Uptime.stop()
+	m.Memory.stop()
 }
 
-func (m *MetricManager) onUpdate(managerName string) {
-
+func (m *MetricManager) Update(t interface{}) {
+	m.Workflow.update(t)
 }
