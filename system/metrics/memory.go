@@ -43,7 +43,9 @@ type MemoryManager struct {
 }
 
 func NewMemoryManager() *MemoryManager {
-	return &MemoryManager{}
+	return &MemoryManager{
+		quit: make(chan struct{}),
+	}
 }
 
 func (d *MemoryManager) start(pause int) {

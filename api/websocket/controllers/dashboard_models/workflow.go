@@ -36,7 +36,7 @@ func NewWorkflow(metrics *metrics2.MetricManager) *Workflow {
 func (w *Workflow) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{
-		"workflows": w.metrics.Workflow.Snapshot(),
+		//"workflows": w.metrics.Workflow.Snapshot(),
 	}, true
 }
 

@@ -108,4 +108,6 @@ func (m MetricManager) Shutdown() {
 
 func (m *MetricManager) Update(t interface{}) {
 	m.Workflow.update(t)
+	m.Gate.update(t)
+	m.Node.update(t)
 }

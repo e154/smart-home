@@ -39,6 +39,7 @@ func NewNodeManager(publisher IPublisher) *NodeManager {
 	return &NodeManager{
 		publisher: publisher,
 		status:    make(map[int64]string),
+		total:     metrics.NewCounter(),
 	}
 }
 
