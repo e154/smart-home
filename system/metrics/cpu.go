@@ -33,6 +33,7 @@ type Cpu struct {
 }
 
 type CpuManager struct {
+	publisher       IPublisher
 	cores           int64
 	model           string
 	mhz             float64
@@ -44,10 +45,11 @@ type CpuManager struct {
 	updateLock      sync.Mutex
 }
 
-func NewCpuManager() (c *CpuManager) {
+func NewCpuManager(publisher IPublisher) (c *CpuManager) {
 	c = &CpuManager{
-		all:  metrics.NewGaugeFloat64(),
-		quit: make(chan struct{}),
+		all:       metrics.NewGaugeFloat64(),
+		quit:      make(chan struct{}),
+		publisher: publisher,
 	}
 	cpuInfo, err := cpu.Info()
 	if err != nil {
@@ -91,6 +93,9 @@ func (c *CpuManager) stop() {
 }
 
 func (c *CpuManager) Snapshot() Cpu {
+	c.updateLock.Lock()
+	defer c.updateLock.Unlock()
+
 	return Cpu{
 		Cores: c.cores,
 		Mhz:   c.mhz,
@@ -117,4 +122,10 @@ func (c *CpuManager) selfUpdate() {
 	c.all.Update(100 * (diffTotal - diffIdle) / diffTotal)
 	c.allCpuPrevTotal = total
 	c.allCpuPrevIdle = timeStats[0].Idle
+
+	c.broadcast()
+}
+
+func (c *CpuManager) broadcast() {
+	go c.publisher.Broadcast("cpu")
 }

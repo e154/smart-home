@@ -45,6 +45,7 @@ type MetricManager struct {
 	Node              *NodeManager
 	Device            *DeviceManager
 	MapElement        *MapElementManager
+	Flow              *FlowManager
 	graceful          *graceful_service.GracefulService
 }
 
@@ -54,7 +55,6 @@ func NewMetricManager(cfg *MetricConfig,
 		Publisher:         NewPublisher(),
 		cfg:               cfg,
 		prometheusHandler: promhttp.Handler(),
-		Cpu:               NewCpuManager(),
 		Disk:              NewDiskManager(),
 		Uptime:            NewUptimeManager(),
 		Memory:            NewMemoryManager(),
@@ -66,6 +66,8 @@ func NewMetricManager(cfg *MetricConfig,
 	metric.Node = NewNodeManager(metric)
 	metric.Device = NewDeviceManager(metric)
 	metric.MapElement = NewMapElementManager(metric)
+	metric.Flow = NewFlowManager(metric)
+	metric.Cpu = NewCpuManager(metric)
 
 	return metric
 }
@@ -116,4 +118,5 @@ func (m *MetricManager) Update(t interface{}) {
 	m.Node.update(t)
 	m.Device.update(t)
 	m.MapElement.update(t)
+	m.Flow.update(t)
 }

@@ -20,38 +20,20 @@ package dashboard_models
 
 import (
 	"github.com/e154/smart-home/system/metrics"
-	"github.com/e154/smart-home/system/stream"
 )
 
-type Gate struct {
+type Cpu struct {
 	metric *metrics.MetricManager
 }
 
-func NewGate(metric *metrics.MetricManager) (node *Gate) {
-	node = &Gate{metric: metric}
+func NewCpu(metric *metrics.MetricManager) (node *Cpu) {
+	node = &Cpu{metric: metric}
 	return
 }
 
-func (g *Gate) Broadcast() (map[string]interface{}, bool) {
+func (g *Cpu) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{
-		"gate": g.metric.Gate.Snapshot(),
+		"cpu": g.metric.Cpu.Snapshot(),
 	}, true
-}
-
-// only on request: 'dashboard.get.gate.status'
-//
-func (t *Gate) Status(client stream.IStreamClient, message stream.Message) {
-
-	satus := t.metric.Gate.Snapshot()
-
-	payload := map[string]interface{}{
-		"status":       satus.Status,
-		"access_token": satus.AccessToken,
-	}
-
-	response := message.Response(payload)
-	client.Write(response.Pack())
-
-	return
 }

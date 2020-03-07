@@ -50,19 +50,28 @@ func (d *NodeManager) update(t interface{}) {
 	case NodeDelete:
 		d.total.Dec(v.Num)
 	case NodeUpdateStatus:
-		d.updateLock.Lock()
-		defer d.updateLock.Unlock()
-
-		if d.status[v.Id] == v.Status {
+		if d.updateStatus(v) {
 			return
 		}
-		d.status[v.Id] = v.Status
 
 	default:
 		return
 	}
 
 	d.broadcast()
+}
+
+func (d *NodeManager) updateStatus(v NodeUpdateStatus) (exist bool) {
+	d.updateLock.Lock()
+	defer d.updateLock.Unlock()
+
+	if d.status[v.Id] == v.Status {
+		exist = true
+		return
+	}
+	d.status[v.Id] = v.Status
+
+	return
 }
 
 func (d *NodeManager) GetStatus(nodeId int64) (status string, err error) {

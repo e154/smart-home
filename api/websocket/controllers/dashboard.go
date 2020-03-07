@@ -19,28 +19,39 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	dashboardModel "github.com/e154/smart-home/api/websocket/controllers/dashboard_models"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
+	"sync"
 	"time"
 )
 
 type ControllerDashboard struct {
 	*ControllerCommon
 	Nodes    *dashboardModel.Nodes
-	devices  *dashboardModel.Devices
+	Devices  *dashboardModel.Devices
 	Workflow *dashboardModel.Workflow
 	Gate     *dashboardModel.Gate
+	Cpu      *dashboardModel.Cpu
+	sendLock sync.Mutex
+	buf      *bytes.Buffer
+	enc      *json.Encoder
 }
 
-func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
-	return &ControllerDashboard{
+func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDashboard) {
+	dashboard = &ControllerDashboard{
 		ControllerCommon: common,
 		Nodes:            dashboardModel.NewNode(common.metric),
-		devices:          dashboardModel.NewDevices(common.metric),
+		Devices:          dashboardModel.NewDevices(common.metric),
 		Workflow:         dashboardModel.NewWorkflow(common.metric),
 		Gate:             dashboardModel.NewGate(common.metric),
+		Cpu:              dashboardModel.NewCpu(common.metric),
+		buf:              bytes.NewBuffer(nil),
 	}
+	dashboard.enc = json.NewEncoder(dashboard.buf)
+	return dashboard
 }
 
 func (c *ControllerDashboard) Start() {
@@ -72,7 +83,12 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 		case "node":
 			body, ok = t.Nodes.Broadcast()
 		case "device":
-			body, ok = t.devices.Broadcast()
+			body, ok = t.Devices.Broadcast()
+		case "gate":
+			body, ok = t.Gate.Broadcast()
+		case "cpu":
+			body, ok = t.Cpu.Broadcast()
+
 		}
 	case metrics.MapElementCursor:
 
@@ -83,7 +99,10 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 	}
 }
 
-func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
+func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) (err error) {
+
+	t.sendLock.Lock()
+	defer t.sendLock.Unlock()
 
 	msg := &stream.Message{
 		Command: "dashboard.telemetry",
@@ -92,7 +111,14 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
 		Payload: payload,
 	}
 
-	t.stream.Broadcast(msg.Pack())
+	t.buf.Reset()
+	if err = t.enc.Encode(msg); err != nil {
+		return
+	}
+
+	t.stream.Broadcast(t.buf.Bytes())
+
+	return
 }
 
 // only on request: 'dashboard.get.telemetry'
