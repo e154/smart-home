@@ -20,22 +20,31 @@ package dashboard_models
 
 import (
 	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/stream"
 )
 
-type Workflow struct {
+type Gate struct {
 	metric *metrics.MetricManager
 }
 
-func NewWorkflow(metric *metrics.MetricManager) *Workflow {
-	return &Workflow{
-		metric: metric,
-	}
+func NewGate(metric *metrics.MetricManager) (node *Gate) {
+	node = &Gate{metric: metric}
+	return
 }
 
-// status all workflows
-func (w *Workflow) Broadcast() (map[string]interface{}, bool) {
+// only on request: 'dashboard.get.gate.status'
+//
+func (t *Gate) Status(client stream.IStreamClient, message stream.Message) {
 
-	return map[string]interface{}{
-		"workflows": w.metric.Workflow.Snapshot(),
-	}, true
+	satus := t.metric.Gate.Snapshot()
+
+	payload := map[string]interface{}{
+		"status":       satus.Status,
+		"access_token": satus.AccessToken,
+	}
+
+	response := message.Response(payload)
+	client.Write(response.Pack())
+
+	return
 }

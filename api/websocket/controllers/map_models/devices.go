@@ -39,7 +39,7 @@ func NewDevices(metric *metrics.MetricManager) *Devices {
 	}
 }
 
-func (d *Devices) UpdateMapElement(cursor metrics.MapElementCursor) (map[string]interface{}, bool) {
+func (d *Devices) Broadcast(cursor metrics.MapElementCursor) (map[string]interface{}, bool) {
 
 	snapshot := d.metric.MapElement.Snapshot()
 	element, ok := snapshot.Elements[d.key(cursor.DeviceId, cursor.ElementName)]

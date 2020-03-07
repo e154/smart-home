@@ -56,7 +56,7 @@ func (c *ControllerMap) Broadcast(param interface{}) {
 
 	switch v := param.(type) {
 	case metrics.MapElementCursor:
-		body, ok = c.devices.UpdateMapElement(v)
+		body, ok = c.devices.Broadcast(v)
 	}
 
 	if ok {

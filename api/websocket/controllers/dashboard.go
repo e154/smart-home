@@ -22,16 +22,15 @@ import (
 	dashboardModel "github.com/e154/smart-home/api/websocket/controllers/dashboard_models"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
-	"sync"
 	"time"
 )
 
 type ControllerDashboard struct {
 	*ControllerCommon
-	sync.Mutex
 	Nodes    *dashboardModel.Nodes
 	devices  *dashboardModel.Devices
 	Workflow *dashboardModel.Workflow
+	Gate     *dashboardModel.Gate
 }
 
 func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
@@ -40,13 +39,14 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 		Nodes:            dashboardModel.NewNode(common.metric),
 		devices:          dashboardModel.NewDevices(common.metric),
 		Workflow:         dashboardModel.NewWorkflow(common.metric),
+		Gate:             dashboardModel.NewGate(common.metric),
 	}
 }
 
 func (c *ControllerDashboard) Start() {
 	c.metric.Subscribe("dashboard", c)
 	c.stream.Subscribe("dashboard.get.nodes.status", c.Nodes.NodesStatus)
-	c.stream.Subscribe("dashboard.get.gate.status", c.GatesStatus)
+	c.stream.Subscribe("dashboard.get.gate.status", c.Gate.Status)
 	//c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
 	c.stream.Subscribe("dashboard.get.telemetry", c.Telemetry)
 }
@@ -119,7 +119,6 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
 //
 func (t *ControllerDashboard) broadcastAll() {
 
-	t.Lock()
 	msg := &stream.Message{
 		Command: "dashboard.telemetry",
 		Type:    stream.Broadcast,
@@ -132,7 +131,6 @@ func (t *ControllerDashboard) broadcastAll() {
 			"gate":   t.metric.Gate.Snapshot(),
 		},
 	}
-	t.Unlock()
 
 	t.stream.Broadcast(msg.Pack())
 }
@@ -158,21 +156,4 @@ func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message str
 	}
 
 	client.Write(msg.Pack())
-}
-
-// only on request: 'dashboard.get.gate.status'
-//
-func (t *ControllerDashboard) GatesStatus(client stream.IStreamClient, message stream.Message) {
-
-	satus := t.metric.Gate.Snapshot()
-
-	payload := map[string]interface{}{
-		"status":       satus.Status,
-		"access_token": satus.AccessToken,
-	}
-
-	response := message.Response(payload)
-	client.Write(response.Pack())
-
-	return
 }
