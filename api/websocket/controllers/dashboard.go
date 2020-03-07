@@ -59,25 +59,6 @@ func (c *ControllerDashboard) Stop() {
 	c.stream.UnSubscribe("dashboard.get.telemetry")
 }
 
-func (t *ControllerDashboard) BroadcastOne(param interface{}) {
-
-	log.Warningf("Not working %v", param)
-
-	//var body map[string]interface{}
-	//var ok bool
-
-	//switch v := param.(type) {
-	//case telemetry.WorkflowScenario:
-	//	body, ok = t.Workflow.BroadcastOne(v)
-	//case telemetry.Device:
-	//	body, ok = t.devices.BroadcastOne(v.Id, v.ElementName)
-	//}
-
-	//if ok {
-	//	t.sendMsg(body)
-	//}
-}
-
 func (t *ControllerDashboard) Broadcast(param interface{}) {
 
 	var body map[string]interface{}
@@ -109,27 +90,6 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
 		Type:    stream.Broadcast,
 		Forward: stream.Request,
 		Payload: payload,
-	}
-
-	t.stream.Broadcast(msg.Pack())
-}
-
-// every time send:
-// memory, swap, cpu, uptime
-//
-func (t *ControllerDashboard) broadcastAll() {
-
-	msg := &stream.Message{
-		Command: "dashboard.telemetry",
-		Type:    stream.Broadcast,
-		Forward: stream.Request,
-		Payload: map[string]interface{}{
-			"memory": t.metric.Memory.Snapshot(),
-			//"app_memory": t.AppMemory,
-			"cpu":    map[string]interface{}{"all": t.metric.Cpu.All()},
-			"uptime": t.metric.Uptime.Snapshot(),
-			"gate":   t.metric.Gate.Snapshot(),
-		},
 	}
 
 	t.stream.Broadcast(msg.Pack())

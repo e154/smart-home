@@ -79,17 +79,6 @@ func (b *Map) GetElement(device *m.Device, elementName string) (element *MapElem
 	return
 }
 
-//TODO remove
-func (b *Map) GetAllElements() (elements []*MapElement) {
-
-	b.elements.Range(func(key, value interface{}) bool {
-		element := value.(*MapElement)
-		elements = append(elements, element)
-		return true
-	})
-	return
-}
-
 func (b *Map) GetElements(device *m.Device) (elements []*MapElement) {
 
 	if device == nil {
