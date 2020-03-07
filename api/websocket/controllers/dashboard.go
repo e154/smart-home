@@ -35,7 +35,7 @@ type ControllerDashboard struct {
 	Workflow *dashboardModel.Workflow
 	Gate     *dashboardModel.Gate
 	Cpu      *dashboardModel.Cpu
-	sendLock sync.Mutex
+	sendLock *sync.Mutex
 	buf      *bytes.Buffer
 	enc      *json.Encoder
 }
@@ -49,6 +49,7 @@ func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDash
 		Gate:             dashboardModel.NewGate(common.metric),
 		Cpu:              dashboardModel.NewCpu(common.metric),
 		buf:              bytes.NewBuffer(nil),
+		sendLock:         &sync.Mutex{},
 	}
 	dashboard.enc = json.NewEncoder(dashboard.buf)
 	return dashboard
@@ -95,7 +96,7 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 	}
 
 	if ok {
-		t.sendMsg(body)
+		go t.sendMsg(body)
 	}
 }
 
@@ -104,7 +105,7 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) (err error
 	t.sendLock.Lock()
 	defer t.sendLock.Unlock()
 
-	msg := &stream.Message{
+	msg := stream.Message{
 		Command: "dashboard.telemetry",
 		Type:    stream.Broadcast,
 		Forward: stream.Request,
@@ -116,7 +117,9 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) (err error
 		return
 	}
 
-	t.stream.Broadcast(t.buf.Bytes())
+	data := make([]byte, t.buf.Len())
+	copy(data, t.buf.Bytes())
+	t.stream.Broadcast(data)
 
 	return
 }
