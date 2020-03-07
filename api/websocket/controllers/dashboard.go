@@ -20,92 +20,62 @@ package controllers
 
 import (
 	dashboardModel "github.com/e154/smart-home/api/websocket/controllers/dashboard_models"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/telemetry"
 	"sync"
 	"time"
 )
 
 type ControllerDashboard struct {
 	*ControllerCommon
-	quit chan bool
 	sync.Mutex
-	Nodes         *dashboardModel.Nodes
-	telemetryTime int
-	AppMemory     *dashboardModel.AppMemory
-	devices       *dashboardModel.Devices
-	Workflow      *dashboardModel.Workflow
+	Nodes    *dashboardModel.Nodes
+	devices  *dashboardModel.Devices
+	Workflow *dashboardModel.Workflow
 }
 
 func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 	return &ControllerDashboard{
 		ControllerCommon: common,
-		telemetryTime:    3,
-		quit:             make(chan bool),
-		AppMemory:        &dashboardModel.AppMemory{},
-		Nodes:            dashboardModel.NewNode(common.adaptors, common.core),
-		devices:          dashboardModel.NewDevices(common.adaptors, common.core),
-		Workflow:         dashboardModel.NewWorkflow(common.metrics),
+		Nodes:            dashboardModel.NewNode(common.metric),
+		devices:          dashboardModel.NewDevices(common.metric),
+		Workflow:         dashboardModel.NewWorkflow(common.metric),
 	}
 }
 
 func (c *ControllerDashboard) Start() {
-	c.telemetry.Subscribe("dashboard", c)
-	c.metrics.Subscribe("dashboard", c)
+	c.metric.Subscribe("dashboard", c)
 	c.stream.Subscribe("dashboard.get.nodes.status", c.Nodes.NodesStatus)
 	c.stream.Subscribe("dashboard.get.gate.status", c.GatesStatus)
 	//c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
 	c.stream.Subscribe("dashboard.get.telemetry", c.Telemetry)
-
-	//i := 0
-
-	go func() {
-		for {
-			select {
-			case <-c.quit:
-				break
-			default:
-
-			}
-
-			//if i >= 10 {
-			//	runtime.GC()
-			//	i = 0
-			//}
-
-			c.broadcastAll()
-
-			time.Sleep(time.Second * time.Duration(c.telemetryTime))
-			//i++
-		}
-	}()
 }
 
 func (c *ControllerDashboard) Stop() {
-	c.telemetry.UnSubscribe("dashboard")
+	c.metric.UnSubscribe("dashboard")
 	c.stream.UnSubscribe("dashboard.get.nodes.status")
 	c.stream.UnSubscribe("dashboard.get.gate.status")
 	//c.stream.UnSubscribe("t.get.flows.status")
 	c.stream.UnSubscribe("dashboard.get.telemetry")
-
-	c.quit <- true
 }
 
 func (t *ControllerDashboard) BroadcastOne(param interface{}) {
 
-	var body map[string]interface{}
-	var ok bool
+	log.Warningf("Not working %v", param)
 
-	switch v := param.(type) {
-	case telemetry.WorkflowScenario:
-		//body, ok = t.Workflow.BroadcastOne(v)
-	case telemetry.Device:
-		body, ok = t.devices.BroadcastOne(v.Id, v.ElementName)
-	}
+	//var body map[string]interface{}
+	//var ok bool
 
-	if ok {
-		t.sendMsg(body)
-	}
+	//switch v := param.(type) {
+	//case telemetry.WorkflowScenario:
+	//	body, ok = t.Workflow.BroadcastOne(v)
+	//case telemetry.Device:
+	//	body, ok = t.devices.BroadcastOne(v.Id, v.ElementName)
+	//}
+
+	//if ok {
+	//	t.sendMsg(body)
+	//}
 }
 
 func (t *ControllerDashboard) Broadcast(param interface{}) {
@@ -118,13 +88,13 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 		switch v {
 		case "workflow":
 			body, ok = t.Workflow.Broadcast()
+		case "node":
+			body, ok = t.Nodes.Broadcast()
+		case "device":
+			body, ok = t.devices.Broadcast()
 		}
-	case telemetry.Node:
-		body, ok = t.Nodes.Broadcast()
-	case telemetry.Device:
-		body, ok = t.devices.Broadcast()
-	case telemetry.WorkflowScenario:
-		body, ok = t.Workflow.Broadcast()
+	case metrics.MapElementCursor:
+
 	}
 
 	if ok {
@@ -150,20 +120,16 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
 func (t *ControllerDashboard) broadcastAll() {
 
 	t.Lock()
-	t.AppMemory.Update()
-
-	//fmt.Println(t.AppMemory)
-
 	msg := &stream.Message{
 		Command: "dashboard.telemetry",
 		Type:    stream.Broadcast,
 		Forward: stream.Request,
 		Payload: map[string]interface{}{
-			"memory":     t.metrics.Memory.Snapshot(),
-			"app_memory": t.AppMemory,
-			"cpu":        map[string]interface{}{"all": t.metrics.Cpu.All()},
-			"uptime":     t.metrics.Uptime.Snapshot(),
-			"gate":       t.metrics.Gate.Snapshot(),
+			"memory": t.metric.Memory.Snapshot(),
+			//"app_memory": t.AppMemory,
+			"cpu":    map[string]interface{}{"all": t.metric.Cpu.All()},
+			"uptime": t.metric.Uptime.Snapshot(),
+			"gate":   t.metric.Gate.Snapshot(),
 		},
 	}
 	t.Unlock()
@@ -171,49 +137,34 @@ func (t *ControllerDashboard) broadcastAll() {
 	t.stream.Broadcast(msg.Pack())
 }
 
-func (t *ControllerDashboard) GetStates() *ControllerDashboard {
-
-	t.Lock()
-	t.Nodes.Update()
-	t.devices.Update()
-	t.Unlock()
-
-	return t
-}
-
 // only on request: 'dashboard.get.telemetry'
 //
 func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message stream.Message) {
 
-	states := t.GetStates()
-
-	t.Lock()
-	msg := &stream.Message{
+	msg := stream.Message{
 		Id:      message.Id,
 		Command: "dashboard.telemetry",
 		Forward: stream.Response,
 		Payload: map[string]interface{}{
-			"memory":  t.metrics.Memory.Snapshot(),
-			"cpu":     t.metrics.Cpu.Snapshot(),
+			"memory":  t.metric.Memory.Snapshot(),
+			"cpu":     t.metric.Cpu.Snapshot(),
 			"time":    time.Now(),
-			"uptime":  t.metrics.Uptime.Snapshot(),
-			"disk":    t.metrics.Disk.Snapshot(),
-			"nodes":   states.Nodes,
-			"devices": states.devices,
-			"gate":    t.metrics.Gate.Snapshot(),
+			"uptime":  t.metric.Uptime.Snapshot(),
+			"disk":    t.metric.Disk.Snapshot(),
+			"nodes":   t.metric.Node.Snapshot(),
+			"devices": t.metric.Device.Snapshot(),
+			"gate":    t.metric.Gate.Snapshot(),
 		},
 	}
-	b := msg.Pack()
-	t.Unlock()
 
-	client.Write(b)
+	client.Write(msg.Pack())
 }
 
 // only on request: 'dashboard.get.gate.status'
 //
 func (t *ControllerDashboard) GatesStatus(client stream.IStreamClient, message stream.Message) {
 
-	satus := t.metrics.Gate.Snapshot()
+	satus := t.metric.Gate.Snapshot()
 
 	payload := map[string]interface{}{
 		"status":       satus.Status,

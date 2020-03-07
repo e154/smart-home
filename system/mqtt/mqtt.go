@@ -134,11 +134,11 @@ func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err er
 }
 
 func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
-	log.Debug("connected...")
+	log.Debugf("%v connected...", client.OptionsReader().ClientID())
 }
 
 func (m *Mqtt) OnClose(ctx context.Context, client gmqtt.Client, err error) {
-	log.Debug("disconnected...")
+	log.Debugf("%v disconnected...", client.OptionsReader().ClientID())
 }
 
 func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {

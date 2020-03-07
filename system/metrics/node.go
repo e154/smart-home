@@ -51,8 +51,13 @@ func (d *NodeManager) update(t interface{}) {
 		d.total.Dec(v.Num)
 	case NodeUpdateStatus:
 		d.updateLock.Lock()
+		defer d.updateLock.Unlock()
+
+		if d.status[v.Id] == v.Status {
+			return
+		}
 		d.status[v.Id] = v.Status
-		d.updateLock.Unlock()
+
 	default:
 		return
 	}

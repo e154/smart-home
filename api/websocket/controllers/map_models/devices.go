@@ -20,12 +20,9 @@ package map_models
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/api/websocket/controllers/models"
-	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/op/go-logging"
-	"sync"
 )
 
 var (
@@ -33,86 +30,30 @@ var (
 )
 
 type Devices struct {
-	sync.Mutex
-	Total       int64                          `json:"total"`
-	DeviceStats map[string]*models.DeviceState `json:"device_stats"`
-	adaptors    *adaptors.Adaptors
-	core        *core.Core
+	metric *metrics.MetricManager
 }
 
-func NewDevices(adaptors *adaptors.Adaptors,
-	core *core.Core) *Devices {
+func NewDevices(metric *metrics.MetricManager) *Devices {
 	return &Devices{
-		DeviceStats: make(map[string]*models.DeviceState),
-		adaptors:    adaptors,
-		core:        core,
+		metric: metric,
 	}
 }
 
-func (d *Devices) Update() {
+func (d *Devices) UpdateMapElement(cursor metrics.MapElementCursor) (map[string]interface{}, bool) {
 
-	if d.core == nil {
-		return
-	}
-
-	mapElements := d.core.Map.GetAllElements()
-
-	d.Lock()
-	d.Total = int64(len(mapElements))
-
-	// clear map
-	for key, _ := range d.DeviceStats {
-		delete(d.DeviceStats, key)
-	}
-
-	var status *models.DeviceStateStatus
-	for _, mapElement := range mapElements {
-
-		if mapElement.State != nil {
-			status = &models.DeviceStateStatus{
-				Id:          mapElement.State.Id,
-				DeviceId:    mapElement.State.DeviceId,
-				SystemName:  mapElement.State.SystemName,
-				Description: mapElement.State.Description,
-			}
-		}
-
-		deviceId := mapElement.Device.Id
-		key := d.key(deviceId, mapElement.ElementName)
-		d.DeviceStats[key] = &models.DeviceState{
-			Id:          deviceId,
-			Status:      status,
-			Options:     mapElement.Options,
-			ElementName: mapElement.ElementName,
-		}
-	}
-	d.Unlock()
-}
-
-func (d *Devices) Broadcast() (map[string]interface{}, bool) {
-
-	d.Update()
-
-	return map[string]interface{}{
-		"devices": d,
-	}, true
-}
-
-func (d *Devices) BroadcastOne(deviceId int64, elementName string) (map[string]interface{}, bool) {
-
-	d.Update()
-
-	d.Lock()
-	key := d.key(deviceId, elementName)
-	state, ok := d.DeviceStats[key]
+	snapshot := d.metric.MapElement.Snapshot()
+	element, ok := snapshot.Elements[d.key(cursor.DeviceId, cursor.ElementName)]
 	if !ok {
-		d.Unlock()
 		return nil, false
 	}
-	d.Unlock()
 
 	return map[string]interface{}{
-		"device": state,
+		"device": map[string]interface{}{
+			"id":           element.DeviceId,
+			"element_name": element.ElementName,
+			"options":      element.StateOptions,
+			"status_id":    element.StateId,
+		},
 	}, true
 }
 
@@ -120,13 +61,24 @@ func (d *Devices) BroadcastOne(deviceId int64, elementName string) (map[string]i
 //
 func (d *Devices) GetDevicesStates(client stream.IStreamClient, message stream.Message) {
 
-	d.Update()
+	snapshot := d.metric.MapElement.Snapshot()
+
+	devices := make([]MapElement, 0)
+
+	for _, element := range snapshot.Elements {
+		devices = append(devices, MapElement{
+			Id:          element.DeviceId,
+			StatusId:    element.StateId,
+			Options:     element.StateOptions,
+			ElementName: element.ElementName,
+		})
+	}
 
 	msg := &stream.Message{
 		Id:      message.Id,
 		Forward: stream.Response,
 		Payload: map[string]interface{}{
-			"states": d,
+			"devices": devices,
 		},
 	}
 
@@ -135,4 +87,11 @@ func (d *Devices) GetDevicesStates(client stream.IStreamClient, message stream.M
 
 func (d *Devices) key(deviceId int64, elementName string) string {
 	return fmt.Sprintf("%d_%s", deviceId, elementName)
+}
+
+type MapElement struct {
+	Id          int64       `json:"id"`
+	StatusId    int64       `json:"status_id"`
+	Options     interface{} `json:"options"`
+	ElementName string      `json:"element_name"`
 }

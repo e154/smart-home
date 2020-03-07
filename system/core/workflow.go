@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/telemetry"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"sync"
 	"time"
@@ -47,7 +46,6 @@ type Workflow struct {
 	nextScenario    *m.WorkflowScenario
 	isRunning       bool
 	scenarioEntered bool
-	telemetry       telemetry.ITelemetry
 	zigbee2mqtt     *zigbee2mqtt.Zigbee2mqtt
 	metric          *metrics.MetricManager
 }
@@ -58,7 +56,6 @@ func NewWorkflow(model *m.Workflow,
 	cron *cr.Cron,
 	core *Core,
 	mqtt *mqtt.Mqtt,
-	telemetry telemetry.ITelemetry,
 	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
 	metric *metrics.MetricManager) (workflow *Workflow) {
 
@@ -71,7 +68,6 @@ func NewWorkflow(model *m.Workflow,
 		cron:        cron,
 		core:        core,
 		mqtt:        mqtt,
-		telemetry:   telemetry,
 		zigbee2mqtt: zigbee2mqtt,
 		metric:      metric,
 	}
@@ -112,8 +108,6 @@ func (wf *Workflow) Run() (err error) {
 	if err = wf.enterScenario(); err != nil {
 		return
 	}
-
-	wf.telemetry.BroadcastOne(telemetry.WorkflowScenario{WorkflowId: wf.model.Id, ScenarioId: wf.model.Scenario.Id})
 
 	if err = wf.initFlows(); err != nil {
 		return

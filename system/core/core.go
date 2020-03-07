@@ -29,7 +29,6 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/telemetry"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"github.com/op/go-logging"
 	"sync"
@@ -47,7 +46,6 @@ type Core struct {
 	scripts       *scripts.ScriptService
 	cron          *cr.Cron
 	mqtt          *mqtt.Mqtt
-	telemetry     telemetry.ITelemetry
 	streamService *stream.StreamService
 	Map           *Map
 	isRunning     bool
@@ -61,7 +59,6 @@ func NewCore(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
 	cron *cr.Cron,
 	mqtt *mqtt.Mqtt,
-	telemetry telemetry.ITelemetry,
 	streamService *stream.StreamService,
 	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
 	metric *metrics.MetricManager) (core *Core, err error) {
@@ -73,13 +70,10 @@ func NewCore(adaptors *adaptors.Adaptors,
 		scripts:       scripts,
 		cron:          cron,
 		mqtt:          mqtt,
-		telemetry:     telemetry,
 		streamService: streamService,
-		Map: &Map{
-			telemetry: telemetry,
-		},
-		zigbee2mqtt: zigbee2mqtt,
-		metric:      metric,
+		Map:           NewMap(metric),
+		zigbee2mqtt:   zigbee2mqtt,
+		metric:        metric,
 	}
 
 	graceful.Subscribe(core)
@@ -106,6 +100,8 @@ func (c *Core) Run() (err error) {
 	if err = c.InitWorkflows(); err != nil {
 		return
 	}
+
+	c.updateMetrics()
 
 	return
 }
@@ -324,7 +320,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.telemetry, b.zigbee2mqtt, b.metric)
+	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.zigbee2mqtt, b.metric)
 
 	if err = wf.Run(); err != nil {
 		return
@@ -605,4 +601,24 @@ func (c *Core) safeUpdateNodeMap(k int64, n *Node) {
 	c.Lock()
 	c.nodes[k] = n
 	c.Unlock()
+}
+
+func (c *Core) updateMetrics() {
+
+	// get devices
+	var err error
+	var total int64
+	var devices []*m.Device
+	if devices, total, err = c.adaptors.Device.List(999, 0, "", ""); err != nil {
+		log.Error(err.Error())
+	}
+
+	var disabled int64
+	for _, device := range devices {
+		if device.Status == "disabled" {
+			disabled++
+		}
+	}
+
+	c.metric.Update(metrics.DeviceAdd{TotalNum: total, DisabledNum: disabled})
 }

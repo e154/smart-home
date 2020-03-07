@@ -19,16 +19,16 @@
 package dashboard_models
 
 import (
-	metrics2 "github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/metrics"
 )
 
 type Workflow struct {
-	metrics *metrics2.MetricManager
+	metric *metrics.MetricManager
 }
 
-func NewWorkflow(metrics *metrics2.MetricManager) *Workflow {
+func NewWorkflow(metric *metrics.MetricManager) *Workflow {
 	return &Workflow{
-		metrics: metrics,
+		metric: metric,
 	}
 }
 
@@ -36,7 +36,7 @@ func NewWorkflow(metrics *metrics2.MetricManager) *Workflow {
 func (w *Workflow) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{
-		//"workflows": w.metrics.Workflow.Snapshot(),
+		"workflows": w.metric.Workflow.Snapshot(),
 	}, true
 }
 

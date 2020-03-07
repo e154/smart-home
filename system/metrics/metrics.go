@@ -42,7 +42,9 @@ type MetricManager struct {
 	Memory            *MemoryManager
 	Gate              *GateManager
 	Workflow          *WorkflowManager
-	Node *NodeManager
+	Node              *NodeManager
+	Device            *DeviceManager
+	MapElement        *MapElementManager
 	graceful          *graceful_service.GracefulService
 }
 
@@ -62,6 +64,8 @@ func NewMetricManager(cfg *MetricConfig,
 	metric.Gate = NewGateManager(metric)
 	metric.Workflow = NewWorkflowManager(metric)
 	metric.Node = NewNodeManager(metric)
+	metric.Device = NewDeviceManager(metric)
+	metric.MapElement = NewMapElementManager(metric)
 
 	return metric
 }
@@ -110,4 +114,6 @@ func (m *MetricManager) Update(t interface{}) {
 	m.Workflow.update(t)
 	m.Gate.update(t)
 	m.Node.update(t)
+	m.Device.update(t)
+	m.MapElement.update(t)
 }
