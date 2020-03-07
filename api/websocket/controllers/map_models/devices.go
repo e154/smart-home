@@ -74,7 +74,7 @@ func (d *Devices) GetDevicesStates(client stream.IStreamClient, message stream.M
 		})
 	}
 
-	msg := &stream.Message{
+	msg := stream.Message{
 		Id:      message.Id,
 		Forward: stream.Response,
 		Payload: map[string]interface{}{

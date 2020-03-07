@@ -129,12 +129,15 @@ func (n *Flows) List(limit, offset int64, orderBy, sort string) (list []*Flow, t
 	}
 
 	list = make([]*Flow, 0)
-	err = n.Db.
+	q := n.Db.
 		Limit(limit).
-		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sort, orderBy)).
-		Find(&list).
-		Error
+		Offset(offset)
+
+	if orderBy != "" && sort != "" {
+		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	err = q.Find(&list).Error
 	if err != nil {
 		return
 	}

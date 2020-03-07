@@ -22,6 +22,7 @@ import (
 	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/validation"
 )
 
@@ -52,7 +53,11 @@ func (n *WorkflowEndpoint) Add(params *m.Workflow) (result *m.Workflow, errs []*
 		return
 	}
 
-	err = n.core.AddWorkflow(result)
+	if err = n.core.AddWorkflow(result); err != nil {
+		return
+	}
+
+	n.metric.Update(metrics.WorkflowAdd{TotalNum: 1})
 
 	return
 }
@@ -124,7 +129,11 @@ func (n *WorkflowEndpoint) Delete(workflowId int64) (err error) {
 		return
 	}
 
-	err = n.adaptors.Workflow.Delete(workflow.Id)
+	if err = n.adaptors.Workflow.Delete(workflow.Id); err != nil {
+		return
+	}
+
+	n.metric.Update(metrics.WorkflowDelete{TotalNum: 1})
 
 	return
 }

@@ -19,6 +19,7 @@
 package metrics
 
 import (
+	"github.com/e154/smart-home/adaptors"
 	"github.com/rcrowley/go-metrics"
 )
 
@@ -30,25 +31,33 @@ type Flow struct {
 type FlowManager struct {
 	publisher IPublisher
 	total     metrics.Counter
-	disabled  metrics.Counter
+	enabled   metrics.Counter
 }
 
-func NewFlowManager(publisher IPublisher) *FlowManager {
-	return &FlowManager{
+func NewFlowManager(publisher IPublisher,
+	adaptors *adaptors.Adaptors) (flow *FlowManager) {
+
+	flow = &FlowManager{
 		publisher: publisher,
 		total:     metrics.NewCounter(),
-		disabled:  metrics.NewCounter(),
+		enabled:   metrics.NewCounter(),
 	}
+
+	if _, total, err := adaptors.Flow.List(999, 0, "", ""); err == nil {
+		flow.total.Inc(total)
+	}
+
+	return
 }
 
 func (d *FlowManager) update(t interface{}) {
 	switch v := t.(type) {
 	case FlowAdd:
 		d.total.Inc(v.TotalNum)
-		d.disabled.Inc(v.DisabledNum)
+		d.enabled.Inc(v.EnabledNum)
 	case FlowDelete:
 		d.total.Dec(v.TotalNum)
-		d.disabled.Dec(v.DisabledNum)
+		d.enabled.Dec(v.EnabledNum)
 
 	default:
 		return
@@ -61,7 +70,7 @@ func (d *FlowManager) Snapshot() Flow {
 
 	return Flow{
 		Total:    d.total.Count(),
-		Disabled: d.disabled.Count(),
+		Disabled: d.total.Count() - d.enabled.Count(),
 	}
 }
 
@@ -70,11 +79,11 @@ func (d *FlowManager) broadcast() {
 }
 
 type FlowAdd struct {
-	TotalNum    int64
-	DisabledNum int64
+	TotalNum   int64
+	EnabledNum int64
 }
 
 type FlowDelete struct {
-	TotalNum    int64
-	DisabledNum int64
+	TotalNum   int64
+	EnabledNum int64
 }

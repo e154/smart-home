@@ -20,6 +20,7 @@ package metrics
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/op/go-logging"
@@ -50,7 +51,8 @@ type MetricManager struct {
 }
 
 func NewMetricManager(cfg *MetricConfig,
-	graceful *graceful_service.GracefulService) *MetricManager {
+	graceful *graceful_service.GracefulService,
+	adaptors *adaptors.Adaptors) *MetricManager {
 	metric := &MetricManager{
 		Publisher:         NewPublisher(),
 		cfg:               cfg,
@@ -62,11 +64,11 @@ func NewMetricManager(cfg *MetricConfig,
 	}
 
 	metric.Gate = NewGateManager(metric)
-	metric.Workflow = NewWorkflowManager(metric)
+	metric.Workflow = NewWorkflowManager(metric, adaptors)
 	metric.Node = NewNodeManager(metric)
 	metric.Device = NewDeviceManager(metric)
 	metric.MapElement = NewMapElementManager(metric)
-	metric.Flow = NewFlowManager(metric)
+	metric.Flow = NewFlowManager(metric, adaptors)
 	metric.Cpu = NewCpuManager(metric)
 
 	return metric

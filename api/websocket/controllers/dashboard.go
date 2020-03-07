@@ -35,6 +35,7 @@ type ControllerDashboard struct {
 	Workflow *dashboardModel.Workflow
 	Gate     *dashboardModel.Gate
 	Cpu      *dashboardModel.Cpu
+	Flow     *dashboardModel.Flow
 	sendLock *sync.Mutex
 	buf      *bytes.Buffer
 	enc      *json.Encoder
@@ -48,6 +49,7 @@ func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDash
 		Workflow:         dashboardModel.NewWorkflow(common.metric),
 		Gate:             dashboardModel.NewGate(common.metric),
 		Cpu:              dashboardModel.NewCpu(common.metric),
+		Flow:             dashboardModel.NewFlow(common.metric),
 		buf:              bytes.NewBuffer(nil),
 		sendLock:         &sync.Mutex{},
 	}
@@ -89,6 +91,8 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 			body, ok = t.Gate.Broadcast()
 		case "cpu":
 			body, ok = t.Cpu.Broadcast()
+		case "flow":
+			body, ok = t.Flow.Broadcast()
 
 		}
 	case metrics.MapElementCursor:
@@ -96,8 +100,10 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 	}
 
 	if ok {
-		go t.sendMsg(body)
+		return
 	}
+
+	_ = t.sendMsg(body)
 }
 
 func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) (err error) {
@@ -133,14 +139,16 @@ func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message str
 		Command: "dashboard.telemetry",
 		Forward: stream.Response,
 		Payload: map[string]interface{}{
-			"memory":  t.metric.Memory.Snapshot(),
-			"cpu":     t.metric.Cpu.Snapshot(),
-			"time":    time.Now(),
-			"uptime":  t.metric.Uptime.Snapshot(),
-			"disk":    t.metric.Disk.Snapshot(),
-			"nodes":   t.metric.Node.Snapshot(),
-			"devices": t.metric.Device.Snapshot(),
-			"gate":    t.metric.Gate.Snapshot(),
+			"memory":    t.metric.Memory.Snapshot(),
+			"cpu":       t.metric.Cpu.Snapshot(),
+			"time":      time.Now(),
+			"uptime":    t.metric.Uptime.Snapshot(),
+			"disk":      t.metric.Disk.Snapshot(),
+			"nodes":     t.metric.Node.Snapshot(),
+			"devices":   t.metric.Device.Snapshot(),
+			"gate":      t.metric.Gate.Snapshot(),
+			"flow":      t.metric.Flow.Snapshot(),
+			"workflows": t.metric.Workflow.Snapshot(),
 		},
 	}
 

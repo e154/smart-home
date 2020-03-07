@@ -326,7 +326,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	go b.metric.Update(metrics.WorkflowAdd{Num: 1})
+	go b.metric.Update(metrics.WorkflowAdd{EnabledNum: 1})
 
 	b.safeUpdateWorkflowMap(workflow.Id, wf)
 
@@ -360,7 +360,7 @@ func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 		log.Error(err.Error())
 	}
 
-	go c.metric.Update(metrics.WorkflowDelete{Num: 1})
+	go c.metric.Update(metrics.WorkflowDelete{EnabledNum: 1})
 
 	c.Lock()
 	delete(c.workflows, workflow.Id)

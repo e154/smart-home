@@ -184,6 +184,8 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 		return
 	}
 
+	wf.metric.Update(metrics.FlowAdd{EnabledNum: 1})
+
 	var model *Flow
 	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts, wf.cron, wf.core, wf.mqtt, wf.zigbee2mqtt); err != nil {
 		log.Error(err.Error())
@@ -214,6 +216,8 @@ func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 	if !ok {
 		return
 	}
+
+	wf.metric.Update(metrics.FlowDelete{EnabledNum: 1})
 
 	f.Remove()
 

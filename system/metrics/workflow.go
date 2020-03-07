@@ -19,6 +19,8 @@
 package metrics
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/rcrowley/go-metrics"
 	"sync"
 )
@@ -29,22 +31,31 @@ type WorkflowStatus struct {
 }
 
 type Workflow struct {
-	Total  int64                    `json:"total"`
-	Status map[int64]WorkflowStatus `json:"status"`
+	Total    int64                    `json:"total"`
+	Disabled int64                    `json:"disabled"`
+	Status   map[int64]WorkflowStatus `json:"status"`
 }
 
 type WorkflowManager struct {
 	publisher  IPublisher
+	enabled    metrics.Counter
 	total      metrics.Counter
 	updateLock sync.Mutex
 	status     map[int64]int64
 }
 
-func NewWorkflowManager(publisher IPublisher) (wf *WorkflowManager) {
+func NewWorkflowManager(publisher IPublisher,
+	adaptors *adaptors.Adaptors) (wf *WorkflowManager) {
+
 	wf = &WorkflowManager{
 		total:     metrics.NewCounter(),
+		enabled:   metrics.NewCounter(),
 		publisher: publisher,
 		status:    make(map[int64]int64),
+	}
+
+	if _, total, err := adaptors.Workflow.List(999, 0, "", "", false); err == nil {
+		wf.total.Inc(total)
 	}
 
 	return
@@ -72,9 +83,11 @@ func (d *WorkflowManager) update(t interface{}) {
 		d.status[v.Id] = v.ScenarioId
 		d.updateLock.Unlock()
 	case WorkflowAdd:
-		d.total.Inc(v.Num)
+		d.total.Inc(v.TotalNum)
+		d.enabled.Inc(v.EnabledNum)
 	case WorkflowDelete:
-		d.total.Dec(v.Num)
+		d.total.Dec(v.TotalNum)
+		d.enabled.Dec(v.EnabledNum)
 	default:
 		return
 	}
@@ -93,9 +106,13 @@ func (d *WorkflowManager) Snapshot() Workflow {
 			ScenarioId: scenId,
 		}
 	}
+	fmt.Println("total", d.total.Count())
+	fmt.Println("enabled", d.enabled.Count())
+
 	return Workflow{
-		Total:  d.total.Count(),
-		Status: status,
+		Total:    d.enabled.Count(),
+		Disabled: d.total.Count() - d.enabled.Count(),
+		Status:   status,
 	}
 }
 
@@ -109,9 +126,11 @@ type WorkflowUpdateScenario struct {
 }
 
 type WorkflowAdd struct {
-	Num int64
+	TotalNum   int64
+	EnabledNum int64
 }
 
 type WorkflowDelete struct {
-	Num int64
+	TotalNum   int64
+	EnabledNum int64
 }
