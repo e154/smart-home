@@ -19,7 +19,6 @@
 package metrics
 
 import (
-	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/rcrowley/go-metrics"
 	"sync"
@@ -106,8 +105,6 @@ func (d *WorkflowManager) Snapshot() Workflow {
 			ScenarioId: scenId,
 		}
 	}
-	fmt.Println("total", d.total.Count())
-	fmt.Println("enabled", d.enabled.Count())
 
 	return Workflow{
 		Total:    d.enabled.Count(),
