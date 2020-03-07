@@ -93,17 +93,20 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 			body, ok = t.Cpu.Broadcast()
 		case "flow":
 			body, ok = t.Flow.Broadcast()
-
+		case "map_element":
+		default:
+			log.Warningf("unknown type %v", v)
 		}
 	case metrics.MapElementCursor:
-
+	default:
+		log.Warningf("unknown type %v", v)
 	}
 
-	if ok {
+	if !ok {
 		return
 	}
 
-	_ = t.sendMsg(body)
+	go t.sendMsg(body)
 }
 
 func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) (err error) {
@@ -120,6 +123,7 @@ func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) (err error
 
 	t.buf.Reset()
 	if err = t.enc.Encode(msg); err != nil {
+		log.Error(err.Error())
 		return
 	}
 

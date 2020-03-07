@@ -55,13 +55,19 @@ func (c *ControllerMap) Broadcast(param interface{}) {
 	var ok bool
 
 	switch v := param.(type) {
+	case string:
+
 	case metrics.MapElementCursor:
 		body, ok = c.devices.Broadcast(v)
+	default:
+		log.Warningf("unknown type %v", v)
 	}
 
-	if ok {
-		c.sendMsg(body)
+	if !ok {
+		return
 	}
+
+	c.sendMsg(body)
 }
 
 func (t *ControllerMap) sendMsg(payload map[string]interface{}) {
