@@ -25,7 +25,7 @@ type UptimeManager struct {
 	total uint64
 }
 
-func NewUptimeManager() *UptimeManager {
+func NewUptimeManager(publisher IPublisher) *UptimeManager {
 	return &UptimeManager{}
 }
 

@@ -24,7 +24,7 @@ type DiskManager struct {
 	root UsageStat
 }
 
-func NewDiskManager() (_disk *DiskManager) {
+func NewDiskManager(publisher IPublisher) (_disk *DiskManager) {
 	_disk = &DiskManager{}
 	return
 }
