@@ -16,35 +16,24 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package metrics
+package dashboard_models
 
-import "errors"
-
-type UsageStat struct {
-	Path              string  `json:"path"`
-	Fstype            string  `json:"fstype"`
-	Total             uint64  `json:"total"`
-	Free              uint64  `json:"free"`
-	Used              uint64  `json:"used"`
-	UsedPercent       float64 `json:"used_percent"`
-	InodesTotal       uint64  `json:"inodes_total"`
-	InodesUsed        uint64  `json:"inodes_used"`
-	InodesFree        uint64  `json:"inodes_free"`
-	InodesUsedPercent float64 `json:"inodes_used_percent"`
-}
-
-type Disk struct {
-	Root UsageStat `json:"root"`
-}
-
-type Uptime struct {
-	Total uint64 `json:"total"`
-}
-
-var (
-	ErrRecordNotFound = errors.New("record not found")
+import (
+	"github.com/e154/smart-home/system/metrics"
 )
 
-func bToMb(b uint64) uint64 {
-	return b / 1024 / 1024
+type Disk struct {
+	metric *metrics.MetricManager
+}
+
+func NewDisk(metric *metrics.MetricManager) (memory *Disk) {
+	memory = &Disk{metric: metric}
+	return
+}
+
+func (g *Disk) Broadcast() (map[string]interface{}, bool) {
+
+	return map[string]interface{}{
+		"disk": g.metric.Disk.Snapshot(),
+	}, true
 }

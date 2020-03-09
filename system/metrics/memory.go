@@ -33,6 +33,7 @@ type Memory struct {
 }
 
 type MemoryManager struct {
+	publisher  IPublisher
 	updateLock sync.Mutex
 	swapTotal  uint64
 	swapFree   uint64
@@ -42,9 +43,10 @@ type MemoryManager struct {
 	quit       chan struct{}
 }
 
-func NewMemoryManager() *MemoryManager {
+func NewMemoryManager(publisher IPublisher) *MemoryManager {
 	return &MemoryManager{
-		quit: make(chan struct{}),
+		quit:      make(chan struct{}),
+		publisher: publisher,
 	}
 }
 
@@ -102,4 +104,10 @@ func (d *MemoryManager) selfUpdate() {
 	memory, _ := mem.VirtualMemory()
 	d.memFree = memory.Free / 1024
 	d.memTotal = memory.Total / 1024
+
+	d.broadcast()
+}
+
+func (d *MemoryManager) broadcast() {
+	go d.publisher.Broadcast("memory")
 }

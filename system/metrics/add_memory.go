@@ -16,36 +16,47 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-// +build linux,!mips64,!mips64le darwin
-
 package metrics
 
 import (
-	"github.com/shirou/gopsutil/host"
 	"go.uber.org/atomic"
+	"runtime"
 	"sync"
 	"time"
 )
 
-type UptimeManager struct {
+type AppMemory struct {
+	Alloc      uint64    `json:"alloc"`
+	HeapAlloc  uint64    `json:"heap_alloc"`
+	TotalAlloc uint64    `json:"total_alloc"`
+	Sys        uint64    `json:"sys"`
+	NumGC      uint64    `json:"num_gc"`
+	LastGC     time.Time `json:"last_gc"`
+}
+
+type AppMemoryManager struct {
 	publisher  IPublisher
-	updateLock sync.Mutex
-	total      uint64
-	idle       uint64
-	isStarted  atomic.Bool
+	isStarted  *atomic.Bool
 	quit       chan struct{}
+	updateLock *sync.Mutex
+	alloc      uint64
+	heapAlloc  uint64
+	totalAlloc uint64
+	sys        uint64
+	numGC      uint64
+	lastGC     time.Time
 }
 
-func NewUptimeManager(publisher IPublisher) (uptime *UptimeManager) {
-	uptime = &UptimeManager{
-		quit:      make(chan struct{}),
-		publisher: publisher,
+func NewAppMemoryManager(publisher IPublisher) *AppMemoryManager {
+	return &AppMemoryManager{
+		publisher:  publisher,
+		quit:       make(chan struct{}),
+		isStarted:  atomic.NewBool(false),
+		updateLock: &sync.Mutex{},
 	}
-	uptime.selfUpdate()
-	return
 }
 
-func (d *UptimeManager) start(pause int) {
+func (d *AppMemoryManager) start(pause int) {
 	if d.isStarted.Load() {
 		return
 	}
@@ -69,32 +80,45 @@ func (d *UptimeManager) start(pause int) {
 	}()
 }
 
-func (d *UptimeManager) stop() {
+func (d *AppMemoryManager) stop() {
 	if !d.isStarted.Load() {
 		return
 	}
 	d.quit <- struct{}{}
 }
 
-func (d *UptimeManager) Snapshot() Uptime {
+func (d *AppMemoryManager) selfUpdate() {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
 
-	return Uptime{
-		Total: d.total,
-	}
-}
+	var s runtime.MemStats
+	runtime.ReadMemStats(&s)
 
-func (d *UptimeManager) selfUpdate() {
-	d.updateLock.Lock()
-	defer d.updateLock.Unlock()
-
-	total, _ := host.Uptime()
-	d.total = total
+	// For info on each, see: https://golang.org/pkg/runtime/#MemStats
+	d.alloc = bToMb(s.Alloc)
+	d.heapAlloc = bToMb(s.HeapAlloc)
+	d.totalAlloc = bToMb(s.TotalAlloc)
+	d.sys = bToMb(s.Sys)
+	d.numGC = uint64(s.NumGC)
+	d.lastGC = time.Unix(0, int64(s.LastGC))
 
 	d.broadcast()
 }
 
-func (d *UptimeManager) broadcast() {
-	go d.publisher.Broadcast("uptime")
+func (d AppMemoryManager) Snapshot() AppMemory {
+	d.updateLock.Lock()
+	defer d.updateLock.Unlock()
+
+	return AppMemory{
+		Alloc:      d.alloc,
+		HeapAlloc:  d.heapAlloc,
+		TotalAlloc: d.totalAlloc,
+		Sys:        d.sys,
+		NumGC:      d.numGC,
+		LastGC:     d.lastGC,
+	}
+}
+
+func (d *AppMemoryManager) broadcast() {
+	go d.publisher.Broadcast("app_memory")
 }

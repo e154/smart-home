@@ -36,6 +36,7 @@ var (
 type MetricManager struct {
 	*Publisher
 	cfg               *MetricConfig
+	adaptors          *adaptors.Adaptors
 	prometheusHandler http.Handler
 	Cpu               *CpuManager
 	Disk              *DiskManager
@@ -47,6 +48,8 @@ type MetricManager struct {
 	Device            *DeviceManager
 	MapElement        *MapElementManager
 	Flow              *FlowManager
+	AppMemory         *AppMemoryManager
+	Mqtt              *MqttManager
 	graceful          *graceful_service.GracefulService
 }
 
@@ -54,12 +57,10 @@ func NewMetricManager(cfg *MetricConfig,
 	graceful *graceful_service.GracefulService,
 	adaptors *adaptors.Adaptors) *MetricManager {
 	metric := &MetricManager{
+		adaptors:          adaptors,
 		Publisher:         NewPublisher(),
 		cfg:               cfg,
 		prometheusHandler: promhttp.Handler(),
-		Disk:              NewDiskManager(),
-		Uptime:            NewUptimeManager(),
-		Memory:            NewMemoryManager(),
 		graceful:          graceful,
 	}
 
@@ -70,6 +71,11 @@ func NewMetricManager(cfg *MetricConfig,
 	metric.MapElement = NewMapElementManager(metric)
 	metric.Flow = NewFlowManager(metric, adaptors)
 	metric.Cpu = NewCpuManager(metric)
+	metric.Disk = NewDiskManager(metric)
+	metric.Uptime = NewUptimeManager(metric)
+	metric.Memory = NewMemoryManager(metric)
+	metric.AppMemory = NewAppMemoryManager(metric)
+	metric.Mqtt = NewMqttManager(metric)
 
 	return metric
 }
@@ -79,7 +85,8 @@ func (m *MetricManager) Start() {
 	m.Cpu.start(5)
 	m.Disk.start(60)
 	m.Uptime.start(15)
-	m.Memory.start(3)
+	m.Memory.start(5)
+	m.AppMemory.start(20)
 
 	m.graceful.Subscribe(m)
 
@@ -112,6 +119,7 @@ func (m MetricManager) Shutdown() {
 	m.Disk.stop()
 	m.Uptime.stop()
 	m.Memory.stop()
+	m.AppMemory.stop()
 }
 
 func (m *MetricManager) Update(t interface{}) {
@@ -121,4 +129,5 @@ func (m *MetricManager) Update(t interface{}) {
 	m.Device.update(t)
 	m.MapElement.update(t)
 	m.Flow.update(t)
+	m.Mqtt.update(t)
 }

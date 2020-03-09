@@ -28,15 +28,17 @@ import (
 )
 
 type DiskManager struct {
+	publisher  IPublisher
 	root       UsageStat
 	quit       chan struct{}
 	isStarted  atomic.Bool
 	updateLock sync.Mutex
 }
 
-func NewDiskManager() (manager *DiskManager) {
+func NewDiskManager(publisher IPublisher) (manager *DiskManager) {
 	manager = &DiskManager{
-		quit: make(chan struct{}),
+		quit:      make(chan struct{}),
+		publisher: publisher,
 	}
 	manager.selfUpdate()
 	return
@@ -102,4 +104,10 @@ func (d *DiskManager) selfUpdate() {
 			InodesUsedPercent: root.InodesUsedPercent,
 		}
 	}
+
+	d.broadcast()
+}
+
+func (d *DiskManager) broadcast() {
+	go d.publisher.Broadcast("disk")
 }

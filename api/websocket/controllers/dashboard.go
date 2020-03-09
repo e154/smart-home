@@ -30,15 +30,20 @@ import (
 
 type ControllerDashboard struct {
 	*ControllerCommon
-	Nodes    *dashboardModel.Nodes
-	Devices  *dashboardModel.Devices
-	Workflow *dashboardModel.Workflow
-	Gate     *dashboardModel.Gate
-	Cpu      *dashboardModel.Cpu
-	Flow     *dashboardModel.Flow
-	sendLock *sync.Mutex
-	buf      *bytes.Buffer
-	enc      *json.Encoder
+	Nodes     *dashboardModel.Nodes
+	Devices   *dashboardModel.Devices
+	Workflow  *dashboardModel.Workflow
+	Gate      *dashboardModel.Gate
+	Cpu       *dashboardModel.Cpu
+	Flow      *dashboardModel.Flow
+	Memory    *dashboardModel.Memory
+	AppMemory *dashboardModel.AppMemory
+	Uptime    *dashboardModel.Uptime
+	Disk      *dashboardModel.Disk
+	Mqtt      *dashboardModel.Mqtt
+	sendLock  *sync.Mutex
+	buf       *bytes.Buffer
+	enc       *json.Encoder
 }
 
 func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDashboard) {
@@ -50,6 +55,11 @@ func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDash
 		Gate:             dashboardModel.NewGate(common.metric),
 		Cpu:              dashboardModel.NewCpu(common.metric),
 		Flow:             dashboardModel.NewFlow(common.metric),
+		Memory:           dashboardModel.NewMemory(common.metric),
+		AppMemory:        dashboardModel.NewAppMemory(common.metric),
+		Uptime:           dashboardModel.NewUptime(common.metric),
+		Disk:             dashboardModel.NewDisk(common.metric),
+		Mqtt:             dashboardModel.NewMqtt(common.metric),
 		buf:              bytes.NewBuffer(nil),
 		sendLock:         &sync.Mutex{},
 	}
@@ -93,6 +103,16 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 			body, ok = t.Cpu.Broadcast()
 		case "flow":
 			body, ok = t.Flow.Broadcast()
+		case "memory":
+			body, ok = t.Memory.Broadcast()
+		case "app_memory":
+			body, ok = t.AppMemory.Broadcast()
+		case "uptime":
+			body, ok = t.Uptime.Broadcast()
+		case "disk":
+			body, ok = t.Disk.Broadcast()
+		case "mqtt":
+			body, ok = t.Mqtt.Broadcast()
 		case "map_element":
 		default:
 			log.Warningf("unknown type %v", v)
@@ -143,16 +163,18 @@ func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message str
 		Command: "dashboard.telemetry",
 		Forward: stream.Response,
 		Payload: map[string]interface{}{
-			"memory":    t.metric.Memory.Snapshot(),
-			"cpu":       t.metric.Cpu.Snapshot(),
-			"time":      time.Now(),
-			"uptime":    t.metric.Uptime.Snapshot(),
-			"disk":      t.metric.Disk.Snapshot(),
-			"nodes":     t.metric.Node.Snapshot(),
-			"devices":   t.metric.Device.Snapshot(),
-			"gate":      t.metric.Gate.Snapshot(),
-			"flow":      t.metric.Flow.Snapshot(),
-			"workflows": t.metric.Workflow.Snapshot(),
+			"memory":     t.metric.Memory.Snapshot(),
+			"app_memory": t.metric.AppMemory.Snapshot(),
+			"cpu":        t.metric.Cpu.Snapshot(),
+			"time":       time.Now(),
+			"uptime":     t.metric.Uptime.Snapshot(),
+			"disk":       t.metric.Disk.Snapshot(),
+			"nodes":      t.metric.Node.Snapshot(),
+			"devices":    t.metric.Device.Snapshot(),
+			"gate":       t.metric.Gate.Snapshot(),
+			"flow":       t.metric.Flow.Snapshot(),
+			"workflows":  t.metric.Workflow.Snapshot(),
+			"mqtt":       t.metric.Mqtt.Snapshot(),
 		},
 	}
 
