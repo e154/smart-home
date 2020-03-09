@@ -50,6 +50,7 @@ type MetricManager struct {
 	Flow              *FlowManager
 	AppMemory         *AppMemoryManager
 	Mqtt              *MqttManager
+	Zigbee2Mqtt       *Zigbee2MqttManager
 	graceful          *graceful_service.GracefulService
 }
 
@@ -76,6 +77,7 @@ func NewMetricManager(cfg *MetricConfig,
 	metric.Memory = NewMemoryManager(metric)
 	metric.AppMemory = NewAppMemoryManager(metric)
 	metric.Mqtt = NewMqttManager(metric)
+	metric.Zigbee2Mqtt = NewZigbee2MqttManager(metric)
 
 	return metric
 }
@@ -130,4 +132,5 @@ func (m *MetricManager) Update(t interface{}) {
 	m.MapElement.update(t)
 	m.Flow.update(t)
 	m.Mqtt.update(t)
+	m.Zigbee2Mqtt.update(t)
 }
