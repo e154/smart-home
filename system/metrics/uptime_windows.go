@@ -29,11 +29,11 @@ func NewUptimeManager(publisher IPublisher) *UptimeManager {
 	return &UptimeManager{}
 }
 
-func (d *UptimeManager) Start(pause int) {
+func (d *UptimeManager) start(pause int) {
 
 }
 
-func (d *UptimeManager) Stop() {
+func (d *UptimeManager) stop() {
 
 }
 

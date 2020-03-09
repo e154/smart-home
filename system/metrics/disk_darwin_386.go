@@ -29,11 +29,11 @@ func NewDiskManager(publisher IPublisher) (_disk *DiskManager) {
 	return
 }
 
-func (d *DiskManager) Start(pause int) {
+func (d *DiskManager) start(pause int) {
 
 }
 
-func (d *DiskManager) Stop() {
+func (d *DiskManager) stop() {
 
 }
 
