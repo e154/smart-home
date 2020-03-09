@@ -35,8 +35,8 @@ func (d *DiskManager) stop() {
 
 }
 
-func (d *DiskManager) Snapshot() DiskManager {
-	return DiskManager{
-		Root: d.root,
+func (d *DiskManager) Snapshot() Disk {
+	return Disk{
+
 	}
 }
