@@ -51,10 +51,10 @@ var (
 
 type GateClient struct {
 	sync.Mutex
+	metric          *metrics.MetricManager
 	adaptors        *adaptors.Adaptors
 	wsClient        *WsClient
 	engine          *gin.Engine
-	streamService   *stream.StreamService
 	messagePoolQuit chan struct{}
 	messagePool     chan stream.Message
 	settingsLock    sync.Mutex
@@ -68,16 +68,15 @@ type GateClient struct {
 
 func NewGateClient(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
-	streamService *stream.StreamService,
 	metric *metrics.MetricManager) (gate *GateClient) {
 	gate = &GateClient{
 		adaptors:        adaptors,
 		settings:        &Settings{},
 		selfSubscribers: make(map[uuid.UUID]func(msg stream.Message)),
 		subscribers:     make(map[string]func(client stream.IStreamClient, msg stream.Message)),
-		streamService:   streamService,
 		messagePoolQuit: make(chan struct{}),
 		messagePool:     make(chan stream.Message),
+		metric:          metric,
 	}
 
 	gate.wsClient = NewWsClient(gate, metric)
@@ -87,8 +86,6 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 	if err := gate.loadSettings(); err != nil {
 		log.Error(err.Error())
 	}
-
-	streamService.GateClient(gate)
 
 	go func() {
 		for {
@@ -131,22 +128,10 @@ func (g *GateClient) Close() {
 
 func (g *GateClient) Restart() {
 	g.Close()
-	g.BroadcastAccessToken()
-}
 
-func (g *GateClient) BroadcastAccessToken() {
-	log.Info("Broadcast access token")
-
-	broadcastMsg := &stream.Message{
-		Command: "gate.access_token",
-		Type:    stream.Broadcast,
-		Forward: stream.Request,
-		Payload: map[string]interface{}{
-			"accessToken": g.settings.GateServerToken,
-		},
-	}
-	g.streamService.Broadcast(broadcastMsg.Pack())
-
+	go g.metric.Update(metrics.GateUpdate{
+		AccessToken: g.settings.GateServerToken,
+	})
 }
 
 func (g *GateClient) RegisterServer() {

@@ -42,7 +42,9 @@ func (d *GateManager) update(t interface{}) {
 	switch v := t.(type) {
 	case GateUpdate:
 		d.updateLock.Lock()
-		d.status = v.Status
+		if v.Status != "" {
+			d.status = v.Status
+		}
 		d.accessToken = v.AccessToken
 		d.updateLock.Unlock()
 	default:
