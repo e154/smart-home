@@ -19,20 +19,30 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	mapModels "github.com/e154/smart-home/api/websocket/controllers/map_models"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
+	"sync"
 )
 
 type ControllerMap struct {
 	*ControllerCommon
-	devices *mapModels.Devices
+	devices  *mapModels.Devices
+	sendLock *sync.Mutex
+	buf      *bytes.Buffer
+	enc      *json.Encoder
 }
 
 func NewControllerMap(common *ControllerCommon) *ControllerMap {
+	buf := bytes.NewBuffer(nil)
 	return &ControllerMap{
 		ControllerCommon: common,
 		devices:          mapModels.NewDevices(common.metric),
+		sendLock:         &sync.Mutex{},
+		buf:              buf,
+		enc:              json.NewEncoder(buf),
 	}
 }
 
@@ -70,7 +80,10 @@ func (c *ControllerMap) Broadcast(param interface{}) {
 	c.sendMsg(body)
 }
 
-func (t *ControllerMap) sendMsg(payload map[string]interface{}) {
+func (t *ControllerMap) sendMsg(payload map[string]interface{}) (err error) {
+
+	t.sendLock.Lock()
+	defer t.sendLock.Unlock()
 
 	msg := &stream.Message{
 		Command: "map.telemetry",
@@ -79,5 +92,16 @@ func (t *ControllerMap) sendMsg(payload map[string]interface{}) {
 		Payload: payload,
 	}
 
-	t.stream.Broadcast(msg.Pack())
+	t.buf.Reset()
+	if err = t.enc.Encode(msg); err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	data := make([]byte, t.buf.Len())
+	copy(data, t.buf.Bytes())
+	t.stream.Broadcast(data)
+	t.gate.Broadcast(data)
+
+	return
 }
