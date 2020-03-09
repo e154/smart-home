@@ -33,6 +33,7 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
@@ -82,6 +83,8 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(endpoint.NewEndpoint)
 	container.Provide(gate_client.NewGateClient)
 	container.Provide(notify.NewNotify)
+	container.Provide(metrics.NewMetricManager)
+	container.Provide(metrics.NewMetricConfig)
 	container.Provide(zigbee2mqtt.NewZigbee2mqttConfig)
 	container.Provide(zigbee2mqtt.NewZigbee2mqtt)
 
