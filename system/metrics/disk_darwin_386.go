@@ -16,8 +16,6 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-//+build linux windows darwin,!386
-
 package metrics
 
 type DiskManager struct {
