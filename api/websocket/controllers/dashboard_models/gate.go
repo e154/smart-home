@@ -43,11 +43,8 @@ func (g *Gate) Broadcast() (map[string]interface{}, bool) {
 //
 func (t *Gate) Status(client stream.IStreamClient, message stream.Message) {
 
-	satus := t.metric.Gate.Snapshot()
-
 	payload := map[string]interface{}{
-		"status":       satus.Status,
-		"access_token": satus.AccessToken,
+		"gate": t.metric.Gate.Snapshot(),
 	}
 
 	response := message.Response(payload)
