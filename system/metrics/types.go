@@ -18,7 +18,10 @@
 
 package metrics
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 type UsageStat struct {
 	Path              string  `json:"path"`
@@ -38,7 +41,8 @@ type Disk struct {
 }
 
 type Uptime struct {
-	Total uint64 `json:"total"`
+	Total      uint64    `json:"total"`
+	AppStarted time.Time `json:"app_started"`
 }
 
 var (

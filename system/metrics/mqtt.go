@@ -50,14 +50,14 @@ func (d *MqttManager) update(t interface{}) {
 	d.broadcast()
 }
 
-func (d MqttManager) updateClientState(clientState MqttClientStats) {
+func (d *MqttManager) updateClientState(clientState MqttClientStats) {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
 
 	d.clientState = clientState
 }
 
-func (d MqttManager) Snapshot() Mqtt {
+func (d *MqttManager) Snapshot() Mqtt {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
 

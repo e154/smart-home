@@ -34,12 +34,14 @@ type UptimeManager struct {
 	idle       uint64
 	isStarted  atomic.Bool
 	quit       chan struct{}
+	appStarted time.Time
 }
 
 func NewUptimeManager(publisher IPublisher) (uptime *UptimeManager) {
 	uptime = &UptimeManager{
-		quit:      make(chan struct{}),
-		publisher: publisher,
+		quit:       make(chan struct{}),
+		publisher:  publisher,
+		appStarted: time.Now(),
 	}
 	uptime.selfUpdate()
 	return
@@ -81,7 +83,8 @@ func (d *UptimeManager) Snapshot() Uptime {
 	defer d.updateLock.Unlock()
 
 	return Uptime{
-		Total: d.total,
+		Total:      d.total,
+		AppStarted: d.appStarted,
 	}
 }
 
