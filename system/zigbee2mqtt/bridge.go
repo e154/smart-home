@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/metrics"
 	mqttServer "github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_client"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -38,6 +39,7 @@ const (
 )
 
 type Bridge struct {
+	metric         *metrics.MetricManager
 	adaptors       *adaptors.Adaptors
 	mqtt           *mqttServer.Mqtt
 	mqttClient     *mqtt_client.Client
@@ -57,12 +59,14 @@ type Bridge struct {
 
 func NewBridge(mqtt *mqttServer.Mqtt,
 	adaptors *adaptors.Adaptors,
-	model *m.Zigbee2mqtt) *Bridge {
+	model *m.Zigbee2mqtt,
+	metric *metrics.MetricManager) *Bridge {
 	return &Bridge{
 		mqtt:     mqtt,
 		adaptors: adaptors,
 		devices:  make(map[string]*Device),
 		model:    model,
+		metric:   metric,
 	}
 }
 
@@ -74,6 +78,10 @@ func (g *Bridge) Start() {
 	g.isStarted = true
 
 	log.Infof("bridge id %v,  base topic: %v", g.model.Id, g.model.BaseTopic)
+
+	g.metric.Update(metrics.Zigbee2MqttAdd{
+		TotalNum: int64(len(g.model.Devices)),
+	})
 
 	var err error
 	if g.mqttClient == nil {
@@ -252,6 +260,7 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 		if err = g.adaptors.Zigbee2mqttDevice.Add(&model); err != nil {
 			return
 		}
+		g.metric.Update(metrics.Zigbee2MqttAdd{TotalNum: 1,})
 	}
 
 	g.devices[device.friendlyName] = device

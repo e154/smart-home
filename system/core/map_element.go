@@ -21,7 +21,7 @@ package core
 import (
 	"fmt"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/telemetry"
+	"github.com/e154/smart-home/system/metrics"
 	"sync"
 )
 
@@ -43,13 +43,17 @@ func (e *MapElement) SetState(systemName string) {
 			continue
 		}
 
-		if e.State != nil && e.State.SystemName == state.SystemName {
+		if e.State != nil && e.State.Id == state.Id {
 			return
 		}
 
 		e.State = state
 
-		e.Map.telemetry.BroadcastOne(telemetry.Device{Id: e.Device.Id, ElementName: e.ElementName})
+		e.Map.metric.Update(metrics.MapElementSetState{
+			DeviceId:    e.State.DeviceId,
+			ElementName: e.ElementName,
+			StateId:     e.State.Id,
+		})
 	}
 }
 
@@ -70,7 +74,12 @@ func (e *MapElement) SetOptions(options interface{}) {
 
 	e.Options = options
 
-	e.Map.telemetry.BroadcastOne(telemetry.Device{Id: e.Device.Id, ElementName: e.ElementName})
+	e.Map.metric.Update(metrics.MapElementSetOption{
+		StateId:      e.State.Id,
+		DeviceId:     e.Device.Id,
+		ElementName:  e.ElementName,
+		StateOptions: options,
+	})
 }
 
 func (e *MapElement) GetOptions() interface{} {

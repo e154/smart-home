@@ -124,10 +124,11 @@ func (n *Workflows) List(limit, offset int64, orderBy, sort string, onlyEnabled 
 	}
 
 	list = make([]*Workflow, 0)
-	q := n.Db.
-		Limit(limit).
-		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sort, orderBy))
+	q := n.Db.Model(Workflow{}).Limit(limit).Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
 
 	if onlyEnabled {
 		q = q.Where("status = ?", "enabled")

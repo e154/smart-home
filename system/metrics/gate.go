@@ -16,39 +16,58 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package dashboard_models
+package metrics
 
 import (
-	"github.com/e154/smart-home/system/metrics"
-	"github.com/e154/smart-home/system/stream"
+	"sync"
 )
 
 type Gate struct {
-	metric *metrics.MetricManager
+	Status      string `json:"status"`
+	AccessToken string `json:"access_token"`
 }
 
-func NewGate(metric *metrics.MetricManager) (node *Gate) {
-	node = &Gate{metric: metric}
-	return
+type GateManager struct {
+	updateLock  sync.Mutex
+	status      string
+	accessToken string
+	publisher   IPublisher
 }
 
-func (g *Gate) Broadcast() (map[string]interface{}, bool) {
-
-	return map[string]interface{}{
-		"gate": g.metric.Gate.Snapshot(),
-	}, true
+func NewGateManager(publisher IPublisher) *GateManager {
+	return &GateManager{publisher: publisher}
 }
 
-// only on request: 'dashboard.get.gate.status'
-//
-func (t *Gate) Status(client stream.IStreamClient, message stream.Message) {
-
-	payload := map[string]interface{}{
-		"gate": t.metric.Gate.Snapshot(),
+func (d *GateManager) update(t interface{}) {
+	switch v := t.(type) {
+	case GateUpdate:
+		d.updateLock.Lock()
+		if v.Status != "" {
+			d.status = v.Status
+		}
+		d.accessToken = v.AccessToken
+		d.updateLock.Unlock()
+	default:
+		return
 	}
 
-	response := message.Response(payload)
-	client.Write(response.Pack())
+	d.broadcast()
+}
 
-	return
+func (d *GateManager) Snapshot() Gate {
+	d.updateLock.Lock()
+	defer d.updateLock.Unlock()
+
+	return Gate{
+		Status:      d.status,
+		AccessToken: d.accessToken,
+	}
+}
+
+func (d *GateManager) broadcast() {
+	go d.publisher.Broadcast("gate")
+}
+
+type GateUpdate struct {
+	Status, AccessToken string
 }

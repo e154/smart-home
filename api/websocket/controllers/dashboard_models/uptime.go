@@ -16,25 +16,24 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-// +build linux,!mips64,!mips64le darwin
-
 package dashboard_models
 
 import (
-	"github.com/shirou/gopsutil/host"
-	"sync"
+	"github.com/e154/smart-home/system/metrics"
 )
 
 type Uptime struct {
-	sync.Mutex
-	Total uint64 `json:"total"`
-	Idle  uint64 `json:"idle"`
+	metric *metrics.MetricManager
 }
 
-func (u *Uptime) Update() {
+func NewUptime(metric *metrics.MetricManager) (memory *Uptime) {
+	memory = &Uptime{metric: metric}
+	return
+}
 
-	total, _ := host.Uptime()
-	u.Lock()
-	u.Total = total
-	u.Unlock()
+func (g *Uptime) Broadcast() (map[string]interface{}, bool) {
+
+	return map[string]interface{}{
+		"uptime": g.metric.Uptime.Snapshot(),
+	}, true
 }

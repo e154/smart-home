@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/op/go-logging"
 	"sync"
@@ -33,6 +34,7 @@ var (
 )
 
 type Zigbee2mqtt struct {
+	metric      *metrics.MetricManager
 	graceful    *graceful_service.GracefulService
 	mqtt        *mqtt.Mqtt
 	adaptors    *adaptors.Adaptors
@@ -43,13 +45,15 @@ type Zigbee2mqtt struct {
 
 func NewZigbee2mqtt(graceful *graceful_service.GracefulService,
 	mqtt *mqtt.Mqtt,
-	adaptors *adaptors.Adaptors) *Zigbee2mqtt {
+	adaptors *adaptors.Adaptors,
+	metric *metrics.MetricManager) *Zigbee2mqtt {
 	return &Zigbee2mqtt{
 		graceful:    graceful,
 		mqtt:        mqtt,
 		adaptors:    adaptors,
 		bridgesLock: &sync.Mutex{},
 		bridges:     make(map[int64]*Bridge),
+		metric:      metric,
 	}
 }
 
@@ -79,7 +83,7 @@ func (z *Zigbee2mqtt) Start() {
 	}
 
 	for _, model := range models {
-		bridge := NewBridge(z.mqtt, z.adaptors, model)
+		bridge := NewBridge(z.mqtt, z.adaptors, model, z.metric)
 		bridge.Start()
 
 		z.bridgesLock.Lock()
@@ -113,7 +117,7 @@ func (z *Zigbee2mqtt) AddBridge(model *m.Zigbee2mqtt) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
-	bridge := NewBridge(z.mqtt, z.adaptors, model)
+	bridge := NewBridge(z.mqtt, z.adaptors, model, z.metric)
 	bridge.Start()
 	z.bridges[model.Id] = bridge
 	return

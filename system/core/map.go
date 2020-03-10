@@ -21,14 +21,20 @@ package core
 import (
 	"fmt"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/telemetry"
+	"github.com/e154/smart-home/system/metrics"
 	"strings"
 	"sync"
 )
 
 type Map struct {
-	telemetry telemetry.ITelemetry
-	elements  sync.Map
+	metric   *metrics.MetricManager
+	elements sync.Map
+}
+
+func NewMap(metric *metrics.MetricManager) *Map {
+	return &Map{
+		metric: metric,
+	}
 }
 
 func (b *Map) SetElementState(device *m.Device, elementName, systemName string) {
@@ -47,28 +53,14 @@ func (b *Map) SetElementState(device *m.Device, elementName, systemName string) 
 				continue
 			}
 			b.NewMapElement(device, elementName, state)
-			b.telemetry.BroadcastOne(telemetry.Device{Id: device.Id, ElementName: elementName})
+
+			b.metric.Update(metrics.MapElementSetState{
+				StateId:     state.Id,
+				DeviceId:    state.DeviceId,
+				ElementName: elementName,
+			})
 		}
 	}
-}
-
-func (b *Map) GetDevicesStates() (states map[int64]*m.DashboardDeviceStatus) {
-	states = make(map[int64]*m.DashboardDeviceStatus)
-
-	b.elements.Range(func(key, value interface{}) bool {
-		element := value.(*MapElement)
-		if element.State != nil {
-			states[element.Device.Id] = &m.DashboardDeviceStatus{
-				Id:          element.State.Id,
-				Description: element.State.Description,
-				SystemName:  element.State.SystemName,
-				DeviceId:    element.State.DeviceId,
-			}
-		}
-		return true
-	})
-
-	return
 }
 
 func (b *Map) GetElement(device *m.Device, elementName string) (element *MapElement) {
@@ -84,16 +76,6 @@ func (b *Map) GetElement(device *m.Device, elementName string) (element *MapElem
 	} else {
 		element = b.NewMapElement(device, elementName, nil)
 	}
-	return
-}
-
-func (b *Map) GetAllElements() (elements []*MapElement) {
-
-	b.elements.Range(func(key, value interface{}) bool {
-		element := value.(*MapElement)
-		elements = append(elements, element)
-		return true
-	})
 	return
 }
 
@@ -132,6 +114,8 @@ func (b *Map) NewMapElement(device *m.Device, elementName string, state *m.Devic
 	hashKey := b.key(device, elementName)
 
 	b.elements.Store(hashKey, element)
+
+	b.metric.Update(metrics.MapElementAdd{Num: 1})
 
 	return element
 }

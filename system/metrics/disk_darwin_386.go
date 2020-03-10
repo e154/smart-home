@@ -16,14 +16,27 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package dashboard_models
+package metrics
 
-type Uptime struct {
-	Total uint64 `json:"total"`
-	Idle  uint64 `json:"idle"`
+type DiskManager struct {
+	root UsageStat
 }
 
-func (u *Uptime) Update() (*Uptime, error) {
+func NewDiskManager(publisher IPublisher) (_disk *DiskManager) {
+	_disk = &DiskManager{}
+	return
+}
 
-	return u, nil
+func (d *DiskManager) start(pause int) {
+
+}
+
+func (d *DiskManager) stop() {
+
+}
+
+func (d *DiskManager) Snapshot() Disk {
+	return Disk{
+
+	}
 }

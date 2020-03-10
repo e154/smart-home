@@ -25,9 +25,9 @@ import (
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
+	metrics2 "github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/telemetry"
 	"github.com/op/go-logging"
 )
 
@@ -45,11 +45,11 @@ func NewWebSocket(adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
 	core *core.Core,
 	graceful *graceful_service.GracefulService,
-	telemetry *telemetry.Telemetry,
-	gate *gate_client.GateClient) *WebSocket {
+	gate *gate_client.GateClient,
+	metrics *metrics2.MetricManager) *WebSocket {
 
 	server := &WebSocket{
-		Controllers: NewControllers(adaptors, stream, scripts, core, endpoint, telemetry, gate),
+		Controllers: NewControllers(adaptors, stream, scripts, core, endpoint, gate, metrics),
 	}
 
 	graceful.Subscribe(server)

@@ -112,7 +112,7 @@ func start() {
 		initialService *initial.InitialService,
 		ws *websocket.WebSocket,
 		mobileServer *mobile.MobileServer,
-		metric *metrics.MetricServer,
+		metric *metrics.MetricManager,
 		zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) {
 
 		l.Initialize(back)

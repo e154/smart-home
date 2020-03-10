@@ -19,18 +19,21 @@
 package dashboard_models
 
 import (
-	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/metrics"
 )
 
 type Flow struct {
-
+	metric *metrics.MetricManager
 }
 
-func (f *Flow) Update() {
-
-}
-
-func FlowsStatus(client stream.IStreamClient, message stream.Message) {
-
+func NewFlow(metric *metrics.MetricManager) (node *Flow) {
+	node = &Flow{metric: metric}
 	return
+}
+
+func (g *Flow) Broadcast() (map[string]interface{}, bool) {
+
+	return map[string]interface{}{
+		"flow": g.metric.Flow.Snapshot(),
+	}, true
 }

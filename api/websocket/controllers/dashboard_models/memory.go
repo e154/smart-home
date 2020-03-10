@@ -19,27 +19,21 @@
 package dashboard_models
 
 import (
-	"github.com/shirou/gopsutil/mem"
-	"sync"
+	"github.com/e154/smart-home/system/metrics"
 )
 
 type Memory struct {
-	sync.Mutex
-	SwapTotal uint64 `json:"swap_total"`
-	SwapFree  uint64 `json:"swap_free"`
-	MemTotal  uint64 `json:"mem_total"`
-	MemFree   uint64 `json:"mem_free"`
+	metric *metrics.MetricManager
 }
 
-func (m *Memory) Update() {
+func NewMemory(metric *metrics.MetricManager) (memory *Memory) {
+	memory = &Memory{metric: metric}
+	return
+}
 
-	m.Lock()
-	swap, _ := mem.SwapMemory()
-	m.SwapFree = swap.Free / 1024
-	m.SwapTotal = swap.Total / 1024
+func (g *Memory) Broadcast() (map[string]interface{}, bool) {
 
-	memory, _ := mem.VirtualMemory()
-	m.MemFree = memory.Free / 1024
-	m.MemTotal = memory.Total / 1024
-	m.Unlock()
+	return map[string]interface{}{
+		"memory": g.metric.Memory.Snapshot(),
+	}, true
 }

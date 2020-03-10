@@ -23,19 +23,19 @@ import (
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/telemetry"
 )
 
 type ControllerCommon struct {
-	adaptors  *adaptors.Adaptors
-	stream    *stream.StreamService
-	endpoint  *endpoint.Endpoint
-	core      *core.Core
-	scripts   *scripts.ScriptService
-	telemetry *telemetry.Telemetry
-	gate      *gate_client.GateClient
+	adaptors *adaptors.Adaptors
+	stream   *stream.StreamService
+	endpoint *endpoint.Endpoint
+	core     *core.Core
+	scripts  *scripts.ScriptService
+	gate     *gate_client.GateClient
+	metric   *metrics.MetricManager
 }
 
 func NewControllerCommon(adaptors *adaptors.Adaptors,
@@ -43,24 +43,24 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 	endpoint *endpoint.Endpoint,
 	scripts *scripts.ScriptService,
 	core *core.Core,
-	telemetry *telemetry.Telemetry,
-	gate *gate_client.GateClient) *ControllerCommon {
+	gate *gate_client.GateClient,
+	metric *metrics.MetricManager) *ControllerCommon {
 	return &ControllerCommon{
-		adaptors:  adaptors,
-		endpoint:  endpoint,
-		stream:    stream,
-		core:      core,
-		scripts:   scripts,
-		telemetry: telemetry,
-		gate:      gate,
+		adaptors: adaptors,
+		endpoint: endpoint,
+		stream:   stream,
+		core:     core,
+		scripts:  scripts,
+		gate:     gate,
+		metric:   metric,
 	}
 }
 
 func (c *ControllerCommon) Err(client stream.IStreamClient, message stream.Message, err error) {
 	msg := stream.Message{
-		Id: message.Id,
+		Id:      message.Id,
 		Forward: stream.Response,
-		Status: stream.StatusError,
+		Status:  stream.StatusError,
 		Payload: map[string]interface{}{
 			"error": err.Error(),
 		},

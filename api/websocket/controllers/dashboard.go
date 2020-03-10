@@ -19,102 +19,68 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	dashboardModel "github.com/e154/smart-home/api/websocket/controllers/dashboard_models"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/telemetry"
 	"sync"
 	"time"
 )
 
 type ControllerDashboard struct {
 	*ControllerCommon
-	quit          chan bool
-	sync.Mutex
-	Nodes         *dashboardModel.Nodes
-	Gate          *dashboardModel.Gate
-	telemetryTime int
-	Memory        *dashboardModel.Memory
-	AppMemory     *dashboardModel.AppMemory
-	Cpu           *dashboardModel.Cpu
-	Uptime        *dashboardModel.Uptime
-	Disk          *dashboardModel.Disk
-	devices       *dashboardModel.Devices
-	Workflow      *dashboardModel.Workflow
+	Nodes     *dashboardModel.Nodes
+	Devices   *dashboardModel.Devices
+	Workflow  *dashboardModel.Workflow
+	Gate      *dashboardModel.Gate
+	Cpu       *dashboardModel.Cpu
+	Flow      *dashboardModel.Flow
+	Memory    *dashboardModel.Memory
+	AppMemory *dashboardModel.AppMemory
+	Uptime    *dashboardModel.Uptime
+	Disk      *dashboardModel.Disk
+	Mqtt      *dashboardModel.Mqtt
+	sendLock  *sync.Mutex
+	buf       *bytes.Buffer
+	enc       *json.Encoder
 }
 
-func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
-	return &ControllerDashboard{
+func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDashboard) {
+	dashboard = &ControllerDashboard{
 		ControllerCommon: common,
-		telemetryTime:    3,
-		quit:             make(chan bool),
-		Cpu:              dashboardModel.NewCpu(),
-		Memory:           &dashboardModel.Memory{},
-		AppMemory:        &dashboardModel.AppMemory{},
-		Uptime:           &dashboardModel.Uptime{},
-		Disk:             dashboardModel.NewDisk(),
-		Nodes:            dashboardModel.NewNode(common.adaptors, common.core),
-		devices:          dashboardModel.NewDevices(common.adaptors, common.core),
-		Gate:             dashboardModel.NewGate(common.gate),
-		Workflow:         dashboardModel.NewWorkflow(common.adaptors, common.core),
+		Nodes:            dashboardModel.NewNode(common.metric),
+		Devices:          dashboardModel.NewDevices(common.metric),
+		Workflow:         dashboardModel.NewWorkflow(common.metric),
+		Gate:             dashboardModel.NewGate(common.metric),
+		Cpu:              dashboardModel.NewCpu(common.metric),
+		Flow:             dashboardModel.NewFlow(common.metric),
+		Memory:           dashboardModel.NewMemory(common.metric),
+		AppMemory:        dashboardModel.NewAppMemory(common.metric),
+		Uptime:           dashboardModel.NewUptime(common.metric),
+		Disk:             dashboardModel.NewDisk(common.metric),
+		Mqtt:             dashboardModel.NewMqtt(common.metric),
+		buf:              bytes.NewBuffer(nil),
+		sendLock:         &sync.Mutex{},
 	}
+	dashboard.enc = json.NewEncoder(dashboard.buf)
+	return dashboard
 }
 
 func (c *ControllerDashboard) Start() {
-	c.telemetry.Subscribe("dashboard", c)
+	c.metric.Subscribe("dashboard", c)
 	c.stream.Subscribe("dashboard.get.nodes.status", c.Nodes.NodesStatus)
-	c.stream.Subscribe("dashboard.get.gate.status", c.Gate.GatesStatus)
-	c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
+	c.stream.Subscribe("dashboard.get.gate.status", c.Gate.Status)
+	//c.stream.Subscribe("t.get.flows.status", dashboardModel.FlowsStatus)
 	c.stream.Subscribe("dashboard.get.telemetry", c.Telemetry)
-
-	//i := 0
-
-	go func() {
-		for {
-			select {
-			case <-c.quit:
-				break
-			default:
-
-			}
-
-			//if i >= 10 {
-			//	runtime.GC()
-			//	i = 0
-			//}
-
-			c.broadcastAll()
-
-			time.Sleep(time.Second * time.Duration(c.telemetryTime))
-			//i++
-		}
-	}()
 }
 
 func (c *ControllerDashboard) Stop() {
-	c.telemetry.UnSubscribe("dashboard")
+	c.metric.UnSubscribe("dashboard")
 	c.stream.UnSubscribe("dashboard.get.nodes.status")
 	c.stream.UnSubscribe("dashboard.get.gate.status")
-	c.stream.UnSubscribe("t.get.flows.status")
+	//c.stream.UnSubscribe("t.get.flows.status")
 	c.stream.UnSubscribe("dashboard.get.telemetry")
-
-	c.quit <- true
-}
-
-func (t *ControllerDashboard) BroadcastOne(param interface{}) {
-
-	var body map[string]interface{}
-	var ok bool
-
-	switch v := param.(type) {
-	case telemetry.WorkflowScenario:
-		body, ok = t.Workflow.BroadcastOne(v)
-	case telemetry.Device:
-		body, ok = t.devices.BroadcastOne(v.Id, v.ElementName)
-	}
-
-	if ok {
-		t.sendMsg(body)
-	}
 }
 
 func (t *ControllerDashboard) Broadcast(param interface{}) {
@@ -122,102 +88,95 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 	var body map[string]interface{}
 	var ok bool
 
-	switch param.(type) {
-	case telemetry.Node:
-		body, ok = t.Nodes.Broadcast()
-	case telemetry.Device:
-		body, ok = t.devices.Broadcast()
-	case telemetry.WorkflowScenario:
-		body, ok = t.Workflow.Broadcast()
+	switch v := param.(type) {
+	case string:
+		switch v {
+		case "workflow":
+			body, ok = t.Workflow.Broadcast()
+		case "node":
+			body, ok = t.Nodes.Broadcast()
+		case "device":
+			body, ok = t.Devices.Broadcast()
+		case "gate":
+			body, ok = t.Gate.Broadcast()
+		case "cpu":
+			body, ok = t.Cpu.Broadcast()
+		case "flow":
+			body, ok = t.Flow.Broadcast()
+		case "memory":
+			body, ok = t.Memory.Broadcast()
+		case "app_memory":
+			body, ok = t.AppMemory.Broadcast()
+		case "uptime":
+			body, ok = t.Uptime.Broadcast()
+		case "disk":
+			body, ok = t.Disk.Broadcast()
+		case "mqtt":
+			body, ok = t.Mqtt.Broadcast()
+		case "map_element":
+		default:
+			log.Warningf("unknown type %v", v)
+		}
+	case metrics.MapElementCursor:
+	default:
+		log.Warningf("unknown type %v", v)
 	}
 
-	if ok {
-		t.sendMsg(body)
+	if !ok {
+		return
 	}
+
+	go t.sendMsg(body)
 }
 
-func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) {
+func (t *ControllerDashboard) sendMsg(payload map[string]interface{}) (err error) {
 
-	msg := &stream.Message{
+	t.sendLock.Lock()
+	defer t.sendLock.Unlock()
+
+	msg := stream.Message{
 		Command: "dashboard.telemetry",
 		Type:    stream.Broadcast,
 		Forward: stream.Request,
 		Payload: payload,
 	}
 
-	t.stream.Broadcast(msg.Pack())
-}
-
-// every time send:
-// memory, swap, cpu, uptime
-//
-func (t *ControllerDashboard) broadcastAll() {
-
-	t.Lock()
-	t.Memory.Update()
-	t.AppMemory.Update()
-	t.Cpu.Update()
-	t.Uptime.Update()
-	t.Gate.Update()
-
-	//fmt.Println(t.AppMemory)
-
-	msg := &stream.Message{
-		Command: "dashboard.telemetry",
-		Type:    stream.Broadcast,
-		Forward: stream.Request,
-		Payload: map[string]interface{}{
-			"memory":     t.Memory,
-			"app_memory": t.AppMemory,
-			"cpu":        map[string]interface{}{"usage": t.Cpu.Usage, "all": t.Cpu.All},
-			"uptime":     t.Uptime,
-			"gate":       t.Gate,
-		},
+	t.buf.Reset()
+	if err = t.enc.Encode(msg); err != nil {
+		log.Error(err.Error())
+		return
 	}
-	t.Unlock()
 
-	t.stream.Broadcast(msg.Pack())
-}
+	data := make([]byte, t.buf.Len())
+	copy(data, t.buf.Bytes())
+	t.stream.Broadcast(data)
 
-func (t *ControllerDashboard) GetStates() *ControllerDashboard {
-
-	t.Lock()
-	t.Memory.Update()
-	t.Cpu.Update()
-	t.Uptime.Update()
-	t.Disk.Update()
-	t.Nodes.Update()
-	t.devices.Update()
-	t.Gate.Update()
-	t.Unlock()
-
-	return t
+	return
 }
 
 // only on request: 'dashboard.get.telemetry'
 //
 func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message stream.Message) {
 
-	states := t.GetStates()
-
-	t.Lock()
-	msg := &stream.Message{
+	msg := stream.Message{
 		Id:      message.Id,
 		Command: "dashboard.telemetry",
 		Forward: stream.Response,
 		Payload: map[string]interface{}{
-			"memory":  states.Memory,
-			"cpu":     map[string]interface{}{"usage": t.Cpu.Usage, "info": t.Cpu.Cpuinfo, "all": t.Cpu.All},
-			"time":    time.Now(),
-			"uptime":  states.Uptime,
-			"disk":    states.Disk,
-			"nodes":   states.Nodes,
-			"devices": states.devices,
-			"gate":    states.Gate,
+			"memory":     t.metric.Memory.Snapshot(),
+			"app_memory": t.metric.AppMemory.Snapshot(),
+			"cpu":        t.metric.Cpu.Snapshot(),
+			"time":       time.Now(),
+			"uptime":     t.metric.Uptime.Snapshot(),
+			"disk":       t.metric.Disk.Snapshot(),
+			"nodes":      t.metric.Node.Snapshot(),
+			"devices":    t.metric.Device.Snapshot(),
+			"gate":       t.metric.Gate.Snapshot(),
+			"flow":       t.metric.Flow.Snapshot(),
+			"workflows":  t.metric.Workflow.Snapshot(),
+			"mqtt":       t.metric.Mqtt.Snapshot(),
 		},
 	}
-	b := msg.Pack()
-	t.Unlock()
 
-	client.Write(b)
+	client.Write(msg.Pack())
 }

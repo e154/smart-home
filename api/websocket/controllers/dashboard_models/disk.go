@@ -16,53 +16,24 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-//+build linux windows darwin,!386
-
 package dashboard_models
 
 import (
-	"github.com/shirou/gopsutil/disk"
-	"sync"
+	"github.com/e154/smart-home/system/metrics"
 )
 
-func NewDisk() (_disk *Disk) {
+type Disk struct {
+	metric *metrics.MetricManager
+}
 
-	var state_root *disk.UsageStat
-	//var state_tmp *disk.UsageStat
-	var err error
-
-	_disk = &Disk{}
-
-	if state_root, err = disk.Usage("/"); err == nil {
-		_disk.Root = state_root
-	}
-
-	//if state_tmp, err = disk.Usage("/tmp"); err == nil {
-	//	_disk.Tmp = state_tmp
-	//}
-
+func NewDisk(metric *metrics.MetricManager) (memory *Disk) {
+	memory = &Disk{metric: metric}
 	return
 }
 
-type Disk struct {
-	sync.Mutex
-	Root *disk.UsageStat `json:"root"`
-	//Tmp		*disk.UsageStat		`json:"tmp"`
-}
+func (g *Disk) Broadcast() (map[string]interface{}, bool) {
 
-func (d *Disk) Update() {
-
-	var state_root *disk.UsageStat
-	//var state_tmp *disk.UsageStat
-	var err error
-
-	if state_root, err = disk.Usage("/"); err == nil {
-		d.Lock()
-		d.Root = state_root
-		d.Unlock()
-	}
-
-	//if state_tmp, err = disk.Usage("/tmp"); err == nil {
-	//	d.Tmp = state_tmp
-	//}
+	return map[string]interface{}{
+		"disk": g.metric.Disk.Snapshot(),
+	}, true
 }

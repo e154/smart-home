@@ -19,9 +19,10 @@
 package endpoint
 
 import (
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/validation"
 	"errors"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/validation"
 )
 
 type DeviceEndpoint struct {
@@ -46,7 +47,15 @@ func (d *DeviceEndpoint) Add(params *m.Device) (device *m.Device, errs []*valida
 		return
 	}
 
-	device, err = d.adaptors.Device.GetById(id)
+	if device, err = d.adaptors.Device.GetById(id); err != nil {
+		return
+	}
+
+	var disabled int64
+	if device.Status == "disabled" {
+		disabled++
+	}
+	d.metric.Update(metrics.DeviceAdd{TotalNum: 1, DisabledNum: disabled})
 
 	return
 }
@@ -91,7 +100,16 @@ func (d *DeviceEndpoint) Delete(deviceId int64) (err error) {
 		return
 	}
 
-	err = d.adaptors.Device.Delete(device.Id)
+	if err = d.adaptors.Device.Delete(device.Id); err != nil {
+		return
+	}
+
+	var disabled int64
+	if device.Status == "disabled" {
+		disabled++
+	}
+
+	d.metric.Update(metrics.DeviceDelete{TotalNum: 1, DisabledNum: disabled})
 
 	return
 }

@@ -23,6 +23,7 @@ import (
 	"errors"
 	"fmt"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_client"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
@@ -40,9 +41,12 @@ type Node struct {
 	stat       NodeStat
 	quit       chan struct{}
 	ch         map[int64]chan *NodeResponse
+	metric     *metrics.MetricManager
 }
 
-func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
+func NewNode(model *m.Node,
+	mqtt *mqtt.Mqtt,
+	metric *metrics.MetricManager) *Node {
 
 	node := &Node{
 		Node: model,
@@ -51,9 +55,10 @@ func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 			ConnStatus: "disabled",
 			LastPing:   time.Now(),
 		},
-		ch:   make(map[int64]chan *NodeResponse, 0),
-		mqtt: mqtt,
-		quit: make(chan struct{}),
+		ch:     make(map[int64]chan *NodeResponse, 0),
+		mqtt:   mqtt,
+		quit:   make(chan struct{}),
+		metric: metric,
 	}
 
 	go func() {
@@ -75,6 +80,7 @@ func NewNode(model *m.Node, mqtt *mqtt.Mqtt) *Node {
 				} else {
 					node.stat.ConnStatus = "disabled"
 				}
+				go node.metric.Update(metrics.NodeUpdateStatus{Id: node.Id, Status: node.stat.ConnStatus})
 				node.Unlock()
 
 			case _, ok := <-node.quit:
