@@ -22,44 +22,40 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/core"
-	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/gate_client"
+	metrics2 "github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/stream"
+	"github.com/op/go-logging"
 )
 
-type ControllerCommon struct {
-	adaptors *adaptors.Adaptors
-	stream   *stream.StreamService
-	endpoint *endpoint.Endpoint
-	core     *core.Core
-	scripts  *scripts.ScriptService
-	metric   *metrics.MetricManager
+var (
+	log = logging.MustGetLogger("gate.controllers")
+)
+
+type Controllers struct {
+	Map    *ControllerMap
+	Action *ControllerAction
 }
 
-func NewControllerCommon(adaptors *adaptors.Adaptors,
-	stream *stream.StreamService,
-	endpoint *endpoint.Endpoint,
+func NewControllers(adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
 	core *core.Core,
-	metric *metrics.MetricManager) *ControllerCommon {
-	return &ControllerCommon{
-		adaptors: adaptors,
-		endpoint: endpoint,
-		stream:   stream,
-		core:     core,
-		scripts:  scripts,
-		metric:   metric,
+	endpoint *endpoint.Endpoint,
+	gate *gate_client.GateClient,
+	metrics *metrics2.MetricManager) *Controllers {
+	common := NewControllerCommon(adaptors, endpoint, scripts, core, gate, metrics)
+	return &Controllers{
+		Map:    NewControllerMap(common),
+		Action: NewControllerAction(common),
 	}
 }
 
-func (c *ControllerCommon) Err(client stream.IStreamClient, message stream.Message, err error) {
-	msg := stream.Message{
-		Id:      message.Id,
-		Forward: stream.Response,
-		Status:  stream.StatusError,
-		Payload: map[string]interface{}{
-			"error": err.Error(),
-		},
-	}
-	client.Write(msg.Pack())
+func (s *Controllers) Start() {
+	s.Map.Start()
+	s.Action.Start()
+}
+
+func (s *Controllers) Stop() {
+	s.Map.Stop()
+	s.Action.Stop()
 }

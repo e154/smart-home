@@ -20,6 +20,7 @@ package models
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/api/gate"
 	"github.com/e154/smart-home/api/mobile"
 	mobileControllers "github.com/e154/smart-home/api/mobile/v1/controllers"
 	"github.com/e154/smart-home/api/server"
@@ -86,6 +87,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(notify.NewNotify)
 	container.Provide(zigbee2mqtt.NewZigbee2mqttConfig)
 	container.Provide(zigbee2mqtt.NewZigbee2mqtt)
+	container.Provide(gate.NewGate)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()

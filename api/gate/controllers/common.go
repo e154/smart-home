@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
@@ -29,25 +30,25 @@ import (
 
 type ControllerCommon struct {
 	adaptors *adaptors.Adaptors
-	stream   *stream.StreamService
 	endpoint *endpoint.Endpoint
 	core     *core.Core
 	scripts  *scripts.ScriptService
+	gate     *gate_client.GateClient
 	metric   *metrics.MetricManager
 }
 
 func NewControllerCommon(adaptors *adaptors.Adaptors,
-	stream *stream.StreamService,
 	endpoint *endpoint.Endpoint,
 	scripts *scripts.ScriptService,
 	core *core.Core,
+	gate *gate_client.GateClient,
 	metric *metrics.MetricManager) *ControllerCommon {
 	return &ControllerCommon{
 		adaptors: adaptors,
 		endpoint: endpoint,
-		stream:   stream,
 		core:     core,
 		scripts:  scripts,
+		gate:     gate,
 		metric:   metric,
 	}
 }

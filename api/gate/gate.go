@@ -16,50 +16,53 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package controllers
+package gate
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	. "github.com/e154/smart-home/api/gate/controllers"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/stream"
+	"github.com/op/go-logging"
 )
 
-type ControllerCommon struct {
-	adaptors *adaptors.Adaptors
-	stream   *stream.StreamService
-	endpoint *endpoint.Endpoint
-	core     *core.Core
-	scripts  *scripts.ScriptService
-	metric   *metrics.MetricManager
+var (
+	log = logging.MustGetLogger("gate")
+)
+
+type Gate struct {
+	Controllers *Controllers
+	graceful    *graceful_service.GracefulService
 }
 
-func NewControllerCommon(adaptors *adaptors.Adaptors,
-	stream *stream.StreamService,
+func NewGate(adaptors *adaptors.Adaptors,
 	endpoint *endpoint.Endpoint,
 	scripts *scripts.ScriptService,
 	core *core.Core,
-	metric *metrics.MetricManager) *ControllerCommon {
-	return &ControllerCommon{
-		adaptors: adaptors,
-		endpoint: endpoint,
-		stream:   stream,
-		core:     core,
-		scripts:  scripts,
-		metric:   metric,
+	graceful *graceful_service.GracefulService,
+	gate *gate_client.GateClient,
+	metric *metrics.MetricManager) *Gate {
+
+	server := &Gate{
+		Controllers: NewControllers(adaptors, scripts, core, endpoint, gate, metric),
+		graceful:    graceful,
 	}
+
+	return server
 }
 
-func (c *ControllerCommon) Err(client stream.IStreamClient, message stream.Message, err error) {
-	msg := stream.Message{
-		Id:      message.Id,
-		Forward: stream.Response,
-		Status:  stream.StatusError,
-		Payload: map[string]interface{}{
-			"error": err.Error(),
-		},
-	}
-	client.Write(msg.Pack())
+func (s *Gate) Start() {
+	log.Infof("Serving gate websocket service")
+	s.graceful.Subscribe(s)
+
+	s.Controllers.Start()
+}
+
+func (s *Gate) Shutdown() {
+	log.Info("Server exiting")
+	s.Controllers.Stop()
 }

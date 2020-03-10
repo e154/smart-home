@@ -21,7 +21,6 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	mapModels "github.com/e154/smart-home/api/websocket/controllers/map_models"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
 	"sync"
@@ -29,7 +28,7 @@ import (
 
 type ControllerMap struct {
 	*ControllerCommon
-	devices  *mapModels.Devices
+	devices  *Devices
 	sendLock *sync.Mutex
 	buf      *bytes.Buffer
 	enc      *json.Encoder
@@ -39,7 +38,7 @@ func NewControllerMap(common *ControllerCommon) *ControllerMap {
 	buf := bytes.NewBuffer(nil)
 	return &ControllerMap{
 		ControllerCommon: common,
-		devices:          mapModels.NewDevices(common.metric),
+		devices:          NewDevices(common.metric),
 		sendLock:         &sync.Mutex{},
 		buf:              buf,
 		enc:              json.NewEncoder(buf),
@@ -47,13 +46,13 @@ func NewControllerMap(common *ControllerCommon) *ControllerMap {
 }
 
 func (c *ControllerMap) Start() {
-	c.metric.Subscribe("map", c)
-	c.stream.Subscribe("map.get.devices", c.devices.GetDevicesStates)
+	c.metric.Subscribe("map2", c)
+	c.gate.Subscribe("map.get.devices", c.devices.GetDevicesStates)
 }
 
 func (c *ControllerMap) Stop() {
-	c.metric.UnSubscribe("map")
-	c.stream.UnSubscribe("map.get.devices")
+	c.metric.Subscribe("map2", c)
+	c.gate.UnSubscribe("map.get.devices")
 }
 
 // method callable from metric service
@@ -98,7 +97,7 @@ func (t *ControllerMap) sendMsg(payload map[string]interface{}) (err error) {
 
 	data := make([]byte, t.buf.Len())
 	copy(data, t.buf.Bytes())
-	t.stream.Broadcast(data)
+	t.gate.Broadcast(data)
 
 	return
 }
