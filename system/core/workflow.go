@@ -24,9 +24,9 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/telemetry"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"sync"
 	"time"
@@ -46,8 +46,8 @@ type Workflow struct {
 	nextScenario    *m.WorkflowScenario
 	isRunning       bool
 	scenarioEntered bool
-	telemetry       telemetry.ITelemetry
 	zigbee2mqtt     *zigbee2mqtt.Zigbee2mqtt
+	metric          *metrics.MetricManager
 }
 
 func NewWorkflow(model *m.Workflow,
@@ -56,8 +56,8 @@ func NewWorkflow(model *m.Workflow,
 	cron *cr.Cron,
 	core *Core,
 	mqtt *mqtt.Mqtt,
-	telemetry telemetry.ITelemetry,
-	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) (workflow *Workflow) {
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
+	metric *metrics.MetricManager) (workflow *Workflow) {
 
 	workflow = &Workflow{
 		Storage:     NewStorage(),
@@ -68,8 +68,8 @@ func NewWorkflow(model *m.Workflow,
 		cron:        cron,
 		core:        core,
 		mqtt:        mqtt,
-		telemetry:   telemetry,
 		zigbee2mqtt: zigbee2mqtt,
+		metric:      metric,
 	}
 
 	return
@@ -108,8 +108,6 @@ func (wf *Workflow) Run() (err error) {
 	if err = wf.enterScenario(); err != nil {
 		return
 	}
-
-	wf.telemetry.BroadcastOne(telemetry.WorkflowScenario{WorkflowId: wf.model.Id, ScenarioId: wf.model.Scenario.Id})
 
 	if err = wf.initFlows(); err != nil {
 		return
@@ -186,6 +184,8 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 		return
 	}
 
+	wf.metric.Update(metrics.FlowAdd{EnabledNum: 1})
+
 	var model *Flow
 	if model, err = NewFlow(flow, wf, wf.adaptors, wf.scripts, wf.cron, wf.core, wf.mqtt, wf.zigbee2mqtt); err != nil {
 		log.Error(err.Error())
@@ -216,6 +216,8 @@ func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 	if !ok {
 		return
 	}
+
+	wf.metric.Update(metrics.FlowDelete{EnabledNum: 1})
 
 	f.Remove()
 
@@ -303,6 +305,11 @@ func (wf *Workflow) enterScenario() (err error) {
 	}
 
 	log.Infof("Workflow '%s', scenario '%s'", wf.model.Name, scenario.Name)
+
+	go wf.metric.Update(metrics.WorkflowUpdateScenario{
+		Id:         wf.model.Id,
+		ScenarioId: wf.model.Scenario.Id,
+	})
 
 	if err = wf.runScenarioScripts("on_enter"); err != nil {
 		return

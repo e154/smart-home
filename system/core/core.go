@@ -25,10 +25,10 @@ import (
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/telemetry"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"github.com/op/go-logging"
 	"sync"
@@ -46,12 +46,12 @@ type Core struct {
 	scripts       *scripts.ScriptService
 	cron          *cr.Cron
 	mqtt          *mqtt.Mqtt
-	telemetry     telemetry.ITelemetry
 	streamService *stream.StreamService
 	Map           *Map
 	isRunning     bool
 	stopLock      sync.Mutex
 	zigbee2mqtt   *zigbee2mqtt.Zigbee2mqtt
+	metric        *metrics.MetricManager
 }
 
 func NewCore(adaptors *adaptors.Adaptors,
@@ -59,9 +59,9 @@ func NewCore(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
 	cron *cr.Cron,
 	mqtt *mqtt.Mqtt,
-	telemetry telemetry.ITelemetry,
 	streamService *stream.StreamService,
-	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) (core *Core, err error) {
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
+	metric *metrics.MetricManager) (core *Core, err error) {
 
 	core = &Core{
 		nodes:         make(map[int64]*Node),
@@ -70,12 +70,10 @@ func NewCore(adaptors *adaptors.Adaptors,
 		scripts:       scripts,
 		cron:          cron,
 		mqtt:          mqtt,
-		telemetry:     telemetry,
 		streamService: streamService,
-		Map: &Map{
-			telemetry: telemetry,
-		},
-		zigbee2mqtt: zigbee2mqtt,
+		Map:           NewMap(metric),
+		zigbee2mqtt:   zigbee2mqtt,
+		metric:        metric,
 	}
 
 	graceful.Subscribe(core)
@@ -102,6 +100,8 @@ func (c *Core) Run() (err error) {
 	if err = c.InitWorkflows(); err != nil {
 		return
 	}
+
+	c.updateMetrics()
 
 	return
 }
@@ -171,10 +171,10 @@ func (c *Core) AddNode(node *m.Node) (n *Node, err error) {
 
 	log.Infof("Add node: \"%s\"", node.Name)
 
-	n = NewNode(node, c.mqtt)
+	n = NewNode(node, c.mqtt, c.metric)
 	c.safeUpdateNodeMap(node.Id, n.Connect())
 
-	go c.telemetry.Broadcast(telemetry.Node{})
+	go c.metric.Update(metrics.NodeAdd{Num: 1})
 
 	return
 }
@@ -187,7 +187,7 @@ func (b *Core) RemoveNode(node *m.Node) (err error) {
 		return
 	}
 
-	b.telemetry.Broadcast(telemetry.Node{})
+	go b.metric.Update(metrics.NodeDelete{Num: 1})
 
 	return
 }
@@ -248,8 +248,6 @@ func (c *Core) ConnectNode(node *m.Node) (err error) {
 		n.Connect()
 	}
 
-	c.telemetry.Broadcast(telemetry.Node{})
-
 	return
 }
 
@@ -260,8 +258,6 @@ func (c *Core) DisconnectNode(node *m.Node) (err error) {
 	if n, exist := c.safeGetNode(node.Id); exist {
 		n.Disconnect()
 	}
-
-	c.telemetry.Broadcast(telemetry.Node{})
 
 	return
 }
@@ -324,11 +320,13 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 		return
 	}
 
-	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.telemetry, b.zigbee2mqtt)
+	wf := NewWorkflow(workflow, b.adaptors, b.scripts, b.cron, b, b.mqtt, b.zigbee2mqtt, b.metric)
 
 	if err = wf.Run(); err != nil {
 		return
 	}
+
+	go b.metric.Update(metrics.WorkflowAdd{EnabledNum: 1})
 
 	b.safeUpdateWorkflowMap(workflow.Id, wf)
 
@@ -348,38 +346,6 @@ func (b *Core) GetWorkflow(workflowId int64) (workflow *Workflow, err error) {
 	return
 }
 
-func (b *Core) GetStatusAllWorkflow() (statusList []m.DashboardWorkflowStatus) {
-
-	b.Lock()
-	defer b.Unlock()
-
-	statusList = make([]m.DashboardWorkflowStatus, 0, len(b.workflows))
-	for _, workflow := range b.workflows {
-		statusList = append(statusList, m.DashboardWorkflowStatus{
-			Id:         workflow.model.Id,
-			ScenarioId: workflow.model.Scenario.Id,
-		})
-	}
-
-	return
-}
-
-func (c *Core) GetStatusWorkflow(workflowId int64) (status m.DashboardWorkflowStatus, err error) {
-
-	workflow, ok := c.safeGetWorkflow(workflowId)
-	if !ok {
-		err = errors.New("not found")
-		return
-	}
-
-	status = m.DashboardWorkflowStatus{
-		Id:         workflow.model.Id,
-		ScenarioId: workflow.model.Scenario.Id,
-	}
-
-	return
-}
-
 // нельзя удалить workflow, если присутствуют связанные сущности
 func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 
@@ -393,6 +359,8 @@ func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 	if err = wf.Stop(); err != nil {
 		log.Error(err.Error())
 	}
+
+	go c.metric.Update(metrics.WorkflowDelete{EnabledNum: 1})
 
 	c.Lock()
 	delete(c.workflows, workflow.Id)
@@ -618,10 +586,8 @@ func (c *Core) safeGetOrAddNode(k int64) (w *Node, ok bool) {
 		if node, err := c.adaptors.Node.GetById(k); err == nil {
 			ok = true
 
-			w = NewNode(node, c.mqtt)
+			w = NewNode(node, c.mqtt, c.metric)
 			c.safeUpdateNodeMap(node.Id, w.Connect())
-
-			go c.telemetry.Broadcast(telemetry.Node{})
 
 		} else {
 			log.Error(err.Error())
@@ -635,4 +601,24 @@ func (c *Core) safeUpdateNodeMap(k int64, n *Node) {
 	c.Lock()
 	c.nodes[k] = n
 	c.Unlock()
+}
+
+func (c *Core) updateMetrics() {
+
+	// get devices
+	var err error
+	var total int64
+	var devices []*m.Device
+	if devices, total, err = c.adaptors.Device.List(999, 0, "", ""); err != nil {
+		log.Error(err.Error())
+	}
+
+	var disabled int64
+	for _, device := range devices {
+		if device.Status == "disabled" {
+			disabled++
+		}
+	}
+
+	c.metric.Update(metrics.DeviceAdd{TotalNum: total, DisabledNum: disabled})
 }

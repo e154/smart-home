@@ -28,6 +28,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
@@ -50,10 +51,10 @@ var (
 
 type GateClient struct {
 	sync.Mutex
+	metric          *metrics.MetricManager
 	adaptors        *adaptors.Adaptors
 	wsClient        *WsClient
 	engine          *gin.Engine
-	streamService   *stream.StreamService
 	messagePoolQuit chan struct{}
 	messagePool     chan stream.Message
 	settingsLock    sync.Mutex
@@ -67,26 +68,24 @@ type GateClient struct {
 
 func NewGateClient(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
-	streamService *stream.StreamService) (gate *GateClient) {
+	metric *metrics.MetricManager) (gate *GateClient) {
 	gate = &GateClient{
 		adaptors:        adaptors,
 		settings:        &Settings{},
 		selfSubscribers: make(map[uuid.UUID]func(msg stream.Message)),
 		subscribers:     make(map[string]func(client stream.IStreamClient, msg stream.Message)),
-		streamService:   streamService,
 		messagePoolQuit: make(chan struct{}),
 		messagePool:     make(chan stream.Message),
+		metric:          metric,
 	}
 
-	gate.wsClient = NewWsClient(gate)
+	gate.wsClient = NewWsClient(gate, metric)
 
 	graceful.Subscribe(gate)
 
 	if err := gate.loadSettings(); err != nil {
 		log.Error(err.Error())
 	}
-
-	streamService.GateClient(gate)
 
 	go func() {
 		for {
@@ -129,22 +128,10 @@ func (g *GateClient) Close() {
 
 func (g *GateClient) Restart() {
 	g.Close()
-	g.BroadcastAccessToken()
-}
 
-func (g *GateClient) BroadcastAccessToken() {
-	log.Info("Broadcast access token")
-
-	broadcastMsg := &stream.Message{
-		Command: "gate.access_token",
-		Type:    stream.Broadcast,
-		Forward: stream.Request,
-		Payload: map[string]interface{}{
-			"accessToken": g.settings.GateServerToken,
-		},
-	}
-	g.streamService.Broadcast(broadcastMsg.Pack())
-
+	go g.metric.Update(metrics.GateUpdate{
+		AccessToken: g.settings.GateServerToken,
+	})
 }
 
 func (g *GateClient) RegisterServer() {
@@ -410,11 +397,11 @@ func (g *GateClient) Broadcast(message []byte) {
 
 func (g *GateClient) Status() string {
 
-	status := g.wsClient.Status()
 	if !g.settings.Enabled {
 		return "disabled"
 	}
 
+	status := g.wsClient.Status()
 	if status == "quit" {
 		return "wait"
 	}

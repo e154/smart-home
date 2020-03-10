@@ -16,14 +16,29 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package dashboard_models
+package metrics
 
-type Uptime struct {
-	Total uint64 `json:"total"`
-	Idle  uint64 `json:"idle"`
+import "sync"
+
+type UptimeManager struct {
+	sync.Mutex
+	total uint64
 }
 
-func (u *Uptime) Update() (*Uptime, error) {
+func NewUptimeManager(publisher IPublisher) *UptimeManager {
+	return &UptimeManager{}
+}
 
-	return u, nil
+func (d *UptimeManager) start(pause int) {
+
+}
+
+func (d *UptimeManager) stop() {
+
+}
+
+func (d UptimeManager) Snapshot() Uptime {
+	return Uptime{
+		Total: d.total,
+	}
 }

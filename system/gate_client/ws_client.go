@@ -20,6 +20,7 @@ package gate_client
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/gorilla/websocket"
 	"net/http"
@@ -47,16 +48,17 @@ type WsClient struct {
 	counter        int
 	connLock       *sync.Mutex
 	conn           *websocket.Conn
+	metric         *metrics.MetricManager
 }
 
-func NewWsClient(
-	cb IWsCallback) *WsClient {
+func NewWsClient(cb IWsCallback, metric *metrics.MetricManager) *WsClient {
 	client := &WsClient{
 		interrupt:  make(chan struct{}),
 		quitWorker: make(chan struct{}),
 		cb:         cb,
 		setLock:    &sync.Mutex{},
 		connLock:   &sync.Mutex{},
+		metric:     metric,
 	}
 
 	go func() {
@@ -96,12 +98,13 @@ func (client *WsClient) UpdateSettings(settings Settings) {
 	client.settings = settings
 	client.reConnect = true
 	client.settingsLoaded = true
+	client.updateMetric()
 }
 
 func (client *WsClient) connect() {
 
 	client.setLock.Lock()
-	client.status = GateStatusWait
+	client.selfUpdateStatus(GateStatusWait)
 
 	if !client.settings.Valid() {
 		client.setLock.Unlock()
@@ -121,7 +124,7 @@ func (client *WsClient) connect() {
 		client.counter--
 
 		client.setLock.Lock()
-		client.status = GateStatusNotConnected
+		client.selfUpdateStatus(GateStatusNotConnected)
 		client.reConnect = false
 		client.setLock.Unlock()
 
@@ -132,19 +135,6 @@ func (client *WsClient) connect() {
 		if client.conn != nil {
 			_ = client.conn.Close()
 		}
-
-		//if err != nil {
-		//	if strings.Contains(err.Error(), "connection refused") {
-		//		return
-		//	}
-		//	if strings.Contains(err.Error(), "bad handshake") {
-		//		return
-		//	}
-		//	if strings.Contains(err.Error(), "use of closed network connection") {
-		//		return
-		//	}
-		//	log.Debug(err.Error())
-		//}
 	}()
 
 	var uri *url.URL
@@ -175,7 +165,7 @@ func (client *WsClient) connect() {
 	}
 
 	log.Info("endpoint %v connected ...", uri.String())
-	client.status = GateStatusConnected
+	client.selfUpdateStatus(GateStatusConnected)
 	client.setLock.Unlock()
 
 	loseChan := make(chan struct{})
@@ -252,12 +242,12 @@ func (client *WsClient) Close() {
 	if client.status == GateStatusQuit {
 		return
 	}
-	if client.status != GateStatusQuit {
-		client.status = GateStatusQuit
-		if client.status == GateStatusConnected {
-			client.interrupt <- struct{}{}
-		}
+
+	if client.status == GateStatusConnected {
+		client.interrupt <- struct{}{}
 	}
+
+	client.selfUpdateStatus(GateStatusQuit)
 }
 
 func (client *WsClient) selfWrite(opCode int, payload []byte) (err error) {
@@ -305,4 +295,27 @@ func (client *WsClient) Notify(t, b string) {
 	}
 
 	client.selfWrite(websocket.TextMessage, msg.Pack())
+}
+
+func (client *WsClient) selfUpdateStatus(status string) {
+	client.status = status
+	client.updateMetric()
+}
+
+func (client *WsClient) updateMetric() {
+
+	var status = client.status
+
+	if client.status == "quit" {
+		status = "wait"
+	}
+
+	if !client.settings.Enabled {
+		status = "disabled"
+	}
+
+	go client.metric.Update(metrics.GateUpdate{
+		Status:      status,
+		AccessToken: client.settings.GateServerToken,
+	})
 }

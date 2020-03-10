@@ -20,6 +20,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/api/gate"
 	"github.com/e154/smart-home/api/mobile"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/websocket"
@@ -110,15 +111,17 @@ func start() {
 		graceful *graceful_service.GracefulService,
 		back *l.LogBackend,
 		initialService *initial.InitialService,
-		ws *websocket.WebSocket,
+		wsApi *websocket.WebSocket,
 		mobileServer *mobile.MobileServer,
-		metric *metrics.MetricServer,
-		zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) {
+		metric *metrics.MetricManager,
+		zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
+		gateApi *gate.Gate) {
 
 		l.Initialize(back)
 		go server.Start()
 		go mobileServer.Start()
-		go ws.Start()
+		go wsApi.Start()
+		go gateApi.Start()
 		go metric.Start()
 		go zigbee2mqtt.Start()
 

@@ -3,12 +3,11 @@ module github.com/e154/smart-home
 go 1.13
 
 require (
-	github.com/DrmagicE/gmqtt v0.1.1
+	github.com/DrmagicE/gmqtt v0.1.2
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlclark/regexp2 v1.2.0 // indirect
-	github.com/docker/distribution v2.7.1+incompatible
 	github.com/dop251/goja v0.0.0-20200126140343-a7d7d4827263
 	github.com/dop251/goja_nodejs v0.0.0-20200128125109-2d688c7e0ac4
 	github.com/eclipse/paho.mqtt.golang v1.2.0
@@ -41,7 +40,8 @@ require (
 	github.com/nlopes/slack v0.6.0
 	github.com/op/go-logging v0.0.0-20160211212156-b2cb9fa56473
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.4.0
+	github.com/prometheus/client_golang v1.5.0
+	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a
 	github.com/rubenv/sql-migrate v0.0.0-20180704111356-3f452fc0ebeb
 	github.com/sfreiberg/gotwilio v0.0.0-20191023035553-f6f740c7bffc
 	github.com/shirou/gopsutil v2.19.13-0.20200118023139-3964e5b57942+incompatible
@@ -55,19 +55,19 @@ require (
 	github.com/t-tiger/gorm-bulk-insert v0.0.0-20191118105655-ec69ce854cfe
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
-	go.uber.org/atomic v1.5.1 // indirect
+	go.uber.org/atomic v1.6.0
 	go.uber.org/dig v1.8.0
-	go.uber.org/multierr v1.4.0 // indirect
+	go.uber.org/multierr v1.5.0 // indirect
 	go.uber.org/zap v1.14.0 // indirect
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
-	golang.org/x/lint v0.0.0-20200130185559-910be7a94367 // indirect
-	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
+	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
+	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
 	golang.org/x/sys v0.0.0-20200217220822-9197077df867 // indirect
-	golang.org/x/tools v0.0.0-20200221152158-fe62aff31966 // indirect
+	golang.org/x/tools v0.0.0-20200308013534-11ec41452d41 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20150902115704-41f357289737
 	gopkg.in/gorp.v1 v1.7.1 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
-	honnef.co/go/tools v0.0.1-2020.1.2 // indirect
+	honnef.co/go/tools v0.0.1-2020.1.3 // indirect
 )

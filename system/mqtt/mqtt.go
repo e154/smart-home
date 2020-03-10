@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
+	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/mqtt/metric"
 	"github.com/e154/smart-home/system/mqtt/prometheus"
 	"net/http"
 
@@ -46,16 +48,19 @@ type Mqtt struct {
 	clients       []*mqtt_client.Client
 	authenticator *mqtt_authenticator.Authenticator
 	management    *management.Management
+	metric        *metrics.MetricManager
 }
 
 func NewMqtt(cfg *MqttConfig,
 	graceful *graceful_service.GracefulService,
 	authenticator *mqtt_authenticator.Authenticator,
-	scriptService *scripts.ScriptService) (mqtt *Mqtt) {
+	scriptService *scripts.ScriptService,
+	metric *metrics.MetricManager) (mqtt *Mqtt) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,
 		authenticator: authenticator,
+		metric:        metric,
 	}
 
 	// javascript binding
@@ -95,9 +100,8 @@ func (m *Mqtt) runServer() {
 			OnSessionCreated: m.OnSessionCreated,
 			OnSessionResumed: m.OnSessionResumed,
 		}),
-		gmqtt.WithPlugin(prometheus.New(&http.Server{
-			Addr: ":8082",
-		}, "/metrics")),
+		gmqtt.WithPlugin(prometheus.New(&http.Server{Addr: ":8082",}, "/metrics")),
+		gmqtt.WithPlugin(metric.New(m.metric, 5)),
 	)
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
@@ -134,11 +138,11 @@ func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err er
 }
 
 func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
-	log.Debug("connected...")
+	log.Debugf("%v connected...", client.OptionsReader().ClientID())
 }
 
 func (m *Mqtt) OnClose(ctx context.Context, client gmqtt.Client, err error) {
-	log.Debug("disconnected...")
+	log.Debugf("%v disconnected...", client.OptionsReader().ClientID())
 }
 
 func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {

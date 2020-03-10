@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
@@ -68,8 +69,9 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	gate *gate_client.GateClient,
 	notify *notify.Notify,
 	mqtt *mqtt.Mqtt,
-	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *Endpoint {
-	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify, mqtt, zigbee2mqtt)
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
+	metric *metrics.MetricManager) *Endpoint {
+	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify, mqtt, zigbee2mqtt, metric)
 	return &Endpoint{
 		Auth:             NewAuthEndpoint(common),
 		Device:           NewDeviceEndpoint(common),

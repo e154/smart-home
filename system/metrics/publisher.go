@@ -16,60 +16,55 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package telemetry
+package metrics
 
 import (
-	"github.com/op/go-logging"
 	"sync"
 )
 
-var (
-	log = logging.MustGetLogger("telemetry")
-)
-
-type Telemetry struct {
-	sync.Mutex
-	subscribers map[string]ITelemetry
+type ISubscriber interface {
+	Broadcast(interface{})
 }
 
-func NewTelemetry() (t2 *Telemetry, t1 ITelemetry) {
-	t2 = &Telemetry{
-		subscribers: make(map[string]ITelemetry),
+type IPublisher interface {
+	Broadcast(interface{})
+}
+
+type Publisher struct {
+	sync.Mutex
+	subscribers map[string]ISubscriber
+}
+
+func NewPublisher() (t *Publisher) {
+	t = &Publisher{
+		subscribers: make(map[string]ISubscriber),
 	}
-	t1 = t2
+
 	return
 }
 
-func (s *Telemetry) Subscribe(command string, f ITelemetry) {
+func (p *Publisher) Subscribe(command string, f ISubscriber) {
 	log.Infof("subscribe %s", command)
-	s.Lock()
-	defer s.Unlock()
-	if s.subscribers[command] != nil {
-		delete(s.subscribers, command)
+	p.Lock()
+	defer p.Unlock()
+	if p.subscribers[command] != nil {
+		delete(p.subscribers, command)
 	}
-	s.subscribers[command] = f
+	p.subscribers[command] = f
 }
 
-func (s *Telemetry) UnSubscribe(command string) {
-	s.Lock()
-	defer s.Unlock()
-	if _, ok := s.subscribers[command]; ok {
-		delete(s.subscribers, command)
+func (p *Publisher) UnSubscribe(command string) {
+	p.Lock()
+	defer p.Unlock()
+	if _, ok := p.subscribers[command]; ok {
+		delete(p.subscribers, command)
 	}
 }
 
-func (t *Telemetry) Broadcast(param interface{}) {
-	t.Lock()
-	defer t.Unlock()
-	for _, f := range t.subscribers {
+func (p *Publisher) Broadcast(param interface{}) {
+	p.Lock()
+	defer p.Unlock()
+	for _, f := range p.subscribers {
 		f.Broadcast(param)
-	}
-}
-
-func (t *Telemetry) BroadcastOne(param interface{}) {
-	t.Lock()
-	defer t.Unlock()
-	for _, f := range t.subscribers {
-		f.BroadcastOne(param)
 	}
 }

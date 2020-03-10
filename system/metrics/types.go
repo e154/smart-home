@@ -16,21 +16,39 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package telemetry
+package metrics
 
-type ITelemetry interface {
-	Broadcast(interface{})
-	BroadcastOne(interface{})
+import (
+	"errors"
+	"time"
+)
+
+type UsageStat struct {
+	Path              string  `json:"path"`
+	Fstype            string  `json:"fstype"`
+	Total             uint64  `json:"total"`
+	Free              uint64  `json:"free"`
+	Used              uint64  `json:"used"`
+	UsedPercent       float64 `json:"used_percent"`
+	InodesTotal       uint64  `json:"inodes_total"`
+	InodesUsed        uint64  `json:"inodes_used"`
+	InodesFree        uint64  `json:"inodes_free"`
+	InodesUsedPercent float64 `json:"inodes_used_percent"`
 }
 
-type Device struct {
-	Id          int64
-	ElementName string
+type Disk struct {
+	Root UsageStat `json:"root"`
 }
 
-type Node struct{}
+type Uptime struct {
+	Total      uint64    `json:"total"`
+	AppStarted time.Time `json:"app_started"`
+}
 
-type WorkflowScenario struct {
-	WorkflowId int64
-	ScenarioId int64
+var (
+	ErrRecordNotFound = errors.New("record not found")
+)
+
+func bToMb(b uint64) uint64 {
+	return b / 1024
 }

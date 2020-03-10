@@ -22,6 +22,7 @@ import (
 	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/e154/smart-home/system/validation"
 )
@@ -52,7 +53,11 @@ func (f *FlowEndpoint) Add(params *m.Flow) (result *m.Flow, errs []*validation.E
 		return
 	}
 
-	err = f.core.AddFlow(result)
+	if err = f.core.AddFlow(result); err != nil {
+		return
+	}
+
+	f.metric.Update(metrics.FlowAdd{TotalNum: 1})
 
 	return
 }
@@ -131,7 +136,12 @@ func (f *FlowEndpoint) Delete(flowId int64) (err error) {
 		return
 	}
 
-	err = f.adaptors.Flow.Delete(flowId)
+	if err = f.adaptors.Flow.Delete(flowId); err != nil {
+		return
+	}
+
+	f.metric.Update(metrics.FlowDelete{TotalNum: 1})
+
 	return
 }
 

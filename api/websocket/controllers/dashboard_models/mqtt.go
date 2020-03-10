@@ -16,9 +16,24 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package models
+package dashboard_models
 
-type DashboardWorkflowStatus struct {
-	Id         int64 `json:"id"`
-	ScenarioId int64 `json:"scenario_id"`
+import (
+	"github.com/e154/smart-home/system/metrics"
+)
+
+type Mqtt struct {
+	metric *metrics.MetricManager
+}
+
+func NewMqtt(metric *metrics.MetricManager) (memory *Mqtt) {
+	memory = &Mqtt{metric: metric}
+	return
+}
+
+func (g *Mqtt) Broadcast() (map[string]interface{}, bool) {
+
+	return map[string]interface{}{
+		"mqtt": g.metric.Mqtt.Snapshot(),
+	}, true
 }

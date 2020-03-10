@@ -19,67 +19,69 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	mapModels "github.com/e154/smart-home/api/websocket/controllers/map_models"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/telemetry"
+	"sync"
 )
 
 type ControllerMap struct {
 	*ControllerCommon
-	devices *mapModels.Devices
+	devices  *mapModels.Devices
+	sendLock *sync.Mutex
+	buf      *bytes.Buffer
+	enc      *json.Encoder
 }
 
 func NewControllerMap(common *ControllerCommon) *ControllerMap {
+	buf := bytes.NewBuffer(nil)
 	return &ControllerMap{
 		ControllerCommon: common,
-		devices:          mapModels.NewDevices(common.adaptors, common.core),
+		devices:          mapModels.NewDevices(common.metric),
+		sendLock:         &sync.Mutex{},
+		buf:              buf,
+		enc:              json.NewEncoder(buf),
 	}
 }
 
 func (c *ControllerMap) Start() {
-	c.telemetry.Subscribe("map", c)
-	c.stream.Subscribe("map.get.devices.states", c.devices.GetDevicesStates)
-	c.gate.Subscribe("map.get.devices.states", c.devices.GetDevicesStates)
-	c.stream.Subscribe("map.get.telemetry", c.streamTelemetry)
+	c.metric.Subscribe("map", c)
+	c.stream.Subscribe("map.get.devices", c.devices.GetDevicesStates)
 }
 
 func (c *ControllerMap) Stop() {
-	c.telemetry.UnSubscribe("map")
-	c.stream.UnSubscribe("map.get.devices.states")
-	c.gate.UnSubscribe("map.get.devices.states")
-	c.stream.UnSubscribe("map.get.telemetry")
+	c.metric.UnSubscribe("map")
+	c.stream.UnSubscribe("map.get.devices")
 }
 
-func (c *ControllerMap) BroadcastOne(param interface{}) {
-	var body map[string]interface{}
-	var ok bool
-
-	switch v := param.(type) {
-	case telemetry.Device:
-		body, ok = c.devices.BroadcastOne(v.Id, v.ElementName)
-	}
-
-	if ok {
-		c.sendMsg(body)
-	}
-}
-
+// method callable from metric service
 func (c *ControllerMap) Broadcast(param interface{}) {
 
 	var body map[string]interface{}
 	var ok bool
 
-	switch param.(type) {
-	case telemetry.Device:
-		body, ok = c.devices.Broadcast()
+	switch v := param.(type) {
+	case string:
+
+	case metrics.MapElementCursor:
+		body, ok = c.devices.Broadcast(v)
+	default:
+		log.Warningf("unknown type %v", v)
 	}
 
-	if ok {
-		c.sendMsg(body)
+	if !ok {
+		return
 	}
+
+	c.sendMsg(body)
 }
 
-func (t *ControllerMap) sendMsg(payload map[string]interface{}) {
+func (t *ControllerMap) sendMsg(payload map[string]interface{}) (err error) {
+
+	t.sendLock.Lock()
+	defer t.sendLock.Unlock()
 
 	msg := &stream.Message{
 		Command: "map.telemetry",
@@ -88,9 +90,15 @@ func (t *ControllerMap) sendMsg(payload map[string]interface{}) {
 		Payload: payload,
 	}
 
-	t.stream.Broadcast(msg.Pack())
-}
+	t.buf.Reset()
+	if err = t.enc.Encode(msg); err != nil {
+		log.Error(err.Error())
+		return
+	}
 
-func (m *ControllerMap) streamTelemetry(client stream.IStreamClient, message stream.Message) {
+	data := make([]byte, t.buf.Len())
+	copy(data, t.buf.Bytes())
+	t.stream.Broadcast(data)
 
+	return
 }

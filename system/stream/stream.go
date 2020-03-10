@@ -96,6 +96,3 @@ func (w *StreamService) Ws(ctx *gin.Context) {
 	w.Hub.AddClient(client)
 }
 
-func (w *StreamService) GateClient(client BroadcastClient)  {
-	w.Hub.gateClient = client
-}
