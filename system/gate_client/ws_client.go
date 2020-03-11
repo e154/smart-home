@@ -164,7 +164,7 @@ func (client *WsClient) connect() {
 		return
 	}
 
-	log.Info("endpoint %v connected ...", uri.String())
+	log.Infof("endpoint %v connected ...", uri.String())
 	client.selfUpdateStatus(GateStatusConnected)
 	client.setLock.Unlock()
 
