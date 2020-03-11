@@ -18,13 +18,19 @@
 
 package mobile
 
-import "github.com/op/go-logging"
+import "go.uber.org/zap"
 
 type MobileServerLogger struct {
-	Logger *logging.Logger
+	logger *zap.Logger
+}
+
+func NewLogger() *MobileServerLogger {
+	return &MobileServerLogger{
+		logger: zap.L(),
+	}
 }
 
 func (s MobileServerLogger) Write(b []byte) (i int, err error) {
-	s.Logger.Info(string(b))
+	s.logger.Info(string(b))
 	return
 }

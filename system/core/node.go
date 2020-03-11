@@ -227,12 +227,12 @@ func (n *Node) Connect() *Node {
 
 	// /home/node/resp
 	if err := n.mqttClient.Subscribe(n.topic("resp"), 0, n.onPublish); err != nil {
-		log.Warning(err.Error())
+		log.Warn(err.Error())
 	}
 
 	// /home/node/ping
 	if err := n.mqttClient.Subscribe(n.topic("ping"), 0, n.ping); err != nil {
-		log.Warning(err.Error())
+		log.Warn(err.Error())
 	}
 
 	return n

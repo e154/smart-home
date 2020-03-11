@@ -22,18 +22,18 @@ import (
 	"context"
 	"fmt"
 	"github.com/e154/smart-home/api/mobile/v1/controllers"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/gin-gonic/gin"
-	"github.com/op/go-logging"
 	"net/http"
 	"time"
 )
 
 var (
-	log = logging.MustGetLogger("server")
+	log = common.MustGetLogger("server")
 )
 
 type MobileServer struct {
@@ -57,7 +57,7 @@ func (s *MobileServer) Start() {
 	go func() {
 		// service connections
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			log.Fatal("listen: %s\n", err)
 		}
 	}()
 
@@ -90,13 +90,13 @@ func NewMobileServer(cfg *MobileServerConfig,
 	streamService *stream.StreamService,
 	gateClient *gate_client.GateClient) (newServer *MobileServer) {
 
-	logger := &MobileServerLogger{log}
+	logger := NewLogger()
 
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = logger
 	gin.DefaultErrorWriter = logger
 	//if cfg.RunMode == config.ReleaseMode {
-		gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.ReleaseMode)
 	//} else {
 	//	gin.SetMode(gin.DebugMode)
 	//}

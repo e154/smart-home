@@ -164,7 +164,7 @@ func (client *WsClient) connect() {
 		return
 	}
 
-	log.Info("endpoint %v connected ...", uri.String())
+	log.Infof("endpoint %v connected ...", uri.String())
 	client.selfUpdateStatus(GateStatusConnected)
 	client.setLock.Unlock()
 
@@ -173,7 +173,7 @@ func (client *WsClient) connect() {
 	var message []byte
 
 	//client.conn.SetCloseHandler(func(code int, text string) error {
-	//	log.Warning("connection closed")
+	//	log.Warn("connection closed")
 	//
 	//	loseChan <- struct{}{}
 	//	return nil
@@ -204,7 +204,7 @@ func (client *WsClient) connect() {
 				//fmt.Printf("recv: %s\n", string(message))
 				go client.cb.onMessage(message)
 			default:
-				log.Warningf("unknown message type(%v)", messageType)
+				log.Warnf("unknown message type(%v)", messageType)
 			}
 		}
 	}()

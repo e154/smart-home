@@ -19,12 +19,12 @@
 package models
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/validation"
-	"github.com/op/go-logging"
 )
 
 var (
-	log = logging.MustGetLogger("models")
+	log = common.MustGetLogger("models")
 )
 
 type Validity struct {

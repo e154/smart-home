@@ -20,8 +20,8 @@ package common
 
 import (
 	"crypto/md5"
-	"encoding/hex"
 	crypto_rand "crypto/rand"
+	"encoding/hex"
 	"math/rand"
 	"time"
 )

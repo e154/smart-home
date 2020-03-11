@@ -109,12 +109,12 @@ func (g *Bridge) Start() {
 
 	// /zigbee2mqtt/bridge/#
 	if err := g.mqttClient.Subscribe(fmt.Sprintf("%s/bridge/#", g.model.BaseTopic), 0, g.onBridgePublish); err != nil {
-		log.Warning(err.Error())
+		log.Warn(err.Error())
 	}
 
 	// /homeassistant/#
 	if err := g.mqttClient.Subscribe(fmt.Sprintf("%s/#", homeassistantTopic), 0, g.onAssistPublish); err != nil {
-		log.Warning(err.Error())
+		log.Warn(err.Error())
 	}
 
 	if err := g.safeGetDeviceList(); err != nil {
@@ -148,7 +148,7 @@ func (g *Bridge) onBridgePublish(client mqtt.Client, message mqtt.Message) {
 	case "networkmap":
 		g.onNetworkmapPublish(client, message)
 	default:
-		log.Warningf("unknown topic %v", topic)
+		log.Warnf("unknown topic %v", topic)
 	}
 }
 

@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
@@ -28,11 +29,10 @@ import (
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
-	"github.com/op/go-logging"
 )
 
 var (
-	log = logging.MustGetLogger("endpoint")
+	log = common.MustGetLogger("endpoint")
 )
 
 type Endpoint struct {

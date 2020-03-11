@@ -68,7 +68,7 @@ func (c *ControllerMap) Broadcast(param interface{}) {
 	case metrics.MapElementCursor:
 		body, ok = c.devices.Broadcast(v)
 	default:
-		log.Warningf("unknown type %v", v)
+		log.Warnf("unknown type %v", v)
 	}
 
 	if !ok {

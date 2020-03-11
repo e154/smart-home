@@ -28,14 +28,13 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/gin-gonic/gin"
-	"github.com/op/go-logging"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
 var (
-	log = logging.MustGetLogger("rbac")
+	log = common.MustGetLogger("rbac")
 )
 
 type AccessFilter struct {
@@ -89,7 +88,7 @@ func (f *AccessFilter) Auth(ctx *gin.Context) {
 		return
 	}
 
-	log.Warningf(fmt.Sprintf("access denied: role(%s) [%s] url(%s)", user.Role.Name, method, requestURI))
+	log.Warnf(fmt.Sprintf("access denied: role(%s) [%s] url(%s)", user.Role.Name, method, requestURI))
 
 	ctx.AbortWithError(403, errors.New("unauthorized access"))
 }
@@ -137,13 +136,13 @@ func (f *AccessFilter) getAccessList(token string) (user *m.User, accessList acc
 	// load user info
 	var claims jwt.MapClaims
 	if claims, err = common.ParseHmacToken(token, hmacKey); err != nil {
-		//log.Warning(err.Error())
+		//log.Warn(err.Error())
 		return
 	}
 
 	//var ok bool
 	//if token, ok = claims["auth"].(string); !ok {
-	//	log.Warning("no auth var in token")
+	//	log.Warn("no auth var in token")
 	//	return
 	//}
 	//

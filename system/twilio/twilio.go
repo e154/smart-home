@@ -22,7 +22,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/common"
 	"github.com/pkg/errors"
 	"github.com/sfreiberg/gotwilio"
 	"net/http"
@@ -32,7 +32,7 @@ import (
 )
 
 var (
-	log = logging.MustGetLogger("twilio")
+	log = common.MustGetLogger("twilio")
 )
 
 type TWClient struct {

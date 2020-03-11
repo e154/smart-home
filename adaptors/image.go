@@ -21,18 +21,18 @@ package adaptors
 import (
 	"bufio"
 	"bytes"
-	"io"
-	"net/http"
-	"github.com/t-tiger/gorm-bulk-insert"
-	"github.com/jinzhu/gorm"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"strings"
-	"path"
-	"fmt"
+	"github.com/jinzhu/gorm"
+	"github.com/t-tiger/gorm-bulk-insert"
+	"io"
+	"net/http"
 	"os"
+	"path"
 	"path/filepath"
-	"github.com/e154/smart-home/common"
+	"strings"
 )
 
 type Image struct {

@@ -93,7 +93,7 @@ func NewFlow(model *m.Flow,
 		if flowElement, err = NewFlowElement(element, flow, workflow, adaptors); err == nil {
 			flow.FlowElements = append(flow.FlowElements, flowElement)
 		} else {
-			log.Warning(err.Error())
+			log.Warn(err.Error())
 		}
 	}
 
@@ -121,7 +121,7 @@ func NewFlow(model *m.Flow,
 	}
 
 	if err = flow.mqttClient.Connect(); err != nil {
-		log.Warning(err.Error())
+		log.Warn(err.Error())
 		return
 	}
 
@@ -130,7 +130,7 @@ func NewFlow(model *m.Flow,
 
 		topic := fmt.Sprintf("%s", subParams.Topic)
 		if err := flow.mqttClient.Subscribe(topic, 0, flow.mqttOnPublish); err != nil {
-			log.Warning(err.Error())
+			log.Warn(err.Error())
 		}
 	}
 
@@ -142,7 +142,7 @@ func NewFlow(model *m.Flow,
 			continue
 		}
 		if err := flow.mqttClient.Subscribe(topic, 0, flow.mqttOnPublish); err != nil {
-			log.Warning(err.Error())
+			log.Warn(err.Error())
 		}
 	}
 
@@ -412,11 +412,11 @@ func (f *Flow) UpdateWorker(worker *m.Worker) (err error) {
 	f.Unlock()
 
 	if err = f.RemoveWorker(worker); err != nil {
-		log.Warningf("error: %s", err.Error())
+		log.Warnf("error: %s", err.Error())
 	}
 
 	if err = f.AddWorker(worker); err != nil {
-		log.Warningf("error: %s", err.Error())
+		log.Warnf("error: %s", err.Error())
 	}
 
 	return

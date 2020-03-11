@@ -19,11 +19,11 @@
 package orm
 
 import (
-	_ "github.com/lib/pq"
-	"github.com/jinzhu/gorm"
-	"time"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/graceful_service"
-	"github.com/op/go-logging"
+	"github.com/jinzhu/gorm"
+	_ "github.com/lib/pq"
+	"time"
 )
 
 type Orm struct {
@@ -32,7 +32,7 @@ type Orm struct {
 }
 
 var (
-	log = logging.MustGetLogger("orm")
+	log = common.MustGetLogger("orm")
 )
 
 func NewOrm(cfg *OrmConfig,
@@ -67,7 +67,7 @@ func NewOrm(cfg *OrmConfig,
 
 func (o *Orm) Shutdown() {
 	if o.db != nil {
-		log.Debugf("database shutdown")
+		log.Debug("database shutdown")
 		o.db.Close()
 	}
 }

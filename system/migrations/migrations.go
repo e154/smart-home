@@ -20,18 +20,18 @@ package migrations
 
 import (
 	"database/sql"
-	"os"
-	"github.com/op/go-logging"
-	"github.com/rubenv/sql-migrate"
-	. "github.com/e154/smart-home/system/migrations/assets"
-	"github.com/jinzhu/gorm"
-	"path"
 	"fmt"
+	"github.com/e154/smart-home/common"
+	. "github.com/e154/smart-home/system/migrations/assets"
 	"github.com/e154/smart-home/system/orm"
+	"github.com/jinzhu/gorm"
+	"github.com/rubenv/sql-migrate"
+	"os"
+	"path"
 )
 
 var (
-	log = logging.MustGetLogger("migrations")
+	log = common.MustGetLogger("migrations")
 )
 
 type Migrations struct {
@@ -110,7 +110,7 @@ func (m Migrations) Down() (err error) {
 
 func (m Migrations) Purge() (err error) {
 
-	log.Warningf("Purge database: %s", m.cfg.Name)
+	log.Warnf("Purge database: %s", m.cfg.Name)
 
 	if err = m.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		log.Error(err.Error())

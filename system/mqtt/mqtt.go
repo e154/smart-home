@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt/metric"
 	"github.com/e154/smart-home/system/mqtt/prometheus"
@@ -34,12 +35,11 @@ import (
 	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
-	"github.com/op/go-logging"
 	"net"
 )
 
 var (
-	log = logging.MustGetLogger("mqtt")
+	log = common.MustGetLogger("mqtt")
 )
 
 type Mqtt struct {

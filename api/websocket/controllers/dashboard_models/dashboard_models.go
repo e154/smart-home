@@ -18,10 +18,10 @@
 
 package dashboard_models
 
-import "github.com/op/go-logging"
+import "github.com/e154/smart-home/common"
 
 var (
-	log = logging.MustGetLogger("models")
+	log = common.MustGetLogger("models")
 )
 
 func bToMb(b uint64) uint64 {

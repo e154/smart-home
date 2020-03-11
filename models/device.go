@@ -69,7 +69,7 @@ func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 	case DevTypeDefault:
 
 	default:
-		log.Warningf("unknown device config %v", d.Type)
+		log.Warnf("unknown device config %v", d.Type)
 		return
 	}
 
@@ -148,7 +148,7 @@ func (d *Device) SetPropertiesFromMap(properties map[string]interface{}) (ok boo
 	case DevTypeMqtt:
 		out = &DevMqttConfig{}
 	default:
-		log.Warningf("unknown device config %v", d.Type)
+		log.Warnf("unknown device config %v", d.Type)
 		err = fmt.Errorf("unknown device config %v", d.Type)
 		return
 	}

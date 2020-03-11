@@ -19,10 +19,8 @@
 package workflow
 
 import (
-	"go.uber.org/dig"
-	l "github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/migrations"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/dig"
 	"os"
 	"path/filepath"
 	"testing"
@@ -41,11 +39,7 @@ var (
 func TestMain(m *testing.M) {
 
 	container = BuildContainer()
-	err := container.Invoke(func(migrations *migrations.Migrations,
-		lx *logrus.Logger,
-		back *l.LogBackend) {
-
-		l.Initialize(back)
+	err := container.Invoke(func(migrations *migrations.Migrations) {
 
 		time.Sleep(time.Millisecond * 500)
 

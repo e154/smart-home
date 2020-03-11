@@ -18,13 +18,19 @@
 
 package server
 
-import "github.com/op/go-logging"
+import "go.uber.org/zap"
 
 type ServerLogger struct {
-	Logger *logging.Logger
+	logger *zap.Logger
+}
+
+func NewLogger() *ServerLogger {
+	return &ServerLogger{
+		logger: zap.L(),
+	}
 }
 
 func (s ServerLogger) Write(b []byte) (i int, err error) {
-	s.Logger.Info(string(b))
+	s.logger.Info(string(b))
 	return
 }

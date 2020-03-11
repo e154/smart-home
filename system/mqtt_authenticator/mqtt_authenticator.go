@@ -24,11 +24,10 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
-	"github.com/op/go-logging"
 )
 
 var (
-	log = logging.MustGetLogger("mqtt_authenticator")
+	log = common.MustGetLogger("mqtt_authenticator")
 )
 
 var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")

@@ -20,15 +20,15 @@ package stream
 
 import (
 	"errors"
+	"github.com/e154/smart-home/common"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/op/go-logging"
 	"net/http"
 	"time"
 )
 
 var (
-	log        = logging.MustGetLogger("stream")
+	log        = common.MustGetLogger("stream")
 	wsupgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -80,7 +80,7 @@ func (w *StreamService) Ws(ctx *gin.Context) {
 
 	conn.SetReadDeadline(time.Now().Add(pongWait))
 	conn.SetPongHandler(func(string) error {
-		conn.SetReadDeadline(time.Now().Add(pongWait));
+		conn.SetReadDeadline(time.Now().Add(pongWait))
 		return nil
 	})
 
@@ -95,4 +95,3 @@ func (w *StreamService) Ws(ctx *gin.Context) {
 	go client.WritePump()
 	w.Hub.AddClient(client)
 }
-
