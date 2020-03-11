@@ -148,9 +148,9 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		deviceAdaptor := GetMapDeviceAdaptor(tx)
 		err = deviceAdaptor.Delete(oldVer.PrototypeId)
 	case common.PrototypeTypeEmpty:
-		log.Warning("empty prototype")
+		log.Warn("empty prototype")
 	default:
-		log.Warningf("unknown prototype: '%v'", oldVer.PrototypeType)
+		log.Warnf("unknown prototype: '%v'", oldVer.PrototypeType)
 	}
 
 	if err != nil {
@@ -204,7 +204,7 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 
 	default:
 		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
-		log.Warningf(err.Error())
+		log.Warnf(err.Error())
 	}
 
 	if err != nil {
@@ -251,7 +251,7 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 			err = deviceAdaptor.Delete(ver.PrototypeId)
 		default:
 			err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
-			log.Warningf(err.Error())
+			log.Warnf(err.Error())
 		}
 	}
 

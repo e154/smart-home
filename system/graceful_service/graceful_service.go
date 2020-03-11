@@ -19,14 +19,14 @@
 package graceful_service
 
 import (
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/common"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
 var (
-	log = logging.MustGetLogger("graceful_service")
+	log = common.MustGetLogger("graceful_service")
 )
 
 type GracefulService struct {
@@ -81,7 +81,6 @@ func (p GracefulService) Unsubscribe(id int) {
 	p.pool.unsubscribe(id)
 	return
 }
-
 
 func (p GracefulService) Shutdown() {
 	p.pool.shutdown()

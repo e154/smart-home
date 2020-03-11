@@ -21,16 +21,16 @@ package zigbee2mqtt
 import (
 	"context"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/op/go-logging"
 	"sync"
 )
 
 var (
-	log = logging.MustGetLogger("zigbee2mqtt")
+	log = common.MustGetLogger("zigbee2mqtt")
 )
 
 type Zigbee2mqtt struct {

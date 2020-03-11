@@ -20,8 +20,8 @@ package mqtt_client
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/common"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/op/go-logging"
 	"github.com/pkg/errors"
 	"strings"
 	"sync"
@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	log = logging.MustGetLogger("mqtt_client")
+	log = common.MustGetLogger("mqtt_client")
 )
 
 type Client struct {

@@ -19,14 +19,14 @@
 package adaptors
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/jinzhu/gorm"
-	"github.com/op/go-logging"
 )
 
 var (
-	log = logging.MustGetLogger("adaptors")
+	log = common.MustGetLogger("adaptors")
 )
 
 type Adaptors struct {

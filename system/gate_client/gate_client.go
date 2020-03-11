@@ -33,7 +33,6 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/op/go-logging"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -46,7 +45,7 @@ const (
 )
 
 var (
-	log = logging.MustGetLogger("gate")
+	log = common.MustGetLogger("gate")
 )
 
 type GateClient struct {
@@ -300,7 +299,7 @@ func (g *GateClient) _onMessage(msg stream.Message) {
 	if f, ok := g.subscribers[msg.Command]; ok {
 		f(g.wsClient, msg)
 	} else {
-		log.Warningf("unknown command %v", msg.Command)
+		log.Warnf("unknown command %v", msg.Command)
 	}
 }
 

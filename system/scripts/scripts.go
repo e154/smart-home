@@ -19,14 +19,14 @@
 package scripts
 
 import (
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/scripts/bind"
-	"github.com/op/go-logging"
 )
 
 var (
-	log = logging.MustGetLogger("scripts")
+	log = common.MustGetLogger("scripts")
 )
 
 type ScriptService struct {

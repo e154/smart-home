@@ -20,12 +20,12 @@ package email_service
 
 import (
 	"errors"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/common"
 	"gopkg.in/gomail.v2"
 )
 
 var (
-	log = logging.MustGetLogger("email")
+	log = common.MustGetLogger("email")
 )
 
 type EmailService struct {

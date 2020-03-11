@@ -53,12 +53,12 @@ func (c *ControllerAction) DoAction(client stream.IStreamClient, message stream.
 	var err error
 
 	if deviceActionId, ok = v["action_id"].(float64); !ok {
-		log.Warning("bad device_action_id param")
+		log.Warn("bad device_action_id param")
 		return
 	}
 
 	if deviceId, ok = v["device_id"].(float64); !ok {
-		log.Warning("bad device_id param")
+		log.Warn("bad device_id param")
 		return
 	}
 

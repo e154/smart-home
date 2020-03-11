@@ -19,13 +19,13 @@
 package slack
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/nlopes/slack"
-	"github.com/op/go-logging"
 	"github.com/pkg/errors"
 )
 
 var (
-	log = logging.MustGetLogger("slack")
+	log = common.MustGetLogger("slack")
 )
 
 type Slack struct {

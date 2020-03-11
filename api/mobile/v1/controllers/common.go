@@ -19,19 +19,19 @@
 package controllers
 
 import (
-	"github.com/op/go-logging"
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/endpoint"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/core"
 	"github.com/gin-gonic/gin"
 	"strconv"
-	"github.com/e154/smart-home/system/access_list"
-	m "github.com/e154/smart-home/models"
-	"fmt"
-	"github.com/e154/smart-home/endpoint"
 )
 
 var (
-	log = logging.MustGetLogger("controllers")
+	log = common.MustGetLogger("controllers")
 )
 
 type ControllerCommon struct {

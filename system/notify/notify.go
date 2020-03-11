@@ -21,16 +21,16 @@ package notify
 import (
 	"encoding/json"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/op/go-logging"
 	"time"
 )
 
 var (
-	log = logging.MustGetLogger("notify")
+	log = common.MustGetLogger("notify")
 )
 
 type Notify struct {

@@ -19,15 +19,15 @@
 package access_list
 
 import (
-	"io/ioutil"
 	"encoding/json"
-	"github.com/op/go-logging"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"io/ioutil"
 )
 
 var (
-	log = logging.MustGetLogger("access_list")
+	log = common.MustGetLogger("access_list")
 )
 
 type AccessListService struct {

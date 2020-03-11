@@ -19,9 +19,9 @@
 package db
 
 import (
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/common"
 )
 
 var (
-	log = logging.MustGetLogger("db")
+	log = common.MustGetLogger("db")
 )

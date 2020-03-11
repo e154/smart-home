@@ -226,7 +226,7 @@ func (e *Error) ValidationToErrors(errs []*validation.Error) *Error {
 		case "Range":
 			code = FieldRange
 		default:
-			log.Warningf("не известный тип валидации: %s", err.Name)
+			log.Warnf("не известный тип валидации: %s", err.Name)
 		}
 
 		limit, ok := err.LimitValue.(int)

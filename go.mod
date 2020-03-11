@@ -38,14 +38,12 @@ require (
 	github.com/messagebird/go-rest-api v5.3.1-0.20190815153316-f1a991ff10ee+incompatible
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/nlopes/slack v0.6.0
-	github.com/op/go-logging v0.0.0-20160211212156-b2cb9fa56473
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.5.0
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a
 	github.com/rubenv/sql-migrate v0.0.0-20180704111356-3f452fc0ebeb
 	github.com/sfreiberg/gotwilio v0.0.0-20191023035553-f6f740c7bffc
 	github.com/shirou/gopsutil v2.19.13-0.20200118023139-3964e5b57942+incompatible
-	github.com/sirupsen/logrus v1.4.2
 	github.com/smartystreets/assertions v1.0.1
 	github.com/smartystreets/goconvey v1.6.3
 	github.com/spf13/cobra v0.0.5
@@ -58,12 +56,12 @@ require (
 	go.uber.org/atomic v1.6.0
 	go.uber.org/dig v1.8.0
 	go.uber.org/multierr v1.5.0 // indirect
-	go.uber.org/zap v1.14.0 // indirect
+	go.uber.org/zap v1.14.0
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
+	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/sys v0.0.0-20200217220822-9197077df867 // indirect
-	golang.org/x/tools v0.0.0-20200308013534-11ec41452d41 // indirect
+	golang.org/x/tools v0.0.0-20200309202150-20ab64c0d93f // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20150902115704-41f357289737

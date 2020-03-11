@@ -21,17 +21,17 @@ package websocket
 import (
 	"github.com/e154/smart-home/adaptors"
 	. "github.com/e154/smart-home/api/websocket/controllers"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/graceful_service"
 	metrics2 "github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/op/go-logging"
 )
 
 var (
-	log = logging.MustGetLogger("websocket")
+	log = common.MustGetLogger("websocket")
 )
 
 type WebSocket struct {
@@ -56,7 +56,7 @@ func NewWebSocket(adaptors *adaptors.Adaptors,
 }
 
 func (s *WebSocket) Start() {
-	log.Infof("Serving websocket service")
+	log.Info("Serving websocket service")
 	s.Controllers.Start()
 }
 

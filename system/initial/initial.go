@@ -20,15 +20,15 @@ package initial
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/op/go-logging"
 )
 
 var (
-	log = logging.MustGetLogger("initial")
+	log = common.MustGetLogger("initial")
 )
 
 type InitialService struct {
@@ -58,7 +58,6 @@ func (n *InitialService) Reset() {
 
 	log.Info("complete")
 }
-
 
 func (n *InitialService) InstallDemoData() {
 
