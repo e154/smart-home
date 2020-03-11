@@ -20,8 +20,8 @@ package metric
 
 import (
 	"github.com/DrmagicE/gmqtt"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/metrics"
-	"github.com/e154/smart-home/system/logging"
 	atomic2 "go.uber.org/atomic"
 	"sync/atomic"
 	"time"

@@ -21,19 +21,21 @@ package logging
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/logging_db"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
+	"strings"
+	"sync"
 )
 
 type Logging struct {
 	logger     *zap.Logger
-	logDbSaver *logging_db.LogDbSaver
-	oldLog     *m.Log
+	logDbSaver *LogDbSaver
+	oldLogLock *sync.Mutex
+	oldLog     m.Log
 }
 
-func NewLogger(logDbSaver *logging_db.LogDbSaver) (logging *Logging) {
+func NewLogger(logDbSaver *LogDbSaver) (logging *Logging) {
 
 	// First, define our level-handling logic.
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
@@ -50,6 +52,9 @@ func NewLogger(logDbSaver *logging_db.LogDbSaver) (logging *Logging) {
 
 	config := zap.NewDevelopmentEncoderConfig()
 	config.EncodeTime = nil
+	config.EncodeLevel = CustomLevelEncoder
+	config.EncodeName = CustomNameEncoder
+	config.EncodeCaller = CustomCallerEncoder
 	consoleEncoder := zapcore.NewConsoleEncoder(config)
 
 	// Join the outputs, encoders, and level-handling functions into
@@ -61,10 +66,12 @@ func NewLogger(logDbSaver *logging_db.LogDbSaver) (logging *Logging) {
 
 	logging = &Logging{
 		logDbSaver: logDbSaver,
+		oldLogLock: &sync.Mutex{},
 	}
 
 	// From a zapcore.Core, it's easy to construct a Logger.
-	logger := zap.New(core, zap.AddCaller(), zap.Hooks(logging.selfSaver))
+	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.Hooks(logging.selfSaver))
+
 
 	zap.ReplaceGlobals(logger)
 
@@ -87,13 +94,14 @@ func (b *Logging) selfSaver(e zapcore.Entry) (err error) {
 		logLevel = "Debug"
 	}
 
-	if b.oldLog != nil {
-		if b.oldLog.Body == e.Message && b.oldLog.Level == logLevel {
-			return
-		}
+	b.oldLogLock.Lock()
+	defer b.oldLogLock.Unlock()
+
+	if b.oldLog.Body == e.Message && b.oldLog.Level == logLevel {
+		return
 	}
 
-	record := &m.Log{
+	record := m.Log{
 		Level:     logLevel,
 		Body:      e.Message,
 		CreatedAt: e.Time,
@@ -101,88 +109,27 @@ func (b *Logging) selfSaver(e zapcore.Entry) (err error) {
 
 	b.oldLog = record
 
-	b.logDbSaver.Save(*record)
+	b.logDbSaver.Save(record)
 
 	return nil
 }
 
-func (b *Logging) Infof(log string, fields ...zapcore.Field) {
-	zap.L().Info(log, fields...)
+func CustomLevelEncoder(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
+	s, ok := _levelToCapitalColorString[l]
+	if !ok {
+		s = _unknownLevelColor.Add(l.CapitalString())
+	}
+	enc.AppendString(s)
 }
 
-func (b *Logging) Info(log string, fields ...zapcore.Field) {
-	zap.L().Info(log, fields...)
+//TODO fix
+func CustomNameEncoder(v string, enc zapcore.PrimitiveArrayEncoder) {
+	var builder strings.Builder
+	builder.WriteString(White.Add(v))
+	builder.WriteString("                                      ")
+	enc.AppendString(builder.String()[0:25])
 }
 
-func (b *Logging) Debug(log string, fields ...zapcore.Field) {
-	zap.L().Debug(log, fields...)
-}
-
-func (b *Logging) Debugf(log string, fields ...zapcore.Field) {
-	zap.L().Debug(log, fields...)
-}
-
-func (b *Logging) Warn(log string, fields ...zapcore.Field) {
-	zap.L().Warn(log, fields...)
-}
-
-func (b *Logging) Warnf(log string, fields ...zapcore.Field) {
-	zap.L().Warn(log, fields...)
-}
-
-func (b *Logging) Error(log string, fields ...zapcore.Field) {
-	zap.L().Error(log, fields...)
-}
-
-func (b *Logging) Errorf(log string, fields ...zapcore.Field) {
-	zap.L().Error(log, fields...)
-}
-
-func (b *Logging) Panic(log string, fields ...zapcore.Field) {
-	zap.L().Panic(log, fields...)
-}
-
-func Info(log string, fields ...zapcore.Field) {
-	zap.L().Info(log, fields...)
-}
-
-func Debug(log string, fields ...zapcore.Field) {
-	zap.L().Debug(log, fields...)
-}
-
-func Warn(log string, fields ...zapcore.Field) {
-	zap.L().Warn(log, fields...)
-}
-
-func Error(log string, fields ...zapcore.Field) {
-	zap.L().Error(log, fields...)
-}
-
-func Panic(log string, fields ...zapcore.Field) {
-	zap.L().Panic(log, fields...)
-}
-
-
-func Infof(log string, fields ...zapcore.Field) {
-	zap.L().Info(log, fields...)
-}
-
-func Debugf(log string, fields ...zapcore.Field) {
-	zap.L().Debug(log, fields...)
-}
-
-func Warnf(log string, fields ...zapcore.Field) {
-	zap.L().Warn(log, fields...)
-}
-
-func Errorf(log string, fields ...zapcore.Field) {
-	zap.L().Error(log, fields...)
-}
-
-func Panicf(log string, fields ...zapcore.Field) {
-	zap.L().Panic(log, fields...)
-}
-
-func MustGetLogger(p string) *zap.Logger {
-	return zap.L()
+func CustomCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
+	enc.AppendString(caller.TrimmedPath() + " >")
 }

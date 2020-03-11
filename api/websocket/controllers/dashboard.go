@@ -115,11 +115,11 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 			body, ok = t.Mqtt.Broadcast()
 		case "map_element":
 		default:
-			log.Warningf("unknown type %v", v)
+			log.Warnf("unknown type %v", v)
 		}
 	case metrics.MapElementCursor:
 	default:
-		log.Warningf("unknown type %v", v)
+		log.Warnf("unknown type %v", v)
 	}
 
 	if !ok {

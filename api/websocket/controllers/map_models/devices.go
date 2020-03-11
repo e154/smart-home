@@ -20,9 +20,9 @@ package map_models
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/logging"
 )
 
 var (

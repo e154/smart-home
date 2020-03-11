@@ -29,7 +29,6 @@ import (
 	"github.com/e154/smart-home/system/stream"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
@@ -67,11 +66,11 @@ func (s *Server) Start() {
 	go func() {
 		// service connections
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal("listen: %s\n", zap.Field{Interface: err})
+			log.Fatalf("listen: %s", err.Error())
 		}
 	}()
 
-	log.Info("Serving server at http://[::]:%d", zap.Field{Interface: s.Config.Port})
+	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
 
 	go s.core.Run()
 }
@@ -102,7 +101,7 @@ func NewServer(cfg *ServerConfig,
 	streamService *stream.StreamService,
 	core *core.Core) (newServer *Server) {
 
-	logger := &ServerLogger{log}
+	logger := NewLogger()
 
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = logger

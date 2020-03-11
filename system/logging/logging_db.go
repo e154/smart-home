@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package logging_db
+package logging
 
 import (
 	"github.com/e154/smart-home/adaptors"

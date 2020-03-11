@@ -19,10 +19,10 @@
 package messagebird
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/messagebird/go-rest-api"
 	"github.com/messagebird/go-rest-api/balance"
 	"github.com/messagebird/go-rest-api/sms"
-	"github.com/e154/smart-home/system/logging"
 	"github.com/pkg/errors"
 )
 

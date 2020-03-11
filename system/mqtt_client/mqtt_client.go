@@ -20,8 +20,8 @@ package mqtt_client
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/common"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/e154/smart-home/system/logging"
 	"github.com/pkg/errors"
 	"strings"
 	"sync"

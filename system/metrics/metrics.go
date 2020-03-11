@@ -24,7 +24,6 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/graceful_service"
-	"github.com/e154/smart-home/system/logging"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"net/http/pprof"
@@ -112,7 +111,7 @@ func (m *MetricManager) Start() {
 	r.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", m.cfg.Host, m.cfg.Port), r); err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 }
 

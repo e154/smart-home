@@ -83,7 +83,7 @@ func (c *ControllerImage) RemoveImage(client stream.IStreamClient, message strea
 	fileId, ok := message.Payload["image_id"].(float64)
 	if !ok {
 		client.Notify("error", "image remove: bad image id request")
-		log.Warning("image remove: bad image id request")
+		log.Warn("image remove: bad image id request")
 		return
 	}
 

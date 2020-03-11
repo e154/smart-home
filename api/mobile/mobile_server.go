@@ -65,7 +65,7 @@ func (s *MobileServer) Start() {
 		s.gateClient.SetEngine(s.engine)
 	}()
 
-	log.Info("Serving server at http://[::]:%d", s.Config.Port)
+	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
 }
 
 func (s *MobileServer) Shutdown() {
@@ -90,7 +90,7 @@ func NewMobileServer(cfg *MobileServerConfig,
 	streamService *stream.StreamService,
 	gateClient *gate_client.GateClient) (newServer *MobileServer) {
 
-	logger := &MobileServerLogger{log}
+	logger := NewLogger()
 
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = logger

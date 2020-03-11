@@ -20,7 +20,7 @@ package email_service
 
 import (
 	"errors"
-	"github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/common"
 	"gopkg.in/gomail.v2"
 )
 

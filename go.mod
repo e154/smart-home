@@ -38,14 +38,12 @@ require (
 	github.com/messagebird/go-rest-api v5.3.1-0.20190815153316-f1a991ff10ee+incompatible
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/nlopes/slack v0.6.0
-	github.com/op/go-logging v0.0.0-20160211212156-b2cb9fa56473
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.5.0
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a
 	github.com/rubenv/sql-migrate v0.0.0-20180704111356-3f452fc0ebeb
 	github.com/sfreiberg/gotwilio v0.0.0-20191023035553-f6f740c7bffc
 	github.com/shirou/gopsutil v2.19.13-0.20200118023139-3964e5b57942+incompatible
-	github.com/sirupsen/logrus v1.4.2
 	github.com/smartystreets/assertions v1.0.1
 	github.com/smartystreets/goconvey v1.6.3
 	github.com/spf13/cobra v0.0.5

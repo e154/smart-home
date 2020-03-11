@@ -67,7 +67,6 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(migrations.NewMigrations)
 	container.Provide(migrations.NewMigrationsConfig)
 	container.Provide(adaptors.NewAdaptors)
-	container.Provide(logging.NewLogrus)
 	container.Provide(scripts.NewScriptService)
 	container.Provide(core.NewCron)
 	container.Provide(initial.NewInitialService)
@@ -80,8 +79,6 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(rbac.NewAccessFilter)
 	container.Provide(stream.NewStreamService)
 	container.Provide(stream.NewHub)
-	container.Provide(logging.NewLogBackend)
-	container.Provide(logging.NewLogDbSaver)
 	container.Provide(endpoint.NewEndpoint)
 	container.Provide(gate_client.NewGateClient)
 	container.Provide(notify.NewNotify)
@@ -89,6 +86,8 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(metrics.NewMetricConfig)
 	container.Provide(zigbee2mqtt.NewZigbee2mqttConfig)
 	container.Provide(zigbee2mqtt.NewZigbee2mqtt)
+	container.Provide(logging.NewLogger)
+	container.Provide(logging.NewLogDbSaver)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()

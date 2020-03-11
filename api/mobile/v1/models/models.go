@@ -18,7 +18,7 @@
 
 package models
 
-import "github.com/e154/smart-home/system/logging"
+import "github.com/e154/smart-home/common"
 
 var (
 	log = common.MustGetLogger("models")

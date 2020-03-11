@@ -20,8 +20,7 @@ package prometheus
 
 import (
 	"context"
-	"github.com/e154/smart-home/system/logging"
-
+	"github.com/e154/smart-home/common"
 	"net/http"
 	"sync/atomic"
 

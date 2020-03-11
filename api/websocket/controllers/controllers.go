@@ -20,12 +20,12 @@ package controllers
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/core"
 	metrics2 "github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/e154/smart-home/system/logging"
 )
 
 var (

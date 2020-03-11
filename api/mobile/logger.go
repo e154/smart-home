@@ -18,13 +18,19 @@
 
 package mobile
 
-import "github.com/e154/smart-home/system/logging"
+import "go.uber.org/zap"
 
 type MobileServerLogger struct {
-	Logger *logging.Logging
+	logger *zap.Logger
+}
+
+func NewLogger() *MobileServerLogger {
+	return &MobileServerLogger{
+		logger: zap.L(),
+	}
 }
 
 func (s MobileServerLogger) Write(b []byte) (i int, err error) {
-	s.Logger.Info(string(b))
+	s.logger.Info(string(b))
 	return
 }

@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
-	"go.uber.org/zap"
 	"os"
 	"os/exec"
 	"path"
@@ -98,7 +97,7 @@ func (b *Backup) List() (list []string) {
 }
 
 func (b *Backup) Restore(name string) (err error) {
-	log.Info("restore: %s", zap.Field{String: name})
+	log.Infof("restore: %s", name)
 
 	file := path.Join(b.cfg.Path, name)
 

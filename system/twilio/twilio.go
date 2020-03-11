@@ -22,7 +22,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/common"
 	"github.com/pkg/errors"
 	"github.com/sfreiberg/gotwilio"
 	"net/http"

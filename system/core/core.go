@@ -316,7 +316,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 	}
 
 	if workflow.Scenario == nil {
-		log.Warningf("No selected scenario for workflow: '%s', exiting...", workflow.Name)
+		log.Warnf("No selected scenario for workflow: '%s', exiting...", workflow.Name)
 		return
 	}
 

@@ -35,7 +35,6 @@ import (
 	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
-	"github.com/e154/smart-home/system/logging"
 	"net"
 )
 

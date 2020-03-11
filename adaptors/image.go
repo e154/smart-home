@@ -27,7 +27,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
 	"github.com/t-tiger/gorm-bulk-insert"
-	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"os"
@@ -114,7 +113,7 @@ func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (err error) {
 	}
 
 	contentType := http.DetectContentType(buffer.Bytes())
-	log.Info("Content-type from buffer, %s", zap.Field{Interface: contentType})
+	log.Infof("Content-type from buffer, %s", contentType)
 
 	//------
 	// rename & save

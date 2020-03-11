@@ -23,7 +23,6 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
-	"go.uber.org/zap"
 	"time"
 )
 
@@ -39,7 +38,7 @@ var (
 func NewOrm(cfg *OrmConfig,
 	graceful *graceful_service.GracefulService) (orm *Orm, db *gorm.DB) {
 
-	log.Debug("database connect %s", zap.Field{String: cfg.String()})
+	log.Debugf("database connect %s", cfg.String())
 	var err error
 	db, err = gorm.Open("postgres", cfg.String())
 	if err != nil {

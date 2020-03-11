@@ -51,7 +51,7 @@ func (c *ControllerWorker) DoWorker(client stream.IStreamClient, message stream.
 	var err error
 
 	if workerId, ok = v["worker_id"].(float64); !ok {
-		log.Warning("bad id param")
+		log.Warn("bad id param")
 		return
 	}
 

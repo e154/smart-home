@@ -19,8 +19,8 @@
 package slack
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/nlopes/slack"
-	"github.com/e154/smart-home/system/logging"
 	"github.com/pkg/errors"
 )
 
