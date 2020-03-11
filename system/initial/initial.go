@@ -24,11 +24,11 @@ import (
 	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 )
 
 var (
-	log = logging.MustGetLogger("initial")
+	log = common.MustGetLogger("initial")
 )
 
 type InitialService struct {

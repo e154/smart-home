@@ -20,16 +20,16 @@ package controllers
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
 	metrics2 "github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/op/go-logging"
 )
 
 var (
-	log = logging.MustGetLogger("gate.controllers")
+	log = common.MustGetLogger("gate.controllers")
 )
 
 type Controllers struct {

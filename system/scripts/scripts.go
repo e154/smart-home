@@ -22,11 +22,11 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/scripts/bind"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 )
 
 var (
-	log = logging.MustGetLogger("scripts")
+	log = common.MustGetLogger("scripts")
 )
 
 type ScriptService struct {

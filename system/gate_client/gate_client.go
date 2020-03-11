@@ -33,7 +33,7 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -46,7 +46,7 @@ const (
 )
 
 var (
-	log = logging.MustGetLogger("gate")
+	log = common.MustGetLogger("gate")
 )
 
 type GateClient struct {

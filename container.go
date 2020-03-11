@@ -35,6 +35,7 @@ import (
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/system/logging_db"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
@@ -68,7 +69,6 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(migrations.NewMigrations)
 	container.Provide(migrations.NewMigrationsConfig)
 	container.Provide(adaptors.NewAdaptors)
-	container.Provide(logging.NewLogrus)
 	container.Provide(scripts.NewScriptService)
 	container.Provide(core.NewCron)
 	container.Provide(initial.NewInitialService)
@@ -81,8 +81,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(rbac.NewAccessFilter)
 	container.Provide(stream.NewStreamService)
 	container.Provide(stream.NewHub)
-	container.Provide(logging.NewLogBackend)
-	container.Provide(logging.NewLogDbSaver)
+	container.Provide(logging_db.NewLogDbSaver)
 	container.Provide(endpoint.NewEndpoint)
 	container.Provide(gate_client.NewGateClient)
 	container.Provide(notify.NewNotify)
@@ -91,6 +90,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(zigbee2mqtt.NewZigbee2mqttConfig)
 	container.Provide(zigbee2mqtt.NewZigbee2mqtt)
 	container.Provide(gate.NewGate)
+	container.Provide(logging.NewLogger)
 
 	return
 }

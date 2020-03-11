@@ -22,12 +22,12 @@ import (
 	"github.com/messagebird/go-rest-api"
 	"github.com/messagebird/go-rest-api/balance"
 	"github.com/messagebird/go-rest-api/sms"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 	"github.com/pkg/errors"
 )
 
 var (
-	log = logging.MustGetLogger("message bird")
+	log = common.MustGetLogger("message bird")
 )
 
 type MBClient struct {

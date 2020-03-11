@@ -22,13 +22,13 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 	"net/http"
 	"time"
 )
 
 var (
-	log        = logging.MustGetLogger("stream")
+	log        = common.MustGetLogger("stream")
 	wsupgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,

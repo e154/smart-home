@@ -22,19 +22,20 @@ import (
 	"context"
 	"fmt"
 	"github.com/e154/smart-home/api/server/v1/controllers"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/op/go-logging"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
 
 var (
-	log = logging.MustGetLogger("server")
+	log = common.MustGetLogger("server")
 )
 
 type Server struct {
@@ -66,11 +67,11 @@ func (s *Server) Start() {
 	go func() {
 		// service connections
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			log.Fatal("listen: %s\n", zap.Field{Interface: err})
 		}
 	}()
 
-	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
+	log.Info("Serving server at http://[::]:%d", zap.Field{Interface: s.Config.Port})
 
 	go s.core.Run()
 }

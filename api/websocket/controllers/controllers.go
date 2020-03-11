@@ -25,11 +25,11 @@ import (
 	metrics2 "github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 )
 
 var (
-	log = logging.MustGetLogger("stream.controllers")
+	log = common.MustGetLogger("stream.controllers")
 )
 
 type Controllers struct {

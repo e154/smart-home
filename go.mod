@@ -58,12 +58,12 @@ require (
 	go.uber.org/atomic v1.6.0
 	go.uber.org/dig v1.8.0
 	go.uber.org/multierr v1.5.0 // indirect
-	go.uber.org/zap v1.14.0 // indirect
+	go.uber.org/zap v1.14.0
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
+	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/sys v0.0.0-20200217220822-9197077df867 // indirect
-	golang.org/x/tools v0.0.0-20200308013534-11ec41452d41 // indirect
+	golang.org/x/tools v0.0.0-20200309202150-20ab64c0d93f // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20150902115704-41f357289737

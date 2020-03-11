@@ -21,16 +21,17 @@ package metrics
 import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/graceful_service"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"net/http/pprof"
 )
 
 var (
-	log = logging.MustGetLogger("metrics")
+	log = common.MustGetLogger("metrics")
 )
 
 type MetricManager struct {

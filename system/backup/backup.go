@@ -19,19 +19,20 @@
 package backup
 
 import (
-	"fmt"
-	"os/exec"
-	"os"
-	"path/filepath"
-	"path"
-	"github.com/jinzhu/gorm"
-	"time"
 	"errors"
-	"github.com/op/go-logging"
+	"fmt"
+	"github.com/e154/smart-home/common"
+	"github.com/jinzhu/gorm"
+	"go.uber.org/zap"
+	"os"
+	"os/exec"
+	"path"
+	"path/filepath"
+	"time"
 )
 
 var (
-	log = logging.MustGetLogger("backup")
+	log = common.MustGetLogger("backup")
 )
 
 type Backup struct {
@@ -97,7 +98,7 @@ func (b *Backup) List() (list []string) {
 }
 
 func (b *Backup) Restore(name string) (err error) {
-	log.Infof("restore: %s", name)
+	log.Info("restore: %s", zap.Field{String: name})
 
 	file := path.Join(b.cfg.Path, name)
 
@@ -184,7 +185,6 @@ func (b Backup) dumpOptions() []string {
 
 	return options
 }
-
 
 func (b Backup) restoreOptions() []string {
 	options := b.Options

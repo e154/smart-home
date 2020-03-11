@@ -18,7 +18,7 @@
 
 package server
 
-import "github.com/op/go-logging"
+import "github.com/e154/smart-home/system/logging"
 
 type ServerLogger struct {
 	Logger *logging.Logger

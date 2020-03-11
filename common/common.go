@@ -20,8 +20,9 @@ package common
 
 import (
 	"crypto/md5"
-	"encoding/hex"
 	crypto_rand "crypto/rand"
+	"encoding/hex"
+	"go.uber.org/zap"
 	"math/rand"
 	"time"
 )
@@ -61,4 +62,8 @@ func RandomString(l int) string {
 		bytes[i] = byte(RandInt(65, 129))
 	}
 	return string(bytes)
+}
+
+func MustGetLogger(p string) *zap.Logger {
+	return zap.L()
 }

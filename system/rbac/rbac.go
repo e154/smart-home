@@ -28,14 +28,14 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/gin-gonic/gin"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
 var (
-	log = logging.MustGetLogger("rbac")
+	log = common.MustGetLogger("rbac")
 )
 
 type AccessFilter struct {

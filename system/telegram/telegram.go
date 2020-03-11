@@ -21,12 +21,12 @@ package telegram
 import (
 	"github.com/Syfaro/telegram-bot-api"
 	"github.com/e154/smart-home/common"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 	"github.com/pkg/errors"
 )
 
 var (
-	log = logging.MustGetLogger("telegram")
+	log = common.MustGetLogger("telegram")
 )
 
 type Telegram struct {

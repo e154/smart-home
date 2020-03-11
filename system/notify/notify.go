@@ -25,12 +25,12 @@ import (
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 	"time"
 )
 
 var (
-	log = logging.MustGetLogger("notify")
+	log = common.MustGetLogger("notify")
 )
 
 type Notify struct {

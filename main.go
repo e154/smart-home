@@ -24,19 +24,19 @@ import (
 	"github.com/e154/smart-home/api/mobile"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/websocket"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
-	l "github.com/e154/smart-home/system/logging"
+	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"github.com/e154/smart-home/version"
-	"github.com/op/go-logging"
 	"os"
 )
 
 var (
-	log = logging.MustGetLogger("main")
+	log = common.MustGetLogger("main")
 )
 
 func main() {
@@ -109,15 +109,14 @@ func start() {
 	container := BuildContainer()
 	err := container.Invoke(func(server *server.Server,
 		graceful *graceful_service.GracefulService,
-		back *l.LogBackend,
 		initialService *initial.InitialService,
 		wsApi *websocket.WebSocket,
 		mobileServer *mobile.MobileServer,
 		metric *metrics.MetricManager,
 		zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
-		gateApi *gate.Gate) {
+		gateApi *gate.Gate,
+		logger *logging.Logging) {
 
-		l.Initialize(back)
 		go server.Start()
 		go mobileServer.Start()
 		go wsApi.Start()

@@ -18,10 +18,10 @@
 
 package mobile
 
-import "github.com/op/go-logging"
+import "github.com/e154/smart-home/system/logging"
 
 type MobileServerLogger struct {
-	Logger *logging.Logger
+	Logger *logging.Logging
 }
 
 func (s MobileServerLogger) Write(b []byte) (i int, err error) {

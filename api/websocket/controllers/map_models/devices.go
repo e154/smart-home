@@ -22,11 +22,11 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 )
 
 var (
-	log = logging.MustGetLogger("map_models")
+	log = common.MustGetLogger("map_models")
 )
 
 type Devices struct {

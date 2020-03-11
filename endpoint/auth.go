@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -96,7 +97,7 @@ func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, 
 		return
 	}
 
-	log.Infof("Successful login, user: %s", user.Email)
+	log.Info("Successful login, user: %s", zap.Field{String: user.Email})
 
 	return
 }

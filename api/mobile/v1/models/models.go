@@ -18,8 +18,8 @@
 
 package models
 
-import "github.com/op/go-logging"
+import "github.com/e154/smart-home/system/logging"
 
 var (
-	log = logging.MustGetLogger("models")
+	log = common.MustGetLogger("models")
 )

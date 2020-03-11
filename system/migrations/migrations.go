@@ -20,18 +20,18 @@ package migrations
 
 import (
 	"database/sql"
-	"os"
-	"github.com/op/go-logging"
-	"github.com/rubenv/sql-migrate"
-	. "github.com/e154/smart-home/system/migrations/assets"
-	"github.com/jinzhu/gorm"
-	"path"
 	"fmt"
+	"github.com/e154/smart-home/common"
+	. "github.com/e154/smart-home/system/migrations/assets"
 	"github.com/e154/smart-home/system/orm"
+	"github.com/jinzhu/gorm"
+	"github.com/rubenv/sql-migrate"
+	"os"
+	"path"
 )
 
 var (
-	log = logging.MustGetLogger("migrations")
+	log = common.MustGetLogger("migrations")
 )
 
 type Migrations struct {

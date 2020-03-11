@@ -20,7 +20,7 @@ package prometheus
 
 import (
 	"context"
-	"github.com/op/go-logging"
+	"github.com/e154/smart-home/system/logging"
 
 	"net/http"
 	"sync/atomic"
@@ -33,7 +33,7 @@ import (
 )
 
 var (
-	log = logging.MustGetLogger("prometheus")
+	log = common.MustGetLogger("prometheus")
 )
 
 const name = "prometheus"

@@ -21,17 +21,17 @@ package gate
 import (
 	"github.com/e154/smart-home/adaptors"
 	. "github.com/e154/smart-home/api/gate/controllers"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/op/go-logging"
 )
 
 var (
-	log = logging.MustGetLogger("gate")
+	log = common.MustGetLogger("gate")
 )
 
 type Gate struct {
@@ -56,7 +56,7 @@ func NewGate(adaptors *adaptors.Adaptors,
 }
 
 func (s *Gate) Start() {
-	log.Infof("Serving gate websocket service")
+	log.Info("Serving gate websocket service")
 	s.graceful.Subscribe(s)
 
 	s.Controllers.Start()

@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/graceful_service"
@@ -30,12 +31,11 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
-	"github.com/op/go-logging"
 	"sync"
 )
 
 var (
-	log = logging.MustGetLogger("core")
+	log = common.MustGetLogger("core")
 )
 
 type Core struct {
