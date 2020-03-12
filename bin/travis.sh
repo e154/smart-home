@@ -28,6 +28,9 @@ EXEC="server"
 TMP_DIR="${ROOT}/tmp/${EXEC}"
 ARCHIVE="smart-home-${EXEC}.tar.gz"
 
+VERSION_VALUE="$(git describe --always --dirty --tags 2>/dev/null)"
+
+
 #
 # docker params
 #
@@ -49,7 +52,6 @@ GENERATED_VAR="${PACKAGE}/version.GeneratedString"
 DEVELOPERS_VAR="${PACKAGE}/version.DevelopersString"
 BUILD_NUMBER_VAR="${PACKAGE}/version.BuildNumString"
 DOCKER_IMAGE_VAR="${PACKAGE}/version.DockerImageString"
-VERSION_VALUE="$(git describe --always --dirty --tags 2>/dev/null)"
 REV_VALUE="$(git rev-parse HEAD 2> /dev/null || echo "???")"
 REV_URL_VALUE="https://${PACKAGE}/commit/${REV_VALUE}"
 GENERATED_VALUE="$(date -u +'%Y-%m-%dT%H:%M:%S%z')"
