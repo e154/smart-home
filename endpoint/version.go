@@ -33,9 +33,9 @@ func NewVersionEndpoint(common *CommonEndpoint) *VersionEndpoint {
 	}
 }
 
-func (v *VersionEndpoint) ServerVersion() (ver *m.Version) {
+func (v *VersionEndpoint) ServerVersion() (ver m.Version) {
 
-	ver = &m.Version{
+	ver = m.Version{
 		Version:     version.VersionString,
 		Revision:    version.RevisionString,
 		RevisionURL: version.RevisionURLString,
