@@ -228,7 +228,9 @@ func client(cmd *cobra.Command, args []string) {
 	}
 
 	for _, t := range clientTopics {
-		c.Subscribe(t, 0, onPublish)
+		if err := c.Subscribe(t, 0, onPublish); err != nil {
+			log.Fatalln(err.Error())
+		}
 	}
 
 	<-done

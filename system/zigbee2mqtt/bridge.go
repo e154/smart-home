@@ -91,7 +91,7 @@ func (g *Bridge) Start() {
 			PingTimeout:    5,
 			ConnectTimeout: 5,
 			Qos:            0,
-			CleanSession:   true,
+			CleanSession:   false,
 			ClientID:       mqtt_client.ClientIdGen("zigbee2mqtt", g.model.Id),
 		}
 

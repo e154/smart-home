@@ -111,7 +111,7 @@ func NewFlow(model *m.Flow,
 		PingTimeout:    5,
 		ConnectTimeout: 5,
 		Qos:            0,
-		CleanSession:   true,
+		CleanSession:   false,
 		ClientID:       mqtt_client.ClientIdGen("flow", model.Id),
 	}
 
