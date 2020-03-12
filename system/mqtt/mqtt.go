@@ -117,7 +117,7 @@ func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err er
 			PingTimeout:    5,
 			ConnectTimeout: 5,
 			Qos:            0,
-			CleanSession:   true,
+			CleanSession:   false,
 		}
 	}
 

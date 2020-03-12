@@ -80,6 +80,7 @@ func (c *Client) Connect() (err error) {
 
 	if token := c.client.Connect(); token.Wait() && token.Error() != nil {
 		log.Error(token.Error().Error())
+		err = token.Error()
 	}
 
 	return
@@ -123,8 +124,7 @@ func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler)
 	}
 
 	if token := c.client.Subscribe(topic, qos, callback); token.Wait() && token.Error() != nil {
-		log.Error(token.Error().Error())
-		return token.Error()
+		err = token.Error()
 	}
 	return
 }

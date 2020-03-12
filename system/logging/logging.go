@@ -84,7 +84,7 @@ func (b *Logging) selfSaver(e zapcore.Entry) (err error) {
 
 	var logLevel common.LogLevel
 	switch e.Level {
-	case zapcore.ErrorLevel:
+	case zapcore.ErrorLevel, zapcore.FatalLevel:
 		logLevel = "Error"
 	case zapcore.WarnLevel:
 		logLevel = "Warning"
@@ -92,6 +92,8 @@ func (b *Logging) selfSaver(e zapcore.Entry) (err error) {
 		logLevel = "Info"
 	case zapcore.DebugLevel:
 		logLevel = "Debug"
+	default:
+		logLevel = "Warning"
 	}
 
 	b.oldLogLock.Lock()
