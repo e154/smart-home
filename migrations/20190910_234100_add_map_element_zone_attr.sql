@@ -9,7 +9,7 @@ CREATE UNIQUE INDEX name_at_zone_tags_unq
     ON zone_tags (name);
 
 ALTER TABLE map_elements
-    ADD COLUMN IF NOT EXISTS zone_id BIGINT NULL;
+    ADD COLUMN zone_id BIGINT NULL;
 
 ALTER TABLE map_elements
     ADD CONSTRAINT map_elements_2_zone_tags_fk FOREIGN KEY (zone_id)

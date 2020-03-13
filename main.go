@@ -50,6 +50,7 @@ func main() {
 		case "-backup":
 			container := BuildContainer()
 			container.Invoke(func(
+				logger *logging.Logging,
 				backup *backup.Backup,
 				graceful *graceful_service.GracefulService) {
 
@@ -67,6 +68,7 @@ func main() {
 			}
 			container := BuildContainer()
 			container.Invoke(func(
+				logger *logging.Logging,
 				backup *backup.Backup,
 				graceful *graceful_service.GracefulService) {
 
@@ -80,6 +82,7 @@ func main() {
 		case "-reset":
 			container := BuildContainer()
 			container.Invoke(func(
+				logger *logging.Logging,
 				initialService *initial.InitialService) {
 
 				initialService.Reset()
@@ -88,6 +91,7 @@ func main() {
 		case "-demo":
 			container := BuildContainer()
 			container.Invoke(func(
+				logger *logging.Logging,
 				initialService *initial.InitialService) {
 
 				initialService.InstallDemoData()
