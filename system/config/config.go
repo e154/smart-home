@@ -23,15 +23,16 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"strconv"
 	"time"
 )
 
-const path = "conf/config.json"
+const filenName = "config.json"
 
 func ReadConfig() (conf *AppConfig, err error) {
 	var file []byte
-	file, err = ioutil.ReadFile(path)
+	file, err = ioutil.ReadFile(path.Join("conf", filenName))
 	if err != nil {
 		log.Fatal("Error reading config file")
 		return
