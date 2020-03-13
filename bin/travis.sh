@@ -108,6 +108,7 @@ __init() {
     mkdir -p ${TMP_DIR}
     cd ${ROOT}
     go mod vendor
+    cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
 }
 
 __clean() {
@@ -194,7 +195,6 @@ __build() {
     cp ${ROOT}/api/server/v1/docs/swagger/swagger.yaml ${TMP_DIR}/api/server/v1/docs/swagger/
 
     cp -r ${ROOT}/conf ${TMP_DIR}
-    cp ${ROOT}/conf/config.dev.json ${TMP_DIR}/conf/config.json
     cp -r ${ROOT}/data ${TMP_DIR}
     cp -r ${ROOT}/snapshots ${TMP_DIR}
     cp ${ROOT}/LICENSE ${TMP_DIR}
