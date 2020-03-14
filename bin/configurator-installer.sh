@@ -91,18 +91,11 @@ __install_default_settings() {
 
     cd ${INSTALL_DIR}/configurator
 
-    file="${INSTALL_DIR}/configurator/conf/app.conf"
+    file="${INSTALL_DIR}/configurator/conf/config.json"
     if [ ! -f "$file" ]; then
         log "Create file $file"
-        sed 's/dev\/app.conf/prod\/app.conf/' ${INSTALL_DIR}/configurator/conf/app.sample.conf > $file
+        cp ${INSTALL_DIR}/configurator/conf/config.dev.json $file
     fi
-
-    file="${INSTALL_DIR}/configurator/conf/prod/app.conf"
-    if [ ! -f "$file" ]; then
-        log "Create file $file"
-        cp ${INSTALL_DIR}/configurator/conf/prod/app.sample.conf $file
-    fi
-
 }
 
 __install_main() {

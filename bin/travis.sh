@@ -85,6 +85,9 @@ main() {
     --build)
     __build
     ;;
+    --host-build)
+    __host_build
+    ;;
     --docker_deploy)
     __docker_deploy
     ;;
@@ -214,6 +217,18 @@ __build() {
 
     # create arch
     tar -zcf ${HOME}/${ARCHIVE} .
+}
+
+__host_build() {
+
+    OUTPUT="server-linux-amd64"
+
+    echo ""
+    echo "build command:"
+    echo "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags '${GOBUILD_LDFLAGS}' -o ${OUTPUT}"
+    echo ""
+
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "${GOBUILD_LDFLAGS}" -o ${OUTPUT}
 }
 
 __docker_deploy() {

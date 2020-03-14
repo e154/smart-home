@@ -28,11 +28,11 @@ OS_ARCH="unknown"
 UNAME=`which uname`
 
 if [ -z "$UNAME" ]; then
-  message "Required tools are missing - check beginning of \"$0\" file for details."
+#  message "Required tools are missing - check beginning of \"$0\" file for details."
   exit 1
 fi
 
-cd ${BASEDIR}
+#cd ${BASEDIR}
 
 main() {
 

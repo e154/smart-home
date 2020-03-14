@@ -91,18 +91,11 @@ __install_default_settings() {
 
     cd ${INSTALL_DIR}/gate
 
-    file="${INSTALL_DIR}/gate/conf/app.conf"
+    file="${INSTALL_DIR}/gate/conf/config.json"
     if [ ! -f "$file" ]; then
         log "Create file $file"
-        sed 's/dev\/app.conf/prod\/app.conf/' ${INSTALL_DIR}/gate/conf/app.sample.conf > $file
+        cp ${INSTALL_DIR}/gate/conf/config.dev.json $file
     fi
-
-    file="${INSTALL_DIR}/gate/conf/prod/app.conf"
-    if [ ! -f "$file" ]; then
-        log "Create file $file"
-        cp ${INSTALL_DIR}/gate/conf/prod/app.sample.conf $file
-    fi
-
 }
 
 __install_main() {
