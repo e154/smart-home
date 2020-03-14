@@ -183,6 +183,28 @@ cp node /opt/smart-home/node
 cp -r conf /opt/smart-home/node
 </code></pre>
 
+<h3 id="возможные-ошибки">Возможные ошибки</h3>
+
+<p>Линук системы не позволяют использовать tcp порты ниже 1024</p>
+
+<pre><code class="language-bash">Failed to Listen: listen tcp :502: bind: permission denied
+</code></pre>
+
+<p>для обхожа этого ограничения выполните команду</p>
+
+<pre><code class="language-bash">setcap 'cap_net_bind_service=+ep'  /opt/smart-home/server/server
+</code></pre>
+
+<p>Закрытые порты</p>
+
+<pre><code class="language-bash">'Error: Error: Permission denied, cannot open /dev/ttyACM0'
+</code></pre>
+
+<p>решается:</p>
+
+<pre><code class="language-bash">sudo chmod a+rw /dev/ttyACM0
+</code></pre>
+
                         
                     </div>
 
