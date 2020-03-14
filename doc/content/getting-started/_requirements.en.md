@@ -74,6 +74,13 @@ groups:
         <a id="smart-home-node" href="https://github.com/e154/smart-home-node/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
     </div>
 </div>
+<div class="row download-block">
+  <div class="col-md-12 download-item text-center">
+        <h3>Шлюз</h3>
+        <p class="text-muted">Позволяет получить доступ к програмному комплексу из сети интернет, даже если он за динамическими ip адресом</p>
+        <a id="smart-home-configurator" href="https://github.com/e154/smart-home-gate/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+    </div>
+</div>
 
 <h2 id="whats-included">Что входит в пакеты</h2>
 
@@ -85,7 +92,6 @@ groups:
 ├── conf
 ├── contributors.txt
 ├── data
-├── dump.sql
 ├── LICENSE
 ├── README.md
 ├── server-darwin-10.6-386
@@ -105,7 +111,6 @@ groups:
 *   **conf** - директория конфигурационных файлов
 *   **contributors.txt** - текстовый файл, список разработчиков системы умный дом
 *   **data** - директория хранения рабочих файлов иконки, изображения
-*   **dump.sql** - дамп sql базы данных
 *   **LICENSE** - текстовый файл лицензионного соглашения
 *   **README.md** - текстовый файл краткой вводной информации
 *   **server** - Платформо зависимый исполняемый файл

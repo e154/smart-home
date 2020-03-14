@@ -91,10 +91,10 @@ __install_default_settings() {
 
     cd ${INSTALL_DIR}/node
 
-    file="${INSTALL_DIR}/node/conf/node.conf"
+    file="${INSTALL_DIR}/node/conf/config.json"
     if [ ! -f "$file" ]; then
         log "Create file $file"
-        cp ${INSTALL_DIR}/node/conf/node.sample.conf $file
+        cp ${INSTALL_DIR}/node/conf/config.dev.json $file
     fi
 
 }

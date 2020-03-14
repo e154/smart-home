@@ -1,0 +1,18 @@
+[Unit]
+Description=Smart home server
+After=multi-user.target
+Requires=postgresql.service
+
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/opt/smart-home/server
+ExecStart=/opt/smart-home/server/server
+
+User=smart_home
+Group=smart_home
+
+
+[Install]
+WantedBy=multi-user.target
