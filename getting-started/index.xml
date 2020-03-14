@@ -72,9 +72,11 @@ delta54@darkstar:tmp$ uname -a Linux darkstar 3.16.0-4-amd64 #1 SMP Debian 3.16.
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://e154.github.io/smart-home/getting-started/_service/</guid>
-      <description>Автозапуск Чтобы прописать сервис в автозагрузку запустить исполняемый файл с флагом install, к примеру:
-cd /opt/smart-home/server/ sudo ./server-linux-amd64 install  Для удаления сервиса из автозагрузки запустить файл с флагом remove, к примеру:
-cd /opt/smart-home/server/ sudo ./server-linux-amd64 remove  </description>
+      <description>Автозапуск Для автозапуска сервисов server, node, или gate нужно воспользоваться инструментарием используемой операционной операционной системы. С каждым сервисом поставляется конфигурационный файл smart-home-server.service unit для запуска в среде systemd.
+так выглядит unit для сервера
+[Unit] Description=Smart home server After=multi-user.target Requires=postgresql.service [Service] Type=simple Restart=always WorkingDirectory=/opt/smart-home/server ExecStart=/opt/smart-home/server/server User=smart_home Group=smart_home [Install] WantedBy=multi-user.target  команды для регистрации сервера в systemd
+cudo cp /opt/smart-home/server/conf/smart-home-server.service /lib/systemd/system sudo systemctl daemon-reload systemctl enable smart-home-server  запуска сервера
+systemctl start smart-home-server  остановка сервера</description>
     </item>
     
     <item>

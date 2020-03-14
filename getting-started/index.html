@@ -253,6 +253,13 @@
         <a id="smart-home-node" href="https://github.com/e154/smart-home-node/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
     </div>
 </div>
+<div class="row download-block">
+  <div class="col-md-12 download-item text-center">
+        <h3>Шлюз</h3>
+        <p class="text-muted">Позволяет получить доступ к програмному комплексу из сети интернет, даже если он за динамическими ip адресом</p>
+        <a id="smart-home-configurator" href="https://github.com/e154/smart-home-gate/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+    </div>
+</div>
 
 <h2 id="whats-included">Что входит в пакеты</h2>
 
@@ -603,16 +610,64 @@ postgres=# grant all privileges on database smart_home to smart_home;
                             
                                 <h2 id="service">Автозапуск</h2>
 
-<p>Чтобы прописать сервис в автозагрузку запустить исполняемый файл с флагом <em>install</em>, к примеру:</p>
+<p>Для автозапуска сервисов server, node, или gate нужно воспользоваться инструментарием используемой операционной
+операционной системы. С каждым сервисом поставляется конфигурационный файл <strong>smart-home-server.service</strong> unit для
+запуска в среде systemd.</p>
 
-<pre><code class="language-bash">cd /opt/smart-home/server/
-sudo ./server-linux-amd64 install
+<p>так выглядит unit для сервера</p>
+
+<pre><code class="language-bash">[Unit]
+Description=Smart home server
+After=multi-user.target
+Requires=postgresql.service
+
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/opt/smart-home/server
+ExecStart=/opt/smart-home/server/server
+
+User=smart_home
+Group=smart_home
+
+
+[Install]
+WantedBy=multi-user.target
 </code></pre>
 
-<p>Для удаления сервиса из автозагрузки запустить файл с флагом <em>remove</em>, к примеру:</p>
+<p>команды для регистрации сервера в systemd</p>
 
-<pre><code class="language-bash">cd /opt/smart-home/server/
-sudo ./server-linux-amd64 remove
+<pre><code class="language-bash">cudo cp /opt/smart-home/server/conf/smart-home-server.service /lib/systemd/system
+sudo systemctl daemon-reload
+systemctl enable smart-home-server
+</code></pre>
+
+<p>запуска сервера</p>
+
+<pre><code class="language-bash">systemctl start smart-home-server
+</code></pre>
+
+<p>остановка сервера</p>
+
+<pre><code class="language-bash">systemctl stop smart-home-server
+</code></pre>
+
+<p>статус</p>
+
+<pre><code class="language-bash">systemctl -l status smart-home-server
+</code></pre>
+
+<h2 id="service">Добавление пользователя</h2>
+
+<p>Програмный комплекс может работать под Вашим текущим пользователем, но не думайте запускать его под root`ом.
+Возможно понадобаиться добавить системного пользователя от которого будут работать сервисы <strong>smart-home</strong>.</p>
+
+<p>Этими командами создается группа <strong>smart_home</strong>, пользователь <strong>smart_home</strong> и указывается каталог /opt/smart-home
+как домашний.</p>
+
+<pre><code class="language-bash">sudo groupadd smart_home
+sudo useradd -r -s /bin/false smart_home -g smart_home -m -d /opt/smart-home
 </code></pre>
 
                             
