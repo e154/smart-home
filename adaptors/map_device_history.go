@@ -73,6 +73,21 @@ func (n *MapDeviceHistory) ListByElementId(mapElementId int64, limit, offset int
 	return
 }
 
+func (n *MapDeviceHistory) List(limit, offset int) (list []*m.MapDeviceHistory, err error) {
+
+	var dbList []*db.MapDeviceHistory
+	if dbList, err = n.table.List(limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.MapDeviceHistory, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
 func (n *MapDeviceHistory) ListByMapId(mapId int64, limit, offset int, orderBy, sort string) (list []*m.MapDeviceHistory, total int64, err error) {
 
 	var dbList []*db.MapDeviceHistory

@@ -92,6 +92,19 @@ func (m MapDeviceHistories) ListByElementId(id int64, limit, offset int) (list [
 	return
 }
 
+func (m MapDeviceHistories) List(limit, offset int) (list []*MapDeviceHistory, err error) {
+
+	list = make([]*MapDeviceHistory, 0)
+	err = m.Db.Model(&MapDeviceHistory{}).
+		Limit(limit).
+		Offset(offset).
+		Order("id desc").
+		Preload("MapElement").
+		Find(&list).Error
+
+	return
+}
+
 func (m MapDeviceHistories) ListByMapId(mapId int64, limit, offset int, orderBy, sort string) (list []*MapDeviceHistory, total int64, err error) {
 
 	err = m.Db.Raw(`select count(mdh.*)

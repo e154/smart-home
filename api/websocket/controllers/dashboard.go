@@ -41,6 +41,7 @@ type ControllerDashboard struct {
 	Uptime    *dashboardModel.Uptime
 	Disk      *dashboardModel.Disk
 	Mqtt      *dashboardModel.Mqtt
+	History   *dashboardModel.History
 	sendLock  *sync.Mutex
 	buf       *bytes.Buffer
 	enc       *json.Encoder
@@ -60,6 +61,7 @@ func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDash
 		Uptime:           dashboardModel.NewUptime(common.metric),
 		Disk:             dashboardModel.NewDisk(common.metric),
 		Mqtt:             dashboardModel.NewMqtt(common.metric),
+		History:          dashboardModel.NewHistory(common.metric),
 		buf:              bytes.NewBuffer(nil),
 		sendLock:         &sync.Mutex{},
 	}
@@ -113,6 +115,8 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 			body, ok = t.Disk.Broadcast()
 		case "mqtt":
 			body, ok = t.Mqtt.Broadcast()
+		case "history":
+			body, ok = t.History.Broadcast()
 		case "map_element":
 		default:
 			log.Warnf("unknown type %v", v)
@@ -175,6 +179,7 @@ func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message str
 			"flow":           t.metric.Flow.Snapshot(),
 			"workflows":      t.metric.Workflow.Snapshot(),
 			"mqtt":           t.metric.Mqtt.Snapshot(),
+			"history":        t.metric.History.Snapshot(),
 			"server_version": t.endpoint.Version.ServerVersion(),
 		},
 	}
