@@ -13,6 +13,7 @@ CREATE TABLE map_device_history
 );
 
 create index type_at_map_device_history_idx on map_device_history (type);
+create index created_at_at_map_device_history_idx on map_device_history (created_at);
 
 -- +migrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

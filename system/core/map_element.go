@@ -74,9 +74,9 @@ func (e *MapElement) SetState(systemName string) {
 
 		e.State = state
 
-		e.updateDeviceHistory(state)
+		go e.updateDeviceHistory(state)
 
-		e.Map.metric.Update(metrics.MapElementSetState{
+		go e.Map.metric.Update(metrics.MapElementSetState{
 			DeviceId:    e.State.DeviceId,
 			ElementName: e.mapElement.Name,
 			StateId:     e.State.Id,
@@ -125,12 +125,15 @@ func (e *MapElement) updateDeviceHistory(state *m.DeviceState) {
 	default:
 		return
 	}
-	e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
+	_, err := e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
 		MapElementId: e.mapElement.Id,
 		MapDeviceId:  e.mapElement.PrototypeId,
 		Type:         common.LogLevelInfo,
 		Description:  state.Description,
 	})
+	if err != nil {
+		log.Error(err.Error())
+	}
 }
 
 func (e *MapElement) CustomHistory(t, desc string) {

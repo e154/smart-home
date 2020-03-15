@@ -94,9 +94,20 @@ func (m MapDeviceHistories) ListByElementId(id int64, limit, offset int) (list [
 
 func (m MapDeviceHistories) ListByMapId(mapId int64, limit, offset int, orderBy, sort string) (list []*MapDeviceHistory, total int64, err error) {
 
+	err = m.Db.Raw(`select count(mdh.*)
+from map_elements me
+         left join map_device_history mdh on me.id = mdh.map_element_id
+where me.map_id = ? and mdh notnull`, mapId).Count(&total).Error
+
+	if err != nil {
+		return
+	}
+
 	if orderBy == "" {
 		orderBy = "id"
 	}
+
+	orderBy = "mdh." + orderBy
 
 	//TODO sort fix
 	if sort == "" {
@@ -106,14 +117,14 @@ func (m MapDeviceHistories) ListByMapId(mapId int64, limit, offset int, orderBy,
 	var rows *sql.Rows
 	rows, err = m.Db.Raw(`select mdh.id, mdh.map_device_id, mdh.map_element_id, 
 mdh.type, mdh.description, mdh.created_at, me.id, me.name, me.description
-from map_elements me
-left join map_device_history mdh on me.id = mdh.map_element_id
-left join map_devices md on mdh.map_device_id = md.id
-where me.map_id = ? and mdh notnull
+from map_device_history mdh
+left join map_elements me on mdh.map_element_id = me.id
+where mdh.map_element_id in (select me.id
+                             from map_elements me
+                             where me.map_id = ?)
 order by ? DESC limit ? offset ?`, mapId, orderBy, limit, offset).Rows()
 
 	if err != nil {
-		log.Error(err.Error())
 		return
 	}
 

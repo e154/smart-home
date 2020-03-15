@@ -83,7 +83,7 @@ func NewControllerMapDeviceHistory(common *ControllerCommon) *ControllerMapDevic
 //	   $ref: '#/responses/Error'
 func (c ControllerMapDeviceHistory) GetList(ctx *gin.Context) {
 
-	_, sort, orderBy, limit, offset := c.list(ctx)
+	_, orderBy, sort, limit, offset := c.list(ctx)
 
 	var mapId int64
 
