@@ -20,6 +20,7 @@ package core
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 	"strings"
@@ -29,11 +30,14 @@ import (
 type Map struct {
 	metric   *metrics.MetricManager
 	elements sync.Map
+	adaptors *adaptors.Adaptors
 }
 
-func NewMap(metric *metrics.MetricManager) *Map {
+func NewMap(metric *metrics.MetricManager,
+	adaptors *adaptors.Adaptors) *Map {
 	return &Map{
-		metric: metric,
+		metric:   metric,
+		adaptors: adaptors,
 	}
 }
 
@@ -52,7 +56,10 @@ func (b *Map) SetElementState(device *m.Device, elementName, systemName string) 
 			if state.SystemName != systemName {
 				continue
 			}
-			b.NewMapElement(device, elementName, state)
+			if _, err := b.NewMapElement(device, elementName, state); err != nil {
+				log.Error(err.Error())
+				return
+			}
 
 			b.metric.Update(metrics.MapElementSetState{
 				StateId:     state.Id,
@@ -63,9 +70,10 @@ func (b *Map) SetElementState(device *m.Device, elementName, systemName string) 
 	}
 }
 
-func (b *Map) GetElement(device *m.Device, elementName string) (element *MapElement) {
+func (b *Map) GetElement(device *m.Device, elementName string) (element *MapElement, err error) {
 
 	if device == nil || elementName == "" {
+		err = fmt.Errorf("bad parameters")
 		return
 	}
 
@@ -74,7 +82,7 @@ func (b *Map) GetElement(device *m.Device, elementName string) (element *MapElem
 	if v, ok := b.elements.Load(hashKey); ok {
 		element = v.(*MapElement)
 	} else {
-		element = b.NewMapElement(device, elementName, nil)
+		element, err = b.NewMapElement(device, elementName, nil)
 	}
 	return
 }
@@ -101,14 +109,11 @@ func (b *Map) GetElements(device *m.Device) (elements []*MapElement) {
 	return
 }
 
-func (b *Map) NewMapElement(device *m.Device, elementName string, state *m.DeviceState) *MapElement {
+func (b *Map) NewMapElement(device *m.Device, elementName string, state *m.DeviceState) (*MapElement, error) {
 
-	element := &MapElement{
-		Map:         b,
-		Device:      device,
-		State:       state,
-		Options:     nil,
-		ElementName: elementName,
+	element, err := NewMapElement(device, elementName, state, b, b.adaptors)
+	if err != nil {
+		return nil, err
 	}
 
 	hashKey := b.key(device, elementName)
@@ -117,7 +122,7 @@ func (b *Map) NewMapElement(device *m.Device, elementName string, state *m.Devic
 
 	b.metric.Update(metrics.MapElementAdd{Num: 1})
 
-	return element
+	return element, nil
 }
 
 func (b *Map) key(device *m.Device, elementName string) string {

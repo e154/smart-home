@@ -16,31 +16,16 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package controllers
+package models
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/endpoint"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/core"
+	"time"
 )
 
-type MobileControllersV1 struct {
-	Auth      *ControllerAuth
-	Workflow  *ControllerWorkflow
-	Map       *ControllerMap
-	MapDevice *ControllerMapDevice
-}
-
-func NewMobileControllersV1(adaptors *adaptors.Adaptors,
-	core *core.Core,
-	accessList *access_list.AccessListService,
-	command *endpoint.Endpoint) *MobileControllersV1 {
-	common := NewControllerCommon(adaptors, core, accessList, command)
-	return &MobileControllersV1{
-		Auth:      NewControllerAuth(common),
-		Workflow:  NewControllerWorkflow(common),
-		Map:       NewControllerMap(common),
-		MapDevice: NewControllerMapDevice(common),
-	}
+type MapDeviceHistory struct {
+	Id          int64     `json:"id"`
+	MapDeviceId int64     `json:"map_device_id"`
+	Type        string    `json:"type"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }

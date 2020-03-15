@@ -16,31 +16,23 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package controllers
+package endpoint
 
-import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/endpoint"
-	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/core"
-)
+import m "github.com/e154/smart-home/models"
 
-type MobileControllersV1 struct {
-	Auth      *ControllerAuth
-	Workflow  *ControllerWorkflow
-	Map       *ControllerMap
-	MapDevice *ControllerMapDevice
+type MapDeviceHistoryEndpoint struct {
+	*CommonEndpoint
 }
 
-func NewMobileControllersV1(adaptors *adaptors.Adaptors,
-	core *core.Core,
-	accessList *access_list.AccessListService,
-	command *endpoint.Endpoint) *MobileControllersV1 {
-	common := NewControllerCommon(adaptors, core, accessList, command)
-	return &MobileControllersV1{
-		Auth:      NewControllerAuth(common),
-		Workflow:  NewControllerWorkflow(common),
-		Map:       NewControllerMap(common),
-		MapDevice: NewControllerMapDevice(common),
+func NewMapDeviceHistoryEndpoint(common *CommonEndpoint) *MapDeviceHistoryEndpoint {
+	return &MapDeviceHistoryEndpoint{
+		CommonEndpoint: common,
 	}
+}
+
+func (e *MapDeviceHistoryEndpoint) GetAllByDeviceId(id int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
+
+	list, total, err = e.adaptors.MapDeviceHistory.GetAllByDeviceId(id, limit, offset)
+
+	return
 }

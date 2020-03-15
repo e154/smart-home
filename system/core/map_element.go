@@ -20,6 +20,8 @@ package core
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 	"sync"
@@ -27,11 +29,33 @@ import (
 
 type MapElement struct {
 	sync.Mutex
-	Map         *Map
-	Options     interface{}
-	Device      *m.Device
-	State       *m.DeviceState
-	ElementName string
+	Map        *Map
+	Options    interface{}
+	Device     *m.Device
+	State      *m.DeviceState
+	mapElement *m.MapElement
+	adaptors   *adaptors.Adaptors
+}
+
+func NewMapElement(device *m.Device,
+	elementName string,
+	state *m.DeviceState,
+	_map *Map,
+	adaptors *adaptors.Adaptors) (*MapElement, error) {
+
+	mapElement, err := adaptors.MapElement.GetByName(elementName)
+	if err != nil {
+		return nil, err
+	}
+
+	return &MapElement{
+		Map:        _map,
+		Device:     device,
+		State:      state,
+		Options:    nil,
+		mapElement: mapElement,
+		adaptors:   adaptors,
+	}, nil
 }
 
 func (e *MapElement) SetState(systemName string) {
@@ -49,9 +73,11 @@ func (e *MapElement) SetState(systemName string) {
 
 		e.State = state
 
+		e.updateDeviceHistory(state)
+
 		e.Map.metric.Update(metrics.MapElementSetState{
 			DeviceId:    e.State.DeviceId,
-			ElementName: e.ElementName,
+			ElementName: e.mapElement.Name,
 			StateId:     e.State.Id,
 		})
 	}
@@ -77,7 +103,7 @@ func (e *MapElement) SetOptions(options interface{}) {
 	e.Map.metric.Update(metrics.MapElementSetOption{
 		StateId:      e.State.Id,
 		DeviceId:     e.Device.Id,
-		ElementName:  e.ElementName,
+		ElementName:  e.mapElement.Name,
 		StateOptions: options,
 	})
 }
@@ -87,4 +113,17 @@ func (e *MapElement) GetOptions() interface{} {
 	defer e.Unlock()
 
 	return e.Options
+}
+
+func (e *MapElement) updateDeviceHistory(state *m.DeviceState) {
+	switch e.mapElement.PrototypeType {
+	case common.PrototypeTypeDevice:
+	default:
+		return
+	}
+	e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
+		MapDeviceId: e.mapElement.PrototypeId,
+		Type:        common.LogLevelInfo,
+		Description: state.Description,
+	})
 }

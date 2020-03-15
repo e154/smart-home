@@ -60,6 +60,7 @@ type Endpoint struct {
 	Mqtt             *MqttEndpoint
 	Version          *VersionEndpoint
 	Zigbee2mqtt      *Zigbee2mqttEndpoint
+	MapDeviceHistory *MapDeviceHistoryEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
@@ -97,5 +98,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Mqtt:             NewMqttEndpoint(common),
 		Version:          NewVersionEndpoint(common),
 		Zigbee2mqtt:      NewZigbee2mqttEndpoint(common),
+		MapDeviceHistory: NewMapDeviceHistoryEndpoint(common),
 	}
 }

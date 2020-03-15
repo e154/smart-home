@@ -75,6 +75,23 @@ func (n MapElements) GetById(mapId int64) (v *MapElement, err error) {
 		First(&v).Error; err != nil {
 		return
 	}
+	err = n.gePrototype(v)
+	return
+}
+
+func (n MapElements) GetByName(name string) (v *MapElement, err error) {
+	v = &MapElement{}
+	if err = n.Db.
+		Preload("Zone").
+		Where("name = ?", name).
+		First(&v).Error; err != nil {
+		return
+	}
+	err = n.gePrototype(v)
+	return
+}
+
+func (n MapElements) gePrototype(v *MapElement) (err error) {
 
 	if v.PrototypeId == 0 {
 		return
