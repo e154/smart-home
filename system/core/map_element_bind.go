@@ -25,6 +25,7 @@ package core
 //	.GetState()
 //	.SetOptions(options)
 //	.GetOptions()
+//	.Story(type, description)
 //
 type MapElementBind struct {
 	element *MapElement
@@ -44,4 +45,8 @@ func (e *MapElementBind) SetOptions(options interface{}) {
 
 func (e *MapElementBind) GetOptions() interface{} {
 	return e.element.GetOptions()
+}
+
+func (e *MapElementBind) Story(t, desc string) {
+	e.element.CustomHistory(t, desc)
 }

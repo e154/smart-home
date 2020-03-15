@@ -35,6 +35,7 @@ type MapElement struct {
 	State      *m.DeviceState
 	mapElement *m.MapElement
 	adaptors   *adaptors.Adaptors
+	storyLock  *sync.Mutex
 }
 
 func NewMapElement(device *m.Device,
@@ -55,6 +56,7 @@ func NewMapElement(device *m.Device,
 		Options:    nil,
 		mapElement: mapElement,
 		adaptors:   adaptors,
+		storyLock:  &sync.Mutex{},
 	}, nil
 }
 
@@ -116,6 +118,9 @@ func (e *MapElement) GetOptions() interface{} {
 }
 
 func (e *MapElement) updateDeviceHistory(state *m.DeviceState) {
+	e.storyLock.Lock()
+	defer e.storyLock.Unlock()
+
 	switch e.mapElement.PrototypeType {
 	case common.PrototypeTypeDevice:
 	default:
@@ -125,5 +130,16 @@ func (e *MapElement) updateDeviceHistory(state *m.DeviceState) {
 		MapDeviceId: e.mapElement.PrototypeId,
 		Type:        common.LogLevelInfo,
 		Description: state.Description,
+	})
+}
+
+func (e *MapElement) CustomHistory(t, desc string) {
+	e.storyLock.Lock()
+	defer e.storyLock.Unlock()
+
+	e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
+		MapDeviceId: e.mapElement.PrototypeId,
+		Type:        common.LogLevel(t),
+		Description: desc,
 	})
 }
