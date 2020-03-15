@@ -135,7 +135,7 @@ left join map_elements me on mdh.map_element_id = me.id
 where mdh.map_element_id in (select me.id
                              from map_elements me
                              where me.map_id = ?)
-order by ? DESC limit ? offset ?`, mapId, orderBy, limit, offset).Rows()
+order by mdh.id DESC limit ? offset ?`, mapId, limit, offset).Rows()
 
 	if err != nil {
 		return

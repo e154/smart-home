@@ -12,6 +12,7 @@ require (
 	github.com/dop251/goja_nodejs v0.0.0-20200128125109-2d688c7e0ac4
 	github.com/eclipse/paho.mqtt.golang v1.2.0
 	github.com/francoispqt/gojay v1.2.13
+	github.com/gammazero/deque v0.0.0-20200310222745-50fa758af896
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-ole/go-ole v1.2.2 // indirect

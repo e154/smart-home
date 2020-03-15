@@ -20,6 +20,7 @@ package metrics
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/gammazero/deque"
 	"sync"
 	"time"
 )
@@ -32,14 +33,14 @@ type HistoryManager struct {
 	publisher  IPublisher
 	adaptors   *adaptors.Adaptors
 	updateLock sync.Mutex
-	pool       []HistoryItem
+	queue      *deque.Deque
 }
 
 func NewHistoryManager(publisher IPublisher, adaptors *adaptors.Adaptors) *HistoryManager {
 	manager := &HistoryManager{
 		publisher: publisher,
 		adaptors:  adaptors,
-		pool:      make([]HistoryItem, 0),
+		queue:     &deque.Deque{},
 	}
 	manager.init()
 	return manager
@@ -61,26 +62,32 @@ func (d *HistoryManager) updatePool(item HistoryItem) {
 	defer d.updateLock.Unlock()
 
 	const (
-		maxItems = 20
+		maxItems = 8
 	)
 
-	lenPool := len(d.pool)
-	i := 1
-
-	if lenPool > maxItems {
-		i = lenPool - maxItems
+	for d.queue.Len() > maxItems {
+		d.queue.PopBack()
 	}
 
-	d.pool = d.pool[i:lenPool]
-	d.pool = append(d.pool, item)
+	d.queue.PushFront(HistoryItem{
+		DeviceName:        item.DeviceName,
+		DeviceDescription: item.DeviceDescription,
+		Type:              item.Type,
+		Description:       item.Description,
+		CreatedAt:         item.CreatedAt,
+	})
 }
 
 func (d HistoryManager) Snapshot() History {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
 
-	items := make([]HistoryItem, len(d.pool))
-	copy(items, d.pool)
+	items := make([]HistoryItem, d.queue.Len())
+	for i := 0; i < d.queue.Len(); i++ {
+		if item, ok := d.queue.At(i).(HistoryItem); ok {
+			items[i] = item
+		}
+	}
 
 	return History{
 		Items: items,
@@ -95,9 +102,9 @@ func (d *HistoryManager) init() {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
 
-	if list, err := d.adaptors.MapDeviceHistory.List(20, 0); err == nil {
+	if list, err := d.adaptors.MapDeviceHistory.List(8, 0); err == nil {
 		for _, item := range list {
-			d.pool = append(d.pool, HistoryItem{
+			d.queue.PushBack(HistoryItem{
 				DeviceName:        item.MapElement.Name,
 				DeviceDescription: item.MapElement.Description,
 				Type:              string(item.Type),

@@ -25,6 +25,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 	"sync"
+	"time"
 )
 
 type MapElement struct {
@@ -80,6 +81,14 @@ func (e *MapElement) SetState(systemName string) {
 			DeviceId:    e.State.DeviceId,
 			ElementName: e.mapElement.Name,
 			StateId:     e.State.Id,
+		})
+
+		go e.Map.metric.Update(metrics.HistoryItem{
+			DeviceName:        e.mapElement.Name,
+			DeviceDescription: e.mapElement.Description,
+			Type:              "Info",
+			Description:       state.Description,
+			CreatedAt:         time.Now(),
 		})
 	}
 }
