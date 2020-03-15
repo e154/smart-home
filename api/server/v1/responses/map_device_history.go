@@ -16,19 +16,21 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package models
+package responses
 
 import (
-	"github.com/e154/smart-home/common"
-	"time"
+	"github.com/e154/smart-home/api/server/v1/models"
 )
 
-type MapDeviceHistory struct {
-	Id           int64           `json:"id"`
-	MapDeviceId  int64           `json:"map_device_id"`
-	MapElement   *MapElement     `json:"map_element"`
-	MapElementId int64           `json:"map_element_id"`
-	Type         common.LogLevel `json:"type"`
-	Description  string          `json:"description"`
-	CreatedAt    time.Time       `json:"created_at"`
+// swagger:response MapDeviceHistoryList
+type MapDeviceHistoryList struct {
+	// in:body
+	Body struct {
+		Items []*models.MapDeviceHistory `json:"items"`
+		Meta  struct {
+			Limit       int64 `json:"limit"`
+			ObjectCount int64 `json:"object_count"`
+			Offset      int64 `json:"offset"`
+		} `json:"meta"`
+	}
 }

@@ -19,6 +19,7 @@
 package db
 
 import (
+	"database/sql"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"time"
@@ -29,12 +30,14 @@ type MapDeviceHistories struct {
 }
 
 type MapDeviceHistory struct {
-	Id          int64 `gorm:"primary_key"`
-	MapDevice   *MapDevice
-	MapDeviceId int64
-	Type        common.LogLevel
-	Description string
-	CreatedAt   time.Time
+	Id           int64 `gorm:"primary_key"`
+	MapDevice    *MapDevice
+	MapDeviceId  int64
+	MapElement   *MapElement
+	MapElementId int64
+	Type         common.LogLevel
+	Description  string
+	CreatedAt    time.Time
 }
 
 func (d *MapDeviceHistory) TableName() string {
@@ -49,9 +52,11 @@ func (m MapDeviceHistories) Add(story MapDeviceHistory) (id int64, err error) {
 	return
 }
 
-func (m MapDeviceHistories) GetAllByDeviceId(id int64, limit, offset int) (list []*MapDeviceHistory, total int64, err error) {
+func (m MapDeviceHistories) ListByDeviceId(id int64, limit, offset int) (list []*MapDeviceHistory, total int64, err error) {
 
-	if err = m.Db.Model(MapDeviceHistory{}).Count(&total).Error; err != nil {
+	if err = m.Db.Model(MapDeviceHistory{}).
+		Where("map_device_id = ?", id).
+		Count(&total).Error; err != nil {
 		return
 	}
 
@@ -60,7 +65,68 @@ func (m MapDeviceHistories) GetAllByDeviceId(id int64, limit, offset int) (list 
 		Limit(limit).
 		Offset(offset).
 		Where("map_device_id = ?", id).
+		Order("id desc").
+		Preload("MapElement").
 		Find(&list).Error
+
+	return
+}
+
+func (m MapDeviceHistories) ListByElementId(id int64, limit, offset int) (list []*MapDeviceHistory, total int64, err error) {
+
+	if err = m.Db.Model(MapDeviceHistory{}).
+		Where("id = ?", id).
+		Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*MapDeviceHistory, 0)
+	err = m.Db.Model(&MapDeviceHistory{}).
+		Limit(limit).
+		Offset(offset).
+		Where("id = ?", id).
+		Order("id desc").
+		Preload("MapElement").
+		Find(&list).Error
+
+	return
+}
+
+func (m MapDeviceHistories) ListByMapId(mapId int64, limit, offset int, orderBy, sort string) (list []*MapDeviceHistory, total int64, err error) {
+
+	if orderBy == "" {
+		orderBy = "id"
+	}
+
+	//TODO sort fix
+	if sort == "" {
+		sort = "DESC"
+	}
+
+	var rows *sql.Rows
+	rows, err = m.Db.Raw(`select mdh.id, mdh.map_device_id, mdh.map_element_id, 
+mdh.type, mdh.description, mdh.created_at, me.id, me.name, me.description
+from map_elements me
+left join map_device_history mdh on me.id = mdh.map_element_id
+left join map_devices md on mdh.map_device_id = md.id
+where me.map_id = ? and mdh notnull
+order by ? DESC limit ? offset ?`, mapId, orderBy, limit, offset).Rows()
+
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	list = make([]*MapDeviceHistory, 0)
+
+	for rows.Next() {
+		item := &MapDeviceHistory{
+			MapElement: &MapElement{},
+		}
+		err = rows.Scan(&item.Id, &item.MapDeviceId, &item.MapElementId, &item.Type, &item.Description,
+			&item.CreatedAt, &item.MapElement.Id, &item.MapElement.Name, &item.MapElement.Description)
+		list = append(list, item)
+	}
 
 	return
 }

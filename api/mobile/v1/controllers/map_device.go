@@ -36,7 +36,6 @@ func NewControllerMapDevice(common *ControllerCommon) *ControllerMapDevice {
 func (c *ControllerMapDevice) GetHistory(ctx *gin.Context) {
 
 	var limit, offset int
-	var id int64
 
 	if ctx.Request.URL.Query().Get("limit") != "" {
 		limit, _ = strconv.Atoi(ctx.Request.URL.Query().Get("limit"))
@@ -46,12 +45,13 @@ func (c *ControllerMapDevice) GetHistory(ctx *gin.Context) {
 		offset, _ = strconv.Atoi(ctx.Request.URL.Query().Get("offset"))
 	}
 
+	var mapElementId int64
 	if ctx.Request.URL.Query().Get("id") != "" {
 		_id, _ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
-		id = int64(_id)
+		mapElementId = int64(_id)
 	}
 
-	items, total, err := c.endpoint.MapDeviceHistory.GetAllByDeviceId(id, limit, offset)
+	items, total, err := c.endpoint.MapDeviceHistory.ListByElementId(mapElementId, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

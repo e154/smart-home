@@ -30,9 +30,17 @@ func NewMapDeviceHistoryEndpoint(common *CommonEndpoint) *MapDeviceHistoryEndpoi
 	}
 }
 
-func (e *MapDeviceHistoryEndpoint) GetAllByDeviceId(id int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
+func (e *MapDeviceHistoryEndpoint) ListByDeviceId(mapDeviceId int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
+	list, total, err = e.adaptors.MapDeviceHistory.ListByDeviceId(mapDeviceId, limit, offset)
+	return
+}
 
-	list, total, err = e.adaptors.MapDeviceHistory.GetAllByDeviceId(id, limit, offset)
+func (e *MapDeviceHistoryEndpoint) ListByElementId(mapElementId int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
+	list, total, err = e.adaptors.MapDeviceHistory.ListByElementId(mapElementId, limit, offset)
+	return
+}
 
+func (e *MapDeviceHistoryEndpoint) ListByMapId(mapId int64, limit, offset int, orderBy, sort string) (list []*m.MapDeviceHistory, total int64, err error) {
+	list, total, err = e.adaptors.MapDeviceHistory.ListByMapId(mapId, limit, offset, orderBy, sort)
 	return
 }

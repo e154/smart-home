@@ -28,14 +28,13 @@ import (
 )
 
 type MapElement struct {
-	sync.Mutex
-	Map        *Map
-	Options    interface{}
-	Device     *m.Device
-	State      *m.DeviceState
-	mapElement *m.MapElement
-	adaptors   *adaptors.Adaptors
-	storyLock  *sync.Mutex
+	Map         *Map
+	Options     interface{}
+	Device      *m.Device
+	State       *m.DeviceState
+	adaptors    *adaptors.Adaptors
+	elementLock *sync.Mutex
+	mapElement  *m.MapElement
 }
 
 func NewMapElement(device *m.Device,
@@ -50,19 +49,19 @@ func NewMapElement(device *m.Device,
 	}
 
 	return &MapElement{
-		Map:        _map,
-		Device:     device,
-		State:      state,
-		Options:    nil,
-		mapElement: mapElement,
-		adaptors:   adaptors,
-		storyLock:  &sync.Mutex{},
+		Map:         _map,
+		Device:      device,
+		State:       state,
+		Options:     nil,
+		mapElement:  mapElement,
+		adaptors:    adaptors,
+		elementLock: &sync.Mutex{},
 	}, nil
 }
 
 func (e *MapElement) SetState(systemName string) {
-	e.Lock()
-	defer e.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	for _, state := range e.Device.States {
 		if state.SystemName != systemName {
@@ -86,15 +85,15 @@ func (e *MapElement) SetState(systemName string) {
 }
 
 func (e *MapElement) GetState() interface{} {
-	e.Lock()
-	defer e.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	return e.State
 }
 
 func (e *MapElement) SetOptions(options interface{}) {
-	e.Lock()
-	defer e.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	if fmt.Sprint(e.Options) == fmt.Sprint(options) {
 		return
@@ -111,15 +110,15 @@ func (e *MapElement) SetOptions(options interface{}) {
 }
 
 func (e *MapElement) GetOptions() interface{} {
-	e.Lock()
-	defer e.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	return e.Options
 }
 
 func (e *MapElement) updateDeviceHistory(state *m.DeviceState) {
-	e.storyLock.Lock()
-	defer e.storyLock.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	switch e.mapElement.PrototypeType {
 	case common.PrototypeTypeDevice:
@@ -127,19 +126,21 @@ func (e *MapElement) updateDeviceHistory(state *m.DeviceState) {
 		return
 	}
 	e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
-		MapDeviceId: e.mapElement.PrototypeId,
-		Type:        common.LogLevelInfo,
-		Description: state.Description,
+		MapElementId: e.mapElement.Id,
+		MapDeviceId:  e.mapElement.PrototypeId,
+		Type:         common.LogLevelInfo,
+		Description:  state.Description,
 	})
 }
 
 func (e *MapElement) CustomHistory(t, desc string) {
-	e.storyLock.Lock()
-	defer e.storyLock.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
-		MapDeviceId: e.mapElement.PrototypeId,
-		Type:        common.LogLevel(t),
-		Description: desc,
+		MapElementId: e.mapElement.Id,
+		MapDeviceId:  e.mapElement.PrototypeId,
+		Type:         common.LogLevel(t),
+		Description:  desc,
 	})
 }

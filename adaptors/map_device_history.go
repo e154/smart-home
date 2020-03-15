@@ -43,10 +43,40 @@ func (n *MapDeviceHistory) Add(ver m.MapDeviceHistory) (id int64, err error) {
 	return
 }
 
-func (n *MapDeviceHistory) GetAllByDeviceId(id int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
+func (n *MapDeviceHistory) ListByDeviceId(mapDeviceId int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
 
 	var dbList []*db.MapDeviceHistory
-	if dbList, total, err = n.table.GetAllByDeviceId(id, limit, offset); err != nil {
+	if dbList, total, err = n.table.ListByDeviceId(mapDeviceId, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.MapDeviceHistory, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+func (n *MapDeviceHistory) ListByElementId(mapElementId int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
+
+	var dbList []*db.MapDeviceHistory
+	if dbList, total, err = n.table.ListByElementId(mapElementId, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.MapDeviceHistory, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+func (n *MapDeviceHistory) ListByMapId(mapId int64, limit, offset int, orderBy, sort string) (list []*m.MapDeviceHistory, total int64, err error) {
+
+	var dbList []*db.MapDeviceHistory
+	if dbList, total, err = n.table.ListByMapId(mapId, limit, offset, orderBy, sort); err != nil {
 		return
 	}
 
@@ -60,11 +90,17 @@ func (n *MapDeviceHistory) GetAllByDeviceId(id int64, limit, offset int) (list [
 
 func (n *MapDeviceHistory) fromDb(dbVer *db.MapDeviceHistory) (ver *m.MapDeviceHistory) {
 	ver = &m.MapDeviceHistory{
-		Id:          dbVer.Id,
-		MapDeviceId: dbVer.MapDeviceId,
-		Type:        dbVer.Type,
-		Description: dbVer.Description,
-		CreatedAt:   dbVer.CreatedAt,
+		Id:           dbVer.Id,
+		MapDeviceId:  dbVer.MapDeviceId,
+		MapElementId: dbVer.MapElementId,
+		Type:         dbVer.Type,
+		Description:  dbVer.Description,
+		CreatedAt:    dbVer.CreatedAt,
+	}
+
+	if dbVer.MapElement != nil {
+		mapElementAdaptor := GetMapElementAdaptor(n.db)
+		ver.MapElement = mapElementAdaptor.fromDb(dbVer.MapElement)
 	}
 
 	return
@@ -72,11 +108,12 @@ func (n *MapDeviceHistory) fromDb(dbVer *db.MapDeviceHistory) (ver *m.MapDeviceH
 
 func (n *MapDeviceHistory) toDb(ver m.MapDeviceHistory) (dbVer db.MapDeviceHistory) {
 	dbVer = db.MapDeviceHistory{
-		Id:          ver.Id,
-		MapDeviceId: ver.MapDeviceId,
-		Type:        ver.Type,
-		Description: ver.Description,
-		CreatedAt:   ver.CreatedAt,
+		Id:           ver.Id,
+		MapDeviceId:  ver.MapDeviceId,
+		MapElementId: ver.MapElementId,
+		Type:         ver.Type,
+		Description:  ver.Description,
+		CreatedAt:    ver.CreatedAt,
 	}
 
 	return
