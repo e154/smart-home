@@ -120,6 +120,18 @@ func (n *MapElement) GetById(mapId int64) (ver *m.MapElement, err error) {
 	return
 }
 
+func (n *MapElement) GetByName(name string) (ver *m.MapElement, err error) {
+
+	var dbVer *db.MapElement
+	if dbVer, err = n.table.GetByName(name); err != nil {
+		return
+	}
+
+	ver = n.fromDb(dbVer)
+
+	return
+}
+
 func (n *MapElement) Update(ver *m.MapElement) (err error) {
 
 	var oldVer *m.MapElement

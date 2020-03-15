@@ -20,23 +20,49 @@ package core
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 	"sync"
+	"time"
 )
 
 type MapElement struct {
-	sync.Mutex
 	Map         *Map
 	Options     interface{}
 	Device      *m.Device
 	State       *m.DeviceState
-	ElementName string
+	adaptors    *adaptors.Adaptors
+	elementLock *sync.Mutex
+	mapElement  *m.MapElement
+}
+
+func NewMapElement(device *m.Device,
+	elementName string,
+	state *m.DeviceState,
+	_map *Map,
+	adaptors *adaptors.Adaptors) (*MapElement, error) {
+
+	mapElement, err := adaptors.MapElement.GetByName(elementName)
+	if err != nil {
+		return nil, err
+	}
+
+	return &MapElement{
+		Map:         _map,
+		Device:      device,
+		State:       state,
+		Options:     nil,
+		mapElement:  mapElement,
+		adaptors:    adaptors,
+		elementLock: &sync.Mutex{},
+	}, nil
 }
 
 func (e *MapElement) SetState(systemName string) {
-	e.Lock()
-	defer e.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	for _, state := range e.Device.States {
 		if state.SystemName != systemName {
@@ -49,24 +75,34 @@ func (e *MapElement) SetState(systemName string) {
 
 		e.State = state
 
-		e.Map.metric.Update(metrics.MapElementSetState{
+		go e.updateDeviceHistory(state)
+
+		go e.Map.metric.Update(metrics.MapElementSetState{
 			DeviceId:    e.State.DeviceId,
-			ElementName: e.ElementName,
+			ElementName: e.mapElement.Name,
 			StateId:     e.State.Id,
+		})
+
+		go e.Map.metric.Update(metrics.HistoryItem{
+			DeviceName:        e.mapElement.Name,
+			DeviceDescription: e.mapElement.Description,
+			Type:              "Info",
+			Description:       state.Description,
+			CreatedAt:         time.Now(),
 		})
 	}
 }
 
 func (e *MapElement) GetState() interface{} {
-	e.Lock()
-	defer e.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	return e.State
 }
 
 func (e *MapElement) SetOptions(options interface{}) {
-	e.Lock()
-	defer e.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	if fmt.Sprint(e.Options) == fmt.Sprint(options) {
 		return
@@ -77,14 +113,46 @@ func (e *MapElement) SetOptions(options interface{}) {
 	e.Map.metric.Update(metrics.MapElementSetOption{
 		StateId:      e.State.Id,
 		DeviceId:     e.Device.Id,
-		ElementName:  e.ElementName,
+		ElementName:  e.mapElement.Name,
 		StateOptions: options,
 	})
 }
 
 func (e *MapElement) GetOptions() interface{} {
-	e.Lock()
-	defer e.Unlock()
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
 
 	return e.Options
+}
+
+func (e *MapElement) updateDeviceHistory(state *m.DeviceState) {
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
+
+	switch e.mapElement.PrototypeType {
+	case common.PrototypeTypeDevice:
+	default:
+		return
+	}
+	_, err := e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
+		MapElementId: e.mapElement.Id,
+		MapDeviceId:  e.mapElement.PrototypeId,
+		Type:         common.LogLevelInfo,
+		Description:  state.Description,
+	})
+	if err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (e *MapElement) CustomHistory(t, desc string) {
+	e.elementLock.Lock()
+	defer e.elementLock.Unlock()
+
+	e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
+		MapElementId: e.mapElement.Id,
+		MapDeviceId:  e.mapElement.PrototypeId,
+		Type:         common.LogLevel(t),
+		Description:  desc,
+	})
 }

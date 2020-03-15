@@ -53,7 +53,14 @@ func (e *MapBind) GetElement(device *DeviceBind, elementName string) (element *M
 		log.Error("device.Model is nil")
 		return
 	}
-	element = &MapElementBind{e.Map.GetElement(device.model, elementName)}
+
+	mapElement, err := e.Map.GetElement(device.model, elementName)
+	if device.model == nil {
+		log.Error(err.Error())
+		return
+	}
+
+	element = &MapElementBind{mapElement}
 	return
 }
 

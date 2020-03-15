@@ -27,6 +27,7 @@
 // migrations/20200209_001958_update_flow_subscriptions.sql
 // migrations/20200220_193432_add_zigbee2mqtt.sql
 // migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql
+// migrations/20200315_105418_add_map_element_history.sql
 // DO NOT EDIT!
 
 package database
@@ -634,6 +635,26 @@ func migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql() (*asset, e
 	return a, nil
 }
 
+var _migrations20200315_105418_add_map_element_historySql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xac\x93\x3f\x6f\xdb\x30\x14\xc4\x77\x7e\x8a\xdb\x6c\xa3\xf5\xd2\xd5\x93\x2c\x31\x81\x50\x55\x4e\xf5\x67\xc8\x24\x30\xe2\x4b\x4d\x44\x22\x09\x91\x89\x9d\x7e\xfa\x82\x56\x5d\xa9\x8d\x86\x06\x08\x37\x9d\xee\x0e\x3f\x3e\xf0\x6d\xb7\xf8\xd4\xab\x1f\x83\xf0\x84\xda\xb2\xed\x16\xe5\xf7\x0c\x4a\xc3\x51\xeb\x95\xd1\x58\xd5\x76\x05\xe5\x40\x67\x6a\x9f\x3d\x49\x9c\x8e\xa4\xe1\x8f\xca\x61\xcc\x05\x93\x72\x10\xd6\x76\x8a\x24\x8b\x0b\x1e\x55\x1c\x55\xb4\xcf\x38\x7a\x61\x1b\x49\x2f\xaa\xa5\xe6\xa8\x9c\x37\xc3\x2b\x5b\x33\x00\x50\x12\xf3\xb3\x4f\x6f\x4b\x5e\xa4\x51\x86\xbb\x22\xfd\x16\x15\xf7\xf8\xca\xef\x3f\x5f\x9c\xb3\x8a\x10\xda\xa7\xb7\x69\x5e\xe1\xed\xc9\x0f\x15\xf2\x3a\xcb\xd8\x55\x88\x0f\x79\x59\x15\x51\x70\xbf\xc5\x68\xbe\x34\x93\xe8\x9a\xc7\x27\x14\xfc\x86\x17\x3c\x8f\x79\x39\xb3\x3b\xac\x95\xdc\xe0\x90\xa3\xbe\x4b\xc2\xb5\xe2\xa8\x8c\xa3\x84\x07\x25\xe1\x19\x9f\x94\x09\x96\x3a\xea\x49\xfb\x40\xfb\xb1\xb0\xbf\x8b\x97\x68\xaf\xbf\xde\x89\xeb\x5f\x2d\xcd\xa8\x3a\x7a\xa1\xae\xf9\x47\x9c\xe3\x22\xe1\x37\x51\x9d\x55\x58\xa5\xfa\xd1\xac\xc6\x12\x49\xae\x1d\x94\xbd\xbc\x83\xd0\x49\x67\xbf\x70\xe3\xa9\x64\x4c\xb5\x03\x09\x4f\xb2\x11\xa3\xd9\xab\x9e\x9c\x17\xbd\xc5\x49\xf9\xe3\xe5\x13\x3f\x8d\x26\x68\xe3\xa1\x9f\xbb\x8e\x6d\x76\x8c\x8d\x21\x28\x2d\xe9\x7c\x81\x6f\x84\x6f\x16\xe6\xa5\xe4\x19\x46\x2f\x4c\x12\xeb\x90\xda\xec\xfe\x6e\x9a\x58\xde\xdf\x37\x65\x03\xe0\x7c\x9b\x12\x73\xd2\xd7\x7d\xfa\xb3\x4c\x41\xfc\xaf\x75\x1a\x4c\xd7\x91\xc4\x83\x68\x9f\x98\x1c\x8c\x85\x17\x0f\x1d\x2d\x21\xb4\xc2\xb5\x42\xd2\x8e\xb1\x5f\x01\x00\x00\xff\xff\x88\xc6\x35\x51\xcc\x03\x00\x00")
+
+func migrations20200315_105418_add_map_element_historySqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20200315_105418_add_map_element_historySql,
+		"migrations/20200315_105418_add_map_element_history.sql",
+	)
+}
+
+func migrations20200315_105418_add_map_element_historySql() (*asset, error) {
+	bytes, err := migrations20200315_105418_add_map_element_historySqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20200315_105418_add_map_element_history.sql", size: 972, mode: os.FileMode(420), modTime: time.Unix(1584270135, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -713,6 +734,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20200209_001958_update_flow_subscriptions.sql": migrations20200209_001958_update_flow_subscriptionsSql,
 	"migrations/20200220_193432_add_zigbee2mqtt.sql": migrations20200220_193432_add_zigbee2mqttSql,
 	"migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql": migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql,
+	"migrations/20200315_105418_add_map_element_history.sql": migrations20200315_105418_add_map_element_historySql,
 }
 
 // AssetDir returns the file names below a certain
@@ -783,6 +805,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20200209_001958_update_flow_subscriptions.sql": &bintree{migrations20200209_001958_update_flow_subscriptionsSql, map[string]*bintree{}},
 		"20200220_193432_add_zigbee2mqtt.sql": &bintree{migrations20200220_193432_add_zigbee2mqttSql, map[string]*bintree{}},
 		"20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql": &bintree{migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql, map[string]*bintree{}},
+		"20200315_105418_add_map_element_history.sql": &bintree{migrations20200315_105418_add_map_element_historySql, map[string]*bintree{}},
 	}},
 }}
 

@@ -245,4 +245,7 @@ func (s *Server) setControllers() {
 	v1.POST("/zigbee2mqtt/:id/update_networkmap", s.af.Auth, s.ControllersV1.Zigbee2mqtt.UpdateNetworkmap)
 	v1.PATCH("/zigbee2mqtts/device_rename", s.af.Auth, s.ControllersV1.Zigbee2mqtt.DeviceRename)
 	v1.GET("/zigbee2mqtts/search_device", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Search)
+
+	// map device history
+	v1.GET("/history/map", s.af.Auth, s.ControllersV1.MapDeviceHistory.GetList)
 }

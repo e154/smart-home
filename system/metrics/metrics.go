@@ -51,6 +51,7 @@ type MetricManager struct {
 	AppMemory         *AppMemoryManager
 	Mqtt              *MqttManager
 	Zigbee2Mqtt       *Zigbee2MqttManager
+	History           *HistoryManager
 	graceful          *graceful_service.GracefulService
 }
 
@@ -78,6 +79,7 @@ func NewMetricManager(cfg *MetricConfig,
 	metric.AppMemory = NewAppMemoryManager(metric)
 	metric.Mqtt = NewMqttManager(metric)
 	metric.Zigbee2Mqtt = NewZigbee2MqttManager(metric)
+	metric.History = NewHistoryManager(metric, adaptors)
 
 	return metric
 }
@@ -133,4 +135,5 @@ func (m *MetricManager) Update(t interface{}) {
 	m.Flow.update(t)
 	m.Mqtt.update(t)
 	m.Zigbee2Mqtt.update(t)
+	m.History.update(t)
 }

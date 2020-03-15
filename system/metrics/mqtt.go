@@ -19,7 +19,6 @@
 package metrics
 
 import (
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -29,8 +28,6 @@ type Mqtt struct {
 
 type MqttManager struct {
 	publisher   IPublisher
-	isStarted   atomic.Bool
-	quit        chan struct{}
 	updateLock  sync.Mutex
 	clientState MqttClientStats
 }

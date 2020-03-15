@@ -16,37 +16,16 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package core
+package models
 
-// Javascript Binding
-//
-// MapElement
-//	.SetState(name)
-//	.GetState()
-//	.SetOptions(options)
-//	.GetOptions()
-//	.Story(type, description)
-//
-type MapElementBind struct {
-	element *MapElement
-}
+import (
+	"time"
+)
 
-func (e *MapElementBind) SetState(name string) {
-	e.element.SetState(name)
-}
-
-func (e *MapElementBind) GetState() interface{} {
-	return e.element.State
-}
-
-func (e *MapElementBind) SetOptions(options interface{}) {
-	e.element.SetOptions(options)
-}
-
-func (e *MapElementBind) GetOptions() interface{} {
-	return e.element.GetOptions()
-}
-
-func (e *MapElementBind) Story(t, desc string) {
-	e.element.CustomHistory(t, desc)
+type MapDeviceHistory struct {
+	Id          int64     `json:"id"`
+	MapDeviceId int64     `json:"map_device_id"`
+	Type        string    `json:"type"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }

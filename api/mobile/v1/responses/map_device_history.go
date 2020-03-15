@@ -16,37 +16,21 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package core
+package responses
 
-// Javascript Binding
-//
-// MapElement
-//	.SetState(name)
-//	.GetState()
-//	.SetOptions(options)
-//	.GetOptions()
-//	.Story(type, description)
-//
-type MapElementBind struct {
-	element *MapElement
-}
+import (
+	"github.com/e154/smart-home/api/mobile/v1/models"
+)
 
-func (e *MapElementBind) SetState(name string) {
-	e.element.SetState(name)
-}
-
-func (e *MapElementBind) GetState() interface{} {
-	return e.element.State
-}
-
-func (e *MapElementBind) SetOptions(options interface{}) {
-	e.element.SetOptions(options)
-}
-
-func (e *MapElementBind) GetOptions() interface{} {
-	return e.element.GetOptions()
-}
-
-func (e *MapElementBind) Story(t, desc string) {
-	e.element.CustomHistory(t, desc)
+// swagger:response MapDeviceHistoryList
+type MapDeviceHistoryList struct {
+	// in:body
+	Body struct {
+		Items []*models.MapDeviceHistory `json:"items"`
+		Meta  struct {
+			Limit       int64 `json:"limit"`
+			ObjectCount int64 `json:"object_count"`
+			Offset      int64 `json:"offset"`
+		} `json:"meta"`
+	}
 }

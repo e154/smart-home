@@ -16,37 +16,24 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package core
+package dashboard_models
 
-// Javascript Binding
-//
-// MapElement
-//	.SetState(name)
-//	.GetState()
-//	.SetOptions(options)
-//	.GetOptions()
-//	.Story(type, description)
-//
-type MapElementBind struct {
-	element *MapElement
+import (
+	"github.com/e154/smart-home/system/metrics"
+)
+
+type History struct {
+	metric *metrics.MetricManager
 }
 
-func (e *MapElementBind) SetState(name string) {
-	e.element.SetState(name)
+func NewHistory(metric *metrics.MetricManager) (memory *History) {
+	memory = &History{metric: metric}
+	return
 }
 
-func (e *MapElementBind) GetState() interface{} {
-	return e.element.State
-}
+func (g *History) Broadcast() (map[string]interface{}, bool) {
 
-func (e *MapElementBind) SetOptions(options interface{}) {
-	e.element.SetOptions(options)
-}
-
-func (e *MapElementBind) GetOptions() interface{} {
-	return e.element.GetOptions()
-}
-
-func (e *MapElementBind) Story(t, desc string) {
-	e.element.CustomHistory(t, desc)
+	return map[string]interface{}{
+		"history": g.metric.History.Snapshot(),
+	}, true
 }

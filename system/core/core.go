@@ -71,7 +71,7 @@ func NewCore(adaptors *adaptors.Adaptors,
 		cron:          cron,
 		mqtt:          mqtt,
 		streamService: streamService,
-		Map:           NewMap(metric),
+		Map:           NewMap(metric, adaptors),
 		zigbee2mqtt:   zigbee2mqtt,
 		metric:        metric,
 	}
