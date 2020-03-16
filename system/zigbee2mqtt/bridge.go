@@ -275,6 +275,8 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 	}
 	g.modelLock.Unlock()
 
+	g.metric.Update(metrics.Zigbee2MqttUpdate{})
+
 	return
 }
 
