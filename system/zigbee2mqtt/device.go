@@ -99,3 +99,10 @@ func (d *Device) SetVendor(vendor string) {
 	d.model.Manufacturer = vendor
 	d.modelLock.Unlock()
 }
+
+func (d *Device) GetImage() string {
+	d.modelLock.Lock()
+	defer d.modelLock.Unlock()
+	d.model.GetImageUrl()
+	return d.model.ImageUrl
+}

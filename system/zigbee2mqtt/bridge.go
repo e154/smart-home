@@ -255,6 +255,8 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 			log.Error(err.Error())
 			return
 		}
+		device.GetImage()
+
 	} else {
 		log.Infof("add device %v ...", model.Id)
 		if err = g.adaptors.Zigbee2mqttDevice.Add(&model); err != nil {
