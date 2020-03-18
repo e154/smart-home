@@ -21,9 +21,8 @@ package core
 import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/metrics"
-	"strings"
 	"sync"
 )
 
@@ -41,82 +40,60 @@ func NewMap(metric *metrics.MetricManager,
 	}
 }
 
-func (b *Map) SetElementState(device *m.Device, elementName, systemName string) {
+func (b *Map) SetElementState(elementName, stateSystemName string) {
 
-	if device == nil || elementName == "" || systemName == "" {
+	if elementName == "" || stateSystemName == "" {
 		return
 	}
 
-	hashKey := b.key(device, elementName)
+	hashKey := b.key(elementName)
 
 	if v, ok := b.elements.Load(hashKey); ok {
-		v.(*MapElement).SetState(systemName)
+		v.(*MapElement).SetState(stateSystemName)
 	} else {
-		for _, state := range device.States {
-			if state.SystemName != systemName {
-				continue
-			}
-			if _, err := b.NewMapElement(device, elementName, state); err != nil {
-				log.Error(err.Error())
-				return
-			}
-
-			b.metric.Update(metrics.MapElementSetState{
-				StateId:     state.Id,
-				DeviceId:    state.DeviceId,
-				ElementName: elementName,
-			})
+		mapElement, err := b.NewMapElement(elementName, common.String(stateSystemName))
+		if err != nil {
+			log.Error(err.Error())
+			return
 		}
+
+		if mapElement.State == nil {
+			return
+		}
+		b.metric.Update(metrics.MapElementSetState{
+			StateId:     mapElement.State.Id,
+			DeviceId:    mapElement.State.DeviceId,
+			ElementName: elementName,
+		})
 	}
 }
 
-func (b *Map) GetElement(device *m.Device, elementName string) (element *MapElement, err error) {
+func (b *Map) GetElement(elementName string) (element *MapElement, err error) {
 
-	if device == nil || elementName == "" {
+	if elementName == "" {
 		err = fmt.Errorf("bad parameters")
 		return
 	}
 
-	hashKey := b.key(device, elementName)
+	hashKey := b.key(elementName)
 
 	if v, ok := b.elements.Load(hashKey); ok {
 		element = v.(*MapElement)
 	} else {
-		element, err = b.NewMapElement(device, elementName, nil)
+		element, err = b.NewMapElement(elementName, nil)
 	}
-	return
-}
-
-func (b *Map) GetElements(device *m.Device) (elements []*MapElement) {
-
-	if device == nil {
-		return nil
-	}
-
-	elements = make([]*MapElement, 0)
-
-	partKeyName := fmt.Sprintf("device(%d)_elementName", device.Id)
-
-	b.elements.Range(func(key, value interface{}) bool {
-		if strings.Contains(key.(string), partKeyName) {
-			element := value.(*MapElement)
-			elements = append(elements, element)
-		}
-
-		return true
-	})
 
 	return
 }
 
-func (b *Map) NewMapElement(device *m.Device, elementName string, state *m.DeviceState) (*MapElement, error) {
+func (b *Map) NewMapElement(elementName string, stateSystemName *string) (*MapElement, error) {
 
-	element, err := NewMapElement(device, elementName, state, b, b.adaptors)
+	element, err := NewMapElement(elementName, stateSystemName, b, b.adaptors)
 	if err != nil {
 		return nil, err
 	}
 
-	hashKey := b.key(device, elementName)
+	hashKey := b.key(elementName)
 
 	b.elements.Store(hashKey, element)
 
@@ -125,6 +102,6 @@ func (b *Map) NewMapElement(device *m.Device, elementName string, state *m.Devic
 	return element, nil
 }
 
-func (b *Map) key(device *m.Device, elementName string) string {
-	return fmt.Sprintf("device(%d)_elementName(%s)", device.Id, elementName)
+func (b *Map) key(elementName string) string {
+	return fmt.Sprintf("%s", elementName)
 }

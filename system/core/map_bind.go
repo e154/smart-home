@@ -21,61 +21,25 @@ package core
 // Javascript Binding
 //
 // Map
-//	.SetElementState(device, elementName, newState)
-//	.GetElement(device, elementName) -> MapElementBind
-//	.GetElements(device) -> []MapElementBind
+//	.SetElementState(elementName, newState)
+//	.GetElement(elementName) -> MapElementBind
 //
 type MapBind struct {
 	Map *Map
 }
 
-func (e *MapBind) SetElementState(device *DeviceBind, elementName, newState string) {
-	if device == nil {
-		log.Error("device is nil")
-		return
-	}
-
-	if device.model == nil {
-		log.Error("device.Model is nil")
-		return
-	}
-
-	e.Map.SetElementState(device.model, elementName, newState)
+func (e *MapBind) SetElementState(elementName, newState string) {
+	e.Map.SetElementState(elementName, newState)
 }
 
-func (e *MapBind) GetElement(device *DeviceBind, elementName string) (element *MapElementBind) {
-	if device == nil {
-		log.Error("device is nil")
-		return
-	}
+func (e *MapBind) GetElement(elementName string) (element *MapElementBind) {
 
-	if device.model == nil {
-		log.Error("device.Model is nil")
-		return
-	}
-
-	mapElement, err := e.Map.GetElement(device.model, elementName)
-	if device.model == nil {
+	mapElement, err := e.Map.GetElement(elementName)
+	if err != nil {
 		log.Error(err.Error())
 		return
 	}
 
 	element = &MapElementBind{mapElement}
-	return
-}
-
-func (e *MapBind) GetElements(device *DeviceBind) (elements []*MapElementBind) {
-
-	elements = make([]*MapElementBind, 0)
-
-	if device == nil {
-		return
-	}
-
-	mapElements := e.Map.GetElements(device.model)
-	for _, mapElement := range mapElements {
-		elements = append(elements, &MapElementBind{mapElement})
-	}
-
 	return
 }
