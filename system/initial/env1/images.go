@@ -229,6 +229,66 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 			Size:     1179,
 			Name:     "door_v1_opened3.svg",
 		},
+		"md_v1_def": {
+			Image:    "3f7482861152f6bf9de3940aa031e7bf.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1686,
+			Name:     "motion_detection_v1_def.svg",
+		},
+		"md_v1_original": {
+			Image:    "763b23acd999eb268deec7320c4b0b88.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1689,
+			Name:     "motion_detection_v1_original.svg",
+		},
+		"md_v1_r": {
+			Image:    "5d6d372b84cb75b80e6447cbc5cecb72.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1685,
+			Name:     "motion_detection_v1_r.svg",
+		},
+		"md_v1_o": {
+			Image:    "0fcdb4e0857adeb71f699b18ce22e403.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1711,
+			Name:     "motion_detection_v1_o.svg",
+		},
+		"md_v1_y": {
+			Image:    "55a011dcd81772b9752470471842d365.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1689,
+			Name:     "motion_detection_v1_y.svg",
+		},
+		"md_v2_def": {
+			Image:    "fe4fad32a33ef2448debab3cf2dc4c6f.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1388,
+			Name:     "motion_detection_v2_def.svg",
+		},
+		"md_v2_original": {
+			Image:    "73125c0ca60b84b647fe5f7bc2833432.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1391,
+			Name:     "motion_detection_v2_original.svg",
+		},
+		"md_v2_r": {
+			Image:    "82799f02881efe45f2a5211ab357e2e2.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1387,
+			Name:     "motion_detection_v2_r.svg",
+		},
+		"md_v2_o": {
+			Image:    "58b1695473e44277c0306a726a601aef.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1391,
+			Name:     "motion_detection_v2_o.svg",
+		},
+		"md_v2_y": {
+			Image:    "aab3542bb028c61a4343bfc4e8c92daf.svg",
+			MimeType: "text/html; charset=utf-8",
+			Size:     1391,
+			Name:     "motion_detection_v2_y.svg",
+		},
 	}
 
 	var err error
@@ -258,6 +318,8 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 				subDir = "map"
 			case strings.Contains(image.Name, "door"):
 				subDir = "door"
+			case strings.Contains(image.Name, "motion_detection"):
+				subDir = "motion_detection"
 			}
 
 			from := path.Join("data", "icons", subDir, image.Name)
