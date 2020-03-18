@@ -72,6 +72,10 @@ func (e *MapElement) SetState(systemName string) {
 	e.elementLock.Lock()
 	defer e.elementLock.Unlock()
 
+	if e.State != nil && e.State.SystemName == systemName {
+		return
+	}
+
 	for _, state := range e.mapElement.Prototype.States {
 		if state.DeviceState.SystemName != systemName {
 			continue
@@ -117,6 +121,10 @@ func (e *MapElement) SetOptions(options interface{}) {
 	}
 
 	e.Options = options
+
+	if e.State == nil {
+		return
+	}
 
 	e.Map.metric.Update(metrics.MapElementSetOption{
 		StateId:      e.State.Id,
