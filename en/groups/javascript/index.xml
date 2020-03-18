@@ -60,9 +60,9 @@ flow = Flow if flow name = flow.GetName() print &#39;flow name&#39;, name  На 
       <guid>https://e154.github.io/smart-home/en/javascript/_map/</guid>
       <description>Map* Возвращает объект карты
 map = Map  Доступные методы приведены далее:
-.SetElementState(device, elementName, newState) Map.SetElementState(device, &#39;dev1_light1&#39;, &#39;ERROR&#39;)  На входе
-   Значение Описание     device type: Object, ссылка на объект DeviceModel{}   elementName type: string, наименование элемента   newState type: string, системное наименование состояния    .GetElement(device, elementName) elements = Map.GetElement(device, &#39;dev1_light1&#39;)  На входе
-   Значение Описание     device type: Object, ссылка на объект Device{}   elementName type: string, наименование элемента    На выходе</description>
+.SetElementState(elementName, newState) Map.SetElementState(&#39;dev1_light1&#39;, &#39;ERROR&#39;)  На входе
+   Значение Описание     elementName type: string, наименование элемента   newState type: string, системное наименование состояния    .GetElement(elementName) element = Map.GetElement(&#39;dev1_light1&#39;)  На входе
+   Значение Описание     elementName type: string, наименование элемента    На выходе</description>
     </item>
     
     <item>

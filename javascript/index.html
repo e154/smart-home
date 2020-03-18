@@ -608,9 +608,9 @@ return if !flow
 
 <p>Доступные методы приведены далее:</p>
 
-<h3 id="map_set_element_state">.SetElementState(device, elementName, newState)</h3>
+<h3 id="map_set_element_state">.SetElementState(elementName, newState)</h3>
 
-<pre><code class="language-coffeescript">Map.SetElementState(device, 'dev1_light1', 'ERROR')
+<pre><code class="language-coffeescript">Map.SetElementState('dev1_light1', 'ERROR')
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -624,11 +624,6 @@ return if !flow
 </thead>
 
 <tbody>
-<tr>
-<td><code>device</code></td>
-<td>type: Object, ссылка на объект <a href="#device">DeviceModel{}</a></td>
-</tr>
-
 <tr>
 <td><code>elementName</code></td>
 <td>type: string, наименование элемента</td>
@@ -641,9 +636,9 @@ return if !flow
 </tbody>
 </table>
 
-<h3 id="map_get_element">.GetElement(device, elementName)</h3>
+<h3 id="map_get_element">.GetElement(elementName)</h3>
 
-<pre><code class="language-coffeescript">elements = Map.GetElement(device, 'dev1_light1')
+<pre><code class="language-coffeescript">element = Map.GetElement('dev1_light1')
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -657,11 +652,6 @@ return if !flow
 </thead>
 
 <tbody>
-<tr>
-<td><code>device</code></td>
-<td>type: Object, ссылка на объект <a href="#device">Device{}</a></td>
-</tr>
-
 <tr>
 <td><code>elementName</code></td>
 <td>type: string, наименование элемента</td>
@@ -681,49 +671,8 @@ return if !flow
 
 <tbody>
 <tr>
-<td><code>elements</code></td>
+<td><code>element</code></td>
 <td>type: Object, ссылка на объектов <a href="#map_element">MapElement{}</a></td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="map_get_element-1">.GetElements(device)</h3>
-
-<pre><code class="language-coffeescript">elements = Map.GetElements(device)
-</code></pre>
-
-<p><strong>На входе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>device</code></td>
-<td>type: Object, ссылка на объект <a href="#device">Device{}</a></td>
-</tr>
-</tbody>
-</table>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>elements</code></td>
-<td>type: Array, массив объектов <a href="#map_element">MapElement{}</a></td>
 </tr>
 </tbody>
 </table>
