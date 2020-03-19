@@ -77,6 +77,9 @@ Languages:
         - title: "Log"
           url: "#log"
 
+        - title: "Action"
+          url: "#action"
+
         - title: "Template()"
           url: "#template"
 
@@ -297,6 +300,9 @@ Languages:
 
         - title: "Log"
           url: "#log"
+
+        - title: "Action"
+          url: "#action"
 
         - title: "Template()"
           url: "#template"
