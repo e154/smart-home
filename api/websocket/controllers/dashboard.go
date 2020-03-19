@@ -30,21 +30,22 @@ import (
 
 type ControllerDashboard struct {
 	*ControllerCommon
-	Nodes     *dashboardModel.Nodes
-	Devices   *dashboardModel.Devices
-	Workflow  *dashboardModel.Workflow
-	Gate      *dashboardModel.Gate
-	Cpu       *dashboardModel.Cpu
-	Flow      *dashboardModel.Flow
-	Memory    *dashboardModel.Memory
-	AppMemory *dashboardModel.AppMemory
-	Uptime    *dashboardModel.Uptime
-	Disk      *dashboardModel.Disk
-	Mqtt      *dashboardModel.Mqtt
-	History   *dashboardModel.History
-	sendLock  *sync.Mutex
-	buf       *bytes.Buffer
-	enc       *json.Encoder
+	Nodes       *dashboardModel.Nodes
+	Devices     *dashboardModel.Devices
+	Workflow    *dashboardModel.Workflow
+	Gate        *dashboardModel.Gate
+	Cpu         *dashboardModel.Cpu
+	Flow        *dashboardModel.Flow
+	Memory      *dashboardModel.Memory
+	AppMemory   *dashboardModel.AppMemory
+	Uptime      *dashboardModel.Uptime
+	Disk        *dashboardModel.Disk
+	Mqtt        *dashboardModel.Mqtt
+	History     *dashboardModel.History
+	Zigbee2Mqtt *dashboardModel.Zigbee2Mqtt
+	sendLock    *sync.Mutex
+	buf         *bytes.Buffer
+	enc         *json.Encoder
 }
 
 func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDashboard) {
@@ -62,6 +63,7 @@ func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDash
 		Disk:             dashboardModel.NewDisk(common.metric),
 		Mqtt:             dashboardModel.NewMqtt(common.metric),
 		History:          dashboardModel.NewHistory(common.metric),
+		Zigbee2Mqtt:      dashboardModel.NewZigbee2Mqtt(common.metric),
 		buf:              bytes.NewBuffer(nil),
 		sendLock:         &sync.Mutex{},
 	}
@@ -117,6 +119,8 @@ func (t *ControllerDashboard) Broadcast(param interface{}) {
 			body, ok = t.Mqtt.Broadcast()
 		case "history":
 			body, ok = t.History.Broadcast()
+		case "zigbee2mqtt":
+			body, ok = t.Zigbee2Mqtt.Broadcast()
 		case "map_element":
 		default:
 			log.Warnf("unknown type %v", v)
@@ -181,6 +185,7 @@ func (t *ControllerDashboard) Telemetry(client stream.IStreamClient, message str
 			"mqtt":           t.metric.Mqtt.Snapshot(),
 			"history":        t.metric.History.Snapshot(),
 			"server_version": t.endpoint.Version.ServerVersion(),
+			"zigbee2mqtt":    t.metric.Zigbee2Mqtt.Snapshot(),
 		},
 	}
 

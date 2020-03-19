@@ -48,6 +48,7 @@ func (d *Zigbee2MqttManager) update(t interface{}) {
 	case Zigbee2MqttDelete:
 		d.total.Dec(v.TotalNum)
 		d.disabled.Dec(v.DisabledNum)
+	case Zigbee2MqttUpdate:
 	default:
 		return
 	}
@@ -70,6 +71,8 @@ type Zigbee2MqttAdd struct {
 	TotalNum    int64
 	DisabledNum int64
 }
+
+type Zigbee2MqttUpdate struct{}
 
 type Zigbee2MqttDelete struct {
 	TotalNum    int64

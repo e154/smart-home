@@ -16,30 +16,24 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package core
+package dashboard_models
 
-// Javascript Binding
-//
-// Map
-//	.SetElementState(elementName, newState)
-//	.GetElement(elementName) -> MapElementBind
-//
-type MapBind struct {
-	Map *Map
+import (
+	"github.com/e154/smart-home/system/metrics"
+)
+
+type Zigbee2Mqtt struct {
+	metric *metrics.MetricManager
 }
 
-func (e *MapBind) SetElementState(elementName, newState string) {
-	e.Map.SetElementState(elementName, newState)
-}
-
-func (e *MapBind) GetElement(elementName string) (element *MapElementBind) {
-
-	mapElement, err := e.Map.GetElement(elementName)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	element = &MapElementBind{mapElement}
+func NewZigbee2Mqtt(metric *metrics.MetricManager) (memory *Zigbee2Mqtt) {
+	memory = &Zigbee2Mqtt{metric: metric}
 	return
+}
+
+func (g *Zigbee2Mqtt) Broadcast() (map[string]interface{}, bool) {
+
+	return map[string]interface{}{
+		"zigbee2mqtt": g.metric.Zigbee2Mqtt.Snapshot(),
+	}, true
 }

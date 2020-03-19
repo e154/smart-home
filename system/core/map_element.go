@@ -31,16 +31,14 @@ import (
 type MapElement struct {
 	Map         *Map
 	Options     interface{}
-	Device      *m.Device
 	State       *m.DeviceState
 	adaptors    *adaptors.Adaptors
 	elementLock *sync.Mutex
 	mapElement  *m.MapElement
 }
 
-func NewMapElement(device *m.Device,
-	elementName string,
-	state *m.DeviceState,
+func NewMapElement(elementName string,
+	systemName *string,
 	_map *Map,
 	adaptors *adaptors.Adaptors) (*MapElement, error) {
 
@@ -49,9 +47,19 @@ func NewMapElement(device *m.Device,
 		return nil, err
 	}
 
+	var state *m.DeviceState
+
+	if systemName != nil {
+		for _, _state := range mapElement.Prototype.Device.States {
+			if _state.SystemName != common.StringValue(systemName) {
+				continue
+			}
+			state = _state
+		}
+	}
+
 	return &MapElement{
 		Map:         _map,
-		Device:      device,
 		State:       state,
 		Options:     nil,
 		mapElement:  mapElement,
@@ -64,18 +72,22 @@ func (e *MapElement) SetState(systemName string) {
 	e.elementLock.Lock()
 	defer e.elementLock.Unlock()
 
-	for _, state := range e.Device.States {
-		if state.SystemName != systemName {
+	if e.State != nil && e.State.SystemName == systemName {
+		return
+	}
+
+	for _, state := range e.mapElement.Prototype.States {
+		if state.DeviceState.SystemName != systemName {
 			continue
 		}
 
-		if e.State != nil && e.State.Id == state.Id {
+		if e.State != nil && e.State.Id == state.DeviceStateId {
 			return
 		}
 
-		e.State = state
+		e.State = state.DeviceState
 
-		go e.updateDeviceHistory(state)
+		go e.updateDeviceHistory(state.DeviceState)
 
 		go e.Map.metric.Update(metrics.MapElementSetState{
 			DeviceId:    e.State.DeviceId,
@@ -87,7 +99,7 @@ func (e *MapElement) SetState(systemName string) {
 			DeviceName:        e.mapElement.Name,
 			DeviceDescription: e.mapElement.Description,
 			Type:              "Info",
-			Description:       state.Description,
+			Description:       state.DeviceState.Description,
 			CreatedAt:         time.Now(),
 		})
 	}
@@ -110,9 +122,13 @@ func (e *MapElement) SetOptions(options interface{}) {
 
 	e.Options = options
 
+	if e.State == nil {
+		return
+	}
+
 	e.Map.metric.Update(metrics.MapElementSetOption{
 		StateId:      e.State.Id,
-		DeviceId:     e.Device.Id,
+		DeviceId:     e.mapElement.Prototype.DeviceId,
 		ElementName:  e.mapElement.Name,
 		StateOptions: options,
 	})
