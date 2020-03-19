@@ -81,7 +81,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript/_log/">English</a>
+                    <a href="https://e154.github.io/smart-home/en/javascript/_action/">English</a>
                 </li>
                 
                 
@@ -98,7 +98,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>log</h1>
+            <h1>action</h1>
             
         </div>
     </div>
@@ -113,11 +113,16 @@
                         
                             
 
-<h2 id="log">Log</h2>
+<h2 id="action">Action</h2>
 
-<p>Логирование состояния.</p>
+<p>Действие.</p>
 
-<pre><code class="language-coffeescript">log = Log
+<pre><code class="language-coffeescript">action = Action
+action.Id
+action.Name
+action.Description
+action.Device()
+action.Node()
 </code></pre>
 
 <p><strong>На выходе</strong></p>
@@ -132,33 +137,31 @@
 
 <tbody>
 <tr>
-<td><code>log</code></td>
-<td>type: Object, ссылка на экземпляр *Log</td>
+<td><code>Id</code></td>
+<td>type: int</td>
+</tr>
+
+<tr>
+<td><code>Name</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>Description</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>Device()</code></td>
+<td>type: Object, ссылка на экземпляр <a href="#device">Device</a></td>
+</tr>
+
+<tr>
+<td><code>Node()</code></td>
+<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
 </tr>
 </tbody>
 </table>
-
-<p>Доступные методы приведены далее:</p>
-
-<h3 id="log_info">.info()</h3>
-
-<pre><code class="language-coffeescript">Log.Info('Info message')
-</code></pre>
-
-<h3 id="log_warn">.warn()</h3>
-
-<pre><code class="language-coffeescript">Log.Warn('Warning message')
-</code></pre>
-
-<h3 id="log_error">.error()</h3>
-
-<pre><code class="language-coffeescript">Log.Error('Error message')
-</code></pre>
-
-<h3 id="log_debug">.debug()</h3>
-
-<pre><code class="language-coffeescript">Log.Debug('Debug message')
-</code></pre>
 
                         
                     </div>
@@ -417,7 +420,7 @@
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/en/javascript/_log/">en</a>
+                <a href="https://e154.github.io/smart-home/en/javascript/_action/">en</a>
             </li>
             
             

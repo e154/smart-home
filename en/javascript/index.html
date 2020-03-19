@@ -752,6 +752,59 @@ if flow
                             
                                 
 
+<h2 id="action">Action</h2>
+
+<p>Действие.</p>
+
+<pre><code class="language-coffeescript">action = Action
+action.Id
+action.Name
+action.Description
+action.Device()
+action.Node()
+</code></pre>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>type: int</td>
+</tr>
+
+<tr>
+<td><code>Name</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>Description</code></td>
+<td>type: string</td>
+</tr>
+
+<tr>
+<td><code>Device()</code></td>
+<td>type: Object, ссылка на экземпляр <a href="#device">Device</a></td>
+</tr>
+
+<tr>
+<td><code>Node()</code></td>
+<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
+</tr>
+</tbody>
+</table>
+
+                            
+                                
+
 <h2 id="template">Template</h2>
 
 <p>Возвращает генератор шаблонов</p>
@@ -1856,6 +1909,15 @@ duplicate = message.GetVar('mqtt_duplicate')
         <li class="bd-toc-item ">
             <a class="bd-toc-link" href="#log">
                 Log
+            </a>
+            <ul class="nav bd-sidenav">
+                
+            </ul>
+        </li>
+        
+        <li class="bd-toc-item ">
+            <a class="bd-toc-link" href="#action">
+                Action
             </a>
             <ul class="nav bd-sidenav">
                 

@@ -11,6 +11,17 @@
     
     
     <item>
+      <title>action</title>
+      <link>https://e154.github.io/smart-home/en/javascript/_action/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://e154.github.io/smart-home/en/javascript/_action/</guid>
+      <description> Action Действие.
+action = Action action.Id action.Name action.Description action.Device() action.Node()  На выходе
+   Значение Описание     Id type: int   Name type: string   Description type: string   Device() type: Object, ссылка на экземпляр Device   Node() type: Object, ссылка на экземпляр Node    </description>
+    </item>
+    
+    <item>
       <title>device</title>
       <link>https://e154.github.io/smart-home/en/javascript/_device/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

@@ -171,6 +171,20 @@
   </url>
   
   <url>
+    <loc>https://e154.github.io/smart-home/javascript/_action/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://e154.github.io/smart-home/en/javascript/_action/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://e154.github.io/smart-home/javascript/_action/"
+                />
+  </url>
+  
+  <url>
     <loc>https://e154.github.io/smart-home/javascript/_template/</loc>
     <xhtml:link
                 rel="alternate"
