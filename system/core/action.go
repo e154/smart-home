@@ -28,15 +28,15 @@ import (
 type Action struct {
 	Device        *m.Device
 	Node          *Node
-	ScriptEngine  *scripts.Engine
 	flow          *Flow
 	scriptService *scripts.ScriptService
-	script        *m.Script
+	ScriptEngine  *scripts.Engine
+	deviceAction  *m.DeviceAction
 	doLock        sync.Mutex
 }
 
 func NewAction(device *m.Device,
-	script *m.Script,
+	deviceAction *m.DeviceAction,
 	node *Node,
 	flow *Flow,
 	scriptService *scripts.ScriptService) (action *Action, err error) {
@@ -46,22 +46,25 @@ func NewAction(device *m.Device,
 		Node:          node,
 		flow:          flow,
 		scriptService: scriptService,
-		script:        script,
+		deviceAction:  deviceAction,
 	}
 
-	err = action.NewScript()
+	err = action.newScript()
 
 	return
 }
 
 func (a *Action) Do() (res string, err error) {
 	a.doLock.Lock()
-	res, err = a.ScriptEngine.EvalScript(a.script)
-	a.doLock.Unlock()
+	defer a.doLock.Unlock()
+	if a.deviceAction.Script == nil {
+		return
+	}
+	res, err = a.ScriptEngine.EvalScript(a.deviceAction.Script)
 	return
 }
 
-func (a *Action) NewScript() (err error) {
+func (a *Action) newScript() (err error) {
 
 	if a.flow != nil {
 		if a.ScriptEngine, err = a.flow.NewScript(); err != nil {
@@ -85,7 +88,12 @@ func (a *Action) NewScript() (err error) {
 		node:  a.Node,
 	})
 
-	a.ScriptEngine.PushStruct("Action", &ActionBind{action: a})
+	a.ScriptEngine.PushStruct("Action", &ActionBind{
+		Id:          a.deviceAction.Id,
+		Name:        a.deviceAction.Name,
+		Description: a.deviceAction.Description,
+		action:      a,
+	})
 
 	return nil
 }

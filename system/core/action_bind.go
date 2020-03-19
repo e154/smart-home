@@ -21,11 +21,17 @@ package core
 // Javascript Binding
 //
 // Action
+//	 .Id
+//	 .Name
+//	 .Description
 //	 .Device()
 //	 .Node()
 //
 type ActionBind struct {
-	action *Action
+	Id          int64
+	Name        string
+	Description string
+	action      *Action
 }
 
 func (a *ActionBind) Device() *DeviceBind {

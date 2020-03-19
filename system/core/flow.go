@@ -389,7 +389,7 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 	for _, device := range devices {
 
 		var action *Action
-		if action, err = NewAction(device, model.DeviceAction.Script, f.Node, f, f.scriptService); err != nil {
+		if action, err = NewAction(device, model.DeviceAction, f.Node, f, f.scriptService); err != nil {
 			log.Error(err.Error())
 			continue
 		}

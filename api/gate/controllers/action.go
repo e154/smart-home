@@ -98,7 +98,7 @@ func (c *ControllerAction) DoAction(client stream.IStreamClient, message stream.
 
 	// action
 	var action *core.Action
-	if action, err = core.NewAction(device, deviceAction.Script, node, nil, c.scripts); err != nil {
+	if action, err = core.NewAction(device, deviceAction, node, nil, c.scripts); err != nil {
 		client.Notify("error", err.Error())
 		return
 	}
