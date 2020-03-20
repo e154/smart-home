@@ -56,12 +56,12 @@ func addScripts(adaptors *adaptors.Adaptors,
 
 	scripts["mb_dev1_condition_check_v1"] = script1
 
-	// light1
+	// mb_dev1_actions
 	// ------------------------------------------------
 	script2 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_on_light1_v1",
-		Source:      MbDev1TurnOnLight1V1,
+		Name:        "mb_dev1_actions",
+		Source:      MbDev1ActionsV1,
 		Description: "turn on light1",
 	}
 	ok, _ = script2.Valid()
@@ -76,77 +76,15 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script2, err = adaptors.Script.GetById(script2Id)
 	So(err, ShouldBeNil)
 
-	scripts["mb_dev1_turn_on_light1_v1"] = script2
+	scripts["mb_dev1_actions"] = script2
 
-	script3 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_off_light1_v1",
-		Source:      MbDev1TurnOffLight1V1,
-		Description: "turn off light1",
-	}
-	ok, _ = script3.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine3, err := scriptService.NewEngine(script3)
-	So(err, ShouldBeNil)
-	err = engine3.Compile()
-	So(err, ShouldBeNil)
-	script3Id, err := adaptors.Script.Add(script3)
-	So(err, ShouldBeNil)
-	script3, err = adaptors.Script.GetById(script3Id)
-	So(err, ShouldBeNil)
-
-	scripts["mb_dev1_turn_off_light1_v1"] = script3
-
-	// light2
-	// ------------------------------------------------
-	script8 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_on_light2_v1",
-		Source:      MbDev1TurnOnLight2V1,
-		Description: "turn on light2",
-	}
-	ok, _ = script8.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine8, err := scriptService.NewEngine(script8)
-	So(err, ShouldBeNil)
-	err = engine8.Compile()
-	So(err, ShouldBeNil)
-	script8Id, err := adaptors.Script.Add(script8)
-	So(err, ShouldBeNil)
-	script8, err = adaptors.Script.GetById(script8Id)
-	So(err, ShouldBeNil)
-
-	scripts["mb_dev1_turn_on_light2_v1"] = script8
-
-	script9 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_off_light2_v1",
-		Source:      MbDev1TurnOffLight2V1,
-		Description: "turn off light2",
-	}
-	ok, _ = script9.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine9, err := scriptService.NewEngine(script9)
-	So(err, ShouldBeNil)
-	err = engine9.Compile()
-	So(err, ShouldBeNil)
-	script9Id, err := adaptors.Script.Add(script9)
-	So(err, ShouldBeNil)
-	script9, err = adaptors.Script.GetById(script9Id)
-	So(err, ShouldBeNil)
-
-	scripts["mb_dev1_turn_off_light2_v1"] = script9
-
-	// light3
+	// mi_pir_sensor
 	// ------------------------------------------------
 	script10 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_on_light3_v1",
-		Source:      MbDev1TurnOnLight3V1,
-		Description: "turn on light3",
+		Name:        "mi_pir_sensor",
+		Source:      MiPirSensor,
+		Description: "mi pir sensor",
 	}
 	ok, _ = script10.Valid()
 	So(ok, ShouldEqual, true)
@@ -160,35 +98,15 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script10, err = adaptors.Script.GetById(script10Id)
 	So(err, ShouldBeNil)
 
-	scripts["mb_dev1_turn_on_light3_v1"] = script10
+	scripts["mi_pir_sensor"] = script10
 
-	script11 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_off_light3_v1",
-		Source:      MbDev1TurnOffLight3V1,
-		Description: "turn off light3",
-	}
-	ok, _ = script11.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine11, err := scriptService.NewEngine(script11)
-	So(err, ShouldBeNil)
-	err = engine11.Compile()
-	So(err, ShouldBeNil)
-	script11Id, err := adaptors.Script.Add(script11)
-	So(err, ShouldBeNil)
-	script11, err = adaptors.Script.GetById(script11Id)
-	So(err, ShouldBeNil)
-
-	scripts["mb_dev1_turn_off_light3_v1"] = script11
-
-	// light4
+	// mi_pir_sensor
 	// ------------------------------------------------
 	script12 := &m.Script{
 		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_on_light4_v1",
-		Source:      MbDev1TurnOnLight4V1,
-		Description: "turn on light4",
+		Name:        "mi_door_sensor",
+		Source:      MiDoorSensor,
+		Description: "mi door sensor",
 	}
 	ok, _ = script12.Valid()
 	So(ok, ShouldEqual, true)
@@ -202,69 +120,7 @@ func addScripts(adaptors *adaptors.Adaptors,
 	script12, err = adaptors.Script.GetById(script12Id)
 	So(err, ShouldBeNil)
 
-	scripts["mb_dev1_turn_on_light4_v1"] = script12
-
-	script13 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_off_light4_v1",
-		Source:      MbDev1TurnOffLight4V1,
-		Description: "turn off light4",
-	}
-	ok, _ = script13.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine13, err := scriptService.NewEngine(script13)
-	So(err, ShouldBeNil)
-	err = engine13.Compile()
-	So(err, ShouldBeNil)
-	script13Id, err := adaptors.Script.Add(script13)
-	So(err, ShouldBeNil)
-	script13, err = adaptors.Script.GetById(script13Id)
-	So(err, ShouldBeNil)
-
-	scripts["mb_dev1_turn_off_light4_v1"] = script13
-
-	// fan1
-	// ------------------------------------------------
-	script14 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_on_fan1_v1",
-		Source:      MbDev1TurnOnFan1V1,
-		Description: "turn on fan1",
-	}
-	ok, _ = script14.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine14, err := scriptService.NewEngine(script14)
-	So(err, ShouldBeNil)
-	err = engine14.Compile()
-	So(err, ShouldBeNil)
-	script14Id, err := adaptors.Script.Add(script14)
-	So(err, ShouldBeNil)
-	script14, err = adaptors.Script.GetById(script14Id)
-	So(err, ShouldBeNil)
-
-	scripts["mb_dev1_turn_on_fan1_v1"] = script14
-
-	script15 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_off_fan1_v1",
-		Source:      MbDev1TurnOffFan1V1,
-		Description: "turn off fan1",
-	}
-	ok, _ = script15.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine15, err := scriptService.NewEngine(script15)
-	So(err, ShouldBeNil)
-	err = engine15.Compile()
-	So(err, ShouldBeNil)
-	script15Id, err := adaptors.Script.Add(script15)
-	So(err, ShouldBeNil)
-	script15, err = adaptors.Script.GetById(script15Id)
-	So(err, ShouldBeNil)
-
-	scripts["mb_dev1_turn_off_fan1_v1"] = script15
+	scripts["mi_door_sensor"] = script12
 
 	// cmd_condition_check_v1
 	// ------------------------------------------------
@@ -464,31 +320,31 @@ fetchStatus =->
     if res.error
         print 'error: ', res.error
         objects.forEach (obj)->
-            Map.SetElementState Device, obj.name, 'ERROR'
+            Map.SetElementState obj.name, 'ERROR'
             return
         temps.forEach (obj)->
-            Map.SetElementState Device, obj.name, 'ERROR'
+            Map.SetElementState obj.name, 'ERROR'
             return
         doors.forEach (obj)->
-            Map.SetElementState Device, obj.name, 'ERROR'
+            Map.SetElementState obj.name, 'ERROR'
             return
         return
     else 
         # print 'ok: ', res.result
         objects.forEach (obj)->
             newStatus = getStatus(res.Result[obj.id])
-            Map.SetElementState Device, obj.name, obj.systemName + newStatus
+            Map.SetElementState obj.name, obj.systemName + newStatus
             return
             
         doors.forEach (obj)->
             newStatus = doorStatus(res.Result[obj.id])
-            Map.SetElementState Device, obj.name, obj.systemName + newStatus
+            Map.SetElementState obj.name, obj.systemName + newStatus
             return
         
         temps.forEach (obj)->
-            Map.SetElementState Device, obj.name, obj.systemName + 'ON'
+            Map.SetElementState obj.name, obj.systemName + 'ON'
 
-            element = Map.GetElement Device, obj.name
+            element = Map.GetElement obj.name
             temp = if res.Result[obj.id] then res.Result[obj.id] else 0
             element.SetOptions {'text': temp}
             return
@@ -500,134 +356,62 @@ main =->
 
 main()
 `
-const MbDev1TurnOnLight1V1 = `
-# turn on first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 0, 1, [1]
+const MbDev1ActionsV1 = `
+writeRegisters =(d, c, r)->
+    res = Device.ModBus 'WriteMultipleRegisters', d, c, r
     if res.error
         print 'error: ', res.error
 
 main =->
-    fetchStatus()
-
-main()
-`
-const MbDev1TurnOffLight1V1 = `
-# turn off first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 0, 1, [0]
-    if res.error
-        print 'error: ', res.error
-
-main =->
-    fetchStatus()
-
-main()
-`
-const MbDev1TurnOnLight2V1 = `
-# turn on first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 1, 1, [1]
-    if res.error
-        print 'error: ', res.error
-
-main =->
-    fetchStatus()
-
-main()
-`
-const MbDev1TurnOffLight2V1 = `
-# turn off first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 1, 1, [0]
-    if res.error
-        print 'error: ', res.error
-
-main =->
-    fetchStatus()
-
-main()
-`
-const MbDev1TurnOnLight3V1 = `
-# turn on first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 2, 1, [1]
-    if res.error
-        print 'error: ', res.error
-
-main =->
-    fetchStatus()
-
-main()
-`
-const MbDev1TurnOffLight3V1 = `
-# turn off first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 2, 1, [0]
-    if res.error
-        print 'error: ', res.error
-
-main =->
-    fetchStatus()
-
-main()
-`
-const MbDev1TurnOnLight4V1 = `
-# turn on first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 3, 1, [1]
-    if res.error
-        print 'error: ', res.error
-
-main =->
-    fetchStatus()
-
-main()
-`
-const MbDev1TurnOffLight4V1 = `
-# turn off first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 3, 1, [0]
-    if res.error
-        print 'error: ', res.error
-
-main =->
-    fetchStatus()
+    switch Action.Name
+        when "turn on light1" then writeRegisters(0, 1, [1])
+        when "turn off light1" then writeRegisters(0, 1, [0])
+        when "turn on light2" then writeRegisters(1, 1, [1])
+        when "turn off light2" then writeRegisters(1, 1, [0])
+        when "turn on light3" then writeRegisters(2, 1, [1])
+        when "turn off light3" then writeRegisters(2, 1, [0])
+        when "turn on light4" then writeRegisters(3, 1, [1])
+        when "turn off light4" then writeRegisters(3, 1, [0])
+        when "turn on fan1" then writeRegisters(4, 1, [1])
+        when "turn off fan1" then writeRegisters(4, 1, [0])
+        when "turn on all lights" then writeRegisters(0, 4, [1,1,1,1])
+        when "turn off all lights" then writeRegisters(0, 4, [0,0,0,0])
 
 main()
 `
 
-const MbDev1TurnOnFan1V1 = `
-# turn on first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 4, 1, [1]
-    if res.error
-        print 'error: ', res.error
+const MiPirSensor = `
+options = 
+    text:'' 
+stateStatus = 'SILENCE'
 
 main =->
-    fetchStatus()
+    return if !message.Mqtt
+    payload = JSON.parse(message.GetVar('mqtt_payload'))
+    
+    if payload['occupancy']
+        stateStatus = 'OCCUPANCY'
+    if payload['battery'] < 50
+        stateStatus = 'WARNING'
+        options.text = 'battery:'+ payload['battery']
 
 main()
 `
-const MbDev1TurnOffFan1V1 = `
-# turn off first light
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 4, 1, [0]
-    if res.error
-        print 'error: ', res.error
+
+const MiDoorSensor = `
+options = 
+    text:'' 
+stateStatus = 'CLOSED'
 
 main =->
-    fetchStatus()
+    return if !message.Mqtt
+    payload = JSON.parse(message.GetVar('mqtt_payload'))
+    
+    if !payload['contact']
+        stateStatus = 'OPENED'
+    if payload['battery'] < 50
+        stateStatus = 'WARNING'
+        options.text = 'battery:'+ payload['battery']
 
 main()
 `

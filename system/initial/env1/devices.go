@@ -81,7 +81,7 @@ func devices(node1 *m.Node,
 	deviceAction2 := &m.DeviceAction{
 		Name:     "turn on light1",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_on_light1_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction2.Valid()
 	So(ok, ShouldEqual, true)
@@ -92,7 +92,7 @@ func devices(node1 *m.Node,
 	deviceAction3 := &m.DeviceAction{
 		Name:     "turn off light1",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_off_light1_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction3.Valid()
 	So(ok, ShouldEqual, true)
@@ -104,7 +104,7 @@ func devices(node1 *m.Node,
 	deviceAction4 := &m.DeviceAction{
 		Name:     "turn on light2",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_on_light2_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction4.Valid()
 	So(ok, ShouldEqual, true)
@@ -115,7 +115,7 @@ func devices(node1 *m.Node,
 	deviceAction5 := &m.DeviceAction{
 		Name:     "turn off light2",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_off_light2_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction5.Valid()
 	So(ok, ShouldEqual, true)
@@ -127,7 +127,7 @@ func devices(node1 *m.Node,
 	deviceAction6 := &m.DeviceAction{
 		Name:     "turn on light3",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_on_light3_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction6.Valid()
 	So(ok, ShouldEqual, true)
@@ -138,7 +138,7 @@ func devices(node1 *m.Node,
 	deviceAction7 := &m.DeviceAction{
 		Name:     "turn off light3",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_off_light3_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction7.Valid()
 	So(ok, ShouldEqual, true)
@@ -150,7 +150,7 @@ func devices(node1 *m.Node,
 	deviceAction8 := &m.DeviceAction{
 		Name:     "turn on light4",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_on_light4_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction8.Valid()
 	So(ok, ShouldEqual, true)
@@ -161,7 +161,7 @@ func devices(node1 *m.Node,
 	deviceAction9 := &m.DeviceAction{
 		Name:     "turn off light4",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_off_light4_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction9.Valid()
 	So(ok, ShouldEqual, true)
@@ -173,7 +173,7 @@ func devices(node1 *m.Node,
 	deviceAction10 := &m.DeviceAction{
 		Name:     "turn on fan1",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_on_fan1_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction10.Valid()
 	So(ok, ShouldEqual, true)
@@ -184,7 +184,7 @@ func devices(node1 *m.Node,
 	deviceAction11 := &m.DeviceAction{
 		Name:     "turn off fan1",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_off_fan1_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction11.Valid()
 	So(ok, ShouldEqual, true)
@@ -196,7 +196,7 @@ func devices(node1 *m.Node,
 	deviceAction12 := &m.DeviceAction{
 		Name:     "turn on all lights",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_on_all_lights_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction12.Valid()
 	So(ok, ShouldEqual, true)
@@ -207,7 +207,7 @@ func devices(node1 *m.Node,
 	deviceAction13 := &m.DeviceAction{
 		Name:     "turn off all lights",
 		DeviceId: device1.Id,
-		ScriptId: scripts["mb_dev1_turn_off_all_lights_v1"].Id,
+		ScriptId: scripts["mb_dev1_actions"].Id,
 	}
 	ok, _ = deviceAction13.Valid()
 	So(ok, ShouldEqual, true)
