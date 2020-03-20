@@ -232,48 +232,6 @@ func addScripts(adaptors *adaptors.Adaptors,
 
 	scripts["wflow_script_v1"] = script16
 
-	// controll all lights
-	// ------------------------------------------------
-	script17 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_on_all_lights_v1",
-		Source:      MbDev1TurnOnAllLightsV1,
-		Description: "turn on all lights",
-	}
-	ok, _ = script17.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine17, err := scriptService.NewEngine(script17)
-	So(err, ShouldBeNil)
-	err = engine17.Compile()
-	So(err, ShouldBeNil)
-	script17Id, err := adaptors.Script.Add(script17)
-	So(err, ShouldBeNil)
-	script17, err = adaptors.Script.GetById(script17Id)
-	So(err, ShouldBeNil)
-
-	scripts["mb_dev1_turn_on_all_lights_v1"] = script17
-
-	script18 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mb_dev1_turn_off_all_lights_v1",
-		Source:      MbDev1TurnOffAllLightsV1,
-		Description: "turn off all lights",
-	}
-	ok, _ = script18.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine18, err := scriptService.NewEngine(script18)
-	So(err, ShouldBeNil)
-	err = engine18.Compile()
-	So(err, ShouldBeNil)
-	script18Id, err := adaptors.Script.Add(script18)
-	So(err, ShouldBeNil)
-	script18, err = adaptors.Script.GetById(script18Id)
-	So(err, ShouldBeNil)
-
-	scripts["mb_dev1_turn_off_all_lights_v1"] = script18
-
 	return
 }
 
@@ -499,30 +457,3 @@ const WflowScriptV1 = `
 WFLOW_VAR1 = 'workflow1'
 `
 
-const MbDev1TurnOnAllLightsV1 = `
-# turn on all lights
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 0, 4, [1,1,1,1]
-    if res.error
-        print 'error: ', res.error
-
-main =->
-    fetchStatus()
-
-main()
-`
-
-const MbDev1TurnOffAllLightsV1 = `
-# turn off all lights
-fetchStatus =->
-    
-    res = Device.ModBus 'WriteMultipleRegisters', 0, 4, [0,0,0,0]
-    if res.error
-        print 'error: ', res.error
-
-main =->
-    fetchStatus()
-
-main()
-`
