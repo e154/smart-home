@@ -41,28 +41,31 @@ func NewGracefulServicePool(cfg *GracefulServiceConfig) *GracefulServicePool {
 
 func (h *GracefulServicePool) subscribe(client IGracefulClient) (id int) {
 	h.m.Lock()
+	defer h.m.Unlock()
+
 	id = len(h.clients)
 	h.clients[id] = client
-	h.m.Unlock()
 	return
 }
 
 func (h *GracefulServicePool) unsubscribe(id int) {
 	h.m.Lock()
+	defer h.m.Unlock()
+
 	if _, ok := h.clients[id]; ok {
 		delete(h.clients, id)
 	}
-	h.m.Unlock()
 }
 
 func (h *GracefulServicePool) shutdown() {
 	h.m.Lock()
+	defer h.m.Unlock()
+
 	i := len(h.clients)
-	for ;i>=0;i-- {
+	for ; i >= 0; i-- {
 		client := h.clients[i]
 		if client != nil {
 			client.Shutdown()
 		}
 	}
-	h.m.Unlock()
 }
