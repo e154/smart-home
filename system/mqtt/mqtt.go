@@ -45,7 +45,6 @@ var (
 type Mqtt struct {
 	cfg           *MqttConfig
 	server        IMQTT
-	clients       []*mqtt_client.Client
 	authenticator *mqtt_authenticator.Authenticator
 	management    *management.Management
 	metric        *metrics.MetricManager
@@ -132,28 +131,27 @@ func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err er
 		return
 	}
 
-	m.clients = append(m.clients, c)
-
 	return
 }
 
 func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
-	log.Debugf("%v connected...", client.OptionsReader().ClientID())
+	log.Debugf("connected... %v", client.OptionsReader().ClientID())
 }
 
 func (m *Mqtt) OnClose(ctx context.Context, client gmqtt.Client, err error) {
-	log.Debugf("%v disconnected...", client.OptionsReader().ClientID())
+	log.Debugf("disconnected... %v", client.OptionsReader().ClientID())
 }
 
 func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {
-	log.Debug("session created...")
+	log.Debugf("session created... %v", client.OptionsReader().ClientID())
 }
 
 func (m *Mqtt) OnSessionResumed(ctx context.Context, client gmqtt.Client) {
-	log.Debug("session resumed...")
+	log.Debugf("session resumed... %v", client.OptionsReader().ClientID())
 }
 
 func (m *Mqtt) OnConnect(ctx context.Context, client gmqtt.Client) (code uint8) {
+	log.Debugf("connect... %v", client.OptionsReader().ClientID())
 
 	username := client.OptionsReader().Username()
 	password := client.OptionsReader().Password()
