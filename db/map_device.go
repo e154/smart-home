@@ -19,8 +19,8 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"time"
 )
 
@@ -29,16 +29,15 @@ type MapDevices struct {
 }
 
 type MapDevice struct {
-	Id         int64 `gorm:"primary_key"`
-	SystemName string
-	Image      *Image
-	ImageId    int64
-	Device     *Device
-	DeviceId   int64
-	States     []*MapDeviceState
-	Actions    []*MapDeviceAction
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	Id        int64 `gorm:"primary_key"`
+	Image     *Image
+	ImageId   int64
+	Device    *Device
+	DeviceId  int64
+	States    []*MapDeviceState
+	Actions   []*MapDeviceAction
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (d *MapDevice) TableName() string {
@@ -56,14 +55,6 @@ func (n MapDevices) Add(v *MapDevice) (id int64, err error) {
 func (n MapDevices) GetById(mapId int64) (v *MapDevice, err error) {
 	v = &MapDevice{Id: mapId}
 	err = n.Db.First(&v).Error
-	return
-}
-
-func (n MapDevices) Update(m *MapDevice) (err error) {
-	err = n.Db.Model(&MapDevice{Id: m.Id}).Updates(map[string]interface{}{
-		"system_name": m.SystemName,
-		"device_id":   m.DeviceId,
-	}).Error
 	return
 }
 

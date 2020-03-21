@@ -66,7 +66,6 @@ func (n *MapDevice) Delete(mapId int64) (err error) {
 func (n *MapDevice) fromDb(dbVer *db.MapDevice) (ver *m.MapDevice) {
 	ver = &m.MapDevice{
 		Id:         dbVer.Id,
-		SystemName: dbVer.SystemName,
 		DeviceId:   dbVer.DeviceId,
 		ImageId:    dbVer.ImageId,
 		Actions:    make([]*m.MapDeviceAction, 0),
@@ -107,7 +106,6 @@ func (n *MapDevice) fromDb(dbVer *db.MapDevice) (ver *m.MapDevice) {
 func (n *MapDevice) toDb(ver *m.MapDevice) (dbVer *db.MapDevice) {
 	dbVer = &db.MapDevice{
 		Id:         ver.Id,
-		SystemName: ver.SystemName,
 		DeviceId:   ver.DeviceId,
 	}
 	if ver.ImageId != 0 {
