@@ -44,7 +44,6 @@ func NewPublisher() (t *Publisher) {
 }
 
 func (p *Publisher) Subscribe(command string, f ISubscriber) {
-	log.Infof("subscribe %s", command)
 	p.Lock()
 	defer p.Unlock()
 	if p.subscribers[command] != nil {
