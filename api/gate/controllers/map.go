@@ -51,7 +51,7 @@ func (c *ControllerMap) Start() {
 }
 
 func (c *ControllerMap) Stop() {
-	c.metric.Subscribe("map2", c)
+	c.metric.UnSubscribe("map2")
 	c.gate.UnSubscribe("map.get.devices")
 }
 

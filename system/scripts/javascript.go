@@ -22,8 +22,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dop251/goja"
-	"github.com/dop251/goja_nodejs/require"
 	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/scripts/eventloop"
 	"strings"
 	"sync"
 )
@@ -36,6 +36,7 @@ type Javascript struct {
 	engine       *Engine
 	compiler     string
 	vm           *goja.Runtime
+	loop         *eventloop.EventLoop
 	program      *goja.Program
 	lockPrograms sync.Mutex
 	programs     map[string]*goja.Program
@@ -43,7 +44,8 @@ type Javascript struct {
 
 func NewJavascript(engine *Engine) *Javascript {
 	return &Javascript{
-		engine:   engine,
+		engine: engine,
+
 		programs: make(map[string]*goja.Program),
 	}
 }
@@ -51,8 +53,7 @@ func NewJavascript(engine *Engine) *Javascript {
 func (j *Javascript) Init() (err error) {
 
 	j.vm = goja.New()
-	registry := new(require.Registry) // this can be shared by multiple runtimes
-	registry.Enable(j.vm)
+	j.loop = eventloop.NewEventLoop(j.vm)
 
 	j.bind()
 
@@ -183,11 +184,7 @@ func (j *Javascript) coffeeCompile() (result goja.Value, err error) {
 }
 
 func (j *Javascript) Do() (result string, err error) {
-	var value goja.Value
-	if value, err = j.vm.RunProgram(j.program); err != nil {
-		return
-	}
-	result = value.String()
+	result, err = j.unsafeRun(j.program)
 	return
 }
 
@@ -217,12 +214,7 @@ func (j *Javascript) EvalString(src string) (result string, err error) {
 		return
 	}
 
-	var value goja.Value
-	if value, err = j.vm.RunProgram(program); err != nil {
-		return
-	}
-
-	result = value.String()
+	result, err = j.unsafeRun(program)
 
 	return
 }
@@ -319,8 +311,27 @@ func (j *Javascript) RunProgram(name string) (result string, err error) {
 		err = ErrorProgramNotFound
 		return
 	}
+
+	result, err = j.unsafeRun(program)
+
+	return
+}
+
+func (j *Javascript) unsafeRun(program *goja.Program) (result string, err error) {
+
 	var value goja.Value
-	if value, err = j.vm.RunProgram(program); err != nil {
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+
+	j.loop.Run(func(vm *goja.Runtime) {
+		value, err = vm.RunProgram(program)
+		wg.Done()
+	})
+
+	wg.Wait()
+
+	if err != nil {
 		return
 	}
 

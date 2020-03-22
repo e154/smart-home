@@ -42,7 +42,7 @@ func (d *Devices) Broadcast() (map[string]interface{}, bool) {
 
 // only on request: 'dashboard.get.devices.states'
 //
-func (d *Devices) streamGetDevicesStates(client *stream.Client, value interface{}) {
+func (d *Devices) streamGetDevicesStates(client stream.IStreamClient, value interface{}) {
 
 	v, ok := reflect.ValueOf(value).Interface().(map[string]interface{})
 	if !ok {
@@ -51,5 +51,5 @@ func (d *Devices) streamGetDevicesStates(client *stream.Client, value interface{
 
 	msg, _ := json.Marshal(map[string]interface{}{"id": v["id"], "states": d.metric.Device.Snapshot()})
 
-	client.Send <- msg
+	client.Write(msg)
 }

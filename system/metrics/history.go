@@ -32,15 +32,16 @@ type History struct {
 type HistoryManager struct {
 	publisher  IPublisher
 	adaptors   *adaptors.Adaptors
-	updateLock sync.Mutex
+	updateLock *sync.Mutex
 	queue      *deque.Deque
 }
 
 func NewHistoryManager(publisher IPublisher, adaptors *adaptors.Adaptors) *HistoryManager {
 	manager := &HistoryManager{
-		publisher: publisher,
-		adaptors:  adaptors,
-		queue:     &deque.Deque{},
+		publisher:  publisher,
+		adaptors:   adaptors,
+		queue:      &deque.Deque{},
+		updateLock: &sync.Mutex{},
 	}
 	manager.init()
 	return manager

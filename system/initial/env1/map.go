@@ -125,9 +125,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// light1
 	// ------------------------------------------------
 	devLight1 := &m.MapDevice{
-		SystemName: "DEV1_LIGHT1",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["lamp_v1_def"].Id,
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["lamp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_light1_on"].Id,
@@ -156,7 +155,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 
 	ok, _ = devLight1.Valid()
 	mapElementLight1 := &m.MapElement{
-		Name: "dev1_light1",
+		Name:        "dev1_light1",
 		Description: "Light1 in the hall",
 		Prototype: m.Prototype{
 			MapDevice: devLight1,
@@ -182,9 +181,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// light2
 	// ------------------------------------------------
 	devLight2 := &m.MapDevice{
-		SystemName: "DEV1_LIGHT2",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["lamp_v1_def"].Id,
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["lamp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_light2_on"].Id,
@@ -211,7 +209,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementLight2 := &m.MapElement{
-		Name: "dev1_light2",
+		Name:        "dev1_light2",
 		Description: "Light2 in the hall",
 		Prototype: m.Prototype{
 			MapDevice: devLight2,
@@ -237,9 +235,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// light3
 	// ------------------------------------------------
 	devLight3 := &m.MapDevice{
-		SystemName: "DEV1_LIGHT3",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["lamp_v1_def"].Id,
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["lamp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_light3_on"].Id,
@@ -266,7 +263,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementLight3 := &m.MapElement{
-		Name: "dev1_light3",
+		Name:        "dev1_light3",
 		Description: "Light3 in the hall",
 		Prototype: m.Prototype{
 			MapDevice: devLight3,
@@ -292,9 +289,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// light4
 	// ------------------------------------------------
 	devLight4 := &m.MapDevice{
-		SystemName: "DEV1_LIGHT4",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["lamp_v1_def"].Id,
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["lamp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_light4_on"].Id,
@@ -321,7 +317,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementLight4 := &m.MapElement{
-		Name: "dev1_light4",
+		Name:        "dev1_light4",
 		Description: "Light in the kitchen",
 		Prototype: m.Prototype{
 			MapDevice: devLight4,
@@ -344,14 +340,12 @@ func addMaps(adaptors *adaptors.Adaptors,
 	mapElementLight4.Id, err = adaptors.MapElement.Add(mapElementLight4)
 	So(err, ShouldBeNil)
 
-
 	// controller all lights
 	// ------------------------------------------------
 	devLightCtrl := &m.MapDevice{
-		SystemName: "DEV1_LIGHT_CTRL",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["lamp_v1_def"].Id,
-		States: []*m.MapDeviceState{},
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["lamp_v1_def"].Id,
+		States:   []*m.MapDeviceState{},
 		Actions: []*m.MapDeviceAction{
 			{
 				DeviceActionId: deviceActions["mb_dev1_turn_on_all_lights_v1"].Id,
@@ -364,7 +358,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementLightCtrl := &m.MapElement{
-		Name: "dev1_light_ctrl",
+		Name:        "dev1_light_ctrl",
 		Description: "controller all lights",
 		Prototype: m.Prototype{
 			MapDevice: devLightCtrl,
@@ -390,9 +384,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// fan5
 	// ------------------------------------------------
 	devFan1 := &m.MapDevice{
-		SystemName: "DEV1_FAN1",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["fan_v1_def"].Id,
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["fan_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_fan1_on"].Id,
@@ -419,7 +412,7 @@ func addMaps(adaptors *adaptors.Adaptors,
 		},
 	}
 	mapElementFan1 := &m.MapElement{
-		Name: "dev1_fan1",
+		Name:        "dev1_fan1",
 		Description: "fan in the kitchen",
 		Prototype: m.Prototype{
 			MapDevice: devFan1,
@@ -445,9 +438,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// temp1
 	// ------------------------------------------------
 	dev1Temp1 := &m.MapDevice{
-		SystemName: "DEV1_TEMP1",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["temp_v1_def"].Id,
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["temp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_temp1_on"].Id,
@@ -490,9 +482,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// temp2
 	// ------------------------------------------------
 	dev1Temp2 := &m.MapDevice{
-		SystemName: "DEV1_TEMP2",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["temp_v1_def"].Id,
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["temp_v1_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["dev1_temp2_on"].Id,
@@ -562,9 +553,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// map element main gate
 	// ------------------------------------------------
 	dev1MainGate := &m.MapDevice{
-		SystemName: "DEV1_DOOR_MAIN",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["door_v1_closed_def"].Id,
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["door_v1_closed_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["state_main_gate_opened"].Id,
@@ -607,9 +597,8 @@ func addMaps(adaptors *adaptors.Adaptors,
 	// map element second gate
 	// ------------------------------------------------
 	dev1SecondGate := &m.MapDevice{
-		SystemName: "DEV1_DOOR_SECOND",
-		DeviceId:   devices[0].Id,
-		ImageId:    imageList["door_v1_closed_def"].Id,
+		DeviceId: devices[0].Id,
+		ImageId:  imageList["door_v1_closed_def"].Id,
 		States: []*m.MapDeviceState{
 			{
 				DeviceStateId: deviceStates["state_second_gate_opened"].Id,

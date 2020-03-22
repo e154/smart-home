@@ -41,17 +41,28 @@ func NewGateManager(publisher IPublisher) *GateManager {
 func (d *GateManager) update(t interface{}) {
 	switch v := t.(type) {
 	case GateUpdate:
-		d.updateLock.Lock()
-		if v.Status != "" {
-			d.status = v.Status
+		if !d.selfUpdate(v) {
+			return
 		}
-		d.accessToken = v.AccessToken
-		d.updateLock.Unlock()
 	default:
 		return
 	}
 
 	d.broadcast()
+}
+
+func (d *GateManager) selfUpdate(v GateUpdate) (broadcast bool) {
+	d.updateLock.Lock()
+	defer d.updateLock.Unlock()
+
+	broadcast = d.status != v.Status || d.accessToken != v.AccessToken
+
+	if v.Status != "" {
+		d.status = v.Status
+	}
+	d.accessToken = v.AccessToken
+
+	return
 }
 
 func (d *GateManager) Snapshot() Gate {
