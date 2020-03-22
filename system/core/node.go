@@ -25,8 +25,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/mqtt_client"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"sync"
 	"time"
 )
@@ -36,8 +34,7 @@ type Nodes []*Node
 type Node struct {
 	*m.Node
 	sync.Mutex
-	mqttClient *mqtt_client.Client
-	mqtt       *mqtt.Mqtt
+	mqttClient *mqtt.Client
 	stat       NodeStat
 	quit       chan struct{}
 	ch         map[int64]chan *NodeResponse
@@ -55,10 +52,10 @@ func NewNode(model *m.Node,
 			ConnStatus: "disabled",
 			LastPing:   time.Now(),
 		},
-		ch:     make(map[int64]chan *NodeResponse, 0),
-		mqtt:   mqtt,
-		quit:   make(chan struct{}),
-		metric: metric,
+		ch:         make(map[int64]chan *NodeResponse, 0),
+		quit:       make(chan struct{}),
+		metric:     metric,
+		mqttClient: mqtt.NewClient(fmt.Sprintf("node_%v", model.Name)),
 	}
 
 	go func() {
@@ -103,16 +100,6 @@ func (n *Node) Remove() {
 	log.Infof("Remove node %v", n.Id)
 
 	n.quit <- struct{}{}
-
-	if n.mqttClient != nil {
-		n.mqttClient.UnsubscribeAll()
-		n.mqttClient.Disconnect()
-		n.mqttClient = nil
-	}
-
-	//if _, err := n.mqtt.Management().GetClient(n.Node.Login); err == nil {
-	//	_ = n.mqtt.Management().CloseClient(n.Node.Login)
-	//}
 }
 
 func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err error) {
@@ -198,55 +185,10 @@ func (n *Node) delCh(deviceId int64) {
 
 func (n *Node) Connect() *Node {
 
-	n.Lock()
-	defer n.Unlock()
-
-	var err error
-	if n.mqttClient == nil {
-		log.Info("create new mqtt client...")
-
-		cfg := &mqtt_client.Config{
-			KeepAlive:      5,
-			PingTimeout:    5,
-			ConnectTimeout: 5,
-			Qos:            0,
-			CleanSession:   false,
-			ClientID:       mqtt_client.ClientIdGen("node", n.Id),
-		}
-
-		if n.mqttClient, err = n.mqtt.NewClient(cfg); err != nil {
-			log.Error(err.Error())
-		}
-	}
-
-	if !n.mqttClient.IsConnected() {
-		if err = n.mqttClient.Connect(); err != nil {
-			log.Error(err.Error())
-		}
-	}
-
-	// /home/node/resp
-	if err := n.mqttClient.Subscribe(n.topic("resp"), 0, n.onPublish); err != nil {
-		log.Warn(err.Error())
-	}
-
-	// /home/node/ping
-	if err := n.mqttClient.Subscribe(n.topic("ping"), 0, n.ping); err != nil {
-		log.Warn(err.Error())
-	}
+	n.mqttClient.Subscribe(n.topic("resp"), n.onPublish)
+	n.mqttClient.Subscribe(n.topic("ping"), n.ping)
 
 	return n
-}
-
-func (n *Node) Disconnect() {
-	n.Lock()
-	defer n.Unlock()
-
-	if n.mqttClient != nil {
-		n.mqttClient.Disconnect()
-		//n.mqttClient = nil
-	}
-
 }
 
 func (n *Node) IsConnected() bool {
@@ -255,10 +197,10 @@ func (n *Node) IsConnected() bool {
 	return n.stat.IsConnected
 }
 
-func (n *Node) onPublish(client MQTT.Client, msg MQTT.Message) {
+func (n *Node) onPublish(client *mqtt.Client, msg mqtt.Message) {
 
 	resp := &NodeResponse{}
-	if err := json.Unmarshal(msg.Payload(), resp); err != nil {
+	if err := json.Unmarshal(msg.Payload, resp); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -272,10 +214,10 @@ func (n *Node) onPublish(client MQTT.Client, msg MQTT.Message) {
 	n.ch[resp.DeviceId] <- resp
 }
 
-func (n *Node) ping(client MQTT.Client, msg MQTT.Message) {
+func (n *Node) ping(client *mqtt.Client, msg mqtt.Message) {
 
 	var stat NodeStatModel
-	_ = json.Unmarshal(msg.Payload(), &stat)
+	_ = json.Unmarshal(msg.Payload, &stat)
 
 	n.Lock()
 
@@ -323,21 +265,12 @@ func (n *Node) GetStat() NodeStat {
 
 func (n *Node) UpdateClientParams(params *m.Node) {
 	n.Lock()
-	loginId := n.Node.Login
 	n.Node = params
+	n.Unlock()
 
 	// unsubscribe all mqtt client
 	if n.mqttClient != nil {
 		n.mqttClient.UnsubscribeAll()
-	}
-
-	n.Unlock()
-
-	// close outer node connection
-	if _, err := n.mqtt.Management().GetClient(loginId); err != nil {
-		log.Error(err.Error())
-	} else {
-		_ = n.mqtt.Management().CloseClient(loginId)
 	}
 
 	if n.Status != "disabled" {

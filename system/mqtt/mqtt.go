@@ -28,13 +28,12 @@ import (
 	"github.com/e154/smart-home/system/mqtt/metric"
 	"github.com/e154/smart-home/system/mqtt/prometheus"
 	"net/http"
+	"sync"
 
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/mqtt/management"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
-	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/uuid"
 	"net"
 )
 
@@ -48,6 +47,8 @@ type Mqtt struct {
 	authenticator *mqtt_authenticator.Authenticator
 	management    *management.Management
 	metric        *metrics.MetricManager
+	clientsLock   *sync.Mutex
+	clients       map[string]*Client
 }
 
 func NewMqtt(cfg *MqttConfig,
@@ -60,6 +61,8 @@ func NewMqtt(cfg *MqttConfig,
 		cfg:           cfg,
 		authenticator: authenticator,
 		metric:        metric,
+		clientsLock:   &sync.Mutex{},
+		clients:       make(map[string]*Client),
 	}
 
 	// javascript binding
@@ -98,6 +101,9 @@ func (m *Mqtt) runServer() {
 			OnClose:          m.OnClose,
 			OnSessionCreated: m.OnSessionCreated,
 			OnSessionResumed: m.OnSessionResumed,
+			OnSubscribe:      m.OnSubscribe,
+			OnUnsubscribed:   m.OnUnsubscribed,
+			OnMsgArrived:     m.OnMsgArrived,
 		}),
 		gmqtt.WithPlugin(prometheus.New(&http.Server{Addr: ":8082",}, "/metrics")),
 		gmqtt.WithPlugin(metric.New(m.metric, 5)),
@@ -106,32 +112,6 @@ func (m *Mqtt) runServer() {
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
 
 	m.server.Run()
-}
-
-func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err error) {
-
-	if cfg == nil {
-		cfg = &mqtt_client.Config{
-			KeepAlive:      5,
-			PingTimeout:    5,
-			ConnectTimeout: 5,
-			Qos:            0,
-			CleanSession:   false,
-		}
-	}
-
-	cfg.Username = m.authenticator.Login()
-	cfg.Password = m.authenticator.Password()
-	if cfg.ClientID == "" {
-		cfg.ClientID = uuid.NewV4().String()
-	}
-	cfg.Broker = fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.Port)
-
-	if c, err = mqtt_client.NewClient(cfg); err != nil {
-		return
-	}
-
-	return
 }
 
 func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
@@ -148,6 +128,26 @@ func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {
 
 func (m *Mqtt) OnSessionResumed(ctx context.Context, client gmqtt.Client) {
 	log.Debugf("session resumed... %v", client.OptionsReader().ClientID())
+}
+
+func (m *Mqtt) OnSubscribe(ctx context.Context, client gmqtt.Client, topic packets.Topic) (qos uint8) {
+	log.Debugf("subscribe %v to topic %v", client.OptionsReader().ClientID(), topic.Name)
+	return topic.Qos
+}
+
+func (m *Mqtt) OnUnsubscribed(ctx context.Context, client gmqtt.Client, topicName string) {
+	log.Debugf("unsubscribe %v from topic %v", client.OptionsReader().ClientID(), topicName)
+}
+
+func (m *Mqtt) OnMsgArrived(ctx context.Context, client gmqtt.Client, msg packets.Message) (valid bool) {
+	m.clientsLock.Lock()
+	defer m.clientsLock.Unlock()
+
+	for _, cli := range m.clients {
+		cli.OnMsgArrived(ctx, client, msg)
+	}
+
+	return true
 }
 
 func (m *Mqtt) OnConnect(ctx context.Context, client gmqtt.Client) (code uint8) {
@@ -170,4 +170,17 @@ func (m *Mqtt) Management() IManagement {
 
 func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) {
 	m.server.PublishService().Publish(gmqtt.NewMessage(topic, payload, qos, gmqtt.Retained(retain)))
+}
+
+func (m *Mqtt) NewClient(name string) (client *Client) {
+	m.clientsLock.Lock()
+	defer m.clientsLock.Unlock()
+
+	var ok bool
+	if client, ok = m.clients[name]; ok {
+		return
+	}
+	client = NewClient(m, name)
+	m.clients[name] = client
+	return
 }

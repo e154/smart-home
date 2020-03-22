@@ -55,3 +55,13 @@ type IMQTT interface {
 	// GetStatsManager returns StatsManager
 	GetStatsManager() gmqtt.StatsManager
 }
+
+type Message struct {
+	Dup       bool
+	Qos       uint8
+	Retained  bool
+	Topic     string
+	PacketID  uint16
+	Payload   []byte
+}
+type MessageHandler func(*Client, Message)
