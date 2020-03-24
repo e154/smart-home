@@ -25,7 +25,9 @@ import (
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
 	metrics2 "github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 var (
@@ -42,8 +44,10 @@ func NewControllers(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	endpoint *endpoint.Endpoint,
 	gate *gate_client.GateClient,
-	metrics *metrics2.MetricManager) *Controllers {
-	common := NewControllerCommon(adaptors, endpoint, scripts, core, gate, metrics)
+	metrics *metrics2.MetricManager,
+	mqtt *mqtt.Mqtt,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *Controllers {
+	common := NewControllerCommon(adaptors, endpoint, scripts, core, gate, metrics, mqtt, zigbee2mqtt)
 	return &Controllers{
 		Map:    NewControllerMap(common),
 		Action: NewControllerAction(common),

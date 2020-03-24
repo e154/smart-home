@@ -26,8 +26,10 @@ import (
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/graceful_service"
 	metrics2 "github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 var (
@@ -44,10 +46,12 @@ func NewWebSocket(adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
 	core *core.Core,
 	graceful *graceful_service.GracefulService,
-	metrics *metrics2.MetricManager) *WebSocket {
+	metrics *metrics2.MetricManager,
+	mqtt *mqtt.Mqtt,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *WebSocket {
 
 	server := &WebSocket{
-		Controllers: NewControllers(adaptors, stream, scripts, core, endpoint, metrics),
+		Controllers: NewControllers(adaptors, stream, scripts, core, endpoint, metrics, mqtt, zigbee2mqtt),
 	}
 
 	graceful.Subscribe(server)

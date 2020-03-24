@@ -19,8 +19,12 @@
 package core
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/models/devices"
+	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 // Javascript Binding
@@ -32,10 +36,25 @@ import (
 //	.RunCommand(command []string)
 //	.SmartBus(command []byte)
 //	.ModBus(func string, address, count int64, command []byte)
+//	.Zigbee2mqtt(path, payload)
+//	.Mqtt(path, payload)
+//	.Send(params interface)
 //
 type DeviceBind struct {
-	model *m.Device
-	node  *Node
+	model    *m.Device
+	node     *Node
+	mqtt     *mqtt.Mqtt
+	adaptors *adaptors.Adaptors
+	device   *Device
+}
+
+func NewDeviceBind(model *m.Device, node *Node, mqtt *mqtt.Mqtt, adaptors *adaptors.Adaptors, zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *DeviceBind {
+	return &DeviceBind{
+		model: model,
+		node:  node,
+		mqtt:  mqtt, adaptors: adaptors,
+		device: NewDevice(model, node, mqtt, adaptors, zigbee2mqtt),
+	}
 }
 
 func (d *DeviceBind) GetName() string {
@@ -50,30 +69,45 @@ func (d *DeviceBind) GetDescription() string {
 	return d.model.Description
 }
 
-func (d *DeviceBind) RunCommand(name string, args []string) (result *DevCommandResponse) {
-	dev := &Device{
-		dev:  d.model,
-		node: d.node,
-	}
-	result = dev.RunCommand(name, args)
-
+func (d *DeviceBind) RunCommand(name string, args []string) (result DevCommandResponse) {
+	result = d.device.RunCommand(name, args)
 	return
 }
 
-func (d *DeviceBind) SmartBus(command []byte) (result *DevSmartBusResponse) {
-	dev := &Device{
-		dev:  d.model,
-		node: d.node,
-	}
-	result = dev.SmartBus(command)
+func (d *DeviceBind) SmartBus(command []byte) (result DevSmartBusResponse) {
+	result = d.device.SmartBus(command)
 	return
 }
 
-func (d *DeviceBind) ModBus(f string, address, count uint16, command []uint16) (result *DevModBusResponse) {
-	dev := &Device{
-		dev:  d.model,
-		node: d.node,
+func (d *DeviceBind) ModBus(f string, address, count uint16, command []uint16) (result DevModBusResponse) {
+	result = d.device.ModBus(f, address, count, command)
+	return
+}
+
+func (d *DeviceBind) Zigbee2mqtt(path string, payload []byte) (result DevZigbee2mqttResponse) {
+	result = d.device.Zigbee2mqtt(path, payload)
+	return
+}
+
+func (d *DeviceBind) Mqtt(path string, payload []byte) (result DevMqttResponse) {
+	result = d.device.Mqtt(path, payload)
+	return
+}
+
+func (d *DeviceBind) Send(payload interface{}) (result interface{}) {
+
+	switch v := payload.(type) {
+	case RunCommandBind:
+		result = d.device.RunCommand(v.Name, v.Args)
+	case ModBusBind:
+		result = d.device.ModBus(v.F, v.Address, v.Count, v.Command)
+	case Zigbee2mqttBind:
+		result = d.device.Zigbee2mqtt(v.Path, v.Payload)
+	case MqttBind:
+		result = d.device.Mqtt(v.Path, v.Payload)
+	default:
+		fmt.Printf("unknown command type %v\n", v)
 	}
-	result = dev.ModBus(f, address, count, command)
+
 	return
 }

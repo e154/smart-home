@@ -21,6 +21,7 @@ package scripts
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/models/devices"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/scripts/bind"
 )
@@ -46,6 +47,10 @@ func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 	service.PushStruct("Log", &bind.LogBind{})
 	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
+	service.PushFunctions("RunCommand", devices.NewRunCommandBind)
+	service.PushFunctions("Zigbee2mqtt", devices.NewZigbee2mqttBind)
+	service.PushFunctions("ModBus", devices.NewModBusBind)
+	service.PushFunctions("Mqtt", devices.NewMqttBind)
 	return service
 }
 

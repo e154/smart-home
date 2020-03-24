@@ -48,6 +48,7 @@ type Flow struct {
 	cron             *cr.Cron
 	core             *Core
 	nextScenario     bool
+	mqtt             *mqtt.Mqtt
 	mqttClient       *mqtt.Client
 	mqttMessageQueue chan *Message
 	mqttWorkerQuit   chan struct{}
@@ -80,6 +81,7 @@ func NewFlow(model *m.Flow,
 		mqttWorkerQuit:   make(chan struct{}),
 		message:          NewMessage(),
 		zigbee2mqtt:      zigbee2mqtt,
+		mqtt:             mqtt,
 	}
 
 	if flow.scriptEngine, err = flow.NewScript(); err != nil {
@@ -367,7 +369,7 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 	for _, device := range devices {
 
 		var action *Action
-		if action, err = NewAction(device, model.DeviceAction, f.Node, f, f.scriptService); err != nil {
+		if action, err = NewAction(device, model.DeviceAction, f.Node, f, f.scriptService, f.mqtt, f.adaptors, f.zigbee2mqtt); err != nil {
 			log.Error(err.Error())
 			continue
 		}

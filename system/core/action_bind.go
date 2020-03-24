@@ -25,7 +25,6 @@ package core
 //	 .Name
 //	 .Description
 //	 .Device()
-//	 .Node()
 //
 type ActionBind struct {
 	Id          int64
@@ -34,10 +33,19 @@ type ActionBind struct {
 	action      *Action
 }
 
+func NewActionBind(id int64, name, desc string, action *Action) *ActionBind {
+	return &ActionBind{
+		Id:          id,
+		Name:        name,
+		Description: desc,
+		action:      action,
+	}
+}
+
 func (a *ActionBind) Device() *DeviceBind {
 	return &DeviceBind{model: a.action.GetDevice()}
 }
 
-func (a *ActionBind) Node() *NodeBind {
-	return &NodeBind{node: a.action.GetNode()}
-}
+//func (a *ActionBind) Node() *NodeBind {
+//	return &NodeBind{node: a.action.GetNode()}
+//}

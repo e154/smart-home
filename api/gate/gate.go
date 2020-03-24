@@ -27,7 +27,9 @@ import (
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 var (
@@ -45,10 +47,12 @@ func NewGate(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	graceful *graceful_service.GracefulService,
 	gate *gate_client.GateClient,
-	metric *metrics.MetricManager) *Gate {
+	metric *metrics.MetricManager,
+	mqtt *mqtt.Mqtt,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *Gate {
 
 	server := &Gate{
-		Controllers: NewControllers(adaptors, scripts, core, endpoint, gate, metric),
+		Controllers: NewControllers(adaptors, scripts, core, endpoint, gate, metric, mqtt, zigbee2mqtt),
 		graceful:    graceful,
 	}
 

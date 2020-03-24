@@ -19,9 +19,12 @@
 package core
 
 import (
+	"github.com/e154/smart-home/adaptors"
 	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"sync"
 )
 
@@ -33,13 +36,19 @@ type Action struct {
 	ScriptEngine  *scripts.Engine
 	deviceAction  *m.DeviceAction
 	doLock        sync.Mutex
+	mqtt          *mqtt.Mqtt
+	adaptors      *adaptors.Adaptors
+	zigbee2mqtt   *zigbee2mqtt.Zigbee2mqtt
 }
 
 func NewAction(device *m.Device,
 	deviceAction *m.DeviceAction,
 	node *Node,
 	flow *Flow,
-	scriptService *scripts.ScriptService) (action *Action, err error) {
+	scriptService *scripts.ScriptService,
+	mqtt *mqtt.Mqtt,
+	adaptors *adaptors.Adaptors,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) (action *Action, err error) {
 
 	action = &Action{
 		Device:        device,
@@ -47,6 +56,9 @@ func NewAction(device *m.Device,
 		flow:          flow,
 		scriptService: scriptService,
 		deviceAction:  deviceAction,
+		mqtt:          mqtt,
+		adaptors:      adaptors,
+		zigbee2mqtt:   zigbee2mqtt,
 	}
 
 	err = action.newScript()
@@ -83,17 +95,10 @@ func (a *Action) newScript() (err error) {
 	}
 
 	// bind device
-	a.ScriptEngine.PushStruct("Device", &DeviceBind{
-		model: a.Device,
-		node:  a.Node,
-	})
+	a.ScriptEngine.PushStruct("Device", NewDeviceBind(a.Device, a.Node, a.mqtt, a.adaptors, a.zigbee2mqtt))
 
-	a.ScriptEngine.PushStruct("Action", &ActionBind{
-		Id:          a.deviceAction.Id,
-		Name:        a.deviceAction.Name,
-		Description: a.deviceAction.Description,
-		action:      a,
-	})
+	// bind action
+	a.ScriptEngine.PushStruct("Action", NewActionBind(a.deviceAction.Id, a.deviceAction.Name, a.deviceAction.Description, a))
 
 	return nil
 }
@@ -102,6 +107,6 @@ func (a *Action) GetDevice() *m.Device {
 	return a.Device
 }
 
-func (a *Action) GetNode() *Node {
-	return a.Node
-}
+//func (a *Action) GetNode() *Node {
+//	return a.Node
+//}

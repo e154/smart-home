@@ -23,43 +23,39 @@ import (
 )
 
 const (
-	DevTypeMqtt = DeviceType("mqtt")
+	DevTypeZigbee2mqtt = DeviceType("zigbee2mqtt")
 )
 
-type DevMqttConfig struct {
+type DevZigbee2mqttConfig struct {
 	Validation
-	Address  string `json:"address"`
-	User     string `json:"user"`
-	Password string `json:"password"`
+	Zigbee2mqttDeviceId string `json:"zigbee2mqtt_device_id"`
 }
 
-type DevMqttRequest struct {
-	Topic   string `json:"topic"`
+type DevZigbee2mqttRequest struct {
+	Path    string `json:"path"`
 	Payload []byte `json:"payload"`
-	Qos     uint8  `json:"qos"`
-	Retain  bool   `json:"retain"`
 }
 
 // params:
 // result
 // error
 // time
-type DevMqttResponse struct {
+type DevZigbee2mqttResponse struct {
 	BaseResponse
 }
 
 // Javascript Binding
 //
-// Mqtt(path, payload)
+// Zigbee2mqtt(path, payload)
 //
-func NewMqttBind(path, payload string) MqttBind {
-	return MqttBind{
-		Payload: []byte(payload),
+func NewZigbee2mqttBind(path string, payload string) Zigbee2mqttBind {
+	return Zigbee2mqttBind{
 		Path:    path,
+		Payload: []byte(payload),
 	}
 }
 
-type MqttBind struct {
+type Zigbee2mqttBind struct {
 	Path    string
 	Payload []byte
 }
