@@ -20,21 +20,22 @@ package mqtt
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/mqtt/management"
 	"github.com/e154/smart-home/system/mqtt/metric"
 	"github.com/e154/smart-home/system/mqtt/prometheus"
-	"net/http"
-	"sync"
-
-	"github.com/e154/smart-home/system/graceful_service"
-	"github.com/e154/smart-home/system/mqtt/management"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
+	"go.uber.org/zap"
 	"net"
+	"net/http"
+	"sync"
 )
 
 var (
@@ -42,13 +43,14 @@ var (
 )
 
 type Mqtt struct {
-	cfg           *MqttConfig
-	server        IMQTT
-	authenticator *mqtt_authenticator.Authenticator
-	management    *management.Management
-	metric        *metrics.MetricManager
-	clientsLock   *sync.Mutex
-	clients       map[string]*Client
+	cfg            *MqttConfig
+	server         IMQTT
+	publishService gmqtt.PublishService
+	authenticator  *mqtt_authenticator.Authenticator
+	management     *management.Management
+	metric         *metrics.MetricManager
+	clientsLock    *sync.Mutex
+	clients        map[string]*Client
 }
 
 func NewMqtt(cfg *MqttConfig,
@@ -94,7 +96,6 @@ func (m *Mqtt) runServer() {
 	// Create a new server
 	m.server = gmqtt.NewServer(
 		gmqtt.WithTCPListener(ln),
-		gmqtt.WithPlugin(m.management),
 		gmqtt.WithHook(gmqtt.Hooks{
 			OnConnect:        m.OnConnect,
 			OnConnected:      m.OnConnected,
@@ -105,9 +106,12 @@ func (m *Mqtt) runServer() {
 			OnUnsubscribed:   m.OnUnsubscribed,
 			OnMsgArrived:     m.OnMsgArrived,
 		}),
+		gmqtt.WithPlugin(m.management),
 		gmqtt.WithPlugin(prometheus.New(&http.Server{Addr: ":8082",}, "/metrics")),
 		gmqtt.WithPlugin(metric.New(m.metric, 5)),
+		gmqtt.WithLogger(zap.L().Named("gmqtt")),
 	)
+	m.publishService = m.server.PublishService()
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
 
@@ -168,8 +172,21 @@ func (m *Mqtt) Management() IManagement {
 	return m.management
 }
 
-func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) {
-	m.server.PublishService().Publish(gmqtt.NewMessage(topic, payload, qos, gmqtt.Retained(retain)))
+func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (err error) {
+	if qos < 0 || qos > 2 {
+		err = errors.New("invalid Qos")
+		return
+	}
+	if !packets.ValidTopicFilter([]byte(topic)) {
+		err = errors.New("invalid topic filter")
+		return
+	}
+	if !packets.ValidUTF8([]byte(payload)) {
+		err = errors.New("invalid utf-8 string")
+		return
+	}
+	m.publishService.Publish(gmqtt.NewMessage(topic, payload, qos, gmqtt.Retained(retain)))
+	return
 }
 
 func (m *Mqtt) NewClient(name string) (client *Client) {
