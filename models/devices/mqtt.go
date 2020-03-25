@@ -29,8 +29,6 @@ const (
 type DevMqttConfig struct {
 	Validation
 	Address  string `json:"address"`
-	User     string `json:"user"`
-	Password string `json:"password"`
 }
 
 type DevMqttRequest struct {

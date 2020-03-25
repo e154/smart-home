@@ -44,9 +44,11 @@ type DevCommandConfig struct {
 }
 
 type DevMqttConfig struct {
-	Address  string `json:"address"`
-	User     string `json:"user"`
-	Password string `json:"password"`
+	Address string `json:"address"`
+}
+
+type DevZigbee2mqttConfig struct {
+	Zigbee2mqttDeviceId string `json:"zigbee2mqtt_device_id"`
 }
 
 // An AllOfModel is composed out of embedded structs but it should build
@@ -62,4 +64,6 @@ type DeviceProperties struct {
 	*DevCommandConfig
 	// swagger:allOf
 	*DevMqttConfig
+	// swagger:allOf
+	*DevZigbee2mqttConfig
 }
