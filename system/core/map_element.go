@@ -24,6 +24,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
+	"reflect"
 	"sync"
 	"time"
 )
@@ -94,14 +95,6 @@ func (e *MapElement) SetState(systemName string) {
 			ElementName: e.mapElement.Name,
 			StateId:     e.State.Id,
 		})
-
-		go e.Map.metric.Update(metrics.HistoryItem{
-			DeviceName:        e.mapElement.Name,
-			DeviceDescription: e.mapElement.Description,
-			Type:              "Info",
-			Description:       state.DeviceState.Description,
-			CreatedAt:         time.Now(),
-		})
 	}
 }
 
@@ -126,6 +119,8 @@ func (e *MapElement) SetOptions(options interface{}) {
 		return
 	}
 
+	go e.updateDeviceHistory(options)
+
 	e.Map.metric.Update(metrics.MapElementSetOption{
 		StateId:      e.State.Id,
 		DeviceId:     e.mapElement.Prototype.DeviceId,
@@ -141,7 +136,7 @@ func (e *MapElement) GetOptions() interface{} {
 	return e.Options
 }
 
-func (e *MapElement) updateDeviceHistory(state *m.DeviceState) {
+func (e *MapElement) updateDeviceHistory(t interface{}) {
 	e.elementLock.Lock()
 	defer e.elementLock.Unlock()
 
@@ -150,25 +145,65 @@ func (e *MapElement) updateDeviceHistory(state *m.DeviceState) {
 	default:
 		return
 	}
+
+	var historyType = common.MapDeviceHistoryState
+	var description string
+	switch v := t.(type) {
+	case *m.DeviceState:
+		description = v.Description
+	case m.DeviceState:
+		description = v.Description
+	case string:
+		description = v
+		historyType = common.MapDeviceHistoryOption
+	case interface{}:
+		description = fmt.Sprintf("%v", v)
+		historyType = common.MapDeviceHistoryOption
+	default:
+		log.Warnf("unknown object type %v", reflect.TypeOf(t).String())
+	}
+
+	var logLevel = common.LogLevelInfo
+
 	_, err := e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
 		MapElementId: e.mapElement.Id,
 		MapDeviceId:  e.mapElement.PrototypeId,
-		Type:         common.LogLevelInfo,
-		Description:  state.Description,
+		LogLevel:     common.LogLevelInfo,
+		Type:         historyType,
+		Description:  description,
 	})
 	if err != nil {
 		log.Error(err.Error())
 	}
+
+	e.Map.metric.Update(metrics.HistoryItem{
+		DeviceName:        e.mapElement.Name,
+		DeviceDescription: e.mapElement.Description,
+		Type:              string(historyType),
+		LogLevel:          string(logLevel),
+		Description:       description,
+		CreatedAt:         time.Now(),
+	})
 }
 
-func (e *MapElement) CustomHistory(t, desc string) {
+func (e *MapElement) CustomHistory(logLevel, t, desc string) {
 	e.elementLock.Lock()
 	defer e.elementLock.Unlock()
 
 	e.adaptors.MapDeviceHistory.Add(m.MapDeviceHistory{
 		MapElementId: e.mapElement.Id,
 		MapDeviceId:  e.mapElement.PrototypeId,
-		Type:         common.LogLevel(t),
+		LogLevel:     common.LogLevel(logLevel),
+		Type:         common.MapDeviceHistoryType(t),
 		Description:  desc,
+	})
+
+	e.Map.metric.Update(metrics.HistoryItem{
+		DeviceName:        e.mapElement.Name,
+		DeviceDescription: e.mapElement.Description,
+		Type:              string(t),
+		LogLevel:          string(logLevel),
+		Description:       desc,
+		CreatedAt:         time.Now(),
 	})
 }

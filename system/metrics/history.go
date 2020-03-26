@@ -74,6 +74,7 @@ func (d *HistoryManager) updatePool(item HistoryItem) {
 		DeviceName:        item.DeviceName,
 		DeviceDescription: item.DeviceDescription,
 		Type:              item.Type,
+		LogLevel:          item.LogLevel,
 		Description:       item.Description,
 		CreatedAt:         item.CreatedAt,
 	})
@@ -109,6 +110,7 @@ func (d *HistoryManager) init() {
 				DeviceName:        item.MapElement.Name,
 				DeviceDescription: item.MapElement.Description,
 				Type:              string(item.Type),
+				LogLevel:          string(item.LogLevel),
 				Description:       item.Description,
 				CreatedAt:         item.CreatedAt,
 			})
@@ -121,6 +123,7 @@ type HistoryItem struct {
 	DeviceName        string    `json:"device_name"`
 	DeviceDescription string    `json:"device_description"`
 	Type              string    `json:"type"`
+	LogLevel          string    `json:"log_level"`
 	Description       string    `json:"description"`
 	CreatedAt         time.Time `json:"created_at"`
 }

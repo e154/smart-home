@@ -35,7 +35,8 @@ type MapDeviceHistory struct {
 	MapDeviceId  int64
 	MapElement   *MapElement
 	MapElementId int64
-	Type         common.LogLevel
+	LogLevel     common.LogLevel
+	Type         common.MapDeviceHistoryType
 	Description  string
 	CreatedAt    time.Time
 }

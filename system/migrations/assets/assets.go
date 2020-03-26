@@ -29,6 +29,7 @@
 // migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql
 // migrations/20200315_105418_add_map_element_history.sql
 // migrations/20200321_115133_update_map_device.sql
+// migrations/20200326_232201_update_map_device_history.sql
 // DO NOT EDIT!
 
 package database
@@ -676,6 +677,26 @@ func migrations20200321_115133_update_map_deviceSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20200326_232201_update_map_device_historySql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xd0\xb1\x6a\xf4\x30\x10\x04\xe0\x5e\x4f\x31\x9d\x8b\x1f\x3f\x81\xf9\xbb\x94\x69\x42\xb8\xfa\xd8\x93\x86\xb3\xc8\x5a\x12\xd2\xfa\x7c\xf7\xf6\xc1\x98\x98\x18\x52\xb8\xdc\x65\x77\x60\xbe\xbe\xc7\xbf\x29\xde\xab\x18\x71\x29\xae\xef\xf1\xf9\xf1\x8e\x98\xd0\xe8\x2d\xe6\x84\xee\x52\x3a\xc4\x06\x3e\xe9\x67\x63\xc0\x32\x32\xc1\xc6\xd8\xb0\xfd\xad\x47\xb1\x41\x4a\xd1\xc8\xe0\x44\x8d\x15\x26\x37\x25\x26\x29\xd7\xc0\x47\xf4\xbc\x8e\xb1\x59\xae\x2f\x07\x00\x95\x49\x26\xc2\x67\x9d\xa7\x04\x7b\x15\xc2\x32\x34\xdf\xaf\xca\x07\x75\x70\x67\x42\x24\x84\x63\x02\x9f\x36\x38\x37\x97\xb0\x56\xf9\xe3\xa9\xd1\xb6\xcb\xff\xe8\x9a\x89\xb1\x73\xcb\xc8\xca\x7d\xd9\x21\xd7\x6d\x88\x2d\xcd\xaa\x18\x9c\xfb\xcd\xf3\x96\x97\xf4\x03\xb4\xeb\xac\xcb\x53\x3e\x35\xab\x32\xe0\x26\xfe\xeb\x4c\xbd\x50\x73\x39\xf4\xf3\xd2\xbc\x04\x9e\xc3\x39\x0a\xef\xb2\x2b\xf3\x1a\x36\xb8\xef\x00\x00\x00\xff\xff\x50\x99\x14\x01\xf7\x01\x00\x00")
+
+func migrations20200326_232201_update_map_device_historySqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20200326_232201_update_map_device_historySql,
+		"migrations/20200326_232201_update_map_device_history.sql",
+	)
+}
+
+func migrations20200326_232201_update_map_device_historySql() (*asset, error) {
+	bytes, err := migrations20200326_232201_update_map_device_historySqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20200326_232201_update_map_device_history.sql", size: 503, mode: os.FileMode(420), modTime: time.Unix(1585240518, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -757,6 +778,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql": migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql,
 	"migrations/20200315_105418_add_map_element_history.sql": migrations20200315_105418_add_map_element_historySql,
 	"migrations/20200321_115133_update_map_device.sql": migrations20200321_115133_update_map_deviceSql,
+	"migrations/20200326_232201_update_map_device_history.sql": migrations20200326_232201_update_map_device_historySql,
 }
 
 // AssetDir returns the file names below a certain
@@ -829,6 +851,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql": &bintree{migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql, map[string]*bintree{}},
 		"20200315_105418_add_map_element_history.sql": &bintree{migrations20200315_105418_add_map_element_historySql, map[string]*bintree{}},
 		"20200321_115133_update_map_device.sql": &bintree{migrations20200321_115133_update_map_deviceSql, map[string]*bintree{}},
+		"20200326_232201_update_map_device_history.sql": &bintree{migrations20200326_232201_update_map_device_historySql, map[string]*bintree{}},
 	}},
 }}
 
