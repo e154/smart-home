@@ -29,12 +29,10 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt/management"
 	"github.com/e154/smart-home/system/mqtt/metric"
-	"github.com/e154/smart-home/system/mqtt/prometheus"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/zap"
 	"net"
-	"net/http"
 	"sync"
 )
 
@@ -107,7 +105,7 @@ func (m *Mqtt) runServer() {
 			OnMsgArrived:     m.OnMsgArrived,
 		}),
 		gmqtt.WithPlugin(m.management),
-		gmqtt.WithPlugin(prometheus.New(&http.Server{Addr: ":8082",}, "/metrics")),
+		//gmqtt.WithPlugin(prometheus.New(&http.Server{Addr: ":8082",}, "/metrics")),
 		gmqtt.WithPlugin(metric.New(m.metric, 5)),
 		gmqtt.WithLogger(zap.L().Named("gmqtt")),
 	)
