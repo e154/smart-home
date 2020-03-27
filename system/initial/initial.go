@@ -73,13 +73,17 @@ func (n *InitialService) InstallDemoData() {
 
 	n.migrations.Purge()
 
-	env1.InstallDemoData(n.adaptors, n.accessList, n.scriptService)
+	tx := n.adaptors.Begin()
 
-	err := n.adaptors.Variable.Add(&m.Variable{
+	env1.InstallDemoData(tx, n.accessList, n.scriptService)
+
+	err := tx.Variable.Add(&m.Variable{
 		Name:  "initial_version",
 		Value: fmt.Sprintf("%d", currentVersion),
 	})
 	So(err, ShouldBeNil)
+
+	tx.Commit()
 
 	log.Info("complete")
 }
@@ -90,7 +94,9 @@ func (n *InitialService) Start() {
 		fmt.Println("")
 	}()
 
-	v, err := n.adaptors.Variable.GetByName("initial_version")
+	tx := n.adaptors.Begin()
+
+	v, err := tx.Variable.GetByName("initial_version")
 	if err != nil {
 
 		if err.Error() == ErrRecordNotFound.Error() {
@@ -98,25 +104,28 @@ func (n *InitialService) Start() {
 				Name:  "initial_version",
 				Value: fmt.Sprintf("%d", 1),
 			}
-			err = n.adaptors.Variable.Add(v)
+			err = tx.Variable.Add(v)
 			So(err, ShouldBeNil)
 		}
 
 		// create
-		env1.Create(n.adaptors, n.accessList, n.scriptService)
+		env1.Create(tx, n.accessList, n.scriptService)
 	}
 
 	oldVersion, err := strconv.Atoi(v.Value)
 	So(err, ShouldBeNil)
 
 	// upgrade
-	env1.Upgrade(oldVersion, n.adaptors, n.accessList, n.scriptService)
+	env1.Upgrade(oldVersion, tx, n.accessList, n.scriptService)
 
 	if oldVersion >= currentVersion {
+		tx.Commit()
 		return
 	}
 
 	v.Value = fmt.Sprintf("%d", currentVersion)
-	err = n.adaptors.Variable.Update(v)
+	err = tx.Variable.Update(v)
 	So(err, ShouldBeNil)
+
+	tx.Commit()
 }

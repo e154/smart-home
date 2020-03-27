@@ -24,7 +24,17 @@ import (
 	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
-func nodes(adaptors *adaptors.Adaptors) (node1, node2 *m.Node) {
+type NodeManager struct {
+	adaptors *adaptors.Adaptors
+}
+
+func NewNodeManager(adaptors *adaptors.Adaptors) *NodeManager {
+	return &NodeManager{
+		adaptors: adaptors,
+	}
+}
+
+func (n NodeManager) Create() (node1, node2 *m.Node) {
 
 	node1 = &m.Node{
 		Name:     "node1",
@@ -45,10 +55,10 @@ func nodes(adaptors *adaptors.Adaptors) (node1, node2 *m.Node) {
 	So(ok, ShouldEqual, true)
 
 	var err error
-	node1.Id, err = adaptors.Node.Add(node1)
+	node1.Id, err = n.adaptors.Node.Add(node1)
 	So(err, ShouldBeNil)
 
-	node2.Id, err = adaptors.Node.Add(node2)
+	node2.Id, err = n.adaptors.Node.Add(node2)
 	So(err, ShouldBeNil)
 
 	return

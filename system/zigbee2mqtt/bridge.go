@@ -82,7 +82,6 @@ func (g *Bridge) Start() {
 	})
 
 	if g.mqttClient == nil {
-		log.Info("create new mqtt client...")
 		g.mqttClient = g.mqtt.NewClient(fmt.Sprintf("bridge_%v", g.model.Name))
 	}
 

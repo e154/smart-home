@@ -46,7 +46,7 @@ func InstallDemoData(adaptors *Adaptors,
 
 	// nodes
 	// ------------------------------------------------
-	node1, _ := nodes(adaptors)
+	node1, _ := NewNodeManager(adaptors).Create()
 
 	// scripts
 	// ------------------------------------------------
@@ -76,6 +76,7 @@ func Create(adaptors *Adaptors,
 	NewImageManager(adaptors).Create()
 	NewRoleManager(adaptors, accessList).Create()
 	NewTemplateManager(adaptors).Create()
+	NewNodeManager(adaptors).Create()
 }
 
 func Upgrade(oldVersion int,
