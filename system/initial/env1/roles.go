@@ -26,24 +26,36 @@ import (
 	"strings"
 )
 
-func roles(adaptors *adaptors.Adaptors,
-	accessList *access_list.AccessListService) {
+type RoleManager struct {
+	adaptors   *adaptors.Adaptors
+	accessList *access_list.AccessListService
+}
+
+func NewRoleManager(adaptors *adaptors.Adaptors,
+	accessList *access_list.AccessListService) *RoleManager {
+	return &RoleManager{
+		adaptors:   adaptors,
+		accessList: accessList,
+	}
+}
+
+func (r RoleManager) Create() {
 
 	// admin role
 	adminRole := &m.Role{
 		Name: "admin",
 	}
-	err := adaptors.Role.Add(adminRole)
+	err := r.adaptors.Role.Add(adminRole)
 	So(err, ShouldBeNil)
 
 	// demo role
 	demoRole := &m.Role{
 		Name: "demo",
 	}
-	err = adaptors.Role.Add(demoRole)
+	err = r.adaptors.Role.Add(demoRole)
 	So(err, ShouldBeNil)
 
-	for pack, item := range *accessList.List {
+	for pack, item := range *r.accessList.List {
 		for right := range item {
 			if strings.Contains(right, "read") ||
 				strings.Contains(right, "view") ||
@@ -54,7 +66,7 @@ func roles(adaptors *adaptors.Adaptors,
 					LevelName:   right,
 				}
 
-				_, err = adaptors.Permission.Add(permission)
+				_, err = r.adaptors.Permission.Add(permission)
 				So(err, ShouldBeNil)
 			}
 		}
@@ -65,7 +77,7 @@ func roles(adaptors *adaptors.Adaptors,
 		Name:   "user",
 		Parent: demoRole,
 	}
-	err = adaptors.Role.Add(userRole)
+	err = r.adaptors.Role.Add(userRole)
 	So(err, ShouldBeNil)
 
 	// add admin
@@ -82,7 +94,7 @@ func roles(adaptors *adaptors.Adaptors,
 	ok, _ := adminUser.Valid()
 	So(ok, ShouldEqual, true)
 
-	adminUser.Id, err = adaptors.User.Add(adminUser)
+	adminUser.Id, err = r.adaptors.User.Add(adminUser)
 	So(err, ShouldBeNil)
 
 	// add demo user
@@ -99,7 +111,7 @@ func roles(adaptors *adaptors.Adaptors,
 	ok, _ = demoUser.Valid()
 	So(ok, ShouldEqual, true)
 
-	demoUser.Id, err = adaptors.User.Add(demoUser)
+	demoUser.Id, err = r.adaptors.User.Add(demoUser)
 	So(err, ShouldBeNil)
 
 	// add base user
@@ -116,6 +128,16 @@ func roles(adaptors *adaptors.Adaptors,
 	ok, _ = baseUser.Valid()
 	So(ok, ShouldEqual, true)
 
-	baseUser.Id, err = adaptors.User.Add(baseUser)
+	baseUser.Id, err = r.adaptors.User.Add(baseUser)
 	So(err, ShouldBeNil)
+}
+
+func (r RoleManager) Upgrade(oldVersion int) (err error) {
+
+	switch oldVersion {
+	case 0:
+
+	}
+
+	return
 }

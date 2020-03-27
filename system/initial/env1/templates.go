@@ -29,7 +29,17 @@ import (
 	"strings"
 )
 
-func addTemplates(adaptors *adaptors.Adaptors) {
+type TemplateManager struct {
+	adaptors *adaptors.Adaptors
+}
+
+func NewTemplateManager(adaptors *adaptors.Adaptors) *TemplateManager {
+	return &TemplateManager{
+		adaptors: adaptors,
+	}
+}
+
+func (t TemplateManager) Create() {
 
 	dataDir := filepath.Join("data", "templates")
 
@@ -103,7 +113,17 @@ func addTemplates(adaptors *adaptors.Adaptors) {
 			ParentName: parent,
 		}
 
-		err = adaptors.Template.Create(template)
+		err = t.adaptors.Template.Create(template)
 		So(err, ShouldBeNil)
 	}
+}
+
+func (t TemplateManager) Upgrade(oldVersion int) (err error) {
+
+	switch oldVersion {
+	case 0:
+
+	}
+
+	return
 }

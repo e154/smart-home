@@ -26,8 +26,20 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
-func addScripts(adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService) (scripts map[string]*m.Script) {
+type ScriptManager struct {
+	adaptors      *adaptors.Adaptors
+	scriptService *scripts.ScriptService
+}
+
+func NewScriptManager(adaptors *adaptors.Adaptors,
+	scriptService *scripts.ScriptService) *ScriptManager {
+	return &ScriptManager{
+		adaptors:      adaptors,
+		scriptService: scriptService,
+	}
+}
+
+func (s ScriptManager) Create() (scripts map[string]*m.Script) {
 
 	scripts = make(map[string]*m.Script)
 
@@ -42,16 +54,16 @@ func addScripts(adaptors *adaptors.Adaptors,
 	ok, _ := script1.Valid()
 	So(ok, ShouldEqual, true)
 
-	engine1, err := scriptService.NewEngine(script1)
+	engine1, err := s.scriptService.NewEngine(script1)
 	So(err, ShouldBeNil)
 	err = engine1.Compile()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	So(err, ShouldBeNil)
-	script1Id, err := adaptors.Script.Add(script1)
+	script1Id, err := s.adaptors.Script.Add(script1)
 	So(err, ShouldBeNil)
-	script1, err = adaptors.Script.GetById(script1Id)
+	script1, err = s.adaptors.Script.GetById(script1Id)
 	So(err, ShouldBeNil)
 
 	scripts["mb_dev1_condition_check_v1"] = script1
@@ -67,60 +79,16 @@ func addScripts(adaptors *adaptors.Adaptors,
 	ok, _ = script2.Valid()
 	So(ok, ShouldEqual, true)
 
-	engine2, err := scriptService.NewEngine(script2)
+	engine2, err := s.scriptService.NewEngine(script2)
 	So(err, ShouldBeNil)
 	err = engine2.Compile()
 	So(err, ShouldBeNil)
-	script2Id, err := adaptors.Script.Add(script2)
+	script2Id, err := s.adaptors.Script.Add(script2)
 	So(err, ShouldBeNil)
-	script2, err = adaptors.Script.GetById(script2Id)
+	script2, err = s.adaptors.Script.GetById(script2Id)
 	So(err, ShouldBeNil)
 
 	scripts["mb_dev1_actions"] = script2
-
-	// mi_pir_sensor
-	// ------------------------------------------------
-	script10 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mi_pir_sensor",
-		Source:      MiPirSensor,
-		Description: "mi pir sensor",
-	}
-	ok, _ = script10.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine10, err := scriptService.NewEngine(script10)
-	So(err, ShouldBeNil)
-	err = engine10.Compile()
-	So(err, ShouldBeNil)
-	script10Id, err := adaptors.Script.Add(script10)
-	So(err, ShouldBeNil)
-	script10, err = adaptors.Script.GetById(script10Id)
-	So(err, ShouldBeNil)
-
-	scripts["mi_pir_sensor"] = script10
-
-	// mi_pir_sensor
-	// ------------------------------------------------
-	script12 := &m.Script{
-		Lang:        "coffeescript",
-		Name:        "mi_door_sensor",
-		Source:      MiDoorSensor,
-		Description: "mi door sensor",
-	}
-	ok, _ = script12.Valid()
-	So(ok, ShouldEqual, true)
-
-	engine12, err := scriptService.NewEngine(script12)
-	So(err, ShouldBeNil)
-	err = engine12.Compile()
-	So(err, ShouldBeNil)
-	script12Id, err := adaptors.Script.Add(script12)
-	So(err, ShouldBeNil)
-	script12, err = adaptors.Script.GetById(script12Id)
-	So(err, ShouldBeNil)
-
-	scripts["mi_door_sensor"] = script12
 
 	// cmd_condition_check_v1
 	// ------------------------------------------------
@@ -133,13 +101,13 @@ func addScripts(adaptors *adaptors.Adaptors,
 	ok, _ = script4.Valid()
 	So(ok, ShouldEqual, true)
 
-	engine4, err := scriptService.NewEngine(script4)
+	engine4, err := s.scriptService.NewEngine(script4)
 	So(err, ShouldBeNil)
 	err = engine4.Compile()
 	So(err, ShouldBeNil)
-	script4Id, err := adaptors.Script.Add(script4)
+	script4Id, err := s.adaptors.Script.Add(script4)
 	So(err, ShouldBeNil)
-	script4, err = adaptors.Script.GetById(script4Id)
+	script4, err = s.adaptors.Script.GetById(script4Id)
 	So(err, ShouldBeNil)
 
 	scripts["cmd_condition_check_v1"] = script4
@@ -155,13 +123,13 @@ func addScripts(adaptors *adaptors.Adaptors,
 	ok, _ = script5.Valid()
 	So(ok, ShouldEqual, true)
 
-	engine5, err := scriptService.NewEngine(script5)
+	engine5, err := s.scriptService.NewEngine(script5)
 	So(err, ShouldBeNil)
 	err = engine5.Compile()
 	So(err, ShouldBeNil)
-	script5Id, err := adaptors.Script.Add(script5)
+	script5Id, err := s.adaptors.Script.Add(script5)
 	So(err, ShouldBeNil)
-	script5, err = adaptors.Script.GetById(script5Id)
+	script5, err = s.adaptors.Script.GetById(script5Id)
 	So(err, ShouldBeNil)
 
 	scripts["wflow_scenario_weekday_v1"] = script5
@@ -177,13 +145,13 @@ func addScripts(adaptors *adaptors.Adaptors,
 	ok, _ = script6.Valid()
 	So(ok, ShouldEqual, true)
 
-	engine6, err := scriptService.NewEngine(script6)
+	engine6, err := s.scriptService.NewEngine(script6)
 	So(err, ShouldBeNil)
 	err = engine6.Compile()
 	So(err, ShouldBeNil)
-	script6Id, err := adaptors.Script.Add(script6)
+	script6Id, err := s.adaptors.Script.Add(script6)
 	So(err, ShouldBeNil)
-	script6, err = adaptors.Script.GetById(script6Id)
+	script6, err = s.adaptors.Script.GetById(script6Id)
 	So(err, ShouldBeNil)
 
 	scripts["wflow_scenario_weekend_v1"] = script6
@@ -199,13 +167,13 @@ func addScripts(adaptors *adaptors.Adaptors,
 	ok, _ = script7.Valid()
 	So(ok, ShouldEqual, true)
 
-	engine7, err := scriptService.NewEngine(script7)
+	engine7, err := s.scriptService.NewEngine(script7)
 	So(err, ShouldBeNil)
 	err = engine7.Compile()
 	So(err, ShouldBeNil)
-	script7Id, err := adaptors.Script.Add(script7)
+	script7Id, err := s.adaptors.Script.Add(script7)
 	So(err, ShouldBeNil)
-	script7, err = adaptors.Script.GetById(script7Id)
+	script7, err = s.adaptors.Script.GetById(script7Id)
 	So(err, ShouldBeNil)
 
 	scripts["base_script"] = script6
@@ -221,18 +189,106 @@ func addScripts(adaptors *adaptors.Adaptors,
 	ok, _ = script16.Valid()
 	So(ok, ShouldEqual, true)
 
-	engine16, err := scriptService.NewEngine(script16)
+	engine16, err := s.scriptService.NewEngine(script16)
 	So(err, ShouldBeNil)
 	err = engine16.Compile()
 	So(err, ShouldBeNil)
-	script16Id, err := adaptors.Script.Add(script16)
+	script16Id, err := s.adaptors.Script.Add(script16)
 	So(err, ShouldBeNil)
-	script16, err = adaptors.Script.GetById(script16Id)
+	script16, err = s.adaptors.Script.GetById(script16Id)
 	So(err, ShouldBeNil)
 
 	scripts["wflow_script_v1"] = script16
 
+	s.upgrade1(scripts)
+
 	return
+}
+
+func (s ScriptManager) Upgrade(oldVersion int) (err error) {
+
+	switch oldVersion {
+	case 0:
+	case 1:
+		s.upgrade1(nil)
+	}
+
+	return
+}
+
+func (s ScriptManager) upgrade1(scripts map[string]*m.Script)  {
+
+	// mi_pir_sensor
+	// ------------------------------------------------
+	script10 := &m.Script{
+		Lang:        "coffeescript",
+		Name:        "mi_pir_sensor",
+		Source:      MiPirSensor,
+		Description: "mi pir sensor",
+	}
+	ok, _ := script10.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine10, err := s.scriptService.NewEngine(script10)
+	So(err, ShouldBeNil)
+	err = engine10.Compile()
+	So(err, ShouldBeNil)
+	script10Id, err := s.adaptors.Script.Add(script10)
+	So(err, ShouldBeNil)
+	script10, err = s.adaptors.Script.GetById(script10Id)
+	So(err, ShouldBeNil)
+
+	if scripts != nil {
+		scripts["mi_pir_sensor"] = script10
+	}
+
+	// mi_door_sensor
+	// ------------------------------------------------
+	script12 := &m.Script{
+		Lang:        "coffeescript",
+		Name:        "mi_door_sensor",
+		Source:      MiDoorSensor,
+		Description: "mi door sensor",
+	}
+	ok, _ = script12.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine12, err := s.scriptService.NewEngine(script12)
+	So(err, ShouldBeNil)
+	err = engine12.Compile()
+	So(err, ShouldBeNil)
+	script12Id, err := s.adaptors.Script.Add(script12)
+	So(err, ShouldBeNil)
+	script12, err = s.adaptors.Script.GetById(script12Id)
+	So(err, ShouldBeNil)
+
+	if scripts != nil {
+		scripts["mi_door_sensor"] = script12
+	}
+
+	// mi_temp_sensor
+	// ------------------------------------------------
+	script13 := &m.Script{
+		Lang:        "coffeescript",
+		Name:        "mi_temp_sensor",
+		Source:      MiTempSensor,
+		Description: "mi temp sensor",
+	}
+	ok, _ = script13.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine13, err := s.scriptService.NewEngine(script13)
+	So(err, ShouldBeNil)
+	err = engine13.Compile()
+	So(err, ShouldBeNil)
+	script13Id, err := s.adaptors.Script.Add(script13)
+	So(err, ShouldBeNil)
+	script13, err = s.adaptors.Script.GetById(script13Id)
+	So(err, ShouldBeNil)
+
+	if scripts != nil {
+		scripts["mi_temp_sensor"] = script13
+	}
 }
 
 const MbDev1ConditionCheckV1 = `
@@ -339,37 +395,103 @@ main()
 `
 
 const MiPirSensor = `
+# {"battery":100,"voltage":3035,"linkquality":120,"occupancy":true}
+
 options = 
     text:'' 
+
 stateStatus = 'SILENCE'
+
+status = 
+    battery: 0
+    voltage: 0
+    linkquality: 0
+    occupancy: false
+    
+main =->
+    return if !message.Mqtt
+    payload = JSON.parse(message.GetVar('mqtt_payload'))
+    
+    status =
+        battery: payload.battery
+        voltage: payload.voltage
+        contact: payload.contact
+        occupancy: payload.occupancy
+        
+    if payload.occupancy
+        stateStatus = 'OCCUPANCY'
+    if payload.battery < 50
+        stateStatus = 'WARNING'
+        options.text = "bat: #{payload.battery}%"
+
+main()
+
+`
+
+const MiDoorSensor = `
+# {"battery":100,"voltage":3005,"linkquality":149,"contact":true}
+
+options = 
+    text:''
+    
+stateStatus = 'CLOSED'
+
+status = 
+    battery: 0
+    voltage: 0
+    linkquality: 0
+    contact: false
 
 main =->
     return if !message.Mqtt
     payload = JSON.parse(message.GetVar('mqtt_payload'))
     
-    if payload['occupancy']
-        stateStatus = 'OCCUPANCY'
-    if payload['battery'] < 50
+    status =
+        battery: payload.battery
+        voltage: payload.voltage
+        contact: payload.contact
+        linkquality: payload.linkquality
+    if !payload.contact
+        stateStatus = 'OPENED'
+    if payload.battery < 50
         stateStatus = 'WARNING'
-        options.text = 'battery:'+ payload['battery']
+        options.text = "bat: #{payload.battery}%"
 
 main()
 `
 
-const MiDoorSensor = `
+const MiTempSensor = `
+# {"battery":100,"voltage":3005,"temperature":27.3,"humidity":22.02,"linkquality":126}
+
 options = 
     text:'' 
-stateStatus = 'CLOSED'
 
+stateStatus = 'DISABLED'
+
+status = 
+    battery: 0
+    voltage: 0
+    temperature: 0
+    humidity: 0
+    linkquality: 0
+    
 main =->
     return if !message.Mqtt
     payload = JSON.parse(message.GetVar('mqtt_payload'))
     
-    if !payload['contact']
-        stateStatus = 'OPENED'
+    if payload?.temperature
+        status =
+            battery: payload.battery
+            voltage: payload.voltage
+            temperature: payload.temperature
+            humidity: payload.humidity
+            linkquality: payload.linkquality
+        options.text = "#{payload.temperature}°C / #{payload.humidity}%"
+        stateStatus = 'ENABLED'
+        
     if payload['battery'] < 50
         stateStatus = 'WARNING'
-        options.text = 'battery:'+ payload['battery']
+        options.text = options.text + " / bat: #{payload.battery}%"
 
 main()
 `
@@ -456,4 +578,3 @@ const WflowScriptV1 = `
 # global variable
 WFLOW_VAR1 = 'workflow1'
 `
-
