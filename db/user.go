@@ -101,6 +101,21 @@ func (u *Users) GetByEmail(email string) (user *User, err error) {
 	return
 }
 
+func (u *Users) GetByNickname(nickname string) (user *User, err error) {
+
+	user = &User{}
+	err = u.Db.Model(&User{}).
+		Where("nickname = ?", nickname).
+		Preload("Image").
+		Preload("Meta").
+		Preload("Role").
+		Preload("User").
+		Find(&user).
+		Error
+
+	return
+}
+
 func (u *Users) GetByAuthenticationToken(token string) (user *User, err error) {
 
 	user = &User{}
