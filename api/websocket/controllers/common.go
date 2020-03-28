@@ -23,17 +23,21 @@ import (
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 type ControllerCommon struct {
-	adaptors *adaptors.Adaptors
-	stream   *stream.StreamService
-	endpoint *endpoint.Endpoint
-	core     *core.Core
-	scripts  *scripts.ScriptService
-	metric   *metrics.MetricManager
+	adaptors    *adaptors.Adaptors
+	stream      *stream.StreamService
+	endpoint    *endpoint.Endpoint
+	core        *core.Core
+	scripts     *scripts.ScriptService
+	metric      *metrics.MetricManager
+	mqtt        *mqtt.Mqtt
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt
 }
 
 func NewControllerCommon(adaptors *adaptors.Adaptors,
@@ -41,14 +45,18 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 	endpoint *endpoint.Endpoint,
 	scripts *scripts.ScriptService,
 	core *core.Core,
-	metric *metrics.MetricManager) *ControllerCommon {
+	metric *metrics.MetricManager,
+	mqtt *mqtt.Mqtt,
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *ControllerCommon {
 	return &ControllerCommon{
-		adaptors: adaptors,
-		endpoint: endpoint,
-		stream:   stream,
-		core:     core,
-		scripts:  scripts,
-		metric:   metric,
+		adaptors:    adaptors,
+		endpoint:    endpoint,
+		stream:      stream,
+		core:        core,
+		scripts:     scripts,
+		metric:      metric,
+		mqtt:        mqtt,
+		zigbee2mqtt: zigbee2mqtt,
 	}
 }
 

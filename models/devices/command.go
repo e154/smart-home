@@ -39,3 +39,19 @@ type DevCommandResponse struct {
 	BaseResponse
 	Result string `json:"result"`
 }
+
+// Javascript Binding
+//
+// RunCommand(name, args)
+//
+func NewRunCommandBind(name string, args []string) RunCommandBind {
+	return RunCommandBind{
+		Name: name,
+		Args: args,
+	}
+}
+
+type RunCommandBind struct {
+	Name string
+	Args []string
+}

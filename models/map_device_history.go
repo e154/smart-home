@@ -24,11 +24,12 @@ import (
 )
 
 type MapDeviceHistory struct {
-	Id           int64           `json:"id"`
-	MapDeviceId  int64           `json:"map_device_id"`
-	MapElement   *MapElement     `json:"map_element"`
-	MapElementId int64           `json:"map_element_id"`
-	Type         common.LogLevel `json:"type"`
-	Description  string          `json:"description"`
-	CreatedAt    time.Time       `json:"created_at"`
+	Id           int64                `json:"id"`
+	MapDeviceId  int64                `json:"map_device_id"`
+	MapElement   *MapElement          `json:"map_element"`
+	MapElementId int64                `json:"map_element_id"`
+	LogLevel     common.LogLevel      `json:"log_level"`
+	Type         common.MapDeviceHistoryType `json:"type"`
+	Description  string               `json:"description"`
+	CreatedAt    time.Time            `json:"created_at"`
 }

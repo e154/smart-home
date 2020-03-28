@@ -20,6 +20,7 @@ package version
 
 import (
 	"fmt"
+	"runtime"
 )
 
 var (
@@ -30,6 +31,7 @@ var (
 	DevelopersString = "?"
 	BuildNumString = "?"
 	DockerImageString = "?"
+	GoVersion = runtime.Version()
 )
 
 const VerboseVersionBanner string = `
@@ -88,6 +90,8 @@ func GetHumanVersion() string {
 	if BuildNumString != "" {
 		version += fmt.Sprintf("Build: %s\n", BuildNumString)
 	}
+
+	version += fmt.Sprintf("Go: %s\n", GoVersion)
 
 	return version
 }

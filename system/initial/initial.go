@@ -19,27 +19,35 @@
 package initial
 
 import (
-	"github.com/e154/smart-home/adaptors"
+	"fmt"
+	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
+	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"strconv"
 )
 
 var (
 	log = common.MustGetLogger("initial")
 )
 
+var (
+	currentVersion = 2
+)
+
 type InitialService struct {
 	migrations    *migrations.Migrations
-	adaptors      *adaptors.Adaptors
+	adaptors      *Adaptors
 	scriptService *scripts.ScriptService
 	accessList    *access_list.AccessListService
 }
 
 func NewInitialService(migrations *migrations.Migrations,
-	adaptors *adaptors.Adaptors,
+	adaptors *Adaptors,
 	scriptService *scripts.ScriptService,
 	accessList *access_list.AccessListService) *InitialService {
 	return &InitialService{
@@ -65,7 +73,59 @@ func (n *InitialService) InstallDemoData() {
 
 	n.migrations.Purge()
 
-	env1.Init(n.adaptors, n.accessList, n.scriptService)
+	tx := n.adaptors.Begin()
+
+	env1.InstallDemoData(tx, n.accessList, n.scriptService)
+
+	err := tx.Variable.Add(&m.Variable{
+		Name:  "initial_version",
+		Value: fmt.Sprintf("%d", currentVersion),
+	})
+	So(err, ShouldBeNil)
+
+	tx.Commit()
 
 	log.Info("complete")
+}
+
+func (n *InitialService) Start() {
+
+	defer func() {
+		fmt.Println("")
+	}()
+
+	tx := n.adaptors.Begin()
+
+	v, err := tx.Variable.GetByName("initial_version")
+	if err != nil {
+
+		if err.Error() == ErrRecordNotFound.Error() {
+			v = &m.Variable{
+				Name:  "initial_version",
+				Value: fmt.Sprintf("%d", 1),
+			}
+			err = tx.Variable.Add(v)
+			So(err, ShouldBeNil)
+		}
+
+		// create
+		env1.Create(tx, n.accessList, n.scriptService)
+	}
+
+	oldVersion, err := strconv.Atoi(v.Value)
+	So(err, ShouldBeNil)
+
+	// upgrade
+	env1.Upgrade(oldVersion, tx, n.accessList, n.scriptService)
+
+	if oldVersion >= currentVersion {
+		tx.Commit()
+		return
+	}
+
+	v.Value = fmt.Sprintf("%d", currentVersion)
+	err = tx.Variable.Update(v)
+	So(err, ShouldBeNil)
+
+	tx.Commit()
 }

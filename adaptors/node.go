@@ -131,6 +131,18 @@ func (a *Node) GetByLogin(login string) (ver *m.Node, err error) {
 	return
 }
 
+func (a *Node) GetByName(name string) (ver *m.Node, err error) {
+
+	var dbVer *db.Node
+	if dbVer, err = a.table.GetByName(name); err != nil {
+		return
+	}
+
+	ver = a.fromDb(dbVer)
+
+	return
+}
+
 func (n *Node) fromDb(dbNode *db.Node) (node *m.Node) {
 	node = &m.Node{
 		Id:                dbNode.Id,

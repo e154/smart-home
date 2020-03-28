@@ -132,3 +132,14 @@ func (n *Nodes) GetByLogin(login string) (node *Node, err error) {
 
 	return
 }
+
+func (n *Nodes) GetByName(name string) (node *Node, err error) {
+
+	node = &Node{}
+	err = n.Db.Model(node).
+		Where("name = ?", name).
+		First(&node).
+		Error
+
+	return
+}

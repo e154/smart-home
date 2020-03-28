@@ -109,6 +109,7 @@ func (n *MapDeviceHistory) fromDb(dbVer *db.MapDeviceHistory) (ver *m.MapDeviceH
 		MapDeviceId:  dbVer.MapDeviceId,
 		MapElementId: dbVer.MapElementId,
 		Type:         dbVer.Type,
+		LogLevel:     dbVer.LogLevel,
 		Description:  dbVer.Description,
 		CreatedAt:    dbVer.CreatedAt,
 	}
@@ -127,6 +128,7 @@ func (n *MapDeviceHistory) toDb(ver m.MapDeviceHistory) (dbVer db.MapDeviceHisto
 		MapDeviceId:  ver.MapDeviceId,
 		MapElementId: ver.MapElementId,
 		Type:         ver.Type,
+		LogLevel:     ver.LogLevel,
 		Description:  ver.Description,
 		CreatedAt:    ver.CreatedAt,
 	}

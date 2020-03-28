@@ -20,22 +20,20 @@ package mqtt
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/metrics"
-	"github.com/e154/smart-home/system/mqtt/metric"
-	"github.com/e154/smart-home/system/mqtt/prometheus"
-	"net/http"
-
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt/management"
+	"github.com/e154/smart-home/system/mqtt/metric"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
-	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/uuid"
+	"go.uber.org/zap"
 	"net"
+	"sync"
 )
 
 var (
@@ -43,11 +41,14 @@ var (
 )
 
 type Mqtt struct {
-	cfg           *MqttConfig
-	server        IMQTT
-	authenticator *mqtt_authenticator.Authenticator
-	management    *management.Management
-	metric        *metrics.MetricManager
+	cfg            *MqttConfig
+	server         IMQTT
+	publishService gmqtt.PublishService
+	authenticator  *mqtt_authenticator.Authenticator
+	management     *management.Management
+	metric         *metrics.MetricManager
+	clientsLock    *sync.Mutex
+	clients        map[string]*Client
 }
 
 func NewMqtt(cfg *MqttConfig,
@@ -60,6 +61,8 @@ func NewMqtt(cfg *MqttConfig,
 		cfg:           cfg,
 		authenticator: authenticator,
 		metric:        metric,
+		clientsLock:   &sync.Mutex{},
+		clients:       make(map[string]*Client),
 	}
 
 	// javascript binding
@@ -91,47 +94,26 @@ func (m *Mqtt) runServer() {
 	// Create a new server
 	m.server = gmqtt.NewServer(
 		gmqtt.WithTCPListener(ln),
-		gmqtt.WithPlugin(m.management),
 		gmqtt.WithHook(gmqtt.Hooks{
 			OnConnect:        m.OnConnect,
 			OnConnected:      m.OnConnected,
 			OnClose:          m.OnClose,
 			OnSessionCreated: m.OnSessionCreated,
 			OnSessionResumed: m.OnSessionResumed,
+			OnSubscribe:      m.OnSubscribe,
+			OnUnsubscribed:   m.OnUnsubscribed,
+			OnMsgArrived:     m.OnMsgArrived,
 		}),
-		gmqtt.WithPlugin(prometheus.New(&http.Server{Addr: ":8082",}, "/metrics")),
+		gmqtt.WithPlugin(m.management),
+		//gmqtt.WithPlugin(prometheus.New(&http.Server{Addr: ":8082",}, "/metrics")),
 		gmqtt.WithPlugin(metric.New(m.metric, 5)),
+		gmqtt.WithLogger(zap.L().Named("gmqtt")),
 	)
+	m.publishService = m.server.PublishService()
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
 
 	m.server.Run()
-}
-
-func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err error) {
-
-	if cfg == nil {
-		cfg = &mqtt_client.Config{
-			KeepAlive:      5,
-			PingTimeout:    5,
-			ConnectTimeout: 5,
-			Qos:            0,
-			CleanSession:   false,
-		}
-	}
-
-	cfg.Username = m.authenticator.Login()
-	cfg.Password = m.authenticator.Password()
-	if cfg.ClientID == "" {
-		cfg.ClientID = uuid.NewV4().String()
-	}
-	cfg.Broker = fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.Port)
-
-	if c, err = mqtt_client.NewClient(cfg); err != nil {
-		return
-	}
-
-	return
 }
 
 func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
@@ -148,6 +130,26 @@ func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {
 
 func (m *Mqtt) OnSessionResumed(ctx context.Context, client gmqtt.Client) {
 	log.Debugf("session resumed... %v", client.OptionsReader().ClientID())
+}
+
+func (m *Mqtt) OnSubscribe(ctx context.Context, client gmqtt.Client, topic packets.Topic) (qos uint8) {
+	log.Debugf("subscribe %v to topic %v", client.OptionsReader().ClientID(), topic.Name)
+	return topic.Qos
+}
+
+func (m *Mqtt) OnUnsubscribed(ctx context.Context, client gmqtt.Client, topicName string) {
+	log.Debugf("unsubscribe %v from topic %v", client.OptionsReader().ClientID(), topicName)
+}
+
+func (m *Mqtt) OnMsgArrived(ctx context.Context, client gmqtt.Client, msg packets.Message) (valid bool) {
+	m.clientsLock.Lock()
+	defer m.clientsLock.Unlock()
+
+	for _, cli := range m.clients {
+		cli.OnMsgArrived(ctx, client, msg)
+	}
+
+	return true
 }
 
 func (m *Mqtt) OnConnect(ctx context.Context, client gmqtt.Client) (code uint8) {
@@ -168,6 +170,32 @@ func (m *Mqtt) Management() IManagement {
 	return m.management
 }
 
-func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) {
-	m.server.PublishService().Publish(gmqtt.NewMessage(topic, payload, qos, gmqtt.Retained(retain)))
+func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (err error) {
+	if qos < 0 || qos > 2 {
+		err = errors.New("invalid Qos")
+		return
+	}
+	if !packets.ValidTopicFilter([]byte(topic)) {
+		err = errors.New("invalid topic filter")
+		return
+	}
+	if !packets.ValidUTF8([]byte(payload)) {
+		err = errors.New("invalid utf-8 string")
+		return
+	}
+	m.publishService.Publish(gmqtt.NewMessage(topic, payload, qos, gmqtt.Retained(retain)))
+	return
+}
+
+func (m *Mqtt) NewClient(name string) (client *Client) {
+	m.clientsLock.Lock()
+	defer m.clientsLock.Unlock()
+
+	var ok bool
+	if client, ok = m.clients[name]; ok {
+		return
+	}
+	client = NewClient(m, name)
+	m.clients[name] = client
+	return
 }

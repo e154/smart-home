@@ -29,7 +29,17 @@ import (
 	"strings"
 )
 
-func addTemplates(adaptors *adaptors.Adaptors) {
+type TemplateManager struct {
+	adaptors *adaptors.Adaptors
+}
+
+func NewTemplateManager(adaptors *adaptors.Adaptors) *TemplateManager {
+	return &TemplateManager{
+		adaptors: adaptors,
+	}
+}
+
+func (t TemplateManager) Create() {
 
 	dataDir := filepath.Join("data", "templates")
 
@@ -54,9 +64,6 @@ func addTemplates(adaptors *adaptors.Adaptors) {
 	fileNames := []string{"main", "message", "body", "callout", "footer", "contacts", "social", "facebook", "google", "header", "password_reset", "privacy", "register_admin_created", "title", "twitter", "vk",}
 
 	for _, name := range fileNames {
-
-		b, err := ioutil.ReadFile(filepath.Join(dataDir, fmt.Sprintf("%s.html", name)))
-		So(err, ShouldBeNil)
 
 		templateType := m.TemplateTypeItem
 		var parent *string
@@ -95,6 +102,20 @@ func addTemplates(adaptors *adaptors.Adaptors) {
 			templateType = m.TemplateTypeTemplate
 		}
 
+		var tpl *m.Template
+		if templateType == m.TemplateTypeTemplate {
+			tpl, err = t.adaptors.Template.GetByName(name)
+		} else {
+			tpl, err = t.adaptors.Template.GetItemByName(name)
+		}
+
+		if err == nil || tpl != nil {
+			continue
+		}
+
+		b, err := ioutil.ReadFile(filepath.Join(dataDir, fmt.Sprintf("%s.html", name)))
+		So(err, ShouldBeNil)
+
 		template := &m.Template{
 			Name:       name,
 			Content:    string(b),
@@ -103,7 +124,17 @@ func addTemplates(adaptors *adaptors.Adaptors) {
 			ParentName: parent,
 		}
 
-		err = adaptors.Template.Create(template)
+		err = t.adaptors.Template.Create(template)
 		So(err, ShouldBeNil)
 	}
+}
+
+func (t TemplateManager) Upgrade(oldVersion int) (err error) {
+
+	switch oldVersion {
+	case 0:
+
+	}
+
+	return
 }

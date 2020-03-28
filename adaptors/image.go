@@ -57,6 +57,19 @@ func (n *Image) Add(ver *m.Image) (id int64, err error) {
 	return
 }
 
+func (n *Image) GetByImageName(imageName string) (ver *m.Image, err error) {
+
+	var dbVer *db.Image
+	if dbVer, err = n.table.GetByImageName(imageName); err != nil {
+		return
+	}
+
+	ver = n.fromDb(dbVer)
+
+	return
+}
+
+
 func (n *Image) GetById(mapId int64) (ver *m.Image, err error) {
 
 	var dbVer *db.Image

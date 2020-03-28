@@ -26,47 +26,33 @@ import (
 	"strings"
 )
 
-func roles(adaptors *adaptors.Adaptors,
-	accessList *access_list.AccessListService) {
+type RoleManager struct {
+	adaptors   *adaptors.Adaptors
+	accessList *access_list.AccessListService
+}
 
-	// admin role
-	adminRole := &m.Role{
-		Name: "admin",
+func NewRoleManager(adaptors *adaptors.Adaptors,
+	accessList *access_list.AccessListService) *RoleManager {
+	return &RoleManager{
+		adaptors:   adaptors,
+		accessList: accessList,
 	}
-	err := adaptors.Role.Add(adminRole)
-	So(err, ShouldBeNil)
+}
 
-	// demo role
-	demoRole := &m.Role{
-		Name: "demo",
-	}
-	err = adaptors.Role.Add(demoRole)
-	So(err, ShouldBeNil)
+func (r RoleManager) addAdmin() (adminRole *m.Role) {
 
-	for pack, item := range *accessList.List {
-		for right := range item {
-			if strings.Contains(right, "read") ||
-				strings.Contains(right, "view") ||
-				strings.Contains(right, "preview") {
-				permission := &m.Permission{
-					RoleName:    demoRole.Name,
-					PackageName: pack,
-					LevelName:   right,
-				}
-
-				_, err = adaptors.Permission.Add(permission)
-				So(err, ShouldBeNil)
-			}
+	var err error
+	if adminRole, err = r.adaptors.Role.GetByName("demo"); err != nil {
+		adminRole = &m.Role{
+			Name: "admin",
 		}
+		err := r.adaptors.Role.Add(adminRole)
+		So(err, ShouldBeNil)
 	}
 
-	// user role
-	userRole := &m.Role{
-		Name:   "user",
-		Parent: demoRole,
+	if _, err = r.adaptors.User.GetByNickname("admin"); err == nil {
+		return
 	}
-	err = adaptors.Role.Add(userRole)
-	So(err, ShouldBeNil)
 
 	// add admin
 	adminUser := &m.User{
@@ -82,25 +68,27 @@ func roles(adaptors *adaptors.Adaptors,
 	ok, _ := adminUser.Valid()
 	So(ok, ShouldEqual, true)
 
-	adminUser.Id, err = adaptors.User.Add(adminUser)
+	adminUser.Id, err = r.adaptors.User.Add(adminUser)
 	So(err, ShouldBeNil)
 
-	// add demo user
-	demoUser := &m.User{
-		Nickname: "demo",
-		RoleName: demoRole.Name,
-		Email:    "demo@e154.ru",
-		Lang:     "en",
-		Status:   "active",
+	return
+}
+
+func (r RoleManager) addUser(demoRole *m.Role) (userRole *m.Role) {
+
+	var err error
+	if demoRole, err = r.adaptors.Role.GetByName("demo"); err != nil {
+		userRole = &m.Role{
+			Name:   "user",
+			Parent: demoRole,
+		}
+		err := r.adaptors.Role.Add(userRole)
+		So(err, ShouldBeNil)
 	}
-	err = demoUser.SetPass("demo")
-	So(err, ShouldBeNil)
 
-	ok, _ = demoUser.Valid()
-	So(ok, ShouldEqual, true)
-
-	demoUser.Id, err = adaptors.User.Add(demoUser)
-	So(err, ShouldBeNil)
+	if _, err = r.adaptors.User.GetByNickname("user"); err == nil {
+		return
+	}
 
 	// add base user
 	baseUser := &m.User{
@@ -113,9 +101,81 @@ func roles(adaptors *adaptors.Adaptors,
 	err = baseUser.SetPass("user")
 	So(err, ShouldBeNil)
 
-	ok, _ = baseUser.Valid()
+	ok, _ := baseUser.Valid()
 	So(ok, ShouldEqual, true)
 
-	baseUser.Id, err = adaptors.User.Add(baseUser)
+	baseUser.Id, err = r.adaptors.User.Add(baseUser)
 	So(err, ShouldBeNil)
+
+	return
+}
+
+func (r RoleManager) addDemo() (demoRole *m.Role) {
+
+	var err error
+	if demoRole, err = r.adaptors.Role.GetByName("demo"); err != nil {
+
+		demoRole = &m.Role{
+			Name: "demo",
+		}
+		err = r.adaptors.Role.Add(demoRole)
+		So(err, ShouldBeNil)
+
+		for pack, item := range *r.accessList.List {
+			for right := range item {
+				if strings.Contains(right, "read") ||
+					strings.Contains(right, "view") ||
+					strings.Contains(right, "preview") {
+					permission := &m.Permission{
+						RoleName:    demoRole.Name,
+						PackageName: pack,
+						LevelName:   right,
+					}
+
+					_, err = r.adaptors.Permission.Add(permission)
+					So(err, ShouldBeNil)
+				}
+			}
+		}
+	}
+
+	if _, err = r.adaptors.User.GetByNickname("demo"); err == nil {
+		return
+	}
+
+	// add demo user
+	demoUser := &m.User{
+		Nickname: "demo",
+		RoleName: demoRole.Name,
+		Email:    "demo@e154.ru",
+		Lang:     "en",
+		Status:   "active",
+	}
+	err = demoUser.SetPass("demo")
+	So(err, ShouldBeNil)
+
+	ok, _ := demoUser.Valid()
+	So(ok, ShouldEqual, true)
+
+	demoUser.Id, err = r.adaptors.User.Add(demoUser)
+	So(err, ShouldBeNil)
+
+	return
+}
+
+func (r RoleManager) Create() {
+
+	r.addUser(r.addDemo())
+	r.addAdmin()
+
+}
+
+func (r RoleManager) Upgrade(oldVersion int) (err error) {
+
+	switch oldVersion {
+	case 0:
+
+	}
+
+	return
 }

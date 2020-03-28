@@ -19,8 +19,8 @@
 package controllers
 
 import (
-	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/core"
 )
 

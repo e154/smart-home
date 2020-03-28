@@ -74,6 +74,21 @@ func (n *User) GetById(userId int64) (user *m.User, err error) {
 	return
 }
 
+func (n *User) GetByNickname(nick string) (user *m.User, err error) {
+
+	var dbUser *db.User
+	if dbUser, err = n.table.GetByNickname(nick); err != nil {
+		return
+	}
+
+	user = n.fromDb(dbUser)
+
+	roleAdaptor := GetRoleAdaptor(n.db)
+	err = roleAdaptor.GetAccessList(user.Role)
+
+	return
+}
+
 func (n *User) GetByEmail(email string) (user *m.User, err error) {
 
 	var dbUser *db.User

@@ -240,28 +240,6 @@ func (c *Core) ReloadNode(node *m.Node) (err error) {
 	return
 }
 
-func (c *Core) ConnectNode(node *m.Node) (err error) {
-
-	log.Infof("Connect to node: \"%s\"", node.Name)
-
-	if n, exist := c.safeGetNode(node.Id); exist {
-		n.Connect()
-	}
-
-	return
-}
-
-func (c *Core) DisconnectNode(node *m.Node) (err error) {
-
-	log.Infof("Disconnect from node: \"%s\"", node.Name)
-
-	if n, exist := c.safeGetNode(node.Id); exist {
-		n.Disconnect()
-	}
-
-	return
-}
-
 func (b *Core) GetNodes() (nodes map[int64]*Node) {
 
 	nodes = make(map[int64]*Node)

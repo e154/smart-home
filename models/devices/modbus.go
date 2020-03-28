@@ -71,3 +71,22 @@ type DevModBusResponse struct {
 	BaseResponse
 	Result []uint16 `json:"result"`
 }
+
+// Javascript Binding
+//
+// ModBus(func, address, count, command)
+//
+func NewModBusBind(f string, address, count uint16, command []uint16) ModBusBind {
+	return ModBusBind{
+		F:       f,
+		Address: address,
+		Count:   count,
+		Command: command,
+	}
+}
+
+type ModBusBind struct {
+	F              string
+	Address, Count uint16
+	Command        []uint16
+}

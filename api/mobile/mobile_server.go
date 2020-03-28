@@ -79,10 +79,6 @@ func (s *MobileServer) Shutdown() {
 	log.Info("MobileServer exiting")
 }
 
-func (s *MobileServer) GetEngine() *gin.Engine {
-	return s.engine
-}
-
 func NewMobileServer(cfg *MobileServerConfig,
 	ctrls *controllers.MobileControllersV1,
 	graceful *graceful_service.GracefulService,

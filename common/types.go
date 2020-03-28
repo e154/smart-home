@@ -74,3 +74,10 @@ const (
 type GinEngine interface {
 	GetEngine() *gin.Engine
 }
+
+type MapDeviceHistoryType string
+
+const (
+	MapDeviceHistoryState  = MapDeviceHistoryType("state")
+	MapDeviceHistoryOption = MapDeviceHistoryType("option")
+)

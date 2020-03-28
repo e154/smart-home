@@ -27,11 +27,9 @@ import (
 	m "github.com/e154/smart-home/models"
 	cr "github.com/e154/smart-home/system/cron"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"sync"
 	"time"
 )
@@ -50,7 +48,8 @@ type Flow struct {
 	cron             *cr.Cron
 	core             *Core
 	nextScenario     bool
-	mqttClient       *mqtt_client.Client
+	mqtt             *mqtt.Mqtt
+	mqttClient       *mqtt.Client
 	mqttMessageQueue chan *Message
 	mqttWorkerQuit   chan struct{}
 	message          *Message
@@ -82,6 +81,7 @@ func NewFlow(model *m.Flow,
 		mqttWorkerQuit:   make(chan struct{}),
 		message:          NewMessage(),
 		zigbee2mqtt:      zigbee2mqtt,
+		mqtt:             mqtt,
 	}
 
 	if flow.scriptEngine, err = flow.NewScript(); err != nil {
@@ -106,32 +106,14 @@ func NewFlow(model *m.Flow,
 
 	go flow.mqttMessageWorker()
 
-	cfg := &mqtt_client.Config{
-		KeepAlive:      5,
-		PingTimeout:    5,
-		ConnectTimeout: 5,
-		Qos:            0,
-		CleanSession:   false,
-		ClientID:       mqtt_client.ClientIdGen("flow", model.Id),
-	}
-
 	// mqtt client
-	if flow.mqttClient, err = mqtt.NewClient(cfg); err != nil {
-		return
-	}
-
-	if err = flow.mqttClient.Connect(); err != nil {
-		log.Warn(err.Error())
-		return
-	}
+	flow.mqttClient = mqtt.NewClient(fmt.Sprintf("flow_%v", flow.Model.Name))
 
 	// raw topic subscriptions
 	for _, subParams := range flow.Model.Subscriptions {
 
 		topic := fmt.Sprintf("%s", subParams.Topic)
-		if err := flow.mqttClient.Subscribe(topic, 0, flow.mqttOnPublish); err != nil {
-			log.Warn(err.Error())
-		}
+		flow.mqttClient.Subscribe(topic, flow.mqttOnPublish)
 	}
 
 	// zigbee2mqtt devices
@@ -141,9 +123,7 @@ func NewFlow(model *m.Flow,
 			log.Error(err.Error())
 			continue
 		}
-		if err := flow.mqttClient.Subscribe(topic, 0, flow.mqttOnPublish); err != nil {
-			log.Warn(err.Error())
-		}
+		flow.mqttClient.Subscribe(topic, flow.mqttOnPublish)
 	}
 
 	return
@@ -160,7 +140,7 @@ func (f *Flow) Remove() {
 	f.mqttWorkerQuit <- struct{}{}
 
 	if f.mqttClient != nil {
-		f.mqttClient.Disconnect()
+		f.mqttClient.UnsubscribeAll()
 	}
 
 	timeout := time.After(3 * time.Second)
@@ -389,7 +369,7 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 	for _, device := range devices {
 
 		var action *Action
-		if action, err = NewAction(device, model.DeviceAction, f.Node, f, f.scriptService); err != nil {
+		if action, err = NewAction(device, model.DeviceAction, f.Node, f, f.scriptService, f.mqtt, f.adaptors, f.zigbee2mqtt); err != nil {
 			log.Error(err.Error())
 			continue
 		}
@@ -499,13 +479,13 @@ func (f *Flow) defineCircularConnection(ctx context.Context) (newCtx context.Con
 	return
 }
 
-func (f *Flow) mqttOnPublish(client MQTT.Client, msg MQTT.Message) {
+func (f *Flow) mqttOnPublish(client *mqtt.Client, msg mqtt.Message) {
 
 	message := NewMessage()
-	message.SetVar("mqtt_payload", string(msg.Payload()))
-	message.SetVar("mqtt_topic", msg.Topic())
-	message.SetVar("mqtt_qos", msg.Qos())
-	message.SetVar("mqtt_duplicate", msg.Duplicate())
+	message.SetVar("mqtt_payload", string(msg.Payload))
+	message.SetVar("mqtt_topic", msg.Topic)
+	message.SetVar("mqtt_qos", msg.Qos)
+	message.SetVar("mqtt_duplicate", msg.Dup)
 	message.Mqtt = true
 
 	f.mqttMessageQueue <- message

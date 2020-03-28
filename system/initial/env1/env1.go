@@ -19,7 +19,7 @@
 package env1
 
 import (
-	"github.com/e154/smart-home/adaptors"
+	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
 	. "github.com/e154/smart-home/system/scripts"
 )
@@ -32,25 +32,25 @@ import (
 // 		+ child device2
 // device3
 //
-func Init(adaptors *adaptors.Adaptors,
+func InstallDemoData(adaptors *Adaptors,
 	accessList *access_list.AccessListService,
 	scriptService *ScriptService) {
 
 	// images
 	// ------------------------------------------------
-	imageList := images(adaptors)
+	imageList := NewImageManager(adaptors).Create()
 
 	// roles
 	// ------------------------------------------------
-	roles(adaptors, accessList)
+	NewRoleManager(adaptors, accessList).Create()
 
 	// nodes
 	// ------------------------------------------------
-	node1, _ := nodes(adaptors)
+	node1, _ := NewNodeManager(adaptors).Create()
 
 	// scripts
 	// ------------------------------------------------
-	scripts := addScripts(adaptors, scriptService)
+	scripts := NewScriptManager(adaptors, scriptService).Create()
 
 	// devices
 	// ------------------------------------------------
@@ -66,5 +66,26 @@ func Init(adaptors *adaptors.Adaptors,
 
 	// templates
 	// ------------------------------------------------
-	addTemplates(adaptors)
+	NewTemplateManager(adaptors).Create()
+}
+
+func Create(adaptors *Adaptors,
+	accessList *access_list.AccessListService,
+	scriptService *ScriptService) {
+
+	NewImageManager(adaptors).Create()
+	NewRoleManager(adaptors, accessList).Create()
+	NewTemplateManager(adaptors).Create()
+	NewNodeManager(adaptors).Create()
+}
+
+func Upgrade(oldVersion int,
+	adaptors *Adaptors,
+	accessList *access_list.AccessListService,
+	scriptService *ScriptService) {
+
+	NewImageManager(adaptors).Upgrade(oldVersion)
+	NewTemplateManager(adaptors).Upgrade(oldVersion)
+	NewScriptManager(adaptors, scriptService).Upgrade(oldVersion)
+	NewRoleManager(adaptors, accessList).Upgrade(oldVersion)
 }

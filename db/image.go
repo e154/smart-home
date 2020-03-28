@@ -58,6 +58,12 @@ func (n Images) GetById(mapId int64) (v *Image, err error) {
 	return
 }
 
+func (n Images) GetByImageName(imageName string) (v *Image, err error) {
+	v = &Image{}
+	err = n.Db.Model(v).Where("image = ?", imageName).First(&v).Error
+	return
+}
+
 func (n Images) Update(m *Image) (err error) {
 	err = n.Db.Model(&Image{Id: m.Id}).Updates(map[string]interface{}{
 		"title": m.Title,

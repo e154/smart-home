@@ -106,7 +106,7 @@ func TestDevice(t *testing.T) {
 				Name: "device7", Description: "device desc", Status: "enabled", Type: "mqtt",
 				Properties: models.DeviceProperties{
 					DevMqttConfig: &models.DevMqttConfig{
-						Address: "127.0.0.1", User: "user", Password: "pass",
+						Address: "127.0.0.1",
 					},
 				},
 			},

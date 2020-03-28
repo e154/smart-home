@@ -121,6 +121,8 @@ func start() {
 		gateApi *gate.Gate,
 		logger *logging.Logging) {
 
+		initialService.Start()
+
 		go server.Start()
 		go mobileServer.Start()
 		go wsApi.Start()

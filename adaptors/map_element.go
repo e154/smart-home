@@ -41,10 +41,18 @@ func GetMapElementAdaptor(d *gorm.DB) *MapElement {
 
 func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 
+	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		return
+		tx = n.db
+		transaction = false
 	}
+
+	defer func() {
+		if err != nil && transaction {
+			tx.Rollback()
+		}
+	}()
 
 	switch {
 	case ver.Prototype.MapText != nil:
@@ -58,7 +66,6 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 	case ver.Prototype.MapDevice != nil:
 		deviceAdaptor := GetMapDeviceAdaptor(tx)
 		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
-			tx.Rollback()
 			return
 		}
 
@@ -70,7 +77,6 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 			action.MapDeviceId = ver.PrototypeId
 			if action.Id, err = deviceAction.Add(action); err != nil {
 				log.Error(err.Error())
-				tx.Rollback()
 				return
 			}
 		}
@@ -82,7 +88,6 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 			state.MapDeviceId = ver.PrototypeId
 			if state.Id, err = stateAdaptor.Add(state); err != nil {
 				log.Error(err.Error())
-				tx.Rollback()
 				return
 			}
 		}
@@ -91,7 +96,6 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 	}
 
 	if err != nil {
-		tx.Rollback()
 		return
 	}
 
@@ -101,8 +105,8 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 		return
 	}
 
-	if err = tx.Commit().Error; err != nil {
-		return
+	if transaction {
+		err = tx.Commit().Error
 	}
 
 	return
@@ -147,6 +151,11 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 	if err = tx.Error; err != nil {
 		return
 	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
 
 	// delete old prototype
 	switch oldVer.PrototypeType {
@@ -185,7 +194,6 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		deviceAdaptor := GetMapDeviceAdaptor(tx)
 		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
 			log.Error(err.Error())
-			tx.Rollback()
 			return
 		}
 
@@ -198,7 +206,6 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 			deviceAction := GetMapDeviceActionAdaptor(tx)
 			if err = deviceAction.AddMultiple(ver.Prototype.MapDevice.Actions); err != nil {
 				log.Error(err.Error())
-				tx.Rollback()
 				return
 			}
 
@@ -209,7 +216,6 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 			stateAdaptor := GetMapDeviceStateAdaptor(tx)
 			if err = stateAdaptor.AddMultiple(ver.Prototype.MapDevice.States); err != nil {
 				log.Errorf(err.Error())
-				tx.Rollback()
 				return
 			}
 		}
@@ -220,20 +226,16 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 	}
 
 	if err != nil {
-		tx.Rollback()
 		return
 	}
 
 	dbVer := n.toDb(ver)
 	table := db.MapElements{Db: tx}
 	if err = table.Update(dbVer); err != nil {
-		tx.Rollback()
 		return
 	}
 
-	if err = tx.Commit().Error; err != nil {
-		return
-	}
+	err = tx.Commit().Error
 
 	return
 }
@@ -249,6 +251,13 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 	if err = tx.Error; err != nil {
 		return
 	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+	}()
 
 	if ver.PrototypeId != 0 {
 		switch ver.PrototypeType {
@@ -268,19 +277,16 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 	}
 
 	if err != nil {
-		tx.Rollback()
 		return
 	}
 
 	table := &db.MapElements{Db: tx}
 	if err = table.Delete(mapId); err != nil {
-		tx.Rollback()
 		return
 	}
 
-	if err = tx.Commit().Error; err != nil {
-		return
-	}
+	err = tx.Commit().Error
+
 	return
 }
 

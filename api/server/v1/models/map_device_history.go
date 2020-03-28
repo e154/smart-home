@@ -24,6 +24,7 @@ import (
 
 type MapDeviceHistory struct {
 	MapElement  MapElementShort `json:"map_element"`
+	LogLevel    string          `json:"log_level"`
 	Type        string          `json:"type"`
 	Description string          `json:"description"`
 	CreatedAt   time.Time       `json:"created_at"`

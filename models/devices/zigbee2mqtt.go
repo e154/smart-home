@@ -16,37 +16,46 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package core
+package devices
+
+import (
+	. "github.com/e154/smart-home/common"
+)
+
+const (
+	DevTypeZigbee2mqtt = DeviceType("zigbee2mqtt")
+)
+
+type DevZigbee2mqttConfig struct {
+	Validation
+	Zigbee2mqttDeviceId string `json:"zigbee2mqtt_device_id"`
+}
+
+type DevZigbee2mqttRequest struct {
+	Path    string `json:"path"`
+	Payload []byte `json:"payload"`
+}
+
+// params:
+// result
+// error
+// time
+type DevZigbee2mqttResponse struct {
+	BaseResponse
+}
 
 // Javascript Binding
 //
-// MapElement
-//	.SetState(name)
-//	.GetState()
-//	.SetOptions(options)
-//	.GetOptions()
-//	.Story(logLevel, type, description)
+// Zigbee2mqtt(path, payload)
 //
-type MapElementBind struct {
-	element *MapElement
+func NewZigbee2mqttBind(path string, payload string) Zigbee2mqttBind {
+	return Zigbee2mqttBind{
+		Path:    path,
+		Payload: []byte(payload),
+	}
 }
 
-func (e *MapElementBind) SetState(name string) {
-	e.element.SetState(name)
-}
-
-func (e *MapElementBind) GetState() interface{} {
-	return e.element.State
-}
-
-func (e *MapElementBind) SetOptions(options interface{}) {
-	e.element.SetOptions(options)
-}
-
-func (e *MapElementBind) GetOptions() interface{} {
-	return e.element.GetOptions()
-}
-
-func (e *MapElementBind) Story(logLevel, t, desc string) {
-	e.element.CustomHistory(logLevel, t, desc)
+type Zigbee2mqttBind struct {
+	Path    string
+	Payload []byte
 }

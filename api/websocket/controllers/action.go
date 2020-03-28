@@ -86,19 +86,11 @@ func (c *ControllerAction) DoAction(client stream.IStreamClient, message stream.
 	var node *core.Node
 	if device.Node != nil {
 		node = c.core.GetNodeById(device.Node.Id)
-	} else {
-		client.Notify("error", "node in device is nil")
-		return
-	}
-
-	if node == nil {
-		client.Notify("error", fmt.Sprintf("node id(%v) not found", node.Id))
-		return
 	}
 
 	// action
 	var action *core.Action
-	if action, err = core.NewAction(device, deviceAction, node, nil, c.scripts); err != nil {
+	if action, err = core.NewAction(device, deviceAction, node, nil, c.scripts, c.mqtt, c.adaptors, c.zigbee2mqtt); err != nil {
 		client.Notify("error", err.Error())
 		return
 	}

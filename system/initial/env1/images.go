@@ -28,7 +28,17 @@ import (
 	"strings"
 )
 
-func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
+type ImageManager struct {
+	adaptors *adaptors.Adaptors
+}
+
+func NewImageManager(adaptors *adaptors.Adaptors) *ImageManager {
+	return &ImageManager{
+		adaptors: adaptors,
+	}
+}
+
+func (i ImageManager) Create() (imageList map[string]*m.Image) {
 
 	imageList = map[string]*m.Image{
 		"button_v1_off": {
@@ -291,10 +301,20 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 		},
 	}
 
-	var err error
+	_ = i.install(imageList)
+
+	return
+}
+
+func (i ImageManager) install(imageList map[string]*m.Image) (err error) {
+
 	var subDir string
 	for _, image := range imageList {
-		image.Id, err = adaptors.Image.Add(image)
+		if _, err = i.adaptors.Image.GetByImageName(image.Image); err == nil {
+			continue
+		}
+
+		image.Id, err = i.adaptors.Image.Add(image)
 		So(err, ShouldBeNil)
 
 		fullPath := common.GetFullPath(image.Image)
@@ -326,6 +346,21 @@ func images(adaptors *adaptors.Adaptors) (imageList map[string]*m.Image) {
 			common.CopyFile(from, to)
 		}
 	}
+
+	return
+}
+
+func (i ImageManager) Upgrade(oldVersion int) (err error) {
+
+	var imageList map[string]*m.Image
+	switch oldVersion {
+	case 0:
+
+	default:
+		return
+	}
+
+	err = i.install(imageList)
 
 	return
 }

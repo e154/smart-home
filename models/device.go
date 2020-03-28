@@ -66,6 +66,8 @@ func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 		out = &DevCommandConfig{}
 	case DevTypeMqtt:
 		out = &DevMqttConfig{}
+	case DevTypeZigbee2mqtt:
+		out = &DevZigbee2mqttConfig{}
 	case DevTypeDefault:
 
 	default:
@@ -91,6 +93,8 @@ func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 		ok, errs = v.Valid()
 	case *DevMqttConfig:
 		ok, errs = v.Valid()
+	case *DevZigbee2mqttConfig:
+		ok, errs = v.Valid()
 	}
 
 	return
@@ -115,6 +119,9 @@ func (d *Device) SetProperties(properties interface{}) (ok bool, errs []*validat
 		ok, errs = v.Valid()
 	case *DevCommandConfig:
 		dType = DevTypeCommand
+		ok, errs = v.Valid()
+	case *DevZigbee2mqttConfig:
+		dType = DevTypeZigbee2mqtt
 		ok, errs = v.Valid()
 	default:
 		dType = DevTypeDefault
@@ -147,6 +154,8 @@ func (d *Device) SetPropertiesFromMap(properties map[string]interface{}) (ok boo
 		out = &DevCommandConfig{}
 	case DevTypeMqtt:
 		out = &DevMqttConfig{}
+	case DevTypeZigbee2mqtt:
+		out = &DevZigbee2mqttConfig{}
 	default:
 		log.Warnf("unknown device config %v", d.Type)
 		err = fmt.Errorf("unknown device config %v", d.Type)

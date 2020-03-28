@@ -29,8 +29,6 @@ const (
 type DevMqttConfig struct {
 	Validation
 	Address  string `json:"address"`
-	User     string `json:"user"`
-	Password string `json:"password"`
 }
 
 type DevMqttRequest struct {
@@ -38,4 +36,28 @@ type DevMqttRequest struct {
 	Payload []byte `json:"payload"`
 	Qos     uint8  `json:"qos"`
 	Retain  bool   `json:"retain"`
+}
+
+// params:
+// result
+// error
+// time
+type DevMqttResponse struct {
+	BaseResponse
+}
+
+// Javascript Binding
+//
+// Mqtt(path, payload)
+//
+func NewMqttBind(path, payload string) MqttBind {
+	return MqttBind{
+		Payload: []byte(payload),
+		Path:    path,
+	}
+}
+
+type MqttBind struct {
+	Path    string
+	Payload []byte
 }
