@@ -65,9 +65,6 @@ func (t TemplateManager) Create() {
 
 	for _, name := range fileNames {
 
-		b, err := ioutil.ReadFile(filepath.Join(dataDir, fmt.Sprintf("%s.html", name)))
-		So(err, ShouldBeNil)
-
 		templateType := m.TemplateTypeItem
 		var parent *string
 
@@ -104,6 +101,20 @@ func (t TemplateManager) Create() {
 		case "register_admin_created":
 			templateType = m.TemplateTypeTemplate
 		}
+
+		var tpl *m.Template
+		if templateType == m.TemplateTypeTemplate {
+			tpl, err = t.adaptors.Template.GetByName(name)
+		} else {
+			tpl, err = t.adaptors.Template.GetItemByName(name)
+		}
+
+		if err == nil || tpl != nil {
+			continue
+		}
+
+		b, err := ioutil.ReadFile(filepath.Join(dataDir, fmt.Sprintf("%s.html", name)))
+		So(err, ShouldBeNil)
 
 		template := &m.Template{
 			Name:       name,

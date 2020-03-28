@@ -34,32 +34,33 @@ func NewNodeManager(adaptors *adaptors.Adaptors) *NodeManager {
 	}
 }
 
-func (n NodeManager) Create() (node1, node2 *m.Node) {
-
-	node1 = &m.Node{
-		Name:     "node1",
-		Status:   "enabled",
-		Login:    "node1",
-		Password: "node1",
-	}
-	node2 = &m.Node{
-		Name:     "node2",
-		Status:   "disabled",
-		Login:    "node2",
-		Password: "node2",
-	}
-
-	ok, _ := node1.Valid()
-	So(ok, ShouldEqual, true)
-	ok, _ = node2.Valid()
-	So(ok, ShouldEqual, true)
+func (n NodeManager) addNode(name, login, pass string) (node *m.Node) {
 
 	var err error
-	node1.Id, err = n.adaptors.Node.Add(node1)
+	if node, err = n.adaptors.Node.GetByLogin(name); err == nil || node != nil {
+		return
+	}
+
+	node = &m.Node{
+		Name:     name,
+		Status:   "enabled",
+		Login:    login,
+		Password: pass,
+	}
+
+	ok, _ := node.Valid()
+	So(ok, ShouldEqual, true)
+
+	node.Id, err = n.adaptors.Node.Add(node)
 	So(err, ShouldBeNil)
 
-	node2.Id, err = n.adaptors.Node.Add(node2)
-	So(err, ShouldBeNil)
+	return
+}
+
+func (n NodeManager) Create() (node1, node2 *m.Node) {
+
+	node1 = n.addNode("node1", "node1", "node1")
+	node2 = n.addNode("node2", "node2", "node2")
 
 	return
 }

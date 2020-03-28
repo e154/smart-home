@@ -310,6 +310,10 @@ func (i ImageManager) install(imageList map[string]*m.Image) (err error) {
 
 	var subDir string
 	for _, image := range imageList {
+		if _, err = i.adaptors.Image.GetByImageName(image.Image); err == nil {
+			continue
+		}
+
 		image.Id, err = i.adaptors.Image.Add(image)
 		So(err, ShouldBeNil)
 
