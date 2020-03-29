@@ -42,7 +42,7 @@ func NewRoleManager(adaptors *adaptors.Adaptors,
 func (r RoleManager) addAdmin() (adminRole *m.Role) {
 
 	var err error
-	if adminRole, err = r.adaptors.Role.GetByName("demo"); err != nil {
+	if adminRole, err = r.adaptors.Role.GetByName("admin"); err != nil {
 		adminRole = &m.Role{
 			Name: "admin",
 		}
@@ -165,8 +165,8 @@ func (r RoleManager) addDemo() (demoRole *m.Role) {
 
 func (r RoleManager) Create() {
 
-	r.addUser(r.addDemo())
 	r.addAdmin()
+	r.addUser(r.addDemo())
 
 }
 
