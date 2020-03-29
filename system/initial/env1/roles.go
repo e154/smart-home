@@ -77,7 +77,7 @@ func (r RoleManager) addAdmin() (adminRole *m.Role) {
 func (r RoleManager) addUser(demoRole *m.Role) (userRole *m.Role) {
 
 	var err error
-	if demoRole, err = r.adaptors.Role.GetByName("demo"); err != nil {
+	if userRole, err = r.adaptors.Role.GetByName("user"); err != nil {
 		userRole = &m.Role{
 			Name:   "user",
 			Parent: demoRole,
