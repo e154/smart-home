@@ -13,7 +13,7 @@
   "pg_conn_max_life_time": 30,
   "auto_migrate": true,
   "snapshot_dir": "snapshots",
-  "mode": "debug",
+  "mode": "release",
   "mqtt_port": 1883,
   "mqtt_retry_interval": 20,
   "mqtt_retry_check_interval": 20,
@@ -25,5 +25,6 @@
   "mqtt_max_msg_queue": 1000,
   "mqtt_deliver_mode": 1,
   "logging": true,
-  "metric_port": 2112
+  "metric_port": 2112,
+  "colored_logging": false
 }

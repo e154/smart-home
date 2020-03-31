@@ -93,7 +93,6 @@ __build() {
     go build -o ${TMP_DIR}/${EXEC}-${OS_TYPE}-${OS_ARCH}
 
 
-    cp ${ROOT}/conf/access_list.json ${TMP_DIR}/conf
     cp ${ROOT}/conf/config.dev.json ${TMP_DIR}/conf
     cp ${ROOT}/conf/dbconfig.dev.yml ${TMP_DIR}/conf
     cp ${ROOT}/LICENSE ${TMP_DIR}

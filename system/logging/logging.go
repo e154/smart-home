@@ -21,6 +21,7 @@ package logging
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
@@ -35,14 +36,15 @@ type Logging struct {
 	oldLog     m.Log
 }
 
-func NewLogger(logDbSaver *LogDbSaver) (logging *Logging) {
+func NewLogger(logDbSaver *LogDbSaver,
+	appConfig *config.AppConfig) (logging *Logging) {
 
 	// First, define our level-handling logic.
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.ErrorLevel
+		return lvl >= zapcore.WarnLevel
 	})
 	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl < zapcore.ErrorLevel
+		return lvl < zapcore.WarnLevel
 	})
 
 	// High-priority output should also go to standard error, and low-priority
@@ -52,7 +54,9 @@ func NewLogger(logDbSaver *LogDbSaver) (logging *Logging) {
 
 	config := zap.NewDevelopmentEncoderConfig()
 	config.EncodeTime = nil
-	config.EncodeLevel = CustomLevelEncoder
+	if appConfig.ColoredLogging {
+		config.EncodeLevel = CustomLevelEncoder
+	}
 	config.EncodeName = CustomNameEncoder
 	config.EncodeCaller = CustomCallerEncoder
 	consoleEncoder := zapcore.NewConsoleEncoder(config)

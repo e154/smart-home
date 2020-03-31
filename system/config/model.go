@@ -49,6 +49,7 @@ type AppConfig struct {
 	Logging                        bool          `json:"logging"`
 	Metric                         bool          `json:"metric"`
 	MetricPort                     int           `json:"metric_port"`
+	ColoredLogging                 bool          `json:"colored_logging"`
 }
 
 type RunMode string

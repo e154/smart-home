@@ -23,7 +23,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"io/ioutil"
 )
 
 var (
@@ -39,23 +38,23 @@ func NewAccessListService(adaptors *adaptors.Adaptors) *AccessListService {
 	accessList := &AccessListService{
 		adaptors: adaptors,
 	}
-	accessList.ReadConfig("./conf/access_list.json")
+	accessList.ReadConfig()
 	return accessList
 }
 
-func (a *AccessListService) ReadConfig(path string) (err error) {
+func (a *AccessListService) ReadConfig() (err error) {
 
-	var file []byte
-	file, err = ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatal("Error reading config file")
-		return
-	}
+	//var file []byte
+	//file, err = ioutil.ReadFile(path)
+	//if err != nil {
+	//	log.Fatal("Error reading config file")
+	//	return
+	//}
 
 	a.List = &AccessList{}
-	err = json.Unmarshal(file, a.List)
+	err = json.Unmarshal([]byte(DATA), a.List)
 	if err != nil {
-		log.Fatal("Error: wrong format of config file")
+		log.Fatal(err.Error())
 		return
 	}
 

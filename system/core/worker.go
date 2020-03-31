@@ -135,7 +135,7 @@ func (w *Worker) doAction(action *Action) {
 	//defer fmt.Println("end ---->", action.deviceAction.Name)
 
 	if _, err := action.Do(); err != nil {
-		log.Errorf("node: %s, device: %s error: %s", action.Node.Name, action.Device.Name, err.Error())
+		log.Errorf("node: %s, device: %s error: %s", action.Node.Model().Name, action.Device.Name, err.Error())
 		return
 	}
 

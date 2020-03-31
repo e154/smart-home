@@ -40,11 +40,11 @@ func (n *NodeBind) IsConnected() bool {
 }
 
 func (n *NodeBind) Name() string {
-	return n.node.Name
+	return n.node.Model().Name
 }
 
 func (n *NodeBind) Status() string {
-	return n.node.Status
+	return n.node.Model().Status
 }
 
 func (n *NodeBind) Stat() NodeStat {
@@ -52,5 +52,5 @@ func (n *NodeBind) Stat() NodeStat {
 }
 
 func (n *NodeBind) Description() string {
-	return n.node.Description
+	return n.node.Model().Description
 }

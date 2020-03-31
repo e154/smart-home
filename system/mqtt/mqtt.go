@@ -25,14 +25,18 @@ import (
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt/management"
 	"github.com/e154/smart-home/system/mqtt/metric"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"net"
+	"os"
 	"sync"
 )
 
@@ -91,24 +95,29 @@ func (m *Mqtt) runServer() {
 
 	m.management = management.New()
 
-	// Create a new server
-	m.server = gmqtt.NewServer(
+	options := []gmqtt.Options{
 		gmqtt.WithTCPListener(ln),
 		gmqtt.WithHook(gmqtt.Hooks{
-			OnConnect:        m.OnConnect,
-			OnConnected:      m.OnConnected,
-			OnClose:          m.OnClose,
-			OnSessionCreated: m.OnSessionCreated,
-			OnSessionResumed: m.OnSessionResumed,
-			OnSubscribe:      m.OnSubscribe,
-			OnUnsubscribed:   m.OnUnsubscribed,
-			OnMsgArrived:     m.OnMsgArrived,
+			OnConnect: m.OnConnect,
+			//OnConnected:      m.OnConnected,
+			//OnClose:          m.OnClose,
+			//OnSessionCreated: m.OnSessionCreated,
+			//OnSessionResumed: m.OnSessionResumed,
+			//OnSubscribe:      m.OnSubscribe,
+			//OnUnsubscribed:   m.OnUnsubscribed,
+			OnMsgArrived: m.OnMsgArrived,
 		}),
 		gmqtt.WithPlugin(m.management),
 		//gmqtt.WithPlugin(prometheus.New(&http.Server{Addr: ":8082",}, "/metrics")),
 		gmqtt.WithPlugin(metric.New(m.metric, 5)),
-		gmqtt.WithLogger(zap.L().Named("gmqtt")),
-	)
+	}
+
+	if m.cfg.Logging {
+		options = append(options, gmqtt.WithLogger(m.logging()))
+	}
+
+	// Create a new server
+	m.server = gmqtt.NewServer(options...)
 	m.publishService = m.server.PublishService()
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
@@ -116,30 +125,30 @@ func (m *Mqtt) runServer() {
 	m.server.Run()
 }
 
-func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
-	log.Debugf("connected... %v", client.OptionsReader().ClientID())
-}
-
-func (m *Mqtt) OnClose(ctx context.Context, client gmqtt.Client, err error) {
-	log.Debugf("disconnected... %v", client.OptionsReader().ClientID())
-}
-
-func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {
-	log.Debugf("session created... %v", client.OptionsReader().ClientID())
-}
-
-func (m *Mqtt) OnSessionResumed(ctx context.Context, client gmqtt.Client) {
-	log.Debugf("session resumed... %v", client.OptionsReader().ClientID())
-}
-
-func (m *Mqtt) OnSubscribe(ctx context.Context, client gmqtt.Client, topic packets.Topic) (qos uint8) {
-	log.Debugf("subscribe %v to topic %v", client.OptionsReader().ClientID(), topic.Name)
-	return topic.Qos
-}
-
-func (m *Mqtt) OnUnsubscribed(ctx context.Context, client gmqtt.Client, topicName string) {
-	log.Debugf("unsubscribe %v from topic %v", client.OptionsReader().ClientID(), topicName)
-}
+//func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
+//	log.Debugf("connected... %v", client.OptionsReader().ClientID())
+//}
+//
+//func (m *Mqtt) OnClose(ctx context.Context, client gmqtt.Client, err error) {
+//	log.Debugf("disconnected... %v", client.OptionsReader().ClientID())
+//}
+//
+//func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {
+//	log.Debugf("session created... %v", client.OptionsReader().ClientID())
+//}
+//
+//func (m *Mqtt) OnSessionResumed(ctx context.Context, client gmqtt.Client) {
+//	log.Debugf("session resumed... %v", client.OptionsReader().ClientID())
+//}
+//
+//func (m *Mqtt) OnSubscribe(ctx context.Context, client gmqtt.Client, topic packets.Topic) (qos uint8) {
+//	log.Debugf("subscribe %v to topic %v", client.OptionsReader().ClientID(), topic.Name)
+//	return topic.Qos
+//}
+//
+//func (m *Mqtt) OnUnsubscribed(ctx context.Context, client gmqtt.Client, topicName string) {
+//	log.Debugf("unsubscribe %v from topic %v", client.OptionsReader().ClientID(), topicName)
+//}
 
 func (m *Mqtt) OnMsgArrived(ctx context.Context, client gmqtt.Client, msg packets.Message) (valid bool) {
 	m.clientsLock.Lock()
@@ -198,4 +207,47 @@ func (m *Mqtt) NewClient(name string) (client *Client) {
 	client = NewClient(m, name)
 	m.clients[name] = client
 	return
+}
+
+func (m *Mqtt) logging() *zap.Logger {
+
+	// First, define our level-handling logic.
+	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.ErrorLevel
+	})
+
+	lowLevel := zapcore.ErrorLevel
+	if m.cfg.DebugMode == config.ReleaseMode {
+		lowLevel = zapcore.DebugLevel
+	}
+	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl < lowLevel
+	})
+
+	// High-priority output should also go to standard error, and low-priority
+	// output should also go to standard out.
+	consoleDebugging := zapcore.Lock(os.Stdout)
+	consoleErrors := zapcore.Lock(os.Stderr)
+
+	var encConfig zapcore.EncoderConfig
+	if m.cfg.DebugMode == config.ReleaseMode {
+		encConfig = zap.NewProductionEncoderConfig()
+	} else {
+		encConfig = zap.NewDevelopmentEncoderConfig()
+	}
+
+	encConfig.EncodeTime = nil
+	encConfig.EncodeName = logging.CustomNameEncoder
+	encConfig.EncodeCaller = logging.CustomCallerEncoder
+	consoleEncoder := zapcore.NewConsoleEncoder(encConfig)
+
+	// Join the outputs, encoders, and level-handling functions into
+	// zapcore.Cores, then tee the four cores together.
+	core := zapcore.NewTee(
+		zapcore.NewCore(consoleEncoder, consoleErrors, highPriority),
+		zapcore.NewCore(consoleEncoder, consoleDebugging, lowPriority),
+	)
+
+	// From a zapcore.Core, it's easy to construct a Logger.
+	return zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Named("mqtt")
 }
