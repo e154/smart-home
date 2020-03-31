@@ -128,7 +128,7 @@ func (b *Core) Stop() (err error) {
 	}
 
 	for _, node := range b.nodes {
-		if err = b.RemoveNode(&m.Node{Id: node.Id, Name: node.Name}); err != nil {
+		if err = b.RemoveNode(&m.Node{Id: node.Model().Id, Name: node.Model().Name}); err != nil {
 			return
 		}
 	}
@@ -203,7 +203,7 @@ func (c *Core) removeNode(node *m.Node) (err error) {
 	exist = false
 	for _, wf := range c.workflows {
 		for _, flow := range wf.Flows {
-			if flow.Node.Id == node.Id {
+			if flow.Node.Model().Id == node.Id {
 				exist = true
 			}
 		}
@@ -565,7 +565,7 @@ func (c *Core) safeGetOrAddNode(k int64) (w *Node, ok bool) {
 			ok = true
 
 			w = NewNode(node, c.mqtt, c.metric)
-			c.safeUpdateNodeMap(node.Id, w.Connect())
+			go c.safeUpdateNodeMap(node.Id, w.Connect())
 
 		} else {
 			log.Error(err.Error())

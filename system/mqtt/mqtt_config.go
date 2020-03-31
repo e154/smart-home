@@ -33,7 +33,8 @@ type MqttConfig struct {
 	MaxInflight                int
 	MaxAwaitRel                int
 	MaxMsgQueue                int
-	//DeliverMode                gmqtt.DeliverMode
+	Logging                    bool
+	DebugMode                  config.RunMode
 }
 
 func NewMqttConfig(cfg *config.AppConfig) *MqttConfig {
@@ -47,6 +48,7 @@ func NewMqttConfig(cfg *config.AppConfig) *MqttConfig {
 		MaxInflight:                cfg.MqttMaxInflight,
 		MaxAwaitRel:                cfg.MqttMaxAwaitRel,
 		MaxMsgQueue:                cfg.MqttMaxMsgQueue,
-		//DeliverMode:                gmqtt.DeliverMode(cfg.MqttDeliverMode),
+		Logging:                    cfg.Logging,
+		DebugMode:                  cfg.Mode,
 	}
 }
