@@ -39,6 +39,7 @@ type ControllerCommon struct {
 	metric      *metrics.MetricManager
 	mqtt        *mqtt.Mqtt
 	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt
+	stream      *stream.StreamService
 }
 
 func NewControllerCommon(adaptors *adaptors.Adaptors,
@@ -48,7 +49,8 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 	gate *gate_client.GateClient,
 	metric *metrics.MetricManager,
 	mqtt *mqtt.Mqtt,
-	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *ControllerCommon {
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
+	stream *stream.StreamService) *ControllerCommon {
 	return &ControllerCommon{
 		adaptors:    adaptors,
 		endpoint:    endpoint,
@@ -58,6 +60,7 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 		metric:      metric,
 		mqtt:        mqtt,
 		zigbee2mqtt: zigbee2mqtt,
+		stream:      stream,
 	}
 }
 
