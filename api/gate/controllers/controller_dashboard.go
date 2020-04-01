@@ -47,12 +47,12 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 
 func (c *ControllerDashboard) Start() {
 	c.metric.Subscribe("gate.workflow", c)
-	c.gate.Subscribe("workflow.get.devices", c.workflow.GetWorkflowStatus)
+	c.gate.Subscribe("workflow.get.status", c.workflow.GetWorkflowStatus)
 }
 
 func (c *ControllerDashboard) Stop() {
 	c.metric.UnSubscribe("do.action")
-	c.gate.UnSubscribe("workflow.get.devices")
+	c.gate.UnSubscribe("workflow.get.status")
 }
 
 func (c *ControllerDashboard) Broadcast(param interface{}) {
