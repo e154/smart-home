@@ -59,7 +59,7 @@ The basic principles underlying the system being developed are ease of setup, lo
 ### Features
 
 1. The ultimate smart thing solution - server, configurator, nodes, gateway, mobile application
-2. Open API
+2. Free and open source
 3. Cross-platform Linux, MacOS, Windows ...
 4. Convenient WEB-configurator for fine-tuning
 5. Mobile application for equipment management
@@ -71,6 +71,10 @@ The basic principles underlying the system being developed are ease of setup, lo
 11. Quick backup of all data, and recovery - literally in two teams
 12. Have Docker images to enhance system security
 13. Minimum consumption of resources.
+14. Optimized for embedded devices like Raspberry Pi
+15. 100% local home automation
+16. Create and restore full backups of your whole configuration with ease
+17. Management web interface integrated into Smart home
 
 ### Demo access
 
