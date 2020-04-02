@@ -38,11 +38,7 @@ func (d *Workflow) Broadcast() (map[string]interface{}, bool) {
 	snapshot := d.metric.Workflow.Snapshot()
 
 	return map[string]interface{}{
-		"workflows": map[string]interface{}{
-			"total":    snapshot.Total,
-			"disabled": snapshot.Disabled,
-			"status":   snapshot.Status,
-		},
+		"workflows": snapshot,
 	}, true
 }
 
