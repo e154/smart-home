@@ -36,6 +36,8 @@ func NewDevices(metric *metrics.MetricManager) *Devices {
 
 func (d *Devices) Broadcast(cursor metrics.MapElementCursor) (map[string]interface{}, bool) {
 
+	log.Infof("broadcast device status")
+
 	snapshot := d.metric.MapElement.Snapshot()
 	element, ok := snapshot.Elements[d.key(cursor.DeviceId, cursor.ElementName)]
 	if !ok {
@@ -55,6 +57,8 @@ func (d *Devices) Broadcast(cursor metrics.MapElementCursor) (map[string]interfa
 // only on request: 'map.get.devices'
 //
 func (d *Devices) GetDevicesStates(client stream.IStreamClient, message stream.Message) {
+
+	log.Infof("get device status")
 
 	snapshot := d.metric.MapElement.Snapshot()
 

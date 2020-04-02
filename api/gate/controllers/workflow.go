@@ -35,6 +35,8 @@ func NewWorkflow(metric *metrics.MetricManager) *Workflow {
 
 func (d *Workflow) Broadcast() (map[string]interface{}, bool) {
 
+	log.Infof("broadcast workflow status")
+
 	snapshot := d.metric.Workflow.Snapshot()
 
 	return map[string]interface{}{
@@ -45,6 +47,8 @@ func (d *Workflow) Broadcast() (map[string]interface{}, bool) {
 // only on request: 'workflow.get.status'
 //
 func (d *Workflow) GetWorkflowStatus(client stream.IStreamClient, message stream.Message) {
+
+	log.Infof("get workflow status")
 
 	snapshot := d.metric.Workflow.Snapshot()
 

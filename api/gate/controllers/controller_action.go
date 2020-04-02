@@ -62,6 +62,8 @@ func (c *ControllerAction) DoAction(client stream.IStreamClient, message stream.
 		return
 	}
 
+	log.Infof("da action device(%v), action(%v)", deviceId, deviceActionId)
+
 	// device
 	var device *m.Device
 	if device, err = c.adaptors.Device.GetById(int64(deviceId)); err != nil {
