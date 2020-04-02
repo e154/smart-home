@@ -27,6 +27,7 @@ import (
 	metrics2 "github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
@@ -35,8 +36,9 @@ var (
 )
 
 type Controllers struct {
-	Map    *ControllerMap
-	Action *ControllerAction
+	Map       *ControllerMap
+	Action    *ControllerAction
+	Dashboard *ControllerDashboard
 }
 
 func NewControllers(adaptors *adaptors.Adaptors,
@@ -46,20 +48,24 @@ func NewControllers(adaptors *adaptors.Adaptors,
 	gate *gate_client.GateClient,
 	metrics *metrics2.MetricManager,
 	mqtt *mqtt.Mqtt,
-	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *Controllers {
-	common := NewControllerCommon(adaptors, endpoint, scripts, core, gate, metrics, mqtt, zigbee2mqtt)
+	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
+	stream *stream.StreamService) *Controllers {
+	common := NewControllerCommon(adaptors, endpoint, scripts, core, gate, metrics, mqtt, zigbee2mqtt, stream)
 	return &Controllers{
-		Map:    NewControllerMap(common),
-		Action: NewControllerAction(common),
+		Map:       NewControllerMap(common),
+		Action:    NewControllerAction(common),
+		Dashboard: NewControllerDashboard(common),
 	}
 }
 
 func (s *Controllers) Start() {
 	s.Map.Start()
 	s.Action.Start()
+	s.Dashboard.Start()
 }
 
 func (s *Controllers) Stop() {
 	s.Map.Stop()
 	s.Action.Stop()
+	s.Dashboard.Stop()
 }
