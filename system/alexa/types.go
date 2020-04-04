@@ -38,10 +38,6 @@ const (
 	ConfNone ConfirmationStatus = "NONE"
 )
 
-// Application represents a single Alexa application server. This application type needs to include
-// the application ID from the Alexa developer portal that will be making requests to the server. This AppId needs
-// to be verified to ensure the requests are coming from the correct app. Handlers can also be provied for
-// different types of requests sent by the Alexa Skills Kit such as OnLaunch or OnIntent.
 type Application interface {
 	GetAppID() string
 	OnLaunch(*gin.Context, *Request, *Response)
