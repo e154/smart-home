@@ -107,7 +107,7 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err 
 		Command:    command,
 	}
 
-	n.MqttPublish(msg)
+	n.MqttPublish(n.topic(fmt.Sprintf("req/device%d", device.Id)), msg)
 
 	// wait response
 	ticker := time.NewTimer(time.Second * 5)
@@ -173,7 +173,7 @@ func (n *Node) delCh(deviceId int64) {
 
 func (n *Node) Connect() *Node {
 
-	n.mqttClient.Subscribe(n.topic("resp"), n.onPublish)
+	n.mqttClient.Subscribe(n.topic("resp/#"), n.onPublish)
 	n.mqttClient.Subscribe(n.topic("ping"), n.ping)
 
 	return n
@@ -222,18 +222,18 @@ func (n *Node) ping(client *mqtt.Client, msg mqtt.Message) {
 	return
 }
 
-func (n *Node) MqttPublish(msg interface{}) {
+func (n *Node) MqttPublish(topic string, msg interface{}) {
 
 	data, _ := json.Marshal(msg)
 
-	if err := n.mqttClient.Publish(n.topic("req"), data); err != nil {
+	if err := n.mqttClient.Publish(topic, data); err != nil {
 		log.Error(err.Error())
 		return
 	}
 }
 
 func (n *Node) topic(r string) string {
-	return fmt.Sprintf("/home/node/%s/%s", n.model.Name, r)
+	return fmt.Sprintf("home/node/%s/%s", n.model.Name, r)
 }
 
 func (n *Node) GetConnStatus() string {
