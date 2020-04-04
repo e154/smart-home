@@ -42,6 +42,8 @@ func (h *HelloWorld) OnLaunch(ctx *gin.Context, req *Request, resp *Response) {
 func (h *HelloWorld) OnIntent(ctx *gin.Context, req *Request, resp *Response) {
 
 	if h.session != nil || common.StringValue(h.session) != req.Session.SessionID {
+		log.Warn("session expired")
+		h.session = nil
 		return
 	}
 

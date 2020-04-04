@@ -71,7 +71,7 @@ func (a *Alexa) Start() {
 	a.init()
 
 	a.engine = gin.New()
-	a.engine.POST("/", a.handlerFunc)
+	a.engine.POST("/", a.Auth, a.handlerFunc)
 
 	a.server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", "127.0.0.1", "3033"),
@@ -220,7 +220,7 @@ func (a *Alexa) updateSettings() (err error) {
 
 func (a Alexa) Auth(ctx *gin.Context) {
 
-	accessToken := ctx.Request.URL.Query().Get("token")
+	accessToken := ctx.Request.URL.Query().Get("alexa_token")
 
 	if accessToken == "" || accessToken != a.token.Load() {
 		ctx.AbortWithError(401, errors.New("access token invalid"))

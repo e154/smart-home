@@ -19,13 +19,10 @@
 package alexa
 
 import (
-	"bytes"
-	"crypto/sha1"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -49,9 +46,7 @@ func HTTPError(w http.ResponseWriter, logMsg string, err string, errCode int) {
 // --insecure-skip-verify flag will disable all validations
 // https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/developing-an-alexa-skill-as-a-web-service#hosting-a-custom-skill-as-a-web-service
 func IsValidAlexaRequest(w http.ResponseWriter, r *http.Request) bool {
-	if insecureSkipVerify {
-		return true
-	}
+
 	certURL := r.Header.Get("SignatureCertChainUrl")
 
 	// Verify certificate URL
@@ -98,28 +93,6 @@ func IsValidAlexaRequest(w http.ResponseWriter, r *http.Request) bool {
 		HTTPError(w, "Amazon certificate invalid.", "Not Authorized", 401)
 		return false
 	}
-
-	// Make the request body SHA1 and verify the request with the public key
-	var bodyBuf bytes.Buffer
-	hash := sha1.New()
-	_, err = io.Copy(hash, io.TeeReader(r.Body, &bodyBuf))
-	if err != nil {
-		HTTPError(w, err.Error(), "Internal Error", 500)
-		return false
-	}
-
-	//TODO fix signature match
-
-	// Verify the key
-	//publicKey := cert.PublicKey
-	//encryptedSig, _ := base64.StdEncoding.DecodeString(r.Header.Get("Signature"))
-	//fmt.Println("signature", r.Header.Get("Signature"))
-	//err = rsa.VerifyPKCS1v15(publicKey.(*rsa.PublicKey), crypto.SHA1, hash.Sum(nil), encryptedSig)
-	//if err != nil {
-	//	log.Error(err.Error())
-	//	HTTPError(w, "Signature match failed.", "Not Authorized", 401)
-	//	return false
-	//}
 
 	return true
 }
