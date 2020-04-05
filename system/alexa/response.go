@@ -20,7 +20,6 @@ package alexa
 
 import (
 	"encoding/json"
-	"github.com/e154/smart-home/system/alexa/dialog"
 )
 
 // NewEchoResponse will construct a new response instance with the required metadata and an empty speech string.
@@ -147,18 +146,18 @@ func (r *Response) EndSession(flag bool) *Response {
 // Multiple directives can be returned by calling the method in chain
 // (eg. RespondToIntent(...).RespondToIntent(...), each RespondToIntent call appends the
 // data to Directives array and will return the same at the end.
-func (r *Response) RespondToIntent(name dialog.Type, intent *Intent, slot *Slot) *Response {
+func (r *Response) RespondToIntent(name DialogType, intent *Intent, slot *Slot) *Response {
 	directive := Directive{Type: name}
-	if intent != nil && name == dialog.ConfirmIntent {
+	if intent != nil && name == ConfirmIntent {
 		directive.IntentToConfirm = intent.Name
 	} else {
 		directive.UpdatedIntent = intent
 	}
 
 	if slot != nil {
-		if name == dialog.ElicitSlot {
+		if name == ElicitSlot {
 			directive.SlotToElicit = slot.Name
-		} else if name == dialog.ConfirmSlot {
+		} else if name == ConfirmSlot {
 			directive.SlotToConfirm = slot.Name
 		}
 	}

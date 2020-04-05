@@ -20,7 +20,6 @@ package alexa
 
 import (
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/alexa/dialog"
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,6 +35,35 @@ const (
 
 	// ConfNone means there has been not acceptance or denial of the intent or slot.
 	ConfNone ConfirmationStatus = "NONE"
+)
+
+// Type will indicate type of dialog interaction to be sent to the user.
+type DialogType string
+
+const (
+	// Delegate will indicate that the Alexa service should continue the dialog ineraction.
+	Delegate DialogType = "Dialog.Delegate"
+
+	// ElicitSlot will indicate to the Alexa service that the specific slot should be elicited from the user.
+	ElicitSlot DialogType = "Dialog.ElicitSlot"
+
+	// ConfirmSlot indicates to the Alexa service that the slot value should be confirmed by the user.
+	ConfirmSlot DialogType = "Dialog.ConfirmSlot"
+
+	// ConfirmIntent indicates to the Alexa service that the complete intent should be confimed by the user.
+	ConfirmIntent DialogType = "Dialog.ConfirmIntent"
+)
+
+const (
+	// Started indicates that the dialog interaction has just begun.
+	Started string = "STARTED"
+
+	// InProgress indicates that the dialog interation is continuing.
+	InProgress string = "IN_PROGRESS"
+
+	// Completed indicates that the dialog interaction has finished.
+	// The intent and slot confirmation status should be checked.
+	Completed string = "COMPLETED"
 )
 
 type Application interface {
@@ -150,11 +178,11 @@ type RespPayload struct {
 // The type value can be used to delegate the action to the Alexa service. In this case, a pre-configured prompt
 // will be used from the developer console.
 type Directive struct {
-	Type            dialog.Type `json:"type"`
-	UpdatedIntent   *Intent     `json:"updatedIntent,omitempty"`
-	SlotToConfirm   string      `json:"slotToConfirm,omitempty"`
-	SlotToElicit    string      `json:"slotToElicit,omitempty"`
-	IntentToConfirm string      `json:"intentToConfirm,omitempty"`
+	Type            DialogType `json:"type"`
+	UpdatedIntent   *Intent    `json:"updatedIntent,omitempty"`
+	SlotToConfirm   string     `json:"slotToConfirm,omitempty"`
+	SlotToElicit    string     `json:"slotToElicit,omitempty"`
+	IntentToConfirm string     `json:"intentToConfirm,omitempty"`
 }
 
 // Session contains information about the ongoing session between the Alexa server and
