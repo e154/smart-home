@@ -30,9 +30,9 @@ type AlexaIntents struct {
 type AlexaIntent struct {
 	Name               string `gorm:"primary_key"`
 	AlexaApplication   *AlexaApplication
-	AlexaApplicationId string
-	Flow               *Flow
-	FlowId             int64
+	AlexaApplicationId int64
+	Script             *Script
+	ScriptId           int64
 	Description        string
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
@@ -47,11 +47,17 @@ func (n AlexaIntents) Add(v *AlexaIntent) (id int64, err error) {
 	return
 }
 
+func (n AlexaIntents) GetByName(name string) (intent *AlexaIntent, err error) {
+	intent = &AlexaIntent{}
+	err = n.Db.Model(intent).Where("name = ?", name).Error
+	return
+}
+
 func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
 	err = n.Db.Model(v).Where("name = ? and alexa_application_id = ?", v.Name, v.AlexaApplicationId).Updates(&map[string]interface{}{
 		"name":        v.Name,
 		"description": v.Description,
-		"flow_id":     v.FlowId,
+		"script_id":   v.ScriptId,
 	}).Error
 	return
 }

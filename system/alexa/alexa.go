@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/atomic"
@@ -38,26 +39,29 @@ var (
 )
 
 type Alexa struct {
-	engine      *gin.Engine
-	isStarted   *atomic.Bool
-	addressPort *string
-	server      *http.Server
-	appLock     *sync.Mutex
-	apps        []Application
-	adaptors    *adaptors.Adaptors
-	appConfig   *config.AppConfig
-	token       *atomic.String
+	engine        *gin.Engine
+	isStarted     *atomic.Bool
+	addressPort   *string
+	server        *http.Server
+	appLock       *sync.Mutex
+	apps          []Application
+	adaptors      *adaptors.Adaptors
+	appConfig     *config.AppConfig
+	token         *atomic.String
+	scriptService *scripts.ScriptService
 }
 
 func NewAlexa(adaptors *adaptors.Adaptors,
-	appConfig *config.AppConfig) *Alexa {
+	appConfig *config.AppConfig,
+	scriptService *scripts.ScriptService) *Alexa {
 	return &Alexa{
-		isStarted: atomic.NewBool(false),
-		adaptors:  adaptors,
-		appLock:   &sync.Mutex{},
-		apps:      make([]Application, 0),
-		appConfig: appConfig,
-		token:     atomic.NewString(""),
+		isStarted:     atomic.NewBool(false),
+		adaptors:      adaptors,
+		appLock:       &sync.Mutex{},
+		apps:          make([]Application, 0),
+		appConfig:     appConfig,
+		token:         atomic.NewString(""),
+		scriptService: scriptService,
 	}
 }
 
@@ -93,8 +97,17 @@ func (a *Alexa) init() {
 		log.Error(err.Error())
 	}
 
-	// hello world
-	a.apps = append(a.apps, NewHelloWorld("amzn1.ask.skill.e2177905-951c-4e39-b061-0b5cac49bdd9"))
+	list, err := a.adaptors.AlexaApplication.ListEnabled(999, 0)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	a.appLock.Lock()
+	defer a.appLock.Unlock()
+	for _, app := range list {
+		a.apps = append(a.apps, NewWorker(app, a.adaptors, a.scriptService))
+	}
 }
 
 func (a *Alexa) Stop() {
@@ -122,10 +135,8 @@ func (a *Alexa) handlerFunc(ctx *gin.Context) {
 	resp := NewResponse()
 
 	if req.GetRequestType() == "LaunchRequest" {
-		fmt.Println("LaunchRequest")
 		a.onLaunchHandler(ctx, req, resp)
 	} else if req.GetRequestType() == "IntentRequest" {
-		fmt.Println("IntentRequest")
 		a.onIntentHandle(ctx, req, resp)
 	} else if req.GetRequestType() == "SessionEndedRequest" {
 		a.onSessionEndedHandler(ctx, req, resp)
@@ -142,10 +153,12 @@ func (a *Alexa) handlerFunc(ctx *gin.Context) {
 }
 
 func (a *Alexa) onLaunchHandler(ctx *gin.Context, req *Request, resp *Response) {
+	a.appLock.Lock()
+	defer a.appLock.Unlock()
 
 	for _, app := range a.apps {
 		if app.GetAppID() != req.Context.System.Application.ApplicationID {
-			return
+			continue
 		}
 		if app.OnLaunch != nil {
 			app.OnLaunch(ctx, req, resp)
@@ -154,10 +167,12 @@ func (a *Alexa) onLaunchHandler(ctx *gin.Context, req *Request, resp *Response) 
 }
 
 func (a *Alexa) onIntentHandle(ctx *gin.Context, req *Request, resp *Response) {
+	a.appLock.Lock()
+	defer a.appLock.Unlock()
 
 	for _, app := range a.apps {
 		if app.GetAppID() != req.Context.System.Application.ApplicationID {
-			return
+			continue
 		}
 		if app.OnIntent != nil {
 			app.OnIntent(ctx, req, resp)
@@ -166,10 +181,12 @@ func (a *Alexa) onIntentHandle(ctx *gin.Context, req *Request, resp *Response) {
 }
 
 func (a *Alexa) onSessionEndedHandler(ctx *gin.Context, req *Request, resp *Response) {
+	a.appLock.Lock()
+	defer a.appLock.Unlock()
 
 	for _, app := range a.apps {
 		if app.GetAppID() != req.Context.System.Application.ApplicationID {
-			return
+			continue
 		}
 		if app.OnSessionEnded != nil {
 			app.OnSessionEnded(ctx, req, resp)
@@ -178,10 +195,12 @@ func (a *Alexa) onSessionEndedHandler(ctx *gin.Context, req *Request, resp *Resp
 }
 
 func (a *Alexa) onAudioPlayerHandler(ctx *gin.Context, req *Request, resp *Response) {
+	a.appLock.Lock()
+	defer a.appLock.Unlock()
 
 	for _, app := range a.apps {
 		if app.GetAppID() != req.Context.System.Application.ApplicationID {
-			return
+			continue
 		}
 		if app.OnAudioPlayerState != nil {
 			app.OnAudioPlayerState(ctx, req, resp)

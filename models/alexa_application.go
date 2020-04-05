@@ -18,13 +18,21 @@
 
 package models
 
-import "time"
+import (
+	"github.com/e154/smart-home/common"
+	"time"
+)
 
 type AlexaApplication struct {
-	Id            int64          `json:"id"`
-	ApplicationId string         `json:"application_id"`
-	Description   string         `json:"description"`
-	Intents       []*AlexaIntent `json:"intents"`
-	CreatedAt     time.Time      `json:"created_at"`
-	UpdatedAt     time.Time      `json:"updated_at"`
+	Id                   int64             `json:"id"`
+	ApplicationId        string            `json:"application_id"`
+	Description          string            `json:"description"`
+	Status               common.StatusType `json:"status"`
+	Intents              []*AlexaIntent    `json:"intents"`
+	OnLaunchScript       *Script           `json:"on_launch_script"`
+	OnLaunchScriptId     *int64            `json:"on_launch_script_id"`
+	OnSessionEndScript   *Script           `json:"on_session_end_script"`
+	OnSessionEndScriptId *int64            `json:"on_session_end_script_id"`
+	CreatedAt            time.Time         `json:"created_at"`
+	UpdatedAt            time.Time         `json:"updated_at"`
 }

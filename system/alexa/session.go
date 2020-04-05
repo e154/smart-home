@@ -16,16 +16,43 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package models
+package alexa
 
-import "time"
+import (
+	"errors"
+	"github.com/e154/smart-home/system/cache"
+)
 
-type AlexaIntent struct {
-	Name               string    `json:"name"`
-	AlexaApplicationId int64     `json:"alexa_application_id"`
-	Script             *Script   `json:"script"`
-	ScriptId           int64     `json:"script_id"`
-	Description        string    `json:"description"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
+type AppSession struct {
+	pull map[string]cache.Cache
+}
+
+func NewAppSession() *AppSession {
+	return &AppSession{
+		pull: make(map[string]cache.Cache),
+	}
+}
+
+func (h *AppSession) addSession(session string) (c cache.Cache, err error) {
+	if c, err = cache.NewCache("memory", `{"interval":3600}`); err != nil {
+		return
+	}
+	h.pull[session] = c
+	return
+}
+
+func (h *AppSession) getSession(session string) (c cache.Cache, err error) {
+	var exist bool
+	if c, exist = h.pull[session]; !exist {
+		err = errors.New("record not found")
+		return
+	}
+	return
+}
+
+func (h *AppSession) delSession(session string) {
+	if _, exist := h.pull[session]; exist {
+		delete(h.pull, session)
+	}
+	return
 }

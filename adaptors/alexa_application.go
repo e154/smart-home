@@ -37,13 +37,7 @@ func GetAlexaApplicationAdaptor(d *gorm.DB) *AlexaApplication {
 }
 
 func (n *AlexaApplication) Add(app *m.AlexaApplication) (id int64, err error) {
-
-	var dbVer *db.AlexaApplication
-	dbVer, err = n.toDb(app)
-	if id, err = n.table.Add(dbVer); err != nil {
-		return
-	}
-
+	id, err = n.table.Add(n.toDb(app))
 	return
 }
 
@@ -60,10 +54,7 @@ func (n *AlexaApplication) GetById(appId int64) (app *m.AlexaApplication, err er
 }
 
 func (n *AlexaApplication) Update(app *m.AlexaApplication) (err error) {
-
-	var dbVer *db.AlexaApplication
-	dbVer, err = n.toDb(app)
-	err = n.table.Update(dbVer)
+	err = n.table.Update(n.toDb(app))
 	return
 }
 
@@ -80,32 +71,65 @@ func (n *AlexaApplication) List(limit, offset int64, orderBy, sort string) (list
 
 	list = make([]*m.AlexaApplication, 0)
 	for _, dbVer := range dbList {
-		app := n.fromDb(dbVer)
-		list = append(list, app)
+		list = append(list, n.fromDb(dbVer))
+	}
+
+	return
+}
+
+func (n *AlexaApplication) ListEnabled(limit, offset int64) (list []*m.AlexaApplication, err error) {
+	var dbList []*db.AlexaApplication
+	if dbList, err = n.table.ListEnabled(limit, offset); err != nil {
+		return
+	}
+
+	list = make([]*m.AlexaApplication, 0)
+	for _, dbVer := range dbList {
+		list = append(list, n.fromDb(dbVer))
 	}
 
 	return
 }
 
 func (n *AlexaApplication) fromDb(dbVer *db.AlexaApplication) (app *m.AlexaApplication) {
+
 	app = &m.AlexaApplication{
-		Id:            dbVer.Id,
-		ApplicationId: dbVer.ApplicationId,
-		Description:   dbVer.Description,
-		Intents:       nil,
-		CreatedAt:     dbVer.CreatedAt,
-		UpdatedAt:     dbVer.UpdatedAt,
+		Id:                   dbVer.Id,
+		ApplicationId:        dbVer.ApplicationId,
+		Description:          dbVer.Description,
+		Status:               dbVer.Status,
+		OnLaunchScriptId:     dbVer.OnLaunchScriptId,
+		OnSessionEndScriptId: dbVer.OnSessionEndScriptId,
+		CreatedAt:            dbVer.CreatedAt,
+		UpdatedAt:            dbVer.UpdatedAt,
+	}
+
+	intentAdaptor := GetAlexaIntentAdaptor(n.db)
+	for _, dbVer := range dbVer.Intents {
+		app.Intents = append(app.Intents, intentAdaptor.fromDb(dbVer))
+	}
+
+	scriptAdaptor := GetScriptAdaptor(n.db)
+	if dbVer.OnLaunchScriptId != nil {
+		app.OnLaunchScript, _ = scriptAdaptor.fromDb(dbVer.OnLaunchScript)
+	}
+
+	if dbVer.OnSessionEndScriptId != nil {
+		app.OnSessionEndScript, _ = scriptAdaptor.fromDb(dbVer.OnSessionEndScript)
 	}
 
 	return
 }
 
-func (n *AlexaApplication) toDb(ver *m.AlexaApplication) (dbVer *db.AlexaApplication, err error) {
+func (n *AlexaApplication) toDb(ver *m.AlexaApplication) (dbVer *db.AlexaApplication) {
 
 	dbVer = &db.AlexaApplication{
-		Id:            ver.Id,
-		ApplicationId: ver.ApplicationId,
-		Description:   ver.Description,
+		Id:                   ver.Id,
+		ApplicationId:        ver.ApplicationId,
+		Description:          ver.Description,
+		OnLaunchScriptId:     ver.OnLaunchScriptId,
+		OnSessionEndScriptId: ver.OnSessionEndScriptId,
+		Status:               ver.Status,
 	}
 
 	return

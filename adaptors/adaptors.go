@@ -67,6 +67,8 @@ type Adaptors struct {
 	Zigbee2mqtt           *Zigbee2mqtt
 	Zigbee2mqttDevice     *Zigbee2mqttDevice
 	MapDeviceHistory      *MapDeviceHistory
+	AlexaApplication      *AlexaApplication
+	AlexaIntent           *AlexaIntent
 }
 
 func NewAdaptors(db *gorm.DB,
@@ -114,6 +116,8 @@ func NewAdaptors(db *gorm.DB,
 		Zigbee2mqtt:           GetZigbee2mqttAdaptor(db),
 		Zigbee2mqttDevice:     GetZigbee2mqttDeviceAdaptor(db),
 		MapDeviceHistory:      GetMapDeviceHistoryAdaptor(db),
+		AlexaApplication:      GetAlexaApplicationAdaptor(db),
+		AlexaIntent:           GetAlexaIntentAdaptor(db),
 	}
 
 	return

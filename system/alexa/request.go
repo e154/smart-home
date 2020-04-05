@@ -108,4 +108,3 @@ func (r *Request) AllSlots() map[string]Slot {
 func (r *Request) Locale() string {
 	return r.Request.Locale
 }
-
