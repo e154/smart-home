@@ -74,6 +74,18 @@ func (n *Device) GetById(deviceId int64) (device *m.Device, err error) {
 	return
 }
 
+func (n *Device) GetByDeviceActionId(deviceActionId int64) (device *m.Device, err error) {
+
+	var dbDevice *db.Device
+	if dbDevice, err = n.table.GetByDeviceActionId(deviceActionId); err != nil {
+		return
+	}
+
+	device = n.fromDb(dbDevice)
+
+	return
+}
+
 func (n *Device) Update(device *m.Device) (err error) {
 	dbDevice := n.toDb(device)
 	err = n.table.Update(dbDevice)

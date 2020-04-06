@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
@@ -49,11 +50,13 @@ type Alexa struct {
 	appConfig     *config.AppConfig
 	token         *atomic.String
 	scriptService *scripts.ScriptService
+	core          *core.Core
 }
 
 func NewAlexa(adaptors *adaptors.Adaptors,
 	appConfig *config.AppConfig,
-	scriptService *scripts.ScriptService) *Alexa {
+	scriptService *scripts.ScriptService,
+	core *core.Core) *Alexa {
 	return &Alexa{
 		isStarted:     atomic.NewBool(false),
 		adaptors:      adaptors,
@@ -62,6 +65,7 @@ func NewAlexa(adaptors *adaptors.Adaptors,
 		appConfig:     appConfig,
 		token:         atomic.NewString(""),
 		scriptService: scriptService,
+		core:          core,
 	}
 }
 
@@ -77,8 +81,9 @@ func (a *Alexa) Start() {
 	a.engine = gin.New()
 	a.engine.POST("/", a.Auth, a.handlerFunc)
 
+	port := "3033"
 	a.server = &http.Server{
-		Addr:    fmt.Sprintf("%s:%s", "127.0.0.1", "3033"),
+		Addr:    fmt.Sprintf("0.0.0.0:%s", port),
 		Handler: a.engine,
 	}
 
@@ -87,11 +92,11 @@ func (a *Alexa) Start() {
 			log.Fatalf("listen: %s", err.Error())
 		}
 	}()
+
+	log.Infof("Serving server at http://[::]:%s", port)
 }
 
 func (a *Alexa) init() {
-	a.appLock.Lock()
-	defer a.appLock.Unlock()
 
 	if err := a.getSettings(); err != nil {
 		log.Error(err.Error())
@@ -106,7 +111,7 @@ func (a *Alexa) init() {
 	a.appLock.Lock()
 	defer a.appLock.Unlock()
 	for _, app := range list {
-		a.apps = append(a.apps, NewWorker(app, a.adaptors, a.scriptService))
+		a.apps = append(a.apps, NewWorker(app, a.adaptors, a.scriptService, a.core))
 	}
 }
 

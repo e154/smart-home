@@ -21,6 +21,7 @@ package alexa
 import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/gin-gonic/gin"
 )
@@ -29,16 +30,19 @@ type Worker struct {
 	adaptors      *adaptors.Adaptors
 	app           *m.AlexaApplication
 	scriptService *scripts.ScriptService
+	core          *core.Core
 }
 
 func NewWorker(app *m.AlexaApplication,
 	adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService) (worker *Worker) {
+	scriptService *scripts.ScriptService,
+	core *core.Core) (worker *Worker) {
 
 	worker = &Worker{
 		app:           app,
 		adaptors:      adaptors,
 		scriptService: scriptService,
+		core:          core,
 	}
 
 	return
@@ -97,13 +101,15 @@ func (h Worker) OnAudioPlayerState(ctx *gin.Context, req *Request, resp *Respons
 
 }
 
-func (f *Worker) newScript(s *m.Script, req *Request, resp *Response) (engine *scripts.Engine, err error) {
+func (h *Worker) newScript(s *m.Script, req *Request, resp *Response) (engine *scripts.Engine, err error) {
 
-	if engine, err = f.scriptService.NewEngine(s); err != nil {
+	if engine, err = h.scriptService.NewEngine(s); err != nil {
 		return
 	}
 
 	engine.PushStruct("Alexa", NewAlexaBind(req, resp))
+
+	engine.PushFunction("DoAction", h.core.DoAction)
 
 	_, err = engine.Do()
 

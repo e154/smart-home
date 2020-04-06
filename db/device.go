@@ -19,13 +19,13 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
-	"fmt"
-	"errors"
-	"encoding/json"
 	"database/sql"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/e154/smart-home/common"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type Devices struct {
@@ -81,6 +81,23 @@ func (n Devices) GetAllEnabled() (list []*Device, err error) {
 func (n Devices) GetById(deviceId int64) (device *Device, err error) {
 	device = &Device{Id: deviceId}
 	if err = n.Db.First(&device).Error; err != nil {
+		return
+	}
+	err = n.DependencyLoading(device)
+	return
+}
+
+func (n Devices) GetByDeviceActionId(deviceActionId int64) (device *Device, err error) {
+	device = &Device{}
+	err = n.Db.Raw(`select d.*
+from devices d
+left join device_actions da on d.id = da.device_id
+where da.id = ? and da notnull`, deviceActionId).Scan(device).Error
+	if err != nil {
+		return
+	}
+	if device.Id == 0 {
+		err = errors.New("record not found")
 		return
 	}
 	err = n.DependencyLoading(device)
