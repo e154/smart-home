@@ -255,3 +255,15 @@ func (a Alexa) Auth(ctx *gin.Context) {
 		return
 	}
 }
+
+func (a *Alexa) Add(app *m.AlexaApplication) {
+
+}
+
+func (a *Alexa) Update(app *m.AlexaApplication) {
+
+}
+
+func (a *Alexa) Delete(app *m.AlexaApplication) {
+
+}

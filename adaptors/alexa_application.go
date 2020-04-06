@@ -53,8 +53,60 @@ func (n *AlexaApplication) GetById(appId int64) (app *m.AlexaApplication, err er
 	return
 }
 
-func (n *AlexaApplication) Update(app *m.AlexaApplication) (err error) {
-	err = n.table.Update(n.toDb(app))
+func (n *AlexaApplication) Update(params *m.AlexaApplication) (err error) {
+
+	var app *db.AlexaApplication
+	if app, err = n.table.GetById(params.Id); err != nil {
+		return
+	}
+
+	tx := n.db.Begin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	intentAdaptor := GetAlexaIntentAdaptor(tx)
+
+	// обновление, либо удаление alexa intent
+	dbParams := n.toDb(params)
+	for _, intent := range app.Intents {
+		var exist bool
+		for _, parIntent := range dbParams.Intents {
+			if intent.Name == parIntent.Name {
+				exist = true
+			}
+		}
+		if !exist {
+			if err = intentAdaptor.Delete(intentAdaptor.fromDb(intent)); err != nil {
+				return
+			}
+		} else {
+			if err = intentAdaptor.Update(intentAdaptor.fromDb(intent)); err != nil {
+				return
+			}
+		}
+	}
+
+	// добавление alexa intent
+	for _, parIntent := range params.Intents {
+		var exist bool
+		for _, intent := range app.Intents {
+			if intent.Name == parIntent.Name {
+				exist = true
+			}
+		}
+		if !exist {
+			if _, err = intentAdaptor.Add(parIntent); err != nil {
+				return
+			}
+		}
+	}
+
+	table := &db.AlexaApplications{Db: tx}
+	err = table.Update(n.toDb(params))
+
 	return
 }
 
@@ -130,6 +182,11 @@ func (n *AlexaApplication) toDb(ver *m.AlexaApplication) (dbVer *db.AlexaApplica
 		OnLaunchScriptId:     ver.OnLaunchScriptId,
 		OnSessionEndScriptId: ver.OnSessionEndScriptId,
 		Status:               ver.Status,
+	}
+
+	intentAdaptor := GetAlexaIntentAdaptor(n.db)
+	for _, ver := range ver.Intents {
+		dbVer.Intents = append(dbVer.Intents, intentAdaptor.toDb(ver))
 	}
 
 	return

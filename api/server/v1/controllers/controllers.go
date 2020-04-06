@@ -54,6 +54,7 @@ type ControllersV1 struct {
 	Version          *ControllerVersion
 	Zigbee2mqtt      *ControllerZigbee2mqtt
 	MapDeviceHistory *ControllerMapDeviceHistory
+	Alexa            *ControllerAlexa
 }
 
 func NewControllersV1(adaptors *adaptors.Adaptors,
@@ -90,5 +91,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Version:          NewControllerVersion(common),
 		Zigbee2mqtt:      NewControllerZigbee2mqtt(common),
 		MapDeviceHistory: NewControllerMapDeviceHistory(common),
+		Alexa:            NewControllerAlexa(common),
 	}
 }

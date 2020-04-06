@@ -20,14 +20,15 @@ package models
 
 import (
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/validation"
 	"time"
 )
 
 type AlexaApplication struct {
 	Id                   int64             `json:"id"`
-	ApplicationId        string            `json:"application_id"`
+	ApplicationId        string            `json:"application_id" valid:"Required"`
 	Description          string            `json:"description"`
-	Status               common.StatusType `json:"status"`
+	Status               common.StatusType `json:"status" valid:"Required"`
 	Intents              []*AlexaIntent    `json:"intents"`
 	OnLaunchScript       *Script           `json:"on_launch_script"`
 	OnLaunchScriptId     *int64            `json:"on_launch_script_id"`
@@ -35,4 +36,14 @@ type AlexaApplication struct {
 	OnSessionEndScriptId *int64            `json:"on_session_end_script_id"`
 	CreatedAt            time.Time         `json:"created_at"`
 	UpdatedAt            time.Time         `json:"updated_at"`
+}
+
+func (d *AlexaApplication) Valid() (ok bool, errs []*validation.Error) {
+
+	valid := validation.Validation{}
+	if ok, _ = valid.Valid(d); !ok {
+		errs = valid.Errors
+	}
+
+	return
 }

@@ -16,29 +16,22 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package models
+package responses
 
 import (
-	"github.com/e154/smart-home/system/validation"
-	"time"
+	"github.com/e154/smart-home/api/server/v1/models"
 )
 
-type AlexaIntent struct {
-	Name               string    `json:"name"`
-	AlexaApplicationId int64     `json:"alexa_application_id" valid:"Required"`
-	Script             *Script   `json:"script"`
-	ScriptId           int64     `json:"script_id" valid:"Required"`
-	Description        string    `json:"description"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
-}
-
-func (d *AlexaIntent) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(d); !ok {
-		errs = valid.Errors
+// swagger:response AlexaApplicationList
+type AlexaApplicationList struct {
+	// in:body
+	Body struct {
+		Items []*models.AlexaApplicationShort `json:"items"`
+		Meta  struct {
+			Limit       int64 `json:"limit"`
+			ObjectCount int64 `json:"object_count"`
+			Offset      int64 `json:"offset"`
+		} `json:"meta"`
 	}
-
-	return
 }
+

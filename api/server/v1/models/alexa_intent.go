@@ -18,27 +18,15 @@
 
 package models
 
-import (
-	"github.com/e154/smart-home/system/validation"
-	"time"
-)
+import "time"
 
+// swagger:model
 type AlexaIntent struct {
 	Name               string    `json:"name"`
-	AlexaApplicationId int64     `json:"alexa_application_id" valid:"Required"`
+	AlexaApplicationId int64     `json:"alexa_application_id"`
 	Script             *Script   `json:"script"`
-	ScriptId           int64     `json:"script_id" valid:"Required"`
+	ScriptId           int64     `json:"script_id"`
 	Description        string    `json:"description"`
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
-}
-
-func (d *AlexaIntent) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(d); !ok {
-		errs = valid.Errors
-	}
-
-	return
 }

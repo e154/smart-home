@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/alexa"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/metrics"
@@ -61,6 +62,7 @@ type Endpoint struct {
 	Version          *VersionEndpoint
 	Zigbee2mqtt      *Zigbee2mqttEndpoint
 	MapDeviceHistory *MapDeviceHistoryEndpoint
+	AlexaApplication *AlexaApplicationEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
@@ -71,8 +73,9 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	notify *notify.Notify,
 	mqtt *mqtt.Mqtt,
 	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
-	metric *metrics.MetricManager) *Endpoint {
-	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify, mqtt, zigbee2mqtt, metric)
+	metric *metrics.MetricManager,
+	alexa *alexa.Alexa) *Endpoint {
+	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify, mqtt, zigbee2mqtt, metric, alexa)
 	return &Endpoint{
 		Auth:             NewAuthEndpoint(common),
 		Device:           NewDeviceEndpoint(common),
@@ -99,5 +102,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Version:          NewVersionEndpoint(common),
 		Zigbee2mqtt:      NewZigbee2mqttEndpoint(common),
 		MapDeviceHistory: NewMapDeviceHistoryEndpoint(common),
+		AlexaApplication: NewAlexaApplicationEndpoint(common),
 	}
 }
