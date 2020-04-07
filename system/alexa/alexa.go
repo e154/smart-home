@@ -83,7 +83,7 @@ func (a *Alexa) Start() {
 	a.init()
 
 	a.engine = gin.New()
-	a.engine.POST("/", a.Auth, a.handlerFunc)
+	a.engine.Any("/*any", a.Auth, a.handlerFunc)
 
 	port := "3033"
 	a.server = &http.Server{
