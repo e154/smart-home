@@ -129,7 +129,7 @@ func TestAuth(t *testing.T) {
 			err := json.Unmarshal(res.Body.Bytes(), &accessList)
 			ctx.So(err, ShouldBeNil)
 
-			ctx.So(len(accessList.AccessList), ShouldEqual, 21)
+			ctx.So(len(accessList.AccessList), ShouldEqual, 22)
 
 			countrer := 0
 			for item, _ := range accessList.AccessList {
@@ -154,13 +154,14 @@ func TestAuth(t *testing.T) {
 					"scenarios",
 					"worker",
 					"workflow",
+					"alexa",
 					"zigbee2mqtt":
 					countrer++
 				default:
 					countrer--
 				}
 			}
-			ctx.So(countrer, ShouldEqual, 21)
+			ctx.So(countrer, ShouldEqual, 22)
 		})
 		if err != nil {
 			panic(err.Error())
