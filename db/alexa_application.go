@@ -145,6 +145,6 @@ func (n AlexaApplications) Update(v *AlexaApplication) (err error) {
 }
 
 func (n AlexaApplications) Delete(id int64) (err error) {
-	err = n.Db.Model(&AlexaApplication{}).Delete("id = ?", id).Error
+	err = n.Db.Delete(&AlexaApplication{}, "id = ?", id).Error
 	return
 }

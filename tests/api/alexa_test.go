@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/e154/smart-home/api/server/v1/responses"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
@@ -374,7 +375,7 @@ func TestAlexa(t *testing.T) {
 
 			// positive
 			client.SetToken(accessToken)
-			res := client.GetDevice(404)
+			res := client.GetAlexa(404)
 			ctx.So(res.Code, ShouldEqual, 404)
 
 			for _, req := range updateAlexas {
@@ -421,6 +422,26 @@ func TestAlexa(t *testing.T) {
 			server *server.Server,
 			core *core.Core) {
 
+			client := NewClient(server.GetEngine())
+
+			// negative
+			client.SetToken(invalidToken1)
+			res := client.DeleteAlexa(404)
+			ctx.So(res.Code, ShouldEqual, 401)
+			client.SetToken(invalidToken2)
+			res = client.DeleteAlexa(404)
+			ctx.So(res.Code, ShouldEqual, 403)
+
+			// positive
+			client.SetToken(accessToken)
+			res = client.DeleteAlexa(404)
+			ctx.So(res.Code, ShouldEqual, 404)
+
+			res = client.DeleteAlexa(1)
+			ctx.So(res.Code, ShouldEqual, 200)
+
+			res = client.DeleteAlexa(1)
+			ctx.So(res.Code, ShouldEqual, 404)
 		})
 		if err != nil {
 			panic(err.Error())
@@ -433,6 +454,37 @@ func TestAlexa(t *testing.T) {
 			scriptService *scripts.ScriptService,
 			server *server.Server,
 			core *core.Core) {
+
+			client := NewClient(server.GetEngine())
+
+			// negative
+			client.SetToken(invalidToken1)
+			res := client.GetAlexaList(5, 0, "DESC", "id")
+			ctx.So(res.Code, ShouldEqual, 401)
+			client.SetToken(invalidToken2)
+			res = client.GetAlexaList(5, 0, "DESC", "id")
+			ctx.So(res.Code, ShouldEqual, 403)
+
+			// positive
+			client.SetToken(accessToken)
+
+			listGetter := func(limit, offset, realLimit, realOffset int) {
+				res = client.GetAlexaList(limit, offset, "DESC", "id")
+				ctx.So(res.Code, ShouldEqual, 200)
+
+				appList := responses.AlexaApplicationList{}
+				err := json.Unmarshal(res.Body.Bytes(), &appList.Body)
+				ctx.So(err, ShouldBeNil)
+
+				ctx.So(appList.Body.Meta.ObjectCount, ShouldEqual, 2)
+				ctx.So(len(appList.Body.Items), ShouldEqual, realLimit)
+				ctx.So(appList.Body.Meta.Limit, ShouldEqual, limit)
+				ctx.So(appList.Body.Meta.Offset, ShouldEqual, realOffset)
+			}
+
+			listGetter(1, 0, 1, 0)
+			listGetter(1, 3, 0, 3)
+			listGetter(5, 0, 2, 0)
 
 		})
 		if err != nil {
