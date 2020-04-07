@@ -201,6 +201,7 @@ func (s ScriptManager) Create() (scripts map[string]*m.Script) {
 	scripts["wflow_script_v1"] = script16
 
 	s.upgrade1(scripts)
+	s.upgrade2(scripts)
 
 	return
 }
@@ -211,12 +212,14 @@ func (s ScriptManager) Upgrade(oldVersion int) (err error) {
 	case 0:
 	case 1:
 		s.upgrade1(nil)
+	case 2:
+		s.upgrade2(nil)
 	}
 
 	return
 }
 
-func (s ScriptManager) upgrade1(scripts map[string]*m.Script)  {
+func (s ScriptManager) upgrade1(scripts map[string]*m.Script) {
 
 	// mi_pir_sensor
 	// ------------------------------------------------
@@ -289,6 +292,58 @@ func (s ScriptManager) upgrade1(scripts map[string]*m.Script)  {
 	if scripts != nil {
 		scripts["mi_temp_sensor"] = script13
 	}
+}
+
+func (s ScriptManager) upgrade2(scripts map[string]*m.Script) {
+
+	// alexa_on_launch_v1
+	// ------------------------------------------------
+	script14 := &m.Script{
+		Lang:        "coffeescript",
+		Name:        "alexa_on_launch_v1",
+		Source:      AlexaOnLaunchV1,
+		Description: "alexa on launch event script",
+	}
+	ok, _ := script14.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine14, err := s.scriptService.NewEngine(script14)
+	So(err, ShouldBeNil)
+	err = engine14.Compile()
+	So(err, ShouldBeNil)
+	script14Id, err := s.adaptors.Script.Add(script14)
+	So(err, ShouldBeNil)
+	script14, err = s.adaptors.Script.GetById(script14Id)
+	So(err, ShouldBeNil)
+
+	if scripts != nil {
+		scripts["alexa_on_launch_v1"] = script14
+	}
+
+	// alexa_light_intent_v1
+	// ------------------------------------------------
+	script15 := &m.Script{
+		Lang:        "coffeescript",
+		Name:        "alexa_light_intent_v1",
+		Source:      AlexaLightIntentV1,
+		Description: "alexa light intent script",
+	}
+	ok, _ = script15.Valid()
+	So(ok, ShouldEqual, true)
+
+	engine15, err := s.scriptService.NewEngine(script15)
+	So(err, ShouldBeNil)
+	err = engine15.Compile()
+	So(err, ShouldBeNil)
+	script15Id, err := s.adaptors.Script.Add(script15)
+	So(err, ShouldBeNil)
+	script15, err = s.adaptors.Script.GetById(script15Id)
+	So(err, ShouldBeNil)
+
+	if scripts != nil {
+		scripts["alexa_light_intent_v1"] = script15
+	}
+
 }
 
 const MbDev1ConditionCheckV1 = `
@@ -577,4 +632,38 @@ const WflowScriptV1 = `
 
 # global variable
 WFLOW_VAR1 = 'workflow1'
+`
+
+const AlexaOnLaunchV1 =`
+Alexa.
+    OutputSpeech("I listen to the order").
+    Card("office light", "I listen to the order.").
+    EndSession(false)
+`
+
+const AlexaLightIntentV1 = `
+doAction =(actionId)->
+    DoAction actionId
+
+main =->
+   
+    state = 'on'
+    if Alexa.Slots['state'] == 'off'
+        state = 'off'
+    
+    place = Alexa.Slots['place']
+    
+    switch "#{place}_#{state}"
+        when "hall_on" then doAction(2)
+        when "hall_off" then doAction(3)
+        when "hallway_on" then doAction(4)
+        when "hallway_off" then doAction(5)
+        when "kitchen_on" then doAction(8)
+        when "kitchen_off" then doAction(9)
+        
+    Alexa.OutputSpeech("ok").
+        Card("success", "turn #{state} the light in the #{place}").
+        EndSession(true)
+        
+main()
 `
