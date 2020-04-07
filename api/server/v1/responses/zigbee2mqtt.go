@@ -29,7 +29,7 @@ type Zigbee2mqttList struct {
 		Items []*models.Zigbee2mqttInfo `json:"items"`
 		Meta  struct {
 			Limit       int64 `json:"limit"`
-			ObjectCount int64 `json:"object_count"`
+			ObjectCount int64 `json:"objects_count"`
 			Offset      int64 `json:"offset"`
 		} `json:"meta"`
 	}

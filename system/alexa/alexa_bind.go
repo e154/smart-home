@@ -16,37 +16,50 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package responses
+package alexa
 
-import (
-	"github.com/e154/smart-home/api/server/v1/models"
-)
+// Javascript Binding
+//
+// Alexa
+//	.OutputSpeech(text)
+//	.Card(title, content)
+//	.EndSession(bool)
+//	.Session()
+//
 
-// swagger:response ScriptList
-type ScriptList struct {
-	// in:body
-	Body struct {
-		Items []*models.Script `json:"items"`
-		Meta  struct {
-			Limit       int64 `json:"limit"`
-			ObjectCount int64 `json:"objects_count"`
-			Offset      int64 `json:"offset"`
-		} `json:"meta"`
-	}
+type AlexaBind struct {
+	Slots map[string]string
+	req   *Request
+	resp  *Response
 }
 
-// swagger:response ScriptSearch
-type ScriptSearch struct {
-	// in:body
-	Body struct {
-		Scripts []*models.Script `json:"scripts"`
+func NewAlexaBind(req *Request, resp *Response) (alex *AlexaBind) {
+	alex = &AlexaBind{
+		Slots: make(map[string]string),
+		req:   req,
+		resp:  resp,
 	}
+	for name, slot := range req.Request.Intent.Slots {
+		alex.Slots[name] = slot.Value
+	}
+	return
 }
 
-// swagger:response ScriptExec
-type ScriptExec struct {
-	// in:body
-	Body struct {
-		Result string `json:"result"`
-	}
+func (r *AlexaBind) OutputSpeech(text string) *AlexaBind {
+	r.resp.OutputSpeech(text)
+	return r
+}
+
+func (r *AlexaBind) Card(title string, content string) *AlexaBind {
+	r.resp.Card(title, content)
+	return r
+}
+
+func (r *AlexaBind) EndSession(flag bool) *AlexaBind {
+	r.resp.EndSession(flag)
+	return r
+}
+
+func (r *AlexaBind) Session() string {
+	return r.req.Session.SessionID
 }

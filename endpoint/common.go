@@ -21,6 +21,7 @@ package endpoint
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/alexa"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/metrics"
@@ -40,6 +41,7 @@ type CommonEndpoint struct {
 	mqtt          *mqtt.Mqtt
 	zigbee2mqtt   *zigbee2mqtt.Zigbee2mqtt
 	metric        *metrics.MetricManager
+	alexa         *alexa.Alexa
 }
 
 func NewCommonEndpoint(adaptors *adaptors.Adaptors,
@@ -50,7 +52,8 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	notify *notify.Notify,
 	mqtt *mqtt.Mqtt,
 	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
-	metric *metrics.MetricManager) *CommonEndpoint {
+	metric *metrics.MetricManager,
+	alexa *alexa.Alexa) *CommonEndpoint {
 	return &CommonEndpoint{
 		adaptors:      adaptors,
 		core:          core,
@@ -61,5 +64,6 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 		mqtt:          mqtt,
 		zigbee2mqtt:   zigbee2mqtt,
 		metric:        metric,
+		alexa:         alexa,
 	}
 }

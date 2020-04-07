@@ -53,7 +53,8 @@ type GateClient struct {
 	metric          *metrics.MetricManager
 	adaptors        *adaptors.Adaptors
 	wsClient        *WsClient
-	engine          *gin.Engine
+	mobileApi       *gin.Engine
+	alexaApi        *gin.Engine
 	messagePoolQuit chan struct{}
 	messagePool     chan stream.Message
 	settingsLock    sync.Mutex
@@ -281,8 +282,12 @@ func (g *GateClient) onMessage(b []byte) {
 
 func (g *GateClient) _onMessage(msg stream.Message) {
 
-	if msg.Command == "mobile_gate_proxy" {
-		g.RequestFromMobileProxy(msg)
+	switch msg.Command {
+	case MobileGateProxy:
+		g.RequestFromProxy(msg, g.mobileApi)
+		return
+	case AlexaGateProxy:
+		g.RequestFromProxy(msg, g.alexaApi)
 		return
 	}
 
@@ -448,7 +453,7 @@ func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error
 	return
 }
 
-func (g *GateClient) RequestFromMobileProxy(message stream.Message) {
+func (g *GateClient) RequestFromProxy(message stream.Message, engine *gin.Engine) {
 
 	if g.wsClient.Status() != GateStatusConnected {
 		return
@@ -467,7 +472,7 @@ func (g *GateClient) RequestFromMobileProxy(message stream.Message) {
 		return
 	}
 
-	payloadResponse := g.execRequest(requestParams)
+	payloadResponse := g.execRequest(requestParams, engine)
 
 	response := stream.Message{
 		Id:      uuid.NewV4(),
@@ -483,13 +488,17 @@ func (g *GateClient) RequestFromMobileProxy(message stream.Message) {
 	}
 }
 
-func (g *GateClient) SetEngine(engine *gin.Engine) {
-	g.engine = engine
+func (g *GateClient) SetMobileApiEngine(engine *gin.Engine) {
+	g.mobileApi = engine
 }
 
-func (g *GateClient) execRequest(requestParams *StreamRequestModel) (response *StreamResponseModel) {
+func (g *GateClient) SetAlexaApiEngine(engine *gin.Engine) {
+	g.alexaApi = engine
+}
 
-	if g.engine == nil {
+func (g *GateClient) execRequest(requestParams *StreamRequestModel, engine *gin.Engine) (response *StreamResponseModel) {
+
+	if engine == nil {
 		return
 	}
 
@@ -497,7 +506,7 @@ func (g *GateClient) execRequest(requestParams *StreamRequestModel) (response *S
 	request.Header = requestParams.Header
 	request.RequestURI = requestParams.URI
 	recorder := httptest.NewRecorder()
-	g.engine.ServeHTTP(recorder, request)
+	engine.ServeHTTP(recorder, request)
 	code := recorder.Code
 	header := recorder.Header()
 	body := recorder.Body.Bytes()

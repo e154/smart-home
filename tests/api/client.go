@@ -173,3 +173,37 @@ func (c *Client) SearchDevice(query string, limit, offset int) *httptest.Respons
 	uri.RawQuery = params.Encode()
 	return c.req("GET", uri.String(), nil)
 }
+
+// alexa
+func (c *Client) NewAlexa(alexa interface{}) *httptest.ResponseRecorder {
+	return c.req("POST", "/api/v1/alexa", alexa)
+}
+
+func (c *Client) GetAlexa(alexaId int64) *httptest.ResponseRecorder {
+	return c.req("GET", fmt.Sprintf("/api/v1/alexa/%d", alexaId), nil)
+}
+
+func (c *Client) UpdateAlexa(alexaId int64, alexa interface{}) *httptest.ResponseRecorder {
+	return c.req("PUT", fmt.Sprintf("/api/v1/alexa/%d", alexaId), alexa)
+}
+
+func (c *Client) DeleteAlexa(alexaId int64) *httptest.ResponseRecorder {
+	return c.req("DELETE", fmt.Sprintf("/api/v1/alexa/%d", alexaId), nil)
+}
+
+func (c *Client) GetAlexaList(limit, offset int, order, sort string) *httptest.ResponseRecorder {
+	uri, _ := url.Parse("/api/v1/alexas")
+	params := url.Values{}
+	params.Add("limit", fmt.Sprintf("%d", limit))
+	params.Add("offset", fmt.Sprintf("%d", offset))
+	if order != "" {
+		params.Add("order", order)
+	}
+	if sort != "" {
+		params.Add("sort_by", sort)
+	}
+	uri.RawQuery = params.Encode()
+	return c.req("GET", uri.String(), nil)
+}
+
+// ...

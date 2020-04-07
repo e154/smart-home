@@ -28,6 +28,7 @@ import (
 	"github.com/e154/smart-home/api/websocket"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/alexa"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/core"
@@ -90,6 +91,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(gate.NewGate)
 	container.Provide(logging.NewLogger)
 	container.Provide(logging.NewLogDbSaver)
+	container.Provide(alexa.NewAlexa)
 
 	return
 }

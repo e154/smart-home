@@ -16,37 +16,43 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package responses
+package alexa
 
 import (
-	"github.com/e154/smart-home/api/server/v1/models"
+	"errors"
+	"github.com/e154/smart-home/system/cache"
 )
 
-// swagger:response ScriptList
-type ScriptList struct {
-	// in:body
-	Body struct {
-		Items []*models.Script `json:"items"`
-		Meta  struct {
-			Limit       int64 `json:"limit"`
-			ObjectCount int64 `json:"objects_count"`
-			Offset      int64 `json:"offset"`
-		} `json:"meta"`
+type AppSession struct {
+	pull map[string]cache.Cache
+}
+
+func NewAppSession() *AppSession {
+	return &AppSession{
+		pull: make(map[string]cache.Cache),
 	}
 }
 
-// swagger:response ScriptSearch
-type ScriptSearch struct {
-	// in:body
-	Body struct {
-		Scripts []*models.Script `json:"scripts"`
+func (h *AppSession) addSession(session string) (c cache.Cache, err error) {
+	if c, err = cache.NewCache("memory", `{"interval":3600}`); err != nil {
+		return
 	}
+	h.pull[session] = c
+	return
 }
 
-// swagger:response ScriptExec
-type ScriptExec struct {
-	// in:body
-	Body struct {
-		Result string `json:"result"`
+func (h *AppSession) getSession(session string) (c cache.Cache, err error) {
+	var exist bool
+	if c, exist = h.pull[session]; !exist {
+		err = errors.New("record not found")
+		return
 	}
+	return
+}
+
+func (h *AppSession) delSession(session string) {
+	if _, exist := h.pull[session]; exist {
+		delete(h.pull, session)
+	}
+	return
 }

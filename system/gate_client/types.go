@@ -41,3 +41,8 @@ const (
 	GateStatusNotConnected = "not connected"
 	GateStatusQuit         = "quit"
 )
+
+const (
+	MobileGateProxy = string("mobile_gate_proxy")
+	AlexaGateProxy  = string("alexa_gate_proxy")
+)

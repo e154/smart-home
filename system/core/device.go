@@ -174,6 +174,12 @@ func (d Device) ModBus(f string, address, count uint16, command []uint16) (resul
 
 func (d Device) Zigbee2mqtt(path string, payload []byte) (result DevZigbee2mqttResponse) {
 
+	if d.zigbee2mqtt == nil {
+		log.Warn("zigbee2mqtt is nil")
+		result.Error = "zigbee2mqtt is nil"
+		return
+	}
+
 	if d.dev.Type != DevTypeZigbee2mqtt {
 		result.Error = "no zigbee settings"
 		return

@@ -22,11 +22,11 @@ import (
 	"github.com/e154/smart-home/api/server/v1/models"
 )
 
-// swagger:response ScriptList
-type ScriptList struct {
+// swagger:response AlexaApplicationList
+type AlexaApplicationList struct {
 	// in:body
 	Body struct {
-		Items []*models.Script `json:"items"`
+		Items []*models.AlexaApplicationShort `json:"items"`
 		Meta  struct {
 			Limit       int64 `json:"limit"`
 			ObjectCount int64 `json:"objects_count"`
@@ -35,18 +35,3 @@ type ScriptList struct {
 	}
 }
 
-// swagger:response ScriptSearch
-type ScriptSearch struct {
-	// in:body
-	Body struct {
-		Scripts []*models.Script `json:"scripts"`
-	}
-}
-
-// swagger:response ScriptExec
-type ScriptExec struct {
-	// in:body
-	Body struct {
-		Result string `json:"result"`
-	}
-}

@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/api/websocket"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/alexa"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
@@ -119,7 +120,8 @@ func start() {
 		metric *metrics.MetricManager,
 		zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
 		gateApi *gate.Gate,
-		logger *logging.Logging) {
+		logger *logging.Logging,
+		alexa *alexa.Alexa) {
 
 		initialService.Start()
 
@@ -129,6 +131,7 @@ func start() {
 		go gateApi.Start()
 		go metric.Start()
 		go zigbee2mqtt.Start()
+		go alexa.Start()
 
 		graceful.Wait()
 	})

@@ -27,7 +27,7 @@ type MqttClientList struct {
 		Items []*models.MqttClient `json:"items"`
 		Meta  struct {
 			Limit       int64 `json:"limit"`
-			ObjectCount int64 `json:"object_count"`
+			ObjectCount int64 `json:"objects_count"`
 			Offset      int64 `json:"offset"`
 		} `json:"meta"`
 	}
@@ -40,7 +40,7 @@ type MqttSessionList struct {
 		Items []*models.MqttSession `json:"items"`
 		Meta  struct {
 			Limit       int64 `json:"limit"`
-			ObjectCount int64 `json:"object_count"`
+			ObjectCount int64 `json:"objects_count"`
 			Offset      int64 `json:"offset"`
 		} `json:"meta"`
 	}
@@ -53,7 +53,7 @@ type MqttSubscriptionList struct {
 		Items []*models.MqttSubscription `json:"items"`
 		Meta  struct {
 			Limit       int64 `json:"limit"`
-			ObjectCount int64 `json:"object_count"`
+			ObjectCount int64 `json:"objects_count"`
 			Offset      int64 `json:"offset"`
 		} `json:"meta"`
 	}

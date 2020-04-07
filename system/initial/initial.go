@@ -36,7 +36,7 @@ var (
 )
 
 var (
-	currentVersion = 2
+	currentVersion = 3
 )
 
 type InitialService struct {

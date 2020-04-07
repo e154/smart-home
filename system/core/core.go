@@ -521,7 +521,7 @@ func (b *Core) DoWorker(worker *m.Worker) (err error) {
 
 // ------------------------------------------------
 // safe methods
-// -------------------------------------A-----------
+// ------------------------------------------------
 
 func (b *Core) safeIsRunning() bool {
 	b.Lock()
@@ -599,4 +599,49 @@ func (c *Core) updateMetrics() {
 	}
 
 	c.metric.Update(metrics.DeviceAdd{TotalNum: total, DisabledNum: disabled})
+}
+
+// ------------------------------------------------
+// action
+// ------------------------------------------------
+
+func (c *Core) DoAction(deviceActionId int64) (result string, err error) {
+
+	// device
+	var device *m.Device
+	if device, err = c.adaptors.Device.GetByDeviceActionId(deviceActionId); err != nil {
+		return
+	}
+
+	log.Infof("da action device(%v), action(%v)", device.Id, deviceActionId)
+
+	// device action
+	var deviceAction *m.DeviceAction
+	for _, action := range device.Actions {
+		if action.Id == deviceActionId {
+			deviceAction = action
+		}
+	}
+
+	if deviceAction == nil {
+		err = fmt.Errorf("device action id(%v) not found", deviceActionId)
+		return
+	}
+
+	// node
+	var node *Node
+	if device.Node != nil {
+		node = c.GetNodeById(device.Node.Id)
+	}
+
+	// action
+	var action *Action
+	if action, err = NewAction(device, deviceAction, node, nil, c.scripts, c.mqtt, c.adaptors, c.zigbee2mqtt); err != nil {
+		return
+	}
+
+	// do action
+	result, err = action.Do()
+
+	return
 }
