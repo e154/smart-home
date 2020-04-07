@@ -26,6 +26,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
@@ -51,12 +52,14 @@ type Alexa struct {
 	token         *atomic.String
 	scriptService *scripts.ScriptService
 	core          *core.Core
+	gateClient    *gate_client.GateClient
 }
 
 func NewAlexa(adaptors *adaptors.Adaptors,
 	appConfig *config.AppConfig,
 	scriptService *scripts.ScriptService,
-	core *core.Core) *Alexa {
+	core *core.Core,
+	gateClient *gate_client.GateClient) *Alexa {
 	return &Alexa{
 		isStarted:     atomic.NewBool(false),
 		adaptors:      adaptors,
@@ -66,6 +69,7 @@ func NewAlexa(adaptors *adaptors.Adaptors,
 		token:         atomic.NewString(""),
 		scriptService: scriptService,
 		core:          core,
+		gateClient:    gateClient,
 	}
 }
 
@@ -91,6 +95,10 @@ func (a *Alexa) Start() {
 		if err := a.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s", err.Error())
 		}
+	}()
+
+	go func() {
+		a.gateClient.SetAlexaApiEngine(a.engine)
 	}()
 
 	log.Infof("Serving server at http://[::]:%s", port)
