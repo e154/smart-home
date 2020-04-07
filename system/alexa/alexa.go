@@ -45,7 +45,7 @@ type Alexa struct {
 	addressPort   *string
 	server        *http.Server
 	appLock       *sync.Mutex
-	apps          []Application
+	apps          map[int64]Application
 	adaptors      *adaptors.Adaptors
 	appConfig     *config.AppConfig
 	token         *atomic.String
@@ -61,7 +61,7 @@ func NewAlexa(adaptors *adaptors.Adaptors,
 		isStarted:     atomic.NewBool(false),
 		adaptors:      adaptors,
 		appLock:       &sync.Mutex{},
-		apps:          make([]Application, 0),
+		apps:          make(map[int64]Application),
 		appConfig:     appConfig,
 		token:         atomic.NewString(""),
 		scriptService: scriptService,
@@ -111,7 +111,7 @@ func (a *Alexa) init() {
 	a.appLock.Lock()
 	defer a.appLock.Unlock()
 	for _, app := range list {
-		a.apps = append(a.apps, NewWorker(app, a.adaptors, a.scriptService, a.core))
+		a.apps[app.Id] = NewWorker(app, a.adaptors, a.scriptService, a.core)
 	}
 }
 
@@ -257,13 +257,23 @@ func (a Alexa) Auth(ctx *gin.Context) {
 }
 
 func (a *Alexa) Add(app *m.AlexaApplication) {
-
+	a.appLock.Lock()
+	defer a.appLock.Unlock()
+	if _, ok := a.apps[app.Id]; !ok {
+		a.apps[app.Id] = NewWorker(app, a.adaptors, a.scriptService, a.core)
+	}
 }
 
 func (a *Alexa) Update(app *m.AlexaApplication) {
-
+	a.appLock.Lock()
+	defer a.appLock.Unlock()
+	a.apps[app.Id] = NewWorker(app, a.adaptors, a.scriptService, a.core)
 }
 
 func (a *Alexa) Delete(app *m.AlexaApplication) {
-
+	a.appLock.Lock()
+	defer a.appLock.Unlock()
+	if _, ok := a.apps[app.Id]; !ok {
+		delete(a.apps, app.Id)
+	}
 }

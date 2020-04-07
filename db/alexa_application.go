@@ -35,8 +35,8 @@ type AlexaApplication struct {
 	Description          string
 	Intents              []*AlexaIntent `gorm:"foreignkey:AlexaApplicationId"`
 	Status               common.StatusType
-	OnLaunchScript       *Script
-	OnLaunchScriptId     *int64 `gorm:"column:on_launch"`
+	OnLaunchScript       *Script `gorm:"foreignkey:OnLaunchScriptId"`
+	OnLaunchScriptId     *int64  `gorm:"column:on_launch"`
 	OnSessionEndScript   *Script
 	OnSessionEndScriptId *int64 `gorm:"column:on_session_end"`
 	CreatedAt            time.Time
@@ -57,10 +57,11 @@ func (n AlexaApplications) Add(v *AlexaApplication) (id int64, err error) {
 
 func (n AlexaApplications) GetById(id int64) (v *AlexaApplication, err error) {
 	v = &AlexaApplication{Id: id}
-	err = n.Db.First(&v).
+	err = n.Db.Model(v).
 		Preload("OnLaunchScript").
 		Preload("OnSessionEndScript").
-		Preload("Intents").Error
+		Find(v).
+		Error
 	if err != nil {
 		return
 	}
@@ -128,9 +129,18 @@ func (n AlexaApplications) preload(v *AlexaApplication) (err error) {
 }
 
 func (n AlexaApplications) Update(v *AlexaApplication) (err error) {
-	err = n.Db.Model(v).Where("id = ?", v.Id).Updates(&map[string]interface{}{
+	q := map[string]interface{}{
 		"application_id": v.ApplicationId,
-	}).Error
+		"status":         v.Status,
+		"description":    v.Description,
+	}
+	if v.OnLaunchScriptId != nil {
+		q["on_launch"] = common.Int64Value(v.OnLaunchScriptId)
+	}
+	if v.OnSessionEndScriptId != nil {
+		q["on_session_end"] = common.Int64Value(v.OnSessionEndScriptId)
+	}
+	err = n.Db.Model(&AlexaApplication{}).Updates(q).Where("id = ?", v.Id).Error
 	return
 }
 

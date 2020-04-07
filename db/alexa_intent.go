@@ -63,6 +63,6 @@ func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
 }
 
 func (n AlexaIntents) Delete(v *AlexaIntent) (err error) {
-	err = n.Db.Model(v).Delete("name = ? and alexa_application_id = ?", v.Name, v.AlexaApplicationId).Error
+	err = n.Db.Delete(&AlexaIntent{}, "name = ? and alexa_application_id = ?", v.Name, v.AlexaApplicationId).Error
 	return
 }

@@ -25,8 +25,8 @@ type NewAlexaApplication struct {
 	ApplicationId        string `json:"application_id"`
 	Description          string `json:"description"`
 	Status               string `json:"status"`
-	OnLaunchScriptId     *int64 `json:"on_launch_script_id"`
-	OnSessionEndScriptId *int64 `json:"on_session_end_script_id"`
+	OnLaunchScriptId     *int64 `json:"on_launch_script_id,omitempty"`
+	OnSessionEndScriptId *int64 `json:"on_session_end_script_id,omitempty"`
 }
 
 // swagger:model
@@ -35,9 +35,9 @@ type UpdateAlexaApplication struct {
 	ApplicationId        string         `json:"application_id"`
 	Description          string         `json:"description"`
 	Status               string         `json:"status"`
-	Intents              []*AlexaIntent `json:"intents"`
-	OnLaunchScriptId     *int64         `json:"on_launch_script_id"`
-	OnSessionEndScriptId *int64         `json:"on_session_end_script_id"`
+	Intents              []*AlexaIntent `json:"intents,omitempty"`
+	OnLaunchScriptId     *int64         `json:"on_launch_script_id,omitempty"`
+	OnSessionEndScriptId *int64         `json:"on_session_end_script_id,omitempty"`
 }
 
 // swagger:model
@@ -46,13 +46,13 @@ type AlexaApplication struct {
 	ApplicationId        string         `json:"application_id"`
 	Description          string         `json:"description"`
 	Status               string         `json:"status"`
-	Intents              []*AlexaIntent `json:"intents"`
-	OnLaunchScript       *Script        `json:"on_launch_script"`
-	OnLaunchScriptId     *int64         `json:"on_launch_script_id"`
-	OnSessionEndScript   *Script        `json:"on_session_end_script"`
-	OnSessionEndScriptId *int64         `json:"on_session_end_script_id"`
-	CreatedAt            time.Time      `json:"created_at"`
-	UpdatedAt            time.Time      `json:"updated_at"`
+	Intents              []*AlexaIntent `json:"intents,omitempty"`
+	OnLaunchScript       *Script        `json:"on_launch_script,omitempty"`
+	OnLaunchScriptId     *int64         `json:"on_launch_script_id,omitempty"`
+	OnSessionEndScript   *Script        `json:"on_session_end_script,omitempty"`
+	OnSessionEndScriptId *int64         `json:"on_session_end_script_id,omitempty"`
+	CreatedAt            time.Time      `json:"created_at,omitempty"`
+	UpdatedAt            time.Time      `json:"updated_at,omitempty"`
 }
 
 // swagger:model
@@ -61,8 +61,8 @@ type AlexaApplicationShort struct {
 	ApplicationId        string    `json:"application_id"`
 	Description          string    `json:"description"`
 	Status               string    `json:"status"`
-	OnLaunchScriptId     *int64    `json:"on_launch_script_id"`
-	OnSessionEndScriptId *int64    `json:"on_session_end_script_id"`
+	OnLaunchScriptId     *int64    `json:"on_launch_script_id,omitempty"`
+	OnSessionEndScriptId *int64    `json:"on_session_end_script_id,omitempty"`
 	CreatedAt            time.Time `json:"created_at"`
 	UpdatedAt            time.Time `json:"updated_at"`
 }

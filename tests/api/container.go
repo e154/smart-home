@@ -26,6 +26,7 @@ import (
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/alexa"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/core"
@@ -86,11 +87,12 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(zigbee2mqtt.NewZigbee2mqtt)
 	container.Provide(logging.NewLogger)
 	container.Provide(logging.NewLogDbSaver)
+	container.Provide(alexa.NewAlexa)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()
 		conf.PgName = "smart_home_test"
-		conf.Logging = false
+		conf.Logging = true
 		return
 	})
 

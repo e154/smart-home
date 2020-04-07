@@ -248,4 +248,11 @@ func (s *Server) setControllers() {
 
 	// map device history
 	v1.GET("/history/map", s.af.Auth, s.ControllersV1.MapDeviceHistory.GetList)
+
+	// alexa
+	v1.POST("/alexa", s.af.Auth, s.ControllersV1.Alexa.Add)
+	v1.GET("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.GetById)
+	v1.PUT("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.Update)
+	v1.DELETE("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.Delete)
+	v1.GET("/alexas", s.af.Auth, s.ControllersV1.Alexa.GetList)
 }

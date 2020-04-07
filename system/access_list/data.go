@@ -824,6 +824,37 @@ const DATA = `
       "method": "patch",
       "description": ""
     }
+  },
+  "alexa": {
+    "read": {
+      "actions": [
+        "/api/v1/alexa",
+        "/api/v1/alexas/[0-9]+"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "create": {
+      "actions": [
+        "/api/v1/alexa"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "update": {
+      "actions": [
+        "/api/v1/alexa/[0-9]+"
+      ],
+      "method": "put",
+      "description": ""
+    },
+    "delete": {
+      "actions": [
+        "/api/v1/alexa/[0-9]+"
+      ],
+      "method": "delete",
+      "description": ""
+    }
   }
 }
 `

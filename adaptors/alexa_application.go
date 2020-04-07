@@ -107,6 +107,8 @@ func (n *AlexaApplication) Update(params *m.AlexaApplication) (err error) {
 	table := &db.AlexaApplications{Db: tx}
 	err = table.Update(n.toDb(params))
 
+	tx.Commit()
+
 	return
 }
 
