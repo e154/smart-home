@@ -252,12 +252,12 @@ func (a *Alexa) updateSettings() (err error) {
 
 func (a Alexa) Auth(ctx *gin.Context) {
 
-	accessToken := ctx.Request.URL.Query().Get("alexa_token")
-
-	if accessToken == "" || accessToken != a.token.Load() {
-		ctx.AbortWithError(401, errors.New("access token invalid"))
-		return
-	}
+	//accessToken := ctx.Request.URL.Query().Get("alexa_token")
+	//
+	//if accessToken == "" || accessToken != a.token.Load() {
+	//	ctx.AbortWithError(401, errors.New("access token invalid"))
+	//	return
+	//}
 	if !IsValidAlexaRequest(ctx.Writer, ctx.Request) {
 		ctx.AbortWithError(401, errors.New("invalid request"))
 		return
