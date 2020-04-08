@@ -27,9 +27,11 @@ var (
 	log = common.MustGetLogger("models")
 )
 
+// Validity ...
 type Validity struct {
 }
 
+// Valid ...
 func (d Validity) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

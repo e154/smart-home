@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/system/config"
 )
 
+// BackupConfig ...
 type BackupConfig struct {
 	Path   string
 	PgUser string
@@ -31,6 +32,7 @@ type BackupConfig struct {
 	PgPort string
 }
 
+// NewBackupConfig ...
 func NewBackupConfig(cfg *config.AppConfig) *BackupConfig {
 	return &BackupConfig{
 		Path:   cfg.SnapshotDir,

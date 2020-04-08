@@ -18,6 +18,7 @@
 
 package mqtt_client
 
+// Config ...
 type Config struct {
 	KeepAlive      int    `json:"keep_alive"`
 	PingTimeout    int    `json:"ping_timeout"`

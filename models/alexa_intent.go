@@ -23,16 +23,18 @@ import (
 	"time"
 )
 
+// AlexaIntent ...
 type AlexaIntent struct {
-	Name               string    `json:"name"`
-	AlexaApplicationId int64     `json:"alexa_application_id" valid:"Required"`
-	Script             *Script   `json:"script"`
-	ScriptId           int64     `json:"script_id" valid:"Required"`
-	Description        string    `json:"description"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
+	Name         string    `json:"name"`
+	AlexaSkillId int64     `json:"alexa_skill_id" valid:"Required"`
+	Script       *Script   `json:"script"`
+	ScriptId     int64     `json:"script_id" valid:"Required"`
+	Description  string    `json:"description"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
+// Valid ...
 func (d *AlexaIntent) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

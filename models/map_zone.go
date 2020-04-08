@@ -20,11 +20,13 @@ package models
 
 import "github.com/e154/smart-home/system/validation"
 
+// MapZone ...
 type MapZone struct {
 	Id   int64  `json:"id"`
 	Name string `json:"name" valid:"Required"`
 }
 
+// Valid ...
 func (d *MapZone) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

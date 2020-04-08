@@ -23,11 +23,13 @@ import (
 	"sync"
 )
 
+// Node ...
 type Node struct {
 	Total  int64            `json:"total"`
 	Status map[int64]string `json:"status"`
 }
 
+// NodeManager ...
 type NodeManager struct {
 	publisher  IPublisher
 	total      metrics.Counter
@@ -35,6 +37,7 @@ type NodeManager struct {
 	status     map[int64]string
 }
 
+// NewNodeManager ...
 func NewNodeManager(publisher IPublisher) *NodeManager {
 	return &NodeManager{
 		publisher: publisher,
@@ -74,6 +77,7 @@ func (d *NodeManager) updateStatus(v NodeUpdateStatus) (exist bool) {
 	return
 }
 
+// GetStatus ...
 func (d *NodeManager) GetStatus(nodeId int64) (status string, err error) {
 
 	var ok bool
@@ -86,6 +90,7 @@ func (d *NodeManager) GetStatus(nodeId int64) (status string, err error) {
 	return
 }
 
+// Snapshot ...
 func (d *NodeManager) Snapshot() Node {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
@@ -104,15 +109,18 @@ func (d *NodeManager) broadcast() {
 	go d.publisher.Broadcast("node")
 }
 
+// NodeUpdateStatus ...
 type NodeUpdateStatus struct {
 	Id     int64
 	Status string
 }
 
+// NodeAdd ...
 type NodeAdd struct {
 	Num int64
 }
 
+// NodeDelete ...
 type NodeDelete struct {
 	Num int64
 }

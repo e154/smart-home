@@ -23,23 +23,33 @@ import (
 )
 
 const (
+	// DevTypeModbusRtu ...
 	DevTypeModbusRtu = DeviceType("modbus_rtu")
+	// DevTypeModbusTcp ...
 	DevTypeModbusTcp = DeviceType("modbus_tcp")
 
 	// bit access
-	ReadCoils          = "ReadCoils"
+	ReadCoils = "ReadCoils"
+	// ReadDiscreteInputs ...
 	ReadDiscreteInputs = "ReadDiscreteInputs"
-	WriteSingleCoil    = "WriteSingleCoil"
+	// WriteSingleCoil ...
+	WriteSingleCoil = "WriteSingleCoil"
+	// WriteMultipleCoils ...
 	WriteMultipleCoils = "WriteMultipleCoils"
 
 	// 16-bit access
-	ReadInputRegisters         = "ReadInputRegisters"
-	ReadHoldingRegisters       = "ReadHoldingRegisters"
+	ReadInputRegisters = "ReadInputRegisters"
+	// ReadHoldingRegisters ...
+	ReadHoldingRegisters = "ReadHoldingRegisters"
+	// ReadWriteMultipleRegisters ...
 	ReadWriteMultipleRegisters = "ReadWriteMultipleRegisters"
-	WriteSingleRegister        = "WriteSingleRegister"
-	WriteMultipleRegisters     = "WriteMultipleRegisters"
+	// WriteSingleRegister ...
+	WriteSingleRegister = "WriteSingleRegister"
+	// WriteMultipleRegisters ...
+	WriteMultipleRegisters = "WriteMultipleRegisters"
 )
 
+// DevModBusRtuConfig ...
 type DevModBusRtuConfig struct {
 	Validation
 	SlaveId  int    `json:"slave_id" mapstructure:"slave_id"`   // 1-32
@@ -50,12 +60,14 @@ type DevModBusRtuConfig struct {
 	Timeout  int    `json:"timeout"`                            // milliseconds
 }
 
+// DevModBusTcpConfig ...
 type DevModBusTcpConfig struct {
 	Validation
 	SlaveId     int    `json:"slave_id" mapstructure:"slave_id"`
 	AddressPort string `json:"address_port" mapstructure:"address_port"`
 }
 
+// DevModBusRequest ...
 type DevModBusRequest struct {
 	Function string   `json:"function"`
 	Address  uint16   `json:"address"`
@@ -85,6 +97,7 @@ func NewModBusBind(f string, address, count uint16, command []uint16) ModBusBind
 	}
 }
 
+// ModBusBind ...
 type ModBusBind struct {
 	F              string
 	Address, Count uint16

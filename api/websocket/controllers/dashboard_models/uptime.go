@@ -22,15 +22,18 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 )
 
+// Uptime ...
 type Uptime struct {
 	metric *metrics.MetricManager
 }
 
+// NewUptime ...
 func NewUptime(metric *metrics.MetricManager) (memory *Uptime) {
 	memory = &Uptime{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (g *Uptime) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

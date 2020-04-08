@@ -30,11 +30,13 @@ import (
 	"unicode/utf8"
 )
 
+// User ...
 type User struct {
 	table *db.Users
 	db    *gorm.DB
 }
 
+// GetUserAdaptor ...
 func GetUserAdaptor(d *gorm.DB) *User {
 	return &User{
 		table: &db.Users{Db: d},
@@ -42,6 +44,7 @@ func GetUserAdaptor(d *gorm.DB) *User {
 	}
 }
 
+// Add ...
 func (n *User) Add(user *m.User) (id int64, err error) {
 
 	dbUser := n.toDb(user)
@@ -59,6 +62,7 @@ func (n *User) Add(user *m.User) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n *User) GetById(userId int64) (user *m.User, err error) {
 
 	var dbUser *db.User
@@ -74,6 +78,7 @@ func (n *User) GetById(userId int64) (user *m.User, err error) {
 	return
 }
 
+// GetByNickname ...
 func (n *User) GetByNickname(nick string) (user *m.User, err error) {
 
 	var dbUser *db.User
@@ -89,6 +94,7 @@ func (n *User) GetByNickname(nick string) (user *m.User, err error) {
 	return
 }
 
+// GetByEmail ...
 func (n *User) GetByEmail(email string) (user *m.User, err error) {
 
 	var dbUser *db.User
@@ -104,6 +110,7 @@ func (n *User) GetByEmail(email string) (user *m.User, err error) {
 	return
 }
 
+// GetByAuthenticationToken ...
 func (n *User) GetByAuthenticationToken(token string) (user *m.User, err error) {
 
 	var dbUser *db.User
@@ -119,6 +126,7 @@ func (n *User) GetByAuthenticationToken(token string) (user *m.User, err error) 
 	return
 }
 
+// GetByResetPassToken ...
 func (n *User) GetByResetPassToken(token string) (user *m.User, err error) {
 
 	if utf8.RuneCountInString(token) > 255 {
@@ -143,6 +151,7 @@ func (n *User) GetByResetPassToken(token string) (user *m.User, err error) {
 	return
 }
 
+// Update ...
 func (n *User) Update(user *m.User) (err error) {
 
 	dbUser := n.toDb(user)
@@ -159,11 +168,13 @@ func (n *User) Update(user *m.User) (err error) {
 	return
 }
 
+// Delete ...
 func (n *User) Delete(userId int64) (err error) {
 	err = n.table.Delete(userId)
 	return
 }
 
+// List ...
 func (n *User) List(limit, offset int64, orderBy, sort string) (list []*m.User, total int64, err error) {
 	var dbList []*db.User
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -179,6 +190,7 @@ func (n *User) List(limit, offset int64, orderBy, sort string) (list []*m.User, 
 	return
 }
 
+// SignIn ...
 func (n *User) SignIn(u *m.User, ipv4 string) (err error) {
 
 	// update count
@@ -205,6 +217,7 @@ func (n *User) SignIn(u *m.User, ipv4 string) (err error) {
 	return
 }
 
+// GenResetPassToken ...
 func (n *User) GenResetPassToken(u *m.User) (token string, err error) {
 
 	for {
@@ -221,12 +234,14 @@ func (n *User) GenResetPassToken(u *m.User) (token string, err error) {
 	return
 }
 
+// ClearResetPassToken ...
 func (n *User) ClearResetPassToken(u *m.User) (err error) {
 
 	err = n.table.ClearResetPassToken(u.Id)
 	return
 }
 
+// NewToken ...
 func (n *User) NewToken(u *m.User) (token string, err error) {
 
 	for {
@@ -243,6 +258,7 @@ func (n *User) NewToken(u *m.User) (token string, err error) {
 	return
 }
 
+// ClearToken ...
 func (n *User) ClearToken(u *m.User) (err error) {
 
 	err = n.table.ClearToken(u.Id)

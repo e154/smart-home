@@ -18,6 +18,7 @@
 
 package models
 
+// DevModBusRtuConfig ...
 type DevModBusRtuConfig struct {
 	SlaveId  int    `json:"slave_id" mapstructure:"slave_id"`   // 1-32
 	Baud     int    `json:"baud"`                               // 9600, 19200, ...
@@ -27,11 +28,13 @@ type DevModBusRtuConfig struct {
 	Timeout  int    `json:"timeout"`                            // milliseconds
 }
 
+// DevModBusTcpConfig ...
 type DevModBusTcpConfig struct {
 	SlaveId     int    `json:"slave_id"`
 	AddressPort string `json:"address_port"`
 }
 
+// DevSmartBusConfig ...
 type DevSmartBusConfig struct {
 	Baud     int `json:"baud" valid:"Required"`
 	Device   int `json:"device"`
@@ -40,13 +43,16 @@ type DevSmartBusConfig struct {
 	Sleep    int `json:"sleep"`
 }
 
+// DevCommandConfig ...
 type DevCommandConfig struct {
 }
 
+// DevMqttConfig ...
 type DevMqttConfig struct {
 	Address string `json:"address"`
 }
 
+// DevZigbee2mqttConfig ...
 type DevZigbee2mqttConfig struct {
 	Zigbee2mqttDeviceId string `json:"zigbee2mqtt_device_id"`
 }

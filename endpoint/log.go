@@ -19,23 +19,26 @@
 package endpoint
 
 import (
+	"encoding/json"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
-	"encoding/json"
-	"time"
 	"strings"
+	"time"
 )
 
+// LogEndpoint ...
 type LogEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewLogEndpoint ...
 func NewLogEndpoint(common *CommonEndpoint) *LogEndpoint {
 	return &LogEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs []*validation.Error, err error) {
 
 	_, errs = log.Valid()
@@ -53,6 +56,7 @@ func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs []*validation.Error, 
 	return
 }
 
+// GetById ...
 func (l *LogEndpoint) GetById(id int64) (log *m.Log, err error) {
 
 	log, err = l.adaptors.Log.GetById(id)
@@ -60,6 +64,7 @@ func (l *LogEndpoint) GetById(id int64) (log *m.Log, err error) {
 	return
 }
 
+// GetList ...
 func (l *LogEndpoint) GetList(limit, offset int64, order, sortBy, query string) (list []*m.Log, total int64, err error) {
 
 	var queryObj *m.LogQuery
@@ -88,6 +93,7 @@ func (l *LogEndpoint) GetList(limit, offset int64, order, sortBy, query string) 
 	return
 }
 
+// Search ...
 func (l *LogEndpoint) Search(query string, limit, offset int) (list []*m.Log, total int64, err error) {
 
 	list, total, err = l.adaptors.Log.Search(query, limit, offset)
@@ -95,6 +101,7 @@ func (l *LogEndpoint) Search(query string, limit, offset int) (list []*m.Log, to
 	return
 }
 
+// Delete ...
 func (l *LogEndpoint) Delete(logId int64) (err error) {
 
 	if _, err = l.adaptors.Log.GetById(logId); err != nil {

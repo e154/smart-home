@@ -27,6 +27,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
+// FlowElement ...
 type FlowElement struct {
 	Model        *m.FlowElement
 	Flow         *Flow
@@ -38,6 +39,7 @@ type FlowElement struct {
 	adaptors     *adaptors.Adaptors
 }
 
+// NewFlowElement ...
 func NewFlowElement(model *m.FlowElement,
 	flow *Flow,
 	workflow *Workflow,
@@ -72,6 +74,7 @@ func NewFlowElement(model *m.FlowElement,
 	return
 }
 
+// Before ...
 func (f *FlowElement) Before(ctx context.Context) (newCtx context.Context, err error) {
 
 	// circular dependency search
@@ -137,11 +140,13 @@ func (f *FlowElement) Run(ctx context.Context) (newCtx context.Context, b bool, 
 	return
 }
 
+// After ...
 func (f *FlowElement) After() error {
 	f.status = Done
 	return f.Prototype.After(f.Flow)
 }
 
+// GetStatus ...
 func (f *FlowElement) GetStatus() (status Status) {
 
 	status = f.status

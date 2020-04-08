@@ -48,6 +48,7 @@ type DeviceBind struct {
 	device   *Device
 }
 
+// NewDeviceBind ...
 func NewDeviceBind(model *m.Device, node *Node, mqtt *mqtt.Mqtt, adaptors *adaptors.Adaptors, zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *DeviceBind {
 	return &DeviceBind{
 		model: model,
@@ -57,43 +58,52 @@ func NewDeviceBind(model *m.Device, node *Node, mqtt *mqtt.Mqtt, adaptors *adapt
 	}
 }
 
+// GetName ...
 func (d *DeviceBind) GetName() string {
 	return d.model.Name
 }
 
+// GetModel ...
 func (d *DeviceBind) GetModel() *m.Device {
 	return d.model
 }
 
+// GetDescription ...
 func (d *DeviceBind) GetDescription() string {
 	return d.model.Description
 }
 
+// RunCommand ...
 func (d *DeviceBind) RunCommand(name string, args []string) (result DevCommandResponse) {
 	result = d.device.RunCommand(name, args)
 	return
 }
 
+// SmartBus ...
 func (d *DeviceBind) SmartBus(command []byte) (result DevSmartBusResponse) {
 	result = d.device.SmartBus(command)
 	return
 }
 
+// ModBus ...
 func (d *DeviceBind) ModBus(f string, address, count uint16, command []uint16) (result DevModBusResponse) {
 	result = d.device.ModBus(f, address, count, command)
 	return
 }
 
+// Zigbee2mqtt ...
 func (d *DeviceBind) Zigbee2mqtt(path string, payload []byte) (result DevZigbee2mqttResponse) {
 	result = d.device.Zigbee2mqtt(path, payload)
 	return
 }
 
+// Mqtt ...
 func (d *DeviceBind) Mqtt(path string, payload []byte) (result DevMqttResponse) {
 	result = d.device.Mqtt(path, payload)
 	return
 }
 
+// Send ...
 func (d *DeviceBind) Send(payload interface{}) (result interface{}) {
 
 	switch v := payload.(type) {

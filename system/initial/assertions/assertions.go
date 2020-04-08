@@ -28,14 +28,18 @@ import (
 const assertionSuccess = ""
 
 var (
-	ShouldEqual       = assertions.ShouldEqual
-	ShouldBeNil       = assertions.ShouldBeNil
+	// ShouldEqual ...
+	ShouldEqual = assertions.ShouldEqual
+	// ShouldBeNil ...
+	ShouldBeNil = assertions.ShouldBeNil
+	// ShouldBeZeroValue ...
 	ShouldBeZeroValue = assertions.ShouldBeZeroValue
-	adaptors *adaptors2.Adaptors
+	adaptors          *adaptors2.Adaptors
 )
 
 type assertion func(actual interface{}, expected ...interface{}) string
 
+// So ...
 func So(actual interface{}, assert assertion, expected ...interface{}) {
 	if result := assert(actual, expected...); result == assertionSuccess {
 		fmt.Printf(".")
@@ -48,6 +52,7 @@ func So(actual interface{}, assert assertion, expected ...interface{}) {
 	}
 }
 
+// SetAdaptors ...
 func SetAdaptors(adaptors *adaptors2.Adaptors) {
 
 }

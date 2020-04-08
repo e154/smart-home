@@ -18,6 +18,7 @@
 
 package models
 
+// ResponseType ...
 type ResponseType string
 
 const (
@@ -39,6 +40,7 @@ const (
 	ResponseTypePermissionError ResponseType = "permission_error"
 )
 
+// ErrorErrorsItems ...
 type ErrorErrorsItems struct {
 
 	// тип ишибки
@@ -51,7 +53,7 @@ type ErrorErrorsItems struct {
 	Message string `json:"message,omitempty"`
 }
 
-
+// ErrorErrors ...
 type ErrorErrors []*ErrorErrorsItems
 
 // swagger:model
@@ -66,4 +68,3 @@ type Error struct {
 	// описание ошибки
 	Message string `json:"message,omitempty"`
 }
-

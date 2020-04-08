@@ -29,6 +29,7 @@ var (
 	log = common.MustGetLogger("adaptors")
 )
 
+// Adaptors ...
 type Adaptors struct {
 	db                    *gorm.DB
 	isTx                  bool
@@ -67,10 +68,11 @@ type Adaptors struct {
 	Zigbee2mqtt           *Zigbee2mqtt
 	Zigbee2mqttDevice     *Zigbee2mqttDevice
 	MapDeviceHistory      *MapDeviceHistory
-	AlexaApplication      *AlexaApplication
+	AlexaSkill            *AlexaSkill
 	AlexaIntent           *AlexaIntent
 }
 
+// NewAdaptors ...
 func NewAdaptors(db *gorm.DB,
 	cfg *config.AppConfig,
 	migrations *migrations.Migrations) (adaptors *Adaptors) {
@@ -116,19 +118,21 @@ func NewAdaptors(db *gorm.DB,
 		Zigbee2mqtt:           GetZigbee2mqttAdaptor(db),
 		Zigbee2mqttDevice:     GetZigbee2mqttDeviceAdaptor(db),
 		MapDeviceHistory:      GetMapDeviceHistoryAdaptor(db),
-		AlexaApplication:      GetAlexaApplicationAdaptor(db),
+		AlexaSkill:            GetAlexaSkillAdaptor(db),
 		AlexaIntent:           GetAlexaIntentAdaptor(db),
 	}
 
 	return
 }
 
+// Begin ...
 func (a Adaptors) Begin() (adaptors *Adaptors) {
 	adaptors = NewAdaptors(a.db.Begin(), nil, nil)
 	adaptors.isTx = true
 	return
 }
 
+// Commit ...
 func (a *Adaptors) Commit() error {
 	if !a.isTx {
 		return nil
@@ -137,6 +141,7 @@ func (a *Adaptors) Commit() error {
 	return a.db.Commit().Error
 }
 
+// Rollback ...
 func (a *Adaptors) Rollback() error {
 	if !a.isTx {
 		return nil

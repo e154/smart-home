@@ -33,6 +33,7 @@ type ActionBind struct {
 	action      *Action
 }
 
+// NewActionBind ...
 func NewActionBind(id int64, name, desc string, action *Action) *ActionBind {
 	return &ActionBind{
 		Id:          id,
@@ -42,6 +43,7 @@ func NewActionBind(id int64, name, desc string, action *Action) *ActionBind {
 	}
 }
 
+// Device ...
 func (a *ActionBind) Device() *DeviceBind {
 	return &DeviceBind{model: a.action.GetDevice()}
 }

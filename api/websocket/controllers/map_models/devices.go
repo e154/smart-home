@@ -29,16 +29,19 @@ var (
 	log = common.MustGetLogger("map_models")
 )
 
+// Devices ...
 type Devices struct {
 	metric *metrics.MetricManager
 }
 
+// NewDevices ...
 func NewDevices(metric *metrics.MetricManager) *Devices {
 	return &Devices{
 		metric: metric,
 	}
 }
 
+// Broadcast ...
 func (d *Devices) Broadcast(cursor metrics.MapElementCursor) (map[string]interface{}, bool) {
 
 	snapshot := d.metric.MapElement.Snapshot()
@@ -89,6 +92,7 @@ func (d *Devices) key(deviceId int64, elementName string) string {
 	return fmt.Sprintf("%d_%s", deviceId, elementName)
 }
 
+// MapElement ...
 type MapElement struct {
 	Id          int64       `json:"id"`
 	StatusId    int64       `json:"status_id"`

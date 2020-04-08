@@ -23,15 +23,18 @@ import (
 	"time"
 )
 
+// NewUserMeta ...
 type NewUserMeta struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
+// NewUserImage ...
 type NewUserImage struct {
 	Id int64 `json:"id"`
 }
 
+// NewUserRole ...
 type NewUserRole struct {
 	Name string `json:"name"`
 }
@@ -51,6 +54,7 @@ type NewUser struct {
 	Meta           []*NewUserMeta `json:"meta"`
 }
 
+// Valid ...
 func (d *NewUser) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
@@ -77,6 +81,7 @@ type UpdateUser struct {
 	Meta           []*NewUserMeta `json:"meta"`
 }
 
+// Valid ...
 func (d *UpdateUser) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
@@ -92,16 +97,19 @@ type UserUpdateStatusRequest struct {
 	Status string `json:"status"`
 }
 
+// UserByIdModelParent ...
 type UserByIdModelParent struct {
 	Id       int64  `json:"id"`
 	Nickname string `json:"nickname"`
 }
 
+// UserByIdModelMeta ...
 type UserByIdModelMeta struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
+// UserHistory ...
 type UserHistory struct {
 	Ip   string    `json:"ip"`
 	Time time.Time `json:"time"`

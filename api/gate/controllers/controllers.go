@@ -35,12 +35,14 @@ var (
 	log = common.MustGetLogger("gate.controllers")
 )
 
+// Controllers ...
 type Controllers struct {
 	Map       *ControllerMap
 	Action    *ControllerAction
 	Dashboard *ControllerDashboard
 }
 
+// NewControllers ...
 func NewControllers(adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
 	core *core.Core,
@@ -58,12 +60,14 @@ func NewControllers(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Start ...
 func (s *Controllers) Start() {
 	s.Map.Start()
 	s.Action.Start()
 	s.Dashboard.Start()
 }
 
+// Stop ...
 func (s *Controllers) Stop() {
 	s.Map.Stop()
 	s.Action.Stop()

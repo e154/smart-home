@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MapDevice ...
 type MapDevice struct {
 	table *db.MapDevices
 	db    *gorm.DB
 }
 
+// GetMapDeviceAdaptor ...
 func GetMapDeviceAdaptor(d *gorm.DB) *MapDevice {
 	return &MapDevice{
 		table: &db.MapDevices{Db: d},
@@ -36,6 +38,7 @@ func GetMapDeviceAdaptor(d *gorm.DB) *MapDevice {
 	}
 }
 
+// Add ...
 func (n *MapDevice) Add(ver *m.MapDevice) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
@@ -46,6 +49,7 @@ func (n *MapDevice) Add(ver *m.MapDevice) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n *MapDevice) GetById(mapId int64) (ver *m.MapDevice, err error) {
 
 	var dbVer *db.MapDevice
@@ -58,6 +62,7 @@ func (n *MapDevice) GetById(mapId int64) (ver *m.MapDevice, err error) {
 	return
 }
 
+// Delete ...
 func (n *MapDevice) Delete(mapId int64) (err error) {
 	err = n.table.Delete(mapId)
 	return
@@ -65,13 +70,13 @@ func (n *MapDevice) Delete(mapId int64) (err error) {
 
 func (n *MapDevice) fromDb(dbVer *db.MapDevice) (ver *m.MapDevice) {
 	ver = &m.MapDevice{
-		Id:         dbVer.Id,
-		DeviceId:   dbVer.DeviceId,
-		ImageId:    dbVer.ImageId,
-		Actions:    make([]*m.MapDeviceAction, 0),
-		States:     make([]*m.MapDeviceState, 0),
-		CreatedAt:  dbVer.CreatedAt,
-		UpdatedAt:  dbVer.UpdatedAt,
+		Id:        dbVer.Id,
+		DeviceId:  dbVer.DeviceId,
+		ImageId:   dbVer.ImageId,
+		Actions:   make([]*m.MapDeviceAction, 0),
+		States:    make([]*m.MapDeviceState, 0),
+		CreatedAt: dbVer.CreatedAt,
+		UpdatedAt: dbVer.UpdatedAt,
 	}
 
 	// actions
@@ -105,8 +110,8 @@ func (n *MapDevice) fromDb(dbVer *db.MapDevice) (ver *m.MapDevice) {
 
 func (n *MapDevice) toDb(ver *m.MapDevice) (dbVer *db.MapDevice) {
 	dbVer = &db.MapDevice{
-		Id:         ver.Id,
-		DeviceId:   ver.DeviceId,
+		Id:       ver.Id,
+		DeviceId: ver.DeviceId,
 	}
 	if ver.ImageId != 0 {
 		dbVer.ImageId = ver.ImageId

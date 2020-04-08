@@ -19,15 +19,17 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
 	"fmt"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// Workers ...
 type Workers struct {
 	Db *gorm.DB
 }
 
+// Worker ...
 type Worker struct {
 	Id             int64 `gorm:"primary_key"`
 	Workflow       *Workflow
@@ -43,10 +45,12 @@ type Worker struct {
 	UpdatedAt      time.Time
 }
 
+// TableName ...
 func (m *Worker) TableName() string {
 	return "workers"
 }
 
+// Add ...
 func (n Workers) Add(worker *Worker) (id int64, err error) {
 	if err = n.Db.Create(&worker).Error; err != nil {
 		return
@@ -55,6 +59,7 @@ func (n Workers) Add(worker *Worker) (id int64, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n Workers) GetAllEnabled() (list []*Worker, err error) {
 	list = make([]*Worker, 0)
 	err = n.Db.Where("status = ?", "enabled").
@@ -62,12 +67,14 @@ func (n Workers) GetAllEnabled() (list []*Worker, err error) {
 	return
 }
 
+// GetById ...
 func (n Workers) GetById(workerId int64) (worker *Worker, err error) {
 	worker = &Worker{Id: workerId}
 	err = n.Db.First(&worker).Error
 	return
 }
 
+// Update ...
 func (n Workers) Update(m *Worker) (err error) {
 	err = n.Db.Model(&Worker{Id: m.Id}).Updates(map[string]interface{}{
 		"name":             m.Name,
@@ -80,11 +87,13 @@ func (n Workers) Update(m *Worker) (err error) {
 	return
 }
 
+// Delete ...
 func (n Workers) Delete(ids []int64) (err error) {
 	err = n.Db.Delete(&Worker{}, "id in (?)", ids).Error
 	return
 }
 
+// List ...
 func (n *Workers) List(limit, offset int64, orderBy, sort string) (list []*Worker, total int64, err error) {
 
 	if err = n.Db.Model(Worker{}).Count(&total).Error; err != nil {

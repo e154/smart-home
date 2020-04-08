@@ -24,17 +24,20 @@ import (
 	"sync"
 )
 
+// WorkflowStatus ...
 type WorkflowStatus struct {
 	Id         int64 `json:"id"`
 	ScenarioId int64 `json:"scenario_id"`
 }
 
+// Workflow ...
 type Workflow struct {
 	Total    int64                    `json:"total"`
 	Disabled int64                    `json:"disabled"`
 	Status   map[int64]WorkflowStatus `json:"status"`
 }
 
+// WorkflowManager ...
 type WorkflowManager struct {
 	publisher  IPublisher
 	enabled    metrics.Counter
@@ -43,6 +46,7 @@ type WorkflowManager struct {
 	status     map[int64]int64
 }
 
+// NewWorkflowManager ...
 func NewWorkflowManager(publisher IPublisher,
 	adaptors *adaptors.Adaptors) (wf *WorkflowManager) {
 
@@ -60,6 +64,7 @@ func NewWorkflowManager(publisher IPublisher,
 	return
 }
 
+// GetStatus ...
 func (d *WorkflowManager) GetStatus(workflowId int64) (status WorkflowStatus, err error) {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
@@ -94,6 +99,7 @@ func (d *WorkflowManager) update(t interface{}) {
 	d.broadcast()
 }
 
+// Snapshot ...
 func (d *WorkflowManager) Snapshot() Workflow {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
@@ -117,16 +123,19 @@ func (d *WorkflowManager) broadcast() {
 	go d.publisher.Broadcast("workflow")
 }
 
+// WorkflowUpdateScenario ...
 type WorkflowUpdateScenario struct {
 	Id         int64
 	ScenarioId int64
 }
 
+// WorkflowAdd ...
 type WorkflowAdd struct {
 	TotalNum   int64
 	EnabledNum int64
 }
 
+// WorkflowDelete ...
 type WorkflowDelete struct {
 	TotalNum   int64
 	EnabledNum int64

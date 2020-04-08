@@ -33,6 +33,7 @@ var (
 	log = common.MustGetLogger("notify")
 )
 
+// Notify ...
 type Notify struct {
 	adaptor       *adaptors.Adaptors
 	cfg           *NotifyConfig
@@ -47,6 +48,7 @@ type Notify struct {
 	stopQueue     chan struct{}
 }
 
+// NewNotify ...
 func NewNotify(
 	adaptor *adaptors.Adaptors,
 	appCfg *config.AppConfig,
@@ -76,11 +78,13 @@ func NewNotify(
 	return notify
 }
 
+// Shutdown ...
 func (n *Notify) Shutdown() {
 	n.stop()
 	close(n.stopQueue)
 }
 
+// Start ...
 func (n *Notify) Start() {
 
 	if n.isStarted {
@@ -104,7 +108,7 @@ func (n *Notify) Start() {
 
 	//...
 	go func() {
-		for ; ; {
+		for {
 			var worker *Worker
 			for _, w := range n.workers {
 				if w.inProcess {
@@ -164,11 +168,13 @@ func (n *Notify) stop() {
 	log.Infof("Notifr service stopped")
 }
 
+// Restart ...
 func (n *Notify) Restart() {
 	n.stop()
 	n.Start()
 }
 
+// Send ...
 func (n Notify) Send(msg interface{}) {
 	if !n.isStarted && n.stopPrecess {
 		return
@@ -234,16 +240,19 @@ func (n *Notify) getCfg() {
 	}
 }
 
+// GetCfg ...
 func (n *Notify) GetCfg() *NotifyConfig {
 	return n.cfg
 }
 
+// UpdateCfg ...
 func (n *Notify) UpdateCfg(cfg *NotifyConfig) error {
 	cfg.adaptor = n.adaptor
 	n.cfg = cfg
 	return n.cfg.Update()
 }
 
+// Stat ...
 func (n *Notify) Stat() *NotifyStat {
 	return n.stat
 }
@@ -279,6 +288,7 @@ func (n *Notify) updateStat() {
 	n.stat = stat
 }
 
+// Repeat ...
 func (n *Notify) Repeat(msg *m.MessageDelivery) {
 	if !n.isStarted && n.stopPrecess {
 		return

@@ -26,11 +26,13 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
+// ScriptManager ...
 type ScriptManager struct {
 	adaptors      *adaptors.Adaptors
 	scriptService *scripts.ScriptService
 }
 
+// NewScriptManager ...
 func NewScriptManager(adaptors *adaptors.Adaptors,
 	scriptService *scripts.ScriptService) *ScriptManager {
 	return &ScriptManager{
@@ -39,6 +41,7 @@ func NewScriptManager(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Create ...
 func (s ScriptManager) Create() (scripts map[string]*m.Script) {
 
 	scripts = make(map[string]*m.Script)
@@ -206,6 +209,7 @@ func (s ScriptManager) Create() (scripts map[string]*m.Script) {
 	return
 }
 
+// Upgrade ...
 func (s ScriptManager) Upgrade(oldVersion int) (err error) {
 
 	switch oldVersion {
@@ -346,6 +350,7 @@ func (s ScriptManager) upgrade2(scripts map[string]*m.Script) {
 
 }
 
+// MbDev1ConditionCheckV1 ...
 const MbDev1ConditionCheckV1 = `
 
 objects = [
@@ -425,6 +430,8 @@ main =->
 
 main()
 `
+
+// MbDev1ActionsV1 ...
 const MbDev1ActionsV1 = `
 writeRegisters =(d, c, r)->
     res = Device.ModBus 'WriteMultipleRegisters', d, c, r
@@ -449,6 +456,7 @@ main =->
 main()
 `
 
+// MiPirSensor ...
 const MiPirSensor = `
 # {"battery":100,"voltage":3035,"linkquality":120,"occupancy":true}
 
@@ -483,6 +491,7 @@ main()
 
 `
 
+// MiDoorSensor ...
 const MiDoorSensor = `
 # {"battery":100,"voltage":3005,"linkquality":149,"contact":true}
 
@@ -515,6 +524,7 @@ main =->
 main()
 `
 
+// MiTempSensor ...
 const MiTempSensor = `
 # {"battery":100,"voltage":3005,"temperature":27.3,"humidity":22.02,"linkquality":126}
 
@@ -551,6 +561,7 @@ main =->
 main()
 `
 
+// CmdConditionCheckV1 ...
 const CmdConditionCheckV1 = `
 main =->
     
@@ -562,6 +573,7 @@ main =->
 main()
 `
 
+// WflowScenarioWeekdayV1 ...
 const WflowScenarioWeekdayV1 = `
 # variables:
 
@@ -586,6 +598,7 @@ on_exit =->
     
 `
 
+// WflowScenarioWeekendV1 ...
 const WflowScenarioWeekendV1 = `
 # variables:
 
@@ -610,11 +623,13 @@ on_exit =->
 
 `
 
+// BaseScript ...
 const BaseScript = `
 
 main =->
 `
 
+// WflowScriptV1 ...
 const WflowScriptV1 = `
 # variables:
 
@@ -634,13 +649,15 @@ const WflowScriptV1 = `
 WFLOW_VAR1 = 'workflow1'
 `
 
-const AlexaOnLaunchV1 =`
+// AlexaOnLaunchV1 ...
+const AlexaOnLaunchV1 = `
 Alexa.
     OutputSpeech("I listen to the order").
     Card("office light", "I listen to the order.").
     EndSession(false)
 `
 
+// AlexaLightIntentV1 ...
 const AlexaLightIntentV1 = `
 doAction =(actionId)->
     DoAction actionId

@@ -33,6 +33,7 @@ var (
 	log = common.MustGetLogger("metrics")
 )
 
+// MetricManager ...
 type MetricManager struct {
 	*Publisher
 	cfg               *MetricConfig
@@ -55,6 +56,7 @@ type MetricManager struct {
 	graceful          *graceful_service.GracefulService
 }
 
+// NewMetricManager ...
 func NewMetricManager(cfg *MetricConfig,
 	graceful *graceful_service.GracefulService,
 	adaptors *adaptors.Adaptors) *MetricManager {
@@ -84,6 +86,7 @@ func NewMetricManager(cfg *MetricConfig,
 	return metric
 }
 
+// Start ...
 func (m *MetricManager) Start() {
 
 	m.Cpu.start(5)
@@ -117,6 +120,7 @@ func (m *MetricManager) Start() {
 	}
 }
 
+// Shutdown ...
 func (m MetricManager) Shutdown() {
 
 	m.Cpu.stop()
@@ -126,6 +130,7 @@ func (m MetricManager) Shutdown() {
 	m.AppMemory.stop()
 }
 
+// Update ...
 func (m *MetricManager) Update(t interface{}) {
 	m.Workflow.update(t)
 	m.Gate.update(t)

@@ -30,6 +30,7 @@ import (
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
+// ControllerCommon ...
 type ControllerCommon struct {
 	adaptors    *adaptors.Adaptors
 	endpoint    *endpoint.Endpoint
@@ -42,6 +43,7 @@ type ControllerCommon struct {
 	stream      *stream.StreamService
 }
 
+// NewControllerCommon ...
 func NewControllerCommon(adaptors *adaptors.Adaptors,
 	endpoint *endpoint.Endpoint,
 	scripts *scripts.ScriptService,
@@ -64,6 +66,7 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Err ...
 func (c *ControllerCommon) Err(client stream.IStreamClient, message stream.Message, err error) {
 	msg := stream.Message{
 		Id:      message.Id,

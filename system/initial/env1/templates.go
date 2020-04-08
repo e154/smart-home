@@ -29,16 +29,19 @@ import (
 	"strings"
 )
 
+// TemplateManager ...
 type TemplateManager struct {
 	adaptors *adaptors.Adaptors
 }
 
+// NewTemplateManager ...
 func NewTemplateManager(adaptors *adaptors.Adaptors) *TemplateManager {
 	return &TemplateManager{
 		adaptors: adaptors,
 	}
 }
 
+// Create ...
 func (t TemplateManager) Create() {
 
 	dataDir := filepath.Join("data", "templates")
@@ -61,7 +64,7 @@ func (t TemplateManager) Create() {
 		}
 	}
 
-	fileNames := []string{"main", "message", "body", "callout", "footer", "contacts", "social", "facebook", "google", "header", "password_reset", "privacy", "register_admin_created", "title", "twitter", "vk",}
+	fileNames := []string{"main", "message", "body", "callout", "footer", "contacts", "social", "facebook", "google", "header", "password_reset", "privacy", "register_admin_created", "title", "twitter", "vk"}
 
 	for _, name := range fileNames {
 
@@ -129,6 +132,7 @@ func (t TemplateManager) Create() {
 	}
 }
 
+// Upgrade ...
 func (t TemplateManager) Upgrade(oldVersion int) (err error) {
 
 	switch oldVersion {

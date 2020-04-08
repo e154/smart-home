@@ -18,6 +18,7 @@
 
 package db
 
+// WorkflowScripts ...
 type WorkflowScripts struct {
 	Id         int64 `gorm:"primary_key"`
 	Workflow   *Workflow
@@ -27,6 +28,7 @@ type WorkflowScripts struct {
 	Weight     int64
 }
 
+// TableName ...
 func (d *WorkflowScripts) TableName() string {
 	return "workflow_scripts"
 }

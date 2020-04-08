@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// MapImage ...
 type MapImage struct {
 	Id      int64  `json:"id"`
 	Image   *Image `json:"image"`
@@ -29,6 +30,7 @@ type MapImage struct {
 	Style   string `json:"style"`
 }
 
+// Valid ...
 func (m *MapImage) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

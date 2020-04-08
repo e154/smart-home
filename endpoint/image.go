@@ -19,24 +19,27 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/system/validation"
-	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/copier"
-	"errors"
-	"mime/multipart"
 	"bufio"
+	"errors"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/validation"
+	"github.com/jinzhu/copier"
+	"mime/multipart"
 )
 
+// ImageEndpoint ...
 type ImageEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewImageEndpoint ...
 func NewImageEndpoint(common *CommonEndpoint) *ImageEndpoint {
 	return &ImageEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (i *ImageEndpoint) Add(params *m.Image) (image *m.Image, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
@@ -54,6 +57,7 @@ func (i *ImageEndpoint) Add(params *m.Image) (image *m.Image, errs []*validation
 	return
 }
 
+// GetById ...
 func (i *ImageEndpoint) GetById(id int64) (image *m.Image, err error) {
 
 	image, err = i.adaptors.Image.GetById(id)
@@ -61,6 +65,7 @@ func (i *ImageEndpoint) GetById(id int64) (image *m.Image, err error) {
 	return
 }
 
+// Update ...
 func (i *ImageEndpoint) Update(params *m.Image) (result *m.Image, errs []*validation.Error, err error) {
 
 	var image *m.Image
@@ -86,6 +91,7 @@ func (i *ImageEndpoint) Update(params *m.Image) (result *m.Image, errs []*valida
 	return
 }
 
+// Delete ...
 func (i *ImageEndpoint) Delete(imageId int64) (err error) {
 
 	if imageId == 0 {
@@ -103,6 +109,7 @@ func (i *ImageEndpoint) Delete(imageId int64) (err error) {
 	return
 }
 
+// Upload ...
 func (i *ImageEndpoint) Upload(files map[string][]*multipart.FileHeader) (fileList []*m.Image, errs []error) {
 
 	fileList = make([]*m.Image, 0)
@@ -127,6 +134,7 @@ func (i *ImageEndpoint) Upload(files map[string][]*multipart.FileHeader) (fileLi
 	return
 }
 
+// GetList ...
 func (i *ImageEndpoint) GetList(limit, offset int64, order, sortBy string) (items []*m.Image, total int64, err error) {
 
 	items, total, err = i.adaptors.Image.List(limit, offset, order, sortBy)

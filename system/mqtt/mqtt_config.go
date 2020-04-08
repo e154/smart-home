@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// MqttConfig ...
 type MqttConfig struct {
 	Port                       int
 	RetryInterval              time.Duration
@@ -37,6 +38,7 @@ type MqttConfig struct {
 	DebugMode                  config.RunMode
 }
 
+// NewMqttConfig ...
 func NewMqttConfig(cfg *config.AppConfig) *MqttConfig {
 	return &MqttConfig{
 		Port:                       cfg.MqttPort,

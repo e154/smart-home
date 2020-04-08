@@ -22,15 +22,18 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 )
 
+// Zigbee2Mqtt ...
 type Zigbee2Mqtt struct {
 	metric *metrics.MetricManager
 }
 
+// NewZigbee2Mqtt ...
 func NewZigbee2Mqtt(metric *metrics.MetricManager) (memory *Zigbee2Mqtt) {
 	memory = &Zigbee2Mqtt{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (g *Zigbee2Mqtt) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

@@ -34,12 +34,14 @@ var (
 	log = common.MustGetLogger("backup")
 )
 
+// Backup ...
 type Backup struct {
 	cfg     *BackupConfig
 	Options []string
 	db      *gorm.DB
 }
 
+// NewBackup ...
 func NewBackup(cfg *BackupConfig,
 	db *gorm.DB) *Backup {
 	return &Backup{
@@ -48,6 +50,7 @@ func NewBackup(cfg *BackupConfig,
 	}
 }
 
+// New ...
 func (b *Backup) New() (err error) {
 	log.Info("backup")
 
@@ -72,7 +75,7 @@ func (b *Backup) New() (err error) {
 		return
 	}
 
-	err = zipit([]string{path.Join("data", "file_storage"), filename}, path.Join(b.cfg.Path, fmt.Sprintf("%s.zip", time.Now().Format("2006-01-02T15:04:05.999")), ))
+	err = zipit([]string{path.Join("data", "file_storage"), filename}, path.Join(b.cfg.Path, fmt.Sprintf("%s.zip", time.Now().Format("2006-01-02T15:04:05.999"))))
 	if err != nil {
 		return
 	}
@@ -84,6 +87,7 @@ func (b *Backup) New() (err error) {
 	return
 }
 
+// List ...
 func (b *Backup) List() (list []string) {
 
 	filepath.Walk(b.cfg.Path, func(path string, info os.FileInfo, err error) error {
@@ -96,6 +100,7 @@ func (b *Backup) List() (list []string) {
 	return
 }
 
+// Restore ...
 func (b *Backup) Restore(name string) (err error) {
 	log.Infof("restore: %s", name)
 

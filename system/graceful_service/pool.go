@@ -22,16 +22,19 @@ import (
 	"sync"
 )
 
+// IGracefulClient ...
 type IGracefulClient interface {
 	Shutdown()
 }
 
+// GracefulServicePool ...
 type GracefulServicePool struct {
 	cfg     *GracefulServiceConfig
 	m       sync.Mutex
 	clients map[int]IGracefulClient
 }
 
+// NewGracefulServicePool ...
 func NewGracefulServicePool(cfg *GracefulServiceConfig) *GracefulServicePool {
 	return &GracefulServicePool{
 		cfg:     cfg,

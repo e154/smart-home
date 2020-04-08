@@ -33,6 +33,7 @@ const (
 	depth           = 3
 )
 
+// GetFileSize ...
 func GetFileSize(name string) (int64, error) {
 	file, err := os.Open(name)
 	if err != nil {
@@ -48,6 +49,7 @@ func GetFileSize(name string) (int64, error) {
 	return fi.Size(), nil
 }
 
+// GetFullPath ...
 func GetFullPath(name string) string {
 
 	dir := filepath.Join(dataDir, fileStoragePath)
@@ -59,6 +61,7 @@ func GetFullPath(name string) string {
 	return dir
 }
 
+// GetLinkPath ...
 func GetLinkPath(name string) string {
 
 	dir := "/upload"
@@ -75,14 +78,17 @@ func GetLinkPath(name string) string {
 	return filepath.Join(dir, name)
 }
 
+// StoragePath ...
 func StoragePath() string {
 	return filepath.Join(dataDir, fileStoragePath)
 }
 
+// StaticPath ...
 func StaticPath() string {
 	return filepath.Join(dataDir, staticPath)
 }
 
+// FileExist ...
 func FileExist(path string) (exist bool) {
 
 	if _, err := os.Stat(path); err != nil {
@@ -99,6 +105,7 @@ func FileExist(path string) (exist bool) {
 	return
 }
 
+// CopyFile ...
 func CopyFile(f, t string) {
 
 	from, err := os.Open(f)

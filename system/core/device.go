@@ -28,6 +28,7 @@ import (
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
+// Device ...
 type Device struct {
 	dev         *m.Device
 	node        *Node
@@ -36,6 +37,7 @@ type Device struct {
 	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt
 }
 
+// NewDevice ...
 func NewDevice(dev *m.Device, node *Node, mqtt *mqtt.Mqtt,
 	adaptors *adaptors.Adaptors, zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt) *Device {
 	return &Device{
@@ -90,6 +92,7 @@ func (d Device) RunCommand(name string, args []string) (result DevCommandRespons
 	return
 }
 
+// SmartBus ...
 func (d Device) SmartBus(command []byte) (result DevSmartBusResponse) {
 
 	request := &DevSmartBusRequest{
@@ -123,6 +126,7 @@ func (d Device) SmartBus(command []byte) (result DevSmartBusResponse) {
 	return
 }
 
+// ModBus ...
 func (d Device) ModBus(f string, address, count uint16, command []uint16) (result DevModBusResponse) {
 
 	result = DevModBusResponse{}
@@ -172,6 +176,7 @@ func (d Device) ModBus(f string, address, count uint16, command []uint16) (resul
 	return
 }
 
+// Zigbee2mqtt ...
 func (d Device) Zigbee2mqtt(path string, payload []byte) (result DevZigbee2mqttResponse) {
 
 	if d.zigbee2mqtt == nil {
@@ -219,6 +224,7 @@ func (d Device) Zigbee2mqtt(path string, payload []byte) (result DevZigbee2mqttR
 	return
 }
 
+// Mqtt ...
 func (d Device) Mqtt(path string, payload []byte) (result DevMqttResponse) {
 
 	if d.dev.Type != DevTypeMqtt {

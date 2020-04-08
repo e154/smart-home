@@ -31,22 +31,28 @@ var (
 	log = common.MustGetLogger("mqtt_authenticator")
 )
 
+// ErrBadLoginOrPassword ...
 var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
+
+// ErrPrincipalDisabled ...
 var ErrPrincipalDisabled = fmt.Errorf("principal disabled")
 
+// Authenticator ...
 type Authenticator struct {
 	adaptors *adaptors.Adaptors
 	cache    cache.Cache
 }
 
+// NewAuthenticator ...
 func NewAuthenticator(adaptors *adaptors.Adaptors) *Authenticator {
-	bm, _ := cache.NewCache("memory", fmt.Sprintf(`{"interval":%d}`, time.Second * 60))
+	bm, _ := cache.NewCache("memory", fmt.Sprintf(`{"interval":%d}`, time.Second*60))
 	return &Authenticator{
 		adaptors: adaptors,
 		cache:    bm,
 	}
 }
 
+// Authenticate ...
 func (a *Authenticator) Authenticate(login string, pass interface{}) (err error) {
 
 	log.Infof("login: %v, pass: %v", login, pass)
@@ -96,7 +102,7 @@ func (a Authenticator) checkZigbee2matt(login, password string) (err error) {
 		return
 	}
 
-	a.cache.Put(login, password, 60 * time.Second)
+	a.cache.Put(login, password, 60*time.Second)
 
 	return
 }
@@ -118,7 +124,7 @@ func (a Authenticator) checkNode(login, password string) (err error) {
 		return
 	}
 
-	a.cache.Put(login, password, 60 * time.Second)
+	a.cache.Put(login, password, 60*time.Second)
 
 	return
 }

@@ -18,12 +18,14 @@
 
 package twilio
 
+// TWConfig ...
 type TWConfig struct {
 	from      string
 	sid       string
 	authToken string
 }
 
+// NewTWConfig ...
 func NewTWConfig(from, sid, authToken string) *TWConfig {
 	return &TWConfig{
 		from:      from,

@@ -19,5 +19,6 @@
 package messagebird
 
 const (
-	StatusDelivered   = "delivered"
+	// StatusDelivered ...
+	StatusDelivered = "delivered"
 )

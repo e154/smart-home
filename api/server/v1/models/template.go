@@ -53,6 +53,7 @@ type Template struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+// TemplateField ...
 type TemplateField struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`

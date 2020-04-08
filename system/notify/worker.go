@@ -30,6 +30,7 @@ import (
 	"time"
 )
 
+// Worker ...
 type Worker struct {
 	cfg            *NotifyConfig
 	mbClient       *mb.MBClient
@@ -42,6 +43,7 @@ type Worker struct {
 	isStarted      bool
 }
 
+// NewWorker ...
 func NewWorker(cfg *NotifyConfig,
 	adaptor *adaptors.Adaptors) *Worker {
 
@@ -53,6 +55,7 @@ func NewWorker(cfg *NotifyConfig,
 	return worker
 }
 
+// Start ...
 func (n *Worker) Start() {
 
 	if n.isStarted {
@@ -92,6 +95,7 @@ func (n *Worker) Start() {
 	n.isStarted = true
 }
 
+// Stop ...
 func (n *Worker) Stop() {
 	if !n.isStarted {
 		return

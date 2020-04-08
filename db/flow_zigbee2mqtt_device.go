@@ -23,14 +23,17 @@ import (
 	"time"
 )
 
+// FlowZigbee2mqttDevices ...
 type FlowZigbee2mqttDevices struct {
 	db *gorm.DB
 }
 
+// NewFlowZigbee2mqttDevices ...
 func NewFlowZigbee2mqttDevices(db *gorm.DB) *FlowZigbee2mqttDevices {
 	return &FlowZigbee2mqttDevices{db: db}
 }
 
+// FlowZigbee2mqttDevice ...
 type FlowZigbee2mqttDevice struct {
 	Id                  int64 `gorm:"primary_key"`
 	Flow                *Flow
@@ -40,15 +43,18 @@ type FlowZigbee2mqttDevice struct {
 	CreatedAt           time.Time
 }
 
+// TableName ...
 func (d *FlowZigbee2mqttDevice) TableName() string {
 	return "flow_zigbee2mqtt_devices"
 }
 
+// Add ...
 func (f *FlowZigbee2mqttDevices) Add(sub *FlowZigbee2mqttDevice) (err error) {
 	err = f.db.Create(sub).Error
 	return
 }
 
+// Delete ...
 func (f *FlowZigbee2mqttDevices) Delete(flowId int64, ids []string) (err error) {
 	err = f.db.Delete(&FlowZigbee2mqttDevice{}, "zigbee2mqtt_device_id in (?) and flow_id = ?", ids, flowId).Error
 	return

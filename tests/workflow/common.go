@@ -38,6 +38,7 @@ func storeRegisterCallback(scriptService *scripts.ScriptService) {
 	})
 }
 
+// GetScripts ...
 func GetScripts(ctx C, scriptService *scripts.ScriptService, adaptors *adaptors.Adaptors, args ...int) (scripts map[string]*m.Script) {
 
 	scripts = make(map[string]*m.Script)

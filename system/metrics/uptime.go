@@ -27,6 +27,7 @@ import (
 	"time"
 )
 
+// UptimeManager ...
 type UptimeManager struct {
 	publisher  IPublisher
 	updateLock sync.Mutex
@@ -37,6 +38,7 @@ type UptimeManager struct {
 	appStarted time.Time
 }
 
+// NewUptimeManager ...
 func NewUptimeManager(publisher IPublisher) (uptime *UptimeManager) {
 	uptime = &UptimeManager{
 		quit:       make(chan struct{}),
@@ -78,6 +80,7 @@ func (d *UptimeManager) stop() {
 	d.quit <- struct{}{}
 }
 
+// Snapshot ...
 func (d *UptimeManager) Snapshot() Uptime {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()

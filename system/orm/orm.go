@@ -26,6 +26,7 @@ import (
 	"time"
 )
 
+// Orm ...
 type Orm struct {
 	cfg *OrmConfig
 	db  *gorm.DB
@@ -35,6 +36,7 @@ var (
 	log = common.MustGetLogger("orm")
 )
 
+// NewOrm ...
 func NewOrm(cfg *OrmConfig,
 	graceful *graceful_service.GracefulService) (orm *Orm, db *gorm.DB) {
 
@@ -65,6 +67,7 @@ func NewOrm(cfg *OrmConfig,
 	return
 }
 
+// Shutdown ...
 func (o *Orm) Shutdown() {
 	if o.db != nil {
 		log.Debug("database shutdown")

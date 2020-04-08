@@ -22,15 +22,18 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 )
 
+// Mqtt ...
 type Mqtt struct {
 	metric *metrics.MetricManager
 }
 
+// NewMqtt ...
 func NewMqtt(metric *metrics.MetricManager) (memory *Mqtt) {
 	memory = &Mqtt{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (g *Mqtt) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

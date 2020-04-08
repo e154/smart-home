@@ -20,6 +20,7 @@ package models
 
 import "time"
 
+// Worker ...
 type Worker struct {
 	Id             int64         `json:"id"`
 	Name           string        `json:"name"`

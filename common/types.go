@@ -20,64 +20,98 @@ package common
 
 import "github.com/gin-gonic/gin"
 
+// ScriptLang ...
 type ScriptLang string
 
 const (
-	ScriptLangTs         = ScriptLang("ts")
-	ScriptLangCoffee     = ScriptLang("coffeescript")
+	// ScriptLangTs ...
+	ScriptLangTs = ScriptLang("ts")
+	// ScriptLangCoffee ...
+	ScriptLangCoffee = ScriptLang("coffeescript")
+	// ScriptLangJavascript ...
 	ScriptLangJavascript = ScriptLang("javascript")
 )
 
+// FlowElementsPrototypeType ...
 type FlowElementsPrototypeType string
 
 const (
-	FlowElementsPrototypeDefault        = FlowElementsPrototypeType("default")
+	// FlowElementsPrototypeDefault ...
+	FlowElementsPrototypeDefault = FlowElementsPrototypeType("default")
+	// FlowElementsPrototypeMessageHandler ...
 	FlowElementsPrototypeMessageHandler = FlowElementsPrototypeType("MessageHandler")
+	// FlowElementsPrototypeMessageEmitter ...
 	FlowElementsPrototypeMessageEmitter = FlowElementsPrototypeType("MessageEmitter")
-	FlowElementsPrototypeTask           = FlowElementsPrototypeType("Task")
-	FlowElementsPrototypeGateway        = FlowElementsPrototypeType("Gateway")
-	FlowElementsPrototypeFlow           = FlowElementsPrototypeType("Flow")
+	// FlowElementsPrototypeTask ...
+	FlowElementsPrototypeTask = FlowElementsPrototypeType("Task")
+	// FlowElementsPrototypeGateway ...
+	FlowElementsPrototypeGateway = FlowElementsPrototypeType("Gateway")
+	// FlowElementsPrototypeFlow ...
+	FlowElementsPrototypeFlow = FlowElementsPrototypeType("Flow")
 )
 
+// StatusType ...
 type StatusType string
 
 const (
-	Enabled  = StatusType("enabled")
+	// Enabled ...
+	Enabled = StatusType("enabled")
+	// Disabled ...
 	Disabled = StatusType("disabled")
-	Frozen   = StatusType("frozen")
+	// Frozen ...
+	Frozen = StatusType("frozen")
 )
 
+// DeviceType ...
 type DeviceType string
 
+// PrototypeType ...
 type PrototypeType string
 
 const (
-	PrototypeTypeText   = PrototypeType("text")
-	PrototypeTypeImage  = PrototypeType("image")
+	// PrototypeTypeText ...
+	PrototypeTypeText = PrototypeType("text")
+	// PrototypeTypeImage ...
+	PrototypeTypeImage = PrototypeType("image")
+	// PrototypeTypeDevice ...
 	PrototypeTypeDevice = PrototypeType("device")
-	PrototypeTypeEmpty  = PrototypeType("")
+	// PrototypeTypeEmpty ...
+	PrototypeTypeEmpty = PrototypeType("")
 )
 
+// LogLevel ...
 type LogLevel string
 
 const (
+	// LogLevelEmergency ...
 	LogLevelEmergency = LogLevel("Emergency")
-	LogLevelAlert     = LogLevel("Alert")
-	LogLevelCritical  = LogLevel("Critical")
-	LogLevelError     = LogLevel("Error")
-	LogLevelWarning   = LogLevel("Warning")
-	LogLevelNotice    = LogLevel("Notice")
-	LogLevelInfo      = LogLevel("Info")
-	LogLevelDebug     = LogLevel("Debug")
+	// LogLevelAlert ...
+	LogLevelAlert = LogLevel("Alert")
+	// LogLevelCritical ...
+	LogLevelCritical = LogLevel("Critical")
+	// LogLevelError ...
+	LogLevelError = LogLevel("Error")
+	// LogLevelWarning ...
+	LogLevelWarning = LogLevel("Warning")
+	// LogLevelNotice ...
+	LogLevelNotice = LogLevel("Notice")
+	// LogLevelInfo ...
+	LogLevelInfo = LogLevel("Info")
+	// LogLevelDebug ...
+	LogLevelDebug = LogLevel("Debug")
 )
 
+// GinEngine ...
 type GinEngine interface {
 	GetEngine() *gin.Engine
 }
 
+// MapDeviceHistoryType ...
 type MapDeviceHistoryType string
 
 const (
-	MapDeviceHistoryState  = MapDeviceHistoryType("state")
+	// MapDeviceHistoryState ...
+	MapDeviceHistoryState = MapDeviceHistoryType("state")
+	// MapDeviceHistoryOption ...
 	MapDeviceHistoryOption = MapDeviceHistoryType("option")
 )

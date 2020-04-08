@@ -24,21 +24,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GateEndpoint ...
 type GateEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewGateEndpoint ...
 func NewGateEndpoint(common *CommonEndpoint) *GateEndpoint {
 	return &GateEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// GetSettings ...
 func (d *GateEndpoint) GetSettings() (settings gate_client.Settings, err error) {
 	settings, err = d.gate.GetSettings()
 	return
 }
 
+// UpdateSettings ...
 func (d *GateEndpoint) UpdateSettings(settings gate_client.Settings) (err error) {
 	if err = d.gate.UpdateSettings(settings); err != nil {
 		return
@@ -47,16 +51,19 @@ func (d *GateEndpoint) UpdateSettings(settings gate_client.Settings) (err error)
 	return
 }
 
+// GetMobileList ...
 func (d *GateEndpoint) GetMobileList(ctx *gin.Context) (list *gate_client.MobileList, err error) {
 	list, err = d.gate.GetMobileList(ctx)
 	return
 }
 
+// DeleteMobile ...
 func (d *GateEndpoint) DeleteMobile(token string, ctx context.Context) (list *gate_client.MobileList, err error) {
 	list, err = d.gate.DeleteMobile(token, ctx)
 	return
 }
 
+// AddMobile ...
 func (d *GateEndpoint) AddMobile(ctx context.Context) (list *gate_client.MobileList, err error) {
 	list, err = d.gate.AddMobile(ctx)
 	return

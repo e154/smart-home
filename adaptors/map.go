@@ -19,18 +19,20 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
+	"encoding/json"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"encoding/json"
+	"github.com/jinzhu/gorm"
 	"sort"
 )
 
+// Map ...
 type Map struct {
 	table *db.Maps
 	db    *gorm.DB
 }
 
+// GetMapAdaptor ...
 func GetMapAdaptor(d *gorm.DB) *Map {
 	return &Map{
 		table: &db.Maps{Db: d},
@@ -38,6 +40,7 @@ func GetMapAdaptor(d *gorm.DB) *Map {
 	}
 }
 
+// Add ...
 func (n *Map) Add(ver *m.Map) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
@@ -48,6 +51,7 @@ func (n *Map) Add(ver *m.Map) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n *Map) GetById(mapId int64) (ver *m.Map, err error) {
 
 	var dbVer *db.Map
@@ -60,6 +64,7 @@ func (n *Map) GetById(mapId int64) (ver *m.Map, err error) {
 	return
 }
 
+// GetFullById ...
 func (n *Map) GetFullById(mapId int64) (ver *m.Map, err error) {
 
 	var dbVer *db.Map
@@ -74,17 +79,20 @@ func (n *Map) GetFullById(mapId int64) (ver *m.Map, err error) {
 	return
 }
 
+// Update ...
 func (n *Map) Update(ver *m.Map) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Update(dbVer)
 	return
 }
 
+// Delete ...
 func (n *Map) Delete(mapId int64) (err error) {
 	err = n.table.Delete(mapId)
 	return
 }
 
+// List ...
 func (n *Map) List(limit, offset int64, orderBy, sort string) (list []*m.Map, total int64, err error) {
 	var dbList []*db.Map
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -100,6 +108,7 @@ func (n *Map) List(limit, offset int64, orderBy, sort string) (list []*m.Map, to
 	return
 }
 
+// Search ...
 func (n *Map) Search(query string, limit, offset int) (list []*m.Map, total int64, err error) {
 	var dbList []*db.Map
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {

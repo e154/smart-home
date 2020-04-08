@@ -19,15 +19,17 @@
 package db
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"
-	"fmt"
 )
 
+// DeviceActions ...
 type DeviceActions struct {
 	Db *gorm.DB
 }
 
+// DeviceAction ...
 type DeviceAction struct {
 	Id          int64 `gorm:"primary_key"`
 	Name        string
@@ -40,10 +42,12 @@ type DeviceAction struct {
 	UpdatedAt   time.Time
 }
 
+// TableName ...
 func (m *DeviceAction) TableName() string {
 	return "device_actions"
 }
 
+// Add ...
 func (n DeviceActions) Add(action *DeviceAction) (id int64, err error) {
 	if err = n.Db.Create(&action).Error; err != nil {
 		return
@@ -52,6 +56,7 @@ func (n DeviceActions) Add(action *DeviceAction) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n DeviceActions) GetById(actionId int64) (action *DeviceAction, err error) {
 	action = &DeviceAction{Id: actionId}
 	err = n.Db.Model(action).
@@ -61,6 +66,7 @@ func (n DeviceActions) GetById(actionId int64) (action *DeviceAction, err error)
 	return
 }
 
+// GetByDeviceId ...
 func (n DeviceActions) GetByDeviceId(deviceId int64) (actions []*DeviceAction, err error) {
 	actions = make([]*DeviceAction, 0)
 	err = n.Db.Model(&DeviceAction{}).
@@ -71,6 +77,7 @@ func (n DeviceActions) GetByDeviceId(deviceId int64) (actions []*DeviceAction, e
 	return
 }
 
+// Update ...
 func (n DeviceActions) Update(m *DeviceAction) (err error) {
 	err = n.Db.Model(&DeviceAction{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
@@ -81,11 +88,13 @@ func (n DeviceActions) Update(m *DeviceAction) (err error) {
 	return
 }
 
+// Delete ...
 func (n DeviceActions) Delete(actionId int64) (err error) {
 	err = n.Db.Delete(&DeviceAction{Id: actionId}).Error
 	return
 }
 
+// List ...
 func (n *DeviceActions) List(limit, offset int64, orderBy, sort string) (list []*DeviceAction, total int64, err error) {
 
 	if err = n.Db.Model(DeviceAction{}).Count(&total).Error; err != nil {
@@ -103,6 +112,7 @@ func (n *DeviceActions) List(limit, offset int64, orderBy, sort string) (list []
 	return
 }
 
+// Search ...
 func (n *DeviceActions) Search(query string, limit, offset int) (list []*DeviceAction, total int64, err error) {
 
 	q := n.Db.Model(&DeviceAction{}).

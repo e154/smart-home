@@ -23,17 +23,20 @@ import (
 	"strconv"
 )
 
+// Int64 ...
 type Int64 struct {
 	Int64 int64
 	Valid bool // Valid is true if Int64 is not NULL
 }
 
+// NewInt64 ...
 func NewInt64(value interface{}) (i Int64) {
 	i = Int64{}
 	i.Scan(value)
 	return
 }
 
+// Scan ...
 func (n *Int64) Scan(value interface{}) error {
 	if value == nil {
 		n.Int64, n.Valid = 0, false
@@ -43,6 +46,7 @@ func (n *Int64) Scan(value interface{}) error {
 	return convertAssign(&n.Int64, value)
 }
 
+// Value ...
 func (n Int64) Value() (driver.Value, error) {
 	if !n.Valid {
 		return nil, nil
@@ -50,7 +54,7 @@ func (n Int64) Value() (driver.Value, error) {
 	return n.Int64, nil
 }
 
-
+// String ...
 func (n Int64) String() (value string) {
 	if !n.Valid {
 		value = "null"
@@ -60,10 +64,12 @@ func (n Int64) String() (value string) {
 	return
 }
 
+// MarshalJSON ...
 func (n Int64) MarshalJSON() ([]byte, error) {
 	return []byte(n.String()), nil
 }
 
+// UnmarshalJSON ...
 func (n *Int64) UnmarshalJSON(data []byte) error {
 	i64, err := strconv.ParseInt(string(data), 10, 0)
 	if err != nil {

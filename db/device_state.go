@@ -19,15 +19,17 @@
 package db
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"
-	"fmt"
 )
 
+// DeviceStates ...
 type DeviceStates struct {
 	Db *gorm.DB
 }
 
+// DeviceState ...
 type DeviceState struct {
 	Id          int64 `gorm:"primary_key"`
 	Device      *Device
@@ -38,10 +40,12 @@ type DeviceState struct {
 	UpdatedAt   time.Time
 }
 
+// TableName ...
 func (m *DeviceState) TableName() string {
 	return "device_states"
 }
 
+// Add ...
 func (n DeviceStates) Add(state *DeviceState) (id int64, err error) {
 	if err = n.Db.Create(&state).Error; err != nil {
 		return
@@ -50,12 +54,14 @@ func (n DeviceStates) Add(state *DeviceState) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n DeviceStates) GetById(stateId int64) (state *DeviceState, err error) {
 	state = &DeviceState{Id: stateId}
 	err = n.Db.First(&state).Error
 	return
 }
 
+// Update ...
 func (n DeviceStates) Update(m *DeviceState) (err error) {
 	err = n.Db.Model(&DeviceState{Id: m.Id}).Updates(map[string]interface{}{
 		"system_name": m.SystemName,
@@ -64,11 +70,13 @@ func (n DeviceStates) Update(m *DeviceState) (err error) {
 	return
 }
 
+// Delete ...
 func (n DeviceStates) Delete(stateId int64) (err error) {
 	err = n.Db.Delete(&DeviceState{Id: stateId}).Error
 	return
 }
 
+// List ...
 func (n *DeviceStates) List(limit, offset int64, orderBy, sort string) (list []*DeviceState, total int64, err error) {
 
 	if err = n.Db.Model(DeviceState{}).Count(&total).Error; err != nil {
@@ -86,6 +94,7 @@ func (n *DeviceStates) List(limit, offset int64, orderBy, sort string) (list []*
 	return
 }
 
+// GetByDeviceId ...
 func (n DeviceStates) GetByDeviceId(deviceId int64) (actions []*DeviceState, err error) {
 	actions = make([]*DeviceState, 0)
 	err = n.Db.Model(&DeviceState{}).

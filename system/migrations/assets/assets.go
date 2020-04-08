@@ -30,7 +30,7 @@
 // migrations/20200315_105418_add_map_element_history.sql
 // migrations/20200321_115133_update_map_device.sql
 // migrations/20200326_232201_update_map_device_history.sql
-// migrations/20200404_235500_add_alexa_intents.sql
+// migrations/20200404_235500_add_alexa.sql
 // DO NOT EDIT!
 
 package database
@@ -79,21 +79,32 @@ type bindataFileInfo struct {
 	modTime time.Time
 }
 
+// Name ...
 func (fi bindataFileInfo) Name() string {
 	return fi.name
 }
+
+// Size ...
 func (fi bindataFileInfo) Size() int64 {
 	return fi.size
 }
+
+// Mode ...
 func (fi bindataFileInfo) Mode() os.FileMode {
 	return fi.mode
 }
+
+// ModTime ...
 func (fi bindataFileInfo) ModTime() time.Time {
 	return fi.modTime
 }
+
+// IsDir ...
 func (fi bindataFileInfo) IsDir() bool {
 	return false
 }
+
+// Sys ...
 func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
@@ -698,22 +709,22 @@ func migrations20200326_232201_update_map_device_historySql() (*asset, error) {
 	return a, nil
 }
 
-var _migrations20200404_235500_add_alexa_intentsSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xbc\x55\x4f\x8f\xda\x3e\x10\xbd\xe7\x53\xbc\x1b\xac\x7e\x70\xd9\xeb\x9e\xf8\x11\x6f\x85\x84\x42\x17\x88\xd4\x5b\x64\xe2\x29\x58\x24\x8e\x1b\x3b\x02\xfa\xe9\x2b\xe7\x1f\xff\x12\x16\xb5\x55\x7d\x4a\x26\x33\xcf\x6f\x66\xde\x64\xc6\x63\xfc\x97\xca\x6d\xce\x2d\x21\xd4\xde\x78\x8c\xd5\xc7\x1c\x52\xc1\x50\x6c\x65\xa6\x30\x08\xf5\x00\xd2\x80\x8e\x14\x17\x96\x04\x0e\x3b\x52\xb0\x3b\x69\x50\xc5\x39\x27\x69\xc0\xb5\x4e\x24\x09\x2f\xce\xc9\x61\xd9\x93\x26\xf0\x84\x8e\x3c\x2a\xbf\xc4\xa5\xa3\x89\x8c\xe5\xb6\x30\xe0\x06\xa4\x8a\x14\xc3\x01\x29\xbe\x49\x48\x0c\x46\x18\x08\x69\xaa\xe7\x97\x37\xaf\xc5\x71\x96\x0e\x20\x6f\xe8\x01\x80\x14\xb8\x3c\x1b\xb9\x35\x94\x4b\x9e\x78\x8d\x25\xce\x94\xb1\x39\x97\xca\x76\xb1\xd1\x7b\x3a\x41\xe7\x32\xe5\xf9\x09\xee\x59\x65\x16\xaa\x48\x92\x51\x09\x70\xe1\x1b\x49\x01\x4b\x47\x8b\x4f\xce\x35\x80\x20\x13\xe7\x52\x97\x35\x02\x9e\x03\x68\x83\xeb\x52\x35\xa7\xbf\x98\xe7\x13\x2c\xd6\x08\xc2\xf9\x1c\x3e\x7b\x9f\x84\xf3\x35\xce\xe5\x2d\x21\x33\x15\x25\xbc\x50\xf1\xae\x72\xff\x7f\xf6\x65\x16\xac\x1f\xf3\x71\x70\x6d\x35\xa7\x8b\x60\xb5\x5e\x4e\x5c\x50\x0b\x15\x71\x1b\x75\x70\x7b\x8d\xaa\xd4\x4d\xf4\x7d\x8f\x25\x7b\x67\x4b\x16\x4c\xd9\x0a\xb5\x15\x43\x29\x5e\xb0\x08\x10\x7e\xf5\x27\x6b\x86\xe9\x64\x35\x9d\xf8\xcc\x59\x7c\x36\x67\x67\x4b\x4b\xdc\x90\x31\xae\x11\xa4\xc4\x9f\x12\xbf\x80\xfa\x27\xec\x2b\x2d\xbb\xbb\x4a\x32\x56\xa6\x64\x2c\x4f\x35\x0e\xd2\xee\xca\x57\xfc\xcc\x14\xf5\xeb\xa8\xd0\xe2\x77\x01\x3c\x37\x4c\xd3\x25\x73\x34\xc3\x60\xf6\x11\x32\xcc\x02\x9f\x7d\x83\xec\xcb\xbd\x50\x3f\xca\x4b\x17\x41\x87\xe6\xca\xcc\xbb\xc7\x53\x2a\x4b\xca\x36\x93\xa9\x78\x4a\x77\x3d\xe9\x1d\x80\x46\xb8\xf5\xdc\xdd\x5e\xeb\xa6\x6f\x23\xb7\x6e\x8a\xfb\x63\xbb\x9a\x7d\xc5\x2c\x7a\xed\x4a\xf7\xba\xc1\x3d\x19\x3f\xdf\xeb\x4a\x21\xd1\xf5\x8f\xa9\x57\xaf\x8f\xb8\xd7\x48\xb7\x29\xfc\x4d\x61\xde\xfc\x9f\x3e\x6b\x52\xdb\xa0\x1b\x41\xd7\x71\x7d\xaa\x7c\xa8\xe5\x27\x63\x7b\x65\xec\x74\x76\x16\x72\x53\xa6\x3b\x0d\xd7\x1f\x30\x74\xfe\xa3\x4e\x85\xb9\x1b\x2e\xd7\xa1\x9f\x1d\x54\xb3\x10\xdb\x6d\xe8\x8c\x4f\xed\xc3\x3c\x4b\x12\x12\xd8\xf0\x78\xef\x89\x3c\xd3\x5d\xa3\x82\x98\x9b\x98\x0b\x7a\xbb\xf7\xb8\x52\xe0\x8d\xdb\xe3\xd5\xda\x3a\x7b\xbf\x02\x00\x00\xff\xff\x6d\x10\xe3\xdc\xdc\x07\x00\x00")
+var _migrations20200404_235500_add_alexaSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xb4\x55\xc1\x8e\xda\x30\x10\xbd\xe7\x2b\xe6\x06\xab\xc2\x65\xaf\x7b\xa2\xc4\x5b\x21\xa1\xd0\x05\x22\xf5\x66\x99\x78\x0a\x23\x1c\xc7\x8d\x1d\x01\xfd\xfa\xca\x09\x49\x08\x90\x2e\x5d\x75\x7d\x32\xc3\xcc\xf3\x9b\x99\x37\x99\xf1\x18\xbe\xa4\xb4\xcd\x85\x43\x88\x4d\x30\x1e\xc3\xea\x6d\x0e\xa4\xc1\x62\xe2\x28\xd3\x30\x88\xcd\x00\xc8\x02\x1e\x31\x29\x1c\x4a\x38\xec\x50\x83\xdb\x91\x85\x2a\xce\x3b\x91\x05\x61\x8c\x22\x94\x41\x92\xa3\xc7\x72\x27\x83\x20\x14\x1e\x05\xb7\x7b\x52\xca\x72\xeb\x84\x2b\x2c\x08\x0b\xa8\x8b\x14\x86\x03\xd4\x62\xa3\x50\x0e\x46\x30\x90\x64\xab\xfb\xd3\x4b\xd0\x20\x78\x4b\x07\x22\x18\x06\x00\x00\x24\xe1\xf2\x6c\x68\x6b\x31\x27\xa1\x82\xda\x92\x64\xda\xba\x5c\x90\x76\x5d\x06\x66\x8f\x27\x30\x39\xa5\x22\x3f\x81\xbf\xeb\xcc\x81\x2e\x94\x1a\x95\xa1\xa5\x17\x6f\xd0\x1d\x1e\x1d\xf4\x9e\x6e\xa8\x44\x9b\xe4\x64\xca\x5a\xbc\x1f\xda\xbe\x58\x95\xa4\x3e\xf7\xca\xd5\x9e\x68\xb1\x86\x28\x9e\xcf\x21\x64\xaf\x93\x78\xbe\x86\xb6\x80\x25\x58\xa6\xb9\x12\x85\x4e\x76\x95\xfb\xd7\xd9\xb7\x59\xb4\xee\xe3\xe0\x81\x9a\x7a\x4d\x17\xd1\x6a\xbd\x9c\x78\xf7\x06\x84\x0b\xc7\x3b\x7c\x9e\x79\x95\xa2\xe5\x3f\xf7\xb0\x64\xaf\x6c\xc9\xa2\x29\x5b\xc1\xd9\x0a\x43\x92\x4f\xb0\x88\x20\xfe\x1e\x4e\xd6\x0c\xa6\x93\xd5\x74\x12\x32\x6f\x09\xd9\x9c\xb5\x96\x86\xac\x45\x6b\x29\xd3\x1c\xb5\xfc\x38\xd9\x0b\x90\x4f\x66\x5c\xa9\xd2\xbf\x52\xa9\x83\x52\xb4\x4e\xa4\x06\x0e\xe4\x76\xe5\x4f\xf8\x9d\x69\xbc\xa7\x8e\xc2\xc8\x7f\x0f\x0d\xfc\x28\x4c\x97\xcc\x53\x8b\xa3\xd9\x5b\xcc\x60\x16\x85\xec\x07\xd0\x6d\xa6\x85\xfe\x55\x3e\xb4\x88\x3a\x1a\x2a\x33\xbc\x3f\x50\xa4\x1d\x6a\x57\x4f\x94\x16\x29\x5e\xd4\xbb\x57\xbe\xb5\x04\xab\xb4\x2e\x9e\xf2\x53\xb3\xa1\xad\x9f\xb8\xfe\xa8\x7b\x2d\xec\xb0\xe1\xcf\xdd\xb4\xba\x6d\xbb\xc9\xec\xf1\xde\x55\x1d\x6f\x46\xbb\x57\x6d\x7f\x63\x7a\xc6\xb8\x26\xfc\x3f\x25\xf6\xe8\x57\xa4\x6d\xc1\xa3\xa2\xfc\x98\x1e\xdf\x95\xa2\xd7\x4d\x2b\xc6\xba\x28\x37\x6a\x3c\xff\x01\x43\xef\x3f\xba\xd2\x8d\xc7\xbe\x5c\x42\x61\x76\xd0\xf5\x1a\x6a\x76\x90\x37\x3e\xb4\x85\xf2\x4c\x29\x94\xb0\x11\xc9\x3e\x90\x79\x66\xee\x89\x1e\x12\x61\x13\x21\xf1\xe5\xd6\xe3\xac\xae\x2b\x87\xbe\x55\xd6\xb8\x05\x7f\x02\x00\x00\xff\xff\x5c\xf2\xfa\xf8\x46\x07\x00\x00")
 
-func migrations20200404_235500_add_alexa_intentsSqlBytes() ([]byte, error) {
+func migrations20200404_235500_add_alexaSqlBytes() ([]byte, error) {
 	return bindataRead(
-		_migrations20200404_235500_add_alexa_intentsSql,
-		"migrations/20200404_235500_add_alexa_intents.sql",
+		_migrations20200404_235500_add_alexaSql,
+		"migrations/20200404_235500_add_alexa.sql",
 	)
 }
 
-func migrations20200404_235500_add_alexa_intentsSql() (*asset, error) {
-	bytes, err := migrations20200404_235500_add_alexa_intentsSqlBytes()
+func migrations20200404_235500_add_alexaSql() (*asset, error) {
+	bytes, err := migrations20200404_235500_add_alexaSqlBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20200404_235500_add_alexa_intents.sql", size: 2012, mode: os.FileMode(420), modTime: time.Unix(1586097201, 0)}
+	info := bindataFileInfo{name: "migrations/20200404_235500_add_alexa.sql", size: 1862, mode: os.FileMode(420), modTime: time.Unix(1586354797, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -770,37 +781,37 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"migrations/20170121_004649_nodes.sql": migrations20170121_004649_nodesSql,
-	"migrations/20170121_005244_workflows.sql": migrations20170121_005244_workflowsSql,
-	"migrations/20181109_220911_workflow_add_scenario.sql": migrations20181109_220911_workflow_add_scenarioSql,
-	"migrations/20181113_013141_workflow_elements.sql": migrations20181113_013141_workflow_elementsSql,
-	"migrations/20181114_214137_devices.sql": migrations20181114_214137_devicesSql,
-	"migrations/20181114_225604_device_group.sql": migrations20181114_225604_device_groupSql,
-	"migrations/20181119_092050_add_workers.sql": migrations20181119_092050_add_workersSql,
-	"migrations/20181219_205800_add_images.sql": migrations20181219_205800_add_imagesSql,
-	"migrations/20181219_205810_add_users.sql": migrations20181219_205810_add_usersSql,
-	"migrations/20181223_231535_add_variables.sql": migrations20181223_231535_add_variablesSql,
-	"migrations/20190122_002953_add_map.sql": migrations20190122_002953_add_mapSql,
-	"migrations/20190309_123940_add_logs.sql": migrations20190309_123940_add_logsSql,
-	"migrations/20190610_215124_add_passw_to_node.sql": migrations20190610_215124_add_passw_to_nodeSql,
-	"migrations/20190730_175759_update_node.sql": migrations20190730_175759_update_nodeSql,
-	"migrations/20190730_193837_update_user.sql": migrations20190730_193837_update_userSql,
-	"migrations/20190730_235533_fix_workflow_scenario_ref.sql": migrations20190730_235533_fix_workflow_scenario_refSql,
-	"migrations/20190910_234100_add_map_element_zone_attr.sql": migrations20190910_234100_add_map_element_zone_attrSql,
-	"migrations/20190913_172212_rename_zone_tags.sql": migrations20190913_172212_rename_zone_tagsSql,
+	"migrations/20170121_004649_nodes.sql":                              migrations20170121_004649_nodesSql,
+	"migrations/20170121_005244_workflows.sql":                          migrations20170121_005244_workflowsSql,
+	"migrations/20181109_220911_workflow_add_scenario.sql":              migrations20181109_220911_workflow_add_scenarioSql,
+	"migrations/20181113_013141_workflow_elements.sql":                  migrations20181113_013141_workflow_elementsSql,
+	"migrations/20181114_214137_devices.sql":                            migrations20181114_214137_devicesSql,
+	"migrations/20181114_225604_device_group.sql":                       migrations20181114_225604_device_groupSql,
+	"migrations/20181119_092050_add_workers.sql":                        migrations20181119_092050_add_workersSql,
+	"migrations/20181219_205800_add_images.sql":                         migrations20181219_205800_add_imagesSql,
+	"migrations/20181219_205810_add_users.sql":                          migrations20181219_205810_add_usersSql,
+	"migrations/20181223_231535_add_variables.sql":                      migrations20181223_231535_add_variablesSql,
+	"migrations/20190122_002953_add_map.sql":                            migrations20190122_002953_add_mapSql,
+	"migrations/20190309_123940_add_logs.sql":                           migrations20190309_123940_add_logsSql,
+	"migrations/20190610_215124_add_passw_to_node.sql":                  migrations20190610_215124_add_passw_to_nodeSql,
+	"migrations/20190730_175759_update_node.sql":                        migrations20190730_175759_update_nodeSql,
+	"migrations/20190730_193837_update_user.sql":                        migrations20190730_193837_update_userSql,
+	"migrations/20190730_235533_fix_workflow_scenario_ref.sql":          migrations20190730_235533_fix_workflow_scenario_refSql,
+	"migrations/20190910_234100_add_map_element_zone_attr.sql":          migrations20190910_234100_add_map_element_zone_attrSql,
+	"migrations/20190913_172212_rename_zone_tags.sql":                   migrations20190913_172212_rename_zone_tagsSql,
 	"migrations/20191012_010345_update_device_actions_2_scripts_fk.sql": migrations20191012_010345_update_device_actions_2_scripts_fkSql,
-	"migrations/20191019_150307_fix_constraints.sql": migrations20191019_150307_fix_constraintsSql,
-	"migrations/20191028_235920_add_templates.sql": migrations20191028_235920_add_templatesSql,
-	"migrations/20191105_205903_add_messages.sql": migrations20191105_205903_add_messagesSql,
-	"migrations/20191204_232940_add_flow_subscribe.sql": migrations20191204_232940_add_flow_subscribeSql,
-	"migrations/20200205_000239_update_device_node_constraint.sql": migrations20200205_000239_update_device_node_constraintSql,
-	"migrations/20200209_001958_update_flow_subscriptions.sql": migrations20200209_001958_update_flow_subscriptionsSql,
-	"migrations/20200220_193432_add_zigbee2mqtt.sql": migrations20200220_193432_add_zigbee2mqttSql,
-	"migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql": migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql,
-	"migrations/20200315_105418_add_map_element_history.sql": migrations20200315_105418_add_map_element_historySql,
-	"migrations/20200321_115133_update_map_device.sql": migrations20200321_115133_update_map_deviceSql,
-	"migrations/20200326_232201_update_map_device_history.sql": migrations20200326_232201_update_map_device_historySql,
-	"migrations/20200404_235500_add_alexa_intents.sql": migrations20200404_235500_add_alexa_intentsSql,
+	"migrations/20191019_150307_fix_constraints.sql":                    migrations20191019_150307_fix_constraintsSql,
+	"migrations/20191028_235920_add_templates.sql":                      migrations20191028_235920_add_templatesSql,
+	"migrations/20191105_205903_add_messages.sql":                       migrations20191105_205903_add_messagesSql,
+	"migrations/20191204_232940_add_flow_subscribe.sql":                 migrations20191204_232940_add_flow_subscribeSql,
+	"migrations/20200205_000239_update_device_node_constraint.sql":      migrations20200205_000239_update_device_node_constraintSql,
+	"migrations/20200209_001958_update_flow_subscriptions.sql":          migrations20200209_001958_update_flow_subscriptionsSql,
+	"migrations/20200220_193432_add_zigbee2mqtt.sql":                    migrations20200220_193432_add_zigbee2mqttSql,
+	"migrations/20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql":  migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql,
+	"migrations/20200315_105418_add_map_element_history.sql":            migrations20200315_105418_add_map_element_historySql,
+	"migrations/20200321_115133_update_map_device.sql":                  migrations20200321_115133_update_map_deviceSql,
+	"migrations/20200326_232201_update_map_device_history.sql":          migrations20200326_232201_update_map_device_historySql,
+	"migrations/20200404_235500_add_alexa.sql":                          migrations20200404_235500_add_alexaSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -842,39 +853,40 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
 	"migrations": &bintree{nil, map[string]*bintree{
-		"20170121_004649_nodes.sql": &bintree{migrations20170121_004649_nodesSql, map[string]*bintree{}},
-		"20170121_005244_workflows.sql": &bintree{migrations20170121_005244_workflowsSql, map[string]*bintree{}},
-		"20181109_220911_workflow_add_scenario.sql": &bintree{migrations20181109_220911_workflow_add_scenarioSql, map[string]*bintree{}},
-		"20181113_013141_workflow_elements.sql": &bintree{migrations20181113_013141_workflow_elementsSql, map[string]*bintree{}},
-		"20181114_214137_devices.sql": &bintree{migrations20181114_214137_devicesSql, map[string]*bintree{}},
-		"20181114_225604_device_group.sql": &bintree{migrations20181114_225604_device_groupSql, map[string]*bintree{}},
-		"20181119_092050_add_workers.sql": &bintree{migrations20181119_092050_add_workersSql, map[string]*bintree{}},
-		"20181219_205800_add_images.sql": &bintree{migrations20181219_205800_add_imagesSql, map[string]*bintree{}},
-		"20181219_205810_add_users.sql": &bintree{migrations20181219_205810_add_usersSql, map[string]*bintree{}},
-		"20181223_231535_add_variables.sql": &bintree{migrations20181223_231535_add_variablesSql, map[string]*bintree{}},
-		"20190122_002953_add_map.sql": &bintree{migrations20190122_002953_add_mapSql, map[string]*bintree{}},
-		"20190309_123940_add_logs.sql": &bintree{migrations20190309_123940_add_logsSql, map[string]*bintree{}},
-		"20190610_215124_add_passw_to_node.sql": &bintree{migrations20190610_215124_add_passw_to_nodeSql, map[string]*bintree{}},
-		"20190730_175759_update_node.sql": &bintree{migrations20190730_175759_update_nodeSql, map[string]*bintree{}},
-		"20190730_193837_update_user.sql": &bintree{migrations20190730_193837_update_userSql, map[string]*bintree{}},
-		"20190730_235533_fix_workflow_scenario_ref.sql": &bintree{migrations20190730_235533_fix_workflow_scenario_refSql, map[string]*bintree{}},
-		"20190910_234100_add_map_element_zone_attr.sql": &bintree{migrations20190910_234100_add_map_element_zone_attrSql, map[string]*bintree{}},
-		"20190913_172212_rename_zone_tags.sql": &bintree{migrations20190913_172212_rename_zone_tagsSql, map[string]*bintree{}},
+		"20170121_004649_nodes.sql":                              &bintree{migrations20170121_004649_nodesSql, map[string]*bintree{}},
+		"20170121_005244_workflows.sql":                          &bintree{migrations20170121_005244_workflowsSql, map[string]*bintree{}},
+		"20181109_220911_workflow_add_scenario.sql":              &bintree{migrations20181109_220911_workflow_add_scenarioSql, map[string]*bintree{}},
+		"20181113_013141_workflow_elements.sql":                  &bintree{migrations20181113_013141_workflow_elementsSql, map[string]*bintree{}},
+		"20181114_214137_devices.sql":                            &bintree{migrations20181114_214137_devicesSql, map[string]*bintree{}},
+		"20181114_225604_device_group.sql":                       &bintree{migrations20181114_225604_device_groupSql, map[string]*bintree{}},
+		"20181119_092050_add_workers.sql":                        &bintree{migrations20181119_092050_add_workersSql, map[string]*bintree{}},
+		"20181219_205800_add_images.sql":                         &bintree{migrations20181219_205800_add_imagesSql, map[string]*bintree{}},
+		"20181219_205810_add_users.sql":                          &bintree{migrations20181219_205810_add_usersSql, map[string]*bintree{}},
+		"20181223_231535_add_variables.sql":                      &bintree{migrations20181223_231535_add_variablesSql, map[string]*bintree{}},
+		"20190122_002953_add_map.sql":                            &bintree{migrations20190122_002953_add_mapSql, map[string]*bintree{}},
+		"20190309_123940_add_logs.sql":                           &bintree{migrations20190309_123940_add_logsSql, map[string]*bintree{}},
+		"20190610_215124_add_passw_to_node.sql":                  &bintree{migrations20190610_215124_add_passw_to_nodeSql, map[string]*bintree{}},
+		"20190730_175759_update_node.sql":                        &bintree{migrations20190730_175759_update_nodeSql, map[string]*bintree{}},
+		"20190730_193837_update_user.sql":                        &bintree{migrations20190730_193837_update_userSql, map[string]*bintree{}},
+		"20190730_235533_fix_workflow_scenario_ref.sql":          &bintree{migrations20190730_235533_fix_workflow_scenario_refSql, map[string]*bintree{}},
+		"20190910_234100_add_map_element_zone_attr.sql":          &bintree{migrations20190910_234100_add_map_element_zone_attrSql, map[string]*bintree{}},
+		"20190913_172212_rename_zone_tags.sql":                   &bintree{migrations20190913_172212_rename_zone_tagsSql, map[string]*bintree{}},
 		"20191012_010345_update_device_actions_2_scripts_fk.sql": &bintree{migrations20191012_010345_update_device_actions_2_scripts_fkSql, map[string]*bintree{}},
-		"20191019_150307_fix_constraints.sql": &bintree{migrations20191019_150307_fix_constraintsSql, map[string]*bintree{}},
-		"20191028_235920_add_templates.sql": &bintree{migrations20191028_235920_add_templatesSql, map[string]*bintree{}},
-		"20191105_205903_add_messages.sql": &bintree{migrations20191105_205903_add_messagesSql, map[string]*bintree{}},
-		"20191204_232940_add_flow_subscribe.sql": &bintree{migrations20191204_232940_add_flow_subscribeSql, map[string]*bintree{}},
-		"20200205_000239_update_device_node_constraint.sql": &bintree{migrations20200205_000239_update_device_node_constraintSql, map[string]*bintree{}},
-		"20200209_001958_update_flow_subscriptions.sql": &bintree{migrations20200209_001958_update_flow_subscriptionsSql, map[string]*bintree{}},
-		"20200220_193432_add_zigbee2mqtt.sql": &bintree{migrations20200220_193432_add_zigbee2mqttSql, map[string]*bintree{}},
-		"20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql": &bintree{migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql, map[string]*bintree{}},
-		"20200315_105418_add_map_element_history.sql": &bintree{migrations20200315_105418_add_map_element_historySql, map[string]*bintree{}},
-		"20200321_115133_update_map_device.sql": &bintree{migrations20200321_115133_update_map_deviceSql, map[string]*bintree{}},
-		"20200326_232201_update_map_device_history.sql": &bintree{migrations20200326_232201_update_map_device_historySql, map[string]*bintree{}},
-		"20200404_235500_add_alexa_intents.sql": &bintree{migrations20200404_235500_add_alexa_intentsSql, map[string]*bintree{}},
+		"20191019_150307_fix_constraints.sql":                    &bintree{migrations20191019_150307_fix_constraintsSql, map[string]*bintree{}},
+		"20191028_235920_add_templates.sql":                      &bintree{migrations20191028_235920_add_templatesSql, map[string]*bintree{}},
+		"20191105_205903_add_messages.sql":                       &bintree{migrations20191105_205903_add_messagesSql, map[string]*bintree{}},
+		"20191204_232940_add_flow_subscribe.sql":                 &bintree{migrations20191204_232940_add_flow_subscribeSql, map[string]*bintree{}},
+		"20200205_000239_update_device_node_constraint.sql":      &bintree{migrations20200205_000239_update_device_node_constraintSql, map[string]*bintree{}},
+		"20200209_001958_update_flow_subscriptions.sql":          &bintree{migrations20200209_001958_update_flow_subscriptionsSql, map[string]*bintree{}},
+		"20200220_193432_add_zigbee2mqtt.sql":                    &bintree{migrations20200220_193432_add_zigbee2mqttSql, map[string]*bintree{}},
+		"20200224_145033_add_flow_to_zigbee2mqtt_subscribe.sql":  &bintree{migrations20200224_145033_add_flow_to_zigbee2mqtt_subscribeSql, map[string]*bintree{}},
+		"20200315_105418_add_map_element_history.sql":            &bintree{migrations20200315_105418_add_map_element_historySql, map[string]*bintree{}},
+		"20200321_115133_update_map_device.sql":                  &bintree{migrations20200321_115133_update_map_deviceSql, map[string]*bintree{}},
+		"20200326_232201_update_map_device_history.sql":          &bintree{migrations20200326_232201_update_map_device_historySql, map[string]*bintree{}},
+		"20200404_235500_add_alexa.sql":                          &bintree{migrations20200404_235500_add_alexaSql, map[string]*bintree{}},
 	}},
 }}
 
@@ -924,4 +936,3 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-

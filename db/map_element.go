@@ -26,16 +26,19 @@ import (
 	"time"
 )
 
+// MapElements ...
 type MapElements struct {
 	Db *gorm.DB
 }
 
+// Prototype ...
 type Prototype struct {
 	*MapImage
 	*MapText
 	*MapDevice
 }
 
+// MapElement ...
 type MapElement struct {
 	Id            int64 `gorm:"primary_key"`
 	Name          string
@@ -56,10 +59,12 @@ type MapElement struct {
 	UpdatedAt     time.Time
 }
 
+// TableName ...
 func (d *MapElement) TableName() string {
 	return "map_elements"
 }
 
+// Add ...
 func (n MapElements) Add(v *MapElement) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -68,6 +73,7 @@ func (n MapElements) Add(v *MapElement) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n MapElements) GetById(mapId int64) (v *MapElement, err error) {
 	v = &MapElement{Id: mapId}
 	if err = n.Db.
@@ -79,6 +85,7 @@ func (n MapElements) GetById(mapId int64) (v *MapElement, err error) {
 	return
 }
 
+// GetByName ...
 func (n MapElements) GetByName(name string) (v *MapElement, err error) {
 	v = &MapElement{}
 	if err = n.Db.
@@ -147,6 +154,7 @@ func (n MapElements) gePrototype(v *MapElement) (err error) {
 	return
 }
 
+// Update ...
 func (n MapElements) Update(m *MapElement) (err error) {
 	err = n.Db.Model(&MapElement{Id: m.Id}).Updates(map[string]interface{}{
 		"name":           m.Name,
@@ -163,6 +171,7 @@ func (n MapElements) Update(m *MapElement) (err error) {
 	return
 }
 
+// Sort ...
 func (n MapElements) Sort(m *MapElement) (err error) {
 	err = n.Db.Model(&MapElement{Id: m.Id}).Updates(map[string]interface{}{
 		"weight": m.Weight,
@@ -170,11 +179,13 @@ func (n MapElements) Sort(m *MapElement) (err error) {
 	return
 }
 
+// Delete ...
 func (n MapElements) Delete(mapId int64) (err error) {
 	err = n.Db.Delete(&MapElement{Id: mapId}).Error
 	return
 }
 
+// List ...
 func (n *MapElements) List(limit, offset int64, orderBy, sort string) (list []*MapElement, total int64, err error) {
 
 	if err = n.Db.Model(MapElement{}).Count(&total).Error; err != nil {
@@ -192,6 +203,7 @@ func (n *MapElements) List(limit, offset int64, orderBy, sort string) (list []*M
 	return
 }
 
+// GetActiveElements ...
 func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort string) (list []*MapElement, total int64, err error) {
 
 	list = make([]*MapElement, 0)

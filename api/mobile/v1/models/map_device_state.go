@@ -20,6 +20,7 @@ package models
 
 import "encoding/json"
 
+// MapDeviceState ...
 type MapDeviceState struct {
 	Id            int64        `json:"id"`
 	DeviceState   *DeviceState `json:"device_state"`
@@ -30,6 +31,7 @@ type MapDeviceState struct {
 	Style         string       `json:"style"`
 }
 
+// MarshalJSON ...
 func (n MapDeviceState) MarshalJSON() (b []byte, err error) {
 
 	data := map[string]interface{}{

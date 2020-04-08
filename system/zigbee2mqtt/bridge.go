@@ -36,6 +36,7 @@ const (
 	homeassistantTopic = "homeassistant"
 )
 
+// Bridge ...
 type Bridge struct {
 	metric         *metrics.MetricManager
 	adaptors       *adaptors.Adaptors
@@ -55,6 +56,7 @@ type Bridge struct {
 	networkmap     string
 }
 
+// NewBridge ...
 func NewBridge(mqtt *mqtt.Mqtt,
 	adaptors *adaptors.Adaptors,
 	model *m.Zigbee2mqtt,
@@ -68,6 +70,7 @@ func NewBridge(mqtt *mqtt.Mqtt,
 	}
 }
 
+// Start ...
 func (g *Bridge) Start() {
 
 	if g.isStarted {
@@ -99,6 +102,7 @@ func (g *Bridge) Start() {
 	g.configPermitJoin(g.model.PermitJoin)
 }
 
+// Stop ...
 func (g *Bridge) Stop(ctx context.Context) {
 	if !g.isStarted {
 		return
@@ -235,7 +239,7 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 		if err = g.adaptors.Zigbee2mqttDevice.Add(&model); err != nil {
 			return
 		}
-		g.metric.Update(metrics.Zigbee2MqttAdd{TotalNum: 1,})
+		g.metric.Update(metrics.Zigbee2MqttAdd{TotalNum: 1})
 	}
 
 	g.devices[device.friendlyName] = device
@@ -316,26 +320,33 @@ func (g *Bridge) configReset() {
 	g.mqttClient.Publish(g.topic("/bridge/config/reset"), []byte{})
 }
 
+// ConfigReset ...
 func (g *Bridge) ConfigReset() {
 	g.configReset()
 	time.Sleep(time.Second * 5)
 }
 
 func (g *Bridge) configLogLevel() {}
-func (g *Bridge) DeviceOptions()  {}
 
+// DeviceOptions ...
+func (g *Bridge) DeviceOptions() {}
+
+// Remove ...
 func (g *Bridge) Remove(friendlyName string) {
 	g.mqttClient.Publish(g.topic("/bridge/config/remove"), []byte(friendlyName))
 }
 
+// Ban ...
 func (g *Bridge) Ban(friendlyName string) {
 	g.mqttClient.Publish(g.topic("/bridge/config/force_remove"), []byte(friendlyName))
 }
 
+// Whitelist ...
 func (g *Bridge) Whitelist(friendlyName string) {
 	g.mqttClient.Publish(g.topic("/bridge/config/whitelist"), []byte(friendlyName))
 }
 
+// RenameDevice ...
 func (g *Bridge) RenameDevice(friendlyName, name string) (err error) {
 
 	var device *Device
@@ -350,10 +361,16 @@ func (g *Bridge) RenameDevice(friendlyName, name string) (err error) {
 	return
 }
 
-func (g *Bridge) RenameLast()  {}
-func (g *Bridge) AddGroup()    {}
+// RenameLast ...
+func (g *Bridge) RenameLast() {}
+
+// AddGroup ...
+func (g *Bridge) AddGroup() {}
+
+// RemoveGroup ...
 func (g *Bridge) RemoveGroup() {}
 
+// UpdateNetworkmap ...
 func (g *Bridge) UpdateNetworkmap() {
 	g.networkmapLock.Lock()
 	defer g.networkmapLock.Unlock()
@@ -366,6 +383,7 @@ func (g *Bridge) UpdateNetworkmap() {
 	g.mqttClient.Publish(g.topic("/bridge/networkmap"), []byte("graphviz"))
 }
 
+// Networkmap ...
 func (g *Bridge) Networkmap() string {
 	g.networkmapLock.Lock()
 	defer g.networkmapLock.Unlock()
@@ -376,6 +394,7 @@ func (g *Bridge) topic(s string) string {
 	return fmt.Sprintf("%s%s", g.model.BaseTopic, s)
 }
 
+// GetDeviceTopic ...
 func (g *Bridge) GetDeviceTopic(friendlyName string) string {
 	return g.topic("/" + friendlyName)
 }
@@ -438,6 +457,7 @@ func (g *Bridge) devicePairing(params BridgePairingMeta) {
 	}
 }
 
+// PermitJoin ...
 func (g *Bridge) PermitJoin(permitJoin bool) {
 	g.modelLock.Lock()
 	defer g.modelLock.Unlock()
@@ -449,6 +469,7 @@ func (g *Bridge) PermitJoin(permitJoin bool) {
 	g.configPermitJoin(g.model.PermitJoin)
 }
 
+// UpdateModel ...
 func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 	g.modelLock.Lock()
 	defer g.modelLock.Unlock()
@@ -461,6 +482,7 @@ func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 	g.configPermitJoin(g.model.PermitJoin)
 }
 
+// Info ...
 func (g *Bridge) Info() (info *Zigbee2mqttInfo) {
 
 	g.networkmapLock.Lock()
@@ -488,6 +510,7 @@ func (g *Bridge) Info() (info *Zigbee2mqttInfo) {
 	return
 }
 
+// GetModel ...
 func (g *Bridge) GetModel() (model m.Zigbee2mqtt) {
 	g.modelLock.Lock()
 	defer g.modelLock.Unlock()

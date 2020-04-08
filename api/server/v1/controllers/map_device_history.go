@@ -28,10 +28,12 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
+// ControllerMapDeviceHistory ...
 type ControllerMapDeviceHistory struct {
 	*ControllerCommon
 }
 
+// NewControllerMapDeviceHistory ...
 func NewControllerMapDeviceHistory(common *ControllerCommon) *ControllerMapDeviceHistory {
 	return &ControllerMapDeviceHistory{ControllerCommon: common}
 }

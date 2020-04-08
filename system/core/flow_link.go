@@ -19,23 +19,27 @@
 package core
 
 //ActionPrototypes
-type FlowLink struct {}
+type FlowLink struct{}
 
+// After ...
 func (m *FlowLink) After(flow *Flow) (err error) {
 	//log.Infof("FlowLink.after: %v", message)
 	return
 }
 
+// Run ...
 func (m *FlowLink) Run(flow *Flow) (err error) {
 	//log.Infof("FlowLink.run: %v", message)
 	return
 }
 
+// Before ...
 func (m *FlowLink) Before(flow *Flow) (err error) {
 	//log.Infof("FlowLink.before: %v", message)
 	return
 }
 
+// Type ...
 func (m *FlowLink) Type() string {
-	return  "FlowLink"
+	return "FlowLink"
 }

@@ -26,10 +26,12 @@ import (
 	"strconv"
 )
 
+// ControllerAlexa ...
 type ControllerAlexa struct {
 	*ControllerCommon
 }
 
+// NewControllerAlexa ...
 func NewControllerAlexa(common *ControllerCommon) *ControllerAlexa {
 	return &ControllerAlexa{ControllerCommon: common}
 }
@@ -42,7 +44,7 @@ func NewControllerAlexa(common *ControllerCommon) *ControllerAlexa {
 //   name: alexa
 //   required: true
 //   schema:
-//     $ref: '#/definitions/NewAlexaApplication'
+//     $ref: '#/definitions/NewAlexaSkill'
 //     type: object
 // summary: add new alexa
 // description:
@@ -54,7 +56,7 @@ func NewControllerAlexa(common *ControllerCommon) *ControllerAlexa {
 //   "200":
 //     description: OK
 //     schema:
-//       $ref: '#/definitions/AlexaApplication'
+//       $ref: '#/definitions/AlexaSkill'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -65,17 +67,17 @@ func NewControllerAlexa(common *ControllerCommon) *ControllerAlexa {
 //	   $ref: '#/responses/Error'
 func (c ControllerAlexa) Add(ctx *gin.Context) {
 
-	params := &models.NewAlexaApplication{}
+	params := &models.NewAlexaSkill{}
 	if err := ctx.ShouldBindJSON(params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
 		return
 	}
 
-	alexa := &m.AlexaApplication{}
+	alexa := &m.AlexaSkill{}
 	common.Copy(&alexa, &params, common.JsonEngine)
 
-	alexa, errs, err := c.endpoint.AlexaApplication.Add(alexa)
+	alexa, errs, err := c.endpoint.AlexaSkill.Add(alexa)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -87,7 +89,7 @@ func (c ControllerAlexa) Add(ctx *gin.Context) {
 		return
 	}
 
-	result := &models.AlexaApplication{}
+	result := &models.AlexaSkill{}
 	if err = common.Copy(&result, &alexa, common.JsonEngine); err != nil {
 		return
 	}
@@ -114,7 +116,7 @@ func (c ControllerAlexa) Add(ctx *gin.Context) {
 //   "200":
 //     description: OK
 //     schema:
-//       $ref: '#/definitions/AlexaApplication'
+//       $ref: '#/definitions/AlexaSkill'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -135,7 +137,7 @@ func (c ControllerAlexa) GetById(ctx *gin.Context) {
 		return
 	}
 
-	alexa, err := c.endpoint.AlexaApplication.GetById(int64(aid))
+	alexa, err := c.endpoint.AlexaSkill.GetById(int64(aid))
 	if err != nil {
 		code := 500
 		if err.Error() == "record not found" {
@@ -145,7 +147,7 @@ func (c ControllerAlexa) GetById(ctx *gin.Context) {
 		return
 	}
 
-	result := &models.AlexaApplication{}
+	result := &models.AlexaSkill{}
 	common.Copy(&result, &alexa, common.JsonEngine)
 
 	resp := NewSuccess()
@@ -165,7 +167,7 @@ func (c ControllerAlexa) GetById(ctx *gin.Context) {
 //   name: alexa
 //   required: true
 //   schema:
-//     $ref: '#/definitions/UpdateAlexaApplication'
+//     $ref: '#/definitions/UpdateAlexaSkill'
 //     type: object
 // summary: update alexa by id
 // description:
@@ -177,7 +179,7 @@ func (c ControllerAlexa) GetById(ctx *gin.Context) {
 //   "200":
 //     description: OK
 //     schema:
-//       $ref: '#/definitions/AlexaApplication'
+//       $ref: '#/definitions/AlexaSkill'
 //   "400":
 //	   $ref: '#/responses/Error'
 //   "401":
@@ -197,7 +199,7 @@ func (c ControllerAlexa) Update(ctx *gin.Context) {
 		return
 	}
 
-	params := &models.UpdateAlexaApplication{}
+	params := &models.UpdateAlexaSkill{}
 	if err := ctx.ShouldBindJSON(&params); err != nil {
 		log.Error(err.Error())
 		NewError(400, err).Send(ctx)
@@ -206,10 +208,10 @@ func (c ControllerAlexa) Update(ctx *gin.Context) {
 
 	params.Id = int64(aid)
 
-	alexa := &m.AlexaApplication{}
+	alexa := &m.AlexaSkill{}
 	common.Copy(&alexa, &params, common.JsonEngine)
 
-	alexa, errs, err := c.endpoint.AlexaApplication.Update(alexa)
+	alexa, errs, err := c.endpoint.AlexaSkill.Update(alexa)
 	if len(errs) > 0 {
 		err400 := NewError(400)
 		err400.ValidationToErrors(errs).Send(ctx)
@@ -221,7 +223,7 @@ func (c ControllerAlexa) Update(ctx *gin.Context) {
 		return
 	}
 
-	result := &models.AlexaApplication{}
+	result := &models.AlexaSkill{}
 	common.Copy(&result, &alexa, common.JsonEngine)
 
 	resp := NewSuccess()
@@ -261,7 +263,7 @@ func (c ControllerAlexa) Update(ctx *gin.Context) {
 //   type: string
 // responses:
 //   "200":
-//	   $ref: '#/responses/AlexaApplicationList'
+//	   $ref: '#/responses/AlexaSkillList'
 //   "401":
 //     description: "Unauthorized"
 //   "403":
@@ -271,13 +273,13 @@ func (c ControllerAlexa) Update(ctx *gin.Context) {
 func (c ControllerAlexa) GetList(ctx *gin.Context) {
 
 	_, sortBy, order, limit, offset := c.list(ctx)
-	items, total, err := c.endpoint.AlexaApplication.GetList(int64(limit), int64(offset), order, sortBy)
+	items, total, err := c.endpoint.AlexaSkill.GetList(int64(limit), int64(offset), order, sortBy)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
 	}
 
-	result := make([]*models.AlexaApplicationShort, 0)
+	result := make([]*models.AlexaSkillShort, 0)
 	common.Copy(&result, &items)
 
 	resp := NewSuccess()
@@ -322,7 +324,7 @@ func (c ControllerAlexa) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.endpoint.AlexaApplication.Delete(int64(aid)); err != nil {
+	if err := c.endpoint.AlexaSkill.Delete(int64(aid)); err != nil {
 		code := 500
 		if err.Error() == "record not found" {
 			code = 404

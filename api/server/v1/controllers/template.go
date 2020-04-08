@@ -25,10 +25,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ControllerTemplate ...
 type ControllerTemplate struct {
 	*ControllerCommon
 }
 
+// NewControllerTemplate ...
 func NewControllerTemplate(common *ControllerCommon) *ControllerTemplate {
 	return &ControllerTemplate{ControllerCommon: common}
 }
@@ -344,7 +346,6 @@ func (c ControllerTemplate) Search(ctx *gin.Context) {
 	resp.Item("templates", result)
 	resp.Send(ctx)
 }
-
 
 // swagger:operation POST /templates/preview templatePreview
 // ---

@@ -26,16 +26,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// WorkflowEndpoint ...
 type WorkflowEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewWorkflowEndpoint ...
 func NewWorkflowEndpoint(common *CommonEndpoint) *WorkflowEndpoint {
 	return &WorkflowEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (n *WorkflowEndpoint) Add(params *m.Workflow) (result *m.Workflow, errs []*validation.Error, err error) {
 
 	// validation
@@ -62,6 +65,7 @@ func (n *WorkflowEndpoint) Add(params *m.Workflow) (result *m.Workflow, errs []*
 	return
 }
 
+// GetById ...
 func (n *WorkflowEndpoint) GetById(workflowId int64) (result *m.Workflow, err error) {
 
 	result, err = n.adaptors.Workflow.GetById(workflowId)
@@ -69,6 +73,7 @@ func (n *WorkflowEndpoint) GetById(workflowId int64) (result *m.Workflow, err er
 	return
 }
 
+// Update ...
 func (n *WorkflowEndpoint) Update(params *m.Workflow,
 ) (result *m.Workflow, errs []*validation.Error, err error) {
 
@@ -105,6 +110,7 @@ func (n *WorkflowEndpoint) Update(params *m.Workflow,
 	return
 }
 
+// GetList ...
 func (n *WorkflowEndpoint) GetList(limit, offset int64, order, sortBy string, onlyEnabled bool) (result []*m.Workflow, total int64, err error) {
 
 	result, total, err = n.adaptors.Workflow.List(limit, offset, order, sortBy, onlyEnabled)
@@ -112,6 +118,7 @@ func (n *WorkflowEndpoint) GetList(limit, offset int64, order, sortBy string, on
 	return
 }
 
+// Delete ...
 func (n *WorkflowEndpoint) Delete(workflowId int64) (err error) {
 
 	if workflowId == 0 {
@@ -138,6 +145,7 @@ func (n *WorkflowEndpoint) Delete(workflowId int64) (err error) {
 	return
 }
 
+// Search ...
 func (n *WorkflowEndpoint) Search(query string, limit, offset int) (result []*m.Workflow, total int64, err error) {
 
 	result, total, err = n.adaptors.Workflow.Search(query, limit, offset)
@@ -145,6 +153,7 @@ func (n *WorkflowEndpoint) Search(query string, limit, offset int) (result []*m.
 	return
 }
 
+// UpdateScenario ...
 func (n *WorkflowEndpoint) UpdateScenario(workflowId int64, workflowScenarioId int64) (err error) {
 
 	var workflow *m.Workflow
@@ -162,6 +171,7 @@ func (n *WorkflowEndpoint) UpdateScenario(workflowId int64, workflowScenarioId i
 	return
 }
 
+// AddScript ...
 func (n WorkflowEndpoint) AddScript(workflow *m.Workflow, script *m.Script) (err error) {
 	if err = n.adaptors.Workflow.AddScript(workflow, script); err != nil {
 		return

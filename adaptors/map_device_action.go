@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MapDeviceAction ...
 type MapDeviceAction struct {
 	table *db.MapDeviceActions
 	db    *gorm.DB
 }
 
+// GetMapDeviceActionAdaptor ...
 func GetMapDeviceActionAdaptor(d *gorm.DB) *MapDeviceAction {
 	return &MapDeviceAction{
 		table: &db.MapDeviceActions{Db: d},
@@ -36,6 +38,7 @@ func GetMapDeviceActionAdaptor(d *gorm.DB) *MapDeviceAction {
 	}
 }
 
+// Add ...
 func (n *MapDeviceAction) Add(ver *m.MapDeviceAction) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
@@ -46,6 +49,7 @@ func (n *MapDeviceAction) Add(ver *m.MapDeviceAction) (id int64, err error) {
 	return
 }
 
+// AddMultiple ...
 func (n *MapDeviceAction) AddMultiple(items []*m.MapDeviceAction) (err error) {
 
 	for _, ver := range items {

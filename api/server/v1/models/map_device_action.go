@@ -20,6 +20,7 @@ package models
 
 import "time"
 
+// MapDeviceAction ...
 type MapDeviceAction struct {
 	Id             int64         `json:"id"`
 	DeviceAction   *DeviceAction `json:"device_action"`
@@ -31,5 +32,3 @@ type MapDeviceAction struct {
 	CreatedAt      time.Time     `json:"created_at"`
 	UpdatedAt      time.Time     `json:"updated_at"`
 }
-
-

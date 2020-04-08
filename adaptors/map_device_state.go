@@ -19,16 +19,18 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
+// MapDeviceState ...
 type MapDeviceState struct {
 	table *db.MapDeviceStates
 	db    *gorm.DB
 }
 
+// GetMapDeviceStateAdaptor ...
 func GetMapDeviceStateAdaptor(d *gorm.DB) *MapDeviceState {
 	return &MapDeviceState{
 		table: &db.MapDeviceStates{Db: d},
@@ -36,6 +38,7 @@ func GetMapDeviceStateAdaptor(d *gorm.DB) *MapDeviceState {
 	}
 }
 
+// Add ...
 func (n *MapDeviceState) Add(ver *m.MapDeviceState) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
@@ -46,6 +49,7 @@ func (n *MapDeviceState) Add(ver *m.MapDeviceState) (id int64, err error) {
 	return
 }
 
+// AddMultiple ...
 func (n *MapDeviceState) AddMultiple(items []*m.MapDeviceState) (err error) {
 
 	for _, ver := range items {

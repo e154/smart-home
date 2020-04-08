@@ -36,6 +36,7 @@ var (
 	log = common.MustGetLogger("endpoint")
 )
 
+// Endpoint ...
 type Endpoint struct {
 	Auth             *AuthEndpoint
 	Device           *DeviceEndpoint
@@ -62,9 +63,10 @@ type Endpoint struct {
 	Version          *VersionEndpoint
 	Zigbee2mqtt      *Zigbee2mqttEndpoint
 	MapDeviceHistory *MapDeviceHistoryEndpoint
-	AlexaApplication *AlexaApplicationEndpoint
+	AlexaSkill       *AlexaSkillEndpoint
 }
 
+// NewEndpoint ...
 func NewEndpoint(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	scriptService *scripts.ScriptService,
@@ -102,6 +104,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Version:          NewVersionEndpoint(common),
 		Zigbee2mqtt:      NewZigbee2mqttEndpoint(common),
 		MapDeviceHistory: NewMapDeviceHistoryEndpoint(common),
-		AlexaApplication: NewAlexaApplicationEndpoint(common),
+		AlexaSkill:       NewAlexaSkillEndpoint(common),
 	}
 }

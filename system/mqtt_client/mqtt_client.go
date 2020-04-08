@@ -32,6 +32,7 @@ var (
 	log = common.MustGetLogger("mqtt_client")
 )
 
+// Client ...
 type Client struct {
 	cfg *Config
 	sync.Mutex
@@ -39,6 +40,7 @@ type Client struct {
 	subscribes map[string]Subscribe
 }
 
+// NewClient ...
 func NewClient(cfg *Config) (client *Client, err error) {
 
 	log.Infof("new queue client(%s) uri(%s)", cfg.ClientID, cfg.Broker)
@@ -71,6 +73,7 @@ func NewClient(cfg *Config) (client *Client, err error) {
 	return
 }
 
+// Connect ...
 func (c *Client) Connect() (err error) {
 
 	c.Lock()
@@ -86,6 +89,7 @@ func (c *Client) Connect() (err error) {
 	return
 }
 
+// Disconnect ...
 func (c *Client) Disconnect() {
 
 	c.Lock()
@@ -103,6 +107,7 @@ func (c *Client) Disconnect() {
 	c.Unlock()
 }
 
+// Subscribe ...
 func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) (err error) {
 
 	if topic == "" {
@@ -129,6 +134,7 @@ func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler)
 	return
 }
 
+// Unsubscribe ...
 func (c *Client) Unsubscribe(topic string) (err error) {
 
 	c.Lock()
@@ -141,6 +147,7 @@ func (c *Client) Unsubscribe(topic string) (err error) {
 	return
 }
 
+// UnsubscribeAll ...
 func (c *Client) UnsubscribeAll() {
 	c.Lock()
 	defer c.Unlock()
@@ -153,6 +160,7 @@ func (c *Client) UnsubscribeAll() {
 	}
 }
 
+// Publish ...
 func (c *Client) Publish(topic string, payload interface{}) (err error) {
 	c.Lock()
 	defer c.Unlock()
@@ -163,6 +171,7 @@ func (c *Client) Publish(topic string, payload interface{}) (err error) {
 	return
 }
 
+// IsConnected ...
 func (c *Client) IsConnected() bool {
 	c.Lock()
 	defer c.Unlock()
@@ -198,6 +207,7 @@ func (c *Client) onConnect(client MQTT.Client) {
 	}
 }
 
+// ClientIdGen ...
 func ClientIdGen(args ...interface{}) string {
 	var b strings.Builder
 	b.WriteString("smarthome")

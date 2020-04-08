@@ -22,11 +22,13 @@ import (
 	"sync"
 )
 
+// Storage ...
 type Storage struct {
 	mx   *sync.Mutex
 	pull map[string]interface{}
 }
 
+// NewStorage ...
 func NewStorage() Storage {
 	return Storage{
 		mx:   &sync.Mutex{},
@@ -34,6 +36,7 @@ func NewStorage() Storage {
 	}
 }
 
+// GetVar ...
 func (s *Storage) GetVar(key string) (value interface{}) {
 
 	s.mx.Lock()
@@ -46,6 +49,7 @@ func (s *Storage) GetVar(key string) (value interface{}) {
 	return
 }
 
+// SetVar ...
 func (s *Storage) SetVar(key string, value interface{}) {
 
 	s.mx.Lock()

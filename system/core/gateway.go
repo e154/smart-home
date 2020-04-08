@@ -21,21 +21,25 @@ package core
 //ActionPrototypes
 type Gateway struct{}
 
+// After ...
 func (m *Gateway) After(flow *Flow) (err error) {
 	//log.Infof("Gateway.after: %v", message)
 	return
 }
 
+// Run ...
 func (m *Gateway) Run(flow *Flow) (err error) {
 	//log.Infof("Gateway.run: %v", message)
 	return
 }
 
+// Before ...
 func (m *Gateway) Before(flow *Flow) (err error) {
 	//log.Infof("Gateway.before: %v", message)
 	return
 }
 
+// Type ...
 func (m *Gateway) Type() string {
 	return "Gateway"
 }

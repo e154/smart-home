@@ -23,14 +23,17 @@ import (
 )
 
 const (
+	// DevTypeZigbee2mqtt ...
 	DevTypeZigbee2mqtt = DeviceType("zigbee2mqtt")
 )
 
+// DevZigbee2mqttConfig ...
 type DevZigbee2mqttConfig struct {
 	Validation
 	Zigbee2mqttDeviceId string `json:"zigbee2mqtt_device_id"`
 }
 
+// DevZigbee2mqttRequest ...
 type DevZigbee2mqttRequest struct {
 	Path    string `json:"path"`
 	Payload []byte `json:"payload"`
@@ -55,6 +58,7 @@ func NewZigbee2mqttBind(path string, payload string) Zigbee2mqttBind {
 	}
 }
 
+// Zigbee2mqttBind ...
 type Zigbee2mqttBind struct {
 	Path    string
 	Payload []byte

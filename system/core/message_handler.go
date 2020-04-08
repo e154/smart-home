@@ -21,21 +21,25 @@ package core
 //ActionPrototypes
 type MessageHandler struct{}
 
+// After ...
 func (m *MessageHandler) After(flow *Flow) (err error) {
 	//log.Infof("MessageHandler.after: %v", message)
 	return
 }
 
+// Run ...
 func (m *MessageHandler) Run(flow *Flow) (err error) {
 	//log.Infof("MessageHandler.run: %v", message)
 	return
 }
 
+// Before ...
 func (m *MessageHandler) Before(flow *Flow) (err error) {
 	//log.Infof("MessageHandler.before: %v", message)
 	return
 }
 
+// Type ...
 func (m *MessageHandler) Type() string {
 	return "MessageHandler"
 }

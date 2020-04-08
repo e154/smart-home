@@ -24,10 +24,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ControllerVersion ...
 type ControllerVersion struct {
 	*ControllerCommon
 }
 
+// NewControllerVersion ...
 func NewControllerVersion(common *ControllerCommon) *ControllerVersion {
 	return &ControllerVersion{ControllerCommon: common}
 }

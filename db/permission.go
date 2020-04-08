@@ -22,10 +22,12 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Permissions ...
 type Permissions struct {
 	Db *gorm.DB
 }
 
+// Permission ...
 type Permission struct {
 	Id          int64 `gorm:"primary_key"`
 	Role        *Role `gorm:"foreignkey:RoleName"`
@@ -34,10 +36,12 @@ type Permission struct {
 	LevelName   string
 }
 
+// TableName ...
 func (m *Permission) TableName() string {
 	return "permissions"
 }
 
+// Add ...
 func (n Permissions) Add(permission *Permission) (id int64, err error) {
 	if err = n.Db.Create(&permission).Error; err != nil {
 		return
@@ -46,6 +50,7 @@ func (n Permissions) Add(permission *Permission) (id int64, err error) {
 	return
 }
 
+// Delete ...
 func (n Permissions) Delete(packageName string, levelName []string) (err error) {
 
 	err = n.Db.
@@ -56,6 +61,7 @@ func (n Permissions) Delete(packageName string, levelName []string) (err error) 
 	return
 }
 
+// GetAllPermissions ...
 func (n Permissions) GetAllPermissions(name string) (permissions []*Permission, err error) {
 
 	permissions = make([]*Permission, 0)

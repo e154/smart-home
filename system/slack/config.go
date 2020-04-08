@@ -18,11 +18,13 @@
 
 package slack
 
+// SlackConfig ...
 type SlackConfig struct {
 	Token    string
 	UserName string
 }
 
+// NewSlackConfig ...
 func NewSlackConfig(slackToken, userName string) *SlackConfig {
 	return &SlackConfig{
 		Token:    slackToken,

@@ -24,11 +24,13 @@ import (
 	"sync"
 )
 
+// MapElement ...
 type MapElement struct {
 	Total    int64                      `json:"total"`
 	Elements map[string]MapElementState `json:"devices"`
 }
 
+// MapElementManager ...
 type MapElementManager struct {
 	publisher  IPublisher
 	total      metrics.Counter
@@ -36,6 +38,7 @@ type MapElementManager struct {
 	elements   map[string]MapElementState
 }
 
+// NewMapElementManager ...
 func NewMapElementManager(publisher IPublisher) *MapElementManager {
 	return &MapElementManager{
 		total:     metrics.NewCounter(),
@@ -139,6 +142,7 @@ func (d *MapElementManager) broadcast(cursor interface{}) {
 	go d.publisher.Broadcast(cursor)
 }
 
+// Snapshot ...
 func (d *MapElementManager) Snapshot() MapElement {
 	elements := make(map[string]MapElementState)
 
@@ -160,14 +164,17 @@ func (d *MapElementManager) key(deviceId int64, elementName string) string {
 	return fmt.Sprintf("%d_%s", deviceId, elementName)
 }
 
+// MapElementAdd ...
 type MapElementAdd struct {
 	Num int64
 }
 
+// MapElementDelete ...
 type MapElementDelete struct {
 	Num int64
 }
 
+// MapElementState ...
 type MapElementState struct {
 	DeviceId     int64       `json:"device_id"`
 	ElementName  string      `json:"element_name"`
@@ -175,12 +182,14 @@ type MapElementState struct {
 	StateOptions interface{} `json:"state_options"`
 }
 
+// MapElementSetState ...
 type MapElementSetState struct {
 	DeviceId    int64  `json:"device_id"`
 	ElementName string `json:"element_name"`
 	StateId     int64  `json:"state_id"`
 }
 
+// MapElementSetOption ...
 type MapElementSetOption struct {
 	DeviceId     int64       `json:"device_id"`
 	ElementName  string      `json:"element_name"`
@@ -188,6 +197,7 @@ type MapElementSetOption struct {
 	StateOptions interface{} `json:"state_options"`
 }
 
+// MapElementCursor ...
 type MapElementCursor struct {
 	DeviceId    int64
 	ElementName string

@@ -35,11 +35,15 @@ func Strtomd5(s string) string {
 }
 
 const (
+	// Alphanum ...
 	Alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	// Alpha ...
 	Alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	// Number ...
 	Number = "0123456789"
 )
 
+// RandStr ...
 func RandStr(strSize int, dictionary string) string {
 
 	var bytes = make([]byte, strSize)
@@ -50,11 +54,13 @@ func RandStr(strSize int, dictionary string) string {
 	return string(bytes)
 }
 
+// RandInt ...
 func RandInt(min int, max int) int {
 	rand.Seed(time.Now().UnixNano())
 	return min + rand.Intn(max-min)
 }
 
+// RandomString ...
 func RandomString(l int) string {
 	bytes := make([]byte, l)
 	for i := 0; i < l; i++ {

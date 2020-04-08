@@ -19,22 +19,25 @@
 package endpoint
 
 import (
+	"errors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
-	"github.com/e154/smart-home/common"
-	"errors"
 )
 
+// MapLayerEndpoint ...
 type MapLayerEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewMapLayerEndpoint ...
 func NewMapLayerEndpoint(common *CommonEndpoint) *MapLayerEndpoint {
 	return &MapLayerEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (n *MapLayerEndpoint) Add(params *m.MapLayer) (result *m.MapLayer, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
@@ -52,6 +55,7 @@ func (n *MapLayerEndpoint) Add(params *m.MapLayer) (result *m.MapLayer, errs []*
 	return
 }
 
+// GetById ...
 func (n *MapLayerEndpoint) GetById(mId int64) (result *m.MapLayer, err error) {
 
 	result, err = n.adaptors.MapLayer.GetById(mId)
@@ -59,6 +63,7 @@ func (n *MapLayerEndpoint) GetById(mId int64) (result *m.MapLayer, err error) {
 	return
 }
 
+// Update ...
 func (n *MapLayerEndpoint) Update(params *m.MapLayer) (result *m.MapLayer, errs []*validation.Error, err error) {
 
 	var m *m.MapLayer
@@ -83,6 +88,7 @@ func (n *MapLayerEndpoint) Update(params *m.MapLayer) (result *m.MapLayer, errs 
 	return
 }
 
+// Sort ...
 func (n *MapLayerEndpoint) Sort(params []*m.SortMapLayer) (err error) {
 
 	for _, s := range params {
@@ -95,6 +101,7 @@ func (n *MapLayerEndpoint) Sort(params []*m.SortMapLayer) (err error) {
 	return
 }
 
+// Delete ...
 func (n *MapLayerEndpoint) Delete(mId int64) (err error) {
 
 	if mId == 0 {
@@ -111,6 +118,7 @@ func (n *MapLayerEndpoint) Delete(mId int64) (err error) {
 	return
 }
 
+// GetList ...
 func (n *MapLayerEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.MapLayer, total int64, err error) {
 
 	result, total, err = n.adaptors.MapLayer.List(limit, offset, order, sortBy)

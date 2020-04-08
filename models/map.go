@@ -19,16 +19,18 @@
 package models
 
 import (
-	"time"
 	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
+// MapOptions ...
 type MapOptions struct {
 	Zoom              float64 `json:"zoom"`
 	ElementStateText  bool    `json:"element_state_text"`
 	ElementOptionText bool    `json:"element_option_text"`
 }
 
+// Map ...
 type Map struct {
 	Id          int64       `json:"id"`
 	Name        string      `json:"name" valid:"MaxSize(254);Required"`
@@ -39,6 +41,7 @@ type Map struct {
 	UpdatedAt   time.Time   `json:"updated_at"`
 }
 
+// Valid ...
 func (m *Map) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

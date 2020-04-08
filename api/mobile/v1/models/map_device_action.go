@@ -20,6 +20,7 @@ package models
 
 import "encoding/json"
 
+// MapDeviceAction ...
 type MapDeviceAction struct {
 	Id             int64         `json:"id"`
 	DeviceAction   *DeviceAction `json:"device_action"`
@@ -30,6 +31,7 @@ type MapDeviceAction struct {
 	Type           string        `json:"type"`
 }
 
+// MarshalJSON ...
 func (n MapDeviceAction) MarshalJSON() (b []byte, err error) {
 
 	data := map[string]interface{}{

@@ -20,11 +20,12 @@ package models
 
 import (
 	"encoding/json"
-	"time"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
+// Connection ...
 type Connection struct {
 	Uuid          uuid.UUID       `json:"uuid"`
 	Name          string          `json:"name" valid:"MaxSize(254)"`
@@ -40,6 +41,7 @@ type Connection struct {
 	UpdatedAt     time.Time       `json:"updated_at"`
 }
 
+// Valid ...
 func (d *Connection) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

@@ -36,6 +36,7 @@ var (
 	log = common.MustGetLogger("server")
 )
 
+// MobileServer ...
 type MobileServer struct {
 	Config        *MobileServerConfig
 	ControllersV1 *controllers.MobileControllersV1
@@ -47,6 +48,7 @@ type MobileServer struct {
 	gateClient    *gate_client.GateClient
 }
 
+// Start ...
 func (s *MobileServer) Start() {
 
 	s.server = &http.Server{
@@ -68,6 +70,7 @@ func (s *MobileServer) Start() {
 	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
 }
 
+// Shutdown ...
 func (s *MobileServer) Shutdown() {
 	log.Info("Shutdown")
 
@@ -79,6 +82,7 @@ func (s *MobileServer) Shutdown() {
 	log.Info("MobileServer exiting")
 }
 
+// NewMobileServer ...
 func NewMobileServer(cfg *MobileServerConfig,
 	ctrls *controllers.MobileControllersV1,
 	graceful *graceful_service.GracefulService,

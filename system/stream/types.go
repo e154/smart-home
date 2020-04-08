@@ -19,18 +19,26 @@
 package stream
 
 const (
-	Request       = "request"
-	Response      = "response"
+	// Request ...
+	Request = "request"
+	// Response ...
+	Response = "response"
+	// StatusSuccess ...
 	StatusSuccess = "success"
-	StatusError   = "error"
-	Notify        = "notify"
-	Broadcast     = "broadcast"
+	// StatusError ...
+	StatusError = "error"
+	// Notify ...
+	Notify = "notify"
+	// Broadcast ...
+	Broadcast = "broadcast"
 )
 
+// BroadcastClient ...
 type BroadcastClient interface {
 	Broadcast(message []byte)
 }
 
+// IStreamClient ...
 type IStreamClient interface {
 	Write(payload []byte) error
 	Notify(t, b string)

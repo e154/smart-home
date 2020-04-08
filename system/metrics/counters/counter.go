@@ -22,15 +22,18 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+// CounterCollector ...
 type CounterCollector struct {
 	CounterDesc *prometheus.Desc
-	value float64
+	value       float64
 }
 
+// Describe ...
 func (c *CounterCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.CounterDesc
 }
 
+// Collect ...
 func (c *CounterCollector) Collect(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(
 		c.CounterDesc,
@@ -39,7 +42,7 @@ func (c *CounterCollector) Collect(ch chan<- prometheus.Metric) {
 	)
 }
 
+// Set ...
 func (c *CounterCollector) Set(val float64) {
 	c.value = val
 }
-

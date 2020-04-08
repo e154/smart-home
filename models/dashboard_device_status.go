@@ -18,6 +18,7 @@
 
 package models
 
+// DashboardDeviceStatus ...
 type DashboardDeviceStatus struct {
 	Id          int64  `json:"id"`
 	Description string `json:"description"`

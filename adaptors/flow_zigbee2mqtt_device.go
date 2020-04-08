@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// FlowZigbee2mqttDevice ...
 type FlowZigbee2mqttDevice struct {
 	db    *gorm.DB
 	table *db.FlowZigbee2mqttDevices
 }
 
+// GetFlowZigbee2mqttDeviceAdaptor ...
 func GetFlowZigbee2mqttDeviceAdaptor(Db *gorm.DB) *FlowZigbee2mqttDevice {
 	return &FlowZigbee2mqttDevice{
 		db:    Db,
@@ -36,11 +38,13 @@ func GetFlowZigbee2mqttDeviceAdaptor(Db *gorm.DB) *FlowZigbee2mqttDevice {
 	}
 }
 
+// Add ...
 func (f *FlowZigbee2mqttDevice) Add(sub *m.FlowZigbee2mqttDevice) (err error) {
 	err = f.table.Add(f.toDb(sub))
 	return
 }
 
+// Remove ...
 func (f *FlowZigbee2mqttDevice) Remove(flowId int64, ids []string) (err error) {
 	err = f.table.Delete(flowId, ids)
 	return

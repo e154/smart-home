@@ -18,6 +18,7 @@
 
 package models
 
+// DevModBusConfig ...
 type DevModBusConfig struct {
 	SlaveId  int    `json:"slave_id" mapstructure:"slave_id"`   // 1-32
 	Baud     int    `json:"baud"`                               // 9600, 19200, ...
@@ -27,6 +28,7 @@ type DevModBusConfig struct {
 	Timeout  int    `json:"timeout"`                            // milliseconds
 }
 
+// DevSmartBusConfig ...
 type DevSmartBusConfig struct {
 	Baud     int `json:"baud" valid:"Required"`
 	Device   int `json:"device"`
@@ -35,6 +37,7 @@ type DevSmartBusConfig struct {
 	Sleep    int `json:"sleep"`
 }
 
+// DevCommandConfig ...
 type DevCommandConfig struct {
 }
 

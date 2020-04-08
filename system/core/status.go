@@ -19,11 +19,17 @@
 package core
 
 const (
-	Started   = Status("started")
+	// Started ...
+	Started = Status("started")
+	// InProcess ...
 	InProcess = Status("in process")
-	Ended     = Status("ended")
-	Done      = Status("done")
-	Error     = Status("error")
+	// Ended ...
+	Ended = Status("ended")
+	// Done ...
+	Done = Status("done")
+	// Error ...
+	Error = Status("error")
 )
 
+// Status ...
 type Status string

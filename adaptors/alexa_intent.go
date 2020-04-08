@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// AlexaIntent ...
 type AlexaIntent struct {
 	table *db.AlexaIntents
 	db    *gorm.DB
 }
 
+// GetAlexaIntentAdaptor ...
 func GetAlexaIntentAdaptor(d *gorm.DB) *AlexaIntent {
 	return &AlexaIntent{
 		table: &db.AlexaIntents{Db: d},
@@ -36,11 +38,13 @@ func GetAlexaIntentAdaptor(d *gorm.DB) *AlexaIntent {
 	}
 }
 
+// Add ...
 func (n *AlexaIntent) Add(ver *m.AlexaIntent) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(ver))
 	return
 }
 
+// GetByName ...
 func (n *AlexaIntent) GetByName(name string) (ver *m.AlexaIntent, err error) {
 
 	var dbVer *db.AlexaIntent
@@ -53,11 +57,13 @@ func (n *AlexaIntent) GetByName(name string) (ver *m.AlexaIntent, err error) {
 	return
 }
 
+// Update ...
 func (n *AlexaIntent) Update(ver *m.AlexaIntent) (err error) {
 	err = n.table.Update(n.toDb(ver))
 	return
 }
 
+// Delete ...
 func (n *AlexaIntent) Delete(ver *m.AlexaIntent) (err error) {
 	err = n.table.Delete(n.toDb(ver))
 	return
@@ -65,12 +71,12 @@ func (n *AlexaIntent) Delete(ver *m.AlexaIntent) (err error) {
 
 func (n *AlexaIntent) fromDb(dbVer *db.AlexaIntent) (ver *m.AlexaIntent) {
 	ver = &m.AlexaIntent{
-		Name:               dbVer.Name,
-		AlexaApplicationId: dbVer.AlexaApplicationId,
-		ScriptId:           dbVer.ScriptId,
-		Description:        dbVer.Description,
-		CreatedAt:          dbVer.CreatedAt,
-		UpdatedAt:          dbVer.UpdatedAt,
+		Name:         dbVer.Name,
+		AlexaSkillId: dbVer.AlexaSkillId,
+		ScriptId:     dbVer.ScriptId,
+		Description:  dbVer.Description,
+		CreatedAt:    dbVer.CreatedAt,
+		UpdatedAt:    dbVer.UpdatedAt,
 	}
 
 	if dbVer.Script != nil {
@@ -84,10 +90,10 @@ func (n *AlexaIntent) fromDb(dbVer *db.AlexaIntent) (ver *m.AlexaIntent) {
 func (n *AlexaIntent) toDb(ver *m.AlexaIntent) (dbVer *db.AlexaIntent) {
 
 	dbVer = &db.AlexaIntent{
-		Name:               ver.Name,
-		AlexaApplicationId: ver.AlexaApplicationId,
-		ScriptId:           ver.ScriptId,
-		Description:        ver.Description,
+		Name:         ver.Name,
+		AlexaSkillId: ver.AlexaSkillId,
+		ScriptId:     ver.ScriptId,
+		Description:  ver.Description,
 	}
 
 	return

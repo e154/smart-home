@@ -18,12 +18,14 @@
 
 package messagebird
 
+// MBClientConfig ...
 type MBClientConfig struct {
 	AccessKey  string
 	Name       string
 	CanSendSms bool
 }
 
+// NewMBClientConfig ...
 func NewMBClientConfig(accessKey, name string) *MBClientConfig {
 	return &MBClientConfig{
 		AccessKey: accessKey,

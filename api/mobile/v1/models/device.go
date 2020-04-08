@@ -18,6 +18,7 @@
 
 package models
 
+// NewDeviceNode ...
 type NewDeviceNode struct {
 	Id int64 `json:"id"`
 }
@@ -44,31 +45,32 @@ type UpdateDevice struct {
 	Properties  DeviceProperties `json:"properties"`
 }
 
+// ParentDevice ...
 type ParentDevice struct {
 	Id int64 `json:"id"`
 }
 
 // swagger:model
 type Device struct {
-	Id          int64            `json:"id"`
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 	//Node        *Node            `json:"node"`
-	Properties  DeviceProperties `json:"properties"`
-	Type        string           `json:"type"`
-	Status      string           `json:"status"`
-	IsGroup     bool             `json:"is_group"`
-	Actions     []DeviceAction   `json:"actions"`
-	States      []DeviceState    `json:"states"`
-	Device      *ParentDevice    `json:"device"`
-	DeviceId    *int64           `json:"device_id"`
+	Properties DeviceProperties `json:"properties"`
+	Type       string           `json:"type"`
+	Status     string           `json:"status"`
+	IsGroup    bool             `json:"is_group"`
+	Actions    []DeviceAction   `json:"actions"`
+	States     []DeviceState    `json:"states"`
+	Device     *ParentDevice    `json:"device"`
+	DeviceId   *int64           `json:"device_id"`
 }
 
 // swagger:model
 type DeviceShort struct {
-	Id          int64            `json:"id"`
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
-	Status      string           `json:"status"`
-	Type        string           `json:"type"`
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	Type        string `json:"type"`
 }

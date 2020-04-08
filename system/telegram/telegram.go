@@ -28,6 +28,7 @@ var (
 	log = common.MustGetLogger("telegram")
 )
 
+// Telegram ...
 type Telegram struct {
 	bot          *tgbotapi.BotAPI
 	isStarted    bool
@@ -38,6 +39,7 @@ type Telegram struct {
 	commandPool  chan Command
 }
 
+// NewTelegram ...
 func NewTelegram(cfg *TelegramConfig, updateChatId func(chatId int64)) (*Telegram, error) {
 
 	if cfg.Token == "" {
@@ -120,6 +122,7 @@ func (c *Telegram) start() {
 	}()
 }
 
+// Stop ...
 func (c *Telegram) Stop() {
 	c.stopPrecess = true
 	c.isStarted = false
@@ -131,6 +134,7 @@ func (c *Telegram) Stop() {
 	c.stopPrecess = false
 }
 
+// SendMsg ...
 func (c *Telegram) SendMsg(body string) error {
 
 	if !c.isStarted {

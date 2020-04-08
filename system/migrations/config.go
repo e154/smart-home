@@ -18,11 +18,13 @@
 
 package migrations
 
+// MigrationsConfig ...
 type MigrationsConfig struct {
 	Source string
 	Dir    string
 }
 
+// NewMigrationsConfig ...
 func NewMigrationsConfig() *MigrationsConfig {
 	return &MigrationsConfig{
 		Source: "assets",

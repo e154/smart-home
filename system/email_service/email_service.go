@@ -28,10 +28,12 @@ var (
 	log = common.MustGetLogger("email")
 )
 
+// EmailService ...
 type EmailService struct {
 	cfg *EmailServiceConfig
 }
 
+// NewEmailService ...
 func NewEmailService(cfg *EmailServiceConfig) (*EmailService, error) {
 
 	if cfg.Auth == "" || cfg.Pass == "" || cfg.Smtp == "" || cfg.Port == 0 ||
@@ -45,6 +47,7 @@ func NewEmailService(cfg *EmailServiceConfig) (*EmailService, error) {
 	return client, nil
 }
 
+// Send ...
 func (e EmailService) Send(email *Email) error {
 
 	email.From = e.cfg.Sender

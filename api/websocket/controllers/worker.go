@@ -23,20 +23,24 @@ import (
 	"github.com/e154/smart-home/system/stream"
 )
 
+// ControllerWorker ...
 type ControllerWorker struct {
 	*ControllerCommon
 }
 
+// NewControllerWorker ...
 func NewControllerWorker(common *ControllerCommon) *ControllerWorker {
 	return &ControllerWorker{
 		ControllerCommon: common,
 	}
 }
 
+// Start ...
 func (c *ControllerWorker) Start() {
 	c.stream.Subscribe("do.worker", c.DoWorker)
 }
 
+// Stop ...
 func (c *ControllerWorker) Stop() {
 	c.stream.UnSubscribe("do.worker")
 }

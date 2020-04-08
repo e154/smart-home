@@ -23,19 +23,23 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MapZones ...
 type MapZones struct {
 	Db *gorm.DB
 }
 
+// MapZone ...
 type MapZone struct {
 	Id   int64 `gorm:"primary_key"`
 	Name string
 }
 
+// TableName ...
 func (d *MapZone) TableName() string {
 	return "map_zones"
 }
 
+// Add ...
 func (n MapZones) Add(zone *MapZone) (id int64, err error) {
 	if err = n.Db.Create(&zone).Error; err != nil {
 		return
@@ -44,6 +48,7 @@ func (n MapZones) Add(zone *MapZone) (id int64, err error) {
 	return
 }
 
+// GetByName ...
 func (n MapZones) GetByName(zoneName string) (zone *MapZone, err error) {
 
 	zone = &MapZone{}
@@ -55,6 +60,7 @@ func (n MapZones) GetByName(zoneName string) (zone *MapZone, err error) {
 	return
 }
 
+// Search ...
 func (n *MapZones) Search(query string, limit, offset int) (list []*MapZone, total int64, err error) {
 
 	q := n.Db.Model(&MapZone{}).
@@ -71,6 +77,7 @@ func (n *MapZones) Search(query string, limit, offset int) (list []*MapZone, tot
 	return
 }
 
+// Delete ...
 func (n MapZones) Delete(name string) (err error) {
 	if name == "" {
 		err = fmt.Errorf("zero name")
@@ -81,6 +88,7 @@ func (n MapZones) Delete(name string) (err error) {
 	return
 }
 
+// Clean ...
 func (n MapZones) Clean() (err error) {
 
 	err = n.Db.Exec(`delete 

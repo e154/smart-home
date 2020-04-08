@@ -20,6 +20,7 @@ package models
 
 import "time"
 
+// NewDeviceNode ...
 type NewDeviceNode struct {
 	Id int64 `json:"id"`
 }
@@ -46,6 +47,7 @@ type UpdateDevice struct {
 	Properties  DeviceProperties `json:"properties"`
 }
 
+// ParentDevice ...
 type ParentDevice struct {
 	Id int64 `json:"id"`
 }
@@ -70,9 +72,9 @@ type Device struct {
 
 // swagger:model
 type DeviceShort struct {
-	Id          int64            `json:"id"`
-	Name        string           `json:"name"`
-	Description string           `json:"description"`
-	Status      string           `json:"status"`
-	Type        string           `json:"type"`
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	Type        string `json:"type"`
 }

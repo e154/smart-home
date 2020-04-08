@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// UsageStat ...
 type UsageStat struct {
 	Path              string  `json:"path"`
 	Fstype            string  `json:"fstype"`
@@ -36,16 +37,19 @@ type UsageStat struct {
 	InodesUsedPercent float64 `json:"inodes_used_percent"`
 }
 
+// Disk ...
 type Disk struct {
 	Root UsageStat `json:"root"`
 }
 
+// Uptime ...
 type Uptime struct {
 	Total      uint64    `json:"total"`
 	AppStarted time.Time `json:"app_started"`
 }
 
 var (
+	// ErrRecordNotFound ...
 	ErrRecordNotFound = errors.New("record not found")
 )
 

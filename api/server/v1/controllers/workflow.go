@@ -26,10 +26,12 @@ import (
 	"strconv"
 )
 
+// ControllerWorkflow ...
 type ControllerWorkflow struct {
 	*ControllerCommon
 }
 
+// NewControllerWorkflow ...
 func NewControllerWorkflow(common *ControllerCommon) *ControllerWorkflow {
 	return &ControllerWorkflow{ControllerCommon: common}
 }

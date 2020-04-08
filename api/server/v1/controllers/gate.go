@@ -25,10 +25,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ControllerGate ...
 type ControllerGate struct {
 	*ControllerCommon
 }
 
+// NewControllerGate ...
 func NewControllerGate(common *ControllerCommon) *ControllerGate {
 	return &ControllerGate{ControllerCommon: common}
 }

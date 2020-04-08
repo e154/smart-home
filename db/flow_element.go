@@ -19,18 +19,20 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
-	"fmt"
-	"github.com/e154/smart-home/system/uuid"
 	"encoding/json"
+	"fmt"
 	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/uuid"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// FlowElements ...
 type FlowElements struct {
 	Db *gorm.DB
 }
 
+// FlowElement ...
 type FlowElement struct {
 	Uuid          uuid.UUID `gorm:"primary_key"`
 	Name          string
@@ -47,10 +49,12 @@ type FlowElement struct {
 	UpdatedAt     time.Time
 }
 
+// TableName ...
 func (d *FlowElement) TableName() string {
 	return "flow_elements"
 }
 
+// Add ...
 func (n FlowElements) Add(flow *FlowElement) (id uuid.UUID, err error) {
 	if err = n.Db.Create(&flow).Error; err != nil {
 		return
@@ -59,6 +63,7 @@ func (n FlowElements) Add(flow *FlowElement) (id uuid.UUID, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n FlowElements) GetAllEnabled() (list []*FlowElement, err error) {
 	list = make([]*FlowElement, 0)
 	err = n.Db.Where("status = ?", "enabled").
@@ -66,12 +71,14 @@ func (n FlowElements) GetAllEnabled() (list []*FlowElement, err error) {
 	return
 }
 
+// GetById ...
 func (n FlowElements) GetById(id uuid.UUID) (flow *FlowElement, err error) {
 	flow = &FlowElement{Uuid: id}
 	err = n.Db.First(&flow).Error
 	return
 }
 
+// Update ...
 func (n FlowElements) Update(m *FlowElement) (err error) {
 	err = n.Db.Model(&FlowElement{Uuid: m.Uuid}).Updates(map[string]interface{}{
 		"name":           m.Name,
@@ -87,11 +94,13 @@ func (n FlowElements) Update(m *FlowElement) (err error) {
 	return
 }
 
+// Delete ...
 func (n FlowElements) Delete(ids []uuid.UUID) (err error) {
 	err = n.Db.Delete(&FlowElement{}, "uuid in (?)", ids).Error
 	return
 }
 
+// List ...
 func (n *FlowElements) List(limit, offset int64, orderBy, sort string) (list []*FlowElement, total int64, err error) {
 
 	if err = n.Db.Model(FlowElement{}).Count(&total).Error; err != nil {

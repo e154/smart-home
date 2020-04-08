@@ -19,16 +19,18 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
-	"fmt"
 	"database/sql"
+	"fmt"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// Roles ...
 type Roles struct {
 	Db *gorm.DB
 }
 
+// Role ...
 type Role struct {
 	Name        string `gorm:"primary_key"`
 	Description string
@@ -40,10 +42,12 @@ type Role struct {
 	UpdatedAt   time.Time
 }
 
+// TableName ...
 func (m *Role) TableName() string {
 	return "roles"
 }
 
+// Add ...
 func (n Roles) Add(role *Role) (err error) {
 	if err = n.Db.Create(&role).Error; err != nil {
 		return
@@ -51,6 +55,7 @@ func (n Roles) Add(role *Role) (err error) {
 	return
 }
 
+// GetByName ...
 func (n Roles) GetByName(name string) (role *Role, err error) {
 
 	role = &Role{Name: name}
@@ -64,6 +69,7 @@ func (n Roles) GetByName(name string) (role *Role, err error) {
 	return
 }
 
+// Update ...
 func (n Roles) Update(m *Role) (err error) {
 	err = n.Db.Model(&Role{Name: m.Name}).Updates(map[string]interface{}{
 		"description": m.Description,
@@ -72,11 +78,13 @@ func (n Roles) Update(m *Role) (err error) {
 	return
 }
 
+// Delete ...
 func (n Roles) Delete(name string) (err error) {
 	err = n.Db.Delete(&Role{Name: name}).Error
 	return
 }
 
+// List ...
 func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, total int64, err error) {
 
 	if err = n.Db.Model(Role{}).Count(&total).Error; err != nil {
@@ -102,6 +110,7 @@ func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, t
 	return
 }
 
+// Search ...
 func (n *Roles) Search(query string, limit, offset int) (list []*Role, total int64, err error) {
 
 	fmt.Println(query)
@@ -119,6 +128,7 @@ func (n *Roles) Search(query string, limit, offset int) (list []*Role, total int
 	return
 }
 
+// RelData ...
 func (n *Roles) RelData(role *Role) (err error) {
 
 	// get parent

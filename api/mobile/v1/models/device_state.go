@@ -18,6 +18,7 @@
 
 package models
 
+// DeviceStateDevice ...
 type DeviceStateDevice struct {
 	Id int64 `json:"id"`
 }

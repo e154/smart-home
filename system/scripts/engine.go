@@ -27,6 +27,7 @@ import (
 	"strconv"
 )
 
+// IScript ...
 type IScript interface {
 	Init() error
 	Do() (string, error)
@@ -40,6 +41,7 @@ type IScript interface {
 	RunProgram(name string) (result string, err error)
 }
 
+// Engine ...
 type Engine struct {
 	model      *m.Script
 	script     IScript
@@ -49,6 +51,7 @@ type Engine struct {
 	structures *Pull
 }
 
+// NewEngine ...
 func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err error) {
 
 	engine = &Engine{
@@ -71,23 +74,28 @@ func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err er
 	return
 }
 
+// Compile ...
 func (s *Engine) Compile() error {
 	return s.script.Compile()
 }
 
+// PushStruct ...
 func (s *Engine) PushStruct(name string, i interface{}) {
 	s.script.PushStruct(name, i)
 }
 
+// PushFunction ...
 func (s *Engine) PushFunction(name string, i interface{}) {
 	s.script.PushFunction(name, i)
 }
 
+// EvalString ...
 func (s *Engine) EvalString(str string) (result string, err error) {
 	result, err = s.script.EvalString(str)
 	return
 }
 
+// EvalScript ...
 func (s *Engine) EvalScript(script *m.Script) (result string, err error) {
 	programName := strconv.Itoa(int(script.Id))
 	if result, err = s.script.RunProgram(programName); err == nil {
@@ -103,10 +111,12 @@ func (s *Engine) EvalScript(script *m.Script) (result string, err error) {
 	return
 }
 
+// Close ...
 func (s *Engine) Close() {
 	s.script.Close()
 }
 
+// DoFull ...
 func (s *Engine) DoFull() (res string, err error) {
 	if s.IsRun {
 		return
@@ -128,10 +138,12 @@ func (s *Engine) DoFull() (res string, err error) {
 	return
 }
 
+// Do ...
 func (s *Engine) Do() (string, error) {
 	return s.script.Do()
 }
 
+// AssertFunction ...
 func (s *Engine) AssertFunction(f string) (result string, err error) {
 
 	if s.IsRun {
@@ -148,15 +160,18 @@ func (s *Engine) AssertFunction(f string) (result string, err error) {
 	return
 }
 
+// Print ...
 func (s *Engine) Print(v ...interface{}) {
 	fmt.Println(v...)
 	s.buf = append(s.buf, fmt.Sprint(v...))
 }
 
+// Get ...
 func (s *Engine) Get() IScript {
 	return s.script
 }
 
+// File ...
 func (s *Engine) File(path string) ([]byte, error) {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {

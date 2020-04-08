@@ -20,12 +20,14 @@ package metrics
 
 import "github.com/e154/smart-home/system/config"
 
+// MetricConfig ...
 type MetricConfig struct {
 	RunMode config.RunMode
 	Host    string
 	Port    int
 }
 
+// NewMetricConfig ...
 func NewMetricConfig(cfg *config.AppConfig) *MetricConfig {
 	return &MetricConfig{
 		RunMode: cfg.Mode,

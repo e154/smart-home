@@ -33,30 +33,37 @@ type WorkflowBind struct {
 	wf *Workflow
 }
 
+// GetName ...
 func (w *WorkflowBind) GetName() string {
 	return w.wf.model.Name
 }
 
+// GetDescription ...
 func (w *WorkflowBind) GetDescription() string {
 	return w.wf.model.Description
 }
 
+// SetVar ...
 func (w *WorkflowBind) SetVar(key string, value interface{}) {
 	w.wf.SetVar(key, value)
 }
 
+// GetVar ...
 func (w *WorkflowBind) GetVar(key string) interface{} {
 	return w.wf.GetVar(key)
 }
 
+// GetScenario ...
 func (w *WorkflowBind) GetScenario() string {
 	return w.wf.model.Scenario.SystemName
 }
 
+// GetScenarioName ...
 func (w *WorkflowBind) GetScenarioName() string {
 	return w.wf.model.Scenario.Name
 }
 
+// SetScenario ...
 func (w *WorkflowBind) SetScenario(system_name string) {
 	//bug if call this method from scenario
 	go w.wf.SetScenario(system_name)

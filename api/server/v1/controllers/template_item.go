@@ -25,10 +25,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ControllerTemplateItem ...
 type ControllerTemplateItem struct {
 	*ControllerCommon
 }
 
+// NewControllerTemplateItem ...
 func NewControllerTemplateItem(common *ControllerCommon) *ControllerTemplateItem {
 	return &ControllerTemplateItem{ControllerCommon: common}
 }
@@ -212,7 +214,6 @@ func (c ControllerTemplateItem) Update(ctx *gin.Context) {
 	resp := NewSuccess()
 	resp.SetData(template).Send(ctx)
 }
-
 
 // swagger:operation PUT /template_item/status/{name} templateUpdateStatusItemByName
 // ---

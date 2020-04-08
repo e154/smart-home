@@ -25,10 +25,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ControllerMapZone ...
 type ControllerMapZone struct {
 	*ControllerCommon
 }
 
+// NewControllerMapZone ...
 func NewControllerMapZone(common *ControllerCommon) *ControllerMapZone {
 	return &ControllerMapZone{ControllerCommon: common}
 }

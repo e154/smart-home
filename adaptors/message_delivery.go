@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MessageDelivery ...
 type MessageDelivery struct {
 	table *db.MessageDeliveries
 	db    *gorm.DB
 }
 
+// GetMessageDeliveryAdaptor ...
 func GetMessageDeliveryAdaptor(d *gorm.DB) *MessageDelivery {
 	return &MessageDelivery{
 		table: &db.MessageDeliveries{Db: d},
@@ -36,16 +38,19 @@ func GetMessageDeliveryAdaptor(d *gorm.DB) *MessageDelivery {
 	}
 }
 
+// Add ...
 func (n *MessageDelivery) Add(msg *m.MessageDelivery) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(msg))
 	return
 }
 
+// SetStatus ...
 func (n *MessageDelivery) SetStatus(msg *m.MessageDelivery) (err error) {
 	err = n.table.SetStatus(n.toDb(msg))
 	return
 }
 
+// List ...
 func (n *MessageDelivery) List(limit, offset int64, orderBy, sort string) (list []*m.MessageDelivery, total int64, err error) {
 	var dbList []*db.MessageDelivery
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -60,6 +65,7 @@ func (n *MessageDelivery) List(limit, offset int64, orderBy, sort string) (list 
 	return
 }
 
+// GetAllUncompleted ...
 func (n *MessageDelivery) GetAllUncompleted(limit, offset int64) (list []*m.MessageDelivery, total int64, err error) {
 	var dbList []*db.MessageDelivery
 	if dbList, total, err = n.table.GetAllUncompleted(limit, offset); err != nil {
@@ -74,11 +80,13 @@ func (n *MessageDelivery) GetAllUncompleted(limit, offset int64) (list []*m.Mess
 	return
 }
 
+// Delete ...
 func (n *MessageDelivery) Delete(id int64) (err error) {
 	err = n.table.Delete(id)
 	return
 }
 
+// GetById ...
 func (n *MessageDelivery) GetById(id int64) (ver *m.MessageDelivery, err error) {
 
 	var dbVer *db.MessageDelivery

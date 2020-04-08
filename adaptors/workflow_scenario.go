@@ -19,16 +19,18 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
+// WorkflowScenario ...
 type WorkflowScenario struct {
 	table *db.WorkflowScenarios
 	db    *gorm.DB
 }
 
+// GetWorkflowScenarioAdaptor ...
 func GetWorkflowScenarioAdaptor(d *gorm.DB) *WorkflowScenario {
 	return &WorkflowScenario{
 		table: &db.WorkflowScenarios{Db: d},
@@ -36,6 +38,7 @@ func GetWorkflowScenarioAdaptor(d *gorm.DB) *WorkflowScenario {
 	}
 }
 
+// Add ...
 func (n *WorkflowScenario) Add(workflow *m.WorkflowScenario) (id int64, err error) {
 
 	dbWorkflowScenario := n.toDb(workflow)
@@ -46,6 +49,7 @@ func (n *WorkflowScenario) Add(workflow *m.WorkflowScenario) (id int64, err erro
 	return
 }
 
+// GetById ...
 func (n *WorkflowScenario) GetById(scenarioId int64) (workflow *m.WorkflowScenario, err error) {
 
 	var dbWorkflowScenario *db.WorkflowScenario
@@ -58,6 +62,7 @@ func (n *WorkflowScenario) GetById(scenarioId int64) (workflow *m.WorkflowScenar
 	return
 }
 
+// Update ...
 func (n *WorkflowScenario) Update(workflow *m.WorkflowScenario) (err error) {
 	dbWorkflowScenario := n.toDb(workflow)
 	if err = n.table.Update(dbWorkflowScenario); err != nil {
@@ -69,11 +74,13 @@ func (n *WorkflowScenario) Update(workflow *m.WorkflowScenario) (err error) {
 	return
 }
 
+// Delete ...
 func (n *WorkflowScenario) Delete(workflowId int64) (err error) {
 	err = n.table.Delete(workflowId)
 	return
 }
 
+// List ...
 func (n *WorkflowScenario) List(limit, offset int64, orderBy, sort string) (list []*m.WorkflowScenario, total int64, err error) {
 	var dbList []*db.WorkflowScenario
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -89,6 +96,7 @@ func (n *WorkflowScenario) List(limit, offset int64, orderBy, sort string) (list
 	return
 }
 
+// ListByWorkflow ...
 func (n *WorkflowScenario) ListByWorkflow(workflowId int64) (list []*m.WorkflowScenario, total int64, err error) {
 	var dbList []*db.WorkflowScenario
 	if dbList, total, err = n.table.ListByWorkflow(workflowId); err != nil {
@@ -104,16 +112,19 @@ func (n *WorkflowScenario) ListByWorkflow(workflowId int64) (list []*m.WorkflowS
 	return
 }
 
+// AddScript ...
 func (n *WorkflowScenario) AddScript(workflowScenario *m.WorkflowScenario, script *m.Script) (err error) {
 	err = n.table.AddScript(workflowScenario.Id, script.Id)
 	return
 }
 
+// RemoveScript ...
 func (n *WorkflowScenario) RemoveScript(workflowScenario *m.WorkflowScenario, script *m.Script) (err error) {
 	err = n.table.RemoveScript(workflowScenario.Id, script.Id)
 	return
 }
 
+// UpdateScripts ...
 func (n *WorkflowScenario) UpdateScripts(wf *m.WorkflowScenario) (err error) {
 
 	var dbWf *db.WorkflowScenario
@@ -153,6 +164,7 @@ func (n *WorkflowScenario) UpdateScripts(wf *m.WorkflowScenario) (err error) {
 	return
 }
 
+// Search ...
 func (n *WorkflowScenario) Search(query string, limit, offset int) (list []*m.WorkflowScenario, total int64, err error) {
 	var dbList []*db.WorkflowScenario
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {

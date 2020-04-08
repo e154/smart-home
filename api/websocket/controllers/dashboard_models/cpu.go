@@ -22,15 +22,18 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 )
 
+// Cpu ...
 type Cpu struct {
 	metric *metrics.MetricManager
 }
 
+// NewCpu ...
 func NewCpu(metric *metrics.MetricManager) (node *Cpu) {
 	node = &Cpu{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (g *Cpu) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

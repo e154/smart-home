@@ -22,6 +22,7 @@ import (
 	"time"
 )
 
+// MapDeviceHistory ...
 type MapDeviceHistory struct {
 	MapElement  MapElementShort `json:"map_element"`
 	LogLevel    string          `json:"log_level"`

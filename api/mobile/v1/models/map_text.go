@@ -18,6 +18,7 @@
 
 package models
 
+// MapText ...
 type MapText struct {
 	Id    int64  `json:"id"`
 	Text  string `json:"text"`

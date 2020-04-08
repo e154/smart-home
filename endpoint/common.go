@@ -31,6 +31,7 @@ import (
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
+// CommonEndpoint ...
 type CommonEndpoint struct {
 	adaptors      *adaptors.Adaptors
 	core          *core.Core
@@ -44,6 +45,7 @@ type CommonEndpoint struct {
 	alexa         *alexa.Alexa
 }
 
+// NewCommonEndpoint ...
 func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	accessList *access_list.AccessListService,

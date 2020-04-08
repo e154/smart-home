@@ -22,10 +22,12 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 )
 
+// Workflow ...
 type Workflow struct {
 	metric *metrics.MetricManager
 }
 
+// NewWorkflow ...
 func NewWorkflow(metric *metrics.MetricManager) *Workflow {
 	return &Workflow{
 		metric: metric,

@@ -35,11 +35,13 @@ import (
 	"strings"
 )
 
+// Image ...
 type Image struct {
 	table *db.Images
 	db    *gorm.DB
 }
 
+// GetImageAdaptor ...
 func GetImageAdaptor(d *gorm.DB) *Image {
 	return &Image{
 		table: &db.Images{Db: d},
@@ -47,6 +49,7 @@ func GetImageAdaptor(d *gorm.DB) *Image {
 	}
 }
 
+// Add ...
 func (n *Image) Add(ver *m.Image) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
@@ -57,6 +60,7 @@ func (n *Image) Add(ver *m.Image) (id int64, err error) {
 	return
 }
 
+// GetByImageName ...
 func (n *Image) GetByImageName(imageName string) (ver *m.Image, err error) {
 
 	var dbVer *db.Image
@@ -69,7 +73,7 @@ func (n *Image) GetByImageName(imageName string) (ver *m.Image, err error) {
 	return
 }
 
-
+// GetById ...
 func (n *Image) GetById(mapId int64) (ver *m.Image, err error) {
 
 	var dbVer *db.Image
@@ -82,17 +86,20 @@ func (n *Image) GetById(mapId int64) (ver *m.Image, err error) {
 	return
 }
 
+// Update ...
 func (n *Image) Update(ver *m.Image) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Update(dbVer)
 	return
 }
 
+// Delete ...
 func (n *Image) Delete(mapId int64) (err error) {
 	err = n.table.Delete(mapId)
 	return
 }
 
+// List ...
 func (n *Image) List(limit, offset int64, orderBy, sort string) (list []*m.Image, total int64, err error) {
 	var dbList []*db.Image
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -108,6 +115,7 @@ func (n *Image) List(limit, offset int64, orderBy, sort string) (list []*m.Image
 	return
 }
 
+// UploadImage ...
 func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (err error) {
 
 	buffer := bytes.NewBuffer(make([]byte, 0))
@@ -162,6 +170,7 @@ func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (err error) {
 	return
 }
 
+// AddMultiple ...
 func (n *Image) AddMultiple(items []*m.Image) (err error) {
 
 	insertRecords := make([]interface{}, 0)
@@ -175,6 +184,7 @@ func (n *Image) AddMultiple(items []*m.Image) (err error) {
 	return
 }
 
+// GetAllByDate ...
 func (n *Image) GetAllByDate(filter string) (images []*m.Image, err error) {
 
 	var dblist []*db.Image
@@ -189,6 +199,7 @@ func (n *Image) GetAllByDate(filter string) (images []*m.Image, err error) {
 	return
 }
 
+// GetFilterList ...
 func (n *Image) GetFilterList() (filterList []*m.ImageFilterList, err error) {
 
 	var dblist []*db.ImageFilterList

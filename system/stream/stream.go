@@ -38,28 +38,34 @@ var (
 	}
 )
 
+// StreamService ...
 type StreamService struct {
 	Hub *Hub
 }
 
+// NewStreamService ...
 func NewStreamService(hub *Hub) *StreamService {
 	return &StreamService{
 		Hub: hub,
 	}
 }
 
+// Broadcast ...
 func (s *StreamService) Broadcast(message []byte) {
 	s.Hub.Broadcast(message)
 }
 
+// Subscribe ...
 func (s *StreamService) Subscribe(command string, f func(client IStreamClient, msg Message)) {
 	s.Hub.Subscribe(command, f)
 }
 
+// UnSubscribe ...
 func (s *StreamService) UnSubscribe(command string) {
 	s.Hub.UnSubscribe(command)
 }
 
+// Ws ...
 func (w *StreamService) Ws(ctx *gin.Context) {
 
 	// CORS

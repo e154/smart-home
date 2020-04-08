@@ -18,6 +18,7 @@
 
 package access_list
 
+// DATA ...
 const DATA = `
 {
   "ws": {

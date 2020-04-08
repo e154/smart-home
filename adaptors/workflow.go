@@ -26,11 +26,13 @@ import (
 	"go/types"
 )
 
+// Workflow ...
 type Workflow struct {
 	table *db.Workflows
 	db    *gorm.DB
 }
 
+// GetWorkflowAdaptor ...
 func GetWorkflowAdaptor(d *gorm.DB) *Workflow {
 	return &Workflow{
 		table: &db.Workflows{Db: d},
@@ -38,6 +40,7 @@ func GetWorkflowAdaptor(d *gorm.DB) *Workflow {
 	}
 }
 
+// Add ...
 func (n *Workflow) Add(workflow *m.Workflow) (id int64, err error) {
 
 	dbWorkflow := n.toDb(workflow)
@@ -48,6 +51,7 @@ func (n *Workflow) Add(workflow *m.Workflow) (id int64, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n *Workflow) GetAllEnabled() (list []*m.Workflow, err error) {
 
 	var dbList []*db.Workflow
@@ -64,6 +68,7 @@ func (n *Workflow) GetAllEnabled() (list []*m.Workflow, err error) {
 	return
 }
 
+// GetById ...
 func (n *Workflow) GetById(workflowId int64) (workflow *m.Workflow, err error) {
 
 	var dbWorkflow *db.Workflow
@@ -76,6 +81,7 @@ func (n *Workflow) GetById(workflowId int64) (workflow *m.Workflow, err error) {
 	return
 }
 
+// GetByWorkflowScenarioId ...
 func (n *Workflow) GetByWorkflowScenarioId(workflowScenarioId int64) (workflow *m.Workflow, err error) {
 
 	var dbWorkflow *db.Workflow
@@ -88,6 +94,7 @@ func (n *Workflow) GetByWorkflowScenarioId(workflowScenarioId int64) (workflow *
 	return
 }
 
+// Update ...
 func (n *Workflow) Update(workflow *m.Workflow) (err error) {
 	dbWorkflow := n.toDb(workflow)
 	if err = n.table.Update(dbWorkflow); err != nil {
@@ -99,11 +106,13 @@ func (n *Workflow) Update(workflow *m.Workflow) (err error) {
 	return
 }
 
+// Delete ...
 func (n *Workflow) Delete(workflowId int64) (err error) {
 	err = n.table.Delete(workflowId)
 	return
 }
 
+// List ...
 func (n *Workflow) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Workflow, total int64, err error) {
 	var dbList []*db.Workflow
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort, onlyEnabled); err != nil {
@@ -119,22 +128,26 @@ func (n *Workflow) List(limit, offset int64, orderBy, sort string, onlyEnabled b
 	return
 }
 
+// DependencyLoading ...
 func (n *Workflow) DependencyLoading(workflow *m.Workflow) (err error) {
 	dbWorkflow := n.toDb(workflow)
 	err = n.table.DependencyLoading(dbWorkflow)
 	return
 }
 
+// AddScript ...
 func (n *Workflow) AddScript(workflow *m.Workflow, script *m.Script) (err error) {
 	err = n.table.AddScript(workflow.Id, script.Id)
 	return
 }
 
+// RemoveScript ...
 func (n *Workflow) RemoveScript(workflow *m.Workflow, script *m.Script) (err error) {
 	err = n.table.RemoveScript(workflow.Id, script.Id)
 	return
 }
 
+// UpdateScripts ...
 func (n *Workflow) UpdateScripts(wf *m.Workflow) (err error) {
 
 	var dbWf *db.Workflow
@@ -174,6 +187,7 @@ func (n *Workflow) UpdateScripts(wf *m.Workflow) (err error) {
 	return
 }
 
+// SetScenario ...
 func (n *Workflow) SetScenario(workflow *m.Workflow, s interface{}) (err error) {
 	var scenarioId *int64
 	switch x := s.(type) {
@@ -191,6 +205,7 @@ func (n *Workflow) SetScenario(workflow *m.Workflow, s interface{}) (err error) 
 	return
 }
 
+// Search ...
 func (n *Workflow) Search(query string, limit, offset int) (list []*m.Workflow, total int64, err error) {
 	var dbList []*db.Workflow
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {

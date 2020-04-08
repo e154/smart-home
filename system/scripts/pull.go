@@ -22,17 +22,20 @@ import (
 	"sync"
 )
 
+// Pull ...
 type Pull struct {
 	sync.Mutex
 	heap map[string]interface{}
 }
 
+// NewPull ...
 func NewPull() *Pull {
 	return &Pull{
 		heap: make(map[string]interface{}),
 	}
 }
 
+// Get ...
 func (p *Pull) Get(name string) (value interface{}, ok bool) {
 	p.Lock()
 	value, ok = p.heap[name]
@@ -40,6 +43,7 @@ func (p *Pull) Get(name string) (value interface{}, ok bool) {
 	return
 }
 
+// Add ...
 func (p *Pull) Add(name string, s interface{}) {
 	p.Lock()
 	defer p.Unlock()

@@ -18,9 +18,11 @@
 
 package graceful_service
 
+// GracefulServiceConfig ...
 type GracefulServiceConfig struct {
 }
 
+// NewGracefulServiceConfig ...
 func NewGracefulServiceConfig() *GracefulServiceConfig {
 	return &GracefulServiceConfig{}
 }

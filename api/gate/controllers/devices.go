@@ -24,16 +24,19 @@ import (
 	"github.com/e154/smart-home/system/stream"
 )
 
+// Devices ...
 type Devices struct {
 	metric *metrics.MetricManager
 }
 
+// NewDevices ...
 func NewDevices(metric *metrics.MetricManager) *Devices {
 	return &Devices{
 		metric: metric,
 	}
 }
 
+// Broadcast ...
 func (d *Devices) Broadcast(cursor metrics.MapElementCursor) (map[string]interface{}, bool) {
 
 	log.Infof("broadcast device status")
@@ -88,6 +91,7 @@ func (d *Devices) key(deviceId int64, elementName string) string {
 	return fmt.Sprintf("%d_%s", deviceId, elementName)
 }
 
+// MapElement ...
 type MapElement struct {
 	Id          int64       `json:"id"`
 	StatusId    int64       `json:"status_id"`

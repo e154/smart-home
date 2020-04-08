@@ -22,11 +22,13 @@ import (
 	"sync"
 )
 
+// Gate ...
 type Gate struct {
 	Status      string `json:"status"`
 	AccessToken string `json:"access_token"`
 }
 
+// GateManager ...
 type GateManager struct {
 	updateLock  sync.Mutex
 	status      string
@@ -34,6 +36,7 @@ type GateManager struct {
 	publisher   IPublisher
 }
 
+// NewGateManager ...
 func NewGateManager(publisher IPublisher) *GateManager {
 	return &GateManager{publisher: publisher}
 }
@@ -65,6 +68,7 @@ func (d *GateManager) selfUpdate(v GateUpdate) (broadcast bool) {
 	return
 }
 
+// Snapshot ...
 func (d *GateManager) Snapshot() Gate {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
@@ -79,6 +83,7 @@ func (d *GateManager) broadcast() {
 	go d.publisher.Broadcast("gate")
 }
 
+// GateUpdate ...
 type GateUpdate struct {
 	Status, AccessToken string
 }

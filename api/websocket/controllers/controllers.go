@@ -34,6 +34,7 @@ var (
 	log = common.MustGetLogger("stream.controllers")
 )
 
+// Controllers ...
 type Controllers struct {
 	Image     *ControllerImage
 	Worker    *ControllerWorker
@@ -42,6 +43,7 @@ type Controllers struct {
 	Map       *ControllerMap
 }
 
+// NewControllers ...
 func NewControllers(adaptors *adaptors.Adaptors,
 	stream *stream.StreamService,
 	scripts *scripts.ScriptService,
@@ -60,6 +62,7 @@ func NewControllers(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Start ...
 func (s *Controllers) Start() {
 	s.Image.Start()
 	s.Worker.Start()
@@ -68,6 +71,7 @@ func (s *Controllers) Start() {
 	s.Map.Start()
 }
 
+// Stop ...
 func (s *Controllers) Stop() {
 	s.Image.Stop()
 	s.Worker.Stop()

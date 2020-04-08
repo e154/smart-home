@@ -29,8 +29,10 @@ import (
 	"time"
 )
 
+// Nodes ...
 type Nodes []*Node
 
+// Node ...
 type Node struct {
 	modelLock  sync.Mutex
 	model      *m.Node
@@ -43,6 +45,7 @@ type Node struct {
 	stat       NodeStat
 }
 
+// NewNode ...
 func NewNode(model *m.Node,
 	mqtt *mqtt.Mqtt,
 	metric *metrics.MetricManager) *Node {
@@ -81,6 +84,7 @@ func NewNode(model *m.Node,
 	return node
 }
 
+// Remove ...
 func (n *Node) Remove() {
 
 	log.Infof("Remove node %v", n.model.Id)
@@ -88,6 +92,7 @@ func (n *Node) Remove() {
 	n.quit <- struct{}{}
 }
 
+// Send ...
 func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err error) {
 
 	//log.Debugf("send device(%v) command(%v)", device.Id, command)
@@ -114,7 +119,7 @@ func (n *Node) Send(device *m.Device, command []byte) (result NodeResponse, err 
 	defer ticker.Stop()
 
 	var done bool
-	for ; ; {
+	for {
 		if done {
 			break
 		}
@@ -171,6 +176,7 @@ func (n *Node) delCh(deviceId int64) {
 	delete(n.ch, deviceId)
 }
 
+// Connect ...
 func (n *Node) Connect() *Node {
 
 	n.mqttClient.Subscribe(n.topic("resp/#"), n.onPublish)
@@ -179,6 +185,7 @@ func (n *Node) Connect() *Node {
 	return n
 }
 
+// IsConnected ...
 func (n *Node) IsConnected() bool {
 	n.statLock.Lock()
 	defer n.statLock.Unlock()
@@ -222,6 +229,7 @@ func (n *Node) ping(client *mqtt.Client, msg mqtt.Message) {
 	return
 }
 
+// MqttPublish ...
 func (n *Node) MqttPublish(topic string, msg interface{}) {
 
 	data, _ := json.Marshal(msg)
@@ -236,18 +244,21 @@ func (n *Node) topic(r string) string {
 	return fmt.Sprintf("home/node/%s/%s", n.model.Name, r)
 }
 
+// GetConnStatus ...
 func (n *Node) GetConnStatus() string {
 	n.statLock.Lock()
 	defer n.statLock.Unlock()
 	return n.stat.ConnStatus
 }
 
+// GetStat ...
 func (n *Node) GetStat() NodeStat {
 	n.statLock.Lock()
 	defer n.statLock.Unlock()
 	return n.stat
 }
 
+// UpdateClientParams ...
 func (n *Node) UpdateClientParams(params *m.Node) {
 	n.modelLock.Lock()
 	defer n.modelLock.Unlock()
@@ -287,6 +298,7 @@ func (n *Node) updateStatus() {
 	go n.metric.Update(metrics.NodeUpdateStatus{Id: n.model.Id, Status: n.stat.ConnStatus})
 }
 
+// Model ...
 func (n *Node) Model() *m.Node {
 	n.modelLock.Lock()
 	defer n.modelLock.Unlock()

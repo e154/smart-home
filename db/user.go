@@ -26,10 +26,12 @@ import (
 	"time"
 )
 
+// Users ...
 type Users struct {
 	Db *gorm.DB
 }
 
+// User ...
 type User struct {
 	Id                  int64 `gorm:"primary_key"`
 	Nickname            string
@@ -60,10 +62,12 @@ type User struct {
 	History             json.RawMessage `gorm:"type:jsonb;not null"`
 }
 
+// TableName ...
 func (u *User) TableName() string {
 	return "users"
 }
 
+// Add ...
 func (u *Users) Add(user *User) (id int64, err error) {
 
 	err = u.Db.Create(&user).Error
@@ -71,6 +75,7 @@ func (u *Users) Add(user *User) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (u *Users) GetById(userId int64) (user *User, err error) {
 
 	user = &User{}
@@ -86,6 +91,7 @@ func (u *Users) GetById(userId int64) (user *User, err error) {
 	return
 }
 
+// GetByEmail ...
 func (u *Users) GetByEmail(email string) (user *User, err error) {
 
 	user = &User{}
@@ -101,6 +107,7 @@ func (u *Users) GetByEmail(email string) (user *User, err error) {
 	return
 }
 
+// GetByNickname ...
 func (u *Users) GetByNickname(nickname string) (user *User, err error) {
 
 	user = &User{}
@@ -116,6 +123,7 @@ func (u *Users) GetByNickname(nickname string) (user *User, err error) {
 	return
 }
 
+// GetByAuthenticationToken ...
 func (u *Users) GetByAuthenticationToken(token string) (user *User, err error) {
 
 	user = &User{}
@@ -131,6 +139,7 @@ func (u *Users) GetByAuthenticationToken(token string) (user *User, err error) {
 	return
 }
 
+// GetByResetPassToken ...
 func (u *Users) GetByResetPassToken(token string) (user *User, err error) {
 
 	user = &User{}
@@ -146,24 +155,25 @@ func (u *Users) GetByResetPassToken(token string) (user *User, err error) {
 	return
 }
 
+// Update ...
 func (u *Users) Update(user *User) (err error) {
 
 	q := map[string]interface{}{
-		"nickname":             user.Nickname,
-		"first_name":           user.FirstName,
-		"last_name":            user.LastName,
-		"email":                user.Email,
-		"status":               user.Status,
-		"reset_password_token": user.ResetPasswordToken,
-		"authentication_token": user.AuthenticationToken,
-		"image_id":             user.ImageId,
-		"sign_in_count":        user.SignInCount,
-		"current_sign_in_ip":   user.CurrentSignInIp,
-		"last_sign_in_ip":      user.LastSignInIp,
-		"lang":                 user.Lang,
-		"user_id":              user.UserId,
-		"role_name":            user.RoleName,
-		"meta":                 user.Meta,
+		"nickname":               user.Nickname,
+		"first_name":             user.FirstName,
+		"last_name":              user.LastName,
+		"email":                  user.Email,
+		"status":                 user.Status,
+		"reset_password_token":   user.ResetPasswordToken,
+		"authentication_token":   user.AuthenticationToken,
+		"image_id":               user.ImageId,
+		"sign_in_count":          user.SignInCount,
+		"current_sign_in_ip":     user.CurrentSignInIp,
+		"last_sign_in_ip":        user.LastSignInIp,
+		"lang":                   user.Lang,
+		"user_id":                user.UserId,
+		"role_name":              user.RoleName,
+		"meta":                   user.Meta,
 		"reset_password_sent_at": user.ResetPasswordSentAt,
 		"current_sign_in_at":     user.CurrentSignInAt,
 		"last_sign_in_at":        user.LastSignInAt,
@@ -179,6 +189,7 @@ func (u *Users) Update(user *User) (err error) {
 	return
 }
 
+// NewResetPassToken ...
 func (u *Users) NewResetPassToken(userId int64, token string) (err error) {
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"reset_password_token":   token,
@@ -187,6 +198,7 @@ func (u *Users) NewResetPassToken(userId int64, token string) (err error) {
 	return
 }
 
+// ClearResetPassToken ...
 func (u *Users) ClearResetPassToken(userId int64) (err error) {
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"reset_password_token":   "",
@@ -195,6 +207,7 @@ func (u *Users) ClearResetPassToken(userId int64) (err error) {
 	return
 }
 
+// ClearToken ...
 func (u *Users) ClearToken(userId int64) (err error) {
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"authentication_token": "",
@@ -202,6 +215,7 @@ func (u *Users) ClearToken(userId int64) (err error) {
 	return
 }
 
+// UpdateAuthenticationToken ...
 func (u *Users) UpdateAuthenticationToken(userId int64, token string) (err error) {
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"authentication_token": token,
@@ -209,6 +223,7 @@ func (u *Users) UpdateAuthenticationToken(userId int64, token string) (err error
 	return
 }
 
+// Delete ...
 func (u *Users) Delete(userId int64) (err error) {
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"deleted_at": time.Now(),
@@ -216,6 +231,7 @@ func (u *Users) Delete(userId int64) (err error) {
 	return
 }
 
+// List ...
 func (n *Users) List(limit, offset int64, orderBy, sort string) (list []*User, total int64, err error) {
 
 	if err = n.Db.Model(User{}).Count(&total).Error; err != nil {

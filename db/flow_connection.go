@@ -19,17 +19,19 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
+	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/system/uuid"
-	"encoding/json"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// Connections ...
 type Connections struct {
 	Db *gorm.DB
 }
 
+// Connection ...
 type Connection struct {
 	Uuid          uuid.UUID `gorm:"primary_key"`
 	Name          string
@@ -45,10 +47,12 @@ type Connection struct {
 	UpdatedAt     time.Time
 }
 
+// TableName ...
 func (d *Connection) TableName() string {
 	return "connections"
 }
 
+// Add ...
 func (n Connections) Add(connection *Connection) (id uuid.UUID, err error) {
 	if err = n.Db.Create(&connection).Error; err != nil {
 		return
@@ -57,12 +61,14 @@ func (n Connections) Add(connection *Connection) (id uuid.UUID, err error) {
 	return
 }
 
+// GetById ...
 func (n Connections) GetById(id uuid.UUID) (connection *Connection, err error) {
 	connection = &Connection{Uuid: id}
 	err = n.Db.First(&connection).Error
 	return
 }
 
+// Update ...
 func (n Connections) Update(m *Connection) (err error) {
 	err = n.Db.Model(&Connection{Uuid: m.Uuid}).Updates(map[string]interface{}{
 		"name":           m.Name,
@@ -77,11 +83,13 @@ func (n Connections) Update(m *Connection) (err error) {
 	return
 }
 
+// Delete ...
 func (n Connections) Delete(ids []uuid.UUID) (err error) {
 	err = n.Db.Delete(&Connection{}, "uuid in (?)", ids).Error
 	return
 }
 
+// List ...
 func (n *Connections) List(limit, offset int64, orderBy, sort string) (list []*Connection, total int64, err error) {
 
 	if err = n.Db.Model(Connection{}).Count(&total).Error; err != nil {

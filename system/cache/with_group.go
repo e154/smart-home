@@ -28,6 +28,7 @@ var (
 	log = common.MustGetLogger("cache")
 )
 
+// WithGroup ...
 type WithGroup struct {
 	bm        Cache
 	cacheTime time.Duration
@@ -35,6 +36,7 @@ type WithGroup struct {
 	name      string
 }
 
+// NewWithGroup ...
 func NewWithGroup(name string, t time.Duration, v bool) (group *WithGroup, err error) {
 
 	var bm Cache
@@ -52,6 +54,7 @@ func NewWithGroup(name string, t time.Duration, v bool) (group *WithGroup, err e
 	return
 }
 
+// ClearAll ...
 func (c *WithGroup) ClearAll() (*WithGroup, error) {
 	c.log("clear all")
 
@@ -60,10 +63,12 @@ func (c *WithGroup) ClearAll() (*WithGroup, error) {
 	return c, err
 }
 
+// GetKey ...
 func (c *WithGroup) GetKey(key interface{}) string {
 	return fmt.Sprintf("%s_%s", c.name, key.(string))
 }
 
+// Clear ...
 func (c *WithGroup) Clear(key string) (*WithGroup, error) {
 	cacheKey := c.GetKey(key)
 
@@ -99,6 +104,7 @@ func (c *WithGroup) addToGroup(group, key string) (*WithGroup, error) {
 	return c, err
 }
 
+// ClearGroup ...
 func (c *WithGroup) ClearGroup(group string) (*WithGroup, error) {
 	c.log("clear group %s", group)
 
@@ -122,6 +128,7 @@ func (c *WithGroup) ClearGroup(group string) (*WithGroup, error) {
 	return c, err
 }
 
+// Put ...
 func (c *WithGroup) Put(group, key string, val interface{}) (*WithGroup, error) {
 	c.log("put key %s", key)
 
@@ -132,17 +139,20 @@ func (c *WithGroup) Put(group, key string, val interface{}) (*WithGroup, error) 
 	return c.addToGroup(group, key)
 }
 
+// IsExist ...
 func (c *WithGroup) IsExist(key string) bool {
 
 	return c.bm.IsExist(key)
 }
 
+// Get ...
 func (c *WithGroup) Get(key string) interface{} {
 	c.log("get key %s", key)
 
 	return c.bm.Get(key)
 }
 
+// Delete ...
 func (c *WithGroup) Delete(key string) *WithGroup {
 	c.log("delete value by key %s", key)
 

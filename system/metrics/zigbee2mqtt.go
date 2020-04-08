@@ -22,17 +22,20 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
+// Zigbee2Mqtt ...
 type Zigbee2Mqtt struct {
 	Total    int64 `json:"total"`
 	Disabled int64 `json:"disabled"`
 }
 
+// Zigbee2MqttManager ...
 type Zigbee2MqttManager struct {
 	publisher IPublisher
 	total     metrics.Counter
 	disabled  metrics.Counter
 }
 
+// NewZigbee2MqttManager ...
 func NewZigbee2MqttManager(publisher IPublisher) *Zigbee2MqttManager {
 	return &Zigbee2MqttManager{
 		publisher: publisher,
@@ -56,6 +59,7 @@ func (d *Zigbee2MqttManager) update(t interface{}) {
 	d.broadcast()
 }
 
+// Snapshot ...
 func (d *Zigbee2MqttManager) Snapshot() Zigbee2Mqtt {
 	return Zigbee2Mqtt{
 		Total:    d.total.Count(),
@@ -67,13 +71,16 @@ func (d *Zigbee2MqttManager) broadcast() {
 	go d.publisher.Broadcast("zigbee2mqtt")
 }
 
+// Zigbee2MqttAdd ...
 type Zigbee2MqttAdd struct {
 	TotalNum    int64
 	DisabledNum int64
 }
 
+// Zigbee2MqttUpdate ...
 type Zigbee2MqttUpdate struct{}
 
+// Zigbee2MqttDelete ...
 type Zigbee2MqttDelete struct {
 	TotalNum    int64
 	DisabledNum int64

@@ -26,12 +26,14 @@ import (
 	"sync"
 )
 
+// Map ...
 type Map struct {
 	metric   *metrics.MetricManager
 	elements sync.Map
 	adaptors *adaptors.Adaptors
 }
 
+// NewMap ...
 func NewMap(metric *metrics.MetricManager,
 	adaptors *adaptors.Adaptors) *Map {
 	return &Map{
@@ -40,6 +42,7 @@ func NewMap(metric *metrics.MetricManager,
 	}
 }
 
+// SetElementState ...
 func (b *Map) SetElementState(elementName, stateSystemName string) {
 
 	if elementName == "" || stateSystemName == "" {
@@ -68,6 +71,7 @@ func (b *Map) SetElementState(elementName, stateSystemName string) {
 	}
 }
 
+// GetElement ...
 func (b *Map) GetElement(elementName string) (element *MapElement, err error) {
 
 	if elementName == "" {
@@ -86,6 +90,7 @@ func (b *Map) GetElement(elementName string) (element *MapElement, err error) {
 	return
 }
 
+// NewMapElement ...
 func (b *Map) NewMapElement(elementName string, stateSystemName *string) (*MapElement, error) {
 
 	element, err := NewMapElement(elementName, stateSystemName, b, b.adaptors)

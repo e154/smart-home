@@ -29,6 +29,7 @@ import (
 	"sync"
 )
 
+// Logging ...
 type Logging struct {
 	logger     *zap.Logger
 	logDbSaver *LogDbSaver
@@ -36,6 +37,7 @@ type Logging struct {
 	oldLog     m.Log
 }
 
+// NewLogger ...
 func NewLogger(logDbSaver *LogDbSaver,
 	appConfig *config.AppConfig) (logging *Logging) {
 
@@ -75,7 +77,6 @@ func NewLogger(logDbSaver *LogDbSaver,
 
 	// From a zapcore.Core, it's easy to construct a Logger.
 	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.Hooks(logging.selfSaver))
-
 
 	zap.ReplaceGlobals(logger)
 
@@ -120,6 +121,7 @@ func (b *Logging) selfSaver(e zapcore.Entry) (err error) {
 	return nil
 }
 
+// CustomLevelEncoder ...
 func CustomLevelEncoder(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
 	s, ok := _levelToCapitalColorString[l]
 	if !ok {
@@ -136,6 +138,7 @@ func CustomNameEncoder(v string, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(builder.String()[0:25])
 }
 
+// CustomCallerEncoder ...
 func CustomCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(caller.TrimmedPath() + " >")
 }

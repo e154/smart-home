@@ -20,6 +20,7 @@ package models
 
 import "time"
 
+// FlowZigbee2mqttDevice ...
 type FlowZigbee2mqttDevice struct {
 	Id                  int64              `json:"id"`
 	Flow                *Flow              `json:"flow"`

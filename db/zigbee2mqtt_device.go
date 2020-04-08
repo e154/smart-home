@@ -24,10 +24,12 @@ import (
 	"time"
 )
 
+// Zigbee2mqttDevices ...
 type Zigbee2mqttDevices struct {
 	Db *gorm.DB
 }
 
+// Zigbee2mqttDevice ...
 type Zigbee2mqttDevice struct {
 	Id            string `gorm:"primary_key"`
 	Zigbee2mqtt   *Zigbee2mqtt
@@ -43,10 +45,12 @@ type Zigbee2mqttDevice struct {
 	UpdatedAt     time.Time
 }
 
+// TableName ...
 func (m *Zigbee2mqttDevice) TableName() string {
 	return "zigbee2mqtt_devices"
 }
 
+// Add ...
 func (z Zigbee2mqttDevices) Add(v *Zigbee2mqttDevice) (err error) {
 	if err = z.Db.Create(&v).Error; err != nil {
 		return
@@ -54,12 +58,14 @@ func (z Zigbee2mqttDevices) Add(v *Zigbee2mqttDevice) (err error) {
 	return
 }
 
+// GetById ...
 func (z Zigbee2mqttDevices) GetById(id string) (v *Zigbee2mqttDevice, err error) {
 	v = &Zigbee2mqttDevice{Id: id}
 	err = z.Db.First(&v).Error
 	return
 }
 
+// Update ...
 func (z Zigbee2mqttDevices) Update(m *Zigbee2mqttDevice) (err error) {
 	err = z.Db.Model(&Zigbee2mqttDevice{Id: m.Id}).Updates(map[string]interface{}{
 		"Name":         m.Name,
@@ -73,11 +79,13 @@ func (z Zigbee2mqttDevices) Update(m *Zigbee2mqttDevice) (err error) {
 	return
 }
 
+// Delete ...
 func (z Zigbee2mqttDevices) Delete(id string) (err error) {
 	err = z.Db.Delete(&Zigbee2mqttDevice{Id: id}).Error
 	return
 }
 
+// List ...
 func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	if err = z.Db.Model(Zigbee2mqttDevice{}).Count(&total).Error; err != nil {
@@ -94,6 +102,7 @@ func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevic
 	return
 }
 
+// Search ...
 func (z *Zigbee2mqttDevices) Search(query string, limit, offset int) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	q := z.Db.Model(&Zigbee2mqttDevice{}).

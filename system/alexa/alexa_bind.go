@@ -18,21 +18,14 @@
 
 package alexa
 
-// Javascript Binding
-//
-// Alexa
-//	.OutputSpeech(text)
-//	.Card(title, content)
-//	.EndSession(bool)
-//	.Session()
-//
-
+// AlexaBind ...
 type AlexaBind struct {
 	Slots map[string]string
 	req   *Request
 	resp  *Response
 }
 
+// NewAlexaBind ...
 func NewAlexaBind(req *Request, resp *Response) (alex *AlexaBind) {
 	alex = &AlexaBind{
 		Slots: make(map[string]string),
@@ -45,21 +38,25 @@ func NewAlexaBind(req *Request, resp *Response) (alex *AlexaBind) {
 	return
 }
 
+// OutputSpeech ...
 func (r *AlexaBind) OutputSpeech(text string) *AlexaBind {
 	r.resp.OutputSpeech(text)
 	return r
 }
 
+// Card ...
 func (r *AlexaBind) Card(title string, content string) *AlexaBind {
 	r.resp.Card(title, content)
 	return r
 }
 
+// EndSession ...
 func (r *AlexaBind) EndSession(flag bool) *AlexaBind {
 	r.resp.EndSession(flag)
 	return r
 }
 
+// Session ...
 func (r *AlexaBind) Session() string {
 	return r.req.Session.SessionID
 }

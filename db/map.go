@@ -19,17 +19,19 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
 	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/common"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// Maps ...
 type Maps struct {
 	Db *gorm.DB
 }
 
+// Map ...
 type Map struct {
 	Id          int64 `gorm:"primary_key"`
 	Name        string
@@ -40,10 +42,12 @@ type Map struct {
 	UpdatedAt   time.Time
 }
 
+// TableName ...
 func (d *Map) TableName() string {
 	return "maps"
 }
 
+// Add ...
 func (n Maps) Add(v *Map) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -52,12 +56,14 @@ func (n Maps) Add(v *Map) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n Maps) GetById(mapId int64) (v *Map, err error) {
 	v = &Map{Id: mapId}
 	err = n.Db.First(&v).Error
 	return
 }
 
+// GetFullById ...
 func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 
 	v = &Map{}
@@ -126,7 +132,6 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 			Error
 	}
 
-
 	for _, l := range v.Layers {
 		for _, e := range l.Elements {
 			switch e.PrototypeType {
@@ -167,6 +172,7 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 	return
 }
 
+// Update ...
 func (n Maps) Update(m *Map) (err error) {
 	err = n.Db.Model(&Map{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
@@ -176,11 +182,13 @@ func (n Maps) Update(m *Map) (err error) {
 	return
 }
 
+// Delete ...
 func (n Maps) Delete(mapId int64) (err error) {
 	err = n.Db.Delete(&Map{Id: mapId}).Error
 	return
 }
 
+// List ...
 func (n *Maps) List(limit, offset int64, orderBy, sort string) (list []*Map, total int64, err error) {
 
 	if err = n.Db.Model(Map{}).Count(&total).Error; err != nil {
@@ -198,6 +206,7 @@ func (n *Maps) List(limit, offset int64, orderBy, sort string) (list []*Map, tot
 	return
 }
 
+// Search ...
 func (n *Maps) Search(query string, limit, offset int) (list []*Map, total int64, err error) {
 
 	q := n.Db.Model(&Map{}).

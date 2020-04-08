@@ -22,6 +22,7 @@ import (
 	"time"
 )
 
+// MapDeviceHistory ...
 type MapDeviceHistory struct {
 	Id          int64     `json:"id"`
 	MapDeviceId int64     `json:"map_device_id"`

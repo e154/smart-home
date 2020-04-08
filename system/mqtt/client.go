@@ -26,6 +26,7 @@ import (
 	"sync"
 )
 
+// Client ...
 type Client struct {
 	mqtt            *Mqtt
 	name            string
@@ -33,6 +34,7 @@ type Client struct {
 	subscribers     map[string]MessageHandler
 }
 
+// NewClient ...
 func NewClient(mqtt *Mqtt, name string) *Client {
 	return &Client{
 		mqtt:            mqtt,
@@ -42,11 +44,13 @@ func NewClient(mqtt *Mqtt, name string) *Client {
 	}
 }
 
+// Publish ...
 func (m *Client) Publish(topic string, payload []byte) (err error) {
 	m.mqtt.Publish(topic, payload, 0, false)
 	return
 }
 
+// Subscribe ...
 func (m *Client) Subscribe(topic string, handler MessageHandler) (err error) {
 	m.subscribersLock.Lock()
 	defer m.subscribersLock.Unlock()
@@ -61,6 +65,7 @@ func (m *Client) Subscribe(topic string, handler MessageHandler) (err error) {
 	return
 }
 
+// Unsubscribe ...
 func (m *Client) Unsubscribe(topic string) {
 	m.subscribersLock.Lock()
 	defer m.subscribersLock.Unlock()
@@ -69,6 +74,7 @@ func (m *Client) Unsubscribe(topic string) {
 	}
 }
 
+// UnsubscribeAll ...
 func (m *Client) UnsubscribeAll() {
 	m.subscribersLock.Lock()
 	defer m.subscribersLock.Unlock()
@@ -77,6 +83,7 @@ func (m *Client) UnsubscribeAll() {
 	}
 }
 
+// OnMsgArrived ...
 func (m *Client) OnMsgArrived(ctx context.Context, client gmqtt.Client, msg packets.Message) {
 	m.subscribersLock.Lock()
 	defer m.subscribersLock.Unlock()

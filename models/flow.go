@@ -24,6 +24,7 @@ import (
 	"time"
 )
 
+// Flow ...
 type Flow struct {
 	Id                 int64                `json:"id"`
 	Name               string               `json:"name" valid:"MaxSize(254);Required"`
@@ -41,6 +42,7 @@ type Flow struct {
 	UpdatedAt          time.Time            `json:"updated_at"`
 }
 
+// Valid ...
 func (d *Flow) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

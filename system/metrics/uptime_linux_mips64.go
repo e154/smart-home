@@ -20,11 +20,13 @@ package metrics
 
 import "sync"
 
+// UptimeManager ...
 type UptimeManager struct {
 	sync.Mutex
 	total uint64
 }
 
+// NewUptimeManager ...
 func NewUptimeManager(publisher IPublisher) *UptimeManager {
 	return &UptimeManager{}
 }
@@ -37,6 +39,7 @@ func (d *UptimeManager) stop() {
 
 }
 
+// Snapshot ...
 func (d UptimeManager) Snapshot() Uptime {
 	return Uptime{
 		Total: d.total,

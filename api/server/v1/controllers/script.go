@@ -19,19 +19,21 @@
 package controllers
 
 import (
-	"strconv"
-	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/scripts"
+	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
+// ControllerScript ...
 type ControllerScript struct {
 	*ControllerCommon
 	scriptService *scripts.ScriptService
 }
 
+// NewControllerScript ...
 func NewControllerScript(common *ControllerCommon,
 	scriptService *scripts.ScriptService) *ControllerScript {
 	return &ControllerScript{

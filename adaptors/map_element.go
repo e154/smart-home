@@ -27,11 +27,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MapElement ...
 type MapElement struct {
 	table *db.MapElements
 	db    *gorm.DB
 }
 
+// GetMapElementAdaptor ...
 func GetMapElementAdaptor(d *gorm.DB) *MapElement {
 	return &MapElement{
 		table: &db.MapElements{Db: d},
@@ -39,6 +41,7 @@ func GetMapElementAdaptor(d *gorm.DB) *MapElement {
 	}
 }
 
+// Add ...
 func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 
 	transaction := true
@@ -112,6 +115,7 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n *MapElement) GetById(mapId int64) (ver *m.MapElement, err error) {
 
 	var dbVer *db.MapElement
@@ -124,6 +128,7 @@ func (n *MapElement) GetById(mapId int64) (ver *m.MapElement, err error) {
 	return
 }
 
+// GetByName ...
 func (n *MapElement) GetByName(name string) (ver *m.MapElement, err error) {
 
 	var dbVer *db.MapElement
@@ -136,6 +141,7 @@ func (n *MapElement) GetByName(name string) (ver *m.MapElement, err error) {
 	return
 }
 
+// Update ...
 func (n *MapElement) Update(ver *m.MapElement) (err error) {
 
 	var oldVer *m.MapElement
@@ -240,6 +246,7 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 	return
 }
 
+// Delete ...
 func (n *MapElement) Delete(mapId int64) (err error) {
 
 	var ver *m.MapElement
@@ -290,12 +297,14 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 	return
 }
 
+// Sort ...
 func (n *MapElement) Sort(ver *m.MapElement) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Sort(dbVer)
 	return
 }
 
+// List ...
 func (n *MapElement) List(limit, offset int64, orderBy, sort string) (list []*m.MapElement, total int64, err error) {
 	var dbList []*db.MapElement
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -311,6 +320,7 @@ func (n *MapElement) List(limit, offset int64, orderBy, sort string) (list []*m.
 	return
 }
 
+// GetActiveElements ...
 func (n *MapElement) GetActiveElements(sortBy, order string, limit, offset int) (result []*m.MapElement, total int64, err error) {
 
 	var dbList []*db.MapElement

@@ -34,4 +34,3 @@ type MessageDeliveryList struct {
 		} `json:"meta"`
 	}
 }
-

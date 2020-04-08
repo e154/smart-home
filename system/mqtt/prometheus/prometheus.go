@@ -45,6 +45,7 @@ type Prometheus struct {
 	path         string
 }
 
+// New ...
 func New(httpSever *http.Server, path string) *Prometheus {
 	p := &Prometheus{
 		httpServer: httpSever,
@@ -53,6 +54,7 @@ func New(httpSever *http.Server, path string) *Prometheus {
 	return p
 }
 
+// Load ...
 func (p *Prometheus) Load(service gmqtt.Server) error {
 	p.statsManager = service.GetStatsManager()
 	r := prometheus.NewPedanticRegistry()
@@ -68,20 +70,28 @@ func (p *Prometheus) Load(service gmqtt.Server) error {
 	}()
 	return nil
 }
+
+// Unload ...
 func (p *Prometheus) Unload() error {
 	return p.httpServer.Shutdown(context.Background())
 }
+
+// HookWrapper ...
 func (p *Prometheus) HookWrapper() gmqtt.HookWrapper {
 	return gmqtt.HookWrapper{}
 }
+
+// Name ...
 func (p *Prometheus) Name() string {
 	return name
 }
 
+// Describe ...
 func (p *Prometheus) Describe(desc chan<- *prometheus.Desc) {
 	prometheus.DescribeByCollect(p, desc)
 }
 
+// Collect ...
 func (p *Prometheus) Collect(m chan<- prometheus.Metric) {
 	log.Debug("metrics collected")
 	st := p.statsManager.GetStats()

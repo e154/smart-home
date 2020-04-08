@@ -18,6 +18,7 @@
 
 package models
 
+// TemplateTree ...
 type TemplateTree struct {
 	Name        string          `json:"name"`
 	Description string          `json:"description"`
@@ -25,20 +26,28 @@ type TemplateTree struct {
 	Nodes       []*TemplateTree `json:"nodes"`
 }
 
-type TemplateStatus string
+// TemplateStatus ...
+type TemplateStatus string 
+// TemplateType ...
 type TemplateType string
 
+// String ...
 func (s TemplateStatus) String() string {
 	return string(s)
 }
 
+// String ...
 func (t TemplateType) String() string {
 	return string(t)
 }
 
 const (
-	TemplateStatusActive   = TemplateStatus("active")
+	// TemplateStatusActive ...
+	TemplateStatusActive = TemplateStatus("active")
+	// TemplateStatusUnactive ...
 	TemplateStatusUnactive = TemplateStatus("inactive")
-	TemplateTypeItem       = TemplateType("item")
-	TemplateTypeTemplate   = TemplateType("template")
+	// TemplateTypeItem ...
+	TemplateTypeItem = TemplateType("item")
+	// TemplateTypeTemplate ...
+	TemplateTypeTemplate = TemplateType("template")
 )

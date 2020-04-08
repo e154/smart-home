@@ -28,11 +28,13 @@ var (
 	log = common.MustGetLogger("slack")
 )
 
+// Slack ...
 type Slack struct {
 	cfg *SlackConfig
 	api *slack.Client
 }
 
+// NewSlack ...
 func NewSlack(cfg *SlackConfig) (*Slack, error) {
 
 	if cfg.Token == "" {
@@ -45,6 +47,7 @@ func NewSlack(cfg *SlackConfig) (*Slack, error) {
 	}, nil
 }
 
+// SendMsg ...
 func (c *Slack) SendMsg(message *SlackMessage) (err error) {
 
 	options := []slack.MsgOption{

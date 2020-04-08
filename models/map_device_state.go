@@ -19,10 +19,11 @@
 package models
 
 import (
-	"time"
 	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
+// MapDeviceState ...
 type MapDeviceState struct {
 	Id            int64        `json:"id"`
 	DeviceState   *DeviceState `json:"device_state"`
@@ -35,6 +36,7 @@ type MapDeviceState struct {
 	UpdatedAt     time.Time    `json:"updated_at"`
 }
 
+// Valid ...
 func (m *MapDeviceState) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

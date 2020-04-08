@@ -165,6 +165,7 @@ func (r *Response) RespondToIntent(name DialogType, intent *Intent, slot *Slot) 
 	return r
 }
 
+// String ...
 func (r *Response) String() ([]byte, error) {
 	jsonStr, err := json.Marshal(r)
 	if err != nil {

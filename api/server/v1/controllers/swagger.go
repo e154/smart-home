@@ -19,22 +19,25 @@
 package controllers
 
 import (
+	"github.com/e154/smart-home/system/swaggo/gin-swagger/swaggerFiles"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/webdav"
-	"regexp"
-	"github.com/e154/smart-home/system/swaggo/gin-swagger/swaggerFiles"
 	"html/template"
+	"regexp"
 	"strings"
 )
 
+// ControllerSwagger ...
 type ControllerSwagger struct {
 	*ControllerCommon
 }
 
+// NewControllerSwagger ...
 func NewControllerSwagger(common *ControllerCommon) *ControllerSwagger {
 	return &ControllerSwagger{ControllerCommon: common}
 }
 
+// WrapHandler ...
 func (c ControllerSwagger) WrapHandler(h *webdav.Handler) gin.HandlerFunc {
 
 	t := template.New("swagger_index.html")
@@ -137,7 +140,6 @@ const swaggerIndexTempl = `<!-- HTML for static distribution bundle build -->
     <symbol viewBox="0 0 20 20" id="large-arrow-down">
       <path d="M17.418 6.109c.272-.268.709-.268.979 0s.271.701 0 .969l-7.908 7.83c-.27.268-.707.268-.979 0l-7.908-7.83c-.27-.268-.27-.701 0-.969.271-.268.709-.268.979 0L10 13.25l7.418-7.141z"/>
     </symbol>
-
 
     <symbol viewBox="0 0 24 24" id="jump-to">
       <path d="M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z"/>

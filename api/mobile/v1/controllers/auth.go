@@ -19,16 +19,18 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	"net/http"
 	"github.com/e154/smart-home/common"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
+// ControllerAuth ...
 type ControllerAuth struct {
 	*ControllerCommon
 }
 
+// NewControllerAuth ...
 func NewControllerAuth(common *ControllerCommon) *ControllerAuth {
 	return &ControllerAuth{ControllerCommon: common}
 }

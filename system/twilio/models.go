@@ -18,6 +18,7 @@
 
 package twilio
 
+// Balance ...
 type Balance struct {
 	Currency   string `json:"currency"`
 	Balance    string `json:"balance"`
@@ -25,13 +26,22 @@ type Balance struct {
 }
 
 const (
-	StatusAccepted    = "accepted"
-	StatusQueued      = "queued"
-	StatusSending     = "sending"
-	StatusReceiving   = "receiving"
-	StatusReceived    = "received"
-	StatusDelivered   = "delivered"
+	// StatusAccepted ...
+	StatusAccepted = "accepted"
+	// StatusQueued ...
+	StatusQueued = "queued"
+	// StatusSending ...
+	StatusSending = "sending"
+	// StatusReceiving ...
+	StatusReceiving = "receiving"
+	// StatusReceived ...
+	StatusReceived = "received"
+	// StatusDelivered ...
+	StatusDelivered = "delivered"
+	// StatusUndelivered ...
 	StatusUndelivered = "undelivered"
-	StatusSent        = "sent"
-	StatusFailed      = "failed"
+	// StatusSent ...
+	StatusSent = "sent"
+	// StatusFailed ...
+	StatusFailed = "failed"
 )

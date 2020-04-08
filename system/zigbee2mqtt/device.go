@@ -23,12 +23,14 @@ import (
 	"sync"
 )
 
+// Device ...
 type Device struct {
 	friendlyName string
 	modelLock    *sync.Mutex
 	model        models.Zigbee2mqttDevice
 }
 
+// NewDevice ...
 func NewDevice(friendlyName string, model *models.Zigbee2mqttDevice) *Device {
 	return &Device{
 		friendlyName: friendlyName,
@@ -37,6 +39,7 @@ func NewDevice(friendlyName string, model *models.Zigbee2mqttDevice) *Device {
 	}
 }
 
+// AddFunc ...
 func (d *Device) AddFunc(name string) {
 	d.modelLock.Lock()
 	defer d.modelLock.Unlock()
@@ -48,6 +51,7 @@ func (d *Device) AddFunc(name string) {
 	d.model.Functions = append(d.model.Functions, name)
 }
 
+// DeviceType ...
 func (d *Device) DeviceType(devType string) {
 	d.modelLock.Lock()
 	defer d.modelLock.Unlock()
@@ -58,48 +62,56 @@ func (d *Device) DeviceType(devType string) {
 	d.model.Type = devType
 }
 
+// GetModel ...
 func (d *Device) GetModel() models.Zigbee2mqttDevice {
 	d.modelLock.Lock()
 	defer d.modelLock.Unlock()
 	return d.model
 }
 
+// SetStatus ...
 func (d *Device) SetStatus(status string) {
 	d.modelLock.Lock()
 	d.model.Status = status
 	d.modelLock.Unlock()
 }
 
+// Status ...
 func (d *Device) Status() string {
 	d.modelLock.Lock()
 	defer d.modelLock.Unlock()
 	return d.model.Status
 }
 
+// SetName ...
 func (d *Device) SetName(name string) {
 	d.modelLock.Lock()
 	d.model.Name = name
 	d.modelLock.Unlock()
 }
 
+// SetModel ...
 func (d *Device) SetModel(model string) {
 	d.modelLock.Lock()
 	d.model.Model = model
 	d.modelLock.Unlock()
 }
 
+// SetDescription ...
 func (d *Device) SetDescription(desc string) {
 	d.modelLock.Lock()
 	d.model.Description = desc
 	d.modelLock.Unlock()
 }
 
+// SetVendor ...
 func (d *Device) SetVendor(vendor string) {
 	d.modelLock.Lock()
 	d.model.Manufacturer = vendor
 	d.modelLock.Unlock()
 }
 
+// GetImage ...
 func (d *Device) GetImage() string {
 	d.modelLock.Lock()
 	defer d.modelLock.Unlock()

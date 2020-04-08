@@ -28,10 +28,12 @@ import (
 	"time"
 )
 
+// Devices ...
 type Devices struct {
 	Db *gorm.DB
 }
 
+// Device ...
 type Device struct {
 	Id          int64 `gorm:"primary_key"`
 	Name        string
@@ -51,10 +53,12 @@ type Device struct {
 	UpdatedAt   time.Time
 }
 
+// TableName ...
 func (m *Device) TableName() string {
 	return "devices"
 }
 
+// Add ...
 func (n Devices) Add(device *Device) (id int64, err error) {
 	if err = n.Db.Create(&device).Error; err != nil {
 		return
@@ -63,6 +67,7 @@ func (n Devices) Add(device *Device) (id int64, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n Devices) GetAllEnabled() (list []*Device, err error) {
 	list = make([]*Device, 0)
 	err = n.Db.Where("status = ?", "enabled").
@@ -78,6 +83,7 @@ func (n Devices) GetAllEnabled() (list []*Device, err error) {
 	return
 }
 
+// GetById ...
 func (n Devices) GetById(deviceId int64) (device *Device, err error) {
 	device = &Device{Id: deviceId}
 	if err = n.Db.First(&device).Error; err != nil {
@@ -87,6 +93,7 @@ func (n Devices) GetById(deviceId int64) (device *Device, err error) {
 	return
 }
 
+// GetByDeviceActionId ...
 func (n Devices) GetByDeviceActionId(deviceActionId int64) (device *Device, err error) {
 	device = &Device{}
 	err = n.Db.Raw(`select d.*
@@ -104,6 +111,7 @@ where da.id = ? and da notnull`, deviceActionId).Scan(device).Error
 	return
 }
 
+// Update ...
 func (n Devices) Update(m *Device) (err error) {
 	err = n.Db.Model(&Device{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
@@ -117,11 +125,13 @@ func (n Devices) Update(m *Device) (err error) {
 	return
 }
 
+// Delete ...
 func (n Devices) Delete(deviceId int64) (err error) {
 	err = n.Db.Delete(&Device{Id: deviceId}).Error
 	return
 }
 
+// List ...
 func (n *Devices) List(limit, offset int64, orderBy, sort string) (list []*Device, total int64, err error) {
 
 	if err = n.Db.Model(Device{}).Count(&total).Error; err != nil {
@@ -154,6 +164,7 @@ func (n *Devices) List(limit, offset int64, orderBy, sort string) (list []*Devic
 	return
 }
 
+// DependencyLoading ...
 func (n *Devices) DependencyLoading(device *Device) (err error) {
 
 	// actions
@@ -214,6 +225,7 @@ func (n *Devices) DependencyLoading(device *Device) (err error) {
 	return
 }
 
+// RemoveState ...
 func (n *Devices) RemoveState(deviceId, stateId int64) (err error) {
 	if deviceId == 0 || stateId == 0 {
 		err = errors.New("bad deviceId or stateId")
@@ -223,6 +235,7 @@ func (n *Devices) RemoveState(deviceId, stateId int64) (err error) {
 	return
 }
 
+// RemoveAction ...
 func (n *Devices) RemoveAction(deviceId, actionId int64) (err error) {
 	if deviceId == 0 || actionId == 0 {
 		err = errors.New("bad deviceId or actionId")
@@ -232,6 +245,7 @@ func (n *Devices) RemoveAction(deviceId, actionId int64) (err error) {
 	return
 }
 
+// Search ...
 func (n *Devices) Search(query string, limit, offset int) (list []*Device, total int64, err error) {
 
 	q := n.Db.Model(&Device{}).

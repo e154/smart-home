@@ -18,6 +18,7 @@
 
 package models
 
+// MapDevice ...
 type MapDevice struct {
 	Id         int64              `json:"id"`
 	SystemName string             `json:"system_name" valid:"Required"`

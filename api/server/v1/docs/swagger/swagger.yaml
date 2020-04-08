@@ -37,11 +37,36 @@ definitions:
       type: object
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  AlexaApplication:
+  AlexaIntent:
     properties:
-      application_id:
+      alexa_skill_id:
+        format: int64
+        type: integer
+        x-go-name: AlexaSkillId
+      created_at:
+        format: date-time
         type: string
-        x-go-name: ApplicationId
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/Script'
+      script_id:
+        format: int64
+        type: integer
+        x-go-name: ScriptId
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AlexaSkill:
+    properties:
       created_at:
         format: date-time
         type: string
@@ -70,6 +95,9 @@ definitions:
         format: int64
         type: integer
         x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
       status:
         type: string
         x-go-name: Status
@@ -79,11 +107,8 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  AlexaApplicationShort:
+  AlexaSkillShort:
     properties:
-      application_id:
-        type: string
-        x-go-name: ApplicationId
       created_at:
         format: date-time
         type: string
@@ -103,37 +128,12 @@ definitions:
         format: int64
         type: integer
         x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
       status:
         type: string
         x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  AlexaIntent:
-    properties:
-      alexa_application_id:
-        format: int64
-        type: integer
-        x-go-name: AlexaApplicationId
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      name:
-        type: string
-        x-go-name: Name
-      script:
-        $ref: '#/definitions/Script'
-      script_id:
-        format: int64
-        type: integer
-        x-go-name: ScriptId
       updated_at:
         format: date-time
         type: string
@@ -217,22 +217,31 @@ definitions:
   DevCommandConfig:
     type: object
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  DevModBusTcpConfig:
+  DevModBusRtuConfig:
     properties:
-      address_port:
+      baud:
+        format: int64
+        type: integer
+        x-go-name: Baud
+      data_bits:
+        format: int64
+        type: integer
+        x-go-name: DataBits
+      parity:
         type: string
-        x-go-name: AddressPort
+        x-go-name: Parity
       slave_id:
         format: int64
         type: integer
         x-go-name: SlaveId
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DevMqttConfig:
-    properties:
-      address:
-        type: string
-        x-go-name: Address
+      stop_bits:
+        format: int64
+        type: integer
+        x-go-name: StopBits
+      timeout:
+        format: int64
+        type: integer
+        x-go-name: Timeout
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Device:
@@ -242,10 +251,6 @@ definitions:
           $ref: '#/definitions/DeviceAction'
         type: array
         x-go-name: Actions
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -265,8 +270,6 @@ definitions:
       name:
         type: string
         x-go-name: Name
-      node:
-        $ref: '#/definitions/Node'
       properties:
         $ref: '#/definitions/DeviceProperties'
       states:
@@ -280,12 +283,8 @@ definitions:
       type:
         type: string
         x-go-name: Type
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceAction:
     properties:
       created_at:
@@ -319,7 +318,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceActionScript:
     properties:
       id:
@@ -330,54 +329,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceProperties:
     allOf:
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
-          type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
     - properties:
         baud:
           format: int64
@@ -445,10 +396,58 @@ definitions:
           type: string
           x-go-name: Zigbee2mqttDeviceId
       type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        data_bits:
+          format: int64
+          type: integer
+          x-go-name: DataBits
+        parity:
+          type: string
+          x-go-name: Parity
+        slave_id:
+          format: int64
+          type: integer
+          x-go-name: SlaveId
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - properties:
+        baud:
+          format: int64
+          type: integer
+          x-go-name: Baud
+        device:
+          format: int64
+          type: integer
+          x-go-name: Device
+        sleep:
+          format: int64
+          type: integer
+          x-go-name: Sleep
+        stop_bits:
+          format: int64
+          type: integer
+          x-go-name: StopBits
+        timeout:
+          format: int64
+          type: integer
+          x-go-name: Timeout
+      type: object
+    - type: object
     description: |-
       An AllOfModel is composed out of embedded structs but it should build
       an allOf property
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceShort:
     properties:
       description:
@@ -468,18 +467,18 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceState:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceStateDevice'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
       id:
         format: int64
         type: integer
@@ -487,8 +486,12 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceStateDevice:
     properties:
       id:
@@ -854,38 +857,18 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       id:
         format: int64
         type: integer
         x-go-name: Id
-      image:
-        type: string
-        x-go-name: Image
-      mime_type:
-        type: string
-        x-go-name: MimeType
-      name:
-        type: string
-        x-go-name: Name
-      size:
-        format: int64
-        type: integer
-        x-go-name: Size
       thumb:
         type: string
         x-go-name: Thumb
-      title:
-        type: string
-        x-go-name: Title
       url:
         type: string
         x-go-name: Url
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   Log:
     properties:
       body:
@@ -906,6 +889,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Map:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -918,8 +905,12 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapDevice:
     properties:
       actions:
@@ -953,6 +944,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapDeviceAction:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       device_action:
         $ref: '#/definitions/DeviceAction'
       device_action_id:
@@ -976,8 +971,12 @@ definitions:
       type:
         type: string
         x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapDeviceHistory:
     properties:
       created_at:
@@ -999,6 +998,10 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapDeviceState:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       device_state:
         $ref: '#/definitions/DeviceState'
       device_state_id:
@@ -1022,8 +1025,12 @@ definitions:
       style:
         type: string
         x-go-name: Style
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElement:
     properties:
       description:
@@ -1091,7 +1098,7 @@ definitions:
         type: integer
         x-go-name: Top
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapElementShort:
     properties:
       description:
@@ -1127,12 +1134,25 @@ definitions:
         $ref: '#/definitions/MapOptions'
     type: object
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+  MapImage:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
+      style:
+        type: string
+        x-go-name: Style
+    type: object
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapLayer:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -1157,16 +1177,12 @@ definitions:
       status:
         type: string
         x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
       weight:
         format: int64
         type: integer
         x-go-name: Weight
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapOptions:
     properties:
       element_option_text:
@@ -1180,7 +1196,21 @@ definitions:
         type: number
         x-go-name: Zoom
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+  MapText:
+    properties:
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      style:
+        type: string
+        x-go-name: Style
+      text:
+        type: string
+        x-go-name: Text
+    type: object
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapZone:
     properties:
       id:
@@ -1407,11 +1437,8 @@ definitions:
         x-go-name: Qos
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewAlexaApplication:
+  NewAlexaSkill:
     properties:
-      application_id:
-        type: string
-        x-go-name: ApplicationId
       description:
         type: string
         x-go-name: Description
@@ -1423,6 +1450,9 @@ definitions:
         format: int64
         type: integer
         x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
       status:
         type: string
         x-go-name: Status
@@ -1449,7 +1479,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceAction:
     properties:
       description:
@@ -1463,7 +1493,7 @@ definitions:
       script:
         $ref: '#/definitions/DeviceActionScript'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceNode:
     properties:
       id:
@@ -1471,7 +1501,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceState:
     properties:
       description:
@@ -1483,7 +1513,7 @@ definitions:
         type: string
         x-go-name: SystemName
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewFlow:
     properties:
       description:
@@ -1556,7 +1586,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMapElement:
     properties:
       description:
@@ -1984,7 +2014,7 @@ definitions:
         type: integer
         x-go-name: Id
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Prototype:
     properties:
       actions:
@@ -2403,11 +2433,8 @@ definitions:
         x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateAlexaApplication:
+  UpdateAlexaSkill:
     properties:
-      application_id:
-        type: string
-        x-go-name: ApplicationId
       description:
         type: string
         x-go-name: Description
@@ -2428,6 +2455,9 @@ definitions:
         format: int64
         type: integer
         x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
       status:
         type: string
         x-go-name: Status
@@ -2576,7 +2606,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateMapElement:
     properties:
       description:
@@ -2637,7 +2667,7 @@ definitions:
         type: string
         x-go-name: Status
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateNode:
     properties:
       description:
@@ -3454,13 +3484,13 @@ paths:
         name: alexa
         required: true
         schema:
-          $ref: '#/definitions/NewAlexaApplication'
+          $ref: '#/definitions/NewAlexaSkill'
           type: object
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/AlexaApplication'
+            $ref: '#/definitions/AlexaSkill'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -3513,7 +3543,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/AlexaApplication'
+            $ref: '#/definitions/AlexaSkill'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -3542,13 +3572,13 @@ paths:
         name: alexa
         required: true
         schema:
-          $ref: '#/definitions/UpdateAlexaApplication'
+          $ref: '#/definitions/UpdateAlexaSkill'
           type: object
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/AlexaApplication'
+            $ref: '#/definitions/AlexaSkill'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -3592,7 +3622,7 @@ paths:
         type: string
       responses:
         "200":
-          $ref: '#/responses/AlexaApplicationList'
+          $ref: '#/responses/AlexaSkillList'
         "401":
           description: Unauthorized
         "403":
@@ -8264,12 +8294,12 @@ paths:
 produces:
 - application/json
 responses:
-  AlexaApplicationList:
+  AlexaSkillList:
     schema:
       properties:
         items:
           items:
-            $ref: '#/definitions/AlexaApplicationShort'
+            $ref: '#/definitions/AlexaSkillShort'
           type: array
           x-go-name: Items
         meta:
@@ -8278,7 +8308,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8303,7 +8333,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8337,7 +8367,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8384,7 +8414,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8418,7 +8448,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8443,7 +8473,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8477,7 +8507,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8502,7 +8532,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8527,7 +8557,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8552,7 +8582,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8586,7 +8616,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8620,7 +8650,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8645,7 +8675,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8679,7 +8709,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8704,7 +8734,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8738,7 +8768,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8772,7 +8802,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8813,7 +8843,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8851,7 +8881,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8889,7 +8919,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8923,7 +8953,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8957,7 +8987,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -9018,7 +9048,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount

@@ -34,12 +34,14 @@ var (
 	log = common.MustGetLogger("migrations")
 )
 
+// Migrations ...
 type Migrations struct {
 	cfg    *orm.OrmConfig
 	source migrate.MigrationSource
 	db     *gorm.DB
 }
 
+// NewMigrations ...
 func NewMigrations(cfg *orm.OrmConfig, db *gorm.DB, mConf *MigrationsConfig) *Migrations {
 
 	var source migrate.MigrationSource
@@ -66,6 +68,7 @@ func NewMigrations(cfg *orm.OrmConfig, db *gorm.DB, mConf *MigrationsConfig) *Mi
 	}
 }
 
+// Connect ...
 func (m Migrations) Connect() (sqlDb *sql.DB, err error) {
 	sqlDb, err = sql.Open("postgres", m.cfg.String())
 	if err != nil {
@@ -76,6 +79,7 @@ func (m Migrations) Connect() (sqlDb *sql.DB, err error) {
 	return
 }
 
+// Up ...
 func (m Migrations) Up() (err error) {
 
 	var sqlDb *sql.DB
@@ -92,6 +96,7 @@ func (m Migrations) Up() (err error) {
 	return
 }
 
+// Down ...
 func (m Migrations) Down() (err error) {
 
 	var sqlDb *sql.DB
@@ -108,6 +113,7 @@ func (m Migrations) Down() (err error) {
 	return
 }
 
+// Purge ...
 func (m Migrations) Purge() (err error) {
 
 	log.Warnf("Purge database: %s", m.cfg.Name)

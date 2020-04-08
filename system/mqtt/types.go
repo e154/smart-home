@@ -26,6 +26,7 @@ import (
 	"github.com/e154/smart-home/system/mqtt/management"
 )
 
+// IManagement ...
 type IManagement interface {
 	GetClients(limit, offset int) (list []*management.ClientInfo, total int, err error)
 	GetClient(clientId string) (client *management.ClientInfo, err error)
@@ -39,6 +40,7 @@ type IManagement interface {
 	SearchTopic(query string) (result []*management.SubscriptionInfo, err error)
 }
 
+// IMQTT ...
 type IMQTT interface {
 	Run()
 	Stop(ctx context.Context) error
@@ -56,12 +58,15 @@ type IMQTT interface {
 	GetStatsManager() gmqtt.StatsManager
 }
 
+// Message ...
 type Message struct {
-	Dup       bool
-	Qos       uint8
-	Retained  bool
-	Topic     string
-	PacketID  uint16
-	Payload   []byte
+	Dup      bool
+	Qos      uint8
+	Retained bool
+	Topic    string
+	PacketID uint16
+	Payload  []byte
 }
+
+// MessageHandler ...
 type MessageHandler func(*Client, Message)

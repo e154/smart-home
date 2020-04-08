@@ -26,6 +26,7 @@ import (
 	"time"
 )
 
+// LogDbSaver ...
 type LogDbSaver struct {
 	adaptors *adaptors.Adaptors
 	pool     chan m.Log
@@ -34,8 +35,9 @@ type LogDbSaver struct {
 	isRunning bool
 }
 
+// NewLogDbSaver ...
 func NewLogDbSaver(adaptors *adaptors.Adaptors,
-	graceful *graceful_service.GracefulService, ) *LogDbSaver {
+	graceful *graceful_service.GracefulService) *LogDbSaver {
 	saver := &LogDbSaver{
 		adaptors: adaptors,
 		pool:     make(chan m.Log),
@@ -49,6 +51,7 @@ func NewLogDbSaver(adaptors *adaptors.Adaptors,
 	return saver
 }
 
+// Start ...
 func (l *LogDbSaver) Start() {
 
 	if l.safeIsRunning() {
@@ -88,6 +91,7 @@ func (l *LogDbSaver) Start() {
 	l.safeSetIsRunning(true)
 }
 
+// Shutdown ...
 func (l *LogDbSaver) Shutdown() {
 	if !l.safeIsRunning() {
 		return
@@ -98,6 +102,7 @@ func (l *LogDbSaver) Shutdown() {
 	close(l.pool)
 }
 
+// Save ...
 func (l *LogDbSaver) Save(log m.Log) {
 	if !l.safeIsRunning() {
 		return

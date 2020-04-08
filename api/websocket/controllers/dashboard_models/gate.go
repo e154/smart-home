@@ -23,15 +23,18 @@ import (
 	"github.com/e154/smart-home/system/stream"
 )
 
+// Gate ...
 type Gate struct {
 	metric *metrics.MetricManager
 }
 
+// NewGate ...
 func NewGate(metric *metrics.MetricManager) (node *Gate) {
 	node = &Gate{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (g *Gate) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

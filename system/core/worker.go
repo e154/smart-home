@@ -27,6 +27,7 @@ import (
 	"time"
 )
 
+// Worker ...
 type Worker struct {
 	Model       *m.Worker
 	flow        *Flow
@@ -38,6 +39,7 @@ type Worker struct {
 	cancelFunc  map[int64]context.CancelFunc
 }
 
+// NewWorker ...
 func NewWorker(model *m.Worker, flow *Flow, cron *cr.Cron) (worker *Worker) {
 
 	worker = &Worker{
@@ -51,11 +53,13 @@ func NewWorker(model *m.Worker, flow *Flow, cron *cr.Cron) (worker *Worker) {
 	return
 }
 
+// Start ...
 func (w *Worker) Start() {
 	w.CronTask = w.cron.NewTask(w.Model.Time, w.Do)
 }
 
-func (w *Worker) Stop() () {
+// Stop ...
+func (w *Worker) Stop() {
 
 	w.actionsLock.Lock()
 	defer w.actionsLock.Unlock()
@@ -88,6 +92,7 @@ func (w *Worker) Stop() () {
 	return
 }
 
+// AddAction ...
 func (w *Worker) AddAction(action *Action) {
 	w.actionsLock.Lock()
 	defer w.actionsLock.Unlock()

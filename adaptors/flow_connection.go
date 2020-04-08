@@ -19,17 +19,19 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
+	"github.com/jinzhu/gorm"
 )
 
+// Connection ...
 type Connection struct {
 	table *db.Connections
 	db    *gorm.DB
 }
 
+// GetConnectionAdaptor ...
 func GetConnectionAdaptor(d *gorm.DB) *Connection {
 	return &Connection{
 		table: &db.Connections{Db: d},
@@ -37,6 +39,7 @@ func GetConnectionAdaptor(d *gorm.DB) *Connection {
 	}
 }
 
+// Add ...
 func (n *Connection) Add(con *m.Connection) (id uuid.UUID, err error) {
 	dbConnection := n.toDb(con)
 	if id, err = n.table.Add(dbConnection); err != nil {
@@ -46,6 +49,7 @@ func (n *Connection) Add(con *m.Connection) (id uuid.UUID, err error) {
 	return
 }
 
+// GetById ...
 func (n *Connection) GetById(conId uuid.UUID) (con *m.Connection, err error) {
 
 	var dbConnection *db.Connection
@@ -58,17 +62,20 @@ func (n *Connection) GetById(conId uuid.UUID) (con *m.Connection, err error) {
 	return
 }
 
+// Update ...
 func (n *Connection) Update(con *m.Connection) (err error) {
 	dbConnection := n.toDb(con)
 	err = n.table.Update(dbConnection)
 	return
 }
 
+// Delete ...
 func (n *Connection) Delete(conIds []uuid.UUID) (err error) {
 	err = n.table.Delete(conIds)
 	return
 }
 
+// List ...
 func (n *Connection) List(limit, offset int64, orderBy, sort string) (list []*m.Connection, total int64, err error) {
 	var dbList []*db.Connection
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -84,6 +91,7 @@ func (n *Connection) List(limit, offset int64, orderBy, sort string) (list []*m.
 	return
 }
 
+// AddOrUpdateConnection ...
 func (n *Connection) AddOrUpdateConnection(connection *m.Connection) (err error) {
 
 	if connection.Uuid.String() == "00000000-0000-0000-0000-000000000000" {

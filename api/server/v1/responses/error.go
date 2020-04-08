@@ -26,8 +26,7 @@ import (
 // swagger:response Error
 type Error struct {
 	// in:body
-	Body struct{
+	Body struct {
 		m.Error
 	}
 }
-

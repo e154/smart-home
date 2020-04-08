@@ -19,16 +19,18 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
+// Device ...
 type Device struct {
 	table *db.Devices
 	db    *gorm.DB
 }
 
+// GetDeviceAdaptor ...
 func GetDeviceAdaptor(d *gorm.DB) *Device {
 	return &Device{
 		table: &db.Devices{Db: d},
@@ -36,6 +38,7 @@ func GetDeviceAdaptor(d *gorm.DB) *Device {
 	}
 }
 
+// Add ...
 func (n *Device) Add(device *m.Device) (id int64, err error) {
 
 	dbDevice := n.toDb(device)
@@ -46,6 +49,7 @@ func (n *Device) Add(device *m.Device) (id int64, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n *Device) GetAllEnabled() (list []*m.Device, err error) {
 
 	var dbList []*db.Device
@@ -62,6 +66,7 @@ func (n *Device) GetAllEnabled() (list []*m.Device, err error) {
 	return
 }
 
+// GetById ...
 func (n *Device) GetById(deviceId int64) (device *m.Device, err error) {
 
 	var dbDevice *db.Device
@@ -74,6 +79,7 @@ func (n *Device) GetById(deviceId int64) (device *m.Device, err error) {
 	return
 }
 
+// GetByDeviceActionId ...
 func (n *Device) GetByDeviceActionId(deviceActionId int64) (device *m.Device, err error) {
 
 	var dbDevice *db.Device
@@ -86,17 +92,20 @@ func (n *Device) GetByDeviceActionId(deviceActionId int64) (device *m.Device, er
 	return
 }
 
+// Update ...
 func (n *Device) Update(device *m.Device) (err error) {
 	dbDevice := n.toDb(device)
 	err = n.table.Update(dbDevice)
 	return
 }
 
+// Delete ...
 func (n *Device) Delete(deviceId int64) (err error) {
 	err = n.table.Delete(deviceId)
 	return
 }
 
+// List ...
 func (n *Device) List(limit, offset int64, orderBy, sort string) (list []*m.Device, total int64, err error) {
 	var dbList []*db.Device
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -112,6 +121,7 @@ func (n *Device) List(limit, offset int64, orderBy, sort string) (list []*m.Devi
 	return
 }
 
+// Search ...
 func (n *Device) Search(query string, limit, offset int) (list []*m.Device, total int64, err error) {
 	var dbList []*db.Device
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {

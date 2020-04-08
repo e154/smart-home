@@ -21,21 +21,25 @@ package core
 //ActionPrototypes
 type Task struct{}
 
+// After ...
 func (m *Task) After(flow *Flow) (err error) {
 	//log.Infof("Task.after: %v", message)
 	return
 }
 
+// Run ...
 func (m *Task) Run(flow *Flow) (err error) {
 	//log.Infof("Task.run: %v", message)
 	return
 }
 
+// Before ...
 func (m *Task) Before(flow *Flow) (err error) {
 	//log.Infof("Task.before: %v", message)
 	return
 }
 
+// Type ...
 func (m *Task) Type() string {
 	return "Task"
 }

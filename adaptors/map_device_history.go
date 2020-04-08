@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MapDeviceHistory ...
 type MapDeviceHistory struct {
 	table *db.MapDeviceHistories
 	db    *gorm.DB
 }
 
+// GetMapDeviceHistoryAdaptor ...
 func GetMapDeviceHistoryAdaptor(d *gorm.DB) *MapDeviceHistory {
 	return &MapDeviceHistory{
 		table: &db.MapDeviceHistories{Db: d},
@@ -36,6 +38,7 @@ func GetMapDeviceHistoryAdaptor(d *gorm.DB) *MapDeviceHistory {
 	}
 }
 
+// Add ...
 func (n *MapDeviceHistory) Add(ver m.MapDeviceHistory) (id int64, err error) {
 
 	id, err = n.table.Add(n.toDb(ver))
@@ -43,6 +46,7 @@ func (n *MapDeviceHistory) Add(ver m.MapDeviceHistory) (id int64, err error) {
 	return
 }
 
+// ListByDeviceId ...
 func (n *MapDeviceHistory) ListByDeviceId(mapDeviceId int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
 
 	var dbList []*db.MapDeviceHistory
@@ -58,6 +62,7 @@ func (n *MapDeviceHistory) ListByDeviceId(mapDeviceId int64, limit, offset int) 
 	return
 }
 
+// ListByElementId ...
 func (n *MapDeviceHistory) ListByElementId(mapElementId int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
 
 	var dbList []*db.MapDeviceHistory
@@ -73,6 +78,7 @@ func (n *MapDeviceHistory) ListByElementId(mapElementId int64, limit, offset int
 	return
 }
 
+// List ...
 func (n *MapDeviceHistory) List(limit, offset int) (list []*m.MapDeviceHistory, err error) {
 
 	var dbList []*db.MapDeviceHistory
@@ -88,6 +94,7 @@ func (n *MapDeviceHistory) List(limit, offset int) (list []*m.MapDeviceHistory, 
 	return
 }
 
+// ListByMapId ...
 func (n *MapDeviceHistory) ListByMapId(mapId int64, limit, offset int, orderBy, sort string) (list []*m.MapDeviceHistory, total int64, err error) {
 
 	var dbList []*db.MapDeviceHistory

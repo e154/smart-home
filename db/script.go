@@ -19,16 +19,18 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
 	"fmt"
-	"time"
 	. "github.com/e154/smart-home/common"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// Scripts ...
 type Scripts struct {
 	Db *gorm.DB
 }
 
+// Script ...
 type Script struct {
 	Id          int64 `gorm:"primary_key"`
 	Lang        ScriptLang
@@ -40,10 +42,12 @@ type Script struct {
 	UpdatedAt   time.Time
 }
 
+// TableName ...
 func (d *Script) TableName() string {
 	return "scripts"
 }
 
+// Add ...
 func (n Scripts) Add(node *Script) (id int64, err error) {
 	if err = n.Db.Create(&node).Error; err != nil {
 		return
@@ -52,12 +56,14 @@ func (n Scripts) Add(node *Script) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n Scripts) GetById(nodeId int64) (node *Script, err error) {
 	node = &Script{Id: nodeId}
 	err = n.Db.First(&node).Error
 	return
 }
 
+// Update ...
 func (n Scripts) Update(m *Script) (err error) {
 	err = n.Db.Model(&Script{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
@@ -69,11 +75,13 @@ func (n Scripts) Update(m *Script) (err error) {
 	return
 }
 
+// Delete ...
 func (n Scripts) Delete(nodeId int64) (err error) {
 	err = n.Db.Delete(&Script{Id: nodeId}).Error
 	return
 }
 
+// List ...
 func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Script, total int64, err error) {
 
 	if err = n.Db.Model(Script{}).Count(&total).Error; err != nil {
@@ -91,6 +99,7 @@ func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Scrip
 	return
 }
 
+// Search ...
 func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total int64, err error) {
 
 	q := n.Db.Model(&Script{}).
@@ -106,4 +115,3 @@ func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total
 
 	return
 }
-

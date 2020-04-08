@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// FlowSubscription ...
 type FlowSubscription struct {
 	db    *gorm.DB
 	table *db.FlowSubscriptions
 }
 
+// GetFlowSubscriptionAdaptor ...
 func GetFlowSubscriptionAdaptor(Db *gorm.DB) *FlowSubscription {
 	return &FlowSubscription{
 		db:    Db,
@@ -36,11 +38,13 @@ func GetFlowSubscriptionAdaptor(Db *gorm.DB) *FlowSubscription {
 	}
 }
 
+// Add ...
 func (f *FlowSubscription) Add(sub *m.FlowSubscription) (err error) {
 	err = f.table.Add(f.toDb(sub))
 	return
 }
 
+// Remove ...
 func (f *FlowSubscription) Remove(ids []int64) (err error) {
 	err = f.table.Delete(ids)
 	return

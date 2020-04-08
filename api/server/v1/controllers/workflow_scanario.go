@@ -19,17 +19,19 @@
 package controllers
 
 import (
+	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
-	"github.com/e154/smart-home/api/server/v1/models"
-	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/common"
 )
 
+// ControllerWorkflowScenario ...
 type ControllerWorkflowScenario struct {
 	*ControllerCommon
 }
 
+// NewControllerWorkflowScenario ...
 func NewControllerWorkflowScenario(common *ControllerCommon) *ControllerWorkflowScenario {
 	return &ControllerWorkflowScenario{ControllerCommon: common}
 }

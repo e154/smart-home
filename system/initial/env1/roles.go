@@ -26,11 +26,13 @@ import (
 	"strings"
 )
 
+// RoleManager ...
 type RoleManager struct {
 	adaptors   *adaptors.Adaptors
 	accessList *access_list.AccessListService
 }
 
+// NewRoleManager ...
 func NewRoleManager(adaptors *adaptors.Adaptors,
 	accessList *access_list.AccessListService) *RoleManager {
 	return &RoleManager{
@@ -163,6 +165,7 @@ func (r RoleManager) addDemo() (demoRole *m.Role) {
 	return
 }
 
+// Create ...
 func (r RoleManager) Create() {
 
 	r.addAdmin()
@@ -170,6 +173,7 @@ func (r RoleManager) Create() {
 
 }
 
+// Upgrade ...
 func (r RoleManager) Upgrade(oldVersion int) (err error) {
 
 	switch oldVersion {

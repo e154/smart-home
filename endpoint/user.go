@@ -19,22 +19,25 @@
 package endpoint
 
 import (
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
-	m "github.com/e154/smart-home/models"
 	"errors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/validation"
 )
 
+// UserEndpoint ...
 type UserEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewUserEndpoint ...
 func NewUserEndpoint(common *CommonEndpoint) *UserEndpoint {
 	return &UserEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (n *UserEndpoint) Add(params *m.User,
 	currentUser *m.User) (result *m.User, errs []*validation.Error, err error) {
 
@@ -93,6 +96,7 @@ func (n *UserEndpoint) Add(params *m.User,
 	return
 }
 
+// GetById ...
 func (n *UserEndpoint) GetById(userId int64) (result *m.User, err error) {
 
 	result, err = n.adaptors.User.GetById(userId)
@@ -100,6 +104,7 @@ func (n *UserEndpoint) GetById(userId int64) (result *m.User, err error) {
 	return
 }
 
+// Delete ...
 func (n *UserEndpoint) Delete(userId int64) (err error) {
 
 	var user *m.User
@@ -117,6 +122,7 @@ func (n *UserEndpoint) Delete(userId int64) (err error) {
 	return
 }
 
+// GetList ...
 func (n *UserEndpoint) GetList(limit, offset int, order, sortBy string) (result []*m.User, total int64, err error) {
 
 	result, total, err = n.adaptors.User.List(int64(limit), int64(offset), order, sortBy)
@@ -124,6 +130,7 @@ func (n *UserEndpoint) GetList(limit, offset int, order, sortBy string) (result 
 	return
 }
 
+// Update ...
 func (n *UserEndpoint) Update(params *m.User) (result *m.User, errs []*validation.Error, err error) {
 
 	var user *m.User
@@ -165,6 +172,7 @@ func (n *UserEndpoint) Update(params *m.User) (result *m.User, errs []*validatio
 	return
 }
 
+// UpdateStatus ...
 func (n *UserEndpoint) UpdateStatus(userId int64, newStatus string) (err error) {
 
 	var user *m.User

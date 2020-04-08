@@ -28,16 +28,19 @@ import (
 	"strings"
 )
 
+// ImageManager ...
 type ImageManager struct {
 	adaptors *adaptors.Adaptors
 }
 
+// NewImageManager ...
 func NewImageManager(adaptors *adaptors.Adaptors) *ImageManager {
 	return &ImageManager{
 		adaptors: adaptors,
 	}
 }
 
+// Create ...
 func (i ImageManager) Create() (imageList map[string]*m.Image) {
 
 	imageList = map[string]*m.Image{
@@ -350,6 +353,7 @@ func (i ImageManager) install(imageList map[string]*m.Image) (err error) {
 	return
 }
 
+// Upgrade ...
 func (i ImageManager) Upgrade(oldVersion int) (err error) {
 
 	var imageList map[string]*m.Image

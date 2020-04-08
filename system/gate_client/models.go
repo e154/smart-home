@@ -20,12 +20,14 @@ package gate_client
 
 import "net/http"
 
+// Settings ...
 type Settings struct {
 	GateServerToken string `json:"gate_server_token"`
 	Address         string `json:"address"`
 	Enabled         bool   `json:"enabled"`
 }
 
+// Valid ...
 func (s Settings) Valid() bool {
 	if s.Address != "" && s.Enabled {
 		return true
@@ -33,17 +35,20 @@ func (s Settings) Valid() bool {
 	return false
 }
 
+// Equal ...
 func (s Settings) Equal(v Settings) bool {
 	return s.GateServerToken == v.GateServerToken &&
 		s.Address == v.Address &&
 		s.Enabled == v.Enabled
 }
 
+// MobileList ...
 type MobileList struct {
 	Total     int64    `json:"total"`
 	TokenList []string `json:"token_list"`
 }
 
+// StreamRequestModel ...
 type StreamRequestModel struct {
 	URI    string      `json:"uri"`
 	Method string      `json:"method"`
@@ -51,6 +56,7 @@ type StreamRequestModel struct {
 	Header http.Header `json:"header"`
 }
 
+// StreamResponseModel ...
 type StreamResponseModel struct {
 	Code   int         `json:"code"`
 	Body   []byte      `json:"body"`
