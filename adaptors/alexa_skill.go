@@ -24,26 +24,26 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type AlexaApplication struct {
-	table *db.AlexaApplications
+type AlexaSkill struct {
+	table *db.AlexaSkills
 	db    *gorm.DB
 }
 
-func GetAlexaApplicationAdaptor(d *gorm.DB) *AlexaApplication {
-	return &AlexaApplication{
-		table: &db.AlexaApplications{Db: d},
+func GetAlexaSkillAdaptor(d *gorm.DB) *AlexaSkill {
+	return &AlexaSkill{
+		table: &db.AlexaSkills{Db: d},
 		db:    d,
 	}
 }
 
-func (n *AlexaApplication) Add(app *m.AlexaApplication) (id int64, err error) {
+func (n *AlexaSkill) Add(app *m.AlexaSkill) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(app))
 	return
 }
 
-func (n *AlexaApplication) GetById(appId int64) (app *m.AlexaApplication, err error) {
+func (n *AlexaSkill) GetById(appId int64) (app *m.AlexaSkill, err error) {
 
-	var dbVer *db.AlexaApplication
+	var dbVer *db.AlexaSkill
 	if dbVer, err = n.table.GetById(appId); err != nil {
 		return
 	}
@@ -53,9 +53,9 @@ func (n *AlexaApplication) GetById(appId int64) (app *m.AlexaApplication, err er
 	return
 }
 
-func (n *AlexaApplication) Update(params *m.AlexaApplication) (err error) {
+func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 
-	var app *db.AlexaApplication
+	var app *db.AlexaSkill
 	if app, err = n.table.GetById(params.Id); err != nil {
 		return
 	}
@@ -104,7 +104,7 @@ func (n *AlexaApplication) Update(params *m.AlexaApplication) (err error) {
 		}
 	}
 
-	table := &db.AlexaApplications{Db: tx}
+	table := &db.AlexaSkills{Db: tx}
 	err = table.Update(n.toDb(params))
 
 	tx.Commit()
@@ -112,18 +112,18 @@ func (n *AlexaApplication) Update(params *m.AlexaApplication) (err error) {
 	return
 }
 
-func (n *AlexaApplication) Delete(appId int64) (err error) {
+func (n *AlexaSkill) Delete(appId int64) (err error) {
 	err = n.table.Delete(appId)
 	return
 }
 
-func (n *AlexaApplication) List(limit, offset int64, orderBy, sort string) (list []*m.AlexaApplication, total int64, err error) {
-	var dbList []*db.AlexaApplication
+func (n *AlexaSkill) List(limit, offset int64, orderBy, sort string) (list []*m.AlexaSkill, total int64, err error) {
+	var dbList []*db.AlexaSkill
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return
 	}
 
-	list = make([]*m.AlexaApplication, 0)
+	list = make([]*m.AlexaSkill, 0)
 	for _, dbVer := range dbList {
 		list = append(list, n.fromDb(dbVer))
 	}
@@ -131,13 +131,13 @@ func (n *AlexaApplication) List(limit, offset int64, orderBy, sort string) (list
 	return
 }
 
-func (n *AlexaApplication) ListEnabled(limit, offset int64) (list []*m.AlexaApplication, err error) {
-	var dbList []*db.AlexaApplication
+func (n *AlexaSkill) ListEnabled(limit, offset int64) (list []*m.AlexaSkill, err error) {
+	var dbList []*db.AlexaSkill
 	if dbList, err = n.table.ListEnabled(limit, offset); err != nil {
 		return
 	}
 
-	list = make([]*m.AlexaApplication, 0)
+	list = make([]*m.AlexaSkill, 0)
 	for _, dbVer := range dbList {
 		list = append(list, n.fromDb(dbVer))
 	}
@@ -145,11 +145,11 @@ func (n *AlexaApplication) ListEnabled(limit, offset int64) (list []*m.AlexaAppl
 	return
 }
 
-func (n *AlexaApplication) fromDb(dbVer *db.AlexaApplication) (app *m.AlexaApplication) {
+func (n *AlexaSkill) fromDb(dbVer *db.AlexaSkill) (app *m.AlexaSkill) {
 
-	app = &m.AlexaApplication{
+	app = &m.AlexaSkill{
 		Id:                   dbVer.Id,
-		ApplicationId:        dbVer.ApplicationId,
+		SkillId:              dbVer.SkillId,
 		Description:          dbVer.Description,
 		Status:               dbVer.Status,
 		OnLaunchScriptId:     dbVer.OnLaunchScriptId,
@@ -175,11 +175,11 @@ func (n *AlexaApplication) fromDb(dbVer *db.AlexaApplication) (app *m.AlexaAppli
 	return
 }
 
-func (n *AlexaApplication) toDb(ver *m.AlexaApplication) (dbVer *db.AlexaApplication) {
+func (n *AlexaSkill) toDb(ver *m.AlexaSkill) (dbVer *db.AlexaSkill) {
 
-	dbVer = &db.AlexaApplication{
+	dbVer = &db.AlexaSkill{
 		Id:                   ver.Id,
-		ApplicationId:        ver.ApplicationId,
+		SkillId:              ver.SkillId,
 		Description:          ver.Description,
 		OnLaunchScriptId:     ver.OnLaunchScriptId,
 		OnSessionEndScriptId: ver.OnSessionEndScriptId,

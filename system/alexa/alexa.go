@@ -45,8 +45,8 @@ type Alexa struct {
 	isStarted     *atomic.Bool
 	addressPort   *string
 	server        *http.Server
-	appLock       *sync.Mutex
-	apps          map[int64]Application
+	skillLock     *sync.Mutex
+	skills        map[int64]Skill
 	adaptors      *adaptors.Adaptors
 	appConfig     *config.AppConfig
 	token         *atomic.String
@@ -63,8 +63,8 @@ func NewAlexa(adaptors *adaptors.Adaptors,
 	return &Alexa{
 		isStarted:     atomic.NewBool(false),
 		adaptors:      adaptors,
-		appLock:       &sync.Mutex{},
-		apps:          make(map[int64]Application),
+		skillLock:     &sync.Mutex{},
+		skills:        make(map[int64]Skill),
 		appConfig:     appConfig,
 		token:         atomic.NewString(""),
 		scriptService: scriptService,
@@ -110,16 +110,16 @@ func (a *Alexa) init() {
 		log.Error(err.Error())
 	}
 
-	list, err := a.adaptors.AlexaApplication.ListEnabled(999, 0)
+	list, err := a.adaptors.AlexaSkill.ListEnabled(999, 0)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
 
-	a.appLock.Lock()
-	defer a.appLock.Unlock()
-	for _, app := range list {
-		a.apps[app.Id] = NewWorker(app, a.adaptors, a.scriptService, a.core)
+	a.skillLock.Lock()
+	defer a.skillLock.Unlock()
+	for _, skill := range list {
+		a.skills[skill.Id] = NewWorker(skill, a.adaptors, a.scriptService, a.core)
 	}
 }
 
@@ -166,57 +166,57 @@ func (a *Alexa) handlerFunc(ctx *gin.Context) {
 }
 
 func (a *Alexa) onLaunchHandler(ctx *gin.Context, req *Request, resp *Response) {
-	a.appLock.Lock()
-	defer a.appLock.Unlock()
+	a.skillLock.Lock()
+	defer a.skillLock.Unlock()
 
-	for _, app := range a.apps {
-		if app.GetAppID() != req.Context.System.Application.ApplicationID {
+	for _, skill := range a.skills {
+		if skill.GetAppID() != req.Context.System.Application.ApplicationID {
 			continue
 		}
-		if app.OnLaunch != nil {
-			app.OnLaunch(ctx, req, resp)
+		if skill.OnLaunch != nil {
+			skill.OnLaunch(ctx, req, resp)
 		}
 	}
 }
 
 func (a *Alexa) onIntentHandle(ctx *gin.Context, req *Request, resp *Response) {
-	a.appLock.Lock()
-	defer a.appLock.Unlock()
+	a.skillLock.Lock()
+	defer a.skillLock.Unlock()
 
-	for _, app := range a.apps {
-		if app.GetAppID() != req.Context.System.Application.ApplicationID {
+	for _, skill := range a.skills {
+		if skill.GetAppID() != req.Context.System.Application.ApplicationID {
 			continue
 		}
-		if app.OnIntent != nil {
-			app.OnIntent(ctx, req, resp)
+		if skill.OnIntent != nil {
+			skill.OnIntent(ctx, req, resp)
 		}
 	}
 }
 
 func (a *Alexa) onSessionEndedHandler(ctx *gin.Context, req *Request, resp *Response) {
-	a.appLock.Lock()
-	defer a.appLock.Unlock()
+	a.skillLock.Lock()
+	defer a.skillLock.Unlock()
 
-	for _, app := range a.apps {
-		if app.GetAppID() != req.Context.System.Application.ApplicationID {
+	for _, skill := range a.skills {
+		if skill.GetAppID() != req.Context.System.Application.ApplicationID {
 			continue
 		}
-		if app.OnSessionEnded != nil {
-			app.OnSessionEnded(ctx, req, resp)
+		if skill.OnSessionEnded != nil {
+			skill.OnSessionEnded(ctx, req, resp)
 		}
 	}
 }
 
 func (a *Alexa) onAudioPlayerHandler(ctx *gin.Context, req *Request, resp *Response) {
-	a.appLock.Lock()
-	defer a.appLock.Unlock()
+	a.skillLock.Lock()
+	defer a.skillLock.Unlock()
 
-	for _, app := range a.apps {
-		if app.GetAppID() != req.Context.System.Application.ApplicationID {
+	for _, skill := range a.skills {
+		if skill.GetAppID() != req.Context.System.Application.ApplicationID {
 			continue
 		}
-		if app.OnAudioPlayerState != nil {
-			app.OnAudioPlayerState(ctx, req, resp)
+		if skill.OnAudioPlayerState != nil {
+			skill.OnAudioPlayerState(ctx, req, resp)
 		}
 	}
 }
@@ -264,24 +264,24 @@ func (a Alexa) Auth(ctx *gin.Context) {
 	}
 }
 
-func (a *Alexa) Add(app *m.AlexaApplication) {
-	a.appLock.Lock()
-	defer a.appLock.Unlock()
-	if _, ok := a.apps[app.Id]; !ok {
-		a.apps[app.Id] = NewWorker(app, a.adaptors, a.scriptService, a.core)
+func (a *Alexa) Add(skill *m.AlexaSkill) {
+	a.skillLock.Lock()
+	defer a.skillLock.Unlock()
+	if _, ok := a.skills[skill.Id]; !ok {
+		a.skills[skill.Id] = NewWorker(skill, a.adaptors, a.scriptService, a.core)
 	}
 }
 
-func (a *Alexa) Update(app *m.AlexaApplication) {
-	a.appLock.Lock()
-	defer a.appLock.Unlock()
-	a.apps[app.Id] = NewWorker(app, a.adaptors, a.scriptService, a.core)
+func (a *Alexa) Update(skill *m.AlexaSkill) {
+	a.skillLock.Lock()
+	defer a.skillLock.Unlock()
+	a.skills[skill.Id] = NewWorker(skill, a.adaptors, a.scriptService, a.core)
 }
 
-func (a *Alexa) Delete(app *m.AlexaApplication) {
-	a.appLock.Lock()
-	defer a.appLock.Unlock()
-	if _, ok := a.apps[app.Id]; !ok {
-		delete(a.apps, app.Id)
+func (a *Alexa) Delete(skill *m.AlexaSkill) {
+	a.skillLock.Lock()
+	defer a.skillLock.Unlock()
+	if _, ok := a.skills[skill.Id]; !ok {
+		delete(a.skills, skill.Id)
 	}
 }

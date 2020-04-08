@@ -28,12 +28,12 @@ import (
 
 type Worker struct {
 	adaptors      *adaptors.Adaptors
-	app           *m.AlexaApplication
+	app           *m.AlexaSkill
 	scriptService *scripts.ScriptService
 	core          *core.Core
 }
 
-func NewWorker(app *m.AlexaApplication,
+func NewWorker(app *m.AlexaSkill,
 	adaptors *adaptors.Adaptors,
 	scriptService *scripts.ScriptService,
 	core *core.Core) (worker *Worker) {
@@ -49,7 +49,7 @@ func NewWorker(app *m.AlexaApplication,
 }
 
 func (h Worker) GetAppID() string {
-	return h.app.ApplicationId
+	return h.app.SkillId
 }
 
 func (h *Worker) OnLaunch(ctx *gin.Context, req *Request, resp *Response) {

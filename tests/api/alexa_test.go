@@ -39,85 +39,85 @@ func TestAlexa(t *testing.T) {
 
 	type newAlexaRequest struct {
 		ResponseCode int
-		Alexa        models.NewAlexaApplication
+		Alexa        models.NewAlexaSkill
 		Id           int64
 	}
 
 	apps := []newAlexaRequest{
 		{
 			ResponseCode: 400,
-			Alexa: models.NewAlexaApplication{
-				ApplicationId: "",
-				Description:   "",
-				Status:        "",
+			Alexa: models.NewAlexaSkill{
+				SkillId:     "",
+				Description: "",
+				Status:      "",
 			},
 		},
 		{
 			ResponseCode: 500,
-			Alexa: models.NewAlexaApplication{
-				ApplicationId: "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
-				Description:   "",
-				Status:        "",
+			Alexa: models.NewAlexaSkill{
+				SkillId:     "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				Description: "",
+				Status:      "",
 			},
 		},
 		{
 			ResponseCode: 500,
-			Alexa: models.NewAlexaApplication{
-				ApplicationId: "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
-				Description:   "hello world",
-				Status:        "",
+			Alexa: models.NewAlexaSkill{
+				SkillId:     "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				Description: "hello world",
+				Status:      "",
 			},
 		},
 		{
 			ResponseCode: 200,
-			Alexa: models.NewAlexaApplication{
-				ApplicationId: "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
-				Description:   "hello world",
-				Status:        "enabled",
+			Alexa: models.NewAlexaSkill{
+				SkillId:     "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				Description: "hello world",
+				Status:      "enabled",
 			},
 		},
 		{
 			ResponseCode: 200,
-			Alexa: models.NewAlexaApplication{
-				ApplicationId: "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
-				Description:   "hello world",
-				Status:        "enabled",
+			Alexa: models.NewAlexaSkill{
+				SkillId:     "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				Description: "hello world",
+				Status:      "enabled",
 			},
 		},
 		{
 			ResponseCode: 200,
-			Alexa: models.NewAlexaApplication{
-				ApplicationId: "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
-				Description:   "hello world",
-				Status:        "enabled",
+			Alexa: models.NewAlexaSkill{
+				SkillId:     "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				Description: "hello world",
+				Status:      "enabled",
 			},
 		},
 	}
 
 	type updateAlexaRequest struct {
 		ResponseCode int
-		Alexa        models.UpdateAlexaApplication
+		Alexa        models.UpdateAlexaSkill
 	}
 
 	updateAlexas := []updateAlexaRequest{
 		{
 			ResponseCode: 400,
-			Alexa:        models.UpdateAlexaApplication{},
+			Alexa:        models.UpdateAlexaSkill{},
 		},
 		{
 			ResponseCode: 200,
-			Alexa: models.UpdateAlexaApplication{
-				Id:            1,
-				ApplicationId: "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
-				Description:   "hello world",
-				Status:        "enabled",
+			Alexa: models.UpdateAlexaSkill{
+				Id:          1,
+				SkillId:     "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				Description: "hello world",
+				Status:      "enabled",
 			},
 		},
 		{
 			ResponseCode: 200,
-			Alexa: models.UpdateAlexaApplication{
+			Alexa: models.UpdateAlexaSkill{
 				Id:               1,
-				ApplicationId:    "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				SkillId:          "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
 				Description:      "hello world",
 				Status:           "enabled",
 				OnLaunchScriptId: common.Int64(1),
@@ -125,9 +125,9 @@ func TestAlexa(t *testing.T) {
 		},
 		{
 			ResponseCode: 200,
-			Alexa: models.UpdateAlexaApplication{
+			Alexa: models.UpdateAlexaSkill{
 				Id:                   1,
-				ApplicationId:        "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				SkillId:              "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
 				Description:          "hello world",
 				Status:               "enabled",
 				OnLaunchScriptId:     common.Int64(1),
@@ -136,80 +136,80 @@ func TestAlexa(t *testing.T) {
 		},
 		{
 			ResponseCode: 500,
-			Alexa: models.UpdateAlexaApplication{
+			Alexa: models.UpdateAlexaSkill{
 				Id:                   1,
-				ApplicationId:        "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				SkillId:              "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
 				Description:          "hello world",
 				Status:               "enabled",
 				OnLaunchScriptId:     common.Int64(1),
 				OnSessionEndScriptId: common.Int64(1),
 				Intents: []*models.AlexaIntent{
 					{
-						Name:               "IntentName",
-						AlexaApplicationId: 1,
+						Name:         "IntentName",
+						AlexaSkillId: 1,
 					},
 				},
 			},
 		},
 		{
 			ResponseCode: 200,
-			Alexa: models.UpdateAlexaApplication{
+			Alexa: models.UpdateAlexaSkill{
 				Id:                   1,
-				ApplicationId:        "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				SkillId:              "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
 				Description:          "hello world",
 				Status:               "enabled",
 				OnLaunchScriptId:     common.Int64(1),
 				OnSessionEndScriptId: common.Int64(1),
 				Intents: []*models.AlexaIntent{
 					{
-						Name:               "IntentName",
-						AlexaApplicationId: 1,
-						ScriptId:           1,
-						Description:        "hello world",
+						Name:         "IntentName",
+						AlexaSkillId: 1,
+						ScriptId:     1,
+						Description:  "hello world",
 					},
 				},
 			},
 		},
 		{
 			ResponseCode: 200,
-			Alexa: models.UpdateAlexaApplication{
+			Alexa: models.UpdateAlexaSkill{
 				Id:                   1,
-				ApplicationId:        "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				SkillId:              "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
 				Description:          "hello world",
 				Status:               "enabled",
 				OnLaunchScriptId:     common.Int64(1),
 				OnSessionEndScriptId: common.Int64(1),
 				Intents: []*models.AlexaIntent{
 					{
-						Name:               "IntentName",
-						AlexaApplicationId: 1,
-						ScriptId:           1,
-						Description:        "hello world",
+						Name:         "IntentName",
+						AlexaSkillId: 1,
+						ScriptId:     1,
+						Description:  "hello world",
 					},
 					{
-						Name:               "IntentName2",
-						AlexaApplicationId: 1,
-						ScriptId:           1,
-						Description:        "hello world",
+						Name:         "IntentName2",
+						AlexaSkillId: 1,
+						ScriptId:     1,
+						Description:  "hello world",
 					},
 				},
 			},
 		},
 		{
 			ResponseCode: 200,
-			Alexa: models.UpdateAlexaApplication{
+			Alexa: models.UpdateAlexaSkill{
 				Id:                   1,
-				ApplicationId:        "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
+				SkillId:              "amzn1.ask.skill.2cc6856d-e79f-412e-b311-5ca7ebfa8754",
 				Description:          "hello world",
 				Status:               "enabled",
 				OnLaunchScriptId:     common.Int64(1),
 				OnSessionEndScriptId: common.Int64(1),
 				Intents: []*models.AlexaIntent{
 					{
-						Name:               "IntentName",
-						AlexaApplicationId: 1,
-						ScriptId:           1,
-						Description:        "hello world",
+						Name:         "IntentName",
+						AlexaSkillId: 1,
+						ScriptId:     1,
+						Description:  "hello world",
 					},
 				},
 			},
@@ -294,7 +294,7 @@ func TestAlexa(t *testing.T) {
 					continue
 				}
 
-				app := &models.AlexaApplication{}
+				app := &models.AlexaSkill{}
 				err = json.Unmarshal(res.Body.Bytes(), app)
 				ctx.So(err, ShouldBeNil)
 				apps[i].Id = app.Id
@@ -342,7 +342,7 @@ func TestAlexa(t *testing.T) {
 					continue
 				}
 
-				app := &models.AlexaApplication{}
+				app := &models.AlexaSkill{}
 				err := json.Unmarshal(res.Body.Bytes(), app)
 				ctx.So(err, ShouldBeNil)
 				apps[i].Id = app.Id
@@ -390,7 +390,7 @@ func TestAlexa(t *testing.T) {
 				res = client.GetAlexa(1)
 				ctx.So(res.Code, ShouldEqual, 200)
 
-				app := &models.AlexaApplication{}
+				app := &models.AlexaSkill{}
 				err := json.Unmarshal(res.Body.Bytes(), app)
 				ctx.So(err, ShouldBeNil)
 
@@ -472,7 +472,7 @@ func TestAlexa(t *testing.T) {
 				res = client.GetAlexaList(limit, offset, "DESC", "id")
 				ctx.So(res.Code, ShouldEqual, 200)
 
-				appList := responses.AlexaApplicationList{}
+				appList := responses.AlexaSkillList{}
 				err := json.Unmarshal(res.Body.Bytes(), &appList.Body)
 				ctx.So(err, ShouldBeNil)
 

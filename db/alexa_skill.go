@@ -25,15 +25,15 @@ import (
 	"time"
 )
 
-type AlexaApplications struct {
+type AlexaSkills struct {
 	Db *gorm.DB
 }
 
-type AlexaApplication struct {
+type AlexaSkill struct {
 	Id                   int64 `gorm:"primary_key"`
-	ApplicationId        string
+	SkillId              string
 	Description          string
-	Intents              []*AlexaIntent `gorm:"foreignkey:AlexaApplicationId"`
+	Intents              []*AlexaIntent `gorm:"foreignkey:AlexaSkillId"`
 	Status               common.StatusType
 	OnLaunchScript       *Script `gorm:"foreignkey:OnLaunchScriptId"`
 	OnLaunchScriptId     *int64  `gorm:"column:on_launch"`
@@ -43,11 +43,11 @@ type AlexaApplication struct {
 	UpdatedAt            time.Time
 }
 
-func (d *AlexaApplication) TableName() string {
-	return "alexa_applications"
+func (d *AlexaSkill) TableName() string {
+	return "alexa_skills"
 }
 
-func (n AlexaApplications) Add(v *AlexaApplication) (id int64, err error) {
+func (n AlexaSkills) Add(v *AlexaSkill) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
 	}
@@ -55,8 +55,8 @@ func (n AlexaApplications) Add(v *AlexaApplication) (id int64, err error) {
 	return
 }
 
-func (n AlexaApplications) GetById(id int64) (v *AlexaApplication, err error) {
-	v = &AlexaApplication{Id: id}
+func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
+	v = &AlexaSkill{Id: id}
 	err = n.Db.Model(v).
 		Preload("OnLaunchScript").
 		Preload("OnSessionEndScript").
@@ -70,14 +70,14 @@ func (n AlexaApplications) GetById(id int64) (v *AlexaApplication, err error) {
 	return
 }
 
-func (n *AlexaApplications) List(limit, offset int64, orderBy, sort string) (list []*AlexaApplication, total int64, err error) {
+func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*AlexaSkill, total int64, err error) {
 
-	if err = n.Db.Model(AlexaApplication{}).Count(&total).Error; err != nil {
+	if err = n.Db.Model(AlexaSkill{}).Count(&total).Error; err != nil {
 		return
 	}
 
-	list = make([]*AlexaApplication, 0)
-	q := n.Db.Model(&AlexaApplication{}).
+	list = make([]*AlexaSkill, 0)
+	q := n.Db.Model(&AlexaSkill{}).
 		Limit(limit).
 		Offset(offset)
 
@@ -91,10 +91,10 @@ func (n *AlexaApplications) List(limit, offset int64, orderBy, sort string) (lis
 	return
 }
 
-func (n *AlexaApplications) ListEnabled(limit, offset int64) (list []*AlexaApplication, err error) {
+func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err error) {
 
-	list = make([]*AlexaApplication, 0)
-	err = n.Db.Model(&AlexaApplication{}).
+	list = make([]*AlexaSkill, 0)
+	err = n.Db.Model(&AlexaSkill{}).
 		Where("status = 'enabled'").
 		Limit(limit).
 		Offset(offset).
@@ -109,14 +109,14 @@ func (n *AlexaApplications) ListEnabled(limit, offset int64) (list []*AlexaAppli
 	}
 
 	//????
-	for _, app := range list {
-		_ = n.preload(app)
+	for _, skill := range list {
+		_ = n.preload(skill)
 	}
 
 	return
 }
 
-func (n AlexaApplications) preload(v *AlexaApplication) (err error) {
+func (n AlexaSkills) preload(v *AlexaSkill) (err error) {
 	err = n.Db.Model(v).
 		Related(&v.Intents).Error
 
@@ -128,11 +128,11 @@ func (n AlexaApplications) preload(v *AlexaApplication) (err error) {
 	return
 }
 
-func (n AlexaApplications) Update(v *AlexaApplication) (err error) {
+func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
 	q := map[string]interface{}{
-		"application_id": v.ApplicationId,
-		"status":         v.Status,
-		"description":    v.Description,
+		"skill_id":    v.SkillId,
+		"status":      v.Status,
+		"description": v.Description,
 	}
 	if v.OnLaunchScriptId != nil {
 		q["on_launch"] = common.Int64Value(v.OnLaunchScriptId)
@@ -140,11 +140,11 @@ func (n AlexaApplications) Update(v *AlexaApplication) (err error) {
 	if v.OnSessionEndScriptId != nil {
 		q["on_session_end"] = common.Int64Value(v.OnSessionEndScriptId)
 	}
-	err = n.Db.Model(&AlexaApplication{}).Updates(q).Where("id = ?", v.Id).Error
+	err = n.Db.Model(&AlexaSkill{}).Updates(q).Where("id = ?", v.Id).Error
 	return
 }
 
-func (n AlexaApplications) Delete(id int64) (err error) {
-	err = n.Db.Delete(&AlexaApplication{}, "id = ?", id).Error
+func (n AlexaSkills) Delete(id int64) (err error) {
+	err = n.Db.Delete(&AlexaSkill{}, "id = ?", id).Error
 	return
 }

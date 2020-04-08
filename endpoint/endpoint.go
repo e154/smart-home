@@ -62,7 +62,7 @@ type Endpoint struct {
 	Version          *VersionEndpoint
 	Zigbee2mqtt      *Zigbee2mqttEndpoint
 	MapDeviceHistory *MapDeviceHistoryEndpoint
-	AlexaApplication *AlexaApplicationEndpoint
+	AlexaSkill       *AlexaSkillEndpoint
 }
 
 func NewEndpoint(adaptors *adaptors.Adaptors,
@@ -102,6 +102,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Version:          NewVersionEndpoint(common),
 		Zigbee2mqtt:      NewZigbee2mqttEndpoint(common),
 		MapDeviceHistory: NewMapDeviceHistoryEndpoint(common),
-		AlexaApplication: NewAlexaApplicationEndpoint(common),
+		AlexaSkill:       NewAlexaApplicationEndpoint(common),
 	}
 }

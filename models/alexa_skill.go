@@ -24,9 +24,9 @@ import (
 	"time"
 )
 
-type AlexaApplication struct {
+type AlexaSkill struct {
 	Id                   int64             `json:"id"`
-	ApplicationId        string            `json:"application_id" valid:"Required"`
+	SkillId              string            `json:"skill_id" valid:"Required"`
 	Description          string            `json:"description"`
 	Status               common.StatusType `json:"status" valid:"Required"`
 	Intents              []*AlexaIntent    `json:"intents"`
@@ -38,7 +38,7 @@ type AlexaApplication struct {
 	UpdatedAt            time.Time         `json:"updated_at"`
 }
 
-func (d *AlexaApplication) Valid() (ok bool, errs []*validation.Error) {
+func (d *AlexaSkill) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
 	if ok, _ = valid.Valid(d); !ok {

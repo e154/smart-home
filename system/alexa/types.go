@@ -66,7 +66,7 @@ const (
 	Completed string = "COMPLETED"
 )
 
-type Application interface {
+type Skill interface {
 	GetAppID() string
 	OnLaunch(*gin.Context, *Request, *Response)
 	OnIntent(*gin.Context, *Request, *Response)

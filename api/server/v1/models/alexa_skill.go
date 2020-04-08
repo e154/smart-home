@@ -21,8 +21,8 @@ package models
 import "time"
 
 // swagger:model
-type NewAlexaApplication struct {
-	ApplicationId        string `json:"application_id"`
+type NewAlexaSkill struct {
+	SkillId              string `json:"skill_id"`
 	Description          string `json:"description"`
 	Status               string `json:"status"`
 	OnLaunchScriptId     *int64 `json:"on_launch_script_id,omitempty"`
@@ -30,9 +30,9 @@ type NewAlexaApplication struct {
 }
 
 // swagger:model
-type UpdateAlexaApplication struct {
+type UpdateAlexaSkill struct {
 	Id                   int64          `json:"id"`
-	ApplicationId        string         `json:"application_id"`
+	SkillId              string         `json:"skill_id"`
 	Description          string         `json:"description"`
 	Status               string         `json:"status"`
 	Intents              []*AlexaIntent `json:"intents,omitempty"`
@@ -41,9 +41,9 @@ type UpdateAlexaApplication struct {
 }
 
 // swagger:model
-type AlexaApplication struct {
+type AlexaSkill struct {
 	Id                   int64          `json:"id"`
-	ApplicationId        string         `json:"application_id"`
+	SkillId              string         `json:"skill_id"`
 	Description          string         `json:"description"`
 	Status               string         `json:"status"`
 	Intents              []*AlexaIntent `json:"intents,omitempty"`
@@ -56,9 +56,9 @@ type AlexaApplication struct {
 }
 
 // swagger:model
-type AlexaApplicationShort struct {
+type AlexaSkillShort struct {
 	Id                   int64     `json:"id"`
-	ApplicationId        string    `json:"application_id"`
+	SkillId              string    `json:"skill_id"`
 	Description          string    `json:"description"`
 	Status               string    `json:"status"`
 	OnLaunchScriptId     *int64    `json:"on_launch_script_id,omitempty"`

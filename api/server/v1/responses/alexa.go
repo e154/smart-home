@@ -22,11 +22,11 @@ import (
 	"github.com/e154/smart-home/api/server/v1/models"
 )
 
-// swagger:response AlexaApplicationList
-type AlexaApplicationList struct {
+// swagger:response AlexaSkillList
+type AlexaSkillList struct {
 	// in:body
 	Body struct {
-		Items []*models.AlexaApplicationShort `json:"items"`
+		Items []*models.AlexaSkillShort `json:"items"`
 		Meta  struct {
 			Limit       int64 `json:"limit"`
 			ObjectCount int64 `json:"objects_count"`
@@ -34,4 +34,3 @@ type AlexaApplicationList struct {
 		} `json:"meta"`
 	}
 }
-

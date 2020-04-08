@@ -28,14 +28,14 @@ type AlexaIntents struct {
 }
 
 type AlexaIntent struct {
-	Name               string `gorm:"primary_key"`
-	AlexaApplication   *AlexaApplication
-	AlexaApplicationId int64
-	Script             *Script
-	ScriptId           int64
-	Description        string
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
+	Name         string `gorm:"primary_key"`
+	AlexaSkill   *AlexaSkill
+	AlexaSkillId int64
+	Script       *Script
+	ScriptId     int64
+	Description  string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 func (d *AlexaIntent) TableName() string {
@@ -54,7 +54,7 @@ func (n AlexaIntents) GetByName(name string) (intent *AlexaIntent, err error) {
 }
 
 func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
-	err = n.Db.Model(v).Where("name = ? and alexa_application_id = ?", v.Name, v.AlexaApplicationId).Updates(&map[string]interface{}{
+	err = n.Db.Model(v).Where("name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Updates(&map[string]interface{}{
 		"name":        v.Name,
 		"description": v.Description,
 		"script_id":   v.ScriptId,
@@ -63,6 +63,6 @@ func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
 }
 
 func (n AlexaIntents) Delete(v *AlexaIntent) (err error) {
-	err = n.Db.Delete(&AlexaIntent{}, "name = ? and alexa_application_id = ?", v.Name, v.AlexaApplicationId).Error
+	err = n.Db.Delete(&AlexaIntent{}, "name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Error
 	return
 }
