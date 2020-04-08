@@ -36,6 +36,7 @@ func CallerName(skip int) (name, file string, line int, ok bool) {
 	return
 }
 
+// Trace ...
 func Trace() (trace string) {
 
 	i := 1 //0...
@@ -52,11 +53,13 @@ func Trace() (trace string) {
 	return
 }
 
+// Println ...
 func Println(i interface{}) {
 	b, _ := json.MarshalIndent(i, " ", "  ")
 	fmt.Println(string(b))
 }
 
+// PrintValidationErrs ...
 func PrintValidationErrs(errs []*validation.Error) {
 	for _, err := range errs {
 		fmt.Printf("%s - %s", err.Name, err.String())

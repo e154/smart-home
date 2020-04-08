@@ -26,6 +26,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
+// ControllersV1 ...
 type ControllersV1 struct {
 	Index            *ControllerIndex
 	Node             *ControllerNode
@@ -57,6 +58,7 @@ type ControllersV1 struct {
 	Alexa            *ControllerAlexa
 }
 
+// NewControllersV1 ...
 func NewControllersV1(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	scriptService *scripts.ScriptService,

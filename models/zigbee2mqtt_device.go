@@ -25,6 +25,7 @@ import (
 	"time"
 )
 
+// Zigbee2mqttDevice ...
 type Zigbee2mqttDevice struct {
 	Id            string    `json:"id"`
 	Zigbee2mqttId int64     `json:"zigbee2mqtt_id" valid:"Required"`
@@ -40,6 +41,7 @@ type Zigbee2mqttDevice struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
+// Valid ...
 func (d *Zigbee2mqttDevice) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
@@ -50,6 +52,7 @@ func (d *Zigbee2mqttDevice) Valid() (ok bool, errs []*validation.Error) {
 	return
 }
 
+// GetImageUrl ...
 func (d *Zigbee2mqttDevice) GetImageUrl() {
 	if d.Model != "" {
 		d.ImageUrl = filepath.Join("/api_static", "devices", fmt.Sprintf("%s.jpg", d.Model))

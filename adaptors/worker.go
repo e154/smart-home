@@ -19,16 +19,18 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
+// Worker ...
 type Worker struct {
 	table *db.Workers
 	db    *gorm.DB
 }
 
+// GetWorkerAdaptor ...
 func GetWorkerAdaptor(d *gorm.DB) *Worker {
 	return &Worker{
 		table: &db.Workers{Db: d},
@@ -36,6 +38,7 @@ func GetWorkerAdaptor(d *gorm.DB) *Worker {
 	}
 }
 
+// Add ...
 func (n *Worker) Add(worker *m.Worker) (id int64, err error) {
 
 	dbWorker := n.toDb(worker)
@@ -46,6 +49,7 @@ func (n *Worker) Add(worker *m.Worker) (id int64, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n *Worker) GetAllEnabled() (list []*m.Worker, err error) {
 
 	var dbList []*db.Worker
@@ -62,6 +66,7 @@ func (n *Worker) GetAllEnabled() (list []*m.Worker, err error) {
 	return
 }
 
+// GetById ...
 func (n *Worker) GetById(workerId int64) (worker *m.Worker, err error) {
 
 	var dbWorker *db.Worker
@@ -74,17 +79,20 @@ func (n *Worker) GetById(workerId int64) (worker *m.Worker, err error) {
 	return
 }
 
+// Update ...
 func (n *Worker) Update(worker *m.Worker) (err error) {
 	dbWorker := n.toDb(worker)
 	err = n.table.Update(dbWorker)
 	return
 }
 
+// Delete ...
 func (n *Worker) Delete(ids []int64) (err error) {
 	err = n.table.Delete(ids)
 	return
 }
 
+// List ...
 func (n *Worker) List(limit, offset int64, orderBy, sort string) (list []*m.Worker, total int64, err error) {
 	var dbList []*db.Worker
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {

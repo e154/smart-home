@@ -26,22 +26,27 @@ import (
 	"time"
 )
 
+// MapElementGraphSettingsPosition ...
 type MapElementGraphSettingsPosition struct {
 	Top  int64 `json:"top"`
 	Left int64 `json:"left"`
 }
+
+// MapElementGraphSettings ...
 type MapElementGraphSettings struct {
 	Width    null.Int64                      `json:"width"`
 	Height   null.Int64                      `json:"height"`
 	Position MapElementGraphSettingsPosition `json:"position"`
 }
 
+// Prototype ...
 type Prototype struct {
 	*MapImage
 	*MapText
 	*MapDevice
 }
 
+// MarshalJSON ...
 func (n Prototype) MarshalJSON() (b []byte, err error) {
 
 	switch {
@@ -58,6 +63,7 @@ func (n Prototype) MarshalJSON() (b []byte, err error) {
 	return
 }
 
+// UnmarshalJSON ...
 func (n *Prototype) UnmarshalJSON(data []byte) (err error) {
 
 	device := &MapDevice{}
@@ -80,6 +86,7 @@ func (n *Prototype) UnmarshalJSON(data []byte) (err error) {
 	return
 }
 
+// MapElement ...
 type MapElement struct {
 	Id            int64                   `json:"id"`
 	Name          string                  `json:"name" valid:"Required"`
@@ -97,6 +104,7 @@ type MapElement struct {
 	UpdatedAt     time.Time               `json:"updated_at"`
 }
 
+// Valid ...
 func (m *MapElement) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
@@ -107,12 +115,19 @@ func (m *MapElement) Valid() (ok bool, errs []*validation.Error) {
 	return
 }
 
+// SortMapElementByWeight ...
 type SortMapElementByWeight []*MapElement
 
-func (l SortMapElementByWeight) Len() int           { return len(l) }
-func (l SortMapElementByWeight) Swap(i, j int)      { l[i], l[j] = l[j], l[i] }
+// Len ...
+func (l SortMapElementByWeight) Len() int { return len(l) }
+
+// Swap ...
+func (l SortMapElementByWeight) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
+
+// Less ...
 func (l SortMapElementByWeight) Less(i, j int) bool { return l[i].Weight < l[j].Weight }
 
+// SortMapElement ...
 type SortMapElement struct {
 	Id     int64 `json:"id"`
 	Weight int64 `json:"weight"`

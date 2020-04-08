@@ -29,12 +29,14 @@ var (
 	log = common.MustGetLogger("graceful_service")
 )
 
+// GracefulService ...
 type GracefulService struct {
 	cfg  *GracefulServiceConfig
 	pool *GracefulServicePool
 	done chan struct{}
 }
 
+// NewGracefulService ...
 func NewGracefulService(cfg *GracefulServiceConfig,
 	hub *GracefulServicePool) (graceful *GracefulService) {
 	graceful = &GracefulService{
@@ -48,6 +50,7 @@ func NewGracefulService(cfg *GracefulServiceConfig,
 	return
 }
 
+// Wait ...
 func (p GracefulService) Wait() {
 
 	var gracefulStop = make(chan os.Signal)
@@ -72,16 +75,19 @@ func (p GracefulService) Wait() {
 	close(gracefulStop)
 }
 
+// Subscribe ...
 func (p GracefulService) Subscribe(client IGracefulClient) (id int) {
 	id = p.pool.subscribe(client)
 	return
 }
 
+// Unsubscribe ...
 func (p GracefulService) Unsubscribe(id int) {
 	p.pool.unsubscribe(id)
 	return
 }
 
+// Shutdown ...
 func (p GracefulService) Shutdown() {
 	p.pool.shutdown()
 	return

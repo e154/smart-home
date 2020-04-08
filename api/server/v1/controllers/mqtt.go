@@ -24,10 +24,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ControllerMqtt ...
 type ControllerMqtt struct {
 	*ControllerCommon
 }
 
+// NewControllerMqtt ...
 func NewControllerMqtt(common *ControllerCommon) *ControllerMqtt {
 	return &ControllerMqtt{ControllerCommon: common}
 }

@@ -40,6 +40,7 @@ var (
 	log = common.MustGetLogger("alexa")
 )
 
+// Alexa ...
 type Alexa struct {
 	engine        *gin.Engine
 	isStarted     *atomic.Bool
@@ -55,6 +56,7 @@ type Alexa struct {
 	gateClient    *gate_client.GateClient
 }
 
+// NewAlexa ...
 func NewAlexa(adaptors *adaptors.Adaptors,
 	appConfig *config.AppConfig,
 	scriptService *scripts.ScriptService,
@@ -73,6 +75,7 @@ func NewAlexa(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Start ...
 func (a *Alexa) Start() {
 
 	if a.isStarted.Load() {
@@ -123,6 +126,7 @@ func (a *Alexa) init() {
 	}
 }
 
+// Stop ...
 func (a *Alexa) Stop() {
 	if !a.isStarted.Load() {
 		return
@@ -250,6 +254,7 @@ func (a *Alexa) updateSettings() (err error) {
 	return
 }
 
+// Auth ...
 func (a Alexa) Auth(ctx *gin.Context) {
 
 	//accessToken := ctx.Request.URL.Query().Get("alexa_token")
@@ -264,6 +269,7 @@ func (a Alexa) Auth(ctx *gin.Context) {
 	}
 }
 
+// Add ...
 func (a *Alexa) Add(skill *m.AlexaSkill) {
 	a.skillLock.Lock()
 	defer a.skillLock.Unlock()
@@ -272,12 +278,14 @@ func (a *Alexa) Add(skill *m.AlexaSkill) {
 	}
 }
 
+// Update ...
 func (a *Alexa) Update(skill *m.AlexaSkill) {
 	a.skillLock.Lock()
 	defer a.skillLock.Unlock()
 	a.skills[skill.Id] = NewWorker(skill, a.adaptors, a.scriptService, a.core)
 }
 
+// Delete ...
 func (a *Alexa) Delete(skill *m.AlexaSkill) {
 	a.skillLock.Lock()
 	defer a.skillLock.Unlock()

@@ -23,20 +23,24 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// WorkflowScenarioScripts ...
 type WorkflowScenarioScripts struct {
 	Db *gorm.DB
 }
 
+// WorkflowScenarioScript ...
 type WorkflowScenarioScript struct {
 	Id                 int64 `gorm:"primary_key"`
 	ScriptId           int64
 	WorkflowScenarioId int64
 }
 
+// TableName ...
 func (d *WorkflowScenarioScript) TableName() string {
 	return "workflow_scenario_scripts"
 }
 
+// Add ...
 func (n WorkflowScenarioScripts) Add(scenario *WorkflowScenarioScript) (id int64, err error) {
 	if err = n.Db.Create(&scenario).Error; err != nil {
 		return
@@ -45,11 +49,13 @@ func (n WorkflowScenarioScripts) Add(scenario *WorkflowScenarioScript) (id int64
 	return
 }
 
+// Delete ...
 func (n WorkflowScenarioScripts) Delete(workflowId int64) (err error) {
 	err = n.Db.Delete(&WorkflowScenarioScript{Id: workflowId}).Error
 	return
 }
 
+// List ...
 func (n *WorkflowScenarioScripts) List(limit, offset int64, orderBy, sort string) (list []*WorkflowScenarioScript, total int64, err error) {
 
 	if err = n.Db.Model(WorkflowScenarioScript{}).Count(&total).Error; err != nil {

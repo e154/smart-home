@@ -37,11 +37,13 @@ var (
 	log = common.MustGetLogger("rbac")
 )
 
+// AccessFilter ...
 type AccessFilter struct {
 	adaptors          *adaptors.Adaptors
 	accessListService *access_list.AccessListService
 }
 
+// NewAccessFilter ...
 func NewAccessFilter(adaptors *adaptors.Adaptors,
 	accessListService *access_list.AccessListService) *AccessFilter {
 	return &AccessFilter{
@@ -50,6 +52,7 @@ func NewAccessFilter(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Auth ...
 func (f *AccessFilter) Auth(ctx *gin.Context) {
 
 	requestURI := ctx.Request.RequestURI

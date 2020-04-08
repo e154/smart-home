@@ -25,10 +25,12 @@ import (
 	"time"
 )
 
+// History ...
 type History struct {
 	Items []HistoryItem `json:"items"`
 }
 
+// HistoryManager ...
 type HistoryManager struct {
 	publisher  IPublisher
 	adaptors   *adaptors.Adaptors
@@ -36,6 +38,7 @@ type HistoryManager struct {
 	queue      *deque.Deque
 }
 
+// NewHistoryManager ...
 func NewHistoryManager(publisher IPublisher, adaptors *adaptors.Adaptors) *HistoryManager {
 	manager := &HistoryManager{
 		publisher:  publisher,
@@ -80,6 +83,7 @@ func (d *HistoryManager) updatePool(item HistoryItem) {
 	})
 }
 
+// Snapshot ...
 func (d HistoryManager) Snapshot() History {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
@@ -119,6 +123,7 @@ func (d *HistoryManager) init() {
 
 }
 
+// HistoryItem ...
 type HistoryItem struct {
 	DeviceName        string    `json:"device_name"`
 	DeviceDescription string    `json:"device_description"`

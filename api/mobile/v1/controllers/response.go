@@ -26,6 +26,7 @@ type Response struct {
 	Payload    interface{}
 }
 
+// NewSuccess ...
 func NewSuccess() *Response {
 	resp := &Response{
 		StatusCode: 200,
@@ -34,11 +35,13 @@ func NewSuccess() *Response {
 	return resp
 }
 
+// Success ...
 func (r *Response) Success() *Response {
 	r.Payload = map[string]interface{}{}
 	return r
 }
 
+// Page ...
 func (r *Response) Page(limit, offset int, total int64, items interface{}) *Response {
 	r.Payload = map[string]interface{}{
 		"items": items,
@@ -52,6 +55,7 @@ func (r *Response) Page(limit, offset int, total int64, items interface{}) *Resp
 	return r
 }
 
+// Item ...
 func (r *Response) Item(name string, item interface{}) *Response {
 	r.Payload = map[string]interface{}{
 		name: item,
@@ -59,11 +63,13 @@ func (r *Response) Item(name string, item interface{}) *Response {
 	return r
 }
 
+// SetData ...
 func (r *Response) SetData(data interface{}) *Response {
 	r.Payload = data
 	return r
 }
 
+// Send ...
 func (r *Response) Send(ctx *gin.Context) {
 	ctx.JSON(r.StatusCode, r.Payload)
 }

@@ -25,16 +25,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// DeviceStateEndpoint ...
 type DeviceStateEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewDeviceStateEndpoint ...
 func NewDeviceStateEndpoint(common *CommonEndpoint) *DeviceStateEndpoint {
 	return &DeviceStateEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (d *DeviceStateEndpoint) Add(params *m.DeviceState) (state *m.DeviceState, id int64, errs []*validation.Error, err error) {
 
 	// validation
@@ -52,6 +55,7 @@ func (d *DeviceStateEndpoint) Add(params *m.DeviceState) (state *m.DeviceState, 
 	return
 }
 
+// GetById ...
 func (d *DeviceStateEndpoint) GetById(id int64) (device *m.DeviceState, err error) {
 
 	device, err = d.adaptors.DeviceState.GetById(id)
@@ -59,6 +63,7 @@ func (d *DeviceStateEndpoint) GetById(id int64) (device *m.DeviceState, err erro
 	return
 }
 
+// Update ...
 func (d *DeviceStateEndpoint) Update(params *m.DeviceState) (state *m.DeviceState, errs []*validation.Error, err error) {
 
 	if state, err = d.adaptors.DeviceState.GetById(params.Id); err != nil {
@@ -82,6 +87,7 @@ func (d *DeviceStateEndpoint) Update(params *m.DeviceState) (state *m.DeviceStat
 	return
 }
 
+// Delete ...
 func (d *DeviceStateEndpoint) Delete(id int64) (err error) {
 
 	if id == 0 {
@@ -99,6 +105,7 @@ func (d *DeviceStateEndpoint) Delete(id int64) (err error) {
 	return
 }
 
+// GetList ...
 func (d *DeviceStateEndpoint) GetList(deviceId int64) (actions []*m.DeviceState, err error) {
 
 	actions, err = d.adaptors.DeviceState.GetByDeviceId(deviceId)

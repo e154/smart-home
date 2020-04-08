@@ -23,14 +23,16 @@ import (
 	"sync"
 )
 
+// Task ...
 type Task struct {
-	_time	map[int][]int
-	_func	func()
-	cron	*Cron
+	_time map[int][]int
+	_func func()
+	cron  *Cron
 	sync.Mutex
 	enabled bool
 }
 
+// Enable ...
 func (t *Task) Enable() *Task {
 	t.Lock()
 	t.enabled = true
@@ -38,6 +40,7 @@ func (t *Task) Enable() *Task {
 	return t
 }
 
+// Disable ...
 func (t *Task) Disable() *Task {
 	t.Lock()
 	t.enabled = false
@@ -45,12 +48,14 @@ func (t *Task) Disable() *Task {
 	return t
 }
 
+// Enabled ...
 func (t *Task) Enabled() bool {
 	t.Lock()
 	defer t.Unlock()
 	return t.enabled
 }
 
+// SetTime ...
 func (t *Task) SetTime(time string) {
 	args := strings.Split(time, " ")
 	switch len(args) {
@@ -62,6 +67,7 @@ func (t *Task) SetTime(time string) {
 	}
 }
 
+// GetTime ...
 func (t *Task) GetTime() (time string) {
 
 	return
@@ -159,6 +165,7 @@ func (t *Task) exec(_timer *Timer) {
 	t.Run()
 }
 
+// Run ...
 func (t *Task) Run() {
 	t._func()
 }

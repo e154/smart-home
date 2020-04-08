@@ -19,16 +19,18 @@
 package db
 
 import (
-	"time"
+	"database/sql"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"database/sql"
+	"time"
 )
 
+// WorkflowScenarios ...
 type WorkflowScenarios struct {
 	Db *gorm.DB
 }
 
+// WorkflowScenario ...
 type WorkflowScenario struct {
 	Id         int64 `gorm:"primary_key"`
 	Name       string
@@ -39,10 +41,12 @@ type WorkflowScenario struct {
 	UpdatedAt  time.Time
 }
 
+// TableName ...
 func (d *WorkflowScenario) TableName() string {
 	return "workflow_scenarios"
 }
 
+// Add ...
 func (n WorkflowScenarios) Add(scenario *WorkflowScenario) (id int64, err error) {
 	if err = n.Db.Create(&scenario).Error; err != nil {
 		return
@@ -51,6 +55,7 @@ func (n WorkflowScenarios) Add(scenario *WorkflowScenario) (id int64, err error)
 	return
 }
 
+// GetById ...
 func (n WorkflowScenarios) GetById(scenarioId int64) (scenario *WorkflowScenario, err error) {
 	scenario = &WorkflowScenario{Id: scenarioId}
 	if err = n.Db.First(&scenario).Error; err != nil {
@@ -61,6 +66,7 @@ func (n WorkflowScenarios) GetById(scenarioId int64) (scenario *WorkflowScenario
 	return
 }
 
+// Update ...
 func (n WorkflowScenarios) Update(m *WorkflowScenario) (err error) {
 	err = n.Db.Model(&WorkflowScenario{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
@@ -69,11 +75,13 @@ func (n WorkflowScenarios) Update(m *WorkflowScenario) (err error) {
 	return
 }
 
+// Delete ...
 func (n WorkflowScenarios) Delete(workflowId int64) (err error) {
 	err = n.Db.Delete(&WorkflowScenario{Id: workflowId}).Error
 	return
 }
 
+// List ...
 func (n *WorkflowScenarios) List(limit, offset int64, orderBy, sort string) (list []*WorkflowScenario, total int64, err error) {
 
 	if err = n.Db.Model(WorkflowScenario{}).Count(&total).Error; err != nil {
@@ -91,6 +99,7 @@ func (n *WorkflowScenarios) List(limit, offset int64, orderBy, sort string) (lis
 	return
 }
 
+// ListByWorkflow ...
 func (n *WorkflowScenarios) ListByWorkflow(workflowId int64) (list []*WorkflowScenario, total int64, err error) {
 
 	if err = n.Db.Model(WorkflowScenario{}).Count(&total).Error; err != nil {
@@ -106,16 +115,19 @@ func (n *WorkflowScenarios) ListByWorkflow(workflowId int64) (list []*WorkflowSc
 	return
 }
 
+// AddScript ...
 func (n *WorkflowScenarios) AddScript(workflowScenarioId, scriptId int64) (err error) {
 	err = n.Db.Create(&WorkflowScenarioScript{WorkflowScenarioId: workflowScenarioId, ScriptId: scriptId}).Error
 	return
 }
 
+// RemoveScript ...
 func (n *WorkflowScenarios) RemoveScript(workflowScenarioId, scriptId int64) (err error) {
 	err = n.Db.Delete(&WorkflowScenarioScript{}, "workflow_scenario_id = ? and script_id = ?", workflowScenarioId, scriptId).Error
 	return
 }
 
+// Search ...
 func (n *WorkflowScenarios) Search(query string, limit, offset int) (list []*WorkflowScenario, total int64, err error) {
 
 	q := n.Db.Model(&WorkflowScenario{}).
@@ -132,6 +144,7 @@ func (n *WorkflowScenarios) Search(query string, limit, offset int) (list []*Wor
 	return
 }
 
+// DependencyLoading ...
 func (n *WorkflowScenarios) DependencyLoading(scenario *WorkflowScenario) (err error) {
 
 	var rows *sql.Rows

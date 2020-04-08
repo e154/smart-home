@@ -30,12 +30,14 @@ var (
 	log = common.MustGetLogger("scripts")
 )
 
+// ScriptService ...
 type ScriptService struct {
 	cfg        *config.AppConfig
 	functions  *Pull
 	structures *Pull
 }
 
+// NewScriptService ...
 func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 
 	service = &ScriptService{
@@ -54,14 +56,17 @@ func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 	return service
 }
 
+// NewEngine ...
 func (service ScriptService) NewEngine(s *m.Script) (*Engine, error) {
 	return NewEngine(s, service.structures, service.functions)
 }
 
+// PushStruct ...
 func (service *ScriptService) PushStruct(name string, s interface{}) {
 	service.structures.Add(name, s)
 }
 
+// PushFunctions ...
 func (service *ScriptService) PushFunctions(name string, s interface{}) {
 	service.functions.Add(name, s)
 }

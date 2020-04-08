@@ -23,14 +23,17 @@ import (
 	"time"
 )
 
+// FlowSubscriptions ...
 type FlowSubscriptions struct {
 	db *gorm.DB
 }
 
+// NewFlowSubscriptions ...
 func NewFlowSubscriptions(db *gorm.DB) *FlowSubscriptions {
 	return &FlowSubscriptions{db: db}
 }
 
+// FlowSubscription ...
 type FlowSubscription struct {
 	Id        int64 `gorm:"primary_key"`
 	Flow      *Flow
@@ -39,15 +42,18 @@ type FlowSubscription struct {
 	CreatedAt time.Time
 }
 
+// TableName ...
 func (d *FlowSubscription) TableName() string {
 	return "flow_subscriptions"
 }
 
+// Add ...
 func (f *FlowSubscriptions) Add(sub *FlowSubscription) (err error) {
 	err = f.db.Create(sub).Error
 	return
 }
 
+// Delete ...
 func (f *FlowSubscriptions) Delete(ids []int64) (err error) {
 	err = f.db.Delete(&FlowSubscription{}, "id in (?)", ids).Error
 	return

@@ -19,16 +19,18 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
+// Role ...
 type Role struct {
 	table *db.Roles
 	db    *gorm.DB
 }
 
+// GetRoleAdaptor ...
 func GetRoleAdaptor(d *gorm.DB) *Role {
 	return &Role{
 		table: &db.Roles{Db: d},
@@ -36,6 +38,7 @@ func GetRoleAdaptor(d *gorm.DB) *Role {
 	}
 }
 
+// Add ...
 func (n *Role) Add(role *m.Role) (err error) {
 
 	dbRole := n.toDb(role)
@@ -44,6 +47,7 @@ func (n *Role) Add(role *m.Role) (err error) {
 	return
 }
 
+// GetByName ...
 func (n *Role) GetByName(name string) (role *m.Role, err error) {
 
 	var dbRole *db.Role
@@ -58,17 +62,20 @@ func (n *Role) GetByName(name string) (role *m.Role, err error) {
 	return
 }
 
+// Update ...
 func (n *Role) Update(role *m.Role) (err error) {
 	dbRole := n.toDb(role)
 	err = n.table.Update(dbRole)
 	return
 }
 
+// Delete ...
 func (n *Role) Delete(name string) (err error) {
 	err = n.table.Delete(name)
 	return
 }
 
+// List ...
 func (n *Role) List(limit, offset int64, orderBy, sort string) (list []*m.Role, total int64, err error) {
 	var dbList []*db.Role
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -84,6 +91,7 @@ func (n *Role) List(limit, offset int64, orderBy, sort string) (list []*m.Role, 
 	return
 }
 
+// Search ...
 func (n *Role) Search(query string, limit, offset int) (list []*m.Role, total int64, err error) {
 	var dbList []*db.Role
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
@@ -99,6 +107,7 @@ func (n *Role) Search(query string, limit, offset int) (list []*m.Role, total in
 	return
 }
 
+// GetAccessList ...
 func (n *Role) GetAccessList(role *m.Role) (err error) {
 
 	role.AccessList = make(map[string][]string)
@@ -147,7 +156,7 @@ func (n *Role) toDb(role *m.Role) (dbRole *db.Role) {
 		Description: role.Description,
 	}
 
-	if role.Parent !=nil {
+	if role.Parent != nil {
 		dbRole.RoleName.Scan(role.Parent.Name)
 	}
 	return

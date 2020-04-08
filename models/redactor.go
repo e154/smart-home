@@ -24,6 +24,7 @@ import (
 	"time"
 )
 
+// RedactorGrapSettings ...
 type RedactorGrapSettings struct {
 	Position struct {
 		Top  int64 `json:"top"`
@@ -31,6 +32,7 @@ type RedactorGrapSettings struct {
 	} `json:"position"`
 }
 
+// RedactorConnector ...
 type RedactorConnector struct {
 	Id    uuid.UUID `json:"id"`
 	Start struct {
@@ -46,6 +48,7 @@ type RedactorConnector struct {
 	Direction string `json:"direction"`
 }
 
+// RedactorObject ...
 type RedactorObject struct {
 	Id   uuid.UUID `json:"id"`
 	Type struct {
@@ -68,6 +71,7 @@ type RedactorObject struct {
 	FlowLink      *Flow                     `json:"flow_link"`
 }
 
+// RedactorFlow ...
 type RedactorFlow struct {
 	Id                 int64                `json:"id"`
 	Name               string               `json:"name"`

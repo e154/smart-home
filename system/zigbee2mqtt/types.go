@@ -23,14 +23,17 @@ import (
 	"time"
 )
 
+// DeviceType ...
 type DeviceType string
 
+// BridgeLog ...
 type BridgeLog struct {
 	Type    string                 `json:"type"`
 	Message string                 `json:"message"`
 	Meta    map[string]interface{} `json:"meta"`
 }
 
+// BridgePairingMeta ...
 type BridgePairingMeta struct {
 	FriendlyName string `json:"friendly_name"`
 	Model        string `json:"model"`
@@ -39,6 +42,7 @@ type BridgePairingMeta struct {
 	Supported    bool   `json:"supported"`
 }
 
+// BridgeConfigMeta ...
 type BridgeConfigMeta struct {
 	Transportrev int64 `json:"transportrev"`
 	Product      int64 `json:"product"`
@@ -48,11 +52,13 @@ type BridgeConfigMeta struct {
 	Revision     int64 `json:"revision"`
 }
 
+// BridgeConfigCoordinator ...
 type BridgeConfigCoordinator struct {
 	Type string           `json:"type"`
 	Meta BridgeConfigMeta `json:"meta"`
 }
 
+// BridgeConfig ...
 type BridgeConfig struct {
 	Version     string                  `json:"version"`
 	Commit      string                  `json:"commit"`
@@ -61,12 +67,14 @@ type BridgeConfig struct {
 	PermitJoin  string                  `json:"permit_join"`
 }
 
+// AssistDeviceInfo ...
 type AssistDeviceInfo struct {
 	Name         string `json:"name"`
 	Model        string `json:"model"`
 	Manufacturer string `json:"manufacturer"`
 }
 
+// AssistDevice ...
 type AssistDevice struct {
 	Device AssistDeviceInfo `json:"device"`
 }
@@ -77,6 +85,7 @@ const (
 	removed = "removed"
 )
 
+// Zigbee2mqttInfo ...
 type Zigbee2mqttInfo struct {
 	ScanInProcess bool          `json:"scan_in_process"`
 	LastScan      time.Time     `json:"last_scan"`

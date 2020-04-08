@@ -19,16 +19,18 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
+// Permission ...
 type Permission struct {
 	table *db.Permissions
 	db    *gorm.DB
 }
 
+// GetPermissionAdaptor ...
 func GetPermissionAdaptor(d *gorm.DB) *Permission {
 	return &Permission{
 		table: &db.Permissions{Db: d},
@@ -36,6 +38,7 @@ func GetPermissionAdaptor(d *gorm.DB) *Permission {
 	}
 }
 
+// Add ...
 func (n *Permission) Add(permission *m.Permission) (id int64, err error) {
 
 	dbPermission := n.toDb(permission)
@@ -46,6 +49,7 @@ func (n *Permission) Add(permission *m.Permission) (id int64, err error) {
 	return
 }
 
+// Delete ...
 func (n *Permission) Delete(packageName string, levelName []string) (err error) {
 
 	err = n.table.Delete(packageName, levelName)
@@ -53,6 +57,7 @@ func (n *Permission) Delete(packageName string, levelName []string) (err error) 
 	return
 }
 
+// GetAllPermissions ...
 func (n *Permission) GetAllPermissions(roleName string) (permissions []*m.Permission, err error) {
 
 	var dbPermissions []*db.Permission

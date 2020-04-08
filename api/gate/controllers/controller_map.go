@@ -26,6 +26,7 @@ import (
 	"sync"
 )
 
+// ControllerMap ...
 type ControllerMap struct {
 	*ControllerCommon
 	devices  *Devices
@@ -34,6 +35,7 @@ type ControllerMap struct {
 	enc      *json.Encoder
 }
 
+// NewControllerMap ...
 func NewControllerMap(common *ControllerCommon) *ControllerMap {
 	buf := bytes.NewBuffer(nil)
 	return &ControllerMap{
@@ -45,11 +47,13 @@ func NewControllerMap(common *ControllerCommon) *ControllerMap {
 	}
 }
 
+// Start ...
 func (c *ControllerMap) Start() {
 	c.metric.Subscribe("map2", c)
 	c.gate.Subscribe("map.get.devices", c.devices.GetDevicesStates)
 }
 
+// Stop ...
 func (c *ControllerMap) Stop() {
 	c.metric.UnSubscribe("map2")
 	c.gate.UnSubscribe("map.get.devices")

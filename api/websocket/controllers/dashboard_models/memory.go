@@ -22,15 +22,18 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 )
 
+// Memory ...
 type Memory struct {
 	metric *metrics.MetricManager
 }
 
+// NewMemory ...
 func NewMemory(metric *metrics.MetricManager) (memory *Memory) {
 	memory = &Memory{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (g *Memory) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

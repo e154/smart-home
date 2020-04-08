@@ -25,16 +25,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// MapEndpoint ...
 type MapEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewMapEndpoint ...
 func NewMapEndpoint(common *CommonEndpoint) *MapEndpoint {
 	return &MapEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (m *MapEndpoint) Add(params *m.Map) (result *m.Map, errs []*validation.Error, err error) {
 
 	// validation
@@ -53,6 +56,7 @@ func (m *MapEndpoint) Add(params *m.Map) (result *m.Map, errs []*validation.Erro
 	return
 }
 
+// GetById ...
 func (m *MapEndpoint) GetById(id int64) (result *m.Map, err error) {
 
 	result, err = m.adaptors.Map.GetById(id)
@@ -60,6 +64,7 @@ func (m *MapEndpoint) GetById(id int64) (result *m.Map, err error) {
 	return
 }
 
+// GetActiveElements ...
 func (m *MapEndpoint) GetActiveElements(sortBy, order string, limit, offset int) (result []*m.MapElement, total int64, err error) {
 
 	result, total, err = m.adaptors.MapElement.GetActiveElements(sortBy, order, limit, offset)
@@ -67,6 +72,7 @@ func (m *MapEndpoint) GetActiveElements(sortBy, order string, limit, offset int)
 	return
 }
 
+// GetFullById ...
 func (m *MapEndpoint) GetFullById(mId int64) (result *m.Map, err error) {
 
 	result, err = m.adaptors.Map.GetFullById(mId)
@@ -74,6 +80,7 @@ func (m *MapEndpoint) GetFullById(mId int64) (result *m.Map, err error) {
 	return
 }
 
+// Update ...
 func (n *MapEndpoint) Update(params *m.Map) (result *m.Map, errs []*validation.Error, err error) {
 
 	var m *m.Map
@@ -97,6 +104,7 @@ func (n *MapEndpoint) Update(params *m.Map) (result *m.Map, errs []*validation.E
 	return
 }
 
+// GetList ...
 func (n *MapEndpoint) GetList(limit, offset int64, order, sortBy string) (items []*m.Map, total int64, err error) {
 
 	items, total, err = n.adaptors.Map.List(limit, offset, order, sortBy)
@@ -104,6 +112,7 @@ func (n *MapEndpoint) GetList(limit, offset int64, order, sortBy string) (items 
 	return
 }
 
+// Delete ...
 func (n *MapEndpoint) Delete(mId int64) (err error) {
 
 	if mId == 0 {
@@ -121,6 +130,7 @@ func (n *MapEndpoint) Delete(mId int64) (err error) {
 	return
 }
 
+// Search ...
 func (n *MapEndpoint) Search(query string, limit, offset int) (items []*m.Map, total int64, err error) {
 
 	items, total, err = n.adaptors.Map.Search(query, limit, offset)

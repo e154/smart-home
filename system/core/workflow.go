@@ -32,6 +32,7 @@ import (
 	"time"
 )
 
+// Workflow ...
 type Workflow struct {
 	Storage
 	sync.Mutex
@@ -50,6 +51,7 @@ type Workflow struct {
 	metric          *metrics.MetricManager
 }
 
+// NewWorkflow ...
 func NewWorkflow(model *m.Workflow,
 	adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
@@ -75,6 +77,7 @@ func NewWorkflow(model *m.Workflow,
 	return
 }
 
+// Run ...
 func (wf *Workflow) Run() (err error) {
 
 	if wf.model == nil {
@@ -116,6 +119,7 @@ func (wf *Workflow) Run() (err error) {
 	return
 }
 
+// Stop ...
 func (wf *Workflow) Stop() (err error) {
 
 	for _, flow := range wf.Flows {
@@ -129,6 +133,7 @@ func (wf *Workflow) Stop() (err error) {
 	return
 }
 
+// Restart ...
 func (wf *Workflow) Restart() (err error) {
 
 	if err = wf.Stop(); err != nil {
@@ -197,6 +202,7 @@ func (wf *Workflow) AddFlow(flow *m.Flow) (err error) {
 	return
 }
 
+// UpdateFlow ...
 func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
 
 	if err = wf.RemoveFlow(flow); err != nil {
@@ -208,6 +214,7 @@ func (wf *Workflow) UpdateFlow(flow *m.Flow) (err error) {
 	return
 }
 
+// RemoveFlow ...
 func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 
 	log.Infof("RemoveFlow: Name(%v)", flow.Name)
@@ -226,6 +233,7 @@ func (wf *Workflow) RemoveFlow(flow *m.Flow) (err error) {
 	return
 }
 
+// GetFLow ...
 func (wf *Workflow) GetFLow(flowId int64) (flow *Flow, err error) {
 
 	log.Infof("GetFLow: id(%v)", flowId)
@@ -239,10 +247,7 @@ func (wf *Workflow) GetFLow(flowId int64) (flow *Flow, err error) {
 	return
 }
 
-// ------------------------------------------------
-// Scenarios
-// ------------------------------------------------
-
+// SetScenario ...
 func (wf *Workflow) SetScenario(systemName string) (err error) {
 
 	wf.Lock()
@@ -356,6 +361,7 @@ func (wf *Workflow) exitScenario() (err error) {
 	return
 }
 
+// UpdateScenario ...
 func (wf *Workflow) UpdateScenario() (err error) {
 
 	// get workflow from base
@@ -423,15 +429,13 @@ func (wf *Workflow) runScripts() (err error) {
 	return
 }
 
+// NewScript ...
 func (wf *Workflow) NewScript(model *m.Script) (engine *scripts.Engine, err error) {
 	engine, err = wf.scripts.NewEngine(model)
 	return
 }
 
-// ------------------------------------------------
-// Workers
-// ------------------------------------------------
-
+// UpdateWorker ...
 func (wf *Workflow) UpdateWorker(_worker *m.Worker) (err error) {
 
 	for _, flow := range wf.Flows {
@@ -448,6 +452,7 @@ func (wf *Workflow) UpdateWorker(_worker *m.Worker) (err error) {
 	return
 }
 
+// RemoveWorker ...
 func (wf *Workflow) RemoveWorker(_worker *m.Worker) (err error) {
 
 	wf.Lock()
@@ -466,6 +471,7 @@ func (wf *Workflow) RemoveWorker(_worker *m.Worker) (err error) {
 	return
 }
 
+// DoWorker ...
 func (wf *Workflow) DoWorker(model *m.Worker) (err error) {
 
 	for _, flow := range wf.Flows {

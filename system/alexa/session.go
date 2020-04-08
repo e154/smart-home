@@ -23,10 +23,12 @@ import (
 	"github.com/e154/smart-home/system/cache"
 )
 
+// AppSession ...
 type AppSession struct {
 	pull map[string]cache.Cache
 }
 
+// NewAppSession ...
 func NewAppSession() *AppSession {
 	return &AppSession{
 		pull: make(map[string]cache.Cache),

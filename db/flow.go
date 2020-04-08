@@ -25,10 +25,12 @@ import (
 	"time"
 )
 
+// Flows ...
 type Flows struct {
 	Db *gorm.DB
 }
 
+// Flow ...
 type Flow struct {
 	Id                 int64 `gorm:"primary_key"`
 	Name               string
@@ -46,10 +48,12 @@ type Flow struct {
 	UpdatedAt          time.Time
 }
 
+// TableName ...
 func (d *Flow) TableName() string {
 	return "flows"
 }
 
+// Add ...
 func (n Flows) Add(flow *Flow) (id int64, err error) {
 	if err = n.Db.Create(&flow).Error; err != nil {
 		return
@@ -60,6 +64,7 @@ func (n Flows) Add(flow *Flow) (id int64, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n Flows) GetAllEnabled() (list []*Flow, err error) {
 	list = make([]*Flow, 0)
 	err = n.Db.Where("status = ?", "enabled").
@@ -76,6 +81,7 @@ func (n Flows) GetAllEnabled() (list []*Flow, err error) {
 	return
 }
 
+// GetAllEnabledByWorkflow ...
 func (n Flows) GetAllEnabledByWorkflow(workflowId int64) (list []*Flow, err error) {
 	list = make([]*Flow, 0)
 	err = n.Db.
@@ -95,6 +101,7 @@ func (n Flows) GetAllEnabledByWorkflow(workflowId int64) (list []*Flow, err erro
 	return
 }
 
+// GetById ...
 func (n Flows) GetById(flowId int64) (flow *Flow, err error) {
 	flow = &Flow{Id: flowId}
 	if err = n.Db.First(&flow).Error; err != nil {
@@ -106,6 +113,7 @@ func (n Flows) GetById(flowId int64) (flow *Flow, err error) {
 	return
 }
 
+// Update ...
 func (n Flows) Update(m *Flow) (err error) {
 	err = n.Db.Model(&Flow{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
@@ -117,11 +125,13 @@ func (n Flows) Update(m *Flow) (err error) {
 	return
 }
 
+// Delete ...
 func (n Flows) Delete(flowId int64) (err error) {
 	err = n.Db.Delete(&Flow{Id: flowId}).Error
 	return
 }
 
+// List ...
 func (n *Flows) List(limit, offset int64, orderBy, sort string) (list []*Flow, total int64, err error) {
 
 	if err = n.Db.Model(Flow{}).Count(&total).Error; err != nil {
@@ -150,6 +160,7 @@ func (n *Flows) List(limit, offset int64, orderBy, sort string) (list []*Flow, t
 	return
 }
 
+// Search ...
 func (n *Flows) Search(query string, limit, offset int) (list []*Flow, total int64, err error) {
 
 	q := n.Db.Model(&Flow{}).
@@ -166,6 +177,7 @@ func (n *Flows) Search(query string, limit, offset int) (list []*Flow, total int
 	return
 }
 
+// DependencyLoading ...
 func (n *Flows) DependencyLoading(flow *Flow) (err error) {
 	flow.Connections = make([]*Connection, 0)
 	flow.FlowElements = make([]*FlowElement, 0)

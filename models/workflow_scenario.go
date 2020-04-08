@@ -19,10 +19,11 @@
 package models
 
 import (
-	"time"
 	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
+// WorkflowScenario ...
 type WorkflowScenario struct {
 	Id         int64     `json:"id"`
 	Name       string    `json:"name" valid:"MaxSize(254);Required"`
@@ -33,6 +34,7 @@ type WorkflowScenario struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
+// Valid ...
 func (d *WorkflowScenario) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

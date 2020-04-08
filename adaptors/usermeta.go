@@ -19,16 +19,18 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
+// UserMeta ...
 type UserMeta struct {
 	table *db.UserMetas
 	db    *gorm.DB
 }
 
+// GetUserMetaAdaptor ...
 func GetUserMetaAdaptor(d *gorm.DB) *UserMeta {
 	return &UserMeta{
 		table: &db.UserMetas{Db: d},
@@ -36,6 +38,7 @@ func GetUserMetaAdaptor(d *gorm.DB) *UserMeta {
 	}
 }
 
+// UpdateOrCreate ...
 func (n *UserMeta) UpdateOrCreate(meta *m.UserMeta) (id int64, err error) {
 
 	dbMeta := n.toDb(meta)

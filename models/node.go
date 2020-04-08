@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// Node ...
 type Node struct {
 	Id                int64     `json:"id"`
 	Name              string    `json:"name" valid:"MaxSize(254);Required"`
@@ -35,6 +36,7 @@ type Node struct {
 	UpdatedAt         time.Time `json:"updated_at"`
 }
 
+// Valid ...
 func (d *Node) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

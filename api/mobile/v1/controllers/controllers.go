@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/system/core"
 )
 
+// MobileControllersV1 ...
 type MobileControllersV1 struct {
 	Auth      *ControllerAuth
 	Workflow  *ControllerWorkflow
@@ -32,6 +33,7 @@ type MobileControllersV1 struct {
 	MapDevice *ControllerMapDevice
 }
 
+// NewMobileControllersV1 ...
 func NewMobileControllersV1(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	accessList *access_list.AccessListService,

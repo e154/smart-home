@@ -28,10 +28,12 @@ type MapBind struct {
 	Map *Map
 }
 
+// SetElementState ...
 func (e *MapBind) SetElementState(elementName, newState string) {
 	e.Map.SetElementState(elementName, newState)
 }
 
+// GetElement ...
 func (e *MapBind) GetElement(elementName string) (element *MapElementBind) {
 
 	mapElement, err := e.Map.GetElement(elementName)

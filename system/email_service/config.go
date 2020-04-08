@@ -18,6 +18,7 @@
 
 package email_service
 
+// EmailServiceConfig ...
 type EmailServiceConfig struct {
 	Auth   string
 	Pass   string
@@ -26,6 +27,7 @@ type EmailServiceConfig struct {
 	Sender string
 }
 
+// NewEmailServiceConfig ...
 func NewEmailServiceConfig(auth, pass, smtp string, port int, send string) *EmailServiceConfig {
 	return &EmailServiceConfig{
 		Auth:   auth,

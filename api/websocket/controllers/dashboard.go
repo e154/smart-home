@@ -28,6 +28,7 @@ import (
 	"time"
 )
 
+// ControllerDashboard ...
 type ControllerDashboard struct {
 	*ControllerCommon
 	Nodes       *dashboardModel.Nodes
@@ -48,6 +49,7 @@ type ControllerDashboard struct {
 	enc         *json.Encoder
 }
 
+// NewControllerDashboard ...
 func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDashboard) {
 	dashboard = &ControllerDashboard{
 		ControllerCommon: common,
@@ -71,6 +73,7 @@ func NewControllerDashboard(common *ControllerCommon) (dashboard *ControllerDash
 	return dashboard
 }
 
+// Start ...
 func (c *ControllerDashboard) Start() {
 	c.metric.Subscribe("dashboard", c)
 	c.stream.Subscribe("dashboard.get.nodes.status", c.Nodes.NodesStatus)
@@ -79,6 +82,7 @@ func (c *ControllerDashboard) Start() {
 	c.stream.Subscribe("dashboard.get.telemetry", c.Telemetry)
 }
 
+// Stop ...
 func (c *ControllerDashboard) Stop() {
 	c.metric.UnSubscribe("dashboard")
 	c.stream.UnSubscribe("dashboard.get.nodes.status")
@@ -87,6 +91,7 @@ func (c *ControllerDashboard) Stop() {
 	c.stream.UnSubscribe("dashboard.get.telemetry")
 }
 
+// Broadcast ...
 func (t *ControllerDashboard) Broadcast(param interface{}) {
 
 	var body map[string]interface{}

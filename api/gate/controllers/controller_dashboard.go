@@ -26,6 +26,7 @@ import (
 	"sync"
 )
 
+// ControllerDashboard ...
 type ControllerDashboard struct {
 	*ControllerCommon
 	workflow *Workflow
@@ -34,6 +35,7 @@ type ControllerDashboard struct {
 	enc      *json.Encoder
 }
 
+// NewControllerDashboard ...
 func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 	buf := bytes.NewBuffer(nil)
 	return &ControllerDashboard{
@@ -45,16 +47,19 @@ func NewControllerDashboard(common *ControllerCommon) *ControllerDashboard {
 	}
 }
 
+// Start ...
 func (c *ControllerDashboard) Start() {
 	c.metric.Subscribe("gate.workflow", c)
 	c.gate.Subscribe("workflow.get.status", c.workflow.GetWorkflowStatus)
 }
 
+// Stop ...
 func (c *ControllerDashboard) Stop() {
 	c.metric.UnSubscribe("do.action")
 	c.gate.UnSubscribe("workflow.get.status")
 }
 
+// Broadcast ...
 func (c *ControllerDashboard) Broadcast(param interface{}) {
 
 	var body map[string]interface{}

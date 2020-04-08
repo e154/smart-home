@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// Zigbee2mqtt ...
 type Zigbee2mqtt struct {
 	Id                int64                `json:"id"`
 	Name              string               `json:"name" valid:"MaxSize(254);Required"`
@@ -36,6 +37,7 @@ type Zigbee2mqtt struct {
 	UpdatedAt         time.Time            `json:"updated_at"`
 }
 
+// Valid ...
 func (d *Zigbee2mqtt) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// DeviceState ...
 type DeviceState struct {
 	table *db.DeviceStates
 	db    *gorm.DB
 }
 
+// GetDeviceStateAdaptor ...
 func GetDeviceStateAdaptor(d *gorm.DB) *DeviceState {
 	return &DeviceState{
 		table: &db.DeviceStates{Db: d},
@@ -36,6 +38,7 @@ func GetDeviceStateAdaptor(d *gorm.DB) *DeviceState {
 	}
 }
 
+// Add ...
 func (n *DeviceState) Add(device *m.DeviceState) (id int64, err error) {
 
 	dbDeviceState := n.toDb(device)
@@ -46,6 +49,7 @@ func (n *DeviceState) Add(device *m.DeviceState) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n *DeviceState) GetById(deviceId int64) (device *m.DeviceState, err error) {
 
 	var dbDeviceState *db.DeviceState
@@ -58,6 +62,7 @@ func (n *DeviceState) GetById(deviceId int64) (device *m.DeviceState, err error)
 	return
 }
 
+// GetByDeviceId ...
 func (n *DeviceState) GetByDeviceId(deviceId int64) (states []*m.DeviceState, err error) {
 
 	var dbDeviceStates []*db.DeviceState
@@ -74,17 +79,20 @@ func (n *DeviceState) GetByDeviceId(deviceId int64) (states []*m.DeviceState, er
 	return
 }
 
+// Update ...
 func (n *DeviceState) Update(device *m.DeviceState) (err error) {
 	dbDeviceState := n.toDb(device)
 	err = n.table.Update(dbDeviceState)
 	return
 }
 
+// Delete ...
 func (n *DeviceState) Delete(deviceId int64) (err error) {
 	err = n.table.Delete(deviceId)
 	return
 }
 
+// List ...
 func (n *DeviceState) List(limit, offset int64, orderBy, sort string) (list []*m.DeviceState, total int64, err error) {
 	var dbList []*db.DeviceState
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {

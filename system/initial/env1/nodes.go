@@ -24,10 +24,12 @@ import (
 	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
+// NodeManager ...
 type NodeManager struct {
 	adaptors *adaptors.Adaptors
 }
 
+// NewNodeManager ...
 func NewNodeManager(adaptors *adaptors.Adaptors) *NodeManager {
 	return &NodeManager{
 		adaptors: adaptors,
@@ -57,6 +59,7 @@ func (n NodeManager) addNode(name, login, pass string) (node *m.Node) {
 	return
 }
 
+// Create ...
 func (n NodeManager) Create() (node1, node2 *m.Node) {
 
 	node1 = n.addNode("node1", "node1", "node1")

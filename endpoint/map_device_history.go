@@ -20,26 +20,31 @@ package endpoint
 
 import m "github.com/e154/smart-home/models"
 
+// MapDeviceHistoryEndpoint ...
 type MapDeviceHistoryEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewMapDeviceHistoryEndpoint ...
 func NewMapDeviceHistoryEndpoint(common *CommonEndpoint) *MapDeviceHistoryEndpoint {
 	return &MapDeviceHistoryEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// ListByDeviceId ...
 func (e *MapDeviceHistoryEndpoint) ListByDeviceId(mapDeviceId int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
 	list, total, err = e.adaptors.MapDeviceHistory.ListByDeviceId(mapDeviceId, limit, offset)
 	return
 }
 
+// ListByElementId ...
 func (e *MapDeviceHistoryEndpoint) ListByElementId(mapElementId int64, limit, offset int) (list []*m.MapDeviceHistory, total int64, err error) {
 	list, total, err = e.adaptors.MapDeviceHistory.ListByElementId(mapElementId, limit, offset)
 	return
 }
 
+// ListByMapId ...
 func (e *MapDeviceHistoryEndpoint) ListByMapId(mapId int64, limit, offset int, orderBy, sort string) (list []*m.MapDeviceHistory, total int64, err error) {
 	list, total, err = e.adaptors.MapDeviceHistory.ListByMapId(mapId, limit, offset, orderBy, sort)
 	return

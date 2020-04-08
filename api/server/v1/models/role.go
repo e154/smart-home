@@ -51,6 +51,7 @@ type Role struct {
 	UpdatedAt  time.Time           `json:"updated_at"`
 }
 
+// AccessItem ...
 type AccessItem struct {
 	Actions     []string `json:"actions"`
 	Method      string   `json:"method"`
@@ -58,6 +59,7 @@ type AccessItem struct {
 	RoleName    string   `json:"role_name"`
 }
 
+// AccessLevels ...
 type AccessLevels map[string]AccessItem
 
 // swagger:model

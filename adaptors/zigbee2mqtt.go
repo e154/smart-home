@@ -25,11 +25,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Zigbee2mqtt ...
 type Zigbee2mqtt struct {
 	table *db.Zigbee2mqtts
 	db    *gorm.DB
 }
 
+// GetZigbee2mqttAdaptor ...
 func GetZigbee2mqttAdaptor(d *gorm.DB) *Zigbee2mqtt {
 	return &Zigbee2mqtt{
 		table: &db.Zigbee2mqtts{Db: d},
@@ -37,6 +39,7 @@ func GetZigbee2mqttAdaptor(d *gorm.DB) *Zigbee2mqtt {
 	}
 }
 
+// Add ...
 func (n *Zigbee2mqtt) Add(ver *m.Zigbee2mqtt) (id int64, err error) {
 
 	id, err = n.table.Add(n.toDb(ver))
@@ -44,6 +47,7 @@ func (n *Zigbee2mqtt) Add(ver *m.Zigbee2mqtt) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n *Zigbee2mqtt) GetById(id int64) (ver *m.Zigbee2mqtt, err error) {
 
 	var dbVer *db.Zigbee2mqtt
@@ -56,16 +60,19 @@ func (n *Zigbee2mqtt) GetById(id int64) (ver *m.Zigbee2mqtt, err error) {
 	return
 }
 
+// Update ...
 func (n *Zigbee2mqtt) Update(ver *m.Zigbee2mqtt) (err error) {
 	err = n.table.Update(n.toDb(ver))
 	return
 }
 
+// Delete ...
 func (n *Zigbee2mqtt) Delete(id int64) (err error) {
 	err = n.table.Delete(id)
 	return
 }
 
+// List ...
 func (n *Zigbee2mqtt) List(limit, offset int64) (list []*m.Zigbee2mqtt, total int64, err error) {
 	var dbList []*db.Zigbee2mqtt
 	if dbList, total, err = n.table.List(limit, offset); err != nil {
@@ -81,6 +88,7 @@ func (n *Zigbee2mqtt) List(limit, offset int64) (list []*m.Zigbee2mqtt, total in
 	return
 }
 
+// GetByLogin ...
 func (a *Zigbee2mqtt) GetByLogin(login string) (ver *m.Zigbee2mqtt, err error) {
 
 	var dbVer *db.Zigbee2mqtt
@@ -130,7 +138,7 @@ func (n *Zigbee2mqtt) toDb(ver *m.Zigbee2mqtt) (dbVer *db.Zigbee2mqtt) {
 	if ver.Password != nil {
 		if *ver.Password == "" {
 			dbVer.EncryptedPassword = ""
-		}  else {
+		} else {
 			dbVer.EncryptedPassword, _ = common.HashPassword(*ver.Password)
 		}
 	}

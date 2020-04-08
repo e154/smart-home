@@ -34,6 +34,7 @@ const (
 	pingPeriod     = (pongWait * 9) / 10
 )
 
+// Hub ...
 type Hub struct {
 	sessions    map[*Client]bool
 	subscribers map[string]func(client IStreamClient, msg Message)
@@ -42,6 +43,7 @@ type Hub struct {
 	interrupt chan os.Signal
 }
 
+// NewHub ...
 func NewHub() *Hub {
 
 	interrupt := make(chan os.Signal, 1)
@@ -58,6 +60,7 @@ func NewHub() *Hub {
 	return hub
 }
 
+// AddClient ...
 func (h *Hub) AddClient(client *Client) {
 
 	defer func() {
@@ -89,6 +92,7 @@ func (h *Hub) AddClient(client *Client) {
 	}
 }
 
+// Run ...
 func (h *Hub) Run() {
 
 	for {
@@ -112,6 +116,7 @@ func (h *Hub) Run() {
 	}
 }
 
+// Recv ...
 func (h *Hub) Recv(client *Client, b []byte) {
 
 	//fmt.Printf("client(%v), message(%v)\n", client, string(b))
@@ -137,16 +142,19 @@ func (h *Hub) Recv(client *Client, b []byte) {
 	}
 }
 
+// Send ...
 func (h *Hub) Send(client *Client, message []byte) {
 	client.Send <- message
 }
 
+// Broadcast ...
 func (h *Hub) Broadcast(message []byte) {
 	h.Lock()
 	h.broadcast <- message
 	h.Unlock()
 }
 
+// Clients ...
 func (h *Hub) Clients() (clients []*Client) {
 
 	clients = []*Client{}
@@ -157,6 +165,7 @@ func (h *Hub) Clients() (clients []*Client) {
 	return
 }
 
+// Subscribe ...
 func (h *Hub) Subscribe(command string, f func(client IStreamClient, msg Message)) {
 	log.Infof("subscribe %s", command)
 	h.Lock()
@@ -167,6 +176,7 @@ func (h *Hub) Subscribe(command string, f func(client IStreamClient, msg Message
 	h.Unlock()
 }
 
+// UnSubscribe ...
 func (h *Hub) UnSubscribe(command string) {
 	h.Lock()
 	if h.subscribers[command] != nil {
@@ -175,6 +185,7 @@ func (h *Hub) UnSubscribe(command string) {
 	h.Unlock()
 }
 
+// Subscriber ...
 func (h *Hub) Subscriber(command string) (f func(client IStreamClient, msg Message)) {
 	h.Lock()
 	if h.subscribers[command] != nil {

@@ -20,21 +20,24 @@ package endpoint
 
 import (
 	"errors"
-	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/validation"
 )
 
+// MapElementEndpoint ...
 type MapElementEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewMapElementEndpoint ...
 func NewMapElementEndpoint(common *CommonEndpoint) *MapElementEndpoint {
 	return &MapElementEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (n *MapElementEndpoint) Add(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
 
 	// validation
@@ -53,6 +56,7 @@ func (n *MapElementEndpoint) Add(params *m.MapElement) (result *m.MapElement, er
 	return
 }
 
+// GetById ...
 func (n *MapElementEndpoint) GetById(mId int64) (result *m.MapElement, err error) {
 
 	result, err = n.adaptors.MapElement.GetById(mId)
@@ -60,6 +64,7 @@ func (n *MapElementEndpoint) GetById(mId int64) (result *m.MapElement, err error
 	return
 }
 
+// Update ...
 func (n *MapElementEndpoint) Update(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
 
 	var m *m.MapElement
@@ -86,6 +91,7 @@ func (n *MapElementEndpoint) Update(params *m.MapElement) (result *m.MapElement,
 	return
 }
 
+// UpdateElement ...
 func (n *MapElementEndpoint) UpdateElement(params *m.MapElement) (result *m.MapElement, errs []*validation.Error, err error) {
 
 	var old *m.MapElement
@@ -116,6 +122,7 @@ func (n *MapElementEndpoint) UpdateElement(params *m.MapElement) (result *m.MapE
 	return
 }
 
+// Sort ...
 func (n *MapElementEndpoint) Sort(params []*m.SortMapElement) (err error) {
 
 	for _, s := range params {
@@ -128,6 +135,7 @@ func (n *MapElementEndpoint) Sort(params []*m.SortMapElement) (err error) {
 	return
 }
 
+// Delete ...
 func (n *MapElementEndpoint) Delete(mId int64) (err error) {
 
 	if mId == 0 {
@@ -144,6 +152,7 @@ func (n *MapElementEndpoint) Delete(mId int64) (err error) {
 	return
 }
 
+// GetList ...
 func (n *MapElementEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.MapElement, total int64, err error) {
 
 	result, total, err = n.adaptors.MapElement.List(limit, offset, order, sortBy)

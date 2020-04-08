@@ -25,6 +25,7 @@ import (
 	"time"
 )
 
+// AppMemory ...
 type AppMemory struct {
 	Alloc      uint64    `json:"alloc"`
 	HeapAlloc  uint64    `json:"heap_alloc"`
@@ -34,6 +35,7 @@ type AppMemory struct {
 	LastGC     time.Time `json:"last_gc"`
 }
 
+// AppMemoryManager ...
 type AppMemoryManager struct {
 	publisher  IPublisher
 	isStarted  *atomic.Bool
@@ -47,6 +49,7 @@ type AppMemoryManager struct {
 	lastGC     time.Time
 }
 
+// NewAppMemoryManager ...
 func NewAppMemoryManager(publisher IPublisher) *AppMemoryManager {
 	return &AppMemoryManager{
 		publisher:  publisher,
@@ -105,6 +108,7 @@ func (d *AppMemoryManager) selfUpdate() {
 	d.broadcast()
 }
 
+// Snapshot ...
 func (d AppMemoryManager) Snapshot() AppMemory {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()

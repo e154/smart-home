@@ -19,11 +19,11 @@
 package backup
 
 import (
-	"os"
-	"io/ioutil"
-	"path"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"os"
+	"path"
 )
 
 // File copies a single file from src to dst

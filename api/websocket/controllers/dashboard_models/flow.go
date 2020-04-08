@@ -22,15 +22,18 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 )
 
+// Flow ...
 type Flow struct {
 	metric *metrics.MetricManager
 }
 
+// NewFlow ...
 func NewFlow(metric *metrics.MetricManager) (node *Flow) {
 	node = &Flow{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (g *Flow) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

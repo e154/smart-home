@@ -34,6 +34,7 @@ var (
 	log = common.MustGetLogger("controllers")
 )
 
+// ControllerCommon ...
 type ControllerCommon struct {
 	adaptors   *adaptors.Adaptors
 	core       *core.Core
@@ -41,6 +42,7 @@ type ControllerCommon struct {
 	endpoint   *endpoint.Endpoint
 }
 
+// NewControllerCommon ...
 func NewControllerCommon(adaptors *adaptors.Adaptors,
 	core *core.Core,
 	accessList *access_list.AccessListService,

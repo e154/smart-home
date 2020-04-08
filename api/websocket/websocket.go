@@ -36,10 +36,12 @@ var (
 	log = common.MustGetLogger("websocket")
 )
 
+// WebSocket ...
 type WebSocket struct {
 	Controllers *Controllers
 }
 
+// NewWebSocket ...
 func NewWebSocket(adaptors *adaptors.Adaptors,
 	stream *stream.StreamService,
 	endpoint *endpoint.Endpoint,
@@ -59,11 +61,13 @@ func NewWebSocket(adaptors *adaptors.Adaptors,
 	return server
 }
 
+// Start ...
 func (s *WebSocket) Start() {
 	log.Info("Serving websocket service")
 	s.Controllers.Start()
 }
 
+// Shutdown ...
 func (s *WebSocket) Shutdown() {
 	log.Info("Server exiting")
 	s.Controllers.Stop()

@@ -25,8 +25,10 @@ import (
 	"time"
 )
 
+// HistoryMax ...
 const HistoryMax = 8
 
+// User ...
 type User struct {
 	Id                  int64          `json:"id"`
 	Nickname            string         `json:"nickname" valid:"Required;MinSize(3);MaxSize(255)"`
@@ -57,6 +59,7 @@ type User struct {
 	History             []*UserHistory `json:"history,omitempty"`
 }
 
+// Valid ...
 func (u *User) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
@@ -67,6 +70,7 @@ func (u *User) Valid() (ok bool, errs []*validation.Error) {
 	return
 }
 
+// UpdateHistory ...
 func (u *User) UpdateHistory(t time.Time, ipv4 string) {
 
 	l := len(u.History)
@@ -77,11 +81,13 @@ func (u *User) UpdateHistory(t time.Time, ipv4 string) {
 	u.History = append(u.History, &UserHistory{Ip: ipv4, Time: t})
 }
 
+// CheckPass ...
 func (u User) CheckPass(password string) (ok bool) {
 	ok = common.CheckPasswordHash(password, u.EncryptedPassword)
 	return
 }
 
+// SetPass ...
 func (u *User) SetPass(password string) (err error) {
 	u.EncryptedPassword, err = common.HashPassword(password)
 	return

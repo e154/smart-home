@@ -24,22 +24,26 @@ import (
 	"os"
 )
 
+// ControllerImage ...
 type ControllerImage struct {
 	*ControllerCommon
 }
 
-func NewControllerImage(common *ControllerCommon, ) *ControllerImage {
+// NewControllerImage ...
+func NewControllerImage(common *ControllerCommon) *ControllerImage {
 	return &ControllerImage{
 		ControllerCommon: common,
 	}
 }
 
+// Start ...
 func (c *ControllerImage) Start() {
 	c.stream.Subscribe("get_image_list", c.GetImageList)
 	c.stream.Subscribe("get_filter_list", c.GetFilterList)
 	c.stream.Subscribe("remove_image", c.RemoveImage)
 }
 
+// Stop ...
 func (c *ControllerImage) Stop() {
 	c.stream.UnSubscribe("get_image_list")
 	c.stream.UnSubscribe("get_filter_list")
@@ -59,11 +63,12 @@ func (c *ControllerImage) GetImageList(client stream.IStreamClient, message stre
 		return
 	}
 
-	payload := map[string]interface{}{"images": images,}
+	payload := map[string]interface{}{"images": images}
 	response := message.Response(payload)
 	client.Write(response.Pack())
 }
 
+// GetFilterList ...
 func (c *ControllerImage) GetFilterList(client stream.IStreamClient, message stream.Message) {
 
 	filterList, err := c.adaptors.Image.GetFilterList()
@@ -73,11 +78,12 @@ func (c *ControllerImage) GetFilterList(client stream.IStreamClient, message str
 		return
 	}
 
-	payload := map[string]interface{}{"filter_list": filterList,}
+	payload := map[string]interface{}{"filter_list": filterList}
 	response := message.Response(payload)
 	client.Write(response.Pack())
 }
 
+// RemoveImage ...
 func (c *ControllerImage) RemoveImage(client stream.IStreamClient, message stream.Message) {
 
 	fileId, ok := message.Payload["image_id"].(float64)

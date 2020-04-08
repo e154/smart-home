@@ -25,14 +25,17 @@ import (
 	"strconv"
 )
 
+// ControllerMapDevice ...
 type ControllerMapDevice struct {
 	*ControllerCommon
 }
 
+// NewControllerMapDevice ...
 func NewControllerMapDevice(common *ControllerCommon) *ControllerMapDevice {
 	return &ControllerMapDevice{ControllerCommon: common}
 }
 
+// GetHistory ...
 func (c *ControllerMapDevice) GetHistory(ctx *gin.Context) {
 
 	var limit, offset int

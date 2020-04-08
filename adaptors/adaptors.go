@@ -29,6 +29,7 @@ var (
 	log = common.MustGetLogger("adaptors")
 )
 
+// Adaptors ...
 type Adaptors struct {
 	db                    *gorm.DB
 	isTx                  bool
@@ -71,6 +72,7 @@ type Adaptors struct {
 	AlexaIntent           *AlexaIntent
 }
 
+// NewAdaptors ...
 func NewAdaptors(db *gorm.DB,
 	cfg *config.AppConfig,
 	migrations *migrations.Migrations) (adaptors *Adaptors) {
@@ -123,12 +125,14 @@ func NewAdaptors(db *gorm.DB,
 	return
 }
 
+// Begin ...
 func (a Adaptors) Begin() (adaptors *Adaptors) {
 	adaptors = NewAdaptors(a.db.Begin(), nil, nil)
 	adaptors.isTx = true
 	return
 }
 
+// Commit ...
 func (a *Adaptors) Commit() error {
 	if !a.isTx {
 		return nil
@@ -137,6 +141,7 @@ func (a *Adaptors) Commit() error {
 	return a.db.Commit().Error
 }
 
+// Rollback ...
 func (a *Adaptors) Rollback() error {
 	if !a.isTx {
 		return nil

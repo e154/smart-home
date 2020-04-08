@@ -24,16 +24,19 @@ import (
 	"strings"
 )
 
+// MapZoneEndpoint ...
 type MapZoneEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewMapZoneEndpoint ...
 func NewMapZoneEndpoint(common *CommonEndpoint) *MapZoneEndpoint {
 	return &MapZoneEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (n *MapZoneEndpoint) Add(zone *m.MapZone) (result *m.MapZone, errs []*validation.Error, err error) {
 
 	_, errs = zone.Valid()
@@ -57,6 +60,7 @@ func (n *MapZoneEndpoint) Add(zone *m.MapZone) (result *m.MapZone, errs []*valid
 	return
 }
 
+// Delete ...
 func (n *MapZoneEndpoint) Delete(zoneName string) (err error) {
 
 	if _, err = n.adaptors.MapZone.GetByName(zoneName); err != nil {
@@ -68,6 +72,7 @@ func (n *MapZoneEndpoint) Delete(zoneName string) (err error) {
 	return
 }
 
+// Search ...
 func (n *MapZoneEndpoint) Search(query string, limit, offset int) (result []*m.MapZone, total int64, err error) {
 
 	result, total, err = n.adaptors.MapZone.Search(query, limit, offset)

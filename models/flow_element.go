@@ -19,20 +19,24 @@
 package models
 
 import (
-	"time"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
+// FlowElementGraphSettingsPosition ...
 type FlowElementGraphSettingsPosition struct {
 	Top  int64 `json:"top"`
 	Left int64 `json:"left"`
 }
+
+// FlowElementGraphSettings ...
 type FlowElementGraphSettings struct {
 	Position FlowElementGraphSettingsPosition `json:"position"`
 }
 
+// FlowElement ...
 type FlowElement struct {
 	Uuid          uuid.UUID                 `json:"uuid"`
 	Name          string                    `json:"name" valid:"MaxSize(254)"`
@@ -48,6 +52,7 @@ type FlowElement struct {
 	UpdatedAt     time.Time                 `json:"updated_at"`
 }
 
+// Valid ...
 func (d *FlowElement) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

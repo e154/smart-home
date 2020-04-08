@@ -22,6 +22,7 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
+// Subscribe ...
 type Subscribe struct {
 	Qos      byte
 	Callback MQTT.MessageHandler

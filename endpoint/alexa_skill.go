@@ -24,16 +24,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// AlexaSkillEndpoint ...
 type AlexaSkillEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewAlexaSkillEndpoint ...
 func NewAlexaSkillEndpoint(common *CommonEndpoint) *AlexaSkillEndpoint {
 	return &AlexaSkillEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (n *AlexaSkillEndpoint) Add(params *m.AlexaSkill) (result *m.AlexaSkill, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
@@ -55,6 +58,7 @@ func (n *AlexaSkillEndpoint) Add(params *m.AlexaSkill) (result *m.AlexaSkill, er
 	return
 }
 
+// GetById ...
 func (n *AlexaSkillEndpoint) GetById(appId int64) (result *m.AlexaSkill, err error) {
 
 	result, err = n.adaptors.AlexaSkill.GetById(appId)
@@ -62,6 +66,7 @@ func (n *AlexaSkillEndpoint) GetById(appId int64) (result *m.AlexaSkill, err err
 	return
 }
 
+// Update ...
 func (n *AlexaSkillEndpoint) Update(params *m.AlexaSkill) (skill *m.AlexaSkill, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
@@ -82,6 +87,7 @@ func (n *AlexaSkillEndpoint) Update(params *m.AlexaSkill) (skill *m.AlexaSkill, 
 	return
 }
 
+// GetList ...
 func (n *AlexaSkillEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.AlexaSkill, total int64, err error) {
 
 	result, total, err = n.adaptors.AlexaSkill.List(limit, offset, order, sortBy)
@@ -89,6 +95,7 @@ func (n *AlexaSkillEndpoint) GetList(limit, offset int64, order, sortBy string) 
 	return
 }
 
+// Delete ...
 func (n *AlexaSkillEndpoint) Delete(skillId int64) (err error) {
 
 	if skillId == 0 {

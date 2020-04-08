@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Variable ...
 type Variable struct {
 	table *db.Variables
 	db    *gorm.DB
 }
 
+// GetVariableAdaptor ...
 func GetVariableAdaptor(d *gorm.DB) *Variable {
 	return &Variable{
 		table: &db.Variables{Db: d},
@@ -36,6 +38,7 @@ func GetVariableAdaptor(d *gorm.DB) *Variable {
 	}
 }
 
+// Add ...
 func (n *Variable) Add(variables *m.Variable) (err error) {
 
 	dbVariable := n.toDb(variables)
@@ -44,6 +47,7 @@ func (n *Variable) Add(variables *m.Variable) (err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n *Variable) GetAllEnabled() (list []*m.Variable, err error) {
 
 	var dbList []*db.Variable
@@ -60,6 +64,7 @@ func (n *Variable) GetAllEnabled() (list []*m.Variable, err error) {
 	return
 }
 
+// GetByName ...
 func (n *Variable) GetByName(name string) (variables *m.Variable, err error) {
 
 	var dbVariable *db.Variable
@@ -72,6 +77,7 @@ func (n *Variable) GetByName(name string) (variables *m.Variable, err error) {
 	return
 }
 
+// Update ...
 func (n *Variable) Update(variable *m.Variable) (err error) {
 	if _, err = n.table.GetByName(variable.Name); err != nil {
 		err = n.Add(variable)
@@ -82,11 +88,13 @@ func (n *Variable) Update(variable *m.Variable) (err error) {
 	return
 }
 
+// Delete ...
 func (n *Variable) Delete(name string) (err error) {
 	err = n.table.Delete(name)
 	return
 }
 
+// List ...
 func (n *Variable) List(limit, offset int64, orderBy, sort string) (list []*m.Variable, total int64, err error) {
 	var dbList []*db.Variable
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {

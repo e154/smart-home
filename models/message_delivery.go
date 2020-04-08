@@ -20,15 +20,21 @@ package models
 
 import "time"
 
+// MessageStatus ...
 type MessageStatus string
 
 const (
-	MessageStatusNew        = MessageStatus("new")
+	// MessageStatusNew ...
+	MessageStatusNew = MessageStatus("new")
+	// MessageStatusInProgress ...
 	MessageStatusInProgress = MessageStatus("in_progress")
-	MessageStatusSucceed    = MessageStatus("succeed")
-	MessageStatusError      = MessageStatus("error")
+	// MessageStatusSucceed ...
+	MessageStatusSucceed = MessageStatus("succeed")
+	// MessageStatusError ...
+	MessageStatusError = MessageStatus("error")
 )
 
+// MessageDelivery ...
 type MessageDelivery struct {
 	Id                 int64         `json:"id"`
 	Message            *Message      `json:"message"`

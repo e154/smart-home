@@ -34,6 +34,7 @@ import (
 	"time"
 )
 
+// Flow ...
 type Flow struct {
 	Storage
 	Model            *m.Flow
@@ -59,6 +60,7 @@ type Flow struct {
 	Workers   map[int64]*Worker
 }
 
+// NewFlow ...
 func NewFlow(model *m.Flow,
 	workflow *Workflow,
 	adaptors *adaptors.Adaptors,
@@ -129,6 +131,7 @@ func NewFlow(model *m.Flow,
 	return
 }
 
+// Remove ...
 func (f *Flow) Remove() {
 
 	log.Infof("Remove flow '%v'", f.Model.Name)
@@ -159,10 +162,9 @@ func (f *Flow) Remove() {
 		}
 	}
 
-	//close(f.mqttMessageQueue)
-	//close(f.mqttWorkerQuit)
 }
 
+// NewMessage ...
 func (f *Flow) NewMessage(ctx context.Context) (err error) {
 
 	f.Lock()
@@ -284,10 +286,7 @@ func (f *Flow) NewMessage(ctx context.Context) (err error) {
 	return
 }
 
-// ------------------------------------------------
-// Workers
-// ------------------------------------------------
-
+// InitWorkers ...
 func (f *Flow) InitWorkers() (err error) {
 
 	for _, worker := range f.Model.Workers {
@@ -299,6 +298,7 @@ func (f *Flow) InitWorkers() (err error) {
 	return
 }
 
+// AddWorker ...
 func (f *Flow) AddWorker(model *m.Worker) (err error) {
 
 	log.Infof("Add worker: \"%s\"", model.Name)
@@ -383,6 +383,7 @@ func (f *Flow) AddWorker(model *m.Worker) (err error) {
 	return
 }
 
+// UpdateWorker ...
 func (f *Flow) UpdateWorker(worker *m.Worker) (err error) {
 
 	f.Lock()
@@ -402,6 +403,7 @@ func (f *Flow) UpdateWorker(worker *m.Worker) (err error) {
 	return
 }
 
+// RemoveWorker ...
 func (f *Flow) RemoveWorker(worker *m.Worker) (err error) {
 
 	log.Infof("Remove worker: \"%s\"", worker.Name)
@@ -420,6 +422,7 @@ func (f *Flow) RemoveWorker(worker *m.Worker) (err error) {
 	return
 }
 
+// NewScript ...
 func (f *Flow) NewScript(s ...*m.Script) (engine *scripts.Engine, err error) {
 
 	var model *m.Script
@@ -540,12 +543,14 @@ func (f *Flow) mqttMessageWorker() {
 	}
 }
 
+// SetMessage ...
 func (f *Flow) SetMessage(msg *Message) {
 	f.Lock()
 	f.message.Update(msg)
 	f.Unlock()
 }
 
+// GetMessage ...
 func (f *Flow) GetMessage() *Message {
 	f.Lock()
 	defer f.Unlock()

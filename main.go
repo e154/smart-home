@@ -107,6 +107,7 @@ func main() {
 	start()
 }
 
+// start...
 func start() {
 
 	fmt.Printf(version.ShortVersionBanner, "")

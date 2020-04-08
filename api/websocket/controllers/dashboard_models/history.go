@@ -22,15 +22,18 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 )
 
+// History ...
 type History struct {
 	metric *metrics.MetricManager
 }
 
+// NewHistory ...
 func NewHistory(metric *metrics.MetricManager) (memory *History) {
 	memory = &History{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (g *History) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

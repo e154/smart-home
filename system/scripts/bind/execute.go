@@ -19,12 +19,13 @@
 package bind
 
 import (
+	"bytes"
+	"fmt"
 	"os/exec"
 	"strings"
-	"fmt"
-	"bytes"
 )
 
+// Response ...
 type Response struct {
 	Out string
 	Err string
@@ -58,6 +59,7 @@ func ExecuteSync(name string, arg ...string) (r *Response) {
 	return
 }
 
+// ExecuteAsync ...
 func ExecuteAsync(name string, arg ...string) (r *Response) {
 
 	r = &Response{}

@@ -44,6 +44,7 @@ var (
 	log = common.MustGetLogger("mqtt")
 )
 
+// Mqtt ...
 type Mqtt struct {
 	cfg            *MqttConfig
 	server         IMQTT
@@ -55,6 +56,7 @@ type Mqtt struct {
 	clients        map[string]*Client
 }
 
+// NewMqtt ...
 func NewMqtt(cfg *MqttConfig,
 	graceful *graceful_service.GracefulService,
 	authenticator *mqtt_authenticator.Authenticator,
@@ -79,6 +81,7 @@ func NewMqtt(cfg *MqttConfig,
 	return
 }
 
+// Shutdown ...
 func (m *Mqtt) Shutdown() {
 	log.Info("Server exiting")
 	if m.server != nil {
@@ -150,6 +153,7 @@ func (m *Mqtt) runServer() {
 //	log.Debugf("unsubscribe %v from topic %v", client.OptionsReader().ClientID(), topicName)
 //}
 
+// OnMsgArrived ...
 func (m *Mqtt) OnMsgArrived(ctx context.Context, client gmqtt.Client, msg packets.Message) (valid bool) {
 	m.clientsLock.Lock()
 	defer m.clientsLock.Unlock()
@@ -161,6 +165,7 @@ func (m *Mqtt) OnMsgArrived(ctx context.Context, client gmqtt.Client, msg packet
 	return true
 }
 
+// OnConnect ...
 func (m *Mqtt) OnConnect(ctx context.Context, client gmqtt.Client) (code uint8) {
 	log.Debugf("connect... %v", client.OptionsReader().ClientID())
 
@@ -175,10 +180,12 @@ func (m *Mqtt) OnConnect(ctx context.Context, client gmqtt.Client) (code uint8) 
 	return packets.CodeAccepted
 }
 
+// Management ...
 func (m *Mqtt) Management() IManagement {
 	return m.management
 }
 
+// Publish ...
 func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (err error) {
 	if qos < 0 || qos > 2 {
 		err = errors.New("invalid Qos")
@@ -196,6 +203,7 @@ func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (er
 	return
 }
 
+// NewClient ...
 func (m *Mqtt) NewClient(name string) (client *Client) {
 	m.clientsLock.Lock()
 	defer m.clientsLock.Unlock()

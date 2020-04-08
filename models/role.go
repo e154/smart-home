@@ -19,10 +19,11 @@
 package models
 
 import (
-	"time"
 	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
+// Role ...
 type Role struct {
 	Name        string              `json:"name" valid:"MaxSize(254);Required"`
 	Description string              `json:"description"`
@@ -33,6 +34,7 @@ type Role struct {
 	UpdatedAt   time.Time           `json:"updated_at"`
 }
 
+// Valid ...
 func (d *Role) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

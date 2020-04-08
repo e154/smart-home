@@ -25,10 +25,12 @@ import (
 	"strconv"
 )
 
+// ControllerWorkflow ...
 type ControllerWorkflow struct {
 	*ControllerCommon
 }
 
+// NewControllerWorkflow ...
 func NewControllerWorkflow(common *ControllerCommon) *ControllerWorkflow {
 	return &ControllerWorkflow{ControllerCommon: common}
 }
@@ -88,7 +90,6 @@ func (c ControllerWorkflow) GetById(ctx *gin.Context) {
 	resp := NewSuccess()
 	resp.SetData(result).Send(ctx)
 }
-
 
 // swagger:operation GET /workflows workflowList
 // ---

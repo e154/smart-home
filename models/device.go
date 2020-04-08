@@ -28,6 +28,7 @@ import (
 	"time"
 )
 
+// Device ...
 type Device struct {
 	Id          int64           `json:"id"`
 	Name        string          `json:"name" valid:"MaxSize(254);Required"`
@@ -46,6 +47,7 @@ type Device struct {
 	UpdatedAt   time.Time       `json:"updated_at"`
 }
 
+// Valid ...
 func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
@@ -100,6 +102,7 @@ func (d *Device) Valid() (ok bool, errs []*validation.Error) {
 	return
 }
 
+// SetProperties ...
 func (d *Device) SetProperties(properties interface{}) (ok bool, errs []*validation.Error) {
 
 	var dType DeviceType
@@ -140,6 +143,7 @@ func (d *Device) SetProperties(properties interface{}) (ok bool, errs []*validat
 	return
 }
 
+// SetPropertiesFromMap ...
 func (d *Device) SetPropertiesFromMap(properties map[string]interface{}) (ok bool, errs []*validation.Error, err error) {
 
 	var out interface{}

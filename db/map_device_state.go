@@ -19,15 +19,17 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"time"
 )
 
+// MapDeviceStates ...
 type MapDeviceStates struct {
 	Db *gorm.DB
 }
 
+// MapDeviceState ...
 type MapDeviceState struct {
 	Id            int64 `gorm:"primary_key"`
 	DeviceState   *DeviceState
@@ -41,10 +43,12 @@ type MapDeviceState struct {
 	UpdatedAt     time.Time
 }
 
+// TableName ...
 func (d *MapDeviceState) TableName() string {
 	return "map_device_states"
 }
 
+// Add ...
 func (n MapDeviceStates) Add(v *MapDeviceState) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -53,12 +57,14 @@ func (n MapDeviceStates) Add(v *MapDeviceState) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n MapDeviceStates) GetById(mapId int64) (v *MapDeviceState, err error) {
 	v = &MapDeviceState{Id: mapId}
 	err = n.Db.First(&v).Error
 	return
 }
 
+// Update ...
 func (n MapDeviceStates) Update(m *MapDeviceState) (err error) {
 	err = n.Db.Model(&MapDeviceState{Id: m.Id}).Updates(map[string]interface{}{
 		"device_state_id": m.DeviceStateId,
@@ -69,11 +75,13 @@ func (n MapDeviceStates) Update(m *MapDeviceState) (err error) {
 	return
 }
 
+// Delete ...
 func (n MapDeviceStates) Delete(mapId int64) (err error) {
 	err = n.Db.Delete(&MapDeviceState{Id: mapId}).Error
 	return
 }
 
+// List ...
 func (n *MapDeviceStates) List(limit, offset int64, orderBy, sort string) (list []*MapDeviceState, total int64, err error) {
 
 	if err = n.Db.Model(MapDeviceState{}).Count(&total).Error; err != nil {

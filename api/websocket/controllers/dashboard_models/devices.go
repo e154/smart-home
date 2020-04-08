@@ -25,14 +25,17 @@ import (
 	"reflect"
 )
 
+// Devices ...
 type Devices struct {
 	metric *metrics.MetricManager
 }
 
+// NewDevices ...
 func NewDevices(metric *metrics.MetricManager) *Devices {
 	return &Devices{metric: metric}
 }
 
+// Broadcast ...
 func (d *Devices) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

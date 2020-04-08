@@ -31,26 +31,27 @@ type NodeBind struct {
 	node *Node
 }
 
-//func (n *NodeBind) Send(device *DeviceBind, command []byte) NodeBindResult {
-//	return n.node.Send(device.model, command)
-//}
-
+// IsConnected ...
 func (n *NodeBind) IsConnected() bool {
 	return n.node.IsConnected()
 }
 
+// Name ...
 func (n *NodeBind) Name() string {
 	return n.node.Model().Name
 }
 
+// Status ...
 func (n *NodeBind) Status() string {
 	return n.node.Model().Status
 }
 
+// Stat ...
 func (n *NodeBind) Stat() NodeStat {
 	return n.node.GetStat()
 }
 
+// Description ...
 func (n *NodeBind) Description() string {
 	return n.node.Model().Description
 }

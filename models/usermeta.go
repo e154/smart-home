@@ -18,6 +18,7 @@
 
 package models
 
+// UserMeta ...
 type UserMeta struct {
 	Id     int64  `json:"id"`
 	User   *User  `json:"user"`

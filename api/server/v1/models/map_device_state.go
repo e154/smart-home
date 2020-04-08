@@ -20,6 +20,7 @@ package models
 
 import "time"
 
+// MapDeviceState ...
 type MapDeviceState struct {
 	Id            int64        `json:"id"`
 	DeviceState   *DeviceState `json:"device_state"`

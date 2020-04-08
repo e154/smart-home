@@ -28,6 +28,7 @@ import (
 	"sync"
 )
 
+// Action ...
 type Action struct {
 	Device        *m.Device
 	Node          *Node
@@ -41,6 +42,7 @@ type Action struct {
 	zigbee2mqtt   *zigbee2mqtt.Zigbee2mqtt
 }
 
+// NewAction ...
 func NewAction(device *m.Device,
 	deviceAction *m.DeviceAction,
 	node *Node,
@@ -66,6 +68,7 @@ func NewAction(device *m.Device,
 	return
 }
 
+// Do ...
 func (a *Action) Do() (res string, err error) {
 	a.doLock.Lock()
 	defer a.doLock.Unlock()
@@ -103,6 +106,7 @@ func (a *Action) newScript() (err error) {
 	return nil
 }
 
+// GetDevice ...
 func (a *Action) GetDevice() *m.Device {
 	return a.Device
 }

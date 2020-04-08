@@ -17,4 +17,3 @@
 // <https://www.gnu.org/licenses/>.
 
 package models
-

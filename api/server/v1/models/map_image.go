@@ -18,6 +18,7 @@
 
 package models
 
+// MapImage ...
 type MapImage struct {
 	Id      int64  `json:"id,omitempty"`
 	Image   *Image `json:"image"`

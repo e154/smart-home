@@ -23,9 +23,11 @@ import (
 )
 
 const (
+	// DevTypeSmartBus ...
 	DevTypeSmartBus = DeviceType("smartbus")
 )
 
+// DevSmartBusConfig ...
 type DevSmartBusConfig struct {
 	Validation
 	Baud     int `json:"baud" valid:"Required"`
@@ -35,9 +37,12 @@ type DevSmartBusConfig struct {
 	Sleep    int `json:"sleep"`
 }
 
+// DevSmartBusRequest ...
 type DevSmartBusRequest struct {
 	Command []byte `json:"command"`
 }
+
+// DevSmartBusResponse ...
 type DevSmartBusResponse struct {
 	BaseResponse
 	Result []byte `json:"result"`

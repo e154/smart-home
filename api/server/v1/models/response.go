@@ -18,8 +18,10 @@
 
 package models
 
+// ResponseSuccess ...
 type ResponseSuccess struct{}
 
+// NewObjectSuccess ...
 type NewObjectSuccess struct {
 	Id int64 `json:"id"`
 }

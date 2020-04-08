@@ -20,14 +20,17 @@ package adaptors
 
 import "time"
 
+// DeviceDefault ...
 type DeviceDefault struct {
 	Address *int `json:"address"`
 }
 
+// DeviceZigBee ...
 type DeviceZigBee struct {
 	Address string `json:"address"`
 }
 
+// DeviceSmartBus ...
 type DeviceSmartBus struct {
 	Address  *int          `json:"address"`
 	Baud     int           `json:"baud"`

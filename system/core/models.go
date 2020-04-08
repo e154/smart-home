@@ -24,6 +24,7 @@ import (
 	"time"
 )
 
+// NodeMessage ...
 type NodeMessage struct {
 	DeviceId   int64             `json:"device_id"`
 	DeviceType common.DeviceType `json:"device_type"`
@@ -31,6 +32,7 @@ type NodeMessage struct {
 	Command    json.RawMessage   `json:"command"`
 }
 
+// NodeResponse ...
 type NodeResponse struct {
 	DeviceId   int64             `json:"device_id"`
 	DeviceType common.DeviceType `json:"device_type"`
@@ -40,8 +42,10 @@ type NodeResponse struct {
 	Time       float64           `json:"time"`
 }
 
+// NodeStatus ...
 type NodeStatus string
 
+// NodeStatModel ...
 type NodeStatModel struct {
 	Status    NodeStatus `json:"status"`
 	Thread    int        `json:"thread"`
@@ -51,6 +55,7 @@ type NodeStatModel struct {
 	StartedAt time.Time  `json:"started_at"`
 }
 
+// NodeStat ...
 type NodeStat struct {
 	Status      NodeStatus `json:"status"`
 	Thread      int        `json:"thread"`

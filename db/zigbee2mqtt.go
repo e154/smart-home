@@ -23,10 +23,12 @@ import (
 	"time"
 )
 
+// Zigbee2mqtts ...
 type Zigbee2mqtts struct {
 	Db *gorm.DB
 }
 
+// Zigbee2mqtt ...
 type Zigbee2mqtt struct {
 	Id                int64 `gorm:"primary_key"`
 	Name              string
@@ -39,10 +41,12 @@ type Zigbee2mqtt struct {
 	UpdatedAt         time.Time
 }
 
+// TableName ...
 func (m *Zigbee2mqtt) TableName() string {
 	return "zigbee2mqtt"
 }
 
+// Add ...
 func (z Zigbee2mqtts) Add(v *Zigbee2mqtt) (id int64, err error) {
 	if err = z.Db.Create(&v).Error; err != nil {
 		return
@@ -51,6 +55,7 @@ func (z Zigbee2mqtts) Add(v *Zigbee2mqtt) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (z Zigbee2mqtts) GetById(id int64) (v *Zigbee2mqtt, err error) {
 	v = &Zigbee2mqtt{Id: id}
 	err = z.Db.First(&v).
@@ -58,6 +63,7 @@ func (z Zigbee2mqtts) GetById(id int64) (v *Zigbee2mqtt, err error) {
 	return
 }
 
+// Update ...
 func (z Zigbee2mqtts) Update(m *Zigbee2mqtt) (err error) {
 	q := map[string]interface{}{
 		"Name":               m.Name,
@@ -71,11 +77,13 @@ func (z Zigbee2mqtts) Update(m *Zigbee2mqtt) (err error) {
 	return
 }
 
+// Delete ...
 func (z Zigbee2mqtts) Delete(id int64) (err error) {
 	err = z.Db.Delete(&Zigbee2mqtt{Id: id}).Error
 	return
 }
 
+// List ...
 func (z *Zigbee2mqtts) List(limit, offset int64) (list []*Zigbee2mqtt, total int64, err error) {
 
 	if err = z.Db.Model(Zigbee2mqtt{}).Count(&total).Error; err != nil {
@@ -93,6 +101,7 @@ func (z *Zigbee2mqtts) List(limit, offset int64) (list []*Zigbee2mqtt, total int
 	return
 }
 
+// GetByLogin ...
 func (z *Zigbee2mqtts) GetByLogin(login string) (bridge *Zigbee2mqtt, err error) {
 
 	bridge = &Zigbee2mqtt{}

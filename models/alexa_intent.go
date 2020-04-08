@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// AlexaIntent ...
 type AlexaIntent struct {
 	Name         string    `json:"name"`
 	AlexaSkillId int64     `json:"alexa_skill_id" valid:"Required"`
@@ -33,6 +34,7 @@ type AlexaIntent struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
+// Valid ...
 func (d *AlexaIntent) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

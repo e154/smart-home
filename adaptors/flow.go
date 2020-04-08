@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Flow ...
 type Flow struct {
 	table *db.Flows
 	db    *gorm.DB
 }
 
+// GetFlowAdaptor ...
 func GetFlowAdaptor(d *gorm.DB) *Flow {
 	return &Flow{
 		table: &db.Flows{Db: d},
@@ -36,6 +38,7 @@ func GetFlowAdaptor(d *gorm.DB) *Flow {
 	}
 }
 
+// Add ...
 func (n *Flow) Add(flow *m.Flow) (id int64, err error) {
 
 	dbFlow := n.toDb(flow)
@@ -46,6 +49,7 @@ func (n *Flow) Add(flow *m.Flow) (id int64, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n *Flow) GetAllEnabled() (list []*m.Flow, err error) {
 
 	var dbList []*db.Flow
@@ -62,6 +66,7 @@ func (n *Flow) GetAllEnabled() (list []*m.Flow, err error) {
 	return
 }
 
+// GetById ...
 func (n *Flow) GetById(flowId int64) (flow *m.Flow, err error) {
 
 	var dbFlow *db.Flow
@@ -74,17 +79,20 @@ func (n *Flow) GetById(flowId int64) (flow *m.Flow, err error) {
 	return
 }
 
+// Update ...
 func (n *Flow) Update(flow *m.Flow) (err error) {
 	dbFlow := n.toDb(flow)
 	err = n.table.Update(dbFlow)
 	return
 }
 
+// Delete ...
 func (n *Flow) Delete(flowId int64) (err error) {
 	err = n.table.Delete(flowId)
 	return
 }
 
+// List ...
 func (n *Flow) List(limit, offset int64, orderBy, sort string) (list []*m.Flow, total int64, err error) {
 	var dbList []*db.Flow
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -100,6 +108,7 @@ func (n *Flow) List(limit, offset int64, orderBy, sort string) (list []*m.Flow, 
 	return
 }
 
+// Search ...
 func (n *Flow) Search(query string, limit, offset int) (list []*m.Flow, total int64, err error) {
 	var dbList []*db.Flow
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
@@ -115,6 +124,7 @@ func (n *Flow) Search(query string, limit, offset int) (list []*m.Flow, total in
 	return
 }
 
+// GetAllEnabledByWorkflow ...
 func (n *Flow) GetAllEnabledByWorkflow(workflowId int64) (list []*m.Flow, err error) {
 
 	var dbList []*db.Flow

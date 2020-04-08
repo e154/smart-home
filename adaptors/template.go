@@ -26,11 +26,13 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Template ...
 type Template struct {
 	table *db.Templates
 	db    *gorm.DB
 }
 
+// GetTemplateAdaptor ...
 func GetTemplateAdaptor(d *gorm.DB) *Template {
 	return &Template{
 		table: &db.Templates{Db: d},
@@ -38,6 +40,7 @@ func GetTemplateAdaptor(d *gorm.DB) *Template {
 	}
 }
 
+// UpdateOrCreate ...
 func (n *Template) UpdateOrCreate(ver *m.Template) (err error) {
 
 	dbVer := n.toDb(ver)
@@ -48,6 +51,7 @@ func (n *Template) UpdateOrCreate(ver *m.Template) (err error) {
 	return
 }
 
+// Create ...
 func (n *Template) Create(ver *m.Template) (err error) {
 
 	dbVer := n.toDb(ver)
@@ -58,6 +62,7 @@ func (n *Template) Create(ver *m.Template) (err error) {
 	return
 }
 
+// UpdateStatus ...
 func (n *Template) UpdateStatus(ver *m.Template) (err error) {
 
 	dbVer := n.toDb(ver)
@@ -68,6 +73,7 @@ func (n *Template) UpdateStatus(ver *m.Template) (err error) {
 	return
 }
 
+// GetList ...
 func (n *Template) GetList(templateType m.TemplateType) (items []*m.Template, err error) {
 
 	var dbItems []*db.Template
@@ -83,6 +89,7 @@ func (n *Template) GetList(templateType m.TemplateType) (items []*m.Template, er
 	return
 }
 
+// GetByName ...
 func (n *Template) GetByName(name string) (ver *m.Template, err error) {
 
 	var dbVer *db.Template
@@ -94,6 +101,7 @@ func (n *Template) GetByName(name string) (ver *m.Template, err error) {
 	return
 }
 
+// GetItemByName ...
 func (n *Template) GetItemByName(name string) (ver *m.Template, err error) {
 
 	var dbVer *db.Template
@@ -105,16 +113,19 @@ func (n *Template) GetItemByName(name string) (ver *m.Template, err error) {
 	return
 }
 
+// GetItemsSortedList ...
 func (n *Template) GetItemsSortedList() (count int64, items []string, err error) {
 	count, items, err = n.table.GetItemsSortedList()
 	return
 }
 
+// Delete ...
 func (n *Template) Delete(name string) (err error) {
 	err = n.table.Delete(name)
 	return
 }
 
+// GetItemsTree ...
 func (n *Template) GetItemsTree() (tree []*m.TemplateTree, err error) {
 
 	var dbTree []*db.TemplateTree
@@ -128,6 +139,7 @@ func (n *Template) GetItemsTree() (tree []*m.TemplateTree, err error) {
 	return
 }
 
+// UpdateItemsTree ...
 func (n *Template) UpdateItemsTree(tree []*m.TemplateTree) (err error) {
 
 	dbTree := make([]*db.TemplateTree, 0)
@@ -143,6 +155,7 @@ func (n *Template) UpdateItemsTree(tree []*m.TemplateTree) (err error) {
 	return
 }
 
+// Search ...
 func (n *Template) Search(query string, limit, offset int) (list []*m.Template, total int64, err error) {
 	var dbList []*db.Template
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
@@ -159,6 +172,7 @@ func (n *Template) Search(query string, limit, offset int) (list []*m.Template, 
 	return
 }
 
+// GetMarkers ...
 func (n *Template) GetMarkers(template *m.Template) (err error) {
 
 	var templateContent *m.TemplateContent
@@ -179,6 +193,7 @@ func (n *Template) GetMarkers(template *m.Template) (err error) {
 	return
 }
 
+// Render ...
 func (n *Template) Render(name string, params map[string]interface{}) (render *m.TemplateRender, err error) {
 
 	var item *m.Template

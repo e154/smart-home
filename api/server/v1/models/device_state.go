@@ -20,6 +20,7 @@ package models
 
 import "time"
 
+// DeviceStateDevice ...
 type DeviceStateDevice struct {
 	Id int64 `json:"id"`
 }

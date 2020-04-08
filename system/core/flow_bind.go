@@ -31,22 +31,27 @@ type FlowBind struct {
 	flow *Flow
 }
 
+// GetName ...
 func (f *FlowBind) GetName() string {
 	return f.flow.Model.Name
 }
 
+// GetDescription ...
 func (f *FlowBind) GetDescription() string {
 	return f.flow.Model.Description
 }
 
+// SetVar ...
 func (f *FlowBind) SetVar(key string, value interface{}) {
 	f.flow.SetVar(key, value)
 }
 
+// GetVar ...
 func (f *FlowBind) GetVar(key string) interface{} {
 	return f.flow.GetVar(key)
 }
 
+// Node ...
 func (f *FlowBind) Node() *NodeBind {
 	if f.flow.Node == nil {
 		return nil

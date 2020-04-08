@@ -42,6 +42,7 @@ type interval struct {
 	stopChan chan struct{}
 }
 
+// EventLoop ...
 type EventLoop struct {
 	vm       *goja.Runtime
 	jobChan  chan func()
@@ -49,6 +50,7 @@ type EventLoop struct {
 	running  bool
 }
 
+// NewEventLoop ...
 func NewEventLoop(vm *goja.Runtime) *EventLoop {
 
 	loop := &EventLoop{
@@ -220,4 +222,3 @@ func (i *interval) run(loop *EventLoop) {
 		}
 	}
 }
-

@@ -35,6 +35,7 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 )
 
+// WsClient ...
 type WsClient struct {
 	settings       Settings
 	settingsLoaded bool
@@ -51,6 +52,7 @@ type WsClient struct {
 	metric         *metrics.MetricManager
 }
 
+// NewWsClient ...
 func NewWsClient(cb IWsCallback, metric *metrics.MetricManager) *WsClient {
 	client := &WsClient{
 		interrupt:  make(chan struct{}),
@@ -91,6 +93,7 @@ func NewWsClient(cb IWsCallback, metric *metrics.MetricManager) *WsClient {
 	return client
 }
 
+// UpdateSettings ...
 func (client *WsClient) UpdateSettings(settings Settings) {
 	client.setLock.Lock()
 	defer client.setLock.Unlock()
@@ -234,6 +237,7 @@ func (client *WsClient) connect() {
 	}
 }
 
+// Close ...
 func (client *WsClient) Close() {
 
 	client.setLock.Lock()
@@ -271,11 +275,13 @@ func (client *WsClient) selfWrite(opCode int, payload []byte) (err error) {
 	return
 }
 
+// Write ...
 func (client *WsClient) Write(payload []byte) (err error) {
 	err = client.selfWrite(websocket.TextMessage, payload)
 	return
 }
 
+// Status ...
 func (client *WsClient) Status() string {
 	client.setLock.Lock()
 	defer client.setLock.Unlock()
@@ -283,6 +289,7 @@ func (client *WsClient) Status() string {
 	return client.status
 }
 
+// Notify ...
 func (client *WsClient) Notify(t, b string) {
 
 	msg := &stream.Message{

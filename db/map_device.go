@@ -24,10 +24,12 @@ import (
 	"time"
 )
 
+// MapDevices ...
 type MapDevices struct {
 	Db *gorm.DB
 }
 
+// MapDevice ...
 type MapDevice struct {
 	Id        int64 `gorm:"primary_key"`
 	Image     *Image
@@ -40,10 +42,12 @@ type MapDevice struct {
 	UpdatedAt time.Time
 }
 
+// TableName ...
 func (d *MapDevice) TableName() string {
 	return "map_devices"
 }
 
+// Add ...
 func (n MapDevices) Add(v *MapDevice) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -52,12 +56,14 @@ func (n MapDevices) Add(v *MapDevice) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n MapDevices) GetById(mapId int64) (v *MapDevice, err error) {
 	v = &MapDevice{Id: mapId}
 	err = n.Db.First(&v).Error
 	return
 }
 
+// Delete ...
 func (n MapDevices) Delete(id int64) (err error) {
 
 	if err = n.Db.Delete(&MapDevice{Id: id}).Error; err != nil {
@@ -74,6 +80,7 @@ func (n MapDevices) Delete(id int64) (err error) {
 	return
 }
 
+// List ...
 func (n *MapDevices) List(limit, offset int64, orderBy, sort string) (list []*MapDevice, total int64, err error) {
 
 	if err = n.Db.Model(MapDevice{}).Count(&total).Error; err != nil {

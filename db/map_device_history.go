@@ -25,10 +25,12 @@ import (
 	"time"
 )
 
+// MapDeviceHistories ...
 type MapDeviceHistories struct {
 	Db *gorm.DB
 }
 
+// MapDeviceHistory ...
 type MapDeviceHistory struct {
 	Id           int64 `gorm:"primary_key"`
 	MapDevice    *MapDevice
@@ -41,10 +43,12 @@ type MapDeviceHistory struct {
 	CreatedAt    time.Time
 }
 
+// TableName ...
 func (d *MapDeviceHistory) TableName() string {
 	return "map_device_history"
 }
 
+// Add ...
 func (m MapDeviceHistories) Add(story MapDeviceHistory) (id int64, err error) {
 	if err = m.Db.Create(&story).Error; err != nil {
 		return
@@ -53,6 +57,7 @@ func (m MapDeviceHistories) Add(story MapDeviceHistory) (id int64, err error) {
 	return
 }
 
+// ListByDeviceId ...
 func (m MapDeviceHistories) ListByDeviceId(id int64, limit, offset int) (list []*MapDeviceHistory, total int64, err error) {
 
 	if err = m.Db.Model(MapDeviceHistory{}).
@@ -73,6 +78,7 @@ func (m MapDeviceHistories) ListByDeviceId(id int64, limit, offset int) (list []
 	return
 }
 
+// ListByElementId ...
 func (m MapDeviceHistories) ListByElementId(id int64, limit, offset int) (list []*MapDeviceHistory, total int64, err error) {
 
 	if err = m.Db.Model(MapDeviceHistory{}).
@@ -93,6 +99,7 @@ func (m MapDeviceHistories) ListByElementId(id int64, limit, offset int) (list [
 	return
 }
 
+// List ...
 func (m MapDeviceHistories) List(limit, offset int) (list []*MapDeviceHistory, err error) {
 
 	list = make([]*MapDeviceHistory, 0)
@@ -106,6 +113,7 @@ func (m MapDeviceHistories) List(limit, offset int) (list []*MapDeviceHistory, e
 	return
 }
 
+// ListByMapId ...
 func (m MapDeviceHistories) ListByMapId(mapId int64, limit, offset int, orderBy, sort string) (list []*MapDeviceHistory, total int64, err error) {
 
 	err = m.Db.Raw(`select count(mdh.*)

@@ -22,19 +22,23 @@ import (
 	"sync"
 )
 
+// ISubscriber ...
 type ISubscriber interface {
 	Broadcast(interface{})
 }
 
+// IPublisher ...
 type IPublisher interface {
 	Broadcast(interface{})
 }
 
+// Publisher ...
 type Publisher struct {
 	sync.Mutex
 	subscribers map[string]ISubscriber
 }
 
+// NewPublisher ...
 func NewPublisher() (t *Publisher) {
 	t = &Publisher{
 		subscribers: make(map[string]ISubscriber),
@@ -43,6 +47,7 @@ func NewPublisher() (t *Publisher) {
 	return
 }
 
+// Subscribe ...
 func (p *Publisher) Subscribe(command string, f ISubscriber) {
 	p.Lock()
 	defer p.Unlock()
@@ -52,6 +57,7 @@ func (p *Publisher) Subscribe(command string, f ISubscriber) {
 	p.subscribers[command] = f
 }
 
+// UnSubscribe ...
 func (p *Publisher) UnSubscribe(command string) {
 	p.Lock()
 	defer p.Unlock()
@@ -60,6 +66,7 @@ func (p *Publisher) UnSubscribe(command string) {
 	}
 }
 
+// Broadcast ...
 func (p *Publisher) Broadcast(param interface{}) {
 	p.Lock()
 	defer p.Unlock()

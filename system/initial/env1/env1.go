@@ -69,6 +69,7 @@ func InstallDemoData(adaptors *Adaptors,
 	NewTemplateManager(adaptors).Create()
 }
 
+// Create ...
 func Create(adaptors *Adaptors,
 	accessList *access_list.AccessListService,
 	scriptService *ScriptService) {
@@ -79,6 +80,7 @@ func Create(adaptors *Adaptors,
 	NewNodeManager(adaptors).Create()
 }
 
+// Upgrade ...
 func Upgrade(oldVersion int,
 	adaptors *Adaptors,
 	accessList *access_list.AccessListService,

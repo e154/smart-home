@@ -48,6 +48,7 @@ var (
 	log = common.MustGetLogger("gate")
 )
 
+// GateClient ...
 type GateClient struct {
 	sync.Mutex
 	metric          *metrics.MetricManager
@@ -66,6 +67,7 @@ type GateClient struct {
 	subscribers     map[string]func(client stream.IStreamClient, msg stream.Message)
 }
 
+// NewGateClient ...
 func NewGateClient(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
 	metric *metrics.MetricManager) (gate *GateClient) {
@@ -107,6 +109,7 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 	return
 }
 
+// Shutdown ...
 func (g *GateClient) Shutdown() {
 	g.settingsLock.Lock()
 	defer g.settingsLock.Unlock()
@@ -118,6 +121,7 @@ func (g *GateClient) Shutdown() {
 	g.wsClient.Close()
 }
 
+// Close ...
 func (g *GateClient) Close() {
 	g.settingsLock.Lock()
 	defer g.settingsLock.Unlock()
@@ -126,6 +130,7 @@ func (g *GateClient) Close() {
 	g.wsClient.Close()
 }
 
+// Restart ...
 func (g *GateClient) Restart() {
 	g.Close()
 
@@ -134,6 +139,7 @@ func (g *GateClient) Restart() {
 	})
 }
 
+// RegisterServer ...
 func (g *GateClient) RegisterServer() {
 
 	g.settingsLock.Lock()
@@ -226,6 +232,7 @@ func (g *GateClient) saveSettings() (err error) {
 	return
 }
 
+// GetSettings ...
 func (g *GateClient) GetSettings() (Settings, error) {
 	g.settingsLock.Lock()
 	defer g.settingsLock.Unlock()
@@ -233,6 +240,7 @@ func (g *GateClient) GetSettings() (Settings, error) {
 	return *g.settings, nil
 }
 
+// UpdateSettings ...
 func (g *GateClient) UpdateSettings(settings Settings) (err error) {
 
 	g.settingsLock.Lock()
@@ -335,6 +343,7 @@ func (g *GateClient) selfUnSubscribe(id uuid.UUID) {
 	}
 }
 
+// Subscribe ...
 func (g *GateClient) Subscribe(command string, f func(client stream.IStreamClient, msg stream.Message)) {
 	g.subscrLock.Lock()
 	defer g.subscrLock.Unlock()
@@ -345,6 +354,7 @@ func (g *GateClient) Subscribe(command string, f func(client stream.IStreamClien
 	g.subscribers[command] = f
 }
 
+// UnSubscribe ...
 func (g *GateClient) UnSubscribe(command string) {
 	g.subscrLock.Lock()
 	defer g.subscrLock.Unlock()
@@ -354,6 +364,7 @@ func (g *GateClient) UnSubscribe(command string) {
 	}
 }
 
+// Send ...
 func (g *GateClient) Send(command string, payload map[string]interface{}, ctx context.Context, f func(msg stream.Message)) (err error) {
 
 	if g.wsClient.Status() != GateStatusConnected {
@@ -389,6 +400,7 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, ctx co
 	return
 }
 
+// Broadcast ...
 func (g *GateClient) Broadcast(message []byte) {
 	if g.wsClient.Status() != GateStatusConnected {
 		return
@@ -399,6 +411,7 @@ func (g *GateClient) Broadcast(message []byte) {
 	}
 }
 
+// Status ...
 func (g *GateClient) Status() string {
 
 	if !g.settings.Enabled {
@@ -412,6 +425,7 @@ func (g *GateClient) Status() string {
 	return status
 }
 
+// GetMobileList ...
 func (g *GateClient) GetMobileList(ctx context.Context) (list *MobileList, err error) {
 
 	list = &MobileList{
@@ -431,6 +445,7 @@ func (g *GateClient) GetMobileList(ctx context.Context) (list *MobileList, err e
 	return
 }
 
+// DeleteMobile ...
 func (g *GateClient) DeleteMobile(token string, ctx context.Context) (list *MobileList, err error) {
 
 	payload := map[string]interface{}{
@@ -443,6 +458,7 @@ func (g *GateClient) DeleteMobile(token string, ctx context.Context) (list *Mobi
 	return
 }
 
+// AddMobile ...
 func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error) {
 
 	payload := map[string]interface{}{}
@@ -453,6 +469,7 @@ func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error
 	return
 }
 
+// RequestFromProxy ...
 func (g *GateClient) RequestFromProxy(message stream.Message, engine *gin.Engine) {
 
 	if g.wsClient.Status() != GateStatusConnected {
@@ -488,10 +505,12 @@ func (g *GateClient) RequestFromProxy(message stream.Message, engine *gin.Engine
 	}
 }
 
+// SetMobileApiEngine ...
 func (g *GateClient) SetMobileApiEngine(engine *gin.Engine) {
 	g.mobileApi = engine
 }
 
+// SetAlexaApiEngine ...
 func (g *GateClient) SetAlexaApiEngine(engine *gin.Engine) {
 	g.alexaApi = engine
 }

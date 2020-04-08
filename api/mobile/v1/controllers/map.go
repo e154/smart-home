@@ -24,10 +24,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ControllerMap ...
 type ControllerMap struct {
 	*ControllerCommon
 }
 
+// NewControllerMap ...
 func NewControllerMap(common *ControllerCommon) *ControllerMap {
 	return &ControllerMap{ControllerCommon: common}
 }

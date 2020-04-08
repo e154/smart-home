@@ -22,6 +22,7 @@ import (
 	"time"
 )
 
+// RedactorWorkflowModel ...
 type RedactorWorkflowModel struct {
 	Id          int64     `json:"id"`
 	Name        string    `json:"name"`
@@ -31,6 +32,7 @@ type RedactorWorkflowModel struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+// RedactorConnector ...
 type RedactorConnector struct {
 	Id    string `json:"id"`
 	Start struct {
@@ -46,6 +48,7 @@ type RedactorConnector struct {
 	Direction string `json:"direction"`
 }
 
+// RedactorObject ...
 type RedactorObject struct {
 	Id   string `json:"id"`
 	Type struct {

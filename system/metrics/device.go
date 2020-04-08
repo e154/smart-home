@@ -24,11 +24,13 @@ import (
 	"sync"
 )
 
+// Device ...
 type Device struct {
 	Total    int64 `json:"total"`
 	Disabled int64 `json:"disabled"`
 }
 
+// DeviceManager ...
 type DeviceManager struct {
 	publisher  IPublisher
 	total      metrics.Counter
@@ -36,6 +38,7 @@ type DeviceManager struct {
 	updateLock sync.Mutex
 }
 
+// NewDeviceManager ...
 func NewDeviceManager(publisher IPublisher) *DeviceManager {
 	return &DeviceManager{
 		total:     metrics.NewCounter(),
@@ -63,6 +66,7 @@ func (d *DeviceManager) broadcast() {
 	go d.publisher.Broadcast("device")
 }
 
+// Snapshot ...
 func (d *DeviceManager) Snapshot() Device {
 	return Device{
 		Total:    d.total.Count(),
@@ -74,11 +78,13 @@ func (d *DeviceManager) key(deviceId int64, elementName string) string {
 	return fmt.Sprintf("%d_%s", deviceId, elementName)
 }
 
+// DeviceAdd ...
 type DeviceAdd struct {
 	TotalNum    int64
 	DisabledNum int64
 }
 
+// DeviceDelete ...
 type DeviceDelete struct {
 	TotalNum    int64
 	DisabledNum int64

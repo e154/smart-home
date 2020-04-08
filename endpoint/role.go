@@ -25,16 +25,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// RoleEndpoint ...
 type RoleEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewRoleEndpoint ...
 func NewRoleEndpoint(common *CommonEndpoint) *RoleEndpoint {
 	return &RoleEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (n *RoleEndpoint) Add(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
 
 	// validation
@@ -52,6 +55,7 @@ func (n *RoleEndpoint) Add(params *m.Role) (result *m.Role, errs []*validation.E
 	return
 }
 
+// GetByName ...
 func (n *RoleEndpoint) GetByName(name string) (result *m.Role, err error) {
 
 	result, err = n.adaptors.Role.GetByName(name)
@@ -59,6 +63,7 @@ func (n *RoleEndpoint) GetByName(name string) (result *m.Role, err error) {
 	return
 }
 
+// Update ...
 func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
 
 	role, err := n.adaptors.Role.GetByName(params.Name)
@@ -89,6 +94,7 @@ func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validatio
 	return
 }
 
+// GetList ...
 func (n *RoleEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Role, total int64, err error) {
 
 	result, total, err = n.adaptors.Role.List(limit, offset, order, sortBy)
@@ -96,6 +102,7 @@ func (n *RoleEndpoint) GetList(limit, offset int64, order, sortBy string) (resul
 	return
 }
 
+// Delete ...
 func (n *RoleEndpoint) Delete(name string) (err error) {
 
 	if name == "admin" {
@@ -107,6 +114,7 @@ func (n *RoleEndpoint) Delete(name string) (err error) {
 	return
 }
 
+// Search ...
 func (n *RoleEndpoint) Search(query string, limit, offset int) (result []*m.Role, total int64, err error) {
 
 	result, total, err = n.adaptors.Role.Search(query, limit, offset)
@@ -114,6 +122,7 @@ func (n *RoleEndpoint) Search(query string, limit, offset int) (result []*m.Role
 	return
 }
 
+// GetAccessList ...
 func (n *RoleEndpoint) GetAccessList(roleName string,
 	accessListService *access_list.AccessListService) (accessList access_list.AccessList, err error) {
 
@@ -127,6 +136,7 @@ func (n *RoleEndpoint) GetAccessList(roleName string,
 	return
 }
 
+// UpdateAccessList ...
 func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[string]map[string]bool) (err error) {
 
 	var role *m.Role

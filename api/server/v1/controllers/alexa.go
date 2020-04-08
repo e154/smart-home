@@ -26,10 +26,12 @@ import (
 	"strconv"
 )
 
+// ControllerAlexa ...
 type ControllerAlexa struct {
 	*ControllerCommon
 }
 
+// NewControllerAlexa ...
 func NewControllerAlexa(common *ControllerCommon) *ControllerAlexa {
 	return &ControllerAlexa{ControllerCommon: common}
 }

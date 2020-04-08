@@ -18,10 +18,12 @@
 
 package common
 
+// String ...
 func String(v string) *string {
 	return &v
 }
 
+// StringValue ...
 func StringValue(v *string) string {
 	if v != nil {
 		return *v
@@ -29,10 +31,12 @@ func StringValue(v *string) string {
 	return ""
 }
 
+// Int ...
 func Int(v int) *int {
 	return &v
 }
 
+// IntValue ...
 func IntValue(v *int) int {
 	if v != nil {
 		return *v
@@ -40,10 +44,12 @@ func IntValue(v *int) int {
 	return 0
 }
 
+// Int64 ...
 func Int64(v int64) *int64 {
 	return &v
 }
 
+// Int64Value ...
 func Int64Value(v *int64) int64 {
 	if v != nil {
 		return *v

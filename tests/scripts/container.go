@@ -44,6 +44,7 @@ import (
 	"go.uber.org/dig"
 )
 
+// BuildContainer ...
 func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()

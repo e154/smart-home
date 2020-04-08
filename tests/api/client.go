@@ -40,22 +40,26 @@ var (
 	accessToken string
 )
 
+// Client ...
 type Client struct {
 	engine    *gin.Engine
 	token     string
 	basicAuth string
 }
 
+// NewClient ...
 func NewClient(engine *gin.Engine) *Client {
 	return &Client{
 		engine: engine,
 	}
 }
 
+// SetToken ...
 func (c *Client) SetToken(token string) {
 	c.token = token
 }
 
+// BasicAuth ...
 func (c *Client) BasicAuth(login, pass string) {
 	c.basicAuth = base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", login, pass)))
 }
@@ -80,11 +84,13 @@ func (c *Client) req(meth, uri string, data interface{}) (w *httptest.ResponseRe
 	return
 }
 
+// LoginAsAdmin ...
 func (c *Client) LoginAsAdmin() (err error) {
 	err = c.login("admin@e154.ru", "admin")
 	return
 }
 
+// LoginAsUser ...
 func (c *Client) LoginAsUser() (err error) {
 	err = c.login("user@e154.ru", "user")
 	return
@@ -115,10 +121,12 @@ func (c *Client) Signin() *httptest.ResponseRecorder {
 	return c.req("POST", "/api/v1/signin", nil)
 }
 
+// Signout ...
 func (c *Client) Signout() *httptest.ResponseRecorder {
 	return c.req("POST", "/api/v1/signout", nil)
 }
 
+// GetAccessList ...
 func (c *Client) GetAccessList() *httptest.ResponseRecorder {
 	return c.req("GET", "/api/v1/access_list", nil)
 }
@@ -128,6 +136,7 @@ func (c *Client) NewDeviceState(device interface{}) *httptest.ResponseRecorder {
 	return c.req("POST", "/api/v1/device_state", device)
 }
 
+// GetDeviceState ...
 func (c *Client) GetDeviceState(stateId int64) *httptest.ResponseRecorder {
 	return c.req("GET", fmt.Sprintf("/api/v1/device_state/%d", stateId), nil)
 }
@@ -137,18 +146,22 @@ func (c *Client) NewDevice(device interface{}) *httptest.ResponseRecorder {
 	return c.req("POST", "/api/v1/device", device)
 }
 
+// GetDevice ...
 func (c *Client) GetDevice(deviceId int64) *httptest.ResponseRecorder {
 	return c.req("GET", fmt.Sprintf("/api/v1/device/%d", deviceId), nil)
 }
 
+// UpdateDevice ...
 func (c *Client) UpdateDevice(deviceId int64, device interface{}) *httptest.ResponseRecorder {
 	return c.req("PUT", fmt.Sprintf("/api/v1/device/%d", deviceId), device)
 }
 
+// DeleteDevice ...
 func (c *Client) DeleteDevice(deviceId int64) *httptest.ResponseRecorder {
 	return c.req("DELETE", fmt.Sprintf("/api/v1/device/%d", deviceId), nil)
 }
 
+// GetDeviceList ...
 func (c *Client) GetDeviceList(limit, offset int, order, sort string) *httptest.ResponseRecorder {
 	uri, _ := url.Parse("/api/v1/devices")
 	params := url.Values{}
@@ -164,6 +177,7 @@ func (c *Client) GetDeviceList(limit, offset int, order, sort string) *httptest.
 	return c.req("GET", uri.String(), nil)
 }
 
+// SearchDevice ...
 func (c *Client) SearchDevice(query string, limit, offset int) *httptest.ResponseRecorder {
 	uri, _ := url.Parse("/api/v1/devices/search")
 	params := url.Values{}
@@ -179,18 +193,22 @@ func (c *Client) NewAlexa(alexa interface{}) *httptest.ResponseRecorder {
 	return c.req("POST", "/api/v1/alexa", alexa)
 }
 
+// GetAlexa ...
 func (c *Client) GetAlexa(alexaId int64) *httptest.ResponseRecorder {
 	return c.req("GET", fmt.Sprintf("/api/v1/alexa/%d", alexaId), nil)
 }
 
+// UpdateAlexa ...
 func (c *Client) UpdateAlexa(alexaId int64, alexa interface{}) *httptest.ResponseRecorder {
 	return c.req("PUT", fmt.Sprintf("/api/v1/alexa/%d", alexaId), alexa)
 }
 
+// DeleteAlexa ...
 func (c *Client) DeleteAlexa(alexaId int64) *httptest.ResponseRecorder {
 	return c.req("DELETE", fmt.Sprintf("/api/v1/alexa/%d", alexaId), nil)
 }
 
+// GetAlexaList ...
 func (c *Client) GetAlexaList(limit, offset int, order, sort string) *httptest.ResponseRecorder {
 	uri, _ := url.Parse("/api/v1/alexas")
 	params := url.Values{}

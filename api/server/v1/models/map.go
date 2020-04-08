@@ -22,6 +22,7 @@ import (
 	"time"
 )
 
+// MapOptions ...
 type MapOptions struct {
 	Zoom              float64 `json:"zoom"`
 	ElementStateText  bool    `json:"element_state_text"`

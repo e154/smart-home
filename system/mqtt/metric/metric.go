@@ -34,6 +34,7 @@ var (
 const name = "metric"
 const metricPrefix = "gmqtt_"
 
+// Metric ...
 type Metric struct {
 	metric       *metrics.MetricManager
 	statsManager gmqtt.StatsManager
@@ -43,6 +44,7 @@ type Metric struct {
 	pause        int64
 }
 
+// New ...
 func New(metric *metrics.MetricManager, pause int64) *Metric {
 
 	return &Metric{
@@ -52,6 +54,7 @@ func New(metric *metrics.MetricManager, pause int64) *Metric {
 	}
 }
 
+// Load ...
 func (p *Metric) Load(service gmqtt.Server) (err error) {
 
 	p.statsManager = service.GetStatsManager()
@@ -84,6 +87,7 @@ func (p *Metric) Load(service gmqtt.Server) (err error) {
 	return
 }
 
+// Unload ...
 func (p *Metric) Unload() (err error) {
 	if !p.isStarted.Load() {
 		return
@@ -93,10 +97,12 @@ func (p *Metric) Unload() (err error) {
 	return
 }
 
+// HookWrapper ...
 func (p *Metric) HookWrapper() gmqtt.HookWrapper {
 	return gmqtt.HookWrapper{}
 }
 
+// Name ...
 func (p *Metric) Name() string {
 	return name
 }

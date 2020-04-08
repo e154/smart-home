@@ -23,19 +23,23 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
+// SlackMessage ...
 type SlackMessage struct {
 	Channel string `json:"channel"`
 	Text    string `json:"text"`
 }
 
+// NewSlackMessage ...
 func NewSlackMessage(channel, text string) *SlackMessage {
 	return &SlackMessage{Channel: channel, Text: text}
 }
 
+// SetRender ...
 func (s *SlackMessage) SetRender(render *m.TemplateRender) {
 	s.Text = render.Body
 }
 
+// Save ...
 func (s *SlackMessage) Save() (addresses []string, message *m.Message) {
 
 	addresses = []string{s.Channel}

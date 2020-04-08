@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MapZone ...
 type MapZone struct {
 	table *db.MapZones
 	db    *gorm.DB
 }
 
+// GetMapZoneAdaptor ...
 func GetMapZoneAdaptor(d *gorm.DB) *MapZone {
 	return &MapZone{
 		table: &db.MapZones{Db: d},
@@ -36,6 +38,7 @@ func GetMapZoneAdaptor(d *gorm.DB) *MapZone {
 	}
 }
 
+// Add ...
 func (n *MapZone) Add(tag *m.MapZone) (id int64, err error) {
 
 	dbTag := n.toDb(tag)
@@ -44,7 +47,7 @@ func (n *MapZone) Add(tag *m.MapZone) (id int64, err error) {
 	return
 }
 
-
+// GetByName ...
 func (n *MapZone) GetByName(zoneName string) (ver *m.MapZone, err error) {
 
 	var dbVer *db.MapZone
@@ -57,6 +60,7 @@ func (n *MapZone) GetByName(zoneName string) (ver *m.MapZone, err error) {
 	return
 }
 
+// Delete ...
 func (n *MapZone) Delete(name string) (err error) {
 
 	err = n.table.Delete(name)
@@ -64,6 +68,7 @@ func (n *MapZone) Delete(name string) (err error) {
 	return
 }
 
+// Search ...
 func (n *MapZone) Search(query string, limit, offset int) (list []*m.MapZone, total int64, err error) {
 	var dbList []*db.MapZone
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
@@ -79,6 +84,7 @@ func (n *MapZone) Search(query string, limit, offset int) (list []*m.MapZone, to
 	return
 }
 
+// Clean ...
 func (n *MapZone) Clean() (err error) {
 
 	err = n.table.Clean()

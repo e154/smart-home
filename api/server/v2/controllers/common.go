@@ -28,11 +28,13 @@ var (
 	log = common.MustGetLogger("controllers")
 )
 
+// ControllerCommon ...
 type ControllerCommon struct {
 	adaptors *adaptors.Adaptors
 	core     *core.Core
 }
 
+// NewControllerCommon ...
 func NewControllerCommon(adaptors *adaptors.Adaptors,
 	core *core.Core) *ControllerCommon {
 	return &ControllerCommon{

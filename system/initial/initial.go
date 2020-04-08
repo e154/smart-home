@@ -39,6 +39,7 @@ var (
 	currentVersion = 3
 )
 
+// InitialService ...
 type InitialService struct {
 	migrations    *migrations.Migrations
 	adaptors      *Adaptors
@@ -46,6 +47,7 @@ type InitialService struct {
 	accessList    *access_list.AccessListService
 }
 
+// NewInitialService ...
 func NewInitialService(migrations *migrations.Migrations,
 	adaptors *Adaptors,
 	scriptService *scripts.ScriptService,
@@ -58,6 +60,7 @@ func NewInitialService(migrations *migrations.Migrations,
 	}
 }
 
+// Reset ...
 func (n *InitialService) Reset() {
 
 	log.Info("full reset")
@@ -67,6 +70,7 @@ func (n *InitialService) Reset() {
 	log.Info("complete")
 }
 
+// InstallDemoData ...
 func (n *InitialService) InstallDemoData() {
 
 	log.Info("install demo data")
@@ -88,6 +92,7 @@ func (n *InitialService) InstallDemoData() {
 	log.Info("complete")
 }
 
+// Start ...
 func (n *InitialService) Start() {
 
 	defer func() {

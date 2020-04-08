@@ -19,16 +19,18 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
 	"fmt"
 	"github.com/e154/smart-home/common"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// Logs ...
 type Logs struct {
 	Db *gorm.DB
 }
 
+// Log ...
 type Log struct {
 	Id        int64 `gorm:"primary_key"`
 	Body      string
@@ -36,16 +38,19 @@ type Log struct {
 	CreatedAt time.Time
 }
 
+// LogQuery ...
 type LogQuery struct {
 	StartDate *time.Time `json:"start_date"`
 	EndDate   *time.Time `json:"end_date"`
 	Levels    []string   `json:"levels"`
 }
 
+// TableName ...
 func (m *Log) TableName() string {
 	return "logs"
 }
 
+// Add ...
 func (n Logs) Add(v *Log) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -54,17 +59,20 @@ func (n Logs) Add(v *Log) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n Logs) GetById(mapId int64) (v *Log, err error) {
 	v = &Log{Id: mapId}
 	err = n.Db.First(&v).Error
 	return
 }
 
+// Delete ...
 func (n Logs) Delete(mapId int64) (err error) {
 	err = n.Db.Delete(&Log{Id: mapId}).Error
 	return
 }
 
+// List ...
 func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuery) (list []*Log, total int64, err error) {
 
 	if err = n.Db.Model(Log{}).Count(&total).Error; err != nil {
@@ -100,6 +108,7 @@ func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuer
 	return
 }
 
+// Search ...
 func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64, err error) {
 
 	q := n.Db.Model(&Log{}).

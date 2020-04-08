@@ -22,6 +22,7 @@ import (
 	"time"
 )
 
+// FlowShort ...
 type FlowShort struct {
 	Id          int64  `json:"id"`
 	Name        string `json:"name"`
@@ -42,6 +43,7 @@ type FlowShort struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// FlowWorkflow ...
 type FlowWorkflow struct {
 	Id          int64     `json:"id"`
 	Name        string    `json:"name"`
@@ -51,6 +53,7 @@ type FlowWorkflow struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+// FlowWorker ...
 type FlowWorker struct {
 	Id             int64         `json:"id"`
 	Name           string        `json:"name" valid:"MaxSize(254);Required"`

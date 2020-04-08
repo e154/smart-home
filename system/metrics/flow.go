@@ -23,17 +23,20 @@ import (
 	"github.com/rcrowley/go-metrics"
 )
 
+// Flow ...
 type Flow struct {
 	Total    int64 `json:"total"`
 	Disabled int64 `json:"disabled"`
 }
 
+// FlowManager ...
 type FlowManager struct {
 	publisher IPublisher
 	total     metrics.Counter
 	enabled   metrics.Counter
 }
 
+// NewFlowManager ...
 func NewFlowManager(publisher IPublisher,
 	adaptors *adaptors.Adaptors) (flow *FlowManager) {
 
@@ -66,6 +69,7 @@ func (d *FlowManager) update(t interface{}) {
 	d.broadcast()
 }
 
+// Snapshot ...
 func (d *FlowManager) Snapshot() Flow {
 
 	return Flow{
@@ -78,11 +82,13 @@ func (d *FlowManager) broadcast() {
 	go d.publisher.Broadcast("flow")
 }
 
+// FlowAdd ...
 type FlowAdd struct {
 	TotalNum   int64
 	EnabledNum int64
 }
 
+// FlowDelete ...
 type FlowDelete struct {
 	TotalNum   int64
 	EnabledNum int64

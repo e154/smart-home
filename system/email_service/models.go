@@ -18,6 +18,7 @@
 
 package email_service
 
+// Email ...
 type Email struct {
 	From    string `json:"from"`
 	To      string `json:"to"`

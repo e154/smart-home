@@ -24,6 +24,7 @@ import (
 	"strings"
 )
 
+// Email ...
 type Email struct {
 	From    string `json:"from"`
 	To      string `json:"to"`
@@ -31,15 +32,18 @@ type Email struct {
 	Body    string `json:"template"`
 }
 
+// NewEmail ...
 func NewEmail() (email *Email) {
 	return &Email{}
 }
 
+// SetRender ...
 func (e *Email) SetRender(render *m.TemplateRender) {
 	e.Subject = render.Subject
 	e.Body = render.Body
 }
 
+// Save ...
 func (e *Email) Save() (addresses []string, message *m.Message) {
 	e.To = strings.Replace(e.To, " ", "", -1)
 	addresses = strings.Split(e.To, ",")

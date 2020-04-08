@@ -24,6 +24,7 @@ import (
 	"github.com/e154/smart-home/system/uuid"
 )
 
+// Message ...
 type Message struct {
 	Id      uuid.UUID              `json:"id"`
 	Command string                 `json:"command"`
@@ -33,6 +34,7 @@ type Message struct {
 	Type    string                 `json:"type"`
 }
 
+// NewMessage ...
 func NewMessage(b []byte) (message Message, err error) {
 
 	message = Message{}
@@ -41,11 +43,13 @@ func NewMessage(b []byte) (message Message, err error) {
 	return
 }
 
+// Pack ...
 func (m *Message) Pack() []byte {
 	b, _ := json.Marshal(m)
 	return b
 }
 
+// Response ...
 func (m *Message) Response(payload map[string]interface{}) *Message {
 	msg := &Message{
 		Id:      m.Id,
@@ -56,6 +60,7 @@ func (m *Message) Response(payload map[string]interface{}) *Message {
 	return msg
 }
 
+// Success ...
 func (m *Message) Success() *Message {
 	msg := &Message{
 		Id:      m.Id,
@@ -66,6 +71,7 @@ func (m *Message) Success() *Message {
 	return msg
 }
 
+// Error ...
 func (m *Message) Error(err error) *Message {
 	msg := &Message{
 		Id: m.Id,
@@ -78,6 +84,7 @@ func (m *Message) Error(err error) *Message {
 	return msg
 }
 
+// IsError ...
 func (m *Message) IsError() (err error) {
 
 	if m.Status != StatusError {

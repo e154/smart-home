@@ -25,15 +25,18 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Management ...
 type Management struct {
 	monitor *monitor
 	server  gmqtt.Server
 }
 
+// New ...
 func New() *Management {
 	return &Management{}
 }
 
+// Load ...
 func (m *Management) Load(server gmqtt.Server) error {
 	m.monitor = newMonitor(server.SubscriptionStore())
 	m.server = server
@@ -41,10 +44,12 @@ func (m *Management) Load(server gmqtt.Server) error {
 	return nil
 }
 
+// Unload ...
 func (m *Management) Unload() error {
 	return nil
 }
 
+// HookWrapper ...
 func (m *Management) HookWrapper() gmqtt.HookWrapper {
 	return gmqtt.HookWrapper{
 		OnSessionCreatedWrapper:    m.OnSessionCreatedWrapper,
@@ -55,6 +60,7 @@ func (m *Management) HookWrapper() gmqtt.HookWrapper {
 	}
 }
 
+// Name ...
 func (m *Management) Name() string {
 	return "management"
 }
@@ -100,37 +106,37 @@ func (m *Management) OnUnsubscribedWrapper(unsubscribe gmqtt.OnUnsubscribed) gmq
 	}
 }
 
-// GetClients
+// GetClients ...
 func (m *Management) GetClients(limit, offset int) (list []*ClientInfo, total int, err error) {
 	list, total, err = m.monitor.GetClients(offset, limit)
 	return
 }
 
-//GetClient
+// GetClient ...
 func (m *Management) GetClient(clientId string) (client *ClientInfo, err error) {
 	client, err = m.monitor.GetClientByID(clientId)
 	return
 }
 
-//GetSessions
+// GetSessions ...
 func (m *Management) GetSessions(limit, offset int) (list []*SessionInfo, total int, err error) {
 	list, total, err = m.monitor.GetSessions(offset, limit)
 	return
 }
 
-//GetSession
+// GetSession ...
 func (m *Management) GetSession(clientId string) (session *SessionInfo, err error) {
 	session, err = m.monitor.GetSessionByID(clientId)
 	return
 }
 
-//GetSubscriptions
+// GetSubscriptions ...
 func (m *Management) GetSubscriptions(clientId string, limit, offset int) (list []*SubscriptionInfo, total int, err error) {
 	list, total, err = m.monitor.GetClientSubscriptions(clientId, offset, limit)
 	return
 }
 
-//Subscribe
+// Subscribe ...
 func (m *Management) Subscribe(clientId, topic string, qos int) (err error) {
 	if qos < 0 || qos > 2 {
 		err = errors.New("invalid Qos")
@@ -151,7 +157,7 @@ func (m *Management) Subscribe(clientId, topic string, qos int) (err error) {
 	return
 }
 
-//Unsubscribe
+// Unsubscribe ...
 func (m *Management) Unsubscribe(clientId, topic string) (err error) {
 	if !packets.ValidTopicFilter([]byte(topic)) {
 		err = errors.New("invalid topic filter")
@@ -165,7 +171,7 @@ func (m *Management) Unsubscribe(clientId, topic string) (err error) {
 	return
 }
 
-//Publish
+// Publish ...
 func (m *Management) Publish(topic string, qos int, payload []byte, retain bool) (err error) {
 	if qos < 0 || qos > 2 {
 		err = errors.New("invalid Qos")
@@ -183,7 +189,7 @@ func (m *Management) Publish(topic string, qos int, payload []byte, retain bool)
 	return
 }
 
-//CloseClient
+// CloseClient ...
 func (m *Management) CloseClient(clientId string) (err error) {
 	if clientId == "" {
 		err = errors.New("invalid clientID")
@@ -197,7 +203,7 @@ func (m *Management) CloseClient(clientId string) (err error) {
 	return
 }
 
-//SearchTopic
+// SearchTopic ...
 func (m *Management) SearchTopic(query string) (result []*SubscriptionInfo, err error) {
 	result, err = m.monitor.SearchTopic(query)
 	return

@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// AlexaIntent ...
 type AlexaIntent struct {
 	table *db.AlexaIntents
 	db    *gorm.DB
 }
 
+// GetAlexaIntentAdaptor ...
 func GetAlexaIntentAdaptor(d *gorm.DB) *AlexaIntent {
 	return &AlexaIntent{
 		table: &db.AlexaIntents{Db: d},
@@ -36,11 +38,13 @@ func GetAlexaIntentAdaptor(d *gorm.DB) *AlexaIntent {
 	}
 }
 
+// Add ...
 func (n *AlexaIntent) Add(ver *m.AlexaIntent) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(ver))
 	return
 }
 
+// GetByName ...
 func (n *AlexaIntent) GetByName(name string) (ver *m.AlexaIntent, err error) {
 
 	var dbVer *db.AlexaIntent
@@ -53,11 +57,13 @@ func (n *AlexaIntent) GetByName(name string) (ver *m.AlexaIntent, err error) {
 	return
 }
 
+// Update ...
 func (n *AlexaIntent) Update(ver *m.AlexaIntent) (err error) {
 	err = n.table.Update(n.toDb(ver))
 	return
 }
 
+// Delete ...
 func (n *AlexaIntent) Delete(ver *m.AlexaIntent) (err error) {
 	err = n.table.Delete(n.toDb(ver))
 	return

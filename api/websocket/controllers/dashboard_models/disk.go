@@ -22,15 +22,18 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 )
 
+// Disk ...
 type Disk struct {
 	metric *metrics.MetricManager
 }
 
+// NewDisk ...
 func NewDisk(metric *metrics.MetricManager) (memory *Disk) {
 	memory = &Disk{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (g *Disk) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

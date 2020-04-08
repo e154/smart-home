@@ -29,6 +29,7 @@ import (
 	"time"
 )
 
+// MapElement ...
 type MapElement struct {
 	Map         *Map
 	Options     interface{}
@@ -38,6 +39,7 @@ type MapElement struct {
 	mapElement  *m.MapElement
 }
 
+// NewMapElement ...
 func NewMapElement(elementName string,
 	systemName *string,
 	_map *Map,
@@ -69,6 +71,7 @@ func NewMapElement(elementName string,
 	}, nil
 }
 
+// SetState ...
 func (e *MapElement) SetState(systemName string) {
 	e.elementLock.Lock()
 	defer e.elementLock.Unlock()
@@ -98,6 +101,7 @@ func (e *MapElement) SetState(systemName string) {
 	}
 }
 
+// GetState ...
 func (e *MapElement) GetState() interface{} {
 	e.elementLock.Lock()
 	defer e.elementLock.Unlock()
@@ -105,6 +109,7 @@ func (e *MapElement) GetState() interface{} {
 	return e.State
 }
 
+// SetOptions ...
 func (e *MapElement) SetOptions(options interface{}) {
 	e.elementLock.Lock()
 	defer e.elementLock.Unlock()
@@ -129,6 +134,7 @@ func (e *MapElement) SetOptions(options interface{}) {
 	})
 }
 
+// GetOptions ...
 func (e *MapElement) GetOptions() interface{} {
 	e.elementLock.Lock()
 	defer e.elementLock.Unlock()
@@ -186,6 +192,7 @@ func (e *MapElement) updateDeviceHistory(t interface{}) {
 	})
 }
 
+// CustomHistory ...
 func (e *MapElement) CustomHistory(logLevel, t, desc string) {
 	e.elementLock.Lock()
 	defer e.elementLock.Unlock()

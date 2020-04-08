@@ -22,20 +22,24 @@ import (
 	"github.com/e154/smart-home/system/stream"
 )
 
+// ControllerAction ...
 type ControllerAction struct {
 	*ControllerCommon
 }
 
+// NewControllerAction ...
 func NewControllerAction(common *ControllerCommon) *ControllerAction {
 	return &ControllerAction{
 		ControllerCommon: common,
 	}
 }
 
+// Start ...
 func (c *ControllerAction) Start() {
 	c.stream.Subscribe("do.action", c.DoAction)
 }
 
+// Stop ...
 func (c *ControllerAction) Stop() {
 	c.stream.UnSubscribe("do.action")
 }

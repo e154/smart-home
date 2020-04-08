@@ -25,16 +25,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// NodeEndpoint ...
 type NodeEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewNodeEndpoint ...
 func NewNodeEndpoint(common *CommonEndpoint) *NodeEndpoint {
 	return &NodeEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (n *NodeEndpoint) Add(params *m.Node) (result *m.Node, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
@@ -56,6 +59,7 @@ func (n *NodeEndpoint) Add(params *m.Node) (result *m.Node, errs []*validation.E
 	return
 }
 
+// GetById ...
 func (n *NodeEndpoint) GetById(nodeId int64) (result *m.Node, err error) {
 
 	result, err = n.adaptors.Node.GetById(nodeId)
@@ -63,6 +67,7 @@ func (n *NodeEndpoint) GetById(nodeId int64) (result *m.Node, err error) {
 	return
 }
 
+// Update ...
 func (n *NodeEndpoint) Update(params *m.Node) (result *m.Node, errs []*validation.Error, err error) {
 
 	var node *m.Node
@@ -92,6 +97,7 @@ func (n *NodeEndpoint) Update(params *m.Node) (result *m.Node, errs []*validatio
 	return
 }
 
+// GetList ...
 func (n *NodeEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Node, total int64, err error) {
 
 	result, total, err = n.adaptors.Node.List(limit, offset, order, sortBy)
@@ -99,6 +105,7 @@ func (n *NodeEndpoint) GetList(limit, offset int64, order, sortBy string) (resul
 	return
 }
 
+// Delete ...
 func (n *NodeEndpoint) Delete(nodeId int64) (err error) {
 
 	if nodeId == 0 {
@@ -121,6 +128,7 @@ func (n *NodeEndpoint) Delete(nodeId int64) (err error) {
 	return
 }
 
+// Search ...
 func (n *NodeEndpoint) Search(query string, limit, offset int) (result []*m.Node, total int64, err error) {
 
 	result, total, err = n.adaptors.Node.Search(query, limit, offset)

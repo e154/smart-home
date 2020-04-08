@@ -22,10 +22,11 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/dgrijalva/jwt-go"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 )
 
+// ComputeHmac256 ...
 func ComputeHmac256() string {
 	var message = "token"
 	var secret = RandomString(255)
@@ -37,6 +38,7 @@ func ComputeHmac256() string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
+// ParseHmacToken ...
 func ParseHmacToken(tokenString string, key []byte) (jwt.MapClaims, error) {
 
 	// Parse takes the token string and a function for looking up the key. The latter is especially

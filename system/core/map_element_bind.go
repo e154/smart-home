@@ -31,22 +31,27 @@ type MapElementBind struct {
 	element *MapElement
 }
 
+// SetState ...
 func (e *MapElementBind) SetState(name string) {
 	e.element.SetState(name)
 }
 
+// GetState ...
 func (e *MapElementBind) GetState() interface{} {
 	return e.element.State
 }
 
+// SetOptions ...
 func (e *MapElementBind) SetOptions(options interface{}) {
 	e.element.SetOptions(options)
 }
 
+// GetOptions ...
 func (e *MapElementBind) GetOptions() interface{} {
 	return e.element.GetOptions()
 }
 
+// Story ...
 func (e *MapElementBind) Story(logLevel, t, desc string) {
 	e.element.CustomHistory(logLevel, t, desc)
 }

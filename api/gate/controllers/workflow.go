@@ -23,16 +23,19 @@ import (
 	"github.com/e154/smart-home/system/stream"
 )
 
+// Workflow ...
 type Workflow struct {
 	metric *metrics.MetricManager
 }
 
+// NewWorkflow ...
 func NewWorkflow(metric *metrics.MetricManager) *Workflow {
 	return &Workflow{
 		metric: metric,
 	}
 }
 
+// Broadcast ...
 func (d *Workflow) Broadcast() (map[string]interface{}, bool) {
 
 	log.Infof("broadcast workflow status")

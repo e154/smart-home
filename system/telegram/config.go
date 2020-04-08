@@ -18,11 +18,13 @@
 
 package telegram
 
+// TelegramConfig ...
 type TelegramConfig struct {
 	Token  string `json:"token"`
 	ChatId *int64 `json:"chat_id"`
 }
 
+// NewTelegramConfig ...
 func NewTelegramConfig(token string, chatId *int64) *TelegramConfig {
 	return &TelegramConfig{
 		Token:  token,

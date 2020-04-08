@@ -18,6 +18,7 @@
 
 package gate_client
 
+// IWsCallback ...
 type IWsCallback interface {
 	onMessage(payload []byte)
 	onConnected()
@@ -25,24 +26,35 @@ type IWsCallback interface {
 }
 
 const (
+	// ClientTypeServer ...
 	ClientTypeServer = "server"
 )
 
 const (
-	Request       = "request"
-	Response      = "response"
+	// Request ...
+	Request = "request"
+	// Response ...
+	Response = "response"
+	// StatusSuccess ...
 	StatusSuccess = "success"
-	StatusError   = "error"
+	// StatusError ...
+	StatusError = "error"
 )
 
 const (
-	GateStatusWait         = "wait"
-	GateStatusConnected    = "connected"
+	// GateStatusWait ...
+	GateStatusWait = "wait"
+	// GateStatusConnected ...
+	GateStatusConnected = "connected"
+	// GateStatusNotConnected ...
 	GateStatusNotConnected = "not connected"
-	GateStatusQuit         = "quit"
+	// GateStatusQuit ...
+	GateStatusQuit = "quit"
 )
 
 const (
+	// MobileGateProxy ...
 	MobileGateProxy = string("mobile_gate_proxy")
-	AlexaGateProxy  = string("alexa_gate_proxy")
+	// AlexaGateProxy ...
+	AlexaGateProxy = string("alexa_gate_proxy")
 )

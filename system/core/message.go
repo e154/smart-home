@@ -18,6 +18,7 @@
 
 package core
 
+// NewMessage ...
 func NewMessage() (m *Message) {
 	m = &Message{
 		storage: NewStorage(),
@@ -25,6 +26,7 @@ func NewMessage() (m *Message) {
 	return
 }
 
+// Message ...
 type Message struct {
 	Error     string
 	storage   Storage
@@ -37,23 +39,28 @@ func (m *Message) clearError() {
 	m.Error = ""
 }
 
+// SetError ...
 func (m *Message) SetError(err string) {
 	m.Error = err
 }
 
+// Setdir ...
 func (m *Message) Setdir(d bool) {
 	m.Direction = d
 }
 
+// Ok ...
 func (m *Message) Ok() {
 	m.Success = true
 }
 
+// Clear ...
 func (m *Message) Clear() {
 	m.storage.pull = make(map[string]interface{})
 	m.Error = ""
 }
 
+// Copy ...
 func (m *Message) Copy() (msg *Message) {
 	msg = NewMessage()
 	for k, v := range m.storage.pull {
@@ -62,14 +69,17 @@ func (m *Message) Copy() (msg *Message) {
 	return
 }
 
+// GetVar ...
 func (m *Message) GetVar(key string) (value interface{}) {
 	return m.storage.GetVar(key)
 }
 
+// SetVar ...
 func (m *Message) SetVar(key string, value interface{}) {
 	m.storage.SetVar(key, value)
 }
 
+// Update ...
 func (m *Message) Update(newMsg *Message) {
 	m.Error = newMsg.Error
 	m.Success = newMsg.Success

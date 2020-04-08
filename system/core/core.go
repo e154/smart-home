@@ -38,6 +38,7 @@ var (
 	log = common.MustGetLogger("core")
 )
 
+// Core ...
 type Core struct {
 	sync.Mutex
 	nodes         map[int64]*Node
@@ -54,6 +55,7 @@ type Core struct {
 	metric        *metrics.MetricManager
 }
 
+// NewCore ...
 func NewCore(adaptors *adaptors.Adaptors,
 	scripts *scripts.ScriptService,
 	graceful *graceful_service.GracefulService,
@@ -83,6 +85,7 @@ func NewCore(adaptors *adaptors.Adaptors,
 	return
 }
 
+// Run ...
 func (c *Core) Run() (err error) {
 
 	if c.safeIsRunning() {
@@ -106,6 +109,7 @@ func (c *Core) Run() (err error) {
 	return
 }
 
+// Stop ...
 func (b *Core) Stop() (err error) {
 	b.stopLock.Lock()
 	defer func() {
@@ -136,6 +140,7 @@ func (b *Core) Stop() (err error) {
 	return
 }
 
+// Shutdown ...
 func (b *Core) Shutdown() {
 	if err := b.Stop(); err != nil {
 		log.Error(err.Error())
@@ -162,6 +167,7 @@ func (c *Core) initNodes() (err error) {
 	return
 }
 
+// AddNode ...
 func (c *Core) AddNode(node *m.Node) (n *Node, err error) {
 
 	if _, exist := c.safeGetNode(node.Id); exist {
@@ -179,6 +185,7 @@ func (c *Core) AddNode(node *m.Node) (n *Node, err error) {
 	return
 }
 
+// RemoveNode ...
 func (b *Core) RemoveNode(node *m.Node) (err error) {
 
 	log.Infof("Remove node: \"%s\"", node.Name)
@@ -223,6 +230,7 @@ func (c *Core) removeNode(node *m.Node) (err error) {
 	return
 }
 
+// ReloadNode ...
 func (c *Core) ReloadNode(node *m.Node) (err error) {
 
 	log.Infof("Reload node: \"%s\"", node.Name)
@@ -240,6 +248,7 @@ func (c *Core) ReloadNode(node *m.Node) (err error) {
 	return
 }
 
+// GetNodes ...
 func (b *Core) GetNodes() (nodes map[int64]*Node) {
 
 	nodes = make(map[int64]*Node)
@@ -253,6 +262,7 @@ func (b *Core) GetNodes() (nodes map[int64]*Node) {
 	return
 }
 
+// GetNodeById ...
 func (c *Core) GetNodeById(nodeId int64) *Node {
 
 	if n, exist := c.safeGetNode(nodeId); exist {
@@ -261,10 +271,6 @@ func (c *Core) GetNodeById(nodeId int64) *Node {
 
 	return nil
 }
-
-// ------------------------------------------------
-// Workflows
-// ------------------------------------------------
 
 // инициализация всего рабочего процесса, с запуском
 // дочерни подпроцессов
@@ -311,6 +317,7 @@ func (b *Core) AddWorkflow(workflow *m.Workflow) (err error) {
 	return
 }
 
+// GetWorkflow ...
 func (b *Core) GetWorkflow(workflowId int64) (workflow *Workflow, err error) {
 
 	log.Infof("GetWorkflow: id(%v)", workflowId)
@@ -347,6 +354,7 @@ func (c *Core) DeleteWorkflow(workflow *m.Workflow) (err error) {
 	return
 }
 
+// UpdateWorkflowScenario ...
 func (c *Core) UpdateWorkflowScenario(workflowId int64) (err error) {
 
 	wf, ok := c.safeGetWorkflow(workflowId)
@@ -360,6 +368,7 @@ func (c *Core) UpdateWorkflowScenario(workflowId int64) (err error) {
 	return
 }
 
+// UpdateWorkflow ...
 func (c *Core) UpdateWorkflow(workflow *m.Workflow) (err error) {
 
 	if workflow.Status == "enabled" {
@@ -378,10 +387,7 @@ func (c *Core) UpdateWorkflow(workflow *m.Workflow) (err error) {
 	return
 }
 
-// ------------------------------------------------
-// Flows
-// ------------------------------------------------
-
+// AddFlow ...
 func (c *Core) AddFlow(flow *m.Flow) (err error) {
 
 	wf, ok := c.safeGetWorkflow(flow.WorkflowId)
@@ -397,6 +403,7 @@ func (c *Core) AddFlow(flow *m.Flow) (err error) {
 	return
 }
 
+// GetFlow ...
 func (c *Core) GetFlow(id int64) (*Flow, error) {
 
 	var flow *m.Flow
@@ -413,6 +420,7 @@ func (c *Core) GetFlow(id int64) (*Flow, error) {
 	return wf.GetFLow(id)
 }
 
+// UpdateFlow ...
 func (c *Core) UpdateFlow(flow *m.Flow) error {
 
 	wf, ok := c.safeGetWorkflow(flow.WorkflowId)
@@ -423,6 +431,7 @@ func (c *Core) UpdateFlow(flow *m.Flow) error {
 	return wf.UpdateFlow(flow)
 }
 
+// RemoveFlow ...
 func (c *Core) RemoveFlow(flow *m.Flow) error {
 
 	wf, ok := c.safeGetWorkflow(flow.WorkflowId)
@@ -433,10 +442,7 @@ func (c *Core) RemoveFlow(flow *m.Flow) error {
 	return wf.RemoveFlow(flow)
 }
 
-// ------------------------------------------------
-// Workers
-// ------------------------------------------------
-
+// UpdateFlowFromDevice ...
 func (b *Core) UpdateFlowFromDevice(device *m.Device) (err error) {
 
 	//	var flows map[int64]*m.Flow
@@ -483,6 +489,7 @@ func (b *Core) UpdateFlowFromDevice(device *m.Device) (err error) {
 	return
 }
 
+// UpdateWorker ...
 func (b *Core) UpdateWorker(_worker *m.Worker) (err error) {
 
 	//b.Lock()
@@ -495,6 +502,7 @@ func (b *Core) UpdateWorker(_worker *m.Worker) (err error) {
 	return
 }
 
+// RemoveWorker ...
 func (b *Core) RemoveWorker(worker *m.Worker) (err error) {
 
 	//b.Lock()
@@ -507,6 +515,7 @@ func (b *Core) RemoveWorker(worker *m.Worker) (err error) {
 	return
 }
 
+// DoWorker ...
 func (b *Core) DoWorker(worker *m.Worker) (err error) {
 
 	//b.Lock()
@@ -601,10 +610,7 @@ func (c *Core) updateMetrics() {
 	c.metric.Update(metrics.DeviceAdd{TotalNum: total, DisabledNum: disabled})
 }
 
-// ------------------------------------------------
-// action
-// ------------------------------------------------
-
+// DoAction ...
 func (c *Core) DoAction(deviceActionId int64) (result string, err error) {
 
 	// device

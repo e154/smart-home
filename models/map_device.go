@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// MapDevice ...
 type MapDevice struct {
 	Id        int64              `json:"id"`
 	Device    *Device            `json:"device"`
@@ -35,6 +36,7 @@ type MapDevice struct {
 	UpdatedAt time.Time          `json:"updated_at"`
 }
 
+// Valid ...
 func (m *MapDevice) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

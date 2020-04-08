@@ -23,14 +23,17 @@ import (
 )
 
 const (
+	// DevTypeMqtt ...
 	DevTypeMqtt = DeviceType("mqtt")
 )
 
+// DevMqttConfig ...
 type DevMqttConfig struct {
 	Validation
-	Address  string `json:"address"`
+	Address string `json:"address"`
 }
 
+// DevMqttRequest ...
 type DevMqttRequest struct {
 	Topic   string `json:"topic"`
 	Payload []byte `json:"payload"`
@@ -57,6 +60,7 @@ func NewMqttBind(path, payload string) MqttBind {
 	}
 }
 
+// MqttBind ...
 type MqttBind struct {
 	Path    string
 	Payload []byte

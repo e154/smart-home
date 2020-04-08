@@ -66,6 +66,7 @@ const (
 	Completed string = "COMPLETED"
 )
 
+// Skill ...
 type Skill interface {
 	GetAppID() string
 	OnLaunch(*gin.Context, *Request, *Response)
@@ -128,8 +129,6 @@ type ResolutionPerAuthority struct {
 		ID   string `json:"id"`
 	} `json:"values"`
 }
-
-// Response Types
 
 // Response represents the information that should be sent back to the Alexa service
 // from the skillserver.
@@ -218,8 +217,10 @@ type Context struct {
 	} `json:"System,omitempty"`
 }
 
+// Options ...
 type Options func(a *Alexa)
 
+// WithServerOption ...
 func WithServerOption(addressPort string) Options {
 	return func(a *Alexa) {
 		a.addressPort = common.String(addressPort)

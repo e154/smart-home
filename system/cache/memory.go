@@ -23,7 +23,7 @@ import (
 
 var (
 	// DefaultEvery means the clock time of recycling the expired cache items in memory.
-	DefaultEvery = 60 // 1 minute
+	DefaultEvery = 60
 )
 
 // MemoryItem store memory cache item.

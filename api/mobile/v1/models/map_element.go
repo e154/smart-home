@@ -22,10 +22,13 @@ import (
 	"encoding/json"
 )
 
+// MapElementGraphSettingsPosition ...
 type MapElementGraphSettingsPosition struct {
 	Top  int64 `json:"top"`
 	Left int64 `json:"left"`
 }
+
+// MapElementGraphSettings ...
 type MapElementGraphSettings struct {
 	Width    *int64                          `json:"width"`
 	Height   *int64                          `json:"height"`
@@ -39,6 +42,7 @@ type Prototype struct {
 	*MapDevice
 }
 
+// MarshalJSON ...
 func (n Prototype) MarshalJSON() (b []byte, err error) {
 
 	switch {
@@ -57,6 +61,7 @@ func (n Prototype) MarshalJSON() (b []byte, err error) {
 	return
 }
 
+// UnmarshalJSON ...
 func (n *Prototype) UnmarshalJSON(data []byte) (err error) {
 
 	device := &MapDevice{}
@@ -99,6 +104,7 @@ type MapElement struct {
 	Zone          *MapZone                `json:"zone,omitempty"`
 }
 
+// SortMapElement ...
 type SortMapElement struct {
 	Id     int64 `json:"id"`
 	Weight int64 `json:"weight"`

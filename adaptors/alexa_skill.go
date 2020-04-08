@@ -24,11 +24,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// AlexaSkill ...
 type AlexaSkill struct {
 	table *db.AlexaSkills
 	db    *gorm.DB
 }
 
+// GetAlexaSkillAdaptor ...
 func GetAlexaSkillAdaptor(d *gorm.DB) *AlexaSkill {
 	return &AlexaSkill{
 		table: &db.AlexaSkills{Db: d},
@@ -36,11 +38,13 @@ func GetAlexaSkillAdaptor(d *gorm.DB) *AlexaSkill {
 	}
 }
 
+// Add ...
 func (n *AlexaSkill) Add(app *m.AlexaSkill) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(app))
 	return
 }
 
+// GetById ...
 func (n *AlexaSkill) GetById(appId int64) (app *m.AlexaSkill, err error) {
 
 	var dbVer *db.AlexaSkill
@@ -53,6 +57,7 @@ func (n *AlexaSkill) GetById(appId int64) (app *m.AlexaSkill, err error) {
 	return
 }
 
+// Update ...
 func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 
 	var app *db.AlexaSkill
@@ -112,11 +117,13 @@ func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 	return
 }
 
+// Delete ...
 func (n *AlexaSkill) Delete(appId int64) (err error) {
 	err = n.table.Delete(appId)
 	return
 }
 
+// List ...
 func (n *AlexaSkill) List(limit, offset int64, orderBy, sort string) (list []*m.AlexaSkill, total int64, err error) {
 	var dbList []*db.AlexaSkill
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -131,6 +138,7 @@ func (n *AlexaSkill) List(limit, offset int64, orderBy, sort string) (list []*m.
 	return
 }
 
+// ListEnabled ...
 func (n *AlexaSkill) ListEnabled(limit, offset int64) (list []*m.AlexaSkill, err error) {
 	var dbList []*db.AlexaSkill
 	if dbList, err = n.table.ListEnabled(limit, offset); err != nil {

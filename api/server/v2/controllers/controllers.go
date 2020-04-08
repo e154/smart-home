@@ -23,11 +23,13 @@ import (
 	"github.com/e154/smart-home/system/core"
 )
 
+// ControllersV2 ...
 type ControllersV2 struct {
 	Index   *ControllerIndex
 	Swagger *ControllerSwagger
 }
 
+// NewControllersV2 ...
 func NewControllersV2(adaptors *adaptors.Adaptors,
 	core *core.Core) *ControllersV2 {
 	common := NewControllerCommon(adaptors, core)

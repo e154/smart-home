@@ -34,6 +34,7 @@ func storeRegisterCallback(scriptService *scripts.ScriptService) {
 	})
 }
 
+// MyStruct ...
 type MyStruct struct {
 	Bool    bool
 	Int     int
@@ -56,6 +57,7 @@ type MyStruct struct {
 	private int
 }
 
+// Multiply ...
 func (m *MyStruct) Multiply(x int) int {
 	return m.Int * x
 }
@@ -64,6 +66,7 @@ func (m *MyStruct) privateMethod() int {
 	return 1
 }
 
+// GetScripts ...
 func GetScripts(ctx C, scriptService *scripts.ScriptService, adaptors *adaptors.Adaptors, args ...int) (scripts map[string]*m.Script) {
 
 	scripts = make(map[string]*m.Script)

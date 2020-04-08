@@ -25,16 +25,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// DeviceEndpoint ...
 type DeviceEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewDeviceEndpoint ...
 func NewDeviceEndpoint(common *CommonEndpoint) *DeviceEndpoint {
 	return &DeviceEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (d *DeviceEndpoint) Add(params *m.Device) (device *m.Device, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
@@ -60,11 +63,13 @@ func (d *DeviceEndpoint) Add(params *m.Device) (device *m.Device, errs []*valida
 	return
 }
 
+// GetById ...
 func (d *DeviceEndpoint) GetById(deviceId int64) (device *m.Device, err error) {
 	device, err = d.adaptors.Device.GetById(deviceId)
 	return
 }
 
+// Update ...
 func (d *DeviceEndpoint) Update(device *m.Device) (result *m.Device, errs []*validation.Error, err error) {
 
 	_, errs = device.Valid()
@@ -81,6 +86,7 @@ func (d *DeviceEndpoint) Update(device *m.Device) (result *m.Device, errs []*val
 	return
 }
 
+// GetList ...
 func (d *DeviceEndpoint) GetList(limit, offset int64, order, sortBy string) (devices []*m.Device, total int64, err error) {
 
 	devices, total, err = d.adaptors.Device.List(limit, offset, order, sortBy)
@@ -88,6 +94,7 @@ func (d *DeviceEndpoint) GetList(limit, offset int64, order, sortBy string) (dev
 	return
 }
 
+// Delete ...
 func (d *DeviceEndpoint) Delete(deviceId int64) (err error) {
 
 	if deviceId == 0 {
@@ -114,6 +121,7 @@ func (d *DeviceEndpoint) Delete(deviceId int64) (err error) {
 	return
 }
 
+// Search ...
 func (d *DeviceEndpoint) Search(query string, limit, offset int) (devices []*m.Device, total int64, err error) {
 
 	devices, total, err = d.adaptors.Device.Search(query, limit, offset)

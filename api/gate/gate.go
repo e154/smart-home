@@ -37,11 +37,13 @@ var (
 	log = common.MustGetLogger("gate")
 )
 
+// Gate ...
 type Gate struct {
 	Controllers *Controllers
 	graceful    *graceful_service.GracefulService
 }
 
+// NewGate ...
 func NewGate(adaptors *adaptors.Adaptors,
 	endpoint *endpoint.Endpoint,
 	scripts *scripts.ScriptService,
@@ -61,6 +63,7 @@ func NewGate(adaptors *adaptors.Adaptors,
 	return server
 }
 
+// Start ...
 func (s *Gate) Start() {
 	log.Info("Serving gate websocket service")
 	s.graceful.Subscribe(s)
@@ -68,6 +71,7 @@ func (s *Gate) Start() {
 	s.Controllers.Start()
 }
 
+// Shutdown ...
 func (s *Gate) Shutdown() {
 	log.Info("Server exiting")
 	s.Controllers.Stop()

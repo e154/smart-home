@@ -27,10 +27,12 @@ import (
 	"strconv"
 )
 
+// ControllerDevice ...
 type ControllerDevice struct {
 	*ControllerCommon
 }
 
+// NewControllerDevice ...
 func NewControllerDevice(common *ControllerCommon) *ControllerDevice {
 	return &ControllerDevice{ControllerCommon: common}
 }

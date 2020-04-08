@@ -29,16 +29,19 @@ import (
 	"strings"
 )
 
+// ScriptEndpoint ...
 type ScriptEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewScriptEndpoint ...
 func NewScriptEndpoint(common *CommonEndpoint) *ScriptEndpoint {
 	return &ScriptEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// Add ...
 func (n *ScriptEndpoint) Add(params *m.Script) (result *m.Script, errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
@@ -65,6 +68,7 @@ func (n *ScriptEndpoint) Add(params *m.Script) (result *m.Script, errs []*valida
 	return
 }
 
+// GetById ...
 func (n *ScriptEndpoint) GetById(scriptId int64) (result *m.Script, err error) {
 
 	result, err = n.adaptors.Script.GetById(scriptId)
@@ -72,6 +76,7 @@ func (n *ScriptEndpoint) GetById(scriptId int64) (result *m.Script, err error) {
 	return
 }
 
+// Copy ...
 func (n *ScriptEndpoint) Copy(scriptId int64) (script *m.Script, err error) {
 
 	if script, err = n.adaptors.Script.GetById(scriptId); err != nil {
@@ -98,6 +103,7 @@ func (n *ScriptEndpoint) Copy(scriptId int64) (script *m.Script, err error) {
 	return
 }
 
+// Update ...
 func (n *ScriptEndpoint) Update(params *m.Script) (result *m.Script, errs []*validation.Error, err error) {
 
 	var script *m.Script
@@ -133,6 +139,7 @@ func (n *ScriptEndpoint) Update(params *m.Script) (result *m.Script, errs []*val
 	return
 }
 
+// GetList ...
 func (n *ScriptEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Script, total int64, err error) {
 
 	result, total, err = n.adaptors.Script.List(limit, offset, order, sortBy)
@@ -140,6 +147,7 @@ func (n *ScriptEndpoint) GetList(limit, offset int64, order, sortBy string) (res
 	return
 }
 
+// DeleteScriptById ...
 func (n *ScriptEndpoint) DeleteScriptById(scriptId int64) (err error) {
 
 	if scriptId == 0 {
@@ -157,6 +165,7 @@ func (n *ScriptEndpoint) DeleteScriptById(scriptId int64) (err error) {
 	return
 }
 
+// Execute ...
 func (n *ScriptEndpoint) Execute(scriptId int64) (result string, err error) {
 
 	var script *m.Script
@@ -174,6 +183,7 @@ func (n *ScriptEndpoint) Execute(scriptId int64) (result string, err error) {
 	return
 }
 
+// ExecuteSource ...
 func (n *ScriptEndpoint) ExecuteSource(script *m.Script) (result string, err error) {
 
 	var engine *scripts.Engine
@@ -190,6 +200,7 @@ func (n *ScriptEndpoint) ExecuteSource(script *m.Script) (result string, err err
 	return
 }
 
+// Search ...
 func (n *ScriptEndpoint) Search(query string, limit, offset int) (devices []*m.Script, total int64, err error) {
 
 	devices, total, err = n.adaptors.Script.Search(query, limit, offset)

@@ -26,6 +26,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Worker ...
 type Worker struct {
 	adaptors      *adaptors.Adaptors
 	app           *m.AlexaSkill
@@ -33,6 +34,7 @@ type Worker struct {
 	core          *core.Core
 }
 
+// NewWorker ...
 func NewWorker(app *m.AlexaSkill,
 	adaptors *adaptors.Adaptors,
 	scriptService *scripts.ScriptService,
@@ -48,10 +50,12 @@ func NewWorker(app *m.AlexaSkill,
 	return
 }
 
+// GetAppID ...
 func (h Worker) GetAppID() string {
 	return h.app.SkillId
 }
 
+// OnLaunch ...
 func (h *Worker) OnLaunch(ctx *gin.Context, req *Request, resp *Response) {
 	if h.app.OnLaunchScript == nil {
 		return
@@ -64,6 +68,7 @@ func (h *Worker) OnLaunch(ctx *gin.Context, req *Request, resp *Response) {
 	}
 }
 
+// OnIntent ...
 func (h *Worker) OnIntent(ctx *gin.Context, req *Request, resp *Response) {
 	var exist bool
 	for _, intent := range h.app.Intents {
@@ -85,6 +90,7 @@ func (h *Worker) OnIntent(ctx *gin.Context, req *Request, resp *Response) {
 	}
 }
 
+// OnSessionEnded ...
 func (h *Worker) OnSessionEnded(ctx *gin.Context, req *Request, resp *Response) {
 	if h.app.OnSessionEndScript == nil {
 		return
@@ -97,6 +103,7 @@ func (h *Worker) OnSessionEnded(ctx *gin.Context, req *Request, resp *Response) 
 	}
 }
 
+// OnAudioPlayerState ...
 func (h Worker) OnAudioPlayerState(ctx *gin.Context, req *Request, resp *Response) {
 
 }

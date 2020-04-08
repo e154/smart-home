@@ -24,6 +24,7 @@ import (
 	"time"
 )
 
+// AlexaSkill ...
 type AlexaSkill struct {
 	Id                   int64             `json:"id"`
 	SkillId              string            `json:"skill_id" valid:"Required"`
@@ -38,6 +39,7 @@ type AlexaSkill struct {
 	UpdatedAt            time.Time         `json:"updated_at"`
 }
 
+// Valid ...
 func (d *AlexaSkill) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

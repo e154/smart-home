@@ -20,16 +20,18 @@ package models
 
 import (
 	"github.com/e154/smart-home/common"
-	"time"
 	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
+// LogQuery ...
 type LogQuery struct {
 	StartDate *time.Time `json:"start_date"`
 	EndDate   *time.Time `json:"end_date"`
 	Levels    []string   `json:"levels"`
 }
 
+// Log ...
 type Log struct {
 	Id        int64           `json:"id"`
 	Body      string          `json:"body" valid:"Required"`
@@ -37,6 +39,7 @@ type Log struct {
 	CreatedAt time.Time       `json:"created_at"`
 }
 
+// Valid ...
 func (d *Log) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

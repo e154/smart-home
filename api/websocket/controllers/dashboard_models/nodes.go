@@ -23,15 +23,18 @@ import (
 	"github.com/e154/smart-home/system/stream"
 )
 
+// Nodes ...
 type Nodes struct {
 	metric *metrics.MetricManager
 }
 
+// NewNode ...
 func NewNode(metric *metrics.MetricManager) (node *Nodes) {
 	node = &Nodes{metric: metric}
 	return
 }
 
+// Broadcast ...
 func (n *Nodes) Broadcast() (map[string]interface{}, bool) {
 
 	return map[string]interface{}{

@@ -24,10 +24,12 @@ import (
 	"time"
 )
 
+// Variables ...
 type Variables struct {
 	Db *gorm.DB
 }
 
+// Variable ...
 type Variable struct {
 	Name      string `gorm:"primary_key"`
 	Value     string
@@ -36,15 +38,18 @@ type Variable struct {
 	UpdatedAt time.Time
 }
 
+// TableName ...
 func (d *Variable) TableName() string {
 	return "variables"
 }
 
+// Add ...
 func (n Variables) Add(variable *Variable) (err error) {
 	err = n.Db.Create(&variable).Error
 	return
 }
 
+// GetByName ...
 func (n Variables) GetByName(name string) (variable *Variable, err error) {
 	variable = &Variable{}
 	err = n.Db.Model(variable).
@@ -54,6 +59,7 @@ func (n Variables) GetByName(name string) (variable *Variable, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n Variables) GetAllEnabled() (list []*Variable, err error) {
 	list = make([]*Variable, 0)
 	err = n.Db.Where("autoload = ?", true).
@@ -61,6 +67,7 @@ func (n Variables) GetAllEnabled() (list []*Variable, err error) {
 	return
 }
 
+// Update ...
 func (n Variables) Update(m *Variable) (err error) {
 	err = n.Db.Model(&Variable{Name: m.Name}).Updates(map[string]interface{}{
 		"value":    m.Value,
@@ -69,11 +76,13 @@ func (n Variables) Update(m *Variable) (err error) {
 	return
 }
 
+// Delete ...
 func (n Variables) Delete(name string) (err error) {
 	err = n.Db.Delete(&Variable{Name: name}).Error
 	return
 }
 
+// List ...
 func (n *Variables) List(limit, offset int64, orderBy, sort string) (list []*Variable, total int64, err error) {
 
 	if err = n.Db.Model(Variable{}).Count(&total).Error; err != nil {

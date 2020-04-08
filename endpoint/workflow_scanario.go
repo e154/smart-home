@@ -26,16 +26,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// WorkflowScenarioEndpoint ...
 type WorkflowScenarioEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewWorkflowScenarioEndpoint ...
 func NewWorkflowScenarioEndpoint(common *CommonEndpoint) *WorkflowScenarioEndpoint {
 	return &WorkflowScenarioEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// GetById ...
 func (n *WorkflowScenarioEndpoint) GetById(workflowId, scenarioId int64) (result *m.WorkflowScenario, err error) {
 
 	result, err = n.adaptors.WorkflowScenario.GetById(scenarioId)
@@ -43,6 +46,7 @@ func (n *WorkflowScenarioEndpoint) GetById(workflowId, scenarioId int64) (result
 	return
 }
 
+// Add ...
 func (n *WorkflowScenarioEndpoint) Add(params *m.WorkflowScenario) (result *m.WorkflowScenario, errs []*validation.Error, err error) {
 
 	// validation
@@ -81,6 +85,7 @@ func (n *WorkflowScenarioEndpoint) Add(params *m.WorkflowScenario) (result *m.Wo
 	return
 }
 
+// GetList ...
 func (n *WorkflowScenarioEndpoint) GetList(workflowId int64) (result []*m.WorkflowScenario, total int64, err error) {
 
 	result, total, err = n.adaptors.WorkflowScenario.ListByWorkflow(workflowId)
@@ -88,6 +93,7 @@ func (n *WorkflowScenarioEndpoint) GetList(workflowId int64) (result []*m.Workfl
 	return
 }
 
+// Delete ...
 func (n *WorkflowScenarioEndpoint) Delete(workflowScenarioId int64) (err error) {
 
 	if workflowScenarioId == 0 {
@@ -110,6 +116,7 @@ func (n *WorkflowScenarioEndpoint) Delete(workflowScenarioId int64) (err error) 
 	return
 }
 
+// Search ...
 func (n *WorkflowScenarioEndpoint) Search(query string, limit, offset int) (result []*m.WorkflowScenario, total int64, err error) {
 
 	result, total, err = n.adaptors.WorkflowScenario.Search(query, limit, offset)
@@ -117,6 +124,7 @@ func (n *WorkflowScenarioEndpoint) Search(query string, limit, offset int) (resu
 	return
 }
 
+// Update ...
 func (n *WorkflowScenarioEndpoint) Update(params *m.WorkflowScenario) (result *m.WorkflowScenario,
 	errs []*validation.Error, err error) {
 

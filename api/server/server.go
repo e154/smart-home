@@ -37,6 +37,7 @@ var (
 	log = common.MustGetLogger("server")
 )
 
+// Server ...
 type Server struct {
 	Config        *ServerConfig
 	ControllersV1 *controllers.ControllersV1
@@ -50,6 +51,7 @@ type Server struct {
 	isStarted     bool
 }
 
+// Start ...
 func (s *Server) Start() {
 
 	if s.isStarted {
@@ -75,6 +77,7 @@ func (s *Server) Start() {
 	go s.core.Run()
 }
 
+// Shutdown ...
 func (s *Server) Shutdown() {
 
 	if !s.isStarted {
@@ -90,10 +93,12 @@ func (s *Server) Shutdown() {
 	log.Info("Server exiting")
 }
 
+// GetEngine ...
 func (s *Server) GetEngine() *gin.Engine {
 	return s.engine
 }
 
+// NewServer ...
 func NewServer(cfg *ServerConfig,
 	ctrls *controllers.ControllersV1,
 	graceful *graceful_service.GracefulService,

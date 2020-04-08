@@ -25,10 +25,12 @@ import (
 	"time"
 )
 
+// AlexaSkills ...
 type AlexaSkills struct {
 	Db *gorm.DB
 }
 
+// AlexaSkill ...
 type AlexaSkill struct {
 	Id                   int64 `gorm:"primary_key"`
 	SkillId              string
@@ -43,10 +45,12 @@ type AlexaSkill struct {
 	UpdatedAt            time.Time
 }
 
+// TableName ...
 func (d *AlexaSkill) TableName() string {
 	return "alexa_skills"
 }
 
+// Add ...
 func (n AlexaSkills) Add(v *AlexaSkill) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -55,6 +59,7 @@ func (n AlexaSkills) Add(v *AlexaSkill) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
 	v = &AlexaSkill{Id: id}
 	err = n.Db.Model(v).
@@ -70,6 +75,7 @@ func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
 	return
 }
 
+// List ...
 func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*AlexaSkill, total int64, err error) {
 
 	if err = n.Db.Model(AlexaSkill{}).Count(&total).Error; err != nil {
@@ -91,6 +97,7 @@ func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*A
 	return
 }
 
+// ListEnabled ...
 func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err error) {
 
 	list = make([]*AlexaSkill, 0)
@@ -98,7 +105,7 @@ func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err 
 		Where("status = 'enabled'").
 		Limit(limit).
 		Offset(offset).
-		Preloads("Intents"). //TODO fix Not work?!
+		Preloads("Intents").        //TODO fix Not work?!
 		Preloads("Intents.Script"). //TODO fix Not work?!
 		Preload("OnLaunchScript").
 		Preload("OnSessionEndScript").
@@ -128,6 +135,7 @@ func (n AlexaSkills) preload(v *AlexaSkill) (err error) {
 	return
 }
 
+// Update ...
 func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
 	q := map[string]interface{}{
 		"skill_id":    v.SkillId,
@@ -144,6 +152,7 @@ func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
 	return
 }
 
+// Delete ...
 func (n AlexaSkills) Delete(id int64) (err error) {
 	err = n.Db.Delete(&AlexaSkill{}, "id = ?", id).Error
 	return

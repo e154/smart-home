@@ -19,18 +19,20 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
+	"encoding/json"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/uuid"
-	"encoding/json"
+	"github.com/jinzhu/gorm"
 )
 
+// FlowElement ...
 type FlowElement struct {
 	table *db.FlowElements
 	db    *gorm.DB
 }
 
+// GetFlowElementAdaptor ...
 func GetFlowElementAdaptor(d *gorm.DB) *FlowElement {
 	return &FlowElement{
 		table: &db.FlowElements{Db: d},
@@ -38,12 +40,14 @@ func GetFlowElementAdaptor(d *gorm.DB) *FlowElement {
 	}
 }
 
+// Add ...
 func (n *FlowElement) Add(element *m.FlowElement) (id uuid.UUID, err error) {
 	dbFlowElement := n.toDb(element)
 	id, err = n.table.Add(dbFlowElement)
 	return
 }
 
+// GetAllEnabled ...
 func (n *FlowElement) GetAllEnabled() (list []*m.FlowElement, err error) {
 
 	var dbList []*db.FlowElement
@@ -60,6 +64,7 @@ func (n *FlowElement) GetAllEnabled() (list []*m.FlowElement, err error) {
 	return
 }
 
+// GetById ...
 func (n *FlowElement) GetById(elementId uuid.UUID) (element *m.FlowElement, err error) {
 
 	var dbFlowElement *db.FlowElement
@@ -72,12 +77,14 @@ func (n *FlowElement) GetById(elementId uuid.UUID) (element *m.FlowElement, err 
 	return
 }
 
+// Update ...
 func (n *FlowElement) Update(element *m.FlowElement) (err error) {
 	dbFlowElement := n.toDb(element)
 	err = n.table.Update(dbFlowElement)
 	return
 }
 
+// AddOrUpdateFlowElement ...
 func (n *FlowElement) AddOrUpdateFlowElement(element *m.FlowElement) (err error) {
 
 	if element.Uuid.String() == "00000000-0000-0000-0000-000000000000" {
@@ -95,11 +102,13 @@ func (n *FlowElement) AddOrUpdateFlowElement(element *m.FlowElement) (err error)
 	return
 }
 
+// Delete ...
 func (n *FlowElement) Delete(ids []uuid.UUID) (err error) {
 	err = n.table.Delete(ids)
 	return
 }
 
+// List ...
 func (n *FlowElement) List(limit, offset int64, orderBy, sort string) (list []*m.FlowElement, total int64, err error) {
 	var dbList []*db.FlowElement
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
