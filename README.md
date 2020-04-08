@@ -8,7 +8,6 @@
 [Modbus device controller](https://github.com/e154/smart-home-modbus-ctrl-v1/) |
 [Mobile app](https://github.com/e154/smart-home-app/)
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/e154/smart-home)](https://goreportcard.com/report/github.com/e154/smart-home)
 ![status](https://img.shields.io/badge/status-beta-yellow.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![telegram group](https://img.shields.io/badge/telegram-group-blue)](https://t.me/SmartHomGo)
