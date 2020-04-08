@@ -75,6 +75,7 @@ The basic principles underlying the system being developed are ease of setup, lo
 15. 100% local home automation
 16. Create and restore full backups of your whole configuration with ease
 17. Management web interface integrated into Smart home
+18. Alexa skills
 
 ### Demo access
 
