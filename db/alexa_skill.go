@@ -148,7 +148,7 @@ func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
 	if v.OnSessionEndScriptId != nil {
 		q["on_session_end"] = common.Int64Value(v.OnSessionEndScriptId)
 	}
-	err = n.Db.Model(&AlexaSkill{}).Updates(q).Where("id = ?", v.Id).Error
+	err = n.Db.Model(&AlexaSkill{}).Where("id = ?", v.Id).Updates(q).Error
 	return
 }
 
