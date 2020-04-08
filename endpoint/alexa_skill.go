@@ -28,7 +28,7 @@ type AlexaSkillEndpoint struct {
 	*CommonEndpoint
 }
 
-func NewAlexaApplicationEndpoint(common *CommonEndpoint) *AlexaSkillEndpoint {
+func NewAlexaSkillEndpoint(common *CommonEndpoint) *AlexaSkillEndpoint {
 	return &AlexaSkillEndpoint{
 		CommonEndpoint: common,
 	}

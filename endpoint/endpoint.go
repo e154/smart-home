@@ -102,6 +102,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Version:          NewVersionEndpoint(common),
 		Zigbee2mqtt:      NewZigbee2mqttEndpoint(common),
 		MapDeviceHistory: NewMapDeviceHistoryEndpoint(common),
-		AlexaSkill:       NewAlexaApplicationEndpoint(common),
+		AlexaSkill:       NewAlexaSkillEndpoint(common),
 	}
 }
