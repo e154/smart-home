@@ -398,8 +398,16 @@ func (c ControllerWorkflowScenario) Delete(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerWorkflowScenario) Search(ctx *gin.Context) {
 
+	id := ctx.Param("id")
+	workflowId, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
 	query, limit, offset := c.select2(ctx)
-	items, _, err := c.endpoint.WorkflowScenario.Search(query, limit, offset)
+	items, _, err := c.endpoint.WorkflowScenario.Search(query, workflowId, limit, offset)
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return

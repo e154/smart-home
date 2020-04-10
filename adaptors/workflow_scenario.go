@@ -165,9 +165,9 @@ func (n *WorkflowScenario) UpdateScripts(wf *m.WorkflowScenario) (err error) {
 }
 
 // Search ...
-func (n *WorkflowScenario) Search(query string, limit, offset int) (list []*m.WorkflowScenario, total int64, err error) {
+func (n *WorkflowScenario) Search(query string, workflowId, limit, offset int) (list []*m.WorkflowScenario, total int64, err error) {
 	var dbList []*db.WorkflowScenario
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = n.table.Search(query, workflowId, limit, offset); err != nil {
 		return
 	}
 

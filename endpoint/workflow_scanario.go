@@ -117,9 +117,9 @@ func (n *WorkflowScenarioEndpoint) Delete(workflowScenarioId int64) (err error) 
 }
 
 // Search ...
-func (n *WorkflowScenarioEndpoint) Search(query string, limit, offset int) (result []*m.WorkflowScenario, total int64, err error) {
+func (n *WorkflowScenarioEndpoint) Search(query string, workflowId, limit, offset int) (result []*m.WorkflowScenario, total int64, err error) {
 
-	result, total, err = n.adaptors.WorkflowScenario.Search(query, limit, offset)
+	result, total, err = n.adaptors.WorkflowScenario.Search(query, workflowId, limit, offset)
 
 	return
 }

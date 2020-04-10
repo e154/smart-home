@@ -128,10 +128,10 @@ func (n *WorkflowScenarios) RemoveScript(workflowScenarioId, scriptId int64) (er
 }
 
 // Search ...
-func (n *WorkflowScenarios) Search(query string, limit, offset int) (list []*WorkflowScenario, total int64, err error) {
+func (n *WorkflowScenarios) Search(query string, workflowId, limit, offset int) (list []*WorkflowScenario, total int64, err error) {
 
 	q := n.Db.Model(&WorkflowScenario{}).
-		Where("name ILIKE ?", "%"+query+"%").
+		Where("name ILIKE ? and workflow_id = ?", "%"+query+"%", workflowId).
 		Order("name ASC")
 
 	if err = q.Count(&total).Error; err != nil {
