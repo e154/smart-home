@@ -45,6 +45,7 @@ var coffeeScripts = map[string]string{
 	"coffeeScript24": coffeeScript24,
 	"coffeeScript25": coffeeScript25,
 	"coffeeScript26": coffeeScript26,
+	"coffeeScript27": coffeeScript27,
 }
 
 // test1
@@ -359,6 +360,46 @@ store(bar2.Bar)
 store(bar2.Foo)
 store(bar2.Foo.Bar)
 store(bar2.Foo.Foo)
+`
+
+// test27
+// ------------------------------------------------
+const coffeeScript27 = `
+"use strict";
+
+# get nil var
+value = Storage.GetByName 'foo'
+store value
+
+foo = 
+	'bar': 'bar'
+
+value = JSON.stringify foo
+
+# save var
+Storage.Push 'foo', value
+
+# get exist var
+value = Storage.GetByName 'foo'
+store value
+foo = JSON.parse(value)
+store foo.bar
+
+# update var and save
+foo.bar = 'foo'
+value = JSON.stringify foo
+Storage.Push 'foo', value
+
+value = Storage.GetByName 'foo'
+store value
+foo = JSON.parse(value)
+store foo.bar
+
+list = Storage.Search 'bar'
+store list
+
+list = Storage.Search 'foo'
+store list
 `
 
 // test...
