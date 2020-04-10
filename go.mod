@@ -8,7 +8,7 @@ require (
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlclark/regexp2 v1.2.0 // indirect
-	github.com/dop251/goja v0.0.0-20200126140343-a7d7d4827263
+	github.com/dop251/goja v0.0.0-20200409105836-0cd29d81c048
 	github.com/dop251/goja_nodejs v0.0.0-20200128125109-2d688c7e0ac4
 	github.com/eclipse/paho.mqtt.golang v1.2.0
 	github.com/francoispqt/gojay v1.2.13
@@ -21,7 +21,7 @@ require (
 	github.com/go-openapi/spec v0.17.2 // indirect
 	github.com/go-openapi/swag v0.17.2 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
-	github.com/go-sourcemap/sourcemap v2.1.2+incompatible // indirect
+	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
