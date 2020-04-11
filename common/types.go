@@ -115,3 +115,12 @@ const (
 	// MapDeviceHistoryOption ...
 	MapDeviceHistoryOption = MapDeviceHistoryType("option")
 )
+
+type MetricType string
+
+const (
+	MetricTypeCounter   = MetricType("counter")
+	MetricTypeGauge     = MetricType("gauge")
+	MetricTypeHistogram = MetricType("histogram")
+	MetricTypeSummaries = MetricType("summaries")
+)
