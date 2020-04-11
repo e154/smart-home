@@ -58,10 +58,6 @@ Languages:
         - title: "Обзор"
           url: "#overview"
 
-        - title: ""
-          url: "#workflow"
-        - title: "Функции"
-          url: "#workflow"
         - title: "Workflow"
           url: "#workflow"
 
@@ -73,6 +69,9 @@ Languages:
 
         - title: "Mqtt"
           url: "#mqtt"
+
+        - title: "Storage"
+          url: "#storage"
 
         - title: "Log"
           url: "#log"
@@ -90,6 +89,8 @@ Languages:
           url: "#current_node"
         - title: "CurrentDevice()"
           url: "#current_device"
+        - title: "DoAction()"
+          url: "#do_action"
 
         - title: ""
           url: "#runmode"
@@ -282,10 +283,6 @@ Languages:
         - title: "Overview"
           url: "#overview"
 
-        - title: ""
-          url: "#workflow"
-        - title: "Functions"
-          url: "#workflow"
         - title: "Workflow"
           url: "#workflow"
 
@@ -297,6 +294,9 @@ Languages:
 
         - title: "Mqtt"
           url: "#mqtt"
+
+        - title: "Storage"
+          url: "#storage"
 
         - title: "Log"
           url: "#log"
@@ -314,6 +314,8 @@ Languages:
           url: "#current_node"
         - title: "CurrentDevice()"
           url: "#current_device"
+        - title: "DoAction()"
+          url: "#do_action"
 
         - title: ""
           url: "#runmode"
