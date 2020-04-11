@@ -16,26 +16,22 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package mobile
+package alexa
 
 import (
 	"fmt"
 	"github.com/e154/smart-home/system/config"
 )
 
-// Config ...
 type Config struct {
-	Host    string
-	Port    int
-	RunMode config.RunMode
+	Host string
+	Port int
 }
 
-// NewConfig ...
-func NewConfig(cfg *config.AppConfig) *Config {
-	return &Config{
-		Host:    cfg.ServerHost,
-		Port:    cfg.MobilePort,
-		RunMode: cfg.Mode,
+func NewConfig(appConfig *config.AppConfig) Config {
+	return Config{
+		Host: appConfig.AlexaHost,
+		Port: appConfig.AlexaPort,
 	}
 }
 

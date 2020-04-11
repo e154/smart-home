@@ -51,6 +51,10 @@ type AppConfig struct {
 	Metric                         bool          `json:"metric"`
 	MetricPort                     int           `json:"metric_port"`
 	ColoredLogging                 bool          `json:"colored_logging"`
+	AlexaHost                      string        `json:"alexa_host"`
+	AlexaPort                      int           `json:"alexa_port"`
+	MobileHost                     string        `json:"mobile_host"`
+	MobilePort                     int           `json:"mobile_port"`
 }
 
 // RunMode ...

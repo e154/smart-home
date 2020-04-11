@@ -53,9 +53,9 @@ func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()
 	container.Provide(server.NewServer)
-	container.Provide(server.NewServerConfig)
+	container.Provide(server.NewConfig)
 	container.Provide(mobile.NewMobileServer)
-	container.Provide(mobile.NewMobileServerConfig)
+	container.Provide(mobile.NewConfig)
 	container.Provide(mobileControllers.NewMobileControllersV1)
 	container.Provide(controllers.NewControllersV1)
 	//container.Provide(config.ReadConfig)
@@ -90,6 +90,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(logging.NewLogger)
 	container.Provide(logging.NewLogDbSaver)
 	container.Provide(alexa.NewAlexa)
+	container.Provide(alexa.NewConfig)
 	container.Provide(storage.NewStorage)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {

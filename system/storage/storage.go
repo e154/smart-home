@@ -36,7 +36,6 @@ var (
 // Storage ...
 type Storage struct {
 	adaptors  *adaptors.Adaptors
-	graceful  *graceful_service.GracefulService
 	pool      sync.Map
 	quit      chan struct{}
 	inProcess *atomic.Bool
@@ -48,12 +47,13 @@ func NewStorage(
 	graceful *graceful_service.GracefulService) *Storage {
 	storage := &Storage{
 		adaptors:  adaptors,
-		graceful:  graceful,
 		pool:      sync.Map{},
 		quit:      make(chan struct{}),
 		inProcess: atomic.NewBool(false),
 	}
 
+	graceful.Subscribe(storage)
+	
 	go func() {
 		ticker := time.NewTicker(time.Minute * 1)
 		defer ticker.Stop()

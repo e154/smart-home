@@ -20,7 +20,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/core"
@@ -34,12 +33,12 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("server")
+	log = common.MustGetLogger("api.server")
 )
 
 // Server ...
 type Server struct {
-	Config        *ServerConfig
+	Config        *Config
 	ControllersV1 *controllers.ControllersV1
 	engine        *gin.Engine
 	server        *http.Server
@@ -61,7 +60,7 @@ func (s *Server) Start() {
 	s.isStarted = true
 
 	s.server = &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", s.Config.Host, s.Config.Port),
+		Addr:    s.Config.String(),
 		Handler: s.engine,
 	}
 
@@ -72,7 +71,7 @@ func (s *Server) Start() {
 		}
 	}()
 
-	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
+	log.Infof("Serving server at %s", s.Config.String())
 
 	go s.core.Run()
 }
@@ -99,7 +98,7 @@ func (s *Server) GetEngine() *gin.Engine {
 }
 
 // NewServer ...
-func NewServer(cfg *ServerConfig,
+func NewServer(cfg *Config,
 	ctrls *controllers.ControllersV1,
 	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,

@@ -20,11 +20,9 @@ package alexa
 
 import (
 	"errors"
-	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/scripts"
@@ -49,7 +47,7 @@ type Alexa struct {
 	skillLock     *sync.Mutex
 	skills        map[int64]Skill
 	adaptors      *adaptors.Adaptors
-	appConfig     *config.AppConfig
+	config        Config
 	token         *atomic.String
 	scriptService *scripts.ScriptService
 	core          *core.Core
@@ -58,7 +56,7 @@ type Alexa struct {
 
 // NewAlexa ...
 func NewAlexa(adaptors *adaptors.Adaptors,
-	appConfig *config.AppConfig,
+	config Config,
 	scriptService *scripts.ScriptService,
 	core *core.Core,
 	gateClient *gate_client.GateClient) *Alexa {
@@ -67,7 +65,7 @@ func NewAlexa(adaptors *adaptors.Adaptors,
 		adaptors:      adaptors,
 		skillLock:     &sync.Mutex{},
 		skills:        make(map[int64]Skill),
-		appConfig:     appConfig,
+		config:        config,
 		token:         atomic.NewString(""),
 		scriptService: scriptService,
 		core:          core,
@@ -88,9 +86,8 @@ func (a *Alexa) Start() {
 	a.engine = gin.New()
 	a.engine.POST("/*any", a.Auth, a.handlerFunc)
 
-	port := "3033"
 	a.server = &http.Server{
-		Addr:    fmt.Sprintf("0.0.0.0:%s", port),
+		Addr:    a.config.String(),
 		Handler: a.engine,
 	}
 
@@ -104,7 +101,7 @@ func (a *Alexa) Start() {
 		a.gateClient.SetAlexaApiEngine(a.engine)
 	}()
 
-	log.Infof("Serving server at http://[::]:%s", port)
+	log.Infof("Serving server at %s", a.config.String())
 }
 
 func (a *Alexa) init() {

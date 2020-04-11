@@ -33,7 +33,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("websocket")
+	log = common.MustGetLogger("websocket.server")
 )
 
 // WebSocket ...
