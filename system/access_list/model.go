@@ -35,7 +35,8 @@ func NewAccessLevels() AccessLevels {
 }
 
 // AccessList ...
-type AccessList map[string]AccessLevels 
+type AccessList map[string]AccessLevels
+
 // NewAccessList ...
 func NewAccessList() AccessList {
 	return make(map[string]AccessLevels)

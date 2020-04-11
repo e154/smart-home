@@ -53,7 +53,7 @@ func NewStorage(
 	}
 
 	graceful.Subscribe(storage)
-	
+
 	go func() {
 		ticker := time.NewTicker(time.Minute * 1)
 		defer ticker.Stop()
@@ -76,6 +76,7 @@ func NewStorage(
 	return storage
 }
 
+// Shutdown ...
 func (s *Storage) Shutdown() {
 	s.quit <- struct{}{}
 	s.serialize()
@@ -138,6 +139,7 @@ func (s *Storage) pop(name string) (val []byte, err error) {
 	return
 }
 
+// Serialize ...
 func (s *Storage) Serialize() {
 	s.serialize()
 }
