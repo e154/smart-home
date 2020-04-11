@@ -19,21 +19,26 @@
 package server
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/system/config"
 )
 
-// ServerConfig ...
-type ServerConfig struct {
+// Config ...
+type Config struct {
 	Host    string
 	Port    int
 	RunMode config.RunMode
 }
 
-// NewServerConfig ...
-func NewServerConfig(cfg *config.AppConfig) *ServerConfig {
-	return &ServerConfig{
+// NewConfig ...
+func NewConfig(cfg *config.AppConfig) *Config {
+	return &Config{
 		Host:    cfg.ServerHost,
 		Port:    cfg.ServerPort,
 		RunMode: cfg.Mode,
 	}
+}
+
+func (c Config) String() string {
+	return fmt.Sprintf("%s:%d", c.Host, c.Port)
 }

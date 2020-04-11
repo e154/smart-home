@@ -39,6 +39,7 @@ import (
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/dig"
@@ -49,9 +50,9 @@ func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()
 	container.Provide(server.NewServer)
-	container.Provide(server.NewServerConfig)
+	container.Provide(server.NewConfig)
 	container.Provide(mobile.NewMobileServer)
-	container.Provide(mobile.NewMobileServerConfig)
+	container.Provide(mobile.NewConfig)
 	container.Provide(mobileControllers.NewMobileControllersV1)
 	container.Provide(controllers.NewControllersV1)
 	//container.Provide(config.ReadConfig)
@@ -83,6 +84,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(zigbee2mqtt.NewZigbee2mqtt)
 	container.Provide(logging.NewLogger)
 	container.Provide(logging.NewLogDbSaver)
+	container.Provide(storage.NewStorage)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()

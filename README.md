@@ -350,6 +350,7 @@ Thank you for your understanding!
 * [iridiummobile](http://www.iridiummobile.net)
 * [amx](https://www.amx.com/en-US)
 * [Home Assistant](https://www.home-assistant.io/integrations/)
+* [Majordomo](https://majordomohome.com)
 
 ### LICENSE
 

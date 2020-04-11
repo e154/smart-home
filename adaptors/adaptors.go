@@ -70,6 +70,7 @@ type Adaptors struct {
 	MapDeviceHistory      *MapDeviceHistory
 	AlexaSkill            *AlexaSkill
 	AlexaIntent           *AlexaIntent
+	Storage               *Storage
 }
 
 // NewAdaptors ...
@@ -120,6 +121,7 @@ func NewAdaptors(db *gorm.DB,
 		MapDeviceHistory:      GetMapDeviceHistoryAdaptor(db),
 		AlexaSkill:            GetAlexaSkillAdaptor(db),
 		AlexaIntent:           GetAlexaIntentAdaptor(db),
+		Storage:               GetStorageAdaptor(db),
 	}
 
 	return

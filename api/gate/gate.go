@@ -34,7 +34,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("gate")
+	log = common.MustGetLogger("gate.server")
 )
 
 // Gate ...

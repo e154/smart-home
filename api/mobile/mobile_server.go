@@ -20,7 +20,6 @@ package mobile
 
 import (
 	"context"
-	"fmt"
 	"github.com/e154/smart-home/api/mobile/v1/controllers"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/gate_client"
@@ -33,12 +32,12 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("server")
+	log = common.MustGetLogger("mobile.server")
 )
 
 // MobileServer ...
 type MobileServer struct {
-	Config        *MobileServerConfig
+	Config        *Config
 	ControllersV1 *controllers.MobileControllersV1
 	engine        *gin.Engine
 	server        *http.Server
@@ -52,7 +51,7 @@ type MobileServer struct {
 func (s *MobileServer) Start() {
 
 	s.server = &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", s.Config.Host, s.Config.Port),
+		Addr:    s.Config.String(),
 		Handler: s.engine,
 	}
 
@@ -67,7 +66,7 @@ func (s *MobileServer) Start() {
 		s.gateClient.SetMobileApiEngine(s.engine)
 	}()
 
-	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
+	log.Infof("Serving server at %s", s.Config.String())
 }
 
 // Shutdown ...
@@ -83,7 +82,7 @@ func (s *MobileServer) Shutdown() {
 }
 
 // NewMobileServer ...
-func NewMobileServer(cfg *MobileServerConfig,
+func NewMobileServer(cfg *Config,
 	ctrls *controllers.MobileControllersV1,
 	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,

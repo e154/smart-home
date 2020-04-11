@@ -34,6 +34,22 @@ print 'current device', device
 **Значение** | **Описание**
 -------------|--------------
   `device`   | type: Object, ссылка на экземпляр [Device](#device) 
+
+## DoAction(action_id) {#do_action}
+
+Фукция, выполнить действие
+
+**На входе**
+
+**Значение**        | **Описание**
+--------------------|--------------
+  `action_id`       | type: number, id действия (action)
+
+Пример:
+
+```coffeescript
+DoAction(1)
+```
   
 ## Runmode {#runmode}
 

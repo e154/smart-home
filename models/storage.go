@@ -16,29 +16,18 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package mobile
+package models
 
 import (
-	"fmt"
-	"github.com/e154/smart-home/system/config"
+	"encoding/json"
+	"time"
 )
 
-// Config ...
-type Config struct {
-	Host    string
-	Port    int
-	RunMode config.RunMode
-}
-
-// NewConfig ...
-func NewConfig(cfg *config.AppConfig) *Config {
-	return &Config{
-		Host:    cfg.ServerHost,
-		Port:    cfg.MobilePort,
-		RunMode: cfg.Mode,
-	}
-}
-
-func (c Config) String() string {
-	return fmt.Sprintf("%s:%d", c.Host, c.Port)
+// Storage...
+type Storage struct {
+	Name      string          `json:"name"`
+	Value     json.RawMessage `json:"value"`
+	Changed   bool            `json:"changed"`
+	UpdatedAt time.Time       `json:"updated_at"`
+	CreatedAt time.Time       `json:"created_at"`
 }
