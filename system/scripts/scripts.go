@@ -19,12 +19,12 @@
 package scripts
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/models/devices"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/scripts/bind"
+	"github.com/e154/smart-home/system/storage"
 )
 
 var (
@@ -39,7 +39,7 @@ type ScriptService struct {
 }
 
 // NewScriptService ...
-func NewScriptService(cfg *config.AppConfig, adaptors *adaptors.Adaptors) (service *ScriptService) {
+func NewScriptService(cfg *config.AppConfig, storage  *storage.Storage) (service *ScriptService) {
 
 	service = &ScriptService{
 		cfg:        cfg,
@@ -54,7 +54,7 @@ func NewScriptService(cfg *config.AppConfig, adaptors *adaptors.Adaptors) (servi
 	service.PushFunctions("Zigbee2mqtt", devices.NewZigbee2mqttBind)
 	service.PushFunctions("ModBus", devices.NewModBusBind)
 	service.PushFunctions("Mqtt", devices.NewMqttBind)
-	service.PushStruct("Storage", bind.NewStorageBind(adaptors))
+	service.PushStruct("Storage", bind.NewStorageBind(storage))
 	return service
 }
 

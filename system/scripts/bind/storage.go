@@ -19,9 +19,7 @@
 package bind
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	m "github.com/e154/smart-home/models"
-	"time"
+	"github.com/e154/smart-home/system/storage"
 )
 
 // Javascript Binding
@@ -33,47 +31,40 @@ import (
 // 	 .Pop(name)
 //
 type StorageBind struct {
-	adaptors *adaptors.Adaptors
+	storage *storage.Storage
 }
 
-func NewStorageBind(adaptors *adaptors.Adaptors) *StorageBind {
-	return &StorageBind{adaptors: adaptors}
+// NewStorageBind ...
+func NewStorageBind(
+	storage *storage.Storage) *StorageBind {
+	return &StorageBind{
+		storage: storage,
+	}
 }
 
+// Search ...
 func (s *StorageBind) Search(name string) (result map[string]string) {
 	result = make(map[string]string)
-	list, _, err := s.adaptors.Storage.Search(name, 99, 0)
-	if err != nil {
-		return
-	}
-	for _, stor := range list {
-		result[stor.Name] = string(stor.Value)
+	storRes := s.storage.Search(name)
+	for k, v := range storRes {
+		result[k] = string(v)
 	}
 	return
 }
 
-func (s *StorageBind) Push(name string, v string) (err error) {
-	err = s.adaptors.Storage.CreateOrUpdate(&m.Storage{
-		Name:      name,
-		Value:     []byte(v),
-		UpdatedAt: time.Time{},
-		CreatedAt: time.Time{},
-	})
-	return
+// Push ...
+func (s *StorageBind) Push(name string, val string) (err error) {
+	return s.storage.Push(name, val)
 }
 
-func (s *StorageBind) GetByName(name string) (value string) {
-	storage, err := s.adaptors.Storage.GetByName(name)
-	if err != nil {
-		return
-	}
-	v, _ := storage.Value.MarshalJSON()
-	value = string(v)
-	return
+// GetByName ...
+func (s *StorageBind) GetByName(name string) string {
+	b, _ := s.storage.GetByName(name)
+	return string(b)
 }
 
-func (s *StorageBind) Pop(name string) (value string) {
-	value = s.GetByName(name)
-	s.adaptors.Storage.Delete(name)
-	return
+// Pop ...
+func (s *StorageBind) Pop(name string) string {
+	b, _ := s.storage.Pop(name)
+	return string(b)
 }

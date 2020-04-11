@@ -24,6 +24,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/storage"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )
@@ -34,12 +35,12 @@ func Test12(t *testing.T) {
 
 	pool := []string{
 		"",
-		`{"bar": "bar"}`,
+		`{"bar":"bar"}`,
 		"bar",
-		`{"bar": "foo"}`,
+		`{"bar":"foo"}`,
 		"foo",
 		`map[]`,
-		`map[foo:{"bar": "foo"}]`,
+		`map[foo:{"bar":"foo"}]`,
 	}
 
 	initCallback := func(ctx C) {
@@ -65,6 +66,7 @@ func Test12(t *testing.T) {
 	Convey("check db storage", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
+			storageService *storage.Storage,
 			scriptService *scripts.ScriptService) {
 
 			// clear database
@@ -91,6 +93,23 @@ func Test12(t *testing.T) {
 			_, err = engine.Do()
 			So(err, ShouldBeNil)
 
+			_, err = adaptors.Storage.GetByName("foo")
+			So(err, ShouldNotBeNil)
+
+			storageService.Serialize()
+			storage, err := adaptors.Storage.GetByName("foo")
+			So(err, ShouldBeNil)
+			So(string(storage.Value), ShouldEqual, `{"bar": "foo"}`)
+
+			err = adaptors.Storage.CreateOrUpdate(m.Storage{
+				Name: "foo2",
+				Value: []byte(`{"foo":"bar"}`),
+			})
+			So(err, ShouldBeNil)
+
+			storage, err = adaptors.Storage.GetByName("foo2")
+			So(err, ShouldBeNil)
+			So(string(storage.Value), ShouldEqual, `{"foo": "bar"}`)
 		})
 	})
 }

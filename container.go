@@ -44,6 +44,7 @@ import (
 	"github.com/e154/smart-home/system/orm"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/dig"
@@ -93,6 +94,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(logging.NewLogger)
 	container.Provide(logging.NewLogDbSaver)
 	container.Provide(alexa.NewAlexa)
+	container.Provide(storage.NewStorage)
 
 	return
 }

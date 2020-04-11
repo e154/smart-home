@@ -44,11 +44,11 @@ func (s *Storage) TableName() string {
 }
 
 // CreateOrUpdate ...
-func (s Storages) CreateOrUpdate(v *Storage) (err error) {
-	err = s.Db.Model(v).
+func (s *Storages) CreateOrUpdate(v Storage) (err error) {
+	err = s.Db.Model(&Storage{}).
 		Set("gorm:insert_option",
 			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', updated_at = '%s'", v.Value, time.Now().Format(time.RFC3339))).
-		Create(v).Error
+		Create(&v).Error
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -56,20 +56,19 @@ func (s Storages) CreateOrUpdate(v *Storage) (err error) {
 }
 
 // GetByName ...
-func (s Storages) GetByName(name string) (v *Storage, err error) {
-	v = &Storage{}
-	err = s.Db.Model(v).Where("name = ?", name).First(&v).Error
+func (s *Storages) GetByName(name string) (v Storage, err error) {
+	err = s.Db.Model(&Storage{}).Where("name = ?", name).First(&v).Error
 	return
 }
 
 // Delete ...
-func (s Storages) Delete(name string) (err error) {
+func (s *Storages) Delete(name string) (err error) {
 	err = s.Db.Delete(&Storage{}, "name = ?", name).Error
 	return
 }
 
 // Search ...
-func (s *Storages) Search(query string, limit, offset int) (list []*Storage, total int64, err error) {
+func (s *Storages) Search(query string, limit, offset int) (list []Storage, total int64, err error) {
 
 	q := s.Db.Model(&Storage{}).
 		Where("name LIKE ?", "%"+query+"%").
@@ -79,7 +78,7 @@ func (s *Storages) Search(query string, limit, offset int) (list []*Storage, tot
 		return
 	}
 
-	list = make([]*Storage, 0)
+	list = make([]Storage, 0)
 	err = q.Find(&list).Error
 
 	return

@@ -27,6 +27,7 @@ import (
 type Storage struct {
 	Name      string          `json:"name"`
 	Value     json.RawMessage `json:"value"`
+	Changed   bool            `json:"changed"`
 	UpdatedAt time.Time       `json:"updated_at"`
 	CreatedAt time.Time       `json:"created_at"`
 }

@@ -27,19 +27,17 @@ import (
 // Storage ...
 type Storage struct {
 	table *db.Storages
-	db    *gorm.DB
 }
 
 // GetStorageAdaptor ...
 func GetStorageAdaptor(d *gorm.DB) *Storage {
 	return &Storage{
 		table: &db.Storages{Db: d},
-		db:    d,
 	}
 }
 
 // CreateOrUpdate ...
-func (s *Storage) CreateOrUpdate(ver *m.Storage) (err error) {
+func (s *Storage) CreateOrUpdate(ver m.Storage) (err error) {
 	err = s.table.CreateOrUpdate(s.toDb(ver))
 	return
 }
@@ -51,25 +49,24 @@ func (s *Storage) Delete(name string) (err error) {
 }
 
 // Search ...
-func (s *Storage) Search(query string, limit, offset int) (list []*m.Storage, total int64, err error) {
-	var dbList []*db.Storage
+func (s *Storage) Search(query string, limit, offset int) (list []m.Storage, total int64, err error) {
+	var dbList []db.Storage
 	if dbList, total, err = s.table.Search(query, limit, offset); err != nil {
 		return
 	}
 
-	list = make([]*m.Storage, 0)
+	list = make([]m.Storage, 0)
 	for _, dbVer := range dbList {
-		ver := s.fromDb(dbVer)
-		list = append(list, ver)
+		list = append(list, s.fromDb(dbVer))
 	}
 
 	return
 }
 
 // GetByName ...
-func (s *Storage) GetByName(name string) (ver *m.Storage, err error) {
+func (s *Storage) GetByName(name string) (ver m.Storage, err error) {
 
-	var dbVer *db.Storage
+	var dbVer db.Storage
 	if dbVer, err = s.table.GetByName(name); err != nil {
 		return
 	}
@@ -79,8 +76,8 @@ func (s *Storage) GetByName(name string) (ver *m.Storage, err error) {
 	return
 }
 
-func (s *Storage) fromDb(dbVer *db.Storage) (ver *m.Storage) {
-	ver = &m.Storage{
+func (s *Storage) fromDb(dbVer db.Storage) (ver m.Storage) {
+	ver = m.Storage{
 		Name:      dbVer.Name,
 		Value:     dbVer.Value,
 		CreatedAt: dbVer.CreatedAt,
@@ -89,8 +86,8 @@ func (s *Storage) fromDb(dbVer *db.Storage) (ver *m.Storage) {
 	return
 }
 
-func (s *Storage) toDb(ver *m.Storage) (dbVer *db.Storage) {
-	dbVer = &db.Storage{
+func (s *Storage) toDb(ver m.Storage) (dbVer db.Storage) {
+	dbVer = db.Storage{
 		Name:      ver.Name,
 		Value:     ver.Value,
 		CreatedAt: ver.CreatedAt,
