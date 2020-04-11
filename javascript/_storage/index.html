@@ -81,7 +81,7 @@
                 
                 
                 <li>
-                    <a href="https://e154.github.io/smart-home/en/javascript/_flow/">English</a>
+                    <a href="https://e154.github.io/smart-home/en/javascript/_storage/">English</a>
                 </li>
                 
                 
@@ -98,7 +98,7 @@
         <header class="javascript">
     <div class="header-content">
         <div class="header-content-inner container">
-            <h1>flow</h1>
+            <h1>storage</h1>
             
         </div>
     </div>
@@ -113,97 +113,14 @@
                         
                             
 
-<h2 id="flow">Flow</h2>
+<h2 id="storage">Storage</h2>
 
-<p>Получить текущий процесс. Может вырнуть <em>null</em> если скрипт запускается
-вне контекста <a href="#workflow">Workflow</a></p>
+<p>Быстрая база данных ключ-значение. Ключ и значение хранит в строковом виде. Для быстрого доступа данные кешируются в памяти.
+Измененные значения сохраняются в БД, с определенным интервалом.</p>
 
-<pre><code class="language-coffeescript">flow = Flow
-return if !flow
-</code></pre>
+<h3 id="storage_push">.Push(key, value)</h3>
 
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>flow</code></td>
-<td>type: Object, ссылка на экземпляр *Flow</td>
-</tr>
-</tbody>
-</table>
-
-<p>Доступные методы приведены далее:</p>
-
-<h3 id="flow_get_name">.GetName()</h3>
-
-<p>Получить наименование текущего Flow процесса.</p>
-
-<pre><code class="language-coffeescript">if Flow
- name = Flow.GetName()
- print 'flow name', name
-</code></pre>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>name</code></td>
-<td>type: string</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="flow_get_description">.GetDescription()</h3>
-
-<p>Получить описание текущего Flow процесса.</p>
-
-<pre><code class="language-coffeescript">if Flow
- name = Flow.GetDescription()
- print 'flow description', name
-</code></pre>
-
-<p><strong>На выходе</strong></p>
-
-<table>
-<thead>
-<tr>
-<th><strong>Значение</strong></th>
-<th><strong>Описание</strong></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>description</code></td>
-<td>type: string</td>
-</tr>
-</tbody>
-</table>
-
-<h3 id="flow_set_var">.SetVar(key, value)</h3>
-
-<p>Запомнить переменнную в хранилище <a href="#flow">Flow</a>. Хранилище позволяет
-сохранять состояния на время жизни <a href="#flow">Flow</a></p>
-
-<pre><code class="language-coffeescript">if Flow
- Flow.SetVar(&quot;key&quot;, &quot;value&quot;)
-</code></pre>
+<p>Сохранение объекта в БД</p>
 
 <p><strong>На входе</strong></p>
 
@@ -223,17 +140,71 @@ return if !flow
 
 <tr>
 <td><code>value</code></td>
-<td>type: interface</td>
+<td>type: string</td>
 </tr>
 </tbody>
 </table>
 
-<h3 id="flow_get_var">.GetVar(key)</h3>
+<p>Пример:</p>
 
-<p>Получить ранее записанную переменную</p>
+<pre><code class="language-coffeescript">foo = 
+	'bar': 'bar'
 
-<pre><code class="language-coffeescript">if Flow
-  variable = Flow.GetVar(key)
+value = JSON.stringify foo
+Storage.Push 'foo', value
+</code></pre>
+
+<h3 id="storage_pop">.Pop(key)</h3>
+
+<p>Получить копию объекта и удалить из БД</p>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>key</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>На выходе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>value</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
+
+<p>Пример:</p>
+
+<pre><code class="language-coffeescript">value = Storage.Pop 'foo'
+foo = JSON.parse value
+</code></pre>
+
+<h3 id="storage_search">.Search(key)</h3>
+
+<p>Поиск в БД по ключу</p>
+
+<pre><code class="language-coffeescript">value = Storage.Search 'foo'
 </code></pre>
 
 <p><strong>На входе</strong></p>
@@ -266,20 +237,38 @@ return if !flow
 
 <tbody>
 <tr>
-<td><code>variable</code></td>
-<td>type: interface</td>
+<td><code>value</code></td>
+<td>type: map[string]string</td>
 </tr>
 </tbody>
 </table>
 
-<h3 id="flow_node">.Node()</h3>
+<h3 id="storage_get_by_name">.GetByName(key)</h3>
 
-<p>Получить ноду</p>
+<p>Получить объект по ключу</p>
 
-<pre><code class="language-coffeescript">if Flow
- node = Flow.Node()
- print 'flow node', node
+<pre><code class="language-coffeescript">value = Storage.GetByName 'foo'
+foo = JSON.parse value
+print foo
 </code></pre>
+
+<p><strong>На входе</strong></p>
+
+<table>
+<thead>
+<tr>
+<th><strong>Значение</strong></th>
+<th><strong>Описание</strong></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>key</code></td>
+<td>type: string</td>
+</tr>
+</tbody>
+</table>
 
 <p><strong>На выходе</strong></p>
 
@@ -293,8 +282,8 @@ return if !flow
 
 <tbody>
 <tr>
-<td><code>node</code></td>
-<td>type: Object, ссылка на экземпляр <a href="#node">Node</a></td>
+<td><code>value</code></td>
+<td>type: string</td>
 </tr>
 </tbody>
 </table>
@@ -556,7 +545,7 @@ return if !flow
             
             
             <li>
-                <a href="https://e154.github.io/smart-home/en/javascript/_flow/">en</a>
+                <a href="https://e154.github.io/smart-home/en/javascript/_storage/">en</a>
             </li>
             
             
