@@ -19,6 +19,7 @@
 package workflow
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/system/migrations"
 	"go.uber.org/dig"
 	"os"
@@ -47,6 +48,6 @@ func TestMain(m *testing.M) {
 	})
 
 	if err != nil {
-		print(err.Error())
+		fmt.Println("error:", dig.RootCause(err))
 	}
 }

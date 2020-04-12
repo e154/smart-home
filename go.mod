@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/DrmagicE/gmqtt v0.1.2
+	github.com/Masterminds/semver v1.5.0
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -20,6 +21,7 @@ require (
 	github.com/go-openapi/jsonreference v0.17.2 // indirect
 	github.com/go-openapi/spec v0.17.2 // indirect
 	github.com/go-openapi/swag v0.17.2 // indirect
+	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
@@ -55,7 +57,7 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	go.uber.org/atomic v1.6.0
-	go.uber.org/dig v1.8.0
+	go.uber.org/dig v1.9.0
 	go.uber.org/multierr v1.5.0 // indirect
 	go.uber.org/zap v1.14.0
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
