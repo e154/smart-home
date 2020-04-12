@@ -30,11 +30,12 @@ import (
 
 // Orm ...
 type Orm struct {
-	cfg           *OrmConfig
-	db            *gorm.DB
-	extCrypto     bool
-	version       string
-	serverVersion string
+	cfg            *OrmConfig
+	db             *gorm.DB
+	extCrypto      bool
+	extTimescaledb bool
+	version        string
+	serverVersion  string
 }
 
 var (
@@ -89,6 +90,17 @@ func (o *Orm) Shutdown() {
 
 func (o *Orm) check() (err error) {
 
+	if err = o.checkServerVersion(); err != nil {
+		return
+	}
+
+	err = o.checkExtensions()
+
+	return
+}
+
+func (o *Orm) checkServerVersion() (err error) {
+
 	// get version
 	row := o.db.Raw("select version()").Row()
 	if err = row.Scan(&o.version); err != nil {
@@ -118,24 +130,58 @@ func (o *Orm) check() (err error) {
 		err = fmt.Errorf("unsupported database version %s, expected %s", o.serverVersion, minimalDbVersion)
 		return
 	}
+	return
+}
+
+func (o *Orm) checkAvailableExtensions(availableExtensions []Extension, extName string) (exist bool) {
+	for _, ext := range availableExtensions {
+		if ext.Extname == extName {
+			exist = true
+			return
+		}
+	}
+	return
+}
+
+func (o *Orm) checkExtensions() (err error) {
 
 	// check extensions
-	exts := make([]Extension, 0)
-	if err = o.db.Raw("select * from pg_extension").Scan(&exts).Error; err != nil {
+	availableExtensions := make([]Extension, 0)
+	if err = o.db.Raw("select * from pg_available_extensions").Scan(&availableExtensions).Error; err != nil {
 		return
 	}
 
-	for _, ext := range exts {
+	// check extensions
+	extensions := make([]Extension, 0)
+	if err = o.db.Raw("select * from pg_extension").Scan(&extensions).Error; err != nil {
+		return
+	}
+
+	for _, ext := range extensions {
 		switch ext.Extname {
 		case "pgcrypto":
 			o.extCrypto = true
+		case "timescaledb":
+			o.extTimescaledb = true
 		default:
 
 		}
 	}
 
 	if !o.extCrypto {
+		if o.checkAvailableExtensions(availableExtensions, "pgcrypto") {
+			err = fmt.Errorf("extension 'pgcrypto' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;")
+			return
+		}
 		err = fmt.Errorf("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)")
+	}
+
+	if !o.extTimescaledb {
+		if o.checkAvailableExtensions(availableExtensions, "timescaledb") {
+			err = fmt.Errorf("extension 'timescaledb' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;")
+			return
+		}
+		fmt.Println("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)")
 	}
 
 	return
