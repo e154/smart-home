@@ -30,7 +30,7 @@ import (
 
 // Orm ...
 type Orm struct {
-	cfg            *OrmConfig
+	cfg            *Config
 	db             *gorm.DB
 	extCrypto      bool
 	extTimescaledb bool
@@ -47,7 +47,7 @@ const (
 )
 
 // NewOrm ...
-func NewOrm(cfg *OrmConfig,
+func NewOrm(cfg *Config,
 	graceful *graceful_service.GracefulService) (orm *Orm, db *gorm.DB, err error) {
 
 	fmt.Printf("database connect %s\n", cfg.String())
