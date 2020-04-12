@@ -19,8 +19,6 @@
 package orm
 
 type Extension struct {
-	Extname       string `json:"extname"`
+	Extname    string `json:"extname"`
 	Extversion string `json:"extversion"`
 }
-
-
