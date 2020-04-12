@@ -26,6 +26,7 @@ package core
 //	.SetOptions(options)
 //	.GetOptions()
 //	.Story(logLevel, type, description)
+//	.PushMetric(name, obj)
 //
 type MapElementBind struct {
 	element *MapElement
@@ -54,4 +55,9 @@ func (e *MapElementBind) GetOptions() interface{} {
 // Story ...
 func (e *MapElementBind) Story(logLevel, t, desc string) {
 	e.element.CustomHistory(logLevel, t, desc)
+}
+
+// PushMetric ...
+func (e *MapElementBind) PushMetric(name string, val map[string]interface{}) {
+	e.element.PushMetric(name, val)
 }

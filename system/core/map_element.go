@@ -19,6 +19,7 @@
 package core
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -124,7 +125,7 @@ func (e *MapElement) SetOptions(options interface{}) {
 		return
 	}
 
-	go e.updateDeviceHistory(options)
+	//go e.updateDeviceHistory(options)
 
 	e.Map.metric.Update(metrics.MapElementSetOption{
 		StateId:      e.State.Id,
@@ -213,4 +214,29 @@ func (e *MapElement) CustomHistory(logLevel, t, desc string) {
 		Description:       desc,
 		CreatedAt:         time.Now(),
 	})
+}
+
+func (e *MapElement) PushMetric(name string, val map[string]interface{}) {
+
+	metric, err := e.adaptors.Metric.GetByMapDeviceId(e.mapElement.PrototypeId, name)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	var b []byte
+	if b, err = json.Marshal(val); err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	err = e.adaptors.MetricBucket.Add(m.MetricBucket{
+		Value:    b,
+		MetricId: metric.Id,
+		Time:     time.Now(),
+	})
+
+	if err != nil {
+		log.Errorf(err.Error())
+	}
 }

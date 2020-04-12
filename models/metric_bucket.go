@@ -24,8 +24,8 @@ import (
 )
 
 type MetricBucket struct {
-	Value          json.RawMessage `json:"value"`
-	MetricMetric   *MetricBucket   `json:"metric_metric"`
-	MetricMetricId int64           `json:"metric_metric_id"`
-	Time           time.Time       `json:"time"`
+	Value    json.RawMessage `json:"value"`
+	Metric   *MetricBucket   `json:"metric"`
+	MetricId int64           `json:"metric_id"`
+	Time     time.Time       `json:"time"`
 }

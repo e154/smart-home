@@ -31,18 +31,25 @@ type MetricBuckets struct {
 
 // MetricBucket ...
 type MetricBucket struct {
-	Value          json.RawMessage `gorm:"type:jsonb;not null"`
-	MetricMetric   *MetricBucket
-	MetricMetricId int64
-	Time           time.Time
+	Value    json.RawMessage `gorm:"type:jsonb;not null"`
+	Metric   *MetricBucket
+	MetricId int64
+	Time     time.Time
 }
 
 // TableName ...
 func (d *MetricBucket) TableName() string {
-	return "ts_bucket"
+	return "metric_bucket"
 }
 
 // Add ...
-func (n MetricBuckets) Add(node MetricBucket) error {
-	return n.Db.Create(&node).Error
+func (n MetricBuckets) Add(metric MetricBucket) error {
+	return n.Db.Create(&metric).Error
+}
+
+// ListByRange ...
+func (n *MetricBuckets) ListByRange(from, to time.Time, metricId int64) (list []MetricBucket, err error) {
+	list = make([]MetricBucket, 0)
+	err = n.Db.Where("time > ? and time < ? and metric_id = ?", from, to, metricId).Find(&list).Error
+	return
 }

@@ -19,18 +19,16 @@
 package models
 
 import (
-	"github.com/e154/smart-home/common"
 	"time"
 )
 
 type Metric struct {
-	Id          int64             `json:"id"`
-	MapDevice   *MapDevice        `json:"map_device"`
-	MapDeviceId int64             `json:"map_device_id"`
-	MetricType  common.MetricType `json:"metric_type"`
-	Buckets     []MetricBucket    `json:"buckets"`
-	Name        string            `json:"name"`
-	Description string            `json:"description"`
-	UpdatedAt   time.Time         `json:"updated_at"`
-	CreatedAt   time.Time         `json:"created_at"`
+	Id          int64          `json:"id"`
+	MapDevice   *MapDevice     `json:"map_device"`
+	MapDeviceId int64          `json:"map_device_id"`
+	Buckets     []MetricBucket `json:"buckets"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	CreatedAt   time.Time      `json:"created_at"`
 }

@@ -19,7 +19,6 @@
 package db
 
 import (
-	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -34,7 +33,6 @@ type Metric struct {
 	Id          int64 `gorm:"primary_key"`
 	MapDevice   *MapDevice
 	MapDeviceId int64
-	MetricType  common.MetricType
 	Buckets     []MetricBucket
 	Name        string
 	Description string
@@ -61,16 +59,15 @@ func (n Metrics) Update(m Metric) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
-		"metric_type": m.MetricType,
 	}
 	err = n.Db.Model(&Metric{}).Updates(q).Error
 	return
 }
 
 // GetByMapDeviceId ...
-func (n Metrics) GetByMapDeviceId(mapDeviceId int64) (list []Metric, err error) {
+func (n Metrics) GetByMapDeviceId(mapDeviceId int64, name string) (list []Metric, err error) {
 	list = make([]Metric, 0)
-	err = n.Db.Model(&Metric{}).Where("map_device_id = ?", mapDeviceId).Find(&list).Error
+	err = n.Db.Model(&Metric{}).Where("map_device_id = ? and name = ?", mapDeviceId, name).Find(&list).Error
 	return
 }
 

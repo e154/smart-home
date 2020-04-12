@@ -21,21 +21,25 @@ package adaptors
 import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"time"
 )
 
 // MetricBucket ...
 type MetricBucket struct {
 	table *db.MetricBuckets
 	db    *gorm.DB
+	orm   *orm.Orm
 }
 
 // GetMetricBucketAdaptor ...
-func GetMetricBucketAdaptor(d *gorm.DB) *MetricBucket {
+func GetMetricBucketAdaptor(d *gorm.DB, orm *orm.Orm) *MetricBucket {
 	return &MetricBucket{
 		table: &db.MetricBuckets{Db: d},
 		db:    d,
+		orm:   orm,
 	}
 }
 
@@ -58,11 +62,32 @@ func (n *MetricBucket) AddMultiple(items []m.MetricBucket) (err error) {
 	return
 }
 
-func (n *MetricBucket) fromDb(dbVer *db.MetricBucket) (ver m.MetricBucket) {
+// ListByRange ...
+func (n *MetricBucket) ListByRange(from, to time.Time, metricId int64) (list []m.MetricBucket, err error) {
+
+	var dbList []db.MetricBucket
+	if dbList, err = n.table.ListByRange(from, to, metricId); err != nil {
+		return
+	}
+
+	list = make([]m.MetricBucket, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+	return
+}
+
+// ListByPeriod ...
+func (n *MetricBucket) ListByPeriod(period string, metricId int64) (list []m.MetricBucket, err error) {
+
+	return
+}
+
+func (n *MetricBucket) fromDb(dbVer db.MetricBucket) (ver m.MetricBucket) {
 	ver = m.MetricBucket{
-		Value:          dbVer.Value,
-		MetricMetricId: dbVer.MetricMetricId,
-		Time:           dbVer.Time,
+		Value:    dbVer.Value,
+		MetricId: dbVer.MetricId,
+		Time:     dbVer.Time,
 	}
 
 	return
@@ -70,9 +95,9 @@ func (n *MetricBucket) fromDb(dbVer *db.MetricBucket) (ver m.MetricBucket) {
 
 func (n *MetricBucket) toDb(ver m.MetricBucket) (dbVer db.MetricBucket) {
 	dbVer = db.MetricBucket{
-		Value:          ver.Value,
-		MetricMetricId: ver.MetricMetricId,
-		Time:           ver.Time,
+		Value:    ver.Value,
+		MetricId: ver.MetricId,
+		Time:     ver.Time,
 	}
 
 	return

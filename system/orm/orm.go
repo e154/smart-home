@@ -186,3 +186,7 @@ func (o *Orm) checkExtensions() (err error) {
 
 	return
 }
+
+func (o Orm) ExtTimescaledbEnabled() bool {
+	return o.extTimescaledb
+}

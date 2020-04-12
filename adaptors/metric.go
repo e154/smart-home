@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/cache"
+	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
 )
 
@@ -30,15 +31,17 @@ type Metric struct {
 	table *db.Metrics
 	db    *gorm.DB
 	c     cache.Cache
+	orm   *orm.Orm
 }
 
 // GetMetricAdaptor ...
-func GetMetricAdaptor(d *gorm.DB) *Metric {
+func GetMetricAdaptor(d *gorm.DB, orm *orm.Orm) *Metric {
 	c, _ := cache.NewCache("memory", `{"interval":3600}`)
 	return &Metric{
 		table: &db.Metrics{Db: d},
 		db:    d,
 		c:     c,
+		orm:   orm,
 	}
 }
 
@@ -49,16 +52,19 @@ func (n *Metric) Add(ver m.Metric) (id int64, err error) {
 }
 
 // GetByMapDeviceId ...
-func (n *Metric) GetByMapDeviceId(mapDeviceId int64) (list []m.Metric, err error) {
+func (n *Metric) GetByMapDeviceId(mapDeviceId int64, name string) (metric m.Metric, err error) {
 	var dbList []db.Metric
-	if dbList, err = n.table.GetByMapDeviceId(mapDeviceId); err != nil {
+	if dbList, err = n.table.GetByMapDeviceId(mapDeviceId, name); err != nil {
 		return
 	}
 
-	list = make([]m.Metric, 0)
-	for _, dbVer := range dbList {
-		list = append(list, n.fromDb(dbVer))
+	if len(dbList) == 0 {
+		err = ErrRecordNotFound
+		return
 	}
+
+	metric = n.fromDb(dbList[0])
+
 	return
 }
 
@@ -92,7 +98,6 @@ func (n *Metric) toDb(ver m.Metric) (dbVer db.Metric) {
 		Name:        ver.Name,
 		Description: ver.Description,
 		MapDeviceId: ver.MapDeviceId,
-		MetricType:  ver.MetricType,
 	}
 
 	return

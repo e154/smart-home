@@ -1,18 +1,17 @@
 -- +migrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-create type metric_type as enum ('counter', 'gauge', 'histogram', 'summaries');
-
 create table metrics
 (
     id            bigserial primary key,
     map_device_id bigint                   null
         CONSTRAINT map_device_at_metrics_2_map_devices_fk REFERENCES map_devices (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    metric_type   metric_type              not null,
     name          text                     not null,
     description   text,
     created_at    timestamp with time zone not null,
     updated_at    timestamp with time zone not null
 );
+
+create index name_at_metrics_unq on metrics (name);
 
 create table metric_bucket
 (
@@ -29,5 +28,3 @@ create index time_at_metric_bucket_idx on metric_bucket (time);
 -- SQL section 'Down' is executed when this migration is rolled back
 drop table metric_bucket cascade;
 drop table metrics cascade;
-drop type metric_type cascade;
-
