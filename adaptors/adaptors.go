@@ -71,6 +71,8 @@ type Adaptors struct {
 	AlexaSkill            *AlexaSkill
 	AlexaIntent           *AlexaIntent
 	Storage               *Storage
+	Metric                *Metric
+	MetricBucket          *MetricBucket
 }
 
 // NewAdaptors ...
@@ -122,6 +124,8 @@ func NewAdaptors(db *gorm.DB,
 		AlexaSkill:            GetAlexaSkillAdaptor(db),
 		AlexaIntent:           GetAlexaIntentAdaptor(db),
 		Storage:               GetStorageAdaptor(db),
+		Metric:                GetMetricAdaptor(db),
+		MetricBucket:          GetMetricBucketAdaptor(db),
 	}
 
 	return

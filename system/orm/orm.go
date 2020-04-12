@@ -53,7 +53,7 @@ func NewOrm(cfg *Config,
 	fmt.Printf("database connect %s\n", cfg.String())
 	db, err = gorm.Open("postgres", cfg.String())
 	if err != nil {
-		panic(err.Error())
+		return
 	}
 
 	db.LogMode(cfg.Logger)

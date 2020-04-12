@@ -16,33 +16,21 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package db
+package models
 
 import (
-	"encoding/json"
-	"github.com/jinzhu/gorm"
+	"github.com/e154/smart-home/common"
 	"time"
 )
 
-// MetricBuckets ...
-type MetricBuckets struct {
-	Db *gorm.DB
-}
-
-// MetricBucket ...
-type MetricBucket struct {
-	Value          json.RawMessage `gorm:"type:jsonb;not null"`
-	MetricMetric   *MetricBucket
-	MetricMetricId int64
-	Time           time.Time
-}
-
-// TableName ...
-func (d *MetricBucket) TableName() string {
-	return "ts_bucket"
-}
-
-// Add ...
-func (n MetricBuckets) Add(node MetricBucket) error {
-	return n.Db.Create(&node).Error
+type Metric struct {
+	Id          int64             `json:"id"`
+	MapDevice   *MapDevice        `json:"map_device"`
+	MapDeviceId int64             `json:"map_device_id"`
+	MetricType  common.MetricType `json:"metric_type"`
+	Buckets     []MetricBucket    `json:"buckets"`
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	UpdatedAt   time.Time         `json:"updated_at"`
+	CreatedAt   time.Time         `json:"created_at"`
 }

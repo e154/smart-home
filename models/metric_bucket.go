@@ -16,33 +16,16 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package db
+package models
 
 import (
 	"encoding/json"
-	"github.com/jinzhu/gorm"
 	"time"
 )
 
-// MetricBuckets ...
-type MetricBuckets struct {
-	Db *gorm.DB
-}
-
-// MetricBucket ...
 type MetricBucket struct {
-	Value          json.RawMessage `gorm:"type:jsonb;not null"`
-	MetricMetric   *MetricBucket
-	MetricMetricId int64
-	Time           time.Time
-}
-
-// TableName ...
-func (d *MetricBucket) TableName() string {
-	return "ts_bucket"
-}
-
-// Add ...
-func (n MetricBuckets) Add(node MetricBucket) error {
-	return n.Db.Create(&node).Error
+	Value          json.RawMessage `json:"value"`
+	MetricMetric   *MetricBucket   `json:"metric_metric"`
+	MetricMetricId int64           `json:"metric_metric_id"`
+	Time           time.Time       `json:"time"`
 }

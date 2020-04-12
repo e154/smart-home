@@ -35,7 +35,7 @@ type Metric struct {
 	MapDevice   *MapDevice
 	MapDeviceId int64
 	MetricType  common.MetricType
-	Buckets     []*MetricBucket
+	Buckets     []MetricBucket
 	Name        string
 	Description string
 	UpdatedAt   time.Time
@@ -48,18 +48,29 @@ func (Metric) TableName() string {
 }
 
 // Add ...
-func (n Metrics) Add(metric *Metric) error {
-	return n.Db.Create(&metric).Error
+func (n Metrics) Add(metric Metric) (id int64, err error) {
+	if err = n.Db.Create(&metric).Error; err != nil {
+		return
+	}
+	id = metric.Id
+	return
 }
 
 // Update ...
-func (n Metrics) Update(m *Metric) (err error) {
+func (n Metrics) Update(m Metric) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
 		"metric_type": m.MetricType,
 	}
 	err = n.Db.Model(&Metric{}).Updates(q).Error
+	return
+}
+
+// GetByMapDeviceId ...
+func (n Metrics) GetByMapDeviceId(mapDeviceId int64) (list []Metric, err error) {
+	list = make([]Metric, 0)
+	err = n.Db.Model(&Metric{}).Where("map_device_id = ?", mapDeviceId).Find(&list).Error
 	return
 }
 
