@@ -24,25 +24,25 @@ import (
 	"time"
 )
 
-// TsBuckets ...
-type TsBuckets struct {
+// MetricBuckets ...
+type MetricBuckets struct {
 	Db *gorm.DB
 }
 
-// TsBucket ...
-type TsBucket struct {
-	Value      json.RawMessage `gorm:"type:jsonb;not null"`
-	TsMetric   *TsMetric
-	TsMetricId int64
-	Time       time.Time
+// MetricBucket ...
+type MetricBucket struct {
+	Value          json.RawMessage `gorm:"type:jsonb;not null"`
+	MetricMetric   *MetricBucket
+	MetricMetricId int64
+	Time           time.Time
 }
 
 // TableName ...
-func (d *TsBucket) TableName() string {
+func (d *MetricBucket) TableName() string {
 	return "ts_bucket"
 }
 
 // Add ...
-func (n TsBuckets) Add(node *TsBucket) error {
+func (n MetricBuckets) Add(node *MetricBucket) error {
 	return n.Db.Create(&node).Error
 }

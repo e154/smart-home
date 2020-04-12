@@ -24,28 +24,46 @@ import (
 	"time"
 )
 
-// TsMetrics ...
-type TsMetrics struct {
+// Metrics ...
+type Metrics struct {
 	Db *gorm.DB
 }
 
-// TsMetric ...
-type TsMetric struct {
+// Metric ...
+type Metric struct {
 	Id          int64 `gorm:"primary_key"`
 	MapDevice   *MapDevice
 	MapDeviceId int64
 	MetricType  common.MetricType
-	Buckets     []*TsBucket
+	Buckets     []*MetricBucket
+	Name        string
+	Description string
 	UpdatedAt   time.Time
 	CreatedAt   time.Time
 }
 
 // TableName ...
-func (d *TsMetric) TableName() string {
-	return "ts_metric"
+func (Metric) TableName() string {
+	return "metrics"
 }
 
 // Add ...
-func (n TsMetrics) Add(node *TsMetric) error {
-	return n.Db.Create(&node).Error
+func (n Metrics) Add(metric *Metric) error {
+	return n.Db.Create(&metric).Error
+}
+
+// Update ...
+func (n Metrics) Update(m *Metric) (err error) {
+	q := map[string]interface{}{
+		"name":        m.Name,
+		"description": m.Description,
+		"metric_type": m.MetricType,
+	}
+	err = n.Db.Model(&Metric{}).Updates(q).Error
+	return
+}
+
+// Delete ...
+func (n Metrics) Delete(id int64) error {
+	return n.Db.Delete(&Metric{Id: id}).Error
 }
