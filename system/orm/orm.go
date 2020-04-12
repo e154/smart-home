@@ -19,6 +19,8 @@
 package orm
 
 import (
+	"fmt"
+	"github.com/Masterminds/semver"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/jinzhu/gorm"
@@ -28,20 +30,26 @@ import (
 
 // Orm ...
 type Orm struct {
-	cfg *OrmConfig
-	db  *gorm.DB
+	cfg           *OrmConfig
+	db            *gorm.DB
+	extCrypto     bool
+	version       string
+	serverVersion string
 }
 
 var (
 	log = common.MustGetLogger("orm")
 )
 
+const (
+	minimalDbVersion = ">= 9.6.0"
+)
+
 // NewOrm ...
 func NewOrm(cfg *OrmConfig,
-	graceful *graceful_service.GracefulService) (orm *Orm, db *gorm.DB) {
+	graceful *graceful_service.GracefulService) (orm *Orm, db *gorm.DB, err error) {
 
-	log.Debugf("database connect %s", cfg.String())
-	var err error
+	fmt.Printf("database connect %s\n", cfg.String())
 	db, err = gorm.Open("postgres", cfg.String())
 	if err != nil {
 		panic(err.Error())
@@ -63,6 +71,10 @@ func NewOrm(cfg *OrmConfig,
 		db:  db,
 	}
 
+	if err = orm.check(); err != nil {
+		return
+	}
+
 	graceful.Subscribe(orm)
 	return
 }
@@ -73,4 +85,58 @@ func (o *Orm) Shutdown() {
 		log.Debug("database shutdown")
 		o.db.Close()
 	}
+}
+
+func (o *Orm) check() (err error) {
+
+	// get version
+	row := o.db.Raw("select version()").Row()
+	if err = row.Scan(&o.version); err != nil {
+		return
+	}
+
+	fmt.Println(o.version)
+
+	// get server version
+	row = o.db.Raw("SHOW server_version").Row()
+	if err = row.Scan(&o.serverVersion); err != nil {
+		return
+	}
+
+	// check server version
+	var v *semver.Constraints
+	if v, err = semver.NewConstraint(minimalDbVersion); err != nil {
+		return
+	}
+
+	var client *semver.Version
+	if client, err = semver.NewVersion(o.serverVersion); err != nil {
+		return
+	}
+
+	if ok := v.Check(client); !ok {
+		err = fmt.Errorf("unsupported database version %s, expected %s", o.serverVersion, minimalDbVersion)
+		return
+	}
+
+	// check extensions
+	exts := make([]Extension, 0)
+	if err = o.db.Raw("select * from pg_extension").Scan(&exts).Error; err != nil {
+		return
+	}
+
+	for _, ext := range exts {
+		switch ext.Extname {
+		case "pgcrypto":
+			o.extCrypto = true
+		default:
+
+		}
+	}
+
+	if !o.extCrypto {
+		err = fmt.Errorf("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)")
+	}
+
+	return
 }

@@ -33,6 +33,7 @@ import (
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"github.com/e154/smart-home/version"
+	"go.uber.org/dig"
 	"os"
 )
 
@@ -138,6 +139,6 @@ func start() {
 	})
 
 	if err != nil {
-		panic(err.Error())
+		fmt.Println("error:", dig.RootCause(err))
 	}
 }

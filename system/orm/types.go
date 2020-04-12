@@ -16,38 +16,11 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package scripts
+package orm
 
-import (
-	"fmt"
-	"github.com/e154/smart-home/system/migrations"
-	"go.uber.org/dig"
-	"os"
-	"path/filepath"
-	"testing"
-	"time"
-)
-
-func init() {
-	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	os.Chdir(apppath)
+type Extension struct {
+	Extname       string `json:"extname"`
+	Extversion string `json:"extversion"`
 }
 
-var (
-	container *dig.Container
-)
 
-func TestMain(m *testing.M) {
-
-	container = BuildContainer()
-	err := container.Invoke(func(migrations *migrations.Migrations) {
-
-		time.Sleep(time.Millisecond * 500)
-
-		os.Exit(m.Run())
-	})
-
-	if err != nil {
-		fmt.Println("error:", dig.RootCause(err))
-	}
-}
