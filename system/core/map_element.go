@@ -220,7 +220,7 @@ func (e *MapElement) PushMetric(name string, val map[string]interface{}) {
 
 	metric, err := e.adaptors.Metric.GetByMapDeviceId(e.mapElement.PrototypeId, name)
 	if err != nil {
-		log.Error(err.Error())
+		log.Errorf("map device id %d with name %s, error: ", e.mapElement.PrototypeId, name, err.Error())
 		return
 	}
 

@@ -253,6 +253,7 @@ func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort strin
 			Preload("Device").
 			Preload("Device.States").
 			Preload("Device.Actions").
+			Preload("Metrics").
 			Find(&devices).
 			Error
 

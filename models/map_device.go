@@ -32,6 +32,7 @@ type MapDevice struct {
 	ImageId   int64              `json:"image_id"`
 	Actions   []*MapDeviceAction `json:"actions"`
 	States    []*MapDeviceState  `json:"states"`
+	Metrics   []Metric           `json:"metrics"`
 	CreatedAt time.Time          `json:"created_at"`
 	UpdatedAt time.Time          `json:"updated_at"`
 }

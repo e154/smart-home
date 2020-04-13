@@ -19,6 +19,7 @@
 package db
 
 import (
+	"encoding/json"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -30,14 +31,15 @@ type Metrics struct {
 
 // Metric ...
 type Metric struct {
-	Id          int64 `gorm:"primary_key"`
-	MapDevice   *MapDevice
-	MapDeviceId int64
-	Buckets     []MetricBucket
-	Name        string
-	Description string
-	UpdatedAt   time.Time
-	CreatedAt   time.Time
+	Id           int64 `gorm:"primary_key"`
+	MapDevice    *MapDevice
+	MapDeviceId  int64
+	Buckets      []MetricBucket
+	Name         string
+	Description  string
+	Translations json.RawMessage `gorm:"type:jsonb;not null"`
+	UpdatedAt    time.Time
+	CreatedAt    time.Time
 }
 
 // TableName ...
@@ -57,8 +59,9 @@ func (n Metrics) Add(metric Metric) (id int64, err error) {
 // Update ...
 func (n Metrics) Update(m Metric) (err error) {
 	q := map[string]interface{}{
-		"name":        m.Name,
-		"description": m.Description,
+		"name":         m.Name,
+		"description":  m.Description,
+		"translations": m.Translations,
 	}
 	err = n.Db.Model(&Metric{}).Updates(q).Error
 	return

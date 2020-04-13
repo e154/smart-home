@@ -18,19 +18,17 @@
 
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
-// MapDevice ...
-type MapDevice struct {
-	Id         int64              `json:"id"`
-	SystemName string             `json:"system_name" valid:"Required"`
-	Device     *Device            `json:"device"`
-	DeviceId   int64              `json:"device_id" valid:"Required"`
-	Image      *Image             `json:"image"`
-	ImageId    int64              `json:"image_id"`
-	Actions    []*MapDeviceAction `json:"actions"`
-	States     []*MapDeviceState  `json:"states"`
-	Metrics    []Metric           `json:"metrics"`
-	CreatedAt  time.Time          `json:"created_at"`
-	UpdatedAt  time.Time          `json:"updated_at"`
+type Metric struct {
+	Id           int64           `json:"id"`
+	MapDeviceId  int64           `json:"map_device_id"`
+	Name         string          `json:"name"`
+	Description  string          `json:"description"`
+	Translations json.RawMessage `json:"translations"`
+	UpdatedAt    time.Time       `json:"updated_at"`
+	CreatedAt    time.Time       `json:"created_at"`
 }

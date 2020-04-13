@@ -19,16 +19,17 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 )
 
 type Metric struct {
-	Id          int64          `json:"id"`
-	MapDevice   *MapDevice     `json:"map_device"`
-	MapDeviceId int64          `json:"map_device_id"`
-	Buckets     []MetricBucket `json:"buckets"`
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	CreatedAt   time.Time      `json:"created_at"`
+	Id           int64           `json:"id"`
+	MapDevice    *MapDevice      `json:"map_device"`
+	MapDeviceId  int64           `json:"map_device_id"`
+	Name         string          `json:"name"`
+	Description  string          `json:"description"`
+	Translations json.RawMessage `json:"translations"`
+	UpdatedAt    time.Time       `json:"updated_at"`
+	CreatedAt    time.Time       `json:"created_at"`
 }
