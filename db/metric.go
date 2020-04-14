@@ -31,15 +31,15 @@ type Metrics struct {
 
 // Metric ...
 type Metric struct {
-	Id           int64 `gorm:"primary_key"`
-	MapDevice    *MapDevice
-	MapDeviceId  int64
-	Buckets      []MetricBucket
-	Name         string
-	Description  string
-	Translations json.RawMessage `gorm:"type:jsonb;not null"`
-	UpdatedAt    time.Time
-	CreatedAt    time.Time
+	Id          int64 `gorm:"primary_key"`
+	MapDevice   *MapDevice
+	MapDeviceId int64
+	Buckets     []MetricBucket
+	Name        string
+	Description string
+	Options     json.RawMessage `gorm:"type:jsonb;not null"`
+	UpdatedAt   time.Time
+	CreatedAt   time.Time
 }
 
 // TableName ...
@@ -61,7 +61,7 @@ func (n Metrics) Update(m Metric) (err error) {
 	q := map[string]interface{}{
 		"name":         m.Name,
 		"description":  m.Description,
-		"translations": m.Translations,
+		"translations": m.Options,
 	}
 	err = n.Db.Model(&Metric{}).Where("id = ?", m.Id).Updates(q).Error
 	return

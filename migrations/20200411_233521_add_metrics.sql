@@ -7,7 +7,7 @@ create table metrics
         CONSTRAINT map_device_at_metrics_2_map_devices_fk REFERENCES map_devices (id) ON UPDATE CASCADE ON DELETE CASCADE,
     name          text                     not null,
     description   text,
-    translations  jsonb default '{}'       not null,
+    options       jsonb default '{}'       not null,
     created_at    timestamp with time zone not null,
     updated_at    timestamp with time zone not null
 );

@@ -107,13 +107,13 @@ func (n *Metric) AddMultiple(items []m.Metric) (err error) {
 
 func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
 	ver = m.Metric{
-		Id:           dbVer.Id,
-		Name:         dbVer.Name,
-		Description:  dbVer.Description,
-		CreatedAt:    dbVer.CreatedAt,
-		UpdatedAt:    dbVer.UpdatedAt,
-		MapDeviceId:  dbVer.MapDeviceId,
-		Translations: dbVer.Translations,
+		Id:          dbVer.Id,
+		Name:        dbVer.Name,
+		Description: dbVer.Description,
+		CreatedAt:   dbVer.CreatedAt,
+		UpdatedAt:   dbVer.UpdatedAt,
+		MapDeviceId: dbVer.MapDeviceId,
+		Options:     dbVer.Options,
 	}
 
 	return
@@ -121,11 +121,11 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
 
 func (n *Metric) toDb(ver m.Metric) (dbVer db.Metric) {
 	dbVer = db.Metric{
-		Id:           ver.Id,
-		Name:         ver.Name,
-		Description:  ver.Description,
-		MapDeviceId:  ver.MapDeviceId,
-		Translations: ver.Translations,
+		Id:          ver.Id,
+		Name:        ver.Name,
+		Description: ver.Description,
+		MapDeviceId: ver.MapDeviceId,
+		Options:     ver.Options,
 	}
 
 	return
