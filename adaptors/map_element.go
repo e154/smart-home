@@ -144,6 +144,7 @@ func (n *MapElement) GetByName(name string) (ver *m.MapElement, err error) {
 // Update ...
 func (n *MapElement) Update(ver *m.MapElement) (err error) {
 
+	fmt.Println("update")
 	var oldVer *m.MapElement
 	if oldVer, err = n.GetById(ver.Id); err != nil {
 		return
@@ -163,24 +164,33 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		}
 	}()
 
+	var deleted bool
 	// delete old prototype
-	switch oldVer.PrototypeType {
-	case common.PrototypeTypeText:
-		textAdaptor := GetMapTextAdaptor(tx)
-		err = textAdaptor.Delete(oldVer.PrototypeId)
-	case common.PrototypeTypeImage:
-		imageAdaptor := GetMapImageAdaptor(tx)
-		err = imageAdaptor.Delete(oldVer.PrototypeId)
-	case common.PrototypeTypeDevice:
-		deviceAdaptor := GetMapDeviceAdaptor(tx)
-		err = deviceAdaptor.Delete(oldVer.PrototypeId)
-	case common.PrototypeTypeEmpty:
-		log.Warn("empty prototype")
-	default:
-		log.Warnf("unknown prototype: '%v'", oldVer.PrototypeType)
+	if oldVer.PrototypeType != ver.PrototypeType {
+		deleted = true
+		switch oldVer.PrototypeType {
+		case common.PrototypeTypeText:
+			textAdaptor := GetMapTextAdaptor(tx)
+			err = textAdaptor.Delete(oldVer.PrototypeId)
+		case common.PrototypeTypeImage:
+			imageAdaptor := GetMapImageAdaptor(tx)
+			err = imageAdaptor.Delete(oldVer.PrototypeId)
+		case common.PrototypeTypeDevice:
+			deviceAdaptor := GetMapDeviceAdaptor(tx)
+			err = deviceAdaptor.Delete(oldVer.PrototypeId)
+		case common.PrototypeTypeEmpty:
+			log.Warn("empty prototype")
+		default:
+			log.Warnf("unknown prototype: '%v'", oldVer.PrototypeType)
+		}
+
+		if err != nil {
+			return
+		}
 	}
 
-	if err != nil {
+	if ver.PrototypeId == 0 {
+		err = fmt.Errorf("prototype_id is zero")
 		return
 	}
 
@@ -188,19 +198,49 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 	switch ver.PrototypeType {
 	case common.PrototypeTypeText:
 		textAdaptor := GetMapTextAdaptor(tx)
-		ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
+		if deleted {
+			// add new
+			ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
+		} else {
+			// update
+			ver.Prototype.MapText.Id = ver.PrototypeId
+			err = textAdaptor.Update(ver.Prototype.MapText)
+		}
 	case common.PrototypeTypeImage:
 		imageAdaptor := GetMapImageAdaptor(tx)
-		mapImage := &m.MapImage{
-			ImageId: ver.Prototype.MapImage.ImageId,
-			Style:   "", //	TODO add style to image
+		if deleted {
+			// add new
+			ver.PrototypeId, err = imageAdaptor.Add(ver.Prototype.MapImage)
+		} else {
+			mapImage := &m.MapImage{
+				Id:      ver.PrototypeId,
+				ImageId: ver.Prototype.MapImage.ImageId,
+				Style:   "", //	TODO add style to image
+			}
+			err = imageAdaptor.Update(mapImage)
 		}
-		ver.PrototypeId, err = imageAdaptor.Add(mapImage)
 	case common.PrototypeTypeDevice:
 		deviceAdaptor := GetMapDeviceAdaptor(tx)
-		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
-			log.Error(err.Error())
-			return
+		if deleted {
+			// add new
+			ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice)
+		} else {
+			ver.PrototypeId = oldVer.PrototypeId
+			ver.Prototype.MapDevice.Id = ver.PrototypeId
+			if err = deviceAdaptor.Update(ver.Prototype.MapDevice); err != nil {
+				log.Error(err.Error())
+				return
+			}
+
+			mapDeviceActionAdaptor := GetMapDeviceActionAdaptor(tx)
+			if err = mapDeviceActionAdaptor.DeleteByDeviceId(oldVer.PrototypeId); err != nil {
+				return
+			}
+
+			mapDeviceStateAdaptor := GetMapDeviceStateAdaptor(tx)
+			if err = mapDeviceStateAdaptor.DeleteByDeviceId(oldVer.PrototypeId); err != nil {
+				return
+			}
 		}
 
 		if ver.Prototype.MapDevice != nil {
@@ -222,6 +262,52 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 			stateAdaptor := GetMapDeviceStateAdaptor(tx)
 			if err = stateAdaptor.AddMultiple(ver.Prototype.MapDevice.States); err != nil {
 				log.Errorf(err.Error())
+				return
+			}
+
+			//metrics
+			metricAdaptor := GetMetricAdaptor(tx, nil)
+
+			if oldVer.PrototypeType == common.PrototypeTypeDevice {
+				for _, oldMetric := range oldVer.Prototype.Metrics {
+					var exist bool
+					for _, metric := range ver.Prototype.MapDevice.Metrics {
+						if metric.Id == oldMetric.Id {
+							exist = true
+						}
+					}
+					if !exist {
+						if err = metricAdaptor.Delete(oldMetric.Id); err != nil {
+							return
+						}
+					}
+				}
+			}
+
+			for _, metric := range ver.Prototype.MapDevice.Metrics {
+				var exist bool
+				if oldVer.PrototypeType == common.PrototypeTypeDevice {
+					for _, oldMetric := range oldVer.Prototype.Metrics {
+						if metric.Id == oldMetric.Id {
+							exist = true
+						}
+					}
+				}
+				if !exist {
+					metric.MapDeviceId = ver.PrototypeId
+					if _, err = metricAdaptor.Add(metric); err != nil {
+						return
+					}
+				} else {
+					if err = metricAdaptor.Update(metric); err != nil {
+						return
+					}
+				}
+			}
+		} else {
+			// delete metrics
+			metricAdaptor := GetMetricAdaptor(tx, nil)
+			if err = metricAdaptor.DeleteByDeviceId(oldVer.PrototypeId); err != nil {
 				return
 			}
 		}

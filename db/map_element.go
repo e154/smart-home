@@ -142,6 +142,7 @@ func (n MapElements) gePrototype(v *MapElement) (err error) {
 			Preload("Device").
 			Preload("Device.States").
 			Preload("Device.Actions").
+			Preload("Metrics").
 			First(&device).
 			Error
 		if err == nil {

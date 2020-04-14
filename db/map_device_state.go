@@ -75,9 +75,9 @@ func (n MapDeviceStates) Update(m *MapDeviceState) (err error) {
 	return
 }
 
-// Delete ...
-func (n MapDeviceStates) Delete(mapId int64) (err error) {
-	err = n.Db.Delete(&MapDeviceState{Id: mapId}).Error
+// DeleteByDeviceId ...
+func (n MapDeviceStates) DeleteByDeviceId(deviceId int64) (err error) {
+	err = n.Db.Delete(&MapDeviceState{}, "map_device_id = ?", deviceId).Error
 	return
 }
 

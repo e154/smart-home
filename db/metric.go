@@ -63,7 +63,7 @@ func (n Metrics) Update(m Metric) (err error) {
 		"description":  m.Description,
 		"translations": m.Translations,
 	}
-	err = n.Db.Model(&Metric{}).Updates(q).Error
+	err = n.Db.Model(&Metric{}).Where("id = ?", m.Id).Updates(q).Error
 	return
 }
 
@@ -76,5 +76,10 @@ func (n Metrics) GetByMapDeviceId(mapDeviceId int64, name string) (list []Metric
 
 // Delete ...
 func (n Metrics) Delete(id int64) error {
-	return n.Db.Delete(&Metric{Id: id}).Error
+	return n.Db.Delete(&Metric{}, "id = ?", id).Error
+}
+
+// DeleteByDeviceId ...
+func (n Metrics) DeleteByDeviceId(mapDeviceId int64) error {
+	return n.Db.Delete(&Metric{}, "map_device_id = ?", mapDeviceId).Error
 }

@@ -32,7 +32,7 @@ type MetricBuckets struct {
 // MetricBucket ...
 type MetricBucket struct {
 	Value    json.RawMessage `gorm:"type:jsonb;not null"`
-	Metric   *MetricBucket
+	Metric   *Metric
 	MetricId int64
 	Time     time.Time
 }

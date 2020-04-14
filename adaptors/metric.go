@@ -74,8 +74,35 @@ func (n *Metric) Update(ver m.Metric) error {
 }
 
 // Delete ...
-func (n *Metric) Delete(verId int64) error {
-	return n.table.Delete(verId)
+func (n *Metric) Delete(deviceId int64) (err error) {
+	err = n.table.Delete(deviceId)
+	return
+}
+
+// DeleteByDeviceId ...
+func (n *Metric) DeleteByDeviceId(deviceId int64) (err error) {
+	err = n.table.DeleteByDeviceId(deviceId)
+	return
+}
+
+// AddMultiple ...
+func (n *Metric) AddMultiple(items []m.Metric) (err error) {
+
+	//TODO not work
+	//insertRecords := make([]interface{}, 0, len(items))
+	//for _, ver := range items {
+	//	insertRecords = append(insertRecords, n.toDb(ver))
+	//}
+	//
+	//err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
+
+	for _, ver := range items {
+		if _, err = n.table.Add(n.toDb(ver)); err != nil {
+			return
+		}
+	}
+
+	return
 }
 
 func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {

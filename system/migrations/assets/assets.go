@@ -755,7 +755,7 @@ func migrations20200411_233521_add_metricsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20200411_233521_add_metrics.sql", size: 1149, mode: os.FileMode(420), modTime: time.Unix(1586791439, 0)}
+	info := bindataFileInfo{name: "migrations/20200411_233521_add_metrics.sql", size: 1149, mode: os.FileMode(420), modTime: time.Unix(1586881370, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
