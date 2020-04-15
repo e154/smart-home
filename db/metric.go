@@ -59,9 +59,9 @@ func (n Metrics) Add(metric Metric) (id int64, err error) {
 // Update ...
 func (n Metrics) Update(m Metric) (err error) {
 	q := map[string]interface{}{
-		"name":         m.Name,
-		"description":  m.Description,
-		"translations": m.Options,
+		"name":        m.Name,
+		"description": m.Description,
+		"options":     m.Options,
 	}
 	err = n.Db.Model(&Metric{}).Where("id = ?", m.Id).Updates(q).Error
 	return
