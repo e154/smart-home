@@ -83,6 +83,12 @@ func (n *MetricBucket) ListByPeriod(period string, metricId int64) (list []m.Met
 	return
 }
 
+// DeleteOldest ...
+func (n *MetricBucket) DeleteOldest(days int) (err error) {
+	err = n.table.DeleteOldest(days)
+	return
+}
+
 func (n *MetricBucket) fromDb(dbVer db.MetricBucket) (ver m.MetricBucket) {
 	ver = m.MetricBucket{
 		Value:    dbVer.Value,

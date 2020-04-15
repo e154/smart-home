@@ -53,3 +53,11 @@ func (n *MetricBuckets) ListByRange(from, to time.Time, metricId int64) (list []
 	err = n.Db.Where("time > ? and time < ? and metric_id = ?", from, to, metricId).Find(&list).Error
 	return
 }
+
+// DeleteOldest ...
+func (n *MetricBuckets) DeleteOldest(days int) (err error) {
+	err = n.Db.Raw(`delete
+    from metric_bucket
+    where time < now() - interval '? days'`, days).Error
+	return
+}

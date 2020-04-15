@@ -133,9 +133,9 @@ func (o *Orm) checkServerVersion() (err error) {
 	return
 }
 
-func (o *Orm) checkAvailableExtensions(availableExtensions []Extension, extName string) (exist bool) {
+func (o *Orm) checkAvailableExtensions(availableExtensions []AvailableExtension, extName string) (exist bool) {
 	for _, ext := range availableExtensions {
-		if ext.Extname == extName {
+		if ext.Name == extName {
 			exist = true
 			return
 		}
@@ -146,7 +146,7 @@ func (o *Orm) checkAvailableExtensions(availableExtensions []Extension, extName 
 func (o *Orm) checkExtensions() (err error) {
 
 	// check extensions
-	availableExtensions := make([]Extension, 0)
+	availableExtensions := make([]AvailableExtension, 0)
 	if err = o.db.Raw("select * from pg_available_extensions").Scan(&availableExtensions).Error; err != nil {
 		return
 	}
@@ -170,18 +170,19 @@ func (o *Orm) checkExtensions() (err error) {
 
 	if !o.extCrypto {
 		if o.checkAvailableExtensions(availableExtensions, "pgcrypto") {
-			err = fmt.Errorf("extension 'pgcrypto' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;")
+			err = fmt.Errorf("extension 'pgcrypto' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
 			return
 		}
-		err = fmt.Errorf("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)")
+		err = fmt.Errorf("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
 	}
 
 	if !o.extTimescaledb {
+		fmt.Println("")
 		if o.checkAvailableExtensions(availableExtensions, "timescaledb") {
-			err = fmt.Errorf("extension 'timescaledb' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;")
+			fmt.Println("extension 'timescaledb' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
 			return
 		}
-		fmt.Println("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)")
+		fmt.Println("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
 	}
 
 	return
