@@ -19,11 +19,8 @@
 package orm
 
 type AvailableExtension struct {
-	Name           string `json:"name"`
-	DefaultVersion string `json:"default_version"`
-}
-
-type Extension struct {
-	Extname    string `json:"extname"`
-	Extversion string `json:"extversion"`
+	Name             string  `json:"name"`
+	DefaultVersion   string  `json:"default_version"`
+	InstalledVersion *string `json:"installed_version"`
+	Comment          string  `json:"comment"`
 }

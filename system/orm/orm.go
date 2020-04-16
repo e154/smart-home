@@ -30,12 +30,12 @@ import (
 
 // Orm ...
 type Orm struct {
-	cfg            *Config
-	db             *gorm.DB
-	extCrypto      bool
-	extTimescaledb bool
-	version        string
-	serverVersion  string
+	cfg                 *Config
+	db                  *gorm.DB
+	extTimescaledb      bool
+	availableExtensions []AvailableExtension
+	version             string
+	serverVersion       string
 }
 
 var (
@@ -68,8 +68,9 @@ func NewOrm(cfg *Config,
 	db.DB().SetConnMaxLifetime(time.Duration(cfg.ConnMaxLifeTime) * time.Minute)
 
 	orm = &Orm{
-		cfg: cfg,
-		db:  db,
+		cfg:                 cfg,
+		db:                  db,
+		availableExtensions: make([]AvailableExtension, 0),
 	}
 
 	if err = orm.check(); err != nil {
@@ -106,8 +107,6 @@ func (o *Orm) checkServerVersion() (err error) {
 	if err = row.Scan(&o.version); err != nil {
 		return
 	}
-
-	fmt.Println(o.version)
 
 	// get server version
 	row = o.db.Raw("SHOW server_version").Row()
@@ -146,21 +145,16 @@ func (o *Orm) checkAvailableExtensions(availableExtensions []AvailableExtension,
 func (o *Orm) checkExtensions() (err error) {
 
 	// check extensions
-	availableExtensions := make([]AvailableExtension, 0)
-	if err = o.db.Raw("select * from pg_available_extensions").Scan(&availableExtensions).Error; err != nil {
+	if err = o.db.Raw("select * from pg_available_extensions").Scan(&o.availableExtensions).Error; err != nil {
 		return
 	}
 
-	// check extensions
-	extensions := make([]Extension, 0)
-	if err = o.db.Raw("select * from pg_extension").Scan(&extensions).Error; err != nil {
-		return
-	}
+	var extCrypto bool
+	for _, ext := range o.availableExtensions {
 
-	for _, ext := range extensions {
-		switch ext.Extname {
+		switch ext.Name {
 		case "pgcrypto":
-			o.extCrypto = true
+			extCrypto = true
 		case "timescaledb":
 			o.extTimescaledb = true
 		default:
@@ -168,8 +162,8 @@ func (o *Orm) checkExtensions() (err error) {
 		}
 	}
 
-	if !o.extCrypto {
-		if o.checkAvailableExtensions(availableExtensions, "pgcrypto") {
+	if !extCrypto {
+		if o.checkAvailableExtensions(o.availableExtensions, "pgcrypto") {
 			err = fmt.Errorf("extension 'pgcrypto' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
 			return
 		}
@@ -178,7 +172,7 @@ func (o *Orm) checkExtensions() (err error) {
 
 	if !o.extTimescaledb {
 		fmt.Println("")
-		if o.checkAvailableExtensions(availableExtensions, "timescaledb") {
+		if o.checkAvailableExtensions(o.availableExtensions, "timescaledb") {
 			fmt.Println("extension 'timescaledb' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
 			return
 		}
