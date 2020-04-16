@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"encoding/json"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/cache"
@@ -113,7 +114,18 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
 		MapDeviceId: dbVer.MapDeviceId,
-		Options:     dbVer.Options,
+	}
+
+	// deserialize options
+	b, _ := dbVer.Options.MarshalJSON()
+	json.Unmarshal(b, &ver.Options)
+
+	if dbVer.Data != nil && len(dbVer.Data) > 0 {
+		bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
+		ver.Data = make([]m.MetricBucket, len(dbVer.Data))
+		for i, dbVer := range dbVer.Data {
+			ver.Data[i] = bucketMetricBucketAdaptor.fromDb(dbVer)
+		}
 	}
 
 	return
@@ -125,8 +137,11 @@ func (n *Metric) toDb(ver m.Metric) (dbVer db.Metric) {
 		Name:        ver.Name,
 		Description: ver.Description,
 		MapDeviceId: ver.MapDeviceId,
-		Options:     ver.Options,
 	}
+
+	// serialize options
+	b, _ := json.Marshal(ver.Options)
+	dbVer.Options.UnmarshalJSON(b)
 
 	return
 }

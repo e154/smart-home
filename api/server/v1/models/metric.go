@@ -19,16 +19,28 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 )
 
+type MetricOptionsItem struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Color       string `json:"color"`
+	Translate   string `json:"translate"`
+	Symbol      string `json:"symbol"`
+}
+
+type MetricOptions struct {
+	Items []MetricOptionsItem `json:"items"`
+}
+
 type Metric struct {
-	Id          int64           `json:"id"`
-	MapDeviceId int64           `json:"map_device_id"`
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Options     json.RawMessage `json:"options"`
-	UpdatedAt   time.Time       `json:"updated_at"`
-	CreatedAt   time.Time       `json:"created_at"`
+	Id          int64               `json:"id"`
+	MapDeviceId int64               `json:"map_device_id"`
+	Name        string              `json:"name"`
+	Description string              `json:"description"`
+	Options     MetricOptions       `json:"options"`
+	Data        []MetricBucketShort `json:"data,omitempty"`
+	UpdatedAt   time.Time           `json:"updated_at"`
+	CreatedAt   time.Time           `json:"created_at"`
 }

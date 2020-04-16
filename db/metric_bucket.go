@@ -47,10 +47,24 @@ func (n MetricBuckets) Add(metric MetricBucket) error {
 	return n.Db.Create(&metric).Error
 }
 
-// ListByRange ...
-func (n *MetricBuckets) ListByRange(from, to time.Time, metricId int64) (list []MetricBucket, err error) {
+// SimpleListByRange ...
+func (n *MetricBuckets) SimpleListByRange(from, to time.Time, metricId int64) (list []MetricBucket, err error) {
 	list = make([]MetricBucket, 0)
-	err = n.Db.Where("time > ? and time < ? and metric_id = ?", from, to, metricId).Find(&list).Error
+	err = n.Db.Where("time between ? and ? and metric_id = ?", from, to, metricId).Find(&list).Error
+	return
+}
+
+// SimpleListBySoftRange ...
+func (n *MetricBuckets) SimpleListBySoftRange(from, to time.Time, metricId, num int64) (list []MetricBucket, err error) {
+	list = make([]MetricBucket, 0)
+	err = n.Db.Raw(`SELECT s.*
+FROM (
+         SELECT t.*,
+                ROW_NUMBER() OVER (ORDER BY t.time) as rnk,
+                COUNT(*) OVER ()                    as total_cnt
+         FROM metric_bucket t
+         WHERE t.metric_id = ? and t.time between ? AND ?) s
+WHERE MOD(s.rnk, (total_cnt / ?)) = 0`, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339), num).Scan(&list).Error
 	return
 }
 

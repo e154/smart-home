@@ -34,7 +34,7 @@ type Metric struct {
 	Id          int64 `gorm:"primary_key"`
 	MapDevice   *MapDevice
 	MapDeviceId int64
-	Buckets     []MetricBucket
+	Data        []MetricBucket
 	Name        string
 	Description string
 	Options     json.RawMessage `gorm:"type:jsonb;not null"`

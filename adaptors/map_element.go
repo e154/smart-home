@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 // MapElement ...
@@ -124,6 +125,21 @@ func (n *MapElement) GetById(mapId int64) (ver *m.MapElement, err error) {
 	}
 
 	ver = n.fromDb(dbVer)
+
+	// load preview metrics data
+	if ver.PrototypeType == common.PrototypeTypeDevice {
+		if ver.Prototype.Metrics == nil || len(ver.Prototype.Metrics) == 0 {
+			return
+		}
+		bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
+		now := time.Now()
+		for i, metric := range ver.Prototype.Metrics {
+			if ver.Prototype.Metrics[i].Data, err = bucketMetricBucketAdaptor.ListBySoftRange(now.AddDate(0, 0, -1), now, metric.Id, 48); err != nil {
+				log.Error(err.Error())
+				return
+			}
+		}
+	}
 
 	return
 }

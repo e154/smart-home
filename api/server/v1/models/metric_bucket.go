@@ -29,3 +29,8 @@ type MetricBucket struct {
 	MetricId int64           `json:"metric_id"`
 	Time     time.Time       `json:"time"`
 }
+
+type MetricBucketShort struct {
+	Value json.RawMessage `json:"value"`
+	Time  time.Time       `json:"time"`
+}

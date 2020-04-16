@@ -66,7 +66,22 @@ func (n *MetricBucket) AddMultiple(items []m.MetricBucket) (err error) {
 func (n *MetricBucket) ListByRange(from, to time.Time, metricId int64) (list []m.MetricBucket, err error) {
 
 	var dbList []db.MetricBucket
-	if dbList, err = n.table.ListByRange(from, to, metricId); err != nil {
+	if dbList, err = n.table.SimpleListByRange(from, to, metricId); err != nil {
+		return
+	}
+
+	list = make([]m.MetricBucket, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+	return
+}
+
+// ListBySoftRange ...
+func (n *MetricBucket) ListBySoftRange(from, to time.Time, metricId, num int64) (list []m.MetricBucket, err error) {
+
+	var dbList []db.MetricBucket
+	if dbList, err = n.table.SimpleListBySoftRange(from, to, metricId, num); err != nil {
 		return
 	}
 
