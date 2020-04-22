@@ -19,6 +19,7 @@
 package controllers
 
 import (
+	"bytes"
 	"github.com/e154/smart-home/api/server/v1/models"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -422,16 +423,21 @@ func (c ControllerMetric) Search(ctx *gin.Context) {
 	resp.Send(ctx)
 }
 
-// swagger:operation POST /metric/data metricAddData
+// swagger:operation POST /metric/{id}/data metricAddData
 // ---
 // parameters:
+// - description: Metric ID
+//   in: path
+//   name: id
+//   required: true
+//   type: integer
 // - description: metric data
 //   in: body
 //   name: metric
+//   default: "{\"humidity\": 26.43, \"temperature\": 29.16}"
 //   required: true
 //   schema:
-//     $ref: '#/definitions/NewMetricDataItem'
-//     type: object
+//	   type: string
 // summary: add new metric
 // description:
 // security:
@@ -451,4 +457,26 @@ func (c ControllerMetric) Search(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerMetric) AddData(ctx *gin.Context) {
 
+	id := ctx.Param("id")
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	buf := &bytes.Buffer{}
+	buf.ReadFrom(ctx.Request.Body)
+
+	if err := c.endpoint.Metric.AddData(int64(aid), buf.Bytes()); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
 }

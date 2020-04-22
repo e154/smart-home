@@ -216,6 +216,10 @@ definitions:
         x-go-name: Token
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DevCommandConfig:
+    title: DevCommandConfig ...
+    type: object
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   Device:
     properties:
       actions:
@@ -223,6 +227,10 @@ definitions:
           $ref: '#/definitions/DeviceAction'
         type: array
         x-go-name: Actions
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -242,6 +250,8 @@ definitions:
       name:
         type: string
         x-go-name: Name
+      node:
+        $ref: '#/definitions/Node'
       properties:
         $ref: '#/definitions/DeviceProperties'
       states:
@@ -255,19 +265,23 @@ definitions:
       type:
         type: string
         x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceAction:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceActionDevice'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
       id:
         format: int64
         type: integer
@@ -277,8 +291,12 @@ definitions:
         x-go-name: Name
       script:
         $ref: '#/definitions/DeviceActionScript'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceActionDevice:
     properties:
       id:
@@ -287,7 +305,7 @@ definitions:
         x-go-name: Id
     title: DeviceActionDevice ...
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   DeviceActionScript:
     properties:
       id:
@@ -373,15 +391,15 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceState:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
       device:
         $ref: '#/definitions/DeviceStateDevice'
+      device_id:
+        format: int64
+        type: integer
+        x-go-name: DeviceId
       id:
         format: int64
         type: integer
@@ -389,12 +407,8 @@ definitions:
       system_name:
         type: string
         x-go-name: SystemName
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   DeviceStateDevice:
     properties:
       id:
@@ -766,18 +780,38 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
     properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       id:
         format: int64
         type: integer
         x-go-name: Id
+      image:
+        type: string
+        x-go-name: Image
+      mime_type:
+        type: string
+        x-go-name: MimeType
+      name:
+        type: string
+        x-go-name: Name
+      size:
+        format: int64
+        type: integer
+        x-go-name: Size
       thumb:
         type: string
         x-go-name: Thumb
+      title:
+        type: string
+        x-go-name: Title
       url:
         type: string
         x-go-name: Url
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Log:
     properties:
       body:
@@ -812,54 +846,8 @@ definitions:
         $ref: '#/definitions/MapOptions'
     type: object
     x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapDevice:
-    properties:
-      actions:
-        items:
-          $ref: '#/definitions/MapDeviceAction'
-        type: array
-        x-go-name: Actions
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      device:
-        $ref: '#/definitions/Device'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      image:
-        $ref: '#/definitions/Image'
-      image_id:
-        format: int64
-        type: integer
-        x-go-name: ImageId
-      states:
-        items:
-          $ref: '#/definitions/MapDeviceState'
-        type: array
-        x-go-name: States
-      system_name:
-        type: string
-        x-go-name: SystemName
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    title: MapDevice ...
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapDeviceAction:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       device_action:
         $ref: '#/definitions/DeviceAction'
       device_action_id:
@@ -883,13 +871,9 @@ definitions:
       type:
         type: string
         x-go-name: Type
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     title: MapDeviceAction ...
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapDeviceHistory:
     properties:
       created_at:
@@ -1002,7 +986,7 @@ definitions:
         x-go-name: Width
     title: MapElementGraphSettings ...
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapElementGraphSettingsPosition:
     properties:
       left:
@@ -1033,10 +1017,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MapFull:
     properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
@@ -1054,12 +1034,8 @@ definitions:
         x-go-name: Name
       options:
         $ref: '#/definitions/MapOptions'
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapLayer:
     properties:
       created_at:
@@ -1114,7 +1090,7 @@ definitions:
         x-go-name: Zoom
     title: MapOptions ...
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   MapZone:
     properties:
       id:
@@ -1455,7 +1431,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewDeviceAction:
     properties:
       description:
@@ -1490,7 +1466,7 @@ definitions:
         type: string
         x-go-name: SystemName
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewFlow:
     properties:
       description:
@@ -1563,7 +1539,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewMapElement:
     properties:
       description:
@@ -1625,7 +1601,7 @@ definitions:
         type: string
         x-go-name: Status
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   NewMapZone:
     properties:
       name:
@@ -1646,17 +1622,6 @@ definitions:
       type:
         type: string
         x-go-name: Type
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewMetricDataItem:
-    properties:
-      metric_id:
-        format: int64
-        type: integer
-        x-go-name: MetricId
-      value:
-        type: string
-        x-go-name: Value
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewMqttPublish:
@@ -2521,7 +2486,7 @@ definitions:
         type: string
         x-go-name: Type
     type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
+    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
   UpdateDeviceAction:
     properties:
       description:
@@ -2643,7 +2608,7 @@ definitions:
       options:
         $ref: '#/definitions/MapOptions'
     type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateMapElement:
     properties:
       description:
@@ -5843,17 +5808,22 @@ paths:
       summary: update metric by id
       tags:
       - metric
-  /metric/data:
+  /metric/{id}/data:
     post:
       operationId: metricAddData
       parameters:
-      - description: metric data
+      - description: Metric ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - default: '{"humidity": 26.43, "temperature": 29.16}'
+        description: metric data
         in: body
         name: metric
         required: true
         schema:
-          $ref: '#/definitions/NewMetricDataItem'
-          type: object
+          type: string
       responses:
         "200":
           description: OK

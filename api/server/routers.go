@@ -263,4 +263,5 @@ func (s *Server) setControllers() {
 	v1.DELETE("/metric/:id", s.af.Auth, s.ControllersV1.Metric.Delete)
 	v1.GET("/metrics", s.af.Auth, s.ControllersV1.Metric.GetList)
 	v1.GET("/metrics/search", s.af.Auth, s.ControllersV1.Metric.Search)
+	v1.POST("/metric/:id/data", s.af.Auth, s.ControllersV1.Metric.AddData)
 }

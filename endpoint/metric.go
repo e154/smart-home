@@ -123,7 +123,11 @@ func (n *MetricEndpoint) Search(query string, limit, offset int) (result []m.Met
 }
 
 // AddData ...
-func (n *MetricEndpoint) AddData(metricId int64, value []byte) (result []m.Metric, total int64, err error) {
+func (n *MetricEndpoint) AddData(metricId int64, value []byte) (err error) {
+	if _, err = n.adaptors.Metric.GetByIdWithData(metricId, nil, nil, nil); err != nil {
+		return
+	}
+
 	data := m.MetricDataItem{
 		Value:    value,
 		MetricId: metricId,

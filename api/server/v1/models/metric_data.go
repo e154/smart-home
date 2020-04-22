@@ -36,9 +36,3 @@ type MetricDataItemShort struct {
 	Value json.RawMessage `json:"value"`
 	Time  time.Time       `json:"time"`
 }
-
-// swagger:model
-type NewMetricDataItem struct {
-	Value    string `json:"value"`
-	MetricId int64  `json:"metric_id"`
-}
