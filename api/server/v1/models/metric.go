@@ -27,20 +27,38 @@ type MetricOptionsItem struct {
 	Description string `json:"description"`
 	Color       string `json:"color"`
 	Translate   string `json:"translate"`
-	Symbol      string `json:"symbol"`
+	Label       string `json:"label"`
 }
 
 type MetricOptions struct {
 	Items []MetricOptionsItem `json:"items"`
 }
 
+// swagger:model
 type Metric struct {
-	Id          int64               `json:"id"`
-	MapDeviceId int64               `json:"map_device_id"`
-	Name        string              `json:"name"`
-	Description string              `json:"description"`
-	Options     MetricOptions       `json:"options"`
-	Data        []MetricBucketShort `json:"data,omitempty"`
-	UpdatedAt   time.Time           `json:"updated_at"`
-	CreatedAt   time.Time           `json:"created_at"`
+	Id          int64                 `json:"id"`
+	Name        string                `json:"name"`
+	Description string                `json:"description"`
+	Options     MetricOptions         `json:"options"`
+	Data        []MetricDataItemShort `json:"data,omitempty"`
+	Type        string                `json:"type"`
+	UpdatedAt   time.Time             `json:"updated_at"`
+	CreatedAt   time.Time             `json:"created_at"`
+}
+
+// swagger:model
+type NewMetric struct {
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
+	Options     MetricOptions `json:"options"`
+	Type        string        `json:"type"`
+}
+
+// swagger:model
+type UpdateMetric struct {
+	Id          int64         `json:"id"`
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
+	Options     MetricOptions `json:"options"`
+	Type        string        `json:"type"`
 }

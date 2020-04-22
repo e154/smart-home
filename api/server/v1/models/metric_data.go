@@ -23,9 +23,22 @@ import (
 	"time"
 )
 
-type MetricBucket struct {
+// MetricDataItem ...
+type MetricDataItem struct {
 	Value    json.RawMessage `json:"value"`
 	Metric   *Metric         `json:"metric"`
 	MetricId int64           `json:"metric_id"`
 	Time     time.Time       `json:"time"`
+}
+
+// MetricDataItemShort ...
+type MetricDataItemShort struct {
+	Value json.RawMessage `json:"value"`
+	Time  time.Time       `json:"time"`
+}
+
+// swagger:model
+type NewMetricDataItem struct {
+	Value    string `json:"value"`
+	MetricId int64  `json:"metric_id"`
 }

@@ -19,29 +19,44 @@
 package models
 
 import (
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/validation"
 	"time"
 )
 
+// MetricOptionsItem ...
 type MetricOptionsItem struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Color       string `json:"color"`
 	Translate   string `json:"translate"`
-	Symbol      string `json:"symbol"`
+	Label       string `json:"label"`
 }
 
+// MetricOptions ...
 type MetricOptions struct {
 	Items []MetricOptionsItem `json:"items"`
 }
 
+// Metric ...
 type Metric struct {
-	Id          int64          `json:"id"`
-	MapDevice   *MapDevice     `json:"map_device"`
-	MapDeviceId int64          `json:"map_device_id"`
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Options     MetricOptions  `json:"options"`
-	Data        []MetricBucket `json:"data"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	CreatedAt   time.Time      `json:"created_at"`
+	Id          int64             `json:"id"`
+	Name        string            `json:"name" valid:"MaxSize(254);Required"`
+	Description string            `json:"description" valid:"MaxSize(254);Required"`
+	Options     MetricOptions     `json:"options"`
+	Data        []MetricDataItem  `json:"data"`
+	Type        common.MetricType `json:"type"`
+	UpdatedAt   time.Time         `json:"updated_at"`
+	CreatedAt   time.Time         `json:"created_at"`
+}
+
+// Valid ...
+func (d *Metric) Valid() (ok bool, errs []*validation.Error) {
+
+	valid := validation.Validation{}
+	if ok, _ = valid.Valid(d); !ok {
+		errs = valid.Errors
+	}
+
+	return
 }

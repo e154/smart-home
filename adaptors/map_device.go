@@ -80,7 +80,6 @@ func (n *MapDevice) fromDb(dbVer *db.MapDevice) (ver *m.MapDevice) {
 		ImageId:   dbVer.ImageId,
 		Actions:   make([]*m.MapDeviceAction, 0),
 		States:    make([]*m.MapDeviceState, 0),
-		Metrics:   make([]m.Metric, 0),
 		CreatedAt: dbVer.CreatedAt,
 		UpdatedAt: dbVer.UpdatedAt,
 	}
@@ -109,14 +108,6 @@ func (n *MapDevice) fromDb(dbVer *db.MapDevice) (ver *m.MapDevice) {
 	if dbVer.Image != nil {
 		imageAdaptor := GetImageAdaptor(n.db)
 		ver.Image = imageAdaptor.fromDb(dbVer.Image)
-	}
-
-	// metrics
-	if dbVer.Metrics != nil && len(dbVer.Metrics) > 0 {
-		metricAdaptor := GetMetricAdaptor(n.db, nil)
-		for _, metric := range dbVer.Metrics {
-			ver.Metrics = append(ver.Metrics, metricAdaptor.fromDb(metric))
-		}
 	}
 
 	return

@@ -64,6 +64,7 @@ type Endpoint struct {
 	Zigbee2mqtt      *Zigbee2mqttEndpoint
 	MapDeviceHistory *MapDeviceHistoryEndpoint
 	AlexaSkill       *AlexaSkillEndpoint
+	Metric           *MetricEndpoint
 }
 
 // NewEndpoint ...
@@ -105,5 +106,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Zigbee2mqtt:      NewZigbee2mqttEndpoint(common),
 		MapDeviceHistory: NewMapDeviceHistoryEndpoint(common),
 		AlexaSkill:       NewAlexaSkillEndpoint(common),
+		Metric:           NewMetricEndpoint(common),
 	}
 }

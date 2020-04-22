@@ -255,4 +255,12 @@ func (s *Server) setControllers() {
 	v1.PUT("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.Update)
 	v1.DELETE("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.Delete)
 	v1.GET("/alexas", s.af.Auth, s.ControllersV1.Alexa.GetList)
+
+	// metric
+	v1.POST("/metric", s.af.Auth, s.ControllersV1.Metric.Add)
+	v1.GET("/metric/:id", s.af.Auth, s.ControllersV1.Metric.GetById)
+	v1.PUT("/metric/:id", s.af.Auth, s.ControllersV1.Metric.Update)
+	v1.DELETE("/metric/:id", s.af.Auth, s.ControllersV1.Metric.Delete)
+	v1.GET("/metrics", s.af.Auth, s.ControllersV1.Metric.GetList)
+	v1.GET("/metrics/search", s.af.Auth, s.ControllersV1.Metric.Search)
 }

@@ -16,21 +16,17 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package models
+package db
 
-import (
-	"encoding/json"
-	"time"
-)
-
-type MetricBucket struct {
-	Value    json.RawMessage `json:"value"`
-	Metric   *Metric         `json:"metric"`
-	MetricId int64           `json:"metric_id"`
-	Time     time.Time       `json:"time"`
+// MapElementMetric ...
+type MapElementMetric struct {
+	MapElement   *MapElement
+	MapElementId int64 `gorm:"primary_key;auto_increment:false"`
+	Metric       *Metric
+	MetricId     int64 `gorm:"primary_key;auto_increment:false"`
 }
 
-type MetricBucketShort struct {
-	Value json.RawMessage `json:"value"`
-	Time  time.Time       `json:"time"`
+// TableName ...
+func (MapElementMetric) TableName() string {
+	return "map_element_metrics"
 }

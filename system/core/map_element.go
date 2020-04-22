@@ -218,25 +218,26 @@ func (e *MapElement) CustomHistory(logLevel, t, desc string) {
 
 func (e *MapElement) PushMetric(name string, val map[string]interface{}) {
 
-	metric, err := e.adaptors.Metric.GetByMapDeviceId(e.mapElement.PrototypeId, name)
-	if err != nil {
-		log.Errorf("map device id %d with name %s, error: ", e.mapElement.PrototypeId, name, err.Error())
-		return
-	}
+	var err error
+	for _, metric := range e.mapElement.Metrics {
+		if metric.Name != name {
+			continue
+		}
 
-	var b []byte
-	if b, err = json.Marshal(val); err != nil {
-		log.Error(err.Error())
-		return
-	}
+		var b []byte
+		if b, err = json.Marshal(val); err != nil {
+			log.Error(err.Error())
+			return
+		}
 
-	err = e.adaptors.MetricBucket.Add(m.MetricBucket{
-		Value:    b,
-		MetricId: metric.Id,
-		Time:     time.Now(),
-	})
+		err = e.adaptors.MetricBucket.Add(m.MetricDataItem{
+			Value:    b,
+			MetricId: metric.Id,
+			Time:     time.Now(),
+		})
 
-	if err != nil {
-		log.Errorf(err.Error())
+		if err != nil {
+			log.Errorf(err.Error())
+		}
 	}
 }

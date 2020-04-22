@@ -119,8 +119,9 @@ const (
 type MetricType string
 
 const (
-	MetricTypeCounter   = MetricType("counter")
-	MetricTypeGauge     = MetricType("gauge")
-	MetricTypeHistogram = MetricType("histogram")
-	MetricTypeSummaries = MetricType("summaries")
+	MetricTypeLine          = MetricType("line")
+	MetricTypeDoughnut      = MetricType("doughnut")
+	MetricTypePie           = MetricType("pie")
+	MetricTypeHorizontalBar = MetricType("horizontal bar")
+	MetricTypeDynamic       = MetricType("dynamic")
 )

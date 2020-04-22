@@ -20,6 +20,8 @@ package db
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -32,12 +34,11 @@ type Metrics struct {
 // Metric ...
 type Metric struct {
 	Id          int64 `gorm:"primary_key"`
-	MapDevice   *MapDevice
-	MapDeviceId int64
 	Data        []MetricBucket
 	Name        string
 	Description string
 	Options     json.RawMessage `gorm:"type:jsonb;not null"`
+	Type        common.MetricType
 	UpdatedAt   time.Time
 	CreatedAt   time.Time
 }
@@ -56,21 +57,22 @@ func (n Metrics) Add(metric Metric) (id int64, err error) {
 	return
 }
 
+// GetById ...
+func (n Metrics) GetById(id int64) (metric Metric, err error) {
+	metric = Metric{Id: id}
+	err = n.Db.First(&metric).Error
+	return
+}
+
 // Update ...
 func (n Metrics) Update(m Metric) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
 		"description": m.Description,
 		"options":     m.Options,
+		"type":        m.Type,
 	}
 	err = n.Db.Model(&Metric{}).Where("id = ?", m.Id).Updates(q).Error
-	return
-}
-
-// GetByMapDeviceId ...
-func (n Metrics) GetByMapDeviceId(mapDeviceId int64, name string) (list []Metric, err error) {
-	list = make([]Metric, 0)
-	err = n.Db.Model(&Metric{}).Where("map_device_id = ? and name = ?", mapDeviceId, name).Find(&list).Error
 	return
 }
 
@@ -79,7 +81,43 @@ func (n Metrics) Delete(id int64) error {
 	return n.Db.Delete(&Metric{}, "id = ?", id).Error
 }
 
-// DeleteByDeviceId ...
-func (n Metrics) DeleteByDeviceId(mapDeviceId int64) error {
-	return n.Db.Delete(&Metric{}, "map_device_id = ?", mapDeviceId).Error
+// List ...
+func (n *Metrics) List(limit, offset int64, orderBy, sort string) (list []Metric, total int64, err error) {
+
+	if err = n.Db.Model(Metric{}).Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]Metric, 0)
+	q := n.Db.Model(&Metric{}).
+		Limit(limit).
+		Offset(offset)
+
+	if sort != "" && orderBy != "" {
+		q = q.
+			Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+
+	err = q.
+		Find(&list).
+		Error
+
+	return
+}
+
+// Search ...q
+func (n *Metrics) Search(query string, limit, offset int) (list []Metric, total int64, err error) {
+
+	q := n.Db.Model(&Metric{}).
+		Where("name LIKE ?", "%"+query+"%").
+		Order("name ASC")
+
+	if err = q.Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]Metric, 0)
+	err = q.Find(&list).Error
+
+	return
 }

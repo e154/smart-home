@@ -25,7 +25,6 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
-	"time"
 )
 
 // MapElement ...
@@ -127,17 +126,20 @@ func (n *MapElement) GetById(mapId int64) (ver *m.MapElement, err error) {
 	ver = n.fromDb(dbVer)
 
 	// load preview metrics data
-	if ver.PrototypeType == common.PrototypeTypeDevice {
-		if ver.Prototype.Metrics == nil || len(ver.Prototype.Metrics) == 0 {
-			return
+	if ver.Metrics == nil || len(ver.Metrics) == 0 {
+		return
+	}
+	bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
+	for i, metric := range ver.Metrics {
+
+		var optionItems = make([]string, len(metric.Options.Items))
+		for i, item := range metric.Options.Items {
+			optionItems[i] = item.Name
 		}
-		bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-		now := time.Now()
-		for i, metric := range ver.Prototype.Metrics {
-			if ver.Prototype.Metrics[i].Data, err = bucketMetricBucketAdaptor.ListBySoftRange(now.AddDate(0, 0, -1), now, metric.Id, 48); err != nil {
-				log.Error(err.Error())
-				return
-			}
+
+		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.Simple24HPreview(metric.Id, optionItems); err != nil {
+			log.Error(err.Error())
+			return
 		}
 	}
 
@@ -280,51 +282,41 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 				log.Errorf(err.Error())
 				return
 			}
+		}
 
-			//metrics
-			metricAdaptor := GetMetricAdaptor(tx, nil)
+		//metrics
+		for _, oldMetric := range oldVer.Metrics {
+			var exist bool
+			for _, metric := range ver.Metrics {
+				if metric.Id == oldMetric.Id {
+					exist = true
+				}
+			}
+			if !exist {
+				if err = n.table.DeleteMetric(oldMetric.Id, oldMetric.Id); err != nil {
+					return
+				}
+			}
+		}
 
+		metricAdaptor := GetMetricAdaptor(tx, nil)
+		for _, metric := range ver.Metrics {
+			var exist bool
 			if oldVer.PrototypeType == common.PrototypeTypeDevice {
-				for _, oldMetric := range oldVer.Prototype.Metrics {
-					var exist bool
-					for _, metric := range ver.Prototype.MapDevice.Metrics {
-						if metric.Id == oldMetric.Id {
-							exist = true
-						}
-					}
-					if !exist {
-						if err = metricAdaptor.Delete(oldMetric.Id); err != nil {
-							return
-						}
+				for _, oldMetric := range oldVer.Metrics {
+					if metric.Id == oldMetric.Id {
+						exist = true
 					}
 				}
 			}
-
-			for _, metric := range ver.Prototype.MapDevice.Metrics {
-				var exist bool
-				if oldVer.PrototypeType == common.PrototypeTypeDevice {
-					for _, oldMetric := range oldVer.Prototype.Metrics {
-						if metric.Id == oldMetric.Id {
-							exist = true
-						}
-					}
+			if !exist {
+				if err = n.table.AppendMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+					return
 				}
-				if !exist {
-					metric.MapDeviceId = ver.PrototypeId
-					if _, err = metricAdaptor.Add(metric); err != nil {
-						return
-					}
-				} else {
-					if err = metricAdaptor.Update(metric); err != nil {
-						return
-					}
+			} else {
+				if err = n.table.ReplaceMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+					return
 				}
-			}
-		} else {
-			// delete metrics
-			metricAdaptor := GetMetricAdaptor(tx, nil)
-			if err = metricAdaptor.DeleteByDeviceId(oldVer.PrototypeId); err != nil {
-				return
 			}
 		}
 
@@ -440,6 +432,11 @@ func (n *MapElement) GetActiveElements(sortBy, order string, limit, offset int) 
 	return
 }
 
+func (n *MapElement) GetMetric(mapElementId int64, metricName string) (ver *m.Metric, err error) {
+
+	return
+}
+
 func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 	ver = &m.MapElement{
 		Id:            dbVer.Id,
@@ -451,6 +448,7 @@ func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 		MapId:         dbVer.MapId,
 		Weight:        dbVer.Weight,
 		Status:        dbVer.Status,
+		Metrics:       make([]m.Metric, 0),
 		CreatedAt:     dbVer.CreatedAt,
 		UpdatedAt:     dbVer.UpdatedAt,
 	}
@@ -481,6 +479,14 @@ func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 		mapDeviceAdaptor := GetMapDeviceAdaptor(n.db)
 		ver.Prototype = m.Prototype{
 			MapDevice: mapDeviceAdaptor.fromDb(dbVer.Prototype.MapDevice),
+		}
+	}
+
+	// metrics
+	if dbVer.Metrics != nil && len(dbVer.Metrics) > 0 {
+		metricAdaptor := GetMetricAdaptor(n.db, nil)
+		for _, metric := range dbVer.Metrics {
+			ver.Metrics = append(ver.Metrics, metricAdaptor.fromDb(metric))
 		}
 	}
 

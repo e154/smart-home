@@ -38,7 +38,6 @@ type MapDevice struct {
 	DeviceId  int64
 	States    []*MapDeviceState
 	Actions   []*MapDeviceAction
-	Metrics   []Metric
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

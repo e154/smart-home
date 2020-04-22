@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/system/cache"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 // Metric ...
@@ -52,19 +53,46 @@ func (n *Metric) Add(ver m.Metric) (id int64, err error) {
 	return
 }
 
-// GetByMapDeviceId ...
-func (n *Metric) GetByMapDeviceId(mapDeviceId int64, name string) (metric m.Metric, err error) {
-	var dbList []db.Metric
-	if dbList, err = n.table.GetByMapDeviceId(mapDeviceId, name); err != nil {
+// GetById ...
+func (n *Metric) GetById(id int64) (metric m.Metric, err error) {
+	var dbVer db.Metric
+	if dbVer, err = n.table.GetById(id); err != nil {
+		return
+	}
+	metric = n.fromDb(dbVer)
+
+	var optionItems = make([]string, len(metric.Options.Items))
+	for i, item := range metric.Options.Items {
+		optionItems[i] = item.Name
+	}
+
+	metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
+	if metric.Data, err = metricBucketAdaptor.Simple24HPreview(metric.Id, optionItems); err != nil {
+		log.Error(err.Error())
 		return
 	}
 
-	if len(dbList) == 0 {
-		err = ErrRecordNotFound
+	return
+}
+
+// GetByIdWithData ...
+func (n *Metric) GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric m.Metric, err error) {
+	var dbVer db.Metric
+	if dbVer, err = n.table.GetById(id); err != nil {
 		return
 	}
+	metric = n.fromDb(dbVer)
 
-	metric = n.fromDb(dbList[0])
+	var optionItems = make([]string, len(metric.Options.Items))
+	for i, item := range metric.Options.Items {
+		optionItems[i] = item.Name
+	}
+
+	metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
+	if metric.Data, err = metricBucketAdaptor.SimpleListWithSoftRange(from, to, id, metricRange, optionItems); err != nil {
+		log.Error(err.Error())
+		return
+	}
 
 	return
 }
@@ -77,12 +105,6 @@ func (n *Metric) Update(ver m.Metric) error {
 // Delete ...
 func (n *Metric) Delete(deviceId int64) (err error) {
 	err = n.table.Delete(deviceId)
-	return
-}
-
-// DeleteByDeviceId ...
-func (n *Metric) DeleteByDeviceId(deviceId int64) (err error) {
-	err = n.table.DeleteByDeviceId(deviceId)
 	return
 }
 
@@ -106,6 +128,36 @@ func (n *Metric) AddMultiple(items []m.Metric) (err error) {
 	return
 }
 
+// List ...
+func (n *Metric) List(limit, offset int64, orderBy, sort string) (list []m.Metric, total int64, err error) {
+	var dbList []db.Metric
+	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+		return
+	}
+
+	list = make([]m.Metric, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
+// Search ...
+func (n *Metric) Search(query string, limit, offset int) (list []m.Metric, total int64, err error) {
+	var dbList []db.Metric
+	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+		return
+	}
+
+	list = make([]m.Metric, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
+	}
+
+	return
+}
+
 func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
 	ver = m.Metric{
 		Id:          dbVer.Id,
@@ -113,7 +165,7 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
 		Description: dbVer.Description,
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
-		MapDeviceId: dbVer.MapDeviceId,
+		Type:        dbVer.Type,
 	}
 
 	// deserialize options
@@ -121,10 +173,10 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
 	json.Unmarshal(b, &ver.Options)
 
 	if dbVer.Data != nil && len(dbVer.Data) > 0 {
-		bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-		ver.Data = make([]m.MetricBucket, len(dbVer.Data))
+		metricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
+		ver.Data = make([]m.MetricDataItem, len(dbVer.Data))
 		for i, dbVer := range dbVer.Data {
-			ver.Data[i] = bucketMetricBucketAdaptor.fromDb(dbVer)
+			ver.Data[i] = metricBucketAdaptor.fromDb(dbVer)
 		}
 	}
 
@@ -135,8 +187,8 @@ func (n *Metric) toDb(ver m.Metric) (dbVer db.Metric) {
 	dbVer = db.Metric{
 		Id:          ver.Id,
 		Name:        ver.Name,
+		Type:        ver.Type,
 		Description: ver.Description,
-		MapDeviceId: ver.MapDeviceId,
 	}
 
 	// serialize options
