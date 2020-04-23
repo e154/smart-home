@@ -42,6 +42,7 @@ type Metric struct {
 	Options     MetricOptions         `json:"options"`
 	Data        []MetricDataItemShort `json:"data,omitempty"`
 	Type        string                `json:"type"`
+	Ranges      []string              `json:"ranges"`
 	UpdatedAt   time.Time             `json:"updated_at"`
 	CreatedAt   time.Time             `json:"created_at"`
 }

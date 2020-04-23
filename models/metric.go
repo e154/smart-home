@@ -42,10 +42,11 @@ type MetricOptions struct {
 type Metric struct {
 	Id          int64             `json:"id"`
 	Name        string            `json:"name" valid:"MaxSize(254);Required"`
-	Description string            `json:"description" valid:"MaxSize(254);Required"`
+	Description string            `json:"description" valid:"MaxSize(254)"`
 	Options     MetricOptions     `json:"options"`
 	Data        []MetricDataItem  `json:"data"`
-	Type        common.MetricType `json:"type"`
+	Type        common.MetricType `json:"type" valid:"Required"`
+	Ranges      []string          `json:"ranges"`
 	UpdatedAt   time.Time         `json:"updated_at"`
 	CreatedAt   time.Time         `json:"created_at"`
 }
@@ -59,4 +60,18 @@ func (d *Metric) Valid() (ok bool, errs []*validation.Error) {
 	}
 
 	return
+}
+
+func (d *Metric) RangesByType() []string {
+
+	switch d.Type {
+	case common.MetricTypeLine, common.MetricTypeBar, common.MetricTypeHorizontalBar:
+		d.Ranges = []string{"1h", "6h", "12h", "24h", "7d", "30d"}
+	case common.MetricTypeDoughnut, common.MetricTypeRadar, common.MetricTypePie:
+		d.Ranges = []string{"current"}
+	default:
+		d.Ranges = []string{"1h", "6h", "12h", "24h", "7d", "30d"}
+	}
+
+	return d.Ranges
 }

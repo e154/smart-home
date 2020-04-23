@@ -180,6 +180,8 @@ func (n *Metric) fromDb(dbVer db.Metric) (ver m.Metric) {
 		}
 	}
 
+	ver.RangesByType()
+
 	return
 }
 

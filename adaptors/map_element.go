@@ -141,6 +141,8 @@ func (n *MapElement) GetById(mapId int64) (ver *m.MapElement, err error) {
 			log.Error(err.Error())
 			return
 		}
+
+		ver.Metrics[i].RangesByType()
 	}
 
 	return
