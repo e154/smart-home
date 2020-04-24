@@ -269,42 +269,6 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 			}
 		}
 
-		//metrics
-		for _, oldMetric := range oldVer.Metrics {
-			var exist bool
-			for _, metric := range ver.Metrics {
-				if metric.Id == oldMetric.Id {
-					exist = true
-				}
-			}
-			if !exist {
-				if err = n.table.DeleteMetric(oldMetric.Id, oldMetric.Id); err != nil {
-					return
-				}
-			}
-		}
-
-		metricAdaptor := GetMetricAdaptor(tx, nil)
-		for _, metric := range ver.Metrics {
-			var exist bool
-			if oldVer.PrototypeType == common.PrototypeTypeDevice {
-				for _, oldMetric := range oldVer.Metrics {
-					if metric.Id == oldMetric.Id {
-						exist = true
-					}
-				}
-			}
-			if !exist {
-				if err = n.table.AppendMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
-					return
-				}
-			} else {
-				if err = n.table.ReplaceMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
-					return
-				}
-			}
-		}
-
 	default:
 		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
 		log.Warnf(err.Error())
@@ -312,6 +276,40 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 
 	if err != nil {
 		return
+	}
+
+	//metrics
+	for _, oldMetric := range oldVer.Metrics {
+		var exist bool
+		for _, metric := range ver.Metrics {
+			if metric.Id == oldMetric.Id {
+				exist = true
+			}
+		}
+		if !exist {
+			if err = n.table.DeleteMetric(oldMetric.Id, oldMetric.Id); err != nil {
+				return
+			}
+		}
+	}
+
+	metricAdaptor := GetMetricAdaptor(tx, nil)
+	for _, metric := range ver.Metrics {
+		var exist bool
+		for _, oldMetric := range oldVer.Metrics {
+			if metric.Id == oldMetric.Id {
+				exist = true
+			}
+		}
+		if !exist {
+			if err = n.table.AppendMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+				return
+			}
+		} else {
+			if err = n.table.ReplaceMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+				return
+			}
+		}
 	}
 
 	dbVer := n.toDb(ver)
