@@ -40,7 +40,7 @@ type Metric struct {
 	Name        string                `json:"name"`
 	Description string                `json:"description"`
 	Options     MetricOptions         `json:"options"`
-	Data        []MetricDataItemShort `json:"data,omitempty"`
+	Data        []MetricDataItemShort `json:"data"`
 	Type        string                `json:"type"`
 	Ranges      []string              `json:"ranges"`
 	UpdatedAt   time.Time             `json:"updated_at"`
