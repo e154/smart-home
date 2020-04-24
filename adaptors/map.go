@@ -76,6 +76,14 @@ func (n *Map) GetFullById(mapId int64) (ver *m.Map, err error) {
 
 	sort.Sort(m.SortMapLayersByWeight(ver.Layers))
 
+	// preload metrics
+	mapElementAdaptor := GetMapElementAdaptor(n.db)
+	for k, layer := range ver.Layers {
+		for i, _ := range layer.Elements {
+			mapElementAdaptor.preloadMetric(ver.Layers[k].Elements[i])
+		}
+	}
+
 	return
 }
 

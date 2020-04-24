@@ -126,24 +126,7 @@ func (n *MapElement) GetById(mapId int64) (ver *m.MapElement, err error) {
 	ver = n.fromDb(dbVer)
 
 	// load preview metrics data
-	if ver.Metrics == nil || len(ver.Metrics) == 0 {
-		return
-	}
-	bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
-	for i, metric := range ver.Metrics {
-
-		var optionItems = make([]string, len(metric.Options.Items))
-		for i, item := range metric.Options.Items {
-			optionItems[i] = item.Name
-		}
-
-		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.Simple24HPreview(metric.Id, optionItems); err != nil {
-			log.Error(err.Error())
-			return
-		}
-
-		ver.Metrics[i].RangesByType()
-	}
+	n.preloadMetric(ver)
 
 	return
 }
@@ -434,8 +417,27 @@ func (n *MapElement) GetActiveElements(sortBy, order string, limit, offset int) 
 	return
 }
 
-func (n *MapElement) GetMetric(mapElementId int64, metricName string) (ver *m.Metric, err error) {
+func (n *MapElement) preloadMetric(ver *m.MapElement) (err error) {
 
+	// load preview metrics data
+	if ver.Metrics == nil || len(ver.Metrics) == 0 {
+		return
+	}
+	bucketMetricBucketAdaptor := GetMetricBucketAdaptor(n.db, nil)
+	for i, metric := range ver.Metrics {
+
+		var optionItems = make([]string, len(metric.Options.Items))
+		for i, item := range metric.Options.Items {
+			optionItems[i] = item.Name
+		}
+
+		if ver.Metrics[i].Data, err = bucketMetricBucketAdaptor.Simple24HPreview(metric.Id, optionItems); err != nil {
+			log.Error(err.Error())
+			return
+		}
+
+		ver.Metrics[i].RangesByType()
+	}
 	return
 }
 
