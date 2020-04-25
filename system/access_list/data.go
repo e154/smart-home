@@ -856,6 +856,39 @@ const DATA = `
       "method": "delete",
       "description": ""
     }
+  },
+  "metric": {
+    "read": {
+      "actions": [
+        "/api/v1/metrics",
+        "/api/v1/metrics/search",
+        "/api/v1/metrics/[0-9]+"
+      ],
+      "method": "get",
+      "description": ""
+    },
+    "create": {
+      "actions": [
+        "/api/v1/metric",
+        "/api/v1/metric/[0-9]+/data"
+      ],
+      "method": "post",
+      "description": ""
+    },
+    "update": {
+      "actions": [
+        "/api/v1/metric/[0-9]+"
+      ],
+      "method": "put",
+      "description": ""
+    },
+    "delete": {
+      "actions": [
+        "/api/v1/metric/[0-9]+"
+      ],
+      "method": "delete",
+      "description": ""
+    }
   }
 }
 `

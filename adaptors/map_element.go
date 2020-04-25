@@ -287,7 +287,7 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 			}
 		}
 		if !exist {
-			if err = n.table.DeleteMetric(oldMetric.Id, oldMetric.Id); err != nil {
+			if err = n.table.DeleteMetric(oldVer.Id, oldMetric.Id); err != nil {
 				return
 			}
 		}
