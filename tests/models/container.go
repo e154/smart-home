@@ -63,7 +63,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(graceful_service.NewGracefulServicePool)
 	container.Provide(graceful_service.NewGracefulServiceConfig)
 	container.Provide(orm.NewOrm)
-	container.Provide(orm.NewOrmConfig)
+	container.Provide(orm.NewConfig)
 	container.Provide(core.NewCore)
 	container.Provide(migrations.NewMigrations)
 	container.Provide(migrations.NewMigrationsConfig)

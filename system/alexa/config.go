@@ -23,11 +23,13 @@ import (
 	"github.com/e154/smart-home/system/config"
 )
 
+// Config ...
 type Config struct {
 	Host string
 	Port int
 }
 
+// NewConfig ...
 func NewConfig(appConfig *config.AppConfig) Config {
 	return Config{
 		Host: appConfig.AlexaHost,
@@ -35,6 +37,7 @@ func NewConfig(appConfig *config.AppConfig) Config {
 	}
 }
 
+// String ...
 func (c Config) String() string {
 	return fmt.Sprintf("%s:%d", c.Host, c.Port)
 }

@@ -96,6 +96,7 @@ type MapElement struct {
 	Status        string                  `json:"status"`
 	Weight        int                     `json:"weight"`
 	Zone          *MapZone                `json:"zone"`
+	Metrics       []Metric                `json:"metrics"`
 	CreatedAt     time.Time               `json:"created_at"`
 	UpdatedAt     time.Time               `json:"updated_at"`
 }
@@ -122,6 +123,7 @@ type NewMapElement struct {
 	Status        string                  `json:"status"`
 	Weight        int                     `json:"weight"`
 	Zone          *MapZone                `json:"zone"`
+	Metrics       []Metric                `json:"metrics"`
 }
 
 // swagger:model
@@ -138,6 +140,7 @@ type UpdateMapElement struct {
 	Status        string                  `json:"status"`
 	Weight        int                     `json:"weight"`
 	Zone          *MapZone                `json:"zone"`
+	Metrics       []Metric                `json:"metrics"`
 }
 
 // swagger:model

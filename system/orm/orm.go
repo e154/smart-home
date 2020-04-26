@@ -19,6 +19,8 @@
 package orm
 
 import (
+	"fmt"
+	"github.com/Masterminds/semver"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/jinzhu/gorm"
@@ -28,23 +30,30 @@ import (
 
 // Orm ...
 type Orm struct {
-	cfg *OrmConfig
-	db  *gorm.DB
+	cfg                 *Config
+	db                  *gorm.DB
+	extTimescaledb      bool
+	availableExtensions []AvailableExtension
+	version             string
+	serverVersion       string
 }
 
 var (
 	log = common.MustGetLogger("orm")
 )
 
-// NewOrm ...
-func NewOrm(cfg *OrmConfig,
-	graceful *graceful_service.GracefulService) (orm *Orm, db *gorm.DB) {
+const (
+	minimalDbVersion = ">= 9.6.0"
+)
 
-	log.Debugf("database connect %s", cfg.String())
-	var err error
+// NewOrm ...
+func NewOrm(cfg *Config,
+	graceful *graceful_service.GracefulService) (orm *Orm, db *gorm.DB, err error) {
+
+	fmt.Printf("database connect %s\n", cfg.String())
 	db, err = gorm.Open("postgres", cfg.String())
 	if err != nil {
-		panic(err.Error())
+		return
 	}
 
 	db.LogMode(cfg.Logger)
@@ -59,8 +68,13 @@ func NewOrm(cfg *OrmConfig,
 	db.DB().SetConnMaxLifetime(time.Duration(cfg.ConnMaxLifeTime) * time.Minute)
 
 	orm = &Orm{
-		cfg: cfg,
-		db:  db,
+		cfg:                 cfg,
+		db:                  db,
+		availableExtensions: make([]AvailableExtension, 0),
+	}
+
+	if err = orm.check(); err != nil {
+		return
 	}
 
 	graceful.Subscribe(orm)
@@ -73,4 +87,101 @@ func (o *Orm) Shutdown() {
 		log.Debug("database shutdown")
 		o.db.Close()
 	}
+}
+
+func (o *Orm) check() (err error) {
+
+	if err = o.checkServerVersion(); err != nil {
+		return
+	}
+
+	err = o.checkExtensions()
+
+	return
+}
+
+func (o *Orm) checkServerVersion() (err error) {
+
+	// get version
+	row := o.db.Raw("select version()").Row()
+	if err = row.Scan(&o.version); err != nil {
+		return
+	}
+
+	// get server version
+	row = o.db.Raw("SHOW server_version").Row()
+	if err = row.Scan(&o.serverVersion); err != nil {
+		return
+	}
+
+	// check server version
+	var v *semver.Constraints
+	if v, err = semver.NewConstraint(minimalDbVersion); err != nil {
+		return
+	}
+
+	var client *semver.Version
+	if client, err = semver.NewVersion(o.serverVersion); err != nil {
+		return
+	}
+
+	if ok := v.Check(client); !ok {
+		err = fmt.Errorf("unsupported database version %s, expected %s", o.serverVersion, minimalDbVersion)
+		return
+	}
+	return
+}
+
+func (o *Orm) checkAvailableExtensions(availableExtensions []AvailableExtension, extName string) (exist bool) {
+	for _, ext := range availableExtensions {
+		if ext.Name == extName {
+			exist = true
+			return
+		}
+	}
+	return
+}
+
+func (o *Orm) checkExtensions() (err error) {
+
+	// check extensions
+	if err = o.db.Raw("select * from pg_available_extensions").Scan(&o.availableExtensions).Error; err != nil {
+		return
+	}
+
+	var extCrypto bool
+	for _, ext := range o.availableExtensions {
+
+		switch ext.Name {
+		case "pgcrypto":
+			extCrypto = true
+		case "timescaledb":
+			o.extTimescaledb = true
+		default:
+
+		}
+	}
+
+	if !extCrypto {
+		if o.checkAvailableExtensions(o.availableExtensions, "pgcrypto") {
+			err = fmt.Errorf("extension 'pgcrypto' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS pgcrypto CASCADE;\n\r")
+			return
+		}
+		err = fmt.Errorf("please install pgcrypto extension for postgresql database (maybe need install postgresql-contrib)\r")
+	}
+
+	if !o.extTimescaledb {
+		fmt.Println("")
+		if o.checkAvailableExtensions(o.availableExtensions, "timescaledb") {
+			fmt.Println("extension 'timescaledb' installed but not enabled, enable it \nCREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;\n\r")
+			return
+		}
+		fmt.Println("please install timescaledb extension, website: https://docs.timescale.com/v1.1/getting-started/installation)\r")
+	}
+
+	return
+}
+
+func (o Orm) ExtTimescaledbEnabled() bool {
+	return o.extTimescaledb
 }

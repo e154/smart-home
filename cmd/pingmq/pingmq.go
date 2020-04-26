@@ -63,14 +63,17 @@ import (
 
 type strlist []string
 
+// String ...
 func (this *strlist) String() string {
 	return fmt.Sprint(*this)
 }
 
+// Type ...
 func (this *strlist) Type() string {
 	return "strlist"
 }
 
+// Set ...
 func (this *strlist) Set(value string) error {
 	for _, ip := range strings.Split(value, ",") {
 		*this = append(*this, ip)

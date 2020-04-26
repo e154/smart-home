@@ -36,13 +36,13 @@ var (
 
 // Migrations ...
 type Migrations struct {
-	cfg    *orm.OrmConfig
+	cfg    *orm.Config
 	source migrate.MigrationSource
 	db     *gorm.DB
 }
 
 // NewMigrations ...
-func NewMigrations(cfg *orm.OrmConfig, db *gorm.DB, mConf *MigrationsConfig) *Migrations {
+func NewMigrations(cfg *orm.Config, db *gorm.DB, mConf *MigrationsConfig) *Migrations {
 
 	var source migrate.MigrationSource
 

@@ -23,8 +23,8 @@ import (
 	"github.com/e154/smart-home/system/config"
 )
 
-// OrmConfig ...
-type OrmConfig struct {
+// Config ...
+type Config struct {
 	Alias           string
 	Name            string
 	User            string
@@ -39,15 +39,15 @@ type OrmConfig struct {
 }
 
 // String ...
-func (c OrmConfig) String() string {
+func (c Config) String() string {
 
 	// parseTime https://github.com/go-sql-driver/mysql#parsetime
 	return fmt.Sprintf("dbname=%s user=%s password=%s host=%s port=%s sslmode=disable", c.Name, c.User, c.Password, c.Host, c.Port)
 }
 
-// NewOrmConfig ...
-func NewOrmConfig(cfg *config.AppConfig) *OrmConfig {
-	return &OrmConfig{
+// NewConfig ...
+func NewConfig(cfg *config.AppConfig) *Config {
+	return &Config{
 		Alias:           "default",
 		Name:            cfg.PgName,
 		User:            cfg.PgUser,

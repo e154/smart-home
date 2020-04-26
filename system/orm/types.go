@@ -16,58 +16,11 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package common
+package orm
 
-import "time"
-
-// String ...
-func String(v string) *string {
-	return &v
-}
-
-// StringValue ...
-func StringValue(v *string) string {
-	if v != nil {
-		return *v
-	}
-	return ""
-}
-
-// Int ...
-func Int(v int) *int {
-	return &v
-}
-
-// IntValue ...
-func IntValue(v *int) int {
-	if v != nil {
-		return *v
-	}
-	return 0
-}
-
-// Int64 ...
-func Int64(v int64) *int64 {
-	return &v
-}
-
-// Int64Value ...
-func Int64Value(v *int64) int64 {
-	if v != nil {
-		return *v
-	}
-	return 0
-}
-
-// Time ...
-func Time(v time.Time) *time.Time {
-	return &v
-}
-
-// TimeValue ...
-func TimeValue(v *time.Time) time.Time {
-	if v != nil {
-		return *v
-	}
-	return time.Time{}
+type AvailableExtension struct {
+	Name             string  `json:"name"`
+	DefaultVersion   string  `json:"default_version"`
+	InstalledVersion *string `json:"installed_version"`
+	Comment          string  `json:"comment"`
 }

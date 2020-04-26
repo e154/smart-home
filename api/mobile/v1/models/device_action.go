@@ -21,7 +21,8 @@ package models
 // DeviceActionScript ...
 type DeviceActionScript struct {
 	Id int64 `json:"id"`
-} 
+}
+
 // DeviceActionDevice ...
 type DeviceActionDevice struct {
 	Id int64 `json:"id"`

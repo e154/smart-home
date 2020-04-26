@@ -134,6 +134,11 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 
 	for _, l := range v.Layers {
 		for _, e := range l.Elements {
+
+			if err = n.Db.Preload("Metrics").First(e).Error; err != nil {
+				return
+			}
+
 			switch e.PrototypeType {
 			case common.PrototypeTypeText:
 				for _, text := range texts {

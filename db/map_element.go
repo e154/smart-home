@@ -55,6 +55,7 @@ type MapElement struct {
 	Weight        int64
 	ZoneId        *int64
 	Zone          *MapZone
+	Metrics       []Metric `gorm:"many2many:map_element_metrics;"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -81,6 +82,11 @@ func (n MapElements) GetById(mapId int64) (v *MapElement, err error) {
 		First(&v).Error; err != nil {
 		return
 	}
+
+	if err = n.Db.Preload("Metrics").First(&v).Error; err != nil {
+		return
+	}
+
 	err = n.gePrototype(v)
 	return
 }
@@ -94,6 +100,11 @@ func (n MapElements) GetByName(name string) (v *MapElement, err error) {
 		First(&v).Error; err != nil {
 		return
 	}
+
+	if err = n.Db.Preload("Metrics").First(&v).Error; err != nil {
+		return
+	}
+
 	err = n.gePrototype(v)
 	return
 }
@@ -272,5 +283,23 @@ func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort strin
 		}
 	}
 
+	return
+}
+
+// AppendMetric ...
+func (n MapElements) AppendMetric(elementId int64, metric Metric) (err error) {
+	err = n.Db.Model(&MapElement{Id: elementId}).Association("Metrics").Append(&metric).Error
+	return
+}
+
+// DeleteMetric ...
+func (n MapElements) DeleteMetric(elementId, metricId int64) (err error) {
+	err = n.Db.Model(&MapElement{Id: elementId}).Association("Metrics").Delete(&Metric{Id: metricId}).Error
+	return
+}
+
+// ReplaceMetric ...
+func (n MapElements) ReplaceMetric(elementId int64, metric Metric) (err error) {
+	err = n.Db.Model(&MapElement{Id: elementId}).Association("Metrics").Replace(&metric).Error
 	return
 }

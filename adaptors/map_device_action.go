@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
 // MapDeviceAction ...
@@ -49,19 +50,25 @@ func (n *MapDeviceAction) Add(ver *m.MapDeviceAction) (id int64, err error) {
 	return
 }
 
+// DeleteByDeviceId ...
+func (n *MapDeviceAction) DeleteByDeviceId(deviceId int64) (err error) {
+	err = n.table.DeleteByDeviceId(deviceId)
+	return
+}
+
 // AddMultiple ...
 func (n *MapDeviceAction) AddMultiple(items []*m.MapDeviceAction) (err error) {
+
+	insertRecords := make([]interface{}, 0, len(items))
 
 	for _, ver := range items {
 		if ver.Image == nil {
 			continue
 		}
-		dbVer := n.toDb(ver)
-		if _, err = n.table.Add(dbVer); err != nil {
-			return
-		}
+		insertRecords = append(insertRecords, n.toDb(ver))
 	}
 
+	err = gormbulk.BulkInsert(n.db, insertRecords, len(insertRecords))
 	return
 }
 

@@ -41,8 +41,7 @@ func GetMapDeviceAdaptor(d *gorm.DB) *MapDevice {
 // Add ...
 func (n *MapDevice) Add(ver *m.MapDevice) (id int64, err error) {
 
-	dbVer := n.toDb(ver)
-	if id, err = n.table.Add(dbVer); err != nil {
+	if id, err = n.table.Add(n.toDb(ver)); err != nil {
 		return
 	}
 
@@ -65,6 +64,12 @@ func (n *MapDevice) GetById(mapId int64) (ver *m.MapDevice, err error) {
 // Delete ...
 func (n *MapDevice) Delete(mapId int64) (err error) {
 	err = n.table.Delete(mapId)
+	return
+}
+
+// Update ...
+func (n *MapDevice) Update(ver *m.MapDevice) (err error) {
+	err = n.table.Update(n.toDb(ver))
 	return
 }
 

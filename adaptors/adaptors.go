@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
 )
 
@@ -71,12 +72,15 @@ type Adaptors struct {
 	AlexaSkill            *AlexaSkill
 	AlexaIntent           *AlexaIntent
 	Storage               *Storage
+	Metric                *Metric
+	MetricBucket          *MetricBucket
 }
 
 // NewAdaptors ...
 func NewAdaptors(db *gorm.DB,
 	cfg *config.AppConfig,
-	migrations *migrations.Migrations) (adaptors *Adaptors) {
+	migrations *migrations.Migrations,
+	orm *orm.Orm) (adaptors *Adaptors) {
 
 	if cfg != nil && migrations != nil && cfg.AutoMigrate {
 		migrations.Up()
@@ -122,6 +126,8 @@ func NewAdaptors(db *gorm.DB,
 		AlexaSkill:            GetAlexaSkillAdaptor(db),
 		AlexaIntent:           GetAlexaIntentAdaptor(db),
 		Storage:               GetStorageAdaptor(db),
+		Metric:                GetMetricAdaptor(db, orm),
+		MetricBucket:          GetMetricBucketAdaptor(db, orm),
 	}
 
 	return
@@ -129,7 +135,7 @@ func NewAdaptors(db *gorm.DB,
 
 // Begin ...
 func (a Adaptors) Begin() (adaptors *Adaptors) {
-	adaptors = NewAdaptors(a.db.Begin(), nil, nil)
+	adaptors = NewAdaptors(a.db.Begin(), nil, nil, nil)
 	adaptors.isTx = true
 	return
 }

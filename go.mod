@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/DrmagicE/gmqtt v0.1.2
+	github.com/Masterminds/semver v1.5.0
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -30,7 +31,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/iancoleman/strcase v0.0.0-20180726023541-3605ed457bf7
 	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
-	github.com/jinzhu/gorm v1.9.11
+	github.com/jinzhu/gorm v1.9.12
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/koron/netx v0.0.0-20151102071817-46fe5d298e3d
 	github.com/leodido/go-urn v1.2.0 // indirect
@@ -51,14 +52,14 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/surge/glog v0.0.0-20141108051140-2578deb2b95c // indirect
 	github.com/swaggo/swag v1.3.2
-	github.com/t-tiger/gorm-bulk-insert v0.0.0-20191118105655-ec69ce854cfe
+	github.com/t-tiger/gorm-bulk-insert v1.3.0
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	go.uber.org/atomic v1.6.0
-	go.uber.org/dig v1.8.0
+	go.uber.org/dig v1.9.0
 	go.uber.org/multierr v1.5.0 // indirect
 	go.uber.org/zap v1.14.0
-	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
+	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/sys v0.0.0-20200217220822-9197077df867 // indirect

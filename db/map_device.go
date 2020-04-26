@@ -56,6 +56,17 @@ func (n MapDevices) Add(v *MapDevice) (id int64, err error) {
 	return
 }
 
+// Update ...
+func (n MapDevices) Update(v *MapDevice) (err error) {
+	q := map[string]interface{}{
+		"image_id":  v.ImageId,
+		"device_id": v.DeviceId,
+	}
+
+	err = n.Db.Model(&MapDevice{Id: v.Id}).Updates(q).Error
+	return
+}
+
 // GetById ...
 func (n MapDevices) GetById(mapId int64) (v *MapDevice, err error) {
 	v = &MapDevice{Id: mapId}

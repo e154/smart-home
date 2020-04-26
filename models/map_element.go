@@ -100,6 +100,7 @@ type MapElement struct {
 	Status        StatusType              `json:"status" valid:"Required"`
 	Weight        int64                   `json:"weight"`
 	Zone          *MapZone                `json:"zone"`
+	Metrics       []Metric                `json:"metrics"`
 	CreatedAt     time.Time               `json:"created_at"`
 	UpdatedAt     time.Time               `json:"updated_at"`
 }

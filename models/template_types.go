@@ -27,7 +27,8 @@ type TemplateTree struct {
 }
 
 // TemplateStatus ...
-type TemplateStatus string 
+type TemplateStatus string
+
 // TemplateType ...
 type TemplateType string
 

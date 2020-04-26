@@ -39,6 +39,7 @@ func NewConfig(cfg *config.AppConfig) *Config {
 	}
 }
 
+// String ...
 func (c Config) String() string {
 	return fmt.Sprintf("%s:%d", c.Host, c.Port)
 }

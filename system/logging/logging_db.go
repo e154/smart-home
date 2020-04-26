@@ -22,26 +22,26 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/graceful_service"
-	"sync"
+	"go.uber.org/atomic"
 	"time"
 )
 
 // LogDbSaver ...
 type LogDbSaver struct {
-	adaptors *adaptors.Adaptors
-	pool     chan m.Log
-	quit     chan struct{}
-	sync.Mutex
-	isRunning bool
+	adaptors  *adaptors.Adaptors
+	pool      chan m.Log
+	quit      chan struct{}
+	isRunning *atomic.Bool
 }
 
 // NewLogDbSaver ...
 func NewLogDbSaver(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService) *LogDbSaver {
 	saver := &LogDbSaver{
-		adaptors: adaptors,
-		pool:     make(chan m.Log),
-		quit:     make(chan struct{}),
+		adaptors:  adaptors,
+		pool:      make(chan m.Log),
+		quit:      make(chan struct{}),
+		isRunning: atomic.NewBool(false),
 	}
 
 	graceful.Subscribe(saver)
@@ -54,7 +54,7 @@ func NewLogDbSaver(adaptors *adaptors.Adaptors,
 // Start ...
 func (l *LogDbSaver) Start() {
 
-	if l.safeIsRunning() {
+	if l.isRunning.Load() {
 		return
 	}
 
@@ -88,15 +88,15 @@ func (l *LogDbSaver) Start() {
 		}
 	}()
 
-	l.safeSetIsRunning(true)
+	l.isRunning.Store(true)
 }
 
 // Shutdown ...
 func (l *LogDbSaver) Shutdown() {
-	if !l.safeIsRunning() {
+	if !l.isRunning.Load() {
 		return
 	}
-	l.safeSetIsRunning(false)
+	l.isRunning.Store(false)
 	l.quit <- struct{}{}
 	close(l.quit)
 	close(l.pool)
@@ -104,20 +104,8 @@ func (l *LogDbSaver) Shutdown() {
 
 // Save ...
 func (l *LogDbSaver) Save(log m.Log) {
-	if !l.safeIsRunning() {
+	if !l.isRunning.Load() {
 		return
 	}
 	l.pool <- log
-}
-
-func (l *LogDbSaver) safeIsRunning() bool {
-	l.Lock()
-	defer l.Unlock()
-	return l.isRunning
-}
-
-func (l *LogDbSaver) safeSetIsRunning(v bool) {
-	l.Lock()
-	l.isRunning = v
-	l.Unlock()
 }

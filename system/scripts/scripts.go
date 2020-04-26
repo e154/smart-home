@@ -39,7 +39,7 @@ type ScriptService struct {
 }
 
 // NewScriptService ...
-func NewScriptService(cfg *config.AppConfig, storage  *storage.Storage) (service *ScriptService) {
+func NewScriptService(cfg *config.AppConfig, storage *storage.Storage) (service *ScriptService) {
 
 	service = &ScriptService{
 		cfg:        cfg,
