@@ -30,11 +30,13 @@ var (
 	log = common.MustGetLogger("message bird")
 )
 
+// MBClient ...
 type MBClient struct {
 	cfg    *MBClientConfig
 	client *messagebird.Client
 }
 
+// NewMBClient ...
 func NewMBClient(cfg *MBClientConfig) (*MBClient, error) {
 
 	if cfg.Name == "" || cfg.AccessKey == "" {
@@ -48,6 +50,7 @@ func NewMBClient(cfg *MBClientConfig) (*MBClient, error) {
 	return client, nil
 }
 
+// SendSMS ...
 func (c *MBClient) SendSMS(phone, body string) (string, error) {
 
 	log.Infof("send sms %v, %v", phone, body)
@@ -74,6 +77,7 @@ func (c *MBClient) SendSMS(phone, body string) (string, error) {
 	return msg.ID, nil
 }
 
+// GetStatus ...
 func (c *MBClient) GetStatus(smsId string) (string, error) {
 
 	msg, err := sms.Read(c.client, smsId)
@@ -84,6 +88,7 @@ func (c *MBClient) GetStatus(smsId string) (string, error) {
 	return msg.Recipients.Items[0].Status, nil
 }
 
+// Balance ...
 func (c *MBClient) Balance() (*balance.Balance, error) {
 
 	b, err := balance.Read(c.client)

@@ -28,7 +28,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/gin-gonic/gin"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -38,11 +37,13 @@ var (
 	log = common.MustGetLogger("rbac")
 )
 
+// AccessFilter ...
 type AccessFilter struct {
 	adaptors          *adaptors.Adaptors
 	accessListService *access_list.AccessListService
 }
 
+// NewAccessFilter ...
 func NewAccessFilter(adaptors *adaptors.Adaptors,
 	accessListService *access_list.AccessListService) *AccessFilter {
 	return &AccessFilter{
@@ -51,11 +52,8 @@ func NewAccessFilter(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Auth ...
 func (f *AccessFilter) Auth(ctx *gin.Context) {
-
-	if os.Getenv("GOD_MODE") == "true" {
-		return
-	}
 
 	requestURI := ctx.Request.RequestURI
 	method := strings.ToLower(ctx.Request.Method)
@@ -85,7 +83,7 @@ func (f *AccessFilter) Auth(ctx *gin.Context) {
 	ctx.Set("currentUser", user)
 
 	// если id == 1 is admin
-	if user.Id == 1 {
+	if user.Id == 1 || user.Role.Name == "admin" {
 		return
 	}
 
@@ -122,9 +120,9 @@ func (f *AccessFilter) getAccessList(token string) (user *m.User, accessList acc
 	//TODO cache start
 
 	// ger hmac key
-	var variable *m.Variable
+	var variable m.Variable
 	if variable, err = f.adaptors.Variable.GetByName("hmacKey"); err != nil {
-		variable = &m.Variable{
+		variable = m.Variable{
 			Name:  "hmacKey",
 			Value: common.ComputeHmac256(),
 		}

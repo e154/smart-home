@@ -23,43 +23,49 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/uuid"
+	"github.com/e154/smart-home/system/cache"
+	"time"
 )
 
 var (
 	log = common.MustGetLogger("mqtt_authenticator")
 )
 
+// ErrBadLoginOrPassword ...
 var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
+
+// ErrPrincipalDisabled ...
 var ErrPrincipalDisabled = fmt.Errorf("principal disabled")
 
+// Authenticator ...
 type Authenticator struct {
 	adaptors *adaptors.Adaptors
-	name     string
-	login    string
-	password string
+	cache    cache.Cache
 }
 
+// NewAuthenticator ...
 func NewAuthenticator(adaptors *adaptors.Adaptors) *Authenticator {
+	bm, _ := cache.NewCache("memory", fmt.Sprintf(`{"interval":%d}`, time.Second*60))
 	return &Authenticator{
 		adaptors: adaptors,
-		name:     "base",
-		login:    "local",
-		password: uuid.NewV4().String(),
+		cache:    bm,
 	}
 }
 
+// Authenticate ...
 func (a *Authenticator) Authenticate(login string, pass interface{}) (err error) {
 
-	log.Infof("login: %v, pass: %v", login, pass)
+	log.Infof("login: \"%v\", pass: \"%v\"", login, pass)
 
 	password, ok := pass.(string)
 	if !ok || password == "" {
 		err = ErrBadLoginOrPassword
 	}
 
-	if login == a.login && pass == a.password {
-		return
+	if a.cache.IsExist(login) {
+		if password == a.cache.Get(login) {
+			return
+		}
 	}
 
 	// nodes
@@ -93,7 +99,10 @@ func (a Authenticator) checkZigbee2matt(login, password string) (err error) {
 
 	if ok := common.CheckPasswordHash(password, bridge.EncryptedPassword); !ok {
 		err = ErrBadLoginOrPassword
+		return
 	}
+
+	a.cache.Put(login, password, 60*time.Second)
 
 	return
 }
@@ -112,19 +121,10 @@ func (a Authenticator) checkNode(login, password string) (err error) {
 
 	if ok := common.CheckPasswordHash(password, node.EncryptedPassword); !ok {
 		err = ErrBadLoginOrPassword
+		return
 	}
 
+	a.cache.Put(login, password, 60*time.Second)
+
 	return
-}
-
-func (a Authenticator) Name() string {
-	return a.name
-}
-
-func (a Authenticator) Password() string {
-	return a.password
-}
-
-func (a Authenticator) Login() string {
-	return a.login
 }

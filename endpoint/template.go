@@ -23,16 +23,19 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// TemplateEndpoint ...
 type TemplateEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewTemplateEndpoint ...
 func NewTemplateEndpoint(common *CommonEndpoint) *TemplateEndpoint {
 	return &TemplateEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// UpdateOrCreate ...
 func (t *TemplateEndpoint) UpdateOrCreate(params *m.Template) (errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
@@ -46,6 +49,7 @@ func (t *TemplateEndpoint) UpdateOrCreate(params *m.Template) (errs []*validatio
 	return
 }
 
+// UpdateStatus ...
 func (t *TemplateEndpoint) UpdateStatus(params *m.Template) (errs []*validation.Error, err error) {
 
 	_, errs = params.Valid()
@@ -59,6 +63,7 @@ func (t *TemplateEndpoint) UpdateStatus(params *m.Template) (errs []*validation.
 	return
 }
 
+// GetByName ...
 func (t *TemplateEndpoint) GetByName(name string) (result *m.Template, err error) {
 	if result, err = t.adaptors.Template.GetByName(name); err != nil {
 		return
@@ -68,41 +73,49 @@ func (t *TemplateEndpoint) GetByName(name string) (result *m.Template, err error
 	return
 }
 
+// GetItemByName ...
 func (t *TemplateEndpoint) GetItemByName(name string) (result *m.Template, err error) {
 	result, err = t.adaptors.Template.GetItemByName(name)
 	return
 }
 
+// GetItemsSortedList ...
 func (t *TemplateEndpoint) GetItemsSortedList() (count int64, items []string, err error) {
 	count, items, err = t.adaptors.Template.GetItemsSortedList()
 	return
 }
 
+// GetList ...
 func (t *TemplateEndpoint) GetList() (count int64, templates []*m.Template, err error) {
 	templates, err = t.adaptors.Template.GetList(m.TemplateTypeTemplate)
 	return
 }
 
+// Delete ...
 func (t *TemplateEndpoint) Delete(name string) (err error) {
 	err = t.adaptors.Template.Delete(name)
 	return
 }
 
+// GetItemsTree ...
 func (t *TemplateEndpoint) GetItemsTree() (tree []*m.TemplateTree, err error) {
 	tree, err = t.adaptors.Template.GetItemsTree()
 	return
 }
 
+// UpdateItemsTree ...
 func (t *TemplateEndpoint) UpdateItemsTree(tree []*m.TemplateTree) (err error) {
 	err = t.adaptors.Template.UpdateItemsTree(tree)
 	return
 }
 
+// Search ...
 func (t *TemplateEndpoint) Search(query string, limit, offset int) (result []*m.Template, total int64, err error) {
 	result, total, err = t.adaptors.Template.Search(query, limit, offset)
 	return
 }
 
+// Preview ...
 func (t *TemplateEndpoint) Preview(template *m.TemplateContent) (data string, err error) {
 
 	var items []*m.Template

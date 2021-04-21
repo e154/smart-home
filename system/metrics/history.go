@@ -25,22 +25,26 @@ import (
 	"time"
 )
 
+// History ...
 type History struct {
 	Items []HistoryItem `json:"items"`
 }
 
+// HistoryManager ...
 type HistoryManager struct {
 	publisher  IPublisher
 	adaptors   *adaptors.Adaptors
-	updateLock sync.Mutex
+	updateLock *sync.Mutex
 	queue      *deque.Deque
 }
 
+// NewHistoryManager ...
 func NewHistoryManager(publisher IPublisher, adaptors *adaptors.Adaptors) *HistoryManager {
 	manager := &HistoryManager{
-		publisher: publisher,
-		adaptors:  adaptors,
-		queue:     &deque.Deque{},
+		publisher:  publisher,
+		adaptors:   adaptors,
+		queue:      &deque.Deque{},
+		updateLock: &sync.Mutex{},
 	}
 	manager.init()
 	return manager
@@ -73,11 +77,13 @@ func (d *HistoryManager) updatePool(item HistoryItem) {
 		DeviceName:        item.DeviceName,
 		DeviceDescription: item.DeviceDescription,
 		Type:              item.Type,
+		LogLevel:          item.LogLevel,
 		Description:       item.Description,
 		CreatedAt:         item.CreatedAt,
 	})
 }
 
+// Snapshot ...
 func (d HistoryManager) Snapshot() History {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
@@ -102,24 +108,27 @@ func (d *HistoryManager) init() {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
 
-	if list, err := d.adaptors.MapDeviceHistory.List(8, 0); err == nil {
-		for _, item := range list {
-			d.queue.PushBack(HistoryItem{
-				DeviceName:        item.MapElement.Name,
-				DeviceDescription: item.MapElement.Description,
-				Type:              string(item.Type),
-				Description:       item.Description,
-				CreatedAt:         item.CreatedAt,
-			})
-		}
-	}
+	//if list, err := d.adaptors.EntityHistory.List(8, 0); err == nil {
+	//	for _, item := range list {
+	//		d.queue.PushBack(HistoryItem{
+	//			DeviceName:        item.Entity.Name,
+	//			DeviceDescription: item.Entity.Description,
+	//			Type:              string(item.Type),
+	//			LogLevel:          string(item.LogLevel),
+	//			Description:       item.Description,
+	//			CreatedAt:         item.CreatedAt,
+	//		})
+	//	}
+	//}
 
 }
 
+// HistoryItem ...
 type HistoryItem struct {
 	DeviceName        string    `json:"device_name"`
 	DeviceDescription string    `json:"device_description"`
 	Type              string    `json:"type"`
+	LogLevel          string    `json:"log_level"`
 	Description       string    `json:"description"`
 	CreatedAt         time.Time `json:"created_at"`
 }

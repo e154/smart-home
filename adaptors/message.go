@@ -24,16 +24,19 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Message ...
 type Message struct {
 	table *db.Messages
 }
 
+// GetMessageAdaptor ...
 func GetMessageAdaptor(d *gorm.DB) *Message {
 	return &Message{
 		table: &db.Messages{Db: d},
 	}
 }
 
+// Add ...
 func (n *Message) Add(msg *m.Message) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(msg))
 	return

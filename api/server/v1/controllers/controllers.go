@@ -22,73 +22,49 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/scripts"
 )
 
+// ControllersV1 ...
 type ControllersV1 struct {
-	Index            *ControllerIndex
-	Node             *ControllerNode
-	Swagger          *ControllerSwagger
-	Script           *ControllerScript
-	Workflow         *ControllerWorkflow
-	Device           *ControllerDevice
-	Role             *ControllerRole
-	User             *ControllerUser
-	Auth             *ControllerAuth
-	DeviceAction     *ControllerDeviceAction
-	DeviceState      *ControllerDeviceState
-	Map              *ControllerMap
-	MapLayer         *ControllerMapLayer
-	MapElement       *ControllerMapElement
-	Image            *ControllerImage
-	WorkflowScenario *ControllerWorkflowScenario
-	Flow             *ControllerFlow
-	Log              *ControllerLog
-	Gate             *ControllerGate
-	MapZone          *ControllerMapZone
-	Template         *ControllerTemplate
-	TemplateItem     *ControllerTemplateItem
-	Notifr           *ControllerNotifr
-	Mqtt             *ControllerMqtt
-	Version          *ControllerVersion
-	Zigbee2mqtt      *ControllerZigbee2mqtt
-	MapDeviceHistory *ControllerMapDeviceHistory
+	Index        *ControllerIndex
+	Node         *ControllerNode
+	Swagger      *ControllerSwagger
+	Script       *ControllerScript
+	Role         *ControllerRole
+	User         *ControllerUser
+	Auth         *ControllerAuth
+	Image        *ControllerImage
+	Log          *ControllerLog
+	Template     *ControllerTemplate
+	TemplateItem *ControllerTemplateItem
+	Notifr       *ControllerNotifr
+	Version      *ControllerVersion
+	Zigbee2mqtt  *ControllerZigbee2mqtt
+	Entity       *ControllerEntity
 }
 
+// NewControllersV1 ...
 func NewControllersV1(adaptors *adaptors.Adaptors,
-	core *core.Core,
 	scriptService *scripts.ScriptService,
 	accessList *access_list.AccessListService,
 	command *endpoint.Endpoint) *ControllersV1 {
-	common := NewControllerCommon(adaptors, core, accessList, command)
+	common := NewControllerCommon(adaptors, accessList, command)
 	return &ControllersV1{
-		Index:            NewControllerIndex(common),
-		Node:             NewControllerNode(common),
-		Swagger:          NewControllerSwagger(common),
-		Script:           NewControllerScript(common, scriptService),
-		Workflow:         NewControllerWorkflow(common),
-		Device:           NewControllerDevice(common),
-		Role:             NewControllerRole(common),
-		User:             NewControllerUser(common),
-		Auth:             NewControllerAuth(common),
-		DeviceAction:     NewControllerDeviceAction(common),
-		DeviceState:      NewControllerDeviceState(common),
-		Map:              NewControllerMap(common),
-		MapLayer:         NewControllerMapLayer(common),
-		MapElement:       NewControllerMapElement(common),
-		Image:            NewControllerImage(common),
-		WorkflowScenario: NewControllerWorkflowScenario(common),
-		Flow:             NewControllerFlow(common),
-		Log:              NewControllerLog(common),
-		Gate:             NewControllerGate(common),
-		MapZone:          NewControllerMapZone(common),
-		Template:         NewControllerTemplate(common),
-		TemplateItem:     NewControllerTemplateItem(common),
-		Notifr:           NewControllerNotifr(common),
-		Mqtt:             NewControllerMqtt(common),
-		Version:          NewControllerVersion(common),
-		Zigbee2mqtt:      NewControllerZigbee2mqtt(common),
-		MapDeviceHistory: NewControllerMapDeviceHistory(common),
+		Index:        NewControllerIndex(common),
+		Node:         NewControllerNode(common),
+		Swagger:      NewControllerSwagger(common),
+		Script:       NewControllerScript(common, scriptService),
+		Role:         NewControllerRole(common),
+		User:         NewControllerUser(common),
+		Auth:         NewControllerAuth(common),
+		Image:        NewControllerImage(common),
+		Log:          NewControllerLog(common),
+		Template:     NewControllerTemplate(common),
+		TemplateItem: NewControllerTemplateItem(common),
+		Notifr:       NewControllerNotifr(common),
+		Version:      NewControllerVersion(common),
+		Zigbee2mqtt:  NewControllerZigbee2mqtt(common),
+		Entity:       NewControllerEntity(common),
 	}
 }

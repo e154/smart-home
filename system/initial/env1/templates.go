@@ -25,15 +25,29 @@ import (
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
 
-func addTemplates(adaptors *adaptors.Adaptors) {
+// TemplateManager ...
+type TemplateManager struct {
+	adaptors *adaptors.Adaptors
+}
+
+// NewTemplateManager ...
+func NewTemplateManager(adaptors *adaptors.Adaptors) *TemplateManager {
+	return &TemplateManager{
+		adaptors: adaptors,
+	}
+}
+
+// Create ...
+func (t TemplateManager) Create() {
 
 	dataDir := filepath.Join("data", "templates")
 
-	files, err := ioutil.ReadDir(dataDir)
+	files, err := os.ReadDir(dataDir)
 	So(err, ShouldBeNil)
 
 	for _, file := range files {
@@ -51,12 +65,9 @@ func addTemplates(adaptors *adaptors.Adaptors) {
 		}
 	}
 
-	fileNames := []string{"main", "message", "body", "callout", "footer", "contacts", "social", "facebook", "google", "header", "password_reset", "privacy", "register_admin_created", "title", "twitter", "vk",}
+	fileNames := []string{"main", "message", "body", "callout", "footer", "contacts", "social", "facebook", "google", "header", "password_reset", "privacy", "register_admin_created", "title", "twitter", "vk"}
 
 	for _, name := range fileNames {
-
-		b, err := ioutil.ReadFile(filepath.Join(dataDir, fmt.Sprintf("%s.html", name)))
-		So(err, ShouldBeNil)
 
 		templateType := m.TemplateTypeItem
 		var parent *string
@@ -95,6 +106,20 @@ func addTemplates(adaptors *adaptors.Adaptors) {
 			templateType = m.TemplateTypeTemplate
 		}
 
+		var tpl *m.Template
+		if templateType == m.TemplateTypeTemplate {
+			tpl, err = t.adaptors.Template.GetByName(name)
+		} else {
+			tpl, err = t.adaptors.Template.GetItemByName(name)
+		}
+
+		if err == nil || tpl != nil {
+			continue
+		}
+
+		b, err := ioutil.ReadFile(filepath.Join(dataDir, fmt.Sprintf("%s.html", name)))
+		So(err, ShouldBeNil)
+
 		template := &m.Template{
 			Name:       name,
 			Content:    string(b),
@@ -103,7 +128,18 @@ func addTemplates(adaptors *adaptors.Adaptors) {
 			ParentName: parent,
 		}
 
-		err = adaptors.Template.Create(template)
+		err = t.adaptors.Template.Create(template)
 		So(err, ShouldBeNil)
 	}
+}
+
+// Upgrade ...
+func (t TemplateManager) Upgrade(oldVersion int) (err error) {
+
+	switch oldVersion {
+	case 0:
+
+	}
+
+	return
 }

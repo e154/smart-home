@@ -25,19 +25,23 @@ import (
 	"strings"
 )
 
+// SMS ...
 type SMS struct {
 	phones []string
 	Text   string `json:"text"`
 }
 
+// NewSMS ...
 func NewSMS() (sms *SMS) {
 	return &SMS{}
 }
 
+// SetRender ...
 func (s *SMS) SetRender(render *m.TemplateRender) {
 	s.Text = render.Body
 }
 
+// AddPhone ...
 func (s *SMS) AddPhone(phone string) {
 	if !strings.Contains(phone, "+") {
 		phone = fmt.Sprintf("+%s", phone)
@@ -45,6 +49,7 @@ func (s *SMS) AddPhone(phone string) {
 	s.phones = append(s.phones, phone)
 }
 
+// Save ...
 func (s *SMS) Save() (addresses []string, message *m.Message) {
 
 	addresses = s.phones

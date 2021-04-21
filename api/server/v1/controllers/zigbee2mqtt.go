@@ -26,10 +26,12 @@ import (
 	"strconv"
 )
 
+// ControllerZigbee2mqtt ...
 type ControllerZigbee2mqtt struct {
 	*ControllerCommon
 }
 
+// NewControllerZigbee2mqtt ...
 func NewControllerZigbee2mqtt(common *ControllerCommon) *ControllerZigbee2mqtt {
 	return &ControllerZigbee2mqtt{ControllerCommon: common}
 }

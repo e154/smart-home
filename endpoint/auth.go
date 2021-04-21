@@ -29,19 +29,23 @@ import (
 )
 
 const (
+	// AdminId ...
 	AdminId = 1
 )
 
+// AuthEndpoint ...
 type AuthEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewAuthEndpoint ...
 func NewAuthEndpoint(common *CommonEndpoint) *AuthEndpoint {
 	return &AuthEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// SignIn ...
 func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, accessToken string, err error) {
 
 	if user, err = a.adaptors.User.GetByEmail(email); err != nil {
@@ -64,9 +68,9 @@ func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, 
 	//}
 
 	// ger hmac key
-	var variable *m.Variable
+	var variable m.Variable
 	if variable, err = a.adaptors.Variable.GetByName("hmacKey"); err != nil {
-		variable = &m.Variable{
+		variable = m.Variable{
 			Name:  "hmacKey",
 			Value: common.ComputeHmac256(),
 		}
@@ -101,15 +105,19 @@ func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, 
 	return
 }
 
+// SignOut ...
 func (a *AuthEndpoint) SignOut(user *m.User) (err error) {
 	err = a.adaptors.User.ClearToken(user)
 	return
 }
 
+// Recovery ...
 func (a *AuthEndpoint) Recovery() {}
 
+// Reset ...
 func (a *AuthEndpoint) Reset() {}
 
+// AccessList ...
 func (a *AuthEndpoint) AccessList(user *m.User, accessListService *access_list.AccessListService) (accessList *access_list.AccessList, err error) {
 	accessList = accessListService.List
 	return

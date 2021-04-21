@@ -48,12 +48,14 @@ var (
 	log = common.MustGetLogger("gate")
 )
 
+// GateClient ...
 type GateClient struct {
 	sync.Mutex
 	metric          *metrics.MetricManager
 	adaptors        *adaptors.Adaptors
 	wsClient        *WsClient
-	engine          *gin.Engine
+	mobileApi       *gin.Engine
+	alexaApi        *gin.Engine
 	messagePoolQuit chan struct{}
 	messagePool     chan stream.Message
 	settingsLock    sync.Mutex
@@ -65,6 +67,7 @@ type GateClient struct {
 	subscribers     map[string]func(client stream.IStreamClient, msg stream.Message)
 }
 
+// NewGateClient ...
 func NewGateClient(adaptors *adaptors.Adaptors,
 	graceful *graceful_service.GracefulService,
 	metric *metrics.MetricManager) (gate *GateClient) {
@@ -106,6 +109,7 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 	return
 }
 
+// Shutdown ...
 func (g *GateClient) Shutdown() {
 	g.settingsLock.Lock()
 	defer g.settingsLock.Unlock()
@@ -117,6 +121,7 @@ func (g *GateClient) Shutdown() {
 	g.wsClient.Close()
 }
 
+// Close ...
 func (g *GateClient) Close() {
 	g.settingsLock.Lock()
 	defer g.settingsLock.Unlock()
@@ -125,6 +130,7 @@ func (g *GateClient) Close() {
 	g.wsClient.Close()
 }
 
+// Restart ...
 func (g *GateClient) Restart() {
 	g.Close()
 
@@ -133,6 +139,7 @@ func (g *GateClient) Restart() {
 	})
 }
 
+// RegisterServer ...
 func (g *GateClient) RegisterServer() {
 
 	g.settingsLock.Lock()
@@ -185,7 +192,7 @@ func (g *GateClient) registerMobile(ctx *gin.Context) {
 func (g *GateClient) loadSettings() (err error) {
 	log.Info("Load settings")
 
-	var variable *m.Variable
+	var variable m.Variable
 	if variable, err = g.adaptors.Variable.GetByName(gateVarName); err != nil {
 		if err = g.saveSettings(); err != nil {
 			log.Error(err.Error())
@@ -225,6 +232,7 @@ func (g *GateClient) saveSettings() (err error) {
 	return
 }
 
+// GetSettings ...
 func (g *GateClient) GetSettings() (Settings, error) {
 	g.settingsLock.Lock()
 	defer g.settingsLock.Unlock()
@@ -232,6 +240,7 @@ func (g *GateClient) GetSettings() (Settings, error) {
 	return *g.settings, nil
 }
 
+// UpdateSettings ...
 func (g *GateClient) UpdateSettings(settings Settings) (err error) {
 
 	g.settingsLock.Lock()
@@ -281,8 +290,12 @@ func (g *GateClient) onMessage(b []byte) {
 
 func (g *GateClient) _onMessage(msg stream.Message) {
 
-	if msg.Command == "mobile_gate_proxy" {
-		g.RequestFromMobileProxy(msg)
+	switch msg.Command {
+	case MobileGateProxy:
+		g.RequestFromProxy(msg, g.mobileApi)
+		return
+	case AlexaGateProxy:
+		g.RequestFromProxy(msg, g.alexaApi)
 		return
 	}
 
@@ -330,6 +343,7 @@ func (g *GateClient) selfUnSubscribe(id uuid.UUID) {
 	}
 }
 
+// Subscribe ...
 func (g *GateClient) Subscribe(command string, f func(client stream.IStreamClient, msg stream.Message)) {
 	g.subscrLock.Lock()
 	defer g.subscrLock.Unlock()
@@ -340,6 +354,7 @@ func (g *GateClient) Subscribe(command string, f func(client stream.IStreamClien
 	g.subscribers[command] = f
 }
 
+// UnSubscribe ...
 func (g *GateClient) UnSubscribe(command string) {
 	g.subscrLock.Lock()
 	defer g.subscrLock.Unlock()
@@ -349,6 +364,7 @@ func (g *GateClient) UnSubscribe(command string) {
 	}
 }
 
+// Send ...
 func (g *GateClient) Send(command string, payload map[string]interface{}, ctx context.Context, f func(msg stream.Message)) (err error) {
 
 	if g.wsClient.Status() != GateStatusConnected {
@@ -384,6 +400,7 @@ func (g *GateClient) Send(command string, payload map[string]interface{}, ctx co
 	return
 }
 
+// Broadcast ...
 func (g *GateClient) Broadcast(message []byte) {
 	if g.wsClient.Status() != GateStatusConnected {
 		return
@@ -394,6 +411,7 @@ func (g *GateClient) Broadcast(message []byte) {
 	}
 }
 
+// Status ...
 func (g *GateClient) Status() string {
 
 	if !g.settings.Enabled {
@@ -407,6 +425,7 @@ func (g *GateClient) Status() string {
 	return status
 }
 
+// GetMobileList ...
 func (g *GateClient) GetMobileList(ctx context.Context) (list *MobileList, err error) {
 
 	list = &MobileList{
@@ -426,6 +445,7 @@ func (g *GateClient) GetMobileList(ctx context.Context) (list *MobileList, err e
 	return
 }
 
+// DeleteMobile ...
 func (g *GateClient) DeleteMobile(token string, ctx context.Context) (list *MobileList, err error) {
 
 	payload := map[string]interface{}{
@@ -438,6 +458,7 @@ func (g *GateClient) DeleteMobile(token string, ctx context.Context) (list *Mobi
 	return
 }
 
+// AddMobile ...
 func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error) {
 
 	payload := map[string]interface{}{}
@@ -448,13 +469,14 @@ func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error
 	return
 }
 
-func (g *GateClient) RequestFromMobileProxy(message stream.Message) {
+// RequestFromProxy ...
+func (g *GateClient) RequestFromProxy(message stream.Message, engine *gin.Engine) {
 
 	if g.wsClient.Status() != GateStatusConnected {
 		return
 	}
 
-	//debug.Println(message.Payload["request"])
+	//debug.Println(message.Obj["request"])
 
 	if _, ok := message.Payload["request"]; !ok {
 		log.Error("no request field from payload")
@@ -467,7 +489,7 @@ func (g *GateClient) RequestFromMobileProxy(message stream.Message) {
 		return
 	}
 
-	payloadResponse := g.execRequest(requestParams)
+	payloadResponse := g.execRequest(requestParams, engine)
 
 	response := stream.Message{
 		Id:      uuid.NewV4(),
@@ -483,13 +505,19 @@ func (g *GateClient) RequestFromMobileProxy(message stream.Message) {
 	}
 }
 
-func (g *GateClient) SetEngine(engine *gin.Engine) {
-	g.engine = engine
+// SetMobileApiEngine ...
+func (g *GateClient) SetMobileApiEngine(engine *gin.Engine) {
+	g.mobileApi = engine
 }
 
-func (g *GateClient) execRequest(requestParams *StreamRequestModel) (response *StreamResponseModel) {
+// SetAlexaApiEngine ...
+func (g *GateClient) SetAlexaApiEngine(engine *gin.Engine) {
+	g.alexaApi = engine
+}
 
-	if g.engine == nil {
+func (g *GateClient) execRequest(requestParams *StreamRequestModel, engine *gin.Engine) (response *StreamResponseModel) {
+
+	if engine == nil {
 		return
 	}
 
@@ -497,7 +525,7 @@ func (g *GateClient) execRequest(requestParams *StreamRequestModel) (response *S
 	request.Header = requestParams.Header
 	request.RequestURI = requestParams.URI
 	recorder := httptest.NewRecorder()
-	g.engine.ServeHTTP(recorder, request)
+	engine.ServeHTTP(recorder, request)
 	code := recorder.Code
 	header := recorder.Header()
 	body := recorder.Body.Bytes()

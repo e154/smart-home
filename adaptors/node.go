@@ -19,17 +19,19 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/common"
+	"github.com/jinzhu/gorm"
 )
 
+// Node ...
 type Node struct {
 	table *db.Nodes
 	db    *gorm.DB
 }
 
+// GetNodeAdaptor ...
 func GetNodeAdaptor(d *gorm.DB) *Node {
 	return &Node{
 		table: &db.Nodes{Db: d},
@@ -37,6 +39,7 @@ func GetNodeAdaptor(d *gorm.DB) *Node {
 	}
 }
 
+// Add ...
 func (n *Node) Add(node *m.Node) (id int64, err error) {
 
 	var dbNode *db.Node
@@ -48,6 +51,7 @@ func (n *Node) Add(node *m.Node) (id int64, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n *Node) GetAllEnabled() (list []*m.Node, err error) {
 
 	var dbList []*db.Node
@@ -64,6 +68,7 @@ func (n *Node) GetAllEnabled() (list []*m.Node, err error) {
 	return
 }
 
+// GetById ...
 func (n *Node) GetById(nodeId int64) (node *m.Node, err error) {
 
 	var dbNode *db.Node
@@ -76,6 +81,7 @@ func (n *Node) GetById(nodeId int64) (node *m.Node, err error) {
 	return
 }
 
+// Update ...
 func (n *Node) Update(node *m.Node) (err error) {
 
 	var dbNode *db.Node
@@ -84,45 +90,59 @@ func (n *Node) Update(node *m.Node) (err error) {
 	return
 }
 
+// Delete ...
 func (n *Node) Delete(nodeId int64) (err error) {
 	err = n.table.Delete(nodeId)
 	return
 }
 
+// List ...
 func (n *Node) List(limit, offset int64, orderBy, sort string) (list []*m.Node, total int64, err error) {
 	var dbList []*db.Node
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return
 	}
 
-	list = make([]*m.Node, 0)
-	for _, dbNode := range dbList {
-		node := n.fromDb(dbNode)
-		list = append(list, node)
+	list = make([]*m.Node, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
 	}
-
 	return
 }
 
+// Search ...
 func (n *Node) Search(query string, limit, offset int) (list []*m.Node, total int64, err error) {
 	var dbList []*db.Node
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
 		return
 	}
 
-	list = make([]*m.Node, 0)
-	for _, dbNode := range dbList {
-		node := n.fromDb(dbNode)
-		list = append(list, node)
+	list = make([]*m.Node, len(dbList))
+	for i, dbVer := range dbList {
+		list[i] = n.fromDb(dbVer)
 	}
 
 	return
 }
 
+// GetByLogin ...
 func (a *Node) GetByLogin(login string) (ver *m.Node, err error) {
 
 	var dbVer *db.Node
 	if dbVer, err = a.table.GetByLogin(login); err != nil {
+		return
+	}
+
+	ver = a.fromDb(dbVer)
+
+	return
+}
+
+// GetByName ...
+func (a *Node) GetByName(name string) (ver *m.Node, err error) {
+
+	var dbVer *db.Node
+	if dbVer, err = a.table.GetByName(name); err != nil {
 		return
 	}
 

@@ -20,9 +20,11 @@ package common
 
 import "github.com/e154/smart-home/system/validation"
 
+// Validation ...
 type Validation struct {
 }
 
+// Valid ...
 func (d Validation) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

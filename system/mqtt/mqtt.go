@@ -20,156 +20,242 @@ package mqtt
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
+	_ "github.com/DrmagicE/gmqtt/persistence"
+	"github.com/DrmagicE/gmqtt/pkg/codes"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
+	"github.com/DrmagicE/gmqtt/server"
+	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
-	"github.com/e154/smart-home/system/mqtt/metric"
-	"github.com/e154/smart-home/system/mqtt/prometheus"
-	"net/http"
-
-	"github.com/e154/smart-home/system/graceful_service"
-	"github.com/e154/smart-home/system/mqtt/management"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
-	"github.com/e154/smart-home/system/mqtt_client"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/uuid"
+	"go.uber.org/fx"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"net"
+	"os"
+	"sync"
 )
 
 var (
 	log = common.MustGetLogger("mqtt")
 )
 
+// Mqtt ...
 type Mqtt struct {
-	cfg           *MqttConfig
+	cfg           *Config
 	server        IMQTT
-	clients       []*mqtt_client.Client
 	authenticator *mqtt_authenticator.Authenticator
-	management    *management.Management
 	metric        *metrics.MetricManager
+	clientsLock   *sync.Mutex
+	clients       map[string]*Client
+	//management     *management.Management
 }
 
-func NewMqtt(cfg *MqttConfig,
-	graceful *graceful_service.GracefulService,
+// NewMqtt ...
+func NewMqtt(lc fx.Lifecycle,
+	cfg *Config,
 	authenticator *mqtt_authenticator.Authenticator,
 	scriptService *scripts.ScriptService,
-	metric *metrics.MetricManager) (mqtt *Mqtt) {
+	metric *metrics.MetricManager,
+) (mqtt *Mqtt) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,
 		authenticator: authenticator,
-		metric:        metric,
+		//metric:        metric,
+		clientsLock: &sync.Mutex{},
+		clients:     make(map[string]*Client),
 	}
 
 	// javascript binding
 	scriptService.PushStruct("Mqtt", NewMqttBind(mqtt))
 
-	mqtt.runServer()
-
-	graceful.Subscribe(mqtt)
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) (err error) {
+			go mqtt.Start()
+			return nil
+		},
+		OnStop: func(ctx context.Context) (err error) {
+			return mqtt.Shutdown()
+		},
+	})
 
 	return
 }
 
-func (m *Mqtt) Shutdown() {
+// Shutdown ...
+func (m *Mqtt) Shutdown() (err error) {
 	log.Info("Server exiting")
 	if m.server != nil {
-		_ = m.server.Stop(context.Background())
+		err = m.server.Stop(context.Background())
 	}
+	return
 }
 
-func (m *Mqtt) runServer() {
+func (m *Mqtt) Start() {
 
 	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.Port))
 	if err != nil {
 		log.Error(err.Error())
 	}
 
-	m.management = management.New()
+	//m.management = management.New()
+
+	options := []server.Options{
+		server.WithTCPListener(ln),
+		server.WithHook(server.Hooks{
+			OnBasicAuth:  m.onBasicAuth,
+			OnMsgArrived: m.onMsgArrived,
+		}),
+	}
+
+	if m.cfg.Logging {
+		options = append(options, server.WithLogger(m.logging()))
+	}
 
 	// Create a new server
-	m.server = gmqtt.NewServer(
-		gmqtt.WithTCPListener(ln),
-		gmqtt.WithPlugin(m.management),
-		gmqtt.WithHook(gmqtt.Hooks{
-			OnConnect:        m.OnConnect,
-			OnConnected:      m.OnConnected,
-			OnClose:          m.OnClose,
-			OnSessionCreated: m.OnSessionCreated,
-			OnSessionResumed: m.OnSessionResumed,
-		}),
-		gmqtt.WithPlugin(prometheus.New(&http.Server{Addr: ":8082",}, "/metrics")),
-		gmqtt.WithPlugin(metric.New(m.metric, 5)),
-	)
+	m.server = server.New(options...)
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
 
-	m.server.Run()
+	if err = m.server.Run(); err != nil {
+		log.Error(err.Error())
+	}
 }
 
-func (m *Mqtt) NewClient(cfg *mqtt_client.Config) (c *mqtt_client.Client, err error) {
+// OnMsgArrived ...
+func (m *Mqtt) onMsgArrived(ctx context.Context, client server.Client, msg *server.MsgArrivedRequest) (err error) {
+	m.clientsLock.Lock()
+	defer m.clientsLock.Unlock()
 
-	if cfg == nil {
-		cfg = &mqtt_client.Config{
-			KeepAlive:      5,
-			PingTimeout:    5,
-			ConnectTimeout: 5,
-			Qos:            0,
-			CleanSession:   false,
-		}
+	for _, cli := range m.clients {
+		cli.OnMsgArrived(ctx, client, msg)
 	}
-
-	cfg.Username = m.authenticator.Login()
-	cfg.Password = m.authenticator.Password()
-	if cfg.ClientID == "" {
-		cfg.ClientID = uuid.NewV4().String()
-	}
-	cfg.Broker = fmt.Sprintf("tcp://127.0.0.1:%d", m.cfg.Port)
-
-	if c, err = mqtt_client.NewClient(cfg); err != nil {
-		return
-	}
-
-	m.clients = append(m.clients, c)
 
 	return
 }
 
-func (m *Mqtt) OnConnected(ctx context.Context, client gmqtt.Client) {
-	log.Debugf("%v connected...", client.OptionsReader().ClientID())
-}
+// OnConnect ...
+func (m *Mqtt) onBasicAuth(ctx context.Context, client server.Client, req *server.ConnectRequest) (err error) {
+	log.Debugf("connect... %v", client.ClientOptions().ClientID)
 
-func (m *Mqtt) OnClose(ctx context.Context, client gmqtt.Client, err error) {
-	log.Debugf("%v disconnected...", client.OptionsReader().ClientID())
-}
-
-func (m *Mqtt) OnSessionCreated(ctx context.Context, client gmqtt.Client) {
-	log.Debug("session created...")
-}
-
-func (m *Mqtt) OnSessionResumed(ctx context.Context, client gmqtt.Client) {
-	log.Debug("session resumed...")
-}
-
-func (m *Mqtt) OnConnect(ctx context.Context, client gmqtt.Client) (code uint8) {
-
-	username := client.OptionsReader().Username()
-	password := client.OptionsReader().Password()
+	username := string(req.Connect.Username)
+	password := string(req.Connect.Password)
 
 	//authentication
-	if err := m.authenticator.Authenticate(username, password); err != nil {
-		return packets.CodeBadUsernameorPsw
+	if err = m.authenticator.Authenticate(username, password); err == nil {
+		return
 	}
 
-	return packets.CodeAccepted
+	// check the client version, return a compatible reason code.
+	switch client.Version() {
+	case packets.Version5:
+		return codes.NewError(codes.BadUserNameOrPassword)
+	case packets.Version311:
+		return codes.NewError(codes.V3BadUsernameorPassword)
+	}
+	// return nil if pass authentication.
+	return nil
 }
 
-func (m *Mqtt) Management() IManagement {
-	return m.management
+// Management ...
+//func (m *Mqtt) Management() IManagement {
+//	return m.management
+//}
+
+// Publish ...
+func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (err error) {
+	if qos < 0 || qos > 2 {
+		err = errors.New("invalid Qos")
+		return
+	}
+	if !packets.ValidTopicFilter(true, []byte(topic)) {
+		err = errors.New("invalid topic filter")
+		return
+	}
+	if !packets.ValidUTF8(payload) {
+		err = errors.New("invalid utf-8 string")
+		return
+	}
+
+	m.server.Publisher().Publish(&gmqtt.Message{
+		QoS:      qos,
+		Retained: retain,
+		Topic:    topic,
+		Payload:  payload,
+	})
+
+	// send to local subscribers
+	m.onMsgArrived(nil, nil, &server.MsgArrivedRequest{
+		Message: &gmqtt.Message{
+			QoS:      qos,
+			Retained: retain,
+			Topic:    topic,
+			Payload:  payload,
+		},
+	})
+	return
 }
 
-func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) {
-	m.server.PublishService().Publish(gmqtt.NewMessage(topic, payload, qos, gmqtt.Retained(retain)))
+// NewClient ...
+func (m *Mqtt) NewClient(name string) (client *Client) {
+	m.clientsLock.Lock()
+	defer m.clientsLock.Unlock()
+
+	var ok bool
+	if client, ok = m.clients[name]; ok {
+		return
+	}
+	client = NewClient(m, name)
+	m.clients[name] = client
+	return
+}
+
+func (m *Mqtt) logging() *zap.Logger {
+
+	// First, define our level-handling logic.
+	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.ErrorLevel
+	})
+
+	lowLevel := zapcore.ErrorLevel
+	if m.cfg.DebugMode == config.ReleaseMode {
+		lowLevel = zapcore.DebugLevel
+	}
+	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl < lowLevel
+	})
+
+	// High-priority output should also go to standard error, and low-priority
+	// output should also go to standard out.
+	consoleDebugging := zapcore.Lock(os.Stdout)
+	consoleErrors := zapcore.Lock(os.Stderr)
+
+	var encConfig zapcore.EncoderConfig
+	if m.cfg.DebugMode == config.ReleaseMode {
+		encConfig = zap.NewProductionEncoderConfig()
+	} else {
+		encConfig = zap.NewDevelopmentEncoderConfig()
+	}
+
+	encConfig.EncodeTime = nil
+	encConfig.EncodeName = logging.CustomNameEncoder
+	encConfig.EncodeCaller = logging.CustomCallerEncoder
+	consoleEncoder := zapcore.NewConsoleEncoder(encConfig)
+
+	// Join the outputs, encoders, and level-handling functions into
+	// zapcore.Cores, then tee the four cores together.
+	core := zapcore.NewTee(
+		zapcore.NewCore(consoleEncoder, consoleErrors, highPriority),
+		zapcore.NewCore(consoleEncoder, consoleDebugging, lowPriority),
+	)
+
+	// From a zapcore.Core, it's easy to construct a Logger.
+	return zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Named("mqtt")
 }

@@ -23,45 +23,48 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"io/ioutil"
 )
 
 var (
 	log = common.MustGetLogger("access_list")
 )
 
+// AccessListService ...
 type AccessListService struct {
 	List     *AccessList
 	adaptors *adaptors.Adaptors
 }
 
+// NewAccessListService ...
 func NewAccessListService(adaptors *adaptors.Adaptors) *AccessListService {
 	accessList := &AccessListService{
 		adaptors: adaptors,
 	}
-	accessList.ReadConfig("./conf/access_list.json")
+	accessList.ReadConfig()
 	return accessList
 }
 
-func (a *AccessListService) ReadConfig(path string) (err error) {
+// ReadConfig ...
+func (a *AccessListService) ReadConfig() (err error) {
 
-	var file []byte
-	file, err = ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatal("Error reading config file")
-		return
-	}
+	//var file []byte
+	//file, err = ioutil.ReadFile(path)
+	//if err != nil {
+	//	log.Fatal("Error reading config file")
+	//	return
+	//}
 
 	a.List = &AccessList{}
-	err = json.Unmarshal(file, a.List)
+	err = json.Unmarshal([]byte(DATA), a.List)
 	if err != nil {
-		log.Fatal("Error: wrong format of config file")
+		log.Fatal(err.Error())
 		return
 	}
 
 	return
 }
 
+// GetFullAccessList ...
 func (a *AccessListService) GetFullAccessList(role *m.Role) (accessList AccessList, err error) {
 
 	var permissions []*m.Permission
@@ -95,6 +98,7 @@ func (a *AccessListService) GetFullAccessList(role *m.Role) (accessList AccessLi
 	return
 }
 
+// GetShotAccessList ...
 func (a *AccessListService) GetShotAccessList(role *m.Role) (err error) {
 
 	err = a.adaptors.Role.GetAccessList(role)

@@ -20,6 +20,7 @@ package assertions
 
 import (
 	"fmt"
+	adaptors2 "github.com/e154/smart-home/adaptors"
 	"github.com/smartystreets/assertions"
 	"github.com/smartystreets/goconvey/convey/reporting"
 )
@@ -27,18 +28,31 @@ import (
 const assertionSuccess = ""
 
 var (
-	ShouldEqual       = assertions.ShouldEqual
-	ShouldBeNil       = assertions.ShouldBeNil
+	// ShouldEqual ...
+	ShouldEqual = assertions.ShouldEqual
+	// ShouldBeNil ...
+	ShouldBeNil = assertions.ShouldBeNil
+	// ShouldBeZeroValue ...
 	ShouldBeZeroValue = assertions.ShouldBeZeroValue
+	adaptors          *adaptors2.Adaptors
 )
 
 type assertion func(actual interface{}, expected ...interface{}) string
 
+// So ...
 func So(actual interface{}, assert assertion, expected ...interface{}) {
 	if result := assert(actual, expected...); result == assertionSuccess {
 		fmt.Printf(".")
 	} else {
 		fmt.Println()
+		if adaptors != nil {
+			adaptors.Rollback()
+		}
 		panic(fmt.Sprintf("%v", reporting.NewFailureReport(result)))
 	}
+}
+
+// SetAdaptors ...
+func SetAdaptors(adaptors *adaptors2.Adaptors) {
+
 }

@@ -20,16 +20,23 @@ package models
 
 import "time"
 
+// MessageType ...
 type MessageType string
 
 const (
-	MessageTypeSMS            = MessageType("sms")
-	MessageTypeEmail          = MessageType("email")
-	MessageTypeSlack          = MessageType("slack")
-	MessageTypeUiNotify       = MessageType("ui_notify")
+	// MessageTypeSMS ...
+	MessageTypeSMS = MessageType("sms")
+	// MessageTypeEmail ...
+	MessageTypeEmail = MessageType("email")
+	// MessageTypeSlack ...
+	MessageTypeSlack = MessageType("slack")
+	// MessageTypeUiNotify ...
+	MessageTypeUiNotify = MessageType("ui_notify")
+	// MessageTypeTelegramNotify ...
 	MessageTypeTelegramNotify = MessageType("telegram_notify")
 )
 
+// Message ...
 type Message struct {
 	Id           int64       `json:"id"`
 	Type         MessageType `json:"type"`
@@ -44,6 +51,7 @@ type Message struct {
 	UpdatedAt    time.Time   `json:"updated_at"`
 }
 
+// NewNotifrMessage ...
 type NewNotifrMessage struct {
 	Type         string                 `json:"type"`
 	BodyType     string                 `json:"body_type"`

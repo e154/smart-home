@@ -18,21 +18,26 @@
 
 package access_list
 
+// AccessItem ...
 type AccessItem struct {
-	Actions		[]string	`json:"actions"`
-	Method		string		`json:"method"`
-	Description	string		`json:"description"`
-	RoleName	string		`json:"role_name"`
+	Actions     []string `json:"actions"`
+	Method      string   `json:"method"`
+	Description string   `json:"description"`
+	RoleName    string   `json:"role_name"`
 }
 
+// AccessLevels ...
 type AccessLevels map[string]AccessItem
 
+// NewAccessLevels ...
 func NewAccessLevels() AccessLevels {
-	return  make(map[string]AccessItem)
+	return make(map[string]AccessItem)
 }
 
+// AccessList ...
 type AccessList map[string]AccessLevels
+
+// NewAccessList ...
 func NewAccessList() AccessList {
 	return make(map[string]AccessLevels)
 }
-

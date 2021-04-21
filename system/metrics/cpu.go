@@ -26,12 +26,14 @@ import (
 	"time"
 )
 
+// Cpu ...
 type Cpu struct {
 	Cores int64   `json:"cores"`
 	Mhz   float64 `json:"mhz"`
 	All   float64 `json:"all"`
 }
 
+// CpuManager ...
 type CpuManager struct {
 	publisher       IPublisher
 	cores           int64
@@ -45,6 +47,7 @@ type CpuManager struct {
 	updateLock      sync.Mutex
 }
 
+// NewCpuManager ...
 func NewCpuManager(publisher IPublisher) (c *CpuManager) {
 	c = &CpuManager{
 		all:       metrics.NewGaugeFloat64(),
@@ -92,6 +95,7 @@ func (c *CpuManager) stop() {
 	c.quit <- struct{}{}
 }
 
+// Snapshot ...
 func (c *CpuManager) Snapshot() Cpu {
 	c.updateLock.Lock()
 	defer c.updateLock.Unlock()
@@ -103,6 +107,7 @@ func (c *CpuManager) Snapshot() Cpu {
 	}
 }
 
+// All ...
 func (c *CpuManager) All() float64 {
 	return c.all.Value()
 }

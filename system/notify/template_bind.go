@@ -32,6 +32,7 @@ type TemplateBind struct {
 	adaptor *adaptors.Adaptors
 }
 
+// Render ...
 func (t *TemplateBind) Render(templateName string, params map[string]interface{}) *m.TemplateRender {
 	render, err := t.adaptor.Template.Render(templateName, params)
 	if err != nil {

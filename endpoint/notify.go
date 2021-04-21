@@ -25,21 +25,25 @@ import (
 	"strings"
 )
 
+// NotifyEndpoint ...
 type NotifyEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewNotifyEndpoint ...
 func NewNotifyEndpoint(common *CommonEndpoint) *NotifyEndpoint {
 	return &NotifyEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// GetSettings ...
 func (n *NotifyEndpoint) GetSettings() (cfg *notify.NotifyConfig, err error) {
 	cfg = n.notify.GetCfg()
 	return
 }
 
+// UpdateSettings ...
 func (n *NotifyEndpoint) UpdateSettings(cfg *notify.NotifyConfig) (err error) {
 	if err = n.notify.UpdateCfg(cfg); err != nil {
 		return
@@ -49,6 +53,7 @@ func (n *NotifyEndpoint) UpdateSettings(cfg *notify.NotifyConfig) (err error) {
 	return
 }
 
+// Repeat ...
 func (n *NotifyEndpoint) Repeat(id int64) (err error) {
 
 	var msg *m.MessageDelivery
@@ -61,6 +66,7 @@ func (n *NotifyEndpoint) Repeat(id int64) (err error) {
 	return
 }
 
+// Send ...
 func (n *NotifyEndpoint) Send(params *m.NewNotifrMessage) (err error) {
 
 	var render *m.TemplateRender

@@ -11,6 +11,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/e154/smart-home)](https://goreportcard.com/report/github.com/e154/smart-home)
 ![status](https://img.shields.io/badge/status-beta-yellow.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![telegram group](https://img.shields.io/badge/telegram-group-blue)](https://t.me/SmartHomGo)
 
 |Ветка       |Статус   |
 |------------|---------|
@@ -57,7 +58,7 @@
 ### Features
 
 1. Законченное решение умных вещей, и для автоматизации процессов - сервер,конфигуратор,ноды,шлюз,мобильное приложение
-2. Открытое API
+2. Бесплатна и открытый исходный код
 3. Кроссплатформенность Linux,MacOS,Windows …
 4. Удобный WEB конфигуратор для тонкой настройки
 5. Мобильное приложение для управления устройствами
@@ -69,6 +70,11 @@
 11. Быстрое резервное копирование всех данных, и восстановление - буквально в две команды
 12. Есть Docker образы для повышения безопасности системы
 13. Минимальное потребление ресурсов, позволяет развернуть комплекс на слабом железе
+14. Оптимизирован для встраиваемых устройств, таких как Raspberry Pi
+15. 100% локальная домашняя автоматизация
+16. Создавайте и восстанавливайте полные резервные копии всей вашей конфигурации с легкостью
+17. Веб-интерфейс управления интегрирован в Умный дом
+18. Amazon Alexa интеграция
 
 ### Demo access
 
@@ -198,6 +204,11 @@ INFO[0000] SRT.stream.hub.go:155.Subscribe() > subscribe do.action
 postgres=# alter user myuser with superuser;
 ```
 
+отменить права superuser
+
+```bash
+postgres=# alter user myuser nosuperuser;
+```
 
 ```bash
 bash-3.2$ ./server
@@ -343,6 +354,7 @@ go test ./tests -v
 * [iridiummobile](http://www.iridiummobile.net) 
 * [amx](https://www.amx.com/en-US)
 * [Home Assistant](https://www.home-assistant.io/integrations/)
+* [Majordomo](https://majordomohome.com)
 
 ### Лицензия
 

@@ -22,10 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/core"
-	"github.com/e154/smart-home/system/gate_client"
-	"github.com/e154/smart-home/system/metrics"
-	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
@@ -35,69 +32,46 @@ var (
 	log = common.MustGetLogger("endpoint")
 )
 
+// Endpoint ...
 type Endpoint struct {
-	Auth             *AuthEndpoint
-	Device           *DeviceEndpoint
-	DeviceAction     *DeviceActionEndpoint
-	DeviceState      *DeviceStateEndpoint
-	Flow             *FlowEndpoint
-	Image            *ImageEndpoint
-	Log              *LogEndpoint
-	Map              *MapEndpoint
-	MapElement       *MapElementEndpoint
-	MapLayer         *MapLayerEndpoint
-	MapZone          *MapZoneEndpoint
-	Node             *NodeEndpoint
-	Role             *RoleEndpoint
-	Script           *ScriptEndpoint
-	Workflow         *WorkflowEndpoint
-	WorkflowScenario *WorkflowScenarioEndpoint
-	User             *UserEndpoint
-	Gate             *GateEndpoint
-	Template         *TemplateEndpoint
-	Notify           *NotifyEndpoint
-	MessageDelivery  *MessageDeliveryEndpoint
-	Mqtt             *MqttEndpoint
-	Version          *VersionEndpoint
-	Zigbee2mqtt      *Zigbee2mqttEndpoint
-	MapDeviceHistory *MapDeviceHistoryEndpoint
+	Auth            *AuthEndpoint
+	Image           *ImageEndpoint
+	Log             *LogEndpoint
+	Zone            *ZoneEndpoint
+	Node            *NodeEndpoint
+	Role            *RoleEndpoint
+	Script          *ScriptEndpoint
+	User            *UserEndpoint
+	Template        *TemplateEndpoint
+	Notify          *NotifyEndpoint
+	MessageDelivery *MessageDeliveryEndpoint
+	Version         *VersionEndpoint
+	Zigbee2mqtt     *Zigbee2mqttEndpoint
+	Entity          *EntityEndpoint
 }
 
+// NewEndpoint ...
 func NewEndpoint(adaptors *adaptors.Adaptors,
-	core *core.Core,
 	scriptService *scripts.ScriptService,
 	accessList *access_list.AccessListService,
-	gate *gate_client.GateClient,
 	notify *notify.Notify,
-	mqtt *mqtt.Mqtt,
 	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
-	metric *metrics.MetricManager) *Endpoint {
-	common := NewCommonEndpoint(adaptors, core, accessList, scriptService, gate, notify, mqtt, zigbee2mqtt, metric)
+	entityManager *entity_manager.EntityManager) *Endpoint {
+	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt)
 	return &Endpoint{
-		Auth:             NewAuthEndpoint(common),
-		Device:           NewDeviceEndpoint(common),
-		DeviceAction:     NewDeviceActionEndpoint(common),
-		DeviceState:      NewDeviceStateEndpoint(common),
-		Flow:             NewFlowEndpoint(common),
-		Image:            NewImageEndpoint(common),
-		Log:              NewLogEndpoint(common),
-		Map:              NewMapEndpoint(common),
-		MapElement:       NewMapElementEndpoint(common),
-		MapLayer:         NewMapLayerEndpoint(common),
-		Node:             NewNodeEndpoint(common),
-		Role:             NewRoleEndpoint(common),
-		Script:           NewScriptEndpoint(common),
-		Workflow:         NewWorkflowEndpoint(common),
-		WorkflowScenario: NewWorkflowScenarioEndpoint(common),
-		User:             NewUserEndpoint(common),
-		Gate:             NewGateEndpoint(common),
-		MapZone:          NewMapZoneEndpoint(common),
-		Template:         NewTemplateEndpoint(common),
-		Notify:           NewNotifyEndpoint(common),
-		MessageDelivery:  NewMessageDeliveryEndpoint(common),
-		Mqtt:             NewMqttEndpoint(common),
-		Version:          NewVersionEndpoint(common),
-		Zigbee2mqtt:      NewZigbee2mqttEndpoint(common),
-		MapDeviceHistory: NewMapDeviceHistoryEndpoint(common),
+		Auth:            NewAuthEndpoint(common),
+		Image:           NewImageEndpoint(common),
+		Log:             NewLogEndpoint(common),
+		Node:            NewNodeEndpoint(common),
+		Role:            NewRoleEndpoint(common),
+		Script:          NewScriptEndpoint(common),
+		User:            NewUserEndpoint(common),
+		Zone:            NewZoneEndpoint(common),
+		Template:        NewTemplateEndpoint(common),
+		Notify:          NewNotifyEndpoint(common),
+		MessageDelivery: NewMessageDeliveryEndpoint(common),
+		Version:         NewVersionEndpoint(common),
+		Zigbee2mqtt:     NewZigbee2mqttEndpoint(common),
+		Entity:          NewEntityEndpoint(common, entityManager),
 	}
 }

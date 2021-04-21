@@ -21,6 +21,7 @@ package logging
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
@@ -28,21 +29,23 @@ import (
 	"sync"
 )
 
+// Logging ...
 type Logging struct {
 	logger     *zap.Logger
-	logDbSaver *LogDbSaver
+	saver      ISaver
 	oldLogLock *sync.Mutex
 	oldLog     m.Log
 }
 
-func NewLogger(logDbSaver *LogDbSaver) (logging *Logging) {
+// NewLogger ...
+func NewLogger(appConfig *config.AppConfig) (logging *Logging) {
 
 	// First, define our level-handling logic.
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.ErrorLevel
+		return lvl >= zapcore.WarnLevel
 	})
 	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl < zapcore.ErrorLevel
+		return lvl < zapcore.WarnLevel
 	})
 
 	// High-priority output should also go to standard error, and low-priority
@@ -52,7 +55,9 @@ func NewLogger(logDbSaver *LogDbSaver) (logging *Logging) {
 
 	config := zap.NewDevelopmentEncoderConfig()
 	config.EncodeTime = nil
-	config.EncodeLevel = CustomLevelEncoder
+	if appConfig.ColoredLogging {
+		config.EncodeLevel = CustomLevelEncoder
+	}
 	config.EncodeName = CustomNameEncoder
 	config.EncodeCaller = CustomCallerEncoder
 	consoleEncoder := zapcore.NewConsoleEncoder(config)
@@ -65,13 +70,11 @@ func NewLogger(logDbSaver *LogDbSaver) (logging *Logging) {
 	)
 
 	logging = &Logging{
-		logDbSaver: logDbSaver,
 		oldLogLock: &sync.Mutex{},
 	}
 
 	// From a zapcore.Core, it's easy to construct a Logger.
 	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1), zap.Hooks(logging.selfSaver))
-
 
 	zap.ReplaceGlobals(logger)
 
@@ -111,11 +114,19 @@ func (b *Logging) selfSaver(e zapcore.Entry) (err error) {
 
 	b.oldLog = record
 
-	b.logDbSaver.Save(record)
+	if b.saver != nil {
+		b.saver.Save(record)
+	}
 
 	return nil
 }
 
+// SetSaver ...
+func (b *Logging) SetSaver(saver ISaver) {
+	b.saver = saver
+}
+
+// CustomLevelEncoder ...
 func CustomLevelEncoder(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
 	s, ok := _levelToCapitalColorString[l]
 	if !ok {
@@ -132,6 +143,7 @@ func CustomNameEncoder(v string, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(builder.String()[0:25])
 }
 
+// CustomCallerEncoder ...
 func CustomCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(caller.TrimmedPath() + " >")
 }

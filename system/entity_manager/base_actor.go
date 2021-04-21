@@ -1,0 +1,200 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
+package entity_manager
+
+import (
+	"fmt"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/scripts"
+	"go.uber.org/atomic"
+	"sync"
+	"time"
+)
+
+type BaseActor struct {
+	IActor
+	Id                common.EntityId
+	Name              string
+	Description       string
+	EntityType        common.EntityType
+	Manager            IActorManager
+	State             *ActorState
+	Area              *m.Area
+	Metric            []m.Metric
+	Hidden            bool
+	AttrMu            *sync.Mutex
+	Attrs             m.EntityAttributes
+	Actions           map[string]ActorAction
+	States            map[string]ActorState
+	ScriptEngine      *scripts.Engine
+	Icon              *common.Icon
+	ImageUrl          *string
+	UnitOfMeasurement string
+	Sripts            []m.Script
+	Value             *atomic.String
+	LastChanged       *time.Time
+	LastUpdated       *time.Time
+}
+
+func NewBaseActor(entity *m.Entity, scriptService *scripts.ScriptService) BaseActor {
+	actor := BaseActor{
+		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.Type, entity.Id.Name())),
+		Name:              entity.Id.Name(),
+		Description:       entity.Description,
+		EntityType:        entity.Type,
+		Manager:            nil,
+		State:             nil,
+		Area:              entity.Area,
+		Hidden:            entity.Hidden,
+		Actions:           make(map[string]ActorAction),
+		States:            make(map[string]ActorState),
+		Icon:              entity.Icon,
+		ImageUrl:          nil,
+		UnitOfMeasurement: "",
+		Sripts:            entity.Scripts,
+		Value:             nil,
+		LastChanged:       nil,
+		LastUpdated:       nil,
+		AttrMu:            &sync.Mutex{},
+		Attrs:             entity.Attributes.Copy(),
+	}
+
+	// Image
+	if entity.Image != nil {
+		actor.ImageUrl = common.String(entity.Image.Url)
+	}
+
+	// Metric
+	actor.Metric = make([]m.Metric, len(entity.Metrics))
+	copy(actor.Metric, entity.Metrics)
+
+	// States
+	for _, s := range entity.States {
+		state := ActorState{
+			Name:        s.Name,
+			Description: s.Description,
+			Icon:        s.Icon,
+		}
+		if s.Image != nil {
+			state.ImageUrl = common.String(s.Image.Url)
+		}
+		actor.States[s.Name] = state
+	}
+
+	// Actions
+	for _, a := range entity.Actions {
+		action := ActorAction{
+			Name:        a.Name,
+			Description: a.Description,
+			Icon:        a.Icon,
+		}
+
+		if a.Script != nil {
+			action.ScriptEngine, _ = scriptService.NewEngine(a.Script)
+		}
+
+		if a.Image != nil {
+			action.ImageUrl = common.String(a.Image.Url)
+		}
+		actor.Actions[a.Name] = action
+	}
+
+	// Scripts
+	if len(entity.Scripts) != 0 {
+		var err error
+		if actor.ScriptEngine, err = scriptService.NewEngine(&entity.Scripts[0]); err != nil {
+			log.Error(err.Error())
+		}
+
+		actor.ScriptEngine.Do()
+	}
+
+	return actor
+}
+
+func (b *BaseActor) GetEventState(actor IActor) event_bus.EventEntityState {
+	return GetEventState(actor)
+}
+
+func (e *BaseActor) Receive(message Message) {}
+
+func (e *BaseActor) Destroy() {}
+
+func (e *BaseActor) Metrics() []m.Metric {
+	return e.Metric
+}
+
+func (e *BaseActor) SetState(EntityStateParams) {
+
+}
+
+func (e *BaseActor) Attributes() m.EntityAttributes {
+	e.AttrMu.Lock()
+	defer e.AttrMu.Unlock()
+	return e.Attrs.Copy()
+}
+
+func (e *BaseActor) Send(payload interface{}) {
+	e.Manager.Send(Message{
+		From:    e.Id,
+		Payload: payload,
+	})
+}
+
+func (e *BaseActor) Info() (info ActorInfo) {
+	info = ActorInfo{
+		Id:                e.Id,
+		Type:              e.EntityType,
+		Name:              e.Name,
+		Description:       e.Description,
+		Hidde:             e.Hidden,
+		DependsOn:         nil,
+		State:             e.State,
+		ImageUrl:          e.ImageUrl,
+		Icon:              e.Icon,
+		Area:              e.Area,
+		UnitOfMeasurement: e.UnitOfMeasurement,
+		LastChanged:       e.LastChanged,
+		LastUpdated:       e.LastUpdated,
+		Actions:           e.Actions,
+		States:            e.States,
+		//Value:             e.value,
+	}
+	return
+}
+
+func (e *BaseActor) Now(oldState event_bus.EventEntityState) time.Time {
+	now := time.Now()
+	e.LastUpdated = common.Time(now)
+
+	if oldState.LastUpdated != nil {
+		e.LastChanged = common.Time(*oldState.LastUpdated)
+	} else {
+		e.LastChanged = common.Time(*e.LastUpdated)
+	}
+	return now
+}
+
+func (e *BaseActor) DeserializeAttr(data m.EntityAttributeValue) {
+	e.AttrMu.Lock()
+	e.Attrs.Deserialize(data)
+	e.AttrMu.Unlock()
+}

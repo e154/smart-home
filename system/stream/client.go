@@ -24,6 +24,7 @@ import (
 	"time"
 )
 
+// Client ...
 type Client struct {
 	Ip        string
 	Referer   string
@@ -40,6 +41,7 @@ type Client struct {
 	Connect   *websocket.Conn
 }
 
+// UpdateInfo ...
 func (c *Client) UpdateInfo(msg Message) {
 
 	v := msg.Payload
@@ -74,6 +76,7 @@ func (c *Client) UpdateInfo(msg Message) {
 	}
 }
 
+// Notify ...
 func (c *Client) Notify(t, b string) {
 
 	msg := &Message{
@@ -128,6 +131,7 @@ func (c *Client) WritePump() {
 	}
 }
 
+// Close ...
 func (c *Client) Close() {
 
 	err := c.selfWrite(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
@@ -136,6 +140,7 @@ func (c *Client) Close() {
 	}
 }
 
+// Write ...
 func (c *Client) Write(payload []byte) (err error) {
 	c.Send <- payload
 	return

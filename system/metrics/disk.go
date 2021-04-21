@@ -27,6 +27,7 @@ import (
 	"time"
 )
 
+// DiskManager ...
 type DiskManager struct {
 	publisher  IPublisher
 	root       UsageStat
@@ -35,6 +36,7 @@ type DiskManager struct {
 	updateLock sync.Mutex
 }
 
+// NewDiskManager ...
 func NewDiskManager(publisher IPublisher) (manager *DiskManager) {
 	manager = &DiskManager{
 		quit:      make(chan struct{}),
@@ -77,6 +79,7 @@ func (d *DiskManager) stop() {
 	d.quit <- struct{}{}
 }
 
+// Snapshot ...
 func (d *DiskManager) Snapshot() Disk {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()

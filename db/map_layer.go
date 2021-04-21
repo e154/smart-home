@@ -19,15 +19,17 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
 	"fmt"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// MapLayers ...
 type MapLayers struct {
 	Db *gorm.DB
 }
 
+// MapLayer ...
 type MapLayer struct {
 	Id          int64 `gorm:"primary_key"`
 	Name        string
@@ -41,10 +43,12 @@ type MapLayer struct {
 	UpdatedAt   time.Time
 }
 
+// TableName ...
 func (d *MapLayer) TableName() string {
 	return "map_layers"
 }
 
+// Add ...
 func (n MapLayers) Add(v *MapLayer) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -53,12 +57,14 @@ func (n MapLayers) Add(v *MapLayer) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n MapLayers) GetById(mapId int64) (v *MapLayer, err error) {
 	v = &MapLayer{Id: mapId}
 	err = n.Db.First(&v).Error
 	return
 }
 
+// Update ...
 func (n MapLayers) Update(m *MapLayer) (err error) {
 	err = n.Db.Model(&MapLayer{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
@@ -70,6 +76,7 @@ func (n MapLayers) Update(m *MapLayer) (err error) {
 	return
 }
 
+// Sort ...
 func (n MapLayers) Sort(m *MapLayer) (err error) {
 	err = n.Db.Model(&MapLayer{Id: m.Id}).Updates(map[string]interface{}{
 		"weight": m.Weight,
@@ -77,11 +84,13 @@ func (n MapLayers) Sort(m *MapLayer) (err error) {
 	return
 }
 
+// Delete ...
 func (n MapLayers) Delete(mapId int64) (err error) {
 	err = n.Db.Delete(&MapLayer{Id: mapId}).Error
 	return
 }
 
+// List ...
 func (n *MapLayers) List(limit, offset int64, orderBy, sort string) (list []*MapLayer, total int64, err error) {
 
 	if err = n.Db.Model(MapLayer{}).Count(&total).Error; err != nil {

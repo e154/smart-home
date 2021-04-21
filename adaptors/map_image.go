@@ -19,16 +19,18 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
+// MapImage ...
 type MapImage struct {
 	table *db.MapImages
 	db    *gorm.DB
 }
 
+// GetMapImageAdaptor ...
 func GetMapImageAdaptor(d *gorm.DB) *MapImage {
 	return &MapImage{
 		table: &db.MapImages{Db: d},
@@ -36,6 +38,7 @@ func GetMapImageAdaptor(d *gorm.DB) *MapImage {
 	}
 }
 
+// Add ...
 func (n *MapImage) Add(ver *m.MapImage) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
@@ -46,6 +49,7 @@ func (n *MapImage) Add(ver *m.MapImage) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n *MapImage) GetById(mapId int64) (ver *m.MapImage, err error) {
 
 	var dbVer *db.MapImage
@@ -58,23 +62,27 @@ func (n *MapImage) GetById(mapId int64) (ver *m.MapImage, err error) {
 	return
 }
 
+// Update ...
 func (n *MapImage) Update(ver *m.MapImage) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Update(dbVer)
 	return
 }
 
+// Sort ...
 func (n *MapImage) Sort(ver *m.MapImage) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Sort(dbVer)
 	return
 }
 
+// Delete ...
 func (n *MapImage) Delete(mapId int64) (err error) {
 	err = n.table.Delete(mapId)
 	return
 }
 
+// List ...
 func (n *MapImage) List(limit, offset int64, orderBy, sort string) (list []*m.MapImage, total int64, err error) {
 	var dbList []*db.MapImage
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {

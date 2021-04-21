@@ -23,20 +23,24 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
+// Telegram ...
 type Telegram struct {
 	Text string `json:"text"`
 }
 
+// NewTelegram ...
 func NewTelegram(text string) *Telegram {
 	return &Telegram{
 		Text: text,
 	}
 }
 
+// SetRender ...
 func (s *Telegram) SetRender(render *m.TemplateRender) {
 	s.Text = render.Body
 }
 
+// Save ...
 func (s *Telegram) Save() (addresses []string, message *m.Message) {
 
 	addresses = []string{""}

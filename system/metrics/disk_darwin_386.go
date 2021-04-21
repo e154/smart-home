@@ -18,10 +18,12 @@
 
 package metrics
 
+// DiskManager ...
 type DiskManager struct {
 	root UsageStat
 }
 
+// NewDiskManager ...
 func NewDiskManager(publisher IPublisher) (_disk *DiskManager) {
 	_disk = &DiskManager{}
 	return
@@ -35,8 +37,7 @@ func (d *DiskManager) stop() {
 
 }
 
+// Snapshot ...
 func (d *DiskManager) Snapshot() Disk {
-	return Disk{
-
-	}
+	return Disk{}
 }

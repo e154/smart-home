@@ -19,11 +19,10 @@
 package backup
 
 import (
-	"os"
-	"io/ioutil"
-	"path"
 	"fmt"
 	"io"
+	"os"
+	"path"
 )
 
 // File copies a single file from src to dst
@@ -55,7 +54,7 @@ func File(src, dst string) error {
 // Dir copies a whole directory recursively
 func Copy(src string, dst string) error {
 	var err error
-	var fds []os.FileInfo
+	var fds []os.DirEntry
 	var srcinfo os.FileInfo
 
 	if srcinfo, err = os.Stat(src); err != nil {
@@ -66,7 +65,7 @@ func Copy(src string, dst string) error {
 		return err
 	}
 
-	if fds, err = ioutil.ReadDir(src); err != nil {
+	if fds, err = os.ReadDir(src); err != nil {
 		return err
 	}
 	for _, fd := range fds {

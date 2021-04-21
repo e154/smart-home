@@ -19,112 +19,129 @@
 package adaptors
 
 import (
+	"context"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
+	"go.uber.org/fx"
 )
 
 var (
 	log = common.MustGetLogger("adaptors")
 )
 
+// Adaptors ...
 type Adaptors struct {
-	db                    *gorm.DB
-	isTx                  bool
-	Node                  *Node
-	Script                *Script
-	Workflow              *Workflow
-	WorkflowScenario      *WorkflowScenario
-	Device                *Device
-	DeviceAction          *DeviceAction
-	DeviceState           *DeviceState
-	Flow                  *Flow
-	FlowElement           *FlowElement
-	FlowSubscription      *FlowSubscription
-	FlowZigbee2mqttDevice *FlowZigbee2mqttDevice
-	Connection            *Connection
-	Worker                *Worker
-	Role                  *Role
-	Permission            *Permission
-	User                  *User
-	UserMeta              *UserMeta
-	Image                 *Image
-	Variable              *Variable
-	Map                   *Map
-	MapLayer              *MapLayer
-	MapText               *MapText
-	MapImage              *MapImage
-	MapDevice             *MapDevice
-	MapElement            *MapElement
-	MapDeviceState        *MapDeviceState
-	MapDeviceAction       *MapDeviceAction
-	Log                   *Log
-	MapZone               *MapZone
-	Template              *Template
-	Message               *Message
-	MessageDelivery       *MessageDelivery
-	Zigbee2mqtt           *Zigbee2mqtt
-	Zigbee2mqttDevice     *Zigbee2mqttDevice
-	MapDeviceHistory      *MapDeviceHistory
+	db                *gorm.DB
+	isTx              bool
+	Node              *Node
+	Script            *Script
+	Role              *Role
+	Permission        *Permission
+	User              *User
+	UserMeta          *UserMeta
+	Image             *Image
+	Variable          *Variable
+	Map               *Map
+	MapLayer          *MapLayer
+	MapText           *MapText
+	MapImage          *MapImage
+	MapElement        *MapElement
+	Entity            *Entity
+	EntityState       *EntityState
+	EntityAction      *EntityAction
+	EntityStorage     *EntityStorage
+	Log               *Log
+	Zone              *Zone
+	Template          *Template
+	Message           *Message
+	MessageDelivery   *MessageDelivery
+	Zigbee2mqtt       *Zigbee2mqtt
+	Zigbee2mqttDevice *Zigbee2mqttDevice
+	AlexaSkill        *AlexaSkill
+	AlexaIntent       *AlexaIntent
+	Storage           *Storage
+	Metric            *Metric
+	MetricBucket      *MetricBucket
+	Area              *Area
+	Action            *Action
+	Condition         *Condition
+	Trigger           *Trigger
+	Task              *Task
+	RunHistory        *RunHistory
 }
 
-func NewAdaptors(db *gorm.DB,
+// NewAdaptors ...
+func NewAdaptors(lc fx.Lifecycle,
+	db *gorm.DB,
 	cfg *config.AppConfig,
-	migrations *migrations.Migrations) (adaptors *Adaptors) {
-
-	if cfg != nil && migrations != nil && cfg.AutoMigrate {
-		migrations.Up()
-	}
+	migrations *migrations.Migrations,
+	orm *orm.Orm) (adaptors *Adaptors) {
 
 	adaptors = &Adaptors{
-		db:                    db,
-		Node:                  GetNodeAdaptor(db),
-		Script:                GetScriptAdaptor(db),
-		Workflow:              GetWorkflowAdaptor(db),
-		WorkflowScenario:      GetWorkflowScenarioAdaptor(db),
-		Device:                GetDeviceAdaptor(db),
-		DeviceAction:          GetDeviceActionAdaptor(db),
-		DeviceState:           GetDeviceStateAdaptor(db),
-		Flow:                  GetFlowAdaptor(db),
-		FlowElement:           GetFlowElementAdaptor(db),
-		FlowSubscription:      GetFlowSubscriptionAdaptor(db),
-		FlowZigbee2mqttDevice: GetFlowZigbee2mqttDeviceAdaptor(db),
-		Connection:            GetConnectionAdaptor(db),
-		Worker:                GetWorkerAdaptor(db),
-		Role:                  GetRoleAdaptor(db),
-		Permission:            GetPermissionAdaptor(db),
-		User:                  GetUserAdaptor(db),
-		UserMeta:              GetUserMetaAdaptor(db),
-		Image:                 GetImageAdaptor(db),
-		Variable:              GetVariableAdaptor(db),
-		Map:                   GetMapAdaptor(db),
-		MapLayer:              GetMapLayerAdaptor(db),
-		MapText:               GetMapTextAdaptor(db),
-		MapImage:              GetMapImageAdaptor(db),
-		MapDevice:             GetMapDeviceAdaptor(db),
-		MapElement:            GetMapElementAdaptor(db),
-		MapDeviceState:        GetMapDeviceStateAdaptor(db),
-		MapDeviceAction:       GetMapDeviceActionAdaptor(db),
-		Log:                   GetLogAdaptor(db),
-		MapZone:               GetMapZoneAdaptor(db),
-		Template:              GetTemplateAdaptor(db),
-		Message:               GetMessageAdaptor(db),
-		MessageDelivery:       GetMessageDeliveryAdaptor(db),
-		Zigbee2mqtt:           GetZigbee2mqttAdaptor(db),
-		Zigbee2mqttDevice:     GetZigbee2mqttDeviceAdaptor(db),
-		MapDeviceHistory:      GetMapDeviceHistoryAdaptor(db),
+		db:                db,
+		Node:              GetNodeAdaptor(db),
+		Script:            GetScriptAdaptor(db),
+		Role:              GetRoleAdaptor(db),
+		Permission:        GetPermissionAdaptor(db),
+		User:              GetUserAdaptor(db),
+		UserMeta:          GetUserMetaAdaptor(db),
+		Image:             GetImageAdaptor(db),
+		Variable:          GetVariableAdaptor(db),
+		Map:               GetMapAdaptor(db),
+		MapLayer:          GetMapLayerAdaptor(db),
+		MapText:           GetMapTextAdaptor(db),
+		MapImage:          GetMapImageAdaptor(db),
+		Entity:            GetEntityAdaptor(db),
+		EntityState:       GetEntityStateAdaptor(db),
+		EntityAction:      GetEntityActionAdaptor(db),
+		EntityStorage:     GetEntityStorageAdaptor(db),
+		MapElement:        GetMapElementAdaptor(db),
+		Log:               GetLogAdaptor(db),
+		Zone:              GetZoneAdaptor(db),
+		Template:          GetTemplateAdaptor(db),
+		Message:           GetMessageAdaptor(db),
+		MessageDelivery:   GetMessageDeliveryAdaptor(db),
+		Zigbee2mqtt:       GetZigbee2mqttAdaptor(db),
+		Zigbee2mqttDevice: GetZigbee2mqttDeviceAdaptor(db),
+		AlexaSkill:        GetAlexaSkillAdaptor(db),
+		AlexaIntent:       GetAlexaIntentAdaptor(db),
+		Storage:           GetStorageAdaptor(db),
+		Metric:            GetMetricAdaptor(db, orm),
+		MetricBucket:      GetMetricBucketAdaptor(db, orm),
+		Area:              GetAreaAdaptor(db),
+		Action:            GetActionAdaptor(db),
+		Condition:         GetConditionAdaptor(db),
+		Trigger:           GetTriggerAdaptor(db),
+		Task:              GetTaskAdaptor(db),
+		RunHistory:        GetRunHistoryAdaptor(db),
+	}
+
+	if lc != nil {
+		lc.Append(fx.Hook{
+			OnStart: func(ctx context.Context) (err error) {
+				if cfg != nil && migrations != nil && cfg.AutoMigrate {
+					err = migrations.Up()
+					return
+				}
+				return
+			},
+		})
 	}
 
 	return
 }
 
+// Begin ...
 func (a Adaptors) Begin() (adaptors *Adaptors) {
-	adaptors = NewAdaptors(a.db.Begin(), nil, nil)
+	adaptors = NewAdaptors(nil, a.db.Begin(), nil, nil, nil)
 	adaptors.isTx = true
 	return
 }
 
+// Commit ...
 func (a *Adaptors) Commit() error {
 	if !a.isTx {
 		return nil
@@ -133,6 +150,7 @@ func (a *Adaptors) Commit() error {
 	return a.db.Commit().Error
 }
 
+// Rollback ...
 func (a *Adaptors) Rollback() error {
 	if !a.isTx {
 		return nil

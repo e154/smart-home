@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// Variable ...
 type Variable struct {
 	Name      string    `json:"name"`
 	Value     string    `json:"value"`
@@ -31,15 +32,18 @@ type Variable struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func NewVariable(name string) *Variable {
-	return &Variable{Name: name}
+// NewVariable ...
+func NewVariable(name string) Variable {
+	return Variable{Name: name}
 }
 
+// GetObj ...
 func (v *Variable) GetObj(obj interface{}) (err error) {
 	err = json.Unmarshal([]byte(v.Value), obj)
 	return
 }
 
+// SetObj ...
 func (v *Variable) SetObj(obj interface{}) (err error) {
 	var b []byte
 	if b, err = json.Marshal(obj); err != nil {

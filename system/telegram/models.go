@@ -18,6 +18,7 @@
 
 package telegram
 
+// Command ...
 type Command struct {
 	UserName, Text string
 	ChatId         int64

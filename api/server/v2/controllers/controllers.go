@@ -20,17 +20,17 @@ package controllers
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/core"
 )
 
+// ControllersV2 ...
 type ControllersV2 struct {
 	Index   *ControllerIndex
 	Swagger *ControllerSwagger
 }
 
-func NewControllersV2(adaptors *adaptors.Adaptors,
-	core *core.Core) *ControllersV2 {
-	common := NewControllerCommon(adaptors, core)
+// NewControllersV2 ...
+func NewControllersV2(adaptors *adaptors.Adaptors) *ControllersV2 {
+	common := NewControllerCommon(adaptors)
 	return &ControllersV2{
 		Index:   NewControllerIndex(common),
 		Swagger: NewControllerSwagger(common),

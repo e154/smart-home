@@ -18,11 +18,13 @@ definitions:
       role_name:
         type: string
         x-go-name: RoleName
+    title: AccessItem ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   AccessLevels:
     additionalProperties:
       $ref: '#/definitions/AccessItem'
+    title: AccessLevels ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   AccessList:
@@ -35,6 +37,20 @@ definitions:
       additionalProperties:
         type: boolean
       type: object
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Area:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      name:
+        type: string
+        x-go-name: Name
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   AuthSignInResponse:
@@ -104,313 +120,65 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DeleteGateMobile:
-    properties:
-      token:
-        type: string
-        x-go-name: Token
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DevModBusConfig:
-    properties:
-      baud:
-        format: int64
-        type: integer
-        x-go-name: Baud
-      data_bits:
-        format: int64
-        type: integer
-        x-go-name: DataBits
-      parity:
-        type: string
-        x-go-name: Parity
-      slave_id:
-        format: int64
-        type: integer
-        x-go-name: SlaveId
-      stop_bits:
-        format: int64
-        type: integer
-        x-go-name: StopBits
-      timeout:
-        format: int64
-        type: integer
-        x-go-name: Timeout
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  DevModBusRtuConfig:
-    properties:
-      baud:
-        format: int64
-        type: integer
-        x-go-name: Baud
-      data_bits:
-        format: int64
-        type: integer
-        x-go-name: DataBits
-      parity:
-        type: string
-        x-go-name: Parity
-      slave_id:
-        format: int64
-        type: integer
-        x-go-name: SlaveId
-      stop_bits:
-        format: int64
-        type: integer
-        x-go-name: StopBits
-      timeout:
-        format: int64
-        type: integer
-        x-go-name: Timeout
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DevSmartBusConfig:
-    properties:
-      baud:
-        format: int64
-        type: integer
-        x-go-name: Baud
-      device:
-        format: int64
-        type: integer
-        x-go-name: Device
-      sleep:
-        format: int64
-        type: integer
-        x-go-name: Sleep
-      stop_bits:
-        format: int64
-        type: integer
-        x-go-name: StopBits
-      timeout:
-        format: int64
-        type: integer
-        x-go-name: Timeout
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  Device:
+  Entity:
     properties:
       actions:
         items:
-          $ref: '#/definitions/DeviceAction'
+          $ref: '#/definitions/EntityAction'
         type: array
         x-go-name: Actions
+      area_id:
+        format: int64
+        type: integer
+        x-go-name: AreaId
+      attributes:
+        $ref: '#/definitions/EntityAttributes'
+      auto_load:
+        type: boolean
+        x-go-name: AutoLoad
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
       description:
         type: string
         x-go-name: Description
-      device:
-        $ref: '#/definitions/ParentDevice'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      is_group:
+      hidden:
         type: boolean
-        x-go-name: IsGroup
-      name:
+        x-go-name: Hidden
+      icon:
         type: string
-        x-go-name: Name
-      properties:
-        $ref: '#/definitions/DeviceProperties'
+        x-go-name: Icon
+      id:
+        type: string
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      metrics:
+        items:
+          $ref: '#/definitions/Metric'
+        type: array
+        x-go-name: Metrics
+      scripts:
+        items:
+          $ref: '#/definitions/Script'
+        type: array
+        x-go-name: Scripts
       states:
         items:
-          $ref: '#/definitions/DeviceState'
+          $ref: '#/definitions/EntityState'
         type: array
         x-go-name: States
-      status:
-        type: string
-        x-go-name: Status
       type:
         type: string
         x-go-name: Type
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  DeviceAction:
-    properties:
-      description:
+      updated_at:
+        format: date-time
         type: string
-        x-go-name: Description
-      device:
-        $ref: '#/definitions/DeviceActionDevice'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      script:
-        $ref: '#/definitions/DeviceActionScript'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  DeviceActionDevice:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  DeviceActionScript:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
+        x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DeviceProperties:
-    allOf:
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
-          type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        data_bits:
-          format: int64
-          type: integer
-          x-go-name: DataBits
-        parity:
-          type: string
-          x-go-name: Parity
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - properties:
-        address_port:
-          type: string
-          x-go-name: AddressPort
-        slave_id:
-          format: int64
-          type: integer
-          x-go-name: SlaveId
-      type: object
-    - properties:
-        baud:
-          format: int64
-          type: integer
-          x-go-name: Baud
-        device:
-          format: int64
-          type: integer
-          x-go-name: Device
-        sleep:
-          format: int64
-          type: integer
-          x-go-name: Sleep
-        stop_bits:
-          format: int64
-          type: integer
-          x-go-name: StopBits
-        timeout:
-          format: int64
-          type: integer
-          x-go-name: Timeout
-      type: object
-    - type: object
-    - properties:
-        address:
-          type: string
-          x-go-name: Address
-        password:
-          type: string
-          x-go-name: Password
-        user:
-          type: string
-          x-go-name: User
-      type: object
-    description: |-
-      An AllOfModel is composed out of embedded structs but it should build
-      an allOf property
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DeviceShort:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-      type:
-        type: string
-        x-go-name: Type
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  DeviceState:
+  EntityAction:
     properties:
       created_at:
         format: date-time
@@ -419,27 +187,93 @@ definitions:
       description:
         type: string
         x-go-name: Description
-      device:
-        $ref: '#/definitions/DeviceStateDevice'
+      entity_id:
+        type: string
+        x-go-name: EntityId
+      icon:
+        type: string
+        x-go-name: Icon
       id:
         format: int64
         type: integer
         x-go-name: Id
-      system_name:
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
+      name:
         type: string
-        x-go-name: SystemName
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/Script'
+      script_id:
+        format: int64
+        type: integer
+        x-go-name: ScriptId
+      type:
+        type: string
+        x-go-name: Type
       updated_at:
         format: date-time
         type: string
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  DeviceStateDevice:
+  EntityAttribute:
     properties:
+      name:
+        type: string
+        x-go-name: Name
+      type:
+        type: string
+        x-go-name: Type
+      value:
+        type: object
+        x-go-name: Value
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  EntityAttributes:
+    additionalProperties:
+      $ref: '#/definitions/EntityAttribute'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  EntityState:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      entity_id:
+        type: string
+        x-go-name: EntityId
+      icon:
+        type: string
+        x-go-name: Icon
       id:
         format: int64
         type: integer
         x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
+      name:
+        type: string
+        x-go-name: Name
+      style:
+        type: string
+        x-go-name: Style
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Error:
@@ -457,6 +291,7 @@ definitions:
   ErrorErrors:
     items:
       $ref: '#/definitions/ErrorErrorsItems'
+    title: ErrorErrors ...
     type: array
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   ErrorErrorsItems:
@@ -473,6 +308,7 @@ definitions:
         description: описание
         type: string
         x-go-name: Message
+    title: ErrorErrorsItems ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   ExecScript:
@@ -489,312 +325,6 @@ definitions:
       source:
         type: string
         x-go-name: Source
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  Flow:
-    properties:
-      connections:
-        items:
-          $ref: '#/definitions/FlowConnection'
-        type: array
-        x-go-name: Connections
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      flow_elements:
-        items:
-          $ref: '#/definitions/FlowElement'
-        type: array
-        x-go-name: FlowElements
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-      subscriptions:
-        items:
-          $ref: '#/definitions/FlowSubscription'
-        type: array
-        x-go-name: Subscriptions
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      workers:
-        items:
-          $ref: '#/definitions/FlowWorker'
-        type: array
-        x-go-name: Workers
-      workflow:
-        $ref: '#/definitions/FlowWorkflow'
-      workflow_id:
-        format: int64
-        type: integer
-        x-go-name: WorkflowId
-      workflow_scenario_id:
-        format: int64
-        type: integer
-        x-go-name: WorkflowScenarioId
-      zigbee2mqtt_devices:
-        items:
-          $ref: '#/definitions/Zigbee2mqttDeviceShort'
-        type: array
-        x-go-name: Zigbee2mqttDevices
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  FlowConnection:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      direction:
-        type: string
-        x-go-name: Direction
-      element_from:
-        type: string
-        x-go-name: ElementFrom
-      element_to:
-        type: string
-        x-go-name: ElementTo
-      flow_id:
-        format: int64
-        type: integer
-        x-go-name: FlowId
-      graph_settings:
-        type: string
-        x-go-name: GraphSettings
-      name:
-        type: string
-        x-go-name: Name
-      point_from:
-        format: int64
-        type: integer
-        x-go-name: PointFrom
-      point_to:
-        format: int64
-        type: integer
-        x-go-name: PointTo
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      uuid:
-        type: string
-        x-go-name: Uuid
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  FlowElement:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      flow_id:
-        format: int64
-        type: integer
-        x-go-name: FlowId
-      flow_link:
-        format: int64
-        type: integer
-        x-go-name: FlowLink
-      graph_settings:
-        type: string
-        x-go-name: GraphSettings
-      name:
-        type: string
-        x-go-name: Name
-      prototype_type:
-        type: string
-        x-go-name: PrototypeType
-      script:
-        $ref: '#/definitions/Script'
-      script_id:
-        format: int64
-        type: integer
-        x-go-name: ScriptId
-      status:
-        type: string
-        x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      uuid:
-        type: string
-        x-go-name: Uuid
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  FlowShort:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      workers:
-        items:
-          properties:
-            id:
-              format: int64
-              type: integer
-              x-go-name: Id
-          type: object
-        type: array
-        x-go-name: Workers
-      workflow:
-        properties:
-          id:
-            format: int64
-            type: integer
-            x-go-name: Id
-          name:
-            type: string
-            x-go-name: Name
-          scenario:
-            properties:
-              id:
-                format: int64
-                type: integer
-                x-go-name: Id
-              name:
-                type: string
-                x-go-name: Name
-            type: object
-            x-go-name: Scenario
-        type: object
-        x-go-name: Workflow
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  FlowSubscription:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      topic:
-        type: string
-        x-go-name: Topic
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  FlowWorker:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      device_action:
-        $ref: '#/definitions/DeviceAction'
-      device_action_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceActionId
-      flow_id:
-        format: int64
-        type: integer
-        x-go-name: FlowId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-      time:
-        type: string
-        x-go-name: Time
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      workflow:
-        $ref: '#/definitions/FlowWorkflow'
-      workflow_id:
-        format: int64
-        type: integer
-        x-go-name: WorkflowId
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  FlowWorkflow:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  GateMobileList:
-    properties:
-      token_list:
-        items:
-          type: string
-        type: array
-        x-go-name: TokenList
-      total:
-        format: int64
-        type: integer
-        x-go-name: Total
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  GateSettings:
-    properties:
-      address:
-        type: string
-        x-go-name: Address
-      enabled:
-        type: boolean
-        x-go-name: Enabled
-      gate_server_token:
-        type: string
-        x-go-name: GateServerToken
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Image:
@@ -847,330 +377,6 @@ definitions:
       level:
         type: string
         x-go-name: Level
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  Map:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      options:
-        $ref: '#/definitions/MapOptions'
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MapDevice:
-    properties:
-      actions:
-        items:
-          $ref: '#/definitions/MapDeviceAction'
-        type: array
-        x-go-name: Actions
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      image:
-        $ref: '#/definitions/Image'
-      image_id:
-        format: int64
-        type: integer
-        x-go-name: ImageId
-      states:
-        items:
-          $ref: '#/definitions/MapDeviceState'
-        type: array
-        x-go-name: States
-      system_name:
-        type: string
-        x-go-name: SystemName
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapDeviceAction:
-    properties:
-      device_action:
-        $ref: '#/definitions/DeviceAction'
-      device_action_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceActionId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      image:
-        $ref: '#/definitions/Image'
-      image_id:
-        format: int64
-        type: integer
-        x-go-name: ImageId
-      map_device_id:
-        format: int64
-        type: integer
-        x-go-name: MapDeviceId
-      type:
-        type: string
-        x-go-name: Type
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapDeviceHistory:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      map_element:
-        $ref: '#/definitions/MapElementShort'
-      type:
-        type: string
-        x-go-name: Type
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MapDeviceState:
-    properties:
-      device_state:
-        $ref: '#/definitions/DeviceState'
-      device_state_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceStateId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      image:
-        $ref: '#/definitions/Image'
-      image_id:
-        format: int64
-        type: integer
-        x-go-name: ImageId
-      map_device_id:
-        format: int64
-        type: integer
-        x-go-name: MapDeviceId
-      style:
-        type: string
-        x-go-name: Style
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapElement:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      graph_settings:
-        $ref: '#/definitions/MapElementGraphSettings'
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      layer_id:
-        format: int64
-        type: integer
-        x-go-name: LayerId
-      map_id:
-        format: int64
-        type: integer
-        x-go-name: MapId
-      name:
-        type: string
-        x-go-name: Name
-      prototype:
-        $ref: '#/definitions/Prototype'
-      prototype_id:
-        format: int64
-        type: integer
-        x-go-name: PrototypeId
-      prototype_type:
-        type: string
-        x-go-name: PrototypeType
-      status:
-        type: string
-        x-go-name: Status
-      weight:
-        format: int64
-        type: integer
-        x-go-name: Weight
-      zone:
-        $ref: '#/definitions/MapZone'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapElementGraphSettings:
-    properties:
-      height:
-        format: int64
-        type: integer
-        x-go-name: Height
-      position:
-        $ref: '#/definitions/MapElementGraphSettingsPosition'
-      width:
-        format: int64
-        type: integer
-        x-go-name: Width
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MapElementGraphSettingsPosition:
-    properties:
-      left:
-        format: int64
-        type: integer
-        x-go-name: Left
-      top:
-        format: int64
-        type: integer
-        x-go-name: Top
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MapElementShort:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MapFull:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      layers:
-        items:
-          $ref: '#/definitions/MapLayer'
-        type: array
-        x-go-name: Layers
-      name:
-        type: string
-        x-go-name: Name
-      options:
-        $ref: '#/definitions/MapOptions'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapImage:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      image:
-        $ref: '#/definitions/Image'
-      image_id:
-        format: int64
-        type: integer
-        x-go-name: ImageId
-      style:
-        type: string
-        x-go-name: Style
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapLayer:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      elements:
-        items:
-          $ref: '#/definitions/MapElement'
-        type: array
-        x-go-name: Elements
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      map:
-        $ref: '#/definitions/Map'
-      map_id:
-        format: int64
-        type: integer
-        x-go-name: MapId
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      weight:
-        format: int64
-        type: integer
-        x-go-name: Weight
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MapOptions:
-    properties:
-      element_option_text:
-        type: boolean
-        x-go-name: ElementOptionText
-      element_state_text:
-        type: boolean
-        x-go-name: ElementStateText
-      zoom:
-        format: double
-        type: number
-        x-go-name: Zoom
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MapText:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      style:
-        type: string
-        x-go-name: Style
-      text:
-        type: string
-        x-go-name: Text
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  MapZone:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Message:
@@ -1247,230 +453,197 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MqttClient:
+  Metric:
     properties:
-      clean_session:
-        type: boolean
-        x-go-name: CleanSession
-      client_id:
-        type: string
-        x-go-name: ClientID
-      connected_at:
+      created_at:
         format: date-time
         type: string
-        x-go-name: ConnectedAt
-      disconnected_at:
-        format: date-time
+        x-go-name: CreatedAt
+      data:
+        items:
+          $ref: '#/definitions/MetricDataItem'
+        type: array
+        x-go-name: Data
+      description:
         type: string
-        x-go-name: DisconnectedAt
-      keep_alive:
-        format: uint16
-        type: integer
-        x-go-name: KeepAlive
-      local_addr:
-        type: string
-        x-go-name: LocalAddr
-      password:
-        type: string
-        x-go-name: Password
-      remote_addr:
-        type: string
-        x-go-name: RemoteAddr
-      username:
-        type: string
-        x-go-name: Username
-      will_flag:
-        type: boolean
-        x-go-name: WillFlag
-      will_payload:
-        type: string
-        x-go-name: WillPayload
-      will_qos:
-        format: uint8
-        type: integer
-        x-go-name: WillQos
-      will_retain:
-        type: boolean
-        x-go-name: WillRetain
-      will_topic:
-        type: string
-        x-go-name: WillTopic
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MqttSession:
-    properties:
-      await_rel_len:
-        format: uint64
-        type: integer
-        x-go-name: AwaitRelLen
-      clean_session:
-        type: boolean
-        x-go-name: CleanSession
-      client_id:
-        type: string
-        x-go-name: ClientID
-      connected_at:
-        format: date-time
-        type: string
-        x-go-name: ConnectedAt
-      disconnected_at:
-        format: date-time
-        type: string
-        x-go-name: DisconnectedAt
-      inflight_len:
-        format: uint64
-        type: integer
-        x-go-name: InflightLen
-      max_await_rel:
+        x-go-name: Description
+      id:
         format: int64
         type: integer
-        x-go-name: MaxAwaitRel
-      max_inflight:
-        format: int64
-        type: integer
-        x-go-name: MaxInflight
-      max_msg_queue:
-        format: int64
-        type: integer
-        x-go-name: MaxMsgQueue
-      msg_queue_len:
-        format: uint64
-        type: integer
-        x-go-name: MsgQueueLen
-      qos0_msg_delivered_total:
-        format: uint64
-        type: integer
-        x-go-name: Qos0MsgDeliveredTotal
-      qos0_msg_dropped_total:
-        format: uint64
-        type: integer
-        x-go-name: Qos0MsgDroppedTotal
-      qos1_msg_delivered_total:
-        format: uint64
-        type: integer
-        x-go-name: Qos1MsgDeliveredTotal
-      qos1_msg_dropped_total:
-        format: uint64
-        type: integer
-        x-go-name: Qos1MsgDroppedTotal
-      qos2_msg_delivered_total:
-        format: uint64
-        type: integer
-        x-go-name: Qos2MsgDeliveredTotal
-      qos2_msg_dropped_total:
-        format: uint64
-        type: integer
-        x-go-name: Qos2MsgDroppedTotal
-      status:
-        type: string
-        x-go-name: Status
-      subscriptions:
-        format: uint64
-        type: integer
-        x-go-name: Subscriptions
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  MqttSubscription:
-    properties:
-      at:
-        format: date-time
-        type: string
-        x-go-name: At
-      client_id:
-        type: string
-        x-go-name: ClientID
+        x-go-name: Id
       name:
         type: string
         x-go-name: Name
-      qos:
-        format: uint8
-        type: integer
-        x-go-name: Qos
+      options:
+        $ref: '#/definitions/MetricOptions'
+      ranges:
+        items:
+          type: string
+        type: array
+        x-go-name: Ranges
+      type:
+        type: string
+        x-go-name: Type
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewDevice:
+  MetricDataItem:
+    properties:
+      metric:
+        $ref: '#/definitions/Metric'
+      metric_id:
+        format: int64
+        type: integer
+        x-go-name: MetricId
+      time:
+        format: date-time
+        type: string
+        x-go-name: Time
+      value:
+        type: object
+        x-go-name: Value
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MetricOptions:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/MetricOptionsItem'
+        type: array
+        x-go-name: Items
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MetricOptionsItem:
+    properties:
+      color:
+        type: string
+        x-go-name: Color
+      description:
+        type: string
+        x-go-name: Description
+      label:
+        type: string
+        x-go-name: Label
+      name:
+        type: string
+        x-go-name: Name
+      translate:
+        type: string
+        x-go-name: Translate
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewArea:
     properties:
       description:
         type: string
         x-go-name: Description
-      device:
-        $ref: '#/definitions/ParentDevice'
       name:
         type: string
         x-go-name: Name
-      node:
-        $ref: '#/definitions/NewDeviceNode'
-      properties:
-        $ref: '#/definitions/DeviceProperties'
-      status:
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewEntity:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/NewEntityAction'
+        type: array
+        x-go-name: Actions
+      area_id:
+        format: int64
+        type: integer
+        x-go-name: AreaId
+      attributes:
+        $ref: '#/definitions/EntityAttributes'
+      auto_load:
+        type: boolean
+        x-go-name: AutoLoad
+      description:
         type: string
-        x-go-name: Status
+        x-go-name: Description
+      hidden:
+        type: boolean
+        x-go-name: Hidden
+      icon:
+        type: string
+        x-go-name: Icon
+      image:
+        $ref: '#/definitions/Image'
+      metrics:
+        items:
+          $ref: '#/definitions/Metric'
+        type: array
+        x-go-name: Metrics
+      scripts:
+        items:
+          $ref: '#/definitions/Script'
+        type: array
+        x-go-name: Scripts
+      states:
+        items:
+          $ref: '#/definitions/NewEntityState'
+        type: array
+        x-go-name: States
       type:
         type: string
         x-go-name: Type
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewDeviceAction:
+  NewEntityAction:
     properties:
       description:
         type: string
         x-go-name: Description
-      device:
-        $ref: '#/definitions/DeviceActionDevice'
+      icon:
+        type: string
+        x-go-name: Icon
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
       name:
         type: string
         x-go-name: Name
       script:
-        $ref: '#/definitions/DeviceActionScript'
+        $ref: '#/definitions/Script'
+      script_id:
+        format: int64
+        type: integer
+        x-go-name: ScriptId
+      type:
+        type: string
+        x-go-name: Type
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewDeviceNode:
+  NewEntityState:
     properties:
+      description:
+        type: string
+        x-go-name: Description
+      icon:
+        type: string
+        x-go-name: Icon
       id:
         format: int64
         type: integer
         x-go-name: Id
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  NewDeviceState:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      device:
-        $ref: '#/definitions/DeviceStateDevice'
-      system_name:
-        type: string
-        x-go-name: SystemName
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewFlow:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
+      image:
+        $ref: '#/definitions/Image'
+      image_id:
+        format: int64
+        type: integer
+        x-go-name: ImageId
       name:
         type: string
         x-go-name: Name
-      scenario:
-        properties:
-          id:
-            format: int64
-            type: integer
-            x-go-name: Id
-        type: object
-        x-go-name: Scenario
-      status:
+      style:
         type: string
-        x-go-name: Status
-      workflow:
-        properties:
-          id:
-            format: int64
-            type: integer
-            x-go-name: Id
-        type: object
-        x-go-name: Workflow
+        x-go-name: Style
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewImage:
@@ -1505,8 +678,13 @@ definitions:
         x-go-name: Body
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewMap:
+  NewMetric:
     properties:
+      data:
+        items:
+          $ref: '#/definitions/MetricDataItem'
+        type: array
+        x-go-name: Data
       description:
         type: string
         x-go-name: Description
@@ -1514,91 +692,15 @@ definitions:
         type: string
         x-go-name: Name
       options:
-        $ref: '#/definitions/MapOptions'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewMapElement:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      graph_settings:
-        $ref: '#/definitions/MapElementGraphSettings'
-      layer:
-        $ref: '#/definitions/MapLayer'
-      layer_id:
-        format: int64
-        type: integer
-        x-go-name: LayerId
-      map:
-        $ref: '#/definitions/Map'
-      map_id:
-        format: int64
-        type: integer
-        x-go-name: MapId
-      name:
-        type: string
-        x-go-name: Name
-      prototype:
-        $ref: '#/definitions/Prototype'
-      prototype_id:
-        format: int64
-        type: integer
-        x-go-name: PrototypeId
-      prototype_type:
-        type: string
-        x-go-name: PrototypeType
-      status:
-        type: string
-        x-go-name: Status
-      weight:
-        format: int64
-        type: integer
-        x-go-name: Weight
-      zone:
-        $ref: '#/definitions/MapZone'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewMapLayer:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      map:
-        $ref: '#/definitions/Map'
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewMapZone:
-    properties:
-      name:
-        type: string
-        x-go-name: Name
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewMqttPublish:
-    properties:
-      payload:
+        $ref: '#/definitions/MetricOptions'
+      ranges:
         items:
-          format: uint8
-          type: integer
+          type: string
         type: array
-        x-go-name: Payload
-      qos:
-        format: int64
-        type: integer
-        x-go-name: Qos
-      retain:
-        type: boolean
-        x-go-name: Retain
-      topic:
+        x-go-name: Ranges
+      type:
         type: string
-        x-go-name: Topic
+        x-go-name: Type
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewNode:
@@ -1786,6 +888,7 @@ definitions:
         format: int64
         type: integer
         x-go-name: Id
+    title: NewUserImage ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewUserMeta:
@@ -1796,6 +899,7 @@ definitions:
       value:
         type: string
         x-go-name: Value
+    title: NewUserMeta ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewUserRole:
@@ -1803,33 +907,7 @@ definitions:
       name:
         type: string
         x-go-name: Name
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewWorkflow:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  NewWorkflowScenario:
-    properties:
-      name:
-        type: string
-        x-go-name: Name
-      system_name:
-        type: string
-        x-go-name: SystemName
-      workflow_id:
-        format: int64
-        type: integer
-        x-go-name: WorkflowId
+    title: NewUserRole ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewZigbee2mqtt:
@@ -1937,236 +1015,8 @@ definitions:
         x-go-name: TWSid
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  ParentDevice:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  Prototype:
-    properties:
-      actions:
-        items:
-          $ref: '#/definitions/MapDeviceAction'
-        type: array
-        x-go-name: Actions
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      device:
-        $ref: '#/definitions/Device'
-      device_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      image:
-        $ref: '#/definitions/Image'
-      image_id:
-        format: int64
-        type: integer
-        x-go-name: ImageId
-      states:
-        items:
-          $ref: '#/definitions/MapDeviceState'
-        type: array
-        x-go-name: States
-      style:
-        type: string
-        x-go-name: Style
-      system_name:
-        type: string
-        x-go-name: SystemName
-      text:
-        type: string
-        x-go-name: Text
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  RedactorConnector:
-    properties:
-      direction:
-        type: string
-        x-go-name: Direction
-      end:
-        properties:
-          object:
-            type: string
-            x-go-name: Object
-          point:
-            format: int64
-            type: integer
-            x-go-name: Point
-        type: object
-        x-go-name: End
-      flow_type:
-        type: string
-        x-go-name: FlowType
-      id:
-        type: string
-        x-go-name: Id
-      start:
-        properties:
-          object:
-            type: string
-            x-go-name: Object
-          point:
-            format: int64
-            type: integer
-            x-go-name: Point
-        type: object
-        x-go-name: Start
-      title:
-        type: string
-        x-go-name: Title
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  RedactorFlow:
-    properties:
-      connectors:
-        items:
-          $ref: '#/definitions/RedactorConnector'
-        type: array
-        x-go-name: Connectors
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      objects:
-        items:
-          $ref: '#/definitions/RedactorObject'
-        type: array
-        x-go-name: Objects
-      scenario:
-        $ref: '#/definitions/WorkflowScenario'
-      status:
-        type: string
-        x-go-name: Status
-      subscriptions:
-        items:
-          $ref: '#/definitions/FlowSubscription'
-        type: array
-        x-go-name: Subscriptions
-      update_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      workers:
-        items:
-          $ref: '#/definitions/Worker'
-        type: array
-        x-go-name: Workers
-      workflow:
-        $ref: '#/definitions/RedactorWorkflowModel'
-      zigbee2mqtt_devices:
-        items:
-          $ref: '#/definitions/Zigbee2mqttDeviceShort'
-        type: array
-        x-go-name: Zigbee2mqttDevices
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  RedactorObject:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      error:
-        type: string
-        x-go-name: Error
-      flow_link:
-        $ref: '#/definitions/Flow'
-      id:
-        type: string
-        x-go-name: Id
-      position:
-        properties:
-          left:
-            format: int64
-            type: integer
-            x-go-name: Left
-          top:
-            format: int64
-            type: integer
-            x-go-name: Top
-        type: object
-        x-go-name: Position
-      prototype_type:
-        type: string
-        x-go-name: PrototypeType
-      script:
-        $ref: '#/definitions/Script'
-      status:
-        type: string
-        x-go-name: Status
-      title:
-        type: string
-        x-go-name: Title
-      type:
-        properties:
-          action:
-            type: string
-            x-go-name: Action
-          end:
-            type: object
-            x-go-name: End
-          name:
-            type: string
-            x-go-name: Name
-          start:
-            type: object
-            x-go-name: Start
-          status:
-            type: string
-            x-go-name: Status
-        type: object
-        x-go-name: Type
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  RedactorWorkflowModel:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseType:
+    title: ResponseType ...
     type: string
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Role:
@@ -2234,30 +1084,6 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  SortMapElement:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      weight:
-        format: int64
-        type: integer
-        x-go-name: Weight
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  SortMapLayer:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      weight:
-        format: int64
-        type: integer
-        x-go-name: Weight
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Template:
     properties:
       content:
@@ -2318,6 +1144,7 @@ definitions:
       value:
         type: string
         x-go-name: Value
+    title: TemplateField ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   TemplateItem:
@@ -2373,102 +1200,7 @@ definitions:
         x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateDevice:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      device:
-        $ref: '#/definitions/ParentDevice'
-      name:
-        type: string
-        x-go-name: Name
-      node:
-        $ref: '#/definitions/NewDeviceNode'
-      properties:
-        $ref: '#/definitions/DeviceProperties'
-      status:
-        type: string
-        x-go-name: Status
-      type:
-        type: string
-        x-go-name: Type
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateDeviceAction:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      device:
-        $ref: '#/definitions/DeviceActionDevice'
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      script:
-        $ref: '#/definitions/DeviceActionScript'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  UpdateDeviceState:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      device:
-        $ref: '#/definitions/DeviceStateDevice'
-      system_name:
-        type: string
-        x-go-name: SystemName
-    type: object
-    x-go-package: github.com/e154/smart-home/api/mobile/v1/models
-  UpdateFlow:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      scenario:
-        properties:
-          id:
-            format: int64
-            type: integer
-            x-go-name: Id
-        type: object
-        x-go-name: Scenario
-      status:
-        type: string
-        x-go-name: Status
-      workflow:
-        properties:
-          id:
-            format: int64
-            type: integer
-            x-go-name: Id
-        type: object
-        x-go-name: Workflow
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateGateSettings:
-    properties:
-      address:
-        type: string
-        x-go-name: Address
-      enabled:
-        type: boolean
-        x-go-name: Enabled
-      gate_server_token:
-        type: string
-        x-go-name: GateServerToken
+  UpdateEntity:
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateImage:
@@ -2499,83 +1231,6 @@ definitions:
       url:
         type: string
         x-go-name: Url
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateMap:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      options:
-        $ref: '#/definitions/MapOptions'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateMapElement:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      graph_settings:
-        $ref: '#/definitions/MapElementGraphSettings'
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      layer_id:
-        format: int64
-        type: integer
-        x-go-name: LayerId
-      map_id:
-        format: int64
-        type: integer
-        x-go-name: MapId
-      name:
-        type: string
-        x-go-name: Name
-      prototype:
-        $ref: '#/definitions/Prototype'
-      prototype_id:
-        format: int64
-        type: integer
-        x-go-name: PrototypeId
-      prototype_type:
-        type: string
-        x-go-name: PrototypeType
-      status:
-        type: string
-        x-go-name: Status
-      weight:
-        format: int64
-        type: integer
-        x-go-name: Weight
-      zone:
-        $ref: '#/definitions/MapZone'
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateMapLayer:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      map:
-        $ref: '#/definitions/Map'
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateNode:
@@ -2796,51 +1451,6 @@ definitions:
         x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateWorkflow:
-    properties:
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      scripts:
-        items:
-          $ref: '#/definitions/Script'
-        type: array
-        x-go-name: Scripts
-      status:
-        type: string
-        x-go-name: Status
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  UpdateWorkflowScenario:
-    properties:
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      scripts:
-        items:
-          $ref: '#/definitions/Script'
-        type: array
-        x-go-name: Scripts
-      system_name:
-        type: string
-        x-go-name: SystemName
-      workflow_id:
-        format: int64
-        type: integer
-        x-go-name: WorkflowId
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateZigbee2mqtt:
     properties:
       base_topic:
@@ -2871,6 +1481,7 @@ definitions:
       value:
         type: string
         x-go-name: Value
+    title: UserByIdModelMeta ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UserByIdModelParent:
@@ -2882,6 +1493,7 @@ definitions:
       nickname:
         type: string
         x-go-name: Nickname
+    title: UserByIdModelParent ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UserFull:
@@ -2975,6 +1587,7 @@ definitions:
         format: date-time
         type: string
         x-go-name: Time
+    title: UserHistory ...
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UserShot:
@@ -3050,179 +1663,6 @@ definitions:
       version:
         type: string
         x-go-name: Version
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  Worker:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      device_action:
-        $ref: '#/definitions/DeviceAction'
-      device_action_id:
-        format: int64
-        type: integer
-        x-go-name: DeviceActionId
-      flow:
-        $ref: '#/definitions/Flow'
-      flow_id:
-        format: int64
-        type: integer
-        x-go-name: FlowId
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      status:
-        type: string
-        x-go-name: Status
-      time:
-        type: string
-        x-go-name: Time
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      workflow:
-        $ref: '#/definitions/Workflow'
-      workflow_id:
-        format: int64
-        type: integer
-        x-go-name: WorkflowId
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  Workflow:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      scenario:
-        $ref: '#/definitions/WorkflowScenario'
-      scenarios:
-        items:
-          $ref: '#/definitions/WorkflowScenario'
-        type: array
-        x-go-name: Scenarios
-      scripts:
-        items:
-          $ref: '#/definitions/Script'
-        type: array
-        x-go-name: Scripts
-      status:
-        type: string
-        x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  WorkflowScenario:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      scripts:
-        items:
-          $ref: '#/definitions/Script'
-        type: array
-        x-go-name: Scripts
-      system_name:
-        type: string
-        x-go-name: SystemName
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-      workflow_id:
-        format: int64
-        type: integer
-        x-go-name: WorkflowId
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  WorkflowScenarioShort:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      system_name:
-        type: string
-        x-go-name: SystemName
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  WorkflowShort:
-    properties:
-      created_at:
-        format: date-time
-        type: string
-        x-go-name: CreatedAt
-      description:
-        type: string
-        x-go-name: Description
-      id:
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        type: string
-        x-go-name: Name
-      scenario:
-        $ref: '#/definitions/WorkflowScenarioShort'
-      scenarios:
-        items:
-          $ref: '#/definitions/WorkflowScenarioShort'
-        type: array
-        x-go-name: Scenarios
-      status:
-        type: string
-        x-go-name: Status
-      updated_at:
-        format: date-time
-        type: string
-        x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  WorkflowUpdateWorkflowScenario:
-    properties:
-      workflow_scenario_id:
-        format: int64
-        type: integer
-        x-go-name: WorkflowScenarioId
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   Zigbee2mqtt:
@@ -3385,453 +1825,9 @@ paths:
       summary: get user access list
       tags:
       - auth
-  /device:
-    post:
-      operationId: deviceAdd
-      parameters:
-      - description: device params
-        in: body
-        name: device
-        required: true
-        schema:
-          $ref: '#/definitions/NewDevice'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Device'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new device
-      tags:
-      - device
-  /device/{id}:
-    delete:
-      operationId: deviceDeleteById
-      parameters:
-      - description: Device ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete device by id
-      tags:
-      - device
+  /entities:
     get:
-      operationId: deviceGetById
-      parameters:
-      - description: Device ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Device'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get device by id
-      tags:
-      - device
-    put:
-      operationId: deviceUpdateById
-      parameters:
-      - description: Device ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update device params
-        in: body
-        name: device
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateDevice'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Device'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update device by id
-      tags:
-      - device
-  /device_action:
-    post:
-      operationId: deviceActionAdd
-      parameters:
-      - description: device action params
-        in: body
-        name: device_action
-        required: true
-        schema:
-          $ref: '#/definitions/NewDeviceAction'
-          type: object
-      responses:
-        "200":
-          schema:
-            $ref: '#/definitions/DeviceAction'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new device action
-      tags:
-      - device_action
-  /device_action/{id}:
-    delete:
-      operationId: deviceActionDeleteById
-      parameters:
-      - description: DeviceAction ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete device action by id
-      tags:
-      - device_action
-    get:
-      operationId: deviceActionGetById
-      parameters:
-      - description: DeviceAction ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DeviceAction'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get device action by id
-      tags:
-      - device_action
-    put:
-      operationId: deviceActionUpdateById
-      parameters:
-      - description: DeviceAction ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update device action params
-        in: body
-        name: device_action
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateDeviceAction'
-          type: object
-      responses:
-        "200":
-          schema:
-            $ref: '#/definitions/DeviceAction'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update device action by id
-      tags:
-      - device_action
-  /device_action/search:
-    get:
-      operationId: deviceActionSearch
-      parameters:
-      - description: query
-        in: query
-        name: query
-        type: string
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/DeviceActionSearch'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: search device actions
-      tags:
-      - device_action
-  /device_actions/{id}:
-    get:
-      operationId: deviceActionGetListByDeviceId
-      parameters:
-      - description: Device ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          schema:
-            items:
-              $ref: '#/definitions/DeviceAction'
-            type: array
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get device actions by device id
-      tags:
-      - device_action
-  /device_state:
-    post:
-      operationId: deviceStateAdd
-      parameters:
-      - description: device state params
-        in: body
-        name: device_state
-        required: true
-        schema:
-          $ref: '#/definitions/NewDeviceState'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DeviceState'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new device state
-      tags:
-      - device_state
-  /device_state/{id}:
-    delete:
-      operationId: deviceStateDeleteById
-      parameters:
-      - description: DeviceState ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete device state by id
-      tags:
-      - device_state
-    get:
-      operationId: deviceStateGetById
-      parameters:
-      - description: DeviceState ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DeviceState'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get device state by id
-      tags:
-      - device_state
-    put:
-      operationId: deviceStateUpdateById
-      parameters:
-      - description: DeviceState ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update device state params
-        in: body
-        name: device_state
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateDeviceState'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/DeviceState'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update device state by id
-      tags:
-      - device_state
-  /device_states/{id}:
-    get:
-      operationId: deviceStateList
-      parameters:
-      - description: Device ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/DeviceState'
-            type: array
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get device state list by device id
-      tags:
-      - device_state
-  /devices:
-    get:
-      operationId: deviceList
+      operationId: entityList
       parameters:
       - default: 10
         description: limit
@@ -3857,7 +1853,7 @@ paths:
         type: string
       responses:
         "200":
-          $ref: '#/responses/DeviceList'
+          $ref: '#/responses/EntityList'
         "401":
           description: Unauthorized
         "403":
@@ -3866,12 +1862,12 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: get device list
+      summary: get entity list
       tags:
-      - device
-  /devices/search:
+      - entity
+  /entities/search:
     get:
-      operationId: deviceSearch
+      operationId: entitySearch
       parameters:
       - description: query
         in: query
@@ -3891,7 +1887,7 @@ paths:
         type: integer
       responses:
         "200":
-          $ref: '#/responses/DeviceSearch'
+          $ref: '#/responses/EntitySearch'
         "401":
           description: Unauthorized
         "403":
@@ -3900,25 +1896,25 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: search device
+      summary: search entity
       tags:
-      - device
-  /flow:
+      - entity
+  /entity:
     post:
-      operationId: flowAdd
+      operationId: entityAdd
       parameters:
-      - description: flow params
+      - description: entity params
         in: body
-        name: flow
+        name: entity
         required: true
         schema:
-          $ref: '#/definitions/NewFlow'
+          $ref: '#/definitions/NewEntity'
           type: object
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/Flow'
+            $ref: '#/definitions/Entity'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -3929,14 +1925,14 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: add new flow
+      summary: add new entity
       tags:
-      - flow
-  /flow/{id}:
+      - entity
+  /entity/{id}:
     delete:
-      operationId: flowDeleteById
+      operationId: entityDeleteById
       parameters:
-      - description: Flow ID
+      - description: Entity ID
         in: path
         name: id
         required: true
@@ -3956,22 +1952,22 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: delete flow by id
+      summary: delete entity by id
       tags:
-      - flow
+      - entity
     get:
-      operationId: flowGetById
+      operationId: entityGetById
       parameters:
-      - description: Flow ID
+      - description: Entity ID
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/Flow'
+            $ref: '#/definitions/Entity'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -3984,29 +1980,29 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: get flow by id
+      summary: get entity by id
       tags:
-      - flow
+      - entity
     put:
-      operationId: flowUpdateById
+      operationId: entityUpdateById
       parameters:
-      - description: Flow ID
+      - description: Entity ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Update flow params
+      - description: Update entity params
         in: body
-        name: flow
+        name: entity
         required: true
         schema:
-          $ref: '#/definitions/UpdateFlow'
+          $ref: '#/definitions/UpdateEntity'
           type: object
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/Flow'
+            $ref: '#/definitions/Entity'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -4019,312 +2015,9 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: update flow by id
+      summary: update entity by id
       tags:
-      - flow
-  /flow/{id}/redactor:
-    get:
-      operationId: flowGetRedactor
-      parameters:
-      - description: Flow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/RedactorFlow'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get flow redactor data by flow id
-      tags:
-      - flow
-    put:
-      operationId: flowUpdateRedactor
-      parameters:
-      - description: Flow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: flow redactor params
-        in: body
-        name: flow
-        required: true
-        schema:
-          $ref: '#/definitions/RedactorFlow'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/RedactorFlow'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update flow by id
-      tags:
-      - flow
-  /flows:
-    get:
-      operationId: flowList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/FlowList'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get flow list
-      tags:
-      - flow
-  /flows/search:
-    get:
-      operationId: flowSearch
-      parameters:
-      - description: query
-        in: query
-        name: query
-        type: string
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/FlowSearch'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: search flow
-      tags:
-      - flow
-  /gate:
-    get:
-      operationId: gateGetSettings
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/GateSettings'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get gate settings
-      tags:
-      - gate
-    put:
-      operationId: gateUpdateSettings
-      parameters:
-      - description: Update gate params
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateGateSettings'
-          type: object
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update gate settings
-      tags:
-      - gate
-  /gate/mobile:
-    post:
-      operationId: gateAddMobile
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new mobile client
-      tags:
-      - gate
-  /gate/mobile/{token}:
-    delete:
-      operationId: gateDeleteMobile
-      parameters:
-      - description: mobile token
-        in: path
-        name: token
-        required: true
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete mobile by token
-      tags:
-      - gate
-  /gate/mobiles:
-    get:
-      operationId: gateGetMobileList
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/GateMobileList'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get gate mobile list
-      tags:
-      - gate
-  /history/map:
-    get:
-      operationId: MapDeviceHistoryList
-      parameters:
-      - description: map id
-        in: query
-        name: map_id
-        required: true
-        type: integer
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/MapDeviceHistoryList'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get map device history
-      tags:
-      - map_device_history
+      - entity
   /image:
     post:
       operationId: imageAdd
@@ -4676,1004 +2369,6 @@ paths:
       summary: search log
       tags:
       - log
-  /map:
-    post:
-      operationId: mapAdd
-      parameters:
-      - description: map params
-        in: body
-        name: map
-        required: true
-        schema:
-          $ref: '#/definitions/NewMap'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Map'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new map
-      tags:
-      - map
-  /map/{id}:
-    delete:
-      operationId: mapDeleteById
-      parameters:
-      - description: Map ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete map by id
-      tags:
-      - map
-    get:
-      operationId: mapGetById
-      parameters:
-      - description: Map ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Map'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get map by id
-      tags:
-      - map
-    put:
-      operationId: mapUpdateById
-      parameters:
-      - description: Map ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update map params
-        in: body
-        name: map
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateMap'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Map'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update map by id
-      tags:
-      - map
-  /map/{id}/full:
-    get:
-      operationId: mapFullGetById
-      parameters:
-      - description: Map ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapFull'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get map full by id
-      tags:
-      - map
-  /map_element:
-    post:
-      operationId: mapElementAdd
-      parameters:
-      - description: element params
-        in: body
-        name: map_element
-        required: true
-        schema:
-          $ref: '#/definitions/NewMapElement'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapElement'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new map element
-      tags:
-      - map_element
-  /map_element/{id}:
-    delete:
-      operationId: mapElementDeleteById
-      parameters:
-      - description: MapElement ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete map element by id
-      tags:
-      - map_element
-    get:
-      operationId: mapElementGetById
-      parameters:
-      - description: MapElement ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapElement'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get map element by id
-      tags:
-      - map_element
-    put:
-      operationId: mapElementUpdateById
-      parameters:
-      - description: MapElement ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update map element params
-        in: body
-        name: map_element
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateMapElement'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapElement'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: full update map element by id
-      tags:
-      - map_element
-  /map_element/{id}/element_only:
-    put:
-      operationId: mapElementUpdateById
-      parameters:
-      - description: MapElement ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update map element params
-        in: body
-        name: map_element
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateMapElement'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapElement'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update map element only by id
-      tags:
-      - map_element
-  /map_element/sort:
-    put:
-      operationId: mapElementUpdateById
-      parameters:
-      - description: sort params
-        in: body
-        name: sort_params
-        required: true
-        schema:
-          $ref: '#/definitions/SortMapElement'
-          type: object
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: sort map elements
-      tags:
-      - map_element
-  /map_elements:
-    get:
-      operationId: mapElementList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapElement'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get map element list
-      tags:
-      - map_element
-  /map_layer:
-    post:
-      operationId: mapLayerAdd
-      parameters:
-      - description: layer params
-        in: body
-        name: map_layer
-        required: true
-        schema:
-          $ref: '#/definitions/NewMapLayer'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapLayer'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new map layer
-      tags:
-      - map_layer
-  /map_layer/{id}:
-    delete:
-      operationId: mapLayerDeleteById
-      parameters:
-      - description: MapLayer ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete map layer by id
-      tags:
-      - map_layer
-    get:
-      operationId: mapLayerGetById
-      parameters:
-      - description: MapLayer ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapLayer'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get map layer by id
-      tags:
-      - map_layer
-    put:
-      operationId: mapLayerUpdateById
-      parameters:
-      - description: MapLayer ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: layer params
-        in: body
-        name: map_layer
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateMapLayer'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapLayer'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update map layer
-      tags:
-      - map_layer
-  /map_layer/sort:
-    put:
-      operationId: mapLayerUpdateById
-      parameters:
-      - description: sort params
-        in: body
-        name: sort_params
-        required: true
-        schema:
-          $ref: '#/definitions/SortMapLayer'
-          type: object
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: sort map layers
-      tags:
-      - map_layer
-  /map_layers:
-    get:
-      operationId: mapLayerList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/MapLayerList'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get map layer list
-      tags:
-      - map_layer
-  /map_zone:
-    post:
-      operationId: mapZoneAdd
-      parameters:
-      - description: map_zone params
-        in: body
-        name: map_zone
-        required: true
-        schema:
-          $ref: '#/definitions/NewMapZone'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MapZone'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new map_zone
-      tags:
-      - map_zone
-  /map_zone/{name}:
-    delete:
-      operationId: mapZoneDeleteByName
-      parameters:
-      - description: MapZone Name
-        in: path
-        name: name
-        required: true
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete map_zone by name
-      tags:
-      - map_zone
-  /map_zone/search:
-    get:
-      operationId: mapZoneSearch
-      parameters:
-      - description: query
-        in: query
-        name: query
-        type: string
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/MapZoneSearch'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: search map_zone
-      tags:
-      - map_zone
-  /maps:
-    get:
-      operationId: mapList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/MapList'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get map list
-      tags:
-      - map
-  /maps/search:
-    get:
-      operationId: mapSearch
-      parameters:
-      - description: query
-        in: query
-        name: query
-        type: string
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/MapSearch'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: search map
-      tags:
-      - map
-  /mqtt/client/{id}:
-    delete:
-      operationId: mqttCloseClient
-      parameters:
-      - description: client ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: close client
-      tags:
-      - mqtt
-    get:
-      operationId: mqttClientGetById
-      parameters:
-      - description: client ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MqttClient'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get client by ID
-      tags:
-      - mqtt
-  /mqtt/client/{id}/session:
-    get:
-      operationId: mqttClientGetById
-      parameters:
-      - description: client ID
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/MqttSession'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get session by client ID
-      tags:
-      - mqtt
-  /mqtt/client/{id}/subscriptions:
-    get:
-      operationId: mqttSubscriptionList
-      parameters:
-      - description: client ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/MqttSubscriptionList'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get subscription list
-      tags:
-      - mqtt
-  /mqtt/client/{id}/topic:
-    delete:
-      operationId: mqttUnsubscribeTopic
-      parameters:
-      - description: client ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: topic
-        in: query
-        name: topic
-        required: true
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete mqtt by id
-      tags:
-      - mqtt
-  /mqtt/clients:
-    get:
-      operationId: mqttClientList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/MqttClientList'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get client list
-      tags:
-      - mqtt
-  /mqtt/publish:
-    post:
-      operationId: mqttPublish
-      parameters:
-      - description: publish params
-        in: body
-        name: mqtt
-        required: true
-        schema:
-          $ref: '#/definitions/NewMqttPublish'
-          type: object
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: publish
-      tags:
-      - mqtt
-  /mqtt/search_topic:
-    get:
-      operationId: mqttSearchTopic
-      parameters:
-      - description: query
-        in: query
-        name: query
-        type: string
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/MqttSearchSubscriptionResult'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: search mqtt topic
-      tags:
-      - mqtt
-  /mqtt/sessions:
-    get:
-      operationId: mqttSessionList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/MqttSessionList'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get session list
-      tags:
-      - mqtt
   /node:
     post:
       operationId: nodeAdd
@@ -7246,432 +3941,6 @@ paths:
       summary: get server version
       tags:
       - version
-  /workflow:
-    post:
-      operationId: workflowAdd
-      parameters:
-      - description: workflow params
-        in: body
-        name: workflow
-        required: true
-        schema:
-          $ref: '#/definitions/NewWorkflow'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Workflow'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new workflow
-      tags:
-      - workflow
-  /workflow/{id}:
-    delete:
-      operationId: workflowDeleteById
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete workflow by id
-      tags:
-      - workflow
-    get:
-      operationId: workflowGetById
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Workflow'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get workflow by id
-      tags:
-      - workflow
-    put:
-      operationId: workflowUpdateById
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update workflow params
-        in: body
-        name: workflow
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateWorkflow'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Workflow'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update workflow by id
-      tags:
-      - workflow
-  /workflow/{id}/scenario:
-    post:
-      operationId: workflowScenarioAdd
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: workflow scenario params
-        in: body
-        name: workflow_scenario
-        required: true
-        schema:
-          $ref: '#/definitions/NewWorkflowScenario'
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/WorkflowScenario'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new workflow scenario
-      tags:
-      - workflow_scenario
-  /workflow/{id}/scenario/{scenario_id}:
-    delete:
-      operationId: workflowScenarioDeleteById
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Workflow scenario ID
-        in: path
-        name: scenario_id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete workflow scenario by id
-      tags:
-      - workflow_scenario
-    get:
-      operationId: workflowScenarioGetById
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: WorkflowScenario ID
-        in: path
-        name: scenario_id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/WorkflowScenario'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get workflow scenario by id
-      tags:
-      - workflow_scenario
-    put:
-      operationId: workflowScenarioUpdateById
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: WorkflowScenario ID
-        in: path
-        name: scenario_id
-        required: true
-        type: integer
-      - description: Update workflow scenario params
-        in: body
-        name: workflowScenario
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateWorkflowScenario'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/WorkflowScenario'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update workflow scenario by id
-      tags:
-      - workflow_scenario
-  /workflow/{id}/scenarios:
-    get:
-      operationId: workflowScenarioList
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/WorkflowScenarios'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get workflow scenario list
-      tags:
-      - workflow_scenario
-  /workflow/{id}/scenarios/search:
-    get:
-      operationId: workflowScenarioSearch
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: query
-        in: query
-        name: query
-        type: string
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/WorkflowScenarioSearch'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: search workflow scenario
-      tags:
-      - workflow_scenario
-  /workflow/{id}/update_scenario:
-    put:
-      operationId: workflowUpdateScenario
-      parameters:
-      - description: Workflow ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update workflow scenario params
-        in: body
-        name: workflowUpdateWorkflowScenario
-        required: true
-        schema:
-          $ref: '#/definitions/WorkflowUpdateWorkflowScenario'
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update workflow scenario
-      tags:
-      - workflow
-  /workflows:
-    get:
-      operationId: workflowList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/WorkflowList'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get workflow list
-      tags:
-      - workflow
-  /workflows/search:
-    get:
-      operationId: workflowSearch
-      parameters:
-      - description: query
-        in: query
-        name: query
-        type: string
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/WorkflowSearch'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: search workflow
-      tags:
-      - workflow
   /zigbee2mqtt:
     post:
       operationId: bridgeAdd
@@ -8045,74 +4314,6 @@ paths:
 produces:
 - application/json
 responses:
-  DeviceActionList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/DeviceAction'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  DeviceActionSearch:
-    schema:
-      properties:
-        device_actions:
-          items:
-            $ref: '#/definitions/DeviceAction'
-          type: array
-          x-go-name: DeviceActions
-      type: object
-  DeviceList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/Device'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  DeviceSearch:
-    schema:
-      properties:
-        devices:
-          items:
-            $ref: '#/definitions/DeviceShort'
-          type: array
-          x-go-name: Devices
-      type: object
   Error:
     description: Error response
     schema:
@@ -8126,41 +4327,8 @@ responses:
           type: string
           x-go-name: Message
       type: object
-  FlowList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/FlowShort'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  FlowSearch:
-    schema:
-      properties:
-        flows:
-          items:
-            $ref: '#/definitions/Flow'
-          type: array
-          x-go-name: Flows
-      type: object
   ImageList:
+    description: ""
     schema:
       properties:
         items:
@@ -8174,7 +4342,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8186,6 +4354,7 @@ responses:
           x-go-name: Meta
       type: object
   LogList:
+    description: ""
     schema:
       properties:
         items:
@@ -8199,7 +4368,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8211,6 +4380,7 @@ responses:
           x-go-name: Meta
       type: object
   LogSearch:
+    description: ""
     schema:
       properties:
         logs:
@@ -8219,150 +4389,8 @@ responses:
           type: array
           x-go-name: Logs
       type: object
-  MapDeviceHistoryList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/MapDeviceHistory'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  MapElementList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/MapElement'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  MapLayerList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/MapLayer'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  MapList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/Map'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  MapSearch:
-    schema:
-      properties:
-        maps:
-          items:
-            $ref: '#/definitions/Map'
-          type: array
-          x-go-name: Maps
-      type: object
-  MapZoneList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/MapZone'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  MapZoneSearch:
-    schema:
-      properties:
-        zones:
-          items:
-            $ref: '#/definitions/MapZone'
-          type: array
-          x-go-name: MapZones
-      type: object
   MessageDeliveryList:
+    description: ""
     schema:
       properties:
         items:
@@ -8376,91 +4404,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  MqttClientList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/MqttClient'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  MqttSearchSubscriptionResult:
-    schema:
-      properties:
-        subscriptions:
-          items:
-            $ref: '#/definitions/MqttSubscription'
-          type: array
-          x-go-name: Subscriptions
-      type: object
-  MqttSessionList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/MqttSession'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  MqttSubscriptionList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/MqttSubscription'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8481,6 +4425,7 @@ responses:
           x-go-name: Id
       type: object
   NodeList:
+    description: ""
     schema:
       properties:
         items:
@@ -8494,7 +4439,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8506,6 +4451,7 @@ responses:
           x-go-name: Meta
       type: object
   NodeSearch:
+    description: ""
     schema:
       properties:
         nodes:
@@ -8515,6 +4461,7 @@ responses:
           x-go-name: Nodes
       type: object
   RoleList:
+    description: ""
     schema:
       properties:
         items:
@@ -8528,7 +4475,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8540,6 +4487,7 @@ responses:
           x-go-name: Meta
       type: object
   RoleSearch:
+    description: ""
     schema:
       properties:
         roles:
@@ -8549,6 +4497,7 @@ responses:
           x-go-name: Roles
       type: object
   ScriptExec:
+    description: ""
     schema:
       properties:
         result:
@@ -8556,6 +4505,7 @@ responses:
           x-go-name: Result
       type: object
   ScriptList:
+    description: ""
     schema:
       properties:
         items:
@@ -8569,7 +4519,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8581,6 +4531,7 @@ responses:
           x-go-name: Meta
       type: object
   ScriptSearch:
+    description: ""
     schema:
       properties:
         scripts:
@@ -8594,6 +4545,7 @@ responses:
     schema:
       type: object
   TemplateItemList:
+    description: ""
     schema:
       properties:
         items:
@@ -8607,7 +4559,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8619,6 +4571,7 @@ responses:
           x-go-name: Meta
       type: object
   TemplateItemSortedList:
+    description: ""
     schema:
       properties:
         items:
@@ -8632,6 +4585,7 @@ responses:
           x-go-name: Total
       type: object
   TemplateList:
+    description: ""
     schema:
       properties:
         items:
@@ -8645,7 +4599,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8657,6 +4611,7 @@ responses:
           x-go-name: Meta
       type: object
   TemplateSearch:
+    description: ""
     schema:
       properties:
         templates:
@@ -8666,6 +4621,7 @@ responses:
           x-go-name: Templates
       type: object
   UserList:
+    description: ""
     schema:
       properties:
         items:
@@ -8679,7 +4635,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount
@@ -8691,6 +4647,7 @@ responses:
           x-go-name: Meta
       type: object
   UserSearch:
+    description: ""
     schema:
       properties:
         users:
@@ -8699,59 +4656,8 @@ responses:
           type: array
           x-go-name: Users
       type: object
-  WorkflowList:
-    schema:
-      properties:
-        items:
-          items:
-            $ref: '#/definitions/WorkflowShort'
-          type: array
-          x-go-name: Items
-        meta:
-          properties:
-            limit:
-              format: int64
-              type: integer
-              x-go-name: Limit
-            object_count:
-              format: int64
-              type: integer
-              x-go-name: ObjectCount
-            offset:
-              format: int64
-              type: integer
-              x-go-name: Offset
-          type: object
-          x-go-name: Meta
-      type: object
-  WorkflowScenarioSearch:
-    schema:
-      properties:
-        scenarios:
-          items:
-            $ref: '#/definitions/WorkflowScenario'
-          type: array
-          x-go-name: Scenarios
-      type: object
-  WorkflowScenarios:
-    schema:
-      properties:
-        scenarios:
-          items:
-            $ref: '#/definitions/WorkflowScenario'
-          type: array
-          x-go-name: Scenarios
-      type: object
-  WorkflowSearch:
-    schema:
-      properties:
-        workflows:
-          items:
-            $ref: '#/definitions/Workflow'
-          type: array
-          x-go-name: Workflows
-      type: object
   Zigbee2mqttDeviceSearch:
+    description: ""
     schema:
       properties:
         devices:
@@ -8761,6 +4667,7 @@ responses:
           x-go-name: Zigbee2mqttDevices
       type: object
   Zigbee2mqttList:
+    description: ""
     schema:
       properties:
         items:
@@ -8774,7 +4681,7 @@ responses:
               format: int64
               type: integer
               x-go-name: Limit
-            object_count:
+            objects_count:
               format: int64
               type: integer
               x-go-name: ObjectCount

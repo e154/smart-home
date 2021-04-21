@@ -19,38 +19,88 @@
 package initial
 
 import (
-	"github.com/e154/smart-home/adaptors"
+	"context"
+	"errors"
+	"fmt"
+	. "github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/automation"
+	"github.com/e154/smart-home/system/entity_manager"
+	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/env1"
+	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/plugin_manager"
 	"github.com/e154/smart-home/system/scripts"
+	"go.uber.org/fx"
+	"strconv"
 )
 
 var (
 	log = common.MustGetLogger("initial")
 )
 
-type InitialService struct {
+var (
+	currentVersion = 3
+)
+
+// Initial ...
+type Initial struct {
 	migrations    *migrations.Migrations
-	adaptors      *adaptors.Adaptors
+	adaptors      *Adaptors
 	scriptService *scripts.ScriptService
 	accessList    *access_list.AccessListService
+	pluginLoader  *plugins.Loader
+	entityManager *entity_manager.EntityManager
+	pluginManager *plugin_manager.PluginManager
+	automation    *automation.Automation
+	api           *server.Server
+	metrics       *metrics.MetricManager
 }
 
-func NewInitialService(migrations *migrations.Migrations,
-	adaptors *adaptors.Adaptors,
+// NewInitial ...
+func NewInitial(lc fx.Lifecycle,
+	migrations *migrations.Migrations,
+	adaptors *Adaptors,
 	scriptService *scripts.ScriptService,
-	accessList *access_list.AccessListService) *InitialService {
-	return &InitialService{
+	accessList *access_list.AccessListService,
+	pluginLoader *plugins.Loader,
+	entityManager *entity_manager.EntityManager,
+	pluginManager *plugin_manager.PluginManager,
+	automation *automation.Automation,
+	api *server.Server,
+	metrics *metrics.MetricManager) *Initial {
+	initial := &Initial{
 		migrations:    migrations,
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		accessList:    accessList,
+		pluginLoader:  pluginLoader,
+		entityManager: entityManager,
+		pluginManager: pluginManager,
+		automation:    automation,
+		api:           api,
+		metrics:       metrics,
 	}
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) (err error) {
+			initial.Start()
+			return nil
+		},
+		OnStop: func(ctx context.Context) (err error) {
+			initial.Shutdown()
+			return nil
+		},
+	})
+	return initial
 }
 
-func (n *InitialService) Reset() {
+// Reset ...
+func (n *Initial) Reset() {
 
 	log.Info("full reset")
 
@@ -59,13 +109,84 @@ func (n *InitialService) Reset() {
 	log.Info("complete")
 }
 
-func (n *InitialService) InstallDemoData() {
+// InstallDemoData ...
+func (n *Initial) InstallDemoData() {
 
 	log.Info("install demo data")
 
 	n.migrations.Purge()
 
-	env1.Init(n.adaptors, n.accessList, n.scriptService)
+	tx := n.adaptors.Begin()
+
+	env1.InstallDemoData(tx, n.accessList, n.scriptService)
+
+	err := tx.Variable.Add(m.Variable{
+		Name:  "initial_version",
+		Value: fmt.Sprintf("%d", currentVersion),
+	})
+	So(err, ShouldBeNil)
+
+	tx.Commit()
 
 	log.Info("complete")
+}
+
+// checkForUpgrade ...
+func (n *Initial) checkForUpgrade() {
+
+	defer func() {
+		fmt.Println("")
+	}()
+
+	tx := n.adaptors.Begin()
+
+	v, err := tx.Variable.GetByName("initial_version")
+	if err != nil {
+
+		if errors.Is(err, ErrRecordNotFound) {
+			v = m.Variable{
+				Name:  "initial_version",
+				Value: fmt.Sprintf("%d", 1),
+			}
+			err = tx.Variable.Add(v)
+			So(err, ShouldBeNil)
+		}
+
+		// create
+		env1.Create(tx, n.accessList, n.scriptService)
+	}
+
+	oldVersion, err := strconv.Atoi(v.Value)
+	So(err, ShouldBeNil)
+
+	// upgrade
+	env1.Upgrade(oldVersion, tx, n.accessList, n.scriptService)
+
+	if oldVersion >= currentVersion {
+		tx.Commit()
+		return
+	}
+
+	v.Value = fmt.Sprintf("%d", currentVersion)
+	err = tx.Variable.Update(v)
+	So(err, ShouldBeNil)
+
+	tx.Commit()
+}
+
+// Start ...
+func (n *Initial) Start() {
+
+	n.checkForUpgrade()
+	n.metrics.Start()
+	n.pluginLoader.Register()
+	n.pluginManager.Start()
+	n.entityManager.LoadEntities()
+	n.automation.Start()
+	n.api.Start()
+}
+
+// Shutdown ...
+func (n *Initial) Shutdown() {
+
 }

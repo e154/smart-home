@@ -23,19 +23,40 @@ import (
 )
 
 const (
+	// DevTypeCommand ...
 	DevTypeCommand = DeviceType("command")
 )
 
+// DevCommandConfig ...
 type DevCommandConfig struct {
 	Validation
 }
 
+// DevCommandRequest ...
 type DevCommandRequest struct {
 	Name string   `json:"name"`
 	Args []string `json:"args"`
 }
 
+// DevCommandResponse ...
 type DevCommandResponse struct {
 	BaseResponse
 	Result string `json:"result"`
+}
+
+// Javascript Binding
+//
+// RunCommand(name, args)
+//
+func NewRunCommandBind(name string, args []string) RunCommandBind {
+	return RunCommandBind{
+		Name: name,
+		Args: args,
+	}
+}
+
+// RunCommandBind ...
+type RunCommandBind struct {
+	Name string
+	Args []string
 }

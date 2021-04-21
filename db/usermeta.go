@@ -20,10 +20,12 @@ package db
 
 import "github.com/jinzhu/gorm"
 
+// UserMetas ...
 type UserMetas struct {
 	Db *gorm.DB
 }
 
+// UserMeta ...
 type UserMeta struct {
 	Id     int64 `gorm:"primary_key"`
 	UserId int64
@@ -31,10 +33,12 @@ type UserMeta struct {
 	Value  string
 }
 
+// TableName ...
 func (m *UserMeta) TableName() string {
 	return "user_metas"
 }
 
+// UpdateOrCreate ...
 func (m *UserMetas) UpdateOrCreate(meta *UserMeta) (id int64, err error) {
 
 	err = m.Db.Model(&UserMeta{}).

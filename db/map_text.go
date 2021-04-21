@@ -19,24 +19,28 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
 	"fmt"
+	"github.com/jinzhu/gorm"
 )
 
+// MapTexts ...
 type MapTexts struct {
 	Db *gorm.DB
 }
 
+// MapText ...
 type MapText struct {
-	Id        int64 `gorm:"primary_key"`
-	Text      string
-	Style     string
+	Id    int64 `gorm:"primary_key"`
+	Text  string
+	Style string
 }
 
+// TableName ...
 func (d *MapText) TableName() string {
 	return "map_texts"
 }
 
+// Add ...
 func (n MapTexts) Add(v *MapText) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -45,12 +49,14 @@ func (n MapTexts) Add(v *MapText) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n MapTexts) GetById(mapId int64) (v *MapText, err error) {
 	v = &MapText{Id: mapId}
 	err = n.Db.First(&v).Error
 	return
 }
 
+// Update ...
 func (n MapTexts) Update(m *MapText) (err error) {
 	err = n.Db.Model(&MapText{Id: m.Id}).Updates(map[string]interface{}{
 		"text":  m.Text,
@@ -59,6 +65,7 @@ func (n MapTexts) Update(m *MapText) (err error) {
 	return
 }
 
+// Sort ...
 func (n MapTexts) Sort(m *MapText) (err error) {
 	err = n.Db.Model(&MapText{Id: m.Id}).Updates(map[string]interface{}{
 		"text":  m.Text,
@@ -67,6 +74,7 @@ func (n MapTexts) Sort(m *MapText) (err error) {
 	return
 }
 
+// Delete ...
 func (n MapTexts) Delete(id int64) (err error) {
 
 	if err = n.Db.Delete(&MapText{Id: id}).Error; err != nil {
@@ -83,6 +91,7 @@ func (n MapTexts) Delete(id int64) (err error) {
 	return
 }
 
+// List ...
 func (n *MapTexts) List(limit, offset int64, orderBy, sort string) (list []*MapText, total int64, err error) {
 
 	if err = n.Db.Model(MapText{}).Count(&total).Error; err != nil {

@@ -19,16 +19,18 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 )
 
+// MapText ...
 type MapText struct {
 	table *db.MapTexts
 	db    *gorm.DB
 }
 
+// GetMapTextAdaptor ...
 func GetMapTextAdaptor(d *gorm.DB) *MapText {
 	return &MapText{
 		table: &db.MapTexts{Db: d},
@@ -36,6 +38,7 @@ func GetMapTextAdaptor(d *gorm.DB) *MapText {
 	}
 }
 
+// Add ...
 func (n *MapText) Add(ver *m.MapText) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
@@ -46,6 +49,7 @@ func (n *MapText) Add(ver *m.MapText) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n *MapText) GetById(mapId int64) (ver *m.MapText, err error) {
 
 	var dbVer *db.MapText
@@ -58,23 +62,27 @@ func (n *MapText) GetById(mapId int64) (ver *m.MapText, err error) {
 	return
 }
 
+// Update ...
 func (n *MapText) Update(ver *m.MapText) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Update(dbVer)
 	return
 }
 
+// Sort ...
 func (n *MapText) Sort(ver *m.MapText) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Sort(dbVer)
 	return
 }
 
+// Delete ...
 func (n *MapText) Delete(mapId int64) (err error) {
 	err = n.table.Delete(mapId)
 	return
 }
 
+// List ...
 func (n *MapText) List(limit, offset int64, orderBy, sort string) (list []*m.MapText, total int64, err error) {
 	var dbList []*db.MapText
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -92,9 +100,9 @@ func (n *MapText) List(limit, offset int64, orderBy, sort string) (list []*m.Map
 
 func (n *MapText) fromDb(dbVer *db.MapText) (ver *m.MapText) {
 	ver = &m.MapText{
-		Id:        dbVer.Id,
-		Text:      dbVer.Text,
-		Style:     dbVer.Style,
+		Id:    dbVer.Id,
+		Text:  dbVer.Text,
+		Style: dbVer.Style,
 	}
 
 	return

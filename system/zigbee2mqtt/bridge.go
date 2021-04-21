@@ -26,9 +26,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
-	mqttServer "github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/mqtt_client"
-	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/e154/smart-home/system/mqtt"
 	"strings"
 	"sync"
 	"time"
@@ -38,11 +36,12 @@ const (
 	homeassistantTopic = "homeassistant"
 )
 
+// Bridge ...
 type Bridge struct {
 	metric         *metrics.MetricManager
 	adaptors       *adaptors.Adaptors
-	mqtt           *mqttServer.Mqtt
-	mqttClient     *mqtt_client.Client
+	mqtt           *mqtt.Mqtt
+	mqttClient     *mqtt.Client
 	isStarted      bool
 	settingsLock   sync.Mutex
 	state          string // online|offline
@@ -57,19 +56,21 @@ type Bridge struct {
 	networkmap     string
 }
 
-func NewBridge(mqtt *mqttServer.Mqtt,
+// NewBridge ...
+func NewBridge(mqtt *mqtt.Mqtt,
 	adaptors *adaptors.Adaptors,
 	model *m.Zigbee2mqtt,
 	metric *metrics.MetricManager) *Bridge {
 	return &Bridge{
-		mqtt:     mqtt,
 		adaptors: adaptors,
 		devices:  make(map[string]*Device),
 		model:    model,
 		metric:   metric,
+		mqtt:     mqtt,
 	}
 }
 
+// Start ...
 func (g *Bridge) Start() {
 
 	if g.isStarted {
@@ -83,39 +84,15 @@ func (g *Bridge) Start() {
 		TotalNum: int64(len(g.model.Devices)),
 	})
 
-	var err error
 	if g.mqttClient == nil {
-
-		cfg := &mqtt_client.Config{
-			KeepAlive:      5,
-			PingTimeout:    5,
-			ConnectTimeout: 5,
-			Qos:            0,
-			CleanSession:   false,
-			ClientID:       mqtt_client.ClientIdGen("zigbee2mqtt", g.model.Id),
-		}
-
-		log.Info("create new mqtt client...")
-		if g.mqttClient, err = g.mqtt.NewClient(cfg); err != nil {
-			log.Error(err.Error())
-		}
-	}
-
-	if !g.mqttClient.IsConnected() {
-		if err = g.mqttClient.Connect(); err != nil {
-			log.Error(err.Error())
-		}
+		g.mqttClient = g.mqtt.NewClient(fmt.Sprintf("bridge_%v", g.model.Name))
 	}
 
 	// /zigbee2mqtt/bridge/#
-	if err := g.mqttClient.Subscribe(fmt.Sprintf("%s/bridge/#", g.model.BaseTopic), 0, g.onBridgePublish); err != nil {
-		log.Warn(err.Error())
-	}
+	g.mqttClient.Subscribe(fmt.Sprintf("%s/bridge/#", g.model.BaseTopic), g.onBridgePublish)
 
 	// /homeassistant/#
-	if err := g.mqttClient.Subscribe(fmt.Sprintf("%s/#", homeassistantTopic), 0, g.onAssistPublish); err != nil {
-		log.Warn(err.Error())
-	}
+	g.mqttClient.Subscribe(fmt.Sprintf("%s/#", homeassistantTopic), g.onAssistPublish)
 
 	if err := g.safeGetDeviceList(); err != nil {
 		log.Error(err.Error())
@@ -125,18 +102,18 @@ func (g *Bridge) Start() {
 	g.configPermitJoin(g.model.PermitJoin)
 }
 
+// Stop ...
 func (g *Bridge) Stop(ctx context.Context) {
 	if !g.isStarted {
 		return
 	}
 	g.isStarted = false
 	g.mqttClient.UnsubscribeAll()
-	g.mqttClient.Disconnect()
 }
 
-func (g *Bridge) onBridgePublish(client mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onBridgePublish(client *mqtt.Client, message mqtt.Message) {
 
-	var topic = strings.Split(message.Topic(), "/")
+	var topic = strings.Split(message.Topic, "/")
 
 	switch topic[2] {
 	case "state":
@@ -152,9 +129,9 @@ func (g *Bridge) onBridgePublish(client mqtt.Client, message mqtt.Message) {
 	}
 }
 
-func (g *Bridge) onAssistPublish(client mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onAssistPublish(client *mqtt.Client, message mqtt.Message) {
 
-	var topic = strings.Split(message.Topic(), "/")
+	var topic = strings.Split(message.Topic, "/")
 
 	// hemeassistant/sensor/0x00158d00031c8ef3/click/config
 	// hemeassistant/sensor/0x00158d00031c8ef3/battery/config
@@ -164,7 +141,7 @@ func (g *Bridge) onAssistPublish(client mqtt.Client, message mqtt.Message) {
 	friendlyName := topic[2]
 	function := topic[3]
 	deviceInfo := AssistDevice{}
-	_ = json.Unmarshal(message.Payload(), &deviceInfo)
+	_ = json.Unmarshal(message.Payload, &deviceInfo)
 
 	device, err := g.safeGetDevice(friendlyName)
 	if err != nil {
@@ -180,15 +157,15 @@ func (g *Bridge) onAssistPublish(client mqtt.Client, message mqtt.Message) {
 	}
 }
 
-func (g *Bridge) onBridgeStatePublish(client mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onBridgeStatePublish(client *mqtt.Client, message mqtt.Message) {
 	g.settingsLock.Lock()
-	g.state = string(message.Payload())
+	g.state = string(message.Payload)
 	g.settingsLock.Unlock()
 }
 
-func (g *Bridge) onNetworkmapPublish(client mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onNetworkmapPublish(client *mqtt.Client, message mqtt.Message) {
 
-	var topic = strings.Split(message.Topic(), "/")
+	var topic = strings.Split(message.Topic, "/")
 
 	if len(topic) < 4 {
 		return
@@ -201,14 +178,14 @@ func (g *Bridge) onNetworkmapPublish(client mqtt.Client, message mqtt.Message) {
 		g.networkmapLock.Lock()
 		g.scanInProcess = false
 		g.lastScan = time.Now()
-		g.networkmap = string(message.Payload())
+		g.networkmap = string(message.Payload)
 		g.networkmapLock.Unlock()
 	}
 }
 
-func (g *Bridge) onConfigPublish(client mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onConfigPublish(client *mqtt.Client, message mqtt.Message) {
 
-	var topic = strings.Split(message.Topic(), "/")
+	var topic = strings.Split(message.Topic, "/")
 
 	if len(topic) > 3 {
 		switch topic[3] {
@@ -219,13 +196,13 @@ func (g *Bridge) onConfigPublish(client mqtt.Client, message mqtt.Message) {
 	}
 
 	config := BridgeConfig{}
-	_ = json.Unmarshal(message.Payload(), &config)
+	_ = json.Unmarshal(message.Payload, &config)
 	g.settingsLock.Lock()
 	g.config = config
 	g.settingsLock.Unlock()
 }
 
-func (g *Bridge) onConfigDevicesPublish(client mqtt.Client, message mqtt.Message) {}
+func (g *Bridge) onConfigDevicesPublish(client *mqtt.Client, message mqtt.Message) {}
 
 func (g *Bridge) safeGetDevice(friendlyName string) (device *Device, err error) {
 
@@ -262,7 +239,7 @@ func (g *Bridge) safeUpdateDevice(device *Device) (err error) {
 		if err = g.adaptors.Zigbee2mqttDevice.Add(&model); err != nil {
 			return
 		}
-		g.metric.Update(metrics.Zigbee2MqttAdd{TotalNum: 1,})
+		g.metric.Update(metrics.Zigbee2MqttAdd{TotalNum: 1})
 	}
 
 	g.devices[device.friendlyName] = device
@@ -295,9 +272,9 @@ func (g *Bridge) safeGetDeviceList() (err error) {
 	return
 }
 
-func (g *Bridge) onLogPublish(client mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onLogPublish(client *mqtt.Client, message mqtt.Message) {
 	var lm BridgeLog
-	_ = json.Unmarshal(message.Payload(), &lm)
+	_ = json.Unmarshal(message.Payload, &lm)
 	log.Infof("%v, %v, %v", lm.Type, lm.Message, lm.Meta)
 	switch lm.Type {
 	case "device_removed":
@@ -319,12 +296,12 @@ func (g *Bridge) getState() string {
 
 // get config
 func (g *Bridge) getConfig() {
-	g.mqtt.Publish(g.topic("/bridge/config/get"), []byte{}, 0, false)
+	g.mqttClient.Publish(g.topic("/bridge/config/get"), []byte{})
 }
 
 // get device list
 func (g *Bridge) getDevices() {
-	g.mqtt.Publish(g.topic("/bridge/config/devices/get"), []byte{}, 0, false)
+	g.mqttClient.Publish(g.topic("/bridge/config/devices/get"), []byte{})
 }
 
 func (g *Bridge) configPermitJoin(tr bool) {
@@ -332,7 +309,7 @@ func (g *Bridge) configPermitJoin(tr bool) {
 	if !tr {
 		permitJoin = "false"
 	}
-	g.mqtt.Publish(g.topic("/bridge/config/permit_join"), []byte(permitJoin), 0, false)
+	g.mqttClient.Publish(g.topic("/bridge/config/permit_join"), []byte(permitJoin))
 }
 
 func (g *Bridge) configLastSeen() {}
@@ -340,29 +317,36 @@ func (g *Bridge) configElapsed()  {}
 
 // Resets the ZNP (CC2530/CC2531).
 func (g *Bridge) configReset() {
-	g.mqtt.Publish(g.topic("/bridge/config/reset"), []byte{}, 0, false)
+	g.mqttClient.Publish(g.topic("/bridge/config/reset"), []byte{})
 }
 
+// ConfigReset ...
 func (g *Bridge) ConfigReset() {
 	g.configReset()
 	time.Sleep(time.Second * 5)
 }
 
 func (g *Bridge) configLogLevel() {}
-func (g *Bridge) DeviceOptions()  {}
 
+// DeviceOptions ...
+func (g *Bridge) DeviceOptions() {}
+
+// Remove ...
 func (g *Bridge) Remove(friendlyName string) {
-	g.mqtt.Publish(g.topic("/bridge/config/remove"), []byte(friendlyName), 0, false)
+	g.mqttClient.Publish(g.topic("/bridge/config/remove"), []byte(friendlyName))
 }
 
+// Ban ...
 func (g *Bridge) Ban(friendlyName string) {
-	g.mqtt.Publish(g.topic("/bridge/config/force_remove"), []byte(friendlyName), 0, false)
+	g.mqttClient.Publish(g.topic("/bridge/config/force_remove"), []byte(friendlyName))
 }
 
+// Whitelist ...
 func (g *Bridge) Whitelist(friendlyName string) {
-	g.mqtt.Publish(g.topic("/bridge/config/whitelist"), []byte(friendlyName), 0, false)
+	g.mqttClient.Publish(g.topic("/bridge/config/whitelist"), []byte(friendlyName))
 }
 
+// RenameDevice ...
 func (g *Bridge) RenameDevice(friendlyName, name string) (err error) {
 
 	var device *Device
@@ -377,10 +361,16 @@ func (g *Bridge) RenameDevice(friendlyName, name string) (err error) {
 	return
 }
 
-func (g *Bridge) RenameLast()  {}
-func (g *Bridge) AddGroup()    {}
+// RenameLast ...
+func (g *Bridge) RenameLast() {}
+
+// AddGroup ...
+func (g *Bridge) AddGroup() {}
+
+// RemoveGroup ...
 func (g *Bridge) RemoveGroup() {}
 
+// UpdateNetworkmap ...
 func (g *Bridge) UpdateNetworkmap() {
 	g.networkmapLock.Lock()
 	defer g.networkmapLock.Unlock()
@@ -390,9 +380,10 @@ func (g *Bridge) UpdateNetworkmap() {
 	}
 	g.scanInProcess = true
 
-	g.mqtt.Publish(g.topic("/bridge/networkmap"), []byte("graphviz"), 0, false)
+	g.mqttClient.Publish(g.topic("/bridge/networkmap"), []byte("graphviz"))
 }
 
+// Networkmap ...
 func (g *Bridge) Networkmap() string {
 	g.networkmapLock.Lock()
 	defer g.networkmapLock.Unlock()
@@ -403,6 +394,7 @@ func (g *Bridge) topic(s string) string {
 	return fmt.Sprintf("%s%s", g.model.BaseTopic, s)
 }
 
+// GetDeviceTopic ...
 func (g *Bridge) GetDeviceTopic(friendlyName string) string {
 	return g.topic("/" + friendlyName)
 }
@@ -465,6 +457,7 @@ func (g *Bridge) devicePairing(params BridgePairingMeta) {
 	}
 }
 
+// PermitJoin ...
 func (g *Bridge) PermitJoin(permitJoin bool) {
 	g.modelLock.Lock()
 	defer g.modelLock.Unlock()
@@ -476,6 +469,7 @@ func (g *Bridge) PermitJoin(permitJoin bool) {
 	g.configPermitJoin(g.model.PermitJoin)
 }
 
+// UpdateModel ...
 func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 	g.modelLock.Lock()
 	defer g.modelLock.Unlock()
@@ -488,6 +482,7 @@ func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 	g.configPermitJoin(g.model.PermitJoin)
 }
 
+// Info ...
 func (g *Bridge) Info() (info *Zigbee2mqttInfo) {
 
 	g.networkmapLock.Lock()
@@ -515,6 +510,7 @@ func (g *Bridge) Info() (info *Zigbee2mqttInfo) {
 	return
 }
 
+// GetModel ...
 func (g *Bridge) GetModel() (model m.Zigbee2mqtt) {
 	g.modelLock.Lock()
 	defer g.modelLock.Unlock()

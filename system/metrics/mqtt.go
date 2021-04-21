@@ -22,16 +22,19 @@ import (
 	"sync"
 )
 
+// Mqtt ...
 type Mqtt struct {
 	ClientState MqttClientStats `json:"client_state"`
 }
 
+// MqttManager ...
 type MqttManager struct {
 	publisher   IPublisher
 	updateLock  sync.Mutex
 	clientState MqttClientStats
 }
 
+// NewMqttManager ...
 func NewMqttManager(publisher IPublisher) *MqttManager {
 	return &MqttManager{publisher: publisher}
 }
@@ -54,6 +57,7 @@ func (d *MqttManager) updateClientState(clientState MqttClientStats) {
 	d.clientState = clientState
 }
 
+// Snapshot ...
 func (d *MqttManager) Snapshot() Mqtt {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
@@ -67,6 +71,7 @@ func (d *MqttManager) broadcast() {
 	go d.publisher.Broadcast("mqtt")
 }
 
+// MqttClientStats ...
 type MqttClientStats struct {
 	ConnectedTotal    uint64 `json:"connected_total"`
 	DisconnectedTotal uint64 `json:"disconnected_total"`

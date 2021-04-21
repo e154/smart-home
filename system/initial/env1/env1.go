@@ -19,7 +19,7 @@
 package env1
 
 import (
-	"github.com/e154/smart-home/adaptors"
+	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
 	. "github.com/e154/smart-home/system/scripts"
 )
@@ -32,39 +32,55 @@ import (
 // 		+ child device2
 // device3
 //
-func Init(adaptors *adaptors.Adaptors,
+func InstallDemoData(adaptors *Adaptors,
 	accessList *access_list.AccessListService,
 	scriptService *ScriptService) {
 
 	// images
 	// ------------------------------------------------
-	imageList := images(adaptors)
+	NewImageManager(adaptors).Create()
 
 	// roles
 	// ------------------------------------------------
-	roles(adaptors, accessList)
+	NewRoleManager(adaptors, accessList).Create()
 
 	// nodes
 	// ------------------------------------------------
-	node1, _ := nodes(adaptors)
+	NewNodeManager(adaptors).Create()
 
-	// scripts
+	// area
 	// ------------------------------------------------
-	scripts := addScripts(adaptors, scriptService)
+	NewAreaManager(adaptors).Create()
 
-	// devices
+	// zone
 	// ------------------------------------------------
-	devList, deviceActions, deviceStates := devices(node1, adaptors, scripts)
-
-	// workflow
-	// ------------------------------------------------
-	addWorkflow(adaptors, deviceActions, scripts)
-
-	// maps
-	// ------------------------------------------------
-	addMaps(adaptors, scripts, devList, imageList, deviceActions, deviceStates)
+	NewZoneManager(adaptors).Create()
 
 	// templates
 	// ------------------------------------------------
-	addTemplates(adaptors)
+	NewTemplateManager(adaptors).Create()
+}
+
+// Create ...
+func Create(adaptors *Adaptors,
+	accessList *access_list.AccessListService,
+	scriptService *ScriptService) {
+
+	NewImageManager(adaptors).Create()
+	NewRoleManager(adaptors, accessList).Create()
+	NewTemplateManager(adaptors).Create()
+	NewNodeManager(adaptors).Create()
+	NewZoneManager(adaptors).Create()
+	NewAreaManager(adaptors).Create()
+}
+
+// Upgrade ...
+func Upgrade(oldVersion int,
+	adaptors *Adaptors,
+	accessList *access_list.AccessListService,
+	scriptService *ScriptService) {
+
+	NewImageManager(adaptors).Upgrade(oldVersion)
+	NewTemplateManager(adaptors).Upgrade(oldVersion)
+	NewRoleManager(adaptors, accessList).Upgrade(oldVersion)
 }

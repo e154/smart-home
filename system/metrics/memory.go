@@ -25,6 +25,7 @@ import (
 	"time"
 )
 
+// Memory ...
 type Memory struct {
 	SwapTotal uint64 `json:"swap_total"`
 	SwapFree  uint64 `json:"swap_free"`
@@ -32,6 +33,7 @@ type Memory struct {
 	MemFree   uint64 `json:"mem_free"`
 }
 
+// MemoryManager ...
 type MemoryManager struct {
 	publisher  IPublisher
 	updateLock sync.Mutex
@@ -43,6 +45,7 @@ type MemoryManager struct {
 	quit       chan struct{}
 }
 
+// NewMemoryManager ...
 func NewMemoryManager(publisher IPublisher) *MemoryManager {
 	return &MemoryManager{
 		quit:      make(chan struct{}),
@@ -81,6 +84,7 @@ func (d *MemoryManager) stop() {
 	d.quit <- struct{}{}
 }
 
+// Snapshot ...
 func (d *MemoryManager) Snapshot() Memory {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()

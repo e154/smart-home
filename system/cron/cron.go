@@ -19,7 +19,7 @@
 package cron
 
 import (
-	"log"
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -27,20 +27,28 @@ import (
 )
 
 const (
+	// SECOND ...
 	SECOND int = iota
+	// MINUTE ...
 	MINUTE
+	// HOUR ...
 	HOUR
+	// DAY ...
 	DAY
+	// MONTH ...
 	MONTH
+	// WEEKDAY ...
 	WEEKDAY
 )
 
+// NewCron ...
 func NewCron() *Cron {
 	return &Cron{
 		tasks: make(map[*Task]bool),
 	}
 }
 
+// Cron ...
 type Cron struct {
 	sync.Mutex
 	tasks     map[*Task]bool
@@ -92,12 +100,12 @@ func (c *Cron) rangeParse(str string) (result []int) {
 	return
 }
 
-func (c *Cron) timeParser(t string) (result map[int][]int) {
+func (c *Cron) timeParser(t string) (result map[int][]int, err error) {
 	result = make(map[int][]int)
 	args := strings.Split(t, " ")
 
 	if len(args) != 6 {
-		log.Println("error: bad time string")
+		err = fmt.Errorf("bad time string %s", t)
 		return
 	}
 
@@ -182,8 +190,12 @@ func (c *Cron) timeParser(t string) (result map[int][]int) {
 	return
 }
 
-func (c *Cron) NewTask(t string, h func()) *Task {
-	_time := c.timeParser(t)
+// NewTask ...
+func (c *Cron) NewTask(t string, h func()) (*Task, error) {
+	_time, err := c.timeParser(t)
+	if err != nil {
+		return nil, nil
+	}
 	task := &Task{
 		_time:   _time,
 		_func:   h,
@@ -195,9 +207,10 @@ func (c *Cron) NewTask(t string, h func()) *Task {
 	c.tasks[task] = false
 	c.Unlock()
 
-	return task
+	return task, nil
 }
 
+// RemoveTask ...
 func (c *Cron) RemoveTask(task *Task) {
 
 	c.Lock()
@@ -235,6 +248,7 @@ func (c *Cron) timePrepare(t time.Time) {
 	}
 }
 
+// Run ...
 func (c *Cron) Run() *Cron {
 	if c.isRun {
 		return c
@@ -261,6 +275,7 @@ func (c *Cron) Run() *Cron {
 	return c
 }
 
+// Stop ...
 func (c *Cron) Stop() *Cron {
 	if !c.isRun {
 		return c

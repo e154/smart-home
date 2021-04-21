@@ -35,11 +35,13 @@ var (
 	log = common.MustGetLogger("twilio")
 )
 
+// TWClient ...
 type TWClient struct {
 	cfg    *TWConfig
 	client *gotwilio.Twilio
 }
 
+// NewTWClient ...
 func NewTWClient(cfg *TWConfig) (*TWClient, error) {
 	if cfg.sid == "" || cfg.authToken == "" {
 		return nil, errors.New("bad parameters")
@@ -52,6 +54,7 @@ func NewTWClient(cfg *TWConfig) (*TWClient, error) {
 	return tw, nil
 }
 
+// SendSMS ...
 func (t *TWClient) SendSMS(phone, body string) (string, error) {
 
 	log.Infof("send sms %v, %v", phone, body)
@@ -76,6 +79,7 @@ func (t *TWClient) SendSMS(phone, body string) (string, error) {
 	return resp.Sid, nil
 }
 
+// GetStatus ...
 func (t *TWClient) GetStatus(smsId string) (string, error) {
 
 	var resp *gotwilio.SmsResponse
@@ -94,6 +98,7 @@ func (t *TWClient) GetStatus(smsId string) (string, error) {
 	return resp.Status, nil
 }
 
+// Balance ...
 func (t *TWClient) Balance() (float32, error) {
 
 	uri, err := url.Parse(fmt.Sprintf("https://api.twilio.com/2010-04-01/Accounts/%s/Balance.json", t.cfg.sid))

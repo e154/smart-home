@@ -20,11 +20,12 @@ package null
 
 import (
 	"errors"
-	"strconv"
-	"reflect"
 	"fmt"
+	"reflect"
+	"strconv"
 )
 
+// Value ...
 type Value interface{}
 
 var errNilPtr = errors.New("destination pointer is nil")

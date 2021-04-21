@@ -24,10 +24,12 @@ import (
 	"time"
 )
 
+// MessageDeliveries ...
 type MessageDeliveries struct {
 	Db *gorm.DB
 }
 
+// MessageDelivery ...
 type MessageDelivery struct {
 	Id                 int64 `gorm:"primary_key"`
 	Message            *Message
@@ -40,10 +42,12 @@ type MessageDelivery struct {
 	UpdatedAt          time.Time
 }
 
+// TableName ...
 func (d *MessageDelivery) TableName() string {
 	return "message_deliveries"
 }
 
+// Add ...
 func (n MessageDeliveries) Add(msg *MessageDelivery) (id int64, err error) {
 	if err = n.Db.Create(&msg).Error; err != nil {
 		return
@@ -52,6 +56,7 @@ func (n MessageDeliveries) Add(msg *MessageDelivery) (id int64, err error) {
 	return
 }
 
+// List ...
 func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (list []*MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(MessageDelivery{}).Count(&total).Error; err != nil {
@@ -70,6 +75,7 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (lis
 	return
 }
 
+// GetAllUncompleted ...
 func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []*MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(MessageDelivery{}).Count(&total).Error; err != nil {
@@ -88,6 +94,7 @@ func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []*Mess
 	return
 }
 
+// SetStatus ...
 func (n MessageDeliveries) SetStatus(msg *MessageDelivery) (err error) {
 
 	err = n.Db.Model(&MessageDelivery{Id: msg.Id}).
@@ -99,11 +106,13 @@ func (n MessageDeliveries) SetStatus(msg *MessageDelivery) (err error) {
 	return
 }
 
+// Delete ...
 func (n MessageDeliveries) Delete(id int64) (err error) {
 	err = n.Db.Delete(&MessageDelivery{Id: id}).Error
 	return
 }
 
+// GetById ...
 func (n MessageDeliveries) GetById(id int64) (msg *MessageDelivery, err error) {
 
 	msg = &MessageDelivery{}

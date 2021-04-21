@@ -18,59 +18,203 @@
 
 package common
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"strings"
+)
 
+// ScriptLang ...
 type ScriptLang string
 
 const (
-	ScriptLangTs         = ScriptLang("ts")
-	ScriptLangCoffee     = ScriptLang("coffeescript")
+	// ScriptLangTs ...
+	ScriptLangTs = ScriptLang("ts")
+	// ScriptLangCoffee ...
+	ScriptLangCoffee = ScriptLang("coffeescript")
+	// ScriptLangJavascript ...
 	ScriptLangJavascript = ScriptLang("javascript")
 )
 
+// FlowElementsPrototypeType ...
 type FlowElementsPrototypeType string
 
 const (
-	FlowElementsPrototypeDefault        = FlowElementsPrototypeType("default")
+	// FlowElementsPrototypeDefault ...
+	FlowElementsPrototypeDefault = FlowElementsPrototypeType("default")
+	// FlowElementsPrototypeMessageHandler ...
 	FlowElementsPrototypeMessageHandler = FlowElementsPrototypeType("MessageHandler")
+	// FlowElementsPrototypeMessageEmitter ...
 	FlowElementsPrototypeMessageEmitter = FlowElementsPrototypeType("MessageEmitter")
-	FlowElementsPrototypeTask           = FlowElementsPrototypeType("Task")
-	FlowElementsPrototypeGateway        = FlowElementsPrototypeType("Gateway")
-	FlowElementsPrototypeFlow           = FlowElementsPrototypeType("Flow")
+	// FlowElementsPrototypeTask ...
+	FlowElementsPrototypeTask = FlowElementsPrototypeType("Task")
+	// FlowElementsPrototypeGateway ...
+	FlowElementsPrototypeGateway = FlowElementsPrototypeType("Gateway")
+	// FlowElementsPrototypeFlow ...
+	FlowElementsPrototypeFlow = FlowElementsPrototypeType("Flow")
 )
 
+// StatusType ...
 type StatusType string
 
 const (
-	Enabled  = StatusType("enabled")
+	// Enabled ...
+	Enabled = StatusType("enabled")
+	// Disabled ...
 	Disabled = StatusType("disabled")
-	Frozen   = StatusType("frozen")
+	// Frozen ...
+	Frozen = StatusType("frozen")
 )
 
+// DeviceType ...
 type DeviceType string
 
-type PrototypeType string
+// MapElementPrototypeId ...
+type MapElementPrototypeId interface{}
+
+// MapElementPrototypeType ...
+type MapElementPrototypeType string
 
 const (
-	PrototypeTypeText   = PrototypeType("text")
-	PrototypeTypeImage  = PrototypeType("image")
-	PrototypeTypeDevice = PrototypeType("device")
-	PrototypeTypeEmpty  = PrototypeType("")
+	// MapElementPrototypeText ...
+	MapElementPrototypeText = MapElementPrototypeType("text")
+	// MapElementPrototypeImage ...
+	MapElementPrototypeImage = MapElementPrototypeType("image")
+	// MapElementPrototypeEntity ...
+	MapElementPrototypeEntity = MapElementPrototypeType("entity")
+	// MapElementPrototypeEmpty ...
+	MapElementPrototypeEmpty = MapElementPrototypeType("")
 )
 
+// LogLevel ...
 type LogLevel string
 
 const (
+	// LogLevelEmergency ...
 	LogLevelEmergency = LogLevel("Emergency")
-	LogLevelAlert     = LogLevel("Alert")
-	LogLevelCritical  = LogLevel("Critical")
-	LogLevelError     = LogLevel("Error")
-	LogLevelWarning   = LogLevel("Warning")
-	LogLevelNotice    = LogLevel("Notice")
-	LogLevelInfo      = LogLevel("Info")
-	LogLevelDebug     = LogLevel("Debug")
+	// LogLevelAlert ...
+	LogLevelAlert = LogLevel("Alert")
+	// LogLevelCritical ...
+	LogLevelCritical = LogLevel("Critical")
+	// LogLevelError ...
+	LogLevelError = LogLevel("Error")
+	// LogLevelWarning ...
+	LogLevelWarning = LogLevel("Warning")
+	// LogLevelNotice ...
+	LogLevelNotice = LogLevel("Notice")
+	// LogLevelInfo ...
+	LogLevelInfo = LogLevel("Info")
+	// LogLevelDebug ...
+	LogLevelDebug = LogLevel("Debug")
 )
 
+// GinEngine ...
 type GinEngine interface {
 	GetEngine() *gin.Engine
 }
+
+// EntityHistoryType ...
+type EntityHistoryType string
+
+const (
+	// EntityHistoryState ...
+	EntityHistoryState = EntityHistoryType("state")
+	// EntityHistoryOption ...
+	EntityHistoryOption = EntityHistoryType("option")
+)
+
+// MetricType
+type MetricType string
+
+const (
+	// MetricTypeLine ...
+	MetricTypeLine = MetricType("line")
+	// MetricTypeBar ...
+	MetricTypeBar = MetricType("bar")
+	// MetricTypeDoughnut ...
+	MetricTypeDoughnut = MetricType("doughnut")
+	// MetricTypeRadar ...
+	MetricTypeRadar = MetricType("radar")
+	// MetricTypePie ...
+	MetricTypePie = MetricType("pie")
+	// MetricTypeHorizontalBar ...
+	MetricTypeHorizontalBar = MetricType("horizontal bar")
+)
+
+// Icon ...
+type Icon string
+
+// NewIcon ...
+func NewIcon(v string) *Icon {
+	s := Icon(v)
+	return &s
+}
+
+// String ...
+func (i *Icon) String() string {
+	if i == nil {
+		return ""
+	}
+	return string(*i)
+}
+
+// EntityPrototypeType ...
+type EntityPrototypeType string
+
+const (
+	// EntityPrototypeDevice ...
+	EntityPrototypeDevice = EntityPrototypeType("device")
+)
+
+// EntityType ...
+type EntityType string
+
+// EntityId ...
+type EntityId string
+
+func (e EntityId) Name() string {
+	arr := strings.Split(string(e), ".")
+	if len(arr) > 1 {
+		return arr[1]
+	}
+	return string(e)
+}
+
+func (e EntityId) Type() EntityType {
+	arr := strings.Split(string(e), ".")
+	if len(arr) > 1 {
+		return EntityType(arr[0])
+	}
+	return EntityType(e)
+}
+
+func (e *EntityId) String() string {
+	if e == nil {
+		return ""
+	} else {
+		return string(*e)
+	}
+}
+
+func (e EntityType) String() string {
+	return string(e)
+}
+
+type EntityAttributeType string
+
+const (
+	EntityAttributeString = EntityAttributeType("string")
+	EntityAttributeInt    = EntityAttributeType("int")
+	EntityAttributeTime   = EntityAttributeType("time")
+	EntityAttributeBool   = EntityAttributeType("bool")
+	EntityAttributeFloat  = EntityAttributeType("float")
+	//DEPRECATED
+	EntityAttributeArray = EntityAttributeType("array")
+	EntityAttributeMap   = EntityAttributeType("map")
+)
+
+type ConditionType string
+
+const (
+	ConditionOr  = ConditionType("or")
+	ConditionAnd = ConditionType("and")
+)

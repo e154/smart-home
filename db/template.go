@@ -24,10 +24,12 @@ import (
 	"time"
 )
 
+// Templates ...
 type Templates struct {
 	Db *gorm.DB
 }
 
+// TemplateTree ...
 type TemplateTree struct {
 	Name        string          `json:"name"`
 	Description string          `json:"description"`
@@ -35,6 +37,7 @@ type TemplateTree struct {
 	Nodes       []*TemplateTree `json:"nodes"`
 }
 
+// Template ...
 type Template struct {
 	Name        string `gorm:"primary_key"`
 	Description string
@@ -46,10 +49,12 @@ type Template struct {
 	UpdatedAt   time.Time
 }
 
+// TableName ...
 func (d *Template) TableName() string {
 	return "templates"
 }
 
+// UpdateOrCreate ...
 func (n Templates) UpdateOrCreate(tpl *Template) error {
 
 	if err := n.Db.Create(tpl).Error; err != nil {
@@ -61,6 +66,7 @@ func (n Templates) UpdateOrCreate(tpl *Template) error {
 	return nil
 }
 
+// Create ...
 func (n Templates) Create(tpl *Template) error {
 
 	if err := n.Db.Create(tpl).Error; err != nil {
@@ -70,6 +76,7 @@ func (n Templates) Create(tpl *Template) error {
 	return nil
 }
 
+// GetByName ...
 func (n Templates) GetByName(name, itemType string) (*Template, error) {
 
 	tpl := &Template{}
@@ -84,6 +91,7 @@ func (n Templates) GetByName(name, itemType string) (*Template, error) {
 	return tpl, nil
 }
 
+// GetItemsSortedList ...
 func (n Templates) GetItemsSortedList() (count int64, newItems []string, err error) {
 
 	items := make([]*Template, 0)
@@ -113,13 +121,14 @@ func (n Templates) GetItemsSortedList() (count int64, newItems []string, err err
 				*t = append(*t, v.Name)
 			}
 		}
-	};
+	}
 	treeGetEndPoints(items, &newItems)
 	count = int64(len(newItems))
 
 	return
 }
 
+// Update ...
 func (n Templates) Update(m *Template) error {
 	err := n.Db.Model(&Template{Name: m.Name}).Updates(map[string]interface{}{
 		"name":        m.Name,
@@ -136,6 +145,7 @@ func (n Templates) Update(m *Template) error {
 	return nil
 }
 
+// UpdateStatus ...
 func (n Templates) UpdateStatus(m *Template) error {
 	err := n.Db.Model(&Template{Name: m.Name}).Updates(map[string]interface{}{
 		"status": m.Status,
@@ -147,11 +157,13 @@ func (n Templates) UpdateStatus(m *Template) error {
 	return nil
 }
 
+// Delete ...
 func (n Templates) Delete(name string) (err error) {
 	err = n.Db.Delete(&Template{Name: name}).Error
 	return
 }
 
+// GetItemsTree ...
 func (n Templates) GetItemsTree() (tree []*TemplateTree, err error) {
 
 	var items []*Template
@@ -176,6 +188,7 @@ func (n Templates) GetItemsTree() (tree []*TemplateTree, err error) {
 	return
 }
 
+// GetList ...
 func (n Templates) GetList(templateType string) ([]*Template, error) {
 	items := make([]*Template, 0)
 	err := n.Db.Model(&Template{}).
@@ -190,6 +203,7 @@ func (n Templates) GetList(templateType string) ([]*Template, error) {
 	return items, nil
 }
 
+// Search ...
 func (n *Templates) Search(query string, limit, offset int) (items []*Template, total int64, err error) {
 
 	q := n.Db.Model(&Template{}).
@@ -227,6 +241,7 @@ func (n Templates) renderTreeRecursive(i []*Template, t *TemplateTree, c string)
 	return
 }
 
+// UpdateItemsTree ...
 func (n Templates) UpdateItemsTree(tree []*TemplateTree, parent string) error {
 
 	for _, v := range tree {

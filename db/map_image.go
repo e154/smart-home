@@ -19,25 +19,29 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
 	"fmt"
+	"github.com/jinzhu/gorm"
 )
 
+// MapImages ...
 type MapImages struct {
 	Db *gorm.DB
 }
 
+// MapImage ...
 type MapImage struct {
-	Id        int64 `gorm:"primary_key"`
-	Image     *Image
-	ImageId   int64
-	Style     string
+	Id      int64 `gorm:"primary_key"`
+	Image   *Image
+	ImageId int64
+	Style   string
 }
 
+// TableName ...
 func (d *MapImage) TableName() string {
 	return "map_images"
 }
 
+// Add ...
 func (n MapImages) Add(v *MapImage) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -46,12 +50,14 @@ func (n MapImages) Add(v *MapImage) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n MapImages) GetById(mapId int64) (v *MapImage, err error) {
 	v = &MapImage{Id: mapId}
 	err = n.Db.First(&v).Error
 	return
 }
 
+// Update ...
 func (n MapImages) Update(m *MapImage) (err error) {
 	err = n.Db.Model(&MapImage{Id: m.Id}).Updates(map[string]interface{}{
 		"image_id": m.ImageId,
@@ -60,6 +66,7 @@ func (n MapImages) Update(m *MapImage) (err error) {
 	return
 }
 
+// Sort ...
 func (n MapImages) Sort(m *MapImage) (err error) {
 	err = n.Db.Model(&MapImage{Id: m.Id}).Updates(map[string]interface{}{
 		"image_id": m.ImageId,
@@ -68,6 +75,7 @@ func (n MapImages) Sort(m *MapImage) (err error) {
 	return
 }
 
+// Delete ...
 func (n MapImages) Delete(id int64) (err error) {
 
 	if err = n.Db.Delete(&MapImage{Id: id}).Error; err != nil {
@@ -84,6 +92,7 @@ func (n MapImages) Delete(id int64) (err error) {
 	return
 }
 
+// List ...
 func (n *MapImages) List(limit, offset int64, orderBy, sort string) (list []*MapImage, total int64, err error) {
 
 	if err = n.Db.Model(MapImage{}).Count(&total).Error; err != nil {

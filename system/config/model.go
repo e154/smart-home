@@ -20,6 +20,7 @@ package config
 
 import "time"
 
+// AppConfig ...
 type AppConfig struct {
 	ServerHost                     string        `json:"server_host"`
 	ServerPort                     int           `json:"server_port"`
@@ -49,11 +50,19 @@ type AppConfig struct {
 	Logging                        bool          `json:"logging"`
 	Metric                         bool          `json:"metric"`
 	MetricPort                     int           `json:"metric_port"`
+	ColoredLogging                 bool          `json:"colored_logging"`
+	AlexaHost                      string        `json:"alexa_host"`
+	AlexaPort                      int           `json:"alexa_port"`
+	MobileHost                     string        `json:"mobile_host"`
+	MobilePort                     int           `json:"mobile_port"`
 }
 
+// RunMode ...
 type RunMode string
 
 const (
-	DebugMode   = RunMode("debug")
+	// DebugMode ...
+	DebugMode = RunMode("debug")
+	// ReleaseMode ...
 	ReleaseMode = RunMode("release")
 )

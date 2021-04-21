@@ -22,11 +22,13 @@ import (
 	"sync"
 )
 
+// Gate ...
 type Gate struct {
 	Status      string `json:"status"`
 	AccessToken string `json:"access_token"`
 }
 
+// GateManager ...
 type GateManager struct {
 	updateLock  sync.Mutex
 	status      string
@@ -34,6 +36,7 @@ type GateManager struct {
 	publisher   IPublisher
 }
 
+// NewGateManager ...
 func NewGateManager(publisher IPublisher) *GateManager {
 	return &GateManager{publisher: publisher}
 }
@@ -41,12 +44,9 @@ func NewGateManager(publisher IPublisher) *GateManager {
 func (d *GateManager) update(t interface{}) {
 	switch v := t.(type) {
 	case GateUpdate:
-		d.updateLock.Lock()
-		if v.Status != "" {
-			d.status = v.Status
+		if !d.selfUpdate(v) {
+			return
 		}
-		d.accessToken = v.AccessToken
-		d.updateLock.Unlock()
 	default:
 		return
 	}
@@ -54,6 +54,21 @@ func (d *GateManager) update(t interface{}) {
 	d.broadcast()
 }
 
+func (d *GateManager) selfUpdate(v GateUpdate) (broadcast bool) {
+	d.updateLock.Lock()
+	defer d.updateLock.Unlock()
+
+	broadcast = d.status != v.Status || d.accessToken != v.AccessToken
+
+	if v.Status != "" {
+		d.status = v.Status
+	}
+	d.accessToken = v.AccessToken
+
+	return
+}
+
+// Snapshot ...
 func (d *GateManager) Snapshot() Gate {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
@@ -68,6 +83,7 @@ func (d *GateManager) broadcast() {
 	go d.publisher.Broadcast("gate")
 }
 
+// GateUpdate ...
 type GateUpdate struct {
 	Status, AccessToken string
 }

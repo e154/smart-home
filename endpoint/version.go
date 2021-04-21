@@ -23,16 +23,19 @@ import (
 	"github.com/e154/smart-home/version"
 )
 
+// VersionEndpoint ...
 type VersionEndpoint struct {
 	*CommonEndpoint
 }
 
+// NewVersionEndpoint ...
 func NewVersionEndpoint(common *CommonEndpoint) *VersionEndpoint {
 	return &VersionEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
+// ServerVersion ...
 func (v *VersionEndpoint) ServerVersion() (ver m.Version) {
 
 	ver = m.Version{

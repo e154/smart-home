@@ -19,7 +19,8 @@
 package scripts
 
 import (
-	"github.com/e154/smart-home/system/migrations"
+	"fmt"
+	. "github.com/e154/smart-home/tests/scripts/container"
 	"go.uber.org/dig"
 	"os"
 	"path/filepath"
@@ -39,7 +40,7 @@ var (
 func TestMain(m *testing.M) {
 
 	container = BuildContainer()
-	err := container.Invoke(func(migrations *migrations.Migrations) {
+	err := container.Invoke(func() {
 
 		time.Sleep(time.Millisecond * 500)
 
@@ -47,6 +48,6 @@ func TestMain(m *testing.M) {
 	})
 
 	if err != nil {
-		print(err.Error())
+		fmt.Println("error:", dig.RootCause(err))
 	}
 }

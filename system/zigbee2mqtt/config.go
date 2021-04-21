@@ -18,12 +18,6 @@
 
 package zigbee2mqtt
 
-import "github.com/e154/smart-home/system/config"
-
-type Zigbee2mqttConfig struct {
-
-}
-
-func NewZigbee2mqttConfig(cfg *config.AppConfig) *Zigbee2mqttConfig {
-	return &Zigbee2mqttConfig{}
+// Config ...
+type Config struct {
 }

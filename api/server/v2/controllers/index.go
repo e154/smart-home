@@ -23,10 +23,12 @@ import (
 	"net/http"
 )
 
+// ControllerIndex ...
 type ControllerIndex struct {
 	*ControllerCommon
 }
 
+// NewControllerIndex ...
 func NewControllerIndex(common *ControllerCommon) *ControllerIndex {
 	return &ControllerIndex{ControllerCommon: common}
 }

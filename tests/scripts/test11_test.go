@@ -33,8 +33,8 @@ import (
 func Test11(t *testing.T) {
 
 	type Foo struct {
-		Bar string
-		Foo *Foo
+		Bar string `json:"bar"`
+		Foo *Foo   `json:"foo"`
 	}
 
 	counter := 0
@@ -96,11 +96,10 @@ func Test11(t *testing.T) {
 			engine, err := scriptService.NewEngine(script1)
 			So(err, ShouldBeNil)
 
-
 			engine.PushStruct("bar2", bar2)
 
 			err = engine.Compile()
-		 	So(err, ShouldBeNil)
+			So(err, ShouldBeNil)
 
 			_, err = engine.Do()
 			So(err, ShouldBeNil)

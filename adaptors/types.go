@@ -18,8 +18,11 @@
 
 package adaptors
 
-import "github.com/pkg/errors"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 var (
-	ErrRecordNotFound = errors.New("record not found")
+	// ErrRecordNotFound ...
+	ErrRecordNotFound = gorm.ErrRecordNotFound
 )

@@ -19,13 +19,14 @@
 package notify
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/config"
-	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/scripts"
+	"go.uber.org/fx"
 	"time"
 )
 
@@ -33,6 +34,7 @@ var (
 	log = common.MustGetLogger("notify")
 )
 
+// Notify ...
 type Notify struct {
 	adaptor       *adaptors.Adaptors
 	cfg           *NotifyConfig
@@ -47,10 +49,11 @@ type Notify struct {
 	stopQueue     chan struct{}
 }
 
+// NewNotify ...
 func NewNotify(
+	lc fx.Lifecycle,
 	adaptor *adaptors.Adaptors,
 	appCfg *config.AppConfig,
-	graceful *graceful_service.GracefulService,
 	scriptService *scripts.ScriptService) *Notify {
 
 	notify := &Notify{
@@ -61,9 +64,14 @@ func NewNotify(
 		cfg:       NewNotifyConfig(adaptor),
 	}
 
-	graceful.Subscribe(notify)
-
-	notify.Start()
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) (err error) {
+			return notify.Start()
+		},
+		OnStop: func(ctx context.Context) (err error) {
+			return notify.Shutdown()
+		},
+	})
 
 	scriptService.PushStruct("Notifr", &NotifyBind{
 		notify: notify,
@@ -76,12 +84,15 @@ func NewNotify(
 	return notify
 }
 
-func (n *Notify) Shutdown() {
+// Shutdown ...
+func (n *Notify) Shutdown() error {
 	n.stop()
 	close(n.stopQueue)
+	return nil
 }
 
-func (n *Notify) Start() {
+// Start ...
+func (n *Notify) Start() (err error) {
 
 	if n.isStarted {
 		return
@@ -104,7 +115,7 @@ func (n *Notify) Start() {
 
 	//...
 	go func() {
-		for ; ; {
+		for {
 			var worker *Worker
 			for _, w := range n.workers {
 				if w.inProcess {
@@ -133,6 +144,8 @@ func (n *Notify) Start() {
 	n.read()
 
 	log.Infof("Notifr service started")
+
+	return
 }
 
 func (n *Notify) stop() {
@@ -164,11 +177,13 @@ func (n *Notify) stop() {
 	log.Infof("Notifr service stopped")
 }
 
+// Restart ...
 func (n *Notify) Restart() {
 	n.stop()
 	n.Start()
 }
 
+// Send ...
 func (n Notify) Send(msg interface{}) {
 	if !n.isStarted && n.stopPrecess {
 		return
@@ -234,16 +249,19 @@ func (n *Notify) getCfg() {
 	}
 }
 
+// GetCfg ...
 func (n *Notify) GetCfg() *NotifyConfig {
 	return n.cfg
 }
 
+// UpdateCfg ...
 func (n *Notify) UpdateCfg(cfg *NotifyConfig) error {
 	cfg.adaptor = n.adaptor
 	n.cfg = cfg
 	return n.cfg.Update()
 }
 
+// Stat ...
 func (n *Notify) Stat() *NotifyStat {
 	return n.stat
 }
@@ -279,6 +297,7 @@ func (n *Notify) updateStat() {
 	n.stat = stat
 }
 
+// Repeat ...
 func (n *Notify) Repeat(msg *m.MessageDelivery) {
 	if !n.isStarted && n.stopPrecess {
 		return

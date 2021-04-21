@@ -26,15 +26,19 @@ var (
 
 // Javascript Binding
 //
-// IC.Log
-// 	 .Info()
-// 	 .Warn()
-// 	 .Error()
-// 	 .Debug()
+// Log
+// 	 .info()
+// 	 .warn()
+// 	 .error()
+// 	 .debug()
 //
 type LogBind struct{}
 
-func (b *LogBind) Info(v ...interface{})  { log.Infof("%v", v) }
-func (b *LogBind) Warn(v ...interface{})  { log.Warnf("%v", v) }
-func (b *LogBind) Debug(v ...interface{}) { log.Debugf("%v", v) }
-func (b *LogBind) Error(v ...interface{}) { log.Errorf("%v", v) }
+// Info ...
+func (b *LogBind) Info(v ...interface{}) { log.Infof("%v", v...) }
+// Warn ...
+func (b *LogBind) Warn(v ...interface{}) { log.Warnf("%v", v...) }
+// Debug ...
+func (b *LogBind) Debug(v ...interface{}) { log.Debugf("%v", v...) }
+// Error ...
+func (b *LogBind) Error(v ...interface{}) { log.Errorf("%v", v...) }

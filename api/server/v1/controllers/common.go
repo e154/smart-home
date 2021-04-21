@@ -25,7 +25,6 @@ import (
 	"github.com/e154/smart-home/endpoint"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/core"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -34,20 +33,19 @@ var (
 	log = common.MustGetLogger("controllers")
 )
 
+// ControllerCommon ...
 type ControllerCommon struct {
 	adaptors   *adaptors.Adaptors
-	core       *core.Core
 	accessList *access_list.AccessListService
 	endpoint   *endpoint.Endpoint
 }
 
+// NewControllerCommon ...
 func NewControllerCommon(adaptors *adaptors.Adaptors,
-	core *core.Core,
 	accessList *access_list.AccessListService,
 	endpoint *endpoint.Endpoint) *ControllerCommon {
 	return &ControllerCommon{
 		adaptors:   adaptors,
-		core:       core,
 		accessList: accessList,
 		endpoint:   endpoint,
 	}

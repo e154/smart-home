@@ -19,17 +19,19 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/copier"
+	"github.com/jinzhu/gorm"
 )
 
+// Script ...
 type Script struct {
 	table *db.Scripts
 	db    *gorm.DB
 }
 
+// GetScriptAdaptor ...
 func GetScriptAdaptor(d *gorm.DB) *Script {
 	return &Script{
 		table: &db.Scripts{Db: d},
@@ -37,17 +39,14 @@ func GetScriptAdaptor(d *gorm.DB) *Script {
 	}
 }
 
+// Add ...
 func (n *Script) Add(script *m.Script) (id int64, err error) {
-
-	var dbScript *db.Script
-	if dbScript, err = n.toDb(script); err != nil {
-		return
-	}
-
+	dbScript := n.toDb(script)
 	id, err = n.table.Add(dbScript)
 	return
 }
 
+// GetById ...
 func (n *Script) GetById(scriptId int64) (script *m.Script, err error) {
 
 	var dbScript *db.Script
@@ -60,20 +59,20 @@ func (n *Script) GetById(scriptId int64) (script *m.Script, err error) {
 	return
 }
 
+// Update ...
 func (n *Script) Update(script *m.Script) (err error) {
-	var dbScript *db.Script
-	if dbScript, err = n.toDb(script); err != nil {
-		return
-	}
+	dbScript := n.toDb(script)
 	err = n.table.Update(dbScript)
 	return
 }
 
+// Delete ...
 func (n *Script) Delete(scriptId int64) (err error) {
 	err = n.table.Delete(scriptId)
 	return
 }
 
+// List ...
 func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error) {
 	var dbList []*db.Script
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -89,6 +88,7 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 	return
 }
 
+// Search ...
 func (n *Script) Search(query string, limit, offset int) (list []*m.Script, total int64, err error) {
 	var dbList []*db.Script
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
@@ -110,8 +110,16 @@ func (n *Script) fromDb(dbScript *db.Script) (script *m.Script, err error) {
 	return
 }
 
-func (n *Script) toDb(script *m.Script) (dbScript *db.Script, err error) {
-	dbScript = &db.Script{}
-	err = copier.Copy(&dbScript, &script)
+func (n *Script) toDb(script *m.Script) (dbScript *db.Script) {
+	dbScript = &db.Script{
+		Id:          script.Id,
+		Lang:        script.Lang,
+		Name:        script.Name,
+		Source:      script.Source,
+		Description: script.Description,
+		Compiled:    script.Compiled,
+		CreatedAt:   script.CreatedAt,
+		UpdatedAt:   script.UpdatedAt,
+	}
 	return
 }

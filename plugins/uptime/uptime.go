@@ -1,0 +1,128 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
+// +build linux,!mips64,!mips64le darwin
+
+package uptime
+
+import (
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/plugin_manager"
+	"go.uber.org/atomic"
+	"time"
+)
+
+const (
+	name = "uptime"
+)
+
+var (
+	log = common.MustGetLogger("plugins.uptime")
+)
+
+type pluginUptime struct {
+	entityManager *entity_manager.EntityManager
+	entity        *EntityActor
+	isStarted     *atomic.Bool
+	ticker        *time.Ticker
+	pause         time.Duration
+	adaptors      *adaptors.Adaptors
+	storyModel    *m.RunStory
+	quit          chan struct{}
+}
+
+func Register(manager *plugin_manager.PluginManager,
+	entityManager *entity_manager.EntityManager,
+	adaptors *adaptors.Adaptors,
+	pause time.Duration) {
+	manager.Register(&pluginUptime{
+		entityManager: entityManager,
+		entity:        NewEntityActor(),
+		isStarted:     atomic.NewBool(false),
+		pause:         pause,
+		adaptors:      adaptors,
+	})
+	return
+}
+
+func (u *pluginUptime) Load(service plugin_manager.IPluginManager, plugins map[string]interface{}) (err error) {
+
+	if u.isStarted.Load() {
+		return
+	}
+	u.isStarted.Store(true)
+	u.quit = make(chan struct{})
+
+	u.storyModel = &m.RunStory{
+		Start: time.Now(),
+	}
+	u.storyModel.Id, err = u.adaptors.RunHistory.Add(u.storyModel)
+
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	u.entityManager.Spawn(u.entity.Spawn)
+
+	go func() {
+		ticker := time.NewTicker(time.Second * u.pause)
+		defer func() {
+			ticker.Stop()
+			u.isStarted.Store(false)
+			close(u.quit)
+		}()
+
+		for {
+			select {
+			case <-u.quit:
+				return
+			case <-ticker.C:
+				u.entity.update()
+			}
+		}
+	}()
+	return
+}
+
+func (u *pluginUptime) Unload() (err error) {
+	if !u.isStarted.Load() {
+		return
+	}
+	u.quit <- struct{}{}
+	u.storyModel.End = common.Time(time.Now())
+	if err = u.adaptors.RunHistory.Update(u.storyModel); err != nil {
+		log.Error(err.Error())
+	}
+	return
+}
+
+func (u pluginUptime) Name() string {
+	return name
+}
+
+func (p *pluginUptime) Type() plugin_manager.PlugableType {
+	return plugin_manager.PlugableBuiltIn
+}
+
+func (p *pluginUptime) Depends() []string {
+	return nil
+}

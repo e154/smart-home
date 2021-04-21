@@ -72,6 +72,7 @@ type SubscriptionInfo struct {
 	At       time.Time `json:"at"`
 }
 
+// ErrNotFound ...
 var ErrNotFound = errors.New("not found")
 
 type quickList struct {

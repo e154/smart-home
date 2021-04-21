@@ -19,10 +19,11 @@
 package models
 
 import (
-	"time"
 	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
+// Image ...
 type Image struct {
 	Id        int64     `json:"id"`
 	Thumb     string    `json:"thumb"`
@@ -35,6 +36,7 @@ type Image struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// Valid ...
 func (m *Image) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
@@ -45,6 +47,7 @@ func (m *Image) Valid() (ok bool, errs []*validation.Error) {
 	return
 }
 
+// ImageFilterList ...
 type ImageFilterList struct {
 	Date  string `json:"date"`
 	Count int    `json:"count"`

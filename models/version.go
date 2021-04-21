@@ -18,6 +18,7 @@
 
 package models
 
+// Version ...
 type Version struct {
 	Version     string `json:"version"`
 	Revision    string `json:"revision"`

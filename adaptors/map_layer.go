@@ -19,17 +19,19 @@
 package adaptors
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
 	"sort"
 )
 
+// MapLayer ...
 type MapLayer struct {
 	table *db.MapLayers
 	db    *gorm.DB
 }
 
+// GetMapLayerAdaptor ...
 func GetMapLayerAdaptor(d *gorm.DB) *MapLayer {
 	return &MapLayer{
 		table: &db.MapLayers{Db: d},
@@ -37,6 +39,7 @@ func GetMapLayerAdaptor(d *gorm.DB) *MapLayer {
 	}
 }
 
+// Add ...
 func (n *MapLayer) Add(ver *m.MapLayer) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
@@ -47,6 +50,7 @@ func (n *MapLayer) Add(ver *m.MapLayer) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n *MapLayer) GetById(mapId int64) (ver *m.MapLayer, err error) {
 
 	var dbVer *db.MapLayer
@@ -59,23 +63,27 @@ func (n *MapLayer) GetById(mapId int64) (ver *m.MapLayer, err error) {
 	return
 }
 
+// Update ...
 func (n *MapLayer) Update(ver *m.MapLayer) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Update(dbVer)
 	return
 }
 
+// Sort ...
 func (n *MapLayer) Sort(ver *m.MapLayer) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Sort(dbVer)
 	return
 }
 
+// Delete ...
 func (n *MapLayer) Delete(mapId int64) (err error) {
 	err = n.table.Delete(mapId)
 	return
 }
 
+// List ...
 func (n *MapLayer) List(limit, offset int64, orderBy, sort string) (list []*m.MapLayer, total int64, err error) {
 	var dbList []*db.MapLayer
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {

@@ -45,6 +45,7 @@ var coffeeScripts = map[string]string{
 	"coffeeScript24": coffeeScript24,
 	"coffeeScript25": coffeeScript25,
 	"coffeeScript26": coffeeScript26,
+	"coffeeScript27": coffeeScript27,
 }
 
 // test1
@@ -53,11 +54,10 @@ const coffeeScript1 = `
 "use strict";
 
 r = ExecuteSync "data/scripts/ping.sh", "google.com"
-
-if r.Out == 'ok'
+if r.out == 'ok'
     print "site is available ^^"
 
-store(r.Out)
+store(r.out)
 `
 
 // test2
@@ -332,20 +332,20 @@ main =->
 const coffeeScript25 = `
 "use strict";
 
-So(bar.Bar, 'ShouldEqual', 'bar')
-So(bar.Foo, 'ShouldEqual', '&{foo <nil>}')
-So(bar.Foo.Bar, 'ShouldEqual', 'foo')
-So(bar.Foo.Foo, 'ShouldEqual', '<nil>')
+So(bar.bar, 'ShouldEqual', 'bar')
+So(bar.foo, 'ShouldEqual', '&{foo <nil>}')
+So(bar.foo.bar, 'ShouldEqual', 'foo')
+So(bar.foo.foo, 'ShouldEqual', '<nil>')
 
-So(bar2.Bar, 'ShouldEqual', 'bar')
-So(bar2.Foo, 'ShouldEqual', '&{foo <nil>}')
-So(bar2.Foo.Bar, 'ShouldEqual', 'foo')
-So(bar2.Foo.Foo, 'ShouldEqual', '<nil>')
+So(bar2.bar, 'ShouldEqual', 'bar')
+So(bar2.foo, 'ShouldEqual', '&{foo <nil>}')
+So(bar2.foo.bar, 'ShouldEqual', 'foo')
+So(bar2.foo.foo, 'ShouldEqual', '<nil>')
 
-So(bar2.Bar, 'ShouldEqual', 'bar')
-So(bar2.Foo, 'ShouldEqual', '&{foo <nil>}')
-So(bar2.Foo.Bar, 'ShouldEqual', 'foo')
-So(bar2.Foo.Foo, 'ShouldEqual', '<nil>')
+So(bar2.bar, 'ShouldEqual', 'bar')
+So(bar2.foo, 'ShouldEqual', '&{foo <nil>}')
+So(bar2.foo.bar, 'ShouldEqual', 'foo')
+So(bar2.foo.foo, 'ShouldEqual', '<nil>')
 
 external('bar', bar)
 external('bar2', bar2)
@@ -355,10 +355,50 @@ external('bar2', bar2)
 const coffeeScript26 = `
 "use strict";
 
-store(bar2.Bar)
-store(bar2.Foo)
-store(bar2.Foo.Bar)
-store(bar2.Foo.Foo)
+store(bar2.bar)
+store(bar2.foo)
+store(bar2.foo.bar)
+store(bar2.foo.foo)
+`
+
+// test27
+// ------------------------------------------------
+const coffeeScript27 = `
+"use strict";
+
+# get nil var
+value = Storage.getByName 'foo'
+store value
+
+foo = 
+	'bar': 'bar'
+
+value = JSON.stringify foo
+
+# save var
+Storage.push 'foo', value
+
+# get exist var
+value = Storage.getByName 'foo'
+store value
+foo = JSON.parse(value)
+store foo.bar
+
+# update var and save
+foo.bar = 'foo'
+value = JSON.stringify foo
+Storage.push 'foo', value
+
+value = Storage.getByName 'foo'
+store value
+foo = JSON.parse(value)
+store foo.bar
+
+list = Storage.search 'bar'
+store list
+
+list = Storage.search 'foo'
+store list
 `
 
 // test...

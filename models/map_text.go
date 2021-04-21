@@ -22,12 +22,14 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// MapText ...
 type MapText struct {
-	Id        int64     `json:"id"`
-	Text      string    `json:"text" valid:"Required"`
-	Style     string    `json:"style"`
+	Id    int64  `json:"id"`
+	Text  string `json:"text" valid:"Required"`
+	Style string `json:"style"`
 }
 
+// Valid ...
 func (m *MapText) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

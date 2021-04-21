@@ -23,14 +23,16 @@ import (
 	"fmt"
 	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"io/ioutil"
+	"github.com/hashicorp/go-multierror"
+	"os"
 	"strconv"
 )
 
+// IScript ...
 type IScript interface {
 	Init() error
 	Do() (string, error)
-	AssertFunction(string) (string, error)
+	AssertFunction(string, ...interface{}) (string, error)
 	Compile() error
 	PushStruct(string, interface{})
 	PushFunction(string, interface{})
@@ -40,6 +42,7 @@ type IScript interface {
 	RunProgram(name string) (result string, err error)
 }
 
+// Engine ...
 type Engine struct {
 	model      *m.Script
 	script     IScript
@@ -49,7 +52,14 @@ type Engine struct {
 	structures *Pull
 }
 
+// NewEngine ...
 func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err error) {
+
+	if s == nil {
+		s = &m.Script{
+			Lang: ScriptLangJavascript,
+		}
+	}
 
 	engine = &Engine{
 		model:      s,
@@ -71,23 +81,39 @@ func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err er
 	return
 }
 
+// Compile ...
 func (s *Engine) Compile() error {
 	return s.script.Compile()
 }
 
+// PushStruct ...
 func (s *Engine) PushStruct(name string, i interface{}) {
 	s.script.PushStruct(name, i)
 }
 
+// PushFunction ...
 func (s *Engine) PushFunction(name string, i interface{}) {
 	s.script.PushFunction(name, i)
 }
 
-func (s *Engine) EvalString(str string) (result string, err error) {
-	result, err = s.script.EvalString(str)
+// EvalString ...
+func (s *Engine) EvalString(str ...string) (result string, errs error) {
+	var err error
+	if len(str) == 0 {
+		if result, err = s.script.Do(); err != nil {
+			err = multierror.Append(err, errs)
+		}
+		return
+	}
+	for _, st := range str {
+		if result, err = s.script.EvalString(st); err != nil {
+			err = multierror.Append(err, errs)
+		}
+	}
 	return
 }
 
+// EvalScript ...
 func (s *Engine) EvalScript(script *m.Script) (result string, err error) {
 	programName := strconv.Itoa(int(script.Id))
 	if result, err = s.script.RunProgram(programName); err == nil {
@@ -103,10 +129,12 @@ func (s *Engine) EvalScript(script *m.Script) (result string, err error) {
 	return
 }
 
+// Close ...
 func (s *Engine) Close() {
 	s.script.Close()
 }
 
+// DoFull ...
 func (s *Engine) DoFull() (res string, err error) {
 	if s.IsRun {
 		return
@@ -128,18 +156,20 @@ func (s *Engine) DoFull() (res string, err error) {
 	return
 }
 
+// Do ...
 func (s *Engine) Do() (string, error) {
 	return s.script.Do()
 }
 
-func (s *Engine) AssertFunction(f string) (result string, err error) {
+// AssertFunction ...
+func (s *Engine) AssertFunction(f string, arg ...interface{}) (result string, err error) {
 
 	if s.IsRun {
 		return
 	}
 
 	s.IsRun = true
-	result, err = s.script.AssertFunction(f)
+	result, err = s.script.AssertFunction(f, arg...)
 
 	// reset buffer
 	s.buf = []string{}
@@ -148,17 +178,20 @@ func (s *Engine) AssertFunction(f string) (result string, err error) {
 	return
 }
 
+// Print ...
 func (s *Engine) Print(v ...interface{}) {
 	fmt.Println(v...)
 	s.buf = append(s.buf, fmt.Sprint(v...))
 }
 
+// Get ...
 func (s *Engine) Get() IScript {
 	return s.script
 }
 
+// File ...
 func (s *Engine) File(path string) ([]byte, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

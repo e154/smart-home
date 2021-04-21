@@ -19,12 +19,13 @@
 package metrics
 
 import (
+	"context"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.uber.org/fx"
 	"net/http"
 	"net/http/pprof"
 )
@@ -33,29 +34,29 @@ var (
 	log = common.MustGetLogger("metrics")
 )
 
+// MetricManager ...
 type MetricManager struct {
 	*Publisher
 	cfg               *MetricConfig
 	adaptors          *adaptors.Adaptors
 	prometheusHandler http.Handler
-	Cpu               *CpuManager
-	Disk              *DiskManager
-	Uptime            *UptimeManager
-	Memory            *MemoryManager
-	Gate              *GateManager
-	Workflow          *WorkflowManager
-	Node              *NodeManager
-	Device            *DeviceManager
-	MapElement        *MapElementManager
-	Flow              *FlowManager
-	AppMemory         *AppMemoryManager
-	Mqtt              *MqttManager
-	Zigbee2Mqtt       *Zigbee2MqttManager
-	History           *HistoryManager
-	graceful          *graceful_service.GracefulService
+	//Cpu               *CpuManager
+	//Disk              *DiskManager
+	//Memory            *MemoryManager
+	//Gate              *GateManager
+	//Workflow          *WorkflowManager
+	//Node              *NodeManager
+	//Device            *DeviceManager
+	//Entity            *EntityManager
+	//AppMemory         *AppMemoryManager
+	//Mqtt              *MqttManager
+	//Zigbee2Mqtt       *Zigbee2MqttManager
+	//History           *HistoryManager
 }
 
-func NewMetricManager(cfg *MetricConfig,
+// NewMetricManager ...
+func NewMetricManager(lc fx.Lifecycle,
+	cfg *MetricConfig,
 	graceful *graceful_service.GracefulService,
 	adaptors *adaptors.Adaptors) *MetricManager {
 	metric := &MetricManager{
@@ -63,38 +64,40 @@ func NewMetricManager(cfg *MetricConfig,
 		Publisher:         NewPublisher(),
 		cfg:               cfg,
 		prometheusHandler: promhttp.Handler(),
-		graceful:          graceful,
 	}
 
-	metric.Gate = NewGateManager(metric)
-	metric.Workflow = NewWorkflowManager(metric, adaptors)
-	metric.Node = NewNodeManager(metric)
-	metric.Device = NewDeviceManager(metric)
-	metric.MapElement = NewMapElementManager(metric)
-	metric.Flow = NewFlowManager(metric, adaptors)
-	metric.Cpu = NewCpuManager(metric)
-	metric.Disk = NewDiskManager(metric)
-	metric.Uptime = NewUptimeManager(metric)
-	metric.Memory = NewMemoryManager(metric)
-	metric.AppMemory = NewAppMemoryManager(metric)
-	metric.Mqtt = NewMqttManager(metric)
-	metric.Zigbee2Mqtt = NewZigbee2MqttManager(metric)
-	metric.History = NewHistoryManager(metric, adaptors)
+	//metric.Gate = NewGateManager(metric)
+	//metric.Workflow = NewWorkflowManager(metric, adaptors)
+	//metric.Node = NewNodeManager(metric)
+	//metric.Device = NewDeviceManager(metric)
+	//metric.Entity = NewEntityManager(metric)
+	//metric.Cpu = NewCpuManager(metric)
+	//metric.Disk = NewDiskManager(metric)
+	//metric.Memory = NewMemoryManager(metric)
+	//metric.AppMemory = NewAppMemoryManager(metric)
+	//metric.Mqtt = NewMqttManager(metric)
+	//metric.Zigbee2Mqtt = NewZigbee2MqttManager(metric)
+	//metric.History = NewHistoryManager(metric, adaptors)
+
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) (err error) {
+			metric.Shutdown()
+			return nil
+		},
+	})
 
 	return metric
 }
 
+// Start ...
 func (m *MetricManager) Start() {
 
-	m.Cpu.start(5)
-	m.Disk.start(60)
-	m.Uptime.start(15)
-	m.Memory.start(5)
-	m.AppMemory.start(20)
+	//m.Cpu.start(5)
+	//m.Disk.start(60)
+	//m.Memory.start(5)
+	//m.AppMemory.start(20)
 
-	m.graceful.Subscribe(m)
-
-	if m.cfg.RunMode != config.DebugMode {
+	if !m.cfg.Enabled {
 		return
 	}
 
@@ -112,28 +115,30 @@ func (m *MetricManager) Start() {
 	r.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	r.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
-	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", m.cfg.Host, m.cfg.Port), r); err != nil {
-		log.Fatal(err.Error())
-	}
+	go func() {
+		if err := http.ListenAndServe(fmt.Sprintf("%s:%d", m.cfg.Host, m.cfg.Port), r); err != nil {
+			log.Fatal(err.Error())
+		}
+	}()
 }
 
+// Shutdown ...
 func (m MetricManager) Shutdown() {
 
-	m.Cpu.stop()
-	m.Disk.stop()
-	m.Uptime.stop()
-	m.Memory.stop()
-	m.AppMemory.stop()
+	//m.Cpu.stop()
+	//m.Disk.stop()
+	//m.Memory.stop()
+	//m.AppMemory.stop()
 }
 
+// Update ...
 func (m *MetricManager) Update(t interface{}) {
-	m.Workflow.update(t)
-	m.Gate.update(t)
-	m.Node.update(t)
-	m.Device.update(t)
-	m.MapElement.update(t)
-	m.Flow.update(t)
-	m.Mqtt.update(t)
-	m.Zigbee2Mqtt.update(t)
-	m.History.update(t)
+	//m.Workflow.update(t)
+	//m.Gate.update(t)
+	//m.Node.update(t)
+	//m.Device.update(t)
+	//m.Entity.update(t)
+	//m.Mqtt.update(t)
+	//m.Zigbee2Mqtt.update(t)
+	//m.History.update(t)
 }

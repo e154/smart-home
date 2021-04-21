@@ -70,46 +70,6 @@ func (s *Server) setControllers() {
 	v1.POST("/script/:id/exec_src", s.af.Auth, s.ControllersV1.Script.ExecSrc)
 	v1.GET("/scripts/search", s.af.Auth, s.ControllersV1.Script.Search)
 
-	// workflow
-	v1.POST("/workflow", s.af.Auth, s.ControllersV1.Workflow.Add)
-	v1.GET("/workflow/:id", s.af.Auth, s.ControllersV1.Workflow.GetById)
-	v1.PUT("/workflow/:id", s.af.Auth, s.ControllersV1.Workflow.Update)
-	v1.DELETE("/workflow/:id", s.af.Auth, s.ControllersV1.Workflow.Delete)
-	v1.GET("/workflows", s.af.Auth, s.ControllersV1.Workflow.GetList)
-	v1.GET("/workflows/search", s.af.Auth, s.ControllersV1.Workflow.Search)
-	v1.PUT("/workflow/:id/update_scenario", s.af.Auth, s.ControllersV1.Workflow.UpdateScenario)
-
-	// workflow scenario
-	v1.POST("/workflow/:id/scenario", s.af.Auth, s.ControllersV1.WorkflowScenario.Add)
-	v1.GET("/workflow/:id/scenario/:scenario_id", s.af.Auth, s.ControllersV1.WorkflowScenario.GetById)
-	v1.PUT("/workflow/:id/scenario/:scenario_id", s.af.Auth, s.ControllersV1.WorkflowScenario.Update)
-	v1.GET("/workflow/:id/scenarios", s.af.Auth, s.ControllersV1.WorkflowScenario.GetList)
-	v1.GET("/workflow/:id/scenarios/search", s.af.Auth, s.ControllersV1.WorkflowScenario.Search)
-	v1.DELETE("/workflow/:id/scenario/:scenario_id", s.af.Auth, s.ControllersV1.WorkflowScenario.Delete)
-
-	// device
-	v1.POST("/device", s.af.Auth, s.ControllersV1.Device.Add)
-	v1.GET("/device/:id", s.af.Auth, s.ControllersV1.Device.GetById)
-	v1.PUT("/device/:id", s.af.Auth, s.ControllersV1.Device.UpdateDevice)
-	v1.DELETE("/device/:id", s.af.Auth, s.ControllersV1.Device.Delete)
-	v1.GET("/devices", s.af.Auth, s.ControllersV1.Device.GetList)
-	v1.GET("/devices/search", s.af.Auth, s.ControllersV1.Device.Search)
-
-	// device actions
-	v1.POST("/device_action", s.af.Auth, s.ControllersV1.DeviceAction.Add)
-	v1.GET("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.GetById)
-	v1.PUT("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.Update)
-	v1.DELETE("/device_action/:id", s.af.Auth, s.ControllersV1.DeviceAction.Delete)
-	v1.GET("/device_actions/:id", s.af.Auth, s.ControllersV1.DeviceAction.GetActionList)
-	v1.GET("/device_action1/search", s.af.Auth, s.ControllersV1.DeviceAction.Search)
-
-	// device states
-	v1.POST("/device_state", s.af.Auth, s.ControllersV1.DeviceState.Add)
-	v1.GET("/device_states/:id", s.af.Auth, s.ControllersV1.DeviceState.GetStateList)
-	v1.GET("/device_state/:id", s.af.Auth, s.ControllersV1.DeviceState.GetById)
-	v1.PUT("/device_state/:id", s.af.Auth, s.ControllersV1.DeviceState.Update)
-	v1.DELETE("/device_state/:id", s.af.Auth, s.ControllersV1.DeviceState.Delete)
-
 	// role
 	v1.POST("/role", s.af.Auth, s.ControllersV1.Role.Add)
 	v1.GET("/role/:name", s.af.Auth, s.ControllersV1.Role.GetByName)
@@ -128,37 +88,6 @@ func (s *Server) setControllers() {
 	v1.PUT("/user/:id/update_status", s.af.Auth, s.ControllersV1.User.UpdateStatus)
 	v1.GET("/users", s.af.Auth, s.ControllersV1.User.GetList)
 
-	// maps
-	v1.POST("/map", s.af.Auth, s.ControllersV1.Map.Add)
-	v1.GET("/map/:id", s.af.Auth, s.ControllersV1.Map.GetById)
-	v1.GET("/map/:id/full", s.af.Auth, s.ControllersV1.Map.GetFullMap)
-	v1.PUT("/map/:id", s.af.Auth, s.ControllersV1.Map.Update)
-	v1.DELETE("/map/:id", s.af.Auth, s.ControllersV1.Map.Delete)
-	v1.GET("/maps", s.af.Auth, s.ControllersV1.Map.GetList)
-	v1.GET("/maps/search", s.af.Auth, s.ControllersV1.Map.Search)
-
-	// map_layer
-	v1.POST("/map_layer", s.af.Auth, s.ControllersV1.MapLayer.Add)
-	v1.GET("/map_layer/:id", s.af.Auth, s.ControllersV1.MapLayer.GetById)
-	v1.PUT("/map_layer/:id", s.af.Auth, s.ControllersV1.MapLayer.Update)
-	v1.DELETE("/map_layer/:id", s.af.Auth, s.ControllersV1.MapLayer.Delete)
-	v1.GET("/map_layers", s.af.Auth, s.ControllersV1.MapLayer.GetList)
-	v1.PUT("/map_layers/sort", s.af.Auth, s.ControllersV1.MapLayer.Sort)
-
-	// map element
-	v1.POST("/map_element", s.af.Auth, s.ControllersV1.MapElement.Add)
-	v1.GET("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.GetById)
-	v1.PUT("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.UpdateFull)
-	v1.PUT("/map_element/:id/element_only", s.af.Auth, s.ControllersV1.MapElement.UpdateElement)
-	v1.DELETE("/map_element/:id", s.af.Auth, s.ControllersV1.MapElement.Delete)
-	v1.GET("/map_elements", s.af.Auth, s.ControllersV1.MapElement.GetList)
-	v1.PUT("/map_elements/sort", s.af.Auth, s.ControllersV1.MapElement.Sort)
-
-	// map zone
-	v1.POST("/map_zone", s.af.Auth, s.ControllersV1.MapZone.Add)
-	v1.DELETE("/map_zone/:name", s.af.Auth, s.ControllersV1.MapZone.Delete)
-	v1.GET("/map_zone/search", s.af.Auth, s.ControllersV1.MapZone.Search)
-
 	// images
 	v1.POST("/image", s.af.Auth, s.ControllersV1.Image.Add)
 	v1.GET("/image/:id", s.af.Auth, s.ControllersV1.Image.GetById)
@@ -167,29 +96,12 @@ func (s *Server) setControllers() {
 	v1.PUT("/image/:id", s.af.Auth, s.ControllersV1.Image.Update)
 	v1.DELETE("/image/:id", s.af.Auth, s.ControllersV1.Image.Delete)
 
-	// flow
-	v1.POST("/flow", s.af.Auth, s.ControllersV1.Flow.Add)
-	v1.GET("/flow/:id", s.af.Auth, s.ControllersV1.Flow.GetById)
-	v1.GET("/flows", s.af.Auth, s.ControllersV1.Flow.GetList)
-	v1.GET("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.GetRedactor)
-	v1.PUT("/flow/:id/redactor", s.af.Auth, s.ControllersV1.Flow.UpdateRedactor)
-	v1.PUT("/flow/:id", s.af.Auth, s.ControllersV1.Flow.Update)
-	v1.DELETE("/flow/:id", s.af.Auth, s.ControllersV1.Flow.Delete)
-	v1.GET("/flows/search", s.af.Auth, s.ControllersV1.Flow.Search)
-
 	// logs
 	v1.POST("/log", s.af.Auth, s.ControllersV1.Log.Add)
 	v1.GET("/log/:id", s.af.Auth, s.ControllersV1.Log.GetById)
 	v1.DELETE("/log/:id", s.af.Auth, s.ControllersV1.Log.Delete)
 	v1.GET("/logs", s.af.Auth, s.ControllersV1.Log.GetList)
 	v1.GET("/logs/search", s.af.Auth, s.ControllersV1.Log.Search)
-
-	// gate
-	v1.GET("/gate", s.af.Auth, s.ControllersV1.Gate.GetSettings)
-	v1.PUT("/gate", s.af.Auth, s.ControllersV1.Gate.UpdateSettings)
-	v1.GET("/gate/mobiles", s.af.Auth, s.ControllersV1.Gate.GetMobileList)
-	v1.POST("/gate/mobile", s.af.Auth, s.ControllersV1.Gate.AddMobile)
-	v1.DELETE("/gate/mobile/:token", s.af.Auth, s.ControllersV1.Gate.DeleteMobile)
 
 	// templates
 	v1.POST("/template", s.af.Auth, s.ControllersV1.Template.Add)
@@ -218,17 +130,6 @@ func (s *Server) setControllers() {
 	v1.POST("/notifr/:id/repeat", s.af.Auth, s.ControllersV1.Notifr.Repeat)
 	v1.POST("/notifr", s.af.Auth, s.ControllersV1.Notifr.Send)
 
-	// mqtt
-	v1.DELETE("/mqtt/client/:id", s.af.Auth, s.ControllersV1.Mqtt.CloseClient)
-	v1.GET("/mqtt/client/:id", s.af.Auth, s.ControllersV1.Mqtt.GetClientById)
-	v1.GET("/mqtt/client/:id/session", s.af.Auth, s.ControllersV1.Mqtt.GetSession)
-	v1.GET("/mqtt/client/:id/subscriptions", s.af.Auth, s.ControllersV1.Mqtt.GetSubscriptions)
-	v1.DELETE("/mqtt/client/:id/topic", s.af.Auth, s.ControllersV1.Mqtt.Unsubscribe)
-	v1.GET("/mqtt/clients", s.af.Auth, s.ControllersV1.Mqtt.GetClients)
-	v1.POST("/mqtt/publish", s.af.Auth, s.ControllersV1.Mqtt.Publish)
-	v1.GET("/mqtt/sessions", s.af.Auth, s.ControllersV1.Mqtt.GetSessions)
-	v1.GET("/mqtt/search_topic", s.af.Auth, s.ControllersV1.Mqtt.SearchTopic)
-
 	// version
 	v1.GET("/version", s.ControllersV1.Version.Version)
 
@@ -246,6 +147,11 @@ func (s *Server) setControllers() {
 	v1.PATCH("/zigbee2mqtts/device_rename", s.af.Auth, s.ControllersV1.Zigbee2mqtt.DeviceRename)
 	v1.GET("/zigbee2mqtts/search_device", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Search)
 
-	// map device history
-	v1.GET("/history/map", s.af.Auth, s.ControllersV1.MapDeviceHistory.GetList)
+	// entities
+	v1.POST("/entity", s.af.Auth, s.ControllersV1.Entity.Add)
+	v1.GET("/entity/:id", s.af.Auth, s.ControllersV1.Entity.GetById)
+	//v1.PUT("/entity/:id", s.af.Auth, s.ControllersV1.Entity.Update)
+	//v1.DELETE("/entity/:id", s.af.Auth, s.ControllersV1.Entity.Delete)
+	//v1.GET("/entitys", s.af.Auth, s.ControllersV1.Entity.GetList)
+	//v1.GET("/entitys/search", s.af.Auth, s.ControllersV1.Entity.Search)
 }

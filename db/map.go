@@ -19,17 +19,19 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
 	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/common"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// Maps ...
 type Maps struct {
 	Db *gorm.DB
 }
 
+// Map ...
 type Map struct {
 	Id          int64 `gorm:"primary_key"`
 	Name        string
@@ -40,10 +42,12 @@ type Map struct {
 	UpdatedAt   time.Time
 }
 
+// TableName ...
 func (d *Map) TableName() string {
 	return "maps"
 }
 
+// Add ...
 func (n Maps) Add(v *Map) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -52,12 +56,14 @@ func (n Maps) Add(v *Map) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n Maps) GetById(mapId int64) (v *Map, err error) {
 	v = &Map{Id: mapId}
 	err = n.Db.First(&v).Error
 	return
 }
 
+// GetFullById ...
 func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 
 	v = &Map{}
@@ -79,20 +85,24 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 	deviceIds := make([]int64, 0)
 	for _, l := range v.Layers {
 		for _, e := range l.Elements {
+			id, ok := e.PrototypeId.(int64)
+			if !ok {
+				continue
+			}
 			switch e.PrototypeType {
-			case common.PrototypeTypeText:
-				textIds = append(textIds, e.PrototypeId)
-			case common.PrototypeTypeImage:
-				imageIds = append(imageIds, e.PrototypeId)
-			case common.PrototypeTypeDevice:
-				deviceIds = append(deviceIds, e.PrototypeId)
+			case common.MapElementPrototypeText:
+				textIds = append(textIds, id)
+			case common.MapElementPrototypeImage:
+				imageIds = append(imageIds, id)
+			case common.MapElementPrototypeEntity:
+				deviceIds = append(deviceIds, id)
 			}
 		}
 	}
 
 	images := make([]*MapImage, 0)
 	texts := make([]*MapText, 0)
-	devices := make([]*MapDevice, 0)
+	entities := make([]*Entity, 0)
 
 	if len(imageIds) > 0 {
 		err = n.Db.Model(&MapImage{}).
@@ -110,7 +120,7 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 	}
 
 	if len(deviceIds) > 0 {
-		err = n.Db.Model(&MapDevice{}).
+		err = n.Db.Model(&Entity{}).
 			Where("id in (?)", deviceIds).
 			Preload("Image").
 			Preload("States").
@@ -119,18 +129,23 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 			Preload("Actions").
 			Preload("Actions.Image").
 			Preload("Actions.DeviceAction").
-			Preload("Device").
-			Preload("Device.States").
-			Preload("Device.Actions").
-			Find(&devices).
+			//Preload("Device").
+			//Preload("Device.States").
+			//Preload("Device.Actions").
+			Preload("Zone").
+			Find(&entities).
 			Error
 	}
 
-
 	for _, l := range v.Layers {
 		for _, e := range l.Elements {
+
+			if err = n.Db.Preload("Metrics").First(e).Error; err != nil {
+				return
+			}
+
 			switch e.PrototypeType {
-			case common.PrototypeTypeText:
+			case common.MapElementPrototypeText:
 				for _, text := range texts {
 					if text.Id == e.PrototypeId {
 						e.Prototype = Prototype{
@@ -139,7 +154,7 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 						continue
 					}
 				}
-			case common.PrototypeTypeImage:
+			case common.MapElementPrototypeImage:
 				for _, image := range images {
 					if image.Id == e.PrototypeId {
 						e.Prototype = Prototype{
@@ -148,11 +163,11 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 						continue
 					}
 				}
-			case common.PrototypeTypeDevice:
-				for _, device := range devices {
-					if device.Id == e.PrototypeId {
+			case common.MapElementPrototypeEntity:
+				for _, entity := range entities {
+					if entity.Id == e.PrototypeId {
 						e.Prototype = Prototype{
-							MapDevice: device,
+							Entity: entity,
 						}
 						continue
 					}
@@ -167,6 +182,7 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 	return
 }
 
+// Update ...
 func (n Maps) Update(m *Map) (err error) {
 	err = n.Db.Model(&Map{Id: m.Id}).Updates(map[string]interface{}{
 		"name":        m.Name,
@@ -176,11 +192,13 @@ func (n Maps) Update(m *Map) (err error) {
 	return
 }
 
+// Delete ...
 func (n Maps) Delete(mapId int64) (err error) {
 	err = n.Db.Delete(&Map{Id: mapId}).Error
 	return
 }
 
+// List ...
 func (n *Maps) List(limit, offset int64, orderBy, sort string) (list []*Map, total int64, err error) {
 
 	if err = n.Db.Model(Map{}).Count(&total).Error; err != nil {
@@ -198,6 +216,7 @@ func (n *Maps) List(limit, offset int64, orderBy, sort string) (list []*Map, tot
 	return
 }
 
+// Search ...
 func (n *Maps) Search(query string, limit, offset int) (list []*Map, total int64, err error) {
 
 	q := n.Db.Model(&Map{}).

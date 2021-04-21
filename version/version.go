@@ -20,18 +20,29 @@ package version
 
 import (
 	"fmt"
+	"runtime"
 )
 
 var (
+	// VersionString ...
 	VersionString = "?"
+	// RevisionString ...
 	RevisionString = "?"
+	// RevisionURLString ...
 	RevisionURLString = "?"
+	// GeneratedString ...
 	GeneratedString = "?"
+	// DevelopersString ...
 	DevelopersString = "?"
+	// BuildNumString ...
 	BuildNumString = "?"
+	// DockerImageString ...
 	DockerImageString = "?"
+	// GoVersion ...
+	GoVersion = runtime.Version()
 )
 
+// VerboseVersionBanner ...
 const VerboseVersionBanner string = `
  ___                _     _  _
 / __|_ __  __ _ _ _| |_  | || |___ _ __  ___
@@ -49,15 +60,17 @@ options:
 help	    - show this help text
 `
 
+// ShortVersionBanner ...
 const ShortVersionBanner = `
  ___                _     _  _
 / __|_ __  __ _ _ _| |_  | || |___ _ __  ___
 \__ \ '  \/ _' | '_|  _| | __ / _ \ '  \/ -_)
-|___/_|_|_\__,_|_|  \__| |_||_\___/_|_|_\___|	
+|___/_|_|_\__,_|_|  \__| |_||_\___/_|_|_\___|
 
 %s
 `
 
+// GetHumanVersion ...
 func GetHumanVersion() string {
 	version := ""
 
@@ -88,6 +101,8 @@ func GetHumanVersion() string {
 	if BuildNumString != "" {
 		version += fmt.Sprintf("Build: %s\n", BuildNumString)
 	}
+
+	version += fmt.Sprintf("Go: %s\n", GoVersion)
 
 	return version
 }

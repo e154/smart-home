@@ -58,10 +58,10 @@ func Test4(t *testing.T) {
 			}
 
 			_, err = engine.EvalString(`store([
-				test.Int,
-				test.Multiply(2),
-				test.Nested.Int,
-				test.Nested.Multiply(3)
+				test.int,
+				test.multiply(2),
+				test.nested.int,
+				test.nested.multiply(3)
 			])`)
 			So(err, ShouldBeNil)
 

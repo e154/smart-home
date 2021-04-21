@@ -1,6 +1,10 @@
 {
   "server_host": "0.0.0.0",
   "server_port": 3000,
+  "alexa_host": "0.0.0.0",
+  "alexa_port": 3002,
+  "mobile_host": "0.0.0.0",
+  "mobile_port": 3001,
   "pg_user": "smart_home",
   "pg_pass": "smart_home",
   "pg_host": "127.0.0.1",
@@ -13,7 +17,7 @@
   "pg_conn_max_life_time": 30,
   "auto_migrate": true,
   "snapshot_dir": "snapshots",
-  "mode": "debug",
+  "mode": "release",
   "mqtt_port": 1883,
   "mqtt_retry_interval": 20,
   "mqtt_retry_check_interval": 20,
@@ -25,5 +29,6 @@
   "mqtt_max_msg_queue": 1000,
   "mqtt_deliver_mode": 1,
   "logging": true,
-  "metric_port": 2112
+  "metric_port": 2112,
+  "colored_logging": false
 }

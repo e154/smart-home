@@ -28,6 +28,7 @@ import (
 	"unicode/utf8"
 )
 
+// Template ...
 type Template struct {
 	Validity
 	Name         string         `json:"name" valid:"Required;MaxSize(64)" `
@@ -42,31 +43,38 @@ type Template struct {
 	UpdatedAt    time.Time      `json:"updated_at"`
 }
 
+// Templates ...
 type Templates []*Template
 
+// Len ...
 func (i Templates) Len() int {
 	return len(i)
 }
 
+// Swap ...
 func (i Templates) Swap(a, b int) {
 	i[a], i[b] = i[b], i[a]
 }
 
+// Less ...
 func (i Templates) Less(a, b int) bool {
 	return i[a].ParentsCount < i[b].ParentsCount
 }
 
+// TemplateField ...
 type TemplateField struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
 }
 
+// TemplateContent ...
 type TemplateContent struct {
 	Items  []string         `json:"items"`
 	Title  string           `json:"title"`
 	Fields []*TemplateField `json:"fields"`
 }
 
+// TemplateGetParents ...
 func TemplateGetParents(items Templates, result *Templates, s string) {
 
 	for _, item := range items {
@@ -89,6 +97,7 @@ func TemplateGetParents(items Templates, result *Templates, s string) {
 	}
 }
 
+// GetMarkers ...
 func (i *Template) GetMarkers(items []*Template, template *TemplateContent) (markers []string, err error) {
 
 	parents := Templates{}
@@ -158,6 +167,7 @@ func (i *Template) GetMarkers(items []*Template, template *TemplateContent) (mar
 	return
 }
 
+// GetTemplate ...
 func (i *Template) GetTemplate() (tpl *TemplateContent, err error) {
 
 	tpl = new(TemplateContent)
@@ -165,11 +175,13 @@ func (i *Template) GetTemplate() (tpl *TemplateContent, err error) {
 	return
 }
 
+// TemplateRender ...
 type TemplateRender struct {
 	Subject string `json:"subject"`
 	Body    string `json:"body"`
 }
 
+// RenderTemplate ...
 func RenderTemplate(items []*Template, template *TemplateContent, params map[string]interface{}) (render *TemplateRender, err error) {
 
 	parents := Templates{}
@@ -243,6 +255,7 @@ func RenderTemplate(items []*Template, template *TemplateContent, params map[str
 	return
 }
 
+// PreviewTemplate ...
 func PreviewTemplate(items []*Template, template *TemplateContent) (data string, err error) {
 
 	parents := Templates{}

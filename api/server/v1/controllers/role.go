@@ -19,16 +19,18 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/gin-gonic/gin"
 )
 
+// ControllerRole ...
 type ControllerRole struct {
 	*ControllerCommon
 }
 
+// NewControllerRole ...
 func NewControllerRole(common *ControllerCommon) *ControllerRole {
 	return &ControllerRole{ControllerCommon: common}
 }

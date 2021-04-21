@@ -20,7 +20,6 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -30,9 +29,10 @@ import (
 
 const filenName = "config.json"
 
+// ReadConfig ...
 func ReadConfig() (conf *AppConfig, err error) {
 	var file []byte
-	file, err = ioutil.ReadFile(path.Join("conf", filenName))
+	file, err = os.ReadFile(path.Join("conf", filenName))
 	if err != nil {
 		log.Fatal("Error reading config file")
 		return

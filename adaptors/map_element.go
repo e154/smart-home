@@ -27,11 +27,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Entity ...
 type MapElement struct {
 	table *db.MapElements
 	db    *gorm.DB
 }
 
+// GetMapElementAdaptor ...
 func GetMapElementAdaptor(d *gorm.DB) *MapElement {
 	return &MapElement{
 		table: &db.MapElements{Db: d},
@@ -39,59 +41,44 @@ func GetMapElementAdaptor(d *gorm.DB) *MapElement {
 	}
 }
 
+// Add ...
 func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 
+	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		return
+		tx = n.db
+		transaction = false
 	}
 
+	defer func() {
+		if err != nil && transaction {
+			tx.Rollback()
+		}
+	}()
+
+	var protId int64
 	switch {
 	case ver.Prototype.MapText != nil:
 		textAdaptor := GetMapTextAdaptor(tx)
-		ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
-		ver.PrototypeType = common.PrototypeTypeText
+		protId, err = textAdaptor.Add(ver.Prototype.MapText)
+		ver.PrototypeType = common.MapElementPrototypeText
 	case ver.Prototype.MapImage != nil:
 		imageAdaptor := GetMapImageAdaptor(tx)
-		ver.PrototypeId, err = imageAdaptor.Add(ver.Prototype.MapImage)
-		ver.PrototypeType = common.PrototypeTypeImage
-	case ver.Prototype.MapDevice != nil:
-		deviceAdaptor := GetMapDeviceAdaptor(tx)
-		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
-			tx.Rollback()
-			return
-		}
-
-		ver.PrototypeType = common.PrototypeTypeDevice
-		//actions
-		deviceAction := GetMapDeviceActionAdaptor(tx)
-		//err = deviceAction.AddMultiple(t.Actions)
-		for _, action := range ver.Prototype.MapDevice.Actions {
-			action.MapDeviceId = ver.PrototypeId
-			if action.Id, err = deviceAction.Add(action); err != nil {
-				log.Error(err.Error())
-				tx.Rollback()
-				return
-			}
-		}
-
-		//states
-		stateAdaptor := GetMapDeviceStateAdaptor(tx)
-		//err = stateAdaptor.AddMultiple(t.States)
-		for _, state := range ver.Prototype.MapDevice.States {
-			state.MapDeviceId = ver.PrototypeId
-			if state.Id, err = stateAdaptor.Add(state); err != nil {
-				log.Error(err.Error())
-				tx.Rollback()
-				return
-			}
-		}
+		protId, err = imageAdaptor.Add(ver.Prototype.MapImage)
+		ver.PrototypeType = common.MapElementPrototypeImage
+	case ver.Prototype.Entity != nil:
+		ver.PrototypeId = ver.Prototype.Entity.Id
+		ver.PrototypeType = common.MapElementPrototypeEntity
 	default:
 
 	}
 
+	if protId != 0 {
+		ver.PrototypeId = fmt.Sprintf("%d", protId)
+	}
+
 	if err != nil {
-		tx.Rollback()
 		return
 	}
 
@@ -101,13 +88,14 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 		return
 	}
 
-	if err = tx.Commit().Error; err != nil {
-		return
+	if transaction {
+		err = tx.Commit().Error
 	}
 
 	return
 }
 
+// GetById ...
 func (n *MapElement) GetById(mapId int64) (ver *m.MapElement, err error) {
 
 	var dbVer *db.MapElement
@@ -120,6 +108,7 @@ func (n *MapElement) GetById(mapId int64) (ver *m.MapElement, err error) {
 	return
 }
 
+// GetByName ...
 func (n *MapElement) GetByName(name string) (ver *m.MapElement, err error) {
 
 	var dbVer *db.MapElement
@@ -132,6 +121,7 @@ func (n *MapElement) GetByName(name string) (ver *m.MapElement, err error) {
 	return
 }
 
+// Update ...
 func (n *MapElement) Update(ver *m.MapElement) (err error) {
 
 	var oldVer *m.MapElement
@@ -139,7 +129,7 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		return
 	}
 
-	if oldVer.PrototypeId == 0 {
+	if oldVer.PrototypeId == "" {
 		oldVer.PrototypeType = ""
 	}
 
@@ -147,97 +137,98 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 	if err = tx.Error; err != nil {
 		return
 	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
 
+	var deleted bool
 	// delete old prototype
-	switch oldVer.PrototypeType {
-	case common.PrototypeTypeText:
-		textAdaptor := GetMapTextAdaptor(tx)
-		err = textAdaptor.Delete(oldVer.PrototypeId)
-	case common.PrototypeTypeImage:
-		imageAdaptor := GetMapImageAdaptor(tx)
-		err = imageAdaptor.Delete(oldVer.PrototypeId)
-	case common.PrototypeTypeDevice:
-		deviceAdaptor := GetMapDeviceAdaptor(tx)
-		err = deviceAdaptor.Delete(oldVer.PrototypeId)
-	case common.PrototypeTypeEmpty:
-		log.Warn("empty prototype")
-	default:
-		log.Warnf("unknown prototype: '%v'", oldVer.PrototypeType)
+	if oldVer.PrototypeType != ver.PrototypeType {
+		deleted = true
+		switch oldVer.PrototypeType {
+		case common.MapElementPrototypeText:
+			textAdaptor := GetMapTextAdaptor(tx)
+			if id, ok := oldVer.PrototypeId.(int64); ok {
+				err = textAdaptor.Delete(id)
+			}
+		case common.MapElementPrototypeImage:
+			imageAdaptor := GetMapImageAdaptor(tx)
+			if id, ok := oldVer.PrototypeId.(int64); ok {
+				err = imageAdaptor.Delete(id)
+			}
+		case common.MapElementPrototypeEntity:
+
+		case common.MapElementPrototypeEmpty:
+			log.Warn("empty prototype")
+		default:
+			log.Warnf("unknown prototype: '%v'", oldVer.PrototypeType)
+		}
+
+		if err != nil {
+			return
+		}
 	}
 
-	if err != nil {
+	if ver.PrototypeId == "" {
+		err = fmt.Errorf("prototype_id is zero")
 		return
 	}
 
 	// add new prototype
 	switch ver.PrototypeType {
-	case common.PrototypeTypeText:
+	case common.MapElementPrototypeText:
 		textAdaptor := GetMapTextAdaptor(tx)
-		ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
-	case common.PrototypeTypeImage:
+		if deleted {
+			// add new
+			ver.PrototypeId, err = textAdaptor.Add(ver.Prototype.MapText)
+		} else {
+			// update
+			if id, ok := ver.PrototypeId.(int64); ok {
+				ver.Prototype.MapText.Id = id
+			}
+			err = textAdaptor.Update(ver.Prototype.MapText)
+		}
+	case common.MapElementPrototypeImage:
 		imageAdaptor := GetMapImageAdaptor(tx)
-		mapImage := &m.MapImage{
-			ImageId: ver.Prototype.MapImage.ImageId,
-			Style:   "", //	TODO add style to image
-		}
-		ver.PrototypeId, err = imageAdaptor.Add(mapImage)
-	case common.PrototypeTypeDevice:
-		deviceAdaptor := GetMapDeviceAdaptor(tx)
-		if ver.PrototypeId, err = deviceAdaptor.Add(ver.Prototype.MapDevice); err != nil {
-			log.Error(err.Error())
-			tx.Rollback()
-			return
-		}
-
-		if ver.Prototype.MapDevice != nil {
-
-			//actions
-			for _, action := range ver.Prototype.MapDevice.Actions {
-				action.MapDeviceId = ver.PrototypeId
-			}
-			deviceAction := GetMapDeviceActionAdaptor(tx)
-			if err = deviceAction.AddMultiple(ver.Prototype.MapDevice.Actions); err != nil {
-				log.Error(err.Error())
-				tx.Rollback()
-				return
-			}
-
-			//states
-			for _, state := range ver.Prototype.MapDevice.States {
-				state.MapDeviceId = ver.PrototypeId
-			}
-			stateAdaptor := GetMapDeviceStateAdaptor(tx)
-			if err = stateAdaptor.AddMultiple(ver.Prototype.MapDevice.States); err != nil {
-				log.Errorf(err.Error())
-				tx.Rollback()
-				return
+		if deleted {
+			// add new
+			ver.PrototypeId, err = imageAdaptor.Add(ver.Prototype.MapImage)
+		} else {
+			if id, ok := ver.PrototypeId.(int64); ok {
+				mapImage := &m.MapImage{
+					Id:      id,
+					ImageId: ver.Prototype.MapImage.ImageId,
+					Style:   "", //	TODO add style to image
+				}
+				err = imageAdaptor.Update(mapImage)
 			}
 		}
-
+	case common.MapElementPrototypeEntity:
+		ver.PrototypeId = ver.Prototype.Entity.Id
+		ver.PrototypeType = common.MapElementPrototypeEntity
 	default:
 		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
 		log.Warnf(err.Error())
 	}
 
 	if err != nil {
-		tx.Rollback()
 		return
 	}
 
 	dbVer := n.toDb(ver)
 	table := db.MapElements{Db: tx}
 	if err = table.Update(dbVer); err != nil {
-		tx.Rollback()
 		return
 	}
 
-	if err = tx.Commit().Error; err != nil {
-		return
-	}
+	err = tx.Commit().Error
 
 	return
 }
 
+// Delete ...
 func (n *MapElement) Delete(mapId int64) (err error) {
 
 	var ver *m.MapElement
@@ -250,17 +241,30 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 		return
 	}
 
-	if ver.PrototypeId != 0 {
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+	}()
+
+	if ver.PrototypeId != "" {
 		switch ver.PrototypeType {
-		case common.PrototypeTypeText:
+		case common.MapElementPrototypeText:
 			textAdaptor := GetMapTextAdaptor(tx)
-			err = textAdaptor.Delete(ver.PrototypeId)
-		case common.PrototypeTypeImage:
+			if id, ok := ver.PrototypeId.(int64); ok {
+				err = textAdaptor.Delete(id)
+			}
+		case common.MapElementPrototypeImage:
 			imageAdaptor := GetMapImageAdaptor(tx)
-			err = imageAdaptor.Delete(ver.PrototypeId)
-		case common.PrototypeTypeDevice:
-			deviceAdaptor := GetMapDeviceAdaptor(tx)
-			err = deviceAdaptor.Delete(ver.PrototypeId)
+			if id, ok := ver.PrototypeId.(int64); ok {
+				err = imageAdaptor.Delete(id)
+			}
+		case common.MapElementPrototypeEntity:
+			entityAdaptor := GetEntityAdaptor(tx)
+			if id, ok := ver.PrototypeId.(common.EntityId); ok {
+				err = entityAdaptor.Delete(id)
+			}
 		default:
 			err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
 			log.Warnf(err.Error())
@@ -268,28 +272,27 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 	}
 
 	if err != nil {
-		tx.Rollback()
 		return
 	}
 
 	table := &db.MapElements{Db: tx}
 	if err = table.Delete(mapId); err != nil {
-		tx.Rollback()
 		return
 	}
 
-	if err = tx.Commit().Error; err != nil {
-		return
-	}
+	err = tx.Commit().Error
+
 	return
 }
 
+// Sort ...
 func (n *MapElement) Sort(ver *m.MapElement) (err error) {
 	dbVer := n.toDb(ver)
 	err = n.table.Sort(dbVer)
 	return
 }
 
+// List ...
 func (n *MapElement) List(limit, offset int64, orderBy, sort string) (list []*m.MapElement, total int64, err error) {
 	var dbList []*db.MapElement
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
@@ -305,6 +308,7 @@ func (n *MapElement) List(limit, offset int64, orderBy, sort string) (list []*m.
 	return
 }
 
+// GetActiveElements ...
 func (n *MapElement) GetActiveElements(sortBy, order string, limit, offset int) (result []*m.MapElement, total int64, err error) {
 
 	var dbList []*db.MapElement
@@ -337,32 +341,26 @@ func (n *MapElement) fromDb(dbVer *db.MapElement) (ver *m.MapElement) {
 		UpdatedAt:     dbVer.UpdatedAt,
 	}
 
-	// Zone tag
-	if dbVer.Zone != nil {
-		zoneAdaptor := GetMapZoneAdaptor(n.db)
-		ver.Zone = zoneAdaptor.fromDb(dbVer.Zone)
-	}
-
 	// GraphSettings
 	graphSettings, _ := dbVer.GraphSettings.MarshalJSON()
 	json.Unmarshal(graphSettings, &ver.GraphSettings)
 
-	// Prototype
+	// MapElementPrototype
 	switch {
 	case dbVer.Prototype.MapText != nil:
 		mapTextAdaptor := GetMapTextAdaptor(n.db)
-		ver.Prototype = m.Prototype{
+		ver.Prototype = m.MapElementPrototype{
 			MapText: mapTextAdaptor.fromDb(dbVer.Prototype.MapText),
 		}
 	case dbVer.Prototype.MapImage != nil:
 		mapImageAdaptor := GetMapImageAdaptor(n.db)
-		ver.Prototype = m.Prototype{
+		ver.Prototype = m.MapElementPrototype{
 			MapImage: mapImageAdaptor.fromDb(dbVer.Prototype.MapImage),
 		}
-	case dbVer.Prototype.MapDevice != nil:
-		mapDeviceAdaptor := GetMapDeviceAdaptor(n.db)
-		ver.Prototype = m.Prototype{
-			MapDevice: mapDeviceAdaptor.fromDb(dbVer.Prototype.MapDevice),
+	case dbVer.Prototype.Entity != nil:
+		mapDeviceAdaptor := GetEntityAdaptor(n.db)
+		ver.Prototype = m.MapElementPrototype{
+			Entity: mapDeviceAdaptor.fromDb(dbVer.Prototype.Entity),
 		}
 	}
 
@@ -380,12 +378,6 @@ func (n *MapElement) toDb(ver *m.MapElement) (dbVer *db.MapElement) {
 		MapId:         ver.MapId,
 		Weight:        ver.Weight,
 		Status:        ver.Status,
-	}
-
-	if ver.Zone != nil && ver.Zone.Id != 0 {
-		dbVer.ZoneId = &ver.Zone.Id
-	} else {
-		dbVer.ZoneId = nil
 	}
 
 	graphSettings, _ := json.Marshal(ver.GraphSettings)

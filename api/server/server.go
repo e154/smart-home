@@ -20,86 +20,82 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/core"
 	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/fx"
 	"net/http"
 	"time"
 )
 
 var (
-	log = common.MustGetLogger("server")
+	log = common.MustGetLogger("api.server")
 )
 
+// Server ...
 type Server struct {
-	Config        *ServerConfig
+	Config        *Config
 	ControllersV1 *controllers.ControllersV1
 	engine        *gin.Engine
 	server        *http.Server
-	graceful      *graceful_service.GracefulService
 	logger        *ServerLogger
 	af            *rbac.AccessFilter
 	streamService *stream.StreamService
-	core          *core.Core
-	isStarted     bool
 }
 
-func (s *Server) Start() {
-
-	if s.isStarted {
-		return
-	}
-
-	s.isStarted = true
+// Start ...
+func (s *Server) Start() (err error) {
 
 	s.server = &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", s.Config.Host, s.Config.Port),
+		Addr:    s.Config.String(),
 		Handler: s.engine,
 	}
 
 	go func() {
 		// service connections
-		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err = s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s", err.Error())
 		}
 	}()
 
-	log.Infof("Serving server at http://[::]:%d", s.Config.Port)
+	log.Infof("Serving server at %s", s.Config.String())
 
-	go s.core.Run()
+	return
 }
 
-func (s *Server) Shutdown() {
+// Shutdown ...
+func (s *Server) Shutdown() (err error) {
 
-	if !s.isStarted {
+	if s.server == nil {
 		return
 	}
-	s.isStarted = false
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	if err := s.server.Shutdown(ctx); err != nil {
+	if err = s.server.Shutdown(ctx); err != nil {
 		log.Error(err.Error())
 	}
 	log.Info("Server exiting")
+
+	return
 }
 
+// GetEngine ...
 func (s *Server) GetEngine() *gin.Engine {
 	return s.engine
 }
 
-func NewServer(cfg *ServerConfig,
+// NewServer ...
+func NewServer(lc fx.Lifecycle,
+	cfg *Config,
 	ctrls *controllers.ControllersV1,
 	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,
-	streamService *stream.StreamService,
-	core *core.Core) (newServer *Server) {
+	streamService *stream.StreamService) (newServer *Server) {
 
 	logger := NewLogger()
 
@@ -123,16 +119,18 @@ func NewServer(cfg *ServerConfig,
 		Config:        cfg,
 		ControllersV1: ctrls,
 		engine:        engine,
-		graceful:      graceful,
 		logger:        logger,
 		af:            accessFilter,
 		streamService: streamService,
-		core:          core,
 	}
 
-	newServer.graceful.Subscribe(newServer)
-
 	newServer.setControllers()
+
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) error {
+			return newServer.Shutdown()
+		},
+	})
 
 	return
 }

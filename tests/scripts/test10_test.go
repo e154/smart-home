@@ -32,8 +32,8 @@ import (
 func Test10(t *testing.T) {
 
 	type Foo struct {
-		Bar string
-		Foo *Foo
+		Bar string `json:"bar"`
+		Foo *Foo   `json:"foo"`
 	}
 
 	var script1 *m.Script

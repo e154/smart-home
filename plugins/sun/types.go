@@ -1,0 +1,149 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
+package sun
+
+import (
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"time"
+)
+
+const (
+	Name      = "sun"
+	EntitySun = common.EntityType("sun")
+)
+
+const (
+	StateAboveHorizon = "aboveHorizon"
+	StateBelowHorizon = "belowHorizon"
+)
+
+const (
+	AttrHorizonState  = "horizonState" // aboveHorizon|belowHorizon
+	AttrPhase         = "phase"
+	AttrAzimuth       = "azimuth"
+	AttrElevation     = "elevation"
+	AttrSunrise       = "sunrise"       // sunrise (top edge of the sun appears on the horizon)
+	AttrSunset        = "sunset"        // sunset (sun disappears below the horizon, evening civil twilight starts)
+	AttrSunriseEnd    = "sunriseEnd"    // sunrise ends (bottom edge of the sun touches the horizon)
+	AttrSunsetStart   = "sunsetStart"   // sunset starts (bottom edge of the sun touches the horizon)
+	AttrDawn          = "dawn"          // dawn (morning nautical twilight ends, morning civil twilight starts)
+	AttrDusk          = "dusk"          // dusk (evening nautical twilight starts)
+	AttrNauticalDawn  = "nauticalDawn"  // nautical dawn (morning nautical twilight starts)
+	AttrNauticalDusk  = "nauticalDusk"  // nautical dusk (evening astronomical twilight starts)
+	AttrNightEnd      = "nightEnd"      // night ends (morning astronomical twilight starts)
+	AttrNight         = "night"         // night starts (dark enough for astronomical observations)
+	AttrGoldenHourEnd = "goldenHourEnd" // morning golden hour (soft light, best DayTime for photography) ends
+	AttrGoldenHour    = "goldenHour"    // evening golden hour starts
+	AttrSolarNoon     = "solarNoon"     // solar noon (sun is in the highest position)
+	AttrNadir         = "nadir"         // nadir (darkest moment of the night, sun is in the lowest position)
+)
+
+type DayTime struct {
+	MorningName string
+	Time        time.Time
+}
+
+type DayTimes []DayTime
+
+// Len ...
+func (l DayTimes) Len() int { return len(l) }
+
+// Swap ...
+func (l DayTimes) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
+
+// Less ...
+func (l DayTimes) Less(i, j int) bool { return l[i].Time.UnixNano() < l[j].Time.UnixNano() }
+
+func NewAttr()  m.EntityAttributes {
+	return m.EntityAttributes{
+		AttrSunrise: {
+			Name: AttrSunrise,
+			Type: common.EntityAttributeTime,
+		},
+		AttrSunset: {
+			Name: AttrSunset,
+			Type: common.EntityAttributeTime,
+		},
+		AttrSunriseEnd: {
+			Name: AttrSunriseEnd,
+			Type: common.EntityAttributeTime,
+		},
+		AttrSunsetStart: {
+			Name: AttrSunsetStart,
+			Type: common.EntityAttributeTime,
+		},
+		AttrDawn: {
+			Name: AttrDawn,
+			Type: common.EntityAttributeTime,
+		},
+		AttrDusk: {
+			Name: AttrDusk,
+			Type: common.EntityAttributeTime,
+		},
+		AttrNauticalDawn: {
+			Name: AttrNauticalDawn,
+			Type: common.EntityAttributeBool,
+		},
+		AttrNauticalDusk: {
+			Name: AttrNauticalDusk,
+			Type: common.EntityAttributeBool,
+		},
+		AttrNightEnd: {
+			Name: AttrNightEnd,
+			Type: common.EntityAttributeBool,
+		},
+		AttrNight: {
+			Name: AttrNight,
+			Type: common.EntityAttributeBool,
+		},
+		AttrGoldenHourEnd: {
+			Name: AttrGoldenHourEnd,
+			Type: common.EntityAttributeBool,
+		},
+		AttrGoldenHour: {
+			Name: AttrGoldenHour,
+			Type: common.EntityAttributeBool,
+		},
+		AttrSolarNoon: {
+			Name: AttrSolarNoon,
+			Type: common.EntityAttributeBool,
+		},
+		AttrNadir: {
+			Name: AttrNadir,
+			Type: common.EntityAttributeBool,
+		},
+		AttrElevation: {
+			Name: AttrElevation,
+			Type: common.EntityAttributeFloat,
+		},
+		AttrAzimuth: {
+			Name: AttrAzimuth,
+			Type: common.EntityAttributeFloat,
+		},
+		AttrPhase: {
+			Name: AttrPhase,
+			Type: common.EntityAttributeString,
+		},
+		AttrHorizonState: {
+			Name: AttrHorizonState,
+			Type: common.EntityAttributeString,
+		},
+	}
+}

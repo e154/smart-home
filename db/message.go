@@ -23,10 +23,12 @@ import (
 	"time"
 )
 
+// Messages ...
 type Messages struct {
 	Db *gorm.DB
 }
 
+// Message ...
 type Message struct {
 	Id           int64 `gorm:"primary_key"`
 	Type         string
@@ -42,10 +44,12 @@ type Message struct {
 	UpdatedAt    time.Time
 }
 
+// TableName ...
 func (d *Message) TableName() string {
 	return "messages"
 }
 
+// Add ...
 func (n Messages) Add(msg *Message) (id int64, err error) {
 	if err = n.Db.Create(&msg).Error; err != nil {
 		return

@@ -25,8 +25,8 @@ set -o errexit
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}")" && cd ../ && pwd)"
 CONF_PATH=${ROOT}/conf/swagger
-#SWAGGER=swagger_darwin_amd64.dms.v0.19
-SWAGGER=swagger_darwin_amd64.dms.v0.20.1
+
+[[ -z "${SWAGGER}" ]] && SWAGGER=swagger_darwin_amd64.dms.v0.27.0 || MyVar="${SWAGGER}"
 
 __validate() {
     ${SWAGGER} validate ${CONF_PATH}/swagger.yml

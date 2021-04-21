@@ -26,22 +26,25 @@ import (
 	"time"
 )
 
+// MapElements ...
 type MapElements struct {
 	Db *gorm.DB
 }
 
+// Prototype ...
 type Prototype struct {
 	*MapImage
 	*MapText
-	*MapDevice
+	*Entity
 }
 
+// Entity ...
 type MapElement struct {
 	Id            int64 `gorm:"primary_key"`
 	Name          string
 	Description   string
-	PrototypeId   int64
-	PrototypeType PrototypeType
+	PrototypeId   MapElementPrototypeId
+	PrototypeType MapElementPrototypeType
 	Prototype     Prototype
 	Map           *Map
 	MapId         int64
@@ -50,16 +53,16 @@ type MapElement struct {
 	GraphSettings json.RawMessage `gorm:"type:jsonb;not null"`
 	Status        StatusType
 	Weight        int64
-	ZoneId        *int64
-	Zone          *MapZone
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
 
+// TableName ...
 func (d *MapElement) TableName() string {
 	return "map_elements"
 }
 
+// Add ...
 func (n MapElements) Add(v *MapElement) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -68,37 +71,39 @@ func (n MapElements) Add(v *MapElement) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n MapElements) GetById(mapId int64) (v *MapElement, err error) {
 	v = &MapElement{Id: mapId}
 	if err = n.Db.
-		Preload("Zone").
 		First(&v).Error; err != nil {
 		return
 	}
+
 	err = n.gePrototype(v)
 	return
 }
 
+// GetByName ...
 func (n MapElements) GetByName(name string) (v *MapElement, err error) {
 	v = &MapElement{}
 	if err = n.Db.
-		Preload("Zone").
 		Where("name = ?", name).
 		First(&v).Error; err != nil {
 		return
 	}
+
 	err = n.gePrototype(v)
 	return
 }
 
 func (n MapElements) gePrototype(v *MapElement) (err error) {
 
-	if v.PrototypeId == 0 {
+	if v.PrototypeId == "" {
 		return
 	}
 
 	switch v.PrototypeType {
-	case PrototypeTypeText:
+	case MapElementPrototypeText:
 		text := &MapText{}
 		err = n.Db.Model(&MapText{}).
 			Where("id = ?", v.PrototypeId).
@@ -110,7 +115,7 @@ func (n MapElements) gePrototype(v *MapElement) (err error) {
 				MapText: text,
 			}
 		}
-	case PrototypeTypeImage:
+	case MapElementPrototypeImage:
 		image := &MapImage{}
 		err = n.Db.Model(&MapImage{}).
 			Where("id = ?", v.PrototypeId).
@@ -121,9 +126,9 @@ func (n MapElements) gePrototype(v *MapElement) (err error) {
 				MapImage: image,
 			}
 		}
-	case PrototypeTypeDevice:
-		device := &MapDevice{}
-		err = n.Db.Model(&MapDevice{}).
+	case MapElementPrototypeEntity:
+		device := &Entity{}
+		err = n.Db.Model(&Entity{}).
 			Where("id = ?", v.PrototypeId).
 			Preload("Image").
 			Preload("States").
@@ -132,14 +137,12 @@ func (n MapElements) gePrototype(v *MapElement) (err error) {
 			Preload("Actions").
 			Preload("Actions.Image").
 			Preload("Actions.DeviceAction").
-			Preload("Device").
-			Preload("Device.States").
-			Preload("Device.Actions").
+			Preload("Area").
 			First(&device).
 			Error
 		if err == nil {
 			v.Prototype = Prototype{
-				MapDevice: device,
+				Entity: device,
 			}
 		}
 	}
@@ -147,6 +150,7 @@ func (n MapElements) gePrototype(v *MapElement) (err error) {
 	return
 }
 
+// Update ...
 func (n MapElements) Update(m *MapElement) (err error) {
 	err = n.Db.Model(&MapElement{Id: m.Id}).Updates(map[string]interface{}{
 		"name":           m.Name,
@@ -158,11 +162,11 @@ func (n MapElements) Update(m *MapElement) (err error) {
 		"graph_settings": m.GraphSettings,
 		"status":         m.Status,
 		"weight":         m.Weight,
-		"zone_id":        m.ZoneId,
 	}).Error
 	return
 }
 
+// Sort ...
 func (n MapElements) Sort(m *MapElement) (err error) {
 	err = n.Db.Model(&MapElement{Id: m.Id}).Updates(map[string]interface{}{
 		"weight": m.Weight,
@@ -170,11 +174,13 @@ func (n MapElements) Sort(m *MapElement) (err error) {
 	return
 }
 
+// Delete ...
 func (n MapElements) Delete(mapId int64) (err error) {
 	err = n.Db.Delete(&MapElement{Id: mapId}).Error
 	return
 }
 
+// List ...
 func (n *MapElements) List(limit, offset int64, orderBy, sort string) (list []*MapElement, total int64, err error) {
 
 	if err = n.Db.Model(MapElement{}).Count(&total).Error; err != nil {
@@ -192,20 +198,20 @@ func (n *MapElements) List(limit, offset int64, orderBy, sort string) (list []*M
 	return
 }
 
+// GetActiveElements ...
 func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort string) (list []*MapElement, total int64, err error) {
 
 	list = make([]*MapElement, 0)
 
 	q := n.Db.Model(&MapElement{}).
-		Where("prototype_type = 'device'")
+		Where("prototype_type = 'entity'")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
 
 	q = n.Db.Model(&MapElement{}).
-		Where("prototype_type = 'device'").
-		Preload("Zone").
+		Where("prototype_type = 'entity'").
 		Limit(limit).
 		Offset(offset)
 
@@ -222,14 +228,14 @@ func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort strin
 		return
 	}
 
-	deviceIds := make([]int64, 0)
+	deviceIds := make([]MapElementPrototypeId, 0)
 	for _, e := range list {
 		deviceIds = append(deviceIds, e.PrototypeId)
 	}
 
-	devices := make([]*MapDevice, 0)
+	devices := make([]*Entity, 0)
 	if len(deviceIds) > 0 {
-		err = n.Db.Model(&MapDevice{}).
+		err = n.Db.Model(&Entity{}).
 			Where("id in (?)", deviceIds).
 			Preload("Image").
 			Preload("States").
@@ -238,9 +244,7 @@ func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort strin
 			Preload("Actions").
 			Preload("Actions.Image").
 			Preload("Actions.DeviceAction").
-			Preload("Device").
-			Preload("Device.States").
-			Preload("Device.Actions").
+			Preload("Area").
 			Find(&devices).
 			Error
 
@@ -253,7 +257,7 @@ func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort strin
 		for _, device := range devices {
 			if device.Id == e.PrototypeId {
 				e.Prototype = Prototype{
-					MapDevice: device,
+					Entity: device,
 				}
 				continue
 			}

@@ -21,7 +21,7 @@ package management
 import (
 	"container/list"
 	"errors"
-	"github.com/DrmagicE/gmqtt/subscription"
+	"github.com/DrmagicE/gmqtt/persistence/subscription"
 	"strings"
 	"sync"
 	"time"
@@ -31,7 +31,9 @@ import (
 )
 
 const (
-	Online  = "online"
+	// Online ...
+	Online = "online"
+	// Offline ...
 	Offline = "offline"
 )
 
@@ -47,8 +49,8 @@ type monitor struct {
 // newMonitor
 func newMonitor(subStatsReader subscription.StatsReader) *monitor {
 	return &monitor{
-		clientList:    newQuickList(),
-		subscriptions: make(map[string]*quickList),
+		clientList:     newQuickList(),
+		subscriptions:  make(map[string]*quickList),
 		subStatsReader: subStatsReader,
 	}
 }
@@ -92,7 +94,7 @@ func (m *monitor) deleteClientSubscriptions(clientID string) {
 	delete(m.subscriptions, clientID)
 }
 
-// GetClientSubscriptions
+// GetClientSubscriptions ...
 func (m *monitor) GetClientSubscriptions(clientID string, offset, n int) ([]*SubscriptionInfo, int, error) {
 	m.subMu.Lock()
 	defer m.subMu.Unlock()
@@ -109,7 +111,7 @@ func (m *monitor) GetClientSubscriptions(clientID string, offset, n int) ([]*Sub
 	return rs, total, err
 }
 
-// SearchTopic
+// SearchTopic ...
 func (m *monitor) SearchTopic(query string) (rs []*SubscriptionInfo, err error) {
 	m.subMu.Lock()
 	defer m.subMu.Unlock()
@@ -190,7 +192,7 @@ func (m *monitor) deleteClient(clientID string) {
 	m.clientMu.Unlock()
 }
 
-// GetClientByID
+// GetClientByID ...
 func (m *monitor) GetClientByID(clientID string) (*ClientInfo, error) {
 	m.clientMu.Lock()
 	client, err := m.getClientByID(clientID)
@@ -255,7 +257,7 @@ func (m *monitor) getClientByID(clientID string) (gmqtt.Client, error) {
 	}
 }
 
-// GetClients
+// GetClients ...
 func (m *monitor) GetClients(offset, n int) ([]*ClientInfo, int, error) {
 	rs := make([]*ClientInfo, 0)
 	fn := func(elem *list.Element) {
@@ -268,7 +270,7 @@ func (m *monitor) GetClients(offset, n int) ([]*ClientInfo, int, error) {
 	return rs, total, nil
 }
 
-// GetSessionByID
+// GetSessionByID ...
 func (m *monitor) GetSessionByID(clientID string) (*SessionInfo, error) {
 	m.clientMu.Lock()
 	client, err := m.getClientByID(clientID)
@@ -279,7 +281,7 @@ func (m *monitor) GetSessionByID(clientID string) (*SessionInfo, error) {
 	return m.newSessionInfo(client, m.config), err
 }
 
-// GetSessions
+// GetSessions ...
 func (m *monitor) GetSessions(offset, n int) ([]*SessionInfo, int, error) {
 	rs := make([]*SessionInfo, 0)
 	fn := func(elem *list.Element) {

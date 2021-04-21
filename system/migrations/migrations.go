@@ -19,14 +19,12 @@
 package migrations
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/e154/smart-home/common"
 	. "github.com/e154/smart-home/system/migrations/assets"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
 	"github.com/rubenv/sql-migrate"
-	"os"
 	"path"
 )
 
@@ -34,13 +32,19 @@ var (
 	log = common.MustGetLogger("migrations")
 )
 
+// Migrations ...
 type Migrations struct {
-	cfg    *orm.OrmConfig
+	cfg    *orm.Config
 	source migrate.MigrationSource
+	orm    *orm.Orm
 	db     *gorm.DB
 }
 
-func NewMigrations(cfg *orm.OrmConfig, db *gorm.DB, mConf *MigrationsConfig) *Migrations {
+// NewMigrations ...
+func NewMigrations(cfg *orm.Config,
+	db *gorm.DB,
+	orm *orm.Orm,
+	mConf *Config) *Migrations {
 
 	var source migrate.MigrationSource
 
@@ -62,28 +66,16 @@ func NewMigrations(cfg *orm.OrmConfig, db *gorm.DB, mConf *MigrationsConfig) *Mi
 	return &Migrations{
 		cfg:    cfg,
 		source: source,
+		orm:    orm,
 		db:     db,
 	}
 }
 
-func (m Migrations) Connect() (sqlDb *sql.DB, err error) {
-	sqlDb, err = sql.Open("postgres", m.cfg.String())
-	if err != nil {
-		log.Error(err.Error())
-		os.Exit(1)
-	}
-
-	return
-}
-
+// Up ...
 func (m Migrations) Up() (err error) {
 
-	var sqlDb *sql.DB
-	sqlDb, err = m.Connect()
-	defer sqlDb.Close()
-
 	var n int
-	if n, err = migrate.Exec(sqlDb, "postgres", m.source, migrate.Up); err != nil {
+	if n, err = migrate.Exec(m.orm.DB(), "postgres", m.source, migrate.Up); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -92,25 +84,23 @@ func (m Migrations) Up() (err error) {
 	return
 }
 
+// Down ...
 func (m Migrations) Down() (err error) {
 
-	var sqlDb *sql.DB
-	sqlDb, err = m.Connect()
-	defer sqlDb.Close()
-
 	var n int
-	if n, err = migrate.Exec(sqlDb, "postgres", m.source, migrate.Down); err != nil {
+	if n, err = migrate.Exec(m.orm.DB(), "postgres", m.source, migrate.Down); err != nil {
 		log.Error(err.Error())
 	}
 
-	log.Infof("Applied %d migrations!", n)
+	fmt.Printf("Applied %d migrations!\n", n)
 
 	return
 }
 
+// Purge ...
 func (m Migrations) Purge() (err error) {
 
-	log.Warnf("Purge database: %s", m.cfg.Name)
+	fmt.Printf("Purge database: %s\n", m.cfg.Name)
 
 	if err = m.db.Exec(`DROP SCHEMA IF EXISTS "public" CASCADE;`).Error; err != nil {
 		log.Error(err.Error())

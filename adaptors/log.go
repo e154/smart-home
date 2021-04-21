@@ -25,11 +25,13 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+// Log ...
 type Log struct {
 	table *db.Logs
 	db    *gorm.DB
 }
 
+// GetLogAdaptor ...
 func GetLogAdaptor(d *gorm.DB) *Log {
 	return &Log{
 		table: &db.Logs{Db: d},
@@ -37,6 +39,7 @@ func GetLogAdaptor(d *gorm.DB) *Log {
 	}
 }
 
+// Add ...
 func (n *Log) Add(ver *m.Log) (id int64, err error) {
 
 	dbVer := n.toDb(ver)
@@ -47,6 +50,7 @@ func (n *Log) Add(ver *m.Log) (id int64, err error) {
 	return
 }
 
+// AddMultiple ...
 func (n *Log) AddMultiple(items []*m.Log) (err error) {
 
 	insertRecords := make([]interface{}, 0, len(items))
@@ -60,6 +64,7 @@ func (n *Log) AddMultiple(items []*m.Log) (err error) {
 	return
 }
 
+// GetById ...
 func (n *Log) GetById(verId int64) (ver *m.Log, err error) {
 
 	var dbVer *db.Log
@@ -72,11 +77,13 @@ func (n *Log) GetById(verId int64) (ver *m.Log, err error) {
 	return
 }
 
+// Delete ...
 func (n *Log) Delete(verId int64) (err error) {
 	err = n.table.Delete(verId)
 	return
 }
 
+// List ...
 func (n *Log) List(limit, offset int64, orderBy, sort string, queryObj *m.LogQuery) (list []*m.Log, total int64, err error) {
 
 	var dbList []*db.Log
@@ -103,6 +110,7 @@ func (n *Log) List(limit, offset int64, orderBy, sort string, queryObj *m.LogQue
 	return
 }
 
+// Search ...
 func (n *Log) Search(query string, limit, offset int) (list []*m.Log, total int64, err error) {
 	var dbList []*db.Log
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {

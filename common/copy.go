@@ -26,11 +26,15 @@ import (
 	"github.com/jinzhu/copier"
 )
 
+// CopyEngine ...
 type CopyEngine string
 
 const (
-	JsonEngine  = CopyEngine("json")
-	GobEngine   = CopyEngine("gob")
+	// JsonEngine ...
+	JsonEngine = CopyEngine("json")
+	// GobEngine ...
+	GobEngine = CopyEngine("gob")
+	// GojayEngine ...
 	GojayEngine = CopyEngine("gojay")
 )
 
@@ -61,6 +65,7 @@ func gojayCopy(to, from interface{}) (err error) {
 	return
 }
 
+// Copy ...
 func Copy(to, from interface{}, params ...CopyEngine) (err error) {
 
 	if len(params) == 0 {

@@ -19,11 +19,12 @@
 package models
 
 import (
-	"time"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/validation"
+	"time"
 )
 
+// Script ...
 type Script struct {
 	Id          int64      `json:"id"`
 	Lang        ScriptLang `json:"lang" valid:"Required"`
@@ -35,6 +36,7 @@ type Script struct {
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
+// Valid ...
 func (d *Script) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}

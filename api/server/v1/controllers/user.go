@@ -19,17 +19,19 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
-	"strconv"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
+// ControllerUser ...
 type ControllerUser struct {
 	*ControllerCommon
 }
 
+// NewControllerUser ...
 func NewControllerUser(common *ControllerCommon) *ControllerUser {
 	return &ControllerUser{ControllerCommon: common}
 }

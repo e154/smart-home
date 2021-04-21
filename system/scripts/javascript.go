@@ -29,9 +29,11 @@ import (
 )
 
 var (
+	// ErrorProgramNotFound ...
 	ErrorProgramNotFound = errors.New("program not found")
 )
 
+// Javascript ...
 type Javascript struct {
 	engine       *Engine
 	compiler     string
@@ -42,6 +44,7 @@ type Javascript struct {
 	programs     map[string]*goja.Program
 }
 
+// NewJavascript ...
 func NewJavascript(engine *Engine) *Javascript {
 	return &Javascript{
 		engine: engine,
@@ -50,9 +53,12 @@ func NewJavascript(engine *Engine) *Javascript {
 	}
 }
 
+// Init ...
 func (j *Javascript) Init() (err error) {
 
 	j.vm = goja.New()
+	j.vm.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
+	//j.vm.SetFieldNameMapper(goja.UncapFieldNameMapper())
 	j.loop = eventloop.NewEventLoop(j.vm)
 
 	j.bind()
@@ -68,10 +74,12 @@ func (j *Javascript) Init() (err error) {
 	return
 }
 
+// Close ...
 func (j *Javascript) Close() {
 
 }
 
+// Compile ...
 func (j *Javascript) Compile() (err error) {
 
 	if err = j.GetCompiler(); err != nil {
@@ -107,6 +115,7 @@ func (j *Javascript) Compile() (err error) {
 	return
 }
 
+// GetCompiler ...
 func (j *Javascript) GetCompiler() error {
 
 	switch j.engine.model.Lang {
@@ -183,15 +192,21 @@ func (j *Javascript) coffeeCompile() (result goja.Value, err error) {
 	return
 }
 
+// Do ...
 func (j *Javascript) Do() (result string, err error) {
 	result, err = j.unsafeRun(j.program)
 	return
 }
 
-func (j *Javascript) AssertFunction(f string) (result string, err error) {
+// AssertFunction ...
+func (j *Javascript) AssertFunction(f string, args ...interface{}) (result string, err error) {
 	if assertFunc, ok := goja.AssertFunction(j.vm.Get(f)); ok {
 		var value goja.Value
-		if value, err = assertFunc(goja.Undefined(), j.vm.ToValue(4), j.vm.ToValue(10)); err != nil {
+		var gojaArgs []goja.Value
+		for _, arg := range args {
+			gojaArgs = append(gojaArgs, j.vm.ToValue(arg))
+		}
+		if value, err = assertFunc(goja.Undefined(), gojaArgs...); err != nil {
 			return
 		}
 		result = value.String()
@@ -199,14 +214,17 @@ func (j *Javascript) AssertFunction(f string) (result string, err error) {
 	return
 }
 
+// PushStruct ...
 func (j *Javascript) PushStruct(name string, s interface{}) {
 	j.vm.Set(name, s)
 }
 
+// PushFunction ...
 func (j *Javascript) PushFunction(name string, s interface{}) {
 	j.vm.Set(name, s)
 }
 
+// EvalString ...
 func (j *Javascript) EvalString(src string) (result string, err error) {
 
 	var program *goja.Program
@@ -231,11 +249,11 @@ func (j *Javascript) bind() {
 	j.vm.Set("print", fmt.Println)
 
 	_, _ = j.vm.RunString(`
-	
+
 	var self = {},
     console = {log:print,warn:print,error:print,info:print},
     global = {};
-	
+
 	hex2arr = function (hexString) {
 	   var result = [];
 	   while (hexString.length >= 2) {
@@ -295,6 +313,7 @@ func (j *Javascript) bind() {
 	return
 }
 
+// CreateProgram ...
 func (j *Javascript) CreateProgram(name, source string) (err error) {
 	j.lockPrograms.Lock()
 	j.programs[name], err = goja.Compile("", source, false)
@@ -302,6 +321,7 @@ func (j *Javascript) CreateProgram(name, source string) (err error) {
 	return
 }
 
+// RunProgram ...
 func (j *Javascript) RunProgram(name string) (result string, err error) {
 	j.lockPrograms.Lock()
 	defer j.lockPrograms.Unlock()

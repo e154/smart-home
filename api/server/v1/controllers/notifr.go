@@ -27,10 +27,12 @@ import (
 	"strconv"
 )
 
+// ControllerNotifr ...
 type ControllerNotifr struct {
 	*ControllerCommon
 }
 
+// NewControllerNotifr ...
 func NewControllerNotifr(common *ControllerCommon) *ControllerNotifr {
 	return &ControllerNotifr{ControllerCommon: common}
 }

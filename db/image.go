@@ -19,16 +19,18 @@
 package db
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
-	"fmt"
 	"database/sql"
+	"fmt"
+	"github.com/jinzhu/gorm"
+	"time"
 )
 
+// Images ...
 type Images struct {
 	Db *gorm.DB
 }
 
+// Image ...
 type Image struct {
 	Id        int64 `gorm:"primary_key"`
 	Thumb     string
@@ -40,10 +42,12 @@ type Image struct {
 	CreatedAt time.Time
 }
 
+// TableName ...
 func (m *Image) TableName() string {
 	return "images"
 }
 
+// Add ...
 func (n Images) Add(v *Image) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
 		return
@@ -52,12 +56,21 @@ func (n Images) Add(v *Image) (id int64, err error) {
 	return
 }
 
+// GetById ...
 func (n Images) GetById(mapId int64) (v *Image, err error) {
 	v = &Image{Id: mapId}
 	err = n.Db.First(&v).Error
 	return
 }
 
+// GetByImageName ...
+func (n Images) GetByImageName(imageName string) (v *Image, err error) {
+	v = &Image{}
+	err = n.Db.Model(v).Where("image = ?", imageName).First(&v).Error
+	return
+}
+
+// Update ...
 func (n Images) Update(m *Image) (err error) {
 	err = n.Db.Model(&Image{Id: m.Id}).Updates(map[string]interface{}{
 		"title": m.Title,
@@ -66,11 +79,13 @@ func (n Images) Update(m *Image) (err error) {
 	return
 }
 
+// Delete ...
 func (n Images) Delete(mapId int64) (err error) {
 	err = n.Db.Delete(&Image{Id: mapId}).Error
 	return
 }
 
+// List ...
 func (n *Images) List(limit, offset int64, orderBy, sort string) (list []*Image, total int64, err error) {
 
 	if err = n.Db.Model(Image{}).Count(&total).Error; err != nil {
@@ -88,11 +103,13 @@ func (n *Images) List(limit, offset int64, orderBy, sort string) (list []*Image,
 	return
 }
 
+// ImageFilterList ...
 type ImageFilterList struct {
 	Date  string `json:"date"`
 	Count int    `json:"count"`
 }
 
+// GetFilterList ...
 func (n *Images) GetFilterList() (images []*ImageFilterList, err error) {
 
 	image := &Image{}
@@ -117,6 +134,7 @@ ORDER BY date`).Rows()
 	return
 }
 
+// GetAllByDate ...
 func (n *Images) GetAllByDate(filter string) (images []*Image, err error) {
 
 	//fmt.Println("filter", filter)

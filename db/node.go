@@ -24,10 +24,12 @@ import (
 	"time"
 )
 
+// Nodes ...
 type Nodes struct {
 	Db *gorm.DB
 }
 
+// Node ...
 type Node struct {
 	Id                int64 `gorm:"primary_key"`
 	Name              string
@@ -39,10 +41,12 @@ type Node struct {
 	UpdatedAt         time.Time
 }
 
+// TableName ...
 func (d *Node) TableName() string {
 	return "nodes"
 }
 
+// Add ...
 func (n Nodes) Add(node *Node) (id int64, err error) {
 	if err = n.Db.Create(&node).Error; err != nil {
 		return
@@ -51,6 +55,7 @@ func (n Nodes) Add(node *Node) (id int64, err error) {
 	return
 }
 
+// GetAllEnabled ...
 func (n Nodes) GetAllEnabled() (list []*Node, err error) {
 	list = make([]*Node, 0)
 	err = n.Db.Where("status = ?", "enabled").
@@ -58,12 +63,14 @@ func (n Nodes) GetAllEnabled() (list []*Node, err error) {
 	return
 }
 
+// GetById ...
 func (n Nodes) GetById(nodeId int64) (node *Node, err error) {
 	node = &Node{Id: nodeId}
 	err = n.Db.First(&node).Error
 	return
 }
 
+// Update ...
 func (n Nodes) Update(m *Node) (err error) {
 	q := map[string]interface{}{
 		"name":        m.Name,
@@ -78,11 +85,13 @@ func (n Nodes) Update(m *Node) (err error) {
 	return
 }
 
+// Delete ...
 func (n Nodes) Delete(nodeId int64) (err error) {
 	err = n.Db.Delete(&Node{Id: nodeId}).Error
 	return
 }
 
+// List ...
 func (n *Nodes) List(limit, offset int64, orderBy, sort string) (list []*Node, total int64, err error) {
 
 	if err = n.Db.Model(Node{}).Count(&total).Error; err != nil {
@@ -106,6 +115,7 @@ func (n *Nodes) List(limit, offset int64, orderBy, sort string) (list []*Node, t
 	return
 }
 
+// Search ...
 func (n *Nodes) Search(query string, limit, offset int) (list []*Node, total int64, err error) {
 
 	q := n.Db.Model(&Node{}).
@@ -122,11 +132,24 @@ func (n *Nodes) Search(query string, limit, offset int) (list []*Node, total int
 	return
 }
 
+// GetByLogin ...
 func (n *Nodes) GetByLogin(login string) (node *Node, err error) {
 
 	node = &Node{}
 	err = n.Db.Model(node).
 		Where("login = ?", login).
+		First(&node).
+		Error
+
+	return
+}
+
+// GetByName ...
+func (n *Nodes) GetByName(name string) (node *Node, err error) {
+
+	node = &Node{}
+	err = n.Db.Model(node).
+		Where("name = ?", name).
 		First(&node).
 		Error
 

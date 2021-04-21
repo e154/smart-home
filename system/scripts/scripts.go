@@ -21,21 +21,25 @@ package scripts
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/models/devices"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/scripts/bind"
+	"github.com/e154/smart-home/system/storage"
 )
 
 var (
 	log = common.MustGetLogger("scripts")
 )
 
+// ScriptService ...
 type ScriptService struct {
 	cfg        *config.AppConfig
 	functions  *Pull
 	structures *Pull
 }
 
-func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
+// NewScriptService ...
+func NewScriptService(cfg *config.AppConfig, storage *storage.Storage) (service *ScriptService) {
 
 	service = &ScriptService{
 		cfg:        cfg,
@@ -46,17 +50,27 @@ func NewScriptService(cfg *config.AppConfig) (service *ScriptService) {
 	service.PushStruct("Log", &bind.LogBind{})
 	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
+	service.PushFunctions("RunCommand", devices.NewRunCommandBind)
+	service.PushFunctions("Zigbee2mqtt", devices.NewZigbee2mqttBind)
+	service.PushFunctions("ModBus", devices.NewModBusBind)
+	service.PushFunctions("Mqtt", devices.NewMqttBind)
+	service.PushStruct("Storage", bind.NewStorageBind(storage))
 	return service
 }
 
+// NewEngine ...
 func (service ScriptService) NewEngine(s *m.Script) (*Engine, error) {
 	return NewEngine(s, service.structures, service.functions)
 }
 
+// PushStruct ...
 func (service *ScriptService) PushStruct(name string, s interface{}) {
+	log.Infof("register structure: \"%s\"", name)
 	service.structures.Add(name, s)
 }
 
+// PushFunctions ...
 func (service *ScriptService) PushFunctions(name string, s interface{}) {
+	log.Infof("register function: \"%s\"", name)
 	service.functions.Add(name, s)
 }

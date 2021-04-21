@@ -19,18 +19,19 @@
 package bind
 
 import (
+	"bytes"
+	"fmt"
 	"os/exec"
 	"strings"
-	"fmt"
-	"bytes"
 )
 
+// Response ...
 type Response struct {
-	Out string
-	Err string
+	Out string `json:"out"`
+	Err string `json:"err"`
 }
 
-// IC.Execute "sh", "-c", "echo stdout; echo 1>&2 stderr"
+// ExecuteSync "sh", "-c", "echo stdout; echo 1>&2 stderr"
 func ExecuteSync(name string, arg ...string) (r *Response) {
 
 	r = &Response{}
@@ -58,6 +59,7 @@ func ExecuteSync(name string, arg ...string) (r *Response) {
 	return
 }
 
+// ExecuteAsync ...
 func ExecuteAsync(name string, arg ...string) (r *Response) {
 
 	r = &Response{}

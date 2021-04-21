@@ -22,11 +22,13 @@ import (
 	. "github.com/e154/smart-home/common"
 )
 
+// BaseResponse ...
 type BaseResponse struct {
-	Error     string  `json:"error"`
-	Time      float64 `json:"time"`
+	Error string  `json:"error"`
+	Time  float64 `json:"time"`
 }
 
 const (
-	DevTypeDefault  = DeviceType("default")
+	// DevTypeDefault ...
+	DevTypeDefault = DeviceType("default")
 )

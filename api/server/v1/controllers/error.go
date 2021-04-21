@@ -20,31 +20,48 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/validation"
-	"github.com/iancoleman/strcase"
-	"github.com/gin-gonic/gin"
 	"github.com/e154/smart-home/api/server/v1/models"
+	"github.com/e154/smart-home/system/validation"
+	"github.com/gin-gonic/gin"
+	"github.com/iancoleman/strcase"
 )
 
 const (
-	FieldNotValid      = "field_not_valid"
-	FieldNotBlank      = "field_not_blank"
-	FieldSizeMax       = "field_size_max"
-	FieldSizeMin       = "field_size_min"
+	// FieldNotValid ...
+	FieldNotValid = "field_not_valid"
+	// FieldNotBlank ...
+	FieldNotBlank = "field_not_blank"
+	// FieldSizeMax ...
+	FieldSizeMax = "field_size_max"
+	// FieldSizeMin ...
+	FieldSizeMin = "field_size_min"
+	// FieldInvalidLength ...
 	FieldInvalidLength = "field_invalid_length"
+	// FieldNotValidChars ...
 	FieldNotValidChars = "field_not_valid_chars"
-	FieldMax           = "field_max"
-	FieldMin           = "field_min"
-	FieldFuture        = "field_future"
-	FieldPast          = "field_past"
-	FieldEmail         = "field_email"
-	FieldCardNumber    = "field_card_number"
-	FieldPhone         = "field_phone"
-	FieldDuplicate     = "field_duplicate"
-	FieldIp            = "field_ip"
-	FieldRange         = "field_range"
+	// FieldMax ...
+	FieldMax = "field_max"
+	// FieldMin ...
+	FieldMin = "field_min"
+	// FieldFuture ...
+	FieldFuture = "field_future"
+	// FieldPast ...
+	FieldPast = "field_past"
+	// FieldEmail ...
+	FieldEmail = "field_email"
+	// FieldCardNumber ...
+	FieldCardNumber = "field_card_number"
+	// FieldPhone ...
+	FieldPhone = "field_phone"
+	// FieldDuplicate ...
+	FieldDuplicate = "field_duplicate"
+	// FieldIp ...
+	FieldIp = "field_ip"
+	// FieldRange ...
+	FieldRange = "field_range"
 )
 
+// Error ...
 type Error struct {
 	_statusCode int
 	Payload     *models.Error `json:"body,omitempty"`
@@ -97,10 +114,12 @@ func NewError(code int, msg ...interface{}) *Error {
 	}
 }
 
+// Fields ...
 func (o *Error) Fields() []*models.ErrorErrorsItems {
 	return o.Payload.Errors
 }
 
+// AddField ...
 func (o *Error) AddField(code, message, field string) *Error {
 
 	_field := &models.ErrorErrorsItems{
@@ -114,11 +133,13 @@ func (o *Error) AddField(code, message, field string) *Error {
 	return o
 }
 
+// SetMessage ...
 func (o *Error) SetMessage(err error) *Error {
 	o.Payload.Message = err.Error()
 	return o
 }
 
+// CheckNum ...
 func (o *Error) CheckNum(num interface{}, name string, min, max float64) *Error {
 
 	var n float64
@@ -148,6 +169,7 @@ func (o *Error) CheckNum(num interface{}, name string, min, max float64) *Error 
 	return o
 }
 
+// AddFieldf ...
 func (o *Error) AddFieldf(name, code string, N ...int) *Error {
 
 	var n int
@@ -189,15 +211,18 @@ func (o *Error) AddFieldf(name, code string, N ...int) *Error {
 	return o
 }
 
+// Errors ...
 func (o *Error) Errors() bool {
 	return len(o.Payload.Errors) > 0
 }
 
+// Error ...
 func (e *Error) Error() string {
 	fmt.Println(e.Payload.Errors[0].Message)
 	return e.Payload.Message
 }
 
+// ValidationToErrors ...
 func (e *Error) ValidationToErrors(errs []*validation.Error) *Error {
 
 	for _, err := range errs {
@@ -242,6 +267,7 @@ func (e *Error) ValidationToErrors(errs []*validation.Error) *Error {
 	return e
 }
 
+// Send ...
 func (e *Error) Send(ctx *gin.Context) {
 	ctx.JSON(e._statusCode, e.Payload)
 	ctx.Abort()

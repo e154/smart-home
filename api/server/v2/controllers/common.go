@@ -19,24 +19,22 @@
 package controllers
 
 import (
-	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/system/core"
+	"github.com/e154/smart-home/common"
 )
 
 var (
 	log = common.MustGetLogger("controllers")
 )
 
+// ControllerCommon ...
 type ControllerCommon struct {
 	adaptors *adaptors.Adaptors
-	core     *core.Core
 }
 
-func NewControllerCommon(adaptors *adaptors.Adaptors,
-	core *core.Core) *ControllerCommon {
+// NewControllerCommon ...
+func NewControllerCommon(adaptors *adaptors.Adaptors) *ControllerCommon {
 	return &ControllerCommon{
 		adaptors: adaptors,
-		core:     core,
 	}
 }
