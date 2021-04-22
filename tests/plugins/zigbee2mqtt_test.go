@@ -138,14 +138,14 @@ automationAction = (entityId)->
 	Convey("zigbee2mqtt", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			scriptService *scripts.ScriptService,
+			scriptService scripts.ScriptService,
 			plugins *plugins.Loader,
-			entityManager *entity_manager.EntityManager,
-			zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
-			mqttServer *mqtt.Mqtt,
-			automation *automation.Automation,
-			eventBus *event_bus.EventBus,
-			pluginManager *plugin_manager.PluginManager) {
+			entityManager entity_manager.EntityManager,
+			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
+			mqttServer mqtt.MqttServ,
+			automation automation.Automation,
+			eventBus event_bus.EventBus,
+			pluginManager plugin_manager.PluginManager) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
@@ -347,7 +347,7 @@ automationAction = (entityId)->
 			//
 			// ------------------------------------------------
 			mqttCli := mqttServer.NewClient("cli")
-			mqttCli.Subscribe("zigbee2mqtt/"+zigbeePlugId+"/set", func(client *mqtt.Client, message mqtt.Message) {
+			mqttCli.Subscribe("zigbee2mqtt/"+zigbeePlugId+"/set", func(client mqtt.MqttCli, message mqtt.Message) {
 				if string(message.Payload) == `{"state":"ON"}` {
 					err = mqttCli.Publish("zigbee2mqtt/"+zigbeePlugId, []byte(`{"consumption":2.87,"energy":2.87,"linkquality":147,"power":0,"state":"ON","temperature":41,"voltage":240.5}`))
 				} else {

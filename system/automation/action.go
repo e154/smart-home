@@ -29,15 +29,15 @@ import (
 
 type Action struct {
 	model         *m.Action
-	scriptService *scripts.ScriptService
-	entityManager *entity_manager.EntityManager
+	scriptService scripts.ScriptService
+	entityManager entity_manager.EntityManager
 	scriptEngine  *scripts.Engine
 	inProcess     atomic.Bool
 	sync.Mutex
 }
 
-func NewAction(scriptService *scripts.ScriptService,
-	entityManager *entity_manager.EntityManager,
+func NewAction(scriptService scripts.ScriptService,
+	entityManager entity_manager.EntityManager,
 	model *m.Action) (action *Action, err error) {
 
 	action = &Action{

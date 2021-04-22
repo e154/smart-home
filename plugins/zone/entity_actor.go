@@ -28,7 +28,7 @@ import (
 
 type EntityActor struct {
 	entity_manager.BaseActor
-	entities []entity_manager.IActor
+	entities []entity_manager.PluginActor
 	stateMu  *sync.Mutex
 }
 
@@ -37,7 +37,7 @@ func NewEntityActor(name string, params m.EntityAttributeValue) *EntityActor {
 	attributes := NewAttr()
 	attributes.Deserialize(params)
 
-	e := &EntityActor{
+	return &EntityActor{
 		BaseActor: entity_manager.BaseActor{
 			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityZone, name)),
 			Name:       name,
@@ -47,11 +47,9 @@ func NewEntityActor(name string, params m.EntityAttributeValue) *EntityActor {
 		},
 		stateMu: &sync.Mutex{},
 	}
-
-	return e
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.IActorManager) entity_manager.IActor {
+func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
 	e.Manager = actorManager
 	return e
 }

@@ -50,24 +50,24 @@ var (
 )
 
 // MET Plugin
-type pluginWeatherMet struct {
+type plugin struct {
 	adaptors      *adaptors.Adaptors
-	entityManager *entity_manager.EntityManager
+	entityManager entity_manager.EntityManager
 	isStarted     *atomic.Bool
 	quit          chan struct{}
 	pause         uint
-	service       plugin_manager.IPluginManager
-	eventBus      *event_bus.EventBus
+	service       plugin_manager.PluginManager
+	eventBus      event_bus.EventBus
 	zones         *sync.Map
 	lock          *sync.Mutex
 	counter       int
 }
 
-func Register(manager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager,
-	eventBus *event_bus.EventBus,
+func Register(manager plugin_manager.PluginManager,
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors) {
-	manager.Register(&pluginWeatherMet{
+	manager.Register(&plugin{
 		adaptors:      adaptors,
 		entityManager: entityManager,
 		isStarted:     atomic.NewBool(false),
@@ -79,7 +79,7 @@ func Register(manager *plugin_manager.PluginManager,
 	})
 }
 
-func (p *pluginWeatherMet) Load(service plugin_manager.IPluginManager, plugins map[string]interface{}) (err error) {
+func (p *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
 
 	p.service = service
 
@@ -119,7 +119,7 @@ func (p *pluginWeatherMet) Load(service plugin_manager.IPluginManager, plugins m
 	return nil
 }
 
-func (p *pluginWeatherMet) Unload() (err error) {
+func (p *plugin) Unload() (err error) {
 	if !p.isStarted.Load() {
 		return
 	}
@@ -130,11 +130,11 @@ func (p *pluginWeatherMet) Unload() (err error) {
 	return nil
 }
 
-func (p pluginWeatherMet) Name() string {
+func (p plugin) Name() string {
 	return Name
 }
 
-func (p *pluginWeatherMet) eventHandler(msg interface{}) {
+func (p *plugin) eventHandler(msg interface{}) {
 	switch v := msg.(type) {
 	case event_bus.EventAddedNewEntity:
 		if v.Type != "weather" {
@@ -155,15 +155,15 @@ func (p *pluginWeatherMet) eventHandler(msg interface{}) {
 			return
 		}
 		p.zones.Delete(v.EntityId.Name())
-
+		log.Infof("Unload weather_met.%s", v.EntityId.Name())
 	}
 }
 
-func (p *pluginWeatherMet) addZone() {
+func (p *plugin) addZone() {
 
 }
 
-func (p *pluginWeatherMet) updateZonesList(entityId common.EntityId, attrs m.EntityAttributes) {
+func (p *plugin) updateZonesList(entityId common.EntityId, attrs m.EntityAttributes) {
 
 	zone := weather.Zone{
 		Name:      entityId.Name(),
@@ -184,7 +184,7 @@ func (p *pluginWeatherMet) updateZonesList(entityId common.EntityId, attrs m.Ent
 	p.updateForecastForAll()
 }
 
-func (p *pluginWeatherMet) send(to common.EntityId, payload interface{}) {
+func (p *plugin) send(to common.EntityId, payload interface{}) {
 	p.entityManager.Send(entity_manager.Message{
 		From:    Name,
 		To:      to,
@@ -192,7 +192,7 @@ func (p *pluginWeatherMet) send(to common.EntityId, payload interface{}) {
 	})
 }
 
-func (p *pluginWeatherMet) updateForecastForAll() (err error) {
+func (p *plugin) updateForecastForAll() (err error) {
 
 	p.lock.Lock()
 	defer p.lock.Unlock()
@@ -213,12 +213,10 @@ func (p *pluginWeatherMet) updateForecastForAll() (err error) {
 	return nil
 }
 
-func (p *pluginWeatherMet) updateForecast(zone weather.Zone) (err error) {
+func (p *plugin) updateForecast(zone weather.Zone) (err error) {
 
 	var forecast m.EntityAttributeValue
-	forecast, err = p.GetForecast(zone)
-	if err != nil {
-		log.Error(err.Error())
+	if forecast, err = p.GetForecast(zone); err != nil {
 		return
 	}
 
@@ -233,11 +231,10 @@ func (p *pluginWeatherMet) updateForecast(zone weather.Zone) (err error) {
 	return nil
 }
 
-func (p *pluginWeatherMet) GetForecast(params weather.Zone) (forecast m.EntityAttributeValue, err error) {
+func (p *plugin) GetForecast(params weather.Zone) (forecast m.EntityAttributeValue, err error) {
 
 	var zone Zone
 	if zone, err = p.fetchData(params.Name, params.Lat, params.Lon, params.Elevation); err != nil {
-		log.Error(err.Error())
 		return
 	}
 
@@ -260,7 +257,7 @@ func (p *pluginWeatherMet) GetForecast(params weather.Zone) (forecast m.EntityAt
 	return
 }
 
-func (p *pluginWeatherMet) fetchData(name string, lat, lon, elevation float64) (zone Zone, err error) {
+func (p *plugin) fetchData(name string, lat, lon, elevation float64) (zone Zone, err error) {
 
 	if lat == 0 || lon == 0 {
 		err = fmt.Errorf("zero positions")
@@ -298,7 +295,7 @@ func (p *pluginWeatherMet) fetchData(name string, lat, lon, elevation float64) (
 	return
 }
 
-func (p *pluginWeatherMet) fetchFromLocalStorage(name string) (zone Zone, err error) {
+func (p *plugin) fetchFromLocalStorage(name string) (zone Zone, err error) {
 
 	log.Debugf("fetch from local storage")
 
@@ -313,7 +310,7 @@ func (p *pluginWeatherMet) fetchFromLocalStorage(name string) (zone Zone, err er
 	return
 }
 
-func (p *pluginWeatherMet) saveToLocalStorage(zone Zone) (err error) {
+func (p *plugin) saveToLocalStorage(zone Zone) (err error) {
 
 	log.Debugf("save to local storage %s", zone.Name)
 
@@ -322,15 +319,16 @@ func (p *pluginWeatherMet) saveToLocalStorage(zone Zone) (err error) {
 		return
 	}
 
-	err = p.adaptors.Variable.Update(m.Variable{
-		Name:  fmt.Sprintf("weather.%s", zone.Name),
-		Value: string(b),
+	err = p.adaptors.Variable.CreateOrUpdate(m.Variable{
+		Name:     fmt.Sprintf("weather.%s", zone.Name),
+		Value:    string(b),
+		EntityId: common.NewEntityId(fmt.Sprintf("weather.%s", zone.Name)),
 	})
 
 	return
 }
 
-func (p *pluginWeatherMet) fetchFromServer(lat, lon, elevation float64) (body []byte, err error) {
+func (p *plugin) fetchFromServer(lat, lon, elevation float64) (body []byte, err error) {
 
 	uri, _ := url.Parse(DefaultApiUrl)
 	params := url.Values{}
@@ -348,7 +346,7 @@ func (p *pluginWeatherMet) fetchFromServer(lat, lon, elevation float64) (body []
 	return
 }
 
-func (p *pluginWeatherMet) getCurrentWeather(zone Zone) (w6 m.EntityAttributeValue, err error) {
+func (p *plugin) getCurrentWeather(zone Zone) (w6 m.EntityAttributeValue, err error) {
 
 	now := time.Now()
 
@@ -367,7 +365,7 @@ func (p *pluginWeatherMet) getCurrentWeather(zone Zone) (w6 m.EntityAttributeVal
 	return
 }
 
-func (p *pluginWeatherMet) getWeather(zone Zone, t time.Time, maxHour float64) (w m.EntityAttributeValue, err error) {
+func (p *plugin) getWeather(zone Zone, t time.Time, maxHour float64) (w m.EntityAttributeValue, err error) {
 
 	var orderedEntries Products
 	for _, product := range zone.Weatherdata.Products {
@@ -404,7 +402,7 @@ func (p *pluginWeatherMet) getWeather(zone Zone, t time.Time, maxHour float64) (
 	return
 }
 
-func (p *pluginWeatherMet) getTemperature(orderedEntries []Product) (value float64) {
+func (p *plugin) getTemperature(orderedEntries []Product) (value float64) {
 
 	for _, entry := range orderedEntries {
 		if entry.Location.Temperature != nil {
@@ -416,7 +414,7 @@ func (p *pluginWeatherMet) getTemperature(orderedEntries []Product) (value float
 	return
 }
 
-func (p *pluginWeatherMet) getMinTemperature(orderedEntries []Product) (value float64) {
+func (p *plugin) getMinTemperature(orderedEntries []Product) (value float64) {
 
 	value = 99
 	for _, entry := range orderedEntries {
@@ -439,7 +437,7 @@ func (p *pluginWeatherMet) getMinTemperature(orderedEntries []Product) (value fl
 	return
 }
 
-func (p *pluginWeatherMet) getMaxTemperature(orderedEntries []Product) (value float64) {
+func (p *plugin) getMaxTemperature(orderedEntries []Product) (value float64) {
 
 	for _, entry := range orderedEntries {
 		if entry.Location.MaxTemperature != nil {
@@ -453,7 +451,7 @@ func (p *pluginWeatherMet) getMaxTemperature(orderedEntries []Product) (value fl
 	return
 }
 
-func (p *pluginWeatherMet) getCondition(orderedEntries []Product) (value string) {
+func (p *plugin) getCondition(orderedEntries []Product) (value string) {
 
 	for _, entry := range orderedEntries {
 		if entry.Location.Symbol != nil {
@@ -466,7 +464,7 @@ func (p *pluginWeatherMet) getCondition(orderedEntries []Product) (value string)
 	return
 }
 
-func (p *pluginWeatherMet) getPressure(orderedEntries []Product) (value float64) {
+func (p *plugin) getPressure(orderedEntries []Product) (value float64) {
 
 	for _, entry := range orderedEntries {
 		if entry.Location.Pressure != nil {
@@ -480,7 +478,7 @@ func (p *pluginWeatherMet) getPressure(orderedEntries []Product) (value float64)
 	return
 }
 
-func (p *pluginWeatherMet) getHumidity(orderedEntries []Product) (value float64) {
+func (p *plugin) getHumidity(orderedEntries []Product) (value float64) {
 
 	for _, entry := range orderedEntries {
 		if entry.Location.Humidity != nil {
@@ -494,7 +492,7 @@ func (p *pluginWeatherMet) getHumidity(orderedEntries []Product) (value float64)
 	return
 }
 
-func (p *pluginWeatherMet) getDewpointTemperature(orderedEntries []Product) (value float64) {
+func (p *plugin) getDewpointTemperature(orderedEntries []Product) (value float64) {
 
 	for _, entry := range orderedEntries {
 		if entry.Location.DewpointTemperature != nil {
@@ -506,7 +504,7 @@ func (p *pluginWeatherMet) getDewpointTemperature(orderedEntries []Product) (val
 	return
 }
 
-func (p *pluginWeatherMet) getWindSpeed(orderedEntries []Product) (value float64) {
+func (p *plugin) getWindSpeed(orderedEntries []Product) (value float64) {
 
 	for _, entry := range orderedEntries {
 		if entry.Location.WindSpeed != nil {
@@ -519,7 +517,7 @@ func (p *pluginWeatherMet) getWindSpeed(orderedEntries []Product) (value float64
 	return
 }
 
-func (p *pluginWeatherMet) getWindDirection(orderedEntries []Product) (value float64) {
+func (p *plugin) getWindDirection(orderedEntries []Product) (value float64) {
 
 	for _, entry := range orderedEntries {
 		if entry.Location.WindDirection != nil {
@@ -531,10 +529,10 @@ func (p *pluginWeatherMet) getWindDirection(orderedEntries []Product) (value flo
 	return
 }
 
-func (p *pluginWeatherMet) Type() plugin_manager.PlugableType {
+func (p *plugin) Type() plugin_manager.PlugableType {
 	return plugin_manager.PlugableBuiltIn
 }
 
-func (p *pluginWeatherMet) Depends() []string {
+func (p *plugin) Depends() []string {
 	return []string{weather.Name}
 }

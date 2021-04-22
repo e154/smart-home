@@ -75,7 +75,7 @@ func (c ControllerNotifr) Update(ctx *gin.Context) {
 		return
 	}
 
-	settings := &notify.NotifyConfig{}
+	settings := &notify.Config{}
 	_ = common.Copy(&settings, &params, common.JsonEngine)
 
 	err := c.endpoint.Notify.UpdateSettings(settings)

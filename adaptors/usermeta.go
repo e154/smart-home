@@ -24,8 +24,15 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IUserMeta interface {
+	UpdateOrCreate(meta *m.UserMeta) (id int64, err error)
+	fromDb(dbMeta *db.UserMeta) (meta *m.UserMeta)
+	toDb(meta *m.UserMeta) (dbMeta *db.UserMeta)
+}
+
 // UserMeta ...
 type UserMeta struct {
+	IUserMeta
 	table *db.UserMetas
 	db    *gorm.DB
 }

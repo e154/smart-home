@@ -33,10 +33,10 @@ type EntityActor struct {
 	updateLock     *sync.Mutex
 	positionLock   *sync.Mutex
 	zoneAttributes m.EntityAttributes
-	eventBus       *event_bus.EventBus
+	eventBus       event_bus.EventBus
 }
 
-func NewEntityActor(name string, eventBus *event_bus.EventBus, ) *EntityActor {
+func NewEntityActor(name string, eventBus event_bus.EventBus, ) *EntityActor {
 
 	e := &EntityActor{
 		BaseActor: entity_manager.BaseActor{
@@ -47,6 +47,7 @@ func NewEntityActor(name string, eventBus *event_bus.EventBus, ) *EntityActor {
 			UnitOfMeasurement: "C°",
 			AttrMu:            &sync.Mutex{},
 			Attrs:             BaseForecast(),
+			ParentId:          common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
 		},
 		eventBus:       eventBus,
 		zoneAttributes: zone.NewAttr(),
@@ -57,7 +58,7 @@ func NewEntityActor(name string, eventBus *event_bus.EventBus, ) *EntityActor {
 	return e
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.IActorManager) entity_manager.IActor {
+func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
 	e.Manager = actorManager
 	return e
 }

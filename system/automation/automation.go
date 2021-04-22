@@ -48,28 +48,36 @@ const (
 	queueSize = 100
 )
 
-type Automation struct {
-	eventBus      *event_bus.EventBus
+type Automation interface {
+	Start() (err error)
+	Shutdown() (err error)
+	Reload()
+	AddTask(model *m.Task)
+	RemoveTask(model *m.Task)
+}
+
+type automation struct {
+	eventBus      event_bus.EventBus
 	taskLock      *sync.Mutex
-	scriptService *scripts.ScriptService
+	scriptService scripts.ScriptService
 	tasks         map[int64]*Task
 	taskCount     atomic.Uint64
 	msgQueue      message_queue.MessageQueue
-	entityManager *entity_manager.EntityManager
+	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	isStarted     *atomic.Bool
 	rawPlugin     triggers.IGetTrigger
-	pluginManager *plugin_manager.PluginManager
+	pluginManager plugin_manager.PluginManager
 }
 
 func NewAutomation(lc fx.Lifecycle,
-	eventBus *event_bus.EventBus,
-	scriptService *scripts.ScriptService,
-	entityManager *entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
+	scriptService scripts.ScriptService,
+	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
-	pluginManager *plugin_manager.PluginManager) (automation *Automation) {
+	pluginManager plugin_manager.PluginManager) (auto Automation) {
 
-	automation = &Automation{
+	auto = &automation{
 		eventBus:      eventBus,
 		taskLock:      &sync.Mutex{},
 		scriptService: scriptService,
@@ -82,23 +90,23 @@ func NewAutomation(lc fx.Lifecycle,
 	}
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
-			return automation.Shutdown()
+			return auto.Shutdown()
 		},
 	})
 	return
 }
 
-func (a *Automation) Start() (err error) {
+func (a *automation) Start() (err error) {
 	a.load()
 	return
 }
 
-func (a *Automation) Shutdown() (err error) {
+func (a *automation) Shutdown() (err error) {
 	a.unload()
 	return
 }
 
-func (a *Automation) load() {
+func (a *automation) load() {
 	if a.isStarted.Load() {
 		return
 	}
@@ -137,7 +145,7 @@ LOOP:
 	log.Info("Loaded ...")
 }
 
-func (a *Automation) unload() {
+func (a *automation) unload() {
 	if !a.isStarted.Load() {
 		return
 	}
@@ -152,12 +160,12 @@ func (a *Automation) unload() {
 	log.Info("Unloaded ...")
 }
 
-func (a *Automation) Reload() {
+func (a *automation) Reload() {
 	a.unload()
 	a.load()
 }
 
-func (a *Automation) AddTask(model *m.Task) {
+func (a *automation) AddTask(model *m.Task) {
 	a.taskLock.Lock()
 	defer a.taskLock.Unlock()
 
@@ -168,7 +176,7 @@ func (a *Automation) AddTask(model *m.Task) {
 	task.Start()
 }
 
-func (a *Automation) RemoveTask(model *m.Task) {
+func (a *automation) RemoveTask(model *m.Task) {
 	a.taskLock.Lock()
 	defer a.taskLock.Unlock()
 

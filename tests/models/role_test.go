@@ -33,7 +33,7 @@ func TestRole(t *testing.T) {
 	Convey("add role", t, func(ctx C) {
 		container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			accessList *access_list.AccessListService) {
+			accessList access_list.AccessListService) {
 
 			// clear database
 			migrations.Purge()
@@ -55,7 +55,7 @@ func TestRole(t *testing.T) {
 			//fmt.Println("----")
 
 			var counter int
-			for pack, item := range *accessList.List {
+			for pack, item := range *accessList.List() {
 				for right := range item {
 					if strings.Contains(right, "read") ||
 						strings.Contains(right, "view") {
@@ -72,7 +72,7 @@ func TestRole(t *testing.T) {
 				}
 			}
 
-			for pack, item := range *accessList.List {
+			for pack, item := range *accessList.List() {
 				for right := range item {
 					if !strings.Contains(right, "read") &&
 						!strings.Contains(right, "view") {

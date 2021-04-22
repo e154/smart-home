@@ -39,7 +39,7 @@ func Test4(t *testing.T) {
 	Convey("javascript PushStruct", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migratxions *migrations.Migrations,
-			scriptService *scripts.ScriptService) {
+			scriptService scripts.ScriptService) {
 
 			storeRegisterCallback(scriptService)
 

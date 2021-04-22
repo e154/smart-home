@@ -24,13 +24,19 @@ import (
 )
 
 const (
+	Name = "zone"
+	// EntityZone ...
+	EntityZone = common.EntityType(Name)
+)
+
+const (
 	AttrLat       = "lat"
 	AttrLon       = "lon"
 	AttrElevation = "elevation"
 	AttrTimezone  = "timezone"
 )
 
-func NewAttr()  m.EntityAttributes {
+func NewAttr() m.EntityAttributes {
 
 	attributes := m.EntityAttributes{
 		AttrLat: {

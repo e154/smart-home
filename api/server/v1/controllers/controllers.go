@@ -46,8 +46,8 @@ type ControllersV1 struct {
 
 // NewControllersV1 ...
 func NewControllersV1(adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService,
-	accessList *access_list.AccessListService,
+	scriptService scripts.ScriptService,
+	accessList access_list.AccessListService,
 	command *endpoint.Endpoint) *ControllersV1 {
 	common := NewControllerCommon(adaptors, accessList, command)
 	return &ControllersV1{

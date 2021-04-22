@@ -48,14 +48,14 @@ type Alexa struct {
 	adaptors      *adaptors.Adaptors
 	config        Config
 	token         *atomic.String
-	scriptService *scripts.ScriptService
+	scriptService scripts.ScriptService
 	gateClient    *gate_client.GateClient
 }
 
 // NewAlexa ...
 func NewAlexa(adaptors *adaptors.Adaptors,
 	config Config,
-	scriptService *scripts.ScriptService,
+	scriptService scripts.ScriptService,
 	gateClient *gate_client.GateClient) *Alexa {
 	return &Alexa{
 		isStarted:     atomic.NewBool(false),

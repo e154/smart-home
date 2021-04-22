@@ -220,12 +220,17 @@ func (n *Maps) List(limit, offset int64, orderBy, sort string) (list []*Map, tot
 func (n *Maps) Search(query string, limit, offset int) (list []*Map, total int64, err error) {
 
 	q := n.Db.Model(&Map{}).
-		Where("name LIKE ?", "%"+query+"%").
-		Order("name ASC")
+		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
+
 
 	list = make([]*Map, 0)
 	err = q.Find(&list).Error

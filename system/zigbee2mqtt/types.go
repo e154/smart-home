@@ -23,6 +23,24 @@ import (
 	"time"
 )
 
+type Zigbee2mqtt interface {
+	Start()
+	Shutdown()
+	AddBridge(model *m.Zigbee2mqtt) (err error)
+	GetBridgeById(id int64) (*m.Zigbee2mqtt, error)
+	GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error)
+	ListBridges(limit, offset int64, order, sortBy string) (models []*Zigbee2mqttInfo, total int64, err error)
+	UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, err error)
+	DeleteBridge(bridgeId int64) (err error)
+	ResetBridge(bridgeId int64) (err error)
+	BridgeDeviceBan(bridgeId int64, friendlyName string) (err error)
+	BridgeDeviceWhitelist(bridgeId int64, friendlyName string) (err error)
+	BridgeNetworkmap(bridgeId int64) (networkmap string, err error)
+	BridgeUpdateNetworkmap(bridgeId int64) (err error)
+	GetTopicByDevice(model *m.Zigbee2mqttDevice) (topic string, err error)
+	DeviceRename(friendlyName, name string) (err error)
+}
+
 // DeviceType ...
 type DeviceType string
 

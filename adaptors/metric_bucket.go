@@ -28,15 +28,29 @@ import (
 	"time"
 )
 
+type IMetricBucket interface {
+	Add(ver m.MetricDataItem) error
+	AddMultiple(items []m.MetricDataItem) (err error)
+	SimpleListWithSoftRange(_from, _to *time.Time, metricId int64, _metricRange *string, optionItems []string) (list []m.MetricDataItem, err error)
+	Simple24HPreview(metricId int64, optionItems []string) (list []m.MetricDataItem, err error)
+	DeleteOldest(days int) (err error)
+	DeleteById(id int64) (err error)
+	DeleteByMetricId(metricId int64) (err error)
+	CreateHypertable() (err error)
+	fromDb(dbVer db.MetricBucket) (ver m.MetricDataItem)
+	toDb(ver m.MetricDataItem) (dbVer db.MetricBucket)
+}
+
 // MetricDataItem ...
 type MetricBucket struct {
+	IMetricBucket
 	table *db.MetricBuckets
 	db    *gorm.DB
 	orm   *orm.Orm
 }
 
 // GetMetricBucketAdaptor ...
-func GetMetricBucketAdaptor(d *gorm.DB, orm *orm.Orm) *MetricBucket {
+func GetMetricBucketAdaptor(d *gorm.DB, orm *orm.Orm) IMetricBucket {
 	return &MetricBucket{
 		table: &db.MetricBuckets{Db: d},
 		db:    d,

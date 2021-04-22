@@ -37,26 +37,26 @@ var (
 	log = common.MustGetLogger("plugins.zigbee2mqtt")
 )
 
-type pluginZigbee2mqtt struct {
-	entityManager *entity_manager.EntityManager
+type plugin struct {
+	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
-	scriptService *scripts.ScriptService
+	scriptService scripts.ScriptService
 	isStarted     *atomic.Bool
-	eventBus      *event_bus.EventBus
+	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
 	actors        map[string]*EntityActor
-	mqtt          *mqtt.Mqtt
-	mqttClient    *mqtt.Client
+	mqtt          mqtt.MqttServ
+	mqttClient    mqtt.MqttCli
 	mqttSubs      sync.Map
 }
 
-func Register(manager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager,
-	eventBus *event_bus.EventBus,
+func Register(manager plugin_manager.PluginManager,
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors,
-	mqtt *mqtt.Mqtt,
-	scriptService *scripts.ScriptService) {
-	manager.Register(&pluginZigbee2mqtt{
+	mqtt mqtt.MqttServ,
+	scriptService scripts.ScriptService) {
+	manager.Register(&plugin{
 		entityManager: entityManager,
 		adaptors:      adaptors,
 		scriptService: scriptService,
@@ -70,30 +70,30 @@ func Register(manager *plugin_manager.PluginManager,
 	})
 }
 
-func (p pluginZigbee2mqtt) Load(service plugin_manager.IPluginManager, plugins map[string]interface{}) (err error) {
+func (p plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
 	if err := p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 	return
 }
 
-func (p pluginZigbee2mqtt) Unload() (err error) {
+func (p plugin) Unload() (err error) {
 	return
 }
 
-func (p pluginZigbee2mqtt) Name() string {
+func (p plugin) Name() string {
 	return Name
 }
 
-func (p *pluginZigbee2mqtt) AddOrUpdateEntity(entity *m.Entity) error {
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) error {
 	return p.addOrUpdateEntity(entity, entity.Attributes.Serialize())
 }
 
-func (p *pluginZigbee2mqtt) RemoveEntity(entity *m.Entity) (err error) {
-	return p.removeEntity(entity.Id.Name())
+func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
+	return p.removeEntity(entityId.Name())
 }
 
-func (p *pluginZigbee2mqtt) addOrUpdateEntity(entity *m.Entity, attributes m.EntityAttributeValue) (err error) {
+func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.EntityAttributeValue) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
@@ -109,8 +109,6 @@ func (p *pluginZigbee2mqtt) addOrUpdateEntity(entity *m.Entity, attributes m.Ent
 		})
 		return
 	}
-
-	log.Infof("Add zigbee2mqtt '%s'", name)
 
 	var actor *EntityActor
 	if actor, err = NewEntityActor(entity, attributes, p.adaptors, p.scriptService); err != nil {
@@ -132,11 +130,12 @@ func (p *pluginZigbee2mqtt) addOrUpdateEntity(entity *m.Entity, attributes m.Ent
 	return
 }
 
-func (p *pluginZigbee2mqtt) removeEntity(name string) (err error) {
+func (p *plugin) removeEntity(name string) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
+		err = fmt.Errorf("not found")
 		return
 	}
 
@@ -145,11 +144,11 @@ func (p *pluginZigbee2mqtt) removeEntity(name string) (err error) {
 	return
 }
 
-func (p *pluginZigbee2mqtt) topic(bridgeId string) string {
+func (p *plugin) topic(bridgeId string) string {
 	return fmt.Sprintf("%s/#", bridgeId)
 }
 
-func (p *pluginZigbee2mqtt) mqttOnPublish(client *mqtt.Client, msg mqtt.Message) {
+func (p *plugin) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 
 	var topic = strings.Split(msg.Topic, "/")
 
@@ -167,7 +166,7 @@ func (p *pluginZigbee2mqtt) mqttOnPublish(client *mqtt.Client, msg mqtt.Message)
 	actor.mqttOnPublish(client, msg)
 }
 
-func (p *pluginZigbee2mqtt) getActorByZigbeeDeviceId(deviceId string) (actor *EntityActor, err error) {
+func (p *plugin) getActorByZigbeeDeviceId(deviceId string) (actor *EntityActor, err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
@@ -182,7 +181,7 @@ func (p *pluginZigbee2mqtt) getActorByZigbeeDeviceId(deviceId string) (actor *En
 	return
 }
 
-func (p *pluginZigbee2mqtt) eventHandler(msg interface{}) {
+func (p *plugin) eventHandler(msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventCallAction:
@@ -197,10 +196,10 @@ func (p *pluginZigbee2mqtt) eventHandler(msg interface{}) {
 	}
 }
 
-func (p *pluginZigbee2mqtt) Type() plugin_manager.PlugableType {
+func (p *plugin) Type() plugin_manager.PlugableType {
 	return plugin_manager.PlugableBuiltIn
 }
 
-func (p *pluginZigbee2mqtt) Depends() []string {
+func (p *plugin) Depends() []string {
 	return nil
 }

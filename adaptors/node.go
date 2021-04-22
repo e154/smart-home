@@ -25,14 +25,29 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type INode interface {
+	Add(node *m.Node) (id int64, err error)
+	GetAllEnabled() (list []*m.Node, err error)
+	GetById(nodeId int64) (node *m.Node, err error)
+	Update(node *m.Node) (err error)
+	Delete(nodeId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.Node, total int64, err error)
+	Search(query string, limit, offset int) (list []*m.Node, total int64, err error)
+	GetByLogin(login string) (ver *m.Node, err error)
+	GetByName(name string) (ver *m.Node, err error)
+	fromDb(dbNode *db.Node) (node *m.Node)
+	toDb(node *m.Node) (dbNode *db.Node, err error)
+}
+
 // Node ...
 type Node struct {
+	INode
 	table *db.Nodes
 	db    *gorm.DB
 }
 
 // GetNodeAdaptor ...
-func GetNodeAdaptor(d *gorm.DB) *Node {
+func GetNodeAdaptor(d *gorm.DB) INode {
 	return &Node{
 		table: &db.Nodes{Db: d},
 		db:    d,

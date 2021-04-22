@@ -40,8 +40,8 @@ const (
 type Bridge struct {
 	metric         *metrics.MetricManager
 	adaptors       *adaptors.Adaptors
-	mqtt           *mqtt.Mqtt
-	mqttClient     *mqtt.Client
+	mqtt           mqtt.MqttServ
+	mqttClient     mqtt.MqttCli
 	isStarted      bool
 	settingsLock   sync.Mutex
 	state          string // online|offline
@@ -57,7 +57,7 @@ type Bridge struct {
 }
 
 // NewBridge ...
-func NewBridge(mqtt *mqtt.Mqtt,
+func NewBridge(mqtt mqtt.MqttServ,
 	adaptors *adaptors.Adaptors,
 	model *m.Zigbee2mqtt,
 	metric *metrics.MetricManager) *Bridge {
@@ -111,7 +111,7 @@ func (g *Bridge) Stop(ctx context.Context) {
 	g.mqttClient.UnsubscribeAll()
 }
 
-func (g *Bridge) onBridgePublish(client *mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onBridgePublish(client mqtt.MqttCli, message mqtt.Message) {
 
 	var topic = strings.Split(message.Topic, "/")
 
@@ -129,7 +129,7 @@ func (g *Bridge) onBridgePublish(client *mqtt.Client, message mqtt.Message) {
 	}
 }
 
-func (g *Bridge) onAssistPublish(client *mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onAssistPublish(client mqtt.MqttCli, message mqtt.Message) {
 
 	var topic = strings.Split(message.Topic, "/")
 
@@ -157,13 +157,13 @@ func (g *Bridge) onAssistPublish(client *mqtt.Client, message mqtt.Message) {
 	}
 }
 
-func (g *Bridge) onBridgeStatePublish(client *mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onBridgeStatePublish(client mqtt.MqttCli, message mqtt.Message) {
 	g.settingsLock.Lock()
 	g.state = string(message.Payload)
 	g.settingsLock.Unlock()
 }
 
-func (g *Bridge) onNetworkmapPublish(client *mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onNetworkmapPublish(client mqtt.MqttCli, message mqtt.Message) {
 
 	var topic = strings.Split(message.Topic, "/")
 
@@ -183,7 +183,7 @@ func (g *Bridge) onNetworkmapPublish(client *mqtt.Client, message mqtt.Message) 
 	}
 }
 
-func (g *Bridge) onConfigPublish(client *mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onConfigPublish(client mqtt.MqttCli, message mqtt.Message) {
 
 	var topic = strings.Split(message.Topic, "/")
 
@@ -202,7 +202,7 @@ func (g *Bridge) onConfigPublish(client *mqtt.Client, message mqtt.Message) {
 	g.settingsLock.Unlock()
 }
 
-func (g *Bridge) onConfigDevicesPublish(client *mqtt.Client, message mqtt.Message) {}
+func (g *Bridge) onConfigDevicesPublish(client mqtt.MqttCli, message mqtt.Message) {}
 
 func (g *Bridge) safeGetDevice(friendlyName string) (device *Device, err error) {
 
@@ -272,7 +272,7 @@ func (g *Bridge) safeGetDeviceList() (err error) {
 	return
 }
 
-func (g *Bridge) onLogPublish(client *mqtt.Client, message mqtt.Message) {
+func (g *Bridge) onLogPublish(client mqtt.MqttCli, message mqtt.Message) {
 	var lm BridgeLog
 	_ = json.Unmarshal(message.Payload, &lm)
 	log.Infof("%v, %v, %v", lm.Type, lm.Message, lm.Meta)

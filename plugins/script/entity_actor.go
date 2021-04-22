@@ -34,8 +34,8 @@ const (
 type EntityActor struct {
 	entity_manager.BaseActor
 	adaptors      *adaptors.Adaptors
-	scriptService *scripts.ScriptService
-	system        entity_manager.IActorManager
+	scriptService scripts.ScriptService
+	system        entity_manager.EntityManager
 	stateMu       *sync.Mutex
 	actionPool    chan event_bus.EventCallAction
 }
@@ -43,7 +43,7 @@ type EntityActor struct {
 func NewEntityActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService) (actor *EntityActor, err error) {
+	scriptService scripts.ScriptService) (actor *EntityActor, err error) {
 
 	actor = &EntityActor{
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
@@ -78,7 +78,7 @@ func NewEntityActor(entity *m.Entity,
 	return
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.IActorManager) entity_manager.IActor {
+func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
 	e.Manager = actorManager
 	return e
 }

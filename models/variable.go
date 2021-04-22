@@ -20,16 +20,18 @@ package models
 
 import (
 	"encoding/json"
+	"github.com/e154/smart-home/common"
 	"time"
 )
 
 // Variable ...
 type Variable struct {
-	Name      string    `json:"name"`
-	Value     string    `json:"value"`
-	Autoload  bool      `json:"autoload"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Name      string           `json:"name"`
+	Value     string           `json:"value"`
+	Autoload  bool             `json:"autoload"`
+	EntityId  *common.EntityId `json:"entity_id"`
+	CreatedAt time.Time        `json:"created_at"`
+	UpdatedAt time.Time        `json:"updated_at"`
 }
 
 // NewVariable ...

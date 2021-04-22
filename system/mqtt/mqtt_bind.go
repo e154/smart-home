@@ -24,11 +24,11 @@ package mqtt
 //	.Publish
 //
 type MqttBind struct {
-	mqtt *Mqtt
+	mqtt MqttServ
 }
 
 // NewMqttBind ...
-func NewMqttBind(mqtt *Mqtt) *MqttBind {
+func NewMqttBind(mqtt MqttServ) *MqttBind {
 	return &MqttBind{mqtt: mqtt}
 }
 

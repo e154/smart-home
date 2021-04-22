@@ -52,8 +52,8 @@ func Test9(t *testing.T) {
 	Convey("send sms", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			scriptService *scripts.ScriptService,
-			notifyService *notify.Notify) {
+			scriptService scripts.ScriptService,
+			notifyService notify.Notify) {
 
 			// add templates
 			// ------------------------------------------------
@@ -112,7 +112,7 @@ func Test9(t *testing.T) {
 			//file, err = ioutil.ReadFile(path)
 			//So(err, ShouldBeNil)
 			//
-			//conf := &notify.NotifyConfig{}
+			//conf := &notify.Config{}
 			//err = json.Unmarshal(file, &conf)
 			//So(err, ShouldBeNil)
 			//

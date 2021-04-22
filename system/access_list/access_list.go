@@ -29,15 +29,22 @@ var (
 	log = common.MustGetLogger("access_list")
 )
 
-// AccessListService ...
-type AccessListService struct {
-	List     *AccessList
+type AccessListService interface {
+	ReadConfig() (err error)
+	GetFullAccessList(role *m.Role) (accessList AccessList, err error)
+	GetShotAccessList(role *m.Role) (err error)
+	List() *AccessList
+}
+
+// accessListService ...
+type accessListService struct {
+	list     *AccessList
 	adaptors *adaptors.Adaptors
 }
 
 // NewAccessListService ...
-func NewAccessListService(adaptors *adaptors.Adaptors) *AccessListService {
-	accessList := &AccessListService{
+func NewAccessListService(adaptors *adaptors.Adaptors) AccessListService {
+	accessList := &accessListService{
 		adaptors: adaptors,
 	}
 	accessList.ReadConfig()
@@ -45,7 +52,7 @@ func NewAccessListService(adaptors *adaptors.Adaptors) *AccessListService {
 }
 
 // ReadConfig ...
-func (a *AccessListService) ReadConfig() (err error) {
+func (a *accessListService) ReadConfig() (err error) {
 
 	//var file []byte
 	//file, err = ioutil.ReadFile(path)
@@ -54,8 +61,8 @@ func (a *AccessListService) ReadConfig() (err error) {
 	//	return
 	//}
 
-	a.List = &AccessList{}
-	err = json.Unmarshal([]byte(DATA), a.List)
+	a.list = &AccessList{}
+	err = json.Unmarshal([]byte(DATA), a.list)
 	if err != nil {
 		log.Fatal(err.Error())
 		return
@@ -65,7 +72,7 @@ func (a *AccessListService) ReadConfig() (err error) {
 }
 
 // GetFullAccessList ...
-func (a *AccessListService) GetFullAccessList(role *m.Role) (accessList AccessList, err error) {
+func (a *accessListService) GetFullAccessList(role *m.Role) (accessList AccessList, err error) {
 
 	var permissions []*m.Permission
 	if permissions, err = a.adaptors.Permission.GetAllPermissions(role.Name); err != nil {
@@ -76,7 +83,7 @@ func (a *AccessListService) GetFullAccessList(role *m.Role) (accessList AccessLi
 	var item AccessItem
 	var levels AccessLevels
 	var ok bool
-	list := *a.List
+	list := *a.list
 	for _, perm := range permissions {
 
 		if levels, ok = list[perm.PackageName]; !ok {
@@ -99,8 +106,12 @@ func (a *AccessListService) GetFullAccessList(role *m.Role) (accessList AccessLi
 }
 
 // GetShotAccessList ...
-func (a *AccessListService) GetShotAccessList(role *m.Role) (err error) {
+func (a *accessListService) GetShotAccessList(role *m.Role) (err error) {
 
 	err = a.adaptors.Role.GetAccessList(role)
 	return
+}
+
+func (a *accessListService) List() *AccessList {
+	return a.list
 }

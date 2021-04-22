@@ -26,14 +26,30 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IEntity interface {
+	Add(ver *m.Entity) (err error)
+	GetById(id common.EntityId) (ver *m.Entity, err error)
+	Delete(id common.EntityId) (err error)
+	List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error)
+	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
+	Update(ver *m.Entity) (err error)
+	Search(query string, limit, offset int) (list []*m.Entity, total int64, err error)
+	AppendMetric(entityId common.EntityId, metric m.Metric) (err error)
+	DeleteMetric(entityId common.EntityId, metric m.Metric) (err error)
+	preloadMetric(ver *m.Entity) (err error)
+	fromDb(dbVer *db.Entity) (ver *m.Entity)
+	toDb(ver *m.Entity) (dbVer *db.Entity)
+}
+
 // Entity ...
 type Entity struct {
+	IEntity
 	table *db.Entities
 	db    *gorm.DB
 }
 
 // GetEntityAdaptor ...
-func GetEntityAdaptor(d *gorm.DB) *Entity {
+func GetEntityAdaptor(d *gorm.DB) IEntity {
 	return &Entity{
 		table: &db.Entities{Db: d},
 		db:    d,
@@ -333,6 +349,7 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 		States:      make([]*m.EntityState, 0),
 		Icon:        dbVer.Icon,
 		AutoLoad:    dbVer.AutoLoad,
+		ParentId:    dbVer.ParentId,
 		CreatedAt:   dbVer.CreatedAt,
 		UpdatedAt:   dbVer.UpdatedAt,
 	}
@@ -407,6 +424,7 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 		Type:        ver.Type.String(),
 		Icon:        ver.Icon,
 		AutoLoad:    ver.AutoLoad,
+		ParentId:    ver.ParentId,
 	}
 
 	if ver.Image != nil && ver.Image.Id != 0 {

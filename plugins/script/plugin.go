@@ -16,9 +16,10 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package scene
+package script
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -30,24 +31,24 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.scene")
+	log = common.MustGetLogger("plugins.script")
 )
 
-type pluginScene struct {
-	entityManager *entity_manager.EntityManager
-	eventBus      *event_bus.EventBus
+type plugin struct {
+	entityManager entity_manager.EntityManager
+	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
 	actors        map[string]*EntityActor
 	adaptors      *adaptors.Adaptors
-	scriptService *scripts.ScriptService
+	scriptService scripts.ScriptService
 }
 
-func Register(manager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager,
-	bus *event_bus.EventBus,
+func Register(manager plugin_manager.PluginManager,
+	entityManager entity_manager.EntityManager,
+	bus event_bus.EventBus,
 	adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService) {
-	manager.Register(&pluginScene{
+	scriptService scripts.ScriptService) {
+	manager.Register(&plugin{
 		entityManager: entityManager,
 		eventBus:      bus,
 		actorsLock:    &sync.Mutex{},
@@ -58,7 +59,7 @@ func Register(manager *plugin_manager.PluginManager,
 	return
 }
 
-func (p *pluginScene) Load(service plugin_manager.IPluginManager, plugins map[string]interface{}) (err error) {
+func (p *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
 
 	if err := p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
@@ -67,24 +68,34 @@ func (p *pluginScene) Load(service plugin_manager.IPluginManager, plugins map[st
 	return
 }
 
-func (p *pluginScene) Unload() (err error) {
+func (p *plugin) Unload() (err error) {
 
 	return
 }
 
-func (p pluginScene) Name() string {
+func (p plugin) Name() string {
 	return Name
 }
 
-func (p *pluginScene) AddOrUpdateEntity(entity *m.Entity) error {
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) error {
 	return p.addOrUpdateEntity(entity, entity.Attributes.Serialize())
 }
 
-func (p *pluginScene) RemoveEntity(entity *m.Entity) (err error) {
-	return p.removeEntity(entity.Id.Name())
+func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
+	p.actorsLock.Lock()
+	defer p.actorsLock.Unlock()
+
+	if _, ok := p.actors[entityId.Name()]; !ok {
+		err = fmt.Errorf("not found")
+		return
+	}
+
+	delete(p.actors, entityId.Name())
+
+	return
 }
 
-func (p *pluginScene) addOrUpdateEntity(entity *m.Entity,
+func (p *plugin) addOrUpdateEntity(entity *m.Entity,
 	attributes m.EntityAttributeValue,
 ) (err error) {
 	p.actorsLock.Lock()
@@ -103,8 +114,6 @@ func (p *pluginScene) addOrUpdateEntity(entity *m.Entity,
 		return
 	}
 
-	log.Infof("Add scene '%s'", name)
-
 	var actor *EntityActor
 	if actor, err = NewEntityActor(entity, attributes, p.adaptors, p.scriptService); err != nil {
 		return
@@ -115,38 +124,25 @@ func (p *pluginScene) addOrUpdateEntity(entity *m.Entity,
 	return
 }
 
-func (p *pluginScene) removeEntity(name string) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[name]; !ok {
-		return
-	}
-
-	delete(p.actors, name)
-
-	return
-}
-
-func (p *pluginScene) eventHandler(msg interface{}) {
+func (p *plugin) eventHandler(msg interface{}) {
 
 	switch v := msg.(type) {
-	case event_bus.EventCallScene:
+	case event_bus.EventCallAction:
 		actor, ok := p.actors[v.EntityId.Name()]
 		if !ok {
 			return
 		}
-		actor.addEvent(v)
+		actor.addAction(v)
 
 	default:
 		//fmt.Printf("new event: %v\n", reflect.TypeOf(v).String())
 	}
 }
 
-func (p *pluginScene) Type() plugin_manager.PlugableType {
+func (p *plugin) Type() plugin_manager.PlugableType {
 	return plugin_manager.PlugableBuiltIn
 }
 
-func (p *pluginScene) Depends() []string {
+func (p *plugin) Depends() []string {
 	return nil
 }

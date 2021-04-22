@@ -35,11 +35,11 @@ var (
 	log = common.MustGetLogger("zigbee2mqtt")
 )
 
-// Zigbee2mqtt ...
-type Zigbee2mqtt struct {
+// zigbee2mqtt ...
+type zigbee2mqtt struct {
 	metric      *metrics.MetricManager
 	graceful    *graceful_service.GracefulService
-	mqtt        *mqtt.Mqtt
+	mqtt        mqtt.MqttServ
 	adaptors    *adaptors.Adaptors
 	isStarted   atomic.Bool
 	bridgesLock *sync.Mutex
@@ -48,10 +48,10 @@ type Zigbee2mqtt struct {
 
 // NewZigbee2mqtt ...
 func NewZigbee2mqtt(lc fx.Lifecycle,
-	mqtt *mqtt.Mqtt,
+	mqtt mqtt.MqttServ,
 	adaptors *adaptors.Adaptors,
-	metric *metrics.MetricManager) *Zigbee2mqtt {
-	zigbee2mqtt := &Zigbee2mqtt{
+	metric *metrics.MetricManager) Zigbee2mqtt {
+	zigbee2mqtt := &zigbee2mqtt{
 		mqtt:        mqtt,
 		adaptors:    adaptors,
 		bridgesLock: &sync.Mutex{},
@@ -73,7 +73,7 @@ func NewZigbee2mqtt(lc fx.Lifecycle,
 }
 
 // Start ...
-func (z *Zigbee2mqtt) Start() {
+func (z *zigbee2mqtt) Start() {
 	if z.isStarted.Load() {
 		return
 	}
@@ -110,7 +110,7 @@ func (z *Zigbee2mqtt) Start() {
 }
 
 // Shutdown ...
-func (z *Zigbee2mqtt) Shutdown() {
+func (z *zigbee2mqtt) Shutdown() {
 	if !z.isStarted.Load() {
 		return
 	}
@@ -121,7 +121,7 @@ func (z *Zigbee2mqtt) Shutdown() {
 }
 
 // AddBridge ...
-func (z *Zigbee2mqtt) AddBridge(model *m.Zigbee2mqtt) (err error) {
+func (z *zigbee2mqtt) AddBridge(model *m.Zigbee2mqtt) (err error) {
 
 	model.Id, err = z.adaptors.Zigbee2mqtt.Add(model)
 	if err != nil {
@@ -143,7 +143,7 @@ func (z *Zigbee2mqtt) AddBridge(model *m.Zigbee2mqtt) (err error) {
 }
 
 // GetBridgeById ...
-func (z *Zigbee2mqtt) GetBridgeById(id int64) (*m.Zigbee2mqtt, error) {
+func (z *zigbee2mqtt) GetBridgeById(id int64) (*m.Zigbee2mqtt, error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -155,7 +155,7 @@ func (z *Zigbee2mqtt) GetBridgeById(id int64) (*m.Zigbee2mqtt, error) {
 }
 
 // GetBridgeInfo ...
-func (z *Zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error) {
+func (z *zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -166,7 +166,7 @@ func (z *Zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error) {
 }
 
 // ListBridges ...
-func (z *Zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (models []*Zigbee2mqttInfo, total int64, err error) {
+func (z *zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (models []*Zigbee2mqttInfo, total int64, err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -180,7 +180,7 @@ func (z *Zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (mo
 }
 
 // UpdateBridge ...
-func (z *Zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, err error) {
+func (z *zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -202,7 +202,7 @@ func (z *Zigbee2mqtt) UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 }
 
 // DeleteBridge ...
-func (z *Zigbee2mqtt) DeleteBridge(bridgeId int64) (err error) {
+func (z *zigbee2mqtt) DeleteBridge(bridgeId int64) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -220,7 +220,7 @@ func (z *Zigbee2mqtt) DeleteBridge(bridgeId int64) (err error) {
 }
 
 // ResetBridge ...
-func (z *Zigbee2mqtt) ResetBridge(bridgeId int64) (err error) {
+func (z *zigbee2mqtt) ResetBridge(bridgeId int64) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -232,7 +232,7 @@ func (z *Zigbee2mqtt) ResetBridge(bridgeId int64) (err error) {
 }
 
 // BridgeDeviceBan ...
-func (z *Zigbee2mqtt) BridgeDeviceBan(bridgeId int64, friendlyName string) (err error) {
+func (z *zigbee2mqtt) BridgeDeviceBan(bridgeId int64, friendlyName string) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -244,7 +244,7 @@ func (z *Zigbee2mqtt) BridgeDeviceBan(bridgeId int64, friendlyName string) (err 
 }
 
 // BridgeDeviceWhitelist ...
-func (z *Zigbee2mqtt) BridgeDeviceWhitelist(bridgeId int64, friendlyName string) (err error) {
+func (z *zigbee2mqtt) BridgeDeviceWhitelist(bridgeId int64, friendlyName string) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -256,7 +256,7 @@ func (z *Zigbee2mqtt) BridgeDeviceWhitelist(bridgeId int64, friendlyName string)
 }
 
 // BridgeNetworkmap ...
-func (z *Zigbee2mqtt) BridgeNetworkmap(bridgeId int64) (networkmap string, err error) {
+func (z *zigbee2mqtt) BridgeNetworkmap(bridgeId int64) (networkmap string, err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -268,7 +268,7 @@ func (z *Zigbee2mqtt) BridgeNetworkmap(bridgeId int64) (networkmap string, err e
 }
 
 // BridgeUpdateNetworkmap ...
-func (z *Zigbee2mqtt) BridgeUpdateNetworkmap(bridgeId int64) (err error) {
+func (z *zigbee2mqtt) BridgeUpdateNetworkmap(bridgeId int64) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -279,7 +279,7 @@ func (z *Zigbee2mqtt) BridgeUpdateNetworkmap(bridgeId int64) (err error) {
 	return
 }
 
-func (z *Zigbee2mqtt) unsafeGetBridge(bridgeId int64) (bridge *Bridge, err error) {
+func (z *zigbee2mqtt) unsafeGetBridge(bridgeId int64) (bridge *Bridge, err error) {
 	var ok bool
 	if bridge, ok = z.bridges[bridgeId]; !ok {
 		err = adaptors.ErrRecordNotFound
@@ -288,7 +288,7 @@ func (z *Zigbee2mqtt) unsafeGetBridge(bridgeId int64) (bridge *Bridge, err error
 }
 
 // GetTopicByDevice ...
-func (z *Zigbee2mqtt) GetTopicByDevice(model *m.Zigbee2mqttDevice) (topic string, err error) {
+func (z *zigbee2mqtt) GetTopicByDevice(model *m.Zigbee2mqttDevice) (topic string, err error) {
 
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
@@ -305,7 +305,7 @@ func (z *Zigbee2mqtt) GetTopicByDevice(model *m.Zigbee2mqttDevice) (topic string
 }
 
 // DeviceRename ...
-func (z *Zigbee2mqtt) DeviceRename(friendlyName, name string) (err error) {
+func (z *zigbee2mqtt) DeviceRename(friendlyName, name string) (err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 

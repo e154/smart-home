@@ -39,7 +39,7 @@ func Test3(t *testing.T) {
 	Convey("eval script", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			scriptService *scripts.ScriptService) {
+			scriptService scripts.ScriptService) {
 
 			storeRegisterCallback(scriptService)
 

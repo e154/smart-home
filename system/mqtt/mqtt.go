@@ -49,28 +49,28 @@ var (
 // Mqtt ...
 type Mqtt struct {
 	cfg           *Config
-	server        IMQTT
-	authenticator *mqtt_authenticator.Authenticator
+	server        GMqttServer
+	authenticator mqtt_authenticator.MqttAuthenticator
 	metric        *metrics.MetricManager
 	clientsLock   *sync.Mutex
-	clients       map[string]*Client
+	clients       map[string]MqttCli
 	//management     *management.Management
 }
 
 // NewMqtt ...
 func NewMqtt(lc fx.Lifecycle,
 	cfg *Config,
-	authenticator *mqtt_authenticator.Authenticator,
-	scriptService *scripts.ScriptService,
+	authenticator mqtt_authenticator.MqttAuthenticator,
+	scriptService scripts.ScriptService,
 	metric *metrics.MetricManager,
-) (mqtt *Mqtt) {
+) (mqtt MqttServ) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,
 		authenticator: authenticator,
 		//metric:        metric,
 		clientsLock: &sync.Mutex{},
-		clients:     make(map[string]*Client),
+		clients:     make(map[string]MqttCli),
 	}
 
 	// javascript binding
@@ -204,7 +204,7 @@ func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (er
 }
 
 // NewClient ...
-func (m *Mqtt) NewClient(name string) (client *Client) {
+func (m *Mqtt) NewClient(name string) (client MqttCli) {
 	m.clientsLock.Lock()
 	defer m.clientsLock.Unlock()
 

@@ -31,7 +31,7 @@ import (
 type EntityActor struct {
 	entity_manager.BaseActor
 	adaptors          *adaptors.Adaptors
-	scriptService     *scripts.ScriptService
+	scriptService     scripts.ScriptService
 	zigbee2mqttDevice *m.Zigbee2mqttDevice
 	message           *Message
 	mqttMessageQueue  chan *Message
@@ -43,7 +43,7 @@ type EntityActor struct {
 func NewEntityActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService) (actor *EntityActor, err error) {
+	scriptService scripts.ScriptService) (actor *EntityActor, err error) {
 
 	var zigbee2mqttDevice *m.Zigbee2mqttDevice
 	if zigbee2mqttDevice, err = adaptors.Zigbee2mqttDevice.GetById(entity.Id.Name()); err != nil {
@@ -100,7 +100,7 @@ func NewEntityActor(entity *m.Entity,
 	return
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.IActorManager) entity_manager.IActor {
+func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
 	e.Manager = actorManager
 	return e
 }
@@ -156,7 +156,7 @@ func (e *EntityActor) setState(params entity_manager.EntityStateParams) (changed
 	return
 }
 
-func (e *EntityActor) mqttOnPublish(client *mqtt.Client, msg mqtt.Message) {
+func (e *EntityActor) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 	message := NewMessage()
 	message.Payload = string(msg.Payload)
 	message.Topic = msg.Topic

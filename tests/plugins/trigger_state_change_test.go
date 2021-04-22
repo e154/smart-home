@@ -77,14 +77,14 @@ automationTriggerStateChanged = (msg)->
 	Convey("trigger state change", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			scriptService *scripts.ScriptService,
+			scriptService scripts.ScriptService,
 			plugins *plugins.Loader,
-			entityManager *entity_manager.EntityManager,
-			zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
-			mqttServer *mqtt.Mqtt,
-			automation *automation.Automation,
-			eventBus *event_bus.EventBus,
-			pluginManager *plugin_manager.PluginManager) {
+			entityManager entity_manager.EntityManager,
+			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
+			mqttServer mqtt.MqttServ,
+			automation automation.Automation,
+			eventBus event_bus.EventBus,
+			pluginManager plugin_manager.PluginManager) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)

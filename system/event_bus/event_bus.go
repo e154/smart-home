@@ -26,28 +26,35 @@ const (
 	queueSize = 100
 )
 
-type EventBus struct {
+type EventBus interface {
+	Publish(topic string, args ...interface{})
+	Close(topic string)
+	Subscribe(topic string, fn interface{}) error
+	Unsubscribe(topic string, fn interface{}) error
+}
+
+type eventBus struct {
 	bus message_queue.MessageQueue
 }
 
-func NewEventBus() *EventBus {
-	return &EventBus{
+func NewEventBus() EventBus {
+	return &eventBus{
 		bus: message_queue.New(queueSize),
 	}
 }
 
-func (e *EventBus) Publish(topic string, args ...interface{}) {
+func (e *eventBus) Publish(topic string, args ...interface{}) {
 	e.bus.Publish(topic, args...)
 }
 
-func (e *EventBus) Close(topic string) {
+func (e *eventBus) Close(topic string) {
 	e.bus.Close(topic)
 }
 
-func (e *EventBus) Subscribe(topic string, fn interface{}) error {
+func (e *eventBus) Subscribe(topic string, fn interface{}) error {
 	return e.bus.Subscribe(topic, fn)
 }
 
-func (e *EventBus) Unsubscribe(topic string, fn interface{}) error {
+func (e *eventBus) Unsubscribe(topic string, fn interface{}) error {
 	return e.bus.Unsubscribe(topic, fn)
 }

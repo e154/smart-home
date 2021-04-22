@@ -26,14 +26,23 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+type IEntityAction interface {
+	Add(ver *m.EntityAction) (id int64, err error)
+	DeleteByEntityId(id common.EntityId) (err error)
+	AddMultiple(items []*m.EntityAction) (err error)
+	fromDb(dbVer *db.EntityAction) (ver *m.EntityAction)
+	toDb(ver *m.EntityAction) (dbVer *db.EntityAction)
+}
+
 // EntityAction ...
 type EntityAction struct {
+	IEntityAction
 	table *db.EntityActions
 	db    *gorm.DB
 }
 
 // GetEntityActionAdaptor ...
-func GetEntityActionAdaptor(d *gorm.DB) *EntityAction {
+func GetEntityActionAdaptor(d *gorm.DB) IEntityAction {
 	return &EntityAction{
 		table: &db.EntityActions{Db: d},
 		db:    d,

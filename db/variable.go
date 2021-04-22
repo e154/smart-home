@@ -20,6 +20,7 @@ package db
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -34,6 +35,7 @@ type Variable struct {
 	Name      string `gorm:"primary_key"`
 	Value     string
 	Autoload  bool
+	EntityId  *common.EntityId
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -53,7 +55,7 @@ func (n Variables) Add(variable Variable) (err error) {
 func (n *Variables) CreateOrUpdate(v Variable) (err error) {
 	err = n.Db.Model(&Variable{}).
 		Set("gorm:insert_option",
-			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', updated_at = '%s'", v.Value, time.Now().Format(time.RFC3339))).
+			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', entity_id = '%s', updated_at = '%s'", v.Value, v.EntityId, time.Now().Format(time.RFC3339))).
 		Create(&v).Error
 	if err != nil {
 		log.Error(err.Error())
@@ -82,8 +84,9 @@ func (n Variables) GetAllEnabled() (list []Variable, err error) {
 // Update ...
 func (n Variables) Update(m Variable) (err error) {
 	err = n.Db.Model(&Variable{Name: m.Name}).Updates(map[string]interface{}{
-		"value":    m.Value,
-		"autoload": m.Autoload,
+		"value":     m.Value,
+		"autoload":  m.Autoload,
+		"entity_id": m.EntityId,
 	}).Error
 	return
 }

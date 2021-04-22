@@ -30,12 +30,12 @@ import (
 // ControllerScript ...
 type ControllerScript struct {
 	*ControllerCommon
-	scriptService *scripts.ScriptService
+	scriptService scripts.ScriptService
 }
 
 // NewControllerScript ...
 func NewControllerScript(common *ControllerCommon,
-	scriptService *scripts.ScriptService) *ControllerScript {
+	scriptService scripts.ScriptService) *ControllerScript {
 	return &ControllerScript{
 		ControllerCommon: common,
 		scriptService:    scriptService,

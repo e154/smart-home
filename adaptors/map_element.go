@@ -27,14 +27,28 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IMapElement interface {
+	Add(ver *m.MapElement) (id int64, err error)
+	GetById(mapId int64) (ver *m.MapElement, err error)
+	GetByName(name string) (ver *m.MapElement, err error)
+	Update(ver *m.MapElement) (err error)
+	Delete(mapId int64) (err error)
+	Sort(ver *m.MapElement) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.MapElement, total int64, err error)
+	GetActiveElements(sortBy, order string, limit, offset int) (result []*m.MapElement, total int64, err error)
+	fromDb(dbVer *db.MapElement) (ver *m.MapElement)
+	toDb(ver *m.MapElement) (dbVer *db.MapElement)
+}
+
 // Entity ...
 type MapElement struct {
+	IMapElement
 	table *db.MapElements
 	db    *gorm.DB
 }
 
 // GetMapElementAdaptor ...
-func GetMapElementAdaptor(d *gorm.DB) *MapElement {
+func GetMapElementAdaptor(d *gorm.DB) IMapElement {
 	return &MapElement{
 		table: &db.MapElements{Db: d},
 		db:    d,

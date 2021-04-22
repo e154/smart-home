@@ -48,6 +48,7 @@ type Entity struct {
 	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
 	Storage     []*EntityStorage
 	AutoLoad    bool
+	ParentId    *common.EntityId `gorm:"column:parent"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -153,7 +154,6 @@ func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool
 		Error
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return
 	}
 
@@ -203,12 +203,16 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 func (n *Entities) Search(query string, limit, offset int) (list []*Entity, total int64, err error) {
 
 	q := n.Db.Model(&Entity{}).
-		Where("id LIKE ?", "%"+query+"%").
-		Order("id ASC")
+		Where("id LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("id ASC")
 
 	list = make([]*Entity, 0)
 	err = q.Find(&list).Error

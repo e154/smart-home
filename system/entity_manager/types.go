@@ -26,21 +26,16 @@ import (
 	"time"
 )
 
-type IMessage interface{}
-
-type IActor interface {
+type PluginActor interface {
 
 	// Spawn ...
-	Spawn(system IActorManager) IActor
+	Spawn(system EntityManager) PluginActor
 
 	// Receive ...
 	Receive(message Message)
 
 	// Attributes ...
 	Attributes() m.EntityAttributes
-
-	// Destroy ...
-	Destroy()
 
 	// Metrics ...
 	Metrics() []m.Metric
@@ -52,14 +47,36 @@ type IActor interface {
 	Info() ActorInfo
 }
 
-type IConstructor func(system IActorManager) (state IActor)
+type ActorConstructor func(system EntityManager) (state PluginActor)
 
-type IActorManager interface {
+type EntityManager interface {
+
+	// LoadEntities ...
+	LoadEntities()
+
+	// Shutdown ...
+	Shutdown()
+
+	// SetMetric ...
+	SetMetric(common.EntityId, string, map[string]interface{})
+
+	// SetState ...
+	SetState(common.EntityId, EntityStateParams)
+
+	// GetEntityById ...
+	GetEntityById(common.EntityId) (Entity, error)
+
+	// GetActorById ...
+	GetActorById(common.EntityId) (PluginActor, error)
+
+	// List ...
+	List() ([]Entity, error)
+
 	// Spawn ...
-	Spawn(constructor IConstructor) IActor
+	Spawn(ActorConstructor) PluginActor
 
-	// Destroy ...
-	Destroy(id common.EntityId)
+	// Remove ...
+	Remove(common.EntityId)
 
 	// Send ...
 	Send(Message) error
@@ -67,11 +84,17 @@ type IActorManager interface {
 	// Broadcast ...
 	Broadcast(Message)
 
-	// Shutdown ...
-	Shutdown()
+	// CallAction ...
+	CallAction(common.EntityId, string, map[string]interface{})
 
-	// SetMetric ...
-	SetMetric(id common.EntityId, name string, value map[string]interface{})
+	// CallScene ...
+	CallScene(common.EntityId, map[string]interface{})
+
+	// Add ...
+	Add(*m.Entity) error
+
+	// Update ...
+	Update(*m.Entity) error
 }
 
 type EntityAttribute struct {
@@ -151,13 +174,14 @@ type MessageCallScene struct {
 }
 
 type actorInfo struct {
-	Actor    IActor
+	Actor    PluginActor
 	Queue    chan Message
 	OldState event_bus.EventEntityState
 }
 
 type ActorInfo struct {
 	Id                common.EntityId        `json:"id"`
+	ParentId          *common.EntityId       `json:"parent_id"`
 	Type              common.EntityType      `json:"type"`
 	Name              string                 `json:"name"`
 	Description       string                 `json:"description"`
@@ -170,6 +194,7 @@ type ActorInfo struct {
 	ImageUrl          *string                `json:"image_url"`
 	Icon              *common.Icon           `json:"icon"`
 	Area              *m.Area                `json:"area"`
+	AutoLoad          bool                   `json:"auto_load"`
 	Value             interface{}            `json:"value"`
 	States            map[string]ActorState  `json:"states"`
 	Actions           map[string]ActorAction `json:"actions"`

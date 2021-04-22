@@ -26,14 +26,33 @@ import (
 	"github.com/pkg/errors"
 )
 
+type ITemplate interface {
+	UpdateOrCreate(ver *m.Template) (err error)
+	Create(ver *m.Template) (err error)
+	UpdateStatus(ver *m.Template) (err error)
+	GetList(templateType m.TemplateType) (items []*m.Template, err error)
+	GetByName(name string) (ver *m.Template, err error)
+	GetItemByName(name string) (ver *m.Template, err error)
+	GetItemsSortedList() (count int64, items []string, err error)
+	Delete(name string) (err error)
+	GetItemsTree() (tree []*m.TemplateTree, err error)
+	UpdateItemsTree(tree []*m.TemplateTree) (err error)
+	Search(query string, limit, offset int) (list []*m.Template, total int64, err error)
+	GetMarkers(template *m.Template) (err error)
+	Render(name string, params map[string]interface{}) (render *m.TemplateRender, err error)
+	fromDb(dbVer *db.Template) (ver *m.Template)
+	toDb(ver *m.Template) (dbVer *db.Template)
+}
+
 // Template ...
 type Template struct {
+	ITemplate
 	table *db.Templates
 	db    *gorm.DB
 }
 
 // GetTemplateAdaptor ...
-func GetTemplateAdaptor(d *gorm.DB) *Template {
+func GetTemplateAdaptor(d *gorm.DB) ITemplate {
 	return &Template{
 		table: &db.Templates{Db: d},
 		db:    d,

@@ -40,7 +40,7 @@ func Test10(t *testing.T) {
 	Convey("require external library", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			scriptService *scripts.ScriptService) {
+			scriptService scripts.ScriptService) {
 
 			scriptService.PushFunctions("So", func(actual interface{}, assert string, expected interface{}) {
 				//fmt.Printf("actual(%v), expected(%v)\n", actual, expected)

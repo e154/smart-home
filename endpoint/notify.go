@@ -38,13 +38,13 @@ func NewNotifyEndpoint(common *CommonEndpoint) *NotifyEndpoint {
 }
 
 // GetSettings ...
-func (n *NotifyEndpoint) GetSettings() (cfg *notify.NotifyConfig, err error) {
+func (n *NotifyEndpoint) GetSettings() (cfg *notify.Config, err error) {
 	cfg = n.notify.GetCfg()
 	return
 }
 
 // UpdateSettings ...
-func (n *NotifyEndpoint) UpdateSettings(cfg *notify.NotifyConfig) (err error) {
+func (n *NotifyEndpoint) UpdateSettings(cfg *notify.Config) (err error) {
 	if err = n.notify.UpdateCfg(cfg); err != nil {
 		return
 	}

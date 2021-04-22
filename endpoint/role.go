@@ -124,7 +124,7 @@ func (n *RoleEndpoint) Search(query string, limit, offset int) (result []*m.Role
 
 // GetAccessList ...
 func (n *RoleEndpoint) GetAccessList(roleName string,
-	accessListService *access_list.AccessListService) (accessList access_list.AccessList, err error) {
+	accessListService access_list.AccessListService) (accessList access_list.AccessList, err error) {
 
 	var role *m.Role
 	if role, err = n.adaptors.Role.GetByName(roleName); err != nil {

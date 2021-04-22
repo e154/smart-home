@@ -25,14 +25,26 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IZigbee2mqtt interface {
+	Add(ver *m.Zigbee2mqtt) (id int64, err error)
+	GetById(id int64) (ver *m.Zigbee2mqtt, err error)
+	Update(ver *m.Zigbee2mqtt) (err error)
+	Delete(id int64) (err error)
+	List(limit, offset int64) (list []*m.Zigbee2mqtt, total int64, err error)
+	GetByLogin(login string) (ver *m.Zigbee2mqtt, err error)
+	fromDb(dbVer *db.Zigbee2mqtt) (ver *m.Zigbee2mqtt)
+	toDb(ver *m.Zigbee2mqtt) (dbVer *db.Zigbee2mqtt)
+}
+
 // Zigbee2mqtt ...
 type Zigbee2mqtt struct {
+	IZigbee2mqtt
 	table *db.Zigbee2mqtts
 	db    *gorm.DB
 }
 
 // GetZigbee2mqttAdaptor ...
-func GetZigbee2mqttAdaptor(d *gorm.DB) *Zigbee2mqtt {
+func GetZigbee2mqttAdaptor(d *gorm.DB) IZigbee2mqtt {
 	return &Zigbee2mqtt{
 		table: &db.Zigbee2mqtts{Db: d},
 		db:    d,

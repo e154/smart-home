@@ -19,6 +19,7 @@
 package sun
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -35,23 +36,23 @@ var (
 	log = common.MustGetLogger("plugins.sun")
 )
 
-type pluginSun struct {
-	entityManager *entity_manager.EntityManager
+type plugin struct {
+	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	isStarted     *atomic.Bool
-	eventBus      *event_bus.EventBus
+	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
 	actors        map[string]*EntityActor
 	pause         time.Duration
 	quit          chan struct{}
 }
 
-func Register(manager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager,
-	eventBus *event_bus.EventBus,
+func Register(manager plugin_manager.PluginManager,
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors,
 	second time.Duration) {
-	manager.Register(&pluginSun{
+	manager.Register(&plugin{
 		entityManager: entityManager,
 		adaptors:      adaptors,
 		isStarted:     atomic.NewBool(false),
@@ -62,7 +63,7 @@ func Register(manager *plugin_manager.PluginManager,
 	})
 }
 
-func (p *pluginSun) Load(service plugin_manager.IPluginManager, plugins map[string]interface{}) error {
+func (p *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) error {
 	if p.isStarted.Load() {
 		return nil
 	}
@@ -92,7 +93,7 @@ func (p *pluginSun) Load(service plugin_manager.IPluginManager, plugins map[stri
 	return nil
 }
 
-func (p *pluginSun) Unload() error {
+func (p *plugin) Unload() error {
 	if !p.isStarted.Load() {
 		return nil
 	}
@@ -101,11 +102,11 @@ func (p *pluginSun) Unload() error {
 	return nil
 }
 
-func (p *pluginSun) Name() string {
+func (p *plugin) Name() string {
 	return Name
 }
 
-func (p *pluginSun) eventHandler(msg interface{}) {
+func (p *plugin) eventHandler(msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventAddedNewEntity:
@@ -129,13 +130,18 @@ func (p *pluginSun) eventHandler(msg interface{}) {
 			return
 		}
 
-		p.removeEntity(v.EntityId.Name())
+		if err := p.removeEntity(v.EntityId.Name()); err != nil {
+			return
+		}
+
+		entityId := common.EntityId(fmt.Sprintf("sun.%s", v.EntityId.Name()))
+		p.entityManager.Remove(entityId)
 	}
 
 	return
 }
 
-func (p *pluginSun) addOrUpdateEntity(zoneName string, zoneAttr m.EntityAttributes) (err error) {
+func (p *plugin) addOrUpdateEntity(zoneName string, zoneAttr m.EntityAttributes) (err error) {
 
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -168,8 +174,6 @@ func (p *pluginSun) addOrUpdateEntity(zoneName string, zoneAttr m.EntityAttribut
 		return
 	}
 
-	log.Infof("Add sun '%v'", zoneName)
-
 	p.actors[zoneName] = NewEntityActor(zoneName)
 	p.entityManager.Spawn(p.actors[zoneName].Spawn)
 
@@ -181,19 +185,20 @@ func (p *pluginSun) addOrUpdateEntity(zoneName string, zoneAttr m.EntityAttribut
 	return
 }
 
-func (p *pluginSun) AddOrUpdateEntity(entity *m.Entity) (err error) {
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	return p.addOrUpdateEntity(entity.Id.Name(), nil)
 }
 
-func (p *pluginSun) RemoveEntity(entity *m.Entity) error {
-	return p.removeEntity(entity.Id.Name())
+func (p *plugin) RemoveActor(entityId common.EntityId) error {
+	return p.removeEntity(entityId.Name())
 }
 
-func (p *pluginSun) removeEntity(name string) (err error) {
+func (p *plugin) removeEntity(name string) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
+		err = fmt.Errorf("not found")
 		return
 	}
 
@@ -202,7 +207,7 @@ func (p *pluginSun) removeEntity(name string) (err error) {
 	return
 }
 
-func (p *pluginSun) updatePositionForAll() {
+func (p *plugin) updatePositionForAll() {
 	//fmt.Println("updatePositionForAll")
 
 	p.actorsLock.Lock()
@@ -213,10 +218,10 @@ func (p *pluginSun) updatePositionForAll() {
 	}
 }
 
-func (p *pluginSun) Type() plugin_manager.PlugableType {
+func (p *plugin) Type() plugin_manager.PlugableType {
 	return plugin_manager.PlugableBuiltIn
 }
 
-func (p *pluginSun) Depends() []string {
+func (p *plugin) Depends() []string {
 	return nil
 }

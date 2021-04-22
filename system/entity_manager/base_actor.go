@@ -30,12 +30,13 @@ import (
 )
 
 type BaseActor struct {
-	IActor
+	PluginActor
 	Id                common.EntityId
+	ParentId          *common.EntityId
 	Name              string
 	Description       string
 	EntityType        common.EntityType
-	Manager            IActorManager
+	Manager           EntityManager
 	State             *ActorState
 	Area              *m.Area
 	Metric            []m.Metric
@@ -50,17 +51,18 @@ type BaseActor struct {
 	UnitOfMeasurement string
 	Sripts            []m.Script
 	Value             *atomic.String
+	AutoLoad          bool
 	LastChanged       *time.Time
 	LastUpdated       *time.Time
 }
 
-func NewBaseActor(entity *m.Entity, scriptService *scripts.ScriptService) BaseActor {
+func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseActor {
 	actor := BaseActor{
 		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.Type, entity.Id.Name())),
 		Name:              entity.Id.Name(),
 		Description:       entity.Description,
 		EntityType:        entity.Type,
-		Manager:            nil,
+		Manager:           nil,
 		State:             nil,
 		Area:              entity.Area,
 		Hidden:            entity.Hidden,
@@ -73,6 +75,7 @@ func NewBaseActor(entity *m.Entity, scriptService *scripts.ScriptService) BaseAc
 		Value:             nil,
 		LastChanged:       nil,
 		LastUpdated:       nil,
+		AutoLoad:          entity.AutoLoad,
 		AttrMu:            &sync.Mutex{},
 		Attrs:             entity.Attributes.Copy(),
 	}
@@ -130,13 +133,11 @@ func NewBaseActor(entity *m.Entity, scriptService *scripts.ScriptService) BaseAc
 	return actor
 }
 
-func (b *BaseActor) GetEventState(actor IActor) event_bus.EventEntityState {
+func (b *BaseActor) GetEventState(actor PluginActor) event_bus.EventEntityState {
 	return GetEventState(actor)
 }
 
 func (e *BaseActor) Receive(message Message) {}
-
-func (e *BaseActor) Destroy() {}
 
 func (e *BaseActor) Metrics() []m.Metric {
 	return e.Metric
@@ -176,6 +177,8 @@ func (e *BaseActor) Info() (info ActorInfo) {
 		LastUpdated:       e.LastUpdated,
 		Actions:           e.Actions,
 		States:            e.States,
+		AutoLoad:          e.AutoLoad,
+		ParentId:          e.ParentId,
 		//Value:             e.value,
 	}
 	return

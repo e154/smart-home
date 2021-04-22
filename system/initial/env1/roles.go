@@ -29,12 +29,12 @@ import (
 // RoleManager ...
 type RoleManager struct {
 	adaptors   *adaptors.Adaptors
-	accessList *access_list.AccessListService
+	accessList access_list.AccessListService
 }
 
 // NewRoleManager ...
 func NewRoleManager(adaptors *adaptors.Adaptors,
-	accessList *access_list.AccessListService) *RoleManager {
+	accessList access_list.AccessListService) *RoleManager {
 	return &RoleManager{
 		adaptors:   adaptors,
 		accessList: accessList,
@@ -67,7 +67,7 @@ func (r RoleManager) addAdmin() (adminRole *m.Role) {
 	err = adminUser.SetPass("admin")
 	So(err, ShouldBeNil)
 
-	for pack, item := range *r.accessList.List {
+	for pack, item := range *r.accessList.List() {
 		for right := range item {
 			permission := &m.Permission{
 				RoleName:    adminUser.Nickname,
@@ -100,7 +100,7 @@ func (r RoleManager) addUser(demoRole *m.Role) (userRole *m.Role) {
 		err := r.adaptors.Role.Add(userRole)
 		So(err, ShouldBeNil)
 
-		for pack, item := range *r.accessList.List {
+		for pack, item := range *r.accessList.List() {
 			for right := range item {
 				if strings.Contains(right, "create") ||
 					strings.Contains(right, "update") ||
@@ -153,7 +153,7 @@ func (r RoleManager) addDemo() (demoRole *m.Role) {
 		err = r.adaptors.Role.Add(demoRole)
 		So(err, ShouldBeNil)
 
-		for pack, item := range *r.accessList.List {
+		for pack, item := range *r.accessList.List() {
 			for right := range item {
 				if strings.Contains(right, "read") ||
 					strings.Contains(right, "view") ||

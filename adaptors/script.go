@@ -25,14 +25,26 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IScript interface {
+	Add(script *m.Script) (id int64, err error)
+	GetById(scriptId int64) (script *m.Script, err error)
+	Update(script *m.Script) (err error)
+	Delete(scriptId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error)
+	Search(query string, limit, offset int) (list []*m.Script, total int64, err error)
+	fromDb(dbScript *db.Script) (script *m.Script, err error)
+	toDb(script *m.Script) (dbScript *db.Script)
+}
+
 // Script ...
 type Script struct {
+	IScript
 	table *db.Scripts
 	db    *gorm.DB
 }
 
 // GetScriptAdaptor ...
-func GetScriptAdaptor(d *gorm.DB) *Script {
+func GetScriptAdaptor(d *gorm.DB) IScript {
 	return &Script{
 		table: &db.Scripts{Db: d},
 		db:    d,

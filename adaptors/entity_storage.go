@@ -26,14 +26,23 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IEntityStorage interface {
+	Add(ver m.EntityStorage) (id int64, err error)
+	GetLastByEntityId(entityId common.EntityId) (ver m.EntityStorage, err error)
+	List(limit, offset int64, orderBy, sort string) (list []m.EntityStorage, total int64, err error)
+	fromDb(dbVer db.EntityStorage) (ver m.EntityStorage)
+	toDb(ver m.EntityStorage) (dbVer db.EntityStorage)
+}
+
 // EntityStorage ...
 type EntityStorage struct {
+	IEntityStorage
 	table *db.EntityStorages
 	db    *gorm.DB
 }
 
 // GetEntityStorageAdaptor ...
-func GetEntityStorageAdaptor(d *gorm.DB) *EntityStorage {
+func GetEntityStorageAdaptor(d *gorm.DB) IEntityStorage {
 	return &EntityStorage{
 		table: &db.EntityStorages{Db: d},
 		db:    d,

@@ -171,6 +171,11 @@ type EntityType string
 // EntityId ...
 type EntityId string
 
+func NewEntityId(s string) *EntityId {
+	e := EntityId(s)
+	return &e
+}
+
 func (e EntityId) Name() string {
 	arr := strings.Split(string(e), ".")
 	if len(arr) > 1 {

@@ -35,14 +35,30 @@ import (
 	"strings"
 )
 
+type IImage interface {
+	Add(ver *m.Image) (id int64, err error)
+	GetByImageName(imageName string) (ver *m.Image, err error)
+	GetById(mapId int64) (ver *m.Image, err error)
+	Update(ver *m.Image) (err error)
+	Delete(mapId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.Image, total int64, err error)
+	UploadImage(reader *bufio.Reader, fileName string) (err error)
+	AddMultiple(items []*m.Image) (err error)
+	GetAllByDate(filter string) (images []*m.Image, err error)
+	GetFilterList() (filterList []*m.ImageFilterList, err error)
+	fromDb(dbImage *db.Image) (image *m.Image)
+	toDb(image *m.Image) (dbImage *db.Image)
+}
+
 // Image ...
 type Image struct {
+	IImage
 	table *db.Images
 	db    *gorm.DB
 }
 
 // GetImageAdaptor ...
-func GetImageAdaptor(d *gorm.DB) *Image {
+func GetImageAdaptor(d *gorm.DB) IImage {
 	return &Image{
 		table: &db.Images{Db: d},
 		db:    d,

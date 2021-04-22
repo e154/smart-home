@@ -30,14 +30,34 @@ import (
 	"unicode/utf8"
 )
 
+type IUser interface {
+	Add(user *m.User) (id int64, err error)
+	GetById(userId int64) (user *m.User, err error)
+	GetByNickname(nick string) (user *m.User, err error)
+	GetByEmail(email string) (user *m.User, err error)
+	GetByAuthenticationToken(token string) (user *m.User, err error)
+	GetByResetPassToken(token string) (user *m.User, err error)
+	Update(user *m.User) (err error)
+	Delete(userId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.User, total int64, err error)
+	SignIn(u *m.User, ipv4 string) (err error)
+	GenResetPassToken(u *m.User) (token string, err error)
+	ClearResetPassToken(u *m.User) (err error)
+	NewToken(u *m.User) (token string, err error)
+	ClearToken(u *m.User) (err error)
+	fromDb(dbUser *db.User) (user *m.User)
+	toDb(user *m.User) (dbUser *db.User)
+}
+
 // User ...
 type User struct {
+	IUser
 	table *db.Users
 	db    *gorm.DB
 }
 
 // GetUserAdaptor ...
-func GetUserAdaptor(d *gorm.DB) *User {
+func GetUserAdaptor(d *gorm.DB) IUser {
 	return &User{
 		table: &db.Users{Db: d},
 		db:    d,

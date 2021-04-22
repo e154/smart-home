@@ -118,7 +118,7 @@ func (a *AuthEndpoint) Recovery() {}
 func (a *AuthEndpoint) Reset() {}
 
 // AccessList ...
-func (a *AuthEndpoint) AccessList(user *m.User, accessListService *access_list.AccessListService) (accessList *access_list.AccessList, err error) {
-	accessList = accessListService.List
+func (a *AuthEndpoint) AccessList(user *m.User, accessListService access_list.AccessListService) (accessList *access_list.AccessList, err error) {
+	accessList = accessListService.List()
 	return
 }

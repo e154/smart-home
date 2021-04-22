@@ -16,42 +16,37 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package notify
+package uptime
 
-// Javascript Binding
-//
-// Notifr()
-//	 .NewSMS()
-//	 .NewEmail()
-//	 .NewSlack(channel, text)
-//	 .NewTelegram(text)
-//	 .Send(msg)
-//
-type NotifyBind struct {
-	notify *notify
+const (
+	name = "uptime"
+)
+
+// plugin ...
+type plugin struct {
 }
 
-// NewSMS ...
-func (b *NotifyBind) NewSMS() *SMS {
-	return NewSMS()
+func RegisterUptime(manager *plugin_manager.PluginManager,
+	entityManager entity_manager.IEntityManager, pause uint) {
+	manager.Register(&plugin{})
+
+	return
 }
 
-// NewEmail ...
-func (b *NotifyBind) NewEmail() *Email {
-	return NewEmail()
+func (u *plugin) Load(service plugin_manager.IServer) (err error) {
+
+	return
 }
 
-// NewSlack ...
-func (b *NotifyBind) NewSlack(channel, text string) *SlackMessage {
-	return NewSlackMessage(channel, text)
+func (u *plugin) Unload() (err error) {
+
+	return
 }
 
-// NewTelegram ...
-func (b *NotifyBind) NewTelegram(text string) *Telegram {
-	return NewTelegram(text)
+func (u plugin) Name() string {
+	return name
 }
 
-// Send ...
-func (b *NotifyBind) Send(msg interface{}) {
-	b.notify.Send(msg)
+func (p *plugin) Type() plugin_manager.PlugableType {
+	return plugin_manager.PlugableBuiltIn
 }

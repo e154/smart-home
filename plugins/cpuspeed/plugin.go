@@ -29,8 +29,8 @@ import (
 	"time"
 )
 
-type pluginCpuspeed struct {
-	entityManager *entity_manager.EntityManager
+type plugin struct {
+	entityManager entity_manager.EntityManager
 	isStarted     *atomic.Bool
 	quit          chan struct{}
 	pause         uint
@@ -38,12 +38,12 @@ type pluginCpuspeed struct {
 	adaptors      *adaptors.Adaptors
 }
 
-func Register(manager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager,
+func Register(manager plugin_manager.PluginManager,
+	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
 	pause uint) {
 
-	manager.Register(&pluginCpuspeed{
+	manager.Register(&plugin{
 		pause:         pause,
 		entityManager: entityManager,
 		actor:         NewEntityActor(),
@@ -53,7 +53,7 @@ func Register(manager *plugin_manager.PluginManager,
 	return
 }
 
-func (c *pluginCpuspeed) Load(service plugin_manager.IPluginManager, plugins map[string]interface{}) error {
+func (c *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) error {
 
 	if c.isStarted.Load() {
 		return nil
@@ -127,7 +127,7 @@ func (c *pluginCpuspeed) Load(service plugin_manager.IPluginManager, plugins map
 	return nil
 }
 
-func (c *pluginCpuspeed) Unload() error {
+func (c *plugin) Unload() error {
 	if !c.isStarted.Load() {
 		return nil
 	}
@@ -135,14 +135,14 @@ func (c *pluginCpuspeed) Unload() error {
 	return nil
 }
 
-func (c pluginCpuspeed) Name() string {
+func (c plugin) Name() string {
 	return Name
 }
 
-func (p *pluginCpuspeed) Type() plugin_manager.PlugableType {
+func (p *plugin) Type() plugin_manager.PlugableType {
 	return plugin_manager.PlugableBuiltIn
 }
 
-func (p *pluginCpuspeed) Depends() []string {
+func (p *plugin) Depends() []string {
 	return nil
 }

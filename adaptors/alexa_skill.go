@@ -24,14 +24,26 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IAlexaSkill interface {
+	Add(app *m.AlexaSkill) (id int64, err error)
+	GetById(appId int64) (app *m.AlexaSkill, err error)
+	Update(params *m.AlexaSkill) (err error)
+	Delete(appId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.AlexaSkill, total int64, err error)
+	ListEnabled(limit, offset int64) (list []*m.AlexaSkill, err error)
+	fromDb(dbVer *db.AlexaSkill) (app *m.AlexaSkill)
+	toDb(ver *m.AlexaSkill) (dbVer *db.AlexaSkill)
+}
+
 // AlexaSkill ...
 type AlexaSkill struct {
+	IAlexaSkill
 	table *db.AlexaSkills
 	db    *gorm.DB
 }
 
 // GetAlexaSkillAdaptor ...
-func GetAlexaSkillAdaptor(d *gorm.DB) *AlexaSkill {
+func GetAlexaSkillAdaptor(d *gorm.DB) IAlexaSkill {
 	return &AlexaSkill{
 		table: &db.AlexaSkills{Db: d},
 		db:    d,

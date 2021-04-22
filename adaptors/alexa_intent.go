@@ -24,14 +24,24 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IAlexaIntent interface {
+	Add(ver *m.AlexaIntent) (id int64, err error)
+	GetByName(name string) (ver *m.AlexaIntent, err error)
+	Update(ver *m.AlexaIntent) (err error)
+	Delete(ver *m.AlexaIntent) (err error)
+	fromDb(dbVer *db.AlexaIntent) (ver *m.AlexaIntent)
+	toDb(ver *m.AlexaIntent) (dbVer *db.AlexaIntent)
+}
+
 // AlexaIntent ...
 type AlexaIntent struct {
+	IAlexaIntent
 	table *db.AlexaIntents
 	db    *gorm.DB
 }
 
 // GetAlexaIntentAdaptor ...
-func GetAlexaIntentAdaptor(d *gorm.DB) *AlexaIntent {
+func GetAlexaIntentAdaptor(d *gorm.DB) IAlexaIntent {
 	return &AlexaIntent{
 		table: &db.AlexaIntents{Db: d},
 		db:    d,

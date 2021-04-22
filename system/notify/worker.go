@@ -32,7 +32,7 @@ import (
 
 // Worker ...
 type Worker struct {
-	cfg            *NotifyConfig
+	cfg            *Config
 	mbClient       *mb.MBClient
 	twClient       *tw.TWClient
 	emailClient    *email_service.EmailService
@@ -44,7 +44,7 @@ type Worker struct {
 }
 
 // NewWorker ...
-func NewWorker(cfg *NotifyConfig,
+func NewWorker(cfg *Config,
 	adaptor *adaptors.Adaptors) *Worker {
 
 	worker := &Worker{

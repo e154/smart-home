@@ -106,12 +106,16 @@ func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevic
 func (z *Zigbee2mqttDevices) Search(query string, limit, offset int) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	q := z.Db.Model(&Zigbee2mqttDevice{}).
-		Where("name LIKE ?", "%"+query+"%").
-		Order("name ASC")
+		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
 
 	list = make([]*Zigbee2mqttDevice, 0)
 	err = q.Find(&list).Error

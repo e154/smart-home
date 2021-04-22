@@ -68,12 +68,17 @@ func (n Areas) GetByName(name string) (area *Area, err error) {
 func (n *Areas) Search(query string, limit, offset int) (list []*Area, total int64, err error) {
 
 	q := n.Db.Model(&Area{}).
-		Where("name LIKE ?", "%"+query+"%").
-		Order("name ASC")
+		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
+
 
 	list = make([]*Area, 0)
 	err = q.Find(&list).Error

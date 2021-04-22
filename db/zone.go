@@ -64,12 +64,16 @@ func (n Zones) GetByName(zoneName string) (zone *Zone, err error) {
 func (n *Zones) Search(query string, limit, offset int) (list []*Zone, total int64, err error) {
 
 	q := n.Db.Model(&Zone{}).
-		Where("name LIKE ?", "%"+query+"%").
-		Order("name ASC")
+		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
 
 	list = make([]*Zone, 0)
 	err = q.Find(&list).Error

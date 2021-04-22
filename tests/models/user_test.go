@@ -33,7 +33,7 @@ func TestUser(t *testing.T) {
 	Convey("add user", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			accessList *access_list.AccessListService) {
+			accessList access_list.AccessListService) {
 
 			// clear database
 			migrations.Purge()

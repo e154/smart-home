@@ -20,7 +20,6 @@ package plugins
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/plugins/cpuspeed"
 	"github.com/e154/smart-home/plugins/moon"
 	"github.com/e154/smart-home/plugins/scene"
 	"github.com/e154/smart-home/plugins/script"
@@ -40,21 +39,21 @@ import (
 )
 
 type Loader struct {
-	pluginManager *plugin_manager.PluginManager
-	entityManager *entity_manager.EntityManager
+	pluginManager plugin_manager.PluginManager
+	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
-	eventBus      *event_bus.EventBus
-	mqtt          *mqtt.Mqtt
-	scriptService *scripts.ScriptService
+	eventBus      event_bus.EventBus
+	mqtt          mqtt.MqttServ
+	scriptService scripts.ScriptService
 }
 
 func NewPluginLoader(
-	pluginManager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager,
+	pluginManager plugin_manager.PluginManager,
+	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
-	eventBus *event_bus.EventBus,
-	mqtt *mqtt.Mqtt,
-	scriptService *scripts.ScriptService) *Loader {
+	eventBus event_bus.EventBus,
+	mqtt mqtt.MqttServ,
+	scriptService scripts.ScriptService) *Loader {
 	plugins := &Loader{
 		pluginManager: pluginManager,
 		entityManager: entityManager,
@@ -80,5 +79,5 @@ func (p *Loader) Register() {
 	moon.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors, 240)
 	weather.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors)
 	weather_met.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors)
-	cpuspeed.Register(p.pluginManager, p.entityManager, p.adaptors, 5)
+	//cpuspeed.Register(p.pluginManager, p.entityManager, p.adaptors, 5)
 }

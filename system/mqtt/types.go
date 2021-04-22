@@ -39,8 +39,23 @@ import (
 //	SearchTopic(query string) (result []*management.SubscriptionInfo, err error)
 //}
 
-// IMQTT ...
-type IMQTT interface {
+type MqttCli interface {
+	Publish(topic string, payload []byte) error
+	Subscribe(topic string, handler MessageHandler) error
+	Unsubscribe(topic string)
+	UnsubscribeAll()
+	OnMsgArrived(ctx context.Context, client server.Client, req *server.MsgArrivedRequest)
+}
+
+type MqttServ interface {
+	Shutdown() error
+	Start()
+	Publish(topic string, payload []byte, qos uint8, retain bool) error
+	NewClient(name string) MqttCli
+}
+
+// GMqttServer ...
+type GMqttServer interface {
 	// ...
 	Run() error
 	// ...
@@ -53,7 +68,7 @@ type IMQTT interface {
 	RetainedStore() retained.Store
 	// Publisher returns the Publisher
 	Publisher() server.Publisher
-	// Client return the ClientService
+	// client return the ClientService
 	ClientService() server.ClientService
 	// GetConfig returns the config of the server
 	GetConfig() config.Config
@@ -72,4 +87,4 @@ type Message struct {
 }
 
 // MessageHandler ...
-type MessageHandler func(*Client, Message)
+type MessageHandler func(MqttCli, Message)

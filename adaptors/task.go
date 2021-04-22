@@ -25,14 +25,23 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type ITask interface {
+	Add(ver *m.Task) (err error)
+	Delete(id int64) (err error)
+	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Task, total int64, err error)
+	fromDb(dbVer *db.Task) (ver *m.Task)
+	toDb(ver *m.Task) (dbVer *db.Task)
+}
+
 // Task ...
 type Task struct {
+	ITask
 	table *db.Tasks
 	db    *gorm.DB
 }
 
 // GetTaskAdaptor ...
-func GetTaskAdaptor(d *gorm.DB) *Task {
+func GetTaskAdaptor(d *gorm.DB) ITask {
 	return &Task{
 		table: &db.Tasks{Db: d},
 		db:    d,

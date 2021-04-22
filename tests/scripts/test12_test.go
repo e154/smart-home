@@ -67,7 +67,7 @@ func Test12(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			storageService *storage.Storage,
-			scriptService *scripts.ScriptService) {
+			scriptService scripts.ScriptService) {
 
 			// clear database
 			// ------------------------------------------------

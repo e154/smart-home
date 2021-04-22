@@ -16,37 +16,29 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package uptime
+package responses
 
-const (
-	name = "uptime"
+import (
+	"github.com/e154/smart-home/api/server/v1/models"
 )
 
-// pluginUptime ...
-type pluginUptime struct {
+// swagger:response EntityList
+type EntityList struct {
+	// in:body
+	Body struct {
+		Items []*models.Entity `json:"items"`
+		Meta  struct {
+			Limit       int64 `json:"limit"`
+			ObjectCount int64 `json:"objects_count"`
+			Offset      int64 `json:"offset"`
+		} `json:"meta"`
+	}
 }
 
-func RegisterUptime(manager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager, pause uint) {
-	manager.Register(&pluginUptime{})
-
-	return
-}
-
-func (u *pluginUptime) Load(service plugin_manager.IServer) (err error) {
-
-	return
-}
-
-func (u *pluginUptime) Unload() (err error) {
-
-	return
-}
-
-func (u pluginUptime) Name() string {
-	return name
-}
-
-func (p *pluginUptime) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+// swagger:response EntitySearch
+type EntitySearch struct {
+	// in:body
+	Body struct {
+		Entities []*models.Entity `json:"entities"`
+	}
 }

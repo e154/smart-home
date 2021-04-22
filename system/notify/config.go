@@ -28,8 +28,8 @@ const (
 	notifyVarName = "notify"
 )
 
-// NotifyConfig ...
-type NotifyConfig struct {
+// Config ...
+type Config struct {
 	adaptor        *adaptors.Adaptors
 	MbAccessKey    string `json:"mb_access_key"`
 	MbName         string `json:"mb_name"`
@@ -47,15 +47,15 @@ type NotifyConfig struct {
 	SlackUserName  string `json:"slack_user_name"`
 }
 
-// NewNotifyConfig ...
-func NewNotifyConfig(adaptor *adaptors.Adaptors) *NotifyConfig {
-	return &NotifyConfig{
+// NewConfig ...
+func NewConfig(adaptor *adaptors.Adaptors) *Config {
+	return &Config{
 		adaptor: adaptor,
 	}
 }
 
 // Get ...
-func (n *NotifyConfig) Get() {
+func (n *Config) Get() {
 
 	v, err := n.adaptor.Variable.GetByName(notifyVarName)
 	if err != nil {
@@ -69,7 +69,7 @@ func (n *NotifyConfig) Get() {
 }
 
 // Update ...
-func (n *NotifyConfig) Update() (err error) {
+func (n *Config) Update() (err error) {
 
 	log.Infof("update settings")
 

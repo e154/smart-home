@@ -24,14 +24,27 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IVariable interface {
+	Add(ver m.Variable) (err error)
+	CreateOrUpdate(ver m.Variable) (err error)
+	GetAllEnabled() (list []m.Variable, err error)
+	GetByName(name string) (ver m.Variable, err error)
+	Update(variable m.Variable) (err error)
+	Delete(name string) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []m.Variable, total int64, err error)
+	fromDb(dbVer db.Variable) (ver m.Variable)
+	toDb(ver m.Variable) (dbVer db.Variable)
+}
+
 // Variable ...
 type Variable struct {
+	IVariable
 	table *db.Variables
 	db    *gorm.DB
 }
 
 // GetVariableAdaptor ...
-func GetVariableAdaptor(d *gorm.DB) *Variable {
+func GetVariableAdaptor(d *gorm.DB) IVariable {
 	return &Variable{
 		table: &db.Variables{Db: d},
 		db:    d,
@@ -49,7 +62,6 @@ func (n *Variable) CreateOrUpdate(ver m.Variable) (err error) {
 	err = n.table.CreateOrUpdate(n.toDb(ver))
 	return
 }
-
 
 // GetAllEnabled ...
 func (n *Variable) GetAllEnabled() (list []m.Variable, err error) {
@@ -120,6 +132,7 @@ func (n *Variable) fromDb(dbVer db.Variable) (ver m.Variable) {
 		Autoload:  dbVer.Autoload,
 		CreatedAt: dbVer.CreatedAt,
 		UpdatedAt: dbVer.UpdatedAt,
+		EntityId:  dbVer.EntityId,
 	}
 
 	return
@@ -130,6 +143,8 @@ func (n *Variable) toDb(ver m.Variable) (dbVer db.Variable) {
 		Name:     ver.Name,
 		Value:    ver.Value,
 		Autoload: ver.Autoload,
+		EntityId: ver.EntityId,
 	}
+
 	return
 }

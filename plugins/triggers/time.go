@@ -46,7 +46,7 @@ type TimeTrigger struct {
 	subscribers map[string][]*subscribe
 }
 
-func NewTimeTrigger(eventBus *event_bus.EventBus) ITrigger {
+func NewTimeTrigger(eventBus event_bus.EventBus) ITrigger {
 	c := cron.NewCron()
 	go c.Run()
 	return &TimeTrigger{

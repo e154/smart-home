@@ -26,14 +26,27 @@ import (
 	"sort"
 )
 
+type IMap interface {
+	Add(ver *m.Map) (id int64, err error)
+	GetById(mapId int64) (ver *m.Map, err error)
+	GetFullById(mapId int64) (ver *m.Map, err error)
+	Update(ver *m.Map) (err error)
+	Delete(mapId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.Map, total int64, err error)
+	Search(query string, limit, offset int) (list []*m.Map, total int64, err error)
+	fromDb(dbVer *db.Map) (ver *m.Map)
+	toDb(ver *m.Map) (dbVer *db.Map)
+}
+
 // Map ...
 type Map struct {
+	IMap
 	table *db.Maps
 	db    *gorm.DB
 }
 
 // GetMapAdaptor ...
-func GetMapAdaptor(d *gorm.DB) *Map {
+func GetMapAdaptor(d *gorm.DB) IMap {
 	return &Map{
 		table: &db.Maps{Db: d},
 		db:    d,

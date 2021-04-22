@@ -150,8 +150,8 @@ func (s *Server) setControllers() {
 	// entities
 	v1.POST("/entity", s.af.Auth, s.ControllersV1.Entity.Add)
 	v1.GET("/entity/:id", s.af.Auth, s.ControllersV1.Entity.GetById)
-	//v1.PUT("/entity/:id", s.af.Auth, s.ControllersV1.Entity.Update)
-	//v1.DELETE("/entity/:id", s.af.Auth, s.ControllersV1.Entity.Delete)
-	//v1.GET("/entitys", s.af.Auth, s.ControllersV1.Entity.GetList)
-	//v1.GET("/entitys/search", s.af.Auth, s.ControllersV1.Entity.Search)
+	v1.PUT("/entity/:id", s.af.Auth, s.ControllersV1.Entity.Update)
+	v1.DELETE("/entity/:id", s.af.Auth, s.ControllersV1.Entity.Delete)
+	v1.GET("/entities", s.af.Auth, s.ControllersV1.Entity.GetList)
+	v1.GET("/entities/search", s.af.Auth, s.ControllersV1.Entity.Search)
 }

@@ -52,12 +52,12 @@ var (
 type Initial struct {
 	migrations    *migrations.Migrations
 	adaptors      *Adaptors
-	scriptService *scripts.ScriptService
-	accessList    *access_list.AccessListService
+	scriptService scripts.ScriptService
+	accessList    access_list.AccessListService
 	pluginLoader  *plugins.Loader
-	entityManager *entity_manager.EntityManager
-	pluginManager *plugin_manager.PluginManager
-	automation    *automation.Automation
+	entityManager entity_manager.EntityManager
+	pluginManager plugin_manager.PluginManager
+	automation    automation.Automation
 	api           *server.Server
 	metrics       *metrics.MetricManager
 }
@@ -66,12 +66,12 @@ type Initial struct {
 func NewInitial(lc fx.Lifecycle,
 	migrations *migrations.Migrations,
 	adaptors *Adaptors,
-	scriptService *scripts.ScriptService,
-	accessList *access_list.AccessListService,
+	scriptService scripts.ScriptService,
+	accessList access_list.AccessListService,
 	pluginLoader *plugins.Loader,
-	entityManager *entity_manager.EntityManager,
-	pluginManager *plugin_manager.PluginManager,
-	automation *automation.Automation,
+	entityManager entity_manager.EntityManager,
+	pluginManager plugin_manager.PluginManager,
+	automation automation.Automation,
 	api *server.Server,
 	metrics *metrics.MetricManager) *Initial {
 	initial := &Initial{

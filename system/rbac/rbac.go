@@ -40,12 +40,12 @@ var (
 // AccessFilter ...
 type AccessFilter struct {
 	adaptors          *adaptors.Adaptors
-	accessListService *access_list.AccessListService
+	accessListService access_list.AccessListService
 }
 
 // NewAccessFilter ...
 func NewAccessFilter(adaptors *adaptors.Adaptors,
-	accessListService *access_list.AccessListService) *AccessFilter {
+	accessListService access_list.AccessListService) *AccessFilter {
 	return &AccessFilter{
 		adaptors:          adaptors,
 		accessListService: accessListService,
@@ -59,6 +59,9 @@ func (f *AccessFilter) Auth(ctx *gin.Context) {
 	method := strings.ToLower(ctx.Request.Method)
 
 	var err error
+
+	//todo remove
+	return
 
 	// get access_token
 	var accessToken string

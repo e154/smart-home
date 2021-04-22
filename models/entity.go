@@ -44,6 +44,7 @@ type Entity struct {
 	Hidden      bool              `json:"hidden"`
 	Attributes  EntityAttributes  `json:"attributes"`
 	AutoLoad    bool              `json:"auto_load"`
+	ParentId    *common.EntityId  `json:"parent_id"`
 	CreatedAt   time.Time         `json:"created_at"`
 	UpdatedAt   time.Time         `json:"updated_at"`
 }

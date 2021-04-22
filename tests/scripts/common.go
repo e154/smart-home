@@ -28,7 +28,7 @@ import (
 
 var store = func(interface{}) {}
 
-func storeRegisterCallback(scriptService *scripts.ScriptService) {
+func storeRegisterCallback(scriptService scripts.ScriptService) {
 	scriptService.PushFunctions("store", func(value interface{}) {
 		store(value)
 	})
@@ -67,7 +67,7 @@ func (m *MyStruct) privateMethod() int {
 }
 
 // GetScripts ...
-func GetScripts(ctx C, scriptService *scripts.ScriptService, adaptors *adaptors.Adaptors, args ...int) (scripts map[string]*m.Script) {
+func GetScripts(ctx C, scriptService scripts.ScriptService, adaptors *adaptors.Adaptors, args ...int) (scripts map[string]*m.Script) {
 
 	scripts = make(map[string]*m.Script)
 	for _, arg := range args {

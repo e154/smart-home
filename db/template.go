@@ -208,13 +208,17 @@ func (n *Templates) Search(query string, limit, offset int) (items []*Template, 
 
 	q := n.Db.Model(&Template{}).
 		Where("name LIKE ?", "%"+query+"%").
-		Order("name ASC").
 		Where("type = 'template'")
 
 	if err = q.Count(&total).Error; err != nil {
 		err = errors.New(err.Error())
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
 
 	items = make([]*Template, 0)
 	if err = q.Find(&items).Error; err != nil {

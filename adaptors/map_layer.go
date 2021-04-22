@@ -25,14 +25,26 @@ import (
 	"sort"
 )
 
+type IMapLayer interface {
+	Add(ver *m.MapLayer) (id int64, err error)
+	GetById(mapId int64) (ver *m.MapLayer, err error)
+	Update(ver *m.MapLayer) (err error)
+	Sort(ver *m.MapLayer) (err error)
+	Delete(mapId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.MapLayer, total int64, err error)
+	fromDb(dbVer *db.MapLayer) (ver *m.MapLayer)
+	toDb(ver *m.MapLayer) (dbVer *db.MapLayer)
+}
+
 // MapLayer ...
 type MapLayer struct {
+	IMapLayer
 	table *db.MapLayers
 	db    *gorm.DB
 }
 
 // GetMapLayerAdaptor ...
-func GetMapLayerAdaptor(d *gorm.DB) *MapLayer {
+func GetMapLayerAdaptor(d *gorm.DB) IMapLayer {
 	return &MapLayer{
 		table: &db.MapLayers{Db: d},
 		db:    d,

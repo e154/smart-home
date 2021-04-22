@@ -29,13 +29,13 @@ import (
 type Worker struct {
 	adaptors      *adaptors.Adaptors
 	app           *m.AlexaSkill
-	scriptService *scripts.ScriptService
+	scriptService scripts.ScriptService
 }
 
 // NewWorker ...
 func NewWorker(app *m.AlexaSkill,
 	adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService,
+	scriptService scripts.ScriptService,
 	) (worker *Worker) {
 
 	worker = &Worker{

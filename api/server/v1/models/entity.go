@@ -24,6 +24,7 @@ import (
 
 // swagger:model
 type NewEntity struct {
+	Id          string             `json:"id"`
 	Description string             `json:"description"`
 	Type        string             `json:"type" valid:"Required"`
 	Icon        *string            `json:"icon"`
@@ -40,6 +41,18 @@ type NewEntity struct {
 
 // swagger:model
 type UpdateEntity struct {
+	Description string           `json:"description"`
+	Type        string           `json:"type" valid:"Required"`
+	Icon        *string          `json:"icon"`
+	Image       *Image           `json:"image"`
+	Actions     []*EntityAction  `json:"actions"`
+	States      []*EntityState   `json:"states"`
+	AreaId      *int64           `json:"area_id"`
+	Metrics     []Metric         `json:"metrics"`
+	Scripts     []Script         `json:"scripts"`
+	Hidden      bool             `json:"hidden"`
+	Attributes  EntityAttributes `json:"attributes"`
+	AutoLoad    bool             `json:"auto_load"`
 }
 
 // swagger:model

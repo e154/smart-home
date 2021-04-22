@@ -19,11 +19,15 @@
 package plugin_manager
 
 import (
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
-type IPluginManager interface {
-	GetPlugin(name string) (plugin IPlugable, err error)
+type PluginManager interface {
+	Register(plugin Plugable)
+	Start()
+	Shutdown()
+	GetPlugin(name string) (plugin Plugable, err error)
 }
 
 type PlugableType string
@@ -33,22 +37,22 @@ const (
 	PlugableInstallable = PlugableType("Installable")
 )
 
-type IPlugable interface {
-	Load(service IPluginManager, plugins map[string]interface{}) error
+type Plugable interface {
+	Load(service PluginManager, plugins map[string]interface{}) error
 	Unload() error
 	Name() string
 	Type() PlugableType
 	Depends() []string
 }
 
-type IInstallable interface {
+type Installable interface {
 	Install()
 	Uninstall()
 }
 
-type ICrudEntity interface {
-	AddOrUpdateEntity(entity *m.Entity) error
-	RemoveEntity(entity *m.Entity) error
+type CrudActor interface {
+	AddOrUpdateActor(*m.Entity) error
+	RemoveActor(common.EntityId) error
 }
 
 type IPluginLoader interface {
@@ -57,5 +61,5 @@ type IPluginLoader interface {
 
 type pluginListItem struct {
 	Name   string
-	Plugin IPlugable
+	Plugin Plugable
 }

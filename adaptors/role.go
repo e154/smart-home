@@ -24,14 +24,27 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IRole interface {
+	Add(role *m.Role) (err error)
+	GetByName(name string) (role *m.Role, err error)
+	Update(role *m.Role) (err error)
+	Delete(name string) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.Role, total int64, err error)
+	Search(query string, limit, offset int) (list []*m.Role, total int64, err error)
+	GetAccessList(role *m.Role) (err error)
+	fromDb(dbRole *db.Role) (role *m.Role)
+	toDb(role *m.Role) (dbRole *db.Role)
+}
+
 // Role ...
 type Role struct {
+	IRole
 	table *db.Roles
 	db    *gorm.DB
 }
 
 // GetRoleAdaptor ...
-func GetRoleAdaptor(d *gorm.DB) *Role {
+func GetRoleAdaptor(d *gorm.DB) IRole {
 	return &Role{
 		table: &db.Roles{Db: d},
 		db:    d,

@@ -25,7 +25,7 @@ import (
 
 // Javascript Binding
 //
-// EntityManager
+// entityManager
 //	.GetEntity(id) -> EntityBind
 //  .SetState(id, stateName)
 //  .SetAttributes(uniqueId, key, value, args)
@@ -33,11 +33,11 @@ import (
 //  .CallAction(uniqueId, actionName)
 //
 type EntityManagerBind struct {
-	manager *EntityManager
+	manager EntityManager
 }
 
 // NewEntityManagerBind ...
-func NewEntityManagerBind(manager *EntityManager) *EntityManagerBind {
+func NewEntityManagerBind(manager EntityManager) *EntityManagerBind {
 	return &EntityManagerBind{manager: manager}
 }
 

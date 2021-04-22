@@ -24,14 +24,26 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IMapText interface {
+	Add(ver *m.MapText) (id int64, err error)
+	GetById(mapId int64) (ver *m.MapText, err error)
+	Update(ver *m.MapText) (err error)
+	Sort(ver *m.MapText) (err error)
+	Delete(mapId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.MapText, total int64, err error)
+	fromDb(dbVer *db.MapText) (ver *m.MapText)
+	toDb(ver *m.MapText) (dbVer *db.MapText)
+}
+
 // MapText ...
 type MapText struct {
+	IMapText
 	table *db.MapTexts
 	db    *gorm.DB
 }
 
 // GetMapTextAdaptor ...
-func GetMapTextAdaptor(d *gorm.DB) *MapText {
+func GetMapTextAdaptor(d *gorm.DB) IMapText {
 	return &MapText{
 		table: &db.MapTexts{Db: d},
 		db:    d,

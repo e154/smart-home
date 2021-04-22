@@ -570,6 +570,9 @@ definitions:
       icon:
         type: string
         x-go-name: Icon
+      id:
+        type: string
+        x-go-name: Id
       image:
         $ref: '#/definitions/Image'
       metrics:
@@ -1201,6 +1204,53 @@ definitions:
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateEntity:
+    properties:
+      actions:
+        items:
+          $ref: '#/definitions/EntityAction'
+        type: array
+        x-go-name: Actions
+      area_id:
+        format: int64
+        type: integer
+        x-go-name: AreaId
+      attributes:
+        $ref: '#/definitions/EntityAttributes'
+      auto_load:
+        type: boolean
+        x-go-name: AutoLoad
+      description:
+        type: string
+        x-go-name: Description
+      hidden:
+        type: boolean
+        x-go-name: Hidden
+      icon:
+        type: string
+        x-go-name: Icon
+      id:
+        type: string
+        x-go-name: Id
+      image:
+        $ref: '#/definitions/Image'
+      metrics:
+        items:
+          $ref: '#/definitions/Metric'
+        type: array
+        x-go-name: Metrics
+      scripts:
+        items:
+          $ref: '#/definitions/Script'
+        type: array
+        x-go-name: Scripts
+      states:
+        items:
+          $ref: '#/definitions/EntityState'
+        type: array
+        x-go-name: States
+      type:
+        type: string
+        x-go-name: Type
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateImage:
@@ -1936,7 +1986,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           $ref: '#/responses/Success'
@@ -1990,7 +2040,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Update entity params
         in: body
         name: entity
@@ -4314,6 +4364,42 @@ paths:
 produces:
 - application/json
 responses:
+  EntityList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Entity'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  EntitySearch:
+    description: ""
+    schema:
+      properties:
+        entities:
+          items:
+            $ref: '#/definitions/Entity'
+          type: array
+          x-go-name: Entities
+      type: object
   Error:
     description: Error response
     schema:

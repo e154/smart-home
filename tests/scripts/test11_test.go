@@ -73,7 +73,7 @@ func Test11(t *testing.T) {
 	Convey("require external library", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			scriptService *scripts.ScriptService) {
+			scriptService scripts.ScriptService) {
 
 			initCallback(ctx)
 

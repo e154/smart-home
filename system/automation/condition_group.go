@@ -26,7 +26,7 @@ import (
 	"time"
 )
 
-func NewConditionGroup(automation *Automation,
+func NewConditionGroup(automation *automation,
 	t common.ConditionType) *ConditionGroup {
 	return &ConditionGroup{
 		automation: automation,
@@ -38,7 +38,7 @@ func NewConditionGroup(automation *Automation,
 type ConditionGroup struct {
 	rules      []*Condition
 	t          common.ConditionType
-	automation *Automation
+	automation *automation
 	lastStatus atomic.Bool
 	sync.Mutex
 }

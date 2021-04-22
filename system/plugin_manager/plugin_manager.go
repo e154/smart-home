@@ -33,7 +33,7 @@ var (
 	log = common.MustGetLogger("plugins.manager")
 )
 
-type PluginManager struct {
+type pluginManager struct {
 	adaptors  *adaptors.Adaptors
 	isStarted *atomic.Bool
 	loadLock  *sync.Mutex
@@ -41,8 +41,8 @@ type PluginManager struct {
 }
 
 func NewPluginManager(lc fx.Lifecycle,
-	adaptors *adaptors.Adaptors, ) (manager *PluginManager) {
-	manager = &PluginManager{
+	adaptors *adaptors.Adaptors, ) (manager PluginManager) {
+	manager = &pluginManager{
 		adaptors:  adaptors,
 		isStarted: atomic.NewBool(false),
 		loadLock:  &sync.Mutex{},
@@ -57,7 +57,7 @@ func NewPluginManager(lc fx.Lifecycle,
 	return
 }
 
-func (p *PluginManager) Register(plugin IPlugable) {
+func (p *pluginManager) Register(plugin Plugable) {
 	p.loadLock.Lock()
 	defer p.loadLock.Unlock()
 	p.plugins.PushBack(pluginListItem{
@@ -66,7 +66,7 @@ func (p *PluginManager) Register(plugin IPlugable) {
 	})
 }
 
-func (p *PluginManager) Start() {
+func (p *pluginManager) Start() {
 	if p.isStarted.Load() {
 		return
 	}
@@ -77,7 +77,7 @@ func (p *PluginManager) Start() {
 	}
 }
 
-func (p *PluginManager) Shutdown() {
+func (p *pluginManager) Shutdown() {
 	log.Info("Shutdown")
 
 	if !p.isStarted.Load() {
@@ -90,7 +90,7 @@ func (p *PluginManager) Shutdown() {
 	}
 }
 
-func (p *PluginManager) loadPlugins() (err error) {
+func (p *pluginManager) loadPlugins() (err error) {
 	p.loadLock.Lock()
 	defer p.loadLock.Unlock()
 
@@ -103,7 +103,7 @@ func (p *PluginManager) loadPlugins() (err error) {
 		log.Infof("load plugin %v", i.Name)
 		plugins := make(map[string]interface{})
 		if len(i.Plugin.Depends()) > 0 {
-			var plugin IPlugable
+			var plugin Plugable
 			for _, dep := range i.Plugin.Depends() {
 				if plugin, err = p.unsafeGetPlugin(dep); err != nil {
 					log.Error(err.Error())
@@ -122,7 +122,7 @@ func (p *PluginManager) loadPlugins() (err error) {
 	return
 }
 
-func (p *PluginManager) unloadPlugins() (err error) {
+func (p *pluginManager) unloadPlugins() (err error) {
 	p.loadLock.Lock()
 	defer p.loadLock.Unlock()
 
@@ -144,7 +144,7 @@ func (p *PluginManager) unloadPlugins() (err error) {
 	return
 }
 
-func (p *PluginManager) GetPlugin(t string) (plugin IPlugable, err error) {
+func (p *pluginManager) GetPlugin(t string) (plugin Plugable, err error) {
 	p.loadLock.Lock()
 	defer p.loadLock.Unlock()
 
@@ -153,7 +153,7 @@ func (p *PluginManager) GetPlugin(t string) (plugin IPlugable, err error) {
 	return
 }
 
-func (p *PluginManager) unsafeGetPlugin(t string) (plugin IPlugable, err error) {
+func (p *pluginManager) unsafeGetPlugin(t string) (plugin Plugable, err error) {
 
 	for e := p.plugins.Front(); e != nil; e = e.Next() {
 		p, ok := e.Value.(pluginListItem)

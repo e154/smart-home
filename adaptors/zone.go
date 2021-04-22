@@ -24,14 +24,25 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IZone interface {
+	Add(tag *m.Zone) (id int64, err error)
+	GetByName(zoneName string) (ver *m.Zone, err error)
+	Delete(name string) (err error)
+	Search(query string, limit, offset int) (list []*m.Zone, total int64, err error)
+	Clean() (err error)
+	toDb(tag *m.Zone) *db.Zone
+	fromDb(tag *db.Zone) *m.Zone
+}
+
 // Zone ...
 type Zone struct {
+	IZone
 	table *db.Zones
 	db    *gorm.DB
 }
 
 // GetZoneAdaptor ...
-func GetZoneAdaptor(d *gorm.DB) *Zone {
+func GetZoneAdaptor(d *gorm.DB) IZone {
 	return &Zone{
 		table: &db.Zones{Db: d},
 		db:    d,

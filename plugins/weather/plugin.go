@@ -19,6 +19,7 @@
 package weather
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -40,20 +41,20 @@ var (
 	log = common.MustGetLogger("plugins.weather")
 )
 
-type pluginWeather struct {
-	entityManager *entity_manager.EntityManager
+type plugin struct {
+	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	isStarted     *atomic.Bool
-	eventBus      *event_bus.EventBus
+	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
 	actors        map[string]*EntityActor
 }
 
-func Register(manager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager,
-	eventBus *event_bus.EventBus,
+func Register(manager plugin_manager.PluginManager,
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors) {
-	manager.Register(&pluginWeather{
+	manager.Register(&plugin{
 		entityManager: entityManager,
 		adaptors:      adaptors,
 		isStarted:     atomic.NewBool(false),
@@ -63,7 +64,7 @@ func Register(manager *plugin_manager.PluginManager,
 	})
 }
 
-func (p *pluginWeather) Load(service plugin_manager.IPluginManager, plugins map[string]interface{}) error {
+func (p *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) error {
 
 	if p.isStarted.Load() {
 		return nil
@@ -76,7 +77,7 @@ func (p *pluginWeather) Load(service plugin_manager.IPluginManager, plugins map[
 	return nil
 }
 
-func (p *pluginWeather) Unload() error {
+func (p *plugin) Unload() error {
 
 	if !p.isStarted.Load() {
 		return nil
@@ -89,11 +90,11 @@ func (p *pluginWeather) Unload() error {
 	return nil
 }
 
-func (p pluginWeather) Name() string {
+func (p plugin) Name() string {
 	return Name
 }
 
-func (p *pluginWeather) eventHandler(msg interface{}) {
+func (p *plugin) eventHandler(msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventRequestState:
@@ -124,13 +125,18 @@ func (p *pluginWeather) eventHandler(msg interface{}) {
 			return
 		}
 
-		p.removeEntity(v.EntityId.Name())
+		if err := p.removeEntity(v.EntityId.Name()); err != nil {
+			return
+		}
+
+		entityId := common.EntityId(fmt.Sprintf("weather.%s", v.EntityId.Name()))
+		p.entityManager.Remove(entityId)
 	}
 
 	return
 }
 
-func (p *pluginWeather) addOrUpdateForecast(name string, attr m.EntityAttributes) (err error) {
+func (p *plugin) addOrUpdateForecast(name string, attr m.EntityAttributes) (err error) {
 
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -148,14 +154,10 @@ func (p *pluginWeather) addOrUpdateForecast(name string, attr m.EntityAttributes
 	return
 }
 
-func (p *pluginWeather) addOrUpdateZone(name string, zoneAttr m.EntityAttributes) (err error) {
+func (p *plugin) addOrUpdateZone(name string, zoneAttr m.EntityAttributes) (err error) {
 
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[name]; !ok {
-		log.Infof("Add weather '%v'", name)
-	}
 
 	if _, ok := p.actors[name]; !ok {
 		p.actors[name] = NewEntityActor(name, p.eventBus)
@@ -166,20 +168,21 @@ func (p *pluginWeather) addOrUpdateZone(name string, zoneAttr m.EntityAttributes
 	return
 }
 
-func (p *pluginWeather) AddOrUpdateEntity(entity *m.Entity) (err error) {
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	p.addOrUpdateZone(entity.Id.Name(), entity.Attributes)
 	return
 }
 
-func (p *pluginWeather) RemoveEntity(entity *m.Entity) error {
-	return p.removeEntity(entity.Id.Name())
+func (p *plugin) RemoveActor(entityId common.EntityId) error {
+	return p.removeEntity(entityId.Name())
 }
 
-func (p *pluginWeather) removeEntity(name string) (err error) {
+func (p *plugin) removeEntity(name string) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
+		err = fmt.Errorf("not found")
 		return
 	}
 
@@ -188,10 +191,10 @@ func (p *pluginWeather) removeEntity(name string) (err error) {
 	return
 }
 
-func (p *pluginWeather) Type() plugin_manager.PlugableType {
+func (p *plugin) Type() plugin_manager.PlugableType {
 	return plugin_manager.PlugableBuiltIn
 }
 
-func (p *pluginWeather) Depends() []string {
+func (p *plugin) Depends() []string {
 	return nil
 }

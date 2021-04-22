@@ -39,7 +39,7 @@ type Entity struct {
 	Hidden      bool               `json:"hidden"`
 }
 
-func NewEntity(a IActor) Entity {
+func NewEntity(a PluginActor) Entity {
 
 	info := a.Info()
 	actions := make([]EntityAction, len(info.Actions))

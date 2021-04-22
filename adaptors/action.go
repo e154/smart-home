@@ -25,14 +25,22 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+type IAction interface {
+	DeleteByTaskId(id int64) (err error)
+	AddMultiple(items []*m.Action) (err error)
+	fromDb(dbVer *db.Action) (ver *m.Action)
+	toDb(ver *m.Action) (dbVer *db.Action)
+}
+
 // Action ...
 type Action struct {
+	IAction
 	table *db.Actions
 	db    *gorm.DB
 }
 
 // GetActionAdaptor ...
-func GetActionAdaptor(d *gorm.DB) *Action {
+func GetActionAdaptor(d *gorm.DB) IAction {
 	return &Action{
 		table: &db.Actions{Db: d},
 		db:    d,

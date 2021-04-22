@@ -22,31 +22,31 @@ const (
 	name = "uptime"
 )
 
-// pluginUptime ...
-type pluginUptime struct {
+// plugin ...
+type plugin struct {
 }
 
 func RegisterUptime(manager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager, pause uint) {
-	manager.Register(&pluginUptime{})
+	entityManager entity_manager.IEntityManager, pause uint) {
+	manager.Register(&plugin{})
 
 	return
 }
 
-func (u *pluginUptime) Load(service plugin_manager.IServer) (err error) {
+func (u *plugin) Load(service plugin_manager.IServer) (err error) {
 
 	return
 }
 
-func (u *pluginUptime) Unload() (err error) {
+func (u *plugin) Unload() (err error) {
 
 	return
 }
 
-func (u pluginUptime) Name() string {
+func (u plugin) Name() string {
 	return name
 }
 
-func (p *pluginUptime) Type() plugin_manager.PlugableType {
+func (p *plugin) Type() plugin_manager.PlugableType {
 	return plugin_manager.PlugableBuiltIn
 }

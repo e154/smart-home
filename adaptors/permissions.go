@@ -24,14 +24,23 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IPermission interface {
+	Add(permission *m.Permission) (id int64, err error)
+	Delete(packageName string, levelName []string) (err error)
+	GetAllPermissions(roleName string) (permissions []*m.Permission, err error)
+	fromDb(dbPermission *db.Permission) (permission *m.Permission)
+	toDb(permission *m.Permission) (dbPermission *db.Permission)
+}
+
 // Permission ...
 type Permission struct {
+	IPermission
 	table *db.Permissions
 	db    *gorm.DB
 }
 
 // GetPermissionAdaptor ...
-func GetPermissionAdaptor(d *gorm.DB) *Permission {
+func GetPermissionAdaptor(d *gorm.DB) IPermission {
 	return &Permission{
 		table: &db.Permissions{Db: d},
 		db:    d,

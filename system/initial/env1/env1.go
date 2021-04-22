@@ -19,9 +19,9 @@
 package env1
 
 import (
-	. "github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
-	. "github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/scripts"
 )
 
 // env1
@@ -32,9 +32,9 @@ import (
 // 		+ child device2
 // device3
 //
-func InstallDemoData(adaptors *Adaptors,
-	accessList *access_list.AccessListService,
-	scriptService *ScriptService) {
+func InstallDemoData(adaptors *adaptors.Adaptors,
+	accessList access_list.AccessListService,
+	scriptService scripts.ScriptService) {
 
 	// images
 	// ------------------------------------------------
@@ -62,9 +62,9 @@ func InstallDemoData(adaptors *Adaptors,
 }
 
 // Create ...
-func Create(adaptors *Adaptors,
-	accessList *access_list.AccessListService,
-	scriptService *ScriptService) {
+func Create(adaptors *adaptors.Adaptors,
+	accessList access_list.AccessListService,
+	scriptService scripts.ScriptService) {
 
 	NewImageManager(adaptors).Create()
 	NewRoleManager(adaptors, accessList).Create()
@@ -76,9 +76,9 @@ func Create(adaptors *Adaptors,
 
 // Upgrade ...
 func Upgrade(oldVersion int,
-	adaptors *Adaptors,
-	accessList *access_list.AccessListService,
-	scriptService *ScriptService) {
+	adaptors *adaptors.Adaptors,
+	accessList access_list.AccessListService,
+	scriptService scripts.ScriptService) {
 
 	NewImageManager(adaptors).Upgrade(oldVersion)
 	NewTemplateManager(adaptors).Upgrade(oldVersion)

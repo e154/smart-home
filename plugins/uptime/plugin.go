@@ -38,8 +38,8 @@ var (
 	log = common.MustGetLogger("plugins.uptime")
 )
 
-type pluginUptime struct {
-	entityManager *entity_manager.EntityManager
+type plugin struct {
+	entityManager entity_manager.EntityManager
 	entity        *EntityActor
 	isStarted     *atomic.Bool
 	ticker        *time.Ticker
@@ -49,11 +49,11 @@ type pluginUptime struct {
 	quit          chan struct{}
 }
 
-func Register(manager *plugin_manager.PluginManager,
-	entityManager *entity_manager.EntityManager,
+func Register(manager plugin_manager.PluginManager,
+	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
 	pause time.Duration) {
-	manager.Register(&pluginUptime{
+	manager.Register(&plugin{
 		entityManager: entityManager,
 		entity:        NewEntityActor(),
 		isStarted:     atomic.NewBool(false),
@@ -63,7 +63,7 @@ func Register(manager *plugin_manager.PluginManager,
 	return
 }
 
-func (u *pluginUptime) Load(service plugin_manager.IPluginManager, plugins map[string]interface{}) (err error) {
+func (u *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
 
 	if u.isStarted.Load() {
 		return
@@ -103,7 +103,7 @@ func (u *pluginUptime) Load(service plugin_manager.IPluginManager, plugins map[s
 	return
 }
 
-func (u *pluginUptime) Unload() (err error) {
+func (u *plugin) Unload() (err error) {
 	if !u.isStarted.Load() {
 		return
 	}
@@ -115,14 +115,14 @@ func (u *pluginUptime) Unload() (err error) {
 	return
 }
 
-func (u pluginUptime) Name() string {
+func (u plugin) Name() string {
 	return name
 }
 
-func (p *pluginUptime) Type() plugin_manager.PlugableType {
+func (p *plugin) Type() plugin_manager.PlugableType {
 	return plugin_manager.PlugableBuiltIn
 }
 
-func (p *pluginUptime) Depends() []string {
+func (p *plugin) Depends() []string {
 	return nil
 }

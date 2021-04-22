@@ -24,14 +24,23 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IRunHistory interface {
+	Add(story *m.RunStory) (id int64, err error)
+	Update(story *m.RunStory) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.RunStory, total int64, err error)
+	fromDb(dbVer *db.RunStory) (story *m.RunStory)
+	toDb(story *m.RunStory) (dbVer *db.RunStory, err error)
+}
+
 // RunStory ...
 type RunHistory struct {
+	IRunHistory
 	table *db.RunHistory
 	db    *gorm.DB
 }
 
 // GetRunHistoryAdaptor ...
-func GetRunHistoryAdaptor(d *gorm.DB) *RunHistory {
+func GetRunHistoryAdaptor(d *gorm.DB) IRunHistory {
 	return &RunHistory{
 		table: &db.RunHistory{Db: d},
 		db:    d,

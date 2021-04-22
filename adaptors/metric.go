@@ -28,8 +28,22 @@ import (
 	"time"
 )
 
+type IMetric interface {
+	Add(ver m.Metric) (id int64, err error)
+	GetById(id int64) (metric m.Metric, err error)
+	GetByIdWithData(id int64, from, to *time.Time, metricRange *string) (metric m.Metric, err error)
+	Update(ver m.Metric) error
+	Delete(deviceId int64) (err error)
+	AddMultiple(items []m.Metric) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []m.Metric, total int64, err error)
+	Search(query string, limit, offset int) (list []m.Metric, total int64, err error)
+	fromDb(dbVer db.Metric) (ver m.Metric)
+	toDb(ver m.Metric) (dbVer db.Metric)
+}
+
 // Metric ...
 type Metric struct {
+	IMetric
 	table *db.Metrics
 	db    *gorm.DB
 	c     cache.Cache
@@ -37,7 +51,7 @@ type Metric struct {
 }
 
 // GetMetricAdaptor ...
-func GetMetricAdaptor(d *gorm.DB, orm *orm.Orm) *Metric {
+func GetMetricAdaptor(d *gorm.DB, orm *orm.Orm) IMetric {
 	c, _ := cache.NewCache("memory", `{"interval":3600}`)
 	return &Metric{
 		table: &db.Metrics{Db: d},

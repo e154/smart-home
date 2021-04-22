@@ -33,21 +33,21 @@ const (
 
 type Task struct {
 	model          *m.Task
-	automation     *Automation
+	automation     *automation
 	conditionGroup *ConditionGroup
 	actions        []*Action
 	script         *scripts.Engine
 	enabled        atomic.Bool
-	scriptService  *scripts.ScriptService
-	entityManager  *entity_manager.EntityManager
+	scriptService  scripts.ScriptService
+	entityManager  entity_manager.EntityManager
 	triggers       map[*Trigger]struct{}
 	rawPlugin      triggers.IGetTrigger
 }
 
-func NewTask(automation *Automation,
-	scriptService *scripts.ScriptService,
+func NewTask(automation *automation,
+	scriptService scripts.ScriptService,
 	model *m.Task,
-	entityManager *entity_manager.EntityManager,
+	entityManager entity_manager.EntityManager,
 	rawPlugin triggers.IGetTrigger) *Task {
 	return &Task{
 		model:         model,

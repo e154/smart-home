@@ -36,13 +36,13 @@ var (
 // ControllerCommon ...
 type ControllerCommon struct {
 	adaptors   *adaptors.Adaptors
-	accessList *access_list.AccessListService
+	accessList access_list.AccessListService
 	endpoint   *endpoint.Endpoint
 }
 
 // NewControllerCommon ...
 func NewControllerCommon(adaptors *adaptors.Adaptors,
-	accessList *access_list.AccessListService,
+	accessList access_list.AccessListService,
 	endpoint *endpoint.Endpoint) *ControllerCommon {
 	return &ControllerCommon{
 		adaptors:   adaptors,

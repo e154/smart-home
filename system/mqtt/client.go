@@ -26,8 +26,8 @@ import (
 	"sync"
 )
 
-// Client ...
-type Client struct {
+// client ...
+type client struct {
 	mqtt            *Mqtt
 	name            string
 	subscribersLock *sync.Mutex
@@ -35,8 +35,8 @@ type Client struct {
 }
 
 // NewClient ...
-func NewClient(mqtt *Mqtt, name string) *Client {
-	return &Client{
+func NewClient(mqtt *Mqtt, name string) MqttCli {
+	return &client{
 		mqtt:            mqtt,
 		name:            name,
 		subscribersLock: &sync.Mutex{},
@@ -45,13 +45,13 @@ func NewClient(mqtt *Mqtt, name string) *Client {
 }
 
 // Publish ...
-func (m *Client) Publish(topic string, payload []byte) (err error) {
+func (m *client) Publish(topic string, payload []byte) (err error) {
 	m.mqtt.Publish(topic, payload, 1, true)
 	return
 }
 
 // Subscribe ...
-func (m *Client) Subscribe(topic string, handler MessageHandler) (err error) {
+func (m *client) Subscribe(topic string, handler MessageHandler) (err error) {
 	log.Infof("client %s, subscribed to topic '%s'", m.name, topic)
 	m.subscribersLock.Lock()
 	defer m.subscribersLock.Unlock()
@@ -68,7 +68,7 @@ func (m *Client) Subscribe(topic string, handler MessageHandler) (err error) {
 }
 
 // Unsubscribe ...
-func (m *Client) Unsubscribe(topic string) {
+func (m *client) Unsubscribe(topic string) {
 	m.subscribersLock.Lock()
 	defer m.subscribersLock.Unlock()
 	if m.subscribers[topic] != nil {
@@ -77,7 +77,7 @@ func (m *Client) Unsubscribe(topic string) {
 }
 
 // UnsubscribeAll ...
-func (m *Client) UnsubscribeAll() {
+func (m *client) UnsubscribeAll() {
 	m.subscribersLock.Lock()
 	defer m.subscribersLock.Unlock()
 	for topic, _ := range m.subscribers {
@@ -86,7 +86,7 @@ func (m *Client) UnsubscribeAll() {
 }
 
 // OnMsgArrived ...
-func (m *Client) OnMsgArrived(ctx context.Context, client server.Client, req *server.MsgArrivedRequest) {
+func (m *client) OnMsgArrived(ctx context.Context, client server.Client, req *server.MsgArrivedRequest) {
 	m.subscribersLock.Lock()
 	defer m.subscribersLock.Unlock()
 	for topic, handler := range m.subscribers {

@@ -24,6 +24,7 @@ import (
 	"github.com/e154/smart-home/common/astronomics/moonphase"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
 	"math"
 	"sync"
@@ -49,6 +50,7 @@ func NewEntityActor(name string) *EntityActor {
 			EntityType:  EntityMoon,
 			AttrMu:      &sync.Mutex{},
 			Attrs:       NewAttr(),
+			ParentId:    common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
 		},
 		positionLock: &sync.Mutex{},
 	}
@@ -56,7 +58,7 @@ func NewEntityActor(name string) *EntityActor {
 	return entity
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.IActorManager) entity_manager.IActor {
+func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
 	e.Manager = actorManager
 	return e
 }

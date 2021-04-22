@@ -23,20 +23,20 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 )
 
-// MessageRequestState -> EntityManager
+// MessageRequestState -> entityManager
 type MessageRequestState struct {
 	Name       string
 	Attributes m.EntityAttributes
 }
 
-// MessageStateChanged -> EntityManager
+// MessageStateChanged -> entityManager
 type MessageStateChanged struct {
 	StorageSave bool
 	OldState    event_bus.EventEntityState
 	NewState    event_bus.EventEntityState
 }
 
-// EntityStateParams -> EntityManager
+// EntityStateParams -> entityManager
 type EntityStateParams struct {
 	NewState        *string                `json:"new_state"`
 	AttributeValues m.EntityAttributeValue `json:"attribute_values"`

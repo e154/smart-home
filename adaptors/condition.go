@@ -25,14 +25,22 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+type ICondition interface {
+	DeleteByTaskId(id int64) (err error)
+	AddMultiple(items []*m.Condition) (err error)
+	fromDb(dbVer *db.Condition) (ver *m.Condition)
+	toDb(ver *m.Condition) (dbVer *db.Condition)
+}
+
 // Condition ...
 type Condition struct {
+	ICondition
 	table *db.Conditions
 	db    *gorm.DB
 }
 
 // GetConditionAdaptor ...
-func GetConditionAdaptor(d *gorm.DB) *Condition {
+func GetConditionAdaptor(d *gorm.DB) ICondition {
 	return &Condition{
 		table: &db.Conditions{Db: d},
 		db:    d,

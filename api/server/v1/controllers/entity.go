@@ -128,7 +128,13 @@ func (c ControllerEntity) Add(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerEntity) GetById(ctx *gin.Context) {
 
-	entityId := common.EntityId(ctx.Param("id"))
+	id := ctx.Param("id")
+	if id == "" {
+		NewError(400, "Bad request").Send(ctx)
+		return
+	}
+
+	entityId := common.EntityId(id)
 
 	entity, err := c.endpoint.Entity.GetById(entityId)
 	if err != nil {
@@ -154,13 +160,13 @@ func (c ControllerEntity) GetById(ctx *gin.Context) {
 //   in: path
 //   name: id
 //   required: true
-//   type: integer
+//   type: string
 // - description: Update entity params
 //   in: body
 //   name: entity
 //   required: true
 //   schema:
-//     $ref: '#/definitions/UpdateEntity'
+//     $ref: '#/definitions/Update'
 //     type: object
 // summary: update entity by id
 // description:
@@ -185,47 +191,40 @@ func (c ControllerEntity) GetById(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerEntity) Update(ctx *gin.Context) {
 
-	//aid, err := strconv.Atoi(ctx.Param("id"))
-	//if err != nil {
-	//	log.Error(err.Error())
-	//	NewError(400, err).Send(ctx)
-	//	return
-	//}
-	//
-	//params := &models.UpdateEntity{}
-	//if err := ctx.ShouldBindJSON(&params); err != nil {
-	//	log.Error(err.Error())
-	//	NewError(400, err).Send(ctx)
-	//	return
-	//}
-	//
-	//if params.Password != params.PasswordRepeat {
-	//	NewError(400, "bad password repeat").Send(ctx)
-	//	return
-	//}
-	//
-	//params.Id = int64(aid)
-	//
-	//entity := &m.Entity{}
-	//common.Copy(&entity, &params, common.JsonEngine)
-	//
-	//entity, errs, err := c.endpoint.Entity.Update(entity)
-	//if len(errs) > 0 {
-	//	err400 := NewError(400)
-	//	err400.ValidationToErrors(errs).Send(ctx)
-	//	return
-	//}
-	//
-	//if err != nil {
-	//	NewError(500, err).Send(ctx)
-	//	return
-	//}
-	//
-	//result := &models.Entity{}
-	//common.Copy(&result, &entity, common.JsonEngine)
-	//
-	//resp := NewSuccess()
-	//resp.SetData(result).Send(ctx)
+	id := ctx.Param("id")
+	if id == "" {
+		NewError(400, "Bad request").Send(ctx)
+		return
+	}
+
+	params := &models.UpdateEntity{}
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		log.Error(err.Error())
+		NewError(400, err).Send(ctx)
+		return
+	}
+
+	entity := &m.Entity{}
+	common.Copy(&entity, &params, common.JsonEngine)
+	entity.Id = common.EntityId(id)
+
+	entity, errs, err := c.endpoint.Entity.Update(entity)
+	if len(errs) > 0 {
+		err400 := NewError(400)
+		err400.ValidationToErrors(errs).Send(ctx)
+		return
+	}
+
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	result := &models.Entity{}
+	common.Copy(&result, &entity, common.JsonEngine)
+
+	resp := NewSuccess()
+	resp.SetData(result).Send(ctx)
 }
 
 // swagger:operation GET /entities entityList
@@ -270,19 +269,19 @@ func (c ControllerEntity) Update(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerEntity) GetList(ctx *gin.Context) {
 
-	//_, sortBy, order, limit, offset := c.list(ctx)
-	//items, total, err := c.endpoint.Entity.GetList(int64(limit), int64(offset), order, sortBy)
-	//if err != nil {
-	//	NewError(500, err).Send(ctx)
-	//	return
-	//}
-	//
-	//result := make([]*models.Entity, 0)
-	//common.Copy(&result, &items)
-	//
-	//resp := NewSuccess()
-	//resp.Page(limit, offset, total, result).Send(ctx)
-	//return
+	_, sortBy, order, limit, offset := c.list(ctx)
+	items, total, err := c.endpoint.Entity.List(int64(limit), int64(offset), order, sortBy)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	result := make([]*models.Entity, 0)
+	common.Copy(&result, &items, common.JsonEngine)
+
+	resp := NewSuccess()
+	resp.Page(limit, offset, total, result).Send(ctx)
+	return
 }
 
 // swagger:operation DELETE /entity/{id} entityDeleteById
@@ -292,7 +291,7 @@ func (c ControllerEntity) GetList(ctx *gin.Context) {
 //   in: path
 //   name: id
 //   required: true
-//   type: integer
+//   type: string
 // summary: delete entity by id
 // description:
 // security:
@@ -314,25 +313,23 @@ func (c ControllerEntity) GetList(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerEntity) Delete(ctx *gin.Context) {
 
-	//id := ctx.Param("id")
-	//aid, err := strconv.Atoi(id)
-	//if err != nil {
-	//	log.Error(err.Error())
-	//	NewError(400, err).Send(ctx)
-	//	return
-	//}
-	//
-	//if err := c.endpoint.Entity.Delete(int64(aid)); err != nil {
-	//	code := 500
-	//	if err.Error() == "record not found" {
-	//		code = 404
-	//	}
-	//	NewError(code, err).Send(ctx)
-	//	return
-	//}
-	//
-	//resp := NewSuccess()
-	//resp.Send(ctx)
+	id := ctx.Param("id")
+	if id == "" {
+		NewError(400, "Bad request").Send(ctx)
+		return
+	}
+
+	if err := c.endpoint.Entity.Delete(common.EntityId(id)); err != nil {
+		code := 500
+		if err.Error() == "record not found" {
+			code = 404
+		}
+		NewError(code, err).Send(ctx)
+		return
+	}
+
+	resp := NewSuccess()
+	resp.Send(ctx)
 }
 
 // swagger:operation GET /entities/search entitySearch
@@ -371,17 +368,17 @@ func (c ControllerEntity) Delete(ctx *gin.Context) {
 //	   $ref: '#/responses/Error'
 func (c ControllerEntity) Search(ctx *gin.Context) {
 
-	//query, limit, offset := c.select2(ctx)
-	//items, _, err := c.endpoint.Entity.Search(query, limit, offset)
-	//if err != nil {
-	//	NewError(500, err).Send(ctx)
-	//	return
-	//}
-	//
-	//result := make([]*models.Entity, 0)
-	//common.Copy(&result, &items)
-	//
-	//resp := NewSuccess()
-	//resp.Item("entities", result)
-	//resp.Send(ctx)
+	query, limit, offset := c.select2(ctx)
+	items, _, err := c.endpoint.Entity.Search(query, limit, offset)
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	result := make([]*models.Entity, 0)
+	common.Copy(&result, &items, common.JsonEngine)
+
+	resp := NewSuccess()
+	resp.Item("entities", result)
+	resp.Send(ctx)
 }

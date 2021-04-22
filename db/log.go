@@ -112,12 +112,17 @@ func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuer
 func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64, err error) {
 
 	q := n.Db.Model(&Log{}).
-		Where("body LIKE ?", "%"+query+"%").
-		Order("body ASC")
+		Where("body LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("body ASC")
+
 
 	list = make([]*Log, 0)
 	err = q.Find(&list).Error

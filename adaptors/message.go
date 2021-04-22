@@ -24,13 +24,20 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IMessage interface {
+	Add(msg *m.Message) (id int64, err error)
+	fromDb(dbVer *db.Message) (ver *m.Message)
+	toDb(ver *m.Message) (dbVer *db.Message)
+}
+
 // Message ...
 type Message struct {
+	IMessage
 	table *db.Messages
 }
 
 // GetMessageAdaptor ...
-func GetMessageAdaptor(d *gorm.DB) *Message {
+func GetMessageAdaptor(d *gorm.DB) IMessage {
 	return &Message{
 		table: &db.Messages{Db: d},
 	}

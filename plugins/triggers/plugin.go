@@ -35,15 +35,15 @@ var (
 	log = common.MustGetLogger("plugins.triggers")
 )
 
-type pluginTriggers struct {
+type plugin struct {
 	isStarted *atomic.Bool
 	triggers  map[string]ITrigger
-	bus       *event_bus.EventBus
+	bus       event_bus.EventBus
 }
 
-func Register(manager *plugin_manager.PluginManager,
-	bus *event_bus.EventBus) {
-	manager.Register(&pluginTriggers{
+func Register(manager plugin_manager.PluginManager,
+	bus event_bus.EventBus) {
+	manager.Register(&plugin{
 		isStarted: atomic.NewBool(false),
 		triggers:  make(map[string]ITrigger),
 		bus:       bus,
@@ -51,7 +51,7 @@ func Register(manager *plugin_manager.PluginManager,
 	return
 }
 
-func (u *pluginTriggers) Load(service plugin_manager.IPluginManager, plugins map[string]interface{}) (err error) {
+func (u *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
 
 	if u.isStarted.Load() {
 		return
@@ -64,16 +64,16 @@ func (u *pluginTriggers) Load(service plugin_manager.IPluginManager, plugins map
 	return
 }
 
-func (u *pluginTriggers) Unload() (err error) {
+func (u *plugin) Unload() (err error) {
 
 	return
 }
 
-func (u pluginTriggers) Name() string {
+func (u plugin) Name() string {
 	return Name
 }
 
-func (u *pluginTriggers) attachTrigger() {
+func (u *plugin) attachTrigger() {
 
 	// init triggers ...
 	u.triggers[StateChangeName] = NewStateChangedTrigger(u.bus)
@@ -93,7 +93,7 @@ func (u *pluginTriggers) attachTrigger() {
 	wg.Wait()
 }
 
-func (u *pluginTriggers) GetTrigger(name string) (trigger ITrigger, err error) {
+func (u *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
 	var ok bool
 	if trigger, ok = u.triggers[name]; !ok {
 		err = fmt.Errorf("not found trigger with name(%s)", name)
@@ -101,10 +101,10 @@ func (u *pluginTriggers) GetTrigger(name string) (trigger ITrigger, err error) {
 	return
 }
 
-func (p *pluginTriggers) Type() plugin_manager.PlugableType {
+func (p *plugin) Type() plugin_manager.PlugableType {
 	return plugin_manager.PlugableBuiltIn
 }
 
-func (p *pluginTriggers) Depends() []string {
+func (p *plugin) Depends() []string {
 	return nil
 }

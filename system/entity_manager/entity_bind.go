@@ -32,10 +32,10 @@ import (
 //
 type EntityBind struct {
 	id      common.EntityId
-	manager *EntityManager
+	manager EntityManager
 }
 
-func NewEntityBind(id common.EntityId, manager *EntityManager) *EntityBind {
+func NewEntityBind(id common.EntityId, manager EntityManager) *EntityBind {
 	return &EntityBind{
 		id:      id,
 		manager: manager,

@@ -36,7 +36,7 @@ type StateChangeTrigger struct {
 	baseTrigger
 }
 
-func NewStateChangedTrigger(eventBus *event_bus.EventBus) ITrigger {
+func NewStateChangedTrigger(eventBus event_bus.EventBus) ITrigger {
 	return &StateChangeTrigger{
 		baseTrigger{
 			eventBus:     eventBus,

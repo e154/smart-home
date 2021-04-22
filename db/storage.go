@@ -71,12 +71,16 @@ func (s *Storages) Delete(name string) (err error) {
 func (s *Storages) Search(query string, limit, offset int) (list []Storage, total int64, err error) {
 
 	q := s.Db.Model(&Storage{}).
-		Where("name LIKE ?", "%"+query+"%").
-		Order("name ASC")
+		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
 
 	list = make([]Storage, 0)
 	err = q.Find(&list).Error

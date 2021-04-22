@@ -26,14 +26,22 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+type ITrigger interface {
+	DeleteByTaskId(id int64) (err error)
+	AddMultiple(items []*m.Trigger) (err error)
+	fromDb(dbVer *db.Trigger) (ver *m.Trigger)
+	toDb(ver *m.Trigger) (dbVer *db.Trigger)
+}
+
 // Trigger ...
 type Trigger struct {
+	ITrigger
 	table *db.Triggers
 	db    *gorm.DB
 }
 
 // GetTriggerAdaptor ...
-func GetTriggerAdaptor(d *gorm.DB) *Trigger {
+func GetTriggerAdaptor(d *gorm.DB) ITrigger {
 	return &Trigger{
 		table: &db.Triggers{Db: d},
 		db:    d,

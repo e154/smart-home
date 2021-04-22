@@ -26,6 +26,14 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+type IEntityState interface {
+	Add(ver *m.EntityState) (id int64, err error)
+	DeleteByEntityId(entityId common.EntityId) (err error)
+	AddMultiple(items []*m.EntityState) (err error)
+	fromDb(dbVer *db.EntityState) (ver *m.EntityState)
+	toDb(ver *m.EntityState) (dbVer *db.EntityState)
+}
+
 // EntityState ...
 type EntityState struct {
 	table *db.EntityStates
@@ -33,7 +41,7 @@ type EntityState struct {
 }
 
 // GetEntityStateAdaptor ...
-func GetEntityStateAdaptor(d *gorm.DB) *EntityState {
+func GetEntityStateAdaptor(d *gorm.DB) IEntityState {
 	return &EntityState{
 		table: &db.EntityStates{Db: d},
 		db:    d,
@@ -76,16 +84,16 @@ func (n *EntityState) AddMultiple(items []*m.EntityState) (err error) {
 
 func (n *EntityState) fromDb(dbVer *db.EntityState) (ver *m.EntityState) {
 	ver = &m.EntityState{
-		Id:            dbVer.Id,
-		Name:          dbVer.Name,
-		Description:   dbVer.Description,
-		Icon:          dbVer.Icon,
+		Id:          dbVer.Id,
+		Name:        dbVer.Name,
+		Description: dbVer.Description,
+		Icon:        dbVer.Icon,
 		//DeviceStateId: dbVer.DeviceStateId,
-		EntityId:      dbVer.EntityId,
-		ImageId:       dbVer.ImageId,
-		Style:         dbVer.Style,
-		CreatedAt:     dbVer.CreatedAt,
-		UpdatedAt:     dbVer.UpdatedAt,
+		EntityId:  dbVer.EntityId,
+		ImageId:   dbVer.ImageId,
+		Style:     dbVer.Style,
+		CreatedAt: dbVer.CreatedAt,
+		UpdatedAt: dbVer.UpdatedAt,
 	}
 
 	// image
@@ -105,14 +113,14 @@ func (n *EntityState) fromDb(dbVer *db.EntityState) (ver *m.EntityState) {
 
 func (n *EntityState) toDb(ver *m.EntityState) (dbVer *db.EntityState) {
 	dbVer = &db.EntityState{
-		Id:            ver.Id,
-		Name:          ver.Name,
-		Description:   ver.Description,
-		Icon:          ver.Icon,
+		Id:          ver.Id,
+		Name:        ver.Name,
+		Description: ver.Description,
+		Icon:        ver.Icon,
 		//DeviceStateId: ver.DeviceStateId,
-		EntityId:      ver.EntityId,
-		ImageId:       ver.ImageId,
-		Style:         ver.Style,
+		EntityId: ver.EntityId,
+		ImageId:  ver.ImageId,
+		Style:    ver.Style,
 	}
 	//if ver.DeviceState != nil && ver.DeviceState.Id != 0 {
 	//	dbVer.DeviceStateId = ver.DeviceState.Id

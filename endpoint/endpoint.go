@@ -52,11 +52,11 @@ type Endpoint struct {
 
 // NewEndpoint ...
 func NewEndpoint(adaptors *adaptors.Adaptors,
-	scriptService *scripts.ScriptService,
-	accessList *access_list.AccessListService,
-	notify *notify.Notify,
-	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
-	entityManager *entity_manager.EntityManager) *Endpoint {
+	scriptService scripts.ScriptService,
+	accessList access_list.AccessListService,
+	notify notify.Notify,
+	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
+	entityManager entity_manager.EntityManager) *Endpoint {
 	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt)
 	return &Endpoint{
 		Auth:            NewAuthEndpoint(common),

@@ -24,13 +24,23 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IStorage interface {
+	CreateOrUpdate(ver m.Storage) (err error)
+	Delete(name string) (err error)
+	Search(query string, limit, offset int) (list []m.Storage, total int64, err error)
+	GetByName(name string) (ver m.Storage, err error)
+	fromDb(dbVer db.Storage) (ver m.Storage)
+	toDb(ver m.Storage) (dbVer db.Storage)
+}
+
 // Storage ...
 type Storage struct {
+	IStorage
 	table *db.Storages
 }
 
 // GetStorageAdaptor ...
-func GetStorageAdaptor(d *gorm.DB) *Storage {
+func GetStorageAdaptor(d *gorm.DB) IStorage {
 	return &Storage{
 		table: &db.Storages{Db: d},
 	}

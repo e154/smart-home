@@ -26,9 +26,9 @@ import (
 	"go.uber.org/atomic"
 )
 
-func NewCondition(scriptService *scripts.ScriptService,
+func NewCondition(scriptService scripts.ScriptService,
 	model *m.Condition,
-	entityManager *entity_manager.EntityManager) (condition *Condition, err error) {
+	entityManager entity_manager.EntityManager) (condition *Condition, err error) {
 
 	var scriptEngine *scripts.Engine
 	if scriptEngine, err = scriptService.NewEngine(model.Script); err != nil {
@@ -57,7 +57,7 @@ type Condition struct {
 	inProcess     atomic.Bool
 	lastStatus    atomic.Bool
 	scriptEngine  *scripts.Engine
-	entityManager *entity_manager.EntityManager
+	entityManager entity_manager.EntityManager
 }
 
 func (r *Condition) Check(ctx context.Context) (result string, err error) {

@@ -24,7 +24,7 @@ import (
 )
 
 type baseTrigger struct {
-	eventBus     *event_bus.EventBus
+	eventBus     event_bus.EventBus
 	msgQueue     message_queue.MessageQueue
 	functionName string
 	name         string

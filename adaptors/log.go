@@ -25,14 +25,26 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+type ILog interface {
+	Add(ver *m.Log) (id int64, err error)
+	AddMultiple(items []*m.Log) (err error)
+	GetById(verId int64) (ver *m.Log, err error)
+	Delete(verId int64) (err error)
+	List(limit, offset int64, orderBy, sort string, queryObj *m.LogQuery) (list []*m.Log, total int64, err error)
+	Search(query string, limit, offset int) (list []*m.Log, total int64, err error)
+	fromDb(dbVer *db.Log) (ver *m.Log)
+	toDb(ver *m.Log) (dbVer *db.Log)
+}
+
 // Log ...
 type Log struct {
+	ILog
 	table *db.Logs
 	db    *gorm.DB
 }
 
 // GetLogAdaptor ...
-func GetLogAdaptor(d *gorm.DB) *Log {
+func GetLogAdaptor(d *gorm.DB) ILog {
 	return &Log{
 		table: &db.Logs{Db: d},
 		db:    d,

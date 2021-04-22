@@ -29,18 +29,18 @@ import (
 // CommonEndpoint ...
 type CommonEndpoint struct {
 	adaptors      *adaptors.Adaptors
-	accessList    *access_list.AccessListService
-	scriptService *scripts.ScriptService
-	notify        *notify.Notify
-	zigbee2mqtt   *zigbee2mqtt.Zigbee2mqtt
+	accessList    access_list.AccessListService
+	scriptService scripts.ScriptService
+	notify        notify.Notify
+	zigbee2mqtt   zigbee2mqtt.Zigbee2mqtt
 }
 
 // NewCommonEndpoint ...
 func NewCommonEndpoint(adaptors *adaptors.Adaptors,
-	accessList *access_list.AccessListService,
-	scriptService *scripts.ScriptService,
-	notify *notify.Notify,
-	zigbee2mqtt *zigbee2mqtt.Zigbee2mqtt,
+	accessList access_list.AccessListService,
+	scriptService scripts.ScriptService,
+	notify notify.Notify,
+	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 ) *CommonEndpoint {
 	return &CommonEndpoint{
 		adaptors:      adaptors,

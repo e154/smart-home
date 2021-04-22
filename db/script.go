@@ -103,12 +103,16 @@ func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Scrip
 func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total int64, err error) {
 
 	q := n.Db.Model(&Script{}).
-		Where("name LIKE ?", "%"+query+"%").
-		Order("name ASC")
+		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
 
 	list = make([]*Script, 0)
 	err = q.Find(&list).Error

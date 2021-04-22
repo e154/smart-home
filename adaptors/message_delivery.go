@@ -24,6 +24,17 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IMessageDelivery interface {
+	Add(msg *m.MessageDelivery) (id int64, err error)
+	SetStatus(msg *m.MessageDelivery) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.MessageDelivery, total int64, err error)
+	GetAllUncompleted(limit, offset int64) (list []*m.MessageDelivery, total int64, err error)
+	Delete(id int64) (err error)
+	GetById(id int64) (ver *m.MessageDelivery, err error)
+	fromDb(dbVer *db.MessageDelivery) (ver *m.MessageDelivery)
+	toDb(ver *m.MessageDelivery) (dbVer *db.MessageDelivery)
+}
+
 // MessageDelivery ...
 type MessageDelivery struct {
 	table *db.MessageDeliveries
@@ -31,7 +42,7 @@ type MessageDelivery struct {
 }
 
 // GetMessageDeliveryAdaptor ...
-func GetMessageDeliveryAdaptor(d *gorm.DB) *MessageDelivery {
+func GetMessageDeliveryAdaptor(d *gorm.DB) IMessageDelivery {
 	return &MessageDelivery{
 		table: &db.MessageDeliveries{Db: d},
 		db:    d,

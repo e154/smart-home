@@ -109,12 +109,17 @@ func (n *Metrics) List(limit, offset int64, orderBy, sort string) (list []Metric
 func (n *Metrics) Search(query string, limit, offset int) (list []Metric, total int64, err error) {
 
 	q := n.Db.Model(&Metric{}).
-		Where("name LIKE ?", "%"+query+"%").
-		Order("name ASC")
+		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		return
 	}
+
+	q = q.
+		Limit(limit).
+		Offset(offset).
+		Order("name ASC")
+
 
 	list = make([]Metric, 0)
 	err = q.Find(&list).Error

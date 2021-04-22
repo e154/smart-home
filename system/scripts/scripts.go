@@ -31,17 +31,23 @@ var (
 	log = common.MustGetLogger("scripts")
 )
 
-// ScriptService ...
-type ScriptService struct {
+type ScriptService interface {
+	NewEngine(s *m.Script) (*Engine, error)
+	PushStruct(name string, s interface{})
+	PushFunctions(name string, s interface{})
+}
+
+// scriptService ...
+type scriptService struct {
 	cfg        *config.AppConfig
 	functions  *Pull
 	structures *Pull
 }
 
 // NewScriptService ...
-func NewScriptService(cfg *config.AppConfig, storage *storage.Storage) (service *ScriptService) {
+func NewScriptService(cfg *config.AppConfig, storage *storage.Storage) (service ScriptService) {
 
-	service = &ScriptService{
+	service = &scriptService{
 		cfg:        cfg,
 		functions:  NewPull(),
 		structures: NewPull(),
@@ -59,18 +65,18 @@ func NewScriptService(cfg *config.AppConfig, storage *storage.Storage) (service 
 }
 
 // NewEngine ...
-func (service ScriptService) NewEngine(s *m.Script) (*Engine, error) {
+func (service *scriptService) NewEngine(s *m.Script) (*Engine, error) {
 	return NewEngine(s, service.structures, service.functions)
 }
 
 // PushStruct ...
-func (service *ScriptService) PushStruct(name string, s interface{}) {
+func (service *scriptService) PushStruct(name string, s interface{}) {
 	log.Infof("register structure: \"%s\"", name)
 	service.structures.Add(name, s)
 }
 
 // PushFunctions ...
-func (service *ScriptService) PushFunctions(name string, s interface{}) {
+func (service *scriptService) PushFunctions(name string, s interface{}) {
 	log.Infof("register function: \"%s\"", name)
 	service.functions.Add(name, s)
 }

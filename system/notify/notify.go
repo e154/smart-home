@@ -34,15 +34,26 @@ var (
 	log = common.MustGetLogger("notify")
 )
 
-// Notify ...
-type Notify struct {
+type Notify interface {
+	Shutdown() error
+	Start() (err error)
+	Restart()
+	GetCfg() *Config
+	UpdateCfg(cfg *Config) error
+	Stat() *NotifyStat
+	Repeat(msg *m.MessageDelivery)
+	Send(msg interface{})
+}
+
+// notify ...
+type notify struct {
 	adaptor       *adaptors.Adaptors
-	cfg           *NotifyConfig
+	cfg           *Config
 	appCfg        *config.AppConfig
 	stat          *NotifyStat
 	isStarted     bool
 	stopPrecess   bool
-	scriptService *scripts.ScriptService
+	scriptService scripts.ScriptService
 	ticker        *time.Ticker
 	workers       []*Worker
 	queue         chan interface{}
@@ -54,14 +65,14 @@ func NewNotify(
 	lc fx.Lifecycle,
 	adaptor *adaptors.Adaptors,
 	appCfg *config.AppConfig,
-	scriptService *scripts.ScriptService) *Notify {
+	scriptService scripts.ScriptService) Notify {
 
-	notify := &Notify{
+	notify := &notify{
 		adaptor:   adaptor,
 		appCfg:    appCfg,
 		queue:     make(chan interface{}),
 		stopQueue: make(chan struct{}),
-		cfg:       NewNotifyConfig(adaptor),
+		cfg:       NewConfig(adaptor),
 	}
 
 	lc.Append(fx.Hook{
@@ -85,14 +96,14 @@ func NewNotify(
 }
 
 // Shutdown ...
-func (n *Notify) Shutdown() error {
+func (n *notify) Shutdown() error {
 	n.stop()
 	close(n.stopQueue)
 	return nil
 }
 
 // Start ...
-func (n *Notify) Start() (err error) {
+func (n *notify) Start() (err error) {
 
 	if n.isStarted {
 		return
@@ -148,7 +159,7 @@ func (n *Notify) Start() (err error) {
 	return
 }
 
-func (n *Notify) stop() {
+func (n *notify) stop() {
 	if n.stopPrecess {
 		return
 	}
@@ -178,13 +189,13 @@ func (n *Notify) stop() {
 }
 
 // Restart ...
-func (n *Notify) Restart() {
+func (n *notify) Restart() {
 	n.stop()
 	n.Start()
 }
 
 // Send ...
-func (n Notify) Send(msg interface{}) {
+func (n notify) Send(msg interface{}) {
 	if !n.isStarted && n.stopPrecess {
 		return
 	}
@@ -197,7 +208,7 @@ func (n Notify) Send(msg interface{}) {
 	}
 }
 
-func (n *Notify) save(t IMessage) {
+func (n *notify) save(t IMessage) {
 
 	addresses, message := t.Save()
 
@@ -223,7 +234,7 @@ func (n *Notify) save(t IMessage) {
 	}
 }
 
-func (n *Notify) read() {
+func (n *notify) read() {
 
 	messageDeliveries, _, err := n.adaptor.MessageDelivery.GetAllUncompleted(99, 0)
 	if err != nil {
@@ -235,7 +246,7 @@ func (n *Notify) read() {
 	}
 }
 
-func (n *Notify) getCfg() {
+func (n *notify) getCfg() {
 
 	v, err := n.adaptor.Variable.GetByName(notifyVarName)
 	if err != nil {
@@ -243,30 +254,30 @@ func (n *Notify) getCfg() {
 		return
 	}
 
-	n.cfg = &NotifyConfig{}
+	n.cfg = &Config{}
 	if err = json.Unmarshal([]byte(v.Value), n.cfg); err != nil {
 		log.Error(err.Error())
 	}
 }
 
 // GetCfg ...
-func (n *Notify) GetCfg() *NotifyConfig {
+func (n *notify) GetCfg() *Config {
 	return n.cfg
 }
 
 // UpdateCfg ...
-func (n *Notify) UpdateCfg(cfg *NotifyConfig) error {
+func (n *notify) UpdateCfg(cfg *Config) error {
 	cfg.adaptor = n.adaptor
 	n.cfg = cfg
 	return n.cfg.Update()
 }
 
 // Stat ...
-func (n *Notify) Stat() *NotifyStat {
+func (n *notify) Stat() *NotifyStat {
 	return n.stat
 }
 
-func (n *Notify) updateStat() {
+func (n *notify) updateStat() {
 
 	stat := &NotifyStat{
 		Workers: len(n.workers),
@@ -298,7 +309,7 @@ func (n *Notify) updateStat() {
 }
 
 // Repeat ...
-func (n *Notify) Repeat(msg *m.MessageDelivery) {
+func (n *notify) Repeat(msg *m.MessageDelivery) {
 	if !n.isStarted && n.stopPrecess {
 		return
 	}

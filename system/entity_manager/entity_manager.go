@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugin_manager"
@@ -38,22 +37,22 @@ var (
 	log = common.MustGetLogger("entity.manager")
 )
 
-type EntityManager struct {
-	eventBus      *event_bus.EventBus
+type entityManager struct {
+	eventBus      event_bus.EventBus
 	adaptors      *adaptors.Adaptors
-	scripts       *scripts.ScriptService
-	pluginManager *plugin_manager.PluginManager
+	scripts       scripts.ScriptService
+	pluginManager plugin_manager.PluginManager
 	lock          *sync.Mutex
 	actors        map[common.EntityId]*actorInfo
 	quit          chan struct{}
 }
 
 func NewEntityManager(lc fx.Lifecycle,
-	eventBus *event_bus.EventBus,
+	eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors,
-	scripts *scripts.ScriptService,
-	pluginManager *plugin_manager.PluginManager) *EntityManager {
-	manager := &EntityManager{
+	scripts scripts.ScriptService,
+	pluginManager plugin_manager.PluginManager) EntityManager {
+	manager := &entityManager{
 		eventBus:      eventBus,
 		adaptors:      adaptors,
 		scripts:       scripts,
@@ -71,7 +70,8 @@ func NewEntityManager(lc fx.Lifecycle,
 	return manager
 }
 
-func (e *EntityManager) LoadEntities() {
+// LoadEntities ...
+func (e *entityManager) LoadEntities() {
 
 	var page int64
 	var entities []*m.Entity
@@ -87,7 +87,7 @@ LOOP:
 
 	// add entities from database
 	for _, entity := range entities {
-		if err := e.AddEntity(entity); err != nil {
+		if err := e.Add(entity); err != nil {
 			log.Warn(err.Error())
 		}
 	}
@@ -98,13 +98,13 @@ LOOP:
 	}
 
 	// scripts
-	e.scripts.PushStruct("EntityManager", NewEntityManagerBind(e))
+	e.scripts.PushStruct("entityManager", NewEntityManagerBind(e))
 
 	return
 }
 
 // Shutdown ...
-func (e *EntityManager) Shutdown() {
+func (e *entityManager) Shutdown() {
 	log.Info("Shutdown")
 
 	e.lock.Lock()
@@ -118,7 +118,7 @@ func (e *EntityManager) Shutdown() {
 }
 
 // SetMetric ...
-func (e *EntityManager) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
+func (e *entityManager) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
 
 	e.lock.Lock()
 	defer e.lock.Unlock()
@@ -153,7 +153,7 @@ func (e *EntityManager) SetMetric(id common.EntityId, name string, value map[str
 }
 
 // SetState ...
-func (e *EntityManager) SetState(id common.EntityId, params EntityStateParams) {
+func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
@@ -171,7 +171,7 @@ func (e *EntityManager) SetState(id common.EntityId, params EntityStateParams) {
 }
 
 // GetEntityById ...
-func (e *EntityManager) GetEntityById(id common.EntityId) (entity Entity, err error) {
+func (e *entityManager) GetEntityById(id common.EntityId) (entity Entity, err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
@@ -184,7 +184,7 @@ func (e *EntityManager) GetEntityById(id common.EntityId) (entity Entity, err er
 }
 
 // GetActorById ...
-func (e *EntityManager) GetActorById(id common.EntityId) (actor IActor, err error) {
+func (e *entityManager) GetActorById(id common.EntityId) (actor PluginActor, err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
@@ -197,7 +197,7 @@ func (e *EntityManager) GetActorById(id common.EntityId) (actor IActor, err erro
 }
 
 // List ...
-func (e *EntityManager) List() (entities []Entity, err error) {
+func (e *entityManager) List() (entities []Entity, err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
@@ -227,40 +227,50 @@ func (e *EntityManager) List() (entities []Entity, err error) {
 }
 
 // Spawn ...
-func (e *EntityManager) Spawn(constructor IConstructor) (actor IActor) {
+func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
 	actor = constructor(e)
 	info := actor.Info()
 
-	if _, ok := e.actors[info.Id]; ok {
-		log.Warnf("info.Id %v exist", info.Id)
+	var entityId = info.Id
+
+	if _, ok := e.actors[entityId]; ok {
+		log.Warnf("entityId %v exist", entityId)
 		return
 	}
 
 	// todo fix
 	queue := make(chan Message, 99)
 
-	e.actors[info.Id] = &actorInfo{
+	e.actors[entityId] = &actorInfo{
 		Actor:    actor,
 		Queue:    queue,
 		OldState: GetEventState(actor),
 	}
 
-	log.Infof("Loaded %v", info.Id)
+	log.Infof("Loaded %v", entityId)
 
 	//e.metric.Update(metrics.EntityAdd{Num: 1})
 
 	go func() {
 		defer func() {
 
+			log.Infof("Unload %v", entityId)
+
 			e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveEntity{
 				Type:     info.Type,
-				EntityId: info.Id,
+				EntityId: entityId,
 			})
 
-			actor.Destroy()
+			var err error
+			var plugin plugin_manager.CrudActor
+			if plugin, err = e.getCrudActor(entityId); err != nil {
+				return
+			}
+			err = plugin.RemoveActor(entityId)
+
 			//e.metric.Update(metrics.EntityDelete{Num: 1})
 		}()
 
@@ -269,42 +279,31 @@ func (e *EntityManager) Spawn(constructor IConstructor) (actor IActor) {
 		}
 	}()
 
-	go func() {
-		e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedNewEntity{
-			Type:       info.Type,
-			EntityId:   info.Id,
-			Attributes: actor.Attributes(),
-		})
-	}()
-
 	attr := actor.Attributes()
-	signature := attr.Signature()
+
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedNewEntity{
+		Type:       info.Type,
+		EntityId:   entityId,
+		Attributes: attr,
+	})
+
 	e.adaptors.Entity.Add(&m.Entity{
-		Id:          info.Id,
-		Type:        info.Type,
+		Id:          entityId,
 		Description: info.Description,
-		Attributes:  signature,
+		Type:        info.Type,
+		Icon:        info.Icon,
+		Area:        info.Area,
+		Hidden:      info.Hidde,
+		AutoLoad:    info.AutoLoad,
+		ParentId:    info.ParentId,
+		Attributes:  attr.Signature(),
 	})
 
 	return
 }
 
-// Destroy ...
-func (e *EntityManager) Destroy(id common.EntityId) {
-	e.lock.Lock()
-	defer e.lock.Unlock()
-
-	if actorInfo, ok := e.actors[id]; ok {
-		close(actorInfo.Queue)
-	} else {
-		return
-	}
-
-	delete(e.actors, id)
-}
-
 // Send ...
-func (e *EntityManager) Send(message Message) error {
+func (e *entityManager) Send(message Message) error {
 
 	switch v := message.Payload.(type) {
 	case MessageRequestState:
@@ -387,7 +386,7 @@ func (e *EntityManager) Send(message Message) error {
 }
 
 // Broadcast ...
-func (e *EntityManager) Broadcast(message Message) {
+func (e *entityManager) Broadcast(message Message) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
@@ -397,7 +396,7 @@ func (e *EntityManager) Broadcast(message Message) {
 }
 
 // CallAction ...
-func (e *EntityManager) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
+func (e *entityManager) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
 
 	go e.Send(Message{
 		To: id,
@@ -409,7 +408,7 @@ func (e *EntityManager) CallAction(id common.EntityId, action string, arg map[st
 }
 
 // CallScene ...
-func (e *EntityManager) CallScene(id common.EntityId, arg map[string]interface{}) {
+func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}) {
 
 	go e.Send(Message{
 		To: id,
@@ -419,31 +418,69 @@ func (e *EntityManager) CallScene(id common.EntityId, arg map[string]interface{}
 	})
 }
 
-// AddEntity ...
-func (e *EntityManager) AddEntity(entity *m.Entity) (err error) {
-
-	var plugin plugin_manager.IPlugable
-	if plugin, err = e.pluginManager.GetPlugin(entity.Type.String()); err != nil {
+func (e *entityManager) getCrudActor(entityId common.EntityId) (result plugin_manager.CrudActor, err error) {
+	var plugin plugin_manager.Plugable
+	if plugin, err = e.pluginManager.GetPlugin(entityId.Type().String()); err != nil {
 		return
 	}
 
-	if crud, ok := plugin.(plugin_manager.ICrudEntity); ok {
-		err = crud.AddOrUpdateEntity(entity)
+	var ok bool
+	if result, ok = plugin.(plugin_manager.CrudActor); ok {
+		return
 		//...
 	} else {
-		log.Debugf("cannot cast to the desired type plugin '%s' to plugin_manager.ICrudEntity", plugin.Name())
-		debug.Println(entity)
+		err = fmt.Errorf("cannot cast to the desired type plugin '%s' to plugin_manager.CrudActor", plugin.Name())
 	}
+	return
+}
+
+// Add ...
+func (e *entityManager) Add(entity *m.Entity) (err error) {
+
+	var plugin plugin_manager.CrudActor
+	if plugin, err = e.getCrudActor(entity.Id); err != nil {
+		return
+	}
+
+	err = plugin.AddOrUpdateActor(entity)
 
 	return
 }
 
-// RemoveByEntityId ...
-func (e *EntityManager) RemoveByEntityId(id common.EntityId) {
-	e.Destroy(id)
+// Update ...
+func (e *entityManager) Update(entity *m.Entity) (err error) {
+
+	e.unsafeRemove(entity.Id)
+
+	//todo fix
+	time.Sleep(time.Millisecond * 500)
+
+	e.Add(entity)
+
+	return
 }
 
-func GetEventState(actor IActor) (eventState event_bus.EventEntityState) {
+// Remove ...
+func (e *entityManager) Remove(id common.EntityId) {
+	e.lock.Lock()
+	defer e.lock.Unlock()
+
+	e.unsafeRemove(id)
+}
+
+func (e *entityManager) unsafeRemove(id common.EntityId) {
+
+	if actorInfo, ok := e.actors[id]; ok {
+		close(actorInfo.Queue)
+	} else {
+		return
+	}
+
+	delete(e.actors, id)
+}
+
+// GetEventState ...
+func GetEventState(actor PluginActor) (eventState event_bus.EventEntityState) {
 
 	attrs := actor.Attributes()
 

@@ -37,6 +37,10 @@ var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
 // ErrPrincipalDisabled ...
 var ErrPrincipalDisabled = fmt.Errorf("principal disabled")
 
+type MqttAuthenticator interface {
+	Authenticate(login string, pass interface{}) (err error)
+}
+
 // Authenticator ...
 type Authenticator struct {
 	adaptors *adaptors.Adaptors
@@ -44,7 +48,7 @@ type Authenticator struct {
 }
 
 // NewAuthenticator ...
-func NewAuthenticator(adaptors *adaptors.Adaptors) *Authenticator {
+func NewAuthenticator(adaptors *adaptors.Adaptors) MqttAuthenticator {
 	bm, _ := cache.NewCache("memory", fmt.Sprintf(`{"interval":%d}`, time.Second*60))
 	return &Authenticator{
 		adaptors: adaptors,

@@ -29,11 +29,11 @@ import (
 // EntityEndpoint ...
 type EntityEndpoint struct {
 	*CommonEndpoint
-	entityManager *entity_manager.EntityManager
+	entityManager entity_manager.EntityManager
 }
 
 // NewEntityEndpoint ...
-func NewEntityEndpoint(common *CommonEndpoint, entityManager *entity_manager.EntityManager) *EntityEndpoint {
+func NewEntityEndpoint(common *CommonEndpoint, entityManager entity_manager.EntityManager) *EntityEndpoint {
 	return &EntityEndpoint{
 		CommonEndpoint: common,
 		entityManager:  entityManager,
@@ -56,7 +56,7 @@ func (n *EntityEndpoint) Add(entity *m.Entity) (result *m.Entity, errs []*valida
 		return
 	}
 
-	err = n.entityManager.AddEntity(entity)
+	err = n.entityManager.Add(entity)
 
 	return
 }
@@ -89,11 +89,11 @@ func (n *EntityEndpoint) Update(params *m.Entity) (result *m.Entity, errs []*val
 		return
 	}
 
-	if entity, err = n.adaptors.Entity.GetById(entity.Id); err != nil {
+	if result, err = n.adaptors.Entity.GetById(entity.Id); err != nil {
 		return
 	}
 
-	err = n.entityManager.AddEntity(entity)
+	err = n.entityManager.Update(entity)
 
 	return
 }
@@ -121,7 +121,7 @@ func (n *EntityEndpoint) Delete(id common.EntityId) (err error) {
 		return
 	}
 
-	n.entityManager.Destroy(id)
+	n.entityManager.Remove(id)
 
 	return
 }

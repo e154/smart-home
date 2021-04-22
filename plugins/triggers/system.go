@@ -37,7 +37,7 @@ type SystemTrigger struct {
 	baseTrigger
 }
 
-func NewSystemTrigger(eventBus *event_bus.EventBus) ITrigger {
+func NewSystemTrigger(eventBus event_bus.EventBus) ITrigger {
 	return &SystemTrigger{
 		baseTrigger{
 			eventBus:     eventBus,

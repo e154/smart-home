@@ -30,7 +30,7 @@ import (
 // Trigger ...
 type Trigger struct {
 	scriptEngine  *scripts.Engine
-	scriptService *scripts.ScriptService
+	scriptService scripts.ScriptService
 	lastStatus    atomic.Bool
 	model         *m.Trigger
 	queue         chan interface{}
@@ -40,7 +40,7 @@ type Trigger struct {
 }
 
 // NewTrigger ...
-func NewTrigger(scriptService *scripts.ScriptService,
+func NewTrigger(scriptService scripts.ScriptService,
 	model *m.Trigger,
 	triggerPLugin triggers.ITrigger) (tr *Trigger, err error) {
 

@@ -24,14 +24,26 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type IMapImage interface {
+	Add(ver *m.MapImage) (id int64, err error)
+	GetById(mapId int64) (ver *m.MapImage, err error)
+	Update(ver *m.MapImage) (err error)
+	Sort(ver *m.MapImage) (err error)
+	Delete(mapId int64) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []*m.MapImage, total int64, err error)
+	fromDb(dbVer *db.MapImage) (ver *m.MapImage)
+	toDb(ver *m.MapImage) (dbVer *db.MapImage)
+}
+
 // MapImage ...
 type MapImage struct {
+	IMapImage
 	table *db.MapImages
 	db    *gorm.DB
 }
 
 // GetMapImageAdaptor ...
-func GetMapImageAdaptor(d *gorm.DB) *MapImage {
+func GetMapImageAdaptor(d *gorm.DB) IMapImage {
 	return &MapImage{
 		table: &db.MapImages{Db: d},
 		db:    d,
