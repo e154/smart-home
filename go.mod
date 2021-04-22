@@ -3,7 +3,7 @@ module github.com/e154/smart-home
 go 1.16
 
 require (
-	github.com/DrmagicE/gmqtt v0.3.0
+	github.com/DrmagicE/gmqtt v0.3.1
 	github.com/Masterminds/semver v1.5.0
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
