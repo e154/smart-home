@@ -16,16 +16,12 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package management
+package models
 
-import (
-	"container/list"
-	"errors"
-	"time"
-)
+import "time"
 
-// ClientInfo represents the client information
-type ClientInfo struct {
+// swagger:model
+type MqttClient struct {
 	ClientID       string    `json:"client_id"`
 	Username       string    `json:"username"`
 	Password       string    `json:"password"`
@@ -42,8 +38,8 @@ type ClientInfo struct {
 	DisconnectedAt time.Time `json:"disconnected_at"`
 }
 
-// SessionInfo represents the session information
-type SessionInfo struct {
+// swagger:model
+type MqttSession struct {
 	ClientID              string    `json:"client_id"`
 	Status                string    `json:"status"`
 	CleanSession          bool      `json:"clean_session"`
@@ -64,18 +60,18 @@ type SessionInfo struct {
 	DisconnectedAt        time.Time `json:"disconnected_at"`
 }
 
-// SubscriptionInfo represents the subscription information
-type SubscriptionInfo struct {
+// swagger:model
+type MqttSubscription struct {
 	ClientID string    `json:"client_id"`
 	Qos      uint8     `json:"qos"`
 	Name     string    `json:"name"`
 	At       time.Time `json:"at"`
 }
 
-// ErrNotFound ...
-var ErrNotFound = errors.New("not found")
-
-type quickList struct {
-	index map[string]*list.Element
-	rows  *list.List
+// swagger:model
+type NewMqttPublish struct {
+	Topic   string `json:"topic"`
+	Qos     int    `json:"qos"`
+	Payload []byte `json:"payload"`
+	Retain  bool   `json:"retain"`
 }

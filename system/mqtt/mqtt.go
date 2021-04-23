@@ -23,11 +23,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
+	cfg "github.com/DrmagicE/gmqtt/config"
 	_ "github.com/DrmagicE/gmqtt/persistence"
 	"github.com/DrmagicE/gmqtt/pkg/codes"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/DrmagicE/gmqtt/server"
 	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
+	"github.com/DrmagicE/gmqtt/plugin/admin"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/logging"
@@ -54,7 +56,7 @@ type Mqtt struct {
 	metric        *metrics.MetricManager
 	clientsLock   *sync.Mutex
 	clients       map[string]MqttCli
-	//management     *management.Management
+	//admin         *admin.Admin
 }
 
 // NewMqtt ...
@@ -105,10 +107,13 @@ func (m *Mqtt) Start() {
 		log.Error(err.Error())
 	}
 
-	//m.management = management.New()
+	//m.admin = &admin.Admin{}
+
+	ad, _ := admin.New(cfg.DefaultConfig())
 
 	options := []server.Options{
 		server.WithTCPListener(ln),
+		server.WithPlugin(ad),
 		server.WithHook(server.Hooks{
 			OnBasicAuth:  m.onBasicAuth,
 			OnMsgArrived: m.onMsgArrived,
@@ -165,9 +170,10 @@ func (m *Mqtt) onBasicAuth(ctx context.Context, client server.Client, req *serve
 }
 
 // Management ...
-//func (m *Mqtt) Management() IManagement {
-//	return m.management
-//}
+func (m *Mqtt) Admin() Admin {
+	//return m.admin
+	return nil
+}
 
 // Publish ...
 func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (err error) {

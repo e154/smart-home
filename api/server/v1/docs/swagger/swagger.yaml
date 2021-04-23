@@ -535,6 +535,147 @@ definitions:
         x-go-name: Translate
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MqttClient:
+    properties:
+      clean_session:
+        type: boolean
+        x-go-name: CleanSession
+      client_id:
+        type: string
+        x-go-name: ClientID
+      connected_at:
+        format: date-time
+        type: string
+        x-go-name: ConnectedAt
+      disconnected_at:
+        format: date-time
+        type: string
+        x-go-name: DisconnectedAt
+      keep_alive:
+        format: uint16
+        type: integer
+        x-go-name: KeepAlive
+      local_addr:
+        type: string
+        x-go-name: LocalAddr
+      password:
+        type: string
+        x-go-name: Password
+      remote_addr:
+        type: string
+        x-go-name: RemoteAddr
+      username:
+        type: string
+        x-go-name: Username
+      will_flag:
+        type: boolean
+        x-go-name: WillFlag
+      will_payload:
+        type: string
+        x-go-name: WillPayload
+      will_qos:
+        format: uint8
+        type: integer
+        x-go-name: WillQos
+      will_retain:
+        type: boolean
+        x-go-name: WillRetain
+      will_topic:
+        type: string
+        x-go-name: WillTopic
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MqttSession:
+    properties:
+      await_rel_len:
+        format: uint64
+        type: integer
+        x-go-name: AwaitRelLen
+      clean_session:
+        type: boolean
+        x-go-name: CleanSession
+      client_id:
+        type: string
+        x-go-name: ClientID
+      connected_at:
+        format: date-time
+        type: string
+        x-go-name: ConnectedAt
+      disconnected_at:
+        format: date-time
+        type: string
+        x-go-name: DisconnectedAt
+      inflight_len:
+        format: uint64
+        type: integer
+        x-go-name: InflightLen
+      max_await_rel:
+        format: int64
+        type: integer
+        x-go-name: MaxAwaitRel
+      max_inflight:
+        format: int64
+        type: integer
+        x-go-name: MaxInflight
+      max_msg_queue:
+        format: int64
+        type: integer
+        x-go-name: MaxMsgQueue
+      msg_queue_len:
+        format: uint64
+        type: integer
+        x-go-name: MsgQueueLen
+      qos0_msg_delivered_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos0MsgDeliveredTotal
+      qos0_msg_dropped_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos0MsgDroppedTotal
+      qos1_msg_delivered_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos1MsgDeliveredTotal
+      qos1_msg_dropped_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos1MsgDroppedTotal
+      qos2_msg_delivered_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos2MsgDeliveredTotal
+      qos2_msg_dropped_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos2MsgDroppedTotal
+      status:
+        type: string
+        x-go-name: Status
+      subscriptions:
+        format: uint64
+        type: integer
+        x-go-name: Subscriptions
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MqttSubscription:
+    properties:
+      at:
+        format: date-time
+        type: string
+        x-go-name: At
+      client_id:
+        type: string
+        x-go-name: ClientID
+      name:
+        type: string
+        x-go-name: Name
+      qos:
+        format: uint8
+        type: integer
+        x-go-name: Qos
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewArea:
     properties:
       description:
@@ -704,6 +845,26 @@ definitions:
       type:
         type: string
         x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewMqttPublish:
+    properties:
+      payload:
+        items:
+          format: uint8
+          type: integer
+        type: array
+        x-go-name: Payload
+      qos:
+        format: int64
+        type: integer
+        x-go-name: Qos
+      retain:
+        type: boolean
+        x-go-name: Retain
+      topic:
+        type: string
+        x-go-name: Topic
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewNode:
@@ -1228,9 +1389,6 @@ definitions:
       icon:
         type: string
         x-go-name: Icon
-      id:
-        type: string
-        x-go-name: Id
       image:
         $ref: '#/definitions/Image'
       metrics:
@@ -2046,7 +2204,7 @@ paths:
         name: entity
         required: true
         schema:
-          $ref: '#/definitions/UpdateEntity'
+          $ref: '#/definitions/Update'
           type: object
       responses:
         "200":
@@ -2419,6 +2577,278 @@ paths:
       summary: search log
       tags:
       - log
+  /mqtt/client/{id}:
+    delete:
+      operationId: mqttCloseClient
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: close client
+      tags:
+      - mqtt
+    get:
+      operationId: mqttClientGetById
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MqttClient'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get client by ID
+      tags:
+      - mqtt
+  /mqtt/client/{id}/session:
+    get:
+      operationId: mqttClientGetById
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MqttSession'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get session by client ID
+      tags:
+      - mqtt
+  /mqtt/client/{id}/subscriptions:
+    get:
+      operationId: mqttSubscriptionList
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MqttSubscriptionList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get subscription list
+      tags:
+      - mqtt
+  /mqtt/client/{id}/topic:
+    delete:
+      operationId: mqttUnsubscribeTopic
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: topic
+        in: query
+        name: topic
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete mqtt by id
+      tags:
+      - mqtt
+  /mqtt/clients:
+    get:
+      operationId: mqttClientList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MqttClientList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get client list
+      tags:
+      - mqtt
+  /mqtt/publish:
+    post:
+      operationId: mqttPublish
+      parameters:
+      - description: publish params
+        in: body
+        name: mqtt
+        required: true
+        schema:
+          $ref: '#/definitions/NewMqttPublish'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: publish
+      tags:
+      - mqtt
+  /mqtt/search_topic:
+    get:
+      operationId: mqttSearchTopic
+      parameters:
+      - description: query
+        in: query
+        name: query
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MqttSearchSubscriptionResult'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: search mqtt topic
+      tags:
+      - mqtt
+  /mqtt/sessions:
+    get:
+      operationId: mqttSessionList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MqttSessionList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get session list
+      tags:
+      - mqtt
   /node:
     post:
       operationId: nodeAdd
@@ -4491,6 +4921,94 @@ responses:
               type: integer
               x-go-name: Limit
             objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MqttClientList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MqttClient'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MqttSearchSubscriptionResult:
+    description: ""
+    schema:
+      properties:
+        subscriptions:
+          items:
+            $ref: '#/definitions/MqttSubscription'
+          type: array
+          x-go-name: Subscriptions
+      type: object
+  MqttSessionList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MqttSession'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MqttSubscriptionList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MqttSubscription'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
               format: int64
               type: integer
               x-go-name: ObjectCount

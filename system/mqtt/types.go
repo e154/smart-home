@@ -25,19 +25,19 @@ import (
 	"github.com/DrmagicE/gmqtt/server"
 )
 
-// IManagement ...
-//type IManagement interface {
-//	GetClients(limit, offset int) (list []*management.ClientInfo, total int, err error)
-//	GetClient(clientId string) (client *management.ClientInfo, err error)
-//	GetSessions(limit, offset int) (list []*management.SessionInfo, total int, err error)
-//	GetSession(clientId string) (session *management.SessionInfo, err error)
-//	GetSubscriptions(clientId string, limit, offset int) (list []*management.SubscriptionInfo, total int, err error)
-//	Subscribe(clientId, topic string, qos int) (err error)
-//	Unsubscribe(clientId, topic string) (err error)
-//	Publish(topic string, qos int, payload []byte, retain bool) (err error)
-//	CloseClient(clientId string) (err error)
-//	SearchTopic(query string) (result []*management.SubscriptionInfo, err error)
-//}
+// Admin ...
+type Admin interface {
+	GetClients(_page, _pageSize uint32) (clients, total interface{}, err error)
+	//GetClient(clientId string) (client *management.ClientInfo, err error)
+	//GetSessions(limit, offset int) (list []*management.SessionInfo, total int, err error)
+	//GetSession(clientId string) (session *management.SessionInfo, err error)
+	//GetSubscriptions(clientId string, limit, offset int) (list []*management.SubscriptionInfo, total int, err error)
+	//Subscribe(clientId, topic string, qos int) (err error)
+	//Unsubscribe(clientId, topic string) (err error)
+	//Publish(topic string, qos int, payload []byte, retain bool) (err error)
+	//CloseClient(clientId string) (err error)
+	//SearchTopic(query string) (result []*management.SubscriptionInfo, err error)
+}
 
 type MqttCli interface {
 	Publish(topic string, payload []byte) error
@@ -52,6 +52,7 @@ type MqttServ interface {
 	Start()
 	Publish(topic string, payload []byte, qos uint8, retain bool) error
 	NewClient(name string) MqttCli
+	Admin() Admin
 }
 
 // GMqttServer ...

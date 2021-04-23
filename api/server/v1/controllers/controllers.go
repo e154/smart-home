@@ -42,6 +42,7 @@ type ControllersV1 struct {
 	Version      *ControllerVersion
 	Zigbee2mqtt  *ControllerZigbee2mqtt
 	Entity       *ControllerEntity
+	Mqtt         *ControllerMqtt
 }
 
 // NewControllersV1 ...
@@ -66,5 +67,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Version:      NewControllerVersion(common),
 		Zigbee2mqtt:  NewControllerZigbee2mqtt(common),
 		Entity:       NewControllerEntity(common),
+		Mqtt:         NewControllerMqtt(common),
 	}
 }

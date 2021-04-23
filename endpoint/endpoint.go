@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
@@ -48,6 +49,7 @@ type Endpoint struct {
 	Version         *VersionEndpoint
 	Zigbee2mqtt     *Zigbee2mqttEndpoint
 	Entity          *EntityEndpoint
+	Mqtt            *MqttEndpoint
 }
 
 // NewEndpoint ...
@@ -56,8 +58,9 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	notify notify.Notify,
 	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
-	entityManager entity_manager.EntityManager) *Endpoint {
-	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt)
+	entityManager entity_manager.EntityManager,
+	mqtt mqtt.MqttServ) *Endpoint {
+	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt, mqtt)
 	return &Endpoint{
 		Auth:            NewAuthEndpoint(common),
 		Image:           NewImageEndpoint(common),
@@ -73,5 +76,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Version:         NewVersionEndpoint(common),
 		Zigbee2mqtt:     NewZigbee2mqttEndpoint(common),
 		Entity:          NewEntityEndpoint(common, entityManager),
+		Mqtt:            NewMqttEndpoint(common),
 	}
 }

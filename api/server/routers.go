@@ -130,6 +130,17 @@ func (s *Server) setControllers() {
 	v1.POST("/notifr/:id/repeat", s.af.Auth, s.ControllersV1.Notifr.Repeat)
 	v1.POST("/notifr", s.af.Auth, s.ControllersV1.Notifr.Send)
 
+	// mqtt
+	v1.DELETE("/mqtt/client/:id", s.af.Auth, s.ControllersV1.Mqtt.CloseClient)
+	v1.GET("/mqtt/client/:id", s.af.Auth, s.ControllersV1.Mqtt.GetClientById)
+	v1.GET("/mqtt/client/:id/session", s.af.Auth, s.ControllersV1.Mqtt.GetSession)
+	v1.GET("/mqtt/client/:id/subscriptions", s.af.Auth, s.ControllersV1.Mqtt.GetSubscriptions)
+	v1.DELETE("/mqtt/client/:id/topic", s.af.Auth, s.ControllersV1.Mqtt.Unsubscribe)
+	v1.GET("/mqtt/clients", s.af.Auth, s.ControllersV1.Mqtt.GetClients)
+	v1.POST("/mqtt/publish", s.af.Auth, s.ControllersV1.Mqtt.Publish)
+	v1.GET("/mqtt/sessions", s.af.Auth, s.ControllersV1.Mqtt.GetSessions)
+	v1.GET("/mqtt/search_topic", s.af.Auth, s.ControllersV1.Mqtt.SearchTopic)
+
 	// version
 	v1.GET("/version", s.ControllersV1.Version.Version)
 
