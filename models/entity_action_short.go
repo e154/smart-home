@@ -16,33 +16,11 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package automation
+package models
 
-import (
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
-)
-
-const ConditionFunc = "automationCondition"
-
-// ConditionBind...
-type ConditionBind struct {
-	condition *Condition
-}
-
-// NewConditionBind...
-func NewConditionBind(condition *Condition) *ConditionBind {
-	return &ConditionBind{condition: condition}
-}
-
-// Check...
-func (t *ConditionBind) GetEntityById(id string) m.EntityShort {
-
-	//var err error
-	entity, err := t.condition.entityManager.GetEntityById(common.EntityId(id))
-	if err != nil {
-		log.Error(err.Error())
-	}
-
-	return entity
+type EntityActionShort struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	ImageUrl    *string `json:"image_url"`
+	Icon        *string `json:"icon"`
 }

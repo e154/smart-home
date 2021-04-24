@@ -64,13 +64,13 @@ type EntityManager interface {
 	SetState(common.EntityId, EntityStateParams)
 
 	// GetEntityById ...
-	GetEntityById(common.EntityId) (Entity, error)
+	GetEntityById(common.EntityId) (m.EntityShort, error)
 
 	// GetActorById ...
 	GetActorById(common.EntityId) (PluginActor, error)
 
 	// List ...
-	List() ([]Entity, error)
+	List() ([]m.EntityShort, error)
 
 	// Spawn ...
 	Spawn(ActorConstructor) PluginActor
@@ -103,26 +103,12 @@ type EntityAttribute struct {
 	Value interface{}                `json:"value,omitempty"`
 }
 
-type EntityAction struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	ImageUrl    *string `json:"image_url"`
-	Icon        *string `json:"icon"`
-}
-
 type ActorAction struct {
 	Name         string          `json:"name"`
 	Description  string          `json:"description"`
 	ImageUrl     *string         `json:"image_url"`
 	Icon         *string         `json:"icon"`
 	ScriptEngine *scripts.Engine `json:"-"`
-}
-
-type EntityState struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	ImageUrl    *string `json:"image_url"`
-	Icon        *string `json:"icon"`
 }
 
 type ActorState struct {

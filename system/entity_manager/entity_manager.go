@@ -171,7 +171,7 @@ func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) {
 }
 
 // GetEntityById ...
-func (e *entityManager) GetEntityById(id common.EntityId) (entity Entity, err error) {
+func (e *entityManager) GetEntityById(id common.EntityId) (entity m.EntityShort, err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
@@ -197,11 +197,11 @@ func (e *entityManager) GetActorById(id common.EntityId) (actor PluginActor, err
 }
 
 // List ...
-func (e *entityManager) List() (entities []Entity, err error) {
+func (e *entityManager) List() (entities []m.EntityShort, err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
-	entities = make([]Entity, len(e.actors))
+	entities = make([]m.EntityShort, len(e.actors))
 	var i int
 	for _, actorInfo := range e.actors {
 		entities[i] = NewEntity(actorInfo.Actor)
