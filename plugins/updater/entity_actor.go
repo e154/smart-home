@@ -42,7 +42,7 @@ type EntityActor struct {
 	currentVersion    *semver.Version
 }
 
-func NewEntityActor() *EntityActor {
+func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
 	var v = "v0.0.1"
 	if version.VersionString != "?" {
 		v = version.VersionString
@@ -61,6 +61,7 @@ func NewEntityActor() *EntityActor {
 			Value:       atomic.NewString(entity_manager.StateAwait),
 			AttrMu:      &sync.Mutex{},
 			Attrs:       NewAttr(),
+			Manager:     entityManager,
 			States: map[string]entity_manager.ActorState{
 				"enabled": {
 					Name:        "enabled",
@@ -91,8 +92,7 @@ func NewEntityActor() *EntityActor {
 	}
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 

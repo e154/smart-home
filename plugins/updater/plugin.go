@@ -21,7 +21,7 @@ package updater
 import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/plugins"
 	atomic2 "go.uber.org/atomic"
 	"time"
 )
@@ -35,6 +35,12 @@ var (
 	log = common.MustGetLogger("plugins.updater")
 )
 
+var _ plugins.Plugable = (*plugin)(nil)
+
+func init() {
+	plugins.RegisterPlugin(Name, New)
+}
+
 type plugin struct {
 	entityManager entity_manager.EntityManager
 	isStarted     atomic2.Bool
@@ -43,21 +49,21 @@ type plugin struct {
 	quit          chan struct{}
 }
 
-func Register(manager plugin_manager.PluginManager,
-	entityManager entity_manager.EntityManager,
-	second time.Duration) {
-	manager.Register(&plugin{
-		pause:         second,
-		entityManager: entityManager,
-		entity:        NewEntityActor(),
-	})
-	return
+func New() plugins.Plugable {
+	return &plugin{
+		pause: 24,
+	}
 }
 
-func (u *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
+func (u *plugin) Load(service plugins.Service) (err error) {
+	u.entityManager = service.EntityManager()
+
 	if u.isStarted.Load() {
 		return
 	}
+
+	u.entity = NewEntityActor(u.entityManager)
+
 	u.entityManager.Spawn(u.entity.Spawn)
 	u.entity.check()
 	u.quit = make(chan struct{})
@@ -96,10 +102,14 @@ func (u *plugin) Name() string {
 	return name
 }
 
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) Type() plugins.PluginType {
+	return plugins.PluginBuiltIn
 }
 
 func (p *plugin) Depends() []string {
 	return nil
+}
+
+func (p *plugin) Version() string {
+	return "0.0.1"
 }

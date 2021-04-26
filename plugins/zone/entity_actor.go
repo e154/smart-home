@@ -32,7 +32,8 @@ type EntityActor struct {
 	stateMu  *sync.Mutex
 }
 
-func NewEntityActor(name string, params m.EntityAttributeValue) *EntityActor {
+func NewEntityActor(name string, params m.EntityAttributeValue,
+	entityManager entity_manager.EntityManager) *EntityActor {
 
 	attributes := NewAttr()
 	attributes.Deserialize(params)
@@ -44,13 +45,13 @@ func NewEntityActor(name string, params m.EntityAttributeValue) *EntityActor {
 			EntityType: EntityZone,
 			AttrMu:     &sync.Mutex{},
 			Attrs:      attributes,
+			Manager:    entityManager,
 		},
 		stateMu: &sync.Mutex{},
 	}
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 

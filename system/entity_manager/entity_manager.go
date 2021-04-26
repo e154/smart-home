@@ -26,7 +26,6 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/plugin_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
 	"sync"
@@ -41,7 +40,7 @@ type entityManager struct {
 	eventBus      event_bus.EventBus
 	adaptors      *adaptors.Adaptors
 	scripts       scripts.ScriptService
-	pluginManager plugin_manager.PluginManager
+	pluginManager common.PluginManager
 	lock          *sync.Mutex
 	actors        map[common.EntityId]*actorInfo
 	quit          chan struct{}
@@ -50,16 +49,14 @@ type entityManager struct {
 func NewEntityManager(lc fx.Lifecycle,
 	eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors,
-	scripts scripts.ScriptService,
-	pluginManager plugin_manager.PluginManager) EntityManager {
+	scripts scripts.ScriptService) EntityManager {
 	manager := &entityManager{
-		eventBus:      eventBus,
-		adaptors:      adaptors,
-		scripts:       scripts,
-		pluginManager: pluginManager,
-		lock:          &sync.Mutex{},
-		actors:        make(map[common.EntityId]*actorInfo),
-		quit:          make(chan struct{}),
+		eventBus: eventBus,
+		adaptors: adaptors,
+		scripts:  scripts,
+		lock:     &sync.Mutex{},
+		actors:   make(map[common.EntityId]*actorInfo),
+		quit:     make(chan struct{}),
 	}
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) (err error) {
@@ -71,11 +68,13 @@ func NewEntityManager(lc fx.Lifecycle,
 }
 
 // LoadEntities ...
-func (e *entityManager) LoadEntities() {
+func (e *entityManager) LoadEntities(pluginManager common.PluginManager) {
+
+	e.pluginManager = pluginManager
 
 	var page int64
 	var entities []*m.Entity
-	const perPage = 1000
+	const perPage = 100
 	var err error
 
 LOOP:
@@ -231,7 +230,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
-	actor = constructor(e)
+	actor = constructor()
 	info := actor.Info()
 
 	var entityId = info.Id
@@ -265,7 +264,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			})
 
 			var err error
-			var plugin plugin_manager.CrudActor
+			var plugin CrudActor
 			if plugin, err = e.getCrudActor(entityId); err != nil {
 				return
 			}
@@ -418,18 +417,18 @@ func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}
 	})
 }
 
-func (e *entityManager) getCrudActor(entityId common.EntityId) (result plugin_manager.CrudActor, err error) {
-	var plugin plugin_manager.Plugable
+func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor, err error) {
+	var plugin interface{}
 	if plugin, err = e.pluginManager.GetPlugin(entityId.Type().String()); err != nil {
 		return
 	}
 
 	var ok bool
-	if result, ok = plugin.(plugin_manager.CrudActor); ok {
+	if result, ok = plugin.(CrudActor); ok {
 		return
 		//...
 	} else {
-		err = fmt.Errorf("cannot cast to the desired type plugin '%s' to plugin_manager.CrudActor", plugin.Name())
+		err = fmt.Errorf("cannot cast to the desired type plugin '%s' to plugins.CrudActor", entityId.Type().String())
 	}
 	return
 }
@@ -437,7 +436,7 @@ func (e *entityManager) getCrudActor(entityId common.EntityId) (result plugin_ma
 // Add ...
 func (e *entityManager) Add(entity *m.Entity) (err error) {
 
-	var plugin plugin_manager.CrudActor
+	var plugin CrudActor
 	if plugin, err = e.getCrudActor(entity.Id); err != nil {
 		return
 	}

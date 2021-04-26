@@ -71,6 +71,7 @@ type Adaptors struct {
 	Trigger           ITrigger
 	Task              ITask
 	RunHistory        IRunHistory
+	Plugin            IPlugin
 }
 
 // NewAdaptors ...
@@ -117,6 +118,7 @@ func NewAdaptors(lc fx.Lifecycle,
 		Trigger:           GetTriggerAdaptor(db),
 		Task:              GetTaskAdaptor(db),
 		RunHistory:        GetRunHistoryAdaptor(db),
+		Plugin:            GetPluginAdaptor(db),
 	}
 
 	if lc != nil {

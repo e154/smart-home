@@ -18,22 +18,10 @@
 
 package models
 
-import (
-	"github.com/e154/smart-home/common"
-)
-
-type EntityShort struct {
-	Id          common.EntityId     `json:"unique_id"`
-	Type        common.EntityType   `json:"type"`
-	Name        string              `json:"name"`
-	Description string              `json:"description"`
-	Icon        *common.Icon        `json:"icon"`
-	ImageUrl    *string             `json:"image_url"`
-	Actions     []EntityActionShort `json:"actions"`
-	States      []EntityStateShort  `json:"states"`
-	State       *EntityStateShort   `json:"state"`
-	Attributes  EntityAttributes    `json:"attributes"`
-	Area        *Area               `json:"area"`
-	Metrics     []Metric            `json:"metrics"`
-	Hidden      bool                `json:"hidden"`
+// Plugin ...
+type Plugin struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Enabled bool   `json:"enabled"`
+	System  bool   `json:"system"`
 }

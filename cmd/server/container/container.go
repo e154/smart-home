@@ -23,14 +23,12 @@ import (
 	"github.com/e154/smart-home/api/server"
 	controllersV1 "github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/endpoint"
-	"github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
@@ -39,7 +37,7 @@ import (
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/orm"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
@@ -55,8 +53,6 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 		fx.Provide(
 			config.ReadConfig,
 			NewGracefulServiceConfig,
-			graceful_service.NewGracefulService,
-			graceful_service.NewGracefulServicePool,
 			NewOrmConfig,
 			orm.NewOrm,
 			NewMigrationsConfig,
@@ -76,8 +72,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			NewZigbee2mqttConfig,
 			zigbee2mqtt.NewZigbee2mqtt,
 			storage.NewStorage,
-			plugin_manager.NewPluginManager,
-			plugins.NewPluginLoader,
+			plugins.NewPluginManager,
 			entity_manager.NewEntityManager,
 			automation.NewAutomation,
 			event_bus.NewEventBus,

@@ -36,7 +36,9 @@ type EntityActor struct {
 	eventBus       event_bus.EventBus
 }
 
-func NewEntityActor(name string, eventBus event_bus.EventBus, ) *EntityActor {
+func NewEntityActor(name string,
+	eventBus event_bus.EventBus,
+	entityManager entity_manager.EntityManager) *EntityActor {
 
 	e := &EntityActor{
 		BaseActor: entity_manager.BaseActor{
@@ -48,6 +50,7 @@ func NewEntityActor(name string, eventBus event_bus.EventBus, ) *EntityActor {
 			AttrMu:            &sync.Mutex{},
 			Attrs:             BaseForecast(),
 			ParentId:          common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
+			Manager:           entityManager,
 		},
 		eventBus:       eventBus,
 		zoneAttributes: zone.NewAttr(),
@@ -58,8 +61,7 @@ func NewEntityActor(name string, eventBus event_bus.EventBus, ) *EntityActor {
 	return e
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 

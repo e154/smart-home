@@ -26,7 +26,7 @@ import (
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/plugins"
 	"go.uber.org/atomic"
 	"sync"
 )
@@ -41,6 +41,12 @@ var (
 	log = common.MustGetLogger("plugins.weather")
 )
 
+var _ plugins.Plugable = (*plugin)(nil)
+
+func init() {
+	plugins.RegisterPlugin(Name, New)
+}
+
 type plugin struct {
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
@@ -50,21 +56,18 @@ type plugin struct {
 	actors        map[string]*EntityActor
 }
 
-func Register(manager plugin_manager.PluginManager,
-	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus,
-	adaptors *adaptors.Adaptors) {
-	manager.Register(&plugin{
-		entityManager: entityManager,
-		adaptors:      adaptors,
-		isStarted:     atomic.NewBool(false),
-		eventBus:      eventBus,
-		actorsLock:    &sync.Mutex{},
-		actors:        make(map[string]*EntityActor),
-	})
+func New() plugins.Plugable {
+	return &plugin{
+		isStarted:  atomic.NewBool(false),
+		actorsLock: &sync.Mutex{},
+		actors:     make(map[string]*EntityActor),
+	}
 }
 
-func (p *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) error {
+func (p *plugin) Load(service plugins.Service) error {
+	p.adaptors = service.Adaptors()
+	p.eventBus = service.EventBus()
+	p.entityManager = service.EntityManager()
 
 	if p.isStarted.Load() {
 		return nil
@@ -160,7 +163,7 @@ func (p *plugin) addOrUpdateZone(name string, zoneAttr m.EntityAttributes) (err 
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
-		p.actors[name] = NewEntityActor(name, p.eventBus)
+		p.actors[name] = NewEntityActor(name, p.eventBus, p.entityManager)
 		p.entityManager.Spawn(p.actors[name].Spawn)
 	}
 	p.actors[name].setPosition(zoneAttr)
@@ -191,10 +194,14 @@ func (p *plugin) removeEntity(name string) (err error) {
 	return
 }
 
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) Type() plugins.PluginType {
+	return plugins.PluginBuiltIn
 }
 
 func (p *plugin) Depends() []string {
 	return nil
+}
+
+func (p *plugin) Version() string {
+	return "0.0.1"
 }

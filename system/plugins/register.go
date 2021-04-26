@@ -16,24 +16,15 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package models
+package plugins
 
-import (
-	"github.com/e154/smart-home/common"
+var (
+	pluginList = make(map[string]Plugable)
 )
 
-type EntityShort struct {
-	Id          common.EntityId     `json:"unique_id"`
-	Type        common.EntityType   `json:"type"`
-	Name        string              `json:"name"`
-	Description string              `json:"description"`
-	Icon        *common.Icon        `json:"icon"`
-	ImageUrl    *string             `json:"image_url"`
-	Actions     []EntityActionShort `json:"actions"`
-	States      []EntityStateShort  `json:"states"`
-	State       *EntityStateShort   `json:"state"`
-	Attributes  EntityAttributes    `json:"attributes"`
-	Area        *Area               `json:"area"`
-	Metrics     []Metric            `json:"metrics"`
-	Hidden      bool                `json:"hidden"`
+func RegisterPlugin(name string, new func() Plugable) {
+	if _, ok := pluginList[name]; ok {
+		panic("duplicated plugin: " + name)
+	}
+	pluginList[name] = new()
 }

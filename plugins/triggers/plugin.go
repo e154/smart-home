@@ -22,18 +22,20 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/plugins"
 	"go.uber.org/atomic"
 	"sync"
-)
-
-const (
-	Name = "triggers"
 )
 
 var (
 	log = common.MustGetLogger("plugins.triggers")
 )
+
+var _ plugins.Plugable = (*plugin)(nil)
+
+func init() {
+	plugins.RegisterPlugin(Name, New)
+}
 
 type plugin struct {
 	isStarted *atomic.Bool
@@ -41,17 +43,19 @@ type plugin struct {
 	bus       event_bus.EventBus
 }
 
-func Register(manager plugin_manager.PluginManager,
-	bus event_bus.EventBus) {
-	manager.Register(&plugin{
+func New() plugins.Plugable {
+	return &plugin{
 		isStarted: atomic.NewBool(false),
 		triggers:  make(map[string]ITrigger),
-		bus:       bus,
-	})
-	return
+	}
 }
 
-func (u *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
+func (u *plugin) Load(service plugins.Service) error {
+	u.bus = service.EventBus()
+	return nil
+}
+
+func (u *plugin) Start() (err error) {
 
 	if u.isStarted.Load() {
 		return
@@ -101,10 +105,14 @@ func (u *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
 	return
 }
 
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) Type() plugins.PluginType {
+	return plugins.PluginBuiltIn
 }
 
 func (p *plugin) Depends() []string {
 	return nil
+}
+
+func (p *plugin) Version() string {
+	return "0.0.1"
 }

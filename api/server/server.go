@@ -22,7 +22,6 @@ import (
 	"context"
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/gin-contrib/cors"
@@ -93,7 +92,6 @@ func (s *Server) GetEngine() *gin.Engine {
 func NewServer(lc fx.Lifecycle,
 	cfg *Config,
 	ctrls *controllers.ControllersV1,
-	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,
 	streamService *stream.StreamService) (newServer *Server) {
 

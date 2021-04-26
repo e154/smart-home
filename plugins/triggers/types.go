@@ -20,6 +20,10 @@ package triggers
 
 import "sync"
 
+const (
+	Name = "triggers"
+)
+
 type IGetTrigger interface {
 	GetTrigger(string) (ITrigger, error)
 }

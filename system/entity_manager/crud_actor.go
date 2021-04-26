@@ -16,50 +16,14 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package plugin_manager
+package entity_manager
 
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
-type PluginManager interface {
-	Register(plugin Plugable)
-	Start()
-	Shutdown()
-	GetPlugin(name string) (plugin Plugable, err error)
-}
-
-type PlugableType string
-
-const (
-	PlugableBuiltIn     = PlugableType("BuiltIn")
-	PlugableInstallable = PlugableType("Installable")
-)
-
-type Plugable interface {
-	Load(service PluginManager, plugins map[string]interface{}) error
-	Unload() error
-	Name() string
-	Type() PlugableType
-	Depends() []string
-}
-
-type Installable interface {
-	Install()
-	Uninstall()
-}
-
 type CrudActor interface {
 	AddOrUpdateActor(*m.Entity) error
 	RemoveActor(common.EntityId) error
-}
-
-type IPluginLoader interface {
-	Register()
-}
-
-type pluginListItem struct {
-	Name   string
-	Plugin Plugable
 }

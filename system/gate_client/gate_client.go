@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/uuid"
@@ -69,7 +68,6 @@ type GateClient struct {
 
 // NewGateClient ...
 func NewGateClient(adaptors *adaptors.Adaptors,
-	graceful *graceful_service.GracefulService,
 	metric *metrics.MetricManager) (gate *GateClient) {
 	gate = &GateClient{
 		adaptors:        adaptors,
@@ -82,8 +80,6 @@ func NewGateClient(adaptors *adaptors.Adaptors,
 	}
 
 	gate.wsClient = NewWsClient(gate, metric)
-
-	graceful.Subscribe(gate)
 
 	if err := gate.loadSettings(); err != nil {
 		log.Error(err.Error())

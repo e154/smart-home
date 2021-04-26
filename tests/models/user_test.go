@@ -46,7 +46,7 @@ func TestUser(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			var counter int
-			for pack, item := range *accessList.List {
+			for pack, item := range *accessList.List() {
 				for right := range item {
 					if strings.Contains(right, "read") ||
 						strings.Contains(right, "view") ||

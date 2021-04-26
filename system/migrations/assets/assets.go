@@ -5,6 +5,7 @@
 // migrations/20210415_172812_run_history.sql
 // migrations/20210422_161648_update_variables.sql
 // migrations/20210422_220814_update_entity.sql
+// migrations/20210426_184659_add_plugins.sql
 // DO NOT EDIT!
 
 package database
@@ -172,6 +173,26 @@ func migrations20210422_220814_update_entitySql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20210426_184659_add_pluginsSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x8f\x31\x4e\x03\x31\x10\x45\xfb\x39\xc5\xef\x02\x82\x3d\x41\x5a\x4a\x1a\x84\x72\x00\x67\xfd\x49\x46\xf1\x8e\x2d\x7b\x96\x64\x6f\x8f\xbc\x08\x58\x24\x0a\xdc\x58\x1a\xbd\x79\x9a\x37\x0c\x78\x98\xf4\x54\x83\x13\x87\x22\xc3\x80\xd7\x97\x67\xa8\xa1\x71\x74\xcd\x86\xdd\xa1\xec\xa0\x0d\xbc\x71\x9c\x9d\x11\xd7\x33\x0d\x7e\xd6\x86\xcf\xbd\x0e\x69\x43\x28\x25\x29\xa3\x8c\x95\xdd\xe5\xe1\x98\x88\x92\xe6\x93\x5a\x93\x3b\x01\x00\x0b\x13\xfb\xef\xbc\x39\x4a\xd5\x29\xd4\x05\x17\x2e\xb0\xec\xb0\x39\xa5\xc7\x15\x7b\x67\x6d\x5d\xba\x62\xdb\xf7\x83\xd0\xba\x3e\xe2\x98\x73\x62\x30\x44\xbe\x85\x39\x6d\x25\x6d\x69\xce\x09\x7f\x12\x72\xbf\x17\xd9\x86\x3f\xe5\xab\x7d\xa5\x7f\x77\xf7\xe1\xbf\xca\x6b\x4e\xeb\x2d\x61\xbc\x48\xac\xb9\xfc\x6e\xdf\x8b\x7c\x04\x00\x00\xff\xff\x35\x89\x51\x25\x64\x01\x00\x00")
+
+func migrations20210426_184659_add_pluginsSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20210426_184659_add_pluginsSql,
+		"migrations/20210426_184659_add_plugins.sql",
+	)
+}
+
+func migrations20210426_184659_add_pluginsSql() (*asset, error) {
+	bytes, err := migrations20210426_184659_add_pluginsSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20210426_184659_add_plugins.sql", size: 356, mode: os.FileMode(420), modTime: time.Unix(1619450740, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -229,6 +250,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20210415_172812_run_history.sql": migrations20210415_172812_run_historySql,
 	"migrations/20210422_161648_update_variables.sql": migrations20210422_161648_update_variablesSql,
 	"migrations/20210422_220814_update_entity.sql": migrations20210422_220814_update_entitySql,
+	"migrations/20210426_184659_add_plugins.sql": migrations20210426_184659_add_pluginsSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -277,6 +299,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20210415_172812_run_history.sql": &bintree{migrations20210415_172812_run_historySql, map[string]*bintree{}},
 		"20210422_161648_update_variables.sql": &bintree{migrations20210422_161648_update_variablesSql, map[string]*bintree{}},
 		"20210422_220814_update_entity.sql": &bintree{migrations20210422_220814_update_entitySql, map[string]*bintree{}},
+		"20210426_184659_add_plugins.sql": &bintree{migrations20210426_184659_add_pluginsSql, map[string]*bintree{}},
 	}},
 }}
 

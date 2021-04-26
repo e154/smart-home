@@ -29,7 +29,7 @@ import (
 type PluginActor interface {
 
 	// Spawn ...
-	Spawn(system EntityManager) PluginActor
+	Spawn() PluginActor
 
 	// Receive ...
 	Receive(message Message)
@@ -47,12 +47,12 @@ type PluginActor interface {
 	Info() ActorInfo
 }
 
-type ActorConstructor func(system EntityManager) (state PluginActor)
+type ActorConstructor func() PluginActor
 
 type EntityManager interface {
 
 	// LoadEntities ...
-	LoadEntities()
+	LoadEntities(pluginManager common.PluginManager)
 
 	// Shutdown ...
 	Shutdown()
@@ -95,12 +95,6 @@ type EntityManager interface {
 
 	// Update ...
 	Update(*m.Entity) error
-}
-
-type EntityAttribute struct {
-	Name  string                     `json:"name"`
-	Type  common.EntityAttributeType `json:"type"`
-	Value interface{}                `json:"value,omitempty"`
 }
 
 type ActorAction struct {

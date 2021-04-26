@@ -26,7 +26,7 @@ import (
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/plugins"
 	"go.uber.org/atomic"
 	"sync"
 	"time"
@@ -35,6 +35,12 @@ import (
 var (
 	log = common.MustGetLogger("plugins.sun")
 )
+
+var _ plugins.Plugable = (*plugin)(nil)
+
+func init() {
+	plugins.RegisterPlugin(Name, New)
+}
 
 type plugin struct {
 	entityManager entity_manager.EntityManager
@@ -47,23 +53,20 @@ type plugin struct {
 	quit          chan struct{}
 }
 
-func Register(manager plugin_manager.PluginManager,
-	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus,
-	adaptors *adaptors.Adaptors,
-	second time.Duration) {
-	manager.Register(&plugin{
-		entityManager: entityManager,
-		adaptors:      adaptors,
-		isStarted:     atomic.NewBool(false),
-		eventBus:      eventBus,
-		actorsLock:    &sync.Mutex{},
-		actors:        make(map[string]*EntityActor),
-		pause:         second,
-	})
+func New() plugins.Plugable {
+	return &plugin{
+		isStarted:  atomic.NewBool(false),
+		actorsLock: &sync.Mutex{},
+		actors:     make(map[string]*EntityActor),
+		pause:      240,
+	}
 }
 
-func (p *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) error {
+func (p *plugin) Load(service plugins.Service) error {
+	p.adaptors = service.Adaptors()
+	p.eventBus = service.EventBus()
+	p.entityManager = service.EntityManager()
+
 	if p.isStarted.Load() {
 		return nil
 	}
@@ -174,7 +177,7 @@ func (p *plugin) addOrUpdateEntity(zoneName string, zoneAttr m.EntityAttributes)
 		return
 	}
 
-	p.actors[zoneName] = NewEntityActor(zoneName)
+	p.actors[zoneName] = NewEntityActor(zoneName, p.entityManager)
 	p.entityManager.Spawn(p.actors[zoneName].Spawn)
 
 	if zoneAttr != nil {
@@ -218,10 +221,14 @@ func (p *plugin) updatePositionForAll() {
 	}
 }
 
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) Type() plugins.PluginType {
+	return plugins.PluginBuiltIn
 }
 
 func (p *plugin) Depends() []string {
 	return nil
+}
+
+func (p *plugin) Version() string {
+	return "0.0.1"
 }

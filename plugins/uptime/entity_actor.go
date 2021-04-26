@@ -34,7 +34,7 @@ type EntityActor struct {
 	total      *atomic.Uint64
 }
 
-func NewEntityActor() *EntityActor {
+func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
 	return &EntityActor{
 		BaseActor: entity_manager.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
@@ -43,14 +43,14 @@ func NewEntityActor() *EntityActor {
 			UnitOfMeasurement: "days",
 			AttrMu:            &sync.Mutex{},
 			Attrs:             NewAttr(),
+			Manager:           entityManager,
 		},
 		appStarted: time.Now(),
 		total:      atomic.NewUint64(0),
 	}
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 

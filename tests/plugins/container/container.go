@@ -21,7 +21,6 @@ package container
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/endpoint"
-	"github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/alexa"
 	"github.com/e154/smart-home/system/automation"
@@ -30,7 +29,6 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
-	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
@@ -39,7 +37,7 @@ import (
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/orm"
-	"github.com/e154/smart-home/system/plugin_manager"
+	plugins2 "github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
@@ -53,8 +51,6 @@ func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()
 	container.Provide(NewGracefulServiceConfig)
-	container.Provide(graceful_service.NewGracefulService)
-	container.Provide(graceful_service.NewGracefulServicePool)
 	container.Provide(NewOrmConfig)
 	container.Provide(orm.NewOrm)
 	container.Provide(NewMigrationsConfig)
@@ -81,8 +77,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(alexa.NewAlexa)
 	container.Provide(alexa.NewConfig)
 	container.Provide(storage.NewStorage)
-	container.Provide(plugin_manager.NewPluginManager)
-	container.Provide(plugins.NewPluginLoader)
+	container.Provide(plugins2.NewPluginManager)
 	container.Provide(entity_manager.NewEntityManager)
 	container.Provide(automation.NewAutomation)
 	container.Provide(event_bus.NewEventBus)

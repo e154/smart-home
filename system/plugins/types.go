@@ -16,24 +16,44 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package models
+package plugins
 
 import (
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scripts"
 )
 
-type EntityShort struct {
-	Id          common.EntityId     `json:"unique_id"`
-	Type        common.EntityType   `json:"type"`
-	Name        string              `json:"name"`
-	Description string              `json:"description"`
-	Icon        *common.Icon        `json:"icon"`
-	ImageUrl    *string             `json:"image_url"`
-	Actions     []EntityActionShort `json:"actions"`
-	States      []EntityStateShort  `json:"states"`
-	State       *EntityStateShort   `json:"state"`
-	Attributes  EntityAttributes    `json:"attributes"`
-	Area        *Area               `json:"area"`
-	Metrics     []Metric            `json:"metrics"`
-	Hidden      bool                `json:"hidden"`
+type PluginType string
+
+const (
+	PluginBuiltIn     = PluginType("System")
+	PluginInstallable = PluginType("Installable")
+)
+
+type Service interface {
+	Plugins() map[string]Plugable
+	PluginManager() common.PluginManager
+	EventBus() event_bus.EventBus
+	Adaptors() *adaptors.Adaptors
+	EntityManager() entity_manager.EntityManager
+	ScriptService() scripts.ScriptService
+	MqttServ() mqtt.MqttServ
+}
+
+type Plugable interface {
+	Load(Service) error
+	Unload() error
+	Name() string
+	Type() PluginType
+	Depends() []string
+	Version() string
+}
+
+type Installable interface {
+	Install() error
+	Uninstall() error
 }
