@@ -28,6 +28,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/gin-gonic/gin"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -60,8 +61,9 @@ func (f *AccessFilter) Auth(ctx *gin.Context) {
 
 	var err error
 
-	//todo remove
-	return
+	if os.Getenv("DEV") == "true" {
+		return
+	}
 
 	// get access_token
 	var accessToken string

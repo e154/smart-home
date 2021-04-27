@@ -52,7 +52,6 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 	app = fx.New(
 		fx.Provide(
 			config.ReadConfig,
-			NewGracefulServiceConfig,
 			NewOrmConfig,
 			orm.NewOrm,
 			NewMigrationsConfig,

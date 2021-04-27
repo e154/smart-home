@@ -78,7 +78,7 @@ func NewMqtt(lc fx.Lifecycle,
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
-			go mqtt.Start()
+			mqtt.Start()
 			return nil
 		},
 		OnStop: func(ctx context.Context) (err error) {
@@ -124,9 +124,11 @@ func (m *Mqtt) Start() {
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
 
-	if err = m.server.Run(); err != nil {
-		log.Error(err.Error())
-	}
+	go func() {
+		if err = m.server.Run(); err != nil {
+			log.Error(err.Error())
+		}
+	}()
 }
 
 // OnMsgArrived ...

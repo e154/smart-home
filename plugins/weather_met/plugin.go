@@ -41,7 +41,7 @@ import (
 )
 
 const (
-	Name          = "met"
+	Name          = "weather_met"
 	DefaultApiUrl = "https://api.met.no/weatherapi/locationforecast/2.0/classic"
 )
 
@@ -90,10 +90,10 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 	p.eventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
+	p.quit = make(chan struct{})
 
 	go func() {
 		ticker := time.NewTicker(time.Minute * time.Duration(p.pause))
-		p.quit = make(chan struct{})
 
 		defer func() {
 			ticker.Stop()
