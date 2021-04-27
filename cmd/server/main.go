@@ -19,91 +19,9 @@
 package main
 
 import (
-	"fmt"
-	. "github.com/e154/smart-home/cmd/server/container"
-	. "github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/backup"
-	"github.com/e154/smart-home/system/initial"
-	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/version"
-	"go.uber.org/fx"
-	"os"
-)
-
-var (
-	log = MustGetLogger("main")
+	"github.com/e154/smart-home/cmd/server/commands"
 )
 
 func main() {
-
-	args := os.Args[1:]
-	for _, arg := range args {
-		switch arg {
-		case "-v", "--version":
-			fmt.Printf(version.ShortVersionBanner, version.GetHumanVersion())
-			return
-		case "-backup":
-			app := BuildContainer(fx.Invoke(func(
-				logger *logging.Logging,
-				backup *backup.Backup) {
-
-				if err := backup.New(); err != nil {
-					log.Error(err.Error())
-				}
-			}))
-			Start(app)
-			return
-		case "-restore":
-			if len(os.Args) < 3 {
-				log.Error("need backup name")
-				return
-			}
-			app := BuildContainer(fx.Invoke(func(
-				logger *logging.Logging,
-				backup *backup.Backup) {
-
-				if err := backup.Restore(os.Args[2]); err != nil {
-					log.Error(err.Error())
-				}
-
-			}))
-			Start(app)
-			return
-		case "-reset":
-			app := BuildContainer(fx.Invoke(func(
-				logger *logging.Logging,
-				initialService *initial.Initial) {
-
-				initialService.Reset()
-			}))
-			Start(app)
-			return
-		case "-demo":
-			app := BuildContainer(fx.Invoke(func(
-				logger *logging.Logging,
-				initialService *initial.Initial) {
-
-				initialService.InstallDemoData()
-			}))
-			Start(app)
-			return
-		default:
-			fmt.Printf(version.VerboseVersionBanner, "v2", os.Args[0])
-			return
-		}
-	}
-
-	app := BuildContainer(fx.Invoke(func(
-		logger *logging.Logging,
-		dbSaver logging.ISaver,
-		initialService *initial.Initial,
-	) {
-		logger.SetSaver(dbSaver)
-	}))
-
-	Start(app)
-
-	Work()
-
-	Stop(app)
+	commands.Server.Execute()
 }

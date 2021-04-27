@@ -48,7 +48,7 @@ require (
 	github.com/shirou/gopsutil v2.19.13-0.20200118023139-3964e5b57942+incompatible
 	github.com/smartystreets/assertions v1.0.1
 	github.com/smartystreets/goconvey v1.6.4
-	github.com/spf13/cobra v1.0.0
+	github.com/spf13/cobra v1.1.3
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/surge/glog v0.0.0-20141108051140-2578deb2b95c // indirect
@@ -57,7 +57,7 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	go.uber.org/atomic v1.6.0
 	go.uber.org/dig v1.10.0
-	go.uber.org/fx v1.13.1 // indirect
+	go.uber.org/fx v1.13.1
 	go.uber.org/multierr v1.5.0 // indirect
 	go.uber.org/zap v1.14.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
@@ -68,6 +68,5 @@ require (
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20150902115704-41f357289737
-	gopkg.in/yaml.v2 v2.2.8 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.3 // indirect
 )
