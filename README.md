@@ -144,22 +144,10 @@ cp conf/config.dev.json conf/config.json
 cp conf/dbconfig.dev.yml conf/dbconfig.yml
 ```
 
-manually create the database and run the command
-
-```bash
-./smart-home migrate
-```
-
 run server
 
 ```bash
 ./smart-home
-```
-
-for test
-
-```bash
-./examples/scripts/auth.sh
 ```
 
 ### Docker
