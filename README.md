@@ -15,8 +15,8 @@
 
 |Branch      |Status   |
 |------------|---------|
-|master      | [![Build Status](https://travis-ci.org/e154/smart-home.svg?branch=master)](https://travis-ci.org/e154/smart-home?branch=master)   |
-|dev         | [![Build Status](https://travis-ci.org/e154/smart-home.svg?branch=develop)](https://travis-ci.org/e154/smart-home?branch=develop) |
+|master      | [![Build Status](https://travis-ci.com/e154/smart-home.svg?branch=master)](https://travis-ci.com/e154/smart-home?branch=master)   |
+|dev         | [![Build Status](https://travis-ci.com/e154/smart-home.svg?branch=develop)](https://travis-ci.com/e154/smart-home?branch=develop) |
 
 
 <img align="right" width="220" height="auto" src="doc/static/img/smarthome_logo.svg" alt="smart-home logo">
@@ -41,12 +41,7 @@ The basic principles underlying the system being developed are ease of setup, lo
 - [Demo access](#demo-access)
 - [Supported system](#supported-system)
 - [Quick installation](#quick-installation)
-    - [Server](#server)
-    - [Configurator](#configurator)
-    - [Node](#node)
     - [Postgresql](#database-postgresql)
-    - [Backup and restore settings](#backup-and-restore-settings)
-    - [Mobile gate](#mobile-gate)
 - [Installation for development](#installation-for-development)
     - [Server](#main-server-install)
 - [Docker](#docker)
@@ -79,7 +74,10 @@ The basic principles underlying the system being developed are ease of setup, lo
 
 ### Demo access
 
+outdated version, not supported:<br />
 [dashboard](https://board.e154.ru) (https://board.e154.ru) <br />
+
+outdated version, not supported:<br />
 [swagger](https://sh.e154.ru/api/v1/swagger) (https://sh.e154.ru/api/v1/swagger)
 
 user: admin@e154.ru <br />
@@ -106,6 +104,84 @@ pass: user
 Schematic smart home map
 
 <img src="doc/static/img/smart-home-network.svg" alt="smart-home map" width="630">
+
+### Quick installation
+
+#### Database postgresql
+
+System **Smart Home** works with **Postgresql database**. Create a database and database user with full rights to this database.
+Connection parameters to the database must be specified in the configuration file. Updating the server version may require updating the database.
+, migrations will start automatically, manual intervention is not required.
+
+```bash
+sudo -u postgres psql
+postgres=# create database mydb;
+postgres=# create user myuser with encrypted password 'mypass';
+postgres=# grant all privileges on database mydb to myuser;
+```
+
+### Installation for development
+
+#### main server install
+
+```bash
+git clone https://github.com/e154/smart-home $GOPATH/src/github.com/e154/smart-home
+
+cd $GOPATH/src/github.com/e154/smart-home
+
+go mod vendor
+
+go build
+
+./smart-home -reset
+./smart-home
+```
+
+editing configuration files
+
+```bash
+cp conf/config.dev.json conf/config.json
+cp conf/dbconfig.dev.yml conf/dbconfig.yml
+```
+
+manually create the database and run the command
+
+```bash
+./smart-home migrate
+```
+
+run server
+
+```bash
+./smart-home
+```
+
+for test
+
+```bash
+./examples/scripts/auth.sh
+```
+
+### Docker
+
+```bash
+git clone https://github.com/e154/smart-home
+cd smart-home
+docker-compose up
+```
+
+connect to the database, create two smart-home databases, smart-home-gate
+
+
+It's all
+
+### Testing
+
+The system supports self-testing of internal components, and is started by the command
+
+```bash
+go test -v ./tests
+```
 
 ### Support 
 
