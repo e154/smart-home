@@ -23,6 +23,9 @@ HUGO=`which hugo`
 
 main() {
   case "$1" in
+    --init)
+    __init
+    ;;
     --clean)
     __clean
     ;;
@@ -43,6 +46,12 @@ main() {
   esac
 }
 
+__init() {
+  mkdir -p ${ROOT}/doc
+  cd ${ROOT}/doc
+  hugo new site
+}
+
 __build() {
     cd ${ROOT}/doc
     hugo
@@ -54,7 +63,7 @@ __clean() {
 
 __dev() {
   cd ${ROOT}/doc
-  hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.yaml" --port=1377 --disableFastRender
+  hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.toml" --port=1377 --disableFastRender
 }
 
 __help() {
