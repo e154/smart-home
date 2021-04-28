@@ -50,12 +50,8 @@ func New() plugins.Plugable {
 	}
 }
 
-func (u *plugin) Load(service plugins.Service) error {
+func (u *plugin) Load(service plugins.Service) (nil error) {
 	u.bus = service.EventBus()
-	return nil
-}
-
-func (u *plugin) Start() (err error) {
 
 	if u.isStarted.Load() {
 		return

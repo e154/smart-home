@@ -112,8 +112,6 @@ func (n *Initial) InstallDemoData() {
 
 	log.Info("install demo data")
 
-	n.migrations.Purge()
-
 	tx := n.adaptors.Begin()
 
 	env1.InstallDemoData(tx, n.accessList, n.scriptService)
@@ -122,6 +120,9 @@ func (n *Initial) InstallDemoData() {
 		Name:  "initial_version",
 		Value: fmt.Sprintf("%d", currentVersion),
 	})
+	if err != nil {
+		tx.Rollback()
+	}
 	So(err, ShouldBeNil)
 
 	tx.Commit()

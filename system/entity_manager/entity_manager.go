@@ -227,11 +227,16 @@ func (e *entityManager) List() (entities []m.EntityShort, err error) {
 
 // Spawn ...
 func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) {
+
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
 	actor = constructor()
 	info := actor.Info()
+
+	defer func(entityId common.EntityId) {
+		log.Infof("Loaded %v", entityId)
+	}(info.Id)
 
 	var entityId = info.Id
 
@@ -248,8 +253,6 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 		Queue:    queue,
 		OldState: GetEventState(actor),
 	}
-
-	log.Infof("Loaded %v", entityId)
 
 	//e.metric.Update(metrics.EntityAdd{Num: 1})
 

@@ -110,7 +110,7 @@ __init() {
 
     mkdir -p ${TMP_DIR}
     cd ${ROOT}
-    go mod vendor
+    go mod tidy
     cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
 }
 
@@ -160,12 +160,20 @@ __build_pingmq() {
 
     cd ${TMP_DIR}
 
+#todo need fix xgo build
+#    echo ""
+#    echo "build command:"
+#    echo "xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq"
+#    echo ""
+#
+#    xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq
+
     echo ""
     echo "build command:"
-    echo "xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq"
+    echo "cd ${ROOT}/cmd/pingmq && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${ROOT}/bin/pingmq"
     echo ""
 
-    xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq
+    cd ${ROOT}/cmd/pingmq && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${ROOT}/bin/pingmq
 
     chmod +x ${ROOT}/bin/pingmq
     cp ${ROOT}/bin/pingmq ${TMP_DIR}
@@ -187,12 +195,20 @@ __build() {
 
     echo "BRANCH ${BRANCH}"
 
+#todo need fix xgo build
+#    echo ""
+#    echo "build command:"
+#    echo "xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags='${GOBUILD_LDFLAGS}' ${ROOT}"
+#    echo ""
+#
+#    xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${ROOT}
+
     echo ""
     echo "build command:"
-    echo "xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags='${GOBUILD_LDFLAGS}' ${ROOT}"
+    echo "cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${EXEC}"
     echo ""
 
-    xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${ROOT}
+    cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${EXEC}
 
     mkdir -p ${TMP_DIR}/api/server/v1/docs/swagger
     cp ${ROOT}/api/server/v1/docs/swagger/swagger.yaml ${TMP_DIR}/api/server/v1/docs/swagger/
@@ -252,9 +268,9 @@ __docker_deploy() {
 __test() {
     cd ${ROOT}
 
-    go test -v ./tests/api
+    go test -v ./tests/models
+    go test -v ./tests/plugins
     go test -v ./tests/scripts
-    go test -v ./tests/workflow
 }
 
 main "$@"

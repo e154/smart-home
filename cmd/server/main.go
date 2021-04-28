@@ -16,8 +16,12 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package graceful_service
+package main
 
-// GracefulServiceConfig ...
-type GracefulServiceConfig struct {
+import (
+	"github.com/e154/smart-home/cmd/server/commands"
+)
+
+func main() {
+	commands.Server.Execute()
 }
