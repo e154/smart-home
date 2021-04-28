@@ -50,7 +50,6 @@ import (
 func BuildContainer() (container *dig.Container) {
 
 	container = dig.New()
-	container.Provide(NewGracefulServiceConfig)
 	container.Provide(NewOrmConfig)
 	container.Provide(orm.NewOrm)
 	container.Provide(NewMigrationsConfig)

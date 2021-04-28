@@ -110,7 +110,7 @@ __init() {
 
     mkdir -p ${TMP_DIR}
     cd ${ROOT}
-    go mod vendor
+    go mod tidy
     cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
 }
 

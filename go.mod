@@ -7,7 +7,6 @@ require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
-	github.com/afiskon/go-actors v0.0.0-20190805150842-126e8e4f540a
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/dop251/goja v0.0.0-20210317175251-bb14c2267b76
@@ -49,8 +48,6 @@ require (
 	github.com/smartystreets/assertions v1.0.1
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/cobra v1.1.3
-	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.6.1
 	github.com/surge/glog v0.0.0-20141108051140-2578deb2b95c // indirect
 	github.com/swaggo/swag v1.3.2
 	github.com/t-tiger/gorm-bulk-insert v1.3.0
