@@ -79,7 +79,7 @@ func (e *EntityActor) setPosition(zoneAttr m.EntityAttributes) {
 		return
 	}
 
-	e.eventBus.Publish(TopicPluginWeather, event_bus.EventSubStateChanged{
+	e.eventBus.Publish(TopicPluginWeather, EventSubStateChanged{
 		Type:       e.Id.Type(),
 		EntityId:   e.Id,
 		State:      SubStatePositionUpdate,
