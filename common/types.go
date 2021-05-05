@@ -65,9 +65,6 @@ const (
 	Frozen = StatusType("frozen")
 )
 
-// DeviceType ...
-type DeviceType string
-
 // MapElementPrototypeId ...
 type MapElementPrototypeId interface{}
 

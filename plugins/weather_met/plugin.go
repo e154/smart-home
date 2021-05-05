@@ -143,7 +143,7 @@ func (p *plugin) eventHandler(msg interface{}) {
 
 		p.addZone()
 
-	case event_bus.EventSubStateChanged:
+	case weather.EventSubStateChanged:
 		if v.Type != "weather" || v.State != weather.SubStatePositionUpdate {
 			return
 		}

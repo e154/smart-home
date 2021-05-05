@@ -28,7 +28,6 @@ import (
 // ControllersV1 ...
 type ControllersV1 struct {
 	Index        *ControllerIndex
-	Node         *ControllerNode
 	Swagger      *ControllerSwagger
 	Script       *ControllerScript
 	Role         *ControllerRole
@@ -52,7 +51,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 	common := NewControllerCommon(adaptors, accessList, command)
 	return &ControllersV1{
 		Index:        NewControllerIndex(common),
-		Node:         NewControllerNode(common),
 		Swagger:      NewControllerSwagger(common),
 		Script:       NewControllerScript(common, scriptService),
 		Role:         NewControllerRole(common),

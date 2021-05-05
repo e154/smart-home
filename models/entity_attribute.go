@@ -53,12 +53,15 @@ func (a EntityAttribute) Int64() int64 {
 }
 
 func (a EntityAttribute) Time() time.Time {
+	if value, ok := a.Value.(time.Time); ok {
+		return value
+	}
 	if value, ok := a.Value.(string); ok {
-		if t, err := time.Parse(value, time.RFC3339); err == nil {
+		if t, err := time.Parse(time.RFC3339, value); err == nil {
 			return t
 		}
 	}
-	return time.Now()
+	return time.Time{}
 }
 
 func (a EntityAttribute) Bool() bool {

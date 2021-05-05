@@ -1,0 +1,191 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
+package node
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scripts"
+	"sync"
+	"time"
+)
+
+type EntityActor struct {
+	entity_manager.BaseActor
+	adaptors      *adaptors.Adaptors
+	scriptService scripts.ScriptService
+	eventBus      event_bus.EventBus
+	mqttClient    mqtt.MqttCli
+	stateMu       *sync.Mutex
+	quit          chan struct{}
+	lastPing      time.Time
+	lastState     m.EntityAttributeValue
+}
+
+func NewEntityActor(entity *m.Entity,
+	entityManager entity_manager.EntityManager,
+	adaptors *adaptors.Adaptors,
+	scriptService scripts.ScriptService,
+	eventBus event_bus.EventBus,
+	mqttClient mqtt.MqttCli) (actor *EntityActor) {
+
+	actor = &EntityActor{
+		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
+		adaptors:      adaptors,
+		scriptService: scriptService,
+		eventBus:      eventBus,
+		mqttClient:    mqttClient,
+		stateMu:       &sync.Mutex{},
+		lastPing:      time.Time{},
+		lastState:     m.EntityAttributeValue{},
+	}
+
+	actor.Manager = entityManager
+	actor.Attrs = NewAttr()
+
+	actor.States = map[string]entity_manager.ActorState{
+		"wait": {
+			Name:        "wait",
+			Description: "Wait",
+		},
+		"connected": {
+			Name:        "connected",
+			Description: "Connected",
+		},
+		"error": {
+			Name:        "error",
+			Description: "Error",
+		},
+	}
+
+	return actor
+}
+
+func (e *EntityActor) destroy() {
+
+	e.mqttClient.Unsubscribe(e.mqttTopic("resp/#"))
+	e.mqttClient.Unsubscribe(e.mqttTopic("ping"))
+	e.eventBus.Unsubscribe(e.localTopic("req"), e.onMessage)
+
+	e.quit <- struct{}{}
+}
+
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
+
+	e.quit = make(chan struct{})
+
+	state := e.States["wait"]
+	e.State = &state
+
+	go func() {
+		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				e.updateStatus()
+
+			case <-e.quit:
+				close(e.quit)
+				return
+			}
+		}
+	}()
+
+	// local sub
+	e.eventBus.Subscribe(e.localTopic("req"), e.onMessage)
+
+	// mqtt sub
+	e.mqttClient.Subscribe(e.mqttTopic("resp/#"), e.mqttOnMessage)
+	e.mqttClient.Subscribe(e.mqttTopic("ping"), e.ping)
+
+	return e
+}
+
+// event from plugin.node/nodeName/req
+func (e *EntityActor) onMessage(msg MessageRequest) {
+	b, _ := json.Marshal(msg)
+	e.mqttClient.Publish(e.mqttTopic("req"), b)
+}
+
+// event from home/node/nodeName/#
+func (e *EntityActor) mqttOnMessage(_ mqtt.MqttCli, msg mqtt.Message) {
+	// resend msg to plugin.node/nodeName/resp
+	resp := MessageResponse{}
+	if err := json.Unmarshal(msg.Payload, &resp); err != nil {
+		log.Warn(err.Error())
+		return
+	}
+	e.eventBus.Publish(e.localTopic("resp"), resp)
+}
+
+// event from home/node/nodeName/ping
+func (e *EntityActor) ping(_ mqtt.MqttCli, msg mqtt.Message) {
+	e.stateMu.Lock()
+	defer e.stateMu.Unlock()
+
+	e.lastPing = time.Now()
+
+	json.Unmarshal(msg.Payload, &e.lastState)
+}
+
+func (e *EntityActor) updateStatus() {
+	e.stateMu.Lock()
+	defer e.stateMu.Unlock()
+
+	var state = "wait"
+	if time.Now().Sub(e.lastPing).Seconds() < 2 {
+		state = "connected"
+	}
+
+	oldState := e.GetEventState(e)
+	e.Now(oldState)
+
+	e.AttrMu.Lock()
+	changed, _ := e.Attrs.Deserialize(e.lastState)
+	e.AttrMu.Unlock()
+
+	if !changed && e.State.Name == state {
+		return
+	}
+
+	if state, ok := e.States[state]; ok {
+		e.State = &state
+	}
+
+	e.Send(entity_manager.MessageStateChanged{
+		StorageSave: false,
+		OldState:    oldState,
+		NewState:    e.GetEventState(e),
+	})
+}
+
+func (e *EntityActor) localTopic(r string) string {
+	return fmt.Sprintf("%s/%s/%s", TopicPluginNode, e.Name, r)
+}
+
+func (e *EntityActor) mqttTopic(r string) string {
+	return fmt.Sprintf("home/node/%s/%s", e.Name, r)
+}
