@@ -36,7 +36,6 @@ var (
 type Adaptors struct {
 	db                *gorm.DB
 	isTx              bool
-	Node              INode
 	Script            IScript
 	Role              IRole
 	Permission        IPermission
@@ -83,7 +82,6 @@ func NewAdaptors(lc fx.Lifecycle,
 
 	adaptors = &Adaptors{
 		db:                db,
-		Node:              GetNodeAdaptor(db),
 		Script:            GetScriptAdaptor(db),
 		Role:              GetRoleAdaptor(db),
 		Permission:        GetPermissionAdaptor(db),

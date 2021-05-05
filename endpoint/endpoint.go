@@ -38,7 +38,6 @@ type Endpoint struct {
 	Image           *ImageEndpoint
 	Log             *LogEndpoint
 	Zone            *ZoneEndpoint
-	Node            *NodeEndpoint
 	Role            *RoleEndpoint
 	Script          *ScriptEndpoint
 	User            *UserEndpoint
@@ -62,7 +61,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Auth:            NewAuthEndpoint(common),
 		Image:           NewImageEndpoint(common),
 		Log:             NewLogEndpoint(common),
-		Node:            NewNodeEndpoint(common),
 		Role:            NewRoleEndpoint(common),
 		Script:          NewScriptEndpoint(common),
 		User:            NewUserEndpoint(common),

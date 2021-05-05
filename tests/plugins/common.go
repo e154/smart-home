@@ -21,6 +21,7 @@ package plugins
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/plugins/scene"
 	"github.com/e154/smart-home/plugins/script"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
@@ -228,3 +229,31 @@ func GetNewZone() *m.Entity {
 		},
 	}
 }
+
+
+func GetNewNode() *m.Entity {
+	return &m.Entity{
+		Id:          "node.home",
+		Description: "main node",
+		Type:        "node",
+		AutoLoad:    true,
+		Attributes: m.EntityAttributes{
+			node.AttrEncryptedPassword: {
+				Name:  node.AttrEncryptedPassword,
+				Type:  common.EntityAttributeString,
+				Value: "qwe",
+			},
+			zone.AttrLon: {
+				Name:  zone.AttrLon,
+				Type:  common.EntityAttributeFloat,
+				Value: 83.0335,
+			},
+			zone.AttrElevation: {
+				Name:  zone.AttrElevation,
+				Type:  common.EntityAttributeFloat,
+				Value: 150,
+			},
+		},
+	}
+}
+

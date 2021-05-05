@@ -51,14 +51,6 @@ func (s *Server) setControllers() {
 	v1.POST("/reset", s.ControllersV1.Auth.Reset)
 	v1.GET("/access_list", s.af.Auth, s.ControllersV1.Auth.AccessList)
 
-	// nodes
-	v1.POST("/node", s.af.Auth, s.ControllersV1.Node.Add)
-	v1.GET("/node/:id", s.af.Auth, s.ControllersV1.Node.GetById)
-	v1.PUT("/node/:id", s.af.Auth, s.ControllersV1.Node.Update)
-	v1.DELETE("/node/:id", s.af.Auth, s.ControllersV1.Node.Delete)
-	v1.GET("/nodes", s.af.Auth, s.ControllersV1.Node.GetList)
-	v1.GET("/nodes/search", s.af.Auth, s.ControllersV1.Node.Search)
-
 	// scripts
 	v1.POST("/script", s.af.Auth, s.ControllersV1.Script.Add)
 	v1.GET("/script/:id", s.af.Auth, s.ControllersV1.Script.GetById)
