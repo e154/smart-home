@@ -19,8 +19,10 @@
 package plugins
 
 import (
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/modbus_rtu"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/plugins/scene"
 	"github.com/e154/smart-home/plugins/script"
@@ -238,4 +240,24 @@ func GetNewNode() *m.Entity {
 		AutoLoad:    true,
 		Attributes:  node.NewAttr(),
 	}
+}
+
+func GetNewModbusRtu() *m.Entity {
+	return &m.Entity{
+		Id:          "modbus_rtu.dev1",
+		Description: "modbus_rtu entity",
+		Type:        "modbus_rtu",
+		AutoLoad:    true,
+		Attributes:  modbus_rtu.NewAttr(),
+	}
+}
+
+func AddPlugin(adaptors *adaptors.Adaptors, name string) (err error) {
+	err = adaptors.Plugin.CreateOrUpdate(m.Plugin{
+		Name:    name,
+		Version: "0.0.1",
+		Enabled: true,
+		System:  true,
+	})
+	return
 }

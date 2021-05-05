@@ -22,7 +22,6 @@ import (
 	"encoding/json"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -54,12 +53,7 @@ func TestNode(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// register plugins
-			err = adaptors.Plugin.CreateOrUpdate(m.Plugin{
-				Name:    "node",
-				Version: "0.0.1",
-				Enabled: true,
-				System:  true,
-			})
+			err = AddPlugin(adaptors, "node")
 			So(err, ShouldBeNil)
 
 			go mqttServer.Start()

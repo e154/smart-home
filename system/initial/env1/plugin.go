@@ -61,5 +61,6 @@ func (n PluginManager) Create() (home *m.Plugin) {
 	n.addPlugin("zigbee2mqtt", true)
 	n.addPlugin("zone", true)
 	n.addPlugin("node", true)
+	n.addPlugin("modbus_rtu", true)
 	return
 }

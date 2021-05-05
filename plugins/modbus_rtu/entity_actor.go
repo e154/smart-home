@@ -16,41 +16,43 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package modbus
+package modbus_rtu
 
 import (
-	"fmt"
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/scripts"
 	"sync"
 )
 
 type EntityActor struct {
 	entity_manager.BaseActor
-	positionLock        *sync.Mutex
-	lat, lon, elevation float64
-	solarAzimuth        float64
-	solarElevation      float64
-	phase               string
-	horizonState        string
+	adaptors      *adaptors.Adaptors
+	scriptService scripts.ScriptService
+	eventBus      event_bus.EventBus
+	stateMu       *sync.Mutex
 }
 
-func NewEntityActor(name string, entityManager entity_manager.EntityManager) *EntityActor {
+func NewEntityActor(entity *m.Entity,
+	entityManager entity_manager.EntityManager,
+	adaptors *adaptors.Adaptors,
+	scriptService scripts.ScriptService,
+	eventBus event_bus.EventBus) (actor *EntityActor) {
 
-	entity := &EntityActor{
-		BaseActor: entity_manager.BaseActor{
-			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityModbus, name)),
-			Name:        name,
-			Description: "modbus plugin",
-			EntityType:  EntityModbus,
-			AttrMu:      &sync.Mutex{},
-			Attrs:       NewAttr(),
-			Manager:     entityManager,
-		},
-		positionLock: &sync.Mutex{},
+	actor = &EntityActor{
+		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
+		adaptors:      adaptors,
+		scriptService: scriptService,
+		eventBus:      eventBus,
+		stateMu:       &sync.Mutex{},
 	}
 
-	return entity
+	actor.Manager = entityManager
+	actor.Attrs = NewAttr()
+
+	return actor
 }
 
 func (e *EntityActor) Spawn() entity_manager.PluginActor {
