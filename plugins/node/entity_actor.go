@@ -99,7 +99,7 @@ func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	e.State = &state
 
 	go func() {
-		ticker := time.NewTicker(time.Second * 5)
+		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
 
 		for {
@@ -133,14 +133,12 @@ func (e *EntityActor) onMessage(msg MessageRequest) {
 // event from home/node/nodeName/#
 func (e *EntityActor) mqttOnMessage(_ mqtt.MqttCli, msg mqtt.Message) {
 	// resend msg to plugin.node/nodeName/resp
-	e.eventBus.Publish(e.localTopic("resp"), MqttMessage{
-		Dup:      msg.Dup,
-		Qos:      msg.Qos,
-		Retained: msg.Retained,
-		Topic:    msg.Topic,
-		PacketID: msg.PacketID,
-		Payload:  msg.Payload,
-	})
+	resp := MessageResponse{}
+	if err := json.Unmarshal(msg.Payload, &resp); err != nil {
+		log.Warn(err.Error())
+		return
+	}
+	e.eventBus.Publish(e.localTopic("resp"), resp)
 }
 
 // event from home/node/nodeName/ping
@@ -189,5 +187,5 @@ func (e *EntityActor) localTopic(r string) string {
 }
 
 func (e *EntityActor) mqttTopic(r string) string {
-	return fmt.Sprintf("home/node/%s/%s", e.Id.Name(), r)
+	return fmt.Sprintf("home/node/%s/%s", e.Name, r)
 }

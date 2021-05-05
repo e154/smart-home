@@ -73,7 +73,6 @@ func (p *plugin) Load(service plugins.Service) error {
 		return nil
 	}
 	p.isStarted.Store(true)
-	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.node")
 
@@ -85,24 +84,11 @@ func (p *plugin) Unload() error {
 		return nil
 	}
 	p.mqttClient.UnsubscribeAll()
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return nil
 }
 
 func (p *plugin) Name() string {
 	return Name
-}
-
-func (p *plugin) eventHandler(msg interface{}) {
-
-	switch v := msg.(type) {
-	case event_bus.EventAddedNewEntity:
-		_ = v
-	case event_bus.EventStateChanged:
-	case event_bus.EventRemoveEntity:
-	}
-
-	return
 }
 
 func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {

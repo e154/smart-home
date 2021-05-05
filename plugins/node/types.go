@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"time"
 )
 
 const (
@@ -96,4 +97,13 @@ type MessageResponse struct {
 	Properties json.RawMessage `json:"properties"`
 	Response   json.RawMessage `json:"response"`
 	Status     string          `json:"status"`
+}
+
+type MessageStatus struct {
+	Status    string    `json:"status"`
+	Thread    int       `json:"thread"`
+	Rps       int64     `json:"rps"`
+	Min       int64     `json:"min"`
+	Max       int64     `json:"max"`
+	StartedAt time.Time `json:"started_at"`
 }

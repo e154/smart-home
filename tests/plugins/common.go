@@ -230,30 +230,12 @@ func GetNewZone() *m.Entity {
 	}
 }
 
-
 func GetNewNode() *m.Entity {
 	return &m.Entity{
-		Id:          "node.home",
+		Id:          "node.main",
 		Description: "main node",
 		Type:        "node",
 		AutoLoad:    true,
-		Attributes: m.EntityAttributes{
-			node.AttrEncryptedPassword: {
-				Name:  node.AttrEncryptedPassword,
-				Type:  common.EntityAttributeString,
-				Value: "qwe",
-			},
-			zone.AttrLon: {
-				Name:  zone.AttrLon,
-				Type:  common.EntityAttributeFloat,
-				Value: 83.0335,
-			},
-			zone.AttrElevation: {
-				Name:  zone.AttrElevation,
-				Type:  common.EntityAttributeFloat,
-				Value: 150,
-			},
-		},
+		Attributes:  node.NewAttr(),
 	}
 }
-
