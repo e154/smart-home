@@ -115,6 +115,14 @@ func TestZone(t *testing.T) {
 			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
 			//...
 			wgAdd.Wait()
 			entityManager.SetState(zoneEnt.Id, entity_manager.EntityStateParams{
@@ -128,12 +136,6 @@ func TestZone(t *testing.T) {
 
 			wgUpdate.Wait()
 			time.Sleep(time.Millisecond * 500)
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

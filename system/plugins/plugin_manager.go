@@ -87,7 +87,6 @@ func (p *pluginManager) Start() {
 }
 
 func (p *pluginManager) Shutdown() {
-	log.Info("Shutdown")
 
 	if !p.isStarted.Load() {
 		return
@@ -103,6 +102,8 @@ func (p *pluginManager) Shutdown() {
 			plugin.Unload()
 		}
 	}
+
+	log.Info("Shutdown")
 }
 
 func (p *pluginManager) GetPlugin(t string) (plugin interface{}, err error) {

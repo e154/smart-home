@@ -16,24 +16,14 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package triggers
+package container
 
 import (
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
-type baseTrigger struct {
-	eventBus     event_bus.EventBus
-	msgQueue     message_queue.MessageQueue
-	functionName string
-	name         string
-}
-
-func (b *baseTrigger) Name() string {
-	return b.name
-}
-
-func (b *baseTrigger) FunctionName() string {
-	return b.functionName
+// NewZigbee2mqttConfig ...
+func NewZigbee2mqttConfig(cfg *config.AppConfig) *zigbee2mqtt.Config {
+	return &zigbee2mqtt.Config{}
 }

@@ -113,7 +113,13 @@ automationTriggerSystem = (msg)->
 			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
-			time.Sleep(time.Millisecond * 500)
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
 
 			eventBus.Publish(event_bus.TopicSystemStart, "started")
 
@@ -129,11 +135,6 @@ automationTriggerSystem = (msg)->
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 			So(lastEvent.Load(), ShouldEqual, "START")
 
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

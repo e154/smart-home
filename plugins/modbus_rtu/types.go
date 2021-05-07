@@ -24,8 +24,12 @@ import (
 )
 
 const (
-	Name         = "modbus_rtu"
-	EntityModbus = common.EntityType("modbus_rtu")
+	Name            = "modbus_rtu"
+	EntityModbusRtu = common.EntityType("modbus_rtu")
+)
+
+const (
+	FuncEntityAction = "entityAction"
 )
 
 const (
@@ -69,4 +73,11 @@ func NewAttr() m.EntityAttributes {
 			Type: common.EntityAttributeString,
 		},
 	}
+}
+
+// ModBusResponse ...
+type ModBusResponse struct {
+	Error  string   `json:"error"`
+	Time   float64  `json:"time"`
+	Result []uint16 `json:"result"`
 }

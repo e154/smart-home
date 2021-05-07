@@ -16,24 +16,27 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package triggers
+package container
 
 import (
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/orm"
 )
 
-type baseTrigger struct {
-	eventBus     event_bus.EventBus
-	msgQueue     message_queue.MessageQueue
-	functionName string
-	name         string
+// NewOrmConfig ...
+func NewOrmConfig(cfg *config.AppConfig) *orm.Config {
+	return &orm.Config{
+		Alias:           "default",
+		Name:            cfg.PgName,
+		User:            cfg.PgUser,
+		Password:        cfg.PgPass,
+		Host:            cfg.PgHost,
+		Port:            cfg.PgPort,
+		Debug:           cfg.PgDebug,
+		Logger:          cfg.PgLogger,
+		MaxIdleConns:    cfg.PgMaxIdleConns,
+		MaxOpenConns:    cfg.PgMaxOpenConns,
+		ConnMaxLifeTime: cfg.PgConnMaxLifeTime,
+	}
 }
 
-func (b *baseTrigger) Name() string {
-	return b.name
-}
-
-func (b *baseTrigger) FunctionName() string {
-	return b.functionName
-}

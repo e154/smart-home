@@ -65,7 +65,10 @@ func (u *plugin) Load(service plugins.Service) (nil error) {
 }
 
 func (u *plugin) Unload() (err error) {
-
+	if !u.isStarted.Load() {
+		return
+	}
+	u.isStarted.Store(false)
 	return
 }
 

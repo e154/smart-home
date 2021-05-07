@@ -33,6 +33,8 @@ const (
 	SystemQueueSize    = 10
 )
 
+var _ ITrigger = (*SystemTrigger)(nil)
+
 type SystemTrigger struct {
 	baseTrigger
 }

@@ -96,18 +96,6 @@ func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (u *EntityActor) Receive(message entity_manager.Message) {
-	switch v := message.Payload.(type) {
-	case entity_manager.MessageCallAction:
-		switch v.Name {
-		case "check":
-			u.check()
-		default:
-			log.Warnf("unknown action name %v", v.Name)
-		}
-	}
-}
-
 func (u *EntityActor) setState(v string) {
 
 	switch v {

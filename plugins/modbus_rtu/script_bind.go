@@ -16,24 +16,27 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package triggers
+package modbus_rtu
 
 import (
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/entity_manager"
 )
 
-type baseTrigger struct {
-	eventBus     event_bus.EventBus
-	msgQueue     message_queue.MessageQueue
-	functionName string
-	name         string
+// Javascript Binding
+//
+// Actor
+//	.SetState(params)
+//
+type ScriptBind struct {
+	actor *EntityActor
 }
 
-func (b *baseTrigger) Name() string {
-	return b.name
+// NewScriptBind...
+func NewScriptBind(actor *EntityActor) *ScriptBind {
+	return &ScriptBind{actor: actor}
 }
 
-func (b *baseTrigger) FunctionName() string {
-	return b.functionName
+// SetState...
+func (s *ScriptBind) SetState(params entity_manager.EntityStateParams) {
+	s.actor.setState(params)
 }

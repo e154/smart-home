@@ -32,6 +32,7 @@ type EntityActor struct {
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 	eventBus      event_bus.EventBus
+	actionPool    chan event_bus.EventCallAction
 	stateMu       *sync.Mutex
 }
 
@@ -46,15 +47,66 @@ func NewEntityActor(entity *m.Entity,
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
+		actionPool:    make(chan event_bus.EventCallAction, 10),
 		stateMu:       &sync.Mutex{},
 	}
 
 	actor.Manager = entityManager
 	actor.Attrs = NewAttr()
 
+	// Actions
+	for _, a := range actor.Actions {
+		if a.ScriptEngine != nil {
+			// bind
+			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
+			a.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(eventBus))
+			a.ScriptEngine.Do()
+		}
+	}
+
+	if actor.ScriptEngine == nil {
+		return
+	}
+
+	// bind
+	actor.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
+
+	// mqtt worker
+	//go func() {
+	//	for message := range actor.mqttMessageQueue {
+	//		actor.mqttNewMessage(message)
+	//	}
+	//}()
+
+	// action worker
+	go func() {
+		for msg := range actor.actionPool {
+			actor.runAction(msg)
+		}
+	}()
+
 	return actor
 }
 
 func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
+}
+
+func (e *EntityActor) setState(params entity_manager.EntityStateParams) (changed bool) {
+	return
+}
+
+func (e *EntityActor) addAction(event event_bus.EventCallAction) {
+	e.actionPool <- event
+}
+
+func (e *EntityActor) runAction(msg event_bus.EventCallAction) {
+	action, ok := e.Actions[msg.ActionName]
+	if !ok {
+		log.Warnf("action %s not found", msg.ActionName)
+		return
+	}
+	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId.Name(), action.Name); err != nil {
+		log.Error(err.Error())
+	}
 }

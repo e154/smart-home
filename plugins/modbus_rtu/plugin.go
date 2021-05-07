@@ -78,6 +78,7 @@ func (p *plugin) Unload() error {
 	if !p.isStarted.Load() {
 		return nil
 	}
+	p.isStarted.Store(false)
 	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return nil
 }
@@ -89,13 +90,13 @@ func (p *plugin) Name() string {
 func (p *plugin) eventHandler(msg interface{}) {
 
 	switch v := msg.(type) {
-	case event_bus.EventAddedNewEntity:
 	case event_bus.EventStateChanged:
-		if v.Type != "node" {
+	case event_bus.EventCallAction:
+		actor, ok := p.actors[v.EntityId]
+		if !ok {
 			return
 		}
-
-	case event_bus.EventRemoveEntity:
+		actor.addAction(v)
 	}
 
 	return
@@ -117,8 +118,17 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	return
 }
 
-func (p *plugin) RemoveActor(entityId common.EntityId) error {
-	return nil
+func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
+	p.actorsLock.Lock()
+	defer p.actorsLock.Unlock()
+
+	if _, ok := p.actors[entityId]; !ok {
+		err = fmt.Errorf("not found")
+		return
+	}
+
+	delete(p.actors, entityId)
+	return
 }
 
 func (p *plugin) Type() plugins.PluginType {

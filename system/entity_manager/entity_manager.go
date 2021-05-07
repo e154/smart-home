@@ -104,16 +104,16 @@ LOOP:
 
 // Shutdown ...
 func (e *entityManager) Shutdown() {
-	log.Info("Shutdown")
 
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
-	for pid, actorInfo := range e.actors {
-		close(actorInfo.Queue)
-		delete(e.actors, pid)
+	for id, actor := range e.actors {
+		actor.quit <- struct{}{}
+		delete(e.actors, id)
 	}
-	return
+
+	log.Info("Shutdown")
 }
 
 // SetMetric ...
@@ -235,7 +235,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	info := actor.Info()
 
 	defer func(entityId common.EntityId) {
-		log.Infof("Loaded %v", entityId)
+		log.Infof("loaded %v", entityId)
 	}(info.Id)
 
 	var entityId = info.Id
@@ -245,12 +245,9 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 		return
 	}
 
-	// todo fix
-	queue := make(chan Message, 99)
-
 	e.actors[entityId] = &actorInfo{
 		Actor:    actor,
-		Queue:    queue,
+		quit:     make(chan struct{}),
 		OldState: GetEventState(actor),
 	}
 
@@ -259,7 +256,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	go func() {
 		defer func() {
 
-			log.Infof("Unload %v", entityId)
+			log.Infof("unload %v", entityId)
 
 			e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveEntity{
 				Type:     info.Type,
@@ -276,9 +273,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			//e.metric.Update(metrics.EntityDelete{Num: 1})
 		}()
 
-		for msg := range queue {
-			actor.Receive(msg)
-		}
+		<-e.actors[entityId].quit
 	}()
 
 	attr := actor.Attributes()
@@ -355,68 +350,27 @@ func (e *entityManager) Send(message Message) error {
 		})
 
 		return nil
-
-	case MessageCallAction:
-
-		e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallAction{
-			Type:       message.To.Type(),
-			EntityId:   message.To,
-			ActionName: v.Name,
-			Args:       v.Arg,
-		})
-
-	case MessageCallScene:
-
-		e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallScene{
-			Type:     message.To.Type(),
-			EntityId: message.To,
-			Args:     v.Arg,
-		})
 	}
 
-	if message.To == "" {
-		return nil
-	}
-
-	e.lock.Lock()
-	defer e.lock.Unlock()
-
-	if actorInfo, ok := e.actors[message.To]; ok {
-		actorInfo.Queue <- message
-	}
 	return nil
-}
-
-// Broadcast ...
-func (e *entityManager) Broadcast(message Message) {
-	e.lock.Lock()
-	defer e.lock.Unlock()
-
-	for _, actorInfo := range e.actors {
-		actorInfo.Queue <- message
-	}
 }
 
 // CallAction ...
 func (e *entityManager) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
-
-	go e.Send(Message{
-		To: id,
-		Payload: MessageCallAction{
-			Name: action,
-			Arg:  arg,
-		},
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallAction{
+		Type:       id.Type(),
+		EntityId:   id,
+		ActionName: action,
+		Args:       arg,
 	})
 }
 
 // CallScene ...
 func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}) {
-
-	go e.Send(Message{
-		To: id,
-		Payload: MessageCallScene{
-			Arg: arg,
-		},
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallScene{
+		Type:     id.Type(),
+		EntityId: id,
+		Args:     arg,
 	})
 }
 
@@ -472,8 +426,8 @@ func (e *entityManager) Remove(id common.EntityId) {
 
 func (e *entityManager) unsafeRemove(id common.EntityId) {
 
-	if actorInfo, ok := e.actors[id]; ok {
-		close(actorInfo.Queue)
+	if actor, ok := e.actors[id]; ok {
+		actor.quit <- struct{}{}
 	} else {
 		return
 	}

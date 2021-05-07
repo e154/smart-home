@@ -16,24 +16,21 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package triggers
+package container
 
 import (
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/config"
 )
 
-type baseTrigger struct {
-	eventBus     event_bus.EventBus
-	msgQueue     message_queue.MessageQueue
-	functionName string
-	name         string
-}
-
-func (b *baseTrigger) Name() string {
-	return b.name
-}
-
-func (b *baseTrigger) FunctionName() string {
-	return b.functionName
+// NewBackupConfig ...
+func NewBackupConfig(cfg *config.AppConfig) *backup.BackupConfig {
+	return &backup.BackupConfig{
+		Path:   cfg.SnapshotDir,
+		PgUser: cfg.PgUser,
+		PgPass: cfg.PgPass,
+		PgHost: cfg.PgHost,
+		PgName: cfg.PgName,
+		PgPort: cfg.PgPort,
+	}
 }

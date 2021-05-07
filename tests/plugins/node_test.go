@@ -70,6 +70,14 @@ func TestNode(t *testing.T) {
 			automation.Reload()
 			entityManager.LoadEntities(pluginManager)
 
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
 			time.Sleep(time.Millisecond * 500)
 
 			now := time.Now()
@@ -113,8 +121,7 @@ func TestNode(t *testing.T) {
 
 			// request
 			// ------------------------------------------------
-			wgRequest := sync.WaitGroup{}
-			wgRequest.Add(1)
+			wgRequest := make(chan struct{})
 			mqttCli := mqttServer.NewClient("cli")
 			mqttCli.Subscribe("home/node/main/req/#", func(client mqtt.MqttCli, message mqtt.Message) {
 				req := node.MessageRequest{}
@@ -122,7 +129,7 @@ func TestNode(t *testing.T) {
 				ctx.So(err, ShouldBeNil)
 				ctx.So(req.EntityId, ShouldEqual, "test.test")
 				ctx.So(req.DeviceType, ShouldEqual, "test")
-				wgRequest.Done()
+				wgRequest <- struct{}{}
 			})
 
 			req := node.MessageRequest{
@@ -131,10 +138,9 @@ func TestNode(t *testing.T) {
 				Properties: nil,
 				Command:    nil,
 			}
-			So(err, ShouldBeNil)
 			eventBus.Publish("plugin.node/main/req", req)
 
-			wgRequest.Wait()
+			<- wgRequest
 
 			// response
 			// ------------------------------------------------
@@ -159,12 +165,6 @@ func TestNode(t *testing.T) {
 			wgResp.Wait()
 
 			time.Sleep(time.Millisecond * 500)
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

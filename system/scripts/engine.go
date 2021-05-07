@@ -47,7 +47,7 @@ type Engine struct {
 	model      *m.Script
 	script     IScript
 	buf        []string
-	IsRun      bool
+	IsRun      bool //todo fix
 	functions  *Pull
 	structures *Pull
 }

@@ -16,24 +16,35 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package triggers
+package system
 
 import (
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
+	"fmt"
+	"github.com/e154/smart-home/system/logging"
+	. "github.com/e154/smart-home/tests/system/container"
+	"go.uber.org/dig"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
 )
 
-type baseTrigger struct {
-	eventBus     event_bus.EventBus
-	msgQueue     message_queue.MessageQueue
-	functionName string
-	name         string
+func init() {
+	apppath := filepath.Join(os.Getenv("PWD"), "../..")
+	os.Chdir(apppath)
 }
 
-func (b *baseTrigger) Name() string {
-	return b.name
-}
 
-func (b *baseTrigger) FunctionName() string {
-	return b.functionName
+func TestMain(m *testing.M) {
+
+	err := BuildContainer().Invoke(func(logger *logging.Logging,) {
+
+		time.Sleep(time.Millisecond * 500)
+
+		os.Exit(m.Run())
+	})
+
+	if err != nil {
+		fmt.Println("error:", dig.RootCause(err))
+	}
 }

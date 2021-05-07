@@ -34,6 +34,8 @@ const (
 	TimeQueueSize    = 10
 )
 
+var _ ITrigger = (*TimeTrigger)(nil)
+
 type subscribe struct {
 	callback reflect.Value
 	task     *cron.Task

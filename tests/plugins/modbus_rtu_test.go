@@ -29,7 +29,6 @@ import (
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 	"time"
@@ -37,12 +36,50 @@ import (
 
 func TestModbusRtu(t *testing.T) {
 
-	Convey("node", t, func(ctx C) {
+	const plugActionOnOffSourceScript = `
+
+getStatus =(status)->
+    if status == 1
+        return 'ON'
+    else
+        return 'OFF'
+
+writeRegisters =(d, c, r)->
+    res = ModbusRtu 'WriteMultipleRegisters', d, c, r
+    if res.error
+        print 'error: ', res.error
+
+checkStatus =->
+    COMMAND = []
+    FUNC = 'ReadHoldingRegisters'
+    ADDRESS = 0
+    COUNT = 16
+
+    res = ModbusRtu FUNC, ADDRESS, COUNT, COMMAND
+    if res.error
+        print 'error: ', res.error
+    else 
+        print 'ok: ', res.result
+        #newStatus = getStatus(res.Result[0])
+
+doOnAction = ->
+    writeRegisters(0, 1, [1])
+doOffAction = ->
+    writeRegisters(0, 1, [0])
+
+entityAction = (entityId, actionName)->
+    print '---action on/off--'
+    switch actionName
+        when 'ON' then doOnAction()
+        when 'OFF' then doOffAction()
+        when 'CHECK' then checkStatus()
+`
+
+	Convey("modbus_rtu", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
 			entityManager entity_manager.EntityManager,
-			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
 			eventBus event_bus.EventBus,
@@ -53,10 +90,28 @@ func TestModbusRtu(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "node")
+			err = AddPlugin(adaptors, "triggers")
 			err = AddPlugin(adaptors, "modbus_rtu")
 			So(err, ShouldBeNil)
 
 			go mqttServer.Start()
+
+			// add scripts
+			// ------------------------------------------------
+			plugActionOnOffScript := &m.Script{
+				Lang:        common.ScriptLangCoffee,
+				Name:        "plug script",
+				Source:      plugActionOnOffSourceScript,
+				Description: "on/off/check condition",
+			}
+
+			enginePlugOnOffScript, err := scriptService.NewEngine(plugActionOnOffScript)
+			So(err, ShouldBeNil)
+			err = enginePlugOnOffScript.Compile()
+			So(err, ShouldBeNil)
+
+			plugActionOnOffScript.Id, err = adaptors.Script.Add(plugActionOnOffScript)
+			So(err, ShouldBeNil)
 
 			// add entity
 			// ------------------------------------------------
@@ -64,26 +119,26 @@ func TestModbusRtu(t *testing.T) {
 			err = adaptors.Entity.Add(nodeEnt)
 			So(err, ShouldBeNil)
 
-			modbusEnt := GetNewModbusRtu()
-			modbusEnt.ParentId = &nodeEnt.Id
-			modbusEnt.Actions = []*m.EntityAction{
+			plugEnt := GetNewModbusRtu("plug")
+			plugEnt.ParentId = &nodeEnt.Id
+			plugEnt.Actions = []*m.EntityAction{
 				{
 					Name:        "ON",
 					Description: "включить",
-					//Script:      plugActionOnOffScript,
+					Script:      plugActionOnOffScript,
 				},
 				{
 					Name:        "OFF",
 					Description: "выключить",
-					//Script:      plugActionOnOffScript,
+					Script:      plugActionOnOffScript,
 				},
 				{
-					Name:        "CONDITION CHECK",
+					Name:        "CHECK",
 					Description: "condition check",
-					//Script:      plugActionOnOffScript,
+					Script:      plugActionOnOffScript,
 				},
 			}
-			modbusEnt.States = []*m.EntityState{
+			plugEnt.States = []*m.EntityState{
 				{
 					Name:        "ON",
 					Description: "on state",
@@ -97,17 +152,17 @@ func TestModbusRtu(t *testing.T) {
 					Description: "error state",
 				},
 			}
-			modbusEnt.Attributes[modbus_rtu.AttrSlaveId].Value = 1
-			modbusEnt.Attributes[modbus_rtu.AttrBaud].Value = 19200
-			modbusEnt.Attributes[modbus_rtu.AttrStopBits].Value = 1
-			modbusEnt.Attributes[modbus_rtu.AttrTimeout].Value = 100
-			modbusEnt.Attributes[modbus_rtu.AttrDataBits].Value = 8
-			modbusEnt.Attributes[modbus_rtu.AttrParity].Value = "none"
-			err = adaptors.Entity.Add(modbusEnt)
+			plugEnt.Attributes[modbus_rtu.AttrSlaveId].Value = 1
+			plugEnt.Attributes[modbus_rtu.AttrBaud].Value = 19200
+			plugEnt.Attributes[modbus_rtu.AttrStopBits].Value = 1
+			plugEnt.Attributes[modbus_rtu.AttrTimeout].Value = 100
+			plugEnt.Attributes[modbus_rtu.AttrDataBits].Value = 8
+			plugEnt.Attributes[modbus_rtu.AttrParity].Value = "none"
+			err = adaptors.Entity.Add(plugEnt)
 			So(err, ShouldBeNil)
 			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
-				EntityId:   modbusEnt.Id,
-				Attributes: modbusEnt.Attributes.Serialize(),
+				EntityId:   plugEnt.Id,
+				Attributes: plugEnt.Attributes.Serialize(),
 			})
 			So(err, ShouldBeNil)
 
@@ -116,15 +171,23 @@ func TestModbusRtu(t *testing.T) {
 			automation.Reload()
 			entityManager.LoadEntities(pluginManager)
 
+			defer func() {
+				mqttServer.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
+			time.Sleep(time.Millisecond * 500)
+
+			entityManager.CallAction(plugEnt.Id, "ON", nil)
+			entityManager.CallAction(plugEnt.Id, "OFF", nil)
+			entityManager.CallAction(plugEnt.Id, "CHECK", nil)
+			entityManager.CallAction(plugEnt.Id, "NULL", nil)
+
 			time.Sleep(time.Millisecond * 500)
 
 			//...
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

@@ -114,13 +114,16 @@ automationTriggerTime = (msg)->
 
 			time.Sleep(time.Second)
 
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

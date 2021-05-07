@@ -342,11 +342,17 @@ automationAction = (entityId)->
 			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
-			time.Sleep(time.Millisecond * 500)
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
 
 			//
 			// ------------------------------------------------
-			mqttCli := mqttServer.NewClient("cli")
+			mqttCli := mqttServer.NewClient("cli3")
 			mqttCli.Subscribe("zigbee2mqtt/"+zigbeePlugId+"/set", func(client mqtt.MqttCli, message mqtt.Message) {
 				if string(message.Payload) == `{"state":"ON"}` {
 					err = mqttCli.Publish("zigbee2mqtt/"+zigbeePlugId, []byte(`{"consumption":2.87,"energy":2.87,"linkquality":147,"power":0,"state":"ON","temperature":41,"voltage":240.5}`))
@@ -383,12 +389,6 @@ automationAction = (entityId)->
 			//wg.Wait()
 
 			time.Sleep(time.Second * 2)
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

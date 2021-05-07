@@ -32,6 +32,8 @@ const (
 	StateChangeQueueSize    = 10
 )
 
+var _ ITrigger = (*StateChangeTrigger)(nil)
+
 type StateChangeTrigger struct {
 	baseTrigger
 }
@@ -62,4 +64,14 @@ func (a *StateChangeTrigger) eventHandler(msg interface{}) {
 	case event_bus.EventStateChanged:
 		a.msgQueue.Publish(string(v.EntityId), v)
 	}
+}
+
+func (b *StateChangeTrigger) Subscribe(topic string, fn interface{}, _ interface{}) error {
+	log.Infof("subscribe topic %s", topic)
+	return b.msgQueue.Subscribe(topic, fn)
+}
+
+func (b *StateChangeTrigger) Unsubscribe(topic string, fn interface{}, _ interface{}) error {
+	log.Infof("unsubscribe topic %s", topic)
+	return b.msgQueue.Unsubscribe(topic, fn)
 }

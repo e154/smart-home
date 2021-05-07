@@ -21,6 +21,7 @@ package updater
 import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	atomic2 "go.uber.org/atomic"
 	"time"
@@ -45,7 +46,8 @@ type plugin struct {
 	entityManager entity_manager.EntityManager
 	isStarted     atomic2.Bool
 	pause         time.Duration
-	entity        *EntityActor
+	actor         *EntityActor
+	eventBus      event_bus.EventBus
 	quit          chan struct{}
 }
 
@@ -55,34 +57,37 @@ func New() plugins.Plugable {
 	}
 }
 
-func (u *plugin) Load(service plugins.Service) (err error) {
-	u.entityManager = service.EntityManager()
+func (p *plugin) Load(service plugins.Service) (err error) {
+	p.entityManager = service.EntityManager()
+	p.eventBus = service.EventBus()
 
-	if u.isStarted.Load() {
+	if p.isStarted.Load() {
 		return
 	}
 
-	u.entity = NewEntityActor(u.entityManager)
+	p.actor = NewEntityActor(p.entityManager)
 
-	u.entityManager.Spawn(u.entity.Spawn)
-	u.entity.check()
-	u.quit = make(chan struct{})
+	p.entityManager.Spawn(p.actor.Spawn)
+	p.actor.check()
+	p.quit = make(chan struct{})
+
+	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	go func() {
-		ticker := time.NewTicker(time.Hour * u.pause)
+		ticker := time.NewTicker(time.Hour * p.pause)
 
 		defer func() {
 			ticker.Stop()
-			u.isStarted.Store(false)
-			close(u.quit)
+			p.isStarted.Store(false)
+			close(p.quit)
 		}()
 
 		for {
 			select {
-			case <-u.quit:
+			case <-p.quit:
 				return
 			case <-ticker.C:
-				u.entity.check()
+				p.actor.check()
 			}
 		}
 	}()
@@ -90,15 +95,16 @@ func (u *plugin) Load(service plugins.Service) (err error) {
 	return
 }
 
-func (u *plugin) Unload() (err error) {
-	if !u.isStarted.Load() {
+func (p *plugin) Unload() (err error) {
+	if !p.isStarted.Load() {
 		return
 	}
-	u.quit <- struct{}{}
+	p.quit <- struct{}{}
+	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
 }
 
-func (u *plugin) Name() string {
+func (p *plugin) Name() string {
 	return name
 }
 
@@ -112,4 +118,20 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) eventHandler(msg interface{}) {
+
+	switch v := msg.(type) {
+	case event_bus.EventCallAction:
+		if v.EntityId != p.actor.Id {
+			return
+		}
+
+		if v.ActionName == "check" {
+			p.actor.check()
+		}
+	}
+
+	return
 }

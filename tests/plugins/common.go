@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -242,10 +243,10 @@ func GetNewNode() *m.Entity {
 	}
 }
 
-func GetNewModbusRtu() *m.Entity {
+func GetNewModbusRtu(name string) *m.Entity {
 	return &m.Entity{
-		Id:          "modbus_rtu.dev1",
-		Description: "modbus_rtu entity",
+		Id:          common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
+		Description: fmt.Sprintf("%s entity", name),
 		Type:        "modbus_rtu",
 		AutoLoad:    true,
 		Attributes:  modbus_rtu.NewAttr(),

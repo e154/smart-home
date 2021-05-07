@@ -16,24 +16,26 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package triggers
+package container
 
 import (
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
+	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/mqtt"
 )
 
-type baseTrigger struct {
-	eventBus     event_bus.EventBus
-	msgQueue     message_queue.MessageQueue
-	functionName string
-	name         string
-}
-
-func (b *baseTrigger) Name() string {
-	return b.name
-}
-
-func (b *baseTrigger) FunctionName() string {
-	return b.functionName
+// NewMqttConfig ...
+func NewMqttConfig(cfg *config.AppConfig) *mqtt.Config {
+	return &mqtt.Config{
+		Port:                       cfg.MqttPort,
+		RetryInterval:              cfg.MqttRetryInterval,
+		RetryCheckInterval:         cfg.MqttRetryCheckInterval,
+		SessionExpiryInterval:      cfg.MqttSessionExpiryInterval,
+		SessionExpireCheckInterval: cfg.MqttSessionExpireCheckInterval,
+		QueueQos0Messages:          cfg.MqttQueueQos0Messages,
+		MaxInflight:                cfg.MqttMaxInflight,
+		MaxAwaitRel:                cfg.MqttMaxAwaitRel,
+		MaxMsgQueue:                cfg.MqttMaxMsgQueue,
+		Logging:                    cfg.Logging,
+		DebugMode:                  cfg.Mode,
+	}
 }
