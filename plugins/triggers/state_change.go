@@ -58,7 +58,7 @@ func (a *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (a *StateChangeTrigger) eventHandler(msg interface{}) {
+func (a *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventStateChanged:

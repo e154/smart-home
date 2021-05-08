@@ -120,7 +120,7 @@ func (p *plugin) Version() string {
 	return "0.0.1"
 }
 
-func (p *plugin) eventHandler(msg interface{}) {
+func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventCallAction:

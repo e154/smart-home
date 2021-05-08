@@ -185,7 +185,7 @@ func (p *plugin) getActorByZigbeeDeviceId(deviceId string) (actor *EntityActor, 
 	return
 }
 
-func (p *plugin) eventHandler(msg interface{}) {
+func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventCallAction:

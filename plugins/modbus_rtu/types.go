@@ -21,15 +21,14 @@ package modbus_rtu
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/node"
 )
 
 const (
-	Name            = "modbus_rtu"
-	EntityModbusRtu = common.EntityType("modbus_rtu")
-)
-
-const (
-	FuncEntityAction = "entityAction"
+	Name                = "modbus_rtu"
+	EntityModbusRtu     = common.EntityType("modbus_rtu")
+	FuncEntityAction    = "entityAction"
+	DeviceTypeModbusRtu = node.DeviceType("modbus_rtu")
 )
 
 const (
@@ -80,4 +79,12 @@ type ModBusResponse struct {
 	Error  string   `json:"error"`
 	Time   float64  `json:"time"`
 	Result []uint16 `json:"result"`
+}
+
+// ModBusCommand ...
+type ModBusCommand struct {
+	Function string   `json:"function"`
+	Address  uint16   `json:"address"`
+	Count    uint16   `json:"count"`
+	Command  []uint16 `json:"command"`
 }

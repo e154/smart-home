@@ -19,10 +19,13 @@
 package plugins
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/modbus_rtu"
+	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
@@ -180,14 +183,200 @@ entityAction = (entityId, actionName)->
 
 			time.Sleep(time.Millisecond * 500)
 
-			entityManager.CallAction(plugEnt.Id, "ON", nil)
-			entityManager.CallAction(plugEnt.Id, "OFF", nil)
-			entityManager.CallAction(plugEnt.Id, "CHECK", nil)
-			entityManager.CallAction(plugEnt.Id, "NULL", nil)
+			ch := make(chan []byte)
+			mqttCli := mqttServer.NewClient("cli")
+			mqttCli.Subscribe("home/node/main/req/#", func(cli mqtt.MqttCli, message mqtt.Message) {
+				ch <- message.Payload
+			})
 
-			time.Sleep(time.Millisecond * 500)
+			// commands
+			t.Run("on command", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "ON", nil)
 
-			//...
+				ticker := time.NewTimer(time.Second * 1)
+				defer ticker.Stop()
+
+				var resp []byte
+				var ok bool
+				select {
+				case resp = <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
+				}
+
+				ctx.So(ok, ShouldBeTrue)
+
+				request := node.MessageRequest{}
+				err = json.Unmarshal(resp, &request)
+				ctx.So(err, ShouldBeNil)
+
+				cmd := modbus_rtu.ModBusCommand{}
+				err = json.Unmarshal(request.Command, &cmd)
+				ctx.So(err, ShouldBeNil)
+
+				prop := map[string]interface{}{}
+				err = json.Unmarshal(request.Properties, &prop)
+				ctx.So(err, ShouldBeNil)
+
+				ctx.So(request.EntityId, ShouldEqual, plugEnt.Id)
+				ctx.So(request.DeviceType, ShouldEqual, modbus_rtu.DeviceTypeModbusRtu)
+				ctx.So(prop["baud"], ShouldEqual, 19200)
+				ctx.So(prop["data_bits"], ShouldEqual, 8)
+				ctx.So(prop["parity"], ShouldEqual, "none")
+				ctx.So(prop["slave_id"], ShouldEqual, 1)
+				ctx.So(prop["sleep"], ShouldEqual, nil)
+				ctx.So(prop["stop_bits"], ShouldEqual, 1)
+				ctx.So(prop["timeout"], ShouldEqual, 100)
+
+				ctx.So(cmd.Function, ShouldEqual, "WriteMultipleRegisters")
+				ctx.So(cmd.Address, ShouldEqual, 0)
+				ctx.So(cmd.Count, ShouldEqual, 1)
+				ctx.So(cmd.Command, ShouldResemble, []uint16{1})
+
+				time.Sleep(time.Millisecond * 500)
+			})
+
+			t.Run("off command", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "OFF", nil)
+
+				ticker := time.NewTimer(time.Second * 1)
+				defer ticker.Stop()
+
+				var resp []byte
+				var ok bool
+				select {
+				case resp = <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
+				}
+
+				ctx.So(ok, ShouldBeTrue)
+
+				request := node.MessageRequest{}
+				err = json.Unmarshal(resp, &request)
+				ctx.So(err, ShouldBeNil)
+
+				cmd := modbus_rtu.ModBusCommand{}
+				err = json.Unmarshal(request.Command, &cmd)
+				ctx.So(err, ShouldBeNil)
+
+				prop := map[string]interface{}{}
+				err = json.Unmarshal(request.Properties, &prop)
+				ctx.So(err, ShouldBeNil)
+
+				ctx.So(request.EntityId, ShouldEqual, plugEnt.Id)
+				ctx.So(request.DeviceType, ShouldEqual, modbus_rtu.DeviceTypeModbusRtu)
+				ctx.So(prop["baud"], ShouldEqual, 19200)
+				ctx.So(prop["data_bits"], ShouldEqual, 8)
+				ctx.So(prop["parity"], ShouldEqual, "none")
+				ctx.So(prop["slave_id"], ShouldEqual, 1)
+				ctx.So(prop["sleep"], ShouldEqual, nil)
+				ctx.So(prop["stop_bits"], ShouldEqual, 1)
+				ctx.So(prop["timeout"], ShouldEqual, 100)
+
+				ctx.So(cmd.Function, ShouldEqual, "WriteMultipleRegisters")
+				ctx.So(cmd.Address, ShouldEqual, 0)
+				ctx.So(cmd.Count, ShouldEqual, 1)
+				ctx.So(cmd.Command, ShouldResemble, []uint16{0})
+
+				time.Sleep(time.Millisecond * 500)
+			})
+
+			t.Run("check command", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "CHECK", nil)
+
+				ticker := time.NewTimer(time.Second * 1)
+				defer ticker.Stop()
+
+				var resp []byte
+				var ok bool
+				select {
+				case resp = <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
+				}
+
+				ctx.So(ok, ShouldBeTrue)
+
+				request := node.MessageRequest{}
+				err = json.Unmarshal(resp, &request)
+				ctx.So(err, ShouldBeNil)
+
+				cmd := modbus_rtu.ModBusCommand{}
+				err = json.Unmarshal(request.Command, &cmd)
+				ctx.So(err, ShouldBeNil)
+
+				prop := map[string]interface{}{}
+				err = json.Unmarshal(request.Properties, &prop)
+				ctx.So(err, ShouldBeNil)
+
+				ctx.So(request.EntityId, ShouldEqual, plugEnt.Id)
+				ctx.So(request.DeviceType, ShouldEqual, modbus_rtu.DeviceTypeModbusRtu)
+				ctx.So(prop["baud"], ShouldEqual, 19200)
+				ctx.So(prop["data_bits"], ShouldEqual, 8)
+				ctx.So(prop["parity"], ShouldEqual, "none")
+				ctx.So(prop["slave_id"], ShouldEqual, 1)
+				ctx.So(prop["sleep"], ShouldEqual, nil)
+				ctx.So(prop["stop_bits"], ShouldEqual, 1)
+				ctx.So(prop["timeout"], ShouldEqual, 100)
+
+				ctx.So(cmd.Function, ShouldEqual, "ReadHoldingRegisters")
+				ctx.So(cmd.Address, ShouldEqual, 0)
+				ctx.So(cmd.Count, ShouldEqual, 16)
+				ctx.So(cmd.Command, ShouldResemble, []uint16{})
+
+				time.Sleep(time.Millisecond * 500)
+			})
+
+			t.Run("bad command", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "NULL", nil)
+
+				ticker := time.NewTimer(time.Second * 1)
+				defer ticker.Stop()
+
+				var ok bool
+				select {
+				case <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
+				}
+
+				ctx.So(ok, ShouldBeFalse)
+			})
+
+			mqttCli.Unsubscribe("home/node/main/req/#")
+
+			// response
+			t.Run("on response", func(t *testing.T) {
+
+				r := modbus_rtu.ModBusResponse{
+					Error:  "",
+					Time:   123,
+					Result: []uint16{1},
+				}
+
+				b, _ := json.Marshal(r)
+
+				resp := node.MessageResponse{
+					EntityId:   plugEnt.Id,
+					DeviceType: modbus_rtu.DeviceTypeModbusRtu,
+					Properties: nil,
+					Response:   b,
+					Status:     "",
+				}
+				b, _ = json.Marshal(resp)
+				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+
+				time.Sleep(time.Second * 2)
+			})
 		})
 	})
 }

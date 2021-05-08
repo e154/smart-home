@@ -19,8 +19,10 @@
 package modbus_rtu
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
@@ -51,15 +53,21 @@ func NewEntityActor(entity *m.Entity,
 		stateMu:       &sync.Mutex{},
 	}
 
+	if actor.ParentId == nil {
+		log.Warnf("entity %s, parent is nil", actor.Id)
+	}
+
 	actor.Manager = entityManager
 	actor.Attrs = NewAttr()
+
+	actor.DeserializeAttr(entity.Attributes.Serialize())
 
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			// bind
 			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
-			a.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(eventBus))
+			a.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(eventBus, actor))
 			a.ScriptEngine.Do()
 		}
 	}
@@ -109,4 +117,12 @@ func (e *EntityActor) runAction(msg event_bus.EventCallAction) {
 	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId.Name(), action.Name); err != nil {
 		log.Error(err.Error())
 	}
+}
+
+func (e *EntityActor) localTopic(r string) string {
+	var parent string
+	if e.ParentId != nil {
+		parent = e.ParentId.Name()
+	}
+	return fmt.Sprintf("%s/%s/%s", node.TopicPluginNode, parent, r)
 }

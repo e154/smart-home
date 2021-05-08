@@ -62,6 +62,7 @@ func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseAct
 		Name:              entity.Id.Name(),
 		Description:       entity.Description,
 		EntityType:        entity.Type,
+		ParentId:          entity.ParentId,
 		Manager:           nil,
 		State:             nil,
 		Area:              entity.Area,

@@ -76,7 +76,7 @@ func TestZone(t *testing.T) {
 			wgAdd.Add(1)
 			wgUpdate := sync.WaitGroup{}
 			wgUpdate.Add(1)
-			eventBus.Subscribe(event_bus.TopicEntities, func(msg interface{}) {
+			eventBus.Subscribe(event_bus.TopicEntities, func(_ string, msg interface{}) {
 
 				switch v := msg.(type) {
 				case event_bus.EventStateChanged:
