@@ -16,41 +16,5 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package plugins
+package system
 
-import (
-	"fmt"
-	. "github.com/e154/smart-home/tests/plugins/container"
-	"go.uber.org/dig"
-	"os"
-	"path/filepath"
-	"runtime"
-	"testing"
-	"time"
-)
-
-func init() {
-	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	os.Chdir(apppath)
-}
-
-var (
-	container *dig.Container
-)
-
-func TestMain(m *testing.M) {
-
-	runtime.GOMAXPROCS(-1)
-
-	container = BuildContainer()
-	err := container.Invoke(func() {
-
-		time.Sleep(time.Millisecond * 500)
-
-		os.Exit(m.Run())
-	})
-
-	if err != nil {
-		fmt.Println("error:", dig.RootCause(err))
-	}
-}

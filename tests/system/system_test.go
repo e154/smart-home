@@ -16,47 +16,35 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package modbus
+package system
 
 import (
-	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
+	"fmt"
+	"github.com/e154/smart-home/system/logging"
+	. "github.com/e154/smart-home/tests/system/container"
+	"go.uber.org/dig"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
 )
 
-const (
-	Name         = "modbus"
-	EntityModbus = common.EntityType("modbus")
-)
+func init() {
+	apppath := filepath.Join(os.Getenv("PWD"), "../..")
+	os.Chdir(apppath)
+}
 
-const (
-	AttrBaud     = "baud"
-	AttrDevice   = "device"
-	AttrTimeout  = "timeout"
-	AttrStopBits = "stop_bits"
-	AttrSleep    = "sleep"
-)
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
-		AttrBaud: {
-			Name: AttrBaud,
-			Type: common.EntityAttributeInt,
-		},
-		AttrDevice: {
-			Name: AttrDevice,
-			Type: common.EntityAttributeInt,
-		},
-		AttrTimeout: {
-			Name: AttrTimeout,
-			Type: common.EntityAttributeInt,
-		},
-		AttrStopBits: {
-			Name: AttrStopBits,
-			Type: common.EntityAttributeInt,
-		},
-		AttrSleep: {
-			Name: AttrSleep,
-			Type: common.EntityAttributeInt,
-		},
+func TestMain(m *testing.M) {
+
+	err := BuildContainer().Invoke(func(logger *logging.Logging,) {
+
+		time.Sleep(time.Millisecond * 500)
+
+		os.Exit(m.Run())
+	})
+
+	if err != nil {
+		fmt.Println("error:", dig.RootCause(err))
 	}
 }

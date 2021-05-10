@@ -20,9 +20,9 @@ package plugins
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -32,7 +32,6 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
-	"sync"
 	"testing"
 	"time"
 )
@@ -51,16 +50,11 @@ func TestNode(t *testing.T) {
 			pluginManager common.PluginManager) {
 
 			err := migrations.Purge()
-			So(err, ShouldBeNil)
+			ctx.So(err, ShouldBeNil)
 
 			// register plugins
-			err = adaptors.Plugin.CreateOrUpdate(m.Plugin{
-				Name:    "node",
-				Version: "0.0.1",
-				Enabled: true,
-				System:  true,
-			})
-			So(err, ShouldBeNil)
+			err = AddPlugin(adaptors, "node")
+			ctx.So(err, ShouldBeNil)
 
 			go mqttServer.Start()
 
@@ -69,108 +63,160 @@ func TestNode(t *testing.T) {
 
 			nodeEnt := GetNewNode()
 			err = adaptors.Entity.Add(nodeEnt)
-			So(err, ShouldBeNil)
+			ctx.So(err, ShouldBeNil)
 
 			// ------------------------------------------------
 			pluginManager.Start()
 			automation.Reload()
 			entityManager.LoadEntities(pluginManager)
 
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
 			time.Sleep(time.Millisecond * 500)
 
 			now := time.Now()
 
-			// ping
-			// ------------------------------------------------
-			wgPing := sync.WaitGroup{}
-			wgPing.Add(1)
-			eventBus.Subscribe(event_bus.TopicEntities, func(msg interface{}) {
-				switch v := msg.(type) {
-				case event_bus.EventStateChanged:
-					if v.Type != "node" {
-						return
+			t.Run("ping", func(t *testing.T) {
+				Convey("case", t, func(ctx C) {
+					ch := make(chan struct{})
+					fn := func(topic string, msg interface{}) {
+						switch v := msg.(type) {
+						case event_bus.EventStateChanged:
+							if v.Type != "node" {
+								return
+							}
+							ctx.So(v.OldState.State, ShouldNotBeNil)
+							ctx.So(v.OldState.State.Name, ShouldEqual, "wait")
+							ctx.So(v.NewState.State, ShouldNotBeNil)
+							ctx.So(v.NewState.State.Name, ShouldEqual, "connected")
+							ctx.So(v.NewState.Attributes[node.AttrThread].Int64(), ShouldEqual, 1)
+							ctx.So(v.NewState.Attributes[node.AttrRps].Int64(), ShouldEqual, 2)
+							ctx.So(v.NewState.Attributes[node.AttrMin].Int64(), ShouldEqual, 3)
+							ctx.So(v.NewState.Attributes[node.AttrMax].Int64(), ShouldEqual, 4)
+							ctx.So(v.NewState.Attributes[node.AttrStartedAt].Time(), ShouldEqual, now)
+							ch <- struct{}{}
+						}
 					}
-					ctx.So(v.OldState.State, ShouldNotBeNil)
-					ctx.So(v.OldState.State.Name, ShouldEqual, "wait")
-					ctx.So(v.NewState.State, ShouldNotBeNil)
-					ctx.So(v.NewState.State.Name, ShouldEqual, "connected")
-					ctx.So(v.NewState.Attributes[node.AttrThread].Int64(), ShouldEqual, 1)
-					ctx.So(v.NewState.Attributes[node.AttrRps].Int64(), ShouldEqual, 2)
-					ctx.So(v.NewState.Attributes[node.AttrMin].Int64(), ShouldEqual, 3)
-					ctx.So(v.NewState.Attributes[node.AttrMax].Int64(), ShouldEqual, 4)
-					ctx.So(v.NewState.Attributes[node.AttrStartedAt].Time(), ShouldEqual, now)
-					wgPing.Done()
-				}
+					eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+
+					b, err := json.Marshal(node.MessageStatus{
+						Status:    "enabled",
+						Thread:    1,
+						Rps:       2,
+						Min:       3,
+						Max:       4,
+						StartedAt: now,
+					})
+					ctx.So(err, ShouldBeNil)
+					err = mqttServer.Publish("home/node/main/ping", b, 0, false)
+					ctx.So(err, ShouldBeNil)
+
+					ticker := time.NewTimer(time.Second * 1)
+					defer ticker.Stop()
+
+					var ok bool
+					select {
+					case <-ch:
+						ok = true
+						break
+					case <-ticker.C:
+						break
+					}
+
+					ctx.So(ok, ShouldBeTrue)
+
+				})
 			})
 
-			b, err := json.Marshal(node.MessageStatus{
-				Status:    "enabled",
-				Thread:    1,
-				Rps:       2,
-				Min:       3,
-				Max:       4,
-				StartedAt: now,
-			})
-			So(err, ShouldBeNil)
-			err = mqttServer.Publish("home/node/main/ping", b, 0, false)
-			So(err, ShouldBeNil)
-
-			wgPing.Wait()
-
-			// request
-			// ------------------------------------------------
-			wgRequest := sync.WaitGroup{}
-			wgRequest.Add(1)
 			mqttCli := mqttServer.NewClient("cli")
-			mqttCli.Subscribe("home/node/main/req/#", func(client mqtt.MqttCli, message mqtt.Message) {
-				req := node.MessageRequest{}
-				err = json.Unmarshal(message.Payload, &req)
-				ctx.So(err, ShouldBeNil)
-				ctx.So(req.EntityId, ShouldEqual, "test.test")
-				ctx.So(req.DeviceType, ShouldEqual, "test")
-				wgRequest.Done()
+
+			t.Run("request", func(t *testing.T) {
+				Convey("case", t, func(ctx C) {
+					ch := make(chan struct{})
+					mqttCli.Subscribe("home/node/main/req/#", func(client mqtt.MqttCli, message mqtt.Message) {
+						req := node.MessageRequest{}
+						err = json.Unmarshal(message.Payload, &req)
+						ctx.So(err, ShouldBeNil)
+						ctx.So(req.EntityId, ShouldEqual, "plugin.test")
+						ctx.So(req.DeviceType, ShouldEqual, "test")
+						ch <- struct{}{}
+					})
+					defer mqttCli.Unsubscribe("home/node/main/req/#")
+
+					req := node.MessageRequest{
+						EntityId:   "plugin.test",
+						DeviceType: "test",
+						Properties: nil,
+						Command:    nil,
+					}
+					eventBus.Publish(fmt.Sprintf("plugin.node/main/req/%s", nodeEnt.Id), req)
+
+					ticker := time.NewTimer(time.Second * 1)
+					defer ticker.Stop()
+
+					var ok bool
+					select {
+					case <-ch:
+						ok = true
+						break
+					case <-ticker.C:
+						break
+					}
+
+					ctx.So(ok, ShouldBeTrue)
+
+				})
 			})
 
-			req := node.MessageRequest{
-				EntityId:   "test.test",
-				DeviceType: "test",
-				Properties: nil,
-				Command:    nil,
-			}
-			So(err, ShouldBeNil)
-			eventBus.Publish("plugin.node/main/req", req)
+			t.Run("response", func(t *testing.T) {
+				Convey("case", t, func(ctx C) {
 
-			wgRequest.Wait()
+					ch := make(chan struct{})
+					topic := fmt.Sprintf("plugin.node/main/resp/%s", "plugin.test")
+					fn := func(topic string, resp node.MessageResponse) {
+						ctx.So(topic, ShouldEqual, "plugin.node/main/resp/plugin.test")
+						ctx.So(resp.EntityId, ShouldEqual, "plugin.test")
+						ctx.So(resp.DeviceType, ShouldEqual, "test")
+						ctx.So(resp.Status, ShouldEqual, "success")
+						ch <- struct{}{}
+					}
+					eventBus.Subscribe(topic, fn)
+					defer eventBus.Unsubscribe(topic, fn)
+					b, err := json.Marshal(node.MessageResponse{
+						EntityId:   "plugin.test",
+						DeviceType: "test",
+						Properties: nil,
+						Response:   nil,
+						Status:     "success",
+					})
+					ctx.So(err, ShouldBeNil)
 
-			// response
-			// ------------------------------------------------
-			wgResp := sync.WaitGroup{}
-			wgResp.Add(1)
-			eventBus.Subscribe("plugin.node/main/resp", func(resp node.MessageResponse) {
-				ctx.So(resp.EntityId, ShouldEqual, "test.test")
-				ctx.So(resp.DeviceType, ShouldEqual, "test")
-				ctx.So(resp.Status, ShouldEqual, "success")
-				wgResp.Done()
+					mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", "plugin.test"), b)
+
+					ticker := time.NewTimer(time.Second * 1)
+					defer ticker.Stop()
+
+					var ok bool
+					select {
+					case <-ch:
+						ok = true
+						break
+					case <-ticker.C:
+						break
+					}
+
+					ctx.So(ok, ShouldBeTrue)
+
+					time.Sleep(time.Millisecond * 500)
+				})
 			})
-			b, err = json.Marshal(node.MessageResponse{
-				EntityId:   "test.test",
-				DeviceType: "test",
-				Properties: nil,
-				Response:   nil,
-				Status:     "success",
-			})
-			So(err, ShouldBeNil)
-			mqttCli.Publish("home/node/main/resp", b)
-
-			wgResp.Wait()
-
-			time.Sleep(time.Millisecond * 500)
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

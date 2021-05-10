@@ -16,41 +16,14 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package plugins
+package container
 
 import (
-	"fmt"
-	. "github.com/e154/smart-home/tests/plugins/container"
-	"go.uber.org/dig"
-	"os"
-	"path/filepath"
-	"runtime"
-	"testing"
-	"time"
+	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
-func init() {
-	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	os.Chdir(apppath)
-}
-
-var (
-	container *dig.Container
-)
-
-func TestMain(m *testing.M) {
-
-	runtime.GOMAXPROCS(-1)
-
-	container = BuildContainer()
-	err := container.Invoke(func() {
-
-		time.Sleep(time.Millisecond * 500)
-
-		os.Exit(m.Run())
-	})
-
-	if err != nil {
-		fmt.Println("error:", dig.RootCause(err))
-	}
+// NewZigbee2mqttConfig ...
+func NewZigbee2mqttConfig(cfg *config.AppConfig) *zigbee2mqtt.Config {
+	return &zigbee2mqtt.Config{}
 }

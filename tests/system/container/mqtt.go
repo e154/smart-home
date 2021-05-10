@@ -16,41 +16,26 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package plugins
+package container
 
 import (
-	"fmt"
-	. "github.com/e154/smart-home/tests/plugins/container"
-	"go.uber.org/dig"
-	"os"
-	"path/filepath"
-	"runtime"
-	"testing"
-	"time"
+	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/system/mqtt"
 )
 
-func init() {
-	apppath := filepath.Join(os.Getenv("PWD"), "../..")
-	os.Chdir(apppath)
-}
-
-var (
-	container *dig.Container
-)
-
-func TestMain(m *testing.M) {
-
-	runtime.GOMAXPROCS(-1)
-
-	container = BuildContainer()
-	err := container.Invoke(func() {
-
-		time.Sleep(time.Millisecond * 500)
-
-		os.Exit(m.Run())
-	})
-
-	if err != nil {
-		fmt.Println("error:", dig.RootCause(err))
+// NewMqttConfig ...
+func NewMqttConfig(cfg *config.AppConfig) *mqtt.Config {
+	return &mqtt.Config{
+		Port:                       cfg.MqttPort,
+		RetryInterval:              cfg.MqttRetryInterval,
+		RetryCheckInterval:         cfg.MqttRetryCheckInterval,
+		SessionExpiryInterval:      cfg.MqttSessionExpiryInterval,
+		SessionExpireCheckInterval: cfg.MqttSessionExpireCheckInterval,
+		QueueQos0Messages:          cfg.MqttQueueQos0Messages,
+		MaxInflight:                cfg.MqttMaxInflight,
+		MaxAwaitRel:                cfg.MqttMaxAwaitRel,
+		MaxMsgQueue:                cfg.MqttMaxMsgQueue,
+		Logging:                    cfg.Logging,
+		DebugMode:                  cfg.Mode,
 	}
 }

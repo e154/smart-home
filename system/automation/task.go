@@ -90,7 +90,7 @@ func (t *Task) addTrigger(model *m.Trigger) (err error) {
 	tr.Start()
 
 	queue := make(chan interface{}, taskMsgBuffer)
-	var handler = func(msg interface{}) {
+	var handler = func(_ string, msg interface{}) {
 		queue <- msg
 	}
 

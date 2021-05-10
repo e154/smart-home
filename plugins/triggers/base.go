@@ -37,13 +37,3 @@ func (b *baseTrigger) Name() string {
 func (b *baseTrigger) FunctionName() string {
 	return b.functionName
 }
-
-func (b *baseTrigger) Subscribe(topic string, fn interface{}, _ interface{}) error {
-	log.Infof("subscribe topic %s", topic)
-	return b.msgQueue.Subscribe(topic, fn)
-}
-
-func (b *baseTrigger) Unsubscribe(topic string, fn interface{}, _ interface{}) error {
-	log.Infof("unsubscribe topic %s", topic)
-	return b.msgQueue.Unsubscribe(topic, fn)
-}

@@ -83,7 +83,8 @@ func (p *plugin) Unload() error {
 	if !p.isStarted.Load() {
 		return nil
 	}
-	p.mqttClient.UnsubscribeAll()
+	p.isStarted.Store(false)
+	p.mqttServ.RemoveClient("plugins.node")
 	return nil
 }
 

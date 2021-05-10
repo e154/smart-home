@@ -25,7 +25,6 @@ import (
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -62,7 +61,8 @@ automationTriggerSystem = (msg)->
 			So(err, ShouldBeNil)
 
 			// register plugins
-			env1.NewPluginManager(adaptors).Create()
+			err = AddPlugin(adaptors, "triggers")
+			ctx.So(err, ShouldBeNil)
 
 			go mqttServer.Start()
 
@@ -113,7 +113,13 @@ automationTriggerSystem = (msg)->
 			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
-			time.Sleep(time.Millisecond * 500)
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
 
 			eventBus.Publish(event_bus.TopicSystemStart, "started")
 
@@ -129,11 +135,6 @@ automationTriggerSystem = (msg)->
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 			So(lastEvent.Load(), ShouldEqual, "START")
 
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

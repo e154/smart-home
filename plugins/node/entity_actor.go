@@ -27,6 +27,7 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"strings"
 	"sync"
 	"time"
 )
@@ -84,9 +85,9 @@ func NewEntityActor(entity *m.Entity,
 
 func (e *EntityActor) destroy() {
 
-	e.mqttClient.Unsubscribe(e.mqttTopic("resp/#"))
+	e.mqttClient.Unsubscribe(e.mqttTopic("resp/+"))
 	e.mqttClient.Unsubscribe(e.mqttTopic("ping"))
-	e.eventBus.Unsubscribe(e.localTopic("req"), e.onMessage)
+	e.eventBus.Unsubscribe(e.localTopic("req/+"), e.onMessage)
 
 	e.quit <- struct{}{}
 }
@@ -115,30 +116,35 @@ func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	}()
 
 	// local sub
-	e.eventBus.Subscribe(e.localTopic("req"), e.onMessage)
+	e.eventBus.Subscribe(e.localTopic("req/+"), e.onMessage)
 
 	// mqtt sub
-	e.mqttClient.Subscribe(e.mqttTopic("resp/#"), e.mqttOnMessage)
+	e.mqttClient.Subscribe(e.mqttTopic("resp/+"), e.mqttOnMessage)
 	e.mqttClient.Subscribe(e.mqttTopic("ping"), e.ping)
 
 	return e
 }
 
 // event from plugin.node/nodeName/req
-func (e *EntityActor) onMessage(msg MessageRequest) {
-	b, _ := json.Marshal(msg)
-	e.mqttClient.Publish(e.mqttTopic("req"), b)
+func (e *EntityActor) onMessage(_ string, msg MessageRequest) {
+	b, err := json.Marshal(msg)
+	if err != nil {
+		log.Error(err.Error())
+	}
+	e.mqttClient.Publish(e.mqttTopic(fmt.Sprintf("req/%s", msg.EntityId)), b)
 }
 
 // event from home/node/nodeName/#
 func (e *EntityActor) mqttOnMessage(_ mqtt.MqttCli, msg mqtt.Message) {
-	// resend msg to plugin.node/nodeName/resp
+	// resend msg to plugin.node/nodeName/resp/entityId
 	resp := MessageResponse{}
 	if err := json.Unmarshal(msg.Payload, &resp); err != nil {
 		log.Warn(err.Error())
 		return
 	}
-	e.eventBus.Publish(e.localTopic("resp"), resp)
+	items := strings.Split(msg.Topic, "/")
+	entityId := items[len(items)-1]
+	e.eventBus.Publish(e.localTopic(fmt.Sprintf("resp/%s", entityId)), resp)
 }
 
 // event from home/node/nodeName/ping

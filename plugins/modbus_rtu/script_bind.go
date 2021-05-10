@@ -16,43 +16,27 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package modbus
+package modbus_rtu
 
 import (
-	"fmt"
-	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
-	"sync"
 )
 
-type EntityActor struct {
-	entity_manager.BaseActor
-	positionLock        *sync.Mutex
-	lat, lon, elevation float64
-	solarAzimuth        float64
-	solarElevation      float64
-	phase               string
-	horizonState        string
+// Javascript Binding
+//
+// Actor
+//	.SetState(params)
+//
+type ScriptBind struct {
+	actor *EntityActor
 }
 
-func NewEntityActor(name string, entityManager entity_manager.EntityManager) *EntityActor {
-
-	entity := &EntityActor{
-		BaseActor: entity_manager.BaseActor{
-			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityModbus, name)),
-			Name:        name,
-			Description: "modbus plugin",
-			EntityType:  EntityModbus,
-			AttrMu:      &sync.Mutex{},
-			Attrs:       NewAttr(),
-			Manager:     entityManager,
-		},
-		positionLock: &sync.Mutex{},
-	}
-
-	return entity
+// NewScriptBind...
+func NewScriptBind(actor *EntityActor) *ScriptBind {
+	return &ScriptBind{actor: actor}
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
-	return e
+// SetState...
+func (s *ScriptBind) SetState(params entity_manager.EntityStateParams) {
+	s.actor.setState(params)
 }

@@ -92,6 +92,14 @@ func NewMqtt(lc fx.Lifecycle,
 // Shutdown ...
 func (m *Mqtt) Shutdown() (err error) {
 	log.Info("Server exiting")
+
+	m.clientsLock.Lock()
+	for name, cli := range m.clients {
+		cli.UnsubscribeAll()
+		delete(m.clients, name)
+	}
+	m.clientsLock.Unlock()
+
 	if m.server != nil {
 		err = m.server.Stop(context.Background())
 	}
@@ -216,6 +224,20 @@ func (m *Mqtt) NewClient(name string) (client MqttCli) {
 	}
 	client = NewClient(m, name)
 	m.clients[name] = client
+	log.Infof("new mqtt client '%s'", name)
+	return
+}
+
+// RemoveClient ...
+func (m *Mqtt) RemoveClient(name string) {
+	m.clientsLock.Lock()
+	defer m.clientsLock.Unlock()
+
+	var ok bool
+	if _, ok = m.clients[name]; !ok {
+		return
+	}
+	delete(m.clients, name)
 	return
 }
 

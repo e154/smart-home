@@ -19,13 +19,18 @@
 package plugins
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/modbus_rtu"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/plugins/scene"
 	"github.com/e154/smart-home/plugins/script"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
 	"github.com/e154/smart-home/plugins/zone"
+	"github.com/e154/smart-home/system/scripts"
+	"github.com/smartystreets/goconvey/convey"
 )
 
 func GetNewButton(id string, scripts []m.Script) *m.Entity {
@@ -238,4 +243,37 @@ func GetNewNode() *m.Entity {
 		AutoLoad:    true,
 		Attributes:  node.NewAttr(),
 	}
+}
+
+func GetNewModbusRtu(name string) *m.Entity {
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
+		Description: fmt.Sprintf("%s entity", name),
+		Type:        "modbus_rtu",
+		AutoLoad:    true,
+		Attributes:  modbus_rtu.NewAttr(),
+	}
+}
+
+func AddPlugin(adaptors *adaptors.Adaptors, name string) (err error) {
+	err = adaptors.Plugin.CreateOrUpdate(m.Plugin{
+		Name:    name,
+		Version: "0.0.1",
+		Enabled: true,
+		System:  true,
+	})
+	return
+}
+
+func RegisterConvey(scriptService scripts.ScriptService, ctx convey.C) {
+	scriptService.PushFunctions("So", func(actual interface{}, assert string, expected interface{}) {
+		//fmt.Printf("actual(%v), expected(%v)\n", actual, expected)
+		switch assert {
+		case "ShouldEqual":
+			ctx.So(fmt.Sprintf("%v", actual), convey.ShouldEqual, expected)
+		case "ShouldNotBeBlank":
+			ctx.So(fmt.Sprintf("%v", actual), convey.ShouldNotBeBlank)
+		}
+	})
+
 }
