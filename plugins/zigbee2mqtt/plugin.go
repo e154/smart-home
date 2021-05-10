@@ -81,6 +81,7 @@ func (p *plugin) Load(service plugins.Service) error {
 
 func (p plugin) Unload() (err error) {
 	p.mqttServ.RemoveClient("plugins.zigbee2mqtt")
+	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
 }
 

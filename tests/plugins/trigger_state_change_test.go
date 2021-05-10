@@ -34,6 +34,7 @@ import (
 	"go.uber.org/atomic"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestTriggerStateChange(t *testing.T) {
@@ -198,6 +199,7 @@ automationTriggerStateChanged = (msg)->
 
 			mqttCli := mqttServer.NewClient("cli2")
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"action":"double","linkquality":134,"voltage":3042}`))
+			time.Sleep(time.Millisecond * 100)
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
 

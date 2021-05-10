@@ -43,7 +43,9 @@ func TestMain(m *testing.M) {
 	runtime.GOMAXPROCS(-1)
 
 	container = BuildContainer()
-	err := container.Invoke(func() {
+	err := container.Invoke(func(
+		//logging *logging.Logging,
+		) {
 
 		time.Sleep(time.Millisecond * 500)
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/event_bus"
+	"go.uber.org/atomic"
 	"strings"
 	"time"
 )
@@ -14,11 +15,10 @@ type modbusRtu func(f string, address, count uint16, command []uint16) (result M
 
 func NewModbusRtu(eventBus event_bus.EventBus, actor *EntityActor) (modbus modbusRtu) {
 
+	var isStarted = atomic.NewBool(false)
+
 	return func(f string, address, count uint16, command []uint16) (result ModBusResponse) {
 		//fmt.Printf("send message^ func(%s), address(%d), count(%d), command(%b) \n", f, address, count, command)
-
-		// time metric
-		startTime := time.Now()
 
 		var err error
 		defer func() {
@@ -26,6 +26,16 @@ func NewModbusRtu(eventBus event_bus.EventBus, actor *EntityActor) (modbus modbu
 				result.Error = err.Error()
 			}
 		}()
+
+		if isStarted.Load() {
+			err = fmt.Errorf("in process")
+			return
+		}
+		isStarted.Store(true)
+		defer isStarted.Store(false)
+
+		// time metric
+		startTime := time.Now()
 
 		// set callback func
 		ch := make(chan node.MessageResponse)

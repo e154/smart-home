@@ -79,13 +79,6 @@ func NewEntityActor(entity *m.Entity,
 	// bind
 	actor.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
 
-	// mqtt worker
-	//go func() {
-	//	for message := range actor.mqttMessageQueue {
-	//		actor.mqttNewMessage(message)
-	//	}
-	//}()
-
 	// action worker
 	go func() {
 		for msg := range actor.actionPool {
