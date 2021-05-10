@@ -75,7 +75,7 @@ func (t *TimeTrigger) Subscribe(_ string, fn interface{}, payload interface{}) e
 	}
 	callback := reflect.ValueOf(fn)
 	task, err := t.cron.NewTask(schedule, func() {
-		callback.Call([]reflect.Value{reflect.ValueOf(time.Now())})
+		callback.Call([]reflect.Value{reflect.ValueOf(""), reflect.ValueOf(time.Now())})
 	})
 
 	if err != nil {

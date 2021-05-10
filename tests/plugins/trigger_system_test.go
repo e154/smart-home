@@ -25,7 +25,6 @@ import (
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -62,7 +61,8 @@ automationTriggerSystem = (msg)->
 			So(err, ShouldBeNil)
 
 			// register plugins
-			env1.NewPluginManager(adaptors).Create()
+			err = AddPlugin(adaptors, "triggers")
+			ctx.So(err, ShouldBeNil)
 
 			go mqttServer.Start()
 

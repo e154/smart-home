@@ -67,7 +67,7 @@ func NewEntityActor(entity *m.Entity,
 		if a.ScriptEngine != nil {
 			// bind
 			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
-			a.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(eventBus, actor))
+			a.ScriptEngine.PushFunction("ModbusRtu",  NewModbusRtu(eventBus, actor))
 			a.ScriptEngine.Do()
 		}
 	}

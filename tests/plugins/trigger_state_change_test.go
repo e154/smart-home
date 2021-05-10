@@ -32,8 +32,8 @@ import (
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
+	"sync"
 	"testing"
-	"time"
 )
 
 func TestTriggerStateChange(t *testing.T) {
@@ -175,9 +175,12 @@ automationTriggerStateChanged = (msg)->
 
 			var counter atomic.Int32
 			var lastStat atomic.String
+			var wg sync.WaitGroup
+			wg.Add(2)
 			scriptService.PushFunctions("Done", func(state string) {
 				lastStat.Store(state)
 				counter.Inc()
+				wg.Done()
 			})
 
 			pluginManager.Start()
@@ -198,7 +201,7 @@ automationTriggerStateChanged = (msg)->
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Second * 1)
+			wg.Wait()
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 			So(lastStat.Load(), ShouldEqual, "DOUBLE_CLICK")

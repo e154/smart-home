@@ -54,7 +54,7 @@ func (b *messageQueue) Publish(topic string, args ...interface{}) {
 	}
 }
 
-func (b *messageQueue) Subscribe(topic string, fn interface{}) error {
+func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interface{}) error {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
 		return fmt.Errorf("%s is not a reflect.Func", reflect.TypeOf(fn))
 	}
@@ -78,6 +78,12 @@ func (b *messageQueue) Subscribe(topic string, fn interface{}) error {
 	} else {
 		b.sub[topic] = &subscribers{
 			handlers: []*handler{h},
+		}
+	}
+
+	if len(options) > 0 {
+		if retain, ok := options[0].(bool); ok && !retain {
+			return nil
 		}
 	}
 

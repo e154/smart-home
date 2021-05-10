@@ -85,7 +85,6 @@ func TestNode(t *testing.T) {
 			t.Run("ping", func(t *testing.T) {
 				Convey("case", t, func(ctx C) {
 					ch := make(chan struct{})
-					defer close(ch)
 					fn := func(topic string, msg interface{}) {
 						switch v := msg.(type) {
 						case event_bus.EventStateChanged:
@@ -105,6 +104,7 @@ func TestNode(t *testing.T) {
 						}
 					}
 					eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
 
 					b, err := json.Marshal(node.MessageStatus{
 						Status:    "enabled",
@@ -132,7 +132,6 @@ func TestNode(t *testing.T) {
 
 					ctx.So(ok, ShouldBeTrue)
 
-					eventBus.Unsubscribe(event_bus.TopicEntities, fn)
 				})
 			})
 
@@ -141,7 +140,6 @@ func TestNode(t *testing.T) {
 			t.Run("request", func(t *testing.T) {
 				Convey("case", t, func(ctx C) {
 					ch := make(chan struct{})
-					defer close(ch)
 					mqttCli.Subscribe("home/node/main/req/#", func(client mqtt.MqttCli, message mqtt.Message) {
 						req := node.MessageRequest{}
 						err = json.Unmarshal(message.Payload, &req)
@@ -150,6 +148,7 @@ func TestNode(t *testing.T) {
 						ctx.So(req.DeviceType, ShouldEqual, "test")
 						ch <- struct{}{}
 					})
+					defer mqttCli.Unsubscribe("home/node/main/req/#")
 
 					req := node.MessageRequest{
 						EntityId:   "plugin.test",
@@ -180,14 +179,16 @@ func TestNode(t *testing.T) {
 				Convey("case", t, func(ctx C) {
 
 					ch := make(chan struct{})
-					defer close(ch)
-					eventBus.Subscribe(fmt.Sprintf("plugin.node/main/resp/%s", "plugin.test"), func(topic string, resp node.MessageResponse) {
+					topic := fmt.Sprintf("plugin.node/main/resp/%s", "plugin.test")
+					fn := func(topic string, resp node.MessageResponse) {
 						ctx.So(topic, ShouldEqual, "plugin.node/main/resp/plugin.test")
 						ctx.So(resp.EntityId, ShouldEqual, "plugin.test")
 						ctx.So(resp.DeviceType, ShouldEqual, "test")
 						ctx.So(resp.Status, ShouldEqual, "success")
 						ch <- struct{}{}
-					})
+					}
+					eventBus.Subscribe(topic, fn)
+					defer eventBus.Unsubscribe(topic, fn)
 					b, err := json.Marshal(node.MessageResponse{
 						EntityId:   "plugin.test",
 						DeviceType: "test",

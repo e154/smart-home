@@ -48,9 +48,7 @@ getStatus =(status)->
         return 'OFF'
 
 writeRegisters =(d, c, r)->
-    res = ModbusRtu 'WriteMultipleRegisters', d, c, r
-    if res.error
-        print 'error: ', res.error
+    return ModbusRtu 'WriteMultipleRegisters', d, c, r
 
 checkStatus =->
     COMMAND = []
@@ -59,23 +57,35 @@ checkStatus =->
     COUNT = 16
 
     res = ModbusRtu FUNC, ADDRESS, COUNT, COMMAND
-    if res.error
-        print 'error: ', res.error
-    else 
-        print 'ok: ', res.result
-        #newStatus = getStatus(res.Result[0])
+    So(res.error, 'ShouldEqual', '')
+    So(res.result, 'ShouldEqual', '[1 0 1]')
+    So(res.time, 'ShouldNotBeBlank', '')
 
 doOnAction = ->
-    writeRegisters(0, 1, [1])
+    res = writeRegisters(0, 1, [1])
+    So(res.error, 'ShouldEqual', '')
+    So(res.result, 'ShouldEqual', '[]')
+    So(res.time, 'ShouldNotBeBlank', '')
+
+doOnErrAction = ->
+    res = writeRegisters(0, 1, [1])
+    So(res.error, 'ShouldEqual', 'some error')
+    So(res.result, 'ShouldEqual', '[]')
+    So(res.time, 'ShouldNotBeBlank', '')
+
 doOffAction = ->
-    writeRegisters(0, 1, [0])
+    res = writeRegisters(0, 1, [0])
+    So(res.error, 'ShouldEqual', '')
+    So(res.result, 'ShouldEqual', '[]')
+    So(res.time, 'ShouldNotBeBlank', '')
 
 entityAction = (entityId, actionName)->
-    print '---action on/off--'
+    #print '---action on/off--'
     switch actionName
         when 'ON' then doOnAction()
         when 'OFF' then doOffAction()
         when 'CHECK' then checkStatus()
+        when 'ON_WITH_ERR' then doOnErrAction()
 `
 
 	Convey("modbus_rtu", t, func(ctx C) {
@@ -90,6 +100,9 @@ entityAction = (entityId, actionName)->
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
+
+			// bind convey
+			RegisterConvey(scriptService, ctx)
 
 			// register plugins
 			err = AddPlugin(adaptors, "node")
@@ -138,6 +151,11 @@ entityAction = (entityId, actionName)->
 				{
 					Name:        "CHECK",
 					Description: "condition check",
+					Script:      plugActionOnOffScript,
+				},
+				{
+					Name:        "ON_WITH_ERR",
+					Description: "error case",
 					Script:      plugActionOnOffScript,
 				},
 			}
@@ -193,13 +211,13 @@ entityAction = (entityId, actionName)->
 			t.Run("on command", func(t *testing.T) {
 				entityManager.CallAction(plugEnt.Id, "ON", nil)
 
-				ticker := time.NewTimer(time.Second * 1)
+				ticker := time.NewTimer(time.Second * 2)
 				defer ticker.Stop()
 
-				var resp []byte
+				var req []byte
 				var ok bool
 				select {
-				case resp = <-ch:
+				case req = <-ch:
 					ok = true
 					break
 				case <-ticker.C:
@@ -208,8 +226,9 @@ entityAction = (entityId, actionName)->
 
 				ctx.So(ok, ShouldBeTrue)
 
+				// what see node
 				request := node.MessageRequest{}
-				err = json.Unmarshal(resp, &request)
+				err = json.Unmarshal(req, &request)
 				ctx.So(err, ShouldBeNil)
 
 				cmd := modbus_rtu.ModBusCommand{}
@@ -235,19 +254,36 @@ entityAction = (entityId, actionName)->
 				ctx.So(cmd.Count, ShouldEqual, 1)
 				ctx.So(cmd.Command, ShouldResemble, []uint16{1})
 
+				// response from node
+				r := modbus_rtu.ModBusResponse{
+					Error:  "",
+					Result: []uint16{},
+				}
+				b, _ := json.Marshal(r)
+				resp := node.MessageResponse{
+					EntityId:   plugEnt.Id,
+					DeviceType: modbus_rtu.DeviceTypeModbusRtu,
+					Properties: nil,
+					Response:   b,
+					Status:     "",
+				}
+				b, _ = json.Marshal(resp)
+				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+
 				time.Sleep(time.Millisecond * 500)
 			})
 
 			t.Run("off command", func(t *testing.T) {
 				entityManager.CallAction(plugEnt.Id, "OFF", nil)
 
-				ticker := time.NewTimer(time.Second * 1)
+				ticker := time.NewTimer(time.Second * 2)
 				defer ticker.Stop()
 
-				var resp []byte
+				var req []byte
 				var ok bool
 				select {
-				case resp = <-ch:
+				case req = <-ch:
 					ok = true
 					break
 				case <-ticker.C:
@@ -256,8 +292,9 @@ entityAction = (entityId, actionName)->
 
 				ctx.So(ok, ShouldBeTrue)
 
+				// what see node
 				request := node.MessageRequest{}
-				err = json.Unmarshal(resp, &request)
+				err = json.Unmarshal(req, &request)
 				ctx.So(err, ShouldBeNil)
 
 				cmd := modbus_rtu.ModBusCommand{}
@@ -283,19 +320,36 @@ entityAction = (entityId, actionName)->
 				ctx.So(cmd.Count, ShouldEqual, 1)
 				ctx.So(cmd.Command, ShouldResemble, []uint16{0})
 
+				// response from node
+				r := modbus_rtu.ModBusResponse{
+					Error:  "",
+					Result: []uint16{},
+				}
+				b, _ := json.Marshal(r)
+				resp := node.MessageResponse{
+					EntityId:   plugEnt.Id,
+					DeviceType: modbus_rtu.DeviceTypeModbusRtu,
+					Properties: nil,
+					Response:   b,
+					Status:     "",
+				}
+				b, _ = json.Marshal(resp)
+				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+
 				time.Sleep(time.Millisecond * 500)
 			})
 
 			t.Run("check command", func(t *testing.T) {
 				entityManager.CallAction(plugEnt.Id, "CHECK", nil)
 
-				ticker := time.NewTimer(time.Second * 1)
+				ticker := time.NewTimer(time.Second * 2)
 				defer ticker.Stop()
 
-				var resp []byte
+				var req []byte
 				var ok bool
 				select {
-				case resp = <-ch:
+				case req = <-ch:
 					ok = true
 					break
 				case <-ticker.C:
@@ -304,8 +358,9 @@ entityAction = (entityId, actionName)->
 
 				ctx.So(ok, ShouldBeTrue)
 
+				// what see node
 				request := node.MessageRequest{}
-				err = json.Unmarshal(resp, &request)
+				err = json.Unmarshal(req, &request)
 				ctx.So(err, ShouldBeNil)
 
 				cmd := modbus_rtu.ModBusCommand{}
@@ -331,6 +386,24 @@ entityAction = (entityId, actionName)->
 				ctx.So(cmd.Count, ShouldEqual, 16)
 				ctx.So(cmd.Command, ShouldResemble, []uint16{})
 
+
+				// response from node
+				r := modbus_rtu.ModBusResponse{
+					Error:  "",
+					Result: []uint16{1, 0, 1},
+				}
+				b, _ := json.Marshal(r)
+				resp := node.MessageResponse{
+					EntityId:   plugEnt.Id,
+					DeviceType: modbus_rtu.DeviceTypeModbusRtu,
+					Properties: nil,
+					Response:   b,
+					Status:     "",
+				}
+				b, _ = json.Marshal(resp)
+				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+
 				time.Sleep(time.Millisecond * 500)
 			})
 
@@ -352,19 +425,27 @@ entityAction = (entityId, actionName)->
 				ctx.So(ok, ShouldBeFalse)
 			})
 
-			mqttCli.Unsubscribe("home/node/main/req/#")
+			t.Run("response with error", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "ON_WITH_ERR", nil)
 
-			// response
-			t.Run("on response", func(t *testing.T) {
+				ticker := time.NewTimer(time.Second * 2)
+				defer ticker.Stop()
 
-				r := modbus_rtu.ModBusResponse{
-					Error:  "",
-					Time:   123,
-					Result: []uint16{1},
+				var ok bool
+				select {
+				case <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
 				}
 
-				b, _ := json.Marshal(r)
+				ctx.So(ok, ShouldBeTrue)
 
+				r := modbus_rtu.ModBusResponse{
+					Error: "some error",
+				}
+				b, _ := json.Marshal(r)
 				resp := node.MessageResponse{
 					EntityId:   plugEnt.Id,
 					DeviceType: modbus_rtu.DeviceTypeModbusRtu,
@@ -373,6 +454,7 @@ entityAction = (entityId, actionName)->
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
+				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/plugin.test"), b)
 				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Second * 2)

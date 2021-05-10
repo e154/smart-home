@@ -20,8 +20,6 @@ package plugins
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/logging"
-	"github.com/e154/smart-home/system/migrations"
 	. "github.com/e154/smart-home/tests/plugins/container"
 	"go.uber.org/dig"
 	"os"
@@ -45,8 +43,7 @@ func TestMain(m *testing.M) {
 	runtime.GOMAXPROCS(-1)
 
 	container = BuildContainer()
-	err := container.Invoke(func(logger *logging.Logging,
-		migrations *migrations.Migrations) {
+	err := container.Invoke(func() {
 
 		time.Sleep(time.Millisecond * 500)
 

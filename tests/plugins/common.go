@@ -29,6 +29,8 @@ import (
 	"github.com/e154/smart-home/plugins/script"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
 	"github.com/e154/smart-home/plugins/zone"
+	"github.com/e154/smart-home/system/scripts"
+	"github.com/smartystreets/goconvey/convey"
 )
 
 func GetNewButton(id string, scripts []m.Script) *m.Entity {
@@ -261,4 +263,17 @@ func AddPlugin(adaptors *adaptors.Adaptors, name string) (err error) {
 		System:  true,
 	})
 	return
+}
+
+func RegisterConvey(scriptService scripts.ScriptService, ctx convey.C) {
+	scriptService.PushFunctions("So", func(actual interface{}, assert string, expected interface{}) {
+		//fmt.Printf("actual(%v), expected(%v)\n", actual, expected)
+		switch assert {
+		case "ShouldEqual":
+			ctx.So(fmt.Sprintf("%v", actual), convey.ShouldEqual, expected)
+		case "ShouldNotBeBlank":
+			ctx.So(fmt.Sprintf("%v", actual), convey.ShouldNotBeBlank)
+		}
+	})
+
 }

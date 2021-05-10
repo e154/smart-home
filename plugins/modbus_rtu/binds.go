@@ -15,13 +15,21 @@ type modbusRtu func(f string, address, count uint16, command []uint16) (result M
 func NewModbusRtu(eventBus event_bus.EventBus, actor *EntityActor) (modbus modbusRtu) {
 
 	return func(f string, address, count uint16, command []uint16) (result ModBusResponse) {
-		fmt.Printf("send message^ func(%s), address(%d), count(%d), comman(%b) \n", f, address, count, command)
+		//fmt.Printf("send message^ func(%s), address(%d), count(%d), command(%b) \n", f, address, count, command)
 
 		// time metric
 		startTime := time.Now()
 
+		var err error
+		defer func() {
+			if err != nil {
+				result.Error = err.Error()
+			}
+		}()
+
 		// set callback func
 		ch := make(chan node.MessageResponse)
+		defer close(ch)
 		fn := func(topic string, msg node.MessageResponse) {
 			items := strings.Split(topic, "/")
 			entityId := items[len(items)-1]
@@ -31,7 +39,10 @@ func NewModbusRtu(eventBus event_bus.EventBus, actor *EntityActor) (modbus modbu
 			ch <- msg
 		}
 		var topic = actor.localTopic(fmt.Sprintf("resp/%s", actor.Id))
-		eventBus.Subscribe(topic, fn)
+		if err = eventBus.Subscribe(topic, fn, false); err != nil {
+			log.Error(err.Error())
+			return
+		}
 		defer func() {
 			eventBus.Unsubscribe(topic, fn)
 		}()
@@ -41,10 +52,9 @@ func NewModbusRtu(eventBus event_bus.EventBus, actor *EntityActor) (modbus modbu
 		attrsSerial := actor.Attrs.Serialize()
 		actor.AttrMu.Unlock()
 
-		properties, err := json.Marshal(attrsSerial)
-		if err != nil {
+		var properties []byte
+		if properties, err = json.Marshal(attrsSerial); err != nil {
 			log.Error(err.Error())
-			result.Error = err.Error()
 			return
 		}
 
@@ -54,9 +64,8 @@ func NewModbusRtu(eventBus event_bus.EventBus, actor *EntityActor) (modbus modbu
 			Count:    count,
 			Command:  command,
 		}
-		b, err := json.Marshal(cmd)
-		if err != nil {
-			result.Error = err.Error()
+		var requestCommand []byte
+		if requestCommand, err = json.Marshal(cmd); err != nil {
 			log.Error(err.Error())
 			return
 		}
@@ -64,32 +73,21 @@ func NewModbusRtu(eventBus event_bus.EventBus, actor *EntityActor) (modbus modbu
 			EntityId:   actor.Id,
 			DeviceType: DeviceTypeModbusRtu,
 			Properties: properties,
-			Command:    b,
+			Command:    requestCommand,
 		}
 
 		eventBus.Publish(actor.localTopic(fmt.Sprintf("req/%s", actor.Id)), msg)
 
 		// wait response
-		ticker := time.NewTimer(time.Second * 5)
+		ticker := time.NewTimer(time.Second * 1)
 		defer ticker.Stop()
 
-		var done bool
-		for {
-			if done {
-				break
-			}
-			select {
-			case <-ticker.C:
-				err = errors.New("timeout")
-				done = true
-			case resp := <-ch:
-				if resp.EntityId != actor.Id {
-					continue
-				}
-				if err = json.Unmarshal(resp.Response, &result); err != nil {
-					log.Error(err.Error())
-				}
-				done = true
+		select {
+		case <-ticker.C:
+			err = errors.New("timeout")
+		case resp := <-ch:
+			if err = json.Unmarshal(resp.Response, &result); err != nil {
+				log.Error(err.Error())
 			}
 		}
 
