@@ -24,7 +24,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/modbus_rtu"
+	"github.com/e154/smart-home/plugins/modbus_tcp"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -37,7 +37,7 @@ import (
 	"time"
 )
 
-func TestModbusRtu(t *testing.T) {
+func TestModbusTcp(t *testing.T) {
 
 	const plugActionOnOffSourceScript = `
 
@@ -48,7 +48,7 @@ getStatus =(status)->
         return 'OFF'
 
 writeRegisters =(d, c, r)->
-    return ModbusRtu 'WriteMultipleRegisters', d, c, r
+    return ModbusTcp 'WriteMultipleRegisters', d, c, r
 
 checkStatus =->
     COMMAND = []
@@ -56,7 +56,7 @@ checkStatus =->
     ADDRESS = 0
     COUNT = 16
 
-    res = ModbusRtu FUNC, ADDRESS, COUNT, COMMAND
+    res = ModbusTcp FUNC, ADDRESS, COUNT, COMMAND
     So(res.error, 'ShouldEqual', '')
     So(res.result, 'ShouldEqual', '[1 0 1]')
     So(res.time, 'ShouldNotBeBlank', '')
@@ -88,7 +88,7 @@ entityAction = (entityId, actionName)->
         when 'ON_WITH_ERR' then doOnErrAction()
 `
 
-	Convey("modbus_rtu", t, func(ctx C) {
+	Convey("modbus_tcp", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
@@ -107,7 +107,7 @@ entityAction = (entityId, actionName)->
 			// register plugins
 			err = AddPlugin(adaptors, "node")
 			err = AddPlugin(adaptors, "triggers")
-			err = AddPlugin(adaptors, "modbus_rtu")
+			err = AddPlugin(adaptors, "modbus_tcp")
 			So(err, ShouldBeNil)
 
 			go mqttServer.Start()
@@ -131,11 +131,11 @@ entityAction = (entityId, actionName)->
 
 			// add entity
 			// ------------------------------------------------
-			nodeEnt := GetNewNode("main")
+			nodeEnt := GetNewNode("second")
 			err = adaptors.Entity.Add(nodeEnt)
 			So(err, ShouldBeNil)
 
-			plugEnt := GetNewModbusRtu("plug")
+			plugEnt := GetNewModbusTcp("plugTcp")
 			plugEnt.ParentId = &nodeEnt.Id
 			plugEnt.Actions = []*m.EntityAction{
 				{
@@ -173,12 +173,8 @@ entityAction = (entityId, actionName)->
 					Description: "error state",
 				},
 			}
-			plugEnt.Attributes[modbus_rtu.AttrSlaveId].Value = 1
-			plugEnt.Attributes[modbus_rtu.AttrBaud].Value = 19200
-			plugEnt.Attributes[modbus_rtu.AttrStopBits].Value = 1
-			plugEnt.Attributes[modbus_rtu.AttrTimeout].Value = 100
-			plugEnt.Attributes[modbus_rtu.AttrDataBits].Value = 8
-			plugEnt.Attributes[modbus_rtu.AttrParity].Value = "none"
+			plugEnt.Attributes[modbus_tcp.AttrSlaveId].Value = 1
+			plugEnt.Attributes[modbus_tcp.AttrAddressPort].Value = "office:502"
 			err = adaptors.Entity.Add(plugEnt)
 			So(err, ShouldBeNil)
 			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
@@ -203,7 +199,7 @@ entityAction = (entityId, actionName)->
 
 			ch := make(chan []byte)
 			mqttCli := mqttServer.NewClient("cli")
-			mqttCli.Subscribe("home/node/main/req/#", func(cli mqtt.MqttCli, message mqtt.Message) {
+			mqttCli.Subscribe("home/node/second/req/#", func(cli mqtt.MqttCli, message mqtt.Message) {
 				ch <- message.Payload
 			})
 			defer mqttCli.UnsubscribeAll()
@@ -232,7 +228,7 @@ entityAction = (entityId, actionName)->
 				err = json.Unmarshal(req, &request)
 				ctx.So(err, ShouldBeNil)
 
-				cmd := modbus_rtu.ModBusCommand{}
+				cmd := modbus_tcp.ModBusCommand{}
 				err = json.Unmarshal(request.Command, &cmd)
 				ctx.So(err, ShouldBeNil)
 
@@ -241,14 +237,9 @@ entityAction = (entityId, actionName)->
 				ctx.So(err, ShouldBeNil)
 
 				ctx.So(request.EntityId, ShouldEqual, plugEnt.Id)
-				ctx.So(request.DeviceType, ShouldEqual, modbus_rtu.DeviceTypeModbusRtu)
-				ctx.So(prop["baud"], ShouldEqual, 19200)
-				ctx.So(prop["data_bits"], ShouldEqual, 8)
-				ctx.So(prop["parity"], ShouldEqual, "none")
+				ctx.So(request.DeviceType, ShouldEqual, modbus_tcp.DeviceTypeModbusTcp)
 				ctx.So(prop["slave_id"], ShouldEqual, 1)
-				ctx.So(prop["sleep"], ShouldEqual, nil)
-				ctx.So(prop["stop_bits"], ShouldEqual, 1)
-				ctx.So(prop["timeout"], ShouldEqual, 100)
+				ctx.So(prop["address_port"], ShouldEqual, "office:502")
 
 				ctx.So(cmd.Function, ShouldEqual, "WriteMultipleRegisters")
 				ctx.So(cmd.Address, ShouldEqual, 0)
@@ -256,21 +247,21 @@ entityAction = (entityId, actionName)->
 				ctx.So(cmd.Command, ShouldResemble, []uint16{1})
 
 				// response from node
-				r := modbus_rtu.ModBusResponse{
+				r := modbus_tcp.ModBusResponse{
 					Error:  "",
 					Result: []uint16{},
 				}
 				b, _ := json.Marshal(r)
 				resp := node.MessageResponse{
 					EntityId:   plugEnt.Id,
-					DeviceType: modbus_rtu.DeviceTypeModbusRtu,
+					DeviceType: modbus_tcp.DeviceTypeModbusTcp,
 					Properties: nil,
 					Response:   b,
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/plugin.test"), b)
-				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})
@@ -298,7 +289,7 @@ entityAction = (entityId, actionName)->
 				err = json.Unmarshal(req, &request)
 				ctx.So(err, ShouldBeNil)
 
-				cmd := modbus_rtu.ModBusCommand{}
+				cmd := modbus_tcp.ModBusCommand{}
 				err = json.Unmarshal(request.Command, &cmd)
 				ctx.So(err, ShouldBeNil)
 
@@ -307,14 +298,9 @@ entityAction = (entityId, actionName)->
 				ctx.So(err, ShouldBeNil)
 
 				ctx.So(request.EntityId, ShouldEqual, plugEnt.Id)
-				ctx.So(request.DeviceType, ShouldEqual, modbus_rtu.DeviceTypeModbusRtu)
-				ctx.So(prop["baud"], ShouldEqual, 19200)
-				ctx.So(prop["data_bits"], ShouldEqual, 8)
-				ctx.So(prop["parity"], ShouldEqual, "none")
+				ctx.So(request.DeviceType, ShouldEqual, modbus_tcp.DeviceTypeModbusTcp)
 				ctx.So(prop["slave_id"], ShouldEqual, 1)
-				ctx.So(prop["sleep"], ShouldEqual, nil)
-				ctx.So(prop["stop_bits"], ShouldEqual, 1)
-				ctx.So(prop["timeout"], ShouldEqual, 100)
+				ctx.So(prop["address_port"], ShouldEqual, "office:502")
 
 				ctx.So(cmd.Function, ShouldEqual, "WriteMultipleRegisters")
 				ctx.So(cmd.Address, ShouldEqual, 0)
@@ -322,21 +308,21 @@ entityAction = (entityId, actionName)->
 				ctx.So(cmd.Command, ShouldResemble, []uint16{0})
 
 				// response from node
-				r := modbus_rtu.ModBusResponse{
+				r := modbus_tcp.ModBusResponse{
 					Error:  "",
 					Result: []uint16{},
 				}
 				b, _ := json.Marshal(r)
 				resp := node.MessageResponse{
 					EntityId:   plugEnt.Id,
-					DeviceType: modbus_rtu.DeviceTypeModbusRtu,
+					DeviceType: modbus_tcp.DeviceTypeModbusTcp,
 					Properties: nil,
 					Response:   b,
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/plugin.test"), b)
-				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})
@@ -364,7 +350,7 @@ entityAction = (entityId, actionName)->
 				err = json.Unmarshal(req, &request)
 				ctx.So(err, ShouldBeNil)
 
-				cmd := modbus_rtu.ModBusCommand{}
+				cmd := modbus_tcp.ModBusCommand{}
 				err = json.Unmarshal(request.Command, &cmd)
 				ctx.So(err, ShouldBeNil)
 
@@ -373,37 +359,31 @@ entityAction = (entityId, actionName)->
 				ctx.So(err, ShouldBeNil)
 
 				ctx.So(request.EntityId, ShouldEqual, plugEnt.Id)
-				ctx.So(request.DeviceType, ShouldEqual, modbus_rtu.DeviceTypeModbusRtu)
-				ctx.So(prop["baud"], ShouldEqual, 19200)
-				ctx.So(prop["data_bits"], ShouldEqual, 8)
-				ctx.So(prop["parity"], ShouldEqual, "none")
+				ctx.So(request.DeviceType, ShouldEqual, modbus_tcp.DeviceTypeModbusTcp)
 				ctx.So(prop["slave_id"], ShouldEqual, 1)
-				ctx.So(prop["sleep"], ShouldEqual, nil)
-				ctx.So(prop["stop_bits"], ShouldEqual, 1)
-				ctx.So(prop["timeout"], ShouldEqual, 100)
+				ctx.So(prop["address_port"], ShouldEqual, "office:502")
 
 				ctx.So(cmd.Function, ShouldEqual, "ReadHoldingRegisters")
 				ctx.So(cmd.Address, ShouldEqual, 0)
 				ctx.So(cmd.Count, ShouldEqual, 16)
 				ctx.So(cmd.Command, ShouldResemble, []uint16{})
 
-
 				// response from node
-				r := modbus_rtu.ModBusResponse{
+				r := modbus_tcp.ModBusResponse{
 					Error:  "",
 					Result: []uint16{1, 0, 1},
 				}
 				b, _ := json.Marshal(r)
 				resp := node.MessageResponse{
 					EntityId:   plugEnt.Id,
-					DeviceType: modbus_rtu.DeviceTypeModbusRtu,
+					DeviceType: modbus_tcp.DeviceTypeModbusTcp,
 					Properties: nil,
 					Response:   b,
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/plugin.test"), b)
-				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Millisecond * 500)
 			})
@@ -443,20 +423,20 @@ entityAction = (entityId, actionName)->
 
 				ctx.So(ok, ShouldBeTrue)
 
-				r := modbus_rtu.ModBusResponse{
+				r := modbus_tcp.ModBusResponse{
 					Error: "some error",
 				}
 				b, _ := json.Marshal(r)
 				resp := node.MessageResponse{
 					EntityId:   plugEnt.Id,
-					DeviceType: modbus_rtu.DeviceTypeModbusRtu,
+					DeviceType: modbus_tcp.DeviceTypeModbusTcp,
 					Properties: nil,
 					Response:   b,
 					Status:     "",
 				}
 				b, _ = json.Marshal(resp)
-				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/plugin.test"), b)
-				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
 
 				time.Sleep(time.Second * 2)
 			})

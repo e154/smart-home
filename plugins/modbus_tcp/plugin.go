@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package node
+package modbus_tcp
 
 import (
 	"fmt"
@@ -25,7 +25,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
@@ -33,7 +32,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.node")
+	log = common.MustGetLogger("plugins.modbus_tcp")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -50,8 +49,6 @@ type plugin struct {
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
 	actors        map[common.EntityId]*EntityActor
-	mqttServ      mqtt.MqttServ
-	mqttClient    mqtt.MqttCli
 }
 
 func New() plugins.Plugable {
@@ -67,14 +64,12 @@ func (p *plugin) Load(service plugins.Service) error {
 	p.eventBus = service.EventBus()
 	p.entityManager = service.EntityManager()
 	p.scriptService = service.ScriptService()
-	p.mqttServ = service.MqttServ()
 
 	if p.isStarted.Load() {
 		return nil
 	}
 	p.isStarted.Store(true)
-
-	p.mqttClient = p.mqttServ.NewClient("plugins.node")
+	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -84,19 +79,27 @@ func (p *plugin) Unload() error {
 		return nil
 	}
 	p.isStarted.Store(false)
-	p.mqttServ.RemoveClient("plugins.node")
-
-	// remove actors
-	for entityId, actor := range p.actors {
-		actor.destroy()
-		delete(p.actors, entityId)
-	}
-
+	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return nil
 }
 
 func (p *plugin) Name() string {
 	return Name
+}
+
+func (p *plugin) eventHandler(topic string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case event_bus.EventStateChanged:
+	case event_bus.EventCallAction:
+		actor, ok := p.actors[v.EntityId]
+		if !ok {
+			return
+		}
+		actor.addAction(v)
+	}
+
+	return
 }
 
 func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
@@ -109,28 +112,22 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	}
 
 	var actor *EntityActor
-	actor = NewEntityActor(entity, p.entityManager, p.adaptors, p.scriptService, p.eventBus, p.mqttClient)
+	actor = NewEntityActor(entity, p.entityManager, p.adaptors, p.scriptService, p.eventBus)
 	p.actors[entity.Id] = actor
 	p.entityManager.Spawn(actor.Spawn)
-
 	return
 }
 
 func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
-
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
-	actor, ok := p.actors[entityId]
-	if !ok {
+	if _, ok := p.actors[entityId]; !ok {
 		err = fmt.Errorf("not found")
 		return
 	}
 
-	actor.destroy()
-
 	delete(p.actors, entityId)
-
 	return
 }
 
@@ -139,13 +136,9 @@ func (p *plugin) Type() plugins.PluginType {
 }
 
 func (p *plugin) Depends() []string {
-	return nil
+	return []string{"node"}
 }
 
 func (p *plugin) Version() string {
 	return "0.0.1"
-}
-
-func (p *plugin) pushToNode() {
-
 }
