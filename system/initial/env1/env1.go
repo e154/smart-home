@@ -31,7 +31,6 @@ func InstallDemoData(adaptors *adaptors.Adaptors,
 
 	NewImageManager(adaptors).Create()
 	NewRoleManager(adaptors, accessList).Create()
-	NewNodeManager(adaptors).Create()
 	NewAreaManager(adaptors).Create()
 	NewZoneManager(adaptors).Create()
 	NewTemplateManager(adaptors).Create()
@@ -46,7 +45,6 @@ func Create(adaptors *adaptors.Adaptors,
 	NewImageManager(adaptors).Create()
 	NewRoleManager(adaptors, accessList).Create()
 	NewTemplateManager(adaptors).Create()
-	NewNodeManager(adaptors).Create()
 	NewZoneManager(adaptors).Create()
 	NewAreaManager(adaptors).Create()
 	NewPluginManager(adaptors).Create()

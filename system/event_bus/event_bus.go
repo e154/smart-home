@@ -29,7 +29,7 @@ const (
 type EventBus interface {
 	Publish(topic string, args ...interface{})
 	Close(topic string)
-	Subscribe(topic string, fn interface{}) error
+	Subscribe(topic string, fn interface{}, options ...interface{}) error
 	Unsubscribe(topic string, fn interface{}) error
 }
 
@@ -51,8 +51,8 @@ func (e *eventBus) Close(topic string) {
 	e.bus.Close(topic)
 }
 
-func (e *eventBus) Subscribe(topic string, fn interface{}) error {
-	return e.bus.Subscribe(topic, fn)
+func (e *eventBus) Subscribe(topic string, fn interface{}, options ...interface{}) error {
+	return e.bus.Subscribe(topic, fn, options...)
 }
 
 func (e *eventBus) Unsubscribe(topic string, fn interface{}) error {

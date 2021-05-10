@@ -26,13 +26,13 @@ import (
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
+	"sync"
 	"testing"
 	"time"
 )
@@ -88,7 +88,8 @@ automationTriggerStateChanged = (msg)->
 			So(err, ShouldBeNil)
 
 			// register plugins
-			env1.NewPluginManager(adaptors).Create()
+			AddPlugin(adaptors, "triggers")
+			AddPlugin(adaptors, "zigbee2mqtt")
 
 			go mqttServer.Start()
 
@@ -175,9 +176,12 @@ automationTriggerStateChanged = (msg)->
 
 			var counter atomic.Int32
 			var lastStat atomic.String
+			var wg sync.WaitGroup
+			wg.Add(2)
 			scriptService.PushFunctions("Done", func(state string) {
 				lastStat.Store(state)
 				counter.Inc()
+				wg.Done()
 			})
 
 			pluginManager.Start()
@@ -185,23 +189,24 @@ automationTriggerStateChanged = (msg)->
 			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
-			time.Sleep(time.Second)
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
 
-			mqttCli := mqttServer.NewClient("cli")
+			mqttCli := mqttServer.NewClient("cli2")
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"action":"double","linkquality":134,"voltage":3042}`))
+			time.Sleep(time.Millisecond * 100)
 			err = mqttCli.Publish("zigbee2mqtt/"+zigbeeButtonId, []byte(`{"battery":100,"click":"double","linkquality":134,"voltage":3042}`))
 			So(err, ShouldBeNil)
 
-			time.Sleep(time.Second * 1)
+			wg.Wait()
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 			So(lastStat.Load(), ShouldEqual, "DOUBLE_CLICK")
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

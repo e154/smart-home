@@ -16,19 +16,21 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package devices
+package container
 
 import (
-	. "github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/backup"
+	"github.com/e154/smart-home/system/config"
 )
 
-// BaseResponse ...
-type BaseResponse struct {
-	Error string  `json:"error"`
-	Time  float64 `json:"time"`
+// NewBackupConfig ...
+func NewBackupConfig(cfg *config.AppConfig) *backup.BackupConfig {
+	return &backup.BackupConfig{
+		Path:   cfg.SnapshotDir,
+		PgUser: cfg.PgUser,
+		PgPass: cfg.PgPass,
+		PgHost: cfg.PgHost,
+		PgName: cfg.PgName,
+		PgPort: cfg.PgPort,
+	}
 }
-
-const (
-	// DevTypeDefault ...
-	DevTypeDefault = DeviceType("default")
-)

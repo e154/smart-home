@@ -117,7 +117,14 @@ entityAction = (entityId, actionName)->
 			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
-			time.Sleep(time.Millisecond * 500)
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
 			entityManager.CallAction(plugEnt.Id, "ON", nil)
 			entityManager.CallAction(plugEnt.Id, "OFF", nil)
 			entityManager.CallAction(plugEnt.Id, "NULL", nil)
@@ -125,11 +132,6 @@ entityAction = (entityId, actionName)->
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 2)
 
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

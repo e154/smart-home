@@ -62,6 +62,7 @@ func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseAct
 		Name:              entity.Id.Name(),
 		Description:       entity.Description,
 		EntityType:        entity.Type,
+		ParentId:          entity.ParentId,
 		Manager:           nil,
 		State:             nil,
 		Area:              entity.Area,
@@ -102,6 +103,7 @@ func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseAct
 		actor.States[s.Name] = state
 	}
 
+	var err error
 	// Actions
 	for _, a := range entity.Actions {
 		action := ActorAction{
@@ -111,7 +113,9 @@ func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseAct
 		}
 
 		if a.Script != nil {
-			action.ScriptEngine, _ = scriptService.NewEngine(a.Script)
+			if action.ScriptEngine, err = scriptService.NewEngine(a.Script); err != nil {
+				log.Error(err.Error())
+			}
 		}
 
 		if a.Image != nil {
@@ -122,12 +126,16 @@ func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseAct
 
 	// Scripts
 	if len(entity.Scripts) != 0 {
-		var err error
 		if actor.ScriptEngine, err = scriptService.NewEngine(&entity.Scripts[0]); err != nil {
 			log.Error(err.Error())
 		}
 
 		actor.ScriptEngine.Do()
+
+	} else {
+		if actor.ScriptEngine, err = scriptService.NewEngine(nil); err != nil {
+			log.Error(err.Error())
+		}
 	}
 
 	return actor
@@ -136,8 +144,6 @@ func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseAct
 func (b *BaseActor) GetEventState(actor PluginActor) event_bus.EventEntityState {
 	return GetEventState(actor)
 }
-
-func (e *BaseActor) Receive(message Message) {}
 
 func (e *BaseActor) Metrics() []m.Metric {
 	return e.Metric

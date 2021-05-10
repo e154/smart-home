@@ -25,7 +25,6 @@ import (
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -53,7 +52,8 @@ func TestZone(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			// register plugins
-			env1.NewPluginManager(adaptors).Create()
+			err = AddPlugin(adaptors, "zone")
+			ctx.So(err, ShouldBeNil)
 
 			go mqttServer.Start()
 
@@ -76,7 +76,7 @@ func TestZone(t *testing.T) {
 			wgAdd.Add(1)
 			wgUpdate := sync.WaitGroup{}
 			wgUpdate.Add(1)
-			eventBus.Subscribe(event_bus.TopicEntities, func(msg interface{}) {
+			eventBus.Subscribe(event_bus.TopicEntities, func(_ string, msg interface{}) {
 
 				switch v := msg.(type) {
 				case event_bus.EventStateChanged:
@@ -115,6 +115,14 @@ func TestZone(t *testing.T) {
 			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
 			//...
 			wgAdd.Wait()
 			entityManager.SetState(zoneEnt.Id, entity_manager.EntityStateParams{
@@ -128,12 +136,6 @@ func TestZone(t *testing.T) {
 
 			wgUpdate.Wait()
 			time.Sleep(time.Millisecond * 500)
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

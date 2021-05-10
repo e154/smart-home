@@ -33,6 +33,8 @@ const (
 	SystemQueueSize    = 10
 )
 
+var _ ITrigger = (*SystemTrigger)(nil)
+
 type SystemTrigger struct {
 	baseTrigger
 }
@@ -50,11 +52,11 @@ func NewSystemTrigger(eventBus event_bus.EventBus) ITrigger {
 
 func (s *SystemTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
-	s.eventBus.Subscribe(event_bus.TopicSystemStart, func(msg interface{}) {
+	s.eventBus.Subscribe(event_bus.TopicSystemStart, func(_ string, msg interface{}) {
 		s.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStart,})
 	})
 
-	s.eventBus.Subscribe(event_bus.TopicSystemStop, func(msg interface{}) {
+	s.eventBus.Subscribe(event_bus.TopicSystemStop, func(_ string, msg interface{}) {
 		s.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStop,})
 	})
 

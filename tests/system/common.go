@@ -16,52 +16,5 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package devices
+package system
 
-import (
-	. "github.com/e154/smart-home/common"
-)
-
-const (
-	// DevTypeMqtt ...
-	DevTypeMqtt = DeviceType("mqtt")
-)
-
-// DevMqttConfig ...
-type DevMqttConfig struct {
-	Validation
-	Address string `json:"address"`
-}
-
-// DevMqttRequest ...
-type DevMqttRequest struct {
-	Topic   string `json:"topic"`
-	Payload []byte `json:"payload"`
-	Qos     uint8  `json:"qos"`
-	Retain  bool   `json:"retain"`
-}
-
-// params:
-// result
-// error
-// time
-type DevMqttResponse struct {
-	BaseResponse
-}
-
-// Javascript Binding
-//
-// Mqtt(path, payload)
-//
-func NewMqttBind(path, payload string) MqttBind {
-	return MqttBind{
-		Payload: []byte(payload),
-		Path:    path,
-	}
-}
-
-// MqttBind ...
-type MqttBind struct {
-	Path    string
-	Payload []byte
-}

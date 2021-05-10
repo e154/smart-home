@@ -103,17 +103,19 @@ sceneEvent = (args)->
 			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
 			time.Sleep(time.Millisecond * 500)
 			entityManager.CallScene(romanticEnt.Id, nil)
 			time.Sleep(time.Millisecond * 500)
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

@@ -31,9 +31,6 @@ type PluginActor interface {
 	// Spawn ...
 	Spawn() PluginActor
 
-	// Receive ...
-	Receive(message Message)
-
 	// Attributes ...
 	Attributes() m.EntityAttributes
 
@@ -80,9 +77,6 @@ type EntityManager interface {
 
 	// Send ...
 	Send(Message) error
-
-	// Broadcast ...
-	Broadcast(Message)
 
 	// CallAction ...
 	CallAction(common.EntityId, string, map[string]interface{})
@@ -144,18 +138,9 @@ const (
 	StateInProcess = "in process"
 )
 
-type MessageCallAction struct {
-	Name string                 `json:"name"`
-	Arg  map[string]interface{} `json:"arg"`
-}
-
-type MessageCallScene struct {
-	Arg map[string]interface{} `json:"arg"`
-}
-
 type actorInfo struct {
 	Actor    PluginActor
-	Queue    chan Message
+	quit     chan struct{}
 	OldState event_bus.EventEntityState
 }
 

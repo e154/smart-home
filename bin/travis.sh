@@ -271,6 +271,7 @@ __test() {
     go test -v ./tests/models
     go test -v ./tests/plugins
     go test -v ./tests/scripts
+    go test -v ./tests/system
 }
 
 main "$@"

@@ -16,47 +16,14 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package devices
+package container
 
-import (
-	. "github.com/e154/smart-home/common"
-)
+import "github.com/e154/smart-home/system/migrations"
 
-const (
-	// DevTypeCommand ...
-	DevTypeCommand = DeviceType("command")
-)
-
-// DevCommandConfig ...
-type DevCommandConfig struct {
-	Validation
-}
-
-// DevCommandRequest ...
-type DevCommandRequest struct {
-	Name string   `json:"name"`
-	Args []string `json:"args"`
-}
-
-// DevCommandResponse ...
-type DevCommandResponse struct {
-	BaseResponse
-	Result string `json:"result"`
-}
-
-// Javascript Binding
-//
-// RunCommand(name, args)
-//
-func NewRunCommandBind(name string, args []string) RunCommandBind {
-	return RunCommandBind{
-		Name: name,
-		Args: args,
+// NewMigrationsConfig ...
+func NewMigrationsConfig() *migrations.Config {
+	return &migrations.Config{
+		Source: "assets",
+		Dir:    "migrations",
 	}
-}
-
-// RunCommandBind ...
-type RunCommandBind struct {
-	Name string
-	Args []string
 }

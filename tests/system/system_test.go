@@ -16,50 +16,35 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package devices
+package system
 
 import (
-	. "github.com/e154/smart-home/common"
+	"fmt"
+	"github.com/e154/smart-home/system/logging"
+	. "github.com/e154/smart-home/tests/system/container"
+	"go.uber.org/dig"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
 )
 
-const (
-	// DevTypeZigbee2mqtt ...
-	DevTypeZigbee2mqtt = DeviceType("zigbee2mqtt")
-)
-
-// DevZigbee2mqttConfig ...
-type DevZigbee2mqttConfig struct {
-	Validation
-	Zigbee2mqttDeviceId string `json:"zigbee2mqtt_device_id"`
+func init() {
+	apppath := filepath.Join(os.Getenv("PWD"), "../..")
+	os.Chdir(apppath)
 }
 
-// DevZigbee2mqttRequest ...
-type DevZigbee2mqttRequest struct {
-	Path    string `json:"path"`
-	Payload []byte `json:"payload"`
-}
 
-// params:
-// result
-// error
-// time
-type DevZigbee2mqttResponse struct {
-	BaseResponse
-}
+func TestMain(m *testing.M) {
 
-// Javascript Binding
-//
-// Zigbee2mqtt(path, payload)
-//
-func NewZigbee2mqttBind(path string, payload string) Zigbee2mqttBind {
-	return Zigbee2mqttBind{
-		Path:    path,
-		Payload: []byte(payload),
+	err := BuildContainer().Invoke(func(logger *logging.Logging,) {
+
+		time.Sleep(time.Millisecond * 500)
+
+		os.Exit(m.Run())
+	})
+
+	if err != nil {
+		fmt.Println("error:", dig.RootCause(err))
 	}
-}
-
-// Zigbee2mqttBind ...
-type Zigbee2mqttBind struct {
-	Path    string
-	Payload []byte
 }
