@@ -64,7 +64,7 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	eventBus event_bus.EventBus,
 	pluginManager common.PluginManager,
 	mqtt mqtt.MqttServ) *Endpoint {
-	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt, eventBus, pluginManager, entityManager)
+	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt, eventBus, pluginManager, entityManager, mqtt)
 	return &Endpoint{
 		AlexaSkill:      NewAlexaSkillEndpoint(common),
 		Auth:            NewAuthEndpoint(common),
