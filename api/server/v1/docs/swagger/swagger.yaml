@@ -2229,29 +2229,6 @@ paths:
   /developer_tools/events:
     get:
       operationId: eventList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
       responses:
         "200":
           $ref: '#/responses/DeveloperToolsEventList'
@@ -2300,29 +2277,6 @@ paths:
   /developer_tools/states:
     get:
       operationId: stateList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
       responses:
         "200":
           $ref: '#/responses/DeveloperToolsStateList'

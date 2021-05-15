@@ -43,28 +43,6 @@ func NewControllerDeveloperTools(common *ControllerCommon) *ControllerDeveloperT
 // tags:
 // - developer_tools
 // parameters:
-// - default: 10
-//   description: limit
-//   in: query
-//   name: limit
-//   required: true
-//   type: integer
-// - default: 0
-//   description: offset
-//   in: query
-//   name: offset
-//   required: true
-//   type: integer
-// - default: DESC
-//   description: order
-//   in: query
-//   name: order
-//   type: string
-// - default: id
-//   description: sort_by
-//   in: query
-//   name: sort_by
-//   type: string
 // responses:
 //   "200":
 //	   $ref: '#/responses/DeveloperToolsStateList'
@@ -165,28 +143,6 @@ func (c ControllerDeveloperTools) UpdateState(ctx *gin.Context) {
 // tags:
 // - developer_tools
 // parameters:
-// - default: 10
-//   description: limit
-//   in: query
-//   name: limit
-//   required: true
-//   type: integer
-// - default: 0
-//   description: offset
-//   in: query
-//   name: offset
-//   required: true
-//   type: integer
-// - default: DESC
-//   description: order
-//   in: query
-//   name: order
-//   type: string
-// - default: id
-//   description: sort_by
-//   in: query
-//   name: sort_by
-//   type: string
 // responses:
 //   "200":
 //	   $ref: '#/responses/DeveloperToolsEventList'
