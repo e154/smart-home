@@ -20,6 +20,7 @@ package message_queue
 
 import (
 	"reflect"
+	"strings"
 	"sync"
 )
 
@@ -35,7 +36,7 @@ type MessageQueue interface {
 	// Unsubscribe unsubscribe handler from the given topic
 	Unsubscribe(topic string, fn interface{}) error
 	// Stat
-	Stat() (stats []Stat, err error)
+	Stat() (stats Stats, err error)
 }
 
 type handler struct {
@@ -54,7 +55,16 @@ type messageQueue struct {
 	sub       map[string]*subscribers
 }
 
+
 type Stat struct {
 	Topic       string
 	Subscribers int
 }
+
+type Stats []Stat
+
+func (s Stats) Len() int { return len(s) }
+
+func (s Stats) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+
+func (s Stats) Less(i, j int) bool { return strings.Compare(s[i].Topic, s[j].Topic) == -1 }

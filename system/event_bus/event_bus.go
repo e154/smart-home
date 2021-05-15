@@ -32,7 +32,7 @@ type EventBus interface {
 	Close(topic string)
 	Subscribe(topic string, fn interface{}, options ...interface{}) error
 	Unsubscribe(topic string, fn interface{}) error
-	Stat() (stats []message_queue.Stat, err error)
+	Stat() (stats message_queue.Stats, err error)
 }
 
 type eventBus struct {
@@ -67,6 +67,6 @@ func (e *eventBus) Unsubscribe(topic string, fn interface{}) error {
 }
 
 // Stat ...
-func (e *eventBus) Stat() ([]message_queue.Stat, error) {
+func (e *eventBus) Stat() (message_queue.Stats, error) {
 	return e.bus.Stat()
 }

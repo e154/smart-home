@@ -21,6 +21,7 @@ package message_queue
 import (
 	"fmt"
 	"reflect"
+	"sort"
 )
 
 // New creates new MessageQueue
@@ -132,9 +133,8 @@ func (b *messageQueue) Close(topic string) {
 }
 
 // todo fix
-func (b *messageQueue) Stat() (stats []Stat, err error) {
+func (b *messageQueue) Stat() (stats Stats, err error) {
 	b.mtx.Lock()
-	defer b.mtx.Unlock()
 
 	for topic, subs := range b.sub {
 		stats = append(stats, Stat{
@@ -142,6 +142,9 @@ func (b *messageQueue) Stat() (stats []Stat, err error) {
 			Subscribers: len(subs.handlers),
 		})
 	}
+	b.mtx.Unlock()
+
+	sort.Sort(stats)
 
 	return
 }
