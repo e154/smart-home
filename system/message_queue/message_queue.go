@@ -131,6 +131,21 @@ func (b *messageQueue) Close(topic string) {
 	}
 }
 
+// todo fix
+func (b *messageQueue) Stat() (stats []Stat, err error) {
+	b.mtx.Lock()
+	defer b.mtx.Unlock()
+
+	for topic, subs := range b.sub {
+		stats = append(stats, Stat{
+			Topic:       topic,
+			Subscribers: len(subs.handlers),
+		})
+	}
+
+	return
+}
+
 func buildHandlerArgs(args []interface{}) []reflect.Value {
 	reflectedArgs := make([]reflect.Value, 0)
 

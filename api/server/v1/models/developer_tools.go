@@ -25,10 +25,15 @@ type DeveloperToolsState struct {
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
-
 // swagger:model
 type UpdateDeveloperToolsState struct {
 	Id         string                 `json:"id"`
 	State      *string                `json:"state"`
 	Attributes map[string]interface{} `json:"attributes"`
+}
+
+// swagger:model
+type DeveloperToolsEvent struct {
+	Topic       string `json:"topic"`
+	Subscribers int    `json:"subscribers"`
 }

@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/message_queue"
 	"github.com/e154/smart-home/system/validation"
 )
 
@@ -37,16 +38,25 @@ func NewDeveloperToolsEndpoint(common *CommonEndpoint) *DeveloperToolsEndpoint {
 	}
 }
 
+// StateList ...
 func (d DeveloperToolsEndpoint) StateList() (states []m.EntityShort, total int64, err error) {
 	states, err = d.entityManager.List()
 	total = int64(len(states))
 	return
 }
 
+// UpdateState ...
 func (d DeveloperToolsEndpoint) UpdateState(entityId string, state *string, attrs map[string]interface{}) (errs []*validation.Error, err error) {
 	err = d.entityManager.SetState(common.EntityId(entityId), entity_manager.EntityStateParams{
 		NewState:        state,
 		AttributeValues: attrs,
 	})
+	return
+}
+
+// EventList ...
+func (d DeveloperToolsEndpoint) EventList() (events []message_queue.Stat, total int64, err error) {
+	events, err = d.eventBus.Stat()
+	total = int64(len(events))
 	return
 }

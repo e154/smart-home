@@ -52,11 +52,11 @@ func NewSystemTrigger(eventBus event_bus.EventBus) ITrigger {
 
 func (t *SystemTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
-	t.eventBus.Subscribe(event_bus.TopicSystemStart, func(_ string, msg interface{}) {
+	t.eventBus.Subscribe(TopicSystemStart, func(_ string, msg interface{}) {
 		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStart,})
 	})
 
-	t.eventBus.Subscribe(event_bus.TopicSystemStop, func(_ string, msg interface{}) {
+	t.eventBus.Subscribe(TopicSystemStop, func(_ string, msg interface{}) {
 		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStop,})
 	})
 

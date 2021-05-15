@@ -24,7 +24,9 @@ import (
 )
 
 const (
-	Name = "triggers"
+	Name             = "triggers"
+	TopicSystemStart = "system_start"
+	TopicSystemStop  = "system_stop"
 )
 
 type IGetTrigger interface {

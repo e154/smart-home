@@ -155,3 +155,65 @@ func (c ControllerDeveloperTools) UpdateState(ctx *gin.Context) {
 	resp := NewSuccess()
 	resp.SetData(state).Send(ctx)
 }
+
+// swagger:operation GET /developer_tools/events eventList
+// ---
+// summary: get event list
+// description:
+// security:
+// - ApiKeyAuth: []
+// tags:
+// - developer_tools
+// parameters:
+// - default: 10
+//   description: limit
+//   in: query
+//   name: limit
+//   required: true
+//   type: integer
+// - default: 0
+//   description: offset
+//   in: query
+//   name: offset
+//   required: true
+//   type: integer
+// - default: DESC
+//   description: order
+//   in: query
+//   name: order
+//   type: string
+// - default: id
+//   description: sort_by
+//   in: query
+//   name: sort_by
+//   type: string
+// responses:
+//   "200":
+//	   $ref: '#/responses/DeveloperToolsEventList'
+//   "401":
+//     description: "Unauthorized"
+//   "403":
+//     description: "Forbidden"
+//   "500":
+//	   $ref: '#/responses/Error'
+func (c ControllerDeveloperTools) GetEventList(ctx *gin.Context) {
+
+	_, _, _, limit, offset := c.list(ctx)
+	items, total, err := c.endpoint.DeveloperTools.EventList()
+	if err != nil {
+		NewError(500, err).Send(ctx)
+		return
+	}
+
+	result := make([]models.DeveloperToolsEvent, 0, len(items))
+	for _, item := range items {
+		result = append(result, models.DeveloperToolsEvent{
+			Topic:       item.Topic,
+			Subscribers: item.Subscribers,
+		})
+	}
+
+	resp := NewSuccess()
+	resp.Page(limit, offset, total, result).Send(ctx)
+	return
+}

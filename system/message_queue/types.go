@@ -34,6 +34,8 @@ type MessageQueue interface {
 	Subscribe(topic string, fn interface{}, options ...interface{}) error
 	// Unsubscribe unsubscribe handler from the given topic
 	Unsubscribe(topic string, fn interface{}) error
+	// Stat
+	Stat() (stats []Stat, err error)
 }
 
 type handler struct {
@@ -50,4 +52,9 @@ type messageQueue struct {
 	queueSize int
 	mtx       sync.RWMutex
 	sub       map[string]*subscribers
+}
+
+type Stat struct {
+	Topic       string
+	Subscribers int
 }

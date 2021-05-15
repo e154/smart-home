@@ -26,35 +26,47 @@ const (
 	queueSize = 100
 )
 
+// EventBus ...
 type EventBus interface {
 	Publish(topic string, args ...interface{})
 	Close(topic string)
 	Subscribe(topic string, fn interface{}, options ...interface{}) error
 	Unsubscribe(topic string, fn interface{}) error
+	Stat() (stats []message_queue.Stat, err error)
 }
 
 type eventBus struct {
 	bus message_queue.MessageQueue
 }
 
+// NewEventBus ...
 func NewEventBus() EventBus {
 	return &eventBus{
 		bus: message_queue.New(queueSize),
 	}
 }
 
+// Publish ...
 func (e *eventBus) Publish(topic string, args ...interface{}) {
 	e.bus.Publish(topic, args...)
 }
 
+// Close ...
 func (e *eventBus) Close(topic string) {
 	e.bus.Close(topic)
 }
 
+// Subscribe ...
 func (e *eventBus) Subscribe(topic string, fn interface{}, options ...interface{}) error {
 	return e.bus.Subscribe(topic, fn, options...)
 }
 
+// Unsubscribe ...
 func (e *eventBus) Unsubscribe(topic string, fn interface{}) error {
 	return e.bus.Unsubscribe(topic, fn)
+}
+
+// Stat ...
+func (e *eventBus) Stat() ([]message_queue.Stat, error) {
+	return e.bus.Stat()
 }

@@ -157,4 +157,5 @@ func (s *Server) setControllers() {
 	// developer tools
 	v1.GET("/developer_tools/states", s.af.Auth, s.ControllersV1.DeveloperTools.GetStateList)
 	v1.PATCH("/developer_tools/state", s.af.Auth, s.ControllersV1.DeveloperTools.UpdateState)
+	v1.GET("/developer_tools/events", s.af.Auth, s.ControllersV1.DeveloperTools.GetEventList)
 }

@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
@@ -121,7 +122,7 @@ automationTriggerSystem = (msg)->
 				pluginManager.Shutdown()
 			}()
 
-			eventBus.Publish(event_bus.TopicSystemStart, "started")
+			eventBus.Publish(triggers.TopicSystemStart, "started")
 
 			//
 			// ------------------------------------------------
