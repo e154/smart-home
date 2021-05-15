@@ -2052,7 +2052,7 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: add new alexa
+      summary: add alexa skill
       tags:
       - alexa
   /alexa/{id}:
@@ -2079,7 +2079,7 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: delete alexa by id
+      summary: delete alexa skill by id
       tags:
       - alexa
     get:
@@ -2107,7 +2107,7 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: get alexa by id
+      summary: get alexa skill by id
       tags:
       - alexa
     put:
@@ -2118,7 +2118,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Update alexa params
+      - description: Update alexa skill
         in: body
         name: alexa
         required: true
@@ -2182,7 +2182,7 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: get alexa list
+      summary: get alexa skill list
       tags:
       - alexa
   /entities:
@@ -2356,7 +2356,7 @@ paths:
         name: entity
         required: true
         schema:
-          $ref: '#/definitions/Update'
+          $ref: '#/definitions/UpdateEntity'
           type: object
       responses:
         "200":

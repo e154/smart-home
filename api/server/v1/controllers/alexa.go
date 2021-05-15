@@ -46,7 +46,7 @@ func NewControllerAlexa(common *ControllerCommon) *ControllerAlexa {
 //   schema:
 //     $ref: '#/definitions/NewAlexaSkill'
 //     type: object
-// summary: add new alexa
+// summary: add alexa skill
 // description:
 // security:
 // - ApiKeyAuth: []
@@ -106,7 +106,7 @@ func (c ControllerAlexa) Add(ctx *gin.Context) {
 //   name: id
 //   required: true
 //   type: integer
-// summary: get alexa by id
+// summary: get alexa skill by id
 // description:
 // security:
 // - ApiKeyAuth: []
@@ -162,7 +162,7 @@ func (c ControllerAlexa) GetById(ctx *gin.Context) {
 //   name: id
 //   required: true
 //   type: integer
-// - description: Update alexa params
+// - description: Update alexa skill
 //   in: body
 //   name: alexa
 //   required: true
@@ -232,7 +232,7 @@ func (c ControllerAlexa) Update(ctx *gin.Context) {
 
 // swagger:operation GET /alexas alexaList
 // ---
-// summary: get alexa list
+// summary: get alexa skill list
 // description:
 // security:
 // - ApiKeyAuth: []
@@ -295,7 +295,7 @@ func (c ControllerAlexa) GetList(ctx *gin.Context) {
 //   name: id
 //   required: true
 //   type: integer
-// summary: delete alexa by id
+// summary: delete alexa skill by id
 // description:
 // security:
 // - ApiKeyAuth: []
