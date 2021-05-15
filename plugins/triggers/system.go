@@ -50,25 +50,25 @@ func NewSystemTrigger(eventBus event_bus.EventBus) ITrigger {
 	}
 }
 
-func (s *SystemTrigger) AsyncAttach(wg *sync.WaitGroup) {
+func (t *SystemTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
-	s.eventBus.Subscribe(event_bus.TopicSystemStart, func(_ string, msg interface{}) {
-		s.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStart,})
+	t.eventBus.Subscribe(event_bus.TopicSystemStart, func(_ string, msg interface{}) {
+		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStart,})
 	})
 
-	s.eventBus.Subscribe(event_bus.TopicSystemStop, func(_ string, msg interface{}) {
-		s.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStop,})
+	t.eventBus.Subscribe(event_bus.TopicSystemStop, func(_ string, msg interface{}) {
+		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStop,})
 	})
 
 	wg.Done()
 }
 
-func (b *SystemTrigger) Subscribe(_ string, fn interface{}, _ interface{}) error {
+func (t *SystemTrigger) Subscribe(options Subscriber) error {
 	log.Infof("subscribe topic %s", TopicSystem)
-	return b.msgQueue.Subscribe(TopicSystem, fn)
+	return t.msgQueue.Subscribe(TopicSystem, options.Handler)
 }
 
-func (b *SystemTrigger) Unsubscribe(_ string, fn interface{}, _ interface{}) error {
+func (t *SystemTrigger) Unsubscribe(options Subscriber) error {
 	log.Infof("unsubscribe topic %s", TopicSystem)
-	return b.msgQueue.Unsubscribe(TopicSystem, fn)
+	return t.msgQueue.Unsubscribe(TopicSystem, options.Handler)
 }

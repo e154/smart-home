@@ -26,17 +26,15 @@ import (
 
 // AlexaSkill ...
 type AlexaSkill struct {
-	Id                   int64             `json:"id"`
-	SkillId              string            `json:"skill_id" valid:"Required"`
-	Description          string            `json:"description"`
-	Status               common.StatusType `json:"status" valid:"Required"`
-	Intents              []*AlexaIntent    `json:"intents"`
-	OnLaunchScript       *Script           `json:"on_launch_script"`
-	OnLaunchScriptId     *int64            `json:"on_launch_script_id"`
-	OnSessionEndScript   *Script           `json:"on_session_end_script"`
-	OnSessionEndScriptId *int64            `json:"on_session_end_script_id"`
-	CreatedAt            time.Time         `json:"created_at"`
-	UpdatedAt            time.Time         `json:"updated_at"`
+	Id          int64             `json:"id"`
+	SkillId     string            `json:"skill_id" valid:"Required"`
+	Description string            `json:"description"`
+	Status      common.StatusType `json:"status" valid:"Required"`
+	Intents     []*AlexaIntent    `json:"intents"`
+	Script      *Script           `json:"script"`
+	ScriptId    *int64            `json:"script_id"`
+	CreatedAt   time.Time         `json:"created_at"`
+	UpdatedAt   time.Time         `json:"updated_at"`
 }
 
 // Valid ...

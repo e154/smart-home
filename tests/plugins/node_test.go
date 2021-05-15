@@ -61,7 +61,7 @@ func TestNode(t *testing.T) {
 			// add entity
 			// ------------------------------------------------
 
-			nodeEnt := GetNewNode()
+			nodeEnt := GetNewNode("main")
 			err = adaptors.Entity.Add(nodeEnt)
 			ctx.So(err, ShouldBeNil)
 

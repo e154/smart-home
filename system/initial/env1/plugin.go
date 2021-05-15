@@ -62,5 +62,7 @@ func (n PluginManager) Create() (home *m.Plugin) {
 	n.addPlugin("zone", true)
 	n.addPlugin("node", true)
 	n.addPlugin("modbus_rtu", true)
+	n.addPlugin("modbus_tcp", true)
+	n.addPlugin("alexa", true)
 	return
 }

@@ -24,6 +24,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/modbus_rtu"
+	"github.com/e154/smart-home/plugins/modbus_tcp"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/plugins/scene"
 	"github.com/e154/smart-home/plugins/script"
@@ -235,9 +236,9 @@ func GetNewZone() *m.Entity {
 	}
 }
 
-func GetNewNode() *m.Entity {
+func GetNewNode(name string) *m.Entity {
 	return &m.Entity{
-		Id:          "node.main",
+		Id:          common.EntityId(fmt.Sprintf("node.%s", name)),
 		Description: "main node",
 		Type:        "node",
 		AutoLoad:    true,
@@ -252,6 +253,17 @@ func GetNewModbusRtu(name string) *m.Entity {
 		Type:        "modbus_rtu",
 		AutoLoad:    true,
 		Attributes:  modbus_rtu.NewAttr(),
+	}
+}
+
+
+func GetNewModbusTcp(name string) *m.Entity {
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("modbus_tcp.%s", name)),
+		Description: fmt.Sprintf("%s entity", name),
+		Type:        "modbus_tcp",
+		AutoLoad:    true,
+		Attributes:  modbus_tcp.NewAttr(),
 	}
 }
 

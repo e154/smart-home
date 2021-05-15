@@ -16,27 +16,24 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package zigbee2mqtt
+package alexa
 
-import (
-	"github.com/e154/smart-home/system/entity_manager"
-)
+import "go.uber.org/zap"
 
-// Javascript Binding
-//
-// Actor
-//	.setState(params)
-//
-type ScriptBind struct {
-	actor *EntityActor
+// ServerLogger ...
+type ServerLogger struct {
+	logger *zap.Logger
 }
 
-// NewScriptBind...
-func NewScriptBind(actor *EntityActor) *ScriptBind {
-	return &ScriptBind{actor: actor}
+// NewLogger ...
+func NewLogger() *ServerLogger {
+	return &ServerLogger{
+		logger: zap.L(),
+	}
 }
 
-// SetState...
-func (s *ScriptBind) SetState(params entity_manager.EntityStateParams) {
-	s.actor.setState(params)
+// Write ...
+func (s ServerLogger) Write(b []byte) (i int, err error) {
+	s.logger.Info(string(b))
+	return
 }

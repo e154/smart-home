@@ -41,7 +41,7 @@ func HTTPError(w http.ResponseWriter, logMsg string, err string, errCode int) {
 }
 
 // IsValidAlexaRequest handles all the necessary steps to validate that an incoming http.Request has actually come from
-// the Alexa service. If an error occurs during the validation process, an http.Error will be written to the provided http.ResponseWriter.
+// the Server service. If an error occurs during the validation process, an http.Error will be written to the provided http.ResponseWriter.
 // The required steps for request validation can be found on this page:
 // --insecure-skip-verify flag will disable all validations
 // https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/developing-an-alexa-skill-as-a-web-service#hosting-a-custom-skill-as-a-web-service

@@ -29,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
@@ -84,6 +85,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			stream.NewHub,
 			NewBackupConfig,
 			backup.NewBackup,
+			gate_client.NewGateClient,
 		),
 		fx.Logger(NewPrinter()),
 		opt,

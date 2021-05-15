@@ -18,24 +18,47 @@
 
 package alexa
 
-// AlexaBind ...
+import (
+	"github.com/e154/smart-home/system/event_bus"
+)
+
+// Javascript Binding
+//
+// Alexa
+//  .slots['slot_name']
+//	.outputSpeech(text string) *AlexaBind
+//	.card(title string, content string) *AlexaBind
+//	.endSession(flag bool) *AlexaBind
+//	.session() string
+//	.sendMessage(msg interface{})
+//
 type AlexaBind struct {
-	Slots map[string]string
-	req   *Request
-	resp  *Response
+	Slots      map[string]string `json:"slots"`
+	req        *Request
+	resp       *Response
+	eventBus   event_bus.EventBus
+	skillId    int64
+	intentName string
 }
 
 // NewAlexaBind ...
-func NewAlexaBind(req *Request, resp *Response) (alex *AlexaBind) {
+func NewAlexaBind(eventBus event_bus.EventBus, skillId int64) (alex *AlexaBind) {
 	alex = &AlexaBind{
-		Slots: make(map[string]string),
-		req:   req,
-		resp:  resp,
-	}
-	for name, slot := range req.Request.Intent.Slots {
-		alex.Slots[name] = slot.Value
+		Slots:    make(map[string]string),
+		eventBus: eventBus,
+		skillId:  skillId,
 	}
 	return
+}
+
+func (r *AlexaBind) update(req *Request, resp *Response) {
+	r.req = req
+	r.resp = resp
+	for name, slot := range req.Request.Intent.Slots {
+		r.Slots[name] = slot.Value
+	}
+
+	r.intentName = req.Request.Intent.Name
 }
 
 // OutputSpeech ...
@@ -59,4 +82,13 @@ func (r *AlexaBind) EndSession(flag bool) *AlexaBind {
 // Session ...
 func (r *AlexaBind) Session() string {
 	return r.req.Session.SessionID
+}
+
+// SendMessage ...
+func (r *AlexaBind) SendMessage(msg interface{}) {
+	r.eventBus.Publish(TopicPluginAlexa, EventAlexaAction{
+		SkillId:    r.skillId,
+		IntentName: r.intentName,
+		Payload:    msg,
+	})
 }

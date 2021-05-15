@@ -29,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/gate_client"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/metrics"
@@ -38,7 +39,6 @@ import (
 	"strconv"
 
 	_ "github.com/e154/smart-home/plugins"
-
 )
 
 var (
@@ -60,6 +60,7 @@ type Initial struct {
 	automation    automation.Automation
 	api           *server.Server
 	metrics       *metrics.MetricManager
+	gateClient    *gate_client.GateClient
 }
 
 // NewInitial ...
@@ -72,7 +73,8 @@ func NewInitial(lc fx.Lifecycle,
 	pluginManager common.PluginManager,
 	automation automation.Automation,
 	api *server.Server,
-	metrics *metrics.MetricManager) *Initial {
+	metrics *metrics.MetricManager,
+	gateClient *gate_client.GateClient) *Initial {
 	initial := &Initial{
 		migrations:    migrations,
 		adaptors:      adaptors,
@@ -83,6 +85,7 @@ func NewInitial(lc fx.Lifecycle,
 		automation:    automation,
 		api:           api,
 		metrics:       metrics,
+		gateClient:    gateClient,
 	}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
@@ -182,6 +185,7 @@ func (n *Initial) Start() {
 	n.entityManager.LoadEntities(n.pluginManager)
 	n.automation.Start()
 	n.api.Start()
+	n.gateClient.Start()
 }
 
 // Shutdown ...

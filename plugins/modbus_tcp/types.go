@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package modbus_rtu
+package modbus_tcp
 
 import (
 	"github.com/e154/smart-home/common"
@@ -25,50 +25,25 @@ import (
 )
 
 const (
-	Name                = "modbus_rtu"
+	Name                = "modbus_tcp"
 	FuncEntityAction    = "entityAction"
-	DeviceTypeModbusRtu = node.DeviceType("modbus_rtu")
+	DeviceTypeModbusTcp = node.DeviceType("modbus_tcp")
 )
 
 const (
-	AttrSlaveId  = "slave_id"  // 1-32
-	AttrBaud     = "baud"      // 9600, 19200, ...
-	AttrDataBits = "data_bits" // 5-9
-	AttrTimeout  = "timeout"   // milliseconds
-	AttrStopBits = "stop_bits" // 1-2
-	AttrSleep    = "sleep"     // milliseconds
-	AttrParity   = "parity"    // none, odd, even
+	AttrSlaveId     = "slave_id"     // 1-32
+	AttrAddressPort = "address_port" // localhost:502
 )
 
 func NewAttr() m.EntityAttributes {
 	return m.EntityAttributes{
-		AttrBaud: {
-			Name: AttrBaud,
-			Type: common.EntityAttributeInt,
-		},
 		AttrSlaveId: {
 			Name: AttrSlaveId,
 			Type: common.EntityAttributeInt,
 		},
-		AttrDataBits: {
-			Name: AttrDataBits,
+		AttrAddressPort: {
+			Name: AttrAddressPort,
 			Type: common.EntityAttributeInt,
-		},
-		AttrTimeout: {
-			Name: AttrTimeout,
-			Type: common.EntityAttributeInt,
-		},
-		AttrStopBits: {
-			Name: AttrStopBits,
-			Type: common.EntityAttributeInt,
-		},
-		AttrSleep: {
-			Name: AttrSleep,
-			Type: common.EntityAttributeInt,
-		},
-		AttrParity: {
-			Name: AttrParity,
-			Type: common.EntityAttributeString,
 		},
 	}
 }
