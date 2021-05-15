@@ -23,7 +23,7 @@ import (
 	"time"
 )
 
-// Request represents all fields sent from the Alexa service to the skillserver.
+// Request represents all fields sent from the Server service to the skillserver.
 // Convenience methods are provided to pull commonly used properties out of the request.
 type Request struct {
 	Version string  `json:"version"`

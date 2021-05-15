@@ -48,7 +48,7 @@ func (r *Response) OutputSpeech(text string) *Response {
 	return r
 }
 
-// Card will add a card to the Alexa app's response with the provided title and content strings.
+// Card will add a card to the Server app's response with the provided title and content strings.
 func (r *Response) Card(title string, content string) *Response {
 	return r.SimpleCard(title, content)
 }
@@ -64,7 +64,7 @@ func (r *Response) OutputSpeechSSML(text string) *Response {
 	return r
 }
 
-// SimpleCard will indicate that a card should be included in the Alexa companion app as part of the response.
+// SimpleCard will indicate that a card should be included in the Server companion app as part of the response.
 // The card will be shown with the provided title and content.
 func (r *Response) SimpleCard(title string, content string) *Response {
 	r.Response.Card = &RespPayload{
@@ -76,7 +76,7 @@ func (r *Response) SimpleCard(title string, content string) *Response {
 	return r
 }
 
-// StandardCard will indicate that a card should be shown in the Alexa companion app as part of the response.
+// StandardCard will indicate that a card should be shown in the Server companion app as part of the response.
 // The card shown will include the provided title and content as well as images loaded from the locations provided
 // as remote locations.
 func (r *Response) StandardCard(title string, content string, smallImg string, largeImg string) *Response {
@@ -98,7 +98,7 @@ func (r *Response) StandardCard(title string, content string, smallImg string, l
 }
 
 // LinkAccountCard is used to indicate that account linking still needs to be completed to continue
-// using the Alexa skill. This will force an account linking card to be shown in the user's companion app.
+// using the Server skill. This will force an account linking card to be shown in the user's companion app.
 func (r *Response) LinkAccountCard() *Response {
 	r.Response.Card = &RespPayload{
 		Type: "LinkAccount",
@@ -141,7 +141,7 @@ func (r *Response) EndSession(flag bool) *Response {
 }
 
 // RespondToIntent is used to Delegate/Elicit/Confirm a dialog or an entire intent with
-// user of alexa. The func takes in name of the dialog, updated intent/intent to confirm
+// user of server. The func takes in name of the dialog, updated intent/intent to confirm
 // if any and optional slot value. It prepares a Echo Response to be returned.
 // Multiple directives can be returned by calling the method in chain
 // (eg. RespondToIntent(...).RespondToIntent(...), each RespondToIntent call appends the

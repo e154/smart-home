@@ -21,8 +21,10 @@ package plugins
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 )
@@ -42,6 +44,8 @@ type Service interface {
 	EntityManager() entity_manager.EntityManager
 	ScriptService() scripts.ScriptService
 	MqttServ() mqtt.MqttServ
+	AppConfig() *config.AppConfig
+	GateClient() *gate_client.GateClient
 }
 
 type Plugable interface {

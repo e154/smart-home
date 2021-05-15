@@ -18,43 +18,22 @@
 
 package alexa
 
-import (
-	"errors"
-	"github.com/e154/smart-home/system/cache"
-)
+import "go.uber.org/zap"
 
-// AppSession ...
-type AppSession struct {
-	pull map[string]cache.Cache
+// ServerLogger ...
+type ServerLogger struct {
+	logger *zap.Logger
 }
 
-// NewAppSession ...
-func NewAppSession() *AppSession {
-	return &AppSession{
-		pull: make(map[string]cache.Cache),
+// NewLogger ...
+func NewLogger() *ServerLogger {
+	return &ServerLogger{
+		logger: zap.L(),
 	}
 }
 
-func (h *AppSession) addSession(session string) (c cache.Cache, err error) {
-	if c, err = cache.NewCache("memory", `{"interval":3600}`); err != nil {
-		return
-	}
-	h.pull[session] = c
-	return
-}
-
-func (h *AppSession) getSession(session string) (c cache.Cache, err error) {
-	var exist bool
-	if c, exist = h.pull[session]; !exist {
-		err = errors.New("record not found")
-		return
-	}
-	return
-}
-
-func (h *AppSession) delSession(session string) {
-	if _, exist := h.pull[session]; exist {
-		delete(h.pull, session)
-	}
+// Write ...
+func (s ServerLogger) Write(b []byte) (i int, err error) {
+	s.logger.Info(string(b))
 	return
 }

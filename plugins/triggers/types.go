@@ -18,7 +18,10 @@
 
 package triggers
 
-import "sync"
+import (
+	"github.com/e154/smart-home/common"
+	"sync"
+)
 
 const (
 	Name = "triggers"
@@ -28,10 +31,23 @@ type IGetTrigger interface {
 	GetTrigger(string) (ITrigger, error)
 }
 
+type IRegistrar interface {
+	RegisterTrigger(ITrigger) error
+	UnregisterTrigger(string) error
+	TriggerList() []string
+}
+
+//todo deAttach
 type ITrigger interface {
 	Name() string
 	AsyncAttach(wg *sync.WaitGroup)
-	Subscribe(topic string, fn interface{}, payload interface{}) error
-	Unsubscribe(topic string, fn interface{}, payload interface{}) error
+	Subscribe(Subscriber) error
+	Unsubscribe(Subscriber) error
 	FunctionName() string
+}
+
+type Subscriber struct {
+	EntityId *common.EntityId
+	Handler  interface{}
+	Payload  interface{}
 }

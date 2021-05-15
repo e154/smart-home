@@ -24,8 +24,10 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
@@ -50,7 +52,9 @@ func NewPluginManager(lc fx.Lifecycle,
 	bus event_bus.EventBus,
 	entityManager entity_manager.EntityManager,
 	mqttServ mqtt.MqttServ,
-	scriptService scripts.ScriptService) common.PluginManager {
+	scriptService scripts.ScriptService,
+	appConfig *config.AppConfig,
+	gateClient *gate_client.GateClient) common.PluginManager {
 	pluginManager := &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
@@ -64,6 +68,8 @@ func NewPluginManager(lc fx.Lifecycle,
 		mqttServ:      mqttServ,
 		adaptors:      adaptors,
 		scriptService: scriptService,
+		appConfig:     appConfig,
+		gateClient:    gateClient,
 	}
 
 	lc.Append(fx.Hook{

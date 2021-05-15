@@ -21,8 +21,10 @@ package plugins
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 )
@@ -34,6 +36,8 @@ type service struct {
 	entityManager entity_manager.EntityManager
 	scriptService scripts.ScriptService
 	mqttServ      mqtt.MqttServ
+	appConfig     *config.AppConfig
+	gateClient    *gate_client.GateClient
 }
 
 func (s service) Plugins() map[string]Plugable {
@@ -62,4 +66,12 @@ func (s service) ScriptService() scripts.ScriptService {
 
 func (s service) MqttServ() mqtt.MqttServ {
 	return s.mqttServ
+}
+
+func (s service) AppConfig() *config.AppConfig {
+	return s.appConfig
+}
+
+func (s service) GateClient() *gate_client.GateClient {
+	return s.gateClient
 }

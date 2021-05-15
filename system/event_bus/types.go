@@ -64,8 +64,8 @@ func (e1 EventEntityState) Compare(e2 EventEntityState) (ident bool) {
 type EventType string
 
 const (
-	TopicEntities      = string("entities")
-	TopicSystemStart   = string("system_start")
-	TopicSystemStop    = string("system_stop")
-	TopicAutomation    = string("automation")
+	TopicEntities    = "entities"
+	TopicSystemStart = "system_start"
+	TopicSystemStop  = "system_stop"
+	TopicAutomation  = "automation"
 )

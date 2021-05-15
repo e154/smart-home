@@ -49,29 +49,29 @@ func NewStateChangedTrigger(eventBus event_bus.EventBus) ITrigger {
 	}
 }
 
-func (a *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
+func (t *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
-	if err := a.eventBus.Subscribe(event_bus.TopicEntities, a.eventHandler); err != nil {
+	if err := t.eventBus.Subscribe(event_bus.TopicEntities, t.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 
 	wg.Done()
 }
 
-func (a *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
+func (t *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventStateChanged:
-		a.msgQueue.Publish(string(v.EntityId), v)
+		t.msgQueue.Publish(string(v.EntityId), v)
 	}
 }
 
-func (b *StateChangeTrigger) Subscribe(topic string, fn interface{}, _ interface{}) error {
-	log.Infof("subscribe topic %s", topic)
-	return b.msgQueue.Subscribe(topic, fn)
+func (t *StateChangeTrigger) Subscribe(options Subscriber) error {
+	log.Infof("subscribe topic %s", options.EntityId)
+	return t.msgQueue.Subscribe(options.EntityId.String(), options.Handler)
 }
 
-func (b *StateChangeTrigger) Unsubscribe(topic string, fn interface{}, _ interface{}) error {
-	log.Infof("unsubscribe topic %s", topic)
-	return b.msgQueue.Unsubscribe(topic, fn)
+func (t *StateChangeTrigger) Unsubscribe(options Subscriber) error {
+	log.Infof("unsubscribe topic %s", options.EntityId)
+	return t.msgQueue.Unsubscribe(options.EntityId.String(), options.Handler)
 }

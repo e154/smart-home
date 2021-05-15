@@ -19,8 +19,13 @@
 package alexa
 
 import (
-	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	Name             = "alexa"
+	TopicPluginAlexa = "plugin.alexa"
 )
 
 // ConfirmationStatus represents the status of either a dialog or slot confirmation.
@@ -41,16 +46,16 @@ const (
 type DialogType string
 
 const (
-	// Delegate will indicate that the Alexa service should continue the dialog ineraction.
+	// Delegate will indicate that the Server service should continue the dialog ineraction.
 	Delegate DialogType = "Dialog.Delegate"
 
-	// ElicitSlot will indicate to the Alexa service that the specific slot should be elicited from the user.
+	// ElicitSlot will indicate to the Server service that the specific slot should be elicited from the user.
 	ElicitSlot DialogType = "Dialog.ElicitSlot"
 
-	// ConfirmSlot indicates to the Alexa service that the slot value should be confirmed by the user.
+	// ConfirmSlot indicates to the Server service that the slot value should be confirmed by the user.
 	ConfirmSlot DialogType = "Dialog.ConfirmSlot"
 
-	// ConfirmIntent indicates to the Alexa service that the complete intent should be confimed by the user.
+	// ConfirmIntent indicates to the Server service that the complete intent should be confimed by the user.
 	ConfirmIntent DialogType = "Dialog.ConfirmIntent"
 )
 
@@ -65,15 +70,6 @@ const (
 	// The intent and slot confirmation status should be checked.
 	Completed string = "COMPLETED"
 )
-
-// Skill ...
-type Skill interface {
-	GetAppID() string
-	OnLaunch(*gin.Context, *Request, *Response)
-	OnIntent(*gin.Context, *Request, *Response)
-	OnSessionEnded(*gin.Context, *Request, *Response)
-	OnAudioPlayerState(*gin.Context, *Request, *Response)
-}
 
 var (
 	insecureSkipVerify = false
@@ -91,7 +87,7 @@ type ReqBody struct {
 }
 
 // Intent represents the intent that is sent as part of an Request. This includes
-// the name of the intent configured in the Alexa developers dashboard as well as any slots
+// the name of the intent configured in the Server developers dashboard as well as any slots
 // and the optional confirmation status if one is needed to complete an intent.
 type Intent struct {
 	Name               string             `json:"name"`
@@ -100,7 +96,7 @@ type Intent struct {
 }
 
 // Slot represents variable values that can be sent that were specified by the end user
-// when invoking the Alexa application.
+// when invoking the Server application.
 type Slot struct {
 	Name               string             `json:"name"`
 	Value              string             `json:"value"`
@@ -130,7 +126,7 @@ type ResolutionPerAuthority struct {
 	} `json:"values"`
 }
 
-// Response represents the information that should be sent back to the Alexa service
+// Response represents the information that should be sent back to the Server service
 // from the skillserver.
 type Response struct {
 	Version           string                 `json:"version"`
@@ -138,9 +134,9 @@ type Response struct {
 	Response          RespBody               `json:"response"`
 }
 
-// RespBody contains the body of the response to be sent back to the Alexa service.
+// RespBody contains the body of the response to be sent back to the Server service.
 // This includes things like the text that should be spoken or any cards that should
-// be shown in the Alexa companion app.
+// be shown in the Server companion app.
 type RespBody struct {
 	OutputSpeech     *RespPayload `json:"outputSpeech,omitempty"`
 	Card             *RespPayload `json:"card,omitempty"`
@@ -174,7 +170,7 @@ type RespPayload struct {
 }
 
 // Directive includes information about intents and slots that should be confirmed or elicted from the user.
-// The type value can be used to delegate the action to the Alexa service. In this case, a pre-configured prompt
+// The type value can be used to delegate the action to the Server service. In this case, a pre-configured prompt
 // will be used from the developer console.
 type Directive struct {
 	Type            DialogType `json:"type"`
@@ -184,7 +180,7 @@ type Directive struct {
 	IntentToConfirm string     `json:"intentToConfirm,omitempty"`
 }
 
-// Session contains information about the ongoing session between the Alexa server and
+// Session contains information about the ongoing session between the Server server and
 // the skillserver. This session is stored as part of each request.
 type Session struct {
 	New         bool   `json:"new"`
@@ -200,7 +196,7 @@ type Session struct {
 }
 
 // Context contains information about the context in which the request was sent.
-// This could be information about the device from which the request was sent or about the invoked Alexa application.
+// This could be information about the device from which the request was sent or about the invoked Server application.
 type Context struct {
 	System struct {
 		Device struct {
@@ -217,12 +213,24 @@ type Context struct {
 	} `json:"System,omitempty"`
 }
 
-// Options ...
-type Options func(a *Alexa)
+type EventAlexaAction struct {
+	SkillId    int64
+	IntentName string
+	Payload    interface{}
+}
 
-// WithServerOption ...
-func WithServerOption(addressPort string) Options {
-	return func(a *Alexa) {
-		a.addressPort = common.String(addressPort)
-	}
+type IServer interface {
+	Start()
+	Stop()
+	OnLaunchHandler(ctx *gin.Context, req *Request, resp *Response)
+	OnIntentHandle(ctx *gin.Context, req *Request, resp *Response)
+	OnSessionEndedHandler(ctx *gin.Context, req *Request, resp *Response)
+	OnAudioPlayerHandler(ctx *gin.Context, req *Request, resp *Response)
+	AddSkill(skill *m.AlexaSkill)
+	UpdateSkill(skill *m.AlexaSkill)
+	DeleteSkill(skill *m.AlexaSkill)
+}
+
+type AlexaPlugin interface {
+	Server() IServer
 }

@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	_ "github.com/e154/smart-home/plugins/alexa"
 	_ "github.com/e154/smart-home/plugins/cpuspeed"
 	_ "github.com/e154/smart-home/plugins/modbus_rtu"
 	_ "github.com/e154/smart-home/plugins/modbus_tcp"
