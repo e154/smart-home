@@ -25,7 +25,7 @@ import (
 // Javascript Binding
 //
 // Actor
-//	.SetState(params)
+//	.setState(params)
 //
 type ScriptBind struct {
 	actor *EntityActor

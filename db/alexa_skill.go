@@ -32,17 +32,15 @@ type AlexaSkills struct {
 
 // AlexaSkill ...
 type AlexaSkill struct {
-	Id                   int64 `gorm:"primary_key"`
-	SkillId              string
-	Description          string
-	Intents              []*AlexaIntent `gorm:"foreignkey:AlexaSkillId"`
-	Status               common.StatusType
-	OnLaunchScript       *Script `gorm:"foreignkey:OnLaunchScriptId"`
-	OnLaunchScriptId     *int64  `gorm:"column:on_launch"`
-	OnSessionEndScript   *Script
-	OnSessionEndScriptId *int64 `gorm:"column:on_session_end"`
-	CreatedAt            time.Time
-	UpdatedAt            time.Time
+	Id          int64 `gorm:"primary_key"`
+	SkillId     string
+	Description string
+	Intents     []*AlexaIntent `gorm:"foreignkey:AlexaSkillId"`
+	Status      common.StatusType
+	Script      *Script
+	ScriptId    *int64
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 // TableName ...
@@ -63,8 +61,9 @@ func (n AlexaSkills) Add(v *AlexaSkill) (id int64, err error) {
 func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
 	v = &AlexaSkill{Id: id}
 	err = n.Db.Model(v).
-		Preload("OnLaunchScript").
-		Preload("OnSessionEndScript").
+		Preload("Script").
+		Preload("Intents").
+		Preload("Intents.Script").
 		Find(v).
 		Error
 	if err != nil {
@@ -105,10 +104,9 @@ func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err 
 		Where("status = 'enabled'").
 		Limit(limit).
 		Offset(offset).
-		Preloads("Intents").        //TODO fix Not work?!
-		Preloads("Intents.Script"). //TODO fix Not work?!
-		Preload("OnLaunchScript").
-		Preload("OnSessionEndScript").
+		Preload("Intents").
+		Preload("Intents.Script").
+		Preload("Script").
 		Find(&list).Error
 
 	if err != nil {
@@ -142,11 +140,8 @@ func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
 		"status":      v.Status,
 		"description": v.Description,
 	}
-	if v.OnLaunchScriptId != nil {
-		q["on_launch"] = common.Int64Value(v.OnLaunchScriptId)
-	}
-	if v.OnSessionEndScriptId != nil {
-		q["on_session_end"] = common.Int64Value(v.OnSessionEndScriptId)
+	if v.ScriptId != nil {
+		q["script_id"] = common.Int64Value(v.ScriptId)
 	}
 	err = n.Db.Model(&AlexaSkill{}).Where("id = ?", v.Id).Updates(q).Error
 	return

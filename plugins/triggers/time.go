@@ -68,12 +68,12 @@ func (t *TimeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (t *TimeTrigger) Subscribe(_ string, fn interface{}, payload interface{}) error {
-	schedule, ok := payload.(string)
+func (t *TimeTrigger) Subscribe(options Subscriber) error {
+	schedule, ok := options.Payload.(string)
 	if !ok {
-		return fmt.Errorf("error static cast to string %v", payload)
+		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
-	callback := reflect.ValueOf(fn)
+	callback := reflect.ValueOf(options.Handler)
 	task, err := t.cron.NewTask(schedule, func() {
 		callback.Call([]reflect.Value{reflect.ValueOf(""), reflect.ValueOf(time.Now())})
 	})
@@ -93,12 +93,12 @@ func (t *TimeTrigger) Subscribe(_ string, fn interface{}, payload interface{}) e
 	return nil
 }
 
-func (t *TimeTrigger) Unsubscribe(_ string, fn interface{}, payload interface{}) error {
-	schedule, ok := payload.(string)
+func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
+	schedule, ok := options.Payload.(string)
 	if !ok {
-		return fmt.Errorf("error static cast to string %v", payload)
+		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
-	callback := reflect.ValueOf(fn)
+	callback := reflect.ValueOf(options.Handler)
 
 	t.Lock()
 	defer t.Unlock()

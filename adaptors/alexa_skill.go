@@ -115,7 +115,7 @@ func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 			}
 		}
 		if !exist {
-			if _, err = intentAdaptor.Add(parIntent); err != nil {
+			if err = intentAdaptor.Add(parIntent); err != nil {
 				return
 			}
 		}
@@ -168,14 +168,13 @@ func (n *AlexaSkill) ListEnabled(limit, offset int64) (list []*m.AlexaSkill, err
 func (n *AlexaSkill) fromDb(dbVer *db.AlexaSkill) (app *m.AlexaSkill) {
 
 	app = &m.AlexaSkill{
-		Id:                   dbVer.Id,
-		SkillId:              dbVer.SkillId,
-		Description:          dbVer.Description,
-		Status:               dbVer.Status,
-		OnLaunchScriptId:     dbVer.OnLaunchScriptId,
-		OnSessionEndScriptId: dbVer.OnSessionEndScriptId,
-		CreatedAt:            dbVer.CreatedAt,
-		UpdatedAt:            dbVer.UpdatedAt,
+		Id:          dbVer.Id,
+		SkillId:     dbVer.SkillId,
+		Description: dbVer.Description,
+		Status:      dbVer.Status,
+		ScriptId:    dbVer.ScriptId,
+		CreatedAt:   dbVer.CreatedAt,
+		UpdatedAt:   dbVer.UpdatedAt,
 	}
 
 	intentAdaptor := GetAlexaIntentAdaptor(n.db)
@@ -184,12 +183,8 @@ func (n *AlexaSkill) fromDb(dbVer *db.AlexaSkill) (app *m.AlexaSkill) {
 	}
 
 	scriptAdaptor := GetScriptAdaptor(n.db)
-	if dbVer.OnLaunchScriptId != nil {
-		app.OnLaunchScript, _ = scriptAdaptor.fromDb(dbVer.OnLaunchScript)
-	}
-
-	if dbVer.OnSessionEndScriptId != nil {
-		app.OnSessionEndScript, _ = scriptAdaptor.fromDb(dbVer.OnSessionEndScript)
+	if dbVer.ScriptId != nil {
+		app.Script, _ = scriptAdaptor.fromDb(dbVer.Script)
 	}
 
 	return
@@ -198,12 +193,11 @@ func (n *AlexaSkill) fromDb(dbVer *db.AlexaSkill) (app *m.AlexaSkill) {
 func (n *AlexaSkill) toDb(ver *m.AlexaSkill) (dbVer *db.AlexaSkill) {
 
 	dbVer = &db.AlexaSkill{
-		Id:                   ver.Id,
-		SkillId:              ver.SkillId,
-		Description:          ver.Description,
-		OnLaunchScriptId:     ver.OnLaunchScriptId,
-		OnSessionEndScriptId: ver.OnSessionEndScriptId,
-		Status:               ver.Status,
+		Id:          ver.Id,
+		SkillId:     ver.SkillId,
+		Description: ver.Description,
+		ScriptId:    ver.ScriptId,
+		Status:      ver.Status,
 	}
 
 	intentAdaptor := GetAlexaIntentAdaptor(n.db)

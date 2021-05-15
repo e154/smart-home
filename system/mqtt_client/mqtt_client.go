@@ -111,7 +111,7 @@ func (c *Client) Disconnect() {
 func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) (err error) {
 
 	if topic == "" {
-		err = errors.New("Invalid Topic; empty string")
+		err = errors.New("Invalid EntityId; empty string")
 		return
 	}
 

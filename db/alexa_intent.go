@@ -46,7 +46,7 @@ func (d *AlexaIntent) TableName() string {
 }
 
 // Add ...
-func (n AlexaIntents) Add(v *AlexaIntent) (id int64, err error) {
+func (n AlexaIntents) Add(v *AlexaIntent) (err error) {
 	err = n.Db.Create(&v).Error
 	return
 }

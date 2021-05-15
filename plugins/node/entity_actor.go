@@ -109,7 +109,7 @@ func (e *EntityActor) Spawn() entity_manager.PluginActor {
 				e.updateStatus()
 
 			case <-e.quit:
-				close(e.quit)
+				//close(e.quit)
 				return
 			}
 		}
