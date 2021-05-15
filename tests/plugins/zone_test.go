@@ -20,14 +20,13 @@ package plugins
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/plugin_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
@@ -42,16 +41,19 @@ func TestZone(t *testing.T) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			plugins *plugins.Loader,
 			entityManager entity_manager.EntityManager,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
 			eventBus event_bus.EventBus,
-			pluginManager plugin_manager.PluginManager) {
+			pluginManager common.PluginManager) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
+
+			// register plugins
+			err = AddPlugin(adaptors, "zone")
+			ctx.So(err, ShouldBeNil)
 
 			go mqttServer.Start()
 
@@ -74,7 +76,7 @@ func TestZone(t *testing.T) {
 			wgAdd.Add(1)
 			wgUpdate := sync.WaitGroup{}
 			wgUpdate.Add(1)
-			eventBus.Subscribe(event_bus.TopicEntities, func(msg interface{}) {
+			eventBus.Subscribe(event_bus.TopicEntities, func(_ string, msg interface{}) {
 
 				switch v := msg.(type) {
 				case event_bus.EventStateChanged:
@@ -108,11 +110,18 @@ func TestZone(t *testing.T) {
 
 			// ------------------------------------------------
 
-			plugins.Register()
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities()
+			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
+
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
 
 			//...
 			wgAdd.Wait()
@@ -127,12 +136,6 @@ func TestZone(t *testing.T) {
 
 			wgUpdate.Wait()
 			time.Sleep(time.Millisecond * 500)
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

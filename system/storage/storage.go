@@ -22,7 +22,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/graceful_service"
 	"go.uber.org/atomic"
 	"strings"
 	"sync"
@@ -44,8 +43,7 @@ type Storage struct {
 
 // NewStorage ...
 func NewStorage(
-	adaptors *adaptors.Adaptors,
-	graceful *graceful_service.GracefulService) *Storage {
+	adaptors *adaptors.Adaptors) *Storage {
 	storage := &Storage{
 		adaptors:  adaptors,
 		pool:      sync.Map{},
@@ -53,8 +51,6 @@ func NewStorage(
 		inProcess: atomic.NewBool(false),
 		isStarted: atomic.NewBool(true),
 	}
-
-	graceful.Subscribe(storage)
 
 	go func() {
 		ticker := time.NewTicker(time.Minute * 1)

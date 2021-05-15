@@ -7,7 +7,6 @@ require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
-	github.com/afiskon/go-actors v0.0.0-20190805150842-126e8e4f540a
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/dop251/goja v0.0.0-20210317175251-bb14c2267b76
@@ -49,9 +48,7 @@ require (
 	github.com/shirou/gopsutil v2.19.13-0.20200118023139-3964e5b57942+incompatible
 	github.com/smartystreets/assertions v1.0.1
 	github.com/smartystreets/goconvey v1.6.4
-	github.com/spf13/cobra v1.0.0
-	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.6.1
+	github.com/spf13/cobra v1.1.3
 	github.com/surge/glog v0.0.0-20141108051140-2578deb2b95c // indirect
 	github.com/swaggo/swag v1.3.2
 	github.com/t-tiger/gorm-bulk-insert v1.3.0
@@ -72,6 +69,5 @@ require (
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20150902115704-41f357289737
-	gopkg.in/yaml.v2 v2.2.8 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.3 // indirect
 )

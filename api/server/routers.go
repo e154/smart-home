@@ -51,14 +51,6 @@ func (s *Server) setControllers() {
 	v1.POST("/reset", s.ControllersV1.Auth.Reset)
 	v1.GET("/access_list", s.af.Auth, s.ControllersV1.Auth.AccessList)
 
-	// nodes
-	v1.POST("/node", s.af.Auth, s.ControllersV1.Node.Add)
-	v1.GET("/node/:id", s.af.Auth, s.ControllersV1.Node.GetById)
-	v1.PUT("/node/:id", s.af.Auth, s.ControllersV1.Node.Update)
-	v1.DELETE("/node/:id", s.af.Auth, s.ControllersV1.Node.Delete)
-	v1.GET("/nodes", s.af.Auth, s.ControllersV1.Node.GetList)
-	v1.GET("/nodes/search", s.af.Auth, s.ControllersV1.Node.Search)
-
 	// scripts
 	v1.POST("/script", s.af.Auth, s.ControllersV1.Script.Add)
 	v1.GET("/script/:id", s.af.Auth, s.ControllersV1.Script.GetById)
@@ -158,6 +150,13 @@ func (s *Server) setControllers() {
 	v1.PATCH("/zigbee2mqtts/device_rename", s.af.Auth, s.ControllersV1.Zigbee2mqtt.DeviceRename)
 	v1.GET("/zigbee2mqtts/search_device", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Search)
 
+	// alexa
+	v1.POST("/alexa", s.af.Auth, s.ControllersV1.Alexa.Add)
+	v1.GET("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.GetById)
+	v1.PUT("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.Update)
+	v1.DELETE("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.Delete)
+	v1.GET("/alexas", s.af.Auth, s.ControllersV1.Alexa.GetList)
+
 	// entities
 	v1.POST("/entity", s.af.Auth, s.ControllersV1.Entity.Add)
 	v1.GET("/entity/:id", s.af.Auth, s.ControllersV1.Entity.GetById)
@@ -165,4 +164,9 @@ func (s *Server) setControllers() {
 	v1.DELETE("/entity/:id", s.af.Auth, s.ControllersV1.Entity.Delete)
 	v1.GET("/entities", s.af.Auth, s.ControllersV1.Entity.GetList)
 	v1.GET("/entities/search", s.af.Auth, s.ControllersV1.Entity.Search)
+
+	// developer tools
+	v1.GET("/developer_tools/states", s.af.Auth, s.ControllersV1.DeveloperTools.GetStateList)
+	v1.PATCH("/developer_tools/state", s.af.Auth, s.ControllersV1.DeveloperTools.UpdateState)
+	v1.GET("/developer_tools/events", s.af.Auth, s.ControllersV1.DeveloperTools.GetEventList)
 }

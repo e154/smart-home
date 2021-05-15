@@ -52,6 +52,7 @@ type MqttServ interface {
 	Start()
 	Publish(topic string, payload []byte, qos uint8, retain bool) error
 	NewClient(name string) MqttCli
+	RemoveClient(name string)
 	Admin() Admin
 }
 

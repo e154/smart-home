@@ -43,7 +43,8 @@ type EntityActor struct {
 func NewEntityActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService) (actor *EntityActor, err error) {
+	scriptService scripts.ScriptService,
+	entityManager entity_manager.EntityManager) (actor *EntityActor, err error) {
 
 	var zigbee2mqttDevice *m.Zigbee2mqttDevice
 	if zigbee2mqttDevice, err = adaptors.Zigbee2mqttDevice.GetById(entity.Id.Name()); err != nil {
@@ -62,6 +63,7 @@ func NewEntityActor(entity *m.Entity,
 		stateMu:           &sync.Mutex{},
 	}
 
+	actor.Manager = entityManager
 	actor.Attrs.Deserialize(params)
 
 	// Actions
@@ -100,20 +102,21 @@ func NewEntityActor(entity *m.Entity,
 	return
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
+func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
 	if !e.setState(params) {
-		return
+		return nil
 	}
 
 	message := NewMessage()
 	message.NewState = params
 
 	e.mqttMessageQueue <- message
+
+	return nil
 }
 
 func (e *EntityActor) setState(params entity_manager.EntityStateParams) (changed bool) {

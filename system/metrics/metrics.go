@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/fx"
 	"net/http"
@@ -57,7 +56,6 @@ type MetricManager struct {
 // NewMetricManager ...
 func NewMetricManager(lc fx.Lifecycle,
 	cfg *MetricConfig,
-	graceful *graceful_service.GracefulService,
 	adaptors *adaptors.Adaptors) *MetricManager {
 	metric := &MetricManager{
 		adaptors:          adaptors,

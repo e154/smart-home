@@ -25,7 +25,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scripts"
 	"sync"
 )
@@ -33,6 +33,12 @@ import (
 var (
 	log = common.MustGetLogger("plugins.scene")
 )
+
+var _ plugins.Plugable = (*plugin)(nil)
+
+func init() {
+	plugins.RegisterPlugin(Name, New)
+}
 
 type plugin struct {
 	entityManager entity_manager.EntityManager
@@ -43,29 +49,24 @@ type plugin struct {
 	scriptService scripts.ScriptService
 }
 
-func Register(manager plugin_manager.PluginManager,
-	entityManager entity_manager.EntityManager,
-	bus event_bus.EventBus,
-	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService) {
-	manager.Register(&plugin{
-		entityManager: entityManager,
-		eventBus:      bus,
-		actorsLock:    &sync.Mutex{},
-		actors:        make(map[string]*EntityActor),
-		adaptors:      adaptors,
-		scriptService: scriptService,
-	})
-	return
+func New() plugins.Plugable {
+	return &plugin{
+		actorsLock: &sync.Mutex{},
+		actors:     make(map[string]*EntityActor),
+	}
 }
 
-func (p *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
+func (p *plugin) Load(service plugins.Service) error {
+	p.entityManager = service.EntityManager()
+	p.adaptors = service.Adaptors()
+	p.eventBus = service.EventBus()
+	p.scriptService = service.ScriptService()
 
 	if err := p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 
-	return
+	return nil
 }
 
 func (p *plugin) Unload() (err error) {
@@ -105,7 +106,8 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity,
 	}
 
 	var actor *EntityActor
-	if actor, err = NewEntityActor(entity, attributes, p.adaptors, p.scriptService); err != nil {
+	if actor, err = NewEntityActor(entity, attributes,
+		p.adaptors, p.scriptService, p.entityManager); err != nil {
 		return
 	}
 	p.actors[name] = actor
@@ -128,7 +130,7 @@ func (p *plugin) removeEntity(name string) (err error) {
 	return
 }
 
-func (p *plugin) eventHandler(msg interface{}) {
+func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventCallScene:
@@ -143,10 +145,14 @@ func (p *plugin) eventHandler(msg interface{}) {
 	}
 }
 
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) Type() plugins.PluginType {
+	return plugins.PluginBuiltIn
 }
 
 func (p *plugin) Depends() []string {
 	return nil
+}
+
+func (p *plugin) Version() string {
+	return "0.0.1"
 }

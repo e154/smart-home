@@ -21,14 +21,15 @@ package entity_manager
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/plugin_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
+	"sort"
 	"sync"
 	"time"
 )
@@ -41,7 +42,7 @@ type entityManager struct {
 	eventBus      event_bus.EventBus
 	adaptors      *adaptors.Adaptors
 	scripts       scripts.ScriptService
-	pluginManager plugin_manager.PluginManager
+	pluginManager common.PluginManager
 	lock          *sync.Mutex
 	actors        map[common.EntityId]*actorInfo
 	quit          chan struct{}
@@ -50,16 +51,14 @@ type entityManager struct {
 func NewEntityManager(lc fx.Lifecycle,
 	eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors,
-	scripts scripts.ScriptService,
-	pluginManager plugin_manager.PluginManager) EntityManager {
+	scripts scripts.ScriptService) EntityManager {
 	manager := &entityManager{
-		eventBus:      eventBus,
-		adaptors:      adaptors,
-		scripts:       scripts,
-		pluginManager: pluginManager,
-		lock:          &sync.Mutex{},
-		actors:        make(map[common.EntityId]*actorInfo),
-		quit:          make(chan struct{}),
+		eventBus: eventBus,
+		adaptors: adaptors,
+		scripts:  scripts,
+		lock:     &sync.Mutex{},
+		actors:   make(map[common.EntityId]*actorInfo),
+		quit:     make(chan struct{}),
 	}
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) (err error) {
@@ -71,11 +70,13 @@ func NewEntityManager(lc fx.Lifecycle,
 }
 
 // LoadEntities ...
-func (e *entityManager) LoadEntities() {
+func (e *entityManager) LoadEntities(pluginManager common.PluginManager) {
+
+	e.pluginManager = pluginManager
 
 	var page int64
 	var entities []*m.Entity
-	const perPage = 1000
+	const perPage = 100
 	var err error
 
 LOOP:
@@ -105,16 +106,16 @@ LOOP:
 
 // Shutdown ...
 func (e *entityManager) Shutdown() {
-	log.Info("Shutdown")
 
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
-	for pid, actorInfo := range e.actors {
-		close(actorInfo.Queue)
-		delete(e.actors, pid)
+	for id, actor := range e.actors {
+		actor.quit <- struct{}{}
+		delete(e.actors, id)
 	}
-	return
+
+	log.Info("Shutdown")
 }
 
 // SetMetric ...
@@ -153,25 +154,26 @@ func (e *entityManager) SetMetric(id common.EntityId, name string, value map[str
 }
 
 // SetState ...
-func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) {
+func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) (err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
 	actorInfo, ok := e.actors[id]
 	if !ok {
+		err = errors.New("not found")
 		return
 	}
 
 	// store old state
 	actorInfo.OldState = GetEventState(actorInfo.Actor)
 
-	actorInfo.Actor.SetState(params)
+	err = actorInfo.Actor.SetState(params)
 
 	return
 }
 
 // GetEntityById ...
-func (e *entityManager) GetEntityById(id common.EntityId) (entity Entity, err error) {
+func (e *entityManager) GetEntityById(id common.EntityId) (entity m.EntityShort, err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
@@ -197,13 +199,24 @@ func (e *entityManager) GetActorById(id common.EntityId) (actor PluginActor, err
 }
 
 // List ...
-func (e *entityManager) List() (entities []Entity, err error) {
+func (e *entityManager) List() (entities []m.EntityShort, err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
-	entities = make([]Entity, len(e.actors))
+	// sort index
+	var index = make([]string, 0, len(e.actors))
+	for _, actor := range e.actors {
+		info := actor.Actor.Info()
+		index = append(index, info.Id.String())
+	}
+	sort.Strings(index)
+
+	entities = make([]m.EntityShort, len(e.actors))
 	var i int
-	for _, actorInfo := range e.actors {
+	for _, n := range index {
+
+		actorInfo := e.actors[common.EntityId(n)]
+
 		entities[i] = NewEntity(actorInfo.Actor)
 
 		// metric preview
@@ -228,11 +241,16 @@ func (e *entityManager) List() (entities []Entity, err error) {
 
 // Spawn ...
 func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) {
+
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
-	actor = constructor(e)
+	actor = constructor()
 	info := actor.Info()
+
+	defer func(entityId common.EntityId) {
+		log.Infof("loaded %v", entityId)
+	}(info.Id)
 
 	var entityId = info.Id
 
@@ -241,23 +259,18 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 		return
 	}
 
-	// todo fix
-	queue := make(chan Message, 99)
-
 	e.actors[entityId] = &actorInfo{
 		Actor:    actor,
-		Queue:    queue,
+		quit:     make(chan struct{}),
 		OldState: GetEventState(actor),
 	}
-
-	log.Infof("Loaded %v", entityId)
 
 	//e.metric.Update(metrics.EntityAdd{Num: 1})
 
 	go func() {
 		defer func() {
 
-			log.Infof("Unload %v", entityId)
+			log.Infof("unload %v", entityId)
 
 			e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveEntity{
 				Type:     info.Type,
@@ -265,7 +278,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			})
 
 			var err error
-			var plugin plugin_manager.CrudActor
+			var plugin CrudActor
 			if plugin, err = e.getCrudActor(entityId); err != nil {
 				return
 			}
@@ -274,9 +287,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			//e.metric.Update(metrics.EntityDelete{Num: 1})
 		}()
 
-		for msg := range queue {
-			actor.Receive(msg)
-		}
+		<-e.actors[entityId].quit
 	}()
 
 	attr := actor.Attributes()
@@ -353,83 +364,42 @@ func (e *entityManager) Send(message Message) error {
 		})
 
 		return nil
-
-	case MessageCallAction:
-
-		e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallAction{
-			Type:       message.To.Type(),
-			EntityId:   message.To,
-			ActionName: v.Name,
-			Args:       v.Arg,
-		})
-
-	case MessageCallScene:
-
-		e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallScene{
-			Type:     message.To.Type(),
-			EntityId: message.To,
-			Args:     v.Arg,
-		})
 	}
 
-	if message.To == "" {
-		return nil
-	}
-
-	e.lock.Lock()
-	defer e.lock.Unlock()
-
-	if actorInfo, ok := e.actors[message.To]; ok {
-		actorInfo.Queue <- message
-	}
 	return nil
-}
-
-// Broadcast ...
-func (e *entityManager) Broadcast(message Message) {
-	e.lock.Lock()
-	defer e.lock.Unlock()
-
-	for _, actorInfo := range e.actors {
-		actorInfo.Queue <- message
-	}
 }
 
 // CallAction ...
 func (e *entityManager) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
-
-	go e.Send(Message{
-		To: id,
-		Payload: MessageCallAction{
-			Name: action,
-			Arg:  arg,
-		},
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallAction{
+		Type:       id.Type(),
+		EntityId:   id,
+		ActionName: action,
+		Args:       arg,
 	})
 }
 
 // CallScene ...
 func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}) {
-
-	go e.Send(Message{
-		To: id,
-		Payload: MessageCallScene{
-			Arg: arg,
-		},
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallScene{
+		Type:     id.Type(),
+		EntityId: id,
+		Args:     arg,
 	})
 }
 
-func (e *entityManager) getCrudActor(entityId common.EntityId) (result plugin_manager.CrudActor, err error) {
-	var plugin plugin_manager.Plugable
+func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor, err error) {
+	var plugin interface{}
 	if plugin, err = e.pluginManager.GetPlugin(entityId.Type().String()); err != nil {
 		return
 	}
 
 	var ok bool
-	if result, ok = plugin.(plugin_manager.CrudActor); ok {
+	if result, ok = plugin.(CrudActor); ok {
 		return
 		//...
 	} else {
-		err = fmt.Errorf("cannot cast to the desired type plugin '%s' to plugin_manager.CrudActor", plugin.Name())
+		err = fmt.Errorf("cannot cast to the desired type plugin '%s' to plugins.CrudActor", entityId.Type().String())
 	}
 	return
 }
@@ -437,7 +407,7 @@ func (e *entityManager) getCrudActor(entityId common.EntityId) (result plugin_ma
 // Add ...
 func (e *entityManager) Add(entity *m.Entity) (err error) {
 
-	var plugin plugin_manager.CrudActor
+	var plugin CrudActor
 	if plugin, err = e.getCrudActor(entity.Id); err != nil {
 		return
 	}
@@ -470,8 +440,8 @@ func (e *entityManager) Remove(id common.EntityId) {
 
 func (e *entityManager) unsafeRemove(id common.EntityId) {
 
-	if actorInfo, ok := e.actors[id]; ok {
-		close(actorInfo.Queue)
+	if actor, ok := e.actors[id]; ok {
+		actor.quit <- struct{}{}
 	} else {
 		return
 	}

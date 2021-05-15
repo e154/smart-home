@@ -29,10 +29,7 @@ import (
 type PluginActor interface {
 
 	// Spawn ...
-	Spawn(system EntityManager) PluginActor
-
-	// Receive ...
-	Receive(message Message)
+	Spawn() PluginActor
 
 	// Attributes ...
 	Attributes() m.EntityAttributes
@@ -41,18 +38,18 @@ type PluginActor interface {
 	Metrics() []m.Metric
 
 	// SetState
-	SetState(EntityStateParams)
+	SetState(EntityStateParams) error
 
 	// Info
 	Info() ActorInfo
 }
 
-type ActorConstructor func(system EntityManager) (state PluginActor)
+type ActorConstructor func() PluginActor
 
 type EntityManager interface {
 
 	// LoadEntities ...
-	LoadEntities()
+	LoadEntities(pluginManager common.PluginManager)
 
 	// Shutdown ...
 	Shutdown()
@@ -61,16 +58,16 @@ type EntityManager interface {
 	SetMetric(common.EntityId, string, map[string]interface{})
 
 	// SetState ...
-	SetState(common.EntityId, EntityStateParams)
+	SetState(common.EntityId, EntityStateParams) error
 
 	// GetEntityById ...
-	GetEntityById(common.EntityId) (Entity, error)
+	GetEntityById(common.EntityId) (m.EntityShort, error)
 
 	// GetActorById ...
 	GetActorById(common.EntityId) (PluginActor, error)
 
 	// List ...
-	List() ([]Entity, error)
+	List() ([]m.EntityShort, error)
 
 	// Spawn ...
 	Spawn(ActorConstructor) PluginActor
@@ -80,9 +77,6 @@ type EntityManager interface {
 
 	// Send ...
 	Send(Message) error
-
-	// Broadcast ...
-	Broadcast(Message)
 
 	// CallAction ...
 	CallAction(common.EntityId, string, map[string]interface{})
@@ -97,32 +91,12 @@ type EntityManager interface {
 	Update(*m.Entity) error
 }
 
-type EntityAttribute struct {
-	Name  string                     `json:"name"`
-	Type  common.EntityAttributeType `json:"type"`
-	Value interface{}                `json:"value,omitempty"`
-}
-
-type EntityAction struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	ImageUrl    *string `json:"image_url"`
-	Icon        *string `json:"icon"`
-}
-
 type ActorAction struct {
 	Name         string          `json:"name"`
 	Description  string          `json:"description"`
 	ImageUrl     *string         `json:"image_url"`
 	Icon         *string         `json:"icon"`
 	ScriptEngine *scripts.Engine `json:"-"`
-}
-
-type EntityState struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	ImageUrl    *string `json:"image_url"`
-	Icon        *string `json:"icon"`
 }
 
 type ActorState struct {
@@ -164,18 +138,9 @@ const (
 	StateInProcess = "in process"
 )
 
-type MessageCallAction struct {
-	Name string                 `json:"name"`
-	Arg  map[string]interface{} `json:"arg"`
-}
-
-type MessageCallScene struct {
-	Arg map[string]interface{} `json:"arg"`
-}
-
 type actorInfo struct {
 	Actor    PluginActor
-	Queue    chan Message
+	quit     chan struct{}
 	OldState event_bus.EventEntityState
 }
 

@@ -33,7 +33,6 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/message_queue"
-	"github.com/e154/smart-home/system/plugin_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
@@ -67,7 +66,7 @@ type automation struct {
 	adaptors      *adaptors.Adaptors
 	isStarted     *atomic.Bool
 	rawPlugin     triggers.IGetTrigger
-	pluginManager plugin_manager.PluginManager
+	pluginManager common.PluginManager
 }
 
 func NewAutomation(lc fx.Lifecycle,
@@ -75,7 +74,7 @@ func NewAutomation(lc fx.Lifecycle,
 	scriptService scripts.ScriptService,
 	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
-	pluginManager plugin_manager.PluginManager) (auto Automation) {
+	pluginManager common.PluginManager) (auto Automation) {
 
 	auto = &automation{
 		eventBus:      eventBus,

@@ -20,7 +20,7 @@ package automation
 
 import (
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/entity_manager"
+	m "github.com/e154/smart-home/models"
 )
 
 const ConditionFunc = "automationCondition"
@@ -36,7 +36,7 @@ func NewConditionBind(condition *Condition) *ConditionBind {
 }
 
 // Check...
-func (t *ConditionBind) GetEntityById(id string) entity_manager.Entity {
+func (t *ConditionBind) GetEntityById(id string) m.EntityShort {
 
 	//var err error
 	entity, err := t.condition.entityManager.GetEntityById(common.EntityId(id))

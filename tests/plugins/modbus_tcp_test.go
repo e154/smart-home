@@ -1,0 +1,445 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
+package plugins
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/modbus_tcp"
+	"github.com/e154/smart-home/plugins/node"
+	"github.com/e154/smart-home/system/automation"
+	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/migrations"
+	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
+	"testing"
+	"time"
+)
+
+func TestModbusTcp(t *testing.T) {
+
+	const plugActionOnOffSourceScript = `
+
+getStatus =(status)->
+    if status == 1
+        return 'ON'
+    else
+        return 'OFF'
+
+writeRegisters =(d, c, r)->
+    return ModbusTcp 'WriteMultipleRegisters', d, c, r
+
+checkStatus =->
+    COMMAND = []
+    FUNC = 'ReadHoldingRegisters'
+    ADDRESS = 0
+    COUNT = 16
+
+    res = ModbusTcp FUNC, ADDRESS, COUNT, COMMAND
+    So(res.error, 'ShouldEqual', '')
+    So(res.result, 'ShouldEqual', '[1 0 1]')
+    So(res.time, 'ShouldNotBeBlank', '')
+
+doOnAction = ->
+    res = writeRegisters(0, 1, [1])
+    So(res.error, 'ShouldEqual', '')
+    So(res.result, 'ShouldEqual', '[]')
+    So(res.time, 'ShouldNotBeBlank', '')
+
+doOnErrAction = ->
+    res = writeRegisters(0, 1, [1])
+    So(res.error, 'ShouldEqual', 'some error')
+    So(res.result, 'ShouldEqual', '[]')
+    So(res.time, 'ShouldNotBeBlank', '')
+
+doOffAction = ->
+    res = writeRegisters(0, 1, [0])
+    So(res.error, 'ShouldEqual', '')
+    So(res.result, 'ShouldEqual', '[]')
+    So(res.time, 'ShouldNotBeBlank', '')
+
+entityAction = (entityId, actionName)->
+    #print '---action on/off--'
+    switch actionName
+        when 'ON' then doOnAction()
+        when 'OFF' then doOffAction()
+        when 'CHECK' then checkStatus()
+        when 'ON_WITH_ERR' then doOnErrAction()
+`
+
+	Convey("modbus_tcp", t, func(ctx C) {
+		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
+			migrations *migrations.Migrations,
+			scriptService scripts.ScriptService,
+			entityManager entity_manager.EntityManager,
+			mqttServer mqtt.MqttServ,
+			automation automation.Automation,
+			eventBus event_bus.EventBus,
+			pluginManager common.PluginManager) {
+
+			err := migrations.Purge()
+			So(err, ShouldBeNil)
+
+			// bind convey
+			RegisterConvey(scriptService, ctx)
+
+			// register plugins
+			err = AddPlugin(adaptors, "node")
+			err = AddPlugin(adaptors, "triggers")
+			err = AddPlugin(adaptors, "modbus_tcp")
+			So(err, ShouldBeNil)
+
+			go mqttServer.Start()
+
+			// add scripts
+			// ------------------------------------------------
+			plugActionOnOffScript := &m.Script{
+				Lang:        common.ScriptLangCoffee,
+				Name:        "plug script",
+				Source:      plugActionOnOffSourceScript,
+				Description: "on/off/check condition",
+			}
+
+			enginePlugOnOffScript, err := scriptService.NewEngine(plugActionOnOffScript)
+			So(err, ShouldBeNil)
+			err = enginePlugOnOffScript.Compile()
+			So(err, ShouldBeNil)
+
+			plugActionOnOffScript.Id, err = adaptors.Script.Add(plugActionOnOffScript)
+			So(err, ShouldBeNil)
+
+			// add entity
+			// ------------------------------------------------
+			nodeEnt := GetNewNode("second")
+			err = adaptors.Entity.Add(nodeEnt)
+			So(err, ShouldBeNil)
+
+			plugEnt := GetNewModbusTcp("plugTcp")
+			plugEnt.ParentId = &nodeEnt.Id
+			plugEnt.Actions = []*m.EntityAction{
+				{
+					Name:        "ON",
+					Description: "включить",
+					Script:      plugActionOnOffScript,
+				},
+				{
+					Name:        "OFF",
+					Description: "выключить",
+					Script:      plugActionOnOffScript,
+				},
+				{
+					Name:        "CHECK",
+					Description: "condition check",
+					Script:      plugActionOnOffScript,
+				},
+				{
+					Name:        "ON_WITH_ERR",
+					Description: "error case",
+					Script:      plugActionOnOffScript,
+				},
+			}
+			plugEnt.States = []*m.EntityState{
+				{
+					Name:        "ON",
+					Description: "on state",
+				},
+				{
+					Name:        "OFF",
+					Description: "off state",
+				},
+				{
+					Name:        "ERROR",
+					Description: "error state",
+				},
+			}
+			plugEnt.Attributes[modbus_tcp.AttrSlaveId].Value = 1
+			plugEnt.Attributes[modbus_tcp.AttrAddressPort].Value = "office:502"
+			err = adaptors.Entity.Add(plugEnt)
+			So(err, ShouldBeNil)
+			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
+				EntityId:   plugEnt.Id,
+				Attributes: plugEnt.Attributes.Serialize(),
+			})
+			So(err, ShouldBeNil)
+
+			// ------------------------------------------------
+			pluginManager.Start()
+			automation.Reload()
+			entityManager.LoadEntities(pluginManager)
+
+			defer func() {
+				mqttServer.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
+			time.Sleep(time.Millisecond * 500)
+
+			ch := make(chan []byte)
+			mqttCli := mqttServer.NewClient("cli")
+			mqttCli.Subscribe("home/node/second/req/#", func(cli mqtt.MqttCli, message mqtt.Message) {
+				ch <- message.Payload
+			})
+			defer mqttCli.UnsubscribeAll()
+
+			// commands
+			t.Run("on command", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "ON", nil)
+
+				ticker := time.NewTimer(time.Second * 2)
+				defer ticker.Stop()
+
+				var req []byte
+				var ok bool
+				select {
+				case req = <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
+				}
+
+				ctx.So(ok, ShouldBeTrue)
+
+				// what see node
+				request := node.MessageRequest{}
+				err = json.Unmarshal(req, &request)
+				ctx.So(err, ShouldBeNil)
+
+				cmd := modbus_tcp.ModBusCommand{}
+				err = json.Unmarshal(request.Command, &cmd)
+				ctx.So(err, ShouldBeNil)
+
+				prop := map[string]interface{}{}
+				err = json.Unmarshal(request.Properties, &prop)
+				ctx.So(err, ShouldBeNil)
+
+				ctx.So(request.EntityId, ShouldEqual, plugEnt.Id)
+				ctx.So(request.DeviceType, ShouldEqual, modbus_tcp.DeviceTypeModbusTcp)
+				ctx.So(prop["slave_id"], ShouldEqual, 1)
+				ctx.So(prop["address_port"], ShouldEqual, "office:502")
+
+				ctx.So(cmd.Function, ShouldEqual, "WriteMultipleRegisters")
+				ctx.So(cmd.Address, ShouldEqual, 0)
+				ctx.So(cmd.Count, ShouldEqual, 1)
+				ctx.So(cmd.Command, ShouldResemble, []uint16{1})
+
+				// response from node
+				r := modbus_tcp.ModBusResponse{
+					Error:  "",
+					Result: []uint16{},
+				}
+				b, _ := json.Marshal(r)
+				resp := node.MessageResponse{
+					EntityId:   plugEnt.Id,
+					DeviceType: modbus_tcp.DeviceTypeModbusTcp,
+					Properties: nil,
+					Response:   b,
+					Status:     "",
+				}
+				b, _ = json.Marshal(resp)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
+
+				time.Sleep(time.Millisecond * 500)
+			})
+
+			t.Run("off command", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "OFF", nil)
+
+				ticker := time.NewTimer(time.Second * 2)
+				defer ticker.Stop()
+
+				var req []byte
+				var ok bool
+				select {
+				case req = <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
+				}
+
+				ctx.So(ok, ShouldBeTrue)
+
+				// what see node
+				request := node.MessageRequest{}
+				err = json.Unmarshal(req, &request)
+				ctx.So(err, ShouldBeNil)
+
+				cmd := modbus_tcp.ModBusCommand{}
+				err = json.Unmarshal(request.Command, &cmd)
+				ctx.So(err, ShouldBeNil)
+
+				prop := map[string]interface{}{}
+				err = json.Unmarshal(request.Properties, &prop)
+				ctx.So(err, ShouldBeNil)
+
+				ctx.So(request.EntityId, ShouldEqual, plugEnt.Id)
+				ctx.So(request.DeviceType, ShouldEqual, modbus_tcp.DeviceTypeModbusTcp)
+				ctx.So(prop["slave_id"], ShouldEqual, 1)
+				ctx.So(prop["address_port"], ShouldEqual, "office:502")
+
+				ctx.So(cmd.Function, ShouldEqual, "WriteMultipleRegisters")
+				ctx.So(cmd.Address, ShouldEqual, 0)
+				ctx.So(cmd.Count, ShouldEqual, 1)
+				ctx.So(cmd.Command, ShouldResemble, []uint16{0})
+
+				// response from node
+				r := modbus_tcp.ModBusResponse{
+					Error:  "",
+					Result: []uint16{},
+				}
+				b, _ := json.Marshal(r)
+				resp := node.MessageResponse{
+					EntityId:   plugEnt.Id,
+					DeviceType: modbus_tcp.DeviceTypeModbusTcp,
+					Properties: nil,
+					Response:   b,
+					Status:     "",
+				}
+				b, _ = json.Marshal(resp)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
+
+				time.Sleep(time.Millisecond * 500)
+			})
+
+			t.Run("check command", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "CHECK", nil)
+
+				ticker := time.NewTimer(time.Second * 2)
+				defer ticker.Stop()
+
+				var req []byte
+				var ok bool
+				select {
+				case req = <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
+				}
+
+				ctx.So(ok, ShouldBeTrue)
+
+				// what see node
+				request := node.MessageRequest{}
+				err = json.Unmarshal(req, &request)
+				ctx.So(err, ShouldBeNil)
+
+				cmd := modbus_tcp.ModBusCommand{}
+				err = json.Unmarshal(request.Command, &cmd)
+				ctx.So(err, ShouldBeNil)
+
+				prop := map[string]interface{}{}
+				err = json.Unmarshal(request.Properties, &prop)
+				ctx.So(err, ShouldBeNil)
+
+				ctx.So(request.EntityId, ShouldEqual, plugEnt.Id)
+				ctx.So(request.DeviceType, ShouldEqual, modbus_tcp.DeviceTypeModbusTcp)
+				ctx.So(prop["slave_id"], ShouldEqual, 1)
+				ctx.So(prop["address_port"], ShouldEqual, "office:502")
+
+				ctx.So(cmd.Function, ShouldEqual, "ReadHoldingRegisters")
+				ctx.So(cmd.Address, ShouldEqual, 0)
+				ctx.So(cmd.Count, ShouldEqual, 16)
+				ctx.So(cmd.Command, ShouldResemble, []uint16{})
+
+				// response from node
+				r := modbus_tcp.ModBusResponse{
+					Error:  "",
+					Result: []uint16{1, 0, 1},
+				}
+				b, _ := json.Marshal(r)
+				resp := node.MessageResponse{
+					EntityId:   plugEnt.Id,
+					DeviceType: modbus_tcp.DeviceTypeModbusTcp,
+					Properties: nil,
+					Response:   b,
+					Status:     "",
+				}
+				b, _ = json.Marshal(resp)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
+
+				time.Sleep(time.Millisecond * 500)
+			})
+
+			t.Run("bad command", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "NULL", nil)
+
+				ticker := time.NewTimer(time.Second * 1)
+				defer ticker.Stop()
+
+				var ok bool
+				select {
+				case <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
+				}
+
+				ctx.So(ok, ShouldBeFalse)
+			})
+
+			t.Run("response with error", func(t *testing.T) {
+				entityManager.CallAction(plugEnt.Id, "ON_WITH_ERR", nil)
+
+				ticker := time.NewTimer(time.Second * 2)
+				defer ticker.Stop()
+
+				var ok bool
+				select {
+				case <-ch:
+					ok = true
+					break
+				case <-ticker.C:
+					break
+				}
+
+				ctx.So(ok, ShouldBeTrue)
+
+				r := modbus_tcp.ModBusResponse{
+					Error: "some error",
+				}
+				b, _ := json.Marshal(r)
+				resp := node.MessageResponse{
+					EntityId:   plugEnt.Id,
+					DeviceType: modbus_tcp.DeviceTypeModbusTcp,
+					Properties: nil,
+					Response:   b,
+					Status:     "",
+				}
+				b, _ = json.Marshal(resp)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
+				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
+
+				time.Sleep(time.Second * 2)
+			})
+		})
+	})
+}

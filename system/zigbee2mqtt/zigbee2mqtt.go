@@ -23,7 +23,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
 	"go.uber.org/atomic"
@@ -38,7 +37,6 @@ var (
 // zigbee2mqtt ...
 type zigbee2mqtt struct {
 	metric      *metrics.MetricManager
-	graceful    *graceful_service.GracefulService
 	mqtt        mqtt.MqttServ
 	adaptors    *adaptors.Adaptors
 	isStarted   atomic.Bool

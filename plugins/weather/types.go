@@ -130,3 +130,10 @@ func NewAttr() m.EntityAttributes {
 		},
 	}
 }
+
+type EventSubStateChanged struct {
+	Type       common.EntityType  `json:"type"`
+	EntityId   common.EntityId    `json:"entity_id"`
+	State      string             `json:"state"`
+	Attributes m.EntityAttributes `json:"attributes"`
+}

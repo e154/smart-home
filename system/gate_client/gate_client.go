@@ -27,12 +27,13 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/graceful_service"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/e154/smart-home/system/uuid"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"go.uber.org/atomic"
+	"go.uber.org/fx"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -56,69 +57,78 @@ type GateClient struct {
 	wsClient        *WsClient
 	mobileApi       *gin.Engine
 	alexaApi        *gin.Engine
-	messagePoolQuit chan struct{}
 	messagePool     chan stream.Message
 	settingsLock    sync.Mutex
 	settings        *Settings
-	quit            bool
 	selfSubscrLock  sync.Mutex
 	selfSubscribers map[uuid.UUID]func(msg stream.Message)
 	subscrLock      sync.Mutex
 	subscribers     map[string]func(client stream.IStreamClient, msg stream.Message)
+	isStarted       *atomic.Bool
 }
 
 // NewGateClient ...
-func NewGateClient(adaptors *adaptors.Adaptors,
-	graceful *graceful_service.GracefulService,
+func NewGateClient(lc fx.Lifecycle,
+	adaptors *adaptors.Adaptors,
 	metric *metrics.MetricManager) (gate *GateClient) {
+
 	gate = &GateClient{
 		adaptors:        adaptors,
 		settings:        &Settings{},
 		selfSubscribers: make(map[uuid.UUID]func(msg stream.Message)),
 		subscribers:     make(map[string]func(client stream.IStreamClient, msg stream.Message)),
-		messagePoolQuit: make(chan struct{}),
-		messagePool:     make(chan stream.Message),
 		metric:          metric,
+		isStarted:       atomic.NewBool(false),
 	}
 
-	gate.wsClient = NewWsClient(gate, metric)
-
-	graceful.Subscribe(gate)
-
-	if err := gate.loadSettings(); err != nil {
-		log.Error(err.Error())
-	}
-
-	go func() {
-		for {
-			select {
-			case <-gate.messagePoolQuit:
-				return
-			case v := <-gate.messagePool:
-				gate.settingsLock.Lock()
-				if gate.quit {
-					gate.settingsLock.Unlock()
-					return
-				}
-				gate.settingsLock.Unlock()
-				gate._onMessage(v)
-			}
-		}
-	}()
+	lc.Append(fx.Hook{
+		OnStop: func(ctx context.Context) error {
+			gate.Shutdown()
+			return nil
+		},
+	})
 
 	return
 }
 
+// Start ...
+func (g *GateClient) Start() {
+	if g.isStarted.Load() {
+		return
+	}
+	g.isStarted.Store(true)
+
+	g.wsClient = NewWsClient(g, g.metric)
+
+	if err := g.loadSettings(); err != nil {
+		log.Error(err.Error())
+	}
+
+	g.messagePool = make(chan stream.Message, 50)
+
+	go func() {
+		for v := range g.messagePool {
+			g._onMessage(v)
+		}
+	}()
+
+	log.Info("Start")
+}
+
 // Shutdown ...
 func (g *GateClient) Shutdown() {
+	if !g.isStarted.Load() {
+		return
+	}
+	g.isStarted.Store(false)
+
 	g.settingsLock.Lock()
 	defer g.settingsLock.Unlock()
 
-	log.Info("Stopping")
-
-	g.quit = true
-	g.messagePoolQuit <- struct{}{}
+	close(g.messagePool)
 	g.wsClient.Close()
+
+	log.Info("Shutdown")
 }
 
 // Close ...
@@ -144,7 +154,7 @@ func (g *GateClient) RegisterServer() {
 
 	g.settingsLock.Lock()
 	log.Info("Register server")
-	if g.settings.GateServerToken != "" || g.quit {
+	if g.settings.GateServerToken != "" || !g.isStarted.Load() {
 		g.settingsLock.Unlock()
 		return
 	}
@@ -289,6 +299,8 @@ func (g *GateClient) onMessage(b []byte) {
 }
 
 func (g *GateClient) _onMessage(msg stream.Message) {
+
+	//log.Debugf("message(%v)\n", msg)
 
 	switch msg.Command {
 	case MobileGateProxy:
@@ -471,6 +483,10 @@ func (g *GateClient) AddMobile(ctx context.Context) (list *MobileList, err error
 
 // RequestFromProxy ...
 func (g *GateClient) RequestFromProxy(message stream.Message, engine *gin.Engine) {
+
+	if engine == nil {
+		return
+	}
 
 	if g.wsClient.Status() != GateStatusConnected {
 		return

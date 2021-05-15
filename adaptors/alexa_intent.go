@@ -25,7 +25,7 @@ import (
 )
 
 type IAlexaIntent interface {
-	Add(ver *m.AlexaIntent) (id int64, err error)
+	Add(ver *m.AlexaIntent) (err error)
 	GetByName(name string) (ver *m.AlexaIntent, err error)
 	Update(ver *m.AlexaIntent) (err error)
 	Delete(ver *m.AlexaIntent) (err error)
@@ -49,9 +49,8 @@ func GetAlexaIntentAdaptor(d *gorm.DB) IAlexaIntent {
 }
 
 // Add ...
-func (n *AlexaIntent) Add(ver *m.AlexaIntent) (id int64, err error) {
-	id, err = n.table.Add(n.toDb(ver))
-	return
+func (n *AlexaIntent) Add(ver *m.AlexaIntent) error {
+	return n.table.Add(n.toDb(ver))
 }
 
 // GetByName ...

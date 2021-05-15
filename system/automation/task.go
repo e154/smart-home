@@ -90,18 +90,29 @@ func (t *Task) addTrigger(model *m.Trigger) (err error) {
 	tr.Start()
 
 	queue := make(chan interface{}, taskMsgBuffer)
-	var handler = func(msg interface{}) {
+	var handler = func(_ string, msg interface{}) {
 		queue <- msg
 	}
 
-	triggerPLugin.Subscribe(tr.EntityId().String(), handler, tr.model.Payload)
+	if err = triggerPLugin.Subscribe(triggers.Subscriber{
+		EntityId: tr.EntityId(),
+		Handler:  handler,
+		Payload:  tr.model.Payload,
+	}); err != nil {
+		log.Error(err.Error())
+		return
+	}
 
 	go func(entityId *common.EntityId) {
 		var result bool
 		var err error
 
 		defer func() {
-			triggerPLugin.Unsubscribe(entityId.String(), handler, tr.model.Payload)
+			triggerPLugin.Unsubscribe(triggers.Subscriber{
+				EntityId: entityId,
+				Handler:  handler,
+				Payload:  tr.model.Payload,
+			})
 			close(queue)
 		}()
 

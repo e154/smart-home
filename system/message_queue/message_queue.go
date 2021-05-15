@@ -1,8 +1,27 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2020, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package message_queue
 
 import (
 	"fmt"
 	"reflect"
+	"sort"
 )
 
 // New creates new MessageQueue
@@ -19,20 +38,24 @@ func New(handlerQueueSize int) MessageQueue {
 }
 
 func (b *messageQueue) Publish(topic string, args ...interface{}) {
-	rArgs := buildHandlerArgs(args)
+	qwe := []interface{}{topic}
+	rArgs := buildHandlerArgs(append(qwe, args...))
 
 	b.mtx.Lock()
 	defer b.mtx.Unlock()
 
-	if hs, ok := b.sub[topic]; ok {
-		hs.lastMsg = rArgs
-		for _, h := range hs.handlers {
+	for t, sub := range b.sub {
+		if !TopicMatch([]byte(topic), []byte(t)) {
+			continue
+		}
+		sub.lastMsg = rArgs
+		for _, h := range sub.handlers {
 			h.queue <- rArgs
 		}
 	}
 }
 
-func (b *messageQueue) Subscribe(topic string, fn interface{}) error {
+func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interface{}) error {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
 		return fmt.Errorf("%s is not a reflect.Func", reflect.TypeOf(fn))
 	}
@@ -56,6 +79,12 @@ func (b *messageQueue) Subscribe(topic string, fn interface{}) error {
 	} else {
 		b.sub[topic] = &subscribers{
 			handlers: []*handler{h},
+		}
+	}
+
+	if len(options) > 0 {
+		if retain, ok := options[0].(bool); ok && !retain {
+			return nil
 		}
 	}
 
@@ -101,6 +130,23 @@ func (b *messageQueue) Close(topic string) {
 
 		return
 	}
+}
+
+// todo fix
+func (b *messageQueue) Stat() (stats Stats, err error) {
+	b.mtx.Lock()
+
+	for topic, subs := range b.sub {
+		stats = append(stats, Stat{
+			Topic:       topic,
+			Subscribers: len(subs.handlers),
+		})
+	}
+	b.mtx.Unlock()
+
+	sort.Sort(stats)
+
+	return
 }
 
 func buildHandlerArgs(args []interface{}) []reflect.Value {

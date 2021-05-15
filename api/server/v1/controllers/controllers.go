@@ -27,22 +27,23 @@ import (
 
 // ControllersV1 ...
 type ControllersV1 struct {
-	Index        *ControllerIndex
-	Node         *ControllerNode
-	Swagger      *ControllerSwagger
-	Script       *ControllerScript
-	Role         *ControllerRole
-	User         *ControllerUser
-	Auth         *ControllerAuth
-	Image        *ControllerImage
-	Log          *ControllerLog
-	Template     *ControllerTemplate
-	TemplateItem *ControllerTemplateItem
-	Notifr       *ControllerNotifr
-	Version      *ControllerVersion
-	Zigbee2mqtt  *ControllerZigbee2mqtt
-	Entity       *ControllerEntity
-	Mqtt         *ControllerMqtt
+	Alexa          *ControllerAlexa
+	Index          *ControllerIndex
+	Swagger        *ControllerSwagger
+	Script         *ControllerScript
+	Role           *ControllerRole
+	User           *ControllerUser
+	Auth           *ControllerAuth
+	Image          *ControllerImage
+	Log            *ControllerLog
+	Template       *ControllerTemplate
+	TemplateItem   *ControllerTemplateItem
+	Notifr         *ControllerNotifr
+	Version        *ControllerVersion
+	Zigbee2mqtt    *ControllerZigbee2mqtt
+	Entity         *ControllerEntity
+	DeveloperTools *ControllerDeveloperTools
+	Mqtt           *ControllerMqtt
 }
 
 // NewControllersV1 ...
@@ -52,21 +53,22 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 	command *endpoint.Endpoint) *ControllersV1 {
 	common := NewControllerCommon(adaptors, accessList, command)
 	return &ControllersV1{
-		Index:        NewControllerIndex(common),
-		Node:         NewControllerNode(common),
-		Swagger:      NewControllerSwagger(common),
-		Script:       NewControllerScript(common, scriptService),
-		Role:         NewControllerRole(common),
-		User:         NewControllerUser(common),
-		Auth:         NewControllerAuth(common),
-		Image:        NewControllerImage(common),
-		Log:          NewControllerLog(common),
-		Template:     NewControllerTemplate(common),
-		TemplateItem: NewControllerTemplateItem(common),
-		Notifr:       NewControllerNotifr(common),
-		Version:      NewControllerVersion(common),
-		Zigbee2mqtt:  NewControllerZigbee2mqtt(common),
-		Entity:       NewControllerEntity(common),
-		Mqtt:         NewControllerMqtt(common),
+		Alexa:          NewControllerAlexa(common),
+		Index:          NewControllerIndex(common),
+		Swagger:        NewControllerSwagger(common),
+		Script:         NewControllerScript(common, scriptService),
+		Role:           NewControllerRole(common),
+		User:           NewControllerUser(common),
+		Auth:           NewControllerAuth(common),
+		Image:          NewControllerImage(common),
+		Log:            NewControllerLog(common),
+		Template:       NewControllerTemplate(common),
+		TemplateItem:   NewControllerTemplateItem(common),
+		Notifr:         NewControllerNotifr(common),
+		Version:        NewControllerVersion(common),
+		Zigbee2mqtt:    NewControllerZigbee2mqtt(common),
+		Entity:         NewControllerEntity(common),
+		DeveloperTools: NewControllerDeveloperTools(common),
+		Mqtt:           NewControllerMqtt(common),
 	}
 }

@@ -19,7 +19,6 @@
 package gate_client
 
 import (
-	"fmt"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/gorilla/websocket"
@@ -46,7 +45,6 @@ type WsClient struct {
 	reConnect      bool
 	setLock        *sync.Mutex
 	status         string
-	counter        int
 	connLock       *sync.Mutex
 	conn           *websocket.Conn
 	metric         *metrics.MetricManager
@@ -94,54 +92,52 @@ func NewWsClient(cb IWsCallback, metric *metrics.MetricManager) *WsClient {
 }
 
 // UpdateSettings ...
-func (client *WsClient) UpdateSettings(settings Settings) {
-	client.setLock.Lock()
-	defer client.setLock.Unlock()
+func (ws *WsClient) UpdateSettings(settings Settings) {
+	ws.setLock.Lock()
+	defer ws.setLock.Unlock()
 
-	client.settings = settings
-	client.reConnect = true
-	client.settingsLoaded = true
-	client.updateMetric()
+	ws.settings = settings
+	ws.reConnect = true
+	ws.settingsLoaded = true
+	ws.updateMetric()
 }
 
-func (client *WsClient) connect() {
+func (ws *WsClient) connect() {
 
-	client.setLock.Lock()
-	client.selfUpdateStatus(GateStatusWait)
+	ws.setLock.Lock()
+	ws.selfUpdateStatus(GateStatusWait)
 
-	if !client.settings.Valid() {
-		client.setLock.Unlock()
+	if !ws.settings.Valid() {
+		ws.setLock.Unlock()
 		return
 	}
 
-	if !client.settings.Enabled {
-		client.setLock.Unlock()
+	if !ws.settings.Enabled {
+		ws.setLock.Unlock()
 		return
 	}
-	client.setLock.Unlock()
+	ws.setLock.Unlock()
 
 	var err error
 	ticker := time.NewTicker(pingPeriod)
-	client.counter++
 	defer func() {
-		client.counter--
 
-		client.setLock.Lock()
-		client.selfUpdateStatus(GateStatusNotConnected)
-		client.reConnect = false
-		client.setLock.Unlock()
+		ws.setLock.Lock()
+		ws.selfUpdateStatus(GateStatusNotConnected)
+		ws.reConnect = false
+		ws.setLock.Unlock()
 
 		ticker.Stop()
 
-		go client.cb.onClosed()
+		go ws.cb.onClosed()
 
-		if client.conn != nil {
-			_ = client.conn.Close()
+		if ws.conn != nil {
+			_ = ws.conn.Close()
 		}
 	}()
 
 	var uri *url.URL
-	if uri, err = url.Parse(client.settings.Address); err != nil {
+	if uri, err = url.Parse(ws.settings.Address); err != nil {
 		return
 	}
 
@@ -156,40 +152,40 @@ func (client *WsClient) connect() {
 	requestHeader := http.Header{
 		"X-Client-Type": {ClientTypeServer},
 	}
-	if client.settings.GateServerToken != "" {
-		requestHeader.Add("X-API-Key", client.settings.GateServerToken)
-		//log.Debugf("X-API-Key: %v", client.settings.GateServerToken)
+	if ws.settings.GateServerToken != "" {
+		requestHeader.Add("X-API-Key", ws.settings.GateServerToken)
+		//log.Debugf("X-API-Key: %v", ws.settings.GateServerToken)
 	}
 
-	client.setLock.Lock()
-	if client.conn, _, err = websocket.DefaultDialer.Dial(uri.String(), requestHeader); err != nil {
-		client.setLock.Unlock()
+	ws.setLock.Lock()
+	if ws.conn, _, err = websocket.DefaultDialer.Dial(uri.String(), requestHeader); err != nil {
+		ws.setLock.Unlock()
 		return
 	}
 
 	log.Infof("endpoint %v connected ...", uri.String())
-	client.selfUpdateStatus(GateStatusConnected)
-	client.setLock.Unlock()
+	ws.selfUpdateStatus(GateStatusConnected)
+	ws.setLock.Unlock()
 
 	loseChan := make(chan struct{})
 	var messageType int
 	var message []byte
 
-	//client.conn.SetCloseHandler(func(code int, text string) error {
+	//ws.conn.SetCloseHandler(func(code int, text string) error {
 	//	log.Warn("connection closed")
 	//
 	//	loseChan <- struct{}{}
 	//	return nil
 	//})
 
-	go client.cb.onConnected()
+	go ws.cb.onConnected()
 
-	if err = client.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+	if err = ws.conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
 		return
 	}
 
-	client.conn.SetPongHandler(func(string) error {
-		_ = client.conn.SetReadDeadline(time.Now().Add(pongWait))
+	ws.conn.SetPongHandler(func(string) error {
+		_ = ws.conn.SetReadDeadline(time.Now().Add(pongWait))
 		return nil
 	})
 
@@ -197,7 +193,7 @@ func (client *WsClient) connect() {
 		defer close(loseChan)
 		for {
 
-			if messageType, message, err = client.conn.ReadMessage(); err != nil {
+			if messageType, message, err = ws.conn.ReadMessage(); err != nil {
 				//log.Error(err.Error())
 				loseChan <- struct{}{}
 				break
@@ -205,7 +201,7 @@ func (client *WsClient) connect() {
 			switch messageType {
 			case websocket.TextMessage:
 				//fmt.Printf("recv: %s\n", string(message))
-				go client.cb.onMessage(message)
+				go ws.cb.onMessage(message)
 			default:
 				log.Warnf("unknown message type(%v)", messageType)
 			}
@@ -215,20 +211,20 @@ func (client *WsClient) connect() {
 	for {
 		select {
 		case <-ticker.C:
-			client.setLock.Lock()
-			if client.reConnect {
-				//_ = client.write(websocket.CloseMessage, []byte{})
-				fmt.Println("reconnect...")
-				client.setLock.Unlock()
+			ws.setLock.Lock()
+			if ws.reConnect {
+				//_ = ws.write(websocket.CloseMessage, []byte{})
+				log.Info("reconnect...")
+				ws.setLock.Unlock()
 				return
 			}
-			client.setLock.Unlock()
+			ws.setLock.Unlock()
 
-			if err := client.selfWrite(websocket.PingMessage, []byte{}); err != nil {
+			if err := ws.selfWrite(websocket.PingMessage, []byte{}); err != nil {
 				log.Error(err.Error())
 				return
 			}
-		case <-client.interrupt:
+		case <-ws.interrupt:
 			log.Info("Disconnected...")
 			return
 		case <-loseChan:
@@ -238,59 +234,59 @@ func (client *WsClient) connect() {
 }
 
 // Close ...
-func (client *WsClient) Close() {
+func (ws *WsClient) Close() {
 
-	client.setLock.Lock()
-	defer client.setLock.Unlock()
+	ws.setLock.Lock()
+	defer ws.setLock.Unlock()
 
-	if client.status == GateStatusQuit {
+	if ws.status == GateStatusQuit {
 		return
 	}
 
-	if client.status == GateStatusConnected {
-		client.interrupt <- struct{}{}
+	if ws.status == GateStatusConnected {
+		ws.interrupt <- struct{}{}
 	}
 
-	client.selfUpdateStatus(GateStatusQuit)
+	ws.selfUpdateStatus(GateStatusQuit)
 }
 
-func (client *WsClient) selfWrite(opCode int, payload []byte) (err error) {
+func (ws *WsClient) selfWrite(opCode int, payload []byte) (err error) {
 
-	client.setLock.Lock()
-	if client.status != GateStatusConnected {
-		client.setLock.Unlock()
+	ws.setLock.Lock()
+	if ws.status != GateStatusConnected {
+		ws.setLock.Unlock()
 		return
 	}
-	client.setLock.Unlock()
+	ws.setLock.Unlock()
 
-	client.connLock.Lock()
-	defer client.connLock.Unlock()
+	ws.connLock.Lock()
+	defer ws.connLock.Unlock()
 
-	if err = client.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+	if err = ws.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
 		return
 	}
 
-	err = client.conn.WriteMessage(opCode, payload)
+	err = ws.conn.WriteMessage(opCode, payload)
 
 	return
 }
 
 // Write ...
-func (client *WsClient) Write(payload []byte) (err error) {
-	err = client.selfWrite(websocket.TextMessage, payload)
+func (ws *WsClient) Write(payload []byte) (err error) {
+	err = ws.selfWrite(websocket.TextMessage, payload)
 	return
 }
 
 // Status ...
-func (client *WsClient) Status() string {
-	client.setLock.Lock()
-	defer client.setLock.Unlock()
+func (ws *WsClient) Status() string {
+	ws.setLock.Lock()
+	defer ws.setLock.Unlock()
 
-	return client.status
+	return ws.status
 }
 
 // Notify ...
-func (client *WsClient) Notify(t, b string) {
+func (ws *WsClient) Notify(t, b string) {
 
 	msg := &stream.Message{
 		Type:    stream.Notify,
@@ -301,28 +297,28 @@ func (client *WsClient) Notify(t, b string) {
 		},
 	}
 
-	client.selfWrite(websocket.TextMessage, msg.Pack())
+	ws.selfWrite(websocket.TextMessage, msg.Pack())
 }
 
-func (client *WsClient) selfUpdateStatus(status string) {
-	client.status = status
-	client.updateMetric()
+func (ws *WsClient) selfUpdateStatus(status string) {
+	ws.status = status
+	ws.updateMetric()
 }
 
-func (client *WsClient) updateMetric() {
+func (ws *WsClient) updateMetric() {
 
-	var status = client.status
-
-	if client.status == "quit" {
-		status = "wait"
-	}
-
-	if !client.settings.Enabled {
-		status = "disabled"
-	}
-
-	go client.metric.Update(metrics.GateUpdate{
-		Status:      status,
-		AccessToken: client.settings.GateServerToken,
-	})
+	//var status = ws.status
+	//
+	//if ws.status == "quit" {
+	//	status = "wait"
+	//}
+	//
+	//if !ws.settings.Enabled {
+	//	status = "disabled"
+	//}
+	//
+	//go ws.metric.Update(metrics.GateUpdate{
+	//	Status:      status,
+	//	AccessToken: ws.settings.GateServerToken,
+	//})
 }

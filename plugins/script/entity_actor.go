@@ -43,7 +43,8 @@ type EntityActor struct {
 func NewEntityActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService) (actor *EntityActor, err error) {
+	scriptService scripts.ScriptService,
+	entityManager entity_manager.EntityManager) (actor *EntityActor, err error) {
 
 	actor = &EntityActor{
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
@@ -53,6 +54,7 @@ func NewEntityActor(entity *m.Entity,
 		stateMu:       &sync.Mutex{},
 	}
 
+	actor.Manager = entityManager
 	actor.Attrs.Deserialize(params)
 
 	// Actions
@@ -78,12 +80,11 @@ func NewEntityActor(entity *m.Entity,
 	return
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
+func (e *EntityActor) SetState(params entity_manager.EntityStateParams) (err error) {
 
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
@@ -99,7 +100,8 @@ func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
 	}
 
 	e.AttrMu.Lock()
-	if changed, err := e.Attrs.Deserialize(params.AttributeValues); !changed {
+	var changed bool
+	if changed, err = e.Attrs.Deserialize(params.AttributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}

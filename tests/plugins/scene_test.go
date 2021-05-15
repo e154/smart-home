@@ -23,13 +23,12 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/plugin_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
@@ -52,16 +51,18 @@ sceneEvent = (args)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			plugins *plugins.Loader,
 			entityManager entity_manager.EntityManager,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
 			eventBus event_bus.EventBus,
-			pluginManager plugin_manager.PluginManager) {
+			pluginManager common.PluginManager) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
+
+			// register plugins
+			env1.NewPluginManager(adaptors).Create()
 
 			go mqttServer.Start()
 
@@ -97,23 +98,24 @@ sceneEvent = (args)->
 				counter.Inc()
 			})
 
-			plugins.Register()
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities()
+			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
+
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
 
 			time.Sleep(time.Millisecond * 500)
 			entityManager.CallScene(romanticEnt.Id, nil)
 			time.Sleep(time.Millisecond * 500)
 
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
-
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

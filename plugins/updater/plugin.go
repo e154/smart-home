@@ -21,7 +21,8 @@ package updater
 import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/plugins"
 	atomic2 "go.uber.org/atomic"
 	"time"
 )
@@ -35,48 +36,58 @@ var (
 	log = common.MustGetLogger("plugins.updater")
 )
 
+var _ plugins.Plugable = (*plugin)(nil)
+
+func init() {
+	plugins.RegisterPlugin(Name, New)
+}
+
 type plugin struct {
 	entityManager entity_manager.EntityManager
 	isStarted     atomic2.Bool
 	pause         time.Duration
-	entity        *EntityActor
+	actor         *EntityActor
+	eventBus      event_bus.EventBus
 	quit          chan struct{}
 }
 
-func Register(manager plugin_manager.PluginManager,
-	entityManager entity_manager.EntityManager,
-	second time.Duration) {
-	manager.Register(&plugin{
-		pause:         second,
-		entityManager: entityManager,
-		entity:        NewEntityActor(),
-	})
-	return
+func New() plugins.Plugable {
+	return &plugin{
+		pause: 24,
+	}
 }
 
-func (u *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
-	if u.isStarted.Load() {
+func (p *plugin) Load(service plugins.Service) (err error) {
+	p.entityManager = service.EntityManager()
+	p.eventBus = service.EventBus()
+
+	if p.isStarted.Load() {
 		return
 	}
-	u.entityManager.Spawn(u.entity.Spawn)
-	u.entity.check()
-	u.quit = make(chan struct{})
+
+	p.actor = NewEntityActor(p.entityManager)
+
+	p.entityManager.Spawn(p.actor.Spawn)
+	p.actor.check()
+	p.quit = make(chan struct{})
+
+	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	go func() {
-		ticker := time.NewTicker(time.Hour * u.pause)
+		ticker := time.NewTicker(time.Hour * p.pause)
 
 		defer func() {
 			ticker.Stop()
-			u.isStarted.Store(false)
-			close(u.quit)
+			p.isStarted.Store(false)
+			close(p.quit)
 		}()
 
 		for {
 			select {
-			case <-u.quit:
+			case <-p.quit:
 				return
 			case <-ticker.C:
-				u.entity.check()
+				p.actor.check()
 			}
 		}
 	}()
@@ -84,22 +95,43 @@ func (u *plugin) Load(service plugin_manager.PluginManager, plugins map[string]i
 	return
 }
 
-func (u *plugin) Unload() (err error) {
-	if !u.isStarted.Load() {
+func (p *plugin) Unload() (err error) {
+	if !p.isStarted.Load() {
 		return
 	}
-	u.quit <- struct{}{}
+	p.quit <- struct{}{}
+	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
 }
 
-func (u *plugin) Name() string {
+func (p *plugin) Name() string {
 	return name
 }
 
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) Type() plugins.PluginType {
+	return plugins.PluginBuiltIn
 }
 
 func (p *plugin) Depends() []string {
 	return nil
+}
+
+func (p *plugin) Version() string {
+	return "0.0.1"
+}
+
+func (p *plugin) eventHandler(_ string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case event_bus.EventCallAction:
+		if v.EntityId != p.actor.Id {
+			return
+		}
+
+		if v.ActionName == "check" {
+			p.actor.check()
+		}
+	}
+
+	return
 }

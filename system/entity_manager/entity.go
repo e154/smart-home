@@ -19,33 +19,16 @@
 package entity_manager
 
 import (
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
-type Entity struct {
-	Id          common.EntityId    `json:"unique_id"`
-	Type        common.EntityType  `json:"type"`
-	Name        string             `json:"name"`
-	Description string             `json:"description"`
-	Icon        *common.Icon            `json:"icon"`
-	ImageUrl    *string            `json:"image_url"`
-	Actions     []EntityAction     `json:"actions"`
-	States      []EntityState      `json:"states"`
-	State       *EntityState       `json:"state"`
-	Attributes  m.EntityAttributes `json:"attributes"`
-	Area        *m.Area            `json:"area"`
-	Metrics     []m.Metric         `json:"metrics"`
-	Hidden      bool               `json:"hidden"`
-}
-
-func NewEntity(a PluginActor) Entity {
+func NewEntity(a PluginActor) m.EntityShort {
 
 	info := a.Info()
-	actions := make([]EntityAction, len(info.Actions))
+	actions := make([]m.EntityActionShort, len(info.Actions))
 	var i int
 	for _, a := range info.Actions {
-		actions[i] = EntityAction{
+		actions[i] = m.EntityActionShort{
 			Name:        a.Name,
 			Description: a.Description,
 			ImageUrl:    a.ImageUrl,
@@ -54,10 +37,10 @@ func NewEntity(a PluginActor) Entity {
 		i++
 	}
 
-	states := make([]EntityState, len(info.States))
+	states := make([]m.EntityStateShort, len(info.States))
 	i = 0
 	for _, a := range info.States {
-		states[i] = EntityState{
+		states[i] = m.EntityStateShort{
 			Name:        a.Name,
 			Description: a.Description,
 			ImageUrl:    a.ImageUrl,
@@ -75,7 +58,7 @@ func NewEntity(a PluginActor) Entity {
 		}
 	}
 
-	entity := Entity{
+	entity := m.EntityShort{
 		Id:          info.Id,
 		Description: info.Description,
 		Type:        info.Type,
@@ -89,7 +72,7 @@ func NewEntity(a PluginActor) Entity {
 		Hidden:      info.Hidde,
 	}
 	if cs := info.State; cs != nil {
-		entity.State = &EntityState{
+		entity.State = &m.EntityStateShort{
 			Name:        cs.Name,
 			Description: cs.Description,
 			ImageUrl:    cs.ImageUrl,

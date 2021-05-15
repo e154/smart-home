@@ -22,13 +22,12 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins"
+	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/plugin_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
@@ -52,16 +51,19 @@ automationTriggerSystem = (msg)->
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
-			plugins *plugins.Loader,
 			entityManager entity_manager.EntityManager,
 			zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 			mqttServer mqtt.MqttServ,
 			automation automation.Automation,
 			eventBus event_bus.EventBus,
-			pluginManager plugin_manager.PluginManager) {
+			pluginManager common.PluginManager) {
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
+
+			// register plugins
+			err = AddPlugin(adaptors, "triggers")
+			ctx.So(err, ShouldBeNil)
 
 			go mqttServer.Start()
 
@@ -107,22 +109,26 @@ automationTriggerSystem = (msg)->
 				counter.Inc()
 			})
 
-			plugins.Register()
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities()
+			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
-			time.Sleep(time.Millisecond * 500)
+			defer func() {
+				mqttServer.Shutdown()
+				zigbee2mqtt.Shutdown()
+				entityManager.Shutdown()
+				automation.Shutdown()
+				pluginManager.Shutdown()
+			}()
 
-			eventBus.Publish(event_bus.TopicSystemStart, "started")
+			eventBus.Publish(triggers.TopicSystemStart, "started")
 
 			//
 			// ------------------------------------------------
 
-			plugins.Register()
 			automation.Reload()
-			entityManager.LoadEntities()
+			entityManager.LoadEntities(pluginManager)
 			go zigbee2mqtt.Start()
 
 			time.Sleep(time.Second)
@@ -130,11 +136,6 @@ automationTriggerSystem = (msg)->
 			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
 			So(lastEvent.Load(), ShouldEqual, "START")
 
-			mqttServer.Shutdown()
-			zigbee2mqtt.Shutdown()
-			entityManager.Shutdown()
-			automation.Shutdown()
-			pluginManager.Shutdown()
 		})
 	})
 }

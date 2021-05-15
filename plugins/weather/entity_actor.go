@@ -36,7 +36,9 @@ type EntityActor struct {
 	eventBus       event_bus.EventBus
 }
 
-func NewEntityActor(name string, eventBus event_bus.EventBus, ) *EntityActor {
+func NewEntityActor(name string,
+	eventBus event_bus.EventBus,
+	entityManager entity_manager.EntityManager) *EntityActor {
 
 	e := &EntityActor{
 		BaseActor: entity_manager.BaseActor{
@@ -48,6 +50,7 @@ func NewEntityActor(name string, eventBus event_bus.EventBus, ) *EntityActor {
 			AttrMu:            &sync.Mutex{},
 			Attrs:             BaseForecast(),
 			ParentId:          common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
+			Manager:           entityManager,
 		},
 		eventBus:       eventBus,
 		zoneAttributes: zone.NewAttr(),
@@ -58,8 +61,7 @@ func NewEntityActor(name string, eventBus event_bus.EventBus, ) *EntityActor {
 	return e
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
@@ -77,7 +79,7 @@ func (e *EntityActor) setPosition(zoneAttr m.EntityAttributes) {
 		return
 	}
 
-	e.eventBus.Publish(TopicPluginWeather, event_bus.EventSubStateChanged{
+	e.eventBus.Publish(TopicPluginWeather, EventSubStateChanged{
 		Type:       e.Id.Type(),
 		EntityId:   e.Id,
 		State:      SubStatePositionUpdate,
@@ -85,7 +87,7 @@ func (e *EntityActor) setPosition(zoneAttr m.EntityAttributes) {
 	})
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
+func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
 
 	log.Infof("update forecast for '%s'", e.Id)
 
@@ -102,4 +104,6 @@ func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
 		OldState:    oldState,
 		NewState:    e.GetEventState(e),
 	})
+
+	return nil
 }

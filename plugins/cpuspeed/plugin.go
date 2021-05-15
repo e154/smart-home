@@ -23,11 +23,17 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/plugins"
 	"github.com/prometheus/common/log"
 	"go.uber.org/atomic"
 	"time"
 )
+
+var _ plugins.Plugable = (*plugin)(nil)
+
+func init() {
+	plugins.RegisterPlugin(Name, New)
+}
 
 type plugin struct {
 	entityManager entity_manager.EntityManager
@@ -38,22 +44,18 @@ type plugin struct {
 	adaptors      *adaptors.Adaptors
 }
 
-func Register(manager plugin_manager.PluginManager,
-	entityManager entity_manager.EntityManager,
-	adaptors *adaptors.Adaptors,
-	pause uint) {
-
-	manager.Register(&plugin{
-		pause:         pause,
-		entityManager: entityManager,
-		actor:         NewEntityActor(),
-		adaptors:      adaptors,
-		isStarted:     atomic.NewBool(false),
-	})
-	return
+func New() plugins.Plugable {
+	p := &plugin{
+		isStarted: atomic.NewBool(false),
+		pause:     50,
+	}
+	return p
 }
 
-func (c *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) error {
+func (c *plugin) Load(service plugins.Service) error {
+	c.adaptors = service.Adaptors()
+	c.entityManager = service.EntityManager()
+	c.actor = NewEntityActor(c.entityManager)
 
 	if c.isStarted.Load() {
 		return nil
@@ -139,10 +141,14 @@ func (c plugin) Name() string {
 	return Name
 }
 
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) Type() plugins.PluginType {
+	return plugins.PluginBuiltIn
 }
 
 func (p *plugin) Depends() []string {
 	return nil
+}
+
+func (p *plugin) Version() string {
+	return "0.0.1"
 }

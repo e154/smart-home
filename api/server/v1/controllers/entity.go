@@ -166,7 +166,7 @@ func (c ControllerEntity) GetById(ctx *gin.Context) {
 //   name: entity
 //   required: true
 //   schema:
-//     $ref: '#/definitions/Update'
+//     $ref: '#/definitions/UpdateEntity'
 //     type: object
 // summary: update entity by id
 // description:

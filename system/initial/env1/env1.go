@@ -24,41 +24,17 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
-// env1
-//
-// node1 + node2
-// script1 + script2 + script3
-// device1
-// 		+ child device2
-// device3
-//
+// Demo ...
 func InstallDemoData(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
 
-	// images
-	// ------------------------------------------------
 	NewImageManager(adaptors).Create()
-
-	// roles
-	// ------------------------------------------------
 	NewRoleManager(adaptors, accessList).Create()
-
-	// nodes
-	// ------------------------------------------------
-	NewNodeManager(adaptors).Create()
-
-	// area
-	// ------------------------------------------------
 	NewAreaManager(adaptors).Create()
-
-	// zone
-	// ------------------------------------------------
 	NewZoneManager(adaptors).Create()
-
-	// templates
-	// ------------------------------------------------
 	NewTemplateManager(adaptors).Create()
+	NewPluginManager(adaptors).Create()
 }
 
 // Create ...
@@ -69,9 +45,9 @@ func Create(adaptors *adaptors.Adaptors,
 	NewImageManager(adaptors).Create()
 	NewRoleManager(adaptors, accessList).Create()
 	NewTemplateManager(adaptors).Create()
-	NewNodeManager(adaptors).Create()
 	NewZoneManager(adaptors).Create()
 	NewAreaManager(adaptors).Create()
+	NewPluginManager(adaptors).Create()
 }
 
 // Upgrade ...

@@ -40,7 +40,7 @@ type EntityActor struct {
 	horizonState        string
 }
 
-func NewEntityActor(name string) *EntityActor {
+func NewEntityActor(name string, entityManager entity_manager.EntityManager) *EntityActor {
 
 	entity := &EntityActor{
 		BaseActor: entity_manager.BaseActor{
@@ -51,6 +51,7 @@ func NewEntityActor(name string) *EntityActor {
 			AttrMu:      &sync.Mutex{},
 			Attrs:       NewAttr(),
 			ParentId:    common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
+			Manager:     entityManager,
 		},
 		positionLock: &sync.Mutex{},
 	}
@@ -58,8 +59,7 @@ func NewEntityActor(name string) *EntityActor {
 	return entity
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 

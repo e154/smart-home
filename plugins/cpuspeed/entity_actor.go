@@ -38,7 +38,7 @@ type EntityActor struct {
 	updateLock      *sync.Mutex
 }
 
-func NewEntityActor() *EntityActor {
+func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
 
 	actor := &EntityActor{
 		BaseActor: entity_manager.BaseActor{
@@ -48,6 +48,7 @@ func NewEntityActor() *EntityActor {
 			UnitOfMeasurement: "GHz",
 			AttrMu:            &sync.Mutex{},
 			Attrs:             NewAttr(),
+			Manager:           entityManager,
 		},
 		all:        metrics.NewGaugeFloat64(),
 		updateLock: &sync.Mutex{},
@@ -63,8 +64,7 @@ func NewEntityActor() *EntityActor {
 	return actor
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 

@@ -43,7 +43,8 @@ type EntityActor struct {
 func NewEntityActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
-	scriptService scripts.ScriptService) (actor *EntityActor, err error) {
+	scriptService scripts.ScriptService,
+	entityManager entity_manager.EntityManager) (actor *EntityActor, err error) {
 
 	actor = &EntityActor{
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
@@ -53,6 +54,7 @@ func NewEntityActor(entity *m.Entity,
 		stateMu:       &sync.Mutex{},
 	}
 
+	actor.Manager = entityManager
 	actor.Attrs.Deserialize(params)
 
 	// todo move to baseActor
@@ -77,8 +79,7 @@ func NewEntityActor(entity *m.Entity,
 	return
 }
 
-func (e *EntityActor) Spawn(actorManager entity_manager.EntityManager) entity_manager.PluginActor {
-	e.Manager = actorManager
+func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 

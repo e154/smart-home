@@ -19,65 +19,20 @@
 package plugins
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/plugins/moon"
-	"github.com/e154/smart-home/plugins/scene"
-	"github.com/e154/smart-home/plugins/script"
-	"github.com/e154/smart-home/plugins/sun"
-	"github.com/e154/smart-home/plugins/triggers"
-	"github.com/e154/smart-home/plugins/updater"
-	"github.com/e154/smart-home/plugins/uptime"
-	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/plugins/weather_met"
-	"github.com/e154/smart-home/plugins/zigbee2mqtt"
-	"github.com/e154/smart-home/plugins/zone"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/plugin_manager"
-	"github.com/e154/smart-home/system/scripts"
+	_ "github.com/e154/smart-home/plugins/alexa"
+	_ "github.com/e154/smart-home/plugins/cpuspeed"
+	_ "github.com/e154/smart-home/plugins/modbus_rtu"
+	_ "github.com/e154/smart-home/plugins/modbus_tcp"
+	_ "github.com/e154/smart-home/plugins/moon"
+	_ "github.com/e154/smart-home/plugins/node"
+	_ "github.com/e154/smart-home/plugins/scene"
+	_ "github.com/e154/smart-home/plugins/script"
+	_ "github.com/e154/smart-home/plugins/sun"
+	_ "github.com/e154/smart-home/plugins/triggers"
+	_ "github.com/e154/smart-home/plugins/updater"
+	_ "github.com/e154/smart-home/plugins/uptime"
+	_ "github.com/e154/smart-home/plugins/weather"
+	_ "github.com/e154/smart-home/plugins/weather_met"
+	_ "github.com/e154/smart-home/plugins/zigbee2mqtt"
+	_ "github.com/e154/smart-home/plugins/zone"
 )
-
-type Loader struct {
-	pluginManager plugin_manager.PluginManager
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	eventBus      event_bus.EventBus
-	mqtt          mqtt.MqttServ
-	scriptService scripts.ScriptService
-}
-
-func NewPluginLoader(
-	pluginManager plugin_manager.PluginManager,
-	entityManager entity_manager.EntityManager,
-	adaptors *adaptors.Adaptors,
-	eventBus event_bus.EventBus,
-	mqtt mqtt.MqttServ,
-	scriptService scripts.ScriptService) *Loader {
-	plugins := &Loader{
-		pluginManager: pluginManager,
-		entityManager: entityManager,
-		adaptors:      adaptors,
-		eventBus:      eventBus,
-		mqtt:          mqtt,
-		scriptService: scriptService,
-	}
-	return plugins
-}
-
-// Register ...
-func (p *Loader) Register() {
-
-	triggers.Register(p.pluginManager, p.eventBus)
-	zigbee2mqtt.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors, p.mqtt, p.scriptService)
-	script.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors, p.scriptService)
-	scene.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors, p.scriptService)
-	updater.Register(p.pluginManager, p.entityManager, 24)
-	uptime.Register(p.pluginManager, p.entityManager, p.adaptors, 60)
-	zone.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors)
-	sun.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors, 240)
-	moon.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors, 240)
-	weather.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors)
-	weather_met.Register(p.pluginManager, p.entityManager, p.eventBus, p.adaptors)
-	//cpuspeed.Register(p.pluginManager, p.entityManager, p.adaptors, 5)
-}

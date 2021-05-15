@@ -26,18 +26,19 @@ import (
 	"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/gate_client"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/plugin_manager"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
 	"strconv"
+
+	_ "github.com/e154/smart-home/plugins"
 )
 
 var (
@@ -54,12 +55,12 @@ type Initial struct {
 	adaptors      *Adaptors
 	scriptService scripts.ScriptService
 	accessList    access_list.AccessListService
-	pluginLoader  *plugins.Loader
 	entityManager entity_manager.EntityManager
-	pluginManager plugin_manager.PluginManager
+	pluginManager common.PluginManager
 	automation    automation.Automation
 	api           *server.Server
 	metrics       *metrics.MetricManager
+	gateClient    *gate_client.GateClient
 }
 
 // NewInitial ...
@@ -68,23 +69,23 @@ func NewInitial(lc fx.Lifecycle,
 	adaptors *Adaptors,
 	scriptService scripts.ScriptService,
 	accessList access_list.AccessListService,
-	pluginLoader *plugins.Loader,
 	entityManager entity_manager.EntityManager,
-	pluginManager plugin_manager.PluginManager,
+	pluginManager common.PluginManager,
 	automation automation.Automation,
 	api *server.Server,
-	metrics *metrics.MetricManager) *Initial {
+	metrics *metrics.MetricManager,
+	gateClient *gate_client.GateClient) *Initial {
 	initial := &Initial{
 		migrations:    migrations,
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		accessList:    accessList,
-		pluginLoader:  pluginLoader,
 		entityManager: entityManager,
 		pluginManager: pluginManager,
 		automation:    automation,
 		api:           api,
 		metrics:       metrics,
+		gateClient:    gateClient,
 	}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
@@ -114,8 +115,6 @@ func (n *Initial) InstallDemoData() {
 
 	log.Info("install demo data")
 
-	n.migrations.Purge()
-
 	tx := n.adaptors.Begin()
 
 	env1.InstallDemoData(tx, n.accessList, n.scriptService)
@@ -124,6 +123,9 @@ func (n *Initial) InstallDemoData() {
 		Name:  "initial_version",
 		Value: fmt.Sprintf("%d", currentVersion),
 	})
+	if err != nil {
+		tx.Rollback()
+	}
 	So(err, ShouldBeNil)
 
 	tx.Commit()
@@ -179,11 +181,11 @@ func (n *Initial) Start() {
 
 	n.checkForUpgrade()
 	n.metrics.Start()
-	n.pluginLoader.Register()
 	n.pluginManager.Start()
-	n.entityManager.LoadEntities()
+	n.entityManager.LoadEntities(n.pluginManager)
 	n.automation.Start()
 	n.api.Start()
+	n.gateClient.Start()
 }
 
 // Shutdown ...

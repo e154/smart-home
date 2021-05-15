@@ -29,13 +29,6 @@ type EventRequestState struct {
 	Attributes m.EntityAttributes `json:"attributes"`
 }
 
-type EventSubStateChanged struct {
-	Type       common.EntityType  `json:"type"`
-	EntityId   common.EntityId    `json:"entity_id"`
-	State      string             `json:"state"`
-	Attributes m.EntityAttributes `json:"attributes"`
-}
-
 type EventStateChanged struct {
 	Type     common.EntityType `json:"type"`
 	EntityId common.EntityId   `json:"entity_id"`

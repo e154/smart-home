@@ -22,70 +22,78 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/plugins"
 	"go.uber.org/atomic"
 	"sync"
-)
-
-const (
-	Name = "triggers"
 )
 
 var (
 	log = common.MustGetLogger("plugins.triggers")
 )
 
+var _ plugins.Plugable = (*plugin)(nil)
+
+func init() {
+	plugins.RegisterPlugin(Name, New)
+}
+
 type plugin struct {
 	isStarted *atomic.Bool
-	triggers  map[string]ITrigger
 	bus       event_bus.EventBus
+	mu        *sync.Mutex
+	triggers  map[string]ITrigger
 }
 
-func Register(manager plugin_manager.PluginManager,
-	bus event_bus.EventBus) {
-	manager.Register(&plugin{
+func New() plugins.Plugable {
+	return &plugin{
 		isStarted: atomic.NewBool(false),
+		mu:        &sync.Mutex{},
 		triggers:  make(map[string]ITrigger),
-		bus:       bus,
-	})
-	return
+	}
 }
 
-func (u *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
+func (p *plugin) Load(service plugins.Service) (nil error) {
+	p.bus = service.EventBus()
 
-	if u.isStarted.Load() {
+	if p.isStarted.Load() {
 		return
 	}
 
-	u.attachTrigger()
+	p.attachTrigger()
 
-	u.isStarted.Store(true)
-
-	return
-}
-
-func (u *plugin) Unload() (err error) {
+	p.isStarted.Store(true)
 
 	return
 }
 
-func (u plugin) Name() string {
+func (p *plugin) Unload() (err error) {
+	if !p.isStarted.Load() {
+		return
+	}
+	p.isStarted.Store(false)
+	return
+}
+
+func (p plugin) Name() string {
 	return Name
 }
 
-func (u *plugin) attachTrigger() {
+func (p *plugin) attachTrigger() {
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	// init triggers ...
-	u.triggers[StateChangeName] = NewStateChangedTrigger(u.bus)
-	u.triggers[SystemName] = NewSystemTrigger(u.bus)
-	u.triggers[TimeName] = NewTimeTrigger(u.bus)
+	p.triggers[StateChangeName] = NewStateChangedTrigger(p.bus)
+	p.triggers[SystemName] = NewSystemTrigger(p.bus)
+	p.triggers[TimeName] = NewTimeTrigger(p.bus)
 
 	wg := &sync.WaitGroup{}
 
-	for _, tr := range u.triggers {
+	for _, tr := range p.triggers {
 		wg.Add(1)
 		go func(tr ITrigger, wg *sync.WaitGroup) {
-			log.Infof("attach trigger '%s'", tr.Name())
+			log.Infof("register trigger '%s'", tr.Name())
 			tr.AsyncAttach(wg)
 		}(tr, wg)
 	}
@@ -93,18 +101,71 @@ func (u *plugin) attachTrigger() {
 	wg.Wait()
 }
 
-func (u *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
+func (p *plugin) Type() plugins.PluginType {
+	return plugins.PluginBuiltIn
+}
+
+func (p *plugin) Depends() []string {
+	return nil
+}
+
+func (p *plugin) Version() string {
+	return "0.0.1"
+}
+
+func (p *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	var ok bool
-	if trigger, ok = u.triggers[name]; !ok {
+	if trigger, ok = p.triggers[name]; !ok {
 		err = fmt.Errorf("not found trigger with name(%s)", name)
 	}
 	return
 }
 
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) RegisterTrigger(tr ITrigger) (err error) {
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if _, ok := p.triggers[tr.Name()]; ok {
+		err = fmt.Errorf("trigger with name %s is registerred", tr.Name())
+		return
+	}
+
+	p.triggers[tr.Name()] = tr
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	log.Infof("register trigger '%s'", tr.Name())
+	go tr.AsyncAttach(wg)
+	wg.Wait()
+
+	return
 }
 
-func (p *plugin) Depends() []string {
+func (p *plugin) UnregisterTrigger(name string) error {
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if _, ok := p.triggers[name]; ok {
+		delete(p.triggers, name)
+		return nil
+	}
+
 	return nil
+}
+
+func (p *plugin) TriggerList() (list []string) {
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	list = make([]string, 0, len(p.triggers))
+	for name, _ := range p.triggers {
+		list = append(list, name)
+	}
+	return
 }

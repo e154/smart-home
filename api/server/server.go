@@ -22,7 +22,7 @@ import (
 	"context"
 	"github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/graceful_service"
+	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/rbac"
 	"github.com/e154/smart-home/system/stream"
 	"github.com/gin-contrib/cors"
@@ -93,27 +93,27 @@ func (s *Server) GetEngine() *gin.Engine {
 func NewServer(lc fx.Lifecycle,
 	cfg *Config,
 	ctrls *controllers.ControllersV1,
-	graceful *graceful_service.GracefulService,
 	accessFilter *rbac.AccessFilter,
-	streamService *stream.StreamService) (newServer *Server) {
+	streamService *stream.StreamService,
+	gate *gate_client.GateClient) (newServer *Server) {
 
 	logger := NewLogger()
 
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = logger
 	gin.DefaultErrorWriter = logger
-	//if cfg.RunMode == config.ReleaseMode {
 	gin.SetMode(gin.ReleaseMode)
-	//} else {
-	//	gin.SetMode(gin.DebugMode)
-	//}
 
 	engine := gin.New()
 	engine.Use(gin.Recovery())
-	//cors
+
+	// cors
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowAllOrigins = true
 	engine.Use(cors.New(corsConfig))
+
+	// gate
+	gate.SetMobileApiEngine(engine)
 
 	newServer = &Server{
 		Config:        cfg,

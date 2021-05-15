@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
@@ -35,11 +36,11 @@ var (
 
 // Endpoint ...
 type Endpoint struct {
+	AlexaSkill      *AlexaSkillEndpoint
 	Auth            *AuthEndpoint
 	Image           *ImageEndpoint
 	Log             *LogEndpoint
 	Zone            *ZoneEndpoint
-	Node            *NodeEndpoint
 	Role            *RoleEndpoint
 	Script          *ScriptEndpoint
 	User            *UserEndpoint
@@ -49,6 +50,7 @@ type Endpoint struct {
 	Version         *VersionEndpoint
 	Zigbee2mqtt     *Zigbee2mqttEndpoint
 	Entity          *EntityEndpoint
+	DeveloperTools  *DeveloperToolsEndpoint
 	Mqtt            *MqttEndpoint
 }
 
@@ -59,13 +61,15 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	notify notify.Notify,
 	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
+	pluginManager common.PluginManager,
 	mqtt mqtt.MqttServ) *Endpoint {
-	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt, mqtt)
+	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt, eventBus, pluginManager, entityManager)
 	return &Endpoint{
+		AlexaSkill:      NewAlexaSkillEndpoint(common),
 		Auth:            NewAuthEndpoint(common),
 		Image:           NewImageEndpoint(common),
 		Log:             NewLogEndpoint(common),
-		Node:            NewNodeEndpoint(common),
 		Role:            NewRoleEndpoint(common),
 		Script:          NewScriptEndpoint(common),
 		User:            NewUserEndpoint(common),
@@ -75,7 +79,8 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		MessageDelivery: NewMessageDeliveryEndpoint(common),
 		Version:         NewVersionEndpoint(common),
 		Zigbee2mqtt:     NewZigbee2mqttEndpoint(common),
-		Entity:          NewEntityEndpoint(common, entityManager),
+		Entity:          NewEntityEndpoint(common),
+		DeveloperTools:  NewDeveloperToolsEndpoint(common),
 		Mqtt:            NewMqttEndpoint(common),
 	}
 }

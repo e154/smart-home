@@ -20,6 +20,7 @@ package message_queue
 
 import (
 	"reflect"
+	"strings"
 	"sync"
 )
 
@@ -31,9 +32,11 @@ type MessageQueue interface {
 	// Close unsubscribe all subscribers from given topic
 	Close(topic string)
 	// Subscribe subscribes to the given topic
-	Subscribe(topic string, fn interface{}) error
+	Subscribe(topic string, fn interface{}, options ...interface{}) error
 	// Unsubscribe unsubscribe handler from the given topic
 	Unsubscribe(topic string, fn interface{}) error
+	// Stat
+	Stat() (stats Stats, err error)
 }
 
 type handler struct {
@@ -51,3 +54,17 @@ type messageQueue struct {
 	mtx       sync.RWMutex
 	sub       map[string]*subscribers
 }
+
+
+type Stat struct {
+	Topic       string
+	Subscribers int
+}
+
+type Stats []Stat
+
+func (s Stats) Len() int { return len(s) }
+
+func (s Stats) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+
+func (s Stats) Less(i, j int) bool { return strings.Compare(s[i].Topic, s[j].Topic) == -1 }

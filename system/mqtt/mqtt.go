@@ -80,7 +80,7 @@ func NewMqtt(lc fx.Lifecycle,
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
-			go mqtt.Start()
+			mqtt.Start()
 			return nil
 		},
 		OnStop: func(ctx context.Context) (err error) {
@@ -94,6 +94,14 @@ func NewMqtt(lc fx.Lifecycle,
 // Shutdown ...
 func (m *Mqtt) Shutdown() (err error) {
 	log.Info("Server exiting")
+
+	m.clientsLock.Lock()
+	for name, cli := range m.clients {
+		cli.UnsubscribeAll()
+		delete(m.clients, name)
+	}
+	m.clientsLock.Unlock()
+
 	if m.server != nil {
 		err = m.server.Stop(context.Background())
 	}
@@ -129,9 +137,11 @@ func (m *Mqtt) Start() {
 
 	log.Infof("Serving server at tcp://[::]:%d", m.cfg.Port)
 
-	if err = m.server.Run(); err != nil {
-		log.Error(err.Error())
-	}
+	go func() {
+		if err = m.server.Run(); err != nil {
+			log.Error(err.Error())
+		}
+	}()
 }
 
 // OnMsgArrived ...
@@ -220,6 +230,20 @@ func (m *Mqtt) NewClient(name string) (client MqttCli) {
 	}
 	client = NewClient(m, name)
 	m.clients[name] = client
+	log.Infof("new mqtt client '%s'", name)
+	return
+}
+
+// RemoveClient ...
+func (m *Mqtt) RemoveClient(name string) {
+	m.clientsLock.Lock()
+	defer m.clientsLock.Unlock()
+
+	var ok bool
+	if _, ok = m.clients[name]; !ok {
+		return
+	}
+	delete(m.clients, name)
 	return
 }
 

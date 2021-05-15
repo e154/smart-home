@@ -30,7 +30,7 @@ import (
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/plugin_manager"
+	"github.com/e154/smart-home/system/plugins"
 	"go.uber.org/atomic"
 	"math"
 	"net/url"
@@ -41,7 +41,7 @@ import (
 )
 
 const (
-	Name          = "met"
+	Name          = "weather_met"
 	DefaultApiUrl = "https://api.met.no/weatherapi/locationforecast/2.0/classic"
 )
 
@@ -49,51 +49,51 @@ var (
 	log = common.MustGetLogger("plugins.met")
 )
 
-// MET Plugin
+var _ plugins.Plugable = (*plugin)(nil)
+
+func init() {
+	plugins.RegisterPlugin(Name, New)
+}
+
 type plugin struct {
 	adaptors      *adaptors.Adaptors
 	entityManager entity_manager.EntityManager
 	isStarted     *atomic.Bool
 	quit          chan struct{}
 	pause         uint
-	service       plugin_manager.PluginManager
+	service       common.PluginManager
 	eventBus      event_bus.EventBus
 	zones         *sync.Map
 	lock          *sync.Mutex
 	counter       int
 }
 
-func Register(manager plugin_manager.PluginManager,
-	entityManager entity_manager.EntityManager,
-	eventBus event_bus.EventBus,
-	adaptors *adaptors.Adaptors) {
-	manager.Register(&plugin{
-		adaptors:      adaptors,
-		entityManager: entityManager,
-		isStarted:     atomic.NewBool(false),
-		quit:          make(chan struct{}),
-		pause:         60,
-		eventBus:      eventBus,
-		zones:         &sync.Map{},
-		lock:          &sync.Mutex{},
-	})
+func New() plugins.Plugable {
+	return &plugin{
+		isStarted: atomic.NewBool(false),
+		quit:      make(chan struct{}),
+		pause:     60,
+		zones:     &sync.Map{},
+		lock:      &sync.Mutex{},
+	}
 }
 
-func (p *plugin) Load(service plugin_manager.PluginManager, plugins map[string]interface{}) (err error) {
-
-	p.service = service
+func (p *plugin) Load(service plugins.Service) (err error) {
+	p.adaptors = service.Adaptors()
+	p.eventBus = service.EventBus()
+	p.entityManager = service.EntityManager()
 
 	if p.isStarted.Load() {
 		return
 	}
+	p.isStarted.Store(true)
 
 	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 	p.eventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
+	p.quit = make(chan struct{})
 
 	go func() {
 		ticker := time.NewTicker(time.Minute * time.Duration(p.pause))
-		p.quit = make(chan struct{})
-		p.isStarted.Store(true)
 
 		defer func() {
 			ticker.Stop()
@@ -116,7 +116,7 @@ func (p *plugin) Load(service plugin_manager.PluginManager, plugins map[string]i
 		log.Error(err.Error())
 	}
 
-	return nil
+	return
 }
 
 func (p *plugin) Unload() (err error) {
@@ -134,7 +134,7 @@ func (p plugin) Name() string {
 	return Name
 }
 
-func (p *plugin) eventHandler(msg interface{}) {
+func (p *plugin) eventHandler(_ string, msg interface{}) {
 	switch v := msg.(type) {
 	case event_bus.EventAddedNewEntity:
 		if v.Type != "weather" {
@@ -143,7 +143,7 @@ func (p *plugin) eventHandler(msg interface{}) {
 
 		p.addZone()
 
-	case event_bus.EventSubStateChanged:
+	case weather.EventSubStateChanged:
 		if v.Type != "weather" || v.State != weather.SubStatePositionUpdate {
 			return
 		}
@@ -529,10 +529,14 @@ func (p *plugin) getWindDirection(orderedEntries []Product) (value float64) {
 	return
 }
 
-func (p *plugin) Type() plugin_manager.PlugableType {
-	return plugin_manager.PlugableBuiltIn
+func (p *plugin) Type() plugins.PluginType {
+	return plugins.PluginBuiltIn
 }
 
 func (p *plugin) Depends() []string {
 	return []string{weather.Name}
+}
+
+func (p *plugin) Version() string {
+	return "0.0.1"
 }
