@@ -5046,6 +5046,32 @@ responses:
           type: object
           x-go-name: Meta
       type: object
+  DeveloperToolsEventList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/DeveloperToolsEvent'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
   DeveloperToolsStateList:
     description: ""
     schema:
