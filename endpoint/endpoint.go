@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
@@ -34,6 +35,7 @@ var (
 
 // Endpoint ...
 type Endpoint struct {
+	AlexaSkill      *AlexaSkillEndpoint
 	Auth            *AuthEndpoint
 	Image           *ImageEndpoint
 	Log             *LogEndpoint
@@ -55,9 +57,12 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	notify notify.Notify,
 	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
-	entityManager entity_manager.EntityManager) *Endpoint {
-	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt)
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
+	pluginManager common.PluginManager) *Endpoint {
+	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt, eventBus, pluginManager)
 	return &Endpoint{
+		AlexaSkill:      NewAlexaSkillEndpoint(common),
 		Auth:            NewAuthEndpoint(common),
 		Image:           NewImageEndpoint(common),
 		Log:             NewLogEndpoint(common),
