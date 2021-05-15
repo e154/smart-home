@@ -27,6 +27,7 @@ import (
 
 // ControllersV1 ...
 type ControllersV1 struct {
+	Alexa        *ControllerAlexa
 	Index        *ControllerIndex
 	Swagger      *ControllerSwagger
 	Script       *ControllerScript
@@ -50,6 +51,7 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 	command *endpoint.Endpoint) *ControllersV1 {
 	common := NewControllerCommon(adaptors, accessList, command)
 	return &ControllersV1{
+		Alexa:        NewControllerAlexa(common),
 		Index:        NewControllerIndex(common),
 		Swagger:      NewControllerSwagger(common),
 		Script:       NewControllerScript(common, scriptService),

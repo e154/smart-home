@@ -219,6 +219,18 @@ type EventAlexaAction struct {
 	Payload    interface{}
 }
 
+type EventAlexaAddSkill struct {
+	Skill *m.AlexaSkill
+}
+
+type EventAlexaUpdateSkill struct {
+	Skill *m.AlexaSkill
+}
+
+type EventAlexaDeleteSkill struct {
+	Skill *m.AlexaSkill
+}
+
 type IServer interface {
 	Start()
 	Stop()

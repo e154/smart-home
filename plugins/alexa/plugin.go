@@ -89,6 +89,8 @@ func (p *plugin) Load(service plugins.Service) error {
 
 	p.server.Start()
 
+	p.eventBus.Subscribe(TopicPluginAlexa, p.eventHandler)
+
 	return nil
 }
 
@@ -97,6 +99,8 @@ func (p *plugin) Unload() error {
 		return nil
 	}
 	p.isStarted.Store(false)
+
+	p.eventBus.Unsubscribe(TopicPluginAlexa, p.eventHandler)
 
 	p.server.Stop()
 	p.server = nil
@@ -137,4 +141,16 @@ func (p *plugin) Version() string {
 
 func (p *plugin) Server() IServer {
 	return p.server
+}
+
+func (p *plugin) eventHandler(_ string, event interface{}) {
+
+	switch v := event.(type) {
+	case EventAlexaAddSkill:
+		p.server.AddSkill(v.Skill)
+	case EventAlexaUpdateSkill:
+		p.server.UpdateSkill(v.Skill)
+	case EventAlexaDeleteSkill:
+		p.server.DeleteSkill(v.Skill)
+	}
 }

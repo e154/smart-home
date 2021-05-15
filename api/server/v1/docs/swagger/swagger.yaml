@@ -39,6 +39,109 @@ definitions:
       type: object
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AlexaIntent:
+    properties:
+      alexa_skill_id:
+        format: int64
+        type: integer
+        x-go-name: AlexaSkillId
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/Script'
+      script_id:
+        format: int64
+        type: integer
+        x-go-name: ScriptId
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AlexaSkill:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      intents:
+        items:
+          $ref: '#/definitions/AlexaIntent'
+        type: array
+        x-go-name: Intents
+      on_launch_script:
+        $ref: '#/definitions/Script'
+      on_launch_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnLaunchScriptId
+      on_session_end_script:
+        $ref: '#/definitions/Script'
+      on_session_end_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AlexaSkillShort:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      on_launch_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnLaunchScriptId
+      on_session_end_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Area:
     properties:
       description:
@@ -533,6 +636,27 @@ definitions:
       translate:
         type: string
         x-go-name: Translate
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewAlexaSkill:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      on_launch_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnLaunchScriptId
+      on_session_end_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
+      status:
+        type: string
+        x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewArea:
@@ -1203,6 +1327,36 @@ definitions:
         x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateAlexaSkill:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      intents:
+        items:
+          $ref: '#/definitions/AlexaIntent'
+        type: array
+        x-go-name: Intents
+      on_launch_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnLaunchScriptId
+      on_session_end_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateEntity:
     properties:
       actions:
@@ -1228,9 +1382,6 @@ definitions:
       icon:
         type: string
         x-go-name: Icon
-      id:
-        type: string
-        x-go-name: Id
       image:
         $ref: '#/definitions/Image'
       metrics:
@@ -1875,6 +2026,165 @@ paths:
       summary: get user access list
       tags:
       - auth
+  /alexa:
+    post:
+      operationId: alexaAdd
+      parameters:
+      - description: alexa params
+        in: body
+        name: alexa
+        required: true
+        schema:
+          $ref: '#/definitions/NewAlexaSkill'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AlexaSkill'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add new alexa
+      tags:
+      - alexa
+  /alexa/{id}:
+    delete:
+      operationId: alexaDeleteById
+      parameters:
+      - description: Alexa ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete alexa by id
+      tags:
+      - alexa
+    get:
+      operationId: alexaGetById
+      parameters:
+      - description: Alexa ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AlexaSkill'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get alexa by id
+      tags:
+      - alexa
+    put:
+      operationId: alexaUpdateById
+      parameters:
+      - description: Alexa ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update alexa params
+        in: body
+        name: alexa
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateAlexaSkill'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AlexaSkill'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update alexa by id
+      tags:
+      - alexa
+  /alexas:
+    get:
+      operationId: alexaList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/AlexaSkillList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get alexa list
+      tags:
+      - alexa
   /entities:
     get:
       operationId: entityList
@@ -2046,7 +2356,7 @@ paths:
         name: entity
         required: true
         schema:
-          $ref: '#/definitions/UpdateEntity'
+          $ref: '#/definitions/Update'
           type: object
       responses:
         "200":
@@ -2419,199 +2729,6 @@ paths:
       summary: search log
       tags:
       - log
-  /node:
-    post:
-      operationId: nodeAdd
-      parameters:
-      - description: node params
-        in: body
-        name: node
-        required: true
-        schema:
-          $ref: '#/definitions/NewNode'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Node'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new node
-      tags:
-      - node
-  /node/{id}:
-    delete:
-      operationId: nodeDeleteById
-      parameters:
-      - description: Node ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/Success'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: delete node by id
-      tags:
-      - node
-    get:
-      operationId: nodeGetById
-      parameters:
-      - description: Node ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Node'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get node by id
-      tags:
-      - node
-    put:
-      operationId: nodeUpdateById
-      parameters:
-      - description: Node ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update node params
-        in: body
-        name: node
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateNode'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Node'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "404":
-          $ref: '#/responses/Error'
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: update node by id
-      tags:
-      - node
-  /nodes:
-    get:
-      operationId: nodeList
-      parameters:
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
-      responses:
-        "200":
-          $ref: '#/responses/NodeList'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: get node list
-      tags:
-      - node
-  /nodes/search:
-    get:
-      operationId: nodeSearch
-      parameters:
-      - description: query
-        in: query
-        name: query
-        type: string
-      - default: 10
-        description: limit
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - default: 0
-        description: offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      responses:
-        "200":
-          $ref: '#/responses/NodeSearch'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: search node
-      tags:
-      - node
   /notifr:
     post:
       operationId: notifySendNewMessage
@@ -4364,6 +4481,32 @@ paths:
 produces:
 - application/json
 responses:
+  AlexaSkillList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/AlexaSkillShort'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
   EntityList:
     description: ""
     schema:
