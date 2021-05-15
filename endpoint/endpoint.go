@@ -49,6 +49,7 @@ type Endpoint struct {
 	Version         *VersionEndpoint
 	Zigbee2mqtt     *Zigbee2mqttEndpoint
 	Entity          *EntityEndpoint
+	DeveloperTools  *DeveloperToolsEndpoint
 }
 
 // NewEndpoint ...
@@ -60,7 +61,7 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	entityManager entity_manager.EntityManager,
 	eventBus event_bus.EventBus,
 	pluginManager common.PluginManager) *Endpoint {
-	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt, eventBus, pluginManager)
+	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt, eventBus, pluginManager, entityManager)
 	return &Endpoint{
 		AlexaSkill:      NewAlexaSkillEndpoint(common),
 		Auth:            NewAuthEndpoint(common),
@@ -75,6 +76,7 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		MessageDelivery: NewMessageDeliveryEndpoint(common),
 		Version:         NewVersionEndpoint(common),
 		Zigbee2mqtt:     NewZigbee2mqttEndpoint(common),
-		Entity:          NewEntityEndpoint(common, entityManager),
+		Entity:          NewEntityEndpoint(common),
+		DeveloperTools:  NewDeveloperToolsEndpoint(common),
 	}
 }

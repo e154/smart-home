@@ -84,7 +84,7 @@ func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
+func (e *EntityActor) SetState(params entity_manager.EntityStateParams) (err error) {
 
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
@@ -100,7 +100,8 @@ func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
 	}
 
 	e.AttrMu.Lock()
-	if changed, err := e.Attrs.Deserialize(params.AttributeValues); !changed {
+	var changed bool
+	if changed, err = e.Attrs.Deserialize(params.AttributeValues); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}

@@ -19,6 +19,7 @@
 package entity_manager
 
 import (
+	"errors"
 	"fmt"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -149,8 +150,8 @@ func (e *BaseActor) Metrics() []m.Metric {
 	return e.Metric
 }
 
-func (e *BaseActor) SetState(EntityStateParams) {
-
+func (e *BaseActor) SetState(EntityStateParams) error {
+	return errors.New("method not implemented")
 }
 
 func (e *BaseActor) Attributes() m.EntityAttributes {

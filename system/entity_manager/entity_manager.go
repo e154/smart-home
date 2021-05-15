@@ -21,6 +21,7 @@ package entity_manager
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -28,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
+	"sort"
 	"sync"
 	"time"
 )
@@ -152,19 +154,20 @@ func (e *entityManager) SetMetric(id common.EntityId, name string, value map[str
 }
 
 // SetState ...
-func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) {
+func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) (err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
 	actorInfo, ok := e.actors[id]
 	if !ok {
+		err = errors.New("not found")
 		return
 	}
 
 	// store old state
 	actorInfo.OldState = GetEventState(actorInfo.Actor)
 
-	actorInfo.Actor.SetState(params)
+	err = actorInfo.Actor.SetState(params)
 
 	return
 }
@@ -200,9 +203,20 @@ func (e *entityManager) List() (entities []m.EntityShort, err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
+	// sort index
+	var index = make([]string, 0, len(e.actors))
+	for _, actor := range e.actors {
+		info := actor.Actor.Info()
+		index = append(index, info.Id.String())
+	}
+	sort.Strings(index)
+
 	entities = make([]m.EntityShort, len(e.actors))
 	var i int
-	for _, actorInfo := range e.actors {
+	for _, n := range index {
+
+		actorInfo := e.actors[common.EntityId(n)]
+
 		entities[i] = NewEntity(actorInfo.Actor)
 
 		// metric preview

@@ -223,6 +223,21 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeveloperToolsState:
+    properties:
+      attributes:
+        additionalProperties:
+          type: object
+        type: object
+        x-go-name: Attributes
+      id:
+        type: string
+        x-go-name: Id
+      state:
+        type: string
+        x-go-name: State
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Entity:
     properties:
       actions:
@@ -1357,6 +1372,21 @@ definitions:
         x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateDeveloperToolsState:
+    properties:
+      attributes:
+        additionalProperties:
+          type: object
+        type: object
+        x-go-name: Attributes
+      id:
+        type: string
+        x-go-name: Id
+      state:
+        type: string
+        x-go-name: State
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateEntity:
     properties:
       actions:
@@ -2185,6 +2215,77 @@ paths:
       summary: get alexa skill list
       tags:
       - alexa
+  /developer_tools/state:
+    patch:
+      operationId: stateUpdate
+      parameters:
+      - description: Update state params
+        in: body
+        name: state
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateDeveloperToolsState'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeveloperToolsState'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update state
+      tags:
+      - developer_tools
+  /developer_tools/states:
+    get:
+      operationId: stateList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/DeveloperToolsStateList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get state list
+      tags:
+      - developer_tools
   /entities:
     get:
       operationId: entityList
@@ -4488,6 +4589,32 @@ responses:
         items:
           items:
             $ref: '#/definitions/AlexaSkillShort'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  DeveloperToolsStateList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/DeveloperToolsState'
           type: array
           x-go-name: Items
         meta:

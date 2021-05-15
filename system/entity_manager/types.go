@@ -38,7 +38,7 @@ type PluginActor interface {
 	Metrics() []m.Metric
 
 	// SetState
-	SetState(EntityStateParams)
+	SetState(EntityStateParams) error
 
 	// Info
 	Info() ActorInfo
@@ -58,7 +58,7 @@ type EntityManager interface {
 	SetMetric(common.EntityId, string, map[string]interface{})
 
 	// SetState ...
-	SetState(common.EntityId, EntityStateParams)
+	SetState(common.EntityId, EntityStateParams) error
 
 	// GetEntityById ...
 	GetEntityById(common.EntityId) (m.EntityShort, error)

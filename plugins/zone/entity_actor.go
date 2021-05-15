@@ -55,7 +55,7 @@ func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
+func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
@@ -75,7 +75,7 @@ func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
 			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
 			if delta < 200 {
 				e.AttrMu.Unlock()
-				return
+				return nil
 			}
 		}
 	}
@@ -86,4 +86,6 @@ func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
 		OldState:    oldState,
 		NewState:    e.GetEventState(e),
 	})
+
+	return nil
 }

@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
@@ -37,6 +38,7 @@ type CommonEndpoint struct {
 	zigbee2mqtt   zigbee2mqtt.Zigbee2mqtt
 	eventBus      event_bus.EventBus
 	pluginManager common.PluginManager
+	entityManager entity_manager.EntityManager
 }
 
 // NewCommonEndpoint ...
@@ -47,6 +49,7 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
 	eventBus event_bus.EventBus,
 	pluginManager common.PluginManager,
+	entityManager entity_manager.EntityManager,
 ) *CommonEndpoint {
 	return &CommonEndpoint{
 		adaptors:      adaptors,
@@ -56,5 +59,6 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 		zigbee2mqtt:   zigbee2mqtt,
 		eventBus:      eventBus,
 		pluginManager: pluginManager,
+		entityManager: entityManager,
 	}
 }

@@ -106,15 +106,17 @@ func (e *EntityActor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
+func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
 	if !e.setState(params) {
-		return
+		return nil
 	}
 
 	message := NewMessage()
 	message.NewState = params
 
 	e.mqttMessageQueue <- message
+
+	return nil
 }
 
 func (e *EntityActor) setState(params entity_manager.EntityStateParams) (changed bool) {

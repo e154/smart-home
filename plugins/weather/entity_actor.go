@@ -87,7 +87,7 @@ func (e *EntityActor) setPosition(zoneAttr m.EntityAttributes) {
 	})
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
+func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
 
 	log.Infof("update forecast for '%s'", e.Id)
 
@@ -104,4 +104,6 @@ func (e *EntityActor) SetState(params entity_manager.EntityStateParams) {
 		OldState:    oldState,
 		NewState:    e.GetEventState(e),
 	})
+
+	return nil
 }

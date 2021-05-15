@@ -153,4 +153,8 @@ func (s *Server) setControllers() {
 	v1.DELETE("/entity/:id", s.af.Auth, s.ControllersV1.Entity.Delete)
 	v1.GET("/entities", s.af.Auth, s.ControllersV1.Entity.GetList)
 	v1.GET("/entities/search", s.af.Auth, s.ControllersV1.Entity.Search)
+
+	// developer tools
+	v1.GET("/developer_tools/states", s.af.Auth, s.ControllersV1.DeveloperTools.GetStateList)
+	v1.PATCH("/developer_tools/state", s.af.Auth, s.ControllersV1.DeveloperTools.UpdateState)
 }
