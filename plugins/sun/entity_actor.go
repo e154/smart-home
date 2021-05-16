@@ -52,6 +52,7 @@ func NewEntityActor(name string, entityManager entity_manager.EntityManager) *En
 			Attrs:       NewAttr(),
 			ParentId:    common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
 			Manager:     entityManager,
+			States:      States(),
 		},
 		positionLock: &sync.Mutex{},
 	}
@@ -127,6 +128,9 @@ func (e *EntityActor) updateSunPosition() {
 	for _, t := range dayTimes {
 		if now.Sub(t.Time).Minutes() > 0 {
 			e.phase = t.MorningName
+			if state, ok := e.States[t.MorningName]; ok {
+				e.State = &state
+			}
 		}
 	}
 	log.Debugf("Sun phase %v", e.phase)
