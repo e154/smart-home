@@ -1,8 +1,8 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
-// This library is free software: you can redistribute it and/orgo
+// This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
 // version 3 of the License, or (at your option) any later version.
