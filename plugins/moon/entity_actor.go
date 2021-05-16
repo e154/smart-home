@@ -53,6 +53,7 @@ func NewEntityActor(name string,
 			Attrs:       NewAttr(),
 			ParentId:    common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
 			Manager:     entityManager,
+			States:      States(),
 		},
 		positionLock: &sync.Mutex{},
 	}
@@ -129,6 +130,10 @@ func (e *EntityActor) updateMoonPosition() {
 	}
 
 	attributeValues[AttrHorizonState] = e.horizonState
+
+	if state, ok := e.States[e.horizonState]; ok {
+		e.State = &state
+	}
 
 	log.Debugf("Moon horizonState %v", e.horizonState)
 

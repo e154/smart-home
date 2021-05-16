@@ -21,6 +21,7 @@ package moon
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
 )
 
 const (
@@ -51,7 +52,7 @@ const (
 	AttrElevation    = "elevation"
 )
 
-func NewAttr()  m.EntityAttributes {
+func NewAttr() m.EntityAttributes {
 	return m.EntityAttributes{
 
 		AttrElevation: {
@@ -71,4 +72,20 @@ func NewAttr()  m.EntityAttributes {
 			Type: common.EntityAttributeString,
 		},
 	}
+}
+
+func States() (states map[string]entity_manager.ActorState) {
+
+	states = map[string]entity_manager.ActorState{
+		StateAboveHorizon: {
+			Name:        StateAboveHorizon,
+			Description: "above horizon",
+		},
+		StateBelowHorizon: {
+			Name:        StateBelowHorizon,
+			Description: "below horizon",
+		},
+	}
+
+	return
 }
