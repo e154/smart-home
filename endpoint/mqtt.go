@@ -37,7 +37,7 @@ func NewMqttEndpoint(common *CommonEndpoint) *MqttEndpoint {
 	}
 }
 
-func (m *MqttEndpoint) GetClients(limit, offset int) (list []*admin.ClientInfo, total int, err error) {
+func (m *MqttEndpoint) GetClients(limit, offset uint) (list []*admin.ClientInfo, total uint32, err error) {
 	if m.mqtt.Admin() == nil {
 		err = ErrMqttServerNoWorked
 		return
@@ -55,7 +55,7 @@ func (m *MqttEndpoint) GetClient(clientId string) (client *admin.ClientInfo, err
 	return
 }
 
-func (m *MqttEndpoint) GetSessions(limit, offset int) (list []*admin.SessionInfo, total int, err error) {
+func (m *MqttEndpoint) GetSessions(limit, offset uint) (list []*admin.SessionInfo, total int, err error) {
 	if m.mqtt.Admin() == nil {
 		err = ErrMqttServerNoWorked
 		return
@@ -73,7 +73,7 @@ func (m *MqttEndpoint) GetSession(clientId string) (session *admin.SessionInfo, 
 	return
 }
 
-func (m *MqttEndpoint) GetSubscriptions(clientId string, limit, offset int) (list []*admin.SubscriptionInfo, total int, err error) {
+func (m *MqttEndpoint) GetSubscriptions(clientId string, limit, offset uint) (list []*admin.SubscriptionInfo, total int, err error) {
 	if m.mqtt.Admin() == nil {
 		err = ErrMqttServerNoWorked
 		return

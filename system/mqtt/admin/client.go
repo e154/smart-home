@@ -25,19 +25,28 @@ import (
 
 // ClientInfo represents the client information
 type ClientInfo struct {
-	ClientID       string     `json:"client_id"`
-	Username       string     `json:"username"`
-	KeepAlive      uint16     `json:"keep_alive"`
-	CleanSession   bool       `json:"clean_session"`
-	WillFlag       bool       `json:"will_flag"`
-	WillRetain     bool       `json:"will_retain"`
-	WillQos        uint8      `json:"will_qos"`
-	WillTopic      string     `json:"will_topic"`
-	WillPayload    string     `json:"will_payload"`
-	RemoteAddr     string     `json:"remote_addr"`
-	LocalAddr      string     `json:"local_addr"`
-	ConnectedAt    time.Time  `json:"connected_at"`
-	DisconnectedAt *time.Time `json:"disconnected_at"`
+	ClientID             string     `json:"client_id"`
+	Username             string     `json:"username"`
+	KeepAlive            uint16     `json:"keep_alive"`
+	CleanSession         bool       `json:"clean_session"`
+	WillFlag             bool       `json:"will_flag"`
+	WillRetain           bool       `json:"will_retain"`
+	WillQos              uint8      `json:"will_qos"`
+	WillTopic            string     `json:"will_topic"`
+	WillPayload          string     `json:"will_payload"`
+	RemoteAddr           string     `json:"remote_addr"`
+	LocalAddr            string     `json:"local_addr"`
+	SubscriptionsCurrent uint32     `json:"subscriptions_current"`
+	SubscriptionsTotal   uint32     `json:"subscriptions_total"`
+	PacketsReceivedBytes uint64     `json:"packets_received_bytes"`
+	PacketsReceivedNums  uint64     `json:"packets_received_nums"`
+	PacketsSendBytes     uint64     `json:"packets_send_bytes"`
+	PacketsSendNums      uint64     `json:"packets_send_nums"`
+	MessageDropped       uint64     `json:"message_dropped"`
+	InflightLen          uint32     `json:"inflight_len"`
+	QueueLen             uint32     `json:"queue_len"`
+	ConnectedAt          time.Time  `json:"connected_at"`
+	DisconnectedAt       *time.Time `json:"disconnected_at"`
 }
 
 func newClientInfo(client server.Client) *ClientInfo {

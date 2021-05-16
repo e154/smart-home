@@ -22,19 +22,28 @@ import "time"
 
 // swagger:model
 type MqttClient struct {
-	ClientID       string     `json:"client_id"`
-	Username       string     `json:"username"`
-	KeepAlive      uint16     `json:"keep_alive"`
-	CleanSession   bool       `json:"clean_session"`
-	WillFlag       bool       `json:"will_flag"`
-	WillRetain     bool       `json:"will_retain"`
-	WillQos        uint8      `json:"will_qos"`
-	WillTopic      string     `json:"will_topic"`
-	WillPayload    string     `json:"will_payload"`
-	RemoteAddr     string     `json:"remote_addr"`
-	LocalAddr      string     `json:"local_addr"`
-	ConnectedAt    *time.Time `json:"connected_at"`
-	DisconnectedAt *time.Time `json:"disconnected_at"`
+	ClientID             string     `json:"client_id"`
+	Username             string     `json:"username"`
+	KeepAlive            uint16     `json:"keep_alive"`
+	CleanSession         bool       `json:"clean_session"`
+	WillFlag             bool       `json:"will_flag"`
+	WillRetain           bool       `json:"will_retain"`
+	WillQos              uint8      `json:"will_qos"`
+	WillTopic            string     `json:"will_topic"`
+	WillPayload          string     `json:"will_payload"`
+	RemoteAddr           string     `json:"remote_addr"`
+	LocalAddr            string     `json:"local_addr"`
+	SubscriptionsCurrent uint32     `json:"subscriptions_current"`
+	SubscriptionsTotal   uint32     `json:"subscriptions_total"`
+	PacketsReceivedBytes uint64     `json:"packets_received_bytes"`
+	PacketsReceivedNums  uint64     `json:"packets_received_nums"`
+	PacketsSendBytes     uint64     `json:"packets_send_bytes"`
+	PacketsSendNums      uint64     `json:"packets_send_nums"`
+	MessageDropped       uint64     `json:"message_dropped"`
+	InflightLen          uint32     `json:"inflight_len"`
+	QueueLen             uint32     `json:"queue_len"`
+	ConnectedAt          *time.Time `json:"connected_at"`
+	DisconnectedAt       *time.Time `json:"disconnected_at"`
 }
 
 // swagger:model
@@ -61,10 +70,13 @@ type MqttSession struct {
 
 // swagger:model
 type MqttSubscription struct {
-	ClientID string    `json:"client_id"`
-	Qos      uint8     `json:"qos"`
-	Name     string    `json:"name"`
-	At       time.Time `json:"at"`
+	Id                uint32 `json:"id"`
+	ClientID          string `json:"client_id"`
+	TopicName         string `json:"topic_name"`
+	Qos               uint32 `json:"qos"`
+	NoLocal           bool   `json:"no_local"`
+	RetainAsPublished bool   `json:"retain_as_published"`
+	RetainHandling    uint32 `json:"retain_handling"`
 }
 
 // swagger:model

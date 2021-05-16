@@ -18,13 +18,14 @@
 
 package admin
 
-import "time"
-
 // SubscriptionInfo represents the subscription information
 type SubscriptionInfo struct {
-	ClientID string    `json:"client_id"`
-	Qos      uint8     `json:"qos"`
-	Name     string    `json:"name"`
-	At       time.Time `json:"at"`
+	Id                uint32 `json:"id"`
+	ClientID          string `json:"client_id"`
+	TopicName         string `json:"topic_name"`
+	Name              string `json:"name"`
+	Qos               uint32 `json:"qos"`
+	NoLocal           bool   `json:"no_local"`
+	RetainAsPublished bool   `json:"retain_as_published"`
+	RetainHandling    uint32 `json:"retain_handling"`
 }
-

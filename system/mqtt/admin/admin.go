@@ -40,7 +40,7 @@ func New() *Admin {
 }
 
 type Admin struct {
-	monitor             *monitor
+	store               *store
 	statsReader         server.StatsReader
 	publisher           server.Publisher
 	clientService       server.ClientService
@@ -60,7 +60,7 @@ func (a *Admin) HookWrapper() server.HookWrapper {
 
 func (a *Admin) Load(service server.Server) error {
 
-	a.monitor = newMonitor(service.SubscriptionService(), service.GetConfig(), service.StatsManager())
+	a.store = newStore(service.StatsManager(), service.SubscriptionService(), service.ClientService())
 	a.statsReader = service.StatsManager()
 	a.publisher = service.Publisher()
 	a.clientService = service.ClientService()
@@ -81,81 +81,80 @@ func (a *Admin) Name() string {
 }
 
 // OnSessionCreatedWrapper store the client when session created
-func (a *Admin) OnSessionCreatedWrapper(created server.OnSessionCreated) server.OnSessionCreated {
+func (a *Admin) OnSessionCreatedWrapper(pre server.OnSessionCreated) server.OnSessionCreated {
 	return func(cs context.Context, client server.Client) {
-		a.monitor.addClient(client)
-		created(cs, client)
+		pre(cs, client)
+		a.store.addClient(client)
 	}
 }
 
 // OnSessionResumedWrapper refresh the client when session resumed
-func (a *Admin) OnSessionResumedWrapper(resumed server.OnSessionResumed) server.OnSessionResumed {
+func (a *Admin) OnSessionResumedWrapper(pre server.OnSessionResumed) server.OnSessionResumed {
 	return func(cs context.Context, client server.Client) {
-		a.monitor.addClient(client)
-		resumed(cs, client)
+		pre(cs, client)
+		a.store.addClient(client)
 	}
 }
 
 // OnClosedWrapper refresh the client when session resumed
 func (a *Admin) OnClosedWrapper(pre server.OnClosed) server.OnClosed {
 	return func(cs context.Context, client server.Client, err error) {
-		a.monitor.setClientDisconnected(client.ClientOptions().ClientID)
 		pre(cs, client, err)
+		a.store.setClientDisconnected(client.ClientOptions().ClientID)
 	}
 }
 
 // OnSessionTerminated remove the client when session terminated
-func (a *Admin) OnSessionTerminatedWrapper(terminated server.OnSessionTerminated) server.OnSessionTerminated {
+func (a *Admin) OnSessionTerminatedWrapper(pre server.OnSessionTerminated) server.OnSessionTerminated {
 	return func(cs context.Context, client string, reason server.SessionTerminatedReason) {
-		a.monitor.deleteClient(client)
-		a.monitor.deleteClientSubscriptions(client)
-		terminated(cs, client, reason)
+		pre(cs, client, reason)
+		a.store.removeClient(client)
 	}
 }
 
 // OnSubscribedWrapper store the subscription
-func (a *Admin) OnSubscribedWrapper(subscribed server.OnSubscribed) server.OnSubscribed {
+func (a *Admin) OnSubscribedWrapper(pre server.OnSubscribed) server.OnSubscribed {
 	return func(cs context.Context, client server.Client, subscription *gmqtt.Subscription) {
-		a.monitor.addSubscription(client.ClientOptions().ClientID, subscription)
-		subscribed(cs, client, subscription)
+		pre(cs, client, subscription)
+		a.store.addSubscription(client.ClientOptions().ClientID, subscription)
 	}
 }
 
 // OnUnsubscribedWrapper remove the subscription
-func (a *Admin) OnUnsubscribedWrapper(unsubscribe server.OnUnsubscribed) server.OnUnsubscribed {
+func (a *Admin) OnUnsubscribedWrapper(pre server.OnUnsubscribed) server.OnUnsubscribed {
 	return func(cs context.Context, client server.Client, topicName string) {
-		a.monitor.deleteSubscription(client.ClientOptions().ClientID, topicName)
-		unsubscribe(cs, client, topicName)
+		pre(cs, client, topicName)
+		a.store.removeSubscription(client.ClientOptions().ClientID, topicName)
 	}
 }
 
 // GetClients ...
-func (a *Admin) GetClients(limit, offset int) (list []*ClientInfo, total int, err error) {
-	list, total, err = a.monitor.GetClients(offset, limit)
+func (a *Admin) GetClients(limit, offset uint) (list []*ClientInfo, total uint32, err error) {
+	list, total, err = a.store.GetClients(limit, offset)
 	return
 }
 
 // GetClient ...
 func (a *Admin) GetClient(clientId string) (client *ClientInfo, err error) {
-	client, err = a.monitor.GetClientByID(clientId)
+	client = a.store.GetClientByID(clientId)
 	return
 }
 
 // GetSessions ...
-func (a *Admin) GetSessions(limit, offset int) (list []*SessionInfo, total int, err error) {
-	list, total, err = a.monitor.GetSessions(offset, limit)
+func (a *Admin) GetSessions(limit, offset uint) (list []*SessionInfo, total int, err error) {
+	list, total, err = a.store.GetSessions(offset, limit)
 	return
 }
 
 // GetSession ...
 func (a *Admin) GetSession(clientId string) (session *SessionInfo, err error) {
-	session, err = a.monitor.GetSessionByID(clientId)
+	session, err = a.store.GetSessionByID(clientId)
 	return
 }
 
 // GetSubscriptions ...
-func (a *Admin) GetSubscriptions(clientId string, limit, offset int) (list []*SubscriptionInfo, total int, err error) {
-	list, total, err = a.monitor.GetClientSubscriptions(clientId, offset, limit)
+func (a *Admin) GetSubscriptions(clientId string, limit, offset uint) (list []*SubscriptionInfo, total int, err error) {
+	list, total, err = a.store.GetClientSubscriptions(clientId, offset, limit)
 	return
 }
 
@@ -233,6 +232,6 @@ func (a *Admin) CloseClient(clientId string) (err error) {
 
 // SearchTopic ...
 func (a *Admin) SearchTopic(query string) (result []*SubscriptionInfo, err error) {
-	result, err = a.monitor.SearchTopic(query)
+	result, err = a.store.SearchTopic(query)
 	return
 }

@@ -65,7 +65,7 @@ func NewControllerMqtt(common *ControllerCommon) *ControllerMqtt {
 func (c ControllerMqtt) GetClients(ctx *gin.Context) {
 
 	_, _, _, limit, offset := c.list(ctx)
-	items, total, err := c.endpoint.Mqtt.GetClients(limit, offset)
+	items, total, err := c.endpoint.Mqtt.GetClients(uint(limit), uint(offset))
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -160,7 +160,7 @@ func (c ControllerMqtt) GetClientById(ctx *gin.Context) {
 func (c ControllerMqtt) GetSessions(ctx *gin.Context) {
 
 	_, _, _, limit, offset := c.list(ctx)
-	items, total, err := c.endpoint.Mqtt.GetSessions(limit, offset)
+	items, total, err := c.endpoint.Mqtt.GetSessions(uint(limit), uint(offset))
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
@@ -261,7 +261,7 @@ func (c ControllerMqtt) GetSubscriptions(ctx *gin.Context) {
 
 	id := ctx.Param("id")
 	_, _, _, limit, offset := c.list(ctx)
-	items, total, err := c.endpoint.Mqtt.GetSubscriptions(id, limit, offset)
+	items, total, err := c.endpoint.Mqtt.GetSubscriptions(id, uint(limit), uint(offset))
 	if err != nil {
 		NewError(500, err).Send(ctx)
 		return
