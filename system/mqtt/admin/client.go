@@ -1,59 +1,65 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2021, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package admin
 
 import (
-	"context"
-	"github.com/e154/smart-home/common/debug"
-	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/DrmagicE/gmqtt/server"
+	"time"
 )
 
-type clientService struct {
-	a *Admin
+// ClientInfo represents the client information
+type ClientInfo struct {
+	ClientID       string     `json:"client_id"`
+	Username       string     `json:"username"`
+	KeepAlive      uint16     `json:"keep_alive"`
+	CleanSession   bool       `json:"clean_session"`
+	WillFlag       bool       `json:"will_flag"`
+	WillRetain     bool       `json:"will_retain"`
+	WillQos        uint8      `json:"will_qos"`
+	WillTopic      string     `json:"will_topic"`
+	WillPayload    string     `json:"will_payload"`
+	RemoteAddr     string     `json:"remote_addr"`
+	LocalAddr      string     `json:"local_addr"`
+	ConnectedAt    time.Time  `json:"connected_at"`
+	DisconnectedAt *time.Time `json:"disconnected_at"`
 }
 
-func (c *clientService) mustEmbedUnimplementedClientServiceServer() {
-	return
-}
-
-// List lists clients information which the session is valid in the broker (both connected and disconnected).
-func (c *clientService) List(_page, _pageSize uint32) (*ListClientResponse, error) {
-	page, pageSize := GetPage(_page, _pageSize)
-	clients, total, err := c.a.store.GetClients(page, pageSize)
-	debug.Println(clients)
-	if err != nil {
-		return &ListClientResponse{}, err
+func newClientInfo(client server.Client) *ClientInfo {
+	sessionInfo := client.SessionInfo()
+	optsReader := client.ClientOptions()
+	conn := client.Connection()
+	rs := &ClientInfo{
+		ClientID:  optsReader.ClientID,
+		Username:  optsReader.Username,
+		KeepAlive: optsReader.KeepAlive,
+		//CleanSession:   optsReader.CleanSession(),
+		//WillFlag:       optsReader.WillFlag(),
+		RemoteAddr:  conn.RemoteAddr().String(),
+		LocalAddr:   conn.LocalAddr().String(),
+		ConnectedAt: client.ConnectedAt(),
+		//DisconnectedAt: client.DisconnectedAt(),
 	}
-	return &ListClientResponse{
-		Clients:    clients,
-		TotalCount: total,
-	}, nil
-}
-
-// Get returns the client information for given request client id.
-func (c *clientService) Get(ctx context.Context, req *GetClientRequest) (*GetClientResponse, error) {
-	if req.ClientId == "" {
-		return nil, ErrInvalidArgument("client_id", "")
+	if sessionInfo.Will != nil {
+		rs.WillRetain = sessionInfo.Will.Retained
+		rs.WillQos = sessionInfo.Will.QoS
+		rs.WillTopic = sessionInfo.Will.Topic
+		rs.WillPayload = string(sessionInfo.Will.Payload)
 	}
-	client := c.a.store.GetClientByID(req.ClientId)
-	if client == nil {
-		return nil, ErrNotFound
-	}
-	return &GetClientResponse{
-		Client: client,
-	}, nil
-}
-
-// Delete force disconnect.
-func (c *clientService) Delete(ctx context.Context, req *DeleteClientRequest) (*empty.Empty, error) {
-	if req.ClientId == "" {
-		return nil, ErrInvalidArgument("client_id", "")
-	}
-	if req.CleanSession {
-		c.a.clientService.TerminateSession(req.ClientId)
-	} else {
-		c := c.a.clientService.GetClient(req.ClientId)
-		if c != nil {
-			c.Close()
-		}
-	}
-	return &empty.Empty{}, nil
+	return rs
 }

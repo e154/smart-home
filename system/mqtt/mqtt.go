@@ -23,17 +23,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
-	cfg "github.com/DrmagicE/gmqtt/config"
 	_ "github.com/DrmagicE/gmqtt/persistence"
 	"github.com/DrmagicE/gmqtt/pkg/codes"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/DrmagicE/gmqtt/server"
 	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
-	"github.com/DrmagicE/gmqtt/plugin/admin"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
@@ -56,7 +55,7 @@ type Mqtt struct {
 	metric        *metrics.MetricManager
 	clientsLock   *sync.Mutex
 	clients       map[string]MqttCli
-	//admin         *admin.Admin
+	admin         *admin.Admin
 }
 
 // NewMqtt ...
@@ -64,15 +63,14 @@ func NewMqtt(lc fx.Lifecycle,
 	cfg *Config,
 	authenticator mqtt_authenticator.MqttAuthenticator,
 	scriptService scripts.ScriptService,
-	metric *metrics.MetricManager,
 ) (mqtt MqttServ) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,
 		authenticator: authenticator,
-		//metric:        metric,
-		clientsLock: &sync.Mutex{},
-		clients:     make(map[string]MqttCli),
+		clientsLock:   &sync.Mutex{},
+		clients:       make(map[string]MqttCli),
+		admin:         admin.New(),
 	}
 
 	// javascript binding
@@ -115,13 +113,9 @@ func (m *Mqtt) Start() {
 		log.Error(err.Error())
 	}
 
-	//m.admin = &admin.Admin{}
-
-	ad, _ := admin.New(cfg.DefaultConfig())
-
 	options := []server.Options{
 		server.WithTCPListener(ln),
-		server.WithPlugin(ad),
+		server.WithPlugin(m.admin),
 		server.WithHook(server.Hooks{
 			OnBasicAuth:  m.onBasicAuth,
 			OnMsgArrived: m.onMsgArrived,
@@ -179,10 +173,9 @@ func (m *Mqtt) onBasicAuth(ctx context.Context, client server.Client, req *serve
 	return nil
 }
 
-// Management ...
+// Admin ...
 func (m *Mqtt) Admin() Admin {
-	//return m.admin
-	return nil
+	return m.admin
 }
 
 // Publish ...

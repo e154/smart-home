@@ -23,20 +23,21 @@ import (
 	"github.com/DrmagicE/gmqtt/config"
 	"github.com/DrmagicE/gmqtt/retained"
 	"github.com/DrmagicE/gmqtt/server"
+	"github.com/e154/smart-home/system/mqtt/admin"
 )
 
 // Admin ...
 type Admin interface {
-	GetClients(_page, _pageSize uint32) (clients, total interface{}, err error)
-	//GetClient(clientId string) (client *management.ClientInfo, err error)
-	//GetSessions(limit, offset int) (list []*management.SessionInfo, total int, err error)
-	//GetSession(clientId string) (session *management.SessionInfo, err error)
-	//GetSubscriptions(clientId string, limit, offset int) (list []*management.SubscriptionInfo, total int, err error)
-	//Subscribe(clientId, topic string, qos int) (err error)
-	//Unsubscribe(clientId, topic string) (err error)
-	//Publish(topic string, qos int, payload []byte, retain bool) (err error)
-	//CloseClient(clientId string) (err error)
-	//SearchTopic(query string) (result []*management.SubscriptionInfo, err error)
+	GetClients(limit, offset int) (list []*admin.ClientInfo, total int, err error)
+	GetClient(clientId string) (client *admin.ClientInfo, err error)
+	GetSessions(limit, offset int) (list []*admin.SessionInfo, total int, err error)
+	GetSession(clientId string) (session *admin.SessionInfo, err error)
+	GetSubscriptions(clientId string, limit, offset int) (list []*admin.SubscriptionInfo, total int, err error)
+	Subscribe(clientId, topic string, qos int) (err error)
+	Unsubscribe(clientId, topic string) (err error)
+	Publish(topic string, qos int, payload []byte, retain bool) (err error)
+	CloseClient(clientId string) (err error)
+	SearchTopic(query string) (result []*admin.SubscriptionInfo, err error)
 }
 
 type MqttCli interface {
