@@ -28,8 +28,7 @@ type ClientInfo struct {
 	ClientID             string     `json:"client_id"`
 	Username             string     `json:"username"`
 	KeepAlive            uint16     `json:"keep_alive"`
-	CleanSession         bool       `json:"clean_session"`
-	WillFlag             bool       `json:"will_flag"`
+	Version              int32      `json:"version"`
 	WillRetain           bool       `json:"will_retain"`
 	WillQos              uint8      `json:"will_qos"`
 	WillTopic            string     `json:"will_topic"`
@@ -54,15 +53,13 @@ func newClientInfo(client server.Client) *ClientInfo {
 	optsReader := client.ClientOptions()
 	conn := client.Connection()
 	rs := &ClientInfo{
-		ClientID:  optsReader.ClientID,
-		Username:  optsReader.Username,
-		KeepAlive: optsReader.KeepAlive,
-		//CleanSession:   optsReader.CleanSession(),
-		//WillFlag:       optsReader.WillFlag(),
+		ClientID:    optsReader.ClientID,
+		Username:    optsReader.Username,
+		KeepAlive:   optsReader.KeepAlive,
 		RemoteAddr:  conn.RemoteAddr().String(),
 		LocalAddr:   conn.LocalAddr().String(),
 		ConnectedAt: client.ConnectedAt(),
-		//DisconnectedAt: client.DisconnectedAt(),
+		Version:     int32(client.Version()),
 	}
 	if sessionInfo.Will != nil {
 		rs.WillRetain = sessionInfo.Will.Retained

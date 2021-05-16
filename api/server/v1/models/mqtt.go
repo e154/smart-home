@@ -25,8 +25,7 @@ type MqttClient struct {
 	ClientID             string     `json:"client_id"`
 	Username             string     `json:"username"`
 	KeepAlive            uint16     `json:"keep_alive"`
-	CleanSession         bool       `json:"clean_session"`
-	WillFlag             bool       `json:"will_flag"`
+	Version              int32      `json:"version"`
 	WillRetain           bool       `json:"will_retain"`
 	WillQos              uint8      `json:"will_qos"`
 	WillTopic            string     `json:"will_topic"`
@@ -42,7 +41,7 @@ type MqttClient struct {
 	MessageDropped       uint64     `json:"message_dropped"`
 	InflightLen          uint32     `json:"inflight_len"`
 	QueueLen             uint32     `json:"queue_len"`
-	ConnectedAt          *time.Time `json:"connected_at"`
+	ConnectedAt          time.Time  `json:"connected_at"`
 	DisconnectedAt       *time.Time `json:"disconnected_at"`
 }
 
@@ -64,7 +63,7 @@ type MqttSession struct {
 	Qos0MsgDeliveredTotal uint64     `json:"qos0_msg_delivered_total"`
 	Qos1MsgDeliveredTotal uint64     `json:"qos1_msg_delivered_total"`
 	Qos2MsgDeliveredTotal uint64     `json:"qos2_msg_delivered_total"`
-	ConnectedAt           *time.Time `json:"connected_at"`
+	ConnectedAt           time.Time  `json:"connected_at"`
 	DisconnectedAt        *time.Time `json:"disconnected_at"`
 }
 
