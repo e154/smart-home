@@ -154,6 +154,11 @@ func GetSunPosition(date time.Time, lat float64, lng float64) SunPosition {
 	}
 }
 
+func IsNight(sunrisePos SunPosition) bool {
+	solarElevation := sunrisePos.Altitude * 180 / math.Pi
+	return solarElevation < -0.833
+}
+
 // sun times configuration (angle, morning name, evening name)
 var times = []dayTimeConf{
 	{-0.833, Sunrise, Sunset},

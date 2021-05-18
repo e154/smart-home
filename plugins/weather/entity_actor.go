@@ -21,11 +21,13 @@ package weather
 import (
 	"fmt"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"sync"
+	"time"
 )
 
 type EntityActor struct {
@@ -51,6 +53,7 @@ func NewEntityActor(name string,
 			Attrs:             BaseForecast(),
 			ParentId:          common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
 			Manager:           entityManager,
+			States:            States(false, false),
 		},
 		eventBus:       eventBus,
 		zoneAttributes: zone.NewAttr(),
@@ -94,6 +97,17 @@ func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
 	oldState := e.GetEventState(e)
 
 	e.Now(oldState)
+
+	// update sun position
+	sunrisePos := suncalc.GetSunPosition(time.Now(), e.zoneAttributes[zone.AttrLat].Float64(), e.zoneAttributes[zone.AttrLon].Float64())
+	var night = suncalc.IsNight(sunrisePos)
+	var winter bool //todo fix
+
+	if params.NewState != nil {
+		state := e.States[*params.NewState]
+		e.State = &state
+		e.State.ImageUrl = GetImagePath(state.Name, night, winter)
+	}
 
 	e.AttrMu.Lock()
 	e.Attrs.Deserialize(params.AttributeValues)

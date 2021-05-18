@@ -317,14 +317,6 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 func (e *entityManager) Send(message Message) error {
 
 	switch v := message.Payload.(type) {
-	case MessageRequestState:
-
-		e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRequestState{
-			From:       message.From,
-			To:         message.To,
-			Attributes: v.Attributes,
-		})
-
 	case MessageStateChanged:
 
 		e.lock.Lock()

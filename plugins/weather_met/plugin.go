@@ -184,14 +184,6 @@ func (p *plugin) updateZonesList(entityId common.EntityId, attrs m.EntityAttribu
 	p.updateForecastForAll()
 }
 
-func (p *plugin) send(to common.EntityId, payload interface{}) {
-	p.entityManager.Send(entity_manager.Message{
-		From:    Name,
-		To:      to,
-		Payload: payload,
-	})
-}
-
 func (p *plugin) updateForecastForAll() (err error) {
 
 	p.lock.Lock()
@@ -223,8 +215,9 @@ func (p *plugin) updateForecast(zone weather.Zone) (err error) {
 	attr := weather.BaseForecast()
 	attr.Deserialize(forecast)
 
-	p.send(common.EntityId(fmt.Sprintf("weather.%s", zone.Name)), entity_manager.MessageRequestState{
-		Name:       "forecast",
+	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRequestState{
+		From:       Name,
+		To:         common.EntityId(fmt.Sprintf("weather.%s", zone.Name)),
 		Attributes: attr,
 	})
 
@@ -456,9 +449,7 @@ func (p *plugin) getCondition(orderedEntries []Product) (value string) {
 	for _, entry := range orderedEntries {
 		if entry.Location.Symbol != nil {
 			num, _ := strconv.Atoi(entry.Location.Symbol.Number)
-			if num < len(conditions) && conditions[num] > value {
-				value = conditions[num]
-			}
+			value = weather.GetStateByIndex(num)
 		}
 	}
 	return

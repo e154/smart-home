@@ -24,52 +24,6 @@ import (
 	"time"
 )
 
-var (
-	conditions = []string{
-		"",
-		"sunny",
-		"partlycloudy",
-		"partlycloudy",
-		"cloudy",
-		"rainy",
-		"lightning-rainy",
-		"snowy-rainy",
-		"snowy",
-		"rainy",
-		"rainy",
-		"lightning-rainy",
-		"snowy-rainy",
-		"snowy",
-		"snowy",
-		"fog",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"rainy",
-		"rainy",
-		"snowy-rainy",
-		"snowy-rainy",
-		"snowy",
-		"snowy",
-		"rainy",
-		"snowy-rainy",
-		"snowy-rainy",
-		"snowy",
-		"snowy"}
-)
-
 type MaxTemperature struct {
 	Id    string `xml:"id,attr"`
 	Unit  string `xml:"unit,attr"`

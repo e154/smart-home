@@ -150,7 +150,14 @@ func (p *plugin) addOrUpdateForecast(name string, attr m.EntityAttributes) (err 
 		return
 	}
 
+	var stateName string
+
+	if a, ok := attr[AttrWeatherCondition]; ok {
+		stateName = a.String()
+	}
+
 	actor.SetState(entity_manager.EntityStateParams{
+		NewState:        common.String(stateName),
 		AttributeValues: attr.Serialize(),
 	})
 

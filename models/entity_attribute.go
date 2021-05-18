@@ -37,7 +37,7 @@ func (a EntityAttribute) String() string {
 	if value, ok := a.Value.(string); ok {
 		return value
 	}
-	return ""
+	return fmt.Sprintf("%v", a.Value)
 }
 
 func (a EntityAttribute) Int64() int64 {
