@@ -25,28 +25,28 @@ import (
 )
 
 type EntityPayload struct {
-	AttributeSignature EntityAttributes `json:"attribute_signature"`
+	AttributeSignature Attributes `json:"attribute_signature"`
 }
 
 // Entity ...
 type Entity struct {
 	Id          common.EntityId   `json:"id"`
 	Description string            `json:"description"`
-	Type        common.EntityType `json:"type" valid:"Required"`
-	Icon        *common.Icon      `json:"icon"`
-	Image       *Image            `json:"image"`
-	Actions     []*EntityAction   `json:"actions"`
-	States      []*EntityState    `json:"states"`
-	Area        *Area             `json:"area"`
-	AreaId      *int64            `json:"area_id"`
-	Metrics     []Metric          `json:"metrics"`
-	Scripts     []Script          `json:"scripts"`
-	Hidden      bool              `json:"hidden"`
-	Attributes  EntityAttributes  `json:"attributes"`
-	AutoLoad    bool              `json:"auto_load"`
-	ParentId    *common.EntityId  `json:"parent_id"`
-	CreatedAt   time.Time         `json:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at"`
+	Type       common.EntityType `json:"type" valid:"Required"`
+	Icon       *common.Icon      `json:"icon"`
+	Image      *Image            `json:"image"`
+	Actions    []*EntityAction   `json:"actions"`
+	States     []*EntityState    `json:"states"`
+	Area       *Area             `json:"area"`
+	AreaId     *int64            `json:"area_id"`
+	Metrics    []Metric          `json:"metrics"`
+	Scripts    []Script          `json:"scripts"`
+	Hidden     bool              `json:"hidden"`
+	Attributes Attributes        `json:"attributes"`
+	AutoLoad   bool              `json:"auto_load"`
+	ParentId   *common.EntityId  `json:"parent_id"`
+	CreatedAt  time.Time         `json:"created_at"`
+	UpdatedAt  time.Time         `json:"updated_at"`
 }
 
 // Valid ...
@@ -58,9 +58,4 @@ func (m *Entity) Valid() (ok bool, errs []*validation.Error) {
 	}
 
 	return
-}
-
-// EntityPrototype ...
-type IEntityPrototype interface {
-	PrototypeName() common.EntityPrototypeType
 }

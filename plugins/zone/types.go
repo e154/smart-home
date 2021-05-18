@@ -36,24 +36,24 @@ const (
 	AttrTimezone  = "timezone"
 )
 
-func NewAttr() m.EntityAttributes {
+func NewAttr() m.Attributes {
 
-	attributes := m.EntityAttributes{
+	attributes := m.Attributes{
 		AttrLat: {
 			Name: AttrLat,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrLon: {
 			Name: AttrLon,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrElevation: {
 			Name: AttrElevation,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrTimezone: {
 			Name: AttrTimezone,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 	}
 

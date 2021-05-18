@@ -41,7 +41,7 @@ type Actor struct {
 	stateMu       *sync.Mutex
 	quit          chan struct{}
 	lastPing      time.Time
-	lastState     m.EntityAttributeValue
+	lastState     m.AttributeValue
 }
 
 func NewActor(entity *m.Entity,
@@ -59,7 +59,7 @@ func NewActor(entity *m.Entity,
 		mqttClient:    mqttClient,
 		stateMu:       &sync.Mutex{},
 		lastPing:      time.Time{},
-		lastState:     m.EntityAttributeValue{},
+		lastState:     m.AttributeValue{},
 	}
 
 	actor.Manager = entityManager

@@ -139,7 +139,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 	return
 }
 
-func (p *plugin) addOrUpdateForecast(name string, attr m.EntityAttributes) (err error) {
+func (p *plugin) addOrUpdateForecast(name string, attr m.Attributes) (err error) {
 
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -164,7 +164,7 @@ func (p *plugin) addOrUpdateForecast(name string, attr m.EntityAttributes) (err 
 	return
 }
 
-func (p *plugin) addOrUpdateZone(name string, zoneAttr m.EntityAttributes) (err error) {
+func (p *plugin) addOrUpdateZone(name string, zoneAttr m.Attributes) (err error) {
 
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()

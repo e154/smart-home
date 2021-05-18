@@ -20,11 +20,11 @@ package models
 
 // swagger:model
 
-type EntityAttribute struct {
+type Attribute struct {
 	Name  string      `json:"name"`
 	Type  string      `json:"type"`
 	Value interface{} `json:"value,omitempty"`
 }
 
 // swagger:model
-type EntityAttributes map[string]EntityAttribute
+type Attributes map[string]Attribute

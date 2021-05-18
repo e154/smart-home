@@ -144,7 +144,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 	return
 }
 
-func (p *plugin) addOrUpdateEntity(name string, zoneAttr m.EntityAttributes) (err error) {
+func (p *plugin) addOrUpdateEntity(name string, zoneAttr m.Attributes) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 

@@ -75,19 +75,6 @@ func TimeValue(v *time.Time) time.Time {
 	return time.Time{}
 }
 
-// ToEntityPrototypeType ...
-func ToEntityPrototypeType(v EntityPrototypeType) *EntityPrototypeType {
-	return &v
-}
-
-// ToEntityPrototypeTypeValue ...
-func ToEntityPrototypeTypeValue(v *EntityPrototypeType) EntityPrototypeType {
-	if v != nil {
-		return *v
-	}
-	return ""
-}
-
 // Rounding ...
 func Rounding(num float64, k uint) float64 {
 	p := math.Pow(10, float64(k))

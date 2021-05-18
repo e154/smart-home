@@ -34,15 +34,15 @@ const (
 	Name = "uptime"
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrUptimeTotal: {
 			Name: AttrUptimeTotal,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrUptimeAppStarted: {
 			Name: AttrUptimeAppStarted,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 	}
 }

@@ -48,7 +48,7 @@ func (e *EntityBind) SetState(stateName string) {
 	})
 }
 
-func (e *EntityBind) SetAttributes(params m.EntityAttributeValue) {
+func (e *EntityBind) SetAttributes(params m.AttributeValue) {
 	e.manager.SetState(e.id, EntityStateParams{
 		AttributeValues: params,
 	})

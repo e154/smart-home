@@ -97,7 +97,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 }
 
 func (p *plugin) addOrUpdateEntity(entity *m.Entity,
-	attributes m.EntityAttributeValue,
+	attributes m.AttributeValue,
 ) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()

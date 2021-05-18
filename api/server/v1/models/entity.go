@@ -35,41 +35,41 @@ type NewEntity struct {
 	Metrics     []Metric           `json:"metrics"`
 	Scripts     []Script           `json:"scripts"`
 	Hidden      bool               `json:"hidden"`
-	Attributes  EntityAttributes   `json:"attributes"`
+	Attributes  Attributes         `json:"attributes"`
 	AutoLoad    bool               `json:"auto_load"`
 }
 
 // swagger:model
 type UpdateEntity struct {
-	Description string           `json:"description"`
-	Type        string           `json:"type" valid:"Required"`
-	Icon        *string          `json:"icon"`
-	Image       *Image           `json:"image"`
-	Actions     []*EntityAction  `json:"actions"`
-	States      []*EntityState   `json:"states"`
-	AreaId      *int64           `json:"area_id"`
-	Metrics     []Metric         `json:"metrics"`
-	Scripts     []Script         `json:"scripts"`
-	Hidden      bool             `json:"hidden"`
-	Attributes  EntityAttributes `json:"attributes"`
-	AutoLoad    bool             `json:"auto_load"`
+	Description string          `json:"description"`
+	Type        string          `json:"type" valid:"Required"`
+	Icon        *string         `json:"icon"`
+	Image       *Image          `json:"image"`
+	Actions     []*EntityAction `json:"actions"`
+	States      []*EntityState  `json:"states"`
+	AreaId      *int64          `json:"area_id"`
+	Metrics     []Metric        `json:"metrics"`
+	Scripts     []Script        `json:"scripts"`
+	Hidden      bool            `json:"hidden"`
+	Attributes  Attributes      `json:"attributes"`
+	AutoLoad    bool            `json:"auto_load"`
 }
 
 // swagger:model
 type Entity struct {
 	Id          string           `json:"id"`
-	Description string           `json:"description"`
-	Type        string           `json:"type" valid:"Required"`
-	Icon        *string          `json:"icon"`
-	Image       *Image           `json:"image"`
-	Actions     []*EntityAction  `json:"actions"`
-	States      []*EntityState   `json:"states"`
-	AreaId      *int64           `json:"area_id"`
-	Metrics     []Metric         `json:"metrics"`
-	Scripts     []Script         `json:"scripts"`
-	Hidden      bool             `json:"hidden"`
-	Attributes  EntityAttributes `json:"attributes"`
-	AutoLoad    bool             `json:"auto_load"`
-	CreatedAt   time.Time        `json:"created_at"`
-	UpdatedAt   time.Time        `json:"updated_at"`
+	Description string          `json:"description"`
+	Type        string          `json:"type" valid:"Required"`
+	Icon        *string         `json:"icon"`
+	Image       *Image          `json:"image"`
+	Actions     []*EntityAction `json:"actions"`
+	States      []*EntityState  `json:"states"`
+	AreaId      *int64          `json:"area_id"`
+	Metrics     []Metric        `json:"metrics"`
+	Scripts     []Script        `json:"scripts"`
+	Hidden      bool            `json:"hidden"`
+	Attributes  Attributes      `json:"attributes"`
+	AutoLoad    bool            `json:"auto_load"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
 }

@@ -41,26 +41,26 @@ func GetNewButton(id string, scripts []m.Script) *m.Entity {
 		Type:        zigbee2mqtt.EntityZigbee2mqtt,
 		Scripts:     scripts,
 		AutoLoad:    true,
-		Attributes: m.EntityAttributes{
-			"click": &m.EntityAttribute{
+		Attributes: m.Attributes{
+			"click": &m.Attribute{
 				Name: "click",
-				Type: common.EntityAttributeString,
+				Type: common.AttributeString,
 			},
-			"action": &m.EntityAttribute{
+			"action": &m.Attribute{
 				Name: "action",
-				Type: common.EntityAttributeString,
+				Type: common.AttributeString,
 			},
-			"battery": &m.EntityAttribute{
+			"battery": &m.Attribute{
 				Name: "battery",
-				Type: common.EntityAttributeInt,
+				Type: common.AttributeInt,
 			},
-			"voltage": &m.EntityAttribute{
+			"voltage": &m.Attribute{
 				Name: "voltage",
-				Type: common.EntityAttributeInt,
+				Type: common.AttributeInt,
 			},
-			"linkquality": &m.EntityAttribute{
+			"linkquality": &m.Attribute{
 				Name: "linkquality",
-				Type: common.EntityAttributeInt,
+				Type: common.AttributeInt,
 			},
 		},
 		States: []*m.EntityState{
@@ -135,30 +135,30 @@ func GetNewPlug(id string, scrits []m.Script) *m.Entity {
 		Type:        zigbee2mqtt.EntityZigbee2mqtt,
 		Scripts:     scrits,
 		AutoLoad:    true,
-		Attributes: m.EntityAttributes{
-			"power": &m.EntityAttribute{
+		Attributes: m.Attributes{
+			"power": &m.Attribute{
 				Name: "power",
-				Type: common.EntityAttributeInt,
+				Type: common.AttributeInt,
 			},
-			"state": &m.EntityAttribute{
+			"state": &m.Attribute{
 				Name: "state",
-				Type: common.EntityAttributeString,
+				Type: common.AttributeString,
 			},
-			"voltage": &m.EntityAttribute{
+			"voltage": &m.Attribute{
 				Name: "voltage",
-				Type: common.EntityAttributeInt,
+				Type: common.AttributeInt,
 			},
-			"consumption": &m.EntityAttribute{
+			"consumption": &m.Attribute{
 				Name: "consumption",
-				Type: common.EntityAttributeString,
+				Type: common.AttributeString,
 			},
-			"linkquality": &m.EntityAttribute{
+			"linkquality": &m.Attribute{
 				Name: "linkquality",
-				Type: common.EntityAttributeInt,
+				Type: common.AttributeInt,
 			},
-			"temperature": &m.EntityAttribute{
+			"temperature": &m.Attribute{
 				Name: "temperature",
-				Type: common.EntityAttributeInt,
+				Type: common.AttributeInt,
 			},
 		},
 		States: []*m.EntityState{
@@ -180,7 +180,7 @@ func GetNewScript(id string, scrits []m.Script) *m.Entity {
 		Description: "MiJia power plug ZigBee",
 		Type:        script.EntityScript,
 		Scripts:     scrits,
-		Attributes:  m.EntityAttributes{},
+		Attributes:  m.Attributes{},
 		AutoLoad:    true,
 		States: []*m.EntityState{
 			{
@@ -211,25 +211,25 @@ func GetNewZone() *m.Entity {
 		Description: "main geo zone",
 		Type:        "zone",
 		AutoLoad:    true,
-		Attributes: m.EntityAttributes{
+		Attributes: m.Attributes{
 			zone.AttrLat: {
 				Name:  zone.AttrLat,
-				Type:  common.EntityAttributeFloat,
+				Type:  common.AttributeFloat,
 				Value: 54.9022,
 			},
 			zone.AttrLon: {
 				Name:  zone.AttrLon,
-				Type:  common.EntityAttributeFloat,
+				Type:  common.AttributeFloat,
 				Value: 83.0335,
 			},
 			zone.AttrElevation: {
 				Name:  zone.AttrElevation,
-				Type:  common.EntityAttributeFloat,
+				Type:  common.AttributeFloat,
 				Value: 150,
 			},
 			zone.AttrTimezone: {
 				Name:  zone.AttrTimezone,
-				Type:  common.EntityAttributeInt,
+				Type:  common.AttributeInt,
 				Value: 7,
 			},
 		},

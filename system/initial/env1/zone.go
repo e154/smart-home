@@ -54,25 +54,25 @@ func (n ZoneManager) addZone(name, desc string) (node *m.Zone) {
 		longitude = loc.Lon
 	}
 
-	attributes := m.EntityAttributes{
+	attributes := m.Attributes{
 		AttrLat: {
 			Name:  AttrLat,
-			Type:  common.EntityAttributeFloat,
+			Type:  common.AttributeFloat,
 			Value: latitude,
 		},
 		AttrLon: {
 			Name:  AttrLon,
-			Type:  common.EntityAttributeFloat,
+			Type:  common.AttributeFloat,
 			Value: longitude,
 		},
 		AttrElevation: {
 			Name:  AttrElevation,
-			Type:  common.EntityAttributeFloat,
+			Type:  common.AttributeFloat,
 			Value: 150,
 		},
 		AttrTimezone: {
 			Name:  AttrTimezone,
-			Type:  common.EntityAttributeInt,
+			Type:  common.AttributeInt,
 			Value: 7,
 		},
 	}

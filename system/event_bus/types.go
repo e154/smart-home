@@ -34,12 +34,12 @@ type EntityState struct {
 }
 
 type EventEntityState struct {
-	EntityId    common.EntityId    `json:"entity_id"`
-	Value       interface{}        `json:"value"`
-	State       *EntityState       `json:"state"`
-	Attributes  m.EntityAttributes `json:"attributes"`
-	LastChanged *time.Time         `json:"last_changed"`
-	LastUpdated *time.Time         `json:"last_updated"`
+	EntityId    common.EntityId `json:"entity_id"`
+	Value       interface{}     `json:"value"`
+	State       *EntityState    `json:"state"`
+	Attributes  m.Attributes    `json:"attributes"`
+	LastChanged *time.Time      `json:"last_changed"`
+	LastUpdated *time.Time      `json:"last_updated"`
 }
 
 func (e1 EventEntityState) Compare(e2 EventEntityState) (ident bool) {

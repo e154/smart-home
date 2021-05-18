@@ -52,24 +52,24 @@ const (
 	AttrElevation    = "elevation"
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 
 		AttrElevation: {
 			Name: AttrElevation,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrAzimuth: {
 			Name: AttrAzimuth,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrPhase: {
 			Name: AttrPhase,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		AttrHorizonState: {
 			Name: AttrHorizonState,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 	}
 }

@@ -34,7 +34,7 @@ type Actor struct {
 	entity_manager.BaseActor
 	updateLock     *sync.Mutex
 	positionLock   *sync.Mutex
-	zoneAttributes m.EntityAttributes
+	zoneAttributes m.Attributes
 	eventBus       event_bus.EventBus
 }
 
@@ -68,7 +68,7 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *Actor) setPosition(zoneAttr m.EntityAttributes) {
+func (e *Actor) setPosition(zoneAttr m.Attributes) {
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 

@@ -156,6 +156,24 @@ definitions:
         x-go-name: Name
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Attribute:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      type:
+        type: string
+        x-go-name: Type
+      value:
+        type: object
+        x-go-name: Value
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Attributes:
+    additionalProperties:
+      $ref: '#/definitions/Attribute'
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   AuthSignInResponse:
     properties:
       access_token:
@@ -261,7 +279,7 @@ definitions:
         type: integer
         x-go-name: AreaId
       attributes:
-        $ref: '#/definitions/EntityAttributes'
+        $ref: '#/definitions/Attributes'
       auto_load:
         type: boolean
         x-go-name: AutoLoad
@@ -348,24 +366,6 @@ definitions:
         format: date-time
         type: string
         x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  EntityAttribute:
-    properties:
-      name:
-        type: string
-        x-go-name: Name
-      type:
-        type: string
-        x-go-name: Type
-      value:
-        type: object
-        x-go-name: Value
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  EntityAttributes:
-    additionalProperties:
-      $ref: '#/definitions/EntityAttribute'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   EntityState:
@@ -666,9 +666,6 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MqttClient:
     properties:
-      clean_session:
-        type: boolean
-        x-go-name: CleanSession
       client_id:
         type: string
         x-go-name: ClientID
@@ -680,6 +677,10 @@ definitions:
         format: date-time
         type: string
         x-go-name: DisconnectedAt
+      inflight_len:
+        format: uint32
+        type: integer
+        x-go-name: InflightLen
       keep_alive:
         format: uint16
         type: integer
@@ -687,18 +688,48 @@ definitions:
       local_addr:
         type: string
         x-go-name: LocalAddr
-      password:
-        type: string
-        x-go-name: Password
+      message_dropped:
+        format: uint64
+        type: integer
+        x-go-name: MessageDropped
+      packets_received_bytes:
+        format: uint64
+        type: integer
+        x-go-name: PacketsReceivedBytes
+      packets_received_nums:
+        format: uint64
+        type: integer
+        x-go-name: PacketsReceivedNums
+      packets_send_bytes:
+        format: uint64
+        type: integer
+        x-go-name: PacketsSendBytes
+      packets_send_nums:
+        format: uint64
+        type: integer
+        x-go-name: PacketsSendNums
+      queue_len:
+        format: uint32
+        type: integer
+        x-go-name: QueueLen
       remote_addr:
         type: string
         x-go-name: RemoteAddr
+      subscriptions_current:
+        format: uint32
+        type: integer
+        x-go-name: SubscriptionsCurrent
+      subscriptions_total:
+        format: uint32
+        type: integer
+        x-go-name: SubscriptionsTotal
       username:
         type: string
         x-go-name: Username
-      will_flag:
-        type: boolean
-        x-go-name: WillFlag
+      version:
+        format: int32
+        type: integer
+        x-go-name: Version
       will_payload:
         type: string
         x-go-name: WillPayload
@@ -789,20 +820,30 @@ definitions:
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   MqttSubscription:
     properties:
-      at:
-        format: date-time
-        type: string
-        x-go-name: At
       client_id:
         type: string
         x-go-name: ClientID
-      name:
-        type: string
-        x-go-name: Name
+      id:
+        format: uint32
+        type: integer
+        x-go-name: Id
+      no_local:
+        type: boolean
+        x-go-name: NoLocal
       qos:
-        format: uint8
+        format: uint32
         type: integer
         x-go-name: Qos
+      retain_as_published:
+        type: boolean
+        x-go-name: RetainAsPublished
+      retain_handling:
+        format: uint32
+        type: integer
+        x-go-name: RetainHandling
+      topic_name:
+        type: string
+        x-go-name: TopicName
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewAlexaSkill:
@@ -848,7 +889,7 @@ definitions:
         type: integer
         x-go-name: AreaId
       attributes:
-        $ref: '#/definitions/EntityAttributes'
+        $ref: '#/definitions/Attributes'
       auto_load:
         type: boolean
         x-go-name: AutoLoad
@@ -1571,7 +1612,7 @@ definitions:
         type: integer
         x-go-name: AreaId
       attributes:
-        $ref: '#/definitions/EntityAttributes'
+        $ref: '#/definitions/Attributes'
       auto_load:
         type: boolean
         x-go-name: AutoLoad

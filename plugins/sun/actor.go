@@ -90,7 +90,7 @@ func (e *Actor) updateSunPosition() {
 
 	log.Debugf("Sun pos azimuth(%f), elevation(%f)", e.solarAzimuth, e.solarElevation)
 
-	var attributeValues = make(m.EntityAttributeValue)
+	var attributeValues = make(m.AttributeValue)
 	attributeValues[AttrAzimuth] = e.solarAzimuth
 	attributeValues[AttrElevation] = e.solarElevation
 

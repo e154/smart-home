@@ -26,7 +26,7 @@ import (
 	"testing"
 )
 
-func TestEntityAttributes(t *testing.T) {
+func TestAttributes(t *testing.T) {
 
 	const data = `
 {
@@ -141,7 +141,7 @@ func TestEntityAttributes(t *testing.T) {
 			err := json.Unmarshal([]byte(data), &obj)
 			So(err, ShouldBeNil)
 
-			var attrs = NetEntityAttr()
+			var attrs = NetAttr()
 			changed, err := attrs.Deserialize(obj)
 			So(err, ShouldBeNil)
 			So(changed, ShouldEqual, true)
@@ -179,11 +179,11 @@ func TestEntityAttributes(t *testing.T) {
 	t.Run("deserialize from string", func(t *testing.T) {
 		Convey("deserialize from string", t, func(ctx C) {
 
-			attrVal := make(m.EntityAttributeValue)
+			attrVal := make(m.AttributeValue)
 			err := json.Unmarshal([]byte(sourceAttrsValue), &attrVal)
 			So(err, ShouldBeNil)
 
-			var attrs = make(m.EntityAttributes)
+			var attrs = make(m.Attributes)
 			err = json.Unmarshal([]byte(sourceAttrs), &attrs)
 			So(err, ShouldBeNil)
 
@@ -213,7 +213,7 @@ func TestEntityAttributes(t *testing.T) {
 			err := json.Unmarshal([]byte(data), &obj)
 			So(err, ShouldBeNil)
 
-			var attrs = NetEntityAttr()
+			var attrs = NetAttr()
 			changed, err := attrs.Deserialize(obj)
 			So(err, ShouldBeNil)
 			So(changed, ShouldEqual, true)
@@ -223,14 +223,14 @@ func TestEntityAttributes(t *testing.T) {
 			So(s["i"], ShouldEqual, 123)
 			So(s["f"], ShouldEqual, 456.123)
 			So(s["b"], ShouldEqual, true)
-			m1, ok := s["m"].(m.EntityAttributeValue)
+			m1, ok := s["m"].(m.AttributeValue)
 			So(ok, ShouldEqual, true)
 			So(m1["s2"], ShouldEqual, "string")
 			So(m1["i2"], ShouldEqual, 123)
 			So(m1["f2"], ShouldEqual, 456.123)
 			So(m1["b2"], ShouldEqual, true)
 			So(m1["m2"], ShouldNotBeNil)
-			m2, ok := m1["m2"].(m.EntityAttributeValue)
+			m2, ok := m1["m2"].(m.AttributeValue)
 			So(ok, ShouldEqual, true)
 			So(m2["s3"], ShouldEqual, "string")
 			So(m2["i3"], ShouldEqual, 123)
@@ -246,7 +246,7 @@ func TestEntityAttributes(t *testing.T) {
 			err := json.Unmarshal([]byte(data), &obj)
 			So(err, ShouldBeNil)
 
-			var attrs = NetEntityAttr()
+			var attrs = NetAttr()
 			changed, err := attrs.Deserialize(obj)
 			So(err, ShouldBeNil)
 			So(changed, ShouldEqual, true)
@@ -254,50 +254,50 @@ func TestEntityAttributes(t *testing.T) {
 			s := attrs.Signature()
 			So(s["s"].Name, ShouldEqual, "s")
 			So(s["s"].Value, ShouldBeNil)
-			So(s["s"].Type, ShouldEqual, common.EntityAttributeString)
+			So(s["s"].Type, ShouldEqual, common.AttributeString)
 			So(s["i"].Name, ShouldEqual, "i")
 			So(s["i"].Value, ShouldBeNil)
-			So(s["i"].Type, ShouldEqual, common.EntityAttributeInt)
+			So(s["i"].Type, ShouldEqual, common.AttributeInt)
 			So(s["f"].Name, ShouldEqual, "f")
 			So(s["f"].Value, ShouldBeNil)
-			So(s["f"].Type, ShouldEqual, common.EntityAttributeFloat)
+			So(s["f"].Type, ShouldEqual, common.AttributeFloat)
 			So(s["b"].Name, ShouldEqual, "b")
 			So(s["b"].Value, ShouldBeNil)
-			So(s["b"].Type, ShouldEqual, common.EntityAttributeBool)
+			So(s["b"].Type, ShouldEqual, common.AttributeBool)
 			So(s["m"].Name, ShouldEqual, "m")
 			So(s["m"].Value, ShouldNotBeNil)
-			So(s["m"].Type, ShouldEqual, common.EntityAttributeMap)
+			So(s["m"].Type, ShouldEqual, common.AttributeMap)
 
 			m1 := s["m"].Map()
 			So(m1["s2"].Name, ShouldEqual, "s2")
 			So(m1["s2"].Value, ShouldBeNil)
-			So(m1["s2"].Type, ShouldEqual, common.EntityAttributeString)
+			So(m1["s2"].Type, ShouldEqual, common.AttributeString)
 			So(m1["i2"].Name, ShouldEqual, "i2")
 			So(m1["i2"].Value, ShouldBeNil)
-			So(m1["i2"].Type, ShouldEqual, common.EntityAttributeInt)
+			So(m1["i2"].Type, ShouldEqual, common.AttributeInt)
 			So(m1["f2"].Name, ShouldEqual, "f2")
 			So(m1["f2"].Value, ShouldBeNil)
-			So(m1["f2"].Type, ShouldEqual, common.EntityAttributeFloat)
+			So(m1["f2"].Type, ShouldEqual, common.AttributeFloat)
 			So(m1["b2"].Name, ShouldEqual, "b2")
 			So(m1["b2"].Value, ShouldBeNil)
-			So(m1["b2"].Type, ShouldEqual, common.EntityAttributeBool)
+			So(m1["b2"].Type, ShouldEqual, common.AttributeBool)
 			So(m1["m2"].Name, ShouldEqual, "m2")
 			So(m1["m2"].Value, ShouldNotBeNil)
-			So(m1["m2"].Type, ShouldEqual, common.EntityAttributeMap)
+			So(m1["m2"].Type, ShouldEqual, common.AttributeMap)
 
 			m2 := m1["m2"].Map()
 			So(m2["s3"].Name, ShouldEqual, "s3")
 			So(m2["s3"].Value, ShouldBeNil)
-			So(m2["s3"].Type, ShouldEqual, common.EntityAttributeString)
+			So(m2["s3"].Type, ShouldEqual, common.AttributeString)
 			So(m2["i3"].Name, ShouldEqual, "i3")
 			So(m2["i3"].Value, ShouldBeNil)
-			So(m2["i3"].Type, ShouldEqual, common.EntityAttributeInt)
+			So(m2["i3"].Type, ShouldEqual, common.AttributeInt)
 			So(m2["f3"].Name, ShouldEqual, "f3")
 			So(m2["f3"].Value, ShouldBeNil)
-			So(m2["f3"].Type, ShouldEqual, common.EntityAttributeFloat)
+			So(m2["f3"].Type, ShouldEqual, common.AttributeFloat)
 			So(m2["b3"].Name, ShouldEqual, "b3")
 			So(m2["b3"].Value, ShouldBeNil)
-			So(m2["b3"].Type, ShouldEqual, common.EntityAttributeBool)
+			So(m2["b3"].Type, ShouldEqual, common.AttributeBool)
 		})
 	})
 
@@ -308,7 +308,7 @@ func TestEntityAttributes(t *testing.T) {
 			err := json.Unmarshal([]byte(data), &obj)
 			So(err, ShouldBeNil)
 
-			var attrs = NetEntityAttr()
+			var attrs = NetAttr()
 			changed, err := attrs.Deserialize(obj)
 			So(err, ShouldBeNil)
 			So(changed, ShouldEqual, true)
@@ -352,7 +352,7 @@ func TestEntityAttributes(t *testing.T) {
 			err := json.Unmarshal([]byte(data), &obj)
 			So(err, ShouldBeNil)
 
-			var attrs = NetEntityAttr()
+			var attrs = NetAttr()
 			changed, err := attrs.Deserialize(obj)
 			So(err, ShouldBeNil)
 			So(changed, ShouldEqual, true)
@@ -398,7 +398,7 @@ func TestEntityAttributes(t *testing.T) {
 			err := json.Unmarshal([]byte(data), &obj)
 			So(err, ShouldBeNil)
 
-			var attrs = NetEntityAttr()
+			var attrs = NetAttr()
 			changed, err := attrs.Deserialize(obj)
 			So(err, ShouldBeNil)
 			So(changed, ShouldEqual, true)

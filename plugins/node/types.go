@@ -40,31 +40,31 @@ const (
 	AttrLastPing  = "last_ping"
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrThread: {
 			Name: AttrThread,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrRps: {
 			Name: AttrRps,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrMin: {
 			Name: AttrMin,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrMax: {
 			Name: AttrMax,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrStartedAt: {
 			Name: AttrStartedAt,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrLastPing: {
 			Name: AttrLastPing,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 	}
 }

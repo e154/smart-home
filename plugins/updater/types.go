@@ -44,23 +44,23 @@ const (
 	EntityUpdater                      = common.EntityType(Name)
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrUpdaterLatestVersion: {
 			Name: AttrUpdaterLatestVersion,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		AttrUpdaterLatestVersionTime: {
 			Name: AttrUpdaterLatestVersionTime,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrUpdaterLatestLatestDownloadUrl: {
 			Name: AttrUpdaterLatestLatestDownloadUrl,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		AttrUpdaterLatestCheck: {
 			Name: AttrUpdaterLatestCheck,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 	}
 }

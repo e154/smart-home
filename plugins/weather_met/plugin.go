@@ -163,7 +163,7 @@ func (p *plugin) addZone() {
 
 }
 
-func (p *plugin) updateZonesList(entityId common.EntityId, attrs m.EntityAttributes) {
+func (p *plugin) updateZonesList(entityId common.EntityId, attrs m.Attributes) {
 
 	zone := weather.Zone{
 		Name:      entityId.Name(),
@@ -207,7 +207,7 @@ func (p *plugin) updateForecastForAll() (err error) {
 
 func (p *plugin) updateForecast(zone weather.Zone) (err error) {
 
-	var forecast m.EntityAttributeValue
+	var forecast m.AttributeValue
 	if forecast, err = p.GetForecast(zone); err != nil {
 		return
 	}
@@ -224,7 +224,7 @@ func (p *plugin) updateForecast(zone weather.Zone) (err error) {
 	return nil
 }
 
-func (p *plugin) GetForecast(params weather.Zone) (forecast m.EntityAttributeValue, err error) {
+func (p *plugin) GetForecast(params weather.Zone) (forecast m.AttributeValue, err error) {
 
 	var zone Zone
 	if zone, err = p.fetchData(params.Name, params.Lat, params.Lon, params.Elevation); err != nil {
@@ -339,7 +339,7 @@ func (p *plugin) fetchFromServer(lat, lon, elevation float64) (body []byte, err 
 	return
 }
 
-func (p *plugin) getCurrentWeather(zone Zone) (w6 m.EntityAttributeValue, err error) {
+func (p *plugin) getCurrentWeather(zone Zone) (w6 m.AttributeValue, err error) {
 
 	now := time.Now()
 
@@ -347,7 +347,7 @@ func (p *plugin) getCurrentWeather(zone Zone) (w6 m.EntityAttributeValue, err er
 		return
 	}
 
-	var w24 m.EntityAttributeValue
+	var w24 m.AttributeValue
 	if w24, err = p.getWeather(zone, now, 24); err != nil {
 		return
 	}
@@ -358,7 +358,7 @@ func (p *plugin) getCurrentWeather(zone Zone) (w6 m.EntityAttributeValue, err er
 	return
 }
 
-func (p *plugin) getWeather(zone Zone, t time.Time, maxHour float64) (w m.EntityAttributeValue, err error) {
+func (p *plugin) getWeather(zone Zone, t time.Time, maxHour float64) (w m.AttributeValue, err error) {
 
 	var orderedEntries Products
 	for _, product := range zone.Weatherdata.Products {
@@ -377,7 +377,7 @@ func (p *plugin) getWeather(zone Zone, t time.Time, maxHour float64) (w m.Entity
 
 	sort.Sort(orderedEntries)
 
-	w = m.EntityAttributeValue{
+	w = m.AttributeValue{
 		weather.AttrWeatherDatetime:       t,
 		weather.AttrWeatherMinTemperature: p.getMinTemperature(orderedEntries),
 		weather.AttrWeatherMaxTemperature: p.getMaxTemperature(orderedEntries),

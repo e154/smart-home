@@ -40,35 +40,35 @@ const (
 	AttrParity   = "parity"    // none, odd, even
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrBaud: {
 			Name: AttrBaud,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrSlaveId: {
 			Name: AttrSlaveId,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrDataBits: {
 			Name: AttrDataBits,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrTimeout: {
 			Name: AttrTimeout,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrStopBits: {
 			Name: AttrStopBits,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrSleep: {
 			Name: AttrSleep,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrParity: {
 			Name: AttrParity,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 	}
 }

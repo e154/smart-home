@@ -32,7 +32,7 @@ type PluginActor interface {
 	Spawn() PluginActor
 
 	// Attributes ...
-	Attributes() m.EntityAttributes
+	Attributes() m.Attributes
 
 	// Metrics ...
 	Metrics() []m.Metric

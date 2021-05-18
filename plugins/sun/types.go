@@ -72,79 +72,79 @@ func (l DayTimes) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
 // Less ...
 func (l DayTimes) Less(i, j int) bool { return l[i].Time.UnixNano() < l[j].Time.UnixNano() }
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrSunrise: {
 			Name: AttrSunrise,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrSunset: {
 			Name: AttrSunset,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrSunriseEnd: {
 			Name: AttrSunriseEnd,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrSunsetStart: {
 			Name: AttrSunsetStart,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrDawn: {
 			Name: AttrDawn,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrDusk: {
 			Name: AttrDusk,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrNauticalDawn: {
 			Name: AttrNauticalDawn,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrNauticalDusk: {
 			Name: AttrNauticalDusk,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrNightEnd: {
 			Name: AttrNightEnd,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrNight: {
 			Name: AttrNight,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrGoldenHourEnd: {
 			Name: AttrGoldenHourEnd,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrGoldenHour: {
 			Name: AttrGoldenHour,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrSolarNoon: {
 			Name: AttrSolarNoon,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrNadir: {
 			Name: AttrNadir,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrElevation: {
 			Name: AttrElevation,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrAzimuth: {
 			Name: AttrAzimuth,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrPhase: {
 			Name: AttrPhase,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		AttrHorizonState: {
 			Name: AttrHorizonState,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 	}
 }

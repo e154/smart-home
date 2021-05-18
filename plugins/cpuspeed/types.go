@@ -39,19 +39,19 @@ const (
 	EntityType = "cpuspeed"
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrCpuCores: {
 			Name: AttrCpuCores,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrCpuMhz: {
 			Name: AttrCpuMhz,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrCpuAll: {
 			Name: AttrCpuAll,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 	}
 }

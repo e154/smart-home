@@ -43,7 +43,7 @@ type BaseActor struct {
 	Metric            []m.Metric
 	Hidden            bool
 	AttrMu            *sync.Mutex
-	Attrs             m.EntityAttributes
+	Attrs             m.Attributes
 	Actions           map[string]ActorAction
 	States            map[string]ActorState
 	ScriptEngine      *scripts.Engine
@@ -154,7 +154,7 @@ func (e *BaseActor) SetState(EntityStateParams) error {
 	return errors.New("method not implemented")
 }
 
-func (e *BaseActor) Attributes() m.EntityAttributes {
+func (e *BaseActor) Attributes() m.Attributes {
 	e.AttrMu.Lock()
 	defer e.AttrMu.Unlock()
 	return e.Attrs.Copy()
@@ -203,7 +203,7 @@ func (e *BaseActor) Now(oldState event_bus.EventEntityState) time.Time {
 	return now
 }
 
-func (e *BaseActor) DeserializeAttr(data m.EntityAttributeValue) {
+func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
 	e.AttrMu.Lock()
 	e.Attrs.Deserialize(data)
 	e.AttrMu.Unlock()

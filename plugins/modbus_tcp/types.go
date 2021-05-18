@@ -35,15 +35,15 @@ const (
 	AttrAddressPort = "address_port" // localhost:502
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrSlaveId: {
 			Name: AttrSlaveId,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrAddressPort: {
 			Name: AttrAddressPort,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 	}
 }

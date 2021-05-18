@@ -110,7 +110,7 @@ func (e *Actor) updateMoonPosition() {
 		log.Warnf("unknown status %s", moon.PhaseName())
 	}
 
-	var attributeValues = make(m.EntityAttributeValue)
+	var attributeValues = make(m.AttributeValue)
 	attributeValues[AttrPhase] = e.phase
 
 	moonPosition := suncalc.GetMoonPosition(now, e.lat, e.lon)

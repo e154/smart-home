@@ -24,9 +24,9 @@ import (
 )
 
 type EventRequestState struct {
-	From       common.EntityId    `json:"from"`
-	To         common.EntityId    `json:"to"`
-	Attributes m.EntityAttributes `json:"attributes"`
+	From       common.EntityId `json:"from"`
+	To         common.EntityId `json:"to"`
+	Attributes m.Attributes    `json:"attributes"`
 }
 
 type EventStateChanged struct {
@@ -50,9 +50,9 @@ type EventCallScene struct {
 }
 
 type EventAddedNewEntity struct {
-	Type       common.EntityType  `json:"type"`
-	EntityId   common.EntityId    `json:"entity_id"`
-	Attributes m.EntityAttributes `json:"attributes"`
+	Type       common.EntityType `json:"type"`
+	EntityId   common.EntityId   `json:"entity_id"`
+	Attributes m.Attributes      `json:"attributes"`
 }
 
 type EventRemoveEntity struct {

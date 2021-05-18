@@ -32,7 +32,7 @@ type Actor struct {
 	stateMu  *sync.Mutex
 }
 
-func NewActor(name string, params m.EntityAttributeValue,
+func NewActor(name string, params m.AttributeValue,
 	entityManager entity_manager.EntityManager) *Actor {
 
 	attributes := NewAttr()

@@ -49,9 +49,9 @@ func NewEntity(a PluginActor) m.EntityShort {
 		i++
 	}
 
-	attributes := make(m.EntityAttributes, len(a.Attributes()))
+	attributes := make(m.Attributes, len(a.Attributes()))
 	for k, a := range a.Attributes() {
-		attributes[k] = &m.EntityAttribute{
+		attributes[k] = &m.Attribute{
 			Name:  a.Name,
 			Type:  a.Type,
 			Value: a.Value,

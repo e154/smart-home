@@ -126,7 +126,7 @@ func TestZone(t *testing.T) {
 			//...
 			wgAdd.Wait()
 			entityManager.SetState(zoneEnt.Id, entity_manager.EntityStateParams{
-				AttributeValues: m.EntityAttributeValue{
+				AttributeValues: m.AttributeValue{
 					"elevation": 10,
 					"lat":       10.881,
 					"lon":       107.570,

@@ -64,23 +64,23 @@ const (
 	Attribution = "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute."
 )
 
-func BaseForecast() m.EntityAttributes {
+func BaseForecast() m.Attributes {
 	return NewForecast(6)
 }
 
-func NewForecast(days int) m.EntityAttributes {
+func NewForecast(days int) m.Attributes {
 	attributes := NewAttr()
 
-	attributes[AttrWeatherAttribution] = &m.EntityAttribute{
+	attributes[AttrWeatherAttribution] = &m.Attribute{
 		Name:  AttrWeatherAttribution,
-		Type:  common.EntityAttributeString,
+		Type:  common.AttributeString,
 		Value: Attribution,
 	}
 
 	for i := 1; i < days; i++ {
-		attributes[fmt.Sprintf("forecast_day%d", i)] = &m.EntityAttribute{
+		attributes[fmt.Sprintf("forecast_day%d", i)] = &m.Attribute{
 			Name:  fmt.Sprintf("forecast_day%d", i),
-			Type:  common.EntityAttributeMap,
+			Type:  common.AttributeMap,
 			Value: NewAttr(),
 		}
 	}
@@ -88,60 +88,60 @@ func NewForecast(days int) m.EntityAttributes {
 	return attributes
 }
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrWeatherDatetime: {
 			Name: AttrWeatherDatetime,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrWeatherTemperature: {
 			Name: AttrWeatherTemperature,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrWeatherCondition: {
 			Name: AttrWeatherCondition,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		AttrWeatherMinTemperature: {
 			Name: AttrWeatherMinTemperature,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrWeatherMaxTemperature: {
 			Name: AttrWeatherMaxTemperature,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrWeatherHumidity: {
 			Name: AttrWeatherHumidity,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrWeatherPressure: {
 			Name: AttrWeatherPressure,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrWeatherWindBearing: {
 			Name: AttrWeatherWindBearing,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrWeatherWindSpeed: {
 			Name: AttrWeatherWindSpeed,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrWeatherOzone: {
 			Name: AttrWeatherOzone,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrWeatherVisibility: {
 			Name: AttrWeatherVisibility,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 	}
 }
 
 type EventSubStateChanged struct {
-	Type       common.EntityType  `json:"type"`
-	EntityId   common.EntityId    `json:"entity_id"`
-	State      string             `json:"state"`
-	Attributes m.EntityAttributes `json:"attributes"`
+	Type       common.EntityType `json:"type"`
+	EntityId   common.EntityId   `json:"entity_id"`
+	State      string            `json:"state"`
+	Attributes m.Attributes      `json:"attributes"`
 }
 
 const (

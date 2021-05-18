@@ -27,20 +27,20 @@ import (
 	"time"
 )
 
-type EntityAttribute struct {
-	Name  string                     `json:"name"`
-	Type  common.EntityAttributeType `json:"type"`
-	Value interface{}                `json:"value,omitempty"`
+type Attribute struct {
+	Name  string               `json:"name"`
+	Type  common.AttributeType `json:"type"`
+	Value interface{}          `json:"value,omitempty"`
 }
 
-func (a EntityAttribute) String() string {
+func (a Attribute) String() string {
 	if value, ok := a.Value.(string); ok {
 		return value
 	}
 	return fmt.Sprintf("%v", a.Value)
 }
 
-func (a EntityAttribute) Int64() int64 {
+func (a Attribute) Int64() int64 {
 	if value, ok := a.Value.(int64); ok {
 		return value
 	}
@@ -52,7 +52,7 @@ func (a EntityAttribute) Int64() int64 {
 	return 0
 }
 
-func (a EntityAttribute) Time() time.Time {
+func (a Attribute) Time() time.Time {
 	if value, ok := a.Value.(time.Time); ok {
 		return value
 	}
@@ -64,44 +64,44 @@ func (a EntityAttribute) Time() time.Time {
 	return time.Time{}
 }
 
-func (a EntityAttribute) Bool() bool {
+func (a Attribute) Bool() bool {
 	if value, ok := a.Value.(bool); ok {
 		return value
 	}
 	return false
 }
 
-func (a EntityAttribute) Float64() float64 {
+func (a Attribute) Float64() float64 {
 	if value, ok := a.Value.(float64); ok {
 		return value
 	}
 	return 0
 }
 
-func (a EntityAttribute) Map() EntityAttributes {
-	if value, ok := a.Value.(EntityAttributes); ok {
+func (a Attribute) Map() Attributes {
+	if value, ok := a.Value.(Attributes); ok {
 		return value
 	}
 	return nil
 }
 
-type EntityAttributeValue map[string]interface{}
+type AttributeValue map[string]interface{}
 
-type EntityAttributes map[string]*EntityAttribute
+type Attributes map[string]*Attribute
 
-func (a EntityAttributes) Serialize() (to EntityAttributeValue) {
+func (a Attributes) Serialize() (to AttributeValue) {
 
-	var serialize func(from EntityAttributes, to EntityAttributeValue)
-	serialize = func(from EntityAttributes, to EntityAttributeValue) {
+	var serialize func(from Attributes, to AttributeValue)
+	serialize = func(from Attributes, to AttributeValue) {
 
 		for kFrom, vFrom := range from {
 			switch vFrom.Type {
-			case common.EntityAttributeString:
-			case common.EntityAttributeInt:
-			case common.EntityAttributeTime:
-			case common.EntityAttributeBool:
-			case common.EntityAttributeFloat:
-			case common.EntityAttributeArray:
+			case common.AttributeString:
+			case common.AttributeInt:
+			case common.AttributeTime:
+			case common.AttributeBool:
+			case common.AttributeFloat:
+			case common.AttributeArray:
 
 				arr := make([]interface{}, 0)
 
@@ -110,8 +110,8 @@ func (a EntityAttributes) Serialize() (to EntityAttributeValue) {
 						switch t5 := attr.(type) {
 						case float64, float32:
 						case int64, int32:
-						case EntityAttributes:
-							t12 := EntityAttributeValue{}
+						case Attributes:
+							t12 := AttributeValue{}
 							serialize(t5, t12)
 							arr = append(arr, t12)
 							continue
@@ -125,9 +125,9 @@ func (a EntityAttributes) Serialize() (to EntityAttributeValue) {
 				to[kFrom] = arr
 
 				continue
-			case common.EntityAttributeMap:
-				if t6, ok := vFrom.Value.(EntityAttributes); ok {
-					to2 := EntityAttributeValue{}
+			case common.AttributeMap:
+				if t6, ok := vFrom.Value.(Attributes); ok {
+					to2 := AttributeValue{}
 					serialize(t6, to2)
 					to[kFrom] = to2
 				}
@@ -141,16 +141,16 @@ func (a EntityAttributes) Serialize() (to EntityAttributeValue) {
 		}
 	}
 
-	to = EntityAttributeValue{}
+	to = AttributeValue{}
 	serialize(a, to)
 
 	return
 }
 
-func (a EntityAttributes) Deserialize(data EntityAttributeValue) (changed bool, err error) {
+func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 
-	var deserialize func(from EntityAttributeValue, to EntityAttributes)
-	deserialize = func(from EntityAttributeValue, to EntityAttributes) {
+	var deserialize func(from AttributeValue, to Attributes)
+	deserialize = func(from AttributeValue, to Attributes) {
 
 		for kFrom, vFrom := range from {
 			if vFrom == nil {
@@ -161,12 +161,12 @@ func (a EntityAttributes) Deserialize(data EntityAttributeValue) (changed bool, 
 				if _, ok := to[kFrom]; ok {
 					switch value := to[kFrom].Value.(type) {
 					case map[string]interface{}:
-						attrs := make(EntityAttributes)
+						attrs := make(Attributes)
 						for k, values := range value {
 							if val, ok := values.(map[string]interface{}); ok {
-								attrs[k] = &EntityAttribute{
+								attrs[k] = &Attribute{
 									Name:  val["name"].(string),
-									Type:  common.EntityAttributeType(val["type"].(string)),
+									Type:  common.AttributeType(val["type"].(string)),
 									Value: vFromCasted[k],
 								}
 							}
@@ -174,16 +174,16 @@ func (a EntityAttributes) Deserialize(data EntityAttributeValue) (changed bool, 
 						deserialize(vFromCasted, attrs)
 						to[kFrom].Value = attrs
 
-					case EntityAttributes:
+					case Attributes:
 						deserialize(vFromCasted, value)
 					default:
 						log.Warnf("unknown type %s (%v)", reflect.TypeOf(to[kFrom].Value).String(), vFrom)
 					}
 				}
 				continue
-			case EntityAttributeValue:
+			case AttributeValue:
 				if _, ok := to[kFrom]; ok {
-					if attrs, ok := to[kFrom].Value.(EntityAttributes); ok {
+					if attrs, ok := to[kFrom].Value.(Attributes); ok {
 						deserialize(vFromCasted, attrs)
 					}
 				}
@@ -204,8 +204,8 @@ func (a EntityAttributes) Deserialize(data EntityAttributeValue) (changed bool, 
 					case float64, float32:
 					case bool:
 					case time.Time:
-					case EntityAttributeValue:
-						if t2, ok := to[kFrom].Value.([]EntityAttributes); ok {
+					case AttributeValue:
+						if t2, ok := to[kFrom].Value.([]Attributes); ok {
 							if len(t2) == 0 || len(t2) < i {
 								continue
 							}
@@ -214,7 +214,7 @@ func (a EntityAttributes) Deserialize(data EntityAttributeValue) (changed bool, 
 						}
 						continue
 					case map[string]interface{}:
-						if t2, ok := to[kFrom].Value.([]EntityAttributes); ok {
+						if t2, ok := to[kFrom].Value.([]Attributes); ok {
 							if len(t2) == 0 || len(t2) < i {
 								continue
 							}
@@ -239,7 +239,7 @@ func (a EntityAttributes) Deserialize(data EntityAttributeValue) (changed bool, 
 			}
 
 			if v, ok := to[kFrom]; ok {
-				to[kFrom] = &EntityAttribute{
+				to[kFrom] = &Attribute{
 					Name:  v.Name,
 					Type:  v.Type,
 					Value: vFrom,
@@ -257,26 +257,26 @@ func (a EntityAttributes) Deserialize(data EntityAttributeValue) (changed bool, 
 	return
 }
 
-func (a EntityAttributes) Signature() (signature EntityAttributes) {
+func (a Attributes) Signature() (signature Attributes) {
 
-	var serialize func(from, to EntityAttributes)
-	serialize = func(from, to EntityAttributes) {
+	var serialize func(from, to Attributes)
+	serialize = func(from, to Attributes) {
 
 		for kFrom, vFrom := range from {
 			switch vFrom.Type {
-			case common.EntityAttributeString:
-			case common.EntityAttributeInt:
-			case common.EntityAttributeTime:
-			case common.EntityAttributeBool:
-			case common.EntityAttributeFloat:
-			case common.EntityAttributeArray:
+			case common.AttributeString:
+			case common.AttributeInt:
+			case common.AttributeTime:
+			case common.AttributeBool:
+			case common.AttributeFloat:
+			case common.AttributeArray:
 
 				if attrs, ok := vFrom.Value.([]interface{}); ok {
 					arr := make([]interface{}, 0)
 					for _, attr := range attrs {
 						switch t5 := attr.(type) {
-						case EntityAttributes:
-							t12 := EntityAttributes{}
+						case Attributes:
+							t12 := Attributes{}
 							serialize(t5, t12)
 							arr = append(arr, t12)
 						case float64, float32:
@@ -292,9 +292,9 @@ func (a EntityAttributes) Signature() (signature EntityAttributes) {
 				}
 
 				continue
-			case common.EntityAttributeMap:
-				if t6, ok := vFrom.Value.(EntityAttributes); ok {
-					to2 := EntityAttributes{}
+			case common.AttributeMap:
+				if t6, ok := vFrom.Value.(Attributes); ok {
+					to2 := Attributes{}
 					serialize(t6, to2)
 					v := from[kFrom]
 					v.Value = to2
@@ -312,14 +312,14 @@ func (a EntityAttributes) Signature() (signature EntityAttributes) {
 		}
 	}
 
-	signature = make(EntityAttributes)
+	signature = make(Attributes)
 	cpy := a.Copy()
 	serialize(cpy, signature)
 
 	return
 }
 
-func (e EntityAttributes) Copy() (copy EntityAttributes) {
+func (e Attributes) Copy() (copy Attributes) {
 
 	var buf bytes.Buffer
 
@@ -331,7 +331,7 @@ func (e EntityAttributes) Copy() (copy EntityAttributes) {
 		return
 	}
 
-	copy = make(EntityAttributes)
+	copy = make(Attributes)
 	if err := dec.Decode(&copy); err != nil {
 		log.Error(err.Error())
 	}
@@ -340,5 +340,5 @@ func (e EntityAttributes) Copy() (copy EntityAttributes) {
 
 func init() {
 	gob.Register(time.Time{})
-	gob.Register(EntityAttributes{})
+	gob.Register(Attributes{})
 }

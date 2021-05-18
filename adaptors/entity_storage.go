@@ -84,7 +84,7 @@ func (n *EntityStorage) fromDb(dbVer db.EntityStorage) (ver m.EntityStorage) {
 		Id:         dbVer.Id,
 		EntityId:   dbVer.EntityId,
 		State:      dbVer.State,
-		Attributes: m.EntityAttributeValue{},
+		Attributes: m.AttributeValue{},
 		CreatedAt:  dbVer.CreatedAt,
 	}
 
