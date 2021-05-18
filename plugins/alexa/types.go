@@ -246,3 +246,7 @@ type IServer interface {
 type AlexaPlugin interface {
 	Server() IServer
 }
+
+const (
+	TriggerOptionSkillId = "skillId"
+)

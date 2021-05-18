@@ -74,22 +74,24 @@ func (t Trigger) Subscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("trigger '%s' subscribe to empty topic", t.name)
 	}
-	log.Infof("trigger '%s' subscribe topic '%s'", t.name, t.topic(options.Payload))
-	return t.msgQueue.Subscribe(t.topic(options.Payload), options.Handler)
+	topic := t.topic(options.Payload[TriggerOptionSkillId].Int64())
+	log.Infof("trigger '%s' subscribe topic '%s'", t.name, topic)
+	return t.msgQueue.Subscribe(topic, options.Handler)
 }
 
 func (t Trigger) Unsubscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("trigger '%s' unsubscribe from empty topic", t.name)
 	}
-	log.Infof("trigger '%s' unsubscribe topic '%s'", t.name, t.topic(options.Payload))
-	return t.msgQueue.Unsubscribe(t.topic(options.Payload), options.Handler)
+	topic := t.topic(options.Payload[TriggerOptionSkillId].Int64())
+	log.Infof("trigger '%s' unsubscribe topic '%s'", t.name, topic)
+	return t.msgQueue.Unsubscribe(topic, options.Handler)
 }
 
 func (t Trigger) FunctionName() string {
 	return t.functionName
 }
 
-func (t Trigger) topic(n interface{}) string {
-	return fmt.Sprintf("skill_%v", n)
+func (t Trigger) topic(n int64) string {
+	return fmt.Sprintf("skill_%d", n)
 }

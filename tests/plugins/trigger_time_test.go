@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
@@ -95,7 +96,13 @@ automationTriggerTime = (msg)->
 				Name:       "",
 				Script:     task3Script,
 				PluginName: "time",
-				Payload:    "* * * * * *", //every seconds
+				Payload: m.Attributes{
+					triggers.CronOptionTrigger: {
+						Name:  triggers.CronOptionTrigger,
+						Type:  common.AttributeString,
+						Value: "* * * * * *", //every seconds
+					},
+				},
 			})
 			err = adaptors.Task.Add(task3)
 			So(err, ShouldBeNil)

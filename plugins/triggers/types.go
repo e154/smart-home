@@ -20,6 +20,7 @@ package triggers
 
 import (
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"sync"
 )
 
@@ -51,5 +52,9 @@ type ITrigger interface {
 type Subscriber struct {
 	EntityId *common.EntityId
 	Handler  interface{}
-	Payload  interface{}
+	Payload  m.Attributes
 }
+
+const (
+	CronOptionTrigger = "cron"
+)

@@ -96,7 +96,13 @@ automationTriggerAlexa = (msg)->
 				Name:       "",
 				Script:     task3Script,
 				PluginName: "alexa",
-				Payload:    "1",
+				Payload: m.Attributes{
+					alexa.TriggerOptionSkillId: {
+						Name:  alexa.TriggerOptionSkillId,
+						Type:  common.AttributeInt,
+						Value: 1,
+					},
+				},
 			})
 			err = adaptors.Task.Add(task3)
 			So(err, ShouldBeNil)
