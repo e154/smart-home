@@ -28,14 +28,14 @@ import (
 	"time"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	appStarted time.Time
 	total      *atomic.Uint64
 }
 
-func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
-	return &EntityActor{
+func NewActor(entityManager entity_manager.EntityManager) *Actor {
+	return &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
 			Name:              Name,
@@ -50,11 +50,11 @@ func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
 	}
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) update() {
+func (e *Actor) update() {
 
 	oldState := e.GetEventState(e)
 

@@ -44,7 +44,7 @@ type plugin struct {
 	entityManager entity_manager.EntityManager
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
-	actors        map[string]*EntityActor
+	actors        map[string]*Actor
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 }
@@ -52,7 +52,7 @@ type plugin struct {
 func New() plugins.Plugable {
 	return &plugin{
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*EntityActor),
+		actors:     make(map[string]*Actor),
 	}
 }
 
@@ -115,8 +115,8 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity,
 		return
 	}
 
-	var actor *EntityActor
-	if actor, err = NewEntityActor(entity, attributes, p.adaptors,
+	var actor *Actor
+	if actor, err = NewActor(entity, attributes, p.adaptors,
 		p.scriptService, p.entityManager); err != nil {
 		return
 	}

@@ -46,7 +46,7 @@ func init() {
 
 type plugin struct {
 	entityManager entity_manager.EntityManager
-	entity        *EntityActor
+	entity        *Actor
 	isStarted     *atomic.Bool
 	ticker        *time.Ticker
 	pause         time.Duration
@@ -71,7 +71,7 @@ func (u *plugin) Load(service plugins.Service) error {
 	}
 	u.isStarted.Store(true)
 
-	u.entity = NewEntityActor(u.entityManager)
+	u.entity = NewActor(u.entityManager)
 	u.quit = make(chan struct{})
 
 	u.storyModel = &m.RunStory{

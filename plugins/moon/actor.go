@@ -30,7 +30,7 @@ import (
 	"sync"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	positionLock        *sync.Mutex
 	lat, lon, elevation float64
@@ -40,10 +40,10 @@ type EntityActor struct {
 	horizonState        string
 }
 
-func NewEntityActor(name string,
-	entityManager entity_manager.EntityManager) *EntityActor {
+func NewActor(name string,
+	entityManager entity_manager.EntityManager) *Actor {
 
-	entity := &EntityActor{
+	entity := &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityMoon, name)),
 			Name:        name,
@@ -61,11 +61,11 @@ func NewEntityActor(name string,
 	return entity
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) setPosition(lat, lon, elevation float64, timezone int) {
+func (e *Actor) setPosition(lat, lon, elevation float64, timezone int) {
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
@@ -74,7 +74,7 @@ func (e *EntityActor) setPosition(lat, lon, elevation float64, timezone int) {
 	e.elevation = elevation
 }
 
-func (e *EntityActor) updateMoonPosition() {
+func (e *Actor) updateMoonPosition() {
 
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()

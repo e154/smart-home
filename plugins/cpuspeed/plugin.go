@@ -40,7 +40,7 @@ type plugin struct {
 	isStarted     *atomic.Bool
 	quit          chan struct{}
 	pause         uint
-	actor         *EntityActor
+	actor         *Actor
 	adaptors      *adaptors.Adaptors
 }
 
@@ -55,7 +55,7 @@ func New() plugins.Plugable {
 func (c *plugin) Load(service plugins.Service) error {
 	c.adaptors = service.Adaptors()
 	c.entityManager = service.EntityManager()
-	c.actor = NewEntityActor(c.entityManager)
+	c.actor = NewActor(c.entityManager)
 
 	if c.isStarted.Load() {
 		return nil

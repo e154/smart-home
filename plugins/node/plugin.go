@@ -49,7 +49,7 @@ type plugin struct {
 	isStarted     *atomic.Bool
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
-	actors        map[common.EntityId]*EntityActor
+	actors        map[common.EntityId]*Actor
 	mqttServ      mqtt.MqttServ
 	mqttClient    mqtt.MqttCli
 }
@@ -58,7 +58,7 @@ func New() plugins.Plugable {
 	return &plugin{
 		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*EntityActor),
+		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
@@ -108,8 +108,8 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	var actor *EntityActor
-	actor = NewEntityActor(entity, p.entityManager, p.adaptors, p.scriptService, p.eventBus, p.mqttClient)
+	var actor *Actor
+	actor = NewActor(entity, p.entityManager, p.adaptors, p.scriptService, p.eventBus, p.mqttClient)
 	p.actors[entity.Id] = actor
 	p.entityManager.Spawn(actor.Spawn)
 

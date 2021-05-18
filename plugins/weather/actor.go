@@ -30,7 +30,7 @@ import (
 	"time"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	updateLock     *sync.Mutex
 	positionLock   *sync.Mutex
@@ -38,11 +38,11 @@ type EntityActor struct {
 	eventBus       event_bus.EventBus
 }
 
-func NewEntityActor(name string,
+func NewActor(name string,
 	eventBus event_bus.EventBus,
-	entityManager entity_manager.EntityManager) *EntityActor {
+	entityManager entity_manager.EntityManager) *Actor {
 
-	e := &EntityActor{
+	e := &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityWeather, name)),
 			Name:              name,
@@ -64,11 +64,11 @@ func NewEntityActor(name string,
 	return e
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) setPosition(zoneAttr m.EntityAttributes) {
+func (e *Actor) setPosition(zoneAttr m.EntityAttributes) {
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
@@ -90,7 +90,7 @@ func (e *EntityActor) setPosition(zoneAttr m.EntityAttributes) {
 	})
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 
 	log.Infof("update forecast for '%s'", e.Id)
 

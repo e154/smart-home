@@ -32,7 +32,7 @@ import (
 	"time"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	checkLock         *sync.Mutex
 	latestVersion     string
@@ -42,7 +42,7 @@ type EntityActor struct {
 	currentVersion    *semver.Version
 }
 
-func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
+func NewActor(entityManager entity_manager.EntityManager) *Actor {
 	var v = "v0.0.1"
 	if version.VersionString != "?" {
 		v = version.VersionString
@@ -52,7 +52,7 @@ func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
 		log.Error(err.Error())
 	}
 
-	return &EntityActor{
+	return &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityUpdater, Name)),
 			Name:        Name,
@@ -92,11 +92,11 @@ func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
 	}
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (u *EntityActor) setState(v string) {
+func (u *Actor) setState(v string) {
 
 	switch v {
 	case "exist_update":
@@ -118,7 +118,7 @@ func (u *EntityActor) setState(v string) {
 	u.Value.Store(v)
 }
 
-func (u *EntityActor) check() {
+func (u *Actor) check() {
 
 	u.checkLock.Lock()
 	var err error

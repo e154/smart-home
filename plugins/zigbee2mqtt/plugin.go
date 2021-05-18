@@ -50,7 +50,7 @@ type plugin struct {
 	isStarted     *atomic.Bool
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
-	actors        map[string]*EntityActor
+	actors        map[string]*Actor
 	mqttServ      mqtt.MqttServ
 	mqttClient    mqtt.MqttCli
 	mqttSubs      sync.Map
@@ -60,7 +60,7 @@ func New() plugins.Plugable {
 	return &plugin{
 		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*EntityActor),
+		actors:     make(map[string]*Actor),
 		mqttSubs:   sync.Map{},
 	}
 }
@@ -114,8 +114,8 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.EntityAttribut
 		return
 	}
 
-	var actor *EntityActor
-	if actor, err = NewEntityActor(entity, attributes,
+	var actor *Actor
+	if actor, err = NewActor(entity, attributes,
 		p.adaptors, p.scriptService, p.entityManager); err != nil {
 		return
 	}
@@ -161,7 +161,7 @@ func (p *plugin) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 		return
 	}
 
-	var actor *EntityActor
+	var actor *Actor
 	var err error
 	if actor, err = p.getActorByZigbeeDeviceId(topic[1]); err != nil {
 		log.Warn(err.Error())
@@ -171,7 +171,7 @@ func (p *plugin) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 	actor.mqttOnPublish(client, msg)
 }
 
-func (p *plugin) getActorByZigbeeDeviceId(deviceId string) (actor *EntityActor, err error) {
+func (p *plugin) getActorByZigbeeDeviceId(deviceId string) (actor *Actor, err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 

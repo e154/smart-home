@@ -26,19 +26,19 @@ import (
 	"sync"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	entities []entity_manager.PluginActor
 	stateMu  *sync.Mutex
 }
 
-func NewEntityActor(name string, params m.EntityAttributeValue,
-	entityManager entity_manager.EntityManager) *EntityActor {
+func NewActor(name string, params m.EntityAttributeValue,
+	entityManager entity_manager.EntityManager) *Actor {
 
 	attributes := NewAttr()
 	attributes.Deserialize(params)
 
-	return &EntityActor{
+	return &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityZone, name)),
 			Name:       name,
@@ -51,11 +51,11 @@ func NewEntityActor(name string, params m.EntityAttributeValue,
 	}
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 

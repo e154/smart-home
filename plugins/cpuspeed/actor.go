@@ -27,7 +27,7 @@ import (
 	"sync"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	cores           int64
 	model           string
@@ -38,9 +38,9 @@ type EntityActor struct {
 	updateLock      *sync.Mutex
 }
 
-func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
+func NewActor(entityManager entity_manager.EntityManager) *Actor {
 
-	actor := &EntityActor{
+	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityCpuspeed, Name)),
 			Name:              Name,
@@ -64,11 +64,11 @@ func NewEntityActor(entityManager entity_manager.EntityManager) *EntityActor {
 	return actor
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (u *EntityActor) selfUpdate() {
+func (u *Actor) selfUpdate() {
 
 	u.updateLock.Lock()
 	defer u.updateLock.Unlock()

@@ -32,7 +32,7 @@ import (
 	"time"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
@@ -44,14 +44,14 @@ type EntityActor struct {
 	lastState     m.EntityAttributeValue
 }
 
-func NewEntityActor(entity *m.Entity,
+func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
 	eventBus event_bus.EventBus,
-	mqttClient mqtt.MqttCli) (actor *EntityActor) {
+	mqttClient mqtt.MqttCli) (actor *Actor) {
 
-	actor = &EntityActor{
+	actor = &Actor{
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
 		adaptors:      adaptors,
 		scriptService: scriptService,
@@ -83,7 +83,7 @@ func NewEntityActor(entity *m.Entity,
 	return actor
 }
 
-func (e *EntityActor) destroy() {
+func (e *Actor) destroy() {
 
 	e.mqttClient.Unsubscribe(e.mqttTopic("resp/+"))
 	e.mqttClient.Unsubscribe(e.mqttTopic("ping"))
@@ -92,7 +92,7 @@ func (e *EntityActor) destroy() {
 	e.quit <- struct{}{}
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 
 	e.quit = make(chan struct{})
 
@@ -126,7 +126,7 @@ func (e *EntityActor) Spawn() entity_manager.PluginActor {
 }
 
 // event from plugin.node/nodeName/req
-func (e *EntityActor) onMessage(_ string, msg MessageRequest) {
+func (e *Actor) onMessage(_ string, msg MessageRequest) {
 	b, err := json.Marshal(msg)
 	if err != nil {
 		log.Error(err.Error())
@@ -135,7 +135,7 @@ func (e *EntityActor) onMessage(_ string, msg MessageRequest) {
 }
 
 // event from home/node/nodeName/#
-func (e *EntityActor) mqttOnMessage(_ mqtt.MqttCli, msg mqtt.Message) {
+func (e *Actor) mqttOnMessage(_ mqtt.MqttCli, msg mqtt.Message) {
 	// resend msg to plugin.node/nodeName/resp/entityId
 	resp := MessageResponse{}
 	if err := json.Unmarshal(msg.Payload, &resp); err != nil {
@@ -148,7 +148,7 @@ func (e *EntityActor) mqttOnMessage(_ mqtt.MqttCli, msg mqtt.Message) {
 }
 
 // event from home/node/nodeName/ping
-func (e *EntityActor) ping(_ mqtt.MqttCli, msg mqtt.Message) {
+func (e *Actor) ping(_ mqtt.MqttCli, msg mqtt.Message) {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
@@ -157,7 +157,7 @@ func (e *EntityActor) ping(_ mqtt.MqttCli, msg mqtt.Message) {
 	json.Unmarshal(msg.Payload, &e.lastState)
 }
 
-func (e *EntityActor) updateStatus() {
+func (e *Actor) updateStatus() {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
@@ -188,10 +188,10 @@ func (e *EntityActor) updateStatus() {
 	})
 }
 
-func (e *EntityActor) localTopic(r string) string {
+func (e *Actor) localTopic(r string) string {
 	return fmt.Sprintf("%s/%s/%s", TopicPluginNode, e.Name, r)
 }
 
-func (e *EntityActor) mqttTopic(r string) string {
+func (e *Actor) mqttTopic(r string) string {
 	return fmt.Sprintf("home/node/%s/%s", e.Name, r)
 }

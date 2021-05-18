@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package modbus_tcp
+package modbus_rtu
 
 import (
 	"fmt"
@@ -29,7 +29,7 @@ import (
 	"sync"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
@@ -38,13 +38,13 @@ type EntityActor struct {
 	stateMu       *sync.Mutex
 }
 
-func NewEntityActor(entity *m.Entity,
+func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	eventBus event_bus.EventBus) (actor *EntityActor) {
+	eventBus event_bus.EventBus) (actor *Actor) {
 
-	actor = &EntityActor{
+	actor = &Actor{
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
 		adaptors:      adaptors,
 		scriptService: scriptService,
@@ -67,7 +67,7 @@ func NewEntityActor(entity *m.Entity,
 		if a.ScriptEngine != nil {
 			// bind
 			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
-			a.ScriptEngine.PushFunction("ModbusTcp",  NewModbusTcp(eventBus, actor))
+			a.ScriptEngine.PushFunction("ModbusRtu",  NewModbusRtu(eventBus, actor))
 			a.ScriptEngine.Do()
 		}
 	}
@@ -89,19 +89,19 @@ func NewEntityActor(entity *m.Entity,
 	return actor
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) setState(params entity_manager.EntityStateParams) (changed bool) {
+func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool) {
 	return
 }
 
-func (e *EntityActor) addAction(event event_bus.EventCallAction) {
+func (e *Actor) addAction(event event_bus.EventCallAction) {
 	e.actionPool <- event
 }
 
-func (e *EntityActor) runAction(msg event_bus.EventCallAction) {
+func (e *Actor) runAction(msg event_bus.EventCallAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
@@ -112,7 +112,7 @@ func (e *EntityActor) runAction(msg event_bus.EventCallAction) {
 	}
 }
 
-func (e *EntityActor) localTopic(r string) string {
+func (e *Actor) localTopic(r string) string {
 	var parent string
 	if e.ParentId != nil {
 		parent = e.ParentId.Name()

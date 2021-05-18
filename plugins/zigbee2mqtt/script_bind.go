@@ -28,11 +28,11 @@ import (
 //	.setState(params)
 //
 type ScriptBind struct {
-	actor *EntityActor
+	actor *Actor
 }
 
 // NewScriptBind...
-func NewScriptBind(actor *EntityActor) *ScriptBind {
+func NewScriptBind(actor *Actor) *ScriptBind {
 	return &ScriptBind{actor: actor}
 }
 

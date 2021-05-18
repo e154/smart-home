@@ -48,7 +48,7 @@ type plugin struct {
 	isStarted     *atomic.Bool
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
-	actors        map[string]*EntityActor
+	actors        map[string]*Actor
 	quit          chan struct{}
 	pause         time.Duration
 }
@@ -57,7 +57,7 @@ func New() plugins.Plugable {
 	return &plugin{
 		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*EntityActor),
+		actors:     make(map[string]*Actor),
 		pause:      240,
 	}
 }
@@ -178,7 +178,7 @@ func (p *plugin) addOrUpdateEntity(name string, zoneAttr m.EntityAttributes) (er
 		return
 	}
 
-	p.actors[name] = NewEntityActor(name, p.entityManager)
+	p.actors[name] = NewActor(name, p.entityManager)
 	p.entityManager.Spawn(p.actors[name].Spawn)
 
 	if zoneAttr != nil {

@@ -46,7 +46,7 @@ type plugin struct {
 	entityManager entity_manager.EntityManager
 	isStarted     atomic2.Bool
 	pause         time.Duration
-	actor         *EntityActor
+	actor         *Actor
 	eventBus      event_bus.EventBus
 	quit          chan struct{}
 }
@@ -65,7 +65,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.actor = NewEntityActor(p.entityManager)
+	p.actor = NewActor(p.entityManager)
 
 	p.entityManager.Spawn(p.actor.Spawn)
 	p.actor.check()

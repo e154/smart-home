@@ -16,59 +16,68 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package script
+package modbus_tcp
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 	"sync"
 )
 
-const (
-	FuncEntityAction = "entityAction"
-)
-
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
-	system        entity_manager.EntityManager
-	stateMu       *sync.Mutex
+	eventBus      event_bus.EventBus
 	actionPool    chan event_bus.EventCallAction
+	stateMu       *sync.Mutex
 }
 
-func NewEntityActor(entity *m.Entity,
-	params map[string]interface{},
+func NewActor(entity *m.Entity,
+	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager) (actor *EntityActor, err error) {
+	eventBus event_bus.EventBus) (actor *Actor) {
 
-	actor = &EntityActor{
+	actor = &Actor{
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
 		adaptors:      adaptors,
 		scriptService: scriptService,
+		eventBus:      eventBus,
 		actionPool:    make(chan event_bus.EventCallAction, 10),
 		stateMu:       &sync.Mutex{},
 	}
 
+	if actor.ParentId == nil {
+		log.Warnf("entity %s, parent is nil", actor.Id)
+	}
+
 	actor.Manager = entityManager
-	actor.Attrs.Deserialize(params)
+	actor.Attrs = NewAttr()
+
+	actor.DeserializeAttr(entity.Attributes.Serialize())
 
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
+			// bind
 			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
+			a.ScriptEngine.PushFunction("ModbusTcp",  NewModbusTcp(eventBus, actor))
 			a.ScriptEngine.Do()
 		}
 	}
 
-	// Script
-	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
+	if actor.ScriptEngine == nil {
+		return
 	}
+
+	// bind
+	actor.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
 
 	// action worker
 	go func() {
@@ -77,61 +86,22 @@ func NewEntityActor(entity *m.Entity,
 		}
 	}()
 
-	return
+	return actor
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) (err error) {
-
-	e.stateMu.Lock()
-	defer e.stateMu.Unlock()
-
-	oldState := e.GetEventState(e)
-
-	now := e.Now(oldState)
-
-	if params.NewState != nil {
-		if state, ok := e.States[*params.NewState]; ok {
-			e.State = &state
-		}
-	}
-
-	e.AttrMu.Lock()
-	var changed bool
-	if changed, err = e.Attrs.Deserialize(params.AttributeValues); !changed {
-		if err != nil {
-			log.Warn(err.Error())
-		}
-
-		if oldState.LastUpdated != nil {
-			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
-			//fmt.Println("delta", delta)
-			if delta < 200 {
-				e.AttrMu.Unlock()
-				return
-			}
-		}
-	}
-	e.AttrMu.Unlock()
-
-	e.Send(entity_manager.MessageStateChanged{
-		StorageSave: true,
-		OldState:    oldState,
-		NewState:    e.GetEventState(e),
-	})
-
+func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool) {
 	return
 }
 
-func (e *EntityActor) addAction(event event_bus.EventCallAction) {
+func (e *Actor) addAction(event event_bus.EventCallAction) {
 	e.actionPool <- event
 }
 
-func (e *EntityActor) runAction(msg event_bus.EventCallAction) {
-
+func (e *Actor) runAction(msg event_bus.EventCallAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)
@@ -140,4 +110,12 @@ func (e *EntityActor) runAction(msg event_bus.EventCallAction) {
 	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId.Name(), action.Name); err != nil {
 		log.Error(err.Error())
 	}
+}
+
+func (e *Actor) localTopic(r string) string {
+	var parent string
+	if e.ParentId != nil {
+		parent = e.ParentId.Name()
+	}
+	return fmt.Sprintf("%s/%s/%s", node.TopicPluginNode, parent, r)
 }

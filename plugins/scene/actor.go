@@ -31,7 +31,7 @@ const (
 	FuncSceneEvent = "sceneEvent"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
@@ -40,13 +40,13 @@ type EntityActor struct {
 	stateMu       *sync.Mutex
 }
 
-func NewEntityActor(entity *m.Entity,
+func NewActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager) (actor *EntityActor, err error) {
+	entityManager entity_manager.EntityManager) (actor *Actor, err error) {
 
-	actor = &EntityActor{
+	actor = &Actor{
 		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
 		adaptors:      adaptors,
 		scriptService: scriptService,
@@ -79,15 +79,15 @@ func NewEntityActor(entity *m.Entity,
 	return
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) addEvent(event event_bus.EventCallScene) {
+func (e *Actor) addEvent(event event_bus.EventCallScene) {
 	e.eventPool <- event
 }
 
-func (e *EntityActor) runEvent(msg event_bus.EventCallScene) {
+func (e *Actor) runEvent(msg event_bus.EventCallScene) {
 
 	if _, err := e.scriptEngine.AssertFunction(FuncSceneEvent, msg.EntityId.Name()); err != nil {
 		log.Error(err.Error())

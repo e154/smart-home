@@ -30,7 +30,7 @@ import (
 	"sync"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	positionLock        *sync.Mutex
 	lat, lon, elevation float64
@@ -40,9 +40,9 @@ type EntityActor struct {
 	horizonState        string
 }
 
-func NewEntityActor(name string, entityManager entity_manager.EntityManager) *EntityActor {
+func NewActor(name string, entityManager entity_manager.EntityManager) *Actor {
 
-	entity := &EntityActor{
+	entity := &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntitySun, name)),
 			Name:        name,
@@ -60,11 +60,11 @@ func NewEntityActor(name string, entityManager entity_manager.EntityManager) *En
 	return entity
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) setPosition(lat, lon, elevation float64) {
+func (e *Actor) setPosition(lat, lon, elevation float64) {
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
@@ -73,7 +73,7 @@ func (e *EntityActor) setPosition(lat, lon, elevation float64) {
 	e.elevation = elevation
 }
 
-func (e *EntityActor) updateSunPosition() {
+func (e *Actor) updateSunPosition() {
 
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()

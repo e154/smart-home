@@ -28,7 +28,7 @@ import (
 	"sync"
 )
 
-type EntityActor struct {
+type Actor struct {
 	entity_manager.BaseActor
 	adaptors          *adaptors.Adaptors
 	scriptService     scripts.ScriptService
@@ -40,18 +40,18 @@ type EntityActor struct {
 	stateMu           *sync.Mutex
 }
 
-func NewEntityActor(entity *m.Entity,
+func NewActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager) (actor *EntityActor, err error) {
+	entityManager entity_manager.EntityManager) (actor *Actor, err error) {
 
 	var zigbee2mqttDevice *m.Zigbee2mqttDevice
 	if zigbee2mqttDevice, err = adaptors.Zigbee2mqttDevice.GetById(entity.Id.Name()); err != nil {
 		return nil, err
 	}
 
-	actor = &EntityActor{
+	actor = &Actor{
 		BaseActor:         entity_manager.NewBaseActor(entity, scriptService),
 		adaptors:          adaptors,
 		scriptService:     scriptService,
@@ -102,11 +102,11 @@ func NewEntityActor(entity *m.Entity,
 	return
 }
 
-func (e *EntityActor) Spawn() entity_manager.PluginActor {
+func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
+func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	if !e.setState(params) {
 		return nil
 	}
@@ -119,7 +119,7 @@ func (e *EntityActor) SetState(params entity_manager.EntityStateParams) error {
 	return nil
 }
 
-func (e *EntityActor) setState(params entity_manager.EntityStateParams) (changed bool) {
+func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool) {
 	e.stateMu.Lock()
 	defer e.stateMu.Unlock()
 
@@ -159,7 +159,7 @@ func (e *EntityActor) setState(params entity_manager.EntityStateParams) (changed
 	return
 }
 
-func (e *EntityActor) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
+func (e *Actor) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 	message := NewMessage()
 	message.Payload = string(msg.Payload)
 	message.Topic = msg.Topic
@@ -169,7 +169,7 @@ func (e *EntityActor) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 	e.mqttMessageQueue <- message
 }
 
-func (e *EntityActor) mqttNewMessage(message *Message) {
+func (e *Actor) mqttNewMessage(message *Message) {
 	e.newMsgMu.Lock()
 	defer e.newMsgMu.Unlock()
 
@@ -183,11 +183,11 @@ func (e *EntityActor) mqttNewMessage(message *Message) {
 	}
 }
 
-func (e *EntityActor) addAction(event event_bus.EventCallAction) {
+func (e *Actor) addAction(event event_bus.EventCallAction) {
 	e.actionPool <- event
 }
 
-func (e *EntityActor) runAction(msg event_bus.EventCallAction) {
+func (e *Actor) runAction(msg event_bus.EventCallAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)

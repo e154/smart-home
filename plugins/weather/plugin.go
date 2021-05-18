@@ -53,14 +53,14 @@ type plugin struct {
 	isStarted     *atomic.Bool
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
-	actors        map[string]*EntityActor
+	actors        map[string]*Actor
 }
 
 func New() plugins.Plugable {
 	return &plugin{
 		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*EntityActor),
+		actors:     make(map[string]*Actor),
 	}
 }
 
@@ -170,7 +170,7 @@ func (p *plugin) addOrUpdateZone(name string, zoneAttr m.EntityAttributes) (err 
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
-		p.actors[name] = NewEntityActor(name, p.eventBus, p.entityManager)
+		p.actors[name] = NewActor(name, p.eventBus, p.entityManager)
 		p.entityManager.Spawn(p.actors[name].Spawn)
 	}
 	p.actors[name].setPosition(zoneAttr)
