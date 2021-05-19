@@ -37,7 +37,6 @@ const (
 	AttrMin       = "min"
 	AttrMax       = "max"
 	AttrStartedAt = "started_at"
-	AttrLastPing  = "last_ping"
 )
 
 func NewAttr() m.Attributes {
@@ -60,10 +59,6 @@ func NewAttr() m.Attributes {
 		},
 		AttrStartedAt: {
 			Name: AttrStartedAt,
-			Type: common.AttributeTime,
-		},
-		AttrLastPing: {
-			Name: AttrLastPing,
 			Type: common.AttributeTime,
 		},
 	}

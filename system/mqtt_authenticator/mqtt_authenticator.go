@@ -61,21 +61,26 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 
 	log.Infof("login: \"%v\", pass: \"%v\"", login, pass)
 
-	password, ok := pass.(string)
-	if !ok || password == "" {
-		err = ErrBadLoginOrPassword
-	}
+	log.Warn("login disabled")
 
-	if a.cache.IsExist(login) {
-		if password == a.cache.Get(login) {
-			return
-		}
-	}
+	return nil
 
-	// zigbee2mqtt
-	if err = a.checkZigbee2matt(login, password); err == nil {
-		return
-	}
+	//todo fix
+	//password, ok := pass.(string)
+	//if !ok || password == "" {
+	//	err = ErrBadLoginOrPassword
+	//}
+	//
+	//if a.cache.IsExist(login) {
+	//	if password == a.cache.Get(login) {
+	//		return
+	//	}
+	//}
+	//
+	//// zigbee2mqtt
+	//if err = a.checkZigbee2matt(login, password); err == nil {
+	//	return
+	//}
 
 	return
 }
