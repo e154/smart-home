@@ -20,15 +20,12 @@ package node
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/e154/smart-home/system/scripts"
 	"sync"
 )
 
@@ -44,14 +41,10 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[common.EntityId]*Actor
-	mqttServ      mqtt.MqttServ
-	mqttClient    mqtt.MqttCli
+	actorsLock *sync.Mutex
+	actors     map[common.EntityId]*Actor
+	mqttServ   mqtt.MqttServ
+	mqttClient mqtt.MqttCli
 }
 
 func New() plugins.Plugable {
@@ -108,9 +101,9 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	}
 
 	var actor *Actor
-	actor = NewActor(entity, p.entityManager, p.adaptors, p.scriptService, p.eventBus, p.mqttClient)
+	actor = NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus, p.mqttClient)
 	p.actors[entity.Id] = actor
-	p.entityManager.Spawn(actor.Spawn)
+	p.EntityManager.Spawn(actor.Spawn)
 
 	return
 }

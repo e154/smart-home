@@ -20,7 +20,6 @@ package weather
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -47,11 +46,8 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[string]*Actor
+	actorsLock *sync.Mutex
+	actors     map[string]*Actor
 }
 
 func New() plugins.Plugable {
@@ -66,7 +62,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -76,7 +72,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -130,8 +126,8 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 
 	name := entity.Id.Name()
 	if _, ok := p.actors[name]; !ok {
-		p.actors[name] = NewActor(entity, p.entityManager, p.eventBus)
-		p.entityManager.Spawn(p.actors[name].Spawn)
+		p.actors[name] = NewActor(entity, p.EntityManager, p.EventBus)
+		p.EntityManager.Spawn(p.actors[name].Spawn)
 	}
 	p.actors[name].UpdatePosition(entity.Settings)
 	return

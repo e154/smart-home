@@ -19,13 +19,10 @@
 package weather_met
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"time"
 )
 
@@ -46,37 +43,28 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	adaptors      *adaptors.Adaptors
-	entityManager entity_manager.EntityManager
-	isStarted     *atomic.Bool
-	quit          chan struct{}
-	pause         uint
-	service       common.PluginManager
-	eventBus      event_bus.EventBus
-	weather       *WeatherMet
+	quit    chan struct{}
+	pause   uint
+	service common.PluginManager
+	weather *WeatherMet
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted: atomic.NewBool(false),
-		quit:      make(chan struct{}),
-		pause:     60,
+		quit:  make(chan struct{}),
+		pause: 60,
 	}
 }
 
 func (p *plugin) Load(service plugins.Service) (err error) {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-	p.weather = NewWeatherMet(p.eventBus, p.adaptors)
-
-	if p.isStarted.Load() {
+	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
-	p.isStarted.Store(true)
 
-	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
-	p.eventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
+	p.weather = NewWeatherMet(p.EventBus, p.Adaptors)
+
+	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
 	p.quit = make(chan struct{})
 
 	go func() {
@@ -107,13 +95,13 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 }
 
 func (p *plugin) Unload() (err error) {
-	if !p.isStarted.Load() {
+	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-	p.isStarted.Store(false)
+
 	p.quit <- struct{}{}
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
-	p.eventBus.Unsubscribe(weather.TopicPluginWeather, p.eventHandler)
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Unsubscribe(weather.TopicPluginWeather, p.eventHandler)
 	return nil
 }
 

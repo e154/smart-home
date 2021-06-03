@@ -19,14 +19,10 @@
 package alexa
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/e154/smart-home/system/scripts"
 	"sync"
 )
 
@@ -42,13 +38,9 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	eventBus      event_bus.EventBus
-	server        IServer
-	actorsLock    *sync.Mutex
-	registrar     triggers.IRegistrar
+	server     IServer
+	actorsLock *sync.Mutex
+	registrar  triggers.IRegistrar
 }
 
 func New() plugins.Plugable {
@@ -65,7 +57,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	// register trigger
 	if triggersPlugin, ok := service.Plugins()[triggers.Name]; ok {
 		if p.registrar, ok = triggersPlugin.(triggers.IRegistrar); ok {
-			if err = p.registrar.RegisterTrigger(NewTrigger(p.eventBus)); err != nil {
+			if err = p.registrar.RegisterTrigger(NewTrigger(p.EventBus)); err != nil {
 				log.Error(err.Error())
 				return
 			}
@@ -73,15 +65,15 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	}
 
 	// run server
-	p.server = NewServer(p.adaptors,
+	p.server = NewServer(p.Adaptors,
 		NewConfig(service.AppConfig()),
-		p.scriptService,
+		p.ScriptService,
 		service.GateClient(),
-		p.eventBus)
+		p.EventBus)
 
 	p.server.Start()
 
-	p.eventBus.Subscribe(TopicPluginAlexa, p.eventHandler)
+	p.EventBus.Subscribe(TopicPluginAlexa, p.eventHandler)
 
 	return nil
 }
@@ -91,7 +83,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.eventBus.Unsubscribe(TopicPluginAlexa, p.eventHandler)
+	p.EventBus.Unsubscribe(TopicPluginAlexa, p.eventHandler)
 
 	p.server.Stop()
 	p.server = nil

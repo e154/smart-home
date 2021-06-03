@@ -20,13 +20,10 @@ package sun
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"sync"
 	"time"
 )
@@ -43,19 +40,14 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	isStarted     *atomic.Bool
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[string]*Actor
-	pause         time.Duration
-	quit          chan struct{}
+	actorsLock *sync.Mutex
+	actors     map[string]*Actor
+	pause      time.Duration
+	quit       chan struct{}
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[string]*Actor),
 		pause:      240,
@@ -74,7 +66,6 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 		defer func() {
 			ticker.Stop()
-			p.isStarted.Store(false)
 			close(p.quit)
 		}()
 
@@ -114,8 +105,8 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	p.actors[entity.Id.Name()] = NewActor(entity, p.entityManager, p.eventBus)
-	p.entityManager.Spawn(p.actors[entity.Id.Name()].Spawn)
+	p.actors[entity.Id.Name()] = NewActor(entity, p.EntityManager, p.EventBus)
+	p.EntityManager.Spawn(p.actors[entity.Id.Name()].Spawn)
 
 	return
 }

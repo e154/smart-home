@@ -21,11 +21,8 @@
 package uptime
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"time"
 )
@@ -46,14 +43,11 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	eventBus      event_bus.EventBus
-	entity        *Actor
-	ticker        *time.Ticker
-	pause         time.Duration
-	adaptors      *adaptors.Adaptors
-	storyModel    *m.RunStory
-	quit          chan struct{}
+	entity     *Actor
+	ticker     *time.Ticker
+	pause      time.Duration
+	storyModel *m.RunStory
+	quit       chan struct{}
 }
 
 func New() plugins.Plugable {
@@ -67,21 +61,21 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.entity = NewActor(p.entityManager, p.eventBus)
+	p.entity = NewActor(p.EntityManager, p.EventBus)
 	p.quit = make(chan struct{})
 
 	p.storyModel = &m.RunStory{
 		Start: time.Now(),
 	}
 
-	p.storyModel.Id, err = p.adaptors.RunHistory.Add(p.storyModel)
+	p.storyModel.Id, err = p.Adaptors.RunHistory.Add(p.storyModel)
 
 	if err != nil {
 		log.Error(err.Error())
 		return nil
 	}
 
-	p.entityManager.Spawn(p.entity.Spawn)
+	p.EntityManager.Spawn(p.entity.Spawn)
 
 	go func() {
 		ticker := time.NewTicker(time.Second * p.pause)
@@ -109,7 +103,7 @@ func (p *plugin) Unload() (err error) {
 
 	p.quit <- struct{}{}
 	p.storyModel.End = common.Time(time.Now())
-	if err = p.adaptors.RunHistory.Update(p.storyModel); err != nil {
+	if err = p.Adaptors.RunHistory.Update(p.storyModel); err != nil {
 		log.Error(err.Error())
 	}
 	return

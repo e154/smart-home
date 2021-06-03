@@ -44,11 +44,9 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	pause         time.Duration
-	actor         *Actor
-	eventBus      event_bus.EventBus
-	quit          chan struct{}
+	pause time.Duration
+	actor *Actor
+	quit  chan struct{}
 }
 
 func New() plugins.Plugable {
@@ -62,13 +60,13 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.actor = NewActor(p.entityManager, p.eventBus)
+	p.actor = NewActor(p.EntityManager, p.EventBus)
 
-	p.entityManager.Spawn(p.actor.Spawn)
+	p.EntityManager.Spawn(p.actor.Spawn)
 	p.actor.check()
 	p.quit = make(chan struct{})
 
-	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	go func() {
 		ticker := time.NewTicker(time.Hour * p.pause)
@@ -97,7 +95,7 @@ func (p *plugin) Unload() (err error) {
 	}
 
 	p.quit <- struct{}{}
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
 }
 

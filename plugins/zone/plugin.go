@@ -20,11 +20,9 @@ package zone
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"sync"
 )
@@ -41,11 +39,8 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[string]entity_manager.PluginActor
+	actorsLock *sync.Mutex
+	actors     map[string]entity_manager.PluginActor
 }
 
 func New() plugins.Plugable {
@@ -89,9 +84,9 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	actor := NewActor(entity, p.ScriptService, p.Adaptors, p.eventBus)
+	actor := NewActor(entity, p.ScriptService, p.Adaptors, p.EventBus)
 	p.actors[entity.Id.Name()] = actor
-	p.entityManager.Spawn(actor.Spawn)
+	p.EntityManager.Spawn(actor.Spawn)
 
 	return
 }

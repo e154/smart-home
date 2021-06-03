@@ -20,13 +20,11 @@ package scene
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/e154/smart-home/system/scripts"
 	"sync"
 )
 
@@ -42,12 +40,8 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[string]*Actor
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
+	actorsLock *sync.Mutex
+	actors     map[string]*Actor
 }
 
 func New() plugins.Plugable {
@@ -62,7 +56,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	if err := p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
+	if err := p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -74,7 +68,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return
 }
@@ -112,11 +106,11 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity,
 
 	var actor *Actor
 	if actor, err = NewActor(entity, attributes,
-		p.adaptors, p.scriptService, p.entityManager); err != nil {
+		p.Adaptors, p.ScriptService, p.EntityManager); err != nil {
 		return
 	}
 	p.actors[name] = actor
-	p.entityManager.Spawn(p.actors[name].Spawn)
+	p.EntityManager.Spawn(p.actors[name].Spawn)
 
 	return
 }

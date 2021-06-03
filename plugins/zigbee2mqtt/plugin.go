@@ -20,14 +20,12 @@ package zigbee2mqtt
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/e154/smart-home/system/scripts"
 	"strings"
 	"sync"
 )
@@ -44,15 +42,11 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[string]*Actor
-	mqttServ      mqtt.MqttServ
-	mqttClient    mqtt.MqttCli
-	mqttSubs      sync.Map
+	actorsLock *sync.Mutex
+	actors     map[string]*Actor
+	mqttServ   mqtt.MqttServ
+	mqttClient mqtt.MqttCli
+	mqttSubs   sync.Map
 }
 
 func New() plugins.Plugable {
@@ -71,7 +65,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.zigbee2mqtt")
-	if err := p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
+	if err := p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 	return nil
@@ -83,7 +77,7 @@ func (p plugin) Unload() (err error) {
 	}
 
 	p.mqttServ.RemoveClient("plugins.zigbee2mqtt")
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
 }
 
@@ -118,14 +112,14 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue
 
 	var actor *Actor
 	if actor, err = NewActor(entity, attributes,
-		p.adaptors, p.scriptService, p.entityManager, p.eventBus); err != nil {
+		p.Adaptors, p.ScriptService, p.EntityManager, p.EventBus); err != nil {
 		return
 	}
 	p.actors[name] = actor
-	p.entityManager.Spawn(p.actors[name].Spawn)
+	p.EntityManager.Spawn(p.actors[name].Spawn)
 
 	var br *m.Zigbee2mqtt
-	if br, err = p.adaptors.Zigbee2mqtt.GetById(actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
+	if br, err = p.Adaptors.Zigbee2mqtt.GetById(actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
 		return
 	}
 

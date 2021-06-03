@@ -20,13 +20,10 @@ package modbus_tcp
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/e154/smart-home/system/scripts"
 	"sync"
 )
 
@@ -42,12 +39,8 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[common.EntityId]*Actor
+	actorsLock *sync.Mutex
+	actors     map[common.EntityId]*Actor
 }
 
 func New() plugins.Plugable {
@@ -62,7 +55,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -72,7 +65,7 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return nil
 }
 
@@ -105,9 +98,9 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	}
 
 	var actor *Actor
-	actor = NewActor(entity, p.entityManager, p.adaptors, p.scriptService, p.eventBus)
+	actor = NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus)
 	p.actors[entity.Id] = actor
-	p.entityManager.Spawn(actor.Spawn)
+	p.EntityManager.Spawn(actor.Spawn)
 	return
 }
 

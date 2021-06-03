@@ -20,11 +20,9 @@ package moon
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"sync"
 	"time"
@@ -42,13 +40,10 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[string]*Actor
-	quit          chan struct{}
-	pause         time.Duration
+	actorsLock *sync.Mutex
+	actors     map[string]*Actor
+	quit       chan struct{}
+	pause      time.Duration
 }
 
 func New() plugins.Plugable {
@@ -110,8 +105,8 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	p.actors[entity.Id.Name()] = NewActor(entity, p.entityManager, p.eventBus)
-	p.entityManager.Spawn(p.actors[entity.Id.Name()].Spawn)
+	p.actors[entity.Id.Name()] = NewActor(entity, p.EntityManager, p.EventBus)
+	p.EntityManager.Spawn(p.actors[entity.Id.Name()].Spawn)
 
 	return
 }

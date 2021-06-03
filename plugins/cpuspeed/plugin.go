@@ -19,11 +19,8 @@
 package cpuspeed
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/prometheus/common/log"
 	"time"
@@ -37,12 +34,9 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	entityManager entity_manager.EntityManager
-	eventBus      event_bus.EventBus
-	quit          chan struct{}
-	pause         uint
-	actor         *Actor
-	adaptors      *adaptors.Adaptors
+	quit  chan struct{}
+	pause uint
+	actor *Actor
 }
 
 func New() plugins.Plugable {
@@ -57,9 +51,9 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.entityManager.Spawn(p.actor.Spawn)
+	p.EntityManager.Spawn(p.actor.Spawn)
 
-	list, _, err := p.adaptors.Metric.Search("cpuspeed", 1, 0)
+	list, _, err := p.Adaptors.Metric.Search("cpuspeed", 1, 0)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -89,8 +83,8 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 			},
 			Type: common.MetricTypeLine,
 		}
-		if metric.Id, err = p.adaptors.Metric.Add(metric); err == nil {
-			p.adaptors.Entity.AppendMetric(p.actor.Id, metric)
+		if metric.Id, err = p.Adaptors.Metric.Add(metric); err == nil {
+			p.Adaptors.Entity.AppendMetric(p.actor.Id, metric)
 		}
 
 	} else {
