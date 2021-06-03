@@ -36,6 +36,7 @@ type NewEntity struct {
 	Scripts     []Script           `json:"scripts"`
 	Hidden      bool               `json:"hidden"`
 	Attributes  Attributes         `json:"attributes"`
+	Settings    Attributes         `json:"settings"`
 	AutoLoad    bool               `json:"auto_load"`
 }
 
@@ -52,12 +53,13 @@ type UpdateEntity struct {
 	Scripts     []Script        `json:"scripts"`
 	Hidden      bool            `json:"hidden"`
 	Attributes  Attributes      `json:"attributes"`
+	Settings    Attributes      `json:"settings"`
 	AutoLoad    bool            `json:"auto_load"`
 }
 
 // swagger:model
 type Entity struct {
-	Id          string           `json:"id"`
+	Id          string          `json:"id"`
 	Description string          `json:"description"`
 	Type        string          `json:"type" valid:"Required"`
 	Icon        *string         `json:"icon"`
@@ -69,6 +71,7 @@ type Entity struct {
 	Scripts     []Script        `json:"scripts"`
 	Hidden      bool            `json:"hidden"`
 	Attributes  Attributes      `json:"attributes"`
+	Settings    Attributes      `json:"settings"`
 	AutoLoad    bool            `json:"auto_load"`
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`

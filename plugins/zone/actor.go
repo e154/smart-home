@@ -19,36 +19,36 @@
 package zone
 
 import (
-	"fmt"
-	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/scripts"
 	"sync"
 )
 
 type Actor struct {
 	entity_manager.BaseActor
+	eventBus event_bus.EventBus
 	entities []entity_manager.PluginActor
 	stateMu  *sync.Mutex
 }
 
-func NewActor(name string, params m.AttributeValue,
-	entityManager entity_manager.EntityManager) *Actor {
+func NewActor(entity *m.Entity,
+	scriptService scripts.ScriptService,
+	adaptors *adaptors.Adaptors,
+	eventBus event_bus.EventBus) *Actor {
 
-	attributes := NewAttr()
-	attributes.Deserialize(params)
-
-	return &Actor{
-		BaseActor: entity_manager.BaseActor{
-			Id:         common.EntityId(fmt.Sprintf("%s.%s", EntityZone, name)),
-			Name:       name,
-			EntityType: EntityZone,
-			AttrMu:     &sync.Mutex{},
-			Attrs:      attributes,
-			Manager:    entityManager,
-		},
-		stateMu: &sync.Mutex{},
+	actor := &Actor{
+		BaseActor: entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		eventBus:  eventBus,
+		stateMu:   &sync.Mutex{},
 	}
+	actor.Setts = entity.Settings
+	if actor.Setts == nil {
+		actor.Setts = NewSettings()
+	}
+	return actor
 }
 
 func (e *Actor) Spawn() entity_manager.PluginActor {
@@ -65,8 +65,8 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 
 	var changed bool
 	var err error
-	e.AttrMu.Lock()
-	if changed, err = e.Attrs.Deserialize(params.AttributeValues); !changed {
+	e.SettingsMu.Lock()
+	if changed, err = e.Setts.Deserialize(params.SettingsValue); !changed {
 		if err != nil {
 			log.Warn(err.Error())
 		}
@@ -74,17 +74,18 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 		if oldState.LastUpdated != nil {
 			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
 			if delta < 200 {
-				e.AttrMu.Unlock()
+				e.SettingsMu.Unlock()
 				return nil
 			}
 		}
 	}
-	e.AttrMu.Unlock()
+	e.SettingsMu.Unlock()
 
-	go e.Send(entity_manager.MessageStateChanged{
-		StorageSave: true,
-		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		OldState: oldState,
+		NewState: e.GetEventState(e),
 	})
 
 	return nil

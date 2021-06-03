@@ -30,6 +30,7 @@ import (
 
 type Actor struct {
 	entity_manager.BaseActor
+	eventBus          event_bus.EventBus
 	adaptors          *adaptors.Adaptors
 	scriptService     scripts.ScriptService
 	zigbee2mqttDevice *m.Zigbee2mqttDevice
@@ -44,7 +45,8 @@ func NewActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager) (actor *Actor, err error) {
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus) (actor *Actor, err error) {
 
 	var zigbee2mqttDevice *m.Zigbee2mqttDevice
 	if zigbee2mqttDevice, err = adaptors.Zigbee2mqttDevice.GetById(entity.Id.Name()); err != nil {
@@ -52,7 +54,8 @@ func NewActor(entity *m.Entity,
 	}
 
 	actor = &Actor{
-		BaseActor:         entity_manager.NewBaseActor(entity, scriptService),
+		BaseActor:         entity_manager.NewBaseActor(entity, scriptService, adaptors),
+		eventBus:          eventBus,
 		adaptors:          adaptors,
 		scriptService:     scriptService,
 		zigbee2mqttDevice: zigbee2mqttDevice,
@@ -150,10 +153,11 @@ func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool)
 	}
 	e.AttrMu.Unlock()
 
-	e.Send(entity_manager.MessageStateChanged{
-		StorageSave: true,
-		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		OldState: oldState,
+		NewState: e.GetEventState(e),
 	})
 
 	return

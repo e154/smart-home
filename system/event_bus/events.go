@@ -30,10 +30,11 @@ type EventRequestState struct {
 }
 
 type EventStateChanged struct {
-	Type     common.EntityType `json:"type"`
-	EntityId common.EntityId   `json:"entity_id"`
-	OldState EventEntityState  `json:"old_state"`
-	NewState EventEntityState  `json:"new_state"`
+	StorageSave bool              `json:"storage_save"`
+	Type        common.EntityType `json:"type"`
+	EntityId    common.EntityId   `json:"entity_id"`
+	OldState    EventEntityState  `json:"old_state"`
+	NewState    EventEntityState  `json:"new_state"`
 }
 
 type EventCallAction struct {
@@ -49,13 +50,14 @@ type EventCallScene struct {
 	Args     map[string]interface{} `json:"args"`
 }
 
-type EventAddedNewEntity struct {
+type EventAddedActor struct {
 	Type       common.EntityType `json:"type"`
 	EntityId   common.EntityId   `json:"entity_id"`
 	Attributes m.Attributes      `json:"attributes"`
+	Settings   m.Attributes      `json:"settings"` //???
 }
 
-type EventRemoveEntity struct {
+type EventRemoveActor struct {
 	Type     common.EntityType `json:"type"`
 	EntityId common.EntityId   `json:"entity_id"`
 }

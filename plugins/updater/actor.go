@@ -24,6 +24,7 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/version"
 	"go.uber.org/atomic"
 	"io"
@@ -34,6 +35,7 @@ import (
 
 type Actor struct {
 	entity_manager.BaseActor
+	eventBus          event_bus.EventBus
 	checkLock         *sync.Mutex
 	latestVersion     string
 	latestDownloadUrl string
@@ -42,7 +44,9 @@ type Actor struct {
 	currentVersion    *semver.Version
 }
 
-func NewActor(entityManager entity_manager.EntityManager) *Actor {
+func NewActor(entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus) *Actor {
+
 	var v = "v0.0.1"
 	if version.VersionString != "?" {
 		v = version.VersionString
@@ -62,31 +66,10 @@ func NewActor(entityManager entity_manager.EntityManager) *Actor {
 			AttrMu:      &sync.Mutex{},
 			Attrs:       NewAttr(),
 			Manager:     entityManager,
-			States: map[string]entity_manager.ActorState{
-				"enabled": {
-					Name:        "enabled",
-					Description: "Enabled",
-				},
-				"disabled": {
-					Name:        "disabled",
-					Description: "Disabled",
-				},
-				"error": {
-					Name:        "error",
-					Description: "Error",
-				},
-				"exist_update": {
-					Name:        "exist_update",
-					Description: "Exist update",
-				},
-			},
-			Actions: map[string]entity_manager.ActorAction{
-				"check": {
-					Name:        "check",
-					Description: "Check version",
-				},
-			},
+			States:      NewStates(),
+			Actions:     NewActions(),
 		},
+		eventBus:       eventBus,
 		checkLock:      &sync.Mutex{},
 		currentVersion: currentVersion,
 	}
@@ -96,41 +79,41 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (u *Actor) setState(v string) {
+func (e *Actor) setState(v string) {
 
 	switch v {
 	case "exist_update":
-		state := u.States["exist_update"]
-		u.State = &state
-		u.Value.Store(entity_manager.StateOk)
+		state := e.States["exist_update"]
+		e.State = &state
+		e.Value.Store(entity_manager.StateOk)
 		return
 	case entity_manager.StateAwait, entity_manager.StateOk, entity_manager.StateInProcess:
-		state := u.States["enabled"]
-		u.State = &state
+		state := e.States["enabled"]
+		e.State = &state
 	case entity_manager.StateError:
-		state := u.States["error"]
-		u.State = &state
+		state := e.States["error"]
+		e.State = &state
 	default:
-		state := u.States["disabled"]
-		u.State = &state
+		state := e.States["disabled"]
+		e.State = &state
 	}
 
-	u.Value.Store(v)
+	e.Value.Store(v)
 }
 
-func (u *Actor) check() {
+func (e *Actor) check() {
 
-	u.checkLock.Lock()
+	e.checkLock.Lock()
 	var err error
 	defer func() {
 		if err != nil {
-			u.setState(entity_manager.StateError)
+			e.setState(entity_manager.StateError)
 			return
 		}
-		u.checkLock.Unlock()
+		e.checkLock.Unlock()
 	}()
 
-	u.setState(entity_manager.StateInProcess)
+	e.setState(entity_manager.StateInProcess)
 
 	var resp *http.Response
 	if resp, err = http.Get(uri); err != nil {
@@ -148,35 +131,36 @@ func (u *Actor) check() {
 		return
 	}
 
-	u.setState(entity_manager.StateOk)
+	e.setState(entity_manager.StateOk)
 
-	u.lastCheck = time.Now()
-	u.latestVersion = data.TagName
-	u.latestVersionTime = data.CreatedAt
+	e.lastCheck = time.Now()
+	e.latestVersion = data.TagName
+	e.latestVersionTime = data.CreatedAt
 	for _, asset := range data.Assets {
-		u.latestDownloadUrl = asset.BrowserDownloadUrl
+		e.latestDownloadUrl = asset.BrowserDownloadUrl
 	}
 
 	var releaseVersion *semver.Version
-	if releaseVersion, err = semver.NewVersion(u.latestVersion); err == nil {
+	if releaseVersion, err = semver.NewVersion(e.latestVersion); err == nil {
 		// found update
-		if compare := u.currentVersion.Compare(releaseVersion); compare < 0 {
-			u.setState("exist_update")
+		if compare := e.currentVersion.Compare(releaseVersion); compare < 0 {
+			e.setState("exist_update")
 		}
 	}
 
-	oldState := u.GetEventState(u)
+	oldState := e.GetEventState(e)
 
-	u.AttrMu.Lock()
-	u.Attrs[AttrUpdaterLatestVersion].Value = u.latestVersion
-	u.Attrs[AttrUpdaterLatestVersionTime].Value = u.latestVersionTime
-	u.Attrs[AttrUpdaterLatestLatestDownloadUrl].Value = u.latestDownloadUrl
-	u.Attrs[AttrUpdaterLatestCheck].Value = u.lastCheck
-	u.AttrMu.Unlock()
+	e.AttrMu.Lock()
+	e.Attrs[AttrUpdaterLatestVersion].Value = e.latestVersion
+	e.Attrs[AttrUpdaterLatestVersionTime].Value = e.latestVersionTime
+	e.Attrs[AttrUpdaterLatestLatestDownloadUrl].Value = e.latestDownloadUrl
+	e.Attrs[AttrUpdaterLatestCheck].Value = e.lastCheck
+	e.AttrMu.Unlock()
 
-	u.Send(entity_manager.MessageStateChanged{
-		StorageSave: true,
-		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		OldState: oldState,
+		NewState: e.GetEventState(e),
 	})
 }

@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
 	"time"
 )
 
@@ -37,6 +38,8 @@ const (
 	AttrMin       = "min"
 	AttrMax       = "max"
 	AttrStartedAt = "started_at"
+	AttrNodeLogin = "node_login"
+	AttrNodePass  = "node_pass"
 )
 
 func NewAttr() m.Attributes {
@@ -62,6 +65,39 @@ func NewAttr() m.Attributes {
 			Type: common.AttributeTime,
 		},
 	}
+}
+
+func NewSettings() m.Attributes {
+	return m.Attributes{
+		AttrNodeLogin: {
+			Name: AttrNodeLogin,
+			Type: common.AttributeString,
+		},
+		AttrNodePass: {
+			Name: AttrNodePass,
+			Type: common.AttributeString,
+		},
+	}
+}
+
+func NewStates() (states map[string]entity_manager.ActorState) {
+
+	states = map[string]entity_manager.ActorState{
+		"wait": {
+			Name:        "wait",
+			Description: "Wait",
+		},
+		"connected": {
+			Name:        "connected",
+			Description: "Connected",
+		},
+		"error": {
+			Name:        "error",
+			Description: "Error",
+		},
+	}
+
+	return
 }
 
 // MqttMessage ...

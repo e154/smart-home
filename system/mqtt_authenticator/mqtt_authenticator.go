@@ -22,8 +22,9 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/cache"
+	"reflect"
+	"sync"
 	"time"
 )
 
@@ -39,20 +40,25 @@ var ErrPrincipalDisabled = fmt.Errorf("principal disabled")
 
 type MqttAuthenticator interface {
 	Authenticate(login string, pass interface{}) (err error)
+	Register(fn func(login, password string) (err error)) (err error)
+	Unregister(fn func(login, password string) (err error)) (err error)
 }
 
 // Authenticator ...
 type Authenticator struct {
-	adaptors *adaptors.Adaptors
-	cache    cache.Cache
+	adaptors  *adaptors.Adaptors
+	cache     cache.Cache
+	handlerMu *sync.Mutex
+	handlers  []reflect.Value
 }
 
 // NewAuthenticator ...
 func NewAuthenticator(adaptors *adaptors.Adaptors) MqttAuthenticator {
 	bm, _ := cache.NewCache("memory", fmt.Sprintf(`{"interval":%d}`, time.Second*60))
 	return &Authenticator{
-		adaptors: adaptors,
-		cache:    bm,
+		adaptors:  adaptors,
+		cache:     bm,
+		handlerMu: &sync.Mutex{},
 	}
 }
 
@@ -61,47 +67,68 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 
 	log.Infof("login: \"%v\", pass: \"%v\"", login, pass)
 
-	log.Warn("login disabled")
+	password, ok := pass.(string)
+	if !ok || password == "" {
+		err = ErrBadLoginOrPassword
+	}
 
-	return nil
+	if a.cache.IsExist(login) {
+		if password == a.cache.Get(login) {
+			return
+		}
+	}
 
-	//todo fix
-	//password, ok := pass.(string)
-	//if !ok || password == "" {
-	//	err = ErrBadLoginOrPassword
-	//}
-	//
-	//if a.cache.IsExist(login) {
-	//	if password == a.cache.Get(login) {
-	//		return
-	//	}
-	//}
-	//
-	//// zigbee2mqtt
-	//if err = a.checkZigbee2matt(login, password); err == nil {
-	//	return
-	//}
+	for _, v := range a.handlers {
+		result := v.Call([]reflect.Value{reflect.ValueOf(login), reflect.ValueOf(pass)})
+		if result[0].Interface() != nil {
+			err = result[0].Interface().(error)
+		} else {
+			continue
+		}
+		break
+	}
+
+	a.cache.Put(login, pass, 60*time.Second)
 
 	return
 }
 
-func (a Authenticator) checkZigbee2matt(login, password string) (err error) {
-
-	var bridge *m.Zigbee2mqtt
-	if bridge, err = a.adaptors.Zigbee2mqtt.GetByLogin(login); err != nil {
-		return
+func (a *Authenticator) Register(fn func(login, password string) (err error)) (err error) {
+	if reflect.TypeOf(fn).Kind() != reflect.Func {
+		err = fmt.Errorf("%s is not a reflect.Func", reflect.TypeOf(fn))
 	}
 
-	if bridge.EncryptedPassword == "" && password == "" {
-		return
+	a.handlerMu.Lock()
+	defer a.handlerMu.Unlock()
+
+	rv := reflect.ValueOf(fn)
+
+	for _, v := range a.handlers {
+		if v == rv {
+			return
+		}
 	}
 
-	if ok := common.CheckPasswordHash(password, bridge.EncryptedPassword); !ok {
-		err = ErrBadLoginOrPassword
-		return
+	a.handlers = append(a.handlers, rv)
+
+	log.Infof("register ...")
+
+	return
+}
+
+func (a *Authenticator) Unregister(fn func(login, password string) (err error)) (err error) {
+	a.handlerMu.Lock()
+	defer a.handlerMu.Unlock()
+
+	rv := reflect.ValueOf(fn)
+
+	for i, v := range a.handlers {
+		if v == rv {
+			a.handlers = append(a.handlers[:i], a.handlers[i+1:]...)
+		}
 	}
 
-	a.cache.Put(login, password, 60*time.Second)
+	log.Infof("unregister ...")
 
 	return
 }

@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/rcrowley/go-metrics"
 	"github.com/shirou/gopsutil/cpu"
 	"sync"
@@ -35,10 +36,12 @@ type Actor struct {
 	all             metrics.GaugeFloat64
 	allCpuPrevTotal float64
 	allCpuPrevIdle  float64
+	eventBus        event_bus.EventBus
 	updateLock      *sync.Mutex
 }
 
-func NewActor(entityManager entity_manager.EntityManager) *Actor {
+func NewActor(entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus) *Actor {
 
 	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
@@ -50,6 +53,7 @@ func NewActor(entityManager entity_manager.EntityManager) *Actor {
 			Attrs:             NewAttr(),
 			Manager:           entityManager,
 		},
+		eventBus:   eventBus,
 		all:        metrics.NewGaugeFloat64(),
 		updateLock: &sync.Mutex{},
 	}
@@ -94,13 +98,14 @@ func (u *Actor) selfUpdate() {
 	u.Attrs[AttrCpuAll].Value = u.all.Value()
 	u.AttrMu.Unlock()
 
-	u.Manager.SetMetric(u.Id, "cpuspeed", map[string]interface{}{
+	u.SetMetric(u.Id, "cpuspeed", map[string]interface{}{
 		"all": common.Rounding(u.all.Value(), 2),
 	})
 
-	u.Send(entity_manager.MessageStateChanged{
-		StorageSave: false,
-		OldState:    oldState,
-		NewState:    u.GetEventState(u),
+	u.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:     u.Id.Type(),
+		EntityId: u.Id,
+		OldState: oldState,
+		NewState: u.GetEventState(u),
 	})
 }

@@ -41,6 +41,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	eventBus      event_bus.EventBus
@@ -61,6 +62,7 @@ func (p *plugin) Load(service plugins.Service) error {
 	p.adaptors = service.Adaptors()
 	p.eventBus = service.EventBus()
 	p.entityManager = service.EntityManager()
+	p.ScriptService = service.ScriptService()
 
 	return nil
 }
@@ -87,7 +89,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	actor := NewActor(entity.Id.Name(), attributes, p.entityManager)
+	actor := NewActor(entity, p.ScriptService, p.Adaptors, p.eventBus)
 	p.actors[entity.Id.Name()] = actor
 	p.entityManager.Spawn(actor.Spawn)
 
@@ -118,4 +120,12 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		ActorCustomAttrs: false,
+		ActorAttrs:       NewAttr(),
+		ActorSetts:       NewSettings(),
+	}
 }

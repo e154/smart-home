@@ -42,6 +42,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
@@ -141,4 +142,15 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:             true,
+		ActorCustomAttrs:   true,
+		ActorCustomActions: true,
+		ActorCustomStates:  true,
+		ActorAttrs:         NewAttr(),
+		ActorSetts:         NewSettings(),
+	}
 }

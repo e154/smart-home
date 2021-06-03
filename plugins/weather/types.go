@@ -26,15 +26,8 @@ import (
 	"path"
 )
 
-type Zone struct {
-	Name      string  `json:"name"`
-	Lat       float64 `json:"lat"`
-	Lon       float64 `json:"lon"`
-	Elevation float64 `json:"elevation"`
-}
-
 const (
-	SubStatePositionUpdate = "positionUpdate"
+	StatePositionUpdate = "positionUpdate"
 )
 
 const (
@@ -62,6 +55,9 @@ const (
 	AttrWeatherWindSpeed      = "wind_speed"
 
 	Attribution = "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute."
+
+	AttrLat = "lat"
+	AttrLon = "lon"
 )
 
 func BaseForecast() m.Attributes {
@@ -137,11 +133,25 @@ func NewAttr() m.Attributes {
 	}
 }
 
-type EventSubStateChanged struct {
+func NewSettings() m.Attributes {
+	return m.Attributes{
+		AttrLat: {
+			Name: AttrLat,
+			Type: common.AttributeFloat,
+		},
+		AttrLon: {
+			Name: AttrLon,
+			Type: common.AttributeFloat,
+		},
+	}
+}
+
+type EventStateChanged struct {
 	Type       common.EntityType `json:"type"`
 	EntityId   common.EntityId   `json:"entity_id"`
 	State      string            `json:"state"`
 	Attributes m.Attributes      `json:"attributes"`
+	Settings   m.Attributes      `json:"settings"`
 }
 
 const (
@@ -234,7 +244,7 @@ var (
 	}
 )
 
-func States(n, w bool) (states map[string]entity_manager.ActorState) {
+func NewStates(n, w bool) (states map[string]entity_manager.ActorState) {
 
 	states = map[string]entity_manager.ActorState{
 		StateClearSky:                    {Name: StateClearSky, Description: "clear sky", ImageUrl: GetImagePath(StateClearSky, n, w)},

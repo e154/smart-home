@@ -35,6 +35,14 @@ type NewEntityAction struct {
 }
 
 // swagger:model
+type EntityActionShort struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Icon        *string `json:"icon"`
+	Image       *Image  `json:"image"`
+}
+
+// swagger:model
 type EntityAction struct {
 	Id          int64     `json:"id"`
 	Name        string    `json:"name"`

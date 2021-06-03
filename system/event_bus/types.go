@@ -38,6 +38,7 @@ type EventEntityState struct {
 	Value       interface{}     `json:"value"`
 	State       *EntityState    `json:"state"`
 	Attributes  m.Attributes    `json:"attributes"`
+	Settings    m.Attributes    `json:"settings"`
 	LastChanged *time.Time      `json:"last_changed"`
 	LastUpdated *time.Time      `json:"last_updated"`
 }

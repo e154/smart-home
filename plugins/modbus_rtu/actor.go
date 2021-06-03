@@ -45,7 +45,7 @@ func NewActor(entity *m.Entity,
 	eventBus event_bus.EventBus) (actor *Actor) {
 
 	actor = &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
+		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
@@ -58,7 +58,14 @@ func NewActor(entity *m.Entity,
 	}
 
 	actor.Manager = entityManager
-	actor.Attrs = NewAttr()
+
+	if actor.Attrs == nil {
+		actor.Attrs = NewAttr()
+	}
+
+	if actor.Setts == nil {
+		actor.Setts = NewSettings()
+	}
 
 	actor.DeserializeAttr(entity.Attributes.Serialize())
 
@@ -67,7 +74,7 @@ func NewActor(entity *m.Entity,
 		if a.ScriptEngine != nil {
 			// bind
 			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
-			a.ScriptEngine.PushFunction("ModbusRtu",  NewModbusRtu(eventBus, actor))
+			a.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(eventBus, actor))
 			a.ScriptEngine.Do()
 		}
 	}
@@ -93,8 +100,30 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool) {
-	return
+func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
+
+	oldState := e.GetEventState(e)
+
+	e.Now(oldState)
+
+	if params.NewState != nil {
+		state := e.States[*params.NewState]
+		e.State = &state
+		e.State.ImageUrl = state.ImageUrl
+	}
+
+	e.AttrMu.Lock()
+	e.Attrs.Deserialize(params.AttributeValues)
+	e.AttrMu.Unlock()
+
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		OldState: oldState,
+		NewState: e.GetEventState(e),
+	})
+
+	return nil
 }
 
 func (e *Actor) addAction(event event_bus.EventCallAction) {

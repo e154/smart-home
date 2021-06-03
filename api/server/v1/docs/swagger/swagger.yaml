@@ -311,6 +311,8 @@ definitions:
           $ref: '#/definitions/Script'
         type: array
         x-go-name: Scripts
+      settings:
+        $ref: '#/definitions/Attributes'
       states:
         items:
           $ref: '#/definitions/EntityState'
@@ -917,6 +919,8 @@ definitions:
           $ref: '#/definitions/Script'
         type: array
         x-go-name: Scripts
+      settings:
+        $ref: '#/definitions/Attributes'
       states:
         items:
           $ref: '#/definitions/NewEntityState'
@@ -1121,6 +1125,22 @@ definitions:
       type:
         type: string
         x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewPlugin:
+    properties:
+      enabled:
+        type: boolean
+        x-go-name: Enabled
+      name:
+        type: string
+        x-go-name: Name
+      system:
+        type: boolean
+        x-go-name: System
+      version:
+        type: string
+        x-go-name: Version
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewRole:
@@ -1368,6 +1388,22 @@ definitions:
       tw_sid:
         type: string
         x-go-name: TWSid
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Plugin:
+    properties:
+      enabled:
+        type: boolean
+        x-go-name: Enabled
+      name:
+        type: string
+        x-go-name: Name
+      system:
+        type: boolean
+        x-go-name: System
+      version:
+        type: string
+        x-go-name: Version
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseType:
@@ -1637,6 +1673,8 @@ definitions:
           $ref: '#/definitions/Script'
         type: array
         x-go-name: Scripts
+      settings:
+        $ref: '#/definitions/Attributes'
       states:
         items:
           $ref: '#/definitions/EntityState'
@@ -1756,6 +1794,22 @@ definitions:
       tw_sid:
         type: string
         x-go-name: TWSid
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdatePlugin:
+    properties:
+      enabled:
+        type: boolean
+        x-go-name: Enabled
+      name:
+        type: string
+        x-go-name: Name
+      system:
+        type: boolean
+        x-go-name: System
+      version:
+        type: string
+        x-go-name: Version
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateRole:
@@ -3482,6 +3536,133 @@ paths:
       summary: get notification list
       tags:
       - notifr
+  /plugin/{name}/disable:
+    post:
+      operationId: pluginDisable
+      parameters:
+      - description: Plugin name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Plugin'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: disable plugin by name
+      tags:
+      - plugin
+  /plugin/{name}/enable:
+    post:
+      operationId: pluginEnable
+      parameters:
+      - description: Plugin name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Plugin'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: enable plugin by name
+      tags:
+      - plugin
+  /plugin/{name}/options:
+    get:
+      operationId: pluginOptions
+      parameters:
+      - description: Plugin name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Plugin'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get plugin by name
+      tags:
+      - plugin
+  /plugins:
+    get:
+      operationId: pluginList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/PluginList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get plugin list
+      tags:
+      - plugin
   /recovery:
     post:
       operationId: authRecovery
@@ -5408,6 +5589,32 @@ responses:
             $ref: '#/definitions/Node'
           type: array
           x-go-name: Nodes
+      type: object
+  PluginList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Plugin'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
       type: object
   RoleList:
     description: ""

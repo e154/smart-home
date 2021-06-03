@@ -39,7 +39,7 @@ func NewZoneManager(adaptors *adaptors.Adaptors) *ZoneManager {
 	}
 }
 
-func (n ZoneManager) addZone(name, desc string) (node *m.Zone) {
+func (n ZoneManager) addZone(name, desc string) {
 
 	loc, err := location.GetRegionInfo()
 	So(err, ShouldBeNil)
@@ -92,11 +92,9 @@ func (n ZoneManager) addZone(name, desc string) (node *m.Zone) {
 	})
 	So(err, ShouldBeNil)
 
-	return
 }
 
 // Create ...
-func (n ZoneManager) Create() (home *m.Zone) {
+func (n ZoneManager) Create() {
 	n.addZone("home", "base geo position")
-	return
 }

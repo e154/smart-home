@@ -20,6 +20,7 @@ package updater
 
 import (
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
@@ -43,6 +44,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	isStarted     atomic2.Bool
 	pause         time.Duration
@@ -65,7 +67,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.actor = NewActor(p.entityManager)
+	p.actor = NewActor(p.entityManager, p.eventBus)
 
 	p.entityManager.Spawn(p.actor.Spawn)
 	p.actor.check()
@@ -134,4 +136,12 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 	}
 
 	return
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		ActorAttrs:   NewAttr(),
+		ActorActions: entity_manager.ToEntityActionShort(NewActions()),
+		ActorStates:  entity_manager.ToEntityStateShort(NewStates()),
+	}
 }

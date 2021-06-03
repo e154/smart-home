@@ -169,4 +169,10 @@ func (s *Server) setControllers() {
 	v1.GET("/developer_tools/states", s.af.Auth, s.ControllersV1.DeveloperTools.GetStateList)
 	v1.PATCH("/developer_tools/state", s.af.Auth, s.ControllersV1.DeveloperTools.UpdateState)
 	v1.GET("/developer_tools/events", s.af.Auth, s.ControllersV1.DeveloperTools.GetEventList)
+
+	// plugins
+	v1.POST("/plugin/:name/enable", s.af.Auth, s.ControllersV1.Plugin.Enable)
+	v1.POST("/plugin/:name/disable", s.af.Auth, s.ControllersV1.Plugin.Disable)
+	v1.GET("/plugins", s.af.Auth, s.ControllersV1.Plugin.GetList)
+	v1.GET("/plugin/:name/options", s.af.Auth, s.ControllersV1.Plugin.GetOptions)
 }

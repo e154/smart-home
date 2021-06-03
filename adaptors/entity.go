@@ -33,6 +33,7 @@ type IEntity interface {
 	List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*m.Entity, total int64, err error)
 	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
 	Update(ver *m.Entity) (err error)
+	UpdateSettings(entityId common.EntityId, settings m.Attributes) (err error)
 	Search(query string, limit, offset int) (list []*m.Entity, total int64, err error)
 	AppendMetric(entityId common.EntityId, metric m.Metric) (err error)
 	DeleteMetric(entityId common.EntityId, metric m.Metric) (err error)
@@ -194,6 +195,15 @@ func (n *Entity) GetByType(t string, limit, offset int64) (list []*m.Entity, err
 }
 
 // Update ...
+func (n *Entity) UpdateSettings(entity common.EntityId, settings m.Attributes) (err error) {
+	b, _ := json.Marshal(m.EntitySettings{
+		Settings: settings,
+	})
+	err = n.table.UpdateSettings(entity, b)
+	return
+}
+
+// UpdateAll ...
 func (n *Entity) Update(ver *m.Entity) (err error) {
 
 	var oldVer *m.Entity
@@ -406,6 +416,12 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 	json.Unmarshal(b, &payload)
 	ver.Attributes = payload.AttributeSignature
 
+	// deserialize settings
+	b, _ = dbVer.Settings.MarshalJSON()
+	settings := m.EntitySettings{}
+	json.Unmarshal(b, &settings)
+	ver.Settings = settings.Settings
+
 	// storage
 	if len(dbVer.Storage) > 0 {
 		data := map[string]interface{}{}
@@ -445,6 +461,12 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 		AttributeSignature: ver.Attributes.Signature(),
 	})
 	dbVer.Payload.UnmarshalJSON(b)
+
+	// serialize settings
+	b, _ = json.Marshal(m.EntitySettings{
+		Settings: ver.Settings,
+	})
+	dbVer.Settings.UnmarshalJSON(b)
 
 	// storage
 	// ...

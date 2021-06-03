@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/prometheus/common/log"
 	"go.uber.org/atomic"
@@ -36,7 +37,9 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
+	eventBus      event_bus.EventBus
 	isStarted     *atomic.Bool
 	quit          chan struct{}
 	pause         uint
@@ -55,7 +58,8 @@ func New() plugins.Plugable {
 func (c *plugin) Load(service plugins.Service) error {
 	c.adaptors = service.Adaptors()
 	c.entityManager = service.EntityManager()
-	c.actor = NewActor(c.entityManager)
+	c.eventBus = service.EventBus()
+	c.actor = NewActor(c.entityManager, c.eventBus)
 
 	if c.isStarted.Load() {
 		return nil
@@ -151,4 +155,10 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		ActorAttrs: NewAttr(),
+	}
 }

@@ -58,6 +58,9 @@ sceneEvent = (args)->
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
 
+			eventBus.Purge()
+			scriptService.Purge()
+
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
@@ -111,11 +114,16 @@ sceneEvent = (args)->
 				pluginManager.Shutdown()
 			}()
 
-			time.Sleep(time.Millisecond * 500)
-			entityManager.CallScene(romanticEnt.Id, nil)
-			time.Sleep(time.Millisecond * 500)
+			t.Run("call scene", func(t *testing.T) {
+				Convey("case", t, func(ctx C) {
 
-			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
+					time.Sleep(time.Millisecond * 500)
+					entityManager.CallScene(romanticEnt.Id, nil)
+					time.Sleep(time.Millisecond * 500)
+
+					So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
+				})
+			})
 		})
 	})
 }

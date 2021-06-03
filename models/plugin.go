@@ -25,3 +25,15 @@ type Plugin struct {
 	Enabled bool   `json:"enabled"`
 	System  bool   `json:"system"`
 }
+
+type PluginOptions struct {
+	Triggers           bool                         `json:"triggers"`
+	Actors             bool                         `json:"actors"`
+	ActorCustomAttrs   bool                         `json:"actor_custom_attrs"`
+	ActorAttrs         Attributes                   `json:"actor_attrs"`
+	ActorCustomActions bool                         `json:"actor_custom_actions"`
+	ActorActions       map[string]EntityActionShort `json:"actor_actions"`
+	ActorCustomStates  bool                         `json:"actor_custom_states"`
+	ActorStates        map[string]EntityStateShort  `json:"actor_states"`
+	ActorSetts         Attributes                   `json:"actor_setts"`
+}

@@ -50,6 +50,8 @@ const (
 	AttrPhase        = "phase"
 	AttrAzimuth      = "azimuth"
 	AttrElevation    = "elevation"
+	AttrLat          = "lat"
+	AttrLon          = "lon"
 )
 
 func NewAttr() m.Attributes {
@@ -74,7 +76,20 @@ func NewAttr() m.Attributes {
 	}
 }
 
-func States() (states map[string]entity_manager.ActorState) {
+func NewSettings() m.Attributes {
+	return m.Attributes{
+		AttrLat: {
+			Name: AttrLat,
+			Type: common.AttributeFloat,
+		},
+		AttrLon: {
+			Name: AttrLon,
+			Type: common.AttributeFloat,
+		},
+	}
+}
+
+func NewStates() (states map[string]entity_manager.ActorState) {
 
 	states = map[string]entity_manager.ActorState{
 		StateAboveHorizon: {

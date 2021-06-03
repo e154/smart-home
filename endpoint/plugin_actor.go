@@ -16,23 +16,26 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package models
+package endpoint
 
-import "github.com/e154/smart-home/system/validation"
-
-// Zone ...
-type Zone struct {
-	Id   int64  `json:"id"`
-	Name string `json:"name" valid:"Required"`
+// PluginActorEndpoint ...
+type PluginActorEndpoint struct {
+	*CommonEndpoint
 }
 
-// Valid ...
-func (d *Zone) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(d); !ok {
-		errs = valid.Errors
+// NewPluginActorEndpoint ...
+func NewPluginActorEndpoint(common *CommonEndpoint) *PluginActorEndpoint {
+	return &PluginActorEndpoint{
+		CommonEndpoint: common,
 	}
-
-	return
 }
+
+func (p *PluginActorEndpoint) Add() {}
+
+func (p *PluginActorEndpoint) GetByName(name string) {}
+
+func (p *PluginActorEndpoint) Update() {}
+
+func (p *PluginActorEndpoint) Delete() {}
+
+func (p *PluginActorEndpoint) Search(query string, limit, offset int) {}

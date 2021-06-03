@@ -20,7 +20,6 @@ package weather_met
 
 import (
 	"encoding/xml"
-	"github.com/e154/smart-home/plugins/weather"
 	"time"
 )
 
@@ -158,7 +157,9 @@ type Weatherdata struct {
 }
 
 type Zone struct {
-	weather.Zone
+	Name        string       `json:"name"`
+	Lat         float64      `json:"lat"`
+	Lon         float64      `json:"lon"`
 	Weatherdata *Weatherdata `json:"weatherdata"`
 	LoadetAt    *time.Time   `json:"loadet_at"`
 }

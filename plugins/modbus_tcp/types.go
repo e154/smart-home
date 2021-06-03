@@ -36,6 +36,10 @@ const (
 )
 
 func NewAttr() m.Attributes {
+	return nil
+}
+
+func NewSettings() m.Attributes {
 	return m.Attributes{
 		AttrSlaveId: {
 			Name: AttrSlaveId,

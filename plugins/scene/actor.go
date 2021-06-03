@@ -47,7 +47,7 @@ func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
+		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventPool:     make(chan event_bus.EventCallScene, 10),

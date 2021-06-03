@@ -44,6 +44,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
@@ -116,7 +117,7 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue
 
 	var actor *Actor
 	if actor, err = NewActor(entity, attributes,
-		p.adaptors, p.scriptService, p.entityManager); err != nil {
+		p.adaptors, p.scriptService, p.entityManager, p.eventBus); err != nil {
 		return
 	}
 	p.actors[name] = actor

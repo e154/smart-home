@@ -49,6 +49,9 @@ func TestNode(t *testing.T) {
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
 
+			eventBus.Purge()
+			scriptService.Purge()
+
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
 
@@ -118,7 +121,7 @@ func TestNode(t *testing.T) {
 					err = mqttServer.Publish("home/node/main/ping", b, 0, false)
 					ctx.So(err, ShouldBeNil)
 
-					ticker := time.NewTimer(time.Second * 1)
+					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
 					var ok bool

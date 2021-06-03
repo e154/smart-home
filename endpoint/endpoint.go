@@ -40,7 +40,6 @@ type Endpoint struct {
 	Auth            *AuthEndpoint
 	Image           *ImageEndpoint
 	Log             *LogEndpoint
-	Zone            *ZoneEndpoint
 	Role            *RoleEndpoint
 	Script          *ScriptEndpoint
 	User            *UserEndpoint
@@ -52,6 +51,8 @@ type Endpoint struct {
 	Entity          *EntityEndpoint
 	DeveloperTools  *DeveloperToolsEndpoint
 	Mqtt            *MqttEndpoint
+	Plugin          *PluginEndpoint
+	PluginActor     *PluginActorEndpoint
 }
 
 // NewEndpoint ...
@@ -73,7 +74,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Role:            NewRoleEndpoint(common),
 		Script:          NewScriptEndpoint(common),
 		User:            NewUserEndpoint(common),
-		Zone:            NewZoneEndpoint(common),
 		Template:        NewTemplateEndpoint(common),
 		Notify:          NewNotifyEndpoint(common),
 		MessageDelivery: NewMessageDeliveryEndpoint(common),
@@ -82,5 +82,7 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Entity:          NewEntityEndpoint(common),
 		DeveloperTools:  NewDeveloperToolsEndpoint(common),
 		Mqtt:            NewMqttEndpoint(common),
+		Plugin:          NewPluginEndpoint(common),
+		PluginActor:     NewPluginActorEndpoint(common),
 	}
 }

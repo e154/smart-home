@@ -21,6 +21,7 @@ package updater
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
 	"time"
 )
 
@@ -61,6 +62,36 @@ func NewAttr() m.Attributes {
 		AttrUpdaterLatestCheck: {
 			Name: AttrUpdaterLatestCheck,
 			Type: common.AttributeTime,
+		},
+	}
+}
+
+func NewStates() map[string]entity_manager.ActorState {
+	return map[string]entity_manager.ActorState{
+		"enabled": {
+			Name:        "enabled",
+			Description: "Enabled",
+		},
+		"disabled": {
+			Name:        "disabled",
+			Description: "Disabled",
+		},
+		"error": {
+			Name:        "error",
+			Description: "Error",
+		},
+		"exist_update": {
+			Name:        "exist_update",
+			Description: "Exist update",
+		},
+	}
+}
+
+func NewActions() map[string]entity_manager.ActorAction {
+	return map[string]entity_manager.ActorAction{
+		"check": {
+			Name:        "check",
+			Description: "Check version",
 		},
 	}
 }

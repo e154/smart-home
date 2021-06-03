@@ -27,4 +27,4 @@ type Attribute struct {
 }
 
 // swagger:model
-type Attributes map[string]Attribute
+type Attributes map[string]*Attribute

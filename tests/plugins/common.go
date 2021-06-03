@@ -25,9 +25,12 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/modbus_rtu"
 	"github.com/e154/smart-home/plugins/modbus_tcp"
+	"github.com/e154/smart-home/plugins/moon"
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/plugins/scene"
 	"github.com/e154/smart-home/plugins/script"
+	"github.com/e154/smart-home/plugins/sun"
+	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/scripts"
@@ -195,54 +198,84 @@ func GetNewScript(id string, scrits []m.Script) *m.Entity {
 	}
 }
 
-func GetNewScene(id string, scrits []m.Script) *m.Entity {
+func GetNewScene(id string, scripts []m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
 		Description: "scene",
 		Type:        scene.EntityScene,
-		Scripts:     scrits,
+		Scripts:     scripts,
 		AutoLoad:    true,
 	}
 }
 
 func GetNewZone() *m.Entity {
+	setings := zone.NewSettings()
+	setings[zone.AttrLat].Value = 54.9022
+	setings[zone.AttrLon].Value = 83.0335
+	setings[zone.AttrElevation].Value = 150
+	setings[zone.AttrTimezone].Value = 7
 	return &m.Entity{
 		Id:          "zone.home",
 		Description: "main geo zone",
 		Type:        "zone",
 		AutoLoad:    true,
-		Attributes: m.Attributes{
-			zone.AttrLat: {
-				Name:  zone.AttrLat,
-				Type:  common.AttributeFloat,
-				Value: 54.9022,
-			},
-			zone.AttrLon: {
-				Name:  zone.AttrLon,
-				Type:  common.AttributeFloat,
-				Value: 83.0335,
-			},
-			zone.AttrElevation: {
-				Name:  zone.AttrElevation,
-				Type:  common.AttributeFloat,
-				Value: 150,
-			},
-			zone.AttrTimezone: {
-				Name:  zone.AttrTimezone,
-				Type:  common.AttributeInt,
-				Value: 7,
-			},
-		},
+		Settings:    setings,
 	}
 }
 
 func GetNewNode(name string) *m.Entity {
+	settings := node.NewSettings()
+	settings[node.AttrNodeLogin].Value = "node1"
+	settings[node.AttrNodePass].Value = "node1"
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("node.%s", name)),
 		Description: "main node",
 		Type:        "node",
 		AutoLoad:    true,
 		Attributes:  node.NewAttr(),
+		Settings:    settings,
+	}
+}
+
+func GetNewMoon(name string) *m.Entity {
+	settings := moon.NewSettings()
+	settings[moon.AttrLat].Value = 54.9022
+	settings[moon.AttrLon].Value = 83.0335
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("moon.%s", name)),
+		Description: "home",
+		Type:        "moon",
+		AutoLoad:    true,
+		Attributes:  moon.NewAttr(),
+		Settings:    settings,
+	}
+}
+
+func GetNewWeather(name string) *m.Entity {
+	settings := weather.NewSettings()
+	settings[weather.AttrLat].Value = 54.9022
+	settings[weather.AttrLon].Value = 83.0335
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("weather.%s", name)),
+		Description: "home",
+		Type:        "weather",
+		AutoLoad:    true,
+		Attributes:  weather.BaseForecast(),
+		Settings:    settings,
+	}
+}
+
+func GetNewSun(name string) *m.Entity {
+	settings := sun.NewSettings()
+	settings[sun.AttrLat].Value = 54.9022
+	settings[sun.AttrLon].Value = 83.0335
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("sun.%s", name)),
+		Description: "home",
+		Type:        "sun",
+		AutoLoad:    true,
+		Attributes:  sun.NewAttr(),
+		Settings:    settings,
 	}
 }
 
@@ -253,9 +286,9 @@ func GetNewModbusRtu(name string) *m.Entity {
 		Type:        "modbus_rtu",
 		AutoLoad:    true,
 		Attributes:  modbus_rtu.NewAttr(),
+		Settings:    modbus_rtu.NewSettings(),
 	}
 }
-
 
 func GetNewModbusTcp(name string) *m.Entity {
 	return &m.Entity{
@@ -264,6 +297,7 @@ func GetNewModbusTcp(name string) *m.Entity {
 		Type:        "modbus_tcp",
 		AutoLoad:    true,
 		Attributes:  modbus_tcp.NewAttr(),
+		Settings:    modbus_tcp.NewSettings(),
 	}
 }
 

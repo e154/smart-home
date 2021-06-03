@@ -28,25 +28,30 @@ type EntityPayload struct {
 	AttributeSignature Attributes `json:"attribute_signature"`
 }
 
+type EntitySettings struct {
+	Settings Attributes `json:"settings"`
+}
+
 // Entity ...
 type Entity struct {
 	Id          common.EntityId   `json:"id"`
 	Description string            `json:"description"`
-	Type       common.EntityType `json:"type" valid:"Required"`
-	Icon       *common.Icon      `json:"icon"`
-	Image      *Image            `json:"image"`
-	Actions    []*EntityAction   `json:"actions"`
-	States     []*EntityState    `json:"states"`
-	Area       *Area             `json:"area"`
-	AreaId     *int64            `json:"area_id"`
-	Metrics    []Metric          `json:"metrics"`
-	Scripts    []Script          `json:"scripts"`
-	Hidden     bool              `json:"hidden"`
-	Attributes Attributes        `json:"attributes"`
-	AutoLoad   bool              `json:"auto_load"`
-	ParentId   *common.EntityId  `json:"parent_id"`
-	CreatedAt  time.Time         `json:"created_at"`
-	UpdatedAt  time.Time         `json:"updated_at"`
+	Type        common.EntityType `json:"type" valid:"Required"`
+	Icon        *common.Icon      `json:"icon"`
+	Image       *Image            `json:"image"`
+	Actions     []*EntityAction   `json:"actions"`
+	States      []*EntityState    `json:"states"`
+	Area        *Area             `json:"area"`
+	AreaId      *int64            `json:"area_id"`
+	Metrics     []Metric          `json:"metrics"`
+	Scripts     []Script          `json:"scripts"`
+	Hidden      bool              `json:"hidden"`
+	Attributes  Attributes        `json:"attributes"`
+	Settings    Attributes        `json:"settings"`
+	AutoLoad    bool              `json:"auto_load"`
+	ParentId    *common.EntityId  `json:"parent_id"`
+	CreatedAt   time.Time         `json:"created_at"`
+	UpdatedAt   time.Time         `json:"updated_at"`
 }
 
 // Valid ...

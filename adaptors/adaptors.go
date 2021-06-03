@@ -53,7 +53,6 @@ type Adaptors struct {
 	EntityAction      IEntityAction
 	EntityStorage     IEntityStorage
 	Log               ILog
-	Zone              IZone
 	Template          ITemplate
 	Message           IMessage
 	MessageDelivery   IMessageDelivery
@@ -99,7 +98,6 @@ func NewAdaptors(lc fx.Lifecycle,
 		EntityStorage:     GetEntityStorageAdaptor(db),
 		MapElement:        GetMapElementAdaptor(db),
 		Log:               GetLogAdaptor(db),
-		Zone:              GetZoneAdaptor(db),
 		Template:          GetTemplateAdaptor(db),
 		Message:           GetMessageAdaptor(db),
 		MessageDelivery:   GetMessageDeliveryAdaptor(db),

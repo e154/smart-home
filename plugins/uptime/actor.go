@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/shirou/gopsutil/host"
 	"go.uber.org/atomic"
 	"sync"
@@ -32,9 +33,11 @@ type Actor struct {
 	entity_manager.BaseActor
 	appStarted time.Time
 	total      *atomic.Uint64
+	eventBus   event_bus.EventBus
 }
 
-func NewActor(entityManager entity_manager.EntityManager) *Actor {
+func NewActor(entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus) *Actor {
 	return &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntitySensor, Name)),
@@ -45,6 +48,7 @@ func NewActor(entityManager entity_manager.EntityManager) *Actor {
 			Attrs:             NewAttr(),
 			Manager:           entityManager,
 		},
+		eventBus:   eventBus,
 		appStarted: time.Now(),
 		total:      atomic.NewUint64(0),
 	}
@@ -72,9 +76,10 @@ func (e *Actor) update() {
 	e.Attrs[AttrUptimeAppStarted].Value = e.appStarted
 	e.AttrMu.Unlock()
 
-	e.Send(entity_manager.MessageStateChanged{
-		StorageSave: false,
-		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		OldState: oldState,
+		NewState: e.GetEventState(e),
 	})
 }

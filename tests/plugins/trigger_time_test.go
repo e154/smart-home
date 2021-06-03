@@ -58,6 +58,9 @@ automationTriggerTime = (msg)->
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
 
+			eventBus.Purge()
+			scriptService.Purge()
+
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 

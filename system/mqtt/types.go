@@ -24,6 +24,7 @@ import (
 	"github.com/DrmagicE/gmqtt/retained"
 	"github.com/DrmagicE/gmqtt/server"
 	"github.com/e154/smart-home/system/mqtt/admin"
+	"github.com/e154/smart-home/system/mqtt_authenticator"
 )
 
 // Admin ...
@@ -55,6 +56,7 @@ type MqttServ interface {
 	NewClient(name string) MqttCli
 	RemoveClient(name string)
 	Admin() Admin
+	Authenticator() mqtt_authenticator.MqttAuthenticator
 }
 
 // GMqttServer ...

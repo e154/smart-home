@@ -24,64 +24,80 @@ import (
 	"github.com/e154/smart-home/common/astronomics/moonphase"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"math"
 	"sync"
+	"time"
 )
 
 type Actor struct {
 	entity_manager.BaseActor
-	positionLock        *sync.Mutex
-	lat, lon, elevation float64
-	moonAzimuth         float64
-	moonElevation       float64
-	phase               string
-	horizonState        string
+	eventBus      event_bus.EventBus
+	positionLock  *sync.Mutex
+	lat, lon      float64
+	moonAzimuth   float64
+	moonElevation float64
+	phase         string
+	horizonState  string
 }
 
-func NewActor(name string,
-	entityManager entity_manager.EntityManager) *Actor {
+func NewActor(entity *m.Entity,
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus) *Actor {
 
-	entity := &Actor{
+	name := entity.Id.Name()
+
+	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntityMoon, name)),
 			Name:        name,
 			Description: "moon plugin",
 			EntityType:  EntityMoon,
 			AttrMu:      &sync.Mutex{},
-			Attrs:       NewAttr(),
-			ParentId:    common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
+			Attrs:       entity.Attributes,
+			Setts:       entity.Settings,
 			Manager:     entityManager,
-			States:      States(),
+			States:      NewStates(),
 		},
+		eventBus:     eventBus,
 		positionLock: &sync.Mutex{},
 	}
 
-	return entity
+	if actor.Setts == nil {
+		actor.Setts = NewSettings()
+	}
+
+	actor.setPosition(entity.Settings)
+
+	return actor
 }
 
 func (e *Actor) Spawn() entity_manager.PluginActor {
+	e.UpdateMoonPosition(time.Now())
 	return e
 }
 
-func (e *Actor) setPosition(lat, lon, elevation float64, timezone int) {
+func (e *Actor) setPosition(settings m.Attributes) {
+	if settings == nil {
+		return
+	}
+
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
-	e.lat = lat
-	e.lon = lon
-	e.elevation = elevation
+	e.lat = settings[AttrLat].Float64()
+	e.lon = settings[AttrLon].Float64()
 }
 
-func (e *Actor) updateMoonPosition() {
+func (e *Actor) UpdateMoonPosition(now time.Time) {
 
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
 	oldState := e.GetEventState(e)
 
-	now := e.Now(oldState)
+	e.Now(oldState)
 
 	moon := moonphase.New(now)
 	//fmt.Println(moon.PhaseName())
@@ -139,8 +155,10 @@ func (e *Actor) updateMoonPosition() {
 
 	e.DeserializeAttr(attributeValues)
 
-	e.Send(entity_manager.MessageStateChanged{
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
 		StorageSave: true,
+		Type:        e.Id.Type(),
+		EntityId:    e.Id,
 		OldState:    oldState,
 		NewState:    e.GetEventState(e),
 	})

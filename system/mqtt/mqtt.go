@@ -41,6 +41,7 @@ import (
 	"net"
 	"os"
 	"sync"
+	"time"
 )
 
 var (
@@ -101,7 +102,8 @@ func (m *Mqtt) Shutdown() (err error) {
 	m.clientsLock.Unlock()
 
 	if m.server != nil {
-		err = m.server.Stop(context.Background())
+		ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(100 * time.Millisecond))
+		err = m.server.Stop(ctx)
 	}
 	return
 }
@@ -281,4 +283,8 @@ func (m *Mqtt) logging() *zap.Logger {
 
 	// From a zapcore.Core, it's easy to construct a Logger.
 	return zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Named("mqtt")
+}
+
+func (m *Mqtt) Authenticator() mqtt_authenticator.MqttAuthenticator {
+	return m.authenticator
 }

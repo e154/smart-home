@@ -38,5 +38,5 @@ func NewScriptBind(actor *Actor) *ScriptBind {
 
 // SetState...
 func (s *ScriptBind) SetState(params entity_manager.EntityStateParams) {
-	s.actor.setState(params)
+	s.actor.SetState(params)
 }

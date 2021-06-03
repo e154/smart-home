@@ -48,3 +48,19 @@ func (m *EntityState) Valid() (ok bool, errs []*validation.Error) {
 
 	return
 }
+
+// Short ...
+func (m *EntityState) Short() (short EntityStateShort) {
+
+	short = EntityStateShort{
+		Name:        m.Name,
+		Description: m.Description,
+		Icon:        m.Icon,
+	}
+
+	if m.Image != nil {
+		short.ImageUrl = common.String(m.Image.Url)
+	}
+
+	return
+}

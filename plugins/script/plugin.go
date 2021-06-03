@@ -41,6 +41,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
@@ -78,10 +79,6 @@ func (p plugin) Name() string {
 	return Name
 }
 
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) error {
-	return p.addOrUpdateEntity(entity, entity.Attributes.Serialize())
-}
-
 func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -96,9 +93,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	return
 }
 
-func (p *plugin) addOrUpdateEntity(entity *m.Entity,
-	attributes m.AttributeValue,
-) (err error) {
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
@@ -110,14 +105,14 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity,
 	if actor, ok := p.actors[name]; ok {
 		// update
 		actor.SetState(entity_manager.EntityStateParams{
-			AttributeValues: attributes,
+			AttributeValues: entity.Attributes.Serialize(),
+			SettingsValue:   entity.Settings.Serialize(),
 		})
 		return
 	}
 
 	var actor *Actor
-	if actor, err = NewActor(entity, attributes, p.adaptors,
-		p.scriptService, p.entityManager); err != nil {
+	if actor, err = NewActor(entity, p.adaptors, p.scriptService, p.entityManager, p.eventBus); err != nil {
 		return
 	}
 	p.actors[name] = actor
@@ -151,4 +146,13 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:             true,
+		ActorCustomAttrs:   true,
+		ActorCustomStates:  true,
+		ActorCustomActions: true,
+	}
 }

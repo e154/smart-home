@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"go.uber.org/atomic"
 	"time"
@@ -45,7 +46,9 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
+	eventBus          event_bus.EventBus
 	entity        *Actor
 	isStarted     *atomic.Bool
 	ticker        *time.Ticker
@@ -62,65 +65,66 @@ func New() plugins.Plugable {
 	}
 }
 
-func (u *plugin) Load(service plugins.Service) error {
-	u.adaptors = service.Adaptors()
-	u.entityManager = service.EntityManager()
+func (p *plugin) Load(service plugins.Service) error {
+	p.adaptors = service.Adaptors()
+	p.eventBus = service.EventBus()
+	p.entityManager = service.EntityManager()
 
-	if u.isStarted.Load() {
+	if p.isStarted.Load() {
 		return nil
 	}
-	u.isStarted.Store(true)
+	p.isStarted.Store(true)
 
-	u.entity = NewActor(u.entityManager)
-	u.quit = make(chan struct{})
+	p.entity = NewActor(p.entityManager, p.eventBus)
+	p.quit = make(chan struct{})
 
-	u.storyModel = &m.RunStory{
+	p.storyModel = &m.RunStory{
 		Start: time.Now(),
 	}
 
 	var err error
-	u.storyModel.Id, err = u.adaptors.RunHistory.Add(u.storyModel)
+	p.storyModel.Id, err = p.adaptors.RunHistory.Add(p.storyModel)
 
 	if err != nil {
 		log.Error(err.Error())
 		return nil
 	}
 
-	u.entityManager.Spawn(u.entity.Spawn)
+	p.entityManager.Spawn(p.entity.Spawn)
 
 	go func() {
-		ticker := time.NewTicker(time.Second * u.pause)
+		ticker := time.NewTicker(time.Second * p.pause)
 		defer func() {
 			ticker.Stop()
-			u.isStarted.Store(false)
-			close(u.quit)
+			p.isStarted.Store(false)
+			close(p.quit)
 		}()
 
 		for {
 			select {
-			case <-u.quit:
+			case <-p.quit:
 				return
 			case <-ticker.C:
-				u.entity.update()
+				p.entity.update()
 			}
 		}
 	}()
 	return nil
 }
 
-func (u *plugin) Unload() (err error) {
-	if !u.isStarted.Load() {
+func (p *plugin) Unload() (err error) {
+	if !p.isStarted.Load() {
 		return
 	}
-	u.quit <- struct{}{}
-	u.storyModel.End = common.Time(time.Now())
-	if err = u.adaptors.RunHistory.Update(u.storyModel); err != nil {
+	p.quit <- struct{}{}
+	p.storyModel.End = common.Time(time.Now())
+	if err = p.adaptors.RunHistory.Update(p.storyModel); err != nil {
 		log.Error(err.Error())
 	}
 	return
 }
 
-func (u plugin) Name() string {
+func (p plugin) Name() string {
 	return name
 }
 

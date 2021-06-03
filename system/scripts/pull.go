@@ -50,3 +50,13 @@ func (p *Pull) Add(name string, s interface{}) {
 
 	p.heap[name] = s
 }
+
+// Purge ...
+func (p *Pull) Purge() {
+	p.Lock()
+	defer p.Unlock()
+
+	for k, _ := range p.heap {
+		delete(p.heap, k)
+	}
+}

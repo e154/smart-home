@@ -21,6 +21,6 @@ package script
 import "github.com/e154/smart-home/common"
 
 const (
-	Name             = "script"
-	EntityScript     = common.EntityType("script")
+	Name         = "script"
+	EntityScript = common.EntityType("script")
 )

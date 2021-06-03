@@ -66,6 +66,9 @@ func NewEntityManager(lc fx.Lifecycle,
 			return nil
 		},
 	})
+
+	eventBus.Subscribe(event_bus.TopicEntities, manager.eventHandler)
+
 	return manager
 }
 
@@ -272,7 +275,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 
 			log.Infof("unload %v", entityId)
 
-			e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveEntity{
+			e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
 				Type:     info.Type,
 				EntityId: entityId,
 			})
@@ -291,11 +294,13 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	}()
 
 	attr := actor.Attributes()
+	settings := actor.Settings()
 
-	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedNewEntity{
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedActor{
 		Type:       info.Type,
 		EntityId:   entityId,
 		Attributes: attr,
+		Settings:   settings,
 	})
 
 	e.adaptors.Entity.Add(&m.Entity{
@@ -308,37 +313,30 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 		AutoLoad:    info.AutoLoad,
 		ParentId:    info.ParentId,
 		Attributes:  attr.Signature(),
+		Settings:    settings,
 	})
 
 	return
 }
 
-// Send ...
-func (e *entityManager) Send(message Message) error {
+// eventHandler ...
+func (e *entityManager) eventHandler(_ string, message interface{}) {
 
-	switch v := message.Payload.(type) {
-	case MessageStateChanged:
+	switch v := message.(type) {
+	case event_bus.EventStateChanged:
 
 		e.lock.Lock()
 		defer e.lock.Unlock()
 
-		actorInfo, ok := e.actors[message.From]
-		if !ok {
-			return nil
+		if _, ok := e.actors[v.EntityId]; !ok {
+			return
 		}
 
 		if v.NewState.Compare(v.OldState) {
-			return nil
+			return
 		}
 
-		e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-			Type:     message.From.Type(),
-			EntityId: message.From,
-			OldState: actorInfo.OldState,
-			NewState: v.NewState,
-		})
-
-		e.actors[message.From].OldState = v.NewState
+		e.actors[v.EntityId].OldState = v.NewState
 
 		// store state to db
 		var state string
@@ -347,18 +345,16 @@ func (e *entityManager) Send(message Message) error {
 		}
 
 		if !v.StorageSave {
-			return nil
+			return
 		}
+
 		go e.adaptors.EntityStorage.Add(m.EntityStorage{
 			State:      state,
-			EntityId:   message.From,
+			EntityId:   v.EntityId,
 			Attributes: v.NewState.Attributes.Serialize(),
 		})
 
-		return nil
 	}
-
-	return nil
 }
 
 // CallAction ...
@@ -445,6 +441,7 @@ func (e *entityManager) unsafeRemove(id common.EntityId) {
 func GetEventState(actor PluginActor) (eventState event_bus.EventEntityState) {
 
 	attrs := actor.Attributes()
+	setts := actor.Settings()
 
 	var state *event_bus.EntityState
 
@@ -463,6 +460,7 @@ func GetEventState(actor PluginActor) (eventState event_bus.EventEntityState) {
 		Value:      info.Value,
 		State:      state,
 		Attributes: attrs,
+		Settings:   setts,
 	}
 
 	if info.LastChanged != nil {

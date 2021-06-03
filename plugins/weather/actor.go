@@ -32,17 +32,18 @@ import (
 
 type Actor struct {
 	entity_manager.BaseActor
-	updateLock     *sync.Mutex
-	positionLock   *sync.Mutex
-	zoneAttributes m.Attributes
-	eventBus       event_bus.EventBus
+	updateLock   *sync.Mutex
+	eventBus     event_bus.EventBus
+	positionLock *sync.Mutex
 }
 
-func NewActor(name string,
-	eventBus event_bus.EventBus,
-	entityManager entity_manager.EntityManager) *Actor {
+func NewActor(entity *m.Entity,
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus) *Actor {
 
-	e := &Actor{
+	name := entity.Id.Name()
+
+	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:                common.EntityId(fmt.Sprintf("%s.%s", EntityWeather, name)),
 			Name:              name,
@@ -50,43 +51,55 @@ func NewActor(name string,
 			EntityType:        EntityWeather,
 			UnitOfMeasurement: "C°",
 			AttrMu:            &sync.Mutex{},
-			Attrs:             BaseForecast(),
+			Attrs:             entity.Attributes,
 			ParentId:          common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
 			Manager:           entityManager,
-			States:            States(false, false),
+			States:            NewStates(false, false),
 		},
-		eventBus:       eventBus,
-		zoneAttributes: zone.NewAttr(),
-		updateLock:     &sync.Mutex{},
-		positionLock:   &sync.Mutex{},
+		eventBus:     eventBus,
+		updateLock:   &sync.Mutex{},
+		positionLock: &sync.Mutex{},
 	}
 
-	return e
+	if actor.Attrs == nil {
+		actor.Attrs = BaseForecast()
+	}
+
+	if actor.Setts == nil {
+		actor.Setts = NewSettings()
+	}
+
+	actor.UpdatePosition(entity.Settings)
+
+	return actor
 }
 
 func (e *Actor) Spawn() entity_manager.PluginActor {
+
+	e.eventBus.Publish(TopicPluginWeather, EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		State:    StatePositionUpdate,
+		Settings: e.Setts.Copy(),
+	})
 	return e
 }
 
-func (e *Actor) setPosition(zoneAttr m.Attributes) {
+func (e *Actor) UpdatePosition(settings m.Attributes) {
+	if settings == nil {
+		return
+	}
+
+	e.Setts.Deserialize(settings.Serialize())
+
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
-	changed, err := e.zoneAttributes.Deserialize(zoneAttr.Serialize())
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	if !changed {
-		return
-	}
-
-	e.eventBus.Publish(TopicPluginWeather, EventSubStateChanged{
-		Type:       e.Id.Type(),
-		EntityId:   e.Id,
-		State:      SubStatePositionUpdate,
-		Attributes: e.zoneAttributes.Copy(),
+	e.eventBus.Publish(TopicPluginWeather, EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		State:    StatePositionUpdate,
+		Settings: e.Setts,
 	})
 }
 
@@ -99,7 +112,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	e.Now(oldState)
 
 	// update sun position
-	sunrisePos := suncalc.GetSunPosition(time.Now(), e.zoneAttributes[zone.AttrLat].Float64(), e.zoneAttributes[zone.AttrLon].Float64())
+	sunrisePos := suncalc.GetSunPosition(time.Now(), e.Setts[AttrLat].Float64(), e.Setts[AttrLon].Float64())
 	var night = suncalc.IsNight(sunrisePos)
 	var winter bool //todo fix
 
@@ -113,10 +126,11 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
-	e.Send(entity_manager.MessageStateChanged{
-		StorageSave: true,
-		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		OldState: oldState,
+		NewState: e.GetEventState(e),
 	})
 
 	return nil

@@ -23,7 +23,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
@@ -43,6 +42,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	isStarted     *atomic.Bool
@@ -71,7 +71,6 @@ func (p *plugin) Load(service plugins.Service) error {
 		return nil
 	}
 	p.isStarted.Store(true)
-	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 	p.quit = make(chan struct{})
 
 	go func() {
@@ -100,7 +99,6 @@ func (p *plugin) Unload() error {
 	if !p.isStarted.Load() {
 		return nil
 	}
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	p.quit <- struct{}{}
 	return nil
 }
@@ -109,88 +107,19 @@ func (p *plugin) Name() string {
 	return Name
 }
 
-func (p *plugin) eventHandler(_ string, msg interface{}) {
-
-	switch v := msg.(type) {
-	case event_bus.EventAddedNewEntity:
-		if v.Type != "zone" {
-			return
-		}
-
-		p.addOrUpdateEntity(v.EntityId.Name(), v.Attributes)
-
-	case event_bus.EventStateChanged:
-		if v.Type != "zone" {
-			return
-		}
-
-		zoneAttr := zone.NewAttr()
-		zoneAttr.Deserialize(v.NewState.Attributes.Serialize())
-		p.addOrUpdateEntity(v.EntityId.Name(), zoneAttr)
-
-	case event_bus.EventRemoveEntity:
-		if v.Type != "zone" {
-			return
-		}
-
-		if err := p.removeEntity(v.EntityId.Name()); err != nil {
-			return
-		}
-
-		entityId := common.EntityId(fmt.Sprintf("moon.%s", v.EntityId.Name()))
-		p.entityManager.Remove(entityId)
-	}
-
-	return
-}
-
-func (p *plugin) addOrUpdateEntity(name string, zoneAttr m.Attributes) (err error) {
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
-	var lat, lon, elevation float64
-	var timezone int
-	if zoneAttr != nil {
-		// lat
-		if _lat, ok := zoneAttr[zone.AttrLat]; ok {
-			lat, ok = _lat.Value.(float64)
-		}
-
-		// lon
-		if _lon, ok := zoneAttr[zone.AttrLon]; ok {
-			lon, ok = _lon.Value.(float64)
-		}
-
-		// elevation
-		if _elevation, ok := zoneAttr[zone.AttrElevation]; ok {
-			elevation, ok = _elevation.Value.(float64)
-		}
-
-		// timezone
-		if _timezone, ok := zoneAttr[zone.AttrTimezone]; ok {
-			timezone, ok = _timezone.Value.(int)
-		}
-	}
-
-	if _, ok := p.actors[name]; ok {
-		p.actors[name].setPosition(lat, lon, elevation, timezone)
-		p.actors[name].updateMoonPosition()
+	if _, ok := p.actors[entity.Id.Name()]; ok {
+		p.actors[entity.Id.Name()].setPosition(entity.Settings)
+		p.actors[entity.Id.Name()].UpdateMoonPosition(time.Now())
 		return
 	}
 
-	p.actors[name] = NewActor(name, p.entityManager)
-	p.entityManager.Spawn(p.actors[name].Spawn)
+	p.actors[entity.Id.Name()] = NewActor(entity, p.entityManager, p.eventBus)
+	p.entityManager.Spawn(p.actors[entity.Id.Name()].Spawn)
 
-	if zoneAttr != nil {
-		p.actors[name].setPosition(lat, lon, elevation, timezone)
-		p.actors[name].updateMoonPosition()
-	}
-
-	return
-}
-
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.addOrUpdateEntity(entity.Id.Name(), entity.Attributes)
 	return
 }
 
@@ -216,8 +145,9 @@ func (p *plugin) updatePositionForAll() {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
+	now := time.Now()
 	for _, actor := range p.actors {
-		actor.updateMoonPosition()
+		actor.UpdateMoonPosition(now)
 	}
 }
 
@@ -231,4 +161,13 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:      true,
+		ActorAttrs:  NewAttr(),
+		ActorSetts:  NewSettings(),
+		ActorStates: entity_manager.ToEntityStateShort(NewStates()),
+	}
 }

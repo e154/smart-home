@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/system/message_queue"
 	. "github.com/smartystreets/goconvey/convey"
+	"go.uber.org/atomic"
 	"sync"
 	"testing"
 	"time"
@@ -140,6 +141,27 @@ func TestMessageQueue(t *testing.T) {
 			time.Sleep(time.Millisecond * 500)
 
 			ctx.So(fmt.Sprintf("%v", arr), ShouldEqual, "[msg1 msg2]")
+		})
+	})
+
+	t.Run("full channel", func(t *testing.T) {
+		Convey("case", t, func(ctx C) {
+
+			queue := message_queue.New(queueSize)
+
+			var count atomic.Uint32
+			fn := func(topic string, msg ...string) {
+				count.Inc()
+			}
+			queue.Subscribe("a/#", fn)
+
+			for i:=0;i<15;i++ {
+				queue.Publish("a/b", "msg")
+			}
+
+			time.Sleep(time.Millisecond * 500)
+
+			ctx.So(count.Load(), ShouldEqual, 15)
 		})
 	})
 }

@@ -75,13 +75,8 @@ func NewModbusTcp(eventBus event_bus.EventBus, actor *Actor) (modbus modbusTcp) 
 			eventBus.Unsubscribe(topic, fn)
 		}()
 
-		// send message
-		actor.AttrMu.Lock()
-		attrsSerial := actor.Attrs.Serialize()
-		actor.AttrMu.Unlock()
-
 		var properties []byte
-		if properties, err = json.Marshal(attrsSerial); err != nil {
+		if properties, err = json.Marshal(actor.Settings().Serialize()); err != nil {
 			log.Error(err.Error())
 			return
 		}

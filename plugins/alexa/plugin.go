@@ -42,6 +42,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
@@ -152,5 +153,12 @@ func (p *plugin) eventHandler(_ string, event interface{}) {
 		p.server.UpdateSkill(v.Skill)
 	case EventAlexaDeleteSkill:
 		p.server.DeleteSkill(v.Skill)
+	}
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:   false,
+		Triggers: true,
 	}
 }

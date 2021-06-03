@@ -52,7 +52,7 @@ func NewActor(entity *m.Entity,
 	mqttClient mqtt.MqttCli) (actor *Actor) {
 
 	actor = &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
+		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
@@ -64,20 +64,11 @@ func NewActor(entity *m.Entity,
 
 	actor.Manager = entityManager
 	actor.Attrs = NewAttr()
+	actor.States = NewStates()
+	actor.Setts = entity.Settings
 
-	actor.States = map[string]entity_manager.ActorState{
-		"wait": {
-			Name:        "wait",
-			Description: "Wait",
-		},
-		"connected": {
-			Name:        "connected",
-			Description: "Connected",
-		},
-		"error": {
-			Name:        "error",
-			Description: "Error",
-		},
+	if actor.Setts == nil {
+		actor.Setts = NewSettings()
 	}
 
 	return actor
@@ -181,8 +172,9 @@ func (e *Actor) updateStatus() {
 		e.State = &state
 	}
 
-	e.Send(entity_manager.MessageStateChanged{
-		StorageSave: false,
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:        e.Id.Type(),
+		EntityId:    e.Id,
 		OldState:    oldState,
 		NewState:    e.GetEventState(e),
 	})

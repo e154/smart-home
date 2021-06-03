@@ -44,6 +44,7 @@ type ControllersV1 struct {
 	Entity         *ControllerEntity
 	DeveloperTools *ControllerDeveloperTools
 	Mqtt           *ControllerMqtt
+	Plugin         *ControllerPlugin
 }
 
 // NewControllersV1 ...
@@ -70,5 +71,6 @@ func NewControllersV1(adaptors *adaptors.Adaptors,
 		Entity:         NewControllerEntity(common),
 		DeveloperTools: NewControllerDeveloperTools(common),
 		Mqtt:           NewControllerMqtt(common),
+		Plugin:         NewControllerPlugin(common),
 	}
 }

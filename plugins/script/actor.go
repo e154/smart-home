@@ -33,6 +33,7 @@ const (
 
 type Actor struct {
 	entity_manager.BaseActor
+	eventBus      event_bus.EventBus
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 	system        entity_manager.EntityManager
@@ -41,21 +42,21 @@ type Actor struct {
 }
 
 func NewActor(entity *m.Entity,
-	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
-	entityManager entity_manager.EntityManager) (actor *Actor, err error) {
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus) (actor *Actor, err error) {
 
 	actor = &Actor{
-		BaseActor:     entity_manager.NewBaseActor(entity, scriptService),
+		BaseActor:     entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		actionPool:    make(chan event_bus.EventCallAction, 10),
 		stateMu:       &sync.Mutex{},
+		eventBus:      eventBus,
 	}
 
 	actor.Manager = entityManager
-	actor.Attrs.Deserialize(params)
 
 	// Actions
 	for _, a := range actor.Actions {
@@ -117,10 +118,11 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) (err error) {
 	}
 	e.AttrMu.Unlock()
 
-	e.Send(entity_manager.MessageStateChanged{
-		StorageSave: true,
-		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		OldState: oldState,
+		NewState: e.GetEventState(e),
 	})
 
 	return

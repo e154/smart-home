@@ -23,7 +23,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
@@ -48,6 +47,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	isStarted     *atomic.Bool
@@ -105,41 +105,13 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 			return
 		}
 
-		p.addOrUpdateForecast(v.To.Name(), v.Attributes)
-
-	case event_bus.EventAddedNewEntity:
-		if v.Type != "zone" {
-			return
-		}
-
-		p.addOrUpdateZone(v.EntityId.Name(), v.Attributes)
-
-	case event_bus.EventStateChanged:
-		if v.Type != "zone" {
-			return
-		}
-
-		zoneAttr := zone.NewAttr()
-		zoneAttr.Deserialize(v.NewState.Attributes.Serialize())
-		p.addOrUpdateZone(v.EntityId.Name(), zoneAttr)
-
-	case event_bus.EventRemoveEntity:
-		if v.Type != "zone" {
-			return
-		}
-
-		if err := p.removeEntity(v.EntityId.Name()); err != nil {
-			return
-		}
-
-		entityId := common.EntityId(fmt.Sprintf("weather.%s", v.EntityId.Name()))
-		p.entityManager.Remove(entityId)
+		p.AddOrUpdateForecast(v.To.Name(), v.Attributes)
 	}
 
 	return
 }
 
-func (p *plugin) addOrUpdateForecast(name string, attr m.Attributes) (err error) {
+func (p *plugin) AddOrUpdateForecast(name string, attr m.Attributes) (err error) {
 
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -164,22 +136,16 @@ func (p *plugin) addOrUpdateForecast(name string, attr m.Attributes) (err error)
 	return
 }
 
-func (p *plugin) addOrUpdateZone(name string, zoneAttr m.Attributes) (err error) {
-
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
+	name := entity.Id.Name()
 	if _, ok := p.actors[name]; !ok {
-		p.actors[name] = NewActor(name, p.eventBus, p.entityManager)
+		p.actors[name] = NewActor(entity, p.entityManager, p.eventBus)
 		p.entityManager.Spawn(p.actors[name].Spawn)
 	}
-	p.actors[name].setPosition(zoneAttr)
-
-	return
-}
-
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.addOrUpdateZone(entity.Id.Name(), entity.Attributes)
+	p.actors[name].UpdatePosition(entity.Settings)
 	return
 }
 
@@ -211,4 +177,12 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		ActorAttrs:  BaseForecast(),
+		ActorSetts:  NewSettings(),
+		ActorStates: entity_manager.ToEntityStateShort(NewStates(false, false)),
+	}
 }

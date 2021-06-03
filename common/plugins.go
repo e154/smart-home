@@ -18,8 +18,18 @@
 
 package common
 
+type PluginInfo struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Enabled bool   `json:"enabled"`
+	System  bool   `json:"system"`
+}
+
 type PluginManager interface {
 	Start()
 	Shutdown()
 	GetPlugin(name string) (plugin interface{}, err error)
+	EnablePlugin(string) error
+	DisablePlugin(string) error
+	PluginList() (list []PluginInfo, total int64, err error)
 }

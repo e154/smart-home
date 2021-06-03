@@ -48,6 +48,9 @@ func TestZone(t *testing.T) {
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
 
+			eventBus.Purge()
+			scriptService.Purge()
+
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
@@ -64,13 +67,6 @@ func TestZone(t *testing.T) {
 			err = adaptors.Entity.Add(zoneEnt)
 			So(err, ShouldBeNil)
 
-			serial := zoneEnt.Attributes.Serialize()
-			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
-				EntityId:   "zone.home",
-				Attributes: serial,
-			})
-			So(err, ShouldBeNil)
-
 			// ------------------------------------------------
 			wgAdd := sync.WaitGroup{}
 			wgAdd.Add(1)
@@ -84,23 +80,23 @@ func TestZone(t *testing.T) {
 						return
 					}
 
-					attr := v.NewState.Attributes
-					ctx.So(attr["elevation"].Value, ShouldEqual, 10)
-					ctx.So(attr["lat"].Value, ShouldEqual, 10.881)
-					ctx.So(attr["lon"].Value, ShouldEqual, 107.570)
-					ctx.So(attr["timezone"].Value, ShouldEqual, 7)
+					settings := v.NewState.Settings
+					ctx.So(settings["elevation"].Value, ShouldEqual, 10)
+					ctx.So(settings["lat"].Value, ShouldEqual, 10.881)
+					ctx.So(settings["lon"].Value, ShouldEqual, 107.570)
+					ctx.So(settings["timezone"].Value, ShouldEqual, 7)
 					wgUpdate.Done()
 
-				case event_bus.EventAddedNewEntity:
+				case event_bus.EventAddedActor:
 					if v.Type != "zone" {
 						return
 					}
 
-					attr := v.Attributes
-					ctx.So(attr["elevation"].Value, ShouldEqual, 150)
-					ctx.So(attr["lat"].Value, ShouldEqual, 54.9022)
-					ctx.So(attr["lon"].Value, ShouldEqual, 83.0335)
-					ctx.So(attr["timezone"].Value, ShouldEqual, 7)
+					settings := v.Settings
+					ctx.So(settings["elevation"].Value, ShouldEqual, 150)
+					ctx.So(settings["lat"].Value, ShouldEqual, 54.9022)
+					ctx.So(settings["lon"].Value, ShouldEqual, 83.0335)
+					ctx.So(settings["timezone"].Value, ShouldEqual, 7)
 					wgAdd.Done()
 
 				default:
@@ -126,7 +122,7 @@ func TestZone(t *testing.T) {
 			//...
 			wgAdd.Wait()
 			entityManager.SetState(zoneEnt.Id, entity_manager.EntityStateParams{
-				AttributeValues: m.AttributeValue{
+				SettingsValue: m.AttributeValue{
 					"elevation": 10,
 					"lat":       10.881,
 					"lon":       107.570,

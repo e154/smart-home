@@ -21,6 +21,7 @@ package triggers
 import (
 	"fmt"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"go.uber.org/atomic"
@@ -38,6 +39,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	isStarted *atomic.Bool
 	bus       event_bus.EventBus
 	mu        *sync.Mutex
@@ -168,4 +170,10 @@ func (p *plugin) TriggerList() (list []string) {
 		list = append(list, name)
 	}
 	return
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Triggers: true,
+	}
 }

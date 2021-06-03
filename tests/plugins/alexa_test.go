@@ -366,8 +366,6 @@ skillOnIntent = ->
 				ctx.So(msg.SkillId, ShouldEqual, 1)
 				ctx.So(msg.IntentName, ShouldEqual, "FlatLights")
 			})
-
-			time.Sleep(time.Second * 2)
 		})
 	})
 }

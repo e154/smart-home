@@ -54,6 +54,9 @@ const (
 	AttrGoldenHour    = "goldenHour"    // evening golden hour starts
 	AttrSolarNoon     = "solarNoon"     // solar noon (sun is in the highest position)
 	AttrNadir         = "nadir"         // nadir (darkest moment of the night, sun is in the lowest position)
+
+	AttrLat          = "lat"
+	AttrLon          = "lon"
 )
 
 type DayTime struct {
@@ -149,6 +152,19 @@ func NewAttr() m.Attributes {
 	}
 }
 
+func NewSettings() m.Attributes {
+	return m.Attributes{
+		AttrLat: {
+			Name: AttrLat,
+			Type: common.AttributeFloat,
+		},
+		AttrLon: {
+			Name: AttrLon,
+			Type: common.AttributeFloat,
+		},
+	}
+}
+
 const (
 	Sunrise = "sunrise" // sunrise (top edge of the sun appears on the horizon)
 	Sunset  = "sunset"  // sunset (sun disappears below the horizon, evening civil twilight starts)
@@ -172,7 +188,7 @@ const (
 	Nadir     = "nadir"     // nadir (darkest moment of the night, sun is in the lowest position)
 )
 
-func States() (states map[string]entity_manager.ActorState) {
+func NewStates() (states map[string]entity_manager.ActorState) {
 
 	states = map[string]entity_manager.ActorState{
 		Sunrise: {

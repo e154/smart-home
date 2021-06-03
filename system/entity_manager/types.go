@@ -34,13 +34,16 @@ type PluginActor interface {
 	// Attributes ...
 	Attributes() m.Attributes
 
+	// Settings ...
+	Settings() m.Attributes
+
 	// Metrics ...
 	Metrics() []m.Metric
 
-	// SetState
+	// SetState ...
 	SetState(EntityStateParams) error
 
-	// Info
+	// Info ...
 	Info() ActorInfo
 }
 
@@ -75,9 +78,6 @@ type EntityManager interface {
 	// Remove ...
 	Remove(common.EntityId)
 
-	// Send ...
-	Send(Message) error
-
 	// CallAction ...
 	CallAction(common.EntityId, string, map[string]interface{})
 
@@ -99,11 +99,37 @@ type ActorAction struct {
 	ScriptEngine *scripts.Engine `json:"-"`
 }
 
+func ToEntityActionShort(from map[string]ActorAction) (to map[string]m.EntityActionShort) {
+	to = make(map[string]m.EntityActionShort)
+	for k, v := range from {
+		to[k] = m.EntityActionShort{
+			Name:        v.Name,
+			Description: v.Description,
+			ImageUrl:    v.ImageUrl,
+			Icon:        v.Icon,
+		}
+	}
+	return
+}
+
 type ActorState struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	ImageUrl    *string `json:"image_url"`
 	Icon        *string `json:"icon"`
+}
+
+func ToEntityStateShort(from map[string]ActorState) (to map[string]m.EntityStateShort) {
+	to = make(map[string]m.EntityStateShort)
+	for k, v := range from {
+		to[k] = m.EntityStateShort{
+			Name:        v.Name,
+			Description: v.Description,
+			ImageUrl:    v.ImageUrl,
+			Icon:        v.Icon,
+		}
+	}
+	return
 }
 
 func (a *ActorState) Copy() (state *ActorState) {

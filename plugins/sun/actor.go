@@ -25,13 +25,16 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"math"
 	"sort"
 	"sync"
+	"time"
 )
 
 type Actor struct {
 	entity_manager.BaseActor
+	eventBus            event_bus.EventBus
 	positionLock        *sync.Mutex
 	lat, lon, elevation float64
 	solarAzimuth        float64
@@ -40,47 +43,62 @@ type Actor struct {
 	horizonState        string
 }
 
-func NewActor(name string, entityManager entity_manager.EntityManager) *Actor {
+func NewActor(entity *m.Entity,
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus) *Actor {
 
-	entity := &Actor{
+	name := entity.Id.Name()
+
+	actor := &Actor{
 		BaseActor: entity_manager.BaseActor{
 			Id:          common.EntityId(fmt.Sprintf("%s.%s", EntitySun, name)),
 			Name:        name,
 			Description: "sun plugin",
 			EntityType:  EntitySun,
 			AttrMu:      &sync.Mutex{},
-			Attrs:       NewAttr(),
+			Attrs:       entity.Attributes,
+			Setts:       entity.Settings,
 			ParentId:    common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
 			Manager:     entityManager,
-			States:      States(),
+			States:      NewStates(),
 		},
+		eventBus:     eventBus,
 		positionLock: &sync.Mutex{},
 	}
 
-	return entity
+	if actor.Setts == nil {
+		actor.Setts = NewSettings()
+	}
+
+	actor.setPosition(entity.Settings)
+
+	return actor
 }
 
 func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
-func (e *Actor) setPosition(lat, lon, elevation float64) {
+func (e *Actor) setPosition(settings m.Attributes) {
+	if settings == nil {
+		return
+	}
+
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
-	e.lat = lat
-	e.lon = lon
-	e.elevation = elevation
+	e.lat = settings[AttrLat].Float64()
+	e.lon = settings[AttrLon].Float64()
 }
 
-func (e *Actor) updateSunPosition() {
+func (e *Actor) UpdateSunPosition(now time.Time) {
 
 	e.positionLock.Lock()
 	defer e.positionLock.Unlock()
 
 	oldState := e.GetEventState(e)
 
-	now := e.Now(oldState)
+	e.Now(oldState)
 
 	sunrisePos := suncalc.GetSunPosition(now, e.lat, e.lon)
 	e.solarAzimuth = sunrisePos.Azimuth*180/math.Pi + 180
@@ -149,9 +167,10 @@ func (e *Actor) updateSunPosition() {
 
 	e.DeserializeAttr(attributeValues)
 
-	e.Send(entity_manager.MessageStateChanged{
-		StorageSave: true,
-		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		OldState: oldState,
+		NewState: e.GetEventState(e),
 	})
 }

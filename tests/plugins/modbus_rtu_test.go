@@ -98,6 +98,9 @@ entityAction = (entityId, actionName)->
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
 
+			eventBus.Purge()
+			scriptService.Purge()
+
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
@@ -173,12 +176,12 @@ entityAction = (entityId, actionName)->
 					Description: "error state",
 				},
 			}
-			plugEnt.Attributes[modbus_rtu.AttrSlaveId].Value = 1
-			plugEnt.Attributes[modbus_rtu.AttrBaud].Value = 19200
-			plugEnt.Attributes[modbus_rtu.AttrStopBits].Value = 1
-			plugEnt.Attributes[modbus_rtu.AttrTimeout].Value = 100
-			plugEnt.Attributes[modbus_rtu.AttrDataBits].Value = 8
-			plugEnt.Attributes[modbus_rtu.AttrParity].Value = "none"
+			plugEnt.Settings[modbus_rtu.AttrSlaveId].Value = 1
+			plugEnt.Settings[modbus_rtu.AttrBaud].Value = 19200
+			plugEnt.Settings[modbus_rtu.AttrStopBits].Value = 1
+			plugEnt.Settings[modbus_rtu.AttrTimeout].Value = 100
+			plugEnt.Settings[modbus_rtu.AttrDataBits].Value = 8
+			plugEnt.Settings[modbus_rtu.AttrParity].Value = "none"
 			err = adaptors.Entity.Add(plugEnt)
 			So(err, ShouldBeNil)
 			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
@@ -458,7 +461,7 @@ entityAction = (entityId, actionName)->
 				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/plugin.test"), b)
 				mqttCli.Publish(fmt.Sprintf("home/node/main/resp/%s", plugEnt.Id), b)
 
-				time.Sleep(time.Second * 2)
+				time.Sleep(time.Millisecond * 500)
 			})
 		})
 	})

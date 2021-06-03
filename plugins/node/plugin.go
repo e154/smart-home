@@ -26,6 +26,7 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
@@ -43,6 +44,7 @@ func init() {
 }
 
 type plugin struct {
+	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
@@ -75,6 +77,7 @@ func (p *plugin) Load(service plugins.Service) error {
 	p.isStarted.Store(true)
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.node")
+	p.mqttServ.Authenticator().Register(p.Authenticator)
 
 	return nil
 }
@@ -85,6 +88,10 @@ func (p *plugin) Unload() error {
 	}
 	p.isStarted.Store(false)
 	p.mqttServ.RemoveClient("plugins.node")
+	p.mqttServ.Authenticator().Unregister(p.Authenticator)
+
+	p.actorsLock.Lock()
+	defer p.actorsLock.Unlock()
 
 	// remove actors
 	for entityId, actor := range p.actors {
@@ -148,4 +155,43 @@ func (p *plugin) Version() string {
 
 func (p *plugin) pushToNode() {
 
+}
+
+func (p *plugin) Authenticator(login, password string) (err error) {
+
+	p.actorsLock.Lock()
+	defer p.actorsLock.Unlock()
+
+	for _, actor := range p.actors {
+		attrs := actor.Settings()
+
+		if attrs[AttrNodeLogin].String() != login {
+			continue
+		}
+
+		if attrs[AttrNodePass].String() != password {
+			continue
+		}
+
+		err = nil
+		return
+
+		// todo add encripted password
+		//if ok := common.CheckPasswordHash(password, settings[AttrNodePass].String()); ok {
+		//	return
+		//}
+	}
+
+	err = mqtt_authenticator.ErrBadLoginOrPassword
+
+	return
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:      true,
+		ActorAttrs:  NewAttr(),
+		ActorSetts:  NewSettings(),
+		ActorStates: entity_manager.ToEntityStateShort(NewStates()),
+	}
 }

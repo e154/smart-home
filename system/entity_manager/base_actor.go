@@ -21,6 +21,7 @@ package entity_manager
 import (
 	"errors"
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
@@ -55,10 +56,16 @@ type BaseActor struct {
 	AutoLoad          bool
 	LastChanged       *time.Time
 	LastUpdated       *time.Time
+	adaptors          *adaptors.Adaptors
+	SettingsMu        *sync.Mutex
+	Setts             m.Attributes
 }
 
-func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseActor {
+func NewBaseActor(entity *m.Entity,
+	scriptService scripts.ScriptService,
+	adaptors *adaptors.Adaptors) BaseActor {
 	actor := BaseActor{
+		adaptors:          adaptors,
 		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.Type, entity.Id.Name())),
 		Name:              entity.Id.Name(),
 		Description:       entity.Description,
@@ -80,6 +87,8 @@ func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseAct
 		AutoLoad:          entity.AutoLoad,
 		AttrMu:            &sync.Mutex{},
 		Attrs:             entity.Attributes.Copy(),
+		SettingsMu:        &sync.Mutex{},
+		Setts:             entity.Settings,
 	}
 
 	// Image
@@ -155,16 +164,13 @@ func (e *BaseActor) SetState(EntityStateParams) error {
 }
 
 func (e *BaseActor) Attributes() m.Attributes {
-	e.AttrMu.Lock()
-	defer e.AttrMu.Unlock()
+	e.attrLock()
 	return e.Attrs.Copy()
 }
 
-func (e *BaseActor) Send(payload interface{}) {
-	e.Manager.Send(Message{
-		From:    e.Id,
-		Payload: payload,
-	})
+func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
+	e.attrLock()
+	e.Attrs.Deserialize(data)
 }
 
 func (e *BaseActor) Info() (info ActorInfo) {
@@ -203,8 +209,37 @@ func (e *BaseActor) Now(oldState event_bus.EventEntityState) time.Time {
 	return now
 }
 
-func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
+func (e *BaseActor) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
+	if e.Manager != nil {
+		e.Manager.SetMetric(id, name, value)
+	}
+}
+
+func (e *BaseActor) Settings() m.Attributes {
+	e.settingsLock()
+	return e.Setts.Copy()
+}
+
+func (e *BaseActor) DeserializeSettings(settings m.AttributeValue) {
+	if settings == nil {
+		return
+	}
+	e.settingsLock()
+	e.Setts.Deserialize(settings)
+}
+
+func (e *BaseActor) attrLock() {
+	if e.AttrMu == nil {
+		e.AttrMu = &sync.Mutex{}
+	}
 	e.AttrMu.Lock()
-	e.Attrs.Deserialize(data)
-	e.AttrMu.Unlock()
+	defer e.AttrMu.Unlock()
+}
+
+func (e *BaseActor) settingsLock() {
+	if e.SettingsMu == nil {
+		e.SettingsMu = &sync.Mutex{}
+	}
+	e.SettingsMu.Lock()
+	defer e.SettingsMu.Unlock()
 }

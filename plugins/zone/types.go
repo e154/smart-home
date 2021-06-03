@@ -37,6 +37,10 @@ const (
 )
 
 func NewAttr() m.Attributes {
+	return nil
+}
+
+func NewSettings() m.Attributes {
 
 	attributes := m.Attributes{
 		AttrLat: {

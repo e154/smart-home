@@ -34,6 +34,7 @@ type ScriptService interface {
 	NewEngine(s *m.Script) (*Engine, error)
 	PushStruct(name string, s interface{})
 	PushFunctions(name string, s interface{})
+	Purge()
 }
 
 // scriptService ...
@@ -74,4 +75,10 @@ func (service *scriptService) PushStruct(name string, s interface{}) {
 func (service *scriptService) PushFunctions(name string, s interface{}) {
 	log.Infof("register function: \"%s\"", name)
 	service.functions.Add(name, s)
+}
+
+// Purge ...
+func (service *scriptService) Purge() {
+	service.functions.Purge()
+	service.structures.Purge()
 }
