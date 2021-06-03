@@ -38,16 +38,17 @@ func init() {
 }
 
 type plugin struct {
-	plugins.Plugin
-	bus       event_bus.EventBus
-	mu        *sync.Mutex
-	triggers  map[string]ITrigger
+	*plugins.Plugin
+	bus      event_bus.EventBus
+	mu       *sync.Mutex
+	triggers map[string]ITrigger
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		mu:        &sync.Mutex{},
-		triggers:  make(map[string]ITrigger),
+		Plugin:   plugins.NewPlugin(),
+		mu:       &sync.Mutex{},
+		triggers: make(map[string]ITrigger),
 	}
 }
 
