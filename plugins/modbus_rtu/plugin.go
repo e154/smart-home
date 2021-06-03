@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -46,7 +45,6 @@ type plugin struct {
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
-	isStarted     *atomic.Bool
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
 	actors        map[common.EntityId]*Actor
@@ -54,32 +52,26 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-	p.scriptService = service.ScriptService()
-
-	if p.isStarted.Load() {
-		return nil
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
 	}
-	p.isStarted.Store(true)
+
 	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
 
-func (p *plugin) Unload() error {
-	if !p.isStarted.Load() {
-		return nil
+func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
 	}
-	p.isStarted.Store(false)
+
 	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return nil
 }

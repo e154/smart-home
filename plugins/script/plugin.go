@@ -57,11 +57,10 @@ func New() plugins.Plugable {
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-	p.scriptService = service.ScriptService()
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
+	}
 
 	if err := p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
@@ -71,6 +70,11 @@ func (p *plugin) Load(service plugins.Service) error {
 }
 
 func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
+	}
+
+	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return
 }

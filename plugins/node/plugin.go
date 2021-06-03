@@ -29,7 +29,6 @@ import (
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -48,7 +47,6 @@ type plugin struct {
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
-	isStarted     *atomic.Bool
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
 	actors        map[common.EntityId]*Actor
@@ -58,23 +56,17 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-	p.scriptService = service.ScriptService()
-	p.mqttServ = service.MqttServ()
-
-	if p.isStarted.Load() {
-		return nil
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
 	}
-	p.isStarted.Store(true)
+
+	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.node")
 	p.mqttServ.Authenticator().Register(p.Authenticator)
@@ -82,11 +74,11 @@ func (p *plugin) Load(service plugins.Service) error {
 	return nil
 }
 
-func (p *plugin) Unload() error {
-	if !p.isStarted.Load() {
-		return nil
+func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
 	}
-	p.isStarted.Store(false)
+
 	p.mqttServ.RemoveClient("plugins.node")
 	p.mqttServ.Authenticator().Unregister(p.Authenticator)
 

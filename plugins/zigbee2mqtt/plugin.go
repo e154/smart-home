@@ -28,7 +28,6 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 	"strings"
 	"sync"
 )
@@ -48,7 +47,6 @@ type plugin struct {
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
-	isStarted     *atomic.Bool
 	eventBus      event_bus.EventBus
 	actorsLock    *sync.Mutex
 	actors        map[string]*Actor
@@ -59,18 +57,17 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[string]*Actor),
 		mqttSubs:   sync.Map{},
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-	p.scriptService = service.ScriptService()
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
+	}
+
 	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.zigbee2mqtt")
@@ -81,6 +78,10 @@ func (p *plugin) Load(service plugins.Service) error {
 }
 
 func (p plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
+	}
+
 	p.mqttServ.RemoveClient("plugins.zigbee2mqtt")
 	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return

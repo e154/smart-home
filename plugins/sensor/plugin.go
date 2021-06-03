@@ -24,7 +24,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -40,7 +39,6 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	isStarted  *atomic.Bool
 	actorsLock *sync.Mutex
 	actors     map[common.EntityId]*Actor
 	mqttServ   mqtt.MqttServ
@@ -50,7 +48,6 @@ type plugin struct {
 func New() plugins.Plugable {
 	return &plugin{
 		Plugin:     plugins.NewPlugin(),
-		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}

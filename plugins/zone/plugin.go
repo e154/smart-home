@@ -26,7 +26,6 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -45,29 +44,30 @@ type plugin struct {
 	entityManager entity_manager.EntityManager
 	adaptors      *adaptors.Adaptors
 	eventBus      event_bus.EventBus
-	isStarted     *atomic.Bool
 	actorsLock    *sync.Mutex
 	actors        map[string]entity_manager.PluginActor
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[string]entity_manager.PluginActor),
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-	p.ScriptService = service.ScriptService()
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
+	}
 
 	return nil
 }
 
-func (p plugin) Unload() error {
+func (p plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
+	}
+
 	return nil
 }
 

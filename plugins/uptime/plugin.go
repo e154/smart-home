@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"time"
 )
 
@@ -48,9 +47,8 @@ func init() {
 type plugin struct {
 	plugins.Plugin
 	entityManager entity_manager.EntityManager
-	eventBus          event_bus.EventBus
+	eventBus      event_bus.EventBus
 	entity        *Actor
-	isStarted     *atomic.Bool
 	ticker        *time.Ticker
 	pause         time.Duration
 	adaptors      *adaptors.Adaptors
@@ -60,20 +58,14 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted: atomic.NewBool(false),
-		pause:     60,
+		pause: 60,
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-
-	if p.isStarted.Load() {
-		return nil
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
 	}
-	p.isStarted.Store(true)
 
 	p.entity = NewActor(p.entityManager, p.eventBus)
 	p.quit = make(chan struct{})
@@ -82,7 +74,6 @@ func (p *plugin) Load(service plugins.Service) error {
 		Start: time.Now(),
 	}
 
-	var err error
 	p.storyModel.Id, err = p.adaptors.RunHistory.Add(p.storyModel)
 
 	if err != nil {
@@ -96,7 +87,6 @@ func (p *plugin) Load(service plugins.Service) error {
 		ticker := time.NewTicker(time.Second * p.pause)
 		defer func() {
 			ticker.Stop()
-			p.isStarted.Store(false)
 			close(p.quit)
 		}()
 
@@ -113,9 +103,10 @@ func (p *plugin) Load(service plugins.Service) error {
 }
 
 func (p *plugin) Unload() (err error) {
-	if !p.isStarted.Load() {
+	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
+
 	p.quit <- struct{}{}
 	p.storyModel.End = common.Time(time.Now())
 	if err = p.adaptors.RunHistory.Update(p.storyModel); err != nil {

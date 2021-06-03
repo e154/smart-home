@@ -26,7 +26,6 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/prometheus/common/log"
-	"go.uber.org/atomic"
 	"time"
 )
 
@@ -40,7 +39,6 @@ type plugin struct {
 	plugins.Plugin
 	entityManager entity_manager.EntityManager
 	eventBus      event_bus.EventBus
-	isStarted     *atomic.Bool
 	quit          chan struct{}
 	pause         uint
 	actor         *Actor
@@ -49,25 +47,19 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	p := &plugin{
-		isStarted: atomic.NewBool(false),
-		pause:     50,
+		pause: 50,
 	}
 	return p
 }
 
-func (c *plugin) Load(service plugins.Service) error {
-	c.adaptors = service.Adaptors()
-	c.entityManager = service.EntityManager()
-	c.eventBus = service.EventBus()
-	c.actor = NewActor(c.entityManager, c.eventBus)
-
-	if c.isStarted.Load() {
-		return nil
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
 	}
 
-	c.entityManager.Spawn(c.actor.Spawn)
+	p.entityManager.Spawn(p.actor.Spawn)
 
-	list, _, err := c.adaptors.Metric.Search("cpuspeed", 1, 0)
+	list, _, err := p.adaptors.Metric.Search("cpuspeed", 1, 0)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -97,35 +89,30 @@ func (c *plugin) Load(service plugins.Service) error {
 			},
 			Type: common.MetricTypeLine,
 		}
-		if metric.Id, err = c.adaptors.Metric.Add(metric); err == nil {
-			c.adaptors.Entity.AppendMetric(c.actor.Id, metric)
+		if metric.Id, err = p.adaptors.Metric.Add(metric); err == nil {
+			p.adaptors.Entity.AppendMetric(p.actor.Id, metric)
 		}
 
 	} else {
 		metric = list[0]
 	}
 
-	c.actor.Metric = []m.Metric{metric}
+	p.actor.Metric = []m.Metric{metric}
 
 	go func() {
-		ticker := time.NewTicker(time.Second * time.Duration(c.pause))
-		c.quit = make(chan struct{})
+		ticker := time.NewTicker(time.Second * time.Duration(p.pause))
+		p.quit = make(chan struct{})
 		defer func() {
 			ticker.Stop()
-			close(c.quit)
-		}()
-
-		c.isStarted.Store(true)
-		defer func() {
-			c.isStarted.Store(false)
+			close(p.quit)
 		}()
 
 		for {
 			select {
-			case <-c.quit:
+			case <-p.quit:
 				return
 			case <-ticker.C:
-				c.actor.selfUpdate()
+				p.actor.selfUpdate()
 			}
 		}
 	}()
@@ -133,15 +120,15 @@ func (c *plugin) Load(service plugins.Service) error {
 	return nil
 }
 
-func (c *plugin) Unload() error {
-	if !c.isStarted.Load() {
-		return nil
+func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
 	}
-	c.quit <- struct{}{}
+	p.quit <- struct{}{}
 	return nil
 }
 
-func (c plugin) Name() string {
+func (p plugin) Name() string {
 	return Name
 }
 

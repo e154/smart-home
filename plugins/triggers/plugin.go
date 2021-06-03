@@ -24,7 +24,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -40,7 +39,6 @@ func init() {
 
 type plugin struct {
 	plugins.Plugin
-	isStarted *atomic.Bool
 	bus       event_bus.EventBus
 	mu        *sync.Mutex
 	triggers  map[string]ITrigger
@@ -48,31 +46,25 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted: atomic.NewBool(false),
 		mu:        &sync.Mutex{},
 		triggers:  make(map[string]ITrigger),
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) (nil error) {
-	p.bus = service.EventBus()
-
-	if p.isStarted.Load() {
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
 
 	p.attachTrigger()
 
-	p.isStarted.Store(true)
-
 	return
 }
 
 func (p *plugin) Unload() (err error) {
-	if !p.isStarted.Load() {
+	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-	p.isStarted.Store(false)
 	return
 }
 

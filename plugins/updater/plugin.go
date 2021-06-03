@@ -24,7 +24,6 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	atomic2 "go.uber.org/atomic"
 	"time"
 )
 
@@ -46,7 +45,6 @@ func init() {
 type plugin struct {
 	plugins.Plugin
 	entityManager entity_manager.EntityManager
-	isStarted     atomic2.Bool
 	pause         time.Duration
 	actor         *Actor
 	eventBus      event_bus.EventBus
@@ -60,10 +58,7 @@ func New() plugins.Plugable {
 }
 
 func (p *plugin) Load(service plugins.Service) (err error) {
-	p.entityManager = service.EntityManager()
-	p.eventBus = service.EventBus()
-
-	if p.isStarted.Load() {
+	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
 
@@ -80,7 +75,6 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 		defer func() {
 			ticker.Stop()
-			p.isStarted.Store(false)
 			close(p.quit)
 		}()
 
@@ -98,9 +92,10 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 }
 
 func (p *plugin) Unload() (err error) {
-	if !p.isStarted.Load() {
+	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
+
 	p.quit <- struct{}{}
 	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
