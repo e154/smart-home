@@ -158,20 +158,13 @@ func (n notify) Send(msg interface{}) {
 
 func (n *notify) save(event Message) {
 
-	provider, ok := n.providerList[event.Type]
-	if !ok {
-		log.Warnf("provider '%s' not found", event.Type)
-		return
-	}
-
-	addresses, message := provider.Save(event)
-
-	messageId, err := n.adaptor.Message.Add(message)
+	provider, err := n.Provider(event.Type)
 	if err != nil {
 		log.Error(err.Error())
 		return
 	}
-	message.Id = messageId
+
+	addresses, message := provider.Save(event)
 
 	for _, address := range addresses {
 		messageDelivery := m.MessageDelivery{
@@ -262,6 +255,7 @@ func (n *notify) Provider(name string) (provider Provider, err error) {
 
 	var ok bool
 	if provider, ok = n.providerList[name]; !ok {
+		log.Warnf("provider '%s' not found", name)
 		err = errors.New("not found")
 		return
 	}

@@ -21,6 +21,7 @@ package plugins
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
@@ -28,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+	"time"
 )
 
 func TestNotify(t *testing.T) {
@@ -51,17 +53,31 @@ func TestNotify(t *testing.T) {
 			err = AddPlugin(adaptors, "email")
 			ctx.So(err, ShouldBeNil)
 
-			eventBus.Publish(notify.TopicNotify, )
+			pluginManager.Start()
+			entityManager.LoadEntities(pluginManager)
+
+			defer func() {
+				entityManager.Shutdown()
+				pluginManager.Shutdown()
+			}()
+
+			time.Sleep(time.Millisecond * 500)
 
 			t.Run("email", func(t *testing.T) {
-				Convey("position", t, func(ctx C) {
-
+				Convey("", t, func(ctx C) {
 
 					eventBus.Publish(notify.TopicNotify, notify.Message{
-						From:       "",
-						Type:       "",
-						Attributes: nil,
+						Type: email.Name,
+						Attributes: map[string]interface{}{
+							"addresses": "test@e154.ru,test2@e154.ru",
+							"subject":   "subject",
+							"body":      "body",
+						},
 					})
+
+					time.Sleep(time.Millisecond * 500)
+
+
 				})
 			})
 

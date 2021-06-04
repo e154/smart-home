@@ -89,7 +89,7 @@ func (p *plugin) asyncLoad() (err error) {
 	}
 
 	// register email provider
-	var provider Provider
+	var provider *Provider
 	provider, err = NewProvider(settings, p.Adaptors)
 	p.notify.AddProvider(Name, provider)
 

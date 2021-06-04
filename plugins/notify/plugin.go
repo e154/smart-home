@@ -51,7 +51,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	}
 
 	p.notify = NewNotify(p.Adaptors, p.ScriptService)
-	p.notify.Stat()
+	p.notify.Start()
 
 	p.EventBus.Subscribe(TopicNotify, p.eventHandler)
 

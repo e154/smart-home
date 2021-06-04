@@ -39,9 +39,9 @@ type Provider struct {
 
 // NewProvider ...
 func NewProvider(attrs m.Attributes,
-	adaptors *adaptors.Adaptors) (p Provider, err error) {
+	adaptors *adaptors.Adaptors) (p *Provider, err error) {
 
-	p = Provider{
+	p = &Provider{
 		adaptors: adaptors,
 		Auth:     attrs[AttrAuth].String(),
 		Pass:     attrs[AttrPass].String(),
@@ -58,7 +58,7 @@ func NewProvider(attrs m.Attributes,
 }
 
 // Save ...
-func (e Provider) Save(msg notify.Message) (addresses []string, message m.Message) {
+func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Message) {
 	message = m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
@@ -76,7 +76,7 @@ func (e Provider) Save(msg notify.Message) (addresses []string, message m.Messag
 }
 
 // Send ...
-func (e Provider) Send(address string, message m.Message) error {
+func (e *Provider) Send(address string, message m.Message) error {
 
 	if e.Auth == "" || e.Pass == "" || e.Smtp == "" || e.Port == 0 || e.Sender == "" {
 		return errors.New("bad settings parameters")
