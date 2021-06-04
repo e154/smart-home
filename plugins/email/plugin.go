@@ -77,7 +77,7 @@ func (p *plugin) asyncLoad() (err error) {
 
 	// get provider registrar
 	var pl interface{}
-	if pl, err = p.GetPlugin("notify"); err != nil {
+	if pl, err = p.GetPlugin(notify.Name); err != nil {
 		return
 	}
 
@@ -91,7 +91,7 @@ func (p *plugin) asyncLoad() (err error) {
 	// register email provider
 	var provider Provider
 	provider, err = NewProvider(settings, p.Adaptors)
-	p.notify.AddProvider("email", provider)
+	p.notify.AddProvider(Name, provider)
 
 	return
 }
@@ -104,7 +104,7 @@ func (p *plugin) Unload() (err error) {
 	if p.notify == nil {
 		return
 	}
-	p.notify.RemoveProvider("email")
+	p.notify.RemoveProvider(Name)
 
 	return nil
 }
@@ -118,7 +118,7 @@ func (p *plugin) Type() plugins.PluginType {
 }
 
 func (p *plugin) Depends() []string {
-	return []string{"notify"}
+	return []string{notify.Name}
 }
 
 func (p *plugin) Version() string {

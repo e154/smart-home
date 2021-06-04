@@ -48,11 +48,12 @@ func TestNotify(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "notify")
+			err = AddPlugin(adaptors, "email")
 			ctx.So(err, ShouldBeNil)
 
 			eventBus.Publish(notify.TopicNotify, )
 
-			t.Run("entity", func(t *testing.T) {
+			t.Run("email", func(t *testing.T) {
 				Convey("position", t, func(ctx C) {
 
 				})

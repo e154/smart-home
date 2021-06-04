@@ -52,7 +52,6 @@ func NewProvider(attrs m.Attributes,
 
 	if p.Auth == "" || p.Pass == "" || p.Smtp == "" || p.Port == 0 || p.Sender == "" {
 		err = errors.New("bad settings parameters")
-		return
 	}
 
 	return
@@ -78,6 +77,10 @@ func (e Provider) Save(msg notify.EventNewNotify) (addresses []string, message m
 
 // Send ...
 func (e Provider) Send(address string, message m.Message) error {
+
+	if e.Auth == "" || e.Pass == "" || e.Smtp == "" || e.Port == 0 || e.Sender == "" {
+		return errors.New("bad settings parameters")
+	}
 
 	attr := NewAttr()
 	attr.Deserialize(message.Attributes)
