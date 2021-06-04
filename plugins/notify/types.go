@@ -39,6 +39,12 @@ type EventNewNotify struct {
 	Attributes m.AttributeValue `json:"attributes"`
 }
 
+func NewEventNewNotify() EventNewNotify {
+	return EventNewNotify{
+		Attributes: make(m.AttributeValue),
+	}
+}
+
 type ProviderRegistrar interface {
 	AddProvider(name string, provider Provider)
 	RemoveProvider(name string)

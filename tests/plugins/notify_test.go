@@ -56,6 +56,12 @@ func TestNotify(t *testing.T) {
 			t.Run("email", func(t *testing.T) {
 				Convey("position", t, func(ctx C) {
 
+
+					eventBus.Publish(notify.TopicNotify, notify.EventNewNotify{
+						From:       "",
+						Type:       "",
+						Attributes: nil,
+					})
 				})
 			})
 

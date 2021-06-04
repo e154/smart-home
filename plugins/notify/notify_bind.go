@@ -31,27 +31,12 @@ type NotifyBind struct {
 	notify *notify
 }
 
-// NewSMS ...
-//func (b *NotifyBind) NewSMS() *SMS {
-//	return NewSMS()
-//}
-//
-//// NewEmail ...
-//func (b *NotifyBind) NewEmail() *Email {
-//	return NewEmail()
-//}
-//
-//// NewSlack ...
-//func (b *NotifyBind) NewSlack(channel, text string) *SlackMessage {
-//	return NewSlackMessage(channel, text)
-//}
-//
-//// NewTelegram ...
-//func (b *NotifyBind) NewTelegram(text string) *Telegram {
-//	return NewTelegram(text)
-//}
-//
-//// Send ...
-//func (b *NotifyBind) Send(msg interface{}) {
-//	b.notify.Send(msg)
-//}
+// NewMessage ...
+func (b *NotifyBind) NewMessage() EventNewNotify {
+	return NewEventNewNotify()
+}
+
+// Send ...
+func (b *NotifyBind) Send(msg interface{}) {
+	b.notify.Send(msg)
+}
