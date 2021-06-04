@@ -16,23 +16,18 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-// +build linux,!mips64,!mips64le darwin
-
-package uptime
+package email
 
 import (
+	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/plugins"
-	"time"
-)
-
-const (
-	name = "uptime"
 )
 
 var (
-	log = common.MustGetLogger("plugins.uptime")
+	log = common.MustGetLogger("plugins.email")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -43,17 +38,12 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	entity     *Actor
-	ticker     *time.Ticker
-	pause      time.Duration
-	storyModel *m.RunStory
-	quit       chan struct{}
+	notify notify.ProviderRegistrar
 }
 
 func New() plugins.Plugable {
 	return &plugin{
 		Plugin: plugins.NewPlugin(),
-		pause:  60,
 	}
 }
 
@@ -62,39 +52,48 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.entity = NewActor(p.EntityManager, p.EventBus)
-	p.quit = make(chan struct{})
-
-	p.storyModel = &m.RunStory{
-		Start: time.Now(),
-	}
-
-	p.storyModel.Id, err = p.Adaptors.RunHistory.Add(p.storyModel)
-
-	if err != nil {
-		log.Error(err.Error())
-		return nil
-	}
-
-	p.EntityManager.Spawn(p.entity.Spawn)
-
 	go func() {
-		ticker := time.NewTicker(time.Second * p.pause)
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
-
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				p.entity.update()
-			}
+		if err = p.asyncLoad(); err != nil {
+			log.Error(err.Error())
 		}
 	}()
+
 	return nil
+}
+
+func (p *plugin) asyncLoad() (err error) {
+
+	// load settings
+	var settings m.Attributes
+	settings, err = p.LoadSettings(p)
+	if err != nil {
+		log.Warn(err.Error())
+		settings = NewSetts()
+	}
+
+	if settings == nil {
+		settings = NewSetts()
+	}
+
+	// get provider registrar
+	var pl interface{}
+	if pl, err = p.GetPlugin("notify"); err != nil {
+		return
+	}
+
+	var ok bool
+	p.notify, ok = pl.(notify.ProviderRegistrar)
+	if !ok {
+		err = errors.New("fail static cast to notify.ProviderRegistrar")
+		return
+	}
+
+	// register email provider
+	var provider Provider
+	provider, err = NewProvider(settings, p.Adaptors)
+	p.notify.AddProvider("email", provider)
+
+	return
 }
 
 func (p *plugin) Unload() (err error) {
@@ -102,16 +101,16 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.quit <- struct{}{}
-	p.storyModel.End = common.Time(time.Now())
-	if err = p.Adaptors.RunHistory.Update(p.storyModel); err != nil {
-		log.Error(err.Error())
+	if p.notify == nil {
+		return
 	}
-	return
+	p.notify.RemoveProvider("email")
+
+	return nil
 }
 
-func (p plugin) Name() string {
-	return name
+func (p *plugin) Name() string {
+	return Name
 }
 
 func (p *plugin) Type() plugins.PluginType {
@@ -119,9 +118,15 @@ func (p *plugin) Type() plugins.PluginType {
 }
 
 func (p *plugin) Depends() []string {
-	return nil
+	return []string{"notify"}
 }
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Setts: NewSetts(),
+	}
 }

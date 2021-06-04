@@ -45,13 +45,14 @@ func init() {
 }
 
 type plugin struct {
-	plugins.Plugin
+	*plugins.Plugin
 	actorsLock *sync.Mutex
 	actors     map[string]*Actor
 }
 
 func New() plugins.Plugable {
 	return &plugin{
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[string]*Actor),
 	}

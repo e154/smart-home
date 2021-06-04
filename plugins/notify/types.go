@@ -16,24 +16,37 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package email_service
+package notify
 
-// EmailServiceConfig ...
-type EmailServiceConfig struct {
-	Auth   string
-	Pass   string
-	Smtp   string
-	Port   int
-	Sender string
+import (
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+)
+
+const (
+	Name        = "notify"
+	TopicNotify = "notify"
+)
+
+// Stat ...
+type Stat struct {
+	Workers int `json:"workers"`
 }
 
-// NewEmailServiceConfig ...
-func NewEmailServiceConfig(auth, pass, smtp string, port int, send string) *EmailServiceConfig {
-	return &EmailServiceConfig{
-		Auth:   auth,
-		Pass:   pass,
-		Smtp:   smtp,
-		Port:   port,
-		Sender: send,
-	}
+type EventNewNotify struct {
+	From       common.EntityId  `json:"from"`
+	Type       string           `json:"type"`
+	Attributes m.AttributeValue `json:"attributes"`
+}
+
+type ProviderRegistrar interface {
+	AddProvider(name string, provider Provider)
+	RemoveProvider(name string)
+	Provider(name string) (provider Provider, err error)
+}
+
+type Provider interface {
+	Save(EventNewNotify) (addresses []string, message m.Message)
+	Send(addresses string, message m.Message) error
+	Attrs() m.Attributes
 }

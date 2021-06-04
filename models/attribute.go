@@ -34,6 +34,9 @@ type Attribute struct {
 }
 
 func (a Attribute) String() string {
+	if a.Value == nil {
+		return ""
+	}
 	if value, ok := a.Value.(string); ok {
 		return value
 	}
@@ -41,6 +44,9 @@ func (a Attribute) String() string {
 }
 
 func (a Attribute) Int64() int64 {
+	if a.Value == nil {
+		return 0
+	}
 	if value, ok := a.Value.(int64); ok {
 		return value
 	}
@@ -65,6 +71,9 @@ func (a Attribute) Time() time.Time {
 }
 
 func (a Attribute) Bool() bool {
+	if a.Value == nil {
+		return false
+	}
 	if value, ok := a.Value.(bool); ok {
 		return value
 	}
@@ -72,6 +81,9 @@ func (a Attribute) Bool() bool {
 }
 
 func (a Attribute) Float64() float64 {
+	if a.Value == nil {
+		return 0
+	}
 	if value, ok := a.Value.(float64); ok {
 		return value
 	}

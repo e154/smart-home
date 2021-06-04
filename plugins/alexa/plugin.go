@@ -37,7 +37,7 @@ func init() {
 }
 
 type plugin struct {
-	plugins.Plugin
+	*plugins.Plugin
 	server     IServer
 	actorsLock *sync.Mutex
 	registrar  triggers.IRegistrar
@@ -45,6 +45,7 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	return &plugin{
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 	}
 }

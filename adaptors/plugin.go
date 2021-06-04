@@ -19,6 +19,7 @@
 package adaptors
 
 import (
+	"encoding/json"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
@@ -52,89 +53,101 @@ func GetPluginAdaptor(d *gorm.DB) IPlugin {
 }
 
 // Add ...
-func (n *Plugin) Add(plugin m.Plugin) (err error) {
-	err = n.table.Add(n.toDb(plugin))
+func (p *Plugin) Add(plugin m.Plugin) (err error) {
+	err = p.table.Add(p.toDb(plugin))
 	return
 }
 
 // CreateOrUpdate ...
-func (n *Plugin) CreateOrUpdate(ver m.Plugin) (err error) {
-	err = n.table.CreateOrUpdate(n.toDb(ver))
+func (p *Plugin) CreateOrUpdate(ver m.Plugin) (err error) {
+	err = p.table.CreateOrUpdate(p.toDb(ver))
 	return
 }
 
 // Update ...
-func (n *Plugin) Update(plugin m.Plugin) (err error) {
-	err = n.table.Update(n.toDb(plugin))
+func (p *Plugin) Update(plugin m.Plugin) (err error) {
+	err = p.table.Update(p.toDb(plugin))
 	return
 }
 
 // Delete ...
-func (n *Plugin) Delete(name string) (err error) {
-	err = n.table.Delete(name)
+func (p *Plugin) Delete(name string) (err error) {
+	err = p.table.Delete(name)
 	return
 }
 
 // List ...
-func (n *Plugin) List(limit, offset int64, orderBy, sort string) (list []m.Plugin, total int64, err error) {
+func (p *Plugin) List(limit, offset int64, orderBy, sort string) (list []m.Plugin, total int64, err error) {
 	var dbList []db.Plugin
-	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
+	if dbList, total, err = p.table.List(limit, offset, orderBy, sort); err != nil {
 		return
 	}
 
 	list = make([]m.Plugin, len(dbList))
 	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
+		list[i] = p.fromDb(dbVer)
 	}
 	return
 }
 
 // Search ...
-func (n *Plugin) Search(query string, limit, offset int) (list []m.Plugin, total int64, err error) {
+func (p *Plugin) Search(query string, limit, offset int) (list []m.Plugin, total int64, err error) {
 	var dbList []db.Plugin
-	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
+	if dbList, total, err = p.table.Search(query, limit, offset); err != nil {
 		return
 	}
 
 	list = make([]m.Plugin, len(dbList))
 	for i, dbVer := range dbList {
-		list[i] = n.fromDb(dbVer)
+		list[i] = p.fromDb(dbVer)
 	}
 
 	return
 }
 
 // GetByName ...
-func (a *Plugin) GetByName(name string) (ver m.Plugin, err error) {
+func (p *Plugin) GetByName(name string) (ver m.Plugin, err error) {
 
 	var dbVer db.Plugin
-	if dbVer, err = a.table.GetByName(name); err != nil {
+	if dbVer, err = p.table.GetByName(name); err != nil {
 		return
 	}
 
-	ver = a.fromDb(dbVer)
+	ver = p.fromDb(dbVer)
 
 	return
 }
 
-func (n *Plugin) fromDb(dbVer db.Plugin) (plugin m.Plugin) {
-	plugin = m.Plugin{
+func (p *Plugin) fromDb(dbVer db.Plugin) (ver m.Plugin) {
+	ver = m.Plugin{
 		Name:    dbVer.Name,
 		Version: dbVer.Version,
 		Enabled: dbVer.Enabled,
 		System:  dbVer.System,
 	}
 
+	// deserialize settings
+	b, _ := dbVer.Settings.MarshalJSON()
+	settings := m.EntitySettings{}
+	json.Unmarshal(b, &settings)
+	ver.Settings = settings.Settings
+
 	return
 }
 
-func (n *Plugin) toDb(ver m.Plugin) (dbVer db.Plugin) {
+func (p *Plugin) toDb(ver m.Plugin) (dbVer db.Plugin) {
 	dbVer = db.Plugin{
 		Name:    ver.Name,
 		Version: ver.Version,
 		Enabled: ver.Enabled,
 		System:  ver.System,
 	}
+
+	// serialize settings
+	b, _ := json.Marshal(m.EntitySettings{
+		Settings: ver.Settings,
+	})
+	dbVer.Settings.UnmarshalJSON(b)
 
 	return
 }

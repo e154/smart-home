@@ -18,14 +18,21 @@
 
 package models
 
-// Plugin ...
-type Plugin struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
-	Enabled bool   `json:"enabled"`
-	System  bool   `json:"system"`
+// PluginSettings ...
+type PluginSettings struct {
+	Settings Attributes `json:"settings"`
 }
 
+// Plugin ...
+type Plugin struct {
+	Name     string     `json:"name"`
+	Version  string     `json:"version"`
+	Enabled  bool       `json:"enabled"`
+	System   bool       `json:"system"`
+	Settings Attributes `json:"settings"`
+}
+
+// PluginOptions ...
 type PluginOptions struct {
 	Triggers           bool                         `json:"triggers"`
 	Actors             bool                         `json:"actors"`
@@ -36,4 +43,5 @@ type PluginOptions struct {
 	ActorCustomStates  bool                         `json:"actor_custom_states"`
 	ActorStates        map[string]EntityStateShort  `json:"actor_states"`
 	ActorSetts         Attributes                   `json:"actor_setts"`
+	Setts              Attributes                   `json:"setts"`
 }

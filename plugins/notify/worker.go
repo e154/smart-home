@@ -19,34 +19,40 @@
 package notify
 
 import (
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"go.uber.org/atomic"
 )
 
-// Telegram ...
-type Telegram struct {
-	Text string `json:"text"`
+// Worker ...
+type Worker struct {
+	adaptor   *adaptors.Adaptors
+	inProcess *atomic.Bool
 }
 
-// NewTelegram ...
-func NewTelegram(text string) *Telegram {
-	return &Telegram{
-		Text: text,
+// NewWorker ...
+func NewWorker(adaptor *adaptors.Adaptors) *Worker {
+
+	worker := &Worker{
+		inProcess: atomic.NewBool(false),
+		adaptor:   adaptor,
 	}
+
+	return worker
 }
 
-// SetRender ...
-func (s *Telegram) SetRender(render *m.TemplateRender) {
-	s.Text = render.Body
-}
+func (n *Worker) send(msg m.MessageDelivery, provider Provider) {
 
-// Save ...
-func (s *Telegram) Save() (addresses []string, message *m.Message) {
+	n.inProcess.Store(true)
+	defer n.inProcess.Store(false)
 
-	addresses = []string{""}
-	message = &m.Message{
-		Type:         m.MessageTypeTelegramNotify,
-		TelegramText: common.String(s.Text),
+	if err := provider.Send(msg.Address, msg.Message); err != nil {
+		msg.Status = m.MessageStatusError
+		msg.ErrorMessageBody = common.String(err.Error())
+		_ = n.adaptor.MessageDelivery.SetStatus(msg)
+	} else {
+		msg.Status = m.MessageStatusSucceed
+		_ = n.adaptor.MessageDelivery.SetStatus(msg)
 	}
-	return
 }

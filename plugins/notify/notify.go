@@ -19,70 +19,54 @@
 package notify
 
 import (
-	"context"
-	"encoding/json"
+	"errors"
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/fx"
+	"go.uber.org/atomic"
+	"sync"
 	"time"
 )
 
-var (
-	log = common.MustGetLogger("notify")
+const (
+	queueSize = 30
 )
 
 type Notify interface {
 	Shutdown() error
 	Start() (err error)
-	Restart()
-	GetCfg() *Config
-	UpdateCfg(cfg *Config) error
-	Stat() *NotifyStat
-	Repeat(msg *m.MessageDelivery)
+	Stat() *Stat
+	Repeat(msg m.MessageDelivery)
 	Send(msg interface{})
+	AddProvider(name string, provider Provider)
+	RemoveProvider(name string)
+	Provider(name string) (provider Provider, err error)
 }
 
 // notify ...
 type notify struct {
 	adaptor       *adaptors.Adaptors
-	cfg           *Config
-	appCfg        *config.AppConfig
-	stat          *NotifyStat
-	isStarted     bool
-	stopPrecess   bool
+	stat          *Stat
+	isStarted     *atomic.Bool
 	scriptService scripts.ScriptService
-	ticker        *time.Ticker
 	workers       []*Worker
-	queue         chan interface{}
-	stopQueue     chan struct{}
+	queue         chan m.MessageDelivery
+	providerMu    *sync.RWMutex
+	providerList  map[string]Provider
 }
 
 // NewNotify ...
 func NewNotify(
-	lc fx.Lifecycle,
 	adaptor *adaptors.Adaptors,
-	appCfg *config.AppConfig,
 	scriptService scripts.ScriptService) Notify {
 
 	notify := &notify{
-		adaptor:   adaptor,
-		appCfg:    appCfg,
-		queue:     make(chan interface{}),
-		stopQueue: make(chan struct{}),
-		cfg:       NewConfig(adaptor),
+		adaptor:      adaptor,
+		isStarted:    atomic.NewBool(false),
+		queue:        make(chan m.MessageDelivery, queueSize),
+		providerMu:   &sync.RWMutex{},
+		providerList: make(map[string]Provider),
 	}
-
-	lc.Append(fx.Hook{
-		OnStart: func(ctx context.Context) (err error) {
-			return notify.Start()
-		},
-		OnStop: func(ctx context.Context) (err error) {
-			return notify.Shutdown()
-		},
-	})
 
 	scriptService.PushStruct("Notifr", &NotifyBind{
 		notify: notify,
@@ -98,119 +82,89 @@ func NewNotify(
 // Shutdown ...
 func (n *notify) Shutdown() error {
 	n.stop()
-	close(n.stopQueue)
 	return nil
 }
 
 // Start ...
 func (n *notify) Start() (err error) {
 
-	if n.isStarted {
+	if n.isStarted.Load() {
 		return
 	}
-
-	// update config
-	n.cfg.Get()
-
-	n.isStarted = true
+	n.isStarted.Store(true)
 
 	// workers
 	n.workers = []*Worker{
-		NewWorker(n.cfg, n.adaptor),
+		NewWorker(n.adaptor),
+		NewWorker(n.adaptor),
+		NewWorker(n.adaptor),
 	}
-
-	// stats
-	n.ticker = time.NewTicker(time.Second * 5)
 
 	n.updateStat()
 
-	//...
 	go func() {
-		for {
-			var worker *Worker
+
+		var worker *Worker
+		defer func() {
+			n.workers = make([]*Worker, 0)
+		}()
+
+		for event := range n.queue {
+		LOOP:
 			for _, w := range n.workers {
-				if w.inProcess {
+				if w.inProcess.Load() {
 					continue
 				}
 				worker = w
+				break
 			}
 			if worker == nil {
-				time.Sleep(time.Millisecond * 500)
-				continue
+				time.Sleep(time.Second)
+				goto LOOP
 			}
 
-			select {
-			case msg := <-n.queue:
-				worker.send(msg)
-			case <-n.stopQueue:
-				return
+			provider, err := n.Provider(event.Message.Type)
+			if err != nil {
+				log.Error(err.Error())
+				continue
 			}
+			worker.send(event, provider)
 		}
 	}()
 
-	for _, worker := range n.workers {
-		worker.Start()
-	}
-
 	n.read()
-
-	log.Infof("Notifr service started")
 
 	return
 }
 
 func (n *notify) stop() {
-	if n.stopPrecess {
-		return
-	}
 
-	n.stopQueue <- struct{}{}
-
-	n.stopPrecess = true
-	defer func() {
-		n.stopPrecess = false
-	}()
-
-	//...
-
-	if n.ticker != nil {
-		n.ticker.Stop()
-	}
-	n.ticker = nil
-
-	for _, worker := range n.workers {
-		worker.Stop()
-	}
-	n.workers = make([]*Worker, 0)
-
-	n.isStarted = false
-
-	log.Infof("Notifr service stopped")
+	close(n.queue)
+	n.isStarted.Store(false)
 }
 
-// Restart ...
-func (n *notify) Restart() {
-	n.stop()
-	n.Start()
-}
-
-// Send ...
 func (n notify) Send(msg interface{}) {
-	if !n.isStarted && n.stopPrecess {
+	if !n.isStarted.Load() {
 		return
 	}
 
 	switch v := msg.(type) {
-	case IMessage:
+	case EventNewNotify:
 		n.save(v)
 	default:
 		log.Errorf("unknown message type %v", v)
 	}
 }
 
-func (n *notify) save(t IMessage) {
+func (n *notify) save(event EventNewNotify) {
 
-	addresses, message := t.Save()
+	provider, ok := n.providerList[event.Type]
+	if !ok {
+		log.Warnf("provider '%s' not found", event.Type)
+		return
+	}
+
+	addresses, message := provider.Save(event)
 
 	messageId, err := n.adaptor.Message.Add(message)
 	if err != nil {
@@ -220,7 +174,7 @@ func (n *notify) save(t IMessage) {
 	message.Id = messageId
 
 	for _, address := range addresses {
-		messageDelivery := &m.MessageDelivery{
+		messageDelivery := m.MessageDelivery{
 			Message:   message,
 			MessageId: message.Id,
 			Status:    m.MessageStatusInProgress,
@@ -246,40 +200,14 @@ func (n *notify) read() {
 	}
 }
 
-func (n *notify) getCfg() {
-
-	v, err := n.adaptor.Variable.GetByName(notifyVarName)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
-
-	n.cfg = &Config{}
-	if err = json.Unmarshal([]byte(v.Value), n.cfg); err != nil {
-		log.Error(err.Error())
-	}
-}
-
-// GetCfg ...
-func (n *notify) GetCfg() *Config {
-	return n.cfg
-}
-
-// UpdateCfg ...
-func (n *notify) UpdateCfg(cfg *Config) error {
-	cfg.adaptor = n.adaptor
-	n.cfg = cfg
-	return n.cfg.Update()
-}
-
 // Stat ...
-func (n *notify) Stat() *NotifyStat {
+func (n *notify) Stat() *Stat {
 	return n.stat
 }
 
 func (n *notify) updateStat() {
 
-	stat := &NotifyStat{
+	stat := &Stat{
 		Workers: len(n.workers),
 	}
 
@@ -287,30 +215,12 @@ func (n *notify) updateStat() {
 		return
 	}
 
-	worker := n.workers[0]
-
-	// messagebird balance
-	if worker.mbClient != nil {
-		if mbBalance, err := worker.mbClient.Balance(); err == nil {
-			stat.MbBalance = mbBalance.Amount
-		}
-	}
-
-	// twilio balance
-	if worker.twClient != nil {
-		if twBalance, err := worker.twClient.Balance(); err == nil {
-			stat.TwBalance = twBalance
-		} else {
-			log.Error(err.Error())
-		}
-	}
-
 	n.stat = stat
 }
 
 // Repeat ...
-func (n *notify) Repeat(msg *m.MessageDelivery) {
-	if !n.isStarted && n.stopPrecess {
+func (n *notify) Repeat(msg m.MessageDelivery) {
+	if !n.isStarted.Load() {
 		return
 	}
 
@@ -318,4 +228,42 @@ func (n *notify) Repeat(msg *m.MessageDelivery) {
 	_ = n.adaptor.MessageDelivery.SetStatus(msg)
 
 	n.queue <- msg
+}
+
+// AddProvider ...
+func (n *notify) AddProvider(name string, provider Provider) {
+	n.providerMu.Lock()
+	defer n.providerMu.Unlock()
+
+	if _, ok := n.providerList[name]; ok {
+		return
+	}
+
+	log.Infof("add new notify provider '%s'", name)
+	n.providerList[name] = provider
+}
+
+// RemoveProvider ...
+func (n *notify) RemoveProvider(name string) {
+	n.providerMu.Lock()
+	defer n.providerMu.Unlock()
+
+	if _, ok := n.providerList[name]; !ok {
+		return
+	}
+
+	log.Infof("remove notify provider '%s'", name)
+	delete(n.providerList, name)
+}
+
+func (n *notify) Provider(name string) (provider Provider, err error) {
+	n.providerMu.RLock()
+	defer n.providerMu.RUnlock()
+
+	var ok bool
+	if provider, ok = n.providerList[name]; !ok {
+		err = errors.New("not found")
+		return
+	}
+	return
 }

@@ -159,7 +159,7 @@ LOOP:
 			continue
 		}
 		if err = p.loadPlugin(pl.Name); err != nil {
-			log.Error(err.Error())
+			log.Errorf("plugin name '%s', %s", pl.Name, err.Error())
 		}
 	}
 
@@ -261,7 +261,7 @@ func (p *pluginManager) EnablePlugin(name string) (err error) {
 		return
 	}
 	pl := pluginList[name]
-	p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+	err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
 		Name:    pl.Name(),
 		Version: pl.Version(),
 		Enabled: true,
@@ -275,7 +275,7 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 		return
 	}
 	pl := pluginList[name]
-	p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+	err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
 		Name:    pl.Name(),
 		Version: pl.Version(),
 		Enabled: false,

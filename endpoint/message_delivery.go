@@ -35,7 +35,7 @@ func NewMessageDeliveryEndpoint(common *CommonEndpoint) *MessageDeliveryEndpoint
 }
 
 // GetList ...
-func (n *MessageDeliveryEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.MessageDelivery, total int64, err error) {
+func (n *MessageDeliveryEndpoint) GetList(limit, offset int64, order, sortBy string) (result []m.MessageDelivery, total int64, err error) {
 	result, total, err = n.adaptors.MessageDelivery.List(limit, offset, order, sortBy)
 	return
 }

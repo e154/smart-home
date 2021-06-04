@@ -23,32 +23,17 @@ import "time"
 // MessageType ...
 type MessageType string
 
-const (
-	// MessageTypeSMS ...
-	MessageTypeSMS = MessageType("sms")
-	// MessageTypeEmail ...
-	MessageTypeEmail = MessageType("email")
-	// MessageTypeSlack ...
-	MessageTypeSlack = MessageType("slack")
-	// MessageTypeUiNotify ...
-	MessageTypeUiNotify = MessageType("ui_notify")
-	// MessageTypeTelegramNotify ...
-	MessageTypeTelegramNotify = MessageType("telegram_notify")
-)
+type MessagePayload struct {
+	AttributeSignature Attributes `json:"attribute_signature"`
+}
 
 // Message ...
 type Message struct {
-	Id           int64       `json:"id"`
-	Type         MessageType `json:"type"`
-	EmailFrom    *string     `json:"email_from"`
-	EmailSubject *string     `json:"email_subject"`
-	EmailBody    *string     `json:"email_body"`
-	SmsText      *string     `json:"sms_text"`
-	UiText       *string     `json:"ui_text"`
-	TelegramText *string     `json:"telegram_text"`
-	SlackText    *string     `json:"slack_text"`
-	CreatedAt    time.Time   `json:"created_at"`
-	UpdatedAt    time.Time   `json:"updated_at"`
+	Id         int64          `json:"id"`
+	Type       string         `json:"type"`
+	Attributes AttributeValue `json:"attributes"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
 }
 
 // NewNotifrMessage ...

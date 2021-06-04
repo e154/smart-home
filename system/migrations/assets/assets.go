@@ -10,6 +10,8 @@
 // migrations/20210514_161024_update_alexa.sql
 // migrations/20210519_173101_add_settings.sql
 // migrations/20210521_235148_remove_zone.sql
+// migrations/20210603_153850_update_messages.sql
+// migrations/20210604_200254_update_plugin.sql
 // DO NOT EDIT!
 
 package database
@@ -252,7 +254,7 @@ func migrations20210519_173101_add_settingsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20210519_173101_add_settings.sql", size: 288, mode: os.FileMode(420), modTime: time.Unix(1622196473, 0)}
+	info := bindataFileInfo{name: "migrations/20210519_173101_add_settings.sql", size: 288, mode: os.FileMode(420), modTime: time.Unix(1622702503, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -272,7 +274,47 @@ func migrations20210521_235148_remove_zoneSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20210521_235148_remove_zone.sql", size: 196, mode: os.FileMode(420), modTime: time.Unix(1622196473, 0)}
+	info := bindataFileInfo{name: "migrations/20210521_235148_remove_zone.sql", size: 196, mode: os.FileMode(420), modTime: time.Unix(1622702503, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20210603_153850_update_messagesSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x94\x91\xbb\x4e\x03\x31\x10\x45\x7b\x7f\xc5\xed\xb6\x40\xfb\x03\xa1\xa5\xa4\x41\x28\x75\x34\x6b\x4f\x36\x4e\xc6\x0f\x79\xc6\x4a\x22\xc4\xbf\xa3\x00\x41\x34\x91\x76\xdb\xab\x7b\x4e\x73\xc6\x11\x4f\x29\xce\x8d\x8c\xb1\xad\x6e\x1c\xf1\xfe\xf6\x8a\x98\xa1\xec\x2d\x96\x8c\x61\x5b\x07\x44\x05\x5f\xd8\x77\xe3\x80\xf3\x81\x33\xec\x10\x15\x3f\xdc\xed\x14\x15\x54\xab\x44\x0e\x8e\xc4\xb8\xc1\x68\x12\x46\x62\x55\x9a\x59\x1d\x00\x50\x08\xf0\x45\x7a\xca\xa8\x74\x95\x42\x01\x47\x2d\x79\x42\xe0\x3d\x75\x31\x0c\x1f\x9f\xc3\x66\xf3\xbd\x3d\x3f\xd6\x84\x56\xea\xdd\xc3\x89\xa2\xec\xf6\xad\xa4\x55\x80\xf6\xe9\xc8\xde\x56\x31\x53\x09\xd7\x85\x80\x26\xdd\x19\x5f\x96\xfa\x7b\x5c\xf3\x56\x21\x7f\x5a\x03\x18\x0b\xcf\x8d\xd2\x2f\xe3\xfe\x07\x7f\x29\xe7\x7c\x4f\xfe\xd7\xfb\x36\x2e\x2a\xde\x8a\x08\x07\x4c\xe4\x4f\xce\xb9\xaf\x00\x00\x00\xff\xff\xd1\x1c\xd9\x8d\x49\x02\x00\x00")
+
+func migrations20210603_153850_update_messagesSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20210603_153850_update_messagesSql,
+		"migrations/20210603_153850_update_messages.sql",
+	)
+}
+
+func migrations20210603_153850_update_messagesSql() (*asset, error) {
+	bytes, err := migrations20210603_153850_update_messagesSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20210603_153850_update_messages.sql", size: 585, mode: os.FileMode(420), modTime: time.Unix(1622709634, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20210604_200254_update_pluginSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xce\x31\x6e\xc3\x30\x0c\x85\xe1\x9d\xa7\x78\x9b\x86\x42\x17\x70\xd7\x8e\x5d\x8a\xc2\x07\x90\x25\xd6\x66\x4b\x4b\x82\x45\xc1\x05\x82\xdc\x3d\x70\x82\x04\x19\xb3\xfe\x20\x1f\x3e\xef\xf1\xb6\xca\xbc\x05\x63\x8c\x95\xbc\xc7\xf7\xd7\x27\x24\xa3\x71\x34\x29\x19\x6e\xac\x0e\xd2\xc0\xff\x1c\xbb\x71\xc2\xbe\x70\x86\x2d\xd2\x70\xfb\x3b\x8e\xa4\x21\xd4\xaa\xc2\x89\x82\x1a\x6f\xb0\x30\x29\xa3\x6a\x9f\x25\x37\x02\x80\x90\x12\x62\xd1\xbe\x1e\xd3\x66\x92\xe7\x86\xdf\x56\xf2\x84\xc4\x3f\xa1\xab\xc1\x9d\xce\x6e\x18\xae\xed\x9d\xe8\x19\xf6\x51\xf6\x7c\xa7\x3d\x5c\x47\x7c\x49\xb6\x15\x55\x4e\x98\x42\xfc\x23\xa2\x4b\x00\x00\x00\xff\xff\x5f\x13\x9d\x77\xf1\x00\x00\x00")
+
+func migrations20210604_200254_update_pluginSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20210604_200254_update_pluginSql,
+		"migrations/20210604_200254_update_plugin.sql",
+	)
+}
+
+func migrations20210604_200254_update_pluginSql() (*asset, error) {
+	bytes, err := migrations20210604_200254_update_pluginSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20210604_200254_update_plugin.sql", size: 241, mode: os.FileMode(420), modTime: time.Unix(1622811805, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -339,6 +381,8 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20210514_161024_update_alexa.sql": migrations20210514_161024_update_alexaSql,
 	"migrations/20210519_173101_add_settings.sql": migrations20210519_173101_add_settingsSql,
 	"migrations/20210521_235148_remove_zone.sql": migrations20210521_235148_remove_zoneSql,
+	"migrations/20210603_153850_update_messages.sql": migrations20210603_153850_update_messagesSql,
+	"migrations/20210604_200254_update_plugin.sql": migrations20210604_200254_update_pluginSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -392,6 +436,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20210514_161024_update_alexa.sql": &bintree{migrations20210514_161024_update_alexaSql, map[string]*bintree{}},
 		"20210519_173101_add_settings.sql": &bintree{migrations20210519_173101_add_settingsSql, map[string]*bintree{}},
 		"20210521_235148_remove_zone.sql": &bintree{migrations20210521_235148_remove_zoneSql, map[string]*bintree{}},
+		"20210603_153850_update_messages.sql": &bintree{migrations20210603_153850_update_messagesSql, map[string]*bintree{}},
+		"20210604_200254_update_plugin.sql": &bintree{migrations20210604_200254_update_pluginSql, map[string]*bintree{}},
 	}},
 }}
 

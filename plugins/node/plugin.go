@@ -40,7 +40,7 @@ func init() {
 }
 
 type plugin struct {
-	plugins.Plugin
+	*plugins.Plugin
 	actorsLock *sync.Mutex
 	actors     map[common.EntityId]*Actor
 	mqttServ   mqtt.MqttServ
@@ -49,6 +49,7 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	return &plugin{
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[common.EntityId]*Actor),
 	}

@@ -16,12 +16,42 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package email_service
+package notify
 
-// Email ...
-type Email struct {
-	From    string `json:"from"`
-	To      string `json:"to"`
-	Subject string `json:"subject"`
-	Body    string `json:"body"`
+// Javascript Binding
+//
+// Notifr()
+//	 .NewSMS()
+//	 .NewEmail()
+//	 .NewSlack(channel, text)
+//	 .NewTelegram(text)
+//	 .Send(msg)
+//
+type NotifyBind struct {
+	notify *notify
 }
+
+// NewSMS ...
+//func (b *NotifyBind) NewSMS() *SMS {
+//	return NewSMS()
+//}
+//
+//// NewEmail ...
+//func (b *NotifyBind) NewEmail() *Email {
+//	return NewEmail()
+//}
+//
+//// NewSlack ...
+//func (b *NotifyBind) NewSlack(channel, text string) *SlackMessage {
+//	return NewSlackMessage(channel, text)
+//}
+//
+//// NewTelegram ...
+//func (b *NotifyBind) NewTelegram(text string) *Telegram {
+//	return NewTelegram(text)
+//}
+//
+//// Send ...
+//func (b *NotifyBind) Send(msg interface{}) {
+//	b.notify.Send(msg)
+//}

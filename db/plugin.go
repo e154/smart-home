@@ -19,6 +19,7 @@
 package db
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
 )
@@ -30,10 +31,11 @@ type Plugins struct {
 
 // Plugin ...
 type Plugin struct {
-	Name    string `gorm:"primary_key"`
-	Version string
-	Enabled bool
-	System  bool
+	Name     string `gorm:"primary_key"`
+	Version  string
+	Enabled  bool
+	System   bool
+	Settings json.RawMessage `gorm:"type:jsonb;not null"`
 }
 
 // TableName ...
@@ -53,7 +55,7 @@ func (n Plugins) Add(plugin Plugin) (err error) {
 func (n Plugins) CreateOrUpdate(v Plugin) (err error) {
 	err = n.Db.Model(&Plugin{}).
 		Set("gorm:insert_option",
-			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET version = '%s', enabled = '%t', system = '%t'", v.Version, v.Enabled, v.System)).
+			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET version = '%s', enabled = '%t', system = '%t', settings = '%s'", v.Version, v.Enabled, v.System, v.Settings)).
 		Create(&v).Error
 	if err != nil {
 		log.Error(err.Error())
@@ -66,7 +68,8 @@ func (n Plugins) Update(m Plugin) (err error) {
 	q := map[string]interface{}{
 		"version":   m.Version,
 		"installed": m.Enabled,
-		"system":  m.System,
+		"system":    m.System,
+		"settings":  m.Settings,
 	}
 	err = n.Db.Model(&Plugin{Name: m.Name}).Updates(q).Error
 	return

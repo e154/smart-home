@@ -33,7 +33,7 @@ func init() {
 }
 
 type plugin struct {
-	plugins.Plugin
+	*plugins.Plugin
 	quit  chan struct{}
 	pause uint
 	actor *Actor
@@ -41,7 +41,8 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	p := &plugin{
-		pause: 50,
+		Plugin: plugins.NewPlugin(),
+		pause:  50,
 	}
 	return p
 }

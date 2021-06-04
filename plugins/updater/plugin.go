@@ -43,7 +43,7 @@ func init() {
 }
 
 type plugin struct {
-	plugins.Plugin
+	*plugins.Plugin
 	pause time.Duration
 	actor *Actor
 	quit  chan struct{}
@@ -51,7 +51,8 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	return &plugin{
-		pause: 24,
+		Plugin: plugins.NewPlugin(),
+		pause:  24,
 	}
 }
 

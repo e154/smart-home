@@ -34,7 +34,6 @@ import (
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
-	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/orm"
 	plugins2 "github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/scripts"
@@ -64,7 +63,6 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(stream.NewStreamService)
 	container.Provide(stream.NewHub)
 	container.Provide(gate_client.NewGateClient)
-	container.Provide(notify.NewNotify)
 	container.Provide(NewMetricConfig)
 	container.Provide(metrics.NewMetricManager)
 	container.Provide(NewZigbee2mqttConfig)

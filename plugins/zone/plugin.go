@@ -38,13 +38,14 @@ func init() {
 }
 
 type plugin struct {
-	plugins.Plugin
+	*plugins.Plugin
 	actorsLock *sync.Mutex
 	actors     map[string]entity_manager.PluginActor
 }
 
 func New() plugins.Plugable {
 	return &plugin{
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[string]entity_manager.PluginActor),
 	}

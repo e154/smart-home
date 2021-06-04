@@ -16,23 +16,15 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-// +build linux,!mips64,!mips64le darwin
-
-package uptime
+package notify
 
 import (
 	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
-	"time"
-)
-
-const (
-	name = "uptime"
 )
 
 var (
-	log = common.MustGetLogger("plugins.uptime")
+	log = common.MustGetLogger("plugins.notify")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -43,17 +35,13 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	entity     *Actor
-	ticker     *time.Ticker
-	pause      time.Duration
-	storyModel *m.RunStory
-	quit       chan struct{}
+	notify Notify
 }
+
 
 func New() plugins.Plugable {
 	return &plugin{
 		Plugin: plugins.NewPlugin(),
-		pause:  60,
 	}
 }
 
@@ -62,38 +50,11 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.entity = NewActor(p.EntityManager, p.EventBus)
-	p.quit = make(chan struct{})
+	p.notify = NewNotify(p.Adaptors, p.ScriptService)
+	p.notify.Stat()
 
-	p.storyModel = &m.RunStory{
-		Start: time.Now(),
-	}
+	p.EventBus.Subscribe(TopicNotify, p.eventHandler)
 
-	p.storyModel.Id, err = p.Adaptors.RunHistory.Add(p.storyModel)
-
-	if err != nil {
-		log.Error(err.Error())
-		return nil
-	}
-
-	p.EntityManager.Spawn(p.entity.Spawn)
-
-	go func() {
-		ticker := time.NewTicker(time.Second * p.pause)
-		defer func() {
-			ticker.Stop()
-			close(p.quit)
-		}()
-
-		for {
-			select {
-			case <-p.quit:
-				return
-			case <-ticker.C:
-				p.entity.update()
-			}
-		}
-	}()
 	return nil
 }
 
@@ -102,16 +63,25 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
-	p.quit <- struct{}{}
-	p.storyModel.End = common.Time(time.Now())
-	if err = p.Adaptors.RunHistory.Update(p.storyModel); err != nil {
-		log.Error(err.Error())
+	p.EventBus.Unsubscribe(TopicNotify, p.eventHandler)
+
+	p.notify.Shutdown()
+
+	return nil
+}
+
+func (p *plugin) eventHandler(_ string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case EventNewNotify:
+		p.notify.Send(v)
 	}
+
 	return
 }
 
-func (p plugin) Name() string {
-	return name
+func (p *plugin) Name() string {
+	return Name
 }
 
 func (p *plugin) Type() plugins.PluginType {
@@ -124,4 +94,18 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+// AddProvider ...
+func (p *plugin) AddProvider(name string, provider Provider) {
+	p.notify.AddProvider(name, provider)
+}
+
+// RemoveProvider ...
+func (p *plugin) RemoveProvider(name string) {
+	p.notify.RemoveProvider(name)
+}
+
+func (p *plugin) Provider(name string) (provider Provider, err error) {
+	panic("implement me")
 }

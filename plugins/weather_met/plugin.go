@@ -42,7 +42,7 @@ func init() {
 }
 
 type plugin struct {
-	plugins.Plugin
+	*plugins.Plugin
 	quit    chan struct{}
 	pause   uint
 	service common.PluginManager
@@ -51,8 +51,9 @@ type plugin struct {
 
 func New() plugins.Plugable {
 	return &plugin{
-		quit:  make(chan struct{}),
-		pause: 60,
+		Plugin: plugins.NewPlugin(),
+		quit:   make(chan struct{}),
+		pause:  60,
 	}
 }
 
