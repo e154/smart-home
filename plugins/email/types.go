@@ -38,16 +38,16 @@ const (
 
 func NewAttr() m.Attributes {
 	return map[string]*m.Attribute{
-		AttrAuth: {
-			Name: AttrAuth,
+		AttrAddresses: {
+			Name: AttrAddresses,
 			Type: common.AttributeString,
 		},
-		AttrPass: {
-			Name: AttrPass,
+		AttrSubject: {
+			Name: AttrSubject,
 			Type: common.AttributeString,
 		},
-		AttrSmtp: {
-			Name: AttrSmtp,
+		AttrBody: {
+			Name: AttrBody,
 			Type: common.AttributeString,
 		},
 	}
