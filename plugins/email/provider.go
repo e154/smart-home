@@ -58,7 +58,7 @@ func NewProvider(attrs m.Attributes,
 }
 
 // Save ...
-func (e Provider) Save(msg notify.EventNewNotify) (addresses []string, message m.Message) {
+func (e Provider) Save(msg notify.Message) (addresses []string, message m.Message) {
 	message = m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,

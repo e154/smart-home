@@ -149,14 +149,14 @@ func (n notify) Send(msg interface{}) {
 	}
 
 	switch v := msg.(type) {
-	case EventNewNotify:
+	case Message:
 		n.save(v)
 	default:
 		log.Errorf("unknown message type %v", v)
 	}
 }
 
-func (n *notify) save(event EventNewNotify) {
+func (n *notify) save(event Message) {
 
 	provider, ok := n.providerList[event.Type]
 	if !ok {

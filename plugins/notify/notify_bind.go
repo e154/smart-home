@@ -21,10 +21,7 @@ package notify
 // Javascript Binding
 //
 // Notifr()
-//	 .NewSMS()
-//	 .NewEmail()
-//	 .NewSlack(channel, text)
-//	 .NewTelegram(text)
+//	 .NewMessage()
 //	 .Send(msg)
 //
 type NotifyBind struct {
@@ -32,8 +29,8 @@ type NotifyBind struct {
 }
 
 // NewMessage ...
-func (b *NotifyBind) NewMessage() EventNewNotify {
-	return NewEventNewNotify()
+func (b *NotifyBind) NewMessage() Message {
+	return NewMessage()
 }
 
 // Send ...

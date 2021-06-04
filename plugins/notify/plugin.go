@@ -73,7 +73,7 @@ func (p *plugin) Unload() (err error) {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case EventNewNotify:
+	case Message:
 		p.notify.Send(v)
 	}
 

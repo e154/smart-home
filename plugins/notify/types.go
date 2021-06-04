@@ -33,14 +33,14 @@ type Stat struct {
 	Workers int `json:"workers"`
 }
 
-type EventNewNotify struct {
+type Message struct {
 	From       common.EntityId  `json:"from"`
 	Type       string           `json:"type"`
 	Attributes m.AttributeValue `json:"attributes"`
 }
 
-func NewEventNewNotify() EventNewNotify {
-	return EventNewNotify{
+func NewMessage() Message {
+	return Message{
 		Attributes: make(m.AttributeValue),
 	}
 }
@@ -52,7 +52,7 @@ type ProviderRegistrar interface {
 }
 
 type Provider interface {
-	Save(EventNewNotify) (addresses []string, message m.Message)
+	Save(Message) (addresses []string, message m.Message)
 	Send(addresses string, message m.Message) error
 	Attrs() m.Attributes
 }

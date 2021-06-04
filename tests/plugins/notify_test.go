@@ -57,7 +57,7 @@ func TestNotify(t *testing.T) {
 				Convey("position", t, func(ctx C) {
 
 
-					eventBus.Publish(notify.TopicNotify, notify.EventNewNotify{
+					eventBus.Publish(notify.TopicNotify, notify.Message{
 						From:       "",
 						Type:       "",
 						Attributes: nil,
