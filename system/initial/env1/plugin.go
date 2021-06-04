@@ -65,5 +65,7 @@ func (n PluginManager) Create() (home *m.Plugin) {
 	n.addPlugin("modbus_tcp", true)
 	n.addPlugin("alexa", true)
 	n.addPlugin("notify", true)
+	n.addPlugin("email", true)
+	n.addPlugin("slack", true)
 	return
 }

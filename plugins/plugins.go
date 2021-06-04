@@ -30,6 +30,7 @@ import (
 	_ "github.com/e154/smart-home/plugins/scene"
 	_ "github.com/e154/smart-home/plugins/script"
 	_ "github.com/e154/smart-home/plugins/sensor"
+	_ "github.com/e154/smart-home/plugins/slack"
 	_ "github.com/e154/smart-home/plugins/sun"
 	_ "github.com/e154/smart-home/plugins/triggers"
 	_ "github.com/e154/smart-home/plugins/updater"

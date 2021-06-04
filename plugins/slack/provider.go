@@ -23,31 +23,28 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
-	"gopkg.in/gomail.v2"
+	"github.com/nlopes/slack"
 	"strings"
 )
 
 // Provider ...
 type Provider struct {
 	adaptors *adaptors.Adaptors
-	Auth     string
-	Pass     string
-	Smtp     string
-	Port     int64
-	Sender   string
+	Token    string
+	UserName string
+	api      *slack.Client
 }
 
 // NewProvider ...
 func NewProvider(attrs m.Attributes,
 	adaptors *adaptors.Adaptors) (p *Provider, err error) {
 
+	token := attrs[AttrToken].String()
 	p = &Provider{
 		adaptors: adaptors,
-		Auth:     attrs[AttrAuth].String(),
-		Pass:     attrs[AttrPass].String(),
-		Smtp:     attrs[AttrSmtp].String(),
-		Port:     attrs[AttrPort].Int64(),
-		Sender:   attrs[AttrSender].String(),
+		Token:    token,
+		UserName: attrs[AttrUserName].String(),
+		api:      slack.New(token),
 	}
 
 	return
@@ -67,45 +64,41 @@ func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Messa
 	attr := NewAttr()
 	attr.Deserialize(message.Attributes)
 
-	addresses = strings.Split(attr[AttrAddresses].String(), ",")
+	addresses = strings.Split(attr[AttrChannel].String(), ",")
 	return
 }
 
 // Send ...
-func (e *Provider) Send(address string, message m.Message) error {
+func (e *Provider) Send(address string, message m.Message) (err error) {
 
-	if e.Auth == "" || e.Pass == "" || e.Smtp == "" || e.Port == 0 || e.Sender == "" {
+	if e.Token == "" || e.UserName == "" {
 		return errors.New("bad settings parameters")
 	}
 
 	attr := NewAttr()
 	attr.Deserialize(message.Attributes)
-	subject := attr[AttrSubject].String()
 
-	m := gomail.NewMessage()
-	m.SetHeaders(map[string][]string{
-		"From":     {e.Sender},
-		"Reply-To": {e.Sender},
-		"To":       {address},
-		"Subject":  {subject},
-	})
-
-	m.SetBody("text/html", attr[AttrBody].String())
-
-	d := gomail.NewPlainDialer(e.Smtp, int(e.Port), e.Auth, e.Pass)
-	if err := d.DialAndSend(m); err != nil {
-		return errors.New(err.Error())
+	options := []slack.MsgOption{
+		slack.MsgOptionText(attr[AttrText].String(), false),
 	}
 
-	log.Debugf("Sent email '%s' to: '%s'", subject, address)
+	if e.UserName != "" {
+		options = append(options, slack.MsgOptionUsername(e.UserName))
+	}
 
-	return nil
+	var channelID, timestamp string
+	if channelID, timestamp, err = e.api.PostMessage(address, options...); err != nil {
+		log.Error(err.Error())
+		return
+	}
+	log.Infof("Message successfully sent to channel '%s' at '%s'", channelID, timestamp)
+
+	return
 }
 
 // Attrs ...
-// Addresses
-// Subject
-// Body
+// Channel
+// Text
 func (e *Provider) Attrs() m.Attributes {
 	return NewAttr()
 }

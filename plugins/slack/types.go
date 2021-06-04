@@ -16,18 +16,45 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package slack
+package email
 
-// SlackConfig ...
-type SlackConfig struct {
-	Token    string
-	UserName string
+import (
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+)
+
+const (
+	Name = "slack"
+
+	AttrToken    = "token"
+	AttrUserName = "user_name"
+
+	AttrChannel = "channel"
+	AttrText    = "text"
+)
+
+func NewAttr() m.Attributes {
+	return map[string]*m.Attribute{
+		AttrChannel: {
+			Name: AttrChannel,
+			Type: common.AttributeString,
+		},
+		AttrText: {
+			Name: AttrText,
+			Type: common.AttributeString,
+		},
+	}
 }
 
-// NewSlackConfig ...
-func NewSlackConfig(slackToken, userName string) *SlackConfig {
-	return &SlackConfig{
-		Token:    slackToken,
-		UserName: userName,
+func NewSetts() map[string]*m.Attribute {
+	return map[string]*m.Attribute{
+		AttrToken: {
+			Name: AttrToken,
+			Type: common.AttributeString,
+		},
+		AttrUserName: {
+			Name: AttrUserName,
+			Type: common.AttributeString,
+		},
 	}
 }
