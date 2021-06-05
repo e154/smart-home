@@ -20,15 +20,22 @@ package email
 
 import (
 	"errors"
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"gopkg.in/gomail.v2"
 	"strings"
+	"sync"
 )
 
-// Provider ...
-type Provider struct {
+// Actor ...
+type Actor struct {
+	entity_manager.BaseActor
+	eventBus event_bus.EventBus
 	adaptors *adaptors.Adaptors
 	Auth     string
 	Pass     string
@@ -37,24 +44,38 @@ type Provider struct {
 	Sender   string
 }
 
-// NewProvider ...
-func NewProvider(attrs m.Attributes,
-	adaptors *adaptors.Adaptors) (p *Provider, err error) {
+// NewActor ...
+func NewActor(settings m.Attributes,
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
+	adaptors *adaptors.Adaptors) *Actor {
 
-	p = &Provider{
+	actor := &Actor{
+		BaseActor: entity_manager.BaseActor{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
+			Name:       Name,
+			EntityType: Name,
+			AttrMu:     &sync.RWMutex{},
+			Manager:    entityManager,
+		},
+		eventBus: eventBus,
 		adaptors: adaptors,
-		Auth:     attrs[AttrAuth].String(),
-		Pass:     attrs[AttrPass].String(),
-		Smtp:     attrs[AttrSmtp].String(),
-		Port:     attrs[AttrPort].Int64(),
-		Sender:   attrs[AttrSender].String(),
+		Auth:     settings[AttrAuth].String(),
+		Pass:     settings[AttrPass].String(),
+		Smtp:     settings[AttrSmtp].String(),
+		Port:     settings[AttrPort].Int64(),
+		Sender:   settings[AttrSender].String(),
 	}
 
-	return
+	return actor
+}
+
+func (p *Actor) Spawn() entity_manager.PluginActor {
+	return p
 }
 
 // Save ...
-func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Message) {
+func (e *Actor) Save(msg notify.Message) (addresses []string, message m.Message) {
 	message = m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
@@ -72,7 +93,7 @@ func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Messa
 }
 
 // Send ...
-func (e *Provider) Send(address string, message m.Message) error {
+func (e *Actor) Send(address string, message m.Message) error {
 
 	if e.Auth == "" || e.Pass == "" || e.Smtp == "" || e.Port == 0 || e.Sender == "" {
 		return errors.New("bad settings parameters")
@@ -81,6 +102,15 @@ func (e *Provider) Send(address string, message m.Message) error {
 	attr := NewMessageParams()
 	attr.Deserialize(message.Attributes)
 	subject := attr[AttrSubject].String()
+
+	defer func() {
+		go e.UpdateStatus()
+		log.Debugf("Sent email '%s' to: '%s'", subject, address)
+	}()
+
+	if common.TestMode() {
+		return nil
+	}
 
 	m := gomail.NewMessage()
 	m.SetHeaders(map[string][]string{
@@ -97,8 +127,6 @@ func (e *Provider) Send(address string, message m.Message) error {
 		return errors.New(err.Error())
 	}
 
-	log.Debugf("Sent email '%s' to: '%s'", subject, address)
-
 	return nil
 }
 
@@ -106,6 +134,44 @@ func (e *Provider) Send(address string, message m.Message) error {
 // Addresses
 // Subject
 // Body
-func (e *Provider) MessageParams() m.Attributes {
+func (e *Actor) MessageParams() m.Attributes {
 	return NewMessageParams()
+}
+
+// UpdateStatus ...
+func (p *Actor) UpdateStatus() (err error) {
+
+	oldState := p.GetEventState(p)
+	now := p.Now(oldState)
+
+	var attributeValues = make(m.AttributeValue)
+	// ...
+
+	p.AttrMu.Lock()
+	var changed bool
+	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+		if err != nil {
+			log.Warn(err.Error())
+		}
+
+		if oldState.LastUpdated != nil {
+			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
+			//fmt.Println("delta", delta)
+			if delta < 200 {
+				p.AttrMu.Unlock()
+				return
+			}
+		}
+	}
+	p.AttrMu.Unlock()
+
+	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		StorageSave: true,
+		Type:        p.Id.Type(),
+		EntityId:    p.Id,
+		OldState:    oldState,
+		NewState:    p.GetEventState(p),
+	})
+
+	return
 }

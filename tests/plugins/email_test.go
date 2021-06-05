@@ -21,6 +21,7 @@ package plugins
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -50,7 +51,13 @@ func TestEmail(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "notify")
-			err = AddPlugin(adaptors, "email")
+			settings := email.NewSetts()
+			settings[email.AttrAuth].Value = "XXX"
+			settings[email.AttrPass].Value = "XXX"
+			settings[email.AttrSmtp].Value = "XXX"
+			settings[email.AttrPort].Value = 123
+			settings[email.AttrSender].Value = "XXX"
+			err = AddPlugin(adaptors, "email", settings)
 			ctx.So(err, ShouldBeNil)
 
 			pluginManager.Start()
@@ -66,6 +73,18 @@ func TestEmail(t *testing.T) {
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
 
+					ch := make(chan interface{}, 2)
+					fn := func(topic string, message interface{}) {
+						switch v := message.(type) {
+						case event_bus.EventStateChanged:
+							ch <- v
+						default:
+						}
+
+					}
+					eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+
 					eventBus.Publish(notify.TopicNotify, notify.Message{
 						Type: email.Name,
 						Attributes: map[string]interface{}{
@@ -75,11 +94,30 @@ func TestEmail(t *testing.T) {
 						},
 					})
 
-					time.Sleep(time.Millisecond * 500)
+					ok := Wait(5, ch)
 
+					ctx.So(ok, ShouldBeTrue)
+
+					time.Sleep(time.Second * 2)
+
+					list, total, err := adaptors.MessageDelivery.List(10, 0, "", "")
+					ctx.So(err, ShouldBeNil)
+					ctx.So(total, ShouldEqual, 2)
+
+					for _, del := range list {
+						ctx.So(del.Status, ShouldEqual, m.MessageStatusSucceed)
+						ctx.So(del.Address, ShouldBeIn, []string{"test@e154.ru", "test2@e154.ru"})
+						ctx.So(del.ErrorMessageBody, ShouldBeNil)
+						ctx.So(del.ErrorMessageStatus, ShouldBeNil)
+						ctx.So(del.Message.Type, ShouldEqual, email.Name)
+
+						attr := email.NewMessageParams()
+						attr.Deserialize(del.Message.Attributes)
+						ctx.So(attr[email.AttrSubject].String(), ShouldEqual, "subject")
+						ctx.So(attr[email.AttrBody].String(), ShouldEqual, "body")
+					}
 				})
 			})
-
 		})
 	})
 }
