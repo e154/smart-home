@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package email
+package slack
 
 import (
 	"github.com/e154/smart-home/common"

@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package slack
+package messagebird
 
 import (
 	"errors"
@@ -27,7 +27,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.slack")
+	log = common.MustGetLogger("plugins.messagebird")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -39,6 +39,7 @@ func init() {
 type plugin struct {
 	*plugins.Plugin
 	notify notify.ProviderRegistrar
+	actor *Actor
 }
 
 func New() plugins.Plugable {
@@ -88,10 +89,13 @@ func (p *plugin) asyncLoad() (err error) {
 		return
 	}
 
-	// register slack provider
-	var provider *Provider
-	provider, err = NewProvider(settings, p.Adaptors)
-	p.notify.AddProvider(Name, provider)
+	// add actor
+	p.actor = NewActor(settings, p.EntityManager, p.EventBus, p.Adaptors)
+	p.EntityManager.Spawn(p.actor.Spawn)
+	go p.actor.UpdateBalance()
+
+	// register messagebird provider
+	p.notify.AddProvider(Name, p.actor)
 
 	return
 }
@@ -127,6 +131,7 @@ func (p *plugin) Version() string {
 
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Setts: NewSetts(),
+		ActorAttrs: NewAttr(),
+		Setts:      NewSetts(),
 	}
 }

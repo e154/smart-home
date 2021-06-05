@@ -18,6 +18,60 @@
 
 package twilio
 
+import (
+	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
+)
+
+const (
+	Name          = "twilio"
+	AttrFrom      = "from"
+	AttrSid       = "sid"
+	AttrAuthToken = "authToken"
+	AttrPhone     = "phone"
+	AttrBody      = "body"
+	AttrAmount    = "amount"
+)
+
+func NewAttr() m.Attributes {
+	return map[string]*m.Attribute{
+		AttrAmount: {
+			Name: AttrAmount,
+			Type: common.AttributeFloat,
+		},
+	}
+}
+
+func NewMessageParams() m.Attributes {
+	return map[string]*m.Attribute{
+		AttrPhone: {
+			Name: AttrPhone,
+			Type: common.AttributeString,
+		},
+		AttrBody: {
+			Name: AttrBody,
+			Type: common.AttributeString,
+		},
+	}
+}
+
+func NewSetts() map[string]*m.Attribute {
+	return map[string]*m.Attribute{
+		AttrFrom: {
+			Name: AttrFrom,
+			Type: common.AttributeString,
+		},
+		AttrSid: {
+			Name: AttrSid,
+			Type: common.AttributeString,
+		},
+		AttrAuthToken: {
+			Name: AttrAuthToken,
+			Type: common.AttributeString,
+		},
+	}
+}
+
 // Balance ...
 type Balance struct {
 	Currency   string `json:"currency"`

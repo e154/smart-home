@@ -35,6 +35,7 @@ import (
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/smartystreets/goconvey/convey"
+	"time"
 )
 
 func GetNewButton(id string, scripts []m.Script) *m.Entity {
@@ -301,13 +302,17 @@ func GetNewModbusTcp(name string) *m.Entity {
 	}
 }
 
-func AddPlugin(adaptors *adaptors.Adaptors, name string) (err error) {
-	err = adaptors.Plugin.CreateOrUpdate(m.Plugin{
+func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.Attributes) (err error) {
+	plugin := m.Plugin{
 		Name:    name,
 		Version: "0.0.1",
 		Enabled: true,
 		System:  true,
-	})
+	}
+	if len(opts) > 0 {
+		plugin.Settings = opts[0]
+	}
+	err = adaptors.Plugin.CreateOrUpdate(plugin)
 	return
 }
 
@@ -322,4 +327,19 @@ func RegisterConvey(scriptService scripts.ScriptService, ctx convey.C) {
 		}
 	})
 
+}
+
+func Wait(t time.Duration, ch chan interface{}) (ok bool) {
+
+	ticker := time.NewTimer(time.Second * t)
+	defer ticker.Stop()
+
+	select {
+	case <-ch:
+		ok = true
+		break
+	case <-ticker.C:
+		break
+	}
+	return
 }

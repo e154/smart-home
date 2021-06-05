@@ -50,9 +50,12 @@ func (n *Worker) send(msg m.MessageDelivery, provider Provider) {
 	if err := provider.Send(msg.Address, msg.Message); err != nil {
 		msg.Status = m.MessageStatusError
 		msg.ErrorMessageBody = common.String(err.Error())
-		_ = n.adaptor.MessageDelivery.SetStatus(msg)
 	} else {
 		msg.Status = m.MessageStatusSucceed
-		_ = n.adaptor.MessageDelivery.SetStatus(msg)
 	}
+	n.adaptor.MessageDelivery.SetStatus(msg)
+}
+
+func (w *Worker) InWork() bool {
+	return w.inProcess.Load()
 }

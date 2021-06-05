@@ -54,5 +54,5 @@ type ProviderRegistrar interface {
 type Provider interface {
 	Save(Message) (addresses []string, message m.Message)
 	Send(addresses string, message m.Message) error
-	Attrs() m.Attributes
+	MessageParams() m.Attributes
 }

@@ -43,6 +43,8 @@ func TestMain(m *testing.M) {
 
 	runtime.GOMAXPROCS(-1)
 
+	os.Setenv("TEST_MODE", "true")
+
 	container = BuildContainer()
 	err := container.Invoke(func(
 		logging *logging.Logging,

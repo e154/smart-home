@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package email
+package slack
 
 import (
 	"errors"
@@ -96,9 +96,9 @@ func (e *Provider) Send(address string, message m.Message) (err error) {
 	return
 }
 
-// Attrs ...
+// MessageParams ...
 // Channel
 // Text
-func (e *Provider) Attrs() m.Attributes {
+func (e *Provider) MessageParams() m.Attributes {
 	return NewAttr()
 }

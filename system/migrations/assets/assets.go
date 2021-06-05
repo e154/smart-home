@@ -12,6 +12,7 @@
 // migrations/20210521_235148_remove_zone.sql
 // migrations/20210603_153850_update_messages.sql
 // migrations/20210604_200254_update_plugin.sql
+// migrations/20210605_133028_update_message.sql
 // DO NOT EDIT!
 
 package database
@@ -319,6 +320,26 @@ func migrations20210604_200254_update_pluginSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20210605_133028_update_messageSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xce\x3b\x0e\x82\x40\x10\x06\xe0\x7e\x4e\xf1\x77\x14\x66\x4f\x60\x85\x4a\xb7\xbe\xa1\xb0\x5c\x61\x02\x1b\x61\xd9\x30\x63\xc0\xdb\x1b\x42\x34\x96\xb6\xff\x23\xf9\x8c\xc1\xaa\xf3\xf5\xe0\x94\x51\x44\x32\x06\xd7\xb3\x85\x0f\x10\x2e\xd5\xf7\x01\x49\x11\x13\x78\x01\x4f\x5c\x3e\x95\x2b\x8c\x0d\x07\x68\xe3\x05\xcb\x6f\x1e\x79\x81\x8b\xb1\xf5\x5c\x51\x6a\xf3\xec\x82\x3c\xdd\xd8\x0c\x1d\x8b\xb8\x9a\x85\x00\x60\x29\xb6\x47\x5b\xec\x0f\xd0\x57\x64\xe4\xb7\x53\x06\xe5\x49\xd7\x44\xbf\x8e\x5d\x3f\x86\x8f\xe4\xcb\x98\xc3\xbf\x20\x43\xdf\xb6\x5c\xe1\xee\xca\x07\x11\xbd\x03\x00\x00\xff\xff\x16\xa3\x46\x40\xe0\x00\x00\x00")
+
+func migrations20210605_133028_update_messageSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20210605_133028_update_messageSql,
+		"migrations/20210605_133028_update_message.sql",
+	)
+}
+
+func migrations20210605_133028_update_messageSql() (*asset, error) {
+	bytes, err := migrations20210605_133028_update_messageSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20210605_133028_update_message.sql", size: 224, mode: os.FileMode(420), modTime: time.Unix(1622874776, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -383,6 +404,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20210521_235148_remove_zone.sql": migrations20210521_235148_remove_zoneSql,
 	"migrations/20210603_153850_update_messages.sql": migrations20210603_153850_update_messagesSql,
 	"migrations/20210604_200254_update_plugin.sql": migrations20210604_200254_update_pluginSql,
+	"migrations/20210605_133028_update_message.sql": migrations20210605_133028_update_messageSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -438,6 +460,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20210521_235148_remove_zone.sql": &bintree{migrations20210521_235148_remove_zoneSql, map[string]*bintree{}},
 		"20210603_153850_update_messages.sql": &bintree{migrations20210603_153850_update_messagesSql, map[string]*bintree{}},
 		"20210604_200254_update_plugin.sql": &bintree{migrations20210604_200254_update_pluginSql, map[string]*bintree{}},
+		"20210605_133028_update_message.sql": &bintree{migrations20210605_133028_update_messageSql, map[string]*bintree{}},
 	}},
 }}
 

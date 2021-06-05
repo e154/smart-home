@@ -64,7 +64,7 @@ func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Messa
 		log.Error(err.Error())
 	}
 
-	attr := NewAttr()
+	attr := NewMessageParams()
 	attr.Deserialize(message.Attributes)
 
 	addresses = strings.Split(attr[AttrAddresses].String(), ",")
@@ -78,7 +78,7 @@ func (e *Provider) Send(address string, message m.Message) error {
 		return errors.New("bad settings parameters")
 	}
 
-	attr := NewAttr()
+	attr := NewMessageParams()
 	attr.Deserialize(message.Attributes)
 	subject := attr[AttrSubject].String()
 
@@ -102,10 +102,10 @@ func (e *Provider) Send(address string, message m.Message) error {
 	return nil
 }
 
-// Attrs ...
+// MessageParams ...
 // Addresses
 // Subject
 // Body
-func (e *Provider) Attrs() m.Attributes {
-	return NewAttr()
+func (e *Provider) MessageParams() m.Attributes {
+	return NewMessageParams()
 }

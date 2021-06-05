@@ -21,7 +21,8 @@ package plugins
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/plugins/email"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/messagebird"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
@@ -32,9 +33,9 @@ import (
 	"time"
 )
 
-func TestNotify(t *testing.T) {
+func TestMessagebird(t *testing.T) {
 
-	Convey("notify", t, func(ctx C) {
+	Convey("messagbird", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
@@ -50,7 +51,10 @@ func TestNotify(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "notify")
-			err = AddPlugin(adaptors, "email")
+			settings := messagebird.NewSetts()
+			settings[messagebird.AttrAccessKey].Value = "XXXX"
+			settings[messagebird.AttrName].Value = "YYYY"
+			err = AddPlugin(adaptors, "messagebird", settings)
 			ctx.So(err, ShouldBeNil)
 
 			pluginManager.Start()
@@ -63,20 +67,55 @@ func TestNotify(t *testing.T) {
 
 			time.Sleep(time.Millisecond * 500)
 
-			t.Run("email", func(t *testing.T) {
+			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
 
+					ch := make(chan interface{}, 1)
+					fn := func(topic string, message interface{}) {
+						switch v := message.(type) {
+						case event_bus.EventStateChanged:
+							ch <- v
+						default:
+						}
+
+					}
+					eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+
+					const (
+						phone = "+79990000001"
+						body  = "some text"
+					)
+
 					eventBus.Publish(notify.TopicNotify, notify.Message{
-						Type: email.Name,
+						Type: messagebird.Name,
 						Attributes: map[string]interface{}{
-							"addresses": "test@e154.ru,test2@e154.ru",
-							"subject":   "subject",
-							"body":      "body",
+							messagebird.AttrPhone: phone,
+							messagebird.AttrBody:  body,
 						},
 					})
 
-					time.Sleep(time.Millisecond * 500)
+					ok := Wait(5, ch)
 
+					ctx.So(ok, ShouldBeTrue)
+
+					time.Sleep(time.Second * 2)
+
+					list, total, err := adaptors.MessageDelivery.List(10, 0, "", "")
+					ctx.So(err, ShouldBeNil)
+					ctx.So(total, ShouldEqual, 1)
+
+					del := list[0]
+					ctx.So(del.Status, ShouldEqual, m.MessageStatusSucceed)
+					ctx.So(del.Address, ShouldEqual, phone)
+					ctx.So(del.ErrorMessageBody, ShouldBeNil)
+					ctx.So(del.ErrorMessageStatus, ShouldBeNil)
+					ctx.So(del.Message.Type, ShouldEqual, messagebird.Name)
+
+					attr := messagebird.NewMessageParams()
+					attr.Deserialize(del.Message.Attributes)
+					ctx.So(attr[messagebird.AttrPhone].String(), ShouldEqual, phone)
+					ctx.So(attr[messagebird.AttrBody].String(), ShouldEqual, body)
 
 				})
 			})

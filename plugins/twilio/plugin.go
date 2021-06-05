@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package slack
+package twilio
 
 import (
 	"errors"
@@ -27,7 +27,7 @@ import (
 )
 
 var (
-	log = common.MustGetLogger("plugins.slack")
+	log = common.MustGetLogger("plugins.twilio")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -88,7 +88,7 @@ func (p *plugin) asyncLoad() (err error) {
 		return
 	}
 
-	// register slack provider
+	// register twilio provider
 	var provider *Provider
 	provider, err = NewProvider(settings, p.Adaptors)
 	p.notify.AddProvider(Name, provider)
@@ -127,6 +127,7 @@ func (p *plugin) Version() string {
 
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Setts: NewSetts(),
+		ActorAttrs: NewAttr(),
+		Setts:      NewSetts(),
 	}
 }

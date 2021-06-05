@@ -112,7 +112,7 @@ func (n *notify) Start() (err error) {
 		for event := range n.queue {
 		LOOP:
 			for _, w := range n.workers {
-				if w.inProcess.Load() {
+				if w.InWork() {
 					continue
 				}
 				worker = w

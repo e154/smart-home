@@ -67,8 +67,6 @@ func NewEntityManager(lc fx.Lifecycle,
 		},
 	})
 
-	eventBus.Subscribe(event_bus.TopicEntities, manager.eventHandler)
-
 	return manager
 }
 
@@ -104,6 +102,9 @@ LOOP:
 	// scripts
 	e.scripts.PushStruct("entityManager", NewEntityManagerBind(e))
 
+	// event subscribe
+	e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
+
 	return
 }
 
@@ -112,6 +113,8 @@ func (e *entityManager) Shutdown() {
 
 	e.lock.Lock()
 	defer e.lock.Unlock()
+
+	e.eventBus.Unsubscribe(event_bus.TopicEntities, e.eventHandler)
 
 	for id, actor := range e.actors {
 		actor.quit <- struct{}{}

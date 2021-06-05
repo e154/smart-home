@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"sync"
 )
@@ -39,7 +38,6 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	bus      event_bus.EventBus
 	mu       *sync.Mutex
 	triggers map[string]ITrigger
 }
@@ -79,9 +77,9 @@ func (p *plugin) attachTrigger() {
 	defer p.mu.Unlock()
 
 	// init triggers ...
-	p.triggers[StateChangeName] = NewStateChangedTrigger(p.bus)
-	p.triggers[SystemName] = NewSystemTrigger(p.bus)
-	p.triggers[TimeName] = NewTimeTrigger(p.bus)
+	p.triggers[StateChangeName] = NewStateChangedTrigger(p.EventBus)
+	p.triggers[SystemName] = NewSystemTrigger(p.EventBus)
+	p.triggers[TimeName] = NewTimeTrigger(p.EventBus)
 
 	wg := &sync.WaitGroup{}
 

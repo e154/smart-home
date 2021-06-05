@@ -43,7 +43,7 @@ type BaseActor struct {
 	Area              *m.Area
 	Metric            []m.Metric
 	Hidden            bool
-	AttrMu            *sync.Mutex
+	AttrMu            *sync.RWMutex
 	Attrs             m.Attributes
 	Actions           map[string]ActorAction
 	States            map[string]ActorState
@@ -57,7 +57,7 @@ type BaseActor struct {
 	LastChanged       *time.Time
 	LastUpdated       *time.Time
 	adaptors          *adaptors.Adaptors
-	SettingsMu        *sync.Mutex
+	SettingsMu        *sync.RWMutex
 	Setts             m.Attributes
 }
 
@@ -85,9 +85,9 @@ func NewBaseActor(entity *m.Entity,
 		LastChanged:       nil,
 		LastUpdated:       nil,
 		AutoLoad:          entity.AutoLoad,
-		AttrMu:            &sync.Mutex{},
+		AttrMu:            &sync.RWMutex{},
 		Attrs:             entity.Attributes.Copy(),
-		SettingsMu:        &sync.Mutex{},
+		SettingsMu:        &sync.RWMutex{},
 		Setts:             entity.Settings,
 	}
 
@@ -165,11 +165,15 @@ func (e *BaseActor) SetState(EntityStateParams) error {
 
 func (e *BaseActor) Attributes() m.Attributes {
 	e.attrLock()
+	e.AttrMu.RLock()
+	defer e.AttrMu.RUnlock()
 	return e.Attrs.Copy()
 }
 
 func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
 	e.attrLock()
+	e.AttrMu.Lock()
+	defer e.AttrMu.Unlock()
 	e.Attrs.Deserialize(data)
 }
 
@@ -217,6 +221,8 @@ func (e *BaseActor) SetMetric(id common.EntityId, name string, value map[string]
 
 func (e *BaseActor) Settings() m.Attributes {
 	e.settingsLock()
+	e.SettingsMu.RLock()
+	defer e.SettingsMu.RUnlock()
 	return e.Setts.Copy()
 }
 
@@ -225,21 +231,19 @@ func (e *BaseActor) DeserializeSettings(settings m.AttributeValue) {
 		return
 	}
 	e.settingsLock()
+	e.SettingsMu.Lock()
+	defer e.SettingsMu.Unlock()
 	e.Setts.Deserialize(settings)
 }
 
 func (e *BaseActor) attrLock() {
 	if e.AttrMu == nil {
-		e.AttrMu = &sync.Mutex{}
+		e.AttrMu = &sync.RWMutex{}
 	}
-	e.AttrMu.Lock()
-	defer e.AttrMu.Unlock()
 }
 
 func (e *BaseActor) settingsLock() {
 	if e.SettingsMu == nil {
-		e.SettingsMu = &sync.Mutex{}
+		e.SettingsMu = &sync.RWMutex{}
 	}
-	e.SettingsMu.Lock()
-	defer e.SettingsMu.Unlock()
 }

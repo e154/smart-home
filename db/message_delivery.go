@@ -64,10 +64,13 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (lis
 	}
 
 	list = make([]MessageDelivery, 0)
-	err = n.Db.
+	q := n.Db.
 		Limit(limit).
-		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sort, orderBy)).
+		Offset(offset)
+	if sort != "" && orderBy != "" {
+		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+	err = q.
 		Preload("Message").
 		Find(&list).
 		Error

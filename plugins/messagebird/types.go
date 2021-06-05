@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package email
+package messagebird
 
 import (
 	"github.com/e154/smart-home/common"
@@ -24,26 +24,42 @@ import (
 )
 
 const (
-	Name       = "email"
-	AttrAuth   = "auth"
-	AttrPass   = "pass"
-	AttrSmtp   = "smtp"
-	AttrPort   = "port"
-	AttrSender = "sender"
-
-	AttrAddresses = "addresses"
-	AttrSubject   = "subject"
+	Name          = "messagebird"
+	AttrAccessKey = "access_key"
+	AttrName      = "name"
+	AttrPhone     = "phone"
 	AttrBody      = "body"
+	AttrPayment   = "Payment"
+	AttrType      = "Type"
+	AttrAmount    = "Amount"
 )
+
+const (
+	// StatusDelivered ...
+	StatusDelivered = "delivered"
+)
+
+func NewAttr() m.Attributes {
+	return map[string]*m.Attribute{
+		AttrPayment: {
+			Name: AttrPayment,
+			Type: common.AttributeString,
+		},
+		AttrType: {
+			Name: AttrType,
+			Type: common.AttributeString,
+		},
+		AttrAmount: {
+			Name: AttrAmount,
+			Type: common.AttributeFloat,
+		},
+	}
+}
 
 func NewMessageParams() m.Attributes {
 	return map[string]*m.Attribute{
-		AttrAddresses: {
-			Name: AttrAddresses,
-			Type: common.AttributeString,
-		},
-		AttrSubject: {
-			Name: AttrSubject,
+		AttrPhone: {
+			Name: AttrPhone,
 			Type: common.AttributeString,
 		},
 		AttrBody: {
@@ -55,25 +71,19 @@ func NewMessageParams() m.Attributes {
 
 func NewSetts() map[string]*m.Attribute {
 	return map[string]*m.Attribute{
-		AttrAuth: {
-			Name: AttrAuth,
+		AttrAccessKey: {
+			Name: AttrAccessKey,
 			Type: common.AttributeString,
 		},
-		AttrPass: {
-			Name: AttrPass,
-			Type: common.AttributeString,
-		},
-		AttrSmtp: {
-			Name: AttrSmtp,
-			Type: common.AttributeString,
-		},
-		AttrPort: {
-			Name: AttrPort,
-			Type: common.AttributeInt,
-		},
-		AttrSender: {
-			Name: AttrSender,
+		AttrName: {
+			Name: AttrName,
 			Type: common.AttributeString,
 		},
 	}
+}
+
+type Balance struct {
+	Payment string
+	Type    string
+	Amount  float32
 }

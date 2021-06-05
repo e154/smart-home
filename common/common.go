@@ -23,6 +23,7 @@ import (
 	crypto_rand "crypto/rand"
 	"encoding/hex"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -67,4 +68,8 @@ func RandomString(l int) string {
 		bytes[i] = byte(RandInt(65, 129))
 	}
 	return string(bytes)
+}
+
+func TestMode() bool {
+	return os.Getenv("TEST_MODE") == "true"
 }
