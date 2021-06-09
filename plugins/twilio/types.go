@@ -31,12 +31,21 @@ const (
 	AttrPhone     = "phone"
 	AttrBody      = "body"
 	AttrAmount    = "amount"
+	AttrCurrency  = "currency"
 )
 
 func NewAttr() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrAmount: {
 			Name: AttrAmount,
+			Type: common.AttributeFloat,
+		},
+		AttrSid: {
+			Name: AttrSid,
+			Type: common.AttributeFloat,
+		},
+		AttrCurrency: {
+			Name: AttrCurrency,
 			Type: common.AttributeFloat,
 		},
 	}

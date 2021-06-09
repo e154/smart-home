@@ -97,14 +97,6 @@ func (p *Actor) Save(msg notify.Message) (addresses []string, message m.Message)
 // Send ...
 func (p *Actor) Send(phone string, message m.Message) (err error) {
 
-	if p.AccessToken == "" {
-		return errors.New("bad settings parameters")
-	}
-
-	defer func() {
-		go p.UpdateBalance()
-	}()
-
 	params := &sms.Params{
 		Type:       "sms",
 		DataCoding: "unicode",
@@ -113,14 +105,17 @@ func (p *Actor) Send(phone string, message m.Message) (err error) {
 	attr := NewMessageParams()
 	attr.Deserialize(message.Attributes)
 
-	client := messagebird.New(p.AccessToken)
-
 	var msg *sms.Message
 	if common.TestMode() {
 		msg = &sms.Message{
 			ID: "123",
 		}
 	} else {
+		var client *messagebird.Client
+		if client, err = p.client(); err != nil {
+			return
+		}
+
 		if msg, err = sms.Create(client, p.Name, []string{phone}, attr[AttrBody].String(), params); err != nil {
 			mbErr, ok := err.(messagebird.ErrorResponse)
 			if !ok {
@@ -132,6 +127,10 @@ func (p *Actor) Send(phone string, message m.Message) (err error) {
 			return
 		}
 	}
+
+	defer func() {
+		go p.UpdateBalance()
+	}()
 
 	log.Infof("SMS id(%s) successfully sent to phone '%s'", msg.ID, phone)
 
@@ -170,7 +169,11 @@ func (p *Actor) GetStatus(smsId string) (string, error) {
 		return StatusDelivered, nil
 	}
 
-	client := messagebird.New(p.AccessToken)
+	client, err := p.client()
+	if err != nil {
+		return "", err
+	}
+
 	msg, err := sms.Read(client, smsId)
 	if err != nil {
 		return "", errors.New(err.Error())
@@ -183,7 +186,7 @@ func (p *Actor) GetStatus(smsId string) (string, error) {
 func (p *Actor) UpdateBalance() (bal Balance, err error) {
 
 	p.balanceLock.Lock()
-	defer p.balanceLock.Lock()
+	defer p.balanceLock.Unlock()
 
 	oldState := p.GetEventState(p)
 	now := p.Now(oldState)
@@ -196,7 +199,10 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 			Amount:  68.93,
 		}
 	} else {
-		client := messagebird.New(p.AccessToken)
+		var client *messagebird.Client
+		if client, err = p.client(); err != nil {
+			return
+		}
 		if b, err = balance.Read(client); err != nil {
 			return
 		}
@@ -233,5 +239,14 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 		NewState:    p.GetEventState(p),
 	})
 
+	return
+}
+
+func (p *Actor) client() (client *messagebird.Client, err error) {
+	if p.AccessToken == "" {
+		err = errors.New("bad settings parameters")
+		return
+	}
+	client = messagebird.New(p.AccessToken)
 	return
 }

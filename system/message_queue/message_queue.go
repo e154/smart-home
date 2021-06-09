@@ -67,6 +67,8 @@ func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interf
 	b.Lock()
 	defer b.Unlock()
 
+	fmt.Println("subscribe")
+
 	go func() {
 		for args := range h.queue {
 			h.callback.Call(args)
@@ -98,6 +100,8 @@ func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interf
 func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
 	b.Lock()
 	defer b.Unlock()
+
+	fmt.Println("unsubscribe")
 
 	rv := reflect.ValueOf(fn)
 
@@ -134,6 +138,8 @@ func (b *messageQueue) Close(topic string) {
 func (b *messageQueue) Purge() {
 	b.Lock()
 	defer b.Unlock()
+
+	fmt.Println("purge")
 
 	for topic, s := range b.sub {
 		for _, h := range s.handlers {

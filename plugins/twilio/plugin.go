@@ -39,6 +39,7 @@ func init() {
 type plugin struct {
 	*plugins.Plugin
 	notify notify.ProviderRegistrar
+	actor  *Actor
 }
 
 func New() plugins.Plugable {
@@ -88,10 +89,13 @@ func (p *plugin) asyncLoad() (err error) {
 		return
 	}
 
+	// add actor
+	p.actor = NewActor(settings, p.EntityManager, p.EventBus, p.Adaptors)
+	p.EntityManager.Spawn(p.actor.Spawn)
+	go p.actor.UpdateBalance()
+
 	// register twilio provider
-	var provider *Provider
-	provider, err = NewProvider(settings, p.Adaptors)
-	p.notify.AddProvider(Name, provider)
+	p.notify.AddProvider(Name, p.actor)
 
 	return
 }

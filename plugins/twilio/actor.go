@@ -24,8 +24,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/sfreiberg/gotwilio"
 	"net/http"
 	"net/url"
@@ -34,38 +37,50 @@ import (
 	"time"
 )
 
-// Provider ...
-type Provider struct {
+// Actor ...
+type Actor struct {
+	entity_manager.BaseActor
+	eventBus  event_bus.EventBus
 	adaptors  *adaptors.Adaptors
 	from      string
 	sid       string
 	authToken string
-	client    *gotwilio.Twilio
-	sync.RWMutex
-	balance Balance
 }
 
-// NewProvider ...
-func NewProvider(attrs m.Attributes,
-	adaptors *adaptors.Adaptors) (p *Provider, err error) {
+// NewActor ...
+func NewActor(settings m.Attributes,
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
+	adaptors *adaptors.Adaptors) *Actor {
 
-	sid := attrs[AttrSid].String()
-	authToken := attrs[AttrAuthToken].String()
-	p = &Provider{
+	sid := settings[AttrSid].String()
+	authToken := settings[AttrAuthToken].String()
+
+	actor := &Actor{
+		BaseActor: entity_manager.BaseActor{
+			Id:         common.EntityId(fmt.Sprintf("%s.%s", Name, Name)),
+			Name:       Name,
+			EntityType: Name,
+			AttrMu:     &sync.RWMutex{},
+			Attrs:      NewAttr(),
+			Manager:    entityManager,
+		},
+		eventBus:  eventBus,
 		adaptors:  adaptors,
 		sid:       sid,
-		from:      attrs[AttrFrom].String(),
+		from:      settings[AttrFrom].String(),
 		authToken: authToken,
-		client:    gotwilio.NewTwilioClient(sid, authToken),
 	}
 
-	p.UpdateBalance()
+	return actor
+}
 
-	return
+func (p *Actor) Spawn() entity_manager.PluginActor {
+	return p
 }
 
 // Save ...
-func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Message) {
+func (e *Actor) Save(msg notify.Message) (addresses []string, message m.Message) {
 	message = m.Message{
 		Type:       Name,
 		Attributes: msg.Attributes,
@@ -83,7 +98,11 @@ func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Messa
 }
 
 // Send ...
-func (e *Provider) Send(phone string, message m.Message) (err error) {
+func (e *Actor) Send(phone string, message m.Message) (err error) {
+
+	defer func() {
+		go e.UpdateBalance()
+	}()
 
 	attr := NewMessageParams()
 	attr.Deserialize(message.Attributes)
@@ -95,7 +114,12 @@ func (e *Provider) Send(phone string, message m.Message) (err error) {
 		phone = fmt.Sprintf("+%s", phone)
 	}
 
-	resp, ex, err = e.client.SendSMS(e.from, phone, attr[AttrBody].String(), "", "")
+	var client *gotwilio.Twilio
+	if client, err = e.client(); err != nil {
+		return
+	}
+
+	resp, ex, err = client.SendSMS(e.from, phone, attr[AttrBody].String(), "", "")
 	if err != nil {
 		return
 	}
@@ -133,18 +157,22 @@ func (e *Provider) Send(phone string, message m.Message) (err error) {
 // MessageParams ...
 // Channel
 // Text
-func (e *Provider) MessageParams() m.Attributes {
+func (e *Actor) MessageParams() m.Attributes {
 	return NewMessageParams()
 }
 
 // GetStatus ...
-func (e *Provider) GetStatus(smsId string) (string, error) {
+func (e *Actor) GetStatus(smsId string) (string, error) {
 
 	var resp *gotwilio.SmsResponse
 	var ex *gotwilio.Exception
 	var err error
 
-	resp, ex, err = e.client.GetSMS(smsId)
+	client, err := e.client()
+	if err != nil {
+		return "", err
+	}
+	resp, ex, err = client.GetSMS(smsId)
 	if err != nil {
 		return "", err
 	}
@@ -157,7 +185,7 @@ func (e *Provider) GetStatus(smsId string) (string, error) {
 }
 
 // Balance ...
-func (e *Provider) Balance() (balance Balance, err error) {
+func (e *Actor) Balance() (balance Balance, err error) {
 
 	var uri *url.URL
 	if uri, err = url.Parse(fmt.Sprintf("https://api.twilio.com/2010-04-01/Accounts/%s/Balance.json", e.sid)); err != nil {
@@ -186,19 +214,63 @@ func (e *Provider) Balance() (balance Balance, err error) {
 }
 
 // UpdateBalance ...
-func (e *Provider) UpdateBalance() {
-	balance, err := e.Balance()
-	if err != nil {
-		return
+func (p *Actor) UpdateBalance() (err error) {
+
+	oldState := p.GetEventState(p)
+	now := p.Now(oldState)
+
+	var balance Balance
+	if common.TestMode() {
+		balance = Balance{
+			Currency:   "euro",
+			Balance:    "68.93",
+			AccountSid: "XXX",
+		}
+	} else {
+		if balance, err = p.Balance(); err != nil {
+			return
+		}
 	}
-	e.Lock()
-	e.balance = balance
-	e.Unlock()
+
+	var attributeValues = make(m.AttributeValue)
+	attributeValues[AttrAmount] = balance.Balance
+	attributeValues[AttrSid] = balance.AccountSid
+	attributeValues[AttrCurrency] = balance.Currency
+
+	p.AttrMu.Lock()
+	var changed bool
+	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+		if err != nil {
+			log.Warn(err.Error())
+		}
+
+		if oldState.LastUpdated != nil {
+			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
+			//fmt.Println("delta", delta)
+			if delta < 200 {
+				p.AttrMu.Unlock()
+				return
+			}
+		}
+	}
+	p.AttrMu.Unlock()
+
+	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		StorageSave: true,
+		Type:        p.Id.Type(),
+		EntityId:    p.Id,
+		OldState:    oldState,
+		NewState:    p.GetEventState(p),
+	})
+
+	return
 }
 
-// GetBalance ...
-func (p *Provider) GetBalance() Balance {
-	p.RLock()
-	defer p.RUnlock()
-	return p.balance
+func (e *Actor) client() (client *gotwilio.Twilio, err error) {
+	if e.authToken == "" || e.sid == "" {
+		err = errors.New("bad settings parameters")
+		return
+	}
+	client = gotwilio.NewTwilioClient(e.sid, e.authToken)
+	return
 }
