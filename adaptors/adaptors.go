@@ -70,6 +70,7 @@ type Adaptors struct {
 	Task              ITask
 	RunHistory        IRunHistory
 	Plugin            IPlugin
+	TelegramChat      ITelegramChat
 }
 
 // NewAdaptors ...
@@ -115,6 +116,7 @@ func NewAdaptors(lc fx.Lifecycle,
 		Task:              GetTaskAdaptor(db),
 		RunHistory:        GetRunHistoryAdaptor(db),
 		Plugin:            GetPluginAdaptor(db),
+		TelegramChat:      GetTelegramChannelAdaptor(db),
 	}
 
 	if lc != nil {

@@ -24,6 +24,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/plugins"
+	"strings"
 )
 
 var (
@@ -69,11 +70,11 @@ func (p *plugin) asyncLoad() (err error) {
 	settings, err = p.LoadSettings(p)
 	if err != nil {
 		log.Warn(err.Error())
-		settings = NewSetts()
+		settings = NewSettings()
 	}
 
 	if settings == nil {
-		settings = NewSetts()
+		settings = NewSettings()
 	}
 
 	// get provider registrar
@@ -95,7 +96,7 @@ func (p *plugin) asyncLoad() (err error) {
 	go p.actor.UpdateBalance()
 
 	// register messagebird provider
-	p.notify.AddProvider(Name, p.actor)
+	p.notify.AddProvider(Name, p)
 
 	return
 }
@@ -132,6 +133,35 @@ func (p *plugin) Version() string {
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		ActorAttrs: NewAttr(),
-		Setts:      NewSetts(),
+		Setts:      NewSettings(),
 	}
+}
+
+// Save ...
+func (p *plugin) Save(msg notify.Message) (addresses []string, message m.Message) {
+	message = m.Message{
+		Type:       Name,
+		Attributes: msg.Attributes,
+	}
+	var err error
+	if message.Id, err = p.Adaptors.Message.Add(message); err != nil {
+		log.Error(err.Error())
+	}
+
+	attr := NewMessageParams()
+	attr.Deserialize(message.Attributes)
+
+	addresses = strings.Split(attr[AttrPhone].String(), ",")
+	return
+}
+
+// Send ...
+func (p *plugin) Send(address string, message m.Message) (err error) {
+	err = p.actor.Send(address, message)
+	return
+}
+
+// MessageParams ...
+func (p *plugin) MessageParams() m.Attributes {
+	return NewMessageParams()
 }

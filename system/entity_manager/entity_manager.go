@@ -90,7 +90,7 @@ LOOP:
 	// add entities from database
 	for _, entity := range entities {
 		if err := e.Add(entity); err != nil {
-			log.Warn(err.Error())
+			log.Warnf("%s, %s", entity.Id, err.Error())
 		}
 	}
 
@@ -382,6 +382,7 @@ func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}
 func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor, err error) {
 	var plugin interface{}
 	if plugin, err = e.pluginManager.GetPlugin(entityId.Type().String()); err != nil {
+		err = fmt.Errorf("from plugin manager, %s", err.Error())
 		return
 	}
 

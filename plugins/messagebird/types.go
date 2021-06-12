@@ -69,7 +69,7 @@ func NewMessageParams() m.Attributes {
 	}
 }
 
-func NewSetts() map[string]*m.Attribute {
+func NewSettings() map[string]*m.Attribute {
 	return map[string]*m.Attribute{
 		AttrAccessKey: {
 			Name: AttrAccessKey,

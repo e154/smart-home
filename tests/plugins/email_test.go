@@ -51,7 +51,7 @@ func TestEmail(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "notify")
-			settings := email.NewSetts()
+			settings := email.NewSettings()
 			settings[email.AttrAuth].Value = "XXX"
 			settings[email.AttrPass].Value = "XXX"
 			settings[email.AttrSmtp].Value = "XXX"

@@ -13,6 +13,7 @@
 // migrations/20210603_153850_update_messages.sql
 // migrations/20210604_200254_update_plugin.sql
 // migrations/20210605_133028_update_message.sql
+// migrations/20210609_161535_add_telegram.sql
 // DO NOT EDIT!
 
 package database
@@ -340,6 +341,26 @@ func migrations20210605_133028_update_messageSql() (*asset, error) {
 	return a, nil
 }
 
+var _migrations20210609_161535_add_telegramSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x51\x4d\xaf\xd3\x30\x10\xbc\xfb\x57\xcc\xed\xb5\xe2\xe5\xc2\xf5\x9d\x10\xf4\x80\x44\x11\xf4\xe3\x6c\xb9\xf6\xb6\x59\xc5\xb1\x2d\x7b\xa3\x36\xfc\x7a\xe4\xb4\x09\x54\x02\xe9\xed\xcd\xbb\x33\xeb\x99\x9d\xa6\xc1\x87\x9e\x2f\xd9\x08\xe1\x98\x54\xd3\x60\xff\xf3\x1b\x38\xa0\x90\x15\x8e\x01\x2f\xc7\xf4\x02\x2e\xa0\x1b\xd9\x41\xc8\xe1\xda\x52\x80\xb4\x5c\x70\xe7\x55\x10\x17\x98\x94\x3c\x93\x53\x36\x53\xdd\x25\xe6\xe4\x09\x42\x9e\x2e\xd9\xf4\xda\xb6\x46\x8a\x5a\x29\x00\xa0\x20\x2c\xa3\x66\x07\x08\xdd\x04\x40\x88\x82\x30\x78\x3f\x8d\x6b\xd9\x18\x8a\x64\xc3\x41\x9e\x57\xe8\x8f\x7a\x62\x33\x15\x7d\xee\x16\x78\xad\x4c\x67\xca\x14\x2c\x15\xcc\x10\xac\xd8\xad\x9f\x40\x31\x60\x48\xae\xea\xb3\xa6\x58\xe3\xa8\x76\x1c\x79\xfa\xd3\x79\x9d\x08\xd3\x67\x55\x21\x70\xe2\x4b\xd5\x31\x6b\xbc\xcf\x87\x42\x39\x98\x9e\x70\xf7\xf0\x20\x4d\xd6\x9d\x36\x02\xe1\x9e\x8a\x98\x3e\xe1\xca\xd2\x4e\x4f\xfc\x8a\x81\xe0\xe8\x6c\x06\x2f\xf8\x7c\xdc\xed\x36\xdf\x0f\xfa\xf0\x75\xbb\xd9\x1f\x3e\x6d\x7f\x3c\x56\xfc\xc7\x78\xd1\xa9\xa3\x71\xf1\x92\x32\xf7\x26\x8f\xe8\x68\xc4\x6a\xb9\xe7\xeb\x2c\x7b\xad\xd6\x6f\x4a\xfd\x1d\xed\x97\x78\x0d\x73\xb8\x4b\xb2\xb5\xf9\xae\x6c\x73\xf4\x9e\x1c\x4e\xc6\x76\xca\xe5\x98\xfe\x99\xee\x7c\xc0\x37\xa5\x7e\x07\x00\x00\xff\xff\xb3\x1d\x9d\x23\x55\x02\x00\x00")
+
+func migrations20210609_161535_add_telegramSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20210609_161535_add_telegramSql,
+		"migrations/20210609_161535_add_telegram.sql",
+	)
+}
+
+func migrations20210609_161535_add_telegramSql() (*asset, error) {
+	bytes, err := migrations20210609_161535_add_telegramSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20210609_161535_add_telegram.sql", size: 597, mode: os.FileMode(420), modTime: time.Unix(1623490164, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -405,6 +426,7 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20210603_153850_update_messages.sql": migrations20210603_153850_update_messagesSql,
 	"migrations/20210604_200254_update_plugin.sql": migrations20210604_200254_update_pluginSql,
 	"migrations/20210605_133028_update_message.sql": migrations20210605_133028_update_messageSql,
+	"migrations/20210609_161535_add_telegram.sql": migrations20210609_161535_add_telegramSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -461,6 +483,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20210603_153850_update_messages.sql": &bintree{migrations20210603_153850_update_messagesSql, map[string]*bintree{}},
 		"20210604_200254_update_plugin.sql": &bintree{migrations20210604_200254_update_pluginSql, map[string]*bintree{}},
 		"20210605_133028_update_message.sql": &bintree{migrations20210605_133028_update_messageSql, map[string]*bintree{}},
+		"20210609_161535_add_telegram.sql": &bintree{migrations20210609_161535_add_telegramSql, map[string]*bintree{}},
 	}},
 }}
 

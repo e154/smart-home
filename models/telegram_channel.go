@@ -16,45 +16,17 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package slack
+package models
 
 import (
 	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
+	"time"
 )
 
-const (
-	Name = "slack"
-
-	AttrToken    = "token"
-	AttrUserName = "user_name"
-
-	AttrChannel = "channel"
-	AttrText    = "text"
-)
-
-func NewAttr() m.Attributes {
-	return map[string]*m.Attribute{
-		AttrChannel: {
-			Name: AttrChannel,
-			Type: common.AttributeString,
-		},
-		AttrText: {
-			Name: AttrText,
-			Type: common.AttributeString,
-		},
-	}
-}
-
-func NewSettings() map[string]*m.Attribute {
-	return map[string]*m.Attribute{
-		AttrToken: {
-			Name: AttrToken,
-			Type: common.AttributeString,
-		},
-		AttrUserName: {
-			Name: AttrUserName,
-			Type: common.AttributeString,
-		},
-	}
+// TelegramChat ...
+type TelegramChat struct {
+	EntityId  common.EntityId
+	ChatId    int64
+	Username  string
+	CreatedAt time.Time
 }

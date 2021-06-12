@@ -68,11 +68,11 @@ func (p *plugin) asyncLoad() (err error) {
 	settings, err = p.LoadSettings(p)
 	if err != nil {
 		log.Warn(err.Error())
-		settings = NewSetts()
+		settings = NewSettings()
 	}
 
 	if settings == nil {
-		settings = NewSetts()
+		settings = NewSettings()
 	}
 
 	// get provider registrar
@@ -127,6 +127,6 @@ func (p *plugin) Version() string {
 
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Setts: NewSetts(),
+		Setts: NewSettings(),
 	}
 }

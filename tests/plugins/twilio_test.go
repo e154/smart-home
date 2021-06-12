@@ -51,7 +51,7 @@ func TestTwilio(t *testing.T) {
 
 			// register plugins
 			err = AddPlugin(adaptors, "notify")
-			settings := twilio.NewSetts()
+			settings := twilio.NewSettings()
 			settings[twilio.AttrAuthToken].Value = "XXXX"
 			settings[twilio.AttrSid].Value = "YYYY"
 			settings[twilio.AttrFrom].Value = "YYYY"

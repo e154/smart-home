@@ -24,7 +24,6 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
@@ -52,8 +51,7 @@ func Test9(t *testing.T) {
 	Convey("send sms", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			scriptService scripts.ScriptService,
-			notifyService notify.Notify) {
+			scriptService scripts.ScriptService) {
 
 			// add templates
 			// ------------------------------------------------

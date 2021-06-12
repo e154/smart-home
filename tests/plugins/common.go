@@ -30,6 +30,7 @@ import (
 	"github.com/e154/smart-home/plugins/scene"
 	"github.com/e154/smart-home/plugins/script"
 	"github.com/e154/smart-home/plugins/sun"
+	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
 	"github.com/e154/smart-home/plugins/zone"
@@ -299,6 +300,19 @@ func GetNewModbusTcp(name string) *m.Entity {
 		AutoLoad:    true,
 		Attributes:  modbus_tcp.NewAttr(),
 		Settings:    modbus_tcp.NewSettings(),
+	}
+}
+
+func GetNewTelegram(name string) *m.Entity {
+	settings := telegram.NewSettings()
+	settings[telegram.AttrToken].Value = "XXXX"
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name)),
+		Description: "",
+		Type:        telegram.Name,
+		AutoLoad:    true,
+		Attributes:  telegram.NewAttr(),
+		Settings:    settings,
 	}
 }
 

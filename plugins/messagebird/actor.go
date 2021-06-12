@@ -24,13 +24,11 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	messagebird "github.com/messagebird/go-rest-api"
 	"github.com/messagebird/go-rest-api/balance"
 	"github.com/messagebird/go-rest-api/sms"
-	"strings"
 	"sync"
 	"time"
 )
@@ -74,24 +72,6 @@ func NewActor(settings m.Attributes,
 
 func (p *Actor) Spawn() entity_manager.PluginActor {
 	return p
-}
-
-// Save ...
-func (p *Actor) Save(msg notify.Message) (addresses []string, message m.Message) {
-	message = m.Message{
-		Type:       Name,
-		Attributes: msg.Attributes,
-	}
-	var err error
-	if message.Id, err = p.adaptors.Message.Add(message); err != nil {
-		log.Error(err.Error())
-	}
-
-	attr := NewMessageParams()
-	attr.Deserialize(message.Attributes)
-
-	addresses = strings.Split(attr[AttrPhone].String(), ",")
-	return
 }
 
 // Send ...
@@ -155,11 +135,6 @@ func (p *Actor) Send(phone string, message m.Message) (err error) {
 	}
 
 	return
-}
-
-// MessageParams ...
-func (p *Actor) MessageParams() m.Attributes {
-	return NewMessageParams()
 }
 
 // GetStatus ...

@@ -16,19 +16,20 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package email
+package telegram
 
 import (
 	"errors"
+	"fmt"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/plugins"
-	"strings"
+	"sync"
 )
 
 var (
-	log = common.MustGetLogger("plugins.email")
+	log = common.MustGetLogger("plugins.telegram")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -39,13 +40,16 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	notify notify.ProviderRegistrar
-	actor  *Actor
+	notify     notify.ProviderRegistrar
+	actorsLock *sync.RWMutex
+	actors     map[common.EntityId]*Actor
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		Plugin: plugins.NewPlugin(),
+		Plugin:     plugins.NewPlugin(),
+		actorsLock: &sync.RWMutex{},
+		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
@@ -65,18 +69,6 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 
 func (p *plugin) asyncLoad() (err error) {
 
-	// load settings
-	var settings m.Attributes
-	settings, err = p.LoadSettings(p)
-	if err != nil {
-		log.Warn(err.Error())
-		settings = NewSettings()
-	}
-
-	if settings == nil {
-		settings = NewSettings()
-	}
-
 	// get provider registrar
 	var pl interface{}
 	if pl, err = p.GetPlugin(notify.Name); err != nil {
@@ -90,11 +82,7 @@ func (p *plugin) asyncLoad() (err error) {
 		return
 	}
 
-	// add actor
-	p.actor = NewActor(settings, p.EntityManager, p.EventBus, p.Adaptors)
-	p.EntityManager.Spawn(p.actor.Spawn)
-
-	// register email provider
+	// register telegram provider
 	p.notify.AddProvider(Name, p)
 
 	return
@@ -131,8 +119,42 @@ func (p *plugin) Version() string {
 
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Setts: NewSettings(),
+		Actors:     true,
+		ActorAttrs: NewAttr(),
+		ActorSetts: NewSettings(),
 	}
+}
+
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
+	p.actorsLock.Lock()
+	defer p.actorsLock.Unlock()
+
+	if _, ok := p.actors[entity.Id]; ok {
+		err = fmt.Errorf("the actor with id '%s' has already been created", entity.Id)
+		return
+	}
+
+	var actor *Actor
+	if actor, err = NewActor(entity, p.EntityManager, p.EventBus, p.Adaptors); err != nil {
+		return
+	}
+	p.actors[entity.Id] = actor
+	p.EntityManager.Spawn(actor.Spawn)
+	return
+}
+
+func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
+	p.actorsLock.Lock()
+	defer p.actorsLock.Unlock()
+
+	if _, ok := p.actors[entityId]; !ok {
+		err = fmt.Errorf("not found")
+		return
+	}
+
+	p.actors[entityId].Stop()
+	delete(p.actors, entityId)
+	return
 }
 
 // Save ...
@@ -149,13 +171,23 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message m.Message
 	attr := NewMessageParams()
 	attr.Deserialize(message.Attributes)
 
-	addresses = strings.Split(attr[AttrAddresses].String(), ",")
 	return
 }
 
 // Send ...
-func (p *plugin) Send(address string, message m.Message) (err error) {
-	err = p.actor.Send(address, message)
+func (p *plugin) Send(name string, message m.Message) (err error) {
+	params := NewMessageParams()
+	params.Deserialize(message.Attributes)
+
+	body := params[AttrBody].String()
+
+	p.actorsLock.RLock()
+	defer p.actorsLock.RUnlock()
+
+	if actor, ok := p.actors[common.EntityId(name)]; ok {
+		actor.Send(body)
+	}
+
 	return
 }
 

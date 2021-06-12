@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package slack
+package telegram
 
 import (
 	"github.com/e154/smart-home/common"
@@ -24,37 +24,55 @@ import (
 )
 
 const (
-	Name = "slack"
+	Name      = "telegram"
+	AttrToken = "token"
+	AttrName  = "name"
+	AttrBody  = "body"
+)
 
-	AttrToken    = "token"
-	AttrUserName = "user_name"
-
-	AttrChannel = "channel"
-	AttrText    = "text"
+const (
+	// StatusDelivered ...
+	StatusDelivered = "delivered"
 )
 
 func NewAttr() m.Attributes {
+	return nil
+}
+
+func NewMessageParams() m.Attributes {
 	return map[string]*m.Attribute{
-		AttrChannel: {
-			Name: AttrChannel,
+		AttrName: {
+			Name: AttrName,
 			Type: common.AttributeString,
 		},
-		AttrText: {
-			Name: AttrText,
+		AttrBody: {
+			Name: AttrBody,
 			Type: common.AttributeString,
 		},
 	}
 }
 
-func NewSettings() map[string]*m.Attribute {
+func NewSettings() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrToken: {
 			Name: AttrToken,
 			Type: common.AttributeString,
 		},
-		AttrUserName: {
-			Name: AttrUserName,
-			Type: common.AttributeString,
-		},
 	}
 }
+
+// Command ...
+type Command struct {
+	UserName, Text string
+	ChatId         int64
+}
+
+const banner = `
+Smart home system
+
+Version:
+%s
+
+command:
+%s
+`

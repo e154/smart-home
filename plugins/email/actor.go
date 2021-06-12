@@ -24,11 +24,9 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"gopkg.in/gomail.v2"
-	"strings"
 	"sync"
 )
 
@@ -74,24 +72,6 @@ func (p *Actor) Spawn() entity_manager.PluginActor {
 	return p
 }
 
-// Save ...
-func (e *Actor) Save(msg notify.Message) (addresses []string, message m.Message) {
-	message = m.Message{
-		Type:       Name,
-		Attributes: msg.Attributes,
-	}
-	var err error
-	if message.Id, err = e.adaptors.Message.Add(message); err != nil {
-		log.Error(err.Error())
-	}
-
-	attr := NewMessageParams()
-	attr.Deserialize(message.Attributes)
-
-	addresses = strings.Split(attr[AttrAddresses].String(), ",")
-	return
-}
-
 // Send ...
 func (e *Actor) Send(address string, message m.Message) error {
 
@@ -128,14 +108,6 @@ func (e *Actor) Send(address string, message m.Message) error {
 	}
 
 	return nil
-}
-
-// MessageParams ...
-// Addresses
-// Subject
-// Body
-func (e *Actor) MessageParams() m.Attributes {
-	return NewMessageParams()
 }
 
 // UpdateStatus ...
