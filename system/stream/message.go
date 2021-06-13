@@ -21,7 +21,7 @@ package stream
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/uuid"
+	"github.com/e154/smart-home/common/uuid"
 )
 
 // Message ...
