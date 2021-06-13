@@ -38,7 +38,6 @@ type plugin struct {
 	notify Notify
 }
 
-
 func New() plugins.Plugable {
 	return &plugin{
 		Plugin: plugins.NewPlugin(),

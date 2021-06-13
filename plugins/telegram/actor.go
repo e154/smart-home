@@ -22,9 +22,11 @@ import (
 	"fmt"
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/version"
 	"go.uber.org/atomic"
 	"sync"
 )
@@ -73,7 +75,6 @@ func NewActor(entity *m.Entity,
 }
 
 func (p *Actor) Spawn() entity_manager.PluginActor {
-	go p.Start()
 	return p
 }
 
@@ -88,35 +89,33 @@ func (p *Actor) Start() (err error) {
 		}
 	}()
 
-	p.bot, err = tgbotapi.NewBotAPI(p.AccessToken)
-	if err != nil {
-		err = fmt.Errorf("telegram error: %s", err.Error())
-		return
-	}
+	if !common.TestMode() {
+		p.bot, err = tgbotapi.NewBotAPI(p.AccessToken)
+		if err != nil {
+			err = fmt.Errorf("telegram error: %s", err.Error())
+			return
+		}
 
-	log.Infof("Authorized on account %s", p.bot.Self.UserName)
+		log.Infof("Authorized on account %s", p.bot.Self.UserName)
 
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
-	updates, err := p.bot.GetUpdatesChan(u)
-	if err != nil {
-		log.Error(err.Error())
-		return
-	}
+		u := tgbotapi.NewUpdate(0)
+		u.Timeout = 60
+		var updates tgbotapi.UpdatesChannel
+		if updates, err = p.bot.GetUpdatesChan(u); err != nil {
+			log.Error(err.Error())
+			return
+		}
 
-	go func() {
-		for {
-			select {
-			case update := <-updates:
-
+		go func() {
+			for update := range updates {
 				p.commandPool <- Command{
 					ChatId:   update.Message.Chat.ID,
 					Text:     update.Message.Text,
 					UserName: update.Message.From.UserName,
 				}
 			}
-		}
-	}()
+		}()
+	}
 
 	go func() {
 		for v := range p.commandPool {
@@ -146,7 +145,9 @@ func (p *Actor) Stop() {
 	if !p.isStarted.Load() {
 		return
 	}
-	p.bot.StopReceivingUpdates()
+	if p.bot != nil {
+		p.bot.StopReceivingUpdates()
+	}
 	close(p.commandPool)
 	close(p.msgPool)
 	p.isStarted.Store(false)
@@ -154,6 +155,9 @@ func (p *Actor) Stop() {
 
 // Send ...
 func (p *Actor) Send(message string) (err error) {
+	if !p.isStarted.Load() {
+		return
+	}
 	p.msgPool <- message
 	return
 }
@@ -167,25 +171,94 @@ func (p *Actor) GetStatus(smsId string) (string, error) {
 func (p *Actor) commandHandler(cmd Command) {
 	switch cmd.Text {
 	case "/start":
-		//p.commandStart(cmd)
+		p.commandStart(cmd)
 	case "/help":
-		//p.commandHelp(cmd)
+		p.commandHelp(cmd)
 	case "/quit":
+		p.commandQuit(cmd)
 	default:
-		log.Infof("[%s] %d %s", cmd.UserName, cmd.ChatId, cmd.Text)
+		log.Infof("unknown command user(%s) chatId(%d) command(%s)", cmd.UserName, cmd.ChatId, cmd.Text)
 	}
 }
 
-func (p *Actor) sendMsg(body string, chatId int64) (int, error) {
-	msgCfg := tgbotapi.NewMessage(chatId, body)
-	msg, err := p.bot.Send(msgCfg)
-	if err != nil {
-		return 0, err
+func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
+	defer func() {
+		if err == nil {
+			go p.UpdateStatus()
+			log.Debugf("Sent message '%s' to chatId '%d'", body, chatId)
+		}
+	}()
+	if common.TestMode() {
+		messageID = 123
+		return
 	}
-	return msg.MessageID, err
+	msgCfg := tgbotapi.NewMessage(chatId, body)
+	var msg tgbotapi.Message
+	if msg, err = p.bot.Send(msgCfg); err != nil {
+		return
+	}
+	messageID = msg.MessageID
+	return
 }
 
 func (p *Actor) getChatList() (list []m.TelegramChat, err error) {
 	list, _, err = p.adaptors.TelegramChat.List(999, 0, "", "", p.Id)
 	return
+}
+
+// UpdateStatus ...
+func (p *Actor) UpdateStatus() (err error) {
+
+	oldState := p.GetEventState(p)
+	now := p.Now(oldState)
+
+	var attributeValues = make(m.AttributeValue)
+	// ...
+
+	p.AttrMu.Lock()
+	var changed bool
+	if changed, err = p.Attrs.Deserialize(attributeValues); !changed {
+		if err != nil {
+			log.Warn(err.Error())
+		}
+
+		if oldState.LastUpdated != nil {
+			delta := now.Sub(*oldState.LastUpdated).Milliseconds()
+			//fmt.Println("delta", delta)
+			if delta < 200 {
+				p.AttrMu.Unlock()
+				return
+			}
+		}
+	}
+	p.AttrMu.Unlock()
+
+	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+		StorageSave: true,
+		Type:        p.Id.Type(),
+		EntityId:    p.Id,
+		OldState:    oldState,
+		NewState:    p.GetEventState(p),
+	})
+
+	return
+}
+
+func (p *Actor) commandStart(cmd Command) {
+	text := fmt.Sprintf(banner, version.GetHumanVersion(), cmd.Text)
+	p.adaptors.TelegramChat.Add(m.TelegramChat{
+		EntityId: p.Id,
+		ChatId:   cmd.ChatId,
+		Username: cmd.UserName,
+	})
+	p.sendMsg(text, cmd.ChatId)
+}
+
+func (p *Actor) commandHelp(cmd Command) {
+	p.sendMsg(help, cmd.ChatId)
+}
+
+func (p *Actor) commandQuit(cmd Command) {
+	p.adaptors.TelegramChat.Delete(p.Id, cmd.ChatId)
+	p.sendMsg("/quit -unsubscribe from bot\n/start - subscriber again", cmd.ChatId)
 }

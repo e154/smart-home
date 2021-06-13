@@ -34,6 +34,6 @@ func (b *NotifyBind) NewMessage() Message {
 }
 
 // Send ...
-func (b *NotifyBind) Send(msg interface{}) {
+func (b *NotifyBind) Send(msg Message) {
 	b.notify.Send(msg)
 }

@@ -140,6 +140,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	}
 	p.actors[entity.Id] = actor
 	p.EntityManager.Spawn(actor.Spawn)
+	actor.Start()
 	return
 }
 
@@ -171,6 +172,8 @@ func (p *plugin) Save(msg notify.Message) (addresses []string, message m.Message
 	attr := NewMessageParams()
 	attr.Deserialize(message.Attributes)
 
+	addresses = []string{attr[AttrName].String()}
+
 	return
 }
 
@@ -184,7 +187,7 @@ func (p *plugin) Send(name string, message m.Message) (err error) {
 	p.actorsLock.RLock()
 	defer p.actorsLock.RUnlock()
 
-	if actor, ok := p.actors[common.EntityId(name)]; ok {
+	if actor, ok := p.actors[common.EntityId(fmt.Sprintf("telegram.%s", name))]; ok {
 		actor.Send(body)
 	}
 

@@ -76,3 +76,7 @@ Version:
 command:
 %s
 `
+
+const help = `/help - this help
+/quit - unsubscribe from bot 
+`

@@ -22,6 +22,8 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
@@ -77,48 +79,46 @@ func TestTelegram(t *testing.T) {
 			t.Run("succeed", func(t *testing.T) {
 				Convey("", t, func(ctx C) {
 
-					//ch := make(chan interface{}, 2)
-					//fn := func(topic string, message interface{}) {
-					//	switch v := message.(type) {
-					//	case event_bus.EventStateChanged:
-					//		ch <- v
-					//	default:
-					//	}
-					//
-					//}
-					//eventBus.Subscribe(event_bus.TopicEntities, fn)
-					//defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
-					//
-					//eventBus.Publish(notify.TopicNotify, notify.Message{
-					//	Type: telegram.Name,
-					//	Attributes: map[string]interface{}{
-					//		"name": "",
-					//		"body":      "body",
-					//	},
-					//})
-					//
-					//ok := Wait(5, ch)
-					//
-					//ctx.So(ok, ShouldBeTrue)
-					//
-					//time.Sleep(time.Second * 2)
-					//
-					//list, total, err := adaptors.MessageDelivery.List(10, 0, "", "")
-					//ctx.So(err, ShouldBeNil)
-					//ctx.So(total, ShouldEqual, 2)
-					//
-					//for _, del := range list {
-					//	ctx.So(del.Status, ShouldEqual, m.MessageStatusSucceed)
-					//	ctx.So(del.Address, ShouldBeIn, []string{"test@e154.ru", "test2@e154.ru"})
-					//	ctx.So(del.ErrorMessageBody, ShouldBeNil)
-					//	ctx.So(del.ErrorMessageStatus, ShouldBeNil)
-					//	ctx.So(del.Message.Type, ShouldEqual, email.Name)
-					//
-					//	attr := email.NewMessageParams()
-					//	attr.Deserialize(del.Message.Attributes)
-					//	ctx.So(attr[email.AttrSubject].String(), ShouldEqual, "subject")
-					//	ctx.So(attr[email.AttrBody].String(), ShouldEqual, "body")
-					//}
+					ch := make(chan interface{}, 2)
+					fn := func(topic string, message interface{}) {
+						switch v := message.(type) {
+						case event_bus.EventStateChanged:
+							ch <- v
+						default:
+						}
+
+					}
+					eventBus.Subscribe(event_bus.TopicEntities, fn)
+					defer eventBus.Unsubscribe(event_bus.TopicEntities, fn)
+
+					eventBus.Publish(notify.TopicNotify, notify.Message{
+						Type: telegram.Name,
+						Attributes: map[string]interface{}{
+							"name": "clavicus",
+							"body": "body",
+						},
+					})
+
+					ok := Wait(2, ch)
+
+					ctx.So(ok, ShouldBeTrue)
+
+					time.Sleep(time.Millisecond * 500)
+
+					list, total, err := adaptors.MessageDelivery.List(10, 0, "", "")
+					ctx.So(err, ShouldBeNil)
+					ctx.So(total, ShouldEqual, 1)
+
+					ctx.So(list[0].Status, ShouldEqual, m.MessageStatusSucceed)
+					ctx.So(list[0].Address, ShouldBeIn, []string{"clavicus"})
+					ctx.So(list[0].ErrorMessageBody, ShouldBeNil)
+					ctx.So(list[0].ErrorMessageStatus, ShouldBeNil)
+					ctx.So(list[0].Message.Type, ShouldEqual, telegram.Name)
+
+					attr := telegram.NewMessageParams()
+					attr.Deserialize(list[0].Message.Attributes)
+					ctx.So(attr[telegram.AttrBody].String(), ShouldEqual, "body")
+
 				})
 			})
 		})

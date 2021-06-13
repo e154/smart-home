@@ -37,7 +37,7 @@ type Notify interface {
 	Start() (err error)
 	Stat() *Stat
 	Repeat(msg m.MessageDelivery)
-	Send(msg interface{})
+	Send(msg Message)
 	AddProvider(name string, provider Provider)
 	RemoveProvider(name string)
 	Provider(name string) (provider Provider, err error)
@@ -104,31 +104,32 @@ func (n *notify) Start() (err error) {
 
 	go func() {
 
-		var worker *Worker
 		defer func() {
 			n.workers = make([]*Worker, 0)
 		}()
 
-		for event := range n.queue {
-		LOOP:
+		for {
+			var worker *Worker
 			for _, w := range n.workers {
 				if w.InWork() {
 					continue
 				}
 				worker = w
-				break
 			}
 			if worker == nil {
-				time.Sleep(time.Second)
-				goto LOOP
-			}
-
-			provider, err := n.Provider(event.Message.Type)
-			if err != nil {
-				log.Error(err.Error())
+				time.Sleep(time.Millisecond * 500)
 				continue
 			}
-			worker.send(event, provider)
+
+			for event := range n.queue {
+				provider, err := n.Provider(event.Message.Type)
+				if err != nil {
+					log.Error(err.Error())
+					continue
+				}
+				worker.send(event, provider)
+			}
+			time.Sleep(time.Millisecond * 500)
 		}
 	}()
 
@@ -143,17 +144,13 @@ func (n *notify) stop() {
 	n.isStarted.Store(false)
 }
 
-func (n notify) Send(msg interface{}) {
+func (n notify) Send(msg Message) {
+
 	if !n.isStarted.Load() {
 		return
 	}
 
-	switch v := msg.(type) {
-	case Message:
-		n.save(v)
-	default:
-		log.Errorf("unknown message type %v", v)
-	}
+	n.save(msg)
 }
 
 func (n *notify) save(event Message) {
