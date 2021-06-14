@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,15 +32,18 @@ type PluginActor interface {
 	Spawn() PluginActor
 
 	// Attributes ...
-	Attributes() m.EntityAttributes
+	Attributes() m.Attributes
+
+	// Settings ...
+	Settings() m.Attributes
 
 	// Metrics ...
 	Metrics() []m.Metric
 
-	// SetState
-	SetState(EntityStateParams)
+	// SetState ...
+	SetState(EntityStateParams) error
 
-	// Info
+	// Info ...
 	Info() ActorInfo
 }
 
@@ -58,7 +61,7 @@ type EntityManager interface {
 	SetMetric(common.EntityId, string, map[string]interface{})
 
 	// SetState ...
-	SetState(common.EntityId, EntityStateParams)
+	SetState(common.EntityId, EntityStateParams) error
 
 	// GetEntityById ...
 	GetEntityById(common.EntityId) (m.EntityShort, error)
@@ -74,9 +77,6 @@ type EntityManager interface {
 
 	// Remove ...
 	Remove(common.EntityId)
-
-	// Send ...
-	Send(Message) error
 
 	// CallAction ...
 	CallAction(common.EntityId, string, map[string]interface{})
@@ -99,11 +99,37 @@ type ActorAction struct {
 	ScriptEngine *scripts.Engine `json:"-"`
 }
 
+func ToEntityActionShort(from map[string]ActorAction) (to map[string]m.EntityActionShort) {
+	to = make(map[string]m.EntityActionShort)
+	for k, v := range from {
+		to[k] = m.EntityActionShort{
+			Name:        v.Name,
+			Description: v.Description,
+			ImageUrl:    v.ImageUrl,
+			Icon:        v.Icon,
+		}
+	}
+	return
+}
+
 type ActorState struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	ImageUrl    *string `json:"image_url"`
 	Icon        *string `json:"icon"`
+}
+
+func ToEntityStateShort(from map[string]ActorState) (to map[string]m.EntityStateShort) {
+	to = make(map[string]m.EntityStateShort)
+	for k, v := range from {
+		to[k] = m.EntityStateShort{
+			Name:        v.Name,
+			Description: v.Description,
+			ImageUrl:    v.ImageUrl,
+			Icon:        v.Icon,
+		}
+	}
+	return
 }
 
 func (a *ActorState) Copy() (state *ActorState) {

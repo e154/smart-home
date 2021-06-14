@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package stream
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/uuid"
+	"github.com/e154/smart-home/common/uuid"
 )
 
 // Message ...

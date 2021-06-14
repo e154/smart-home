@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -152,6 +152,11 @@ func GetSunPosition(date time.Time, lat float64, lng float64) SunPosition {
 		azimuth(H, phi, c.dec),
 		altitude(H, phi, c.dec),
 	}
+}
+
+func IsNight(sunrisePos SunPosition) bool {
+	solarElevation := sunrisePos.Altitude * 180 / math.Pi
+	return solarElevation < -0.833
 }
 
 // sun times configuration (angle, morning name, evening name)

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,15 +35,19 @@ const (
 	AttrAddressPort = "address_port" // localhost:502
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return nil
+}
+
+func NewSettings() m.Attributes {
+	return m.Attributes{
 		AttrSlaveId: {
 			Name: AttrSlaveId,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrAddressPort: {
 			Name: AttrAddressPort,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 	}
 }

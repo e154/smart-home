@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,10 @@ package updater
 
 import (
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	atomic2 "go.uber.org/atomic"
 	"time"
 )
 
@@ -43,42 +43,37 @@ func init() {
 }
 
 type plugin struct {
-	entityManager entity_manager.EntityManager
-	isStarted     atomic2.Bool
-	pause         time.Duration
-	actor         *EntityActor
-	eventBus      event_bus.EventBus
-	quit          chan struct{}
+	*plugins.Plugin
+	pause time.Duration
+	actor *Actor
+	quit  chan struct{}
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		pause: 24,
+		Plugin: plugins.NewPlugin(),
+		pause:  24,
 	}
 }
 
 func (p *plugin) Load(service plugins.Service) (err error) {
-	p.entityManager = service.EntityManager()
-	p.eventBus = service.EventBus()
-
-	if p.isStarted.Load() {
+	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
 
-	p.actor = NewEntityActor(p.entityManager)
+	p.actor = NewActor(p.EntityManager, p.EventBus)
 
-	p.entityManager.Spawn(p.actor.Spawn)
+	p.EntityManager.Spawn(p.actor.Spawn)
 	p.actor.check()
 	p.quit = make(chan struct{})
 
-	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	go func() {
 		ticker := time.NewTicker(time.Hour * p.pause)
 
 		defer func() {
 			ticker.Stop()
-			p.isStarted.Store(false)
 			close(p.quit)
 		}()
 
@@ -96,11 +91,12 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 }
 
 func (p *plugin) Unload() (err error) {
-	if !p.isStarted.Load() {
+	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
+
 	p.quit <- struct{}{}
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
 }
 
@@ -134,4 +130,12 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 	}
 
 	return
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		ActorAttrs:   NewAttr(),
+		ActorActions: entity_manager.ToEntityActionShort(NewActions()),
+		ActorStates:  entity_manager.ToEntityStateShort(NewStates()),
+	}
 }

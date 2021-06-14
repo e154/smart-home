@@ -39,6 +39,109 @@ definitions:
       type: object
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AlexaIntent:
+    properties:
+      alexa_skill_id:
+        format: int64
+        type: integer
+        x-go-name: AlexaSkillId
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      script:
+        $ref: '#/definitions/Script'
+      script_id:
+        format: int64
+        type: integer
+        x-go-name: ScriptId
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AlexaSkill:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      intents:
+        items:
+          $ref: '#/definitions/AlexaIntent'
+        type: array
+        x-go-name: Intents
+      on_launch_script:
+        $ref: '#/definitions/Script'
+      on_launch_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnLaunchScriptId
+      on_session_end_script:
+        $ref: '#/definitions/Script'
+      on_session_end_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  AlexaSkillShort:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      on_launch_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnLaunchScriptId
+      on_session_end_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
+      status:
+        type: string
+        x-go-name: Status
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Area:
     properties:
       description:
@@ -51,6 +154,24 @@ definitions:
       name:
         type: string
         x-go-name: Name
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Attribute:
+    properties:
+      name:
+        type: string
+        x-go-name: Name
+      type:
+        type: string
+        x-go-name: Type
+      value:
+        type: object
+        x-go-name: Value
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Attributes:
+    additionalProperties:
+      $ref: '#/definitions/Attribute'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   AuthSignInResponse:
@@ -120,6 +241,32 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeveloperToolsEvent:
+    properties:
+      subscribers:
+        format: int64
+        type: integer
+        x-go-name: Subscribers
+      topic:
+        type: string
+        x-go-name: Topic
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  DeveloperToolsState:
+    properties:
+      attributes:
+        additionalProperties:
+          type: object
+        type: object
+        x-go-name: Attributes
+      id:
+        type: string
+        x-go-name: Id
+      state:
+        type: string
+        x-go-name: State
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   Entity:
     properties:
       actions:
@@ -132,7 +279,7 @@ definitions:
         type: integer
         x-go-name: AreaId
       attributes:
-        $ref: '#/definitions/EntityAttributes'
+        $ref: '#/definitions/Attributes'
       auto_load:
         type: boolean
         x-go-name: AutoLoad
@@ -164,6 +311,8 @@ definitions:
           $ref: '#/definitions/Script'
         type: array
         x-go-name: Scripts
+      settings:
+        $ref: '#/definitions/Attributes'
       states:
         items:
           $ref: '#/definitions/EntityState'
@@ -219,24 +368,6 @@ definitions:
         format: date-time
         type: string
         x-go-name: UpdatedAt
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  EntityAttribute:
-    properties:
-      name:
-        type: string
-        x-go-name: Name
-      type:
-        type: string
-        x-go-name: Type
-      value:
-        type: object
-        x-go-name: Value
-    type: object
-    x-go-package: github.com/e154/smart-home/api/server/v1/models
-  EntityAttributes:
-    additionalProperties:
-      $ref: '#/definitions/EntityAttribute'
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   EntityState:
@@ -535,6 +666,209 @@ definitions:
         x-go-name: Translate
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MqttClient:
+    properties:
+      client_id:
+        type: string
+        x-go-name: ClientID
+      connected_at:
+        format: date-time
+        type: string
+        x-go-name: ConnectedAt
+      disconnected_at:
+        format: date-time
+        type: string
+        x-go-name: DisconnectedAt
+      inflight_len:
+        format: uint32
+        type: integer
+        x-go-name: InflightLen
+      keep_alive:
+        format: uint16
+        type: integer
+        x-go-name: KeepAlive
+      local_addr:
+        type: string
+        x-go-name: LocalAddr
+      message_dropped:
+        format: uint64
+        type: integer
+        x-go-name: MessageDropped
+      packets_received_bytes:
+        format: uint64
+        type: integer
+        x-go-name: PacketsReceivedBytes
+      packets_received_nums:
+        format: uint64
+        type: integer
+        x-go-name: PacketsReceivedNums
+      packets_send_bytes:
+        format: uint64
+        type: integer
+        x-go-name: PacketsSendBytes
+      packets_send_nums:
+        format: uint64
+        type: integer
+        x-go-name: PacketsSendNums
+      queue_len:
+        format: uint32
+        type: integer
+        x-go-name: QueueLen
+      remote_addr:
+        type: string
+        x-go-name: RemoteAddr
+      subscriptions_current:
+        format: uint32
+        type: integer
+        x-go-name: SubscriptionsCurrent
+      subscriptions_total:
+        format: uint32
+        type: integer
+        x-go-name: SubscriptionsTotal
+      username:
+        type: string
+        x-go-name: Username
+      version:
+        format: int32
+        type: integer
+        x-go-name: Version
+      will_payload:
+        type: string
+        x-go-name: WillPayload
+      will_qos:
+        format: uint8
+        type: integer
+        x-go-name: WillQos
+      will_retain:
+        type: boolean
+        x-go-name: WillRetain
+      will_topic:
+        type: string
+        x-go-name: WillTopic
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MqttSession:
+    properties:
+      await_rel_len:
+        format: uint64
+        type: integer
+        x-go-name: AwaitRelLen
+      clean_session:
+        type: boolean
+        x-go-name: CleanSession
+      client_id:
+        type: string
+        x-go-name: ClientID
+      connected_at:
+        format: date-time
+        type: string
+        x-go-name: ConnectedAt
+      disconnected_at:
+        format: date-time
+        type: string
+        x-go-name: DisconnectedAt
+      inflight_len:
+        format: uint64
+        type: integer
+        x-go-name: InflightLen
+      max_await_rel:
+        format: int64
+        type: integer
+        x-go-name: MaxAwaitRel
+      max_inflight:
+        format: int64
+        type: integer
+        x-go-name: MaxInflight
+      max_msg_queue:
+        format: int64
+        type: integer
+        x-go-name: MaxMsgQueue
+      msg_queue_len:
+        format: uint64
+        type: integer
+        x-go-name: MsgQueueLen
+      qos0_msg_delivered_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos0MsgDeliveredTotal
+      qos0_msg_dropped_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos0MsgDroppedTotal
+      qos1_msg_delivered_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos1MsgDeliveredTotal
+      qos1_msg_dropped_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos1MsgDroppedTotal
+      qos2_msg_delivered_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos2MsgDeliveredTotal
+      qos2_msg_dropped_total:
+        format: uint64
+        type: integer
+        x-go-name: Qos2MsgDroppedTotal
+      status:
+        type: string
+        x-go-name: Status
+      subscriptions:
+        format: uint64
+        type: integer
+        x-go-name: Subscriptions
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  MqttSubscription:
+    properties:
+      client_id:
+        type: string
+        x-go-name: ClientID
+      id:
+        format: uint32
+        type: integer
+        x-go-name: Id
+      no_local:
+        type: boolean
+        x-go-name: NoLocal
+      qos:
+        format: uint32
+        type: integer
+        x-go-name: Qos
+      retain_as_published:
+        type: boolean
+        x-go-name: RetainAsPublished
+      retain_handling:
+        format: uint32
+        type: integer
+        x-go-name: RetainHandling
+      topic_name:
+        type: string
+        x-go-name: TopicName
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewAlexaSkill:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      on_launch_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnLaunchScriptId
+      on_session_end_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewArea:
     properties:
       description:
@@ -557,7 +891,7 @@ definitions:
         type: integer
         x-go-name: AreaId
       attributes:
-        $ref: '#/definitions/EntityAttributes'
+        $ref: '#/definitions/Attributes'
       auto_load:
         type: boolean
         x-go-name: AutoLoad
@@ -585,6 +919,8 @@ definitions:
           $ref: '#/definitions/Script'
         type: array
         x-go-name: Scripts
+      settings:
+        $ref: '#/definitions/Attributes'
       states:
         items:
           $ref: '#/definitions/NewEntityState'
@@ -706,6 +1042,26 @@ definitions:
         x-go-name: Type
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewMqttPublish:
+    properties:
+      payload:
+        items:
+          format: uint8
+          type: integer
+        type: array
+        x-go-name: Payload
+      qos:
+        format: int64
+        type: integer
+        x-go-name: Qos
+      retain:
+        type: boolean
+        x-go-name: Retain
+      topic:
+        type: string
+        x-go-name: Topic
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewNode:
     properties:
       description:
@@ -769,6 +1125,22 @@ definitions:
       type:
         type: string
         x-go-name: Type
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  NewPlugin:
+    properties:
+      enabled:
+        type: boolean
+        x-go-name: Enabled
+      name:
+        type: string
+        x-go-name: Name
+      system:
+        type: boolean
+        x-go-name: System
+      version:
+        type: string
+        x-go-name: Version
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   NewRole:
@@ -1018,6 +1390,22 @@ definitions:
         x-go-name: TWSid
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  Plugin:
+    properties:
+      enabled:
+        type: boolean
+        x-go-name: Enabled
+      name:
+        type: string
+        x-go-name: Name
+      system:
+        type: boolean
+        x-go-name: System
+      version:
+        type: string
+        x-go-name: Version
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   ResponseType:
     title: ResponseType ...
     type: string
@@ -1203,6 +1591,51 @@ definitions:
         x-go-name: Status
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateAlexaSkill:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        format: int64
+        type: integer
+        x-go-name: Id
+      intents:
+        items:
+          $ref: '#/definitions/AlexaIntent'
+        type: array
+        x-go-name: Intents
+      on_launch_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnLaunchScriptId
+      on_session_end_script_id:
+        format: int64
+        type: integer
+        x-go-name: OnSessionEndScriptId
+      skill_id:
+        type: string
+        x-go-name: SkillId
+      status:
+        type: string
+        x-go-name: Status
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdateDeveloperToolsState:
+    properties:
+      attributes:
+        additionalProperties:
+          type: object
+        type: object
+        x-go-name: Attributes
+      id:
+        type: string
+        x-go-name: Id
+      state:
+        type: string
+        x-go-name: State
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateEntity:
     properties:
       actions:
@@ -1215,7 +1648,7 @@ definitions:
         type: integer
         x-go-name: AreaId
       attributes:
-        $ref: '#/definitions/EntityAttributes'
+        $ref: '#/definitions/Attributes'
       auto_load:
         type: boolean
         x-go-name: AutoLoad
@@ -1228,9 +1661,6 @@ definitions:
       icon:
         type: string
         x-go-name: Icon
-      id:
-        type: string
-        x-go-name: Id
       image:
         $ref: '#/definitions/Image'
       metrics:
@@ -1243,6 +1673,8 @@ definitions:
           $ref: '#/definitions/Script'
         type: array
         x-go-name: Scripts
+      settings:
+        $ref: '#/definitions/Attributes'
       states:
         items:
           $ref: '#/definitions/EntityState'
@@ -1362,6 +1794,22 @@ definitions:
       tw_sid:
         type: string
         x-go-name: TWSid
+    type: object
+    x-go-package: github.com/e154/smart-home/api/server/v1/models
+  UpdatePlugin:
+    properties:
+      enabled:
+        type: boolean
+        x-go-name: Enabled
+      name:
+        type: string
+        x-go-name: Name
+      system:
+        type: boolean
+        x-go-name: System
+      version:
+        type: string
+        x-go-name: Version
     type: object
     x-go-package: github.com/e154/smart-home/api/server/v1/models
   UpdateRole:
@@ -1875,6 +2323,230 @@ paths:
       summary: get user access list
       tags:
       - auth
+  /alexa:
+    post:
+      operationId: alexaAdd
+      parameters:
+      - description: alexa params
+        in: body
+        name: alexa
+        required: true
+        schema:
+          $ref: '#/definitions/NewAlexaSkill'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AlexaSkill'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: add alexa skill
+      tags:
+      - alexa
+  /alexa/{id}:
+    delete:
+      operationId: alexaDeleteById
+      parameters:
+      - description: Alexa ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete alexa skill by id
+      tags:
+      - alexa
+    get:
+      operationId: alexaGetById
+      parameters:
+      - description: Alexa ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AlexaSkill'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get alexa skill by id
+      tags:
+      - alexa
+    put:
+      operationId: alexaUpdateById
+      parameters:
+      - description: Alexa ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update alexa skill
+        in: body
+        name: alexa
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateAlexaSkill'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/AlexaSkill'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update alexa by id
+      tags:
+      - alexa
+  /alexas:
+    get:
+      operationId: alexaList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/AlexaSkillList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get alexa skill list
+      tags:
+      - alexa
+  /developer_tools/events:
+    get:
+      operationId: eventList
+      responses:
+        "200":
+          $ref: '#/responses/DeveloperToolsEventList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get event list
+      tags:
+      - developer_tools
+  /developer_tools/state:
+    patch:
+      operationId: stateUpdate
+      parameters:
+      - description: Update state params
+        in: body
+        name: state
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateDeveloperToolsState'
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DeveloperToolsState'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update state
+      tags:
+      - developer_tools
+  /developer_tools/states:
+    get:
+      operationId: stateList
+      responses:
+        "200":
+          $ref: '#/responses/DeveloperToolsStateList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get state list
+      tags:
+      - developer_tools
   /entities:
     get:
       operationId: entityList
@@ -2419,44 +3091,15 @@ paths:
       summary: search log
       tags:
       - log
-  /node:
-    post:
-      operationId: nodeAdd
-      parameters:
-      - description: node params
-        in: body
-        name: node
-        required: true
-        schema:
-          $ref: '#/definitions/NewNode'
-          type: object
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Node'
-        "400":
-          $ref: '#/responses/Error'
-        "401":
-          description: Unauthorized
-        "403":
-          description: Forbidden
-        "500":
-          $ref: '#/responses/Error'
-      security:
-      - ApiKeyAuth: []
-      summary: add new node
-      tags:
-      - node
-  /node/{id}:
+  /mqtt/client/{id}:
     delete:
-      operationId: nodeDeleteById
+      operationId: mqttCloseClient
       parameters:
-      - description: Node ID
+      - description: client ID
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           $ref: '#/responses/Success'
@@ -2472,22 +3115,22 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: delete node by id
+      summary: close client
       tags:
-      - node
+      - mqtt
     get:
-      operationId: nodeGetById
+      operationId: mqttClientGetById
       parameters:
-      - description: Node ID
+      - description: client ID
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/Node'
+            $ref: '#/definitions/MqttClient'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -2500,29 +3143,23 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: get node by id
+      summary: get client by ID
       tags:
-      - node
-    put:
-      operationId: nodeUpdateById
+      - mqtt
+  /mqtt/client/{id}/session:
+    get:
+      operationId: mqttClientGetById
       parameters:
-      - description: Node ID
+      - description: client ID
         in: path
         name: id
         required: true
-        type: integer
-      - description: Update node params
-        in: body
-        name: node
-        required: true
-        schema:
-          $ref: '#/definitions/UpdateNode'
-          type: object
+        type: string
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/Node'
+            $ref: '#/definitions/MqttSession'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -2535,12 +3172,79 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: update node by id
+      summary: get session by client ID
       tags:
-      - node
-  /nodes:
+      - mqtt
+  /mqtt/client/{id}/subscriptions:
     get:
-      operationId: nodeList
+      operationId: mqttSubscriptionList
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MqttSubscriptionList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get subscription list
+      tags:
+      - mqtt
+  /mqtt/client/{id}/topic:
+    delete:
+      operationId: mqttUnsubscribeTopic
+      parameters:
+      - description: client ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: topic
+        in: query
+        name: topic
+        required: true
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete mqtt by id
+      tags:
+      - mqtt
+  /mqtt/clients:
+    get:
+      operationId: mqttClientList
       parameters:
       - default: 10
         description: limit
@@ -2554,19 +3258,9 @@ paths:
         name: offset
         required: true
         type: integer
-      - default: DESC
-        description: order
-        in: query
-        name: order
-        type: string
-      - default: id
-        description: sort_by
-        in: query
-        name: sort_by
-        type: string
       responses:
         "200":
-          $ref: '#/responses/NodeList'
+          $ref: '#/responses/MqttClientList'
         "401":
           description: Unauthorized
         "403":
@@ -2575,12 +3269,39 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: get node list
+      summary: get client list
       tags:
-      - node
-  /nodes/search:
+      - mqtt
+  /mqtt/publish:
+    post:
+      operationId: mqttPublish
+      parameters:
+      - description: publish params
+        in: body
+        name: mqtt
+        required: true
+        schema:
+          $ref: '#/definitions/NewMqttPublish'
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/Success'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: publish
+      tags:
+      - mqtt
+  /mqtt/search_topic:
     get:
-      operationId: nodeSearch
+      operationId: mqttSearchTopic
       parameters:
       - description: query
         in: query
@@ -2600,7 +3321,7 @@ paths:
         type: integer
       responses:
         "200":
-          $ref: '#/responses/NodeSearch'
+          $ref: '#/responses/MqttSearchSubscriptionResult'
         "401":
           description: Unauthorized
         "403":
@@ -2609,9 +3330,39 @@ paths:
           $ref: '#/responses/Error'
       security:
       - ApiKeyAuth: []
-      summary: search node
+      summary: search mqtt topic
       tags:
-      - node
+      - mqtt
+  /mqtt/sessions:
+    get:
+      operationId: mqttSessionList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/MqttSessionList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get session list
+      tags:
+      - mqtt
   /notifr:
     post:
       operationId: notifySendNewMessage
@@ -2785,6 +3536,133 @@ paths:
       summary: get notification list
       tags:
       - notifr
+  /plugin/{name}/disable:
+    post:
+      operationId: pluginDisable
+      parameters:
+      - description: Plugin name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Plugin'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: disable plugin by name
+      tags:
+      - plugin
+  /plugin/{name}/enable:
+    post:
+      operationId: pluginEnable
+      parameters:
+      - description: Plugin name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Plugin'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: enable plugin by name
+      tags:
+      - plugin
+  /plugin/{name}/options:
+    get:
+      operationId: pluginOptions
+      parameters:
+      - description: Plugin name
+        in: path
+        name: name
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Plugin'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          $ref: '#/responses/Error'
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get plugin by name
+      tags:
+      - plugin
+  /plugins:
+    get:
+      operationId: pluginList
+      parameters:
+      - default: 10
+        description: limit
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: DESC
+        description: order
+        in: query
+        name: order
+        type: string
+      - default: id
+        description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      responses:
+        "200":
+          $ref: '#/responses/PluginList'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "500":
+          $ref: '#/responses/Error'
+      security:
+      - ApiKeyAuth: []
+      summary: get plugin list
+      tags:
+      - plugin
   /recovery:
     post:
       operationId: authRecovery
@@ -4364,6 +5242,84 @@ paths:
 produces:
 - application/json
 responses:
+  AlexaSkillList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/AlexaSkillShort'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  DeveloperToolsEventList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/DeveloperToolsEvent'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  DeveloperToolsStateList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/DeveloperToolsState'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
   EntityList:
     description: ""
     schema:
@@ -4501,6 +5457,94 @@ responses:
           type: object
           x-go-name: Meta
       type: object
+  MqttClientList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MqttClient'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MqttSearchSubscriptionResult:
+    description: ""
+    schema:
+      properties:
+        subscriptions:
+          items:
+            $ref: '#/definitions/MqttSubscription'
+          type: array
+          x-go-name: Subscriptions
+      type: object
+  MqttSessionList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MqttSession'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
+  MqttSubscriptionList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/MqttSubscription'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            object_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
+      type: object
   NewObjectSuccess:
     description: Success with id response
     schema:
@@ -4545,6 +5589,32 @@ responses:
             $ref: '#/definitions/Node'
           type: array
           x-go-name: Nodes
+      type: object
+  PluginList:
+    description: ""
+    schema:
+      properties:
+        items:
+          items:
+            $ref: '#/definitions/Plugin'
+          type: array
+          x-go-name: Items
+        meta:
+          properties:
+            limit:
+              format: int64
+              type: integer
+              x-go-name: Limit
+            objects_count:
+              format: int64
+              type: integer
+              x-go-name: ObjectCount
+            offset:
+              format: int64
+              type: integer
+              x-go-name: Offset
+          type: object
+          x-go-name: Meta
       type: object
   RoleList:
     description: ""

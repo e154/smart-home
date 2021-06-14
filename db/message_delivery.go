@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,7 @@ type MessageDeliveries struct {
 // MessageDelivery ...
 type MessageDelivery struct {
 	Id                 int64 `gorm:"primary_key"`
-	Message            *Message
+	Message            Message
 	MessageId          int64
 	Address            string
 	Status             string
@@ -48,7 +48,7 @@ func (d *MessageDelivery) TableName() string {
 }
 
 // Add ...
-func (n MessageDeliveries) Add(msg *MessageDelivery) (id int64, err error) {
+func (n MessageDeliveries) Add(msg MessageDelivery) (id int64, err error) {
 	if err = n.Db.Create(&msg).Error; err != nil {
 		return
 	}
@@ -57,17 +57,20 @@ func (n MessageDeliveries) Add(msg *MessageDelivery) (id int64, err error) {
 }
 
 // List ...
-func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (list []*MessageDelivery, total int64, err error) {
+func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (list []MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(MessageDelivery{}).Count(&total).Error; err != nil {
 		return
 	}
 
-	list = make([]*MessageDelivery, 0)
-	err = n.Db.
+	list = make([]MessageDelivery, 0)
+	q := n.Db.
 		Limit(limit).
-		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sort, orderBy)).
+		Offset(offset)
+	if sort != "" && orderBy != "" {
+		q = q.Order(fmt.Sprintf("%s %s", sort, orderBy))
+	}
+	err = q.
 		Preload("Message").
 		Find(&list).
 		Error
@@ -76,13 +79,13 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (lis
 }
 
 // GetAllUncompleted ...
-func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []*MessageDelivery, total int64, err error) {
+func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(MessageDelivery{}).Count(&total).Error; err != nil {
 		return
 	}
 
-	list = make([]*MessageDelivery, 0)
+	list = make([]MessageDelivery, 0)
 	err = n.Db.
 		Where("status in ('in_progress', 'new')").
 		Limit(limit).
@@ -95,7 +98,7 @@ func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []*Mess
 }
 
 // SetStatus ...
-func (n MessageDeliveries) SetStatus(msg *MessageDelivery) (err error) {
+func (n MessageDeliveries) SetStatus(msg MessageDelivery) (err error) {
 
 	err = n.Db.Model(&MessageDelivery{Id: msg.Id}).
 		Updates(map[string]interface{}{
@@ -113,9 +116,9 @@ func (n MessageDeliveries) Delete(id int64) (err error) {
 }
 
 // GetById ...
-func (n MessageDeliveries) GetById(id int64) (msg *MessageDelivery, err error) {
+func (n MessageDeliveries) GetById(id int64) (msg MessageDelivery, err error) {
 
-	msg = &MessageDelivery{}
+	msg = MessageDelivery{}
 	err = n.Db.Model(msg).
 		Where("id = ?", id).
 		Preload("Message").

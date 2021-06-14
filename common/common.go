@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ import (
 	crypto_rand "crypto/rand"
 	"encoding/hex"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -67,4 +68,8 @@ func RandomString(l int) string {
 		bytes[i] = byte(RandInt(65, 129))
 	}
 	return string(bytes)
+}
+
+func TestMode() bool {
+	return os.Getenv("TEST_MODE") == "true"
 }

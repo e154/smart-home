@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,12 @@ package zigbee2mqtt
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 	"strings"
 	"sync"
 )
@@ -44,44 +41,44 @@ func init() {
 }
 
 type plugin struct {
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	isStarted     *atomic.Bool
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[string]*EntityActor
-	mqttServ      mqtt.MqttServ
-	mqttClient    mqtt.MqttCli
-	mqttSubs      sync.Map
+	*plugins.Plugin
+	actorsLock *sync.Mutex
+	actors     map[string]*Actor
+	mqttServ   mqtt.MqttServ
+	mqttClient mqtt.MqttCli
+	mqttSubs   sync.Map
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*EntityActor),
+		actors:     make(map[string]*Actor),
 		mqttSubs:   sync.Map{},
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-	p.scriptService = service.ScriptService()
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
+	}
+
 	p.mqttServ = service.MqttServ()
 
 	p.mqttClient = p.mqttServ.NewClient("plugins.zigbee2mqtt")
-	if err := p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
+	if err := p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 	return nil
 }
 
 func (p plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
+	}
+
 	p.mqttServ.RemoveClient("plugins.zigbee2mqtt")
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return
 }
 
@@ -97,7 +94,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	return p.removeEntity(entityId.Name())
 }
 
-func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.EntityAttributeValue) (err error) {
+func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.AttributeValue) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
@@ -114,16 +111,16 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity, attributes m.EntityAttribut
 		return
 	}
 
-	var actor *EntityActor
-	if actor, err = NewEntityActor(entity, attributes,
-		p.adaptors, p.scriptService, p.entityManager); err != nil {
+	var actor *Actor
+	if actor, err = NewActor(entity, attributes,
+		p.Adaptors, p.ScriptService, p.EntityManager, p.EventBus); err != nil {
 		return
 	}
 	p.actors[name] = actor
-	p.entityManager.Spawn(p.actors[name].Spawn)
+	p.EntityManager.Spawn(p.actors[name].Spawn)
 
 	var br *m.Zigbee2mqtt
-	if br, err = p.adaptors.Zigbee2mqtt.GetById(actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
+	if br, err = p.Adaptors.Zigbee2mqtt.GetById(actor.zigbee2mqttDevice.Zigbee2mqttId); err != nil {
 		return
 	}
 
@@ -161,7 +158,7 @@ func (p *plugin) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 		return
 	}
 
-	var actor *EntityActor
+	var actor *Actor
 	var err error
 	if actor, err = p.getActorByZigbeeDeviceId(topic[1]); err != nil {
 		log.Warn(err.Error())
@@ -171,7 +168,7 @@ func (p *plugin) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 	actor.mqttOnPublish(client, msg)
 }
 
-func (p *plugin) getActorByZigbeeDeviceId(deviceId string) (actor *EntityActor, err error) {
+func (p *plugin) getActorByZigbeeDeviceId(deviceId string) (actor *Actor, err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 

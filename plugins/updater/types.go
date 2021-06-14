@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package updater
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
 	"time"
 )
 
@@ -44,23 +45,53 @@ const (
 	EntityUpdater                      = common.EntityType(Name)
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrUpdaterLatestVersion: {
 			Name: AttrUpdaterLatestVersion,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		AttrUpdaterLatestVersionTime: {
 			Name: AttrUpdaterLatestVersionTime,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrUpdaterLatestLatestDownloadUrl: {
 			Name: AttrUpdaterLatestLatestDownloadUrl,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		AttrUpdaterLatestCheck: {
 			Name: AttrUpdaterLatestCheck,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
+		},
+	}
+}
+
+func NewStates() map[string]entity_manager.ActorState {
+	return map[string]entity_manager.ActorState{
+		"enabled": {
+			Name:        "enabled",
+			Description: "Enabled",
+		},
+		"disabled": {
+			Name:        "disabled",
+			Description: "Disabled",
+		},
+		"error": {
+			Name:        "error",
+			Description: "Error",
+		},
+		"exist_update": {
+			Name:        "exist_update",
+			Description: "Exist update",
+		},
+	}
+}
+
+func NewActions() map[string]entity_manager.ActorAction {
+	return map[string]entity_manager.ActorAction{
+		"check": {
+			Name:        "check",
+			Description: "Check version",
 		},
 	}
 }

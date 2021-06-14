@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 package db
 
 import (
+	"encoding/json"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -30,18 +31,12 @@ type Messages struct {
 
 // Message ...
 type Message struct {
-	Id           int64 `gorm:"primary_key"`
-	Type         string
-	EmailFrom    *string
-	EmailSubject *string
-	EmailBody    *string
-	SmsText      *string
-	SlackText    *string
-	UiText       *string
-	TelegramText *string
-	Statuses     []*MessageDelivery
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	Id        int64 `gorm:"primary_key"`
+	Type      string
+	Payload   json.RawMessage `gorm:"type:jsonb;not null"`
+	Statuses  []*MessageDelivery
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // TableName ...
@@ -50,7 +45,7 @@ func (d *Message) TableName() string {
 }
 
 // Add ...
-func (n Messages) Add(msg *Message) (id int64, err error) {
+func (n Messages) Add(msg Message) (id int64, err error) {
 	if err = n.Db.Create(&msg).Error; err != nil {
 		return
 	}

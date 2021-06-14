@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
 	"sync"
@@ -96,15 +97,19 @@ func (z *zigbee2mqtt) Start() {
 		models = append(models, model)
 	}
 
+	if err := z.mqtt.Authenticator().Register(z.Authenticator); err != nil {
+		log.Error(err.Error())
+	}
+
 	//todo fix race condition
-	//for _, model := range models {
-	//	bridge := NewBridge(z.mqtt, z.adaptors, model, z.metric)
-	//	bridge.Start()
-	//
-	//	z.bridgesLock.Lock()
-	//	z.bridges[model.Id] = bridge
-	//	z.bridgesLock.Unlock()
-	//}
+	for _, model := range models {
+		bridge := NewBridge(z.mqtt, z.adaptors, model, z.metric)
+		bridge.Start()
+
+		z.bridgesLock.Lock()
+		z.bridges[model.Id] = bridge
+		z.bridgesLock.Unlock()
+	}
 }
 
 // Shutdown ...
@@ -116,6 +121,7 @@ func (z *zigbee2mqtt) Shutdown() {
 	for _, bridge := range z.bridges {
 		bridge.Stop(context.Background())
 	}
+	z.mqtt.Authenticator().Unregister(z.Authenticator)
 }
 
 // AddBridge ...
@@ -310,6 +316,27 @@ func (z *zigbee2mqtt) DeviceRename(friendlyName, name string) (err error) {
 	for _, bridge := range z.bridges {
 		_ = bridge.RenameDevice(friendlyName, name)
 	}
+
+	return
+}
+
+func (z *zigbee2mqtt) Authenticator(login, password string) (err error) {
+
+	z.bridgesLock.Lock()
+	defer z.bridgesLock.Unlock()
+
+	for _, bridge := range z.bridges {
+		if bridge.model.Login != login {
+			err = mqtt_authenticator.ErrBadLoginOrPassword
+			return
+		}
+
+		if ok := common.CheckPasswordHash(password, bridge.model.EncryptedPassword); ok {
+			return
+		}
+	}
+
+	err = mqtt_authenticator.ErrBadLoginOrPassword
 
 	return
 }

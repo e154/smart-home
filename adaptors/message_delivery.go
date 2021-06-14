@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,14 +25,14 @@ import (
 )
 
 type IMessageDelivery interface {
-	Add(msg *m.MessageDelivery) (id int64, err error)
-	SetStatus(msg *m.MessageDelivery) (err error)
-	List(limit, offset int64, orderBy, sort string) (list []*m.MessageDelivery, total int64, err error)
-	GetAllUncompleted(limit, offset int64) (list []*m.MessageDelivery, total int64, err error)
+	Add(msg m.MessageDelivery) (id int64, err error)
+	SetStatus(msg m.MessageDelivery) (err error)
+	List(limit, offset int64, orderBy, sort string) (list []m.MessageDelivery, total int64, err error)
+	GetAllUncompleted(limit, offset int64) (list []m.MessageDelivery, total int64, err error)
 	Delete(id int64) (err error)
-	GetById(id int64) (ver *m.MessageDelivery, err error)
-	fromDb(dbVer *db.MessageDelivery) (ver *m.MessageDelivery)
-	toDb(ver *m.MessageDelivery) (dbVer *db.MessageDelivery)
+	GetById(id int64) (ver m.MessageDelivery, err error)
+	fromDb(dbVer db.MessageDelivery) (ver m.MessageDelivery)
+	toDb(ver m.MessageDelivery) (dbVer db.MessageDelivery)
 }
 
 // MessageDelivery ...
@@ -50,25 +50,25 @@ func GetMessageDeliveryAdaptor(d *gorm.DB) IMessageDelivery {
 }
 
 // Add ...
-func (n *MessageDelivery) Add(msg *m.MessageDelivery) (id int64, err error) {
+func (n *MessageDelivery) Add(msg m.MessageDelivery) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(msg))
 	return
 }
 
 // SetStatus ...
-func (n *MessageDelivery) SetStatus(msg *m.MessageDelivery) (err error) {
+func (n *MessageDelivery) SetStatus(msg m.MessageDelivery) (err error) {
 	err = n.table.SetStatus(n.toDb(msg))
 	return
 }
 
 // List ...
-func (n *MessageDelivery) List(limit, offset int64, orderBy, sort string) (list []*m.MessageDelivery, total int64, err error) {
-	var dbList []*db.MessageDelivery
+func (n *MessageDelivery) List(limit, offset int64, orderBy, sort string) (list []m.MessageDelivery, total int64, err error) {
+	var dbList []db.MessageDelivery
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return
 	}
 
-	list = make([]*m.MessageDelivery, 0)
+	list = make([]m.MessageDelivery, 0)
 	for _, dbVer := range dbList {
 		list = append(list, n.fromDb(dbVer))
 	}
@@ -77,13 +77,13 @@ func (n *MessageDelivery) List(limit, offset int64, orderBy, sort string) (list 
 }
 
 // GetAllUncompleted ...
-func (n *MessageDelivery) GetAllUncompleted(limit, offset int64) (list []*m.MessageDelivery, total int64, err error) {
-	var dbList []*db.MessageDelivery
+func (n *MessageDelivery) GetAllUncompleted(limit, offset int64) (list []m.MessageDelivery, total int64, err error) {
+	var dbList []db.MessageDelivery
 	if dbList, total, err = n.table.GetAllUncompleted(limit, offset); err != nil {
 		return
 	}
 
-	list = make([]*m.MessageDelivery, 0)
+	list = make([]m.MessageDelivery, 0)
 	for _, dbVer := range dbList {
 		list = append(list, n.fromDb(dbVer))
 	}
@@ -98,9 +98,9 @@ func (n *MessageDelivery) Delete(id int64) (err error) {
 }
 
 // GetById ...
-func (n *MessageDelivery) GetById(id int64) (ver *m.MessageDelivery, err error) {
+func (n *MessageDelivery) GetById(id int64) (ver m.MessageDelivery, err error) {
 
-	var dbVer *db.MessageDelivery
+	var dbVer db.MessageDelivery
 	if dbVer, err = n.table.GetById(id); err != nil {
 		return
 	}
@@ -110,9 +110,9 @@ func (n *MessageDelivery) GetById(id int64) (ver *m.MessageDelivery, err error) 
 	return
 }
 
-func (n *MessageDelivery) fromDb(dbVer *db.MessageDelivery) (ver *m.MessageDelivery) {
+func (n *MessageDelivery) fromDb(dbVer db.MessageDelivery) (ver m.MessageDelivery) {
 
-	ver = &m.MessageDelivery{
+	ver = m.MessageDelivery{
 		Id:                 dbVer.Id,
 		MessageId:          dbVer.MessageId,
 		Address:            dbVer.Address,
@@ -123,7 +123,7 @@ func (n *MessageDelivery) fromDb(dbVer *db.MessageDelivery) (ver *m.MessageDeliv
 		UpdatedAt:          dbVer.UpdatedAt,
 	}
 
-	if dbVer.Message != nil {
+	if dbVer.MessageId != 0 {
 		messageAdaptor := GetMessageAdaptor(n.db)
 		ver.Message = messageAdaptor.fromDb(dbVer.Message)
 	}
@@ -131,9 +131,9 @@ func (n *MessageDelivery) fromDb(dbVer *db.MessageDelivery) (ver *m.MessageDeliv
 	return
 }
 
-func (n *MessageDelivery) toDb(ver *m.MessageDelivery) (dbVer *db.MessageDelivery) {
+func (n *MessageDelivery) toDb(ver m.MessageDelivery) (dbVer db.MessageDelivery) {
 
-	dbVer = &db.MessageDelivery{
+	dbVer = db.MessageDelivery{
 		Id:                 ver.Id,
 		MessageId:          ver.MessageId,
 		Address:            ver.Address,

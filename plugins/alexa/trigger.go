@@ -1,3 +1,21 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2021, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package alexa
 
 import (
@@ -56,22 +74,24 @@ func (t Trigger) Subscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("trigger '%s' subscribe to empty topic", t.name)
 	}
-	log.Infof("trigger '%s' subscribe topic '%s'", t.name, t.topic(options.Payload))
-	return t.msgQueue.Subscribe(t.topic(options.Payload), options.Handler)
+	topic := t.topic(options.Payload[TriggerOptionSkillId].Int64())
+	log.Infof("trigger '%s' subscribe topic '%s'", t.name, topic)
+	return t.msgQueue.Subscribe(topic, options.Handler)
 }
 
 func (t Trigger) Unsubscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("trigger '%s' unsubscribe from empty topic", t.name)
 	}
-	log.Infof("trigger '%s' unsubscribe topic '%s'", t.name, t.topic(options.Payload))
-	return t.msgQueue.Unsubscribe(t.topic(options.Payload), options.Handler)
+	topic := t.topic(options.Payload[TriggerOptionSkillId].Int64())
+	log.Infof("trigger '%s' unsubscribe topic '%s'", t.name, topic)
+	return t.msgQueue.Unsubscribe(topic, options.Handler)
 }
 
 func (t Trigger) FunctionName() string {
 	return t.functionName
 }
 
-func (t Trigger) topic(n interface{}) string {
-	return fmt.Sprintf("skill_%v", n)
+func (t Trigger) topic(n int64) string {
+	return fmt.Sprintf("skill_%d", n)
 }

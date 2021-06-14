@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,16 +24,17 @@ import (
 )
 
 type EventRequestState struct {
-	From       common.EntityId    `json:"from"`
-	To         common.EntityId    `json:"to"`
-	Attributes m.EntityAttributes `json:"attributes"`
+	From       common.EntityId `json:"from"`
+	To         common.EntityId `json:"to"`
+	Attributes m.Attributes    `json:"attributes"`
 }
 
 type EventStateChanged struct {
-	Type     common.EntityType `json:"type"`
-	EntityId common.EntityId   `json:"entity_id"`
-	OldState EventEntityState  `json:"old_state"`
-	NewState EventEntityState  `json:"new_state"`
+	StorageSave bool              `json:"storage_save"`
+	Type        common.EntityType `json:"type"`
+	EntityId    common.EntityId   `json:"entity_id"`
+	OldState    EventEntityState  `json:"old_state"`
+	NewState    EventEntityState  `json:"new_state"`
 }
 
 type EventCallAction struct {
@@ -49,13 +50,14 @@ type EventCallScene struct {
 	Args     map[string]interface{} `json:"args"`
 }
 
-type EventAddedNewEntity struct {
-	Type       common.EntityType  `json:"type"`
-	EntityId   common.EntityId    `json:"entity_id"`
-	Attributes m.EntityAttributes `json:"attributes"`
+type EventAddedActor struct {
+	Type       common.EntityType `json:"type"`
+	EntityId   common.EntityId   `json:"entity_id"`
+	Attributes m.Attributes      `json:"attributes"`
+	Settings   m.Attributes      `json:"settings"` //???
 }
 
-type EventRemoveEntity struct {
+type EventRemoveActor struct {
 	Type     common.EntityType `json:"type"`
 	EntityId common.EntityId   `json:"entity_id"`
 }

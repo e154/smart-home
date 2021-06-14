@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,41 +35,44 @@ type NewEntity struct {
 	Metrics     []Metric           `json:"metrics"`
 	Scripts     []Script           `json:"scripts"`
 	Hidden      bool               `json:"hidden"`
-	Attributes  EntityAttributes   `json:"attributes"`
+	Attributes  Attributes         `json:"attributes"`
+	Settings    Attributes         `json:"settings"`
 	AutoLoad    bool               `json:"auto_load"`
 }
 
 // swagger:model
 type UpdateEntity struct {
-	Description string           `json:"description"`
-	Type        string           `json:"type" valid:"Required"`
-	Icon        *string          `json:"icon"`
-	Image       *Image           `json:"image"`
-	Actions     []*EntityAction  `json:"actions"`
-	States      []*EntityState   `json:"states"`
-	AreaId      *int64           `json:"area_id"`
-	Metrics     []Metric         `json:"metrics"`
-	Scripts     []Script         `json:"scripts"`
-	Hidden      bool             `json:"hidden"`
-	Attributes  EntityAttributes `json:"attributes"`
-	AutoLoad    bool             `json:"auto_load"`
+	Description string          `json:"description"`
+	Type        string          `json:"type" valid:"Required"`
+	Icon        *string         `json:"icon"`
+	Image       *Image          `json:"image"`
+	Actions     []*EntityAction `json:"actions"`
+	States      []*EntityState  `json:"states"`
+	AreaId      *int64          `json:"area_id"`
+	Metrics     []Metric        `json:"metrics"`
+	Scripts     []Script        `json:"scripts"`
+	Hidden      bool            `json:"hidden"`
+	Attributes  Attributes      `json:"attributes"`
+	Settings    Attributes      `json:"settings"`
+	AutoLoad    bool            `json:"auto_load"`
 }
 
 // swagger:model
 type Entity struct {
-	Id          string           `json:"id"`
-	Description string           `json:"description"`
-	Type        string           `json:"type" valid:"Required"`
-	Icon        *string          `json:"icon"`
-	Image       *Image           `json:"image"`
-	Actions     []*EntityAction  `json:"actions"`
-	States      []*EntityState   `json:"states"`
-	AreaId      *int64           `json:"area_id"`
-	Metrics     []Metric         `json:"metrics"`
-	Scripts     []Script         `json:"scripts"`
-	Hidden      bool             `json:"hidden"`
-	Attributes  EntityAttributes `json:"attributes"`
-	AutoLoad    bool             `json:"auto_load"`
-	CreatedAt   time.Time        `json:"created_at"`
-	UpdatedAt   time.Time        `json:"updated_at"`
+	Id          string          `json:"id"`
+	Description string          `json:"description"`
+	Type        string          `json:"type" valid:"Required"`
+	Icon        *string         `json:"icon"`
+	Image       *Image          `json:"image"`
+	Actions     []*EntityAction `json:"actions"`
+	States      []*EntityState  `json:"states"`
+	AreaId      *int64          `json:"area_id"`
+	Metrics     []Metric        `json:"metrics"`
+	Scripts     []Script        `json:"scripts"`
+	Hidden      bool            `json:"hidden"`
+	Attributes  Attributes      `json:"attributes"`
+	Settings    Attributes      `json:"settings"`
+	AutoLoad    bool            `json:"auto_load"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
 }

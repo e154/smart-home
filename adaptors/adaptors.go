@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -53,7 +53,6 @@ type Adaptors struct {
 	EntityAction      IEntityAction
 	EntityStorage     IEntityStorage
 	Log               ILog
-	Zone              IZone
 	Template          ITemplate
 	Message           IMessage
 	MessageDelivery   IMessageDelivery
@@ -71,6 +70,7 @@ type Adaptors struct {
 	Task              ITask
 	RunHistory        IRunHistory
 	Plugin            IPlugin
+	TelegramChat      ITelegramChat
 }
 
 // NewAdaptors ...
@@ -99,7 +99,6 @@ func NewAdaptors(lc fx.Lifecycle,
 		EntityStorage:     GetEntityStorageAdaptor(db),
 		MapElement:        GetMapElementAdaptor(db),
 		Log:               GetLogAdaptor(db),
-		Zone:              GetZoneAdaptor(db),
 		Template:          GetTemplateAdaptor(db),
 		Message:           GetMessageAdaptor(db),
 		MessageDelivery:   GetMessageDeliveryAdaptor(db),
@@ -117,6 +116,7 @@ func NewAdaptors(lc fx.Lifecycle,
 		Task:              GetTaskAdaptor(db),
 		RunHistory:        GetRunHistoryAdaptor(db),
 		Plugin:            GetPluginAdaptor(db),
+		TelegramChat:      GetTelegramChannelAdaptor(db),
 	}
 
 	if lc != nil {

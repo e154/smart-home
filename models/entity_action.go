@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -41,12 +41,25 @@ type EntityAction struct {
 }
 
 // Valid ...
-func (m *EntityAction) Valid() (ok bool, errs []*validation.Error) {
+func (a *EntityAction) Valid() (ok bool, errs []*validation.Error) {
 
 	valid := validation.Validation{}
-	if ok, _ = valid.Valid(m); !ok {
+	if ok, _ = valid.Valid(a); !ok {
 		errs = valid.Errors
 	}
 
+	return
+}
+
+// Short ...
+func (a *EntityAction) Short() (short EntityActionShort) {
+	short = EntityActionShort{
+		Name:        a.Name,
+		Description: a.Description,
+		Icon:        a.Icon,
+	}
+	if a.Image != nil {
+		short.ImageUrl = common.String(a.Image.Url)
+	}
 	return
 }

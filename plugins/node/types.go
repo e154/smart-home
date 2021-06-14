@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
 	"time"
 )
 
@@ -37,36 +38,66 @@ const (
 	AttrMin       = "min"
 	AttrMax       = "max"
 	AttrStartedAt = "started_at"
-	AttrLastPing  = "last_ping"
+	AttrNodeLogin = "node_login"
+	AttrNodePass  = "node_pass"
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrThread: {
 			Name: AttrThread,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrRps: {
 			Name: AttrRps,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrMin: {
 			Name: AttrMin,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrMax: {
 			Name: AttrMax,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrStartedAt: {
 			Name: AttrStartedAt,
-			Type: common.EntityAttributeTime,
-		},
-		AttrLastPing: {
-			Name: AttrLastPing,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 	}
+}
+
+func NewSettings() m.Attributes {
+	return m.Attributes{
+		AttrNodeLogin: {
+			Name: AttrNodeLogin,
+			Type: common.AttributeString,
+		},
+		AttrNodePass: {
+			Name: AttrNodePass,
+			Type: common.AttributeString,
+		},
+	}
+}
+
+func NewStates() (states map[string]entity_manager.ActorState) {
+
+	states = map[string]entity_manager.ActorState{
+		"wait": {
+			Name:        "wait",
+			Description: "Wait",
+		},
+		"connected": {
+			Name:        "connected",
+			Description: "Connected",
+		},
+		"error": {
+			Name:        "error",
+			Description: "Error",
+		},
+	}
+
+	return
 }
 
 // MqttMessage ...

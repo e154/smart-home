@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,11 @@ package endpoint
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/notify"
+	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
@@ -31,22 +34,31 @@ type CommonEndpoint struct {
 	adaptors      *adaptors.Adaptors
 	accessList    access_list.AccessListService
 	scriptService scripts.ScriptService
-	notify        notify.Notify
 	zigbee2mqtt   zigbee2mqtt.Zigbee2mqtt
+	eventBus      event_bus.EventBus
+	pluginManager common.PluginManager
+	entityManager entity_manager.EntityManager
+	mqtt          mqtt.MqttServ
 }
 
 // NewCommonEndpoint ...
 func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService,
-	notify notify.Notify,
 	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
+	eventBus event_bus.EventBus,
+	pluginManager common.PluginManager,
+	entityManager entity_manager.EntityManager,
+	mqtt mqtt.MqttServ,
 ) *CommonEndpoint {
 	return &CommonEndpoint{
 		adaptors:      adaptors,
 		accessList:    accessList,
 		scriptService: scriptService,
-		notify:        notify,
 		zigbee2mqtt:   zigbee2mqtt,
+		eventBus:      eventBus,
+		pluginManager: pluginManager,
+		entityManager: entityManager,
+		mqtt:          mqtt,
 	}
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,63 +23,63 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
-func NetEntityAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NetAttr() m.Attributes {
+	return m.Attributes{
 		"s": {
 			Name: "s",
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		"i": {
 			Name: "i",
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		"f": {
 			Name: "f",
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		"b": {
 			Name: "b",
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		"m": {
 			Name: "m",
-			Type: common.EntityAttributeMap,
-			Value: m.EntityAttributes{
+			Type: common.AttributeMap,
+			Value: m.Attributes{
 				"s2": {
 					Name: "s2",
-					Type: common.EntityAttributeString,
+					Type: common.AttributeString,
 				},
 				"i2": {
 					Name: "i2",
-					Type: common.EntityAttributeInt,
+					Type: common.AttributeInt,
 				},
 				"f2": {
 					Name: "f2",
-					Type: common.EntityAttributeFloat,
+					Type: common.AttributeFloat,
 				},
 				"b2": {
 					Name: "b2",
-					Type: common.EntityAttributeBool,
+					Type: common.AttributeBool,
 				},
 				"m2": {
 					Name: "m2",
-					Type: common.EntityAttributeMap,
-					Value: m.EntityAttributes{
+					Type: common.AttributeMap,
+					Value: m.Attributes{
 						"s3": {
 							Name: "s3",
-							Type: common.EntityAttributeString,
+							Type: common.AttributeString,
 						},
 						"i3": {
 							Name: "i3",
-							Type: common.EntityAttributeInt,
+							Type: common.AttributeInt,
 						},
 						"f3": {
 							Name: "f3",
-							Type: common.EntityAttributeFloat,
+							Type: common.AttributeFloat,
 						},
 						"b3": {
 							Name: "b3",
-							Type: common.EntityAttributeBool,
+							Type: common.AttributeBool,
 						},
 					},
 				},

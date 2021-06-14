@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,6 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
@@ -52,8 +51,7 @@ func Test9(t *testing.T) {
 	Convey("send sms", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
-			scriptService scripts.ScriptService,
-			notifyService notify.Notify) {
+			scriptService scripts.ScriptService) {
 
 			// add templates
 			// ------------------------------------------------

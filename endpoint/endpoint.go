@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,8 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/notify"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
@@ -34,10 +35,10 @@ var (
 
 // Endpoint ...
 type Endpoint struct {
+	AlexaSkill      *AlexaSkillEndpoint
 	Auth            *AuthEndpoint
 	Image           *ImageEndpoint
 	Log             *LogEndpoint
-	Zone            *ZoneEndpoint
 	Role            *RoleEndpoint
 	Script          *ScriptEndpoint
 	User            *UserEndpoint
@@ -47,29 +48,39 @@ type Endpoint struct {
 	Version         *VersionEndpoint
 	Zigbee2mqtt     *Zigbee2mqttEndpoint
 	Entity          *EntityEndpoint
+	DeveloperTools  *DeveloperToolsEndpoint
+	Mqtt            *MqttEndpoint
+	Plugin          *PluginEndpoint
+	PluginActor     *PluginActorEndpoint
 }
 
 // NewEndpoint ...
 func NewEndpoint(adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
 	accessList access_list.AccessListService,
-	notify notify.Notify,
 	zigbee2mqtt zigbee2mqtt.Zigbee2mqtt,
-	entityManager entity_manager.EntityManager) *Endpoint {
-	common := NewCommonEndpoint(adaptors, accessList, scriptService, notify, zigbee2mqtt)
+	entityManager entity_manager.EntityManager,
+	eventBus event_bus.EventBus,
+	pluginManager common.PluginManager,
+	mqtt mqtt.MqttServ) *Endpoint {
+	common := NewCommonEndpoint(adaptors, accessList, scriptService, zigbee2mqtt, eventBus, pluginManager, entityManager, mqtt)
 	return &Endpoint{
+		AlexaSkill:      NewAlexaSkillEndpoint(common),
 		Auth:            NewAuthEndpoint(common),
 		Image:           NewImageEndpoint(common),
 		Log:             NewLogEndpoint(common),
 		Role:            NewRoleEndpoint(common),
 		Script:          NewScriptEndpoint(common),
 		User:            NewUserEndpoint(common),
-		Zone:            NewZoneEndpoint(common),
 		Template:        NewTemplateEndpoint(common),
 		Notify:          NewNotifyEndpoint(common),
 		MessageDelivery: NewMessageDeliveryEndpoint(common),
 		Version:         NewVersionEndpoint(common),
 		Zigbee2mqtt:     NewZigbee2mqttEndpoint(common),
-		Entity:          NewEntityEndpoint(common, entityManager),
+		Entity:          NewEntityEndpoint(common),
+		DeveloperTools:  NewDeveloperToolsEndpoint(common),
+		Mqtt:            NewMqttEndpoint(common),
+		Plugin:          NewPluginEndpoint(common),
+		PluginActor:     NewPluginActorEndpoint(common),
 	}
 }

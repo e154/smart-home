@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package moon
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
 )
 
 const (
@@ -49,26 +50,57 @@ const (
 	AttrPhase        = "phase"
 	AttrAzimuth      = "azimuth"
 	AttrElevation    = "elevation"
+	AttrLat          = "lat"
+	AttrLon          = "lon"
 )
 
-func NewAttr()  m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 
 		AttrElevation: {
 			Name: AttrElevation,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrAzimuth: {
 			Name: AttrAzimuth,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrPhase: {
 			Name: AttrPhase,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		AttrHorizonState: {
 			Name: AttrHorizonState,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 	}
+}
+
+func NewSettings() m.Attributes {
+	return m.Attributes{
+		AttrLat: {
+			Name: AttrLat,
+			Type: common.AttributeFloat,
+		},
+		AttrLon: {
+			Name: AttrLon,
+			Type: common.AttributeFloat,
+		},
+	}
+}
+
+func NewStates() (states map[string]entity_manager.ActorState) {
+
+	states = map[string]entity_manager.ActorState{
+		StateAboveHorizon: {
+			Name:        StateAboveHorizon,
+			Description: "above horizon",
+		},
+		StateBelowHorizon: {
+			Name:        StateBelowHorizon,
+			Description: "below horizon",
+		},
+	}
+
+	return
 }

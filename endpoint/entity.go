@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,21 +22,18 @@ import (
 	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/validation"
 )
 
 // EntityEndpoint ...
 type EntityEndpoint struct {
 	*CommonEndpoint
-	entityManager entity_manager.EntityManager
 }
 
 // NewEntityEndpoint ...
-func NewEntityEndpoint(common *CommonEndpoint, entityManager entity_manager.EntityManager) *EntityEndpoint {
+func NewEntityEndpoint(common *CommonEndpoint) *EntityEndpoint {
 	return &EntityEndpoint{
 		CommonEndpoint: common,
-		entityManager:  entityManager,
 	}
 }
 

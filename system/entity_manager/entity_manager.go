@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package entity_manager
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -28,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
+	"sort"
 	"sync"
 	"time"
 )
@@ -64,6 +66,7 @@ func NewEntityManager(lc fx.Lifecycle,
 			return nil
 		},
 	})
+
 	return manager
 }
 
@@ -87,7 +90,7 @@ LOOP:
 	// add entities from database
 	for _, entity := range entities {
 		if err := e.Add(entity); err != nil {
-			log.Warn(err.Error())
+			log.Warnf("%s, %s", entity.Id, err.Error())
 		}
 	}
 
@@ -99,6 +102,9 @@ LOOP:
 	// scripts
 	e.scripts.PushStruct("entityManager", NewEntityManagerBind(e))
 
+	// event subscribe
+	e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
+
 	return
 }
 
@@ -107,6 +113,8 @@ func (e *entityManager) Shutdown() {
 
 	e.lock.Lock()
 	defer e.lock.Unlock()
+
+	e.eventBus.Unsubscribe(event_bus.TopicEntities, e.eventHandler)
 
 	for id, actor := range e.actors {
 		actor.quit <- struct{}{}
@@ -152,19 +160,20 @@ func (e *entityManager) SetMetric(id common.EntityId, name string, value map[str
 }
 
 // SetState ...
-func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) {
+func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) (err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
 	actorInfo, ok := e.actors[id]
 	if !ok {
+		err = errors.New("not found")
 		return
 	}
 
 	// store old state
 	actorInfo.OldState = GetEventState(actorInfo.Actor)
 
-	actorInfo.Actor.SetState(params)
+	err = actorInfo.Actor.SetState(params)
 
 	return
 }
@@ -200,9 +209,20 @@ func (e *entityManager) List() (entities []m.EntityShort, err error) {
 	e.lock.Lock()
 	defer e.lock.Unlock()
 
+	// sort index
+	var index = make([]string, 0, len(e.actors))
+	for _, actor := range e.actors {
+		info := actor.Actor.Info()
+		index = append(index, info.Id.String())
+	}
+	sort.Strings(index)
+
 	entities = make([]m.EntityShort, len(e.actors))
 	var i int
-	for _, actorInfo := range e.actors {
+	for _, n := range index {
+
+		actorInfo := e.actors[common.EntityId(n)]
+
 		entities[i] = NewEntity(actorInfo.Actor)
 
 		// metric preview
@@ -258,7 +278,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 
 			log.Infof("unload %v", entityId)
 
-			e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveEntity{
+			e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
 				Type:     info.Type,
 				EntityId: entityId,
 			})
@@ -277,11 +297,13 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	}()
 
 	attr := actor.Attributes()
+	settings := actor.Settings()
 
-	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedNewEntity{
+	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedActor{
 		Type:       info.Type,
 		EntityId:   entityId,
 		Attributes: attr,
+		Settings:   settings,
 	})
 
 	e.adaptors.Entity.Add(&m.Entity{
@@ -294,45 +316,30 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 		AutoLoad:    info.AutoLoad,
 		ParentId:    info.ParentId,
 		Attributes:  attr.Signature(),
+		Settings:    settings,
 	})
 
 	return
 }
 
-// Send ...
-func (e *entityManager) Send(message Message) error {
+// eventHandler ...
+func (e *entityManager) eventHandler(_ string, message interface{}) {
 
-	switch v := message.Payload.(type) {
-	case MessageRequestState:
-
-		e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRequestState{
-			From:       message.From,
-			To:         message.To,
-			Attributes: v.Attributes,
-		})
-
-	case MessageStateChanged:
+	switch v := message.(type) {
+	case event_bus.EventStateChanged:
 
 		e.lock.Lock()
 		defer e.lock.Unlock()
 
-		actorInfo, ok := e.actors[message.From]
-		if !ok {
-			return nil
+		if _, ok := e.actors[v.EntityId]; !ok {
+			return
 		}
 
 		if v.NewState.Compare(v.OldState) {
-			return nil
+			return
 		}
 
-		e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-			Type:     message.From.Type(),
-			EntityId: message.From,
-			OldState: actorInfo.OldState,
-			NewState: v.NewState,
-		})
-
-		e.actors[message.From].OldState = v.NewState
+		e.actors[v.EntityId].OldState = v.NewState
 
 		// store state to db
 		var state string
@@ -341,18 +348,16 @@ func (e *entityManager) Send(message Message) error {
 		}
 
 		if !v.StorageSave {
-			return nil
+			return
 		}
+
 		go e.adaptors.EntityStorage.Add(m.EntityStorage{
 			State:      state,
-			EntityId:   message.From,
+			EntityId:   v.EntityId,
 			Attributes: v.NewState.Attributes.Serialize(),
 		})
 
-		return nil
 	}
-
-	return nil
 }
 
 // CallAction ...
@@ -377,6 +382,7 @@ func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}
 func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor, err error) {
 	var plugin interface{}
 	if plugin, err = e.pluginManager.GetPlugin(entityId.Type().String()); err != nil {
+		err = fmt.Errorf("from plugin manager, %s", err.Error())
 		return
 	}
 
@@ -439,6 +445,7 @@ func (e *entityManager) unsafeRemove(id common.EntityId) {
 func GetEventState(actor PluginActor) (eventState event_bus.EventEntityState) {
 
 	attrs := actor.Attributes()
+	setts := actor.Settings()
 
 	var state *event_bus.EntityState
 
@@ -457,6 +464,7 @@ func GetEventState(actor PluginActor) (eventState event_bus.EventEntityState) {
 		Value:      info.Value,
 		State:      state,
 		Attributes: attrs,
+		Settings:   setts,
 	}
 
 	if info.LastChanged != nil {

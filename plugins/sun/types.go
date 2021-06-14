@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package sun
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/entity_manager"
 	"time"
 )
 
@@ -53,6 +54,9 @@ const (
 	AttrGoldenHour    = "goldenHour"    // evening golden hour starts
 	AttrSolarNoon     = "solarNoon"     // solar noon (sun is in the highest position)
 	AttrNadir         = "nadir"         // nadir (darkest moment of the night, sun is in the lowest position)
+
+	AttrLat          = "lat"
+	AttrLon          = "lon"
 )
 
 type DayTime struct {
@@ -71,79 +75,179 @@ func (l DayTimes) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
 // Less ...
 func (l DayTimes) Less(i, j int) bool { return l[i].Time.UnixNano() < l[j].Time.UnixNano() }
 
-func NewAttr()  m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrSunrise: {
 			Name: AttrSunrise,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrSunset: {
 			Name: AttrSunset,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrSunriseEnd: {
 			Name: AttrSunriseEnd,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrSunsetStart: {
 			Name: AttrSunsetStart,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrDawn: {
 			Name: AttrDawn,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrDusk: {
 			Name: AttrDusk,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 		AttrNauticalDawn: {
 			Name: AttrNauticalDawn,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrNauticalDusk: {
 			Name: AttrNauticalDusk,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrNightEnd: {
 			Name: AttrNightEnd,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrNight: {
 			Name: AttrNight,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrGoldenHourEnd: {
 			Name: AttrGoldenHourEnd,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrGoldenHour: {
 			Name: AttrGoldenHour,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrSolarNoon: {
 			Name: AttrSolarNoon,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrNadir: {
 			Name: AttrNadir,
-			Type: common.EntityAttributeBool,
+			Type: common.AttributeBool,
 		},
 		AttrElevation: {
 			Name: AttrElevation,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrAzimuth: {
 			Name: AttrAzimuth,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrPhase: {
 			Name: AttrPhase,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 		AttrHorizonState: {
 			Name: AttrHorizonState,
-			Type: common.EntityAttributeString,
+			Type: common.AttributeString,
 		},
 	}
+}
+
+func NewSettings() m.Attributes {
+	return m.Attributes{
+		AttrLat: {
+			Name: AttrLat,
+			Type: common.AttributeFloat,
+		},
+		AttrLon: {
+			Name: AttrLon,
+			Type: common.AttributeFloat,
+		},
+	}
+}
+
+const (
+	Sunrise = "sunrise" // sunrise (top edge of the sun appears on the horizon)
+	Sunset  = "sunset"  // sunset (sun disappears below the horizon, evening civil twilight starts)
+
+	SunriseEnd  = "sunriseEnd"  // sunrise ends (bottom edge of the sun touches the horizon)
+	SunsetStart = "sunsetStart" // sunset starts (bottom edge of the sun touches the horizon)
+
+	Dawn = "dawn" // dawn (morning nautical twilight ends, morning civil twilight starts)
+	Dusk = "dusk" // dusk (evening nautical twilight starts)
+
+	NauticalDawn = "nauticalDawn" // nautical dawn (morning nautical twilight starts)
+	NauticalDusk = "nauticalDusk" // nautical dusk (evening astronomical twilight starts)
+
+	NightEnd = "nightEnd" // night ends (morning astronomical twilight starts)
+	Night    = "night"    // night starts (dark enough for astronomical observations)
+
+	GoldenHourEnd = "goldenHourEnd" // morning golden hour (soft light, best DayTime for photography) ends
+	GoldenHour    = "goldenHour"    // evening golden hour starts
+
+	SolarNoon = "solarNoon" // solar noon (sun is in the highest position)
+	Nadir     = "nadir"     // nadir (darkest moment of the night, sun is in the lowest position)
+)
+
+func NewStates() (states map[string]entity_manager.ActorState) {
+
+	states = map[string]entity_manager.ActorState{
+		Sunrise: {
+			Name:        Sunrise,
+			Description: "sunrise (top edge of the sun appears on the horizon)",
+		},
+		Sunset: {
+			Name:        Sunset,
+			Description: "sunset (sun disappears below the horizon, evening civil twilight starts)",
+		},
+		SunriseEnd: {
+			Name:        SunriseEnd,
+			Description: "sunrise ends (bottom edge of the sun touches the horizon)",
+		},
+		SunsetStart: {
+			Name:        SunsetStart,
+			Description: "sunset starts (bottom edge of the sun touches the horizon)",
+		},
+		Dawn: {
+			Name:        Dawn,
+			Description: "dawn (morning nautical twilight ends, morning civil twilight starts)",
+		},
+		Dusk: {
+			Name:        Dusk,
+			Description: "dusk (evening nautical twilight starts)",
+		},
+		NauticalDawn: {
+			Name:        NauticalDawn,
+			Description: "nautical dawn (morning nautical twilight starts)",
+		},
+		NauticalDusk: {
+			Name:        NauticalDusk,
+			Description: "nautical dusk (evening astronomical twilight starts)",
+		},
+		NightEnd: {
+			Name:        NightEnd,
+			Description: "night ends (morning astronomical twilight starts)",
+		},
+		Night: {
+			Name:        Night,
+			Description: "night starts (dark enough for astronomical observations)",
+		},
+		GoldenHourEnd: {
+			Name:        GoldenHourEnd,
+			Description: "morning golden hour (soft light, best DayTime for photography) ends",
+		},
+		GoldenHour: {
+			Name:        GoldenHour,
+			Description: "evening golden hour starts",
+		},
+		SolarNoon: {
+			Name:        SolarNoon,
+			Description: "solar noon (sun is in the highest position)",
+		},
+		Nadir: {
+			Name:        Nadir,
+			Description: "nadir (darkest moment of the night, sun is in the lowest position)",
+		},
+	}
+
+	return
 }

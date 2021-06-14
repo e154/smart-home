@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,7 @@ package plugins
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -103,10 +104,11 @@ func (p *pluginManager) Shutdown() {
 		if !ok {
 			continue
 		}
-		log.Infof("unload plugin %v", name)
+		log.Infof("unload plugin '%s'", name)
 		if plugin, ok := pluginList[name]; ok {
 			plugin.Unload()
 		}
+		p.enabledPlugins[name] = false
 	}
 
 	log.Info("Shutdown")
@@ -156,13 +158,9 @@ LOOP:
 		if !pl.Enabled {
 			continue
 		}
-
-		if plugin, ok := pluginList[pl.Name]; ok {
-			log.Infof("load plugin %v", plugin.Name())
-			plugin.Load(p.service)
+		if err = p.loadPlugin(pl.Name); err != nil {
+			log.Errorf("plugin name '%s', %s", pl.Name, err.Error())
 		}
-
-		p.enabledPlugins[pl.Name] = true
 	}
 
 	if len(loadList) != 0 {
@@ -171,6 +169,46 @@ LOOP:
 	}
 
 	log.Info("all plugins loaded ...")
+}
+
+func (p *pluginManager) loadPlugin(name string) (err error) {
+
+	if p.enabledPlugins[name] {
+		err = errors.New(fmt.Sprintf("plugin '%s' is loaded", name))
+		return
+	}
+
+	if plugin, ok := pluginList[name]; ok {
+		log.Infof("load plugin %v", plugin.Name())
+		if err = plugin.Load(p.service); err != nil {
+			return
+		}
+	} else {
+		err = errors.New("not found")
+		return
+	}
+
+	p.enabledPlugins[name] = true
+	return
+}
+
+func (p *pluginManager) unloadPlugin(name string) (err error) {
+
+	if !p.enabledPlugins[name] {
+		err = errors.New("plugin not loaded")
+		return
+	}
+
+	if plugin, ok := pluginList[name]; ok {
+		log.Infof("unload plugin %v", plugin.Name())
+		plugin.Unload()
+	} else {
+		err = errors.New("not found")
+		return
+	}
+
+	p.enabledPlugins[name] = false
+	return
 }
 
 func (p *pluginManager) Install(t string) {
@@ -209,11 +247,54 @@ func (p *pluginManager) Install(t string) {
 		System:  plugin.Type() == PluginBuiltIn,
 	})
 
-	if err = plugin.Load(p.service); err != nil {
+	if err = p.loadPlugin(plugin.Name()); err != nil {
 		log.Error(err.Error())
 	}
 }
 
 func (p *pluginManager) Uninstall(name string) {
 
+}
+
+func (p *pluginManager) EnablePlugin(name string) (err error) {
+	if err = p.loadPlugin(name); err != nil {
+		return
+	}
+	pl := pluginList[name]
+	err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+		Name:    pl.Name(),
+		Version: pl.Version(),
+		Enabled: true,
+		System:  pl.Type() == PluginBuiltIn,
+	})
+	return
+}
+
+func (p *pluginManager) DisablePlugin(name string) (err error) {
+	if err = p.unloadPlugin(name); err != nil {
+		return
+	}
+	pl := pluginList[name]
+	err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+		Name:    pl.Name(),
+		Version: pl.Version(),
+		Enabled: false,
+		System:  pl.Type() == PluginBuiltIn,
+	})
+	return
+}
+
+func (p *pluginManager) PluginList() (list []common.PluginInfo, total int64, err error) {
+	t := len(pluginList)
+	list = make([]common.PluginInfo, 0, t)
+	total = int64(t)
+	for _, pl := range pluginList {
+		list = append(list, common.PluginInfo{
+			Name:    pl.Name(),
+			Version: pl.Version(),
+			Enabled: p.enabledPlugins[pl.Name()],
+			System:  pl.Type() == PluginBuiltIn,
+		})
+	}
+	return
 }

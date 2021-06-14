@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,11 +20,14 @@ package triggers
 
 import (
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"sync"
 )
 
 const (
-	Name = "triggers"
+	Name             = "triggers"
+	TopicSystemStart = "system_start"
+	TopicSystemStop  = "system_stop"
 )
 
 type IGetTrigger interface {
@@ -49,5 +52,9 @@ type ITrigger interface {
 type Subscriber struct {
 	EntityId *common.EntityId
 	Handler  interface{}
-	Payload  interface{}
+	Payload  m.Attributes
 }
+
+const (
+	CronOptionTrigger = "cron"
+)

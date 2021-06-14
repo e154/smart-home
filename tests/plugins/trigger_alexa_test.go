@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -57,6 +57,9 @@ automationTriggerAlexa = (msg)->
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
 
+			eventBus.Purge()
+			scriptService.Purge()
+
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
@@ -96,7 +99,13 @@ automationTriggerAlexa = (msg)->
 				Name:       "",
 				Script:     task3Script,
 				PluginName: "alexa",
-				Payload:    "1",
+				Payload: m.Attributes{
+					alexa.TriggerOptionSkillId: {
+						Name:  alexa.TriggerOptionSkillId,
+						Type:  common.AttributeInt,
+						Value: 1,
+					},
+				},
 			})
 			err = adaptors.Task.Add(task3)
 			So(err, ShouldBeNil)

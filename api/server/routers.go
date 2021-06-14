@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -115,12 +115,21 @@ func (s *Server) setControllers() {
 	v1.DELETE("/template_item/:name", s.af.Auth, s.ControllersV1.TemplateItem.Delete)
 
 	// notify
-	v1.GET("/notifr/config", s.af.Auth, s.ControllersV1.Notifr.GetSettings)
-	v1.PUT("/notifr/config", s.af.Auth, s.ControllersV1.Notifr.Update)
 	v1.GET("/notifrs", s.af.Auth, s.ControllersV1.Notifr.GetList)
 	v1.DELETE("/notifr/:id", s.af.Auth, s.ControllersV1.Notifr.Delete)
 	v1.POST("/notifr/:id/repeat", s.af.Auth, s.ControllersV1.Notifr.Repeat)
 	v1.POST("/notifr", s.af.Auth, s.ControllersV1.Notifr.Send)
+
+	// mqtt
+	v1.DELETE("/mqtt/client/:id", s.af.Auth, s.ControllersV1.Mqtt.CloseClient)
+	v1.GET("/mqtt/client/:id", s.af.Auth, s.ControllersV1.Mqtt.GetClientById)
+	v1.GET("/mqtt/client/:id/session", s.af.Auth, s.ControllersV1.Mqtt.GetSession)
+	v1.GET("/mqtt/client/:id/subscriptions", s.af.Auth, s.ControllersV1.Mqtt.GetSubscriptions)
+	v1.DELETE("/mqtt/client/:id/topic", s.af.Auth, s.ControllersV1.Mqtt.Unsubscribe)
+	v1.GET("/mqtt/clients", s.af.Auth, s.ControllersV1.Mqtt.GetClients)
+	v1.POST("/mqtt/publish", s.af.Auth, s.ControllersV1.Mqtt.Publish)
+	v1.GET("/mqtt/sessions", s.af.Auth, s.ControllersV1.Mqtt.GetSessions)
+	v1.GET("/mqtt/search_topic", s.af.Auth, s.ControllersV1.Mqtt.SearchTopic)
 
 	// version
 	v1.GET("/version", s.ControllersV1.Version.Version)
@@ -139,6 +148,13 @@ func (s *Server) setControllers() {
 	v1.PATCH("/zigbee2mqtts/device_rename", s.af.Auth, s.ControllersV1.Zigbee2mqtt.DeviceRename)
 	v1.GET("/zigbee2mqtts/search_device", s.af.Auth, s.ControllersV1.Zigbee2mqtt.Search)
 
+	// alexa
+	v1.POST("/alexa", s.af.Auth, s.ControllersV1.Alexa.Add)
+	v1.GET("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.GetById)
+	v1.PUT("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.Update)
+	v1.DELETE("/alexa/:id", s.af.Auth, s.ControllersV1.Alexa.Delete)
+	v1.GET("/alexas", s.af.Auth, s.ControllersV1.Alexa.GetList)
+
 	// entities
 	v1.POST("/entity", s.af.Auth, s.ControllersV1.Entity.Add)
 	v1.GET("/entity/:id", s.af.Auth, s.ControllersV1.Entity.GetById)
@@ -146,4 +162,15 @@ func (s *Server) setControllers() {
 	v1.DELETE("/entity/:id", s.af.Auth, s.ControllersV1.Entity.Delete)
 	v1.GET("/entities", s.af.Auth, s.ControllersV1.Entity.GetList)
 	v1.GET("/entities/search", s.af.Auth, s.ControllersV1.Entity.Search)
+
+	// developer tools
+	v1.GET("/developer_tools/states", s.af.Auth, s.ControllersV1.DeveloperTools.GetStateList)
+	v1.PATCH("/developer_tools/state", s.af.Auth, s.ControllersV1.DeveloperTools.UpdateState)
+	v1.GET("/developer_tools/events", s.af.Auth, s.ControllersV1.DeveloperTools.GetEventList)
+
+	// plugins
+	v1.POST("/plugin/:name/enable", s.af.Auth, s.ControllersV1.Plugin.Enable)
+	v1.POST("/plugin/:name/disable", s.af.Auth, s.ControllersV1.Plugin.Disable)
+	v1.GET("/plugins", s.af.Auth, s.ControllersV1.Plugin.GetList)
+	v1.GET("/plugin/:name/options", s.af.Auth, s.ControllersV1.Plugin.GetOptions)
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
@@ -56,6 +57,9 @@ automationTriggerSystem = (msg)->
 			automation automation.Automation,
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
+
+			eventBus.Purge()
+			scriptService.Purge()
 
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
@@ -121,7 +125,7 @@ automationTriggerSystem = (msg)->
 				pluginManager.Shutdown()
 			}()
 
-			eventBus.Publish(event_bus.TopicSystemStart, "started")
+			eventBus.Publish(triggers.TopicSystemStart, "started")
 
 			//
 			// ------------------------------------------------

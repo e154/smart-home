@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package models
 import "github.com/e154/smart-home/common"
 
 type TriggerPayload struct {
-	Obj interface{} `json:"obj"`
+	Obj Attributes `json:"obj"`
 }
 
 // Trigger ...
@@ -33,5 +33,5 @@ type Trigger struct {
 	Script     *Script          `json:"script"`
 	ScriptId   int64            `json:"script_id"`
 	PluginName string           `json:"plugin_name"`
-	Payload    interface{}      `json:"payload"`
+	Payload    Attributes       `json:"payload"`
 }

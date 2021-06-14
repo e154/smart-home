@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,10 @@ package zone
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -41,31 +38,32 @@ func init() {
 }
 
 type plugin struct {
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	eventBus      event_bus.EventBus
-	isStarted     *atomic.Bool
-	actorsLock    *sync.Mutex
-	actors        map[string]entity_manager.PluginActor
+	*plugins.Plugin
+	actorsLock *sync.Mutex
+	actors     map[string]entity_manager.PluginActor
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 		actors:     make(map[string]entity_manager.PluginActor),
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
+	}
 
 	return nil
 }
 
-func (p plugin) Unload() error {
+func (p plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
+	}
+
 	return nil
 }
 
@@ -87,9 +85,9 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	actor := NewEntityActor(entity.Id.Name(), attributes, p.entityManager)
+	actor := NewActor(entity, p.ScriptService, p.Adaptors, p.EventBus)
 	p.actors[entity.Id.Name()] = actor
-	p.entityManager.Spawn(actor.Spawn)
+	p.EntityManager.Spawn(actor.Spawn)
 
 	return
 }
@@ -118,4 +116,12 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		ActorCustomAttrs: false,
+		ActorAttrs:       NewAttr(),
+		ActorSetts:       NewSettings(),
+	}
 }

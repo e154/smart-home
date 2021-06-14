@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,10 +18,30 @@
 
 package models
 
+// PluginSettings ...
+type PluginSettings struct {
+	Settings Attributes `json:"settings"`
+}
+
 // Plugin ...
 type Plugin struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
-	Enabled bool   `json:"enabled"`
-	System  bool   `json:"system"`
+	Name     string     `json:"name"`
+	Version  string     `json:"version"`
+	Enabled  bool       `json:"enabled"`
+	System   bool       `json:"system"`
+	Settings Attributes `json:"settings"`
+}
+
+// PluginOptions ...
+type PluginOptions struct {
+	Triggers           bool                         `json:"triggers"`
+	Actors             bool                         `json:"actors"`
+	ActorCustomAttrs   bool                         `json:"actor_custom_attrs"`
+	ActorAttrs         Attributes                   `json:"actor_attrs"`
+	ActorCustomActions bool                         `json:"actor_custom_actions"`
+	ActorActions       map[string]EntityActionShort `json:"actor_actions"`
+	ActorCustomStates  bool                         `json:"actor_custom_states"`
+	ActorStates        map[string]EntityStateShort  `json:"actor_states"`
+	ActorSetts         Attributes                   `json:"actor_setts"`
+	Setts              Attributes                   `json:"setts"`
 }

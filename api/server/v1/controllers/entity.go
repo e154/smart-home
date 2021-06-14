@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -166,7 +166,7 @@ func (c ControllerEntity) GetById(ctx *gin.Context) {
 //   name: entity
 //   required: true
 //   schema:
-//     $ref: '#/definitions/Update'
+//     $ref: '#/definitions/UpdateEntity'
 //     type: object
 // summary: update entity by id
 // description:

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,10 @@
 package alexa
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
-	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -42,66 +37,59 @@ func init() {
 }
 
 type plugin struct {
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	isStarted     *atomic.Bool
-	eventBus      event_bus.EventBus
-	server        IServer
-	actorsLock    *sync.Mutex
-	registrar     triggers.IRegistrar
+	*plugins.Plugin
+	server     IServer
+	actorsLock *sync.Mutex
+	registrar  triggers.IRegistrar
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-	p.scriptService = service.ScriptService()
-
-	if p.isStarted.Load() {
-		return nil
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
 	}
-	p.isStarted.Store(true)
 
 	// register trigger
 	if triggersPlugin, ok := service.Plugins()[triggers.Name]; ok {
 		if p.registrar, ok = triggersPlugin.(triggers.IRegistrar); ok {
-			if err := p.registrar.RegisterTrigger(NewTrigger(p.eventBus)); err != nil {
+			if err = p.registrar.RegisterTrigger(NewTrigger(p.EventBus)); err != nil {
 				log.Error(err.Error())
-				return err
+				return
 			}
 		}
 	}
 
 	// run server
-	p.server = NewServer(p.adaptors,
+	p.server = NewServer(p.Adaptors,
 		NewConfig(service.AppConfig()),
-		p.scriptService,
+		p.ScriptService,
 		service.GateClient(),
-		p.eventBus)
+		p.EventBus)
 
 	p.server.Start()
+
+	p.EventBus.Subscribe(TopicPluginAlexa, p.eventHandler)
 
 	return nil
 }
 
-func (p *plugin) Unload() error {
-	if !p.isStarted.Load() {
-		return nil
+func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
 	}
-	p.isStarted.Store(false)
+
+	p.EventBus.Unsubscribe(TopicPluginAlexa, p.eventHandler)
 
 	p.server.Stop()
 	p.server = nil
 
-	if err := p.registrar.UnregisterTrigger(TriggerName); err != nil {
+	if err = p.registrar.UnregisterTrigger(TriggerName); err != nil {
 		log.Error(err.Error())
 		return err
 	}
@@ -137,4 +125,23 @@ func (p *plugin) Version() string {
 
 func (p *plugin) Server() IServer {
 	return p.server
+}
+
+func (p *plugin) eventHandler(_ string, event interface{}) {
+
+	switch v := event.(type) {
+	case EventAlexaAddSkill:
+		p.server.AddSkill(v.Skill)
+	case EventAlexaUpdateSkill:
+		p.server.UpdateSkill(v.Skill)
+	case EventAlexaDeleteSkill:
+		p.server.DeleteSkill(v.Skill)
+	}
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:   false,
+		Triggers: true,
+	}
 }

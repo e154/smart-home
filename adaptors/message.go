@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,16 @@
 package adaptors
 
 import (
+	"encoding/json"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
 )
 
 type IMessage interface {
-	Add(msg *m.Message) (id int64, err error)
-	fromDb(dbVer *db.Message) (ver *m.Message)
-	toDb(ver *m.Message) (dbVer *db.Message)
+	Add(msg m.Message) (id int64, err error)
+	fromDb(dbVer db.Message) (ver m.Message)
+	toDb(ver m.Message) (dbVer db.Message)
 }
 
 // Message ...
@@ -44,41 +45,39 @@ func GetMessageAdaptor(d *gorm.DB) IMessage {
 }
 
 // Add ...
-func (n *Message) Add(msg *m.Message) (id int64, err error) {
+func (n *Message) Add(msg m.Message) (id int64, err error) {
 	id, err = n.table.Add(n.toDb(msg))
 	return
 }
 
-func (n *Message) fromDb(dbVer *db.Message) (ver *m.Message) {
-	ver = &m.Message{
-		Id:           dbVer.Id,
-		Type:         m.MessageType(dbVer.Type),
-		EmailFrom:    dbVer.EmailFrom,
-		EmailSubject: dbVer.EmailSubject,
-		EmailBody:    dbVer.EmailBody,
-		SmsText:      dbVer.SmsText,
-		SlackText:    dbVer.SlackText,
-		UiText:       dbVer.UiText,
-		TelegramText: dbVer.TelegramText,
-		CreatedAt:    dbVer.CreatedAt,
-		UpdatedAt:    dbVer.UpdatedAt,
+func (n *Message) fromDb(dbVer db.Message) (ver m.Message) {
+	ver = m.Message{
+		Id:         dbVer.Id,
+		Type:       dbVer.Type,
+		CreatedAt:  dbVer.CreatedAt,
+		UpdatedAt:  dbVer.UpdatedAt,
+		Attributes: m.AttributeValue{},
 	}
+
+	if len(dbVer.Payload) > 0 {
+		json.Unmarshal(dbVer.Payload, &ver.Attributes)
+	}
+
 	return
 }
 
-func (n *Message) toDb(ver *m.Message) (dbVer *db.Message) {
-	dbVer = &db.Message{
-		Id:           ver.Id,
-		Type:         string(ver.Type),
-		EmailFrom:    ver.EmailFrom,
-		EmailSubject: ver.EmailSubject,
-		EmailBody:    ver.EmailBody,
-		SmsText:      ver.SmsText,
-		SlackText:    ver.SlackText,
-		UiText:       ver.UiText,
-		TelegramText: ver.TelegramText,
-		CreatedAt:    ver.CreatedAt,
-		UpdatedAt:    ver.UpdatedAt,
+func (n *Message) toDb(ver m.Message) (dbVer db.Message) {
+	dbVer = db.Message{
+		Id:        ver.Id,
+		Type:      ver.Type,
+		CreatedAt: ver.CreatedAt,
+		UpdatedAt: ver.UpdatedAt,
 	}
+
+	if ver.Attributes != nil {
+		b, _ := json.Marshal(ver.Attributes)
+		dbVer.Payload.UnmarshalJSON(b)
+	}
+
 	return
 }

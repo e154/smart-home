@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -44,6 +44,22 @@ func (m *EntityState) Valid() (ok bool, errs []*validation.Error) {
 	valid := validation.Validation{}
 	if ok, _ = valid.Valid(m); !ok {
 		errs = valid.Errors
+	}
+
+	return
+}
+
+// Short ...
+func (m *EntityState) Short() (short EntityStateShort) {
+
+	short = EntityStateShort{
+		Name:        m.Name,
+		Description: m.Description,
+		Icon:        m.Icon,
+	}
+
+	if m.Image != nil {
+		short.ImageUrl = common.String(m.Image.Url)
 	}
 
 	return

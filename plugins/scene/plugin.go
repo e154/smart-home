@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,11 @@ package scene
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/e154/smart-home/system/scripts"
 	"sync"
 )
 
@@ -41,28 +39,25 @@ func init() {
 }
 
 type plugin struct {
-	entityManager entity_manager.EntityManager
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[string]*EntityActor
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
+	*plugins.Plugin
+	actorsLock *sync.Mutex
+	actors     map[string]*Actor
 }
 
 func New() plugins.Plugable {
 	return &plugin{
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*EntityActor),
+		actors:     make(map[string]*Actor),
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.entityManager = service.EntityManager()
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.scriptService = service.ScriptService()
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
+	}
 
-	if err := p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
+	if err := p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler); err != nil {
 		log.Error(err.Error())
 	}
 
@@ -70,6 +65,11 @@ func (p *plugin) Load(service plugins.Service) error {
 }
 
 func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
+	}
+
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return
 }
@@ -87,7 +87,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 }
 
 func (p *plugin) addOrUpdateEntity(entity *m.Entity,
-	attributes m.EntityAttributeValue,
+	attributes m.AttributeValue,
 ) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -105,13 +105,13 @@ func (p *plugin) addOrUpdateEntity(entity *m.Entity,
 		return
 	}
 
-	var actor *EntityActor
-	if actor, err = NewEntityActor(entity, attributes,
-		p.adaptors, p.scriptService, p.entityManager); err != nil {
+	var actor *Actor
+	if actor, err = NewActor(entity, attributes,
+		p.Adaptors, p.ScriptService, p.EntityManager); err != nil {
 		return
 	}
 	p.actors[name] = actor
-	p.entityManager.Spawn(p.actors[name].Spawn)
+	p.EntityManager.Spawn(p.actors[name].Spawn)
 
 	return
 }
@@ -155,4 +155,8 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{}
 }

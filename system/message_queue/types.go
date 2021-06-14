@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,7 @@ package message_queue
 
 import (
 	"reflect"
+	"strings"
 	"sync"
 )
 
@@ -34,6 +35,10 @@ type MessageQueue interface {
 	Subscribe(topic string, fn interface{}, options ...interface{}) error
 	// Unsubscribe unsubscribe handler from the given topic
 	Unsubscribe(topic string, fn interface{}) error
+	// Stat
+	Stat() (stats Stats, err error)
+	// Purge
+	Purge()
 }
 
 type handler struct {
@@ -48,6 +53,19 @@ type subscribers struct {
 
 type messageQueue struct {
 	queueSize int
-	mtx       sync.RWMutex
-	sub       map[string]*subscribers
+	sync.RWMutex
+	sub map[string]*subscribers
 }
+
+type Stat struct {
+	Topic       string
+	Subscribers int
+}
+
+type Stats []Stat
+
+func (s Stats) Len() int { return len(s) }
+
+func (s Stats) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+
+func (s Stats) Less(i, j int) bool { return strings.Compare(s[i].Topic, s[j].Topic) == -1 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -154,14 +154,6 @@ func (i *Icon) String() string {
 	return string(*i)
 }
 
-// EntityPrototypeType ...
-type EntityPrototypeType string
-
-const (
-	// EntityPrototypeDevice ...
-	EntityPrototypeDevice = EntityPrototypeType("device")
-)
-
 // EntityType ...
 type EntityType string
 
@@ -201,17 +193,17 @@ func (e EntityType) String() string {
 	return string(e)
 }
 
-type EntityAttributeType string
+type AttributeType string
 
 const (
-	EntityAttributeString = EntityAttributeType("string")
-	EntityAttributeInt    = EntityAttributeType("int")
-	EntityAttributeTime   = EntityAttributeType("time")
-	EntityAttributeBool   = EntityAttributeType("bool")
-	EntityAttributeFloat  = EntityAttributeType("float")
+	AttributeString = AttributeType("string")
+	AttributeInt    = AttributeType("int")
+	AttributeTime   = AttributeType("time")
+	AttributeBool   = AttributeType("bool")
+	AttributeFloat  = AttributeType("float")
 	//DEPRECATED
-	EntityAttributeArray = EntityAttributeType("array")
-	EntityAttributeMap   = EntityAttributeType("map")
+	AttributeArray = AttributeType("array")
+	AttributeMap   = AttributeType("map")
 )
 
 type ConditionType string

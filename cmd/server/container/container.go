@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,6 @@ import (
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
-	"github.com/e154/smart-home/system/notify"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/e154/smart-home/system/rbac"
@@ -77,7 +76,6 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			automation.NewAutomation,
 			event_bus.NewEventBus,
 			endpoint.NewEndpoint,
-			notify.NewNotify,
 			NewApiServerConfig,
 			controllersV1.NewControllersV1,
 			server.NewServer,

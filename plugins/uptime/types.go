@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -34,15 +34,15 @@ const (
 	Name = "uptime"
 )
 
-func NewAttr() m.EntityAttributes {
-	return m.EntityAttributes{
+func NewAttr() m.Attributes {
+	return m.Attributes{
 		AttrUptimeTotal: {
 			Name: AttrUptimeTotal,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 		AttrUptimeAppStarted: {
 			Name: AttrUptimeAppStarted,
-			Type: common.EntityAttributeTime,
+			Type: common.AttributeTime,
 		},
 	}
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ func NewMessageDeliveryEndpoint(common *CommonEndpoint) *MessageDeliveryEndpoint
 }
 
 // GetList ...
-func (n *MessageDeliveryEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.MessageDelivery, total int64, err error) {
+func (n *MessageDeliveryEndpoint) GetList(limit, offset int64, order, sortBy string) (result []m.MessageDelivery, total int64, err error) {
 	result, total, err = n.adaptors.MessageDelivery.List(limit, offset, order, sortBy)
 	return
 }

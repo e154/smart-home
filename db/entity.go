@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -46,6 +46,7 @@ type Entity struct {
 	Scripts     []Script `gorm:"many2many:entity_scripts;"`
 	Icon        *common.Icon
 	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
+	Settings    json.RawMessage `gorm:"type:jsonb;not null"`
 	Storage     []*EntityStorage
 	AutoLoad    bool
 	ParentId    *common.EntityId `gorm:"column:parent"`
@@ -72,9 +73,21 @@ func (n Entities) Update(v *Entity) (err error) {
 		"description": v.Description,
 		"type":        v.Type,
 		"icon":        v.Icon,
+		"payload":     v.Payload,
+		"settings":    v.Settings,
 	}
 
 	err = n.Db.Model(&Entity{Id: v.Id}).Updates(q).Error
+	return
+}
+
+// UpdateSettings ...
+func (n Entities) UpdateSettings(entityId common.EntityId, settings []byte) (err error) {
+	q := map[string]interface{}{
+		"settings":    settings,
+	}
+
+	err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error
 	return
 }
 

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,11 @@ import (
 )
 
 type EntityPayload struct {
-	AttributeSignature EntityAttributes `json:"attribute_signature"`
+	AttributeSignature Attributes `json:"attribute_signature"`
+}
+
+type EntitySettings struct {
+	Settings Attributes `json:"settings"`
 }
 
 // Entity ...
@@ -42,7 +46,8 @@ type Entity struct {
 	Metrics     []Metric          `json:"metrics"`
 	Scripts     []Script          `json:"scripts"`
 	Hidden      bool              `json:"hidden"`
-	Attributes  EntityAttributes  `json:"attributes"`
+	Attributes  Attributes        `json:"attributes"`
+	Settings    Attributes        `json:"settings"`
 	AutoLoad    bool              `json:"auto_load"`
 	ParentId    *common.EntityId  `json:"parent_id"`
 	CreatedAt   time.Time         `json:"created_at"`
@@ -58,9 +63,4 @@ func (m *Entity) Valid() (ok bool, errs []*validation.Error) {
 	}
 
 	return
-}
-
-// EntityPrototype ...
-type IEntityPrototype interface {
-	PrototypeName() common.EntityPrototypeType
 }

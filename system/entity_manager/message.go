@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,12 +23,6 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 )
 
-// MessageRequestState -> entityManager
-type MessageRequestState struct {
-	Name       string
-	Attributes m.EntityAttributes
-}
-
 // MessageStateChanged -> entityManager
 type MessageStateChanged struct {
 	StorageSave bool
@@ -38,6 +32,7 @@ type MessageStateChanged struct {
 
 // EntityStateParams -> entityManager
 type EntityStateParams struct {
-	NewState        *string                `json:"new_state"`
-	AttributeValues m.EntityAttributeValue `json:"attribute_values"`
+	NewState        *string          `json:"new_state"`
+	AttributeValues m.AttributeValue `json:"attribute_values"`
+	SettingsValue   m.AttributeValue `json:"settings_value"`
 }

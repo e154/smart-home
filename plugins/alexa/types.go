@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -219,6 +219,18 @@ type EventAlexaAction struct {
 	Payload    interface{}
 }
 
+type EventAlexaAddSkill struct {
+	Skill *m.AlexaSkill
+}
+
+type EventAlexaUpdateSkill struct {
+	Skill *m.AlexaSkill
+}
+
+type EventAlexaDeleteSkill struct {
+	Skill *m.AlexaSkill
+}
+
 type IServer interface {
 	Start()
 	Stop()
@@ -234,3 +246,7 @@ type IServer interface {
 type AlexaPlugin interface {
 	Server() IServer
 }
+
+const (
+	TriggerOptionSkillId = "skillId"
+)

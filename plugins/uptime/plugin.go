@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,12 +21,9 @@
 package uptime
 
 import (
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"time"
 )
 
@@ -45,82 +42,75 @@ func init() {
 }
 
 type plugin struct {
-	entityManager entity_manager.EntityManager
-	entity        *EntityActor
-	isStarted     *atomic.Bool
-	ticker        *time.Ticker
-	pause         time.Duration
-	adaptors      *adaptors.Adaptors
-	storyModel    *m.RunStory
-	quit          chan struct{}
+	*plugins.Plugin
+	entity     *Actor
+	ticker     *time.Ticker
+	pause      time.Duration
+	storyModel *m.RunStory
+	quit       chan struct{}
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted: atomic.NewBool(false),
-		pause:     60,
+		Plugin: plugins.NewPlugin(),
+		pause:  60,
 	}
 }
 
-func (u *plugin) Load(service plugins.Service) error {
-	u.adaptors = service.Adaptors()
-	u.entityManager = service.EntityManager()
-
-	if u.isStarted.Load() {
-		return nil
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
 	}
-	u.isStarted.Store(true)
 
-	u.entity = NewEntityActor(u.entityManager)
-	u.quit = make(chan struct{})
+	p.entity = NewActor(p.EntityManager, p.EventBus)
+	p.quit = make(chan struct{})
 
-	u.storyModel = &m.RunStory{
+	p.storyModel = &m.RunStory{
 		Start: time.Now(),
 	}
 
-	var err error
-	u.storyModel.Id, err = u.adaptors.RunHistory.Add(u.storyModel)
+	p.storyModel.Id, err = p.Adaptors.RunHistory.Add(p.storyModel)
 
 	if err != nil {
 		log.Error(err.Error())
 		return nil
 	}
 
-	u.entityManager.Spawn(u.entity.Spawn)
+	p.EntityManager.Spawn(p.entity.Spawn)
 
 	go func() {
-		ticker := time.NewTicker(time.Second * u.pause)
+		ticker := time.NewTicker(time.Second * p.pause)
 		defer func() {
 			ticker.Stop()
-			u.isStarted.Store(false)
-			close(u.quit)
+			close(p.quit)
 		}()
 
 		for {
 			select {
-			case <-u.quit:
+			case <-p.quit:
 				return
 			case <-ticker.C:
-				u.entity.update()
+				p.entity.update()
 			}
 		}
 	}()
 	return nil
 }
 
-func (u *plugin) Unload() (err error) {
-	if !u.isStarted.Load() {
+func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-	u.quit <- struct{}{}
-	u.storyModel.End = common.Time(time.Now())
-	if err = u.adaptors.RunHistory.Update(u.storyModel); err != nil {
+
+	p.quit <- struct{}{}
+	p.storyModel.End = common.Time(time.Now())
+	if err = p.Adaptors.RunHistory.Update(p.storyModel); err != nil {
 		log.Error(err.Error())
 	}
 	return
 }
 
-func (u plugin) Name() string {
+func (p plugin) Name() string {
 	return name
 }
 

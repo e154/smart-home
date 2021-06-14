@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,14 +20,10 @@ package modbus_tcp
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"github.com/e154/smart-home/system/scripts"
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -42,44 +38,35 @@ func init() {
 }
 
 type plugin struct {
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	scriptService scripts.ScriptService
-	isStarted     *atomic.Bool
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[common.EntityId]*EntityActor
+	*plugins.Plugin
+	actorsLock *sync.Mutex
+	actors     map[common.EntityId]*Actor
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[common.EntityId]*EntityActor),
+		actors:     make(map[common.EntityId]*Actor),
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-	p.scriptService = service.ScriptService()
-
-	if p.isStarted.Load() {
-		return nil
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
 	}
-	p.isStarted.Store(true)
-	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+
+	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
 
-func (p *plugin) Unload() error {
-	if !p.isStarted.Load() {
-		return nil
+func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
 	}
-	p.isStarted.Store(false)
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 	return nil
 }
 
@@ -111,10 +98,10 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 		return
 	}
 
-	var actor *EntityActor
-	actor = NewEntityActor(entity, p.entityManager, p.adaptors, p.scriptService, p.eventBus)
+	var actor *Actor
+	actor = NewActor(entity, p.EntityManager, p.Adaptors, p.ScriptService, p.EventBus)
 	p.actors[entity.Id] = actor
-	p.entityManager.Spawn(actor.Spawn)
+	p.EntityManager.Spawn(actor.Spawn)
 	return
 }
 
@@ -141,4 +128,15 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:             true,
+		ActorCustomAttrs:   true,
+		ActorCustomActions: true,
+		ActorCustomStates:  true,
+		ActorAttrs:         NewAttr(),
+		ActorSetts:         NewSettings(),
+	}
 }

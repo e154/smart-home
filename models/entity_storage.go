@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,9 +25,9 @@ import (
 
 // EntityStorage ...
 type EntityStorage struct {
-	Id         int64                `json:"id"`
-	State      string               `json:"state"`
-	EntityId   common.EntityId      `json:"entity_id"`
-	Attributes EntityAttributeValue `json:"attributes"`
-	CreatedAt  time.Time            `json:"created_at"`
+	Id         int64           `json:"id"`
+	State      string          `json:"state"`
+	EntityId   common.EntityId `json:"entity_id"`
+	Attributes AttributeValue  `json:"attributes"`
+	CreatedAt  time.Time       `json:"created_at"`
 }

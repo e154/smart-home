@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -49,9 +49,9 @@ func NewEntity(a PluginActor) m.EntityShort {
 		i++
 	}
 
-	attributes := make(m.EntityAttributes, len(a.Attributes()))
+	attributes := make(m.Attributes, len(a.Attributes()))
 	for k, a := range a.Attributes() {
-		attributes[k] = &m.EntityAttribute{
+		attributes[k] = &m.Attribute{
 			Name:  a.Name,
 			Type:  a.Type,
 			Value: a.Value,

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,54 +20,7 @@ package weather_met
 
 import (
 	"encoding/xml"
-	"github.com/e154/smart-home/plugins/weather"
 	"time"
-)
-
-var (
-	conditions = []string{
-		"",
-		"sunny",
-		"partlycloudy",
-		"partlycloudy",
-		"cloudy",
-		"rainy",
-		"lightning-rainy",
-		"snowy-rainy",
-		"snowy",
-		"rainy",
-		"rainy",
-		"lightning-rainy",
-		"snowy-rainy",
-		"snowy",
-		"snowy",
-		"fog",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"lightning-rainy",
-		"rainy",
-		"rainy",
-		"snowy-rainy",
-		"snowy-rainy",
-		"snowy",
-		"snowy",
-		"rainy",
-		"snowy-rainy",
-		"snowy-rainy",
-		"snowy",
-		"snowy"}
 )
 
 type MaxTemperature struct {
@@ -204,7 +157,9 @@ type Weatherdata struct {
 }
 
 type Zone struct {
-	weather.Zone
+	Name        string       `json:"name"`
+	Lat         float64      `json:"lat"`
+	Lon         float64      `json:"lon"`
 	Weatherdata *Weatherdata `json:"weatherdata"`
 	LoadetAt    *time.Time   `json:"loadet_at"`
 }

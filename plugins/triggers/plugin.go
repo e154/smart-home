@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,8 @@ package triggers
 import (
 	"fmt"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/event_bus"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"sync"
 )
 
@@ -38,39 +37,33 @@ func init() {
 }
 
 type plugin struct {
-	isStarted *atomic.Bool
-	bus       event_bus.EventBus
-	mu        *sync.Mutex
-	triggers  map[string]ITrigger
+	*plugins.Plugin
+	mu       *sync.Mutex
+	triggers map[string]ITrigger
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted: atomic.NewBool(false),
-		mu:        &sync.Mutex{},
-		triggers:  make(map[string]ITrigger),
+		Plugin:   plugins.NewPlugin(),
+		mu:       &sync.Mutex{},
+		triggers: make(map[string]ITrigger),
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) (nil error) {
-	p.bus = service.EventBus()
-
-	if p.isStarted.Load() {
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
 		return
 	}
 
 	p.attachTrigger()
 
-	p.isStarted.Store(true)
-
 	return
 }
 
 func (p *plugin) Unload() (err error) {
-	if !p.isStarted.Load() {
+	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
-	p.isStarted.Store(false)
 	return
 }
 
@@ -84,9 +77,9 @@ func (p *plugin) attachTrigger() {
 	defer p.mu.Unlock()
 
 	// init triggers ...
-	p.triggers[StateChangeName] = NewStateChangedTrigger(p.bus)
-	p.triggers[SystemName] = NewSystemTrigger(p.bus)
-	p.triggers[TimeName] = NewTimeTrigger(p.bus)
+	p.triggers[StateChangeName] = NewStateChangedTrigger(p.EventBus)
+	p.triggers[SystemName] = NewSystemTrigger(p.EventBus)
+	p.triggers[TimeName] = NewTimeTrigger(p.EventBus)
 
 	wg := &sync.WaitGroup{}
 
@@ -168,4 +161,10 @@ func (p *plugin) TriggerList() (list []string) {
 		list = append(list, name)
 	}
 	return
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Triggers: true,
+	}
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,24 +36,28 @@ const (
 	AttrTimezone  = "timezone"
 )
 
-func NewAttr() m.EntityAttributes {
+func NewAttr() m.Attributes {
+	return nil
+}
 
-	attributes := m.EntityAttributes{
+func NewSettings() m.Attributes {
+
+	attributes := m.Attributes{
 		AttrLat: {
 			Name: AttrLat,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrLon: {
 			Name: AttrLon,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrElevation: {
 			Name: AttrElevation,
-			Type: common.EntityAttributeFloat,
+			Type: common.AttributeFloat,
 		},
 		AttrTimezone: {
 			Name: AttrTimezone,
-			Type: common.EntityAttributeInt,
+			Type: common.AttributeInt,
 		},
 	}
 

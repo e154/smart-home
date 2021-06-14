@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -48,6 +48,9 @@ func TestNode(t *testing.T) {
 			automation automation.Automation,
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
+
+			eventBus.Purge()
+			scriptService.Purge()
 
 			err := migrations.Purge()
 			ctx.So(err, ShouldBeNil)
@@ -118,7 +121,7 @@ func TestNode(t *testing.T) {
 					err = mqttServer.Publish("home/node/main/ping", b, 0, false)
 					ctx.So(err, ShouldBeNil)
 
-					ticker := time.NewTimer(time.Second * 1)
+					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
 					var ok bool

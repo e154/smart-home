@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package message_queue
 import (
 	"fmt"
 	"reflect"
+	"sort"
 )
 
 // New creates new MessageQueue
@@ -37,11 +38,10 @@ func New(handlerQueueSize int) MessageQueue {
 }
 
 func (b *messageQueue) Publish(topic string, args ...interface{}) {
-	qwe := []interface{}{topic}
-	rArgs := buildHandlerArgs(append(qwe, args...))
+	rArgs := buildHandlerArgs(append([]interface{}{topic}, args...))
 
-	b.mtx.Lock()
-	defer b.mtx.Unlock()
+	b.RLock()
+	defer b.RUnlock()
 
 	for t, sub := range b.sub {
 		if !TopicMatch([]byte(topic), []byte(t)) {
@@ -64,14 +64,14 @@ func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interf
 		queue:    make(chan []reflect.Value, b.queueSize),
 	}
 
+	b.Lock()
+	defer b.Unlock()
+
 	go func() {
 		for args := range h.queue {
 			h.callback.Call(args)
 		}
 	}()
-
-	b.mtx.Lock()
-	defer b.mtx.Unlock()
 
 	if _, ok := b.sub[topic]; ok {
 		b.sub[topic].handlers = append(b.sub[topic].handlers, h)
@@ -96,8 +96,8 @@ func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interf
 }
 
 func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
-	b.mtx.Lock()
-	defer b.mtx.Unlock()
+	b.Lock()
+	defer b.Unlock()
 
 	rv := reflect.ValueOf(fn)
 
@@ -117,8 +117,8 @@ func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
 }
 
 func (b *messageQueue) Close(topic string) {
-	b.mtx.Lock()
-	defer b.mtx.Unlock()
+	b.Lock()
+	defer b.Unlock()
 
 	if _, ok := b.sub[topic]; ok {
 		for _, h := range b.sub[topic].handlers {
@@ -129,6 +129,38 @@ func (b *messageQueue) Close(topic string) {
 
 		return
 	}
+}
+
+func (b *messageQueue) Purge() {
+	b.Lock()
+	defer b.Unlock()
+
+	fmt.Println("purge")
+
+	for topic, s := range b.sub {
+		for _, h := range s.handlers {
+			close(h.queue)
+		}
+
+		delete(b.sub, topic)
+	}
+}
+
+// todo fix
+func (b *messageQueue) Stat() (stats Stats, err error) {
+	b.RLock()
+
+	for topic, subs := range b.sub {
+		stats = append(stats, Stat{
+			Topic:       topic,
+			Subscribers: len(subs.handlers),
+		})
+	}
+	b.RUnlock()
+
+	sort.Sort(stats)
+
+	return
 }
 
 func buildHandlerArgs(args []interface{}) []reflect.Value {

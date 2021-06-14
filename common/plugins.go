@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,8 +18,18 @@
 
 package common
 
+type PluginInfo struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Enabled bool   `json:"enabled"`
+	System  bool   `json:"system"`
+}
+
 type PluginManager interface {
 	Start()
 	Shutdown()
 	GetPlugin(name string) (plugin interface{}, err error)
+	EnablePlugin(string) error
+	DisablePlugin(string) error
+	PluginList() (list []PluginInfo, total int64, err error)
 }

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,9 @@
 package entity_manager
 
 import (
+	"errors"
 	"fmt"
+	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
@@ -41,8 +43,8 @@ type BaseActor struct {
 	Area              *m.Area
 	Metric            []m.Metric
 	Hidden            bool
-	AttrMu            *sync.Mutex
-	Attrs             m.EntityAttributes
+	AttrMu            *sync.RWMutex
+	Attrs             m.Attributes
 	Actions           map[string]ActorAction
 	States            map[string]ActorState
 	ScriptEngine      *scripts.Engine
@@ -54,10 +56,16 @@ type BaseActor struct {
 	AutoLoad          bool
 	LastChanged       *time.Time
 	LastUpdated       *time.Time
+	adaptors          *adaptors.Adaptors
+	SettingsMu        *sync.RWMutex
+	Setts             m.Attributes
 }
 
-func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseActor {
+func NewBaseActor(entity *m.Entity,
+	scriptService scripts.ScriptService,
+	adaptors *adaptors.Adaptors) BaseActor {
 	actor := BaseActor{
+		adaptors:          adaptors,
 		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.Type, entity.Id.Name())),
 		Name:              entity.Id.Name(),
 		Description:       entity.Description,
@@ -77,8 +85,10 @@ func NewBaseActor(entity *m.Entity, scriptService scripts.ScriptService) BaseAct
 		LastChanged:       nil,
 		LastUpdated:       nil,
 		AutoLoad:          entity.AutoLoad,
-		AttrMu:            &sync.Mutex{},
+		AttrMu:            &sync.RWMutex{},
 		Attrs:             entity.Attributes.Copy(),
+		SettingsMu:        &sync.RWMutex{},
+		Setts:             entity.Settings,
 	}
 
 	// Image
@@ -149,21 +159,22 @@ func (e *BaseActor) Metrics() []m.Metric {
 	return e.Metric
 }
 
-func (e *BaseActor) SetState(EntityStateParams) {
-
+func (e *BaseActor) SetState(EntityStateParams) error {
+	return errors.New("method not implemented")
 }
 
-func (e *BaseActor) Attributes() m.EntityAttributes {
-	e.AttrMu.Lock()
-	defer e.AttrMu.Unlock()
+func (e *BaseActor) Attributes() m.Attributes {
+	e.attrLock()
+	e.AttrMu.RLock()
+	defer e.AttrMu.RUnlock()
 	return e.Attrs.Copy()
 }
 
-func (e *BaseActor) Send(payload interface{}) {
-	e.Manager.Send(Message{
-		From:    e.Id,
-		Payload: payload,
-	})
+func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
+	e.attrLock()
+	e.AttrMu.Lock()
+	defer e.AttrMu.Unlock()
+	e.Attrs.Deserialize(data)
 }
 
 func (e *BaseActor) Info() (info ActorInfo) {
@@ -202,8 +213,37 @@ func (e *BaseActor) Now(oldState event_bus.EventEntityState) time.Time {
 	return now
 }
 
-func (e *BaseActor) DeserializeAttr(data m.EntityAttributeValue) {
-	e.AttrMu.Lock()
-	e.Attrs.Deserialize(data)
-	e.AttrMu.Unlock()
+func (e *BaseActor) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
+	if e.Manager != nil {
+		e.Manager.SetMetric(id, name, value)
+	}
+}
+
+func (e *BaseActor) Settings() m.Attributes {
+	e.settingsLock()
+	e.SettingsMu.RLock()
+	defer e.SettingsMu.RUnlock()
+	return e.Setts.Copy()
+}
+
+func (e *BaseActor) DeserializeSettings(settings m.AttributeValue) {
+	if settings == nil {
+		return
+	}
+	e.settingsLock()
+	e.SettingsMu.Lock()
+	defer e.SettingsMu.Unlock()
+	e.Setts.Deserialize(settings)
+}
+
+func (e *BaseActor) attrLock() {
+	if e.AttrMu == nil {
+		e.AttrMu = &sync.RWMutex{}
+	}
+}
+
+func (e *BaseActor) settingsLock() {
+	if e.SettingsMu == nil {
+		e.SettingsMu = &sync.RWMutex{}
+	}
 }

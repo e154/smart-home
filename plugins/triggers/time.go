@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -69,8 +69,8 @@ func (t *TimeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 }
 
 func (t *TimeTrigger) Subscribe(options Subscriber) error {
-	schedule, ok := options.Payload.(string)
-	if !ok {
+	schedule := options.Payload[CronOptionTrigger].String()
+	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
 	callback := reflect.ValueOf(options.Handler)
@@ -94,8 +94,8 @@ func (t *TimeTrigger) Subscribe(options Subscriber) error {
 }
 
 func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
-	schedule, ok := options.Payload.(string)
-	if !ok {
+	schedule := options.Payload[CronOptionTrigger].String()
+	if schedule == "" {
 		return fmt.Errorf("error static cast to string %v", options.Payload)
 	}
 	callback := reflect.ValueOf(options.Handler)

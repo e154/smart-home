@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -98,6 +98,9 @@ entityAction = (entityId, actionName)->
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
 
+			eventBus.Purge()
+			scriptService.Purge()
+
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
@@ -135,7 +138,7 @@ entityAction = (entityId, actionName)->
 			err = adaptors.Entity.Add(nodeEnt)
 			So(err, ShouldBeNil)
 
-			plugEnt := GetNewModbusTcp("plugTcp")
+			plugEnt := GetNewModbusTcp("plug")
 			plugEnt.ParentId = &nodeEnt.Id
 			plugEnt.Actions = []*m.EntityAction{
 				{
@@ -173,8 +176,8 @@ entityAction = (entityId, actionName)->
 					Description: "error state",
 				},
 			}
-			plugEnt.Attributes[modbus_tcp.AttrSlaveId].Value = 1
-			plugEnt.Attributes[modbus_tcp.AttrAddressPort].Value = "office:502"
+			plugEnt.Settings[modbus_tcp.AttrSlaveId].Value = 1
+			plugEnt.Settings[modbus_tcp.AttrAddressPort].Value = "office:502"
 			err = adaptors.Entity.Add(plugEnt)
 			So(err, ShouldBeNil)
 			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
@@ -438,7 +441,6 @@ entityAction = (entityId, actionName)->
 				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/plugin.test"), b)
 				mqttCli.Publish(fmt.Sprintf("home/node/second/resp/%s", plugEnt.Id), b)
 
-				time.Sleep(time.Second * 2)
 			})
 		})
 	})

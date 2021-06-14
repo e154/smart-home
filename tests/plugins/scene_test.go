@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -58,6 +58,9 @@ sceneEvent = (args)->
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
 
+			eventBus.Purge()
+			scriptService.Purge()
+
 			err := migrations.Purge()
 			So(err, ShouldBeNil)
 
@@ -111,11 +114,16 @@ sceneEvent = (args)->
 				pluginManager.Shutdown()
 			}()
 
-			time.Sleep(time.Millisecond * 500)
-			entityManager.CallScene(romanticEnt.Id, nil)
-			time.Sleep(time.Millisecond * 500)
+			t.Run("call scene", func(t *testing.T) {
+				Convey("case", t, func(ctx C) {
 
-			So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
+					time.Sleep(time.Millisecond * 500)
+					entityManager.CallScene(romanticEnt.Id, nil)
+					time.Sleep(time.Millisecond * 500)
+
+					So(counter.Load(), ShouldBeGreaterThanOrEqualTo, 1)
+				})
+			})
 		})
 	})
 }

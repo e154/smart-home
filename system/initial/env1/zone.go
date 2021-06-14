@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,7 @@ func NewZoneManager(adaptors *adaptors.Adaptors) *ZoneManager {
 	}
 }
 
-func (n ZoneManager) addZone(name, desc string) (node *m.Zone) {
+func (n ZoneManager) addZone(name, desc string) {
 
 	loc, err := location.GetRegionInfo()
 	So(err, ShouldBeNil)
@@ -54,25 +54,25 @@ func (n ZoneManager) addZone(name, desc string) (node *m.Zone) {
 		longitude = loc.Lon
 	}
 
-	attributes := m.EntityAttributes{
+	attributes := m.Attributes{
 		AttrLat: {
 			Name:  AttrLat,
-			Type:  common.EntityAttributeFloat,
+			Type:  common.AttributeFloat,
 			Value: latitude,
 		},
 		AttrLon: {
 			Name:  AttrLon,
-			Type:  common.EntityAttributeFloat,
+			Type:  common.AttributeFloat,
 			Value: longitude,
 		},
 		AttrElevation: {
 			Name:  AttrElevation,
-			Type:  common.EntityAttributeFloat,
+			Type:  common.AttributeFloat,
 			Value: 150,
 		},
 		AttrTimezone: {
 			Name:  AttrTimezone,
-			Type:  common.EntityAttributeInt,
+			Type:  common.AttributeInt,
 			Value: 7,
 		},
 	}
@@ -92,11 +92,9 @@ func (n ZoneManager) addZone(name, desc string) (node *m.Zone) {
 	})
 	So(err, ShouldBeNil)
 
-	return
 }
 
 // Create ...
-func (n ZoneManager) Create() (home *m.Zone) {
+func (n ZoneManager) Create() {
 	n.addZone("home", "base geo position")
-	return
 }

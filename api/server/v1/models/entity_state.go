@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -45,4 +45,12 @@ type EntityState struct {
 	Style       string    `json:"style"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+// swagger:model
+type EntityStatesShort struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Icon        *string `json:"icon"`
+	Image       *Image  `json:"image"`
 }

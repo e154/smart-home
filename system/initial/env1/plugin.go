@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -64,5 +64,8 @@ func (n PluginManager) Create() (home *m.Plugin) {
 	n.addPlugin("modbus_rtu", true)
 	n.addPlugin("modbus_tcp", true)
 	n.addPlugin("alexa", true)
+	n.addPlugin("notify", true)
+	n.addPlugin("email", true)
+	n.addPlugin("slack", true)
 	return
 }

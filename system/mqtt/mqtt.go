@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@ import (
 	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/mqtt/admin"
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
@@ -40,6 +41,7 @@ import (
 	"net"
 	"os"
 	"sync"
+	"time"
 )
 
 var (
@@ -54,7 +56,7 @@ type Mqtt struct {
 	metric        *metrics.MetricManager
 	clientsLock   *sync.Mutex
 	clients       map[string]MqttCli
-	//management     *management.Management
+	admin         *admin.Admin
 }
 
 // NewMqtt ...
@@ -62,15 +64,14 @@ func NewMqtt(lc fx.Lifecycle,
 	cfg *Config,
 	authenticator mqtt_authenticator.MqttAuthenticator,
 	scriptService scripts.ScriptService,
-	metric *metrics.MetricManager,
 ) (mqtt MqttServ) {
 
 	mqtt = &Mqtt{
 		cfg:           cfg,
 		authenticator: authenticator,
-		//metric:        metric,
-		clientsLock: &sync.Mutex{},
-		clients:     make(map[string]MqttCli),
+		clientsLock:   &sync.Mutex{},
+		clients:       make(map[string]MqttCli),
+		admin:         admin.New(),
 	}
 
 	// javascript binding
@@ -101,7 +102,8 @@ func (m *Mqtt) Shutdown() (err error) {
 	m.clientsLock.Unlock()
 
 	if m.server != nil {
-		err = m.server.Stop(context.Background())
+		ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(100 * time.Millisecond))
+		err = m.server.Stop(ctx)
 	}
 	return
 }
@@ -113,10 +115,9 @@ func (m *Mqtt) Start() {
 		log.Error(err.Error())
 	}
 
-	//m.management = management.New()
-
 	options := []server.Options{
 		server.WithTCPListener(ln),
+		server.WithPlugin(m.admin),
 		server.WithHook(server.Hooks{
 			OnBasicAuth:  m.onBasicAuth,
 			OnMsgArrived: m.onMsgArrived,
@@ -174,10 +175,10 @@ func (m *Mqtt) onBasicAuth(ctx context.Context, client server.Client, req *serve
 	return nil
 }
 
-// Management ...
-//func (m *Mqtt) Management() IManagement {
-//	return m.management
-//}
+// Admin ...
+func (m *Mqtt) Admin() Admin {
+	return m.admin
+}
 
 // Publish ...
 func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (err error) {
@@ -282,4 +283,8 @@ func (m *Mqtt) logging() *zap.Logger {
 
 	// From a zapcore.Core, it's easy to construct a Logger.
 	return zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Named("mqtt")
+}
+
+func (m *Mqtt) Authenticator() mqtt_authenticator.MqttAuthenticator {
+	return m.authenticator
 }

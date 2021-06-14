@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -34,12 +34,13 @@ type EntityState struct {
 }
 
 type EventEntityState struct {
-	EntityId    common.EntityId    `json:"entity_id"`
-	Value       interface{}        `json:"value"`
-	State       *EntityState       `json:"state"`
-	Attributes  m.EntityAttributes `json:"attributes"`
-	LastChanged *time.Time         `json:"last_changed"`
-	LastUpdated *time.Time         `json:"last_updated"`
+	EntityId    common.EntityId `json:"entity_id"`
+	Value       interface{}     `json:"value"`
+	State       *EntityState    `json:"state"`
+	Attributes  m.Attributes    `json:"attributes"`
+	Settings    m.Attributes    `json:"settings"`
+	LastChanged *time.Time      `json:"last_changed"`
+	LastUpdated *time.Time      `json:"last_updated"`
 }
 
 func (e1 EventEntityState) Compare(e2 EventEntityState) (ident bool) {
@@ -64,8 +65,5 @@ func (e1 EventEntityState) Compare(e2 EventEntityState) (ident bool) {
 type EventType string
 
 const (
-	TopicEntities    = "entities"
-	TopicSystemStart = "system_start"
-	TopicSystemStop  = "system_stop"
-	TopicAutomation  = "automation"
+	TopicEntities = "entities"
 )

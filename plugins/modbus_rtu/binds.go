@@ -1,3 +1,21 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2021, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
 package modbus_rtu
 
 import (
@@ -13,7 +31,7 @@ import (
 
 type modbusRtu func(f string, address, count uint16, command []uint16) (result ModBusResponse)
 
-func NewModbusRtu(eventBus event_bus.EventBus, actor *EntityActor) (modbus modbusRtu) {
+func NewModbusRtu(eventBus event_bus.EventBus, actor *Actor) (modbus modbusRtu) {
 
 	var isStarted = atomic.NewBool(false)
 
@@ -57,13 +75,8 @@ func NewModbusRtu(eventBus event_bus.EventBus, actor *EntityActor) (modbus modbu
 			eventBus.Unsubscribe(topic, fn)
 		}()
 
-		// send message
-		actor.AttrMu.Lock()
-		attrsSerial := actor.Attrs.Serialize()
-		actor.AttrMu.Unlock()
-
 		var properties []byte
-		if properties, err = json.Marshal(attrsSerial); err != nil {
+		if properties, err = json.Marshal(actor.Settings().Serialize()); err != nil {
 			log.Error(err.Error())
 			return
 		}

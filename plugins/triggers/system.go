@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -52,11 +52,11 @@ func NewSystemTrigger(eventBus event_bus.EventBus) ITrigger {
 
 func (t *SystemTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
-	t.eventBus.Subscribe(event_bus.TopicSystemStart, func(_ string, msg interface{}) {
+	t.eventBus.Subscribe(TopicSystemStart, func(_ string, msg interface{}) {
 		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStart,})
 	})
 
-	t.eventBus.Subscribe(event_bus.TopicSystemStop, func(_ string, msg interface{}) {
+	t.eventBus.Subscribe(TopicSystemStop, func(_ string, msg interface{}) {
 		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStop,})
 	})
 

@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -23,21 +23,23 @@ import (
 	"github.com/DrmagicE/gmqtt/config"
 	"github.com/DrmagicE/gmqtt/retained"
 	"github.com/DrmagicE/gmqtt/server"
+	"github.com/e154/smart-home/system/mqtt/admin"
+	"github.com/e154/smart-home/system/mqtt_authenticator"
 )
 
-// IManagement ...
-//type IManagement interface {
-//	GetClients(limit, offset int) (list []*management.ClientInfo, total int, err error)
-//	GetClient(clientId string) (client *management.ClientInfo, err error)
-//	GetSessions(limit, offset int) (list []*management.SessionInfo, total int, err error)
-//	GetSession(clientId string) (session *management.SessionInfo, err error)
-//	GetSubscriptions(clientId string, limit, offset int) (list []*management.SubscriptionInfo, total int, err error)
-//	Subscribe(clientId, topic string, qos int) (err error)
-//	Unsubscribe(clientId, topic string) (err error)
-//	Publish(topic string, qos int, payload []byte, retain bool) (err error)
-//	CloseClient(clientId string) (err error)
-//	SearchTopic(query string) (result []*management.SubscriptionInfo, err error)
-//}
+// Admin ...
+type Admin interface {
+	GetClients(limit, offset uint) (list []*admin.ClientInfo, total uint32, err error)
+	GetClient(clientId string) (client *admin.ClientInfo, err error)
+	GetSessions(limit, offset uint) (list []*admin.SessionInfo, total int, err error)
+	GetSession(clientId string) (session *admin.SessionInfo, err error)
+	GetSubscriptions(clientId string, limit, offset uint) (list []*admin.SubscriptionInfo, total int, err error)
+	Subscribe(clientId, topic string, qos int) (err error)
+	Unsubscribe(clientId, topic string) (err error)
+	Publish(topic string, qos int, payload []byte, retain bool) (err error)
+	CloseClient(clientId string) (err error)
+	SearchTopic(query string) (result []*admin.SubscriptionInfo, err error)
+}
 
 type MqttCli interface {
 	Publish(topic string, payload []byte) error
@@ -53,6 +55,8 @@ type MqttServ interface {
 	Publish(topic string, payload []byte, qos uint8, retain bool) error
 	NewClient(name string) MqttCli
 	RemoveClient(name string)
+	Admin() Admin
+	Authenticator() mqtt_authenticator.MqttAuthenticator
 }
 
 // GMqttServer ...

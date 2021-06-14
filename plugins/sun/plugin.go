@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,14 +20,10 @@ package sun
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/entity_manager"
-	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"go.uber.org/atomic"
 	"sync"
 	"time"
 )
@@ -43,35 +39,27 @@ func init() {
 }
 
 type plugin struct {
-	entityManager entity_manager.EntityManager
-	adaptors      *adaptors.Adaptors
-	isStarted     *atomic.Bool
-	eventBus      event_bus.EventBus
-	actorsLock    *sync.Mutex
-	actors        map[string]*EntityActor
-	pause         time.Duration
-	quit          chan struct{}
+	*plugins.Plugin
+	actorsLock *sync.Mutex
+	actors     map[string]*Actor
+	pause      time.Duration
+	quit       chan struct{}
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		isStarted:  atomic.NewBool(false),
+		Plugin:     plugins.NewPlugin(),
 		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*EntityActor),
+		actors:     make(map[string]*Actor),
 		pause:      240,
 	}
 }
 
-func (p *plugin) Load(service plugins.Service) error {
-	p.adaptors = service.Adaptors()
-	p.eventBus = service.EventBus()
-	p.entityManager = service.EntityManager()
-
-	if p.isStarted.Load() {
-		return nil
+func (p *plugin) Load(service plugins.Service) (err error) {
+	if err = p.Plugin.Load(service); err != nil {
+		return
 	}
-	p.isStarted.Store(true)
-	p.eventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+
 	p.quit = make(chan struct{})
 
 	go func() {
@@ -79,7 +67,6 @@ func (p *plugin) Load(service plugins.Service) error {
 
 		defer func() {
 			ticker.Stop()
-			p.isStarted.Store(false)
 			close(p.quit)
 		}()
 
@@ -96,11 +83,11 @@ func (p *plugin) Load(service plugins.Service) error {
 	return nil
 }
 
-func (p *plugin) Unload() error {
-	if !p.isStarted.Load() {
-		return nil
+func (p *plugin) Unload() (err error) {
+	if err = p.Plugin.Unload(); err != nil {
+		return
 	}
-	p.eventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
+
 	p.quit <- struct{}{}
 	return nil
 }
@@ -109,87 +96,20 @@ func (p *plugin) Name() string {
 	return Name
 }
 
-func (p *plugin) eventHandler(_ string, msg interface{}) {
-
-	switch v := msg.(type) {
-	case event_bus.EventAddedNewEntity:
-		if v.Type != "zone" {
-			return
-		}
-
-		p.addOrUpdateEntity(v.EntityId.Name(), v.Attributes)
-
-	case event_bus.EventStateChanged:
-		if v.Type != "zone" {
-			return
-		}
-
-		zoneAttr := zone.NewAttr()
-		zoneAttr.Deserialize(v.NewState.Attributes.Serialize())
-		p.addOrUpdateEntity(v.EntityId.Name(), zoneAttr)
-
-	case event_bus.EventRemoveEntity:
-		if v.Type != "zone" {
-			return
-		}
-
-		if err := p.removeEntity(v.EntityId.Name()); err != nil {
-			return
-		}
-
-		entityId := common.EntityId(fmt.Sprintf("sun.%s", v.EntityId.Name()))
-		p.entityManager.Remove(entityId)
-	}
-
-	return
-}
-
-func (p *plugin) addOrUpdateEntity(zoneName string, zoneAttr m.EntityAttributes) (err error) {
-
+func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
-	var lat, lon, elevation float64
-	if zoneAttr != nil {
-		// lat
-		if _lat, ok := zoneAttr[zone.AttrLat]; ok {
-			lat, ok = _lat.Value.(float64)
-		}
-
-		// lon
-		if _lon, ok := zoneAttr[zone.AttrLon]; ok {
-			lon, ok = _lon.Value.(float64)
-		}
-
-		// elevation
-		if _elevation, ok := zoneAttr[zone.AttrElevation]; ok {
-			elevation, ok = _elevation.Value.(float64)
-		}
-	}
-
-	if lat == 0 && lon == 0 {
+	if _, ok := p.actors[entity.Id.Name()]; ok {
+		p.actors[entity.Id.Name()].setPosition(entity.Settings)
+		p.actors[entity.Id.Name()].UpdateSunPosition(time.Now())
 		return
 	}
 
-	if _, ok := p.actors[zoneName]; ok {
-		p.actors[zoneName].setPosition(lat, lon, elevation)
-		p.actors[zoneName].updateSunPosition()
-		return
-	}
-
-	p.actors[zoneName] = NewEntityActor(zoneName, p.entityManager)
-	p.entityManager.Spawn(p.actors[zoneName].Spawn)
-
-	if zoneAttr != nil {
-		p.actors[zoneName].setPosition(lat, lon, elevation)
-		p.actors[zoneName].updateSunPosition()
-	}
+	p.actors[entity.Id.Name()] = NewActor(entity, p.EntityManager, p.EventBus)
+	p.EntityManager.Spawn(p.actors[entity.Id.Name()].Spawn)
 
 	return
-}
-
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	return p.addOrUpdateEntity(entity.Id.Name(), nil)
 }
 
 func (p *plugin) RemoveActor(entityId common.EntityId) error {
@@ -216,8 +136,9 @@ func (p *plugin) updatePositionForAll() {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
 
+	now := time.Now()
 	for _, actor := range p.actors {
-		actor.updateSunPosition()
+		actor.UpdateSunPosition(now)
 	}
 }
 
@@ -231,4 +152,13 @@ func (p *plugin) Depends() []string {
 
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Actors:      true,
+		ActorAttrs:  NewAttr(),
+		ActorSetts:  NewSettings(),
+		ActorStates: entity_manager.ToEntityStateShort(NewStates()),
+	}
 }

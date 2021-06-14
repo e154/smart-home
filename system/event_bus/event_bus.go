@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -26,35 +26,53 @@ const (
 	queueSize = 100
 )
 
+// EventBus ...
 type EventBus interface {
 	Publish(topic string, args ...interface{})
 	Close(topic string)
 	Subscribe(topic string, fn interface{}, options ...interface{}) error
 	Unsubscribe(topic string, fn interface{}) error
+	Stat() (stats message_queue.Stats, err error)
+	Purge()
 }
 
 type eventBus struct {
-	bus message_queue.MessageQueue
+	queue message_queue.MessageQueue
 }
 
+// NewEventBus ...
 func NewEventBus() EventBus {
 	return &eventBus{
-		bus: message_queue.New(queueSize),
+		queue: message_queue.New(queueSize),
 	}
 }
 
+// Publish ...
 func (e *eventBus) Publish(topic string, args ...interface{}) {
-	e.bus.Publish(topic, args...)
+	e.queue.Publish(topic, args...)
 }
 
+// Close ...
 func (e *eventBus) Close(topic string) {
-	e.bus.Close(topic)
+	e.queue.Close(topic)
 }
 
+// Subscribe ...
 func (e *eventBus) Subscribe(topic string, fn interface{}, options ...interface{}) error {
-	return e.bus.Subscribe(topic, fn, options...)
+	return e.queue.Subscribe(topic, fn, options...)
 }
 
+// Unsubscribe ...
 func (e *eventBus) Unsubscribe(topic string, fn interface{}) error {
-	return e.bus.Unsubscribe(topic, fn)
+	return e.queue.Unsubscribe(topic, fn)
+}
+
+// Stat ...
+func (e *eventBus) Stat() (message_queue.Stats, error) {
+	return e.queue.Stat()
+}
+
+// Purge ...
+func (e *eventBus) Purge() {
+	e.queue.Purge()
 }

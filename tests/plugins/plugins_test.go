@@ -1,6 +1,6 @@
 // This file is part of the Smart Home
 // Program complex distribution https://github.com/e154/smart-home
-// Copyright (C) 2016-2020, Filippov Alex
+// Copyright (C) 2016-2021, Filippov Alex
 //
 // This library is free software: you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -42,10 +42,12 @@ func TestMain(m *testing.M) {
 
 	runtime.GOMAXPROCS(-1)
 
+	os.Setenv("TEST_MODE", "true")
+
 	container = BuildContainer()
 	err := container.Invoke(func(
 		//logging *logging.Logging,
-		) {
+	) {
 
 		time.Sleep(time.Millisecond * 500)
 
