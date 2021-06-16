@@ -14,7 +14,6 @@ require (
 	github.com/eclipse/paho.mqtt.golang v1.2.0
 	github.com/francoispqt/gojay v1.2.13
 	github.com/gammazero/deque v0.0.0-20200310222745-50fa758af896
-	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-ole/go-ole v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v0.17.2 // indirect
@@ -24,13 +23,15 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
+	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/golang/mock v1.5.0 // indirect
-	github.com/golang/protobuf v1.4.2
+	github.com/golang/protobuf v1.5.2
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/gorilla/websocket v1.4.2
+	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
+	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/hashicorp/go-multierror v1.1.0
-	github.com/iancoleman/strcase v0.1.2
 	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
 	github.com/jinzhu/gorm v1.9.16
 	github.com/koron/netx v0.0.0-20151102071817-46fe5d298e3d
@@ -53,19 +54,18 @@ require (
 	github.com/swaggo/swag v1.3.2
 	github.com/t-tiger/gorm-bulk-insert v1.3.0
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
+	github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5
 	go.uber.org/atomic v1.6.0
 	go.uber.org/dig v1.10.0
 	go.uber.org/fx v1.13.1
 	go.uber.org/multierr v1.5.0 // indirect
 	go.uber.org/zap v1.14.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/net v0.0.0-20200822124328-c89045814202
-	golang.org/x/text v0.3.5 // indirect
-	golang.org/x/tools v0.0.0-20200309202150-20ab64c0d93f // indirect
-	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013
-	google.golang.org/grpc v1.34.0
-	google.golang.org/protobuf v1.25.0
+	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	google.golang.org/genproto v0.0.0-20210611144927-798beca9d670
+	google.golang.org/grpc v1.38.0
+	google.golang.org/protobuf v1.26.0
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20150902115704-41f357289737

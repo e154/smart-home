@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/protobuf/timestamp.proto";
+
+message Image {
+  int64 id = 1;
+  string thumb = 2;
+  string image = 3;
+  string mime_type = 4;
+  string title = 5;
+  int64 size = 6;
+  string name = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+message NewImage {
+  string thumb = 1;
+  string image = 2;
+  string mime_type = 3;
+  string title = 4;
+  int64 size = 5;
+  string name = 6;
+}
+
+message UpdateImage {
+  int64 id = 1;
+  string thumb = 2;
+  string image = 3;
+  string mime_type = 4;
+  string title = 5;
+  int64 size = 6;
+  string name = 7;
+}

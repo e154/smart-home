@@ -23,7 +23,9 @@ import (
 	"errors"
 	"fmt"
 	. "github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/api/server"
+	"github.com/e154/smart-home/api"
+
+	//"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
@@ -58,7 +60,7 @@ type Initial struct {
 	entityManager entity_manager.EntityManager
 	pluginManager common.PluginManager
 	automation    automation.Automation
-	api           *server.Server
+	api           *api.Api
 	metrics       *metrics.MetricManager
 	gateClient    *gate_client.GateClient
 }
@@ -72,7 +74,7 @@ func NewInitial(lc fx.Lifecycle,
 	entityManager entity_manager.EntityManager,
 	pluginManager common.PluginManager,
 	automation automation.Automation,
-	api *server.Server,
+	api *api.Api,
 	metrics *metrics.MetricManager,
 	gateClient *gate_client.GateClient) *Initial {
 	initial := &Initial{

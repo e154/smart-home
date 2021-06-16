@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+import "image.proto";
+import "role.proto";
+
+
+message UserHistory {
+  string id = 1;
+  google.protobuf.Timestamp time = 2;
+}
+message UserMeta {
+  string key = 1;
+  string value = 2;
+}
+
+message CurrentUser {
+  int64 id = 1;
+  string nickname = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string email = 5;
+  string status = 6;
+  repeated UserHistory history = 7;
+  Image image = 8;
+  int32 sign_in_count = 9;
+  repeated UserMeta meta = 10;
+  Role role = 11;
+  string lang = 12;
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp updated_at = 14;
+  google.protobuf.Timestamp current_sign_in_at = 15;
+  google.protobuf.Timestamp last_sign_in_at = 16;
+}
+
+message NewtUser {
+  string nickname = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string password = 4;
+  string password_repeat = 5;
+  string email = 6;
+  string status = 7;
+  string lang = 8;
+  Image image = 9;
+  Role role = 10;
+  repeated UserMeta meta = 11;
+}
+
+message UserFull {
+  int64 id = 1;
+  string nickname = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string email = 5;
+  string status = 6;
+  repeated UserHistory history = 7;
+  Image image = 8;
+  int32 sign_in_count = 9;
+  repeated UserMeta meta = 10;
+  Role role = 11;
+  string role_name = 12;
+  string lang = 13;
+
+  string authentication_token = 14;
+  string current_sign_in_ip = 15;
+  string last_sign_in_ip = 16;
+
+  message Parent {
+    int64 id = 1;
+    string nickname = 2;
+  }
+
+  Parent user = 17;
+
+  google.protobuf.Timestamp created_at = 18;
+  google.protobuf.Timestamp updated_at = 19;
+  google.protobuf.Timestamp current_sign_in_at = 20;
+  google.protobuf.Timestamp last_sign_in_at = 21;
+  google.protobuf.Timestamp reset_password_sent_at = 22;
+  google.protobuf.Timestamp deleted_at = 23;
+
+}
+
+message UserShot {
+  int64 id = 1;
+  string nickname = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string email = 5;
+  string status = 7;
+  message NewImage {
+    int64 id = 1;
+  }
+  NewImage image = 9;
+  string lang = 8;
+  Role role = 10;
+  string role_name = 11;
+  message Parent {
+    int64 id = 1;
+    string nickname = 2;
+  }
+
+  Parent user = 12;
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp updated_at = 14;
+}
+
+message GetUserByIdRequest {
+  int64 id = 1;
+}
+
+service UserService {
+
+  // add new user
+  rpc AddUser (NewtUser) returns (UserFull){
+    option (google.api.http) = {
+      post: "/v1/user"
+    };
+  }
+
+  // get user by id
+  rpc GetUserById (GetUserByIdRequest) returns (UserFull){
+    option (google.api.http) = {
+      get: "/v1/user/{id}"
+    };
+  }
+}

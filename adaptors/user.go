@@ -43,7 +43,6 @@ type IUser interface {
 	SignIn(u *m.User, ipv4 string) (err error)
 	GenResetPassToken(u *m.User) (token string, err error)
 	ClearResetPassToken(u *m.User) (err error)
-	NewToken(u *m.User) (token string, err error)
 	ClearToken(u *m.User) (err error)
 	fromDb(dbUser *db.User) (user *m.User)
 	toDb(user *m.User) (dbUser *db.User)
@@ -258,23 +257,6 @@ func (n *User) GenResetPassToken(u *m.User) (token string, err error) {
 func (n *User) ClearResetPassToken(u *m.User) (err error) {
 
 	err = n.table.ClearResetPassToken(u.Id)
-	return
-}
-
-// NewToken ...
-func (n *User) NewToken(u *m.User) (token string, err error) {
-
-	for {
-		token = common.RandStr(50, common.Alphanum)
-		u.AuthenticationToken = &token
-
-		if _, err = n.GetByAuthenticationToken(token); err != nil {
-			break
-		}
-	}
-
-	err = n.table.UpdateAuthenticationToken(u.Id, *u.AuthenticationToken)
-
 	return
 }
 

@@ -36,7 +36,7 @@ type IRole interface {
 	toDb(role *m.Role) (dbRole *db.Role)
 }
 
-// Role ...
+// RoleName ...
 type Role struct {
 	IRole
 	table *db.Roles

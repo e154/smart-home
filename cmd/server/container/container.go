@@ -20,8 +20,12 @@ package container
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/api/server"
-	controllersV1 "github.com/e154/smart-home/api/server/v1/controllers"
+	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/api/controllers"
+	"github.com/e154/smart-home/system/jwt_manager"
+
+	//"github.com/e154/smart-home/api/server"
+	//controllersV1 "github.com/e154/smart-home/api/server/v1/controllers"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
@@ -76,14 +80,14 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			automation.NewAutomation,
 			event_bus.NewEventBus,
 			endpoint.NewEndpoint,
-			NewApiServerConfig,
-			controllersV1.NewControllersV1,
-			server.NewServer,
+			api.NewApi,
+			controllers.NewControllers,
 			stream.NewStreamService,
 			stream.NewHub,
 			NewBackupConfig,
 			backup.NewBackup,
 			gate_client.NewGateClient,
+			jwt_manager.NewJwtManager,
 		),
 		fx.Logger(NewPrinter()),
 		opt,

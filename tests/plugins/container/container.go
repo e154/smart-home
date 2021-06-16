@@ -29,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
+	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
@@ -76,6 +77,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(automation.NewAutomation)
 	container.Provide(event_bus.NewEventBus)
 	container.Provide(endpoint.NewEndpoint)
+	container.Provide(jwt_manager.NewJwtManager)
 
 	container.Provide(func() (conf *config.AppConfig, err error) {
 		conf, err = config.ReadConfig()

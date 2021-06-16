@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+message SubscribeRequest {
+  string query = 1;
+}
+
+message SubscribeResponse {
+  string query = 1;
+  google.protobuf.Struct data = 2;
+  message Event {
+    string key = 1;
+    repeated string events = 2;
+  }
+  repeated Event events = 3;
+}
+
+service StreamService {
+  // stream
+  rpc Subscribe (SubscribeRequest) returns (stream SubscribeResponse) {
+    option (google.api.http) = {
+      get: "/subscribe"
+    };
+  }
+}

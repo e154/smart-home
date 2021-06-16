@@ -131,7 +131,7 @@ func (n *RoleEndpoint) GetAccessList(roleName string,
 		return
 	}
 
-	accessList, err = accessListService.GetFullAccessList(role)
+	accessList, err = accessListService.GetFullAccessList(role.Name)
 
 	return
 }

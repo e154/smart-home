@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/protobuf/timestamp.proto";
+
+message AccessItem {
+  repeated string actions = 1;
+  string method = 2;
+  string description = 3;
+  string role_name = 4;
+}
+
+message AccessLevels {
+  map<string, AccessItem> projects = 1;
+}
+
+message AccessList {
+  map<string, AccessLevels> projects = 1;
+}
+
+message Role {
+  int64 id = 1;
+
+  string name = 2;
+  string description = 3;
+
+  message Parent {
+    string name = 1;
+  }
+
+  repeated Role children = 4;
+
+  message ListOfString {
+    repeated string what_ever_name = 1;
+  }
+
+  message AccessList {
+    map<string, ListOfString> projects = 1;
+  }
+
+  AccessList access_list = 5;
+
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}

@@ -122,6 +122,13 @@ postgres=# grant all privileges on database mydb to myuser;
 
 ### Installation for development
 
+```bash
+go install \
+    github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@latest \
+    github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@latest \
+    github.com/golang/protobuf/protoc-gen-go@latest
+```
+
 #### main server install
 
 ```bash

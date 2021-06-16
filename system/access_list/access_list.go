@@ -31,7 +31,7 @@ var (
 
 type AccessListService interface {
 	ReadConfig() (err error)
-	GetFullAccessList(role *m.Role) (accessList AccessList, err error)
+	GetFullAccessList(roleName string) (accessList AccessList, err error)
 	GetShotAccessList(role *m.Role) (err error)
 	List() *AccessList
 }
@@ -72,10 +72,10 @@ func (a *accessListService) ReadConfig() (err error) {
 }
 
 // GetFullAccessList ...
-func (a *accessListService) GetFullAccessList(role *m.Role) (accessList AccessList, err error) {
+func (a *accessListService) GetFullAccessList(roleName string) (accessList AccessList, err error) {
 
 	var permissions []*m.Permission
-	if permissions, err = a.adaptors.Permission.GetAllPermissions(role.Name); err != nil {
+	if permissions, err = a.adaptors.Permission.GetAllPermissions(roleName); err != nil {
 		return
 	}
 
