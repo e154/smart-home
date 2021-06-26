@@ -19,19 +19,17 @@
 package rbac
 
 import (
-	"encoding/hex"
-	"errors"
+	"context"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/gin-gonic/gin"
-	"os"
+	"github.com/e154/smart-home/system/jwt_manager"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"regexp"
-	"strconv"
-	"strings"
 )
 
 var (
@@ -40,146 +38,22 @@ var (
 
 // AccessFilter ...
 type AccessFilter struct {
-	adaptors          *adaptors.Adaptors
-	accessListService access_list.AccessListService
+	adaptors            *adaptors.Adaptors
+	jwtManager          jwt_manager.JwtManager
+	accessListService   access_list.AccessListService
+	internalServerError error
 }
 
 // NewAccessFilter ...
 func NewAccessFilter(adaptors *adaptors.Adaptors,
+	jwtManager jwt_manager.JwtManager,
 	accessListService access_list.AccessListService) *AccessFilter {
 	return &AccessFilter{
-		adaptors:          adaptors,
-		accessListService: accessListService,
+		adaptors:            adaptors,
+		jwtManager:          jwtManager,
+		accessListService:   accessListService,
+		internalServerError: status.Error(codes.Unauthenticated, "UNAUTHORIZED"),
 	}
-}
-
-// Auth ...
-func (f *AccessFilter) Auth(ctx *gin.Context) {
-
-	requestURI := ctx.Request.RequestURI
-	method := strings.ToLower(ctx.Request.Method)
-
-	var err error
-
-	if os.Getenv("DEV") == "true" {
-		return
-	}
-
-	// get access_token
-	var accessToken string
-	if accessToken, err = f.getToken(ctx); err != nil || accessToken == "" {
-		ctx.AbortWithError(401, errors.New("unauthorized access"))
-		return
-	}
-
-	if len(strings.Split(accessToken, ".")) != 3 {
-		ctx.AbortWithError(401, errors.New("access token invalid"))
-		return
-	}
-
-	// get access list
-	var accessList access_list.AccessList
-	var user *m.User
-	if user, accessList, err = f.getAccessList(accessToken); err != nil {
-		ctx.AbortWithError(403, errors.New("unauthorized access"))
-		return
-	}
-
-	ctx.Set("currentUser", user)
-
-	// если id == 1 is admin
-	if user.Id == 1 || user.Role.Name == "admin" {
-		return
-	}
-
-	if ret := f.accessDecision(requestURI, method, accessList); ret {
-		return
-	}
-
-	log.Warnf(fmt.Sprintf("access denied: role(%s) [%s] url(%s)", user.Role.Name, method, requestURI))
-
-	ctx.AbortWithError(403, errors.New("unauthorized access"))
-}
-
-// access_token
-func (f *AccessFilter) getToken(ctx *gin.Context) (accessToken string, err error) {
-
-	if accessToken = ctx.Request.Header.Get("access_token"); accessToken != "" {
-		return
-	}
-
-	if accessToken = ctx.Request.Header.Get("Authorization"); accessToken != "" {
-		return
-	}
-
-	if accessToken = ctx.Request.URL.Query().Get("access_token"); accessToken != "" {
-		return
-	}
-
-	return
-}
-
-// получить лист доступа
-func (f *AccessFilter) getAccessList(token string) (user *m.User, accessList access_list.AccessList, err error) {
-
-	//TODO cache start
-
-	// ger hmac key
-	var variable m.Variable
-	if variable, err = f.adaptors.Variable.GetByName("hmacKey"); err != nil {
-		variable = m.Variable{
-			Name:  "hmacKey",
-			Value: common.ComputeHmac256(),
-		}
-		if err = f.adaptors.Variable.Add(variable); err != nil {
-			log.Error(err.Error())
-		}
-	}
-
-	hmacKey, err := hex.DecodeString(variable.Value)
-	if err != nil {
-		log.Error(err.Error())
-	}
-
-	// load user info
-	var claims jwt.MapClaims
-	if claims, err = common.ParseHmacToken(token, hmacKey); err != nil {
-		//log.Warn(err.Error())
-		return
-	}
-
-	//var ok bool
-	//if token, ok = claims["auth"].(string); !ok {
-	//	log.Warn("no auth var in token")
-	//	return
-	//}
-	//
-	//if user, err = f.adaptors.User.GetByAuthenticationToken(token); err != nil {
-	//	return
-	//}
-
-	id, ok := claims["userId"]
-	if !ok {
-		err = fmt.Errorf("no userId var in token")
-		return
-	}
-
-	var userId int64
-	if userId, err = strconv.ParseInt(fmt.Sprintf("%v", id), 10, 0); err != nil {
-		return
-	}
-
-	if user, err = f.adaptors.User.GetById(userId); err != nil {
-		return
-	}
-
-	if accessList, err = f.accessListService.GetFullAccessList(user.Role); err != nil {
-		return
-	}
-
-	//TODO cache end
-
-	return
 }
 
 func (f *AccessFilter) accessDecision(params, method string, accessList access_list.AccessList) bool {
@@ -199,4 +73,65 @@ func (f *AccessFilter) accessDecision(params, method string, accessList access_l
 	}
 
 	return false
+}
+
+func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+
+	meta, ok := metadata.FromIncomingContext(ctx)
+
+	switch info.FullMethod {
+	case "/api.AuthService/Signin":
+		return handler(ctx, req)
+	}
+
+	if !ok {
+		return nil, f.internalServerError
+	}
+	if len(meta["x-api-key"]) != 1 {
+		return nil, f.internalServerError
+	}
+
+	// get access token from meta
+	var accessToken = meta["x-api-key"][0]
+
+	claims, err := f.jwtManager.Verify(accessToken)
+	if err != nil {
+		log.Error(err.Error())
+		return nil, f.internalServerError
+	}
+
+	// validate claim
+	if err = claims.Valid(); err != nil {
+		return nil, f.internalServerError
+	}
+
+	// если id == 1 is admin
+	if claims.UserId == 1 || claims.RoleName == "admin" {
+		return f.getUser(claims.UserId, handler, ctx, req)
+	}
+
+	// check access filter
+	var accessList access_list.AccessList
+	if accessList, err = f.accessListService.GetFullAccessList(claims.RoleName); err != nil {
+		return nil, f.internalServerError
+	}
+
+	const method = "post"
+	var requestURI = info.FullMethod
+
+	if ret := f.accessDecision(requestURI, method, accessList); ret {
+		return f.getUser(claims.UserId, handler, ctx, req)
+	}
+
+	log.Warnf(fmt.Sprintf("access denied: role(%s) [%s] url(%s)", claims.RoleName, method, requestURI))
+
+	return nil, f.internalServerError
+}
+
+func (f *AccessFilter) getUser(userId int64, handler grpc.UnaryHandler, ctx context.Context, req interface{}) (interface{}, error) {
+	user, err := f.adaptors.User.GetById(userId)
+	if err != nil {
+		return nil, f.internalServerError
+	}
+	return handler(context.WithValue(ctx, "currentUser", user), req)
 }

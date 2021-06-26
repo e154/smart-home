@@ -42,7 +42,7 @@ type IImage interface {
 	Update(ver *m.Image) (err error)
 	Delete(mapId int64) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Image, total int64, err error)
-	UploadImage(reader *bufio.Reader, fileName string) (err error)
+	UploadImage(reader *bufio.Reader, fileName string) (file *m.Image, err error)
 	AddMultiple(items []*m.Image) (err error)
 	GetAllByDate(filter string) (images []*m.Image, err error)
 	GetFilterList() (filterList []*m.ImageFilterList, err error)
@@ -117,6 +117,14 @@ func (n *Image) Delete(mapId int64) (err error) {
 
 // List ...
 func (n *Image) List(limit, offset int64, orderBy, sort string) (list []*m.Image, total int64, err error) {
+
+	if sort == "" {
+		sort = "id"
+	}
+	if orderBy == "" {
+		orderBy = "desc"
+	}
+
 	var dbList []*db.Image
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return
@@ -132,7 +140,7 @@ func (n *Image) List(limit, offset int64, orderBy, sort string) (list []*m.Image
 }
 
 // UploadImage ...
-func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (err error) {
+func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (newFile *m.Image, err error) {
 
 	buffer := bytes.NewBuffer(make([]byte, 0))
 	part := make([]byte, 128)
@@ -174,7 +182,7 @@ func (n *Image) UploadImage(reader *bufio.Reader, fileName string) (err error) {
 	}
 
 	size, _ := common.GetFileSize(filepath.Join(dir, newname))
-	newFile := &m.Image{
+	newFile = &m.Image{
 		Size:     size,
 		MimeType: contentType,
 		Image:    newname,

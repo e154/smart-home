@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+import "user.proto";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+message SigninResponse {
+  CurrentUser current_user = 1;
+  string access_token = 2;
+}
+
+message AccessListResponse {
+  bytes access_list = 1;
+}
+
+service AuthService {
+
+  // sign in user
+  rpc Signin (google.protobuf.Empty) returns (SigninResponse){
+    option (google.api.http) = {
+      post: "/v1/signin"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "BasicAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // sign out user
+  rpc Signout (google.protobuf.Empty) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/signout"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get user access list object
+  rpc AccessList (google.protobuf.Empty) returns (AccessListResponse){
+    option (google.api.http) = {
+      get: "/v1/access_list"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}
+

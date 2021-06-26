@@ -123,9 +123,13 @@ func (n *UserEndpoint) Delete(userId int64) (err error) {
 }
 
 // GetList ...
-func (n *UserEndpoint) GetList(limit, offset int, order, sortBy string) (result []*m.User, total int64, err error) {
+func (n *UserEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.User, total int64, err error) {
 
-	result, total, err = n.adaptors.User.List(int64(limit), int64(offset), order, sortBy)
+	if limit == 0 {
+		limit = common.DefaultPageSize
+	}
+
+	result, total, err = n.adaptors.User.List(limit, offset, order, sortBy)
 
 	return
 }

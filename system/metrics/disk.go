@@ -21,7 +21,6 @@
 package metrics
 
 import (
-	"github.com/shirou/gopsutil/disk"
 	"go.uber.org/atomic"
 	"sync"
 	"time"
@@ -93,20 +92,20 @@ func (d *DiskManager) selfUpdate() {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
 
-	if root, err := disk.Usage("/"); err == nil {
-		d.root = UsageStat{
-			Path:              root.Path,
-			Fstype:            root.Fstype,
-			Total:             root.Total,
-			Free:              root.Free,
-			Used:              root.Used,
-			UsedPercent:       root.UsedPercent,
-			InodesTotal:       root.InodesTotal,
-			InodesUsed:        root.InodesUsed,
-			InodesFree:        root.InodesFree,
-			InodesUsedPercent: root.InodesUsedPercent,
-		}
-	}
+	//if root, err := disk.Usage("/"); err == nil {
+	//	d.root = UsageStat{
+	//		Path:              root.Path,
+	//		Fstype:            root.Fstype,
+	//		Total:             root.Total,
+	//		Free:              root.Free,
+	//		Used:              root.Used,
+	//		UsedPercent:       root.UsedPercent,
+	//		InodesTotal:       root.InodesTotal,
+	//		InodesUsed:        root.InodesUsed,
+	//		InodesFree:        root.InodesFree,
+	//		InodesUsedPercent: root.InodesUsedPercent,
+	//	}
+	//}
 
 	d.broadcast()
 }

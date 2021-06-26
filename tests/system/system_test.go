@@ -34,10 +34,14 @@ func init() {
 	os.Chdir(apppath)
 }
 
+var (
+	container *dig.Container
+)
 
 func TestMain(m *testing.M) {
 
-	err := BuildContainer().Invoke(func(logger *logging.Logging,) {
+	container = BuildContainer()
+	err := container.Invoke(func(logger *logging.Logging,) {
 
 		time.Sleep(time.Millisecond * 500)
 

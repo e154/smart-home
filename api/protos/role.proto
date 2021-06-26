@@ -1,0 +1,231 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message AccessItem {
+  repeated string actions = 1;
+  string method = 2;
+  string description = 3;
+  string role_name = 4;
+}
+
+message AccessLevels {
+  map<string, AccessItem> items = 1;
+}
+
+message AccessList {
+  map<string, AccessLevels> levels = 1;
+}
+
+message Role {
+  Role parent = 1;
+  string name = 2;
+  string description = 3;
+  repeated Role children = 4;
+
+  message AccessList {
+    message ListOfString {
+      repeated string items = 1;
+    }
+    map<string, ListOfString> levels = 1;
+  }
+
+  AccessList access_list = 5;
+
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message NewRoleRequest {
+  string name = 1;
+  string description = 2;
+  string parent = 3;
+}
+
+message GetRoleRequest {
+  string name = 1;
+}
+
+message UpdateRoleRequest {
+  string name = 1;
+  string description = 2;
+  string parent = 3;
+}
+
+message GetRoleListRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+  string order = 3;
+  string sort_by = 4;
+}
+
+message GetRoleListResult {
+  repeated Role items = 1;
+  message Meta {
+    uint32 limit = 1;
+    uint32 objects_count = 2;
+    uint32 offset = 3;
+  }
+  Meta meta = 2;
+}
+
+message SearchRoleRequest {
+  string query = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message SearchRoleListResult {
+  repeated Role items = 1;
+}
+
+message DeleteRoleRequest {
+  string name = 1;
+}
+
+message GetRoleAccessListRequest {
+  string name = 1;
+}
+message RoleAccessListResult {
+  map<string, AccessLevels> levels = 1;
+}
+
+message UpdateRoleAccessListRequest {
+  string name = 1;
+  message AccessListDiff {
+    map<string, bool> items = 1;
+  }
+  map<string, AccessListDiff> accessListDiff = 2;
+}
+
+service RoleService {
+
+  // add new role
+  rpc AddRole (NewRoleRequest) returns (Role){
+    option (google.api.http) = {
+      post: "/v1/role"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get role by name
+  rpc GetRoleByName (GetRoleRequest) returns (Role){
+    option (google.api.http) = {
+      get: "/v1/role/{name}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get role access list
+  rpc GetRoleAccessList (GetRoleAccessListRequest) returns (RoleAccessListResult){
+    option (google.api.http) = {
+      get: "/v1/role/{name}/access_list"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update role access list
+  rpc UpdateRoleAccessList (UpdateRoleAccessListRequest) returns (RoleAccessListResult){
+    option (google.api.http) = {
+      put: "/v1/role/n/access_list"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update role
+  rpc UpdateRoleByName (UpdateRoleRequest) returns (Role){
+    option (google.api.http) = {
+      put: "/v1/role/{name}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get role list
+  rpc GetRoleList (GetRoleListRequest) returns (GetRoleListResult){
+    option (google.api.http) = {
+      get: "/v1/roles"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete role by name
+  rpc SearchRoleByName (SearchRoleRequest) returns (SearchRoleListResult){
+    option (google.api.http) = {
+      get: "/v1/roles/search"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete role by name
+  rpc DeleteRoleByName (DeleteRoleRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/role/{name}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}

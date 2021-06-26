@@ -1,0 +1,164 @@
+// This file is part of the Smart Home
+// Program complex distribution https://github.com/e154/smart-home
+// Copyright (C) 2016-2021, Filippov Alex
+//
+// This library is free software: you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 3 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Library General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library.  If not, see
+// <https://www.gnu.org/licenses/>.
+
+package controllers
+
+import (
+	"context"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/api/dto"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/endpoint"
+	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/validation"
+	"github.com/gin-gonic/gin"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"net/http"
+	"strconv"
+	"strings"
+)
+
+var (
+	log = common.MustGetLogger("controllers")
+)
+
+// ControllerCommon ...
+type ControllerCommon struct {
+	adaptors   *adaptors.Adaptors
+	accessList access_list.AccessListService
+	endpoint   *endpoint.Endpoint
+	dto        dto.Dto
+}
+
+// NewControllerCommon ...
+func NewControllerCommon(adaptors *adaptors.Adaptors,
+	accessList access_list.AccessListService,
+	endpoint *endpoint.Endpoint) *ControllerCommon {
+	return &ControllerCommon{
+		dto:        dto.NewDto(),
+		adaptors:   adaptors,
+		accessList: accessList,
+		endpoint:   endpoint,
+	}
+}
+
+//query
+//limit
+//offset
+func (c ControllerCommon) select2(ctx *gin.Context) (query string, limit, offset int) {
+	query = ctx.Request.URL.Query().Get("query")
+	limit, _ = strconv.Atoi(ctx.Request.URL.Query().Get("limit"))
+	offset, _ = strconv.Atoi(ctx.Request.URL.Query().Get("offset"))
+	return
+}
+
+//query
+//sortby
+//order
+//limit
+//offset
+func (c ControllerCommon) list(ctx *gin.Context) (query, sortBy, order string, limit, offset int) {
+
+	limit = 15
+	offset = 0
+	order = "DESC"
+	sortBy = "created_at"
+
+	if ctx.Request.URL.Query().Get("query") != "" {
+		query = ctx.Request.URL.Query().Get("query")
+	}
+
+	if ctx.Request.URL.Query().Get("sortby") != "" {
+		sortBy = ctx.Request.URL.Query().Get("sortby")
+	}
+
+	if ctx.Request.URL.Query().Get("order") != "" {
+		order = ctx.Request.URL.Query().Get("order")
+	}
+
+	if ctx.Request.URL.Query().Get("limit") != "" {
+		limit, _ = strconv.Atoi(ctx.Request.URL.Query().Get("limit"))
+	}
+
+	if ctx.Request.URL.Query().Get("offset") != "" {
+		offset, _ = strconv.Atoi(ctx.Request.URL.Query().Get("offset"))
+	}
+	return
+}
+
+func (c ControllerCommon) currentUser(ctx context.Context) (*m.User, error) {
+
+	user, ok := ctx.Value("currentUser").(*m.User)
+	if !ok {
+		return nil, fmt.Errorf("bad user object")
+	}
+
+	return user, nil
+}
+
+func (c ControllerCommon) parseBasicAuth(auth string) (username, password string, ok bool) {
+	const prefix = "Basic "
+	// Case insensitive prefix match. See Issue 22736.
+	if len(auth) < len(prefix) || !strings.EqualFold(auth[:len(prefix)], prefix) {
+		return
+	}
+	str, err := base64.StdEncoding.DecodeString(auth[len(prefix):])
+	if err != nil {
+		return
+	}
+	cs := string(str)
+	s := strings.IndexByte(cs, ':')
+	if s < 0 {
+		return
+	}
+
+	return cs[:s], cs[s+1:], true
+}
+
+func (c ControllerCommon) prepareErrors(errs []*validation.Error) error {
+	if len(errs) > 0 {
+		st := status.New(codes.InvalidArgument, "One or more fields are invalid")
+		for _, e := range errs {
+			st, _ = st.WithDetails(&errdetails.BadRequest_FieldViolation{
+				Field:       e.Field,
+				Description: e.Message,
+			})
+		}
+		return st.Err()
+	}
+	return nil
+}
+
+func (c ControllerCommon) writeErr(code int, body string, w http.ResponseWriter) {
+	http.Error(w, body, code)
+}
+
+func (c ControllerCommon) writeSuccess(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusOK)
+}
+
+func (c ControllerCommon) writeJson(w http.ResponseWriter, p interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(p)
+}

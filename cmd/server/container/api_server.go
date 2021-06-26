@@ -18,16 +18,16 @@
 
 package container
 
-import (
-	"github.com/e154/smart-home/api/server"
-	"github.com/e154/smart-home/system/config"
-)
-
-// NewApiServerConfig ...
-func NewApiServerConfig(cfg *config.AppConfig) *server.Config {
-	return &server.Config{
-		Host:    cfg.ServerHost,
-		Port:    cfg.ServerPort,
-		RunMode: cfg.Mode,
-	}
-}
+//import (
+//	"github.com/e154/smart-home/api/server"
+//	"github.com/e154/smart-home/system/config"
+//)
+//
+//// NewApiServerConfig ...
+//func NewApiServerConfig(cfg *config.AppConfig) *server.Config {
+//	return &server.Config{
+//		Host:    cfg.ServerHost,
+//		Port:    cfg.ServerPort,
+//		RunMode: cfg.Mode,
+//	}
+//}

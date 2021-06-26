@@ -36,7 +36,7 @@ type IRole interface {
 	toDb(role *m.Role) (dbRole *db.Role)
 }
 
-// Role ...
+// RoleName ...
 type Role struct {
 	IRole
 	table *db.Roles
@@ -90,6 +90,14 @@ func (n *Role) Delete(name string) (err error) {
 
 // List ...
 func (n *Role) List(limit, offset int64, orderBy, sort string) (list []*m.Role, total int64, err error) {
+
+	if sort == "" {
+		sort = "name"
+	}
+	if orderBy == "" {
+		orderBy = "desc"
+	}
+
 	var dbList []*db.Role
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return
