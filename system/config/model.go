@@ -55,6 +55,11 @@ type AppConfig struct {
 	AlexaPort                      int           `json:"alexa_port"`
 	MobileHost                     string        `json:"mobile_host"`
 	MobilePort                     int           `json:"mobile_port"`
+	ApiGrpcHostPort                string        `json:"api_grpc_host_port"`
+	ApiHttpHostPort                string        `json:"api_http_host_port"`
+	ApiPromHostPort                string        `json:"api_prom_host_port"`
+	ApiWsHostPort                  string        `json:"api_ws_host_port"`
+	ApiSwagger                     bool          `json:"api_swagger"`
 }
 
 // RunMode ...

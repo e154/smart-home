@@ -86,6 +86,14 @@ func (n *Script) Delete(scriptId int64) (err error) {
 
 // List ...
 func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error) {
+
+	if sort == "" {
+		sort = "id"
+	}
+	if orderBy == "" {
+		orderBy = "desc"
+	}
+
 	var dbList []*db.Script
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return

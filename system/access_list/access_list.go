@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -78,6 +79,8 @@ func (a *accessListService) GetFullAccessList(roleName string) (accessList Acces
 	if permissions, err = a.adaptors.Permission.GetAllPermissions(roleName); err != nil {
 		return
 	}
+
+	debug.Println(permissions)
 
 	accessList = make(AccessList)
 	var item AccessItem

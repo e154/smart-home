@@ -3,15 +3,17 @@ syntax = "proto3";
 package api;
 option go_package = "/api";
 
+import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "protoc-gen-swagger/options/annotations.proto";
 
 import "image.proto";
 import "role.proto";
 
 
 message UserHistory {
-  string id = 1;
+  string ip = 1;
   google.protobuf.Timestamp time = 2;
 }
 message UserMeta {
@@ -20,7 +22,7 @@ message UserMeta {
 }
 
 message CurrentUser {
-  int64 id = 1;
+  int32 id = 1;
   string nickname = 2;
   string first_name = 3;
   string last_name = 4;
@@ -38,7 +40,7 @@ message CurrentUser {
   google.protobuf.Timestamp last_sign_in_at = 16;
 }
 
-message NewtUser {
+message NewtUserRequest {
   string nickname = 1;
   string first_name = 2;
   string last_name = 3;
@@ -47,13 +49,40 @@ message NewtUser {
   string email = 6;
   string status = 7;
   string lang = 8;
+  message Image {
+    int32 id = 1;
+  }
   Image image = 9;
+  message Role {
+    string name = 1;
+  }
   Role role = 10;
   repeated UserMeta meta = 11;
 }
 
+message UpdateUserRequest {
+  int32 id = 1;
+  string nickname = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string password = 5;
+  string password_repeat = 6;
+  string email = 7;
+  string status = 8;
+  string lang = 9;
+  message Image {
+    int32 id = 1;
+  }
+  Image image = 10;
+  message Role {
+    string name = 1;
+  }
+  Role role = 11;
+  repeated UserMeta meta = 12;
+}
+
 message UserFull {
-  int64 id = 1;
+  int32 id = 1;
   string nickname = 2;
   string first_name = 3;
   string last_name = 4;
@@ -72,7 +101,7 @@ message UserFull {
   string last_sign_in_ip = 16;
 
   message Parent {
-    int64 id = 1;
+    int32 id = 1;
     string nickname = 2;
   }
 
@@ -88,21 +117,21 @@ message UserFull {
 }
 
 message UserShot {
-  int64 id = 1;
+  int32 id = 1;
   string nickname = 2;
   string first_name = 3;
   string last_name = 4;
   string email = 5;
   string status = 7;
   message NewImage {
-    int64 id = 1;
+    int32 id = 1;
   }
-  NewImage image = 9;
+  Image image = 9;
   string lang = 8;
   Role role = 10;
   string role_name = 11;
   message Parent {
-    int64 id = 1;
+    int32 id = 1;
     string nickname = 2;
   }
 
@@ -112,15 +141,51 @@ message UserShot {
 }
 
 message GetUserByIdRequest {
-  int64 id = 1;
+  // user id
+  int32 id = 1;
+}
+
+message GetUserListRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+  string order = 3;
+  string sort_by = 4;
+}
+
+message GetUserListResult {
+  repeated UserShot items = 1;
+  message Meta {
+    uint32 limit = 1;
+    uint32 objects_count = 2;
+    uint32 offset = 3;
+  }
+  Meta meta = 2;
+}
+
+message GetUserSearchResult {
+  repeated UserShot items = 1;
+}
+
+message DeleteUserRequest {
+  // user id
+  int32 id = 1;
 }
 
 service UserService {
 
   // add new user
-  rpc AddUser (NewtUser) returns (UserFull){
+  rpc AddUser (NewtUserRequest) returns (UserFull){
     option (google.api.http) = {
       post: "/v1/user"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
     };
   }
 
@@ -128,6 +193,60 @@ service UserService {
   rpc GetUserById (GetUserByIdRequest) returns (UserFull){
     option (google.api.http) = {
       get: "/v1/user/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update user by id
+  rpc UpdateUserById (UpdateUserRequest) returns (UserFull){
+    option (google.api.http) = {
+      put: "/v1/user/{id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get user list
+  rpc GetUserList (GetUserListRequest) returns (GetUserListResult){
+    option (google.api.http) = {
+      get: "/v1/users"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete user by id
+  rpc DeleteUserById (DeleteUserRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/user/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
     };
   }
 }

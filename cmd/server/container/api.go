@@ -16,22 +16,23 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package jwt_manager
+package container
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/system/config"
 )
 
-type JwtManager interface {
-	Start() (err error)
-	Generate(user *m.User) (accessToken string, err error)
-	Verify(accessToken string) (claims *UserClaims, err error)
-}
-
-type UserClaims struct {
-	jwt.StandardClaims
-	UserId   int64  `json:"i,omitempty"`
-	Username string `json:"n,omitempty"`
-	RoleName string `json:"r,omitempty"`
+// NewApiConfig ...
+func NewApiConfig(cfg *config.AppConfig) api.Config {
+	if cfg.ApiGrpcHostPort == "" {
+		cfg.ApiGrpcHostPort = ":3000"
+	}
+	return api.Config{
+		GrpcHostPort: cfg.ApiGrpcHostPort,
+		HttpHostPort: cfg.ApiHttpHostPort,
+		PromHostPort: cfg.ApiPromHostPort,
+		WsHostPort:   cfg.ApiWsHostPort,
+		Swagger:      cfg.ApiSwagger,
+	}
 }

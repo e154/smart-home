@@ -113,7 +113,6 @@ func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, t
 // Search ...
 func (n *Roles) Search(query string, limit, offset int) (list []*Role, total int64, err error) {
 
-	fmt.Println(query)
 	q := n.Db.Model(&Role{}).
 		Where("name LIKE ?", "%"+query+"%")
 

@@ -172,4 +172,20 @@ func checkEnv(conf *AppConfig) {
 		v, _ := strconv.ParseInt(metricPort, 10, 32)
 		conf.MetricPort = int(v)
 	}
+
+	if apiGrpcHostPort := os.Getenv("API_GRPC_HOST_PORT"); apiGrpcHostPort != "" {
+		conf.ApiGrpcHostPort = apiGrpcHostPort
+	}
+
+	if apiHttpHostPort := os.Getenv("API_HTTP_HOST_PORT"); apiHttpHostPort != "" {
+		conf.ApiHttpHostPort = apiHttpHostPort
+	}
+
+	if apiPromHostPort := os.Getenv("API_PROM_HOST_PORT"); apiPromHostPort != "" {
+		conf.ApiPromHostPort = apiPromHostPort
+	}
+
+	if apiWsHostPort := os.Getenv("API_WS_HOST_PORT"); apiWsHostPort != "" {
+		conf.ApiWsHostPort = apiWsHostPort
+	}
 }

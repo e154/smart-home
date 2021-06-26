@@ -19,14 +19,22 @@
 package controllers
 
 import (
+	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/endpoint"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/validation"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -40,6 +48,7 @@ type ControllerCommon struct {
 	adaptors   *adaptors.Adaptors
 	accessList access_list.AccessListService
 	endpoint   *endpoint.Endpoint
+	dto        dto.Dto
 }
 
 // NewControllerCommon ...
@@ -47,6 +56,7 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	endpoint *endpoint.Endpoint) *ControllerCommon {
 	return &ControllerCommon{
+		dto:        dto.NewDto(),
 		adaptors:   adaptors,
 		accessList: accessList,
 		endpoint:   endpoint,
@@ -97,38 +107,58 @@ func (c ControllerCommon) list(ctx *gin.Context) (query, sortBy, order string, l
 	return
 }
 
-func (c ControllerCommon) getUser(ctx *gin.Context) (user *m.User, err error) {
+func (c ControllerCommon) currentUser(ctx context.Context) (*m.User, error) {
 
-	u, ok := ctx.Get("currentUser")
+	user, ok := ctx.Value("currentUser").(*m.User)
 	if !ok {
-		err = fmt.Errorf("bad user object")
-		return
+		return nil, fmt.Errorf("bad user object")
 	}
 
-	user, ok = u.(*m.User)
-	if !ok {
-		err = fmt.Errorf("bad user object")
-		return
-	}
-
-	return
+	return user, nil
 }
 
-func (cm ControllerCommon) parseBasicAuth(auth string) (username, password string, ok bool) {
+func (c ControllerCommon) parseBasicAuth(auth string) (username, password string, ok bool) {
 	const prefix = "Basic "
 	// Case insensitive prefix match. See Issue 22736.
 	if len(auth) < len(prefix) || !strings.EqualFold(auth[:len(prefix)], prefix) {
 		return
 	}
-	c, err := base64.StdEncoding.DecodeString(auth[len(prefix):])
+	str, err := base64.StdEncoding.DecodeString(auth[len(prefix):])
 	if err != nil {
 		return
 	}
-	cs := string(c)
+	cs := string(str)
 	s := strings.IndexByte(cs, ':')
 	if s < 0 {
 		return
 	}
 
 	return cs[:s], cs[s+1:], true
+}
+
+func (c ControllerCommon) prepareErrors(errs []*validation.Error) error {
+	if len(errs) > 0 {
+		st := status.New(codes.InvalidArgument, "One or more fields are invalid")
+		for _, e := range errs {
+			st, _ = st.WithDetails(&errdetails.BadRequest_FieldViolation{
+				Field:       e.Field,
+				Description: e.Message,
+			})
+		}
+		return st.Err()
+	}
+	return nil
+}
+
+func (c ControllerCommon) writeErr(code int, body string, w http.ResponseWriter) {
+	http.Error(w, body, code)
+}
+
+func (c ControllerCommon) writeSuccess(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusOK)
+}
+
+func (c ControllerCommon) writeJson(w http.ResponseWriter, p interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(p)
 }

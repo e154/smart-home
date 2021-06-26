@@ -26,13 +26,17 @@ import (
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/rbac"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tmc/grpc-websocket-proxy/wsproxy"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
 	"net"
 	"net/http"
+	"strings"
 )
 
 //go:embed swagger-ui/*
@@ -46,13 +50,28 @@ var (
 type Api struct {
 	controllers *controllers.Controllers
 	filter      *rbac.AccessFilter
+	cfg         Config
 }
 
 func NewApi(controllers *controllers.Controllers,
-	filter *rbac.AccessFilter) (api *Api) {
-	api = &Api{controllers: controllers,
-		filter: filter}
+	filter *rbac.AccessFilter,
+	cfg Config) (api *Api) {
+	api = &Api{
+		controllers: controllers,
+		filter:      filter,
+		cfg:         cfg,
+	}
 	return
+}
+
+func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Handler {
+	return h2c.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+			grpcServer.ServeHTTP(w, r)
+		} else {
+			otherHandler.ServeHTTP(w, r)
+		}
+	}), &http2.Server{})
 }
 
 func (a *Api) Start() error {
@@ -61,32 +80,46 @@ func (a *Api) Start() error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	lis, err := net.Listen("tcp", ":3000")
+	lis, err := net.Listen("tcp", a.cfg.GrpcHostPort)
 	if err != nil {
 		log.Error(err.Error())
 		return err
 	}
 
 	grpcServer := grpc.NewServer(
-		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
 		grpc.UnaryInterceptor(a.filter.AuthInterceptor),
+		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
 	)
 	gw.RegisterAuthServiceServer(grpcServer, a.controllers.Auth)
 	gw.RegisterStreamServiceServer(grpcServer, a.controllers.Stream)
 	gw.RegisterUserServiceServer(grpcServer, a.controllers.User)
+	gw.RegisterRoleServiceServer(grpcServer, a.controllers.Role)
+	gw.RegisterScriptServiceServer(grpcServer, a.controllers.Script)
+	gw.RegisterImageServiceServer(grpcServer, a.controllers.Image)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
 
-	group.Go(func() error {
-		err := grpcServer.Serve(lis)
-		if err != nil {
+	group.Go(func() (err error) {
+		if err = grpcServer.Serve(lis); err != nil {
 			log.Error(err.Error())
 		}
-		return err
+		return
 	})
 
-	mux := runtime.NewServeMux(runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{OrigName: true, EmitDefaults: true}))
+	//todo check ...
+	//OrigName:     true,
+	//EmitDefaults: true,
+	customMarshaller := &runtime.JSONPb{
+		MarshalOptions: protojson.MarshalOptions{
+			UseEnumNumbers:  false,
+			EmitUnpopulated: true,
+			UseProtoNames:   true,
+		},
+	}
+
+	mux := runtime.NewServeMux(runtime.WithMarshalerOption(runtime.MIMEWildcard, customMarshaller),
+		runtime.WithIncomingHeaderMatcher(a.CustomMatcher))
 
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
@@ -94,29 +127,57 @@ func (a *Api) Start() error {
 	}
 
 	group.Go(func() error {
-		gw.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, ":3000", opts)
-		gw.RegisterStreamServiceHandlerFromEndpoint(ctx, mux, ":3000", opts)
-		gw.RegisterUserServiceHandlerFromEndpoint(ctx, mux, ":3000", opts)
+		gw.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterStreamServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterUserServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterRoleServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterScriptServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterImageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 
-	group.Go(func() error {
-		return http.ListenAndServe(":8843", wsproxy.WebsocketProxy(mux))
-	})
-	group.Go(func() error {
-		return http.ListenAndServe(":2662", promhttp.Handler())
-	})
+	if a.cfg.WsHostPort != "" {
+		group.Go(func() error {
+			return http.ListenAndServe(a.cfg.WsHostPort, wsproxy.WebsocketProxy(mux))
+		})
+	}
 
-	swagger := http.NewServeMux()
-	swagger.Handle("/", mux)
-	swagger.Handle("/swagger-ui/", http.StripPrefix("/", http.FileServer(http.FS(f))))
-	swagger.Handle("/api.swagger.json", http.StripPrefix("/", http.FileServer(http.FS(f))))
+	if a.cfg.PromHostPort != "" {
+		group.Go(func() error {
+			return http.ListenAndServe(a.cfg.PromHostPort, promhttp.Handler())
+		})
+	}
 
-	go func() {
-		if err = http.ListenAndServe("localhost:8080", swagger); err != nil {
-			log.Fatal(err.Error())
-		}
-	}()
+	if a.cfg.Swagger {
+		httpv1 := http.NewServeMux()
+		httpv1.Handle("/", grpcHandlerFunc(grpcServer, mux))
+
+		// upload handler
+		httpv1.HandleFunc("/v1/image/upload", a.controllers.Image.MuxUploadImage())
+
+		// uploaded and other static files
+		httpv1.Handle("/upload", http.FileServer(http.Dir(common.StoragePath())))
+		httpv1.Handle("/api_static", http.FileServer(http.Dir(common.StoragePath())))
+
+		// swagger
+		httpv1.Handle("/swagger-ui/", http.StripPrefix("/", http.FileServer(http.FS(f))))
+		httpv1.Handle("/api.swagger.json", http.StripPrefix("/", http.FileServer(http.FS(f))))
+
+		go func() {
+			if err = http.ListenAndServe(a.cfg.HttpHostPort, httpv1); err != nil {
+				log.Fatal(err.Error())
+			}
+		}()
+	}
 
 	return group.Wait()
+}
+
+func (a *Api) CustomMatcher(key string) (string, bool) {
+	switch key {
+	case "X-Api-Key":
+		return key, true
+	default:
+		return runtime.DefaultHeaderMatcher(key)
+	}
 }

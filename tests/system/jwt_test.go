@@ -20,6 +20,7 @@ package system
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/jwt_manager"
 	. "github.com/smartystreets/goconvey/convey"
@@ -52,15 +53,16 @@ func TestJwt(t *testing.T) {
 				t.Run("verify", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
 
-						const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzNDU4MjEsImlhdCI6MTYyMzc1MzgyMSwiaXNzIjoic2VydmVyIiwibmJmIjoxNjIzNzUzODIxLCJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6InVzZXIifQ.PlnyM928_KJaeBseB5IpCrphu4T7O4y-2oK0SeUgv8Q"
+						const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjcwNTE3OTUsImlhdCI6MTYyNDQ1OTc5NSwiaXNzIjoic2VydmVyIiwibmJmIjoxNjI0NDU5Nzk1LCJpIjoxLCJuIjoiSm9obiBEb2UiLCJyIjoidXNlciJ9.glT9RxcB9RgrS2rswZh1q_JpPccxpVwXjXZETM6iiCk"
 
 						claims, err := manager.Verify(accessToken)
+						debug.Println(claims)
 						ctx.So(err, ShouldBeNil)
 						ctx.So(claims, ShouldNotBeNil)
-						ctx.So(claims.ExpiresAt, ShouldEqual, 1626345821)
-						ctx.So(claims.IssuedAt, ShouldEqual, 1623753821)
+						ctx.So(claims.ExpiresAt, ShouldEqual, 1627051795)
+						ctx.So(claims.IssuedAt, ShouldEqual, 1624459795)
 						ctx.So(claims.Issuer, ShouldEqual, "server")
-						ctx.So(claims.NotBefore, ShouldEqual, 1623753821)
+						ctx.So(claims.NotBefore, ShouldEqual, 1624459795)
 						ctx.So(claims.UserId, ShouldEqual, 1)
 						ctx.So(claims.Username, ShouldEqual, "John Doe")
 						ctx.So(claims.RoleName, ShouldEqual, "user")

@@ -26,7 +26,7 @@ import (
 
 type IPermission interface {
 	Add(permission *m.Permission) (id int64, err error)
-	Delete(packageName string, levelName []string) (err error)
+	Delete(roleName, packageName string, levelName []string) (err error)
 	GetAllPermissions(roleName string) (permissions []*m.Permission, err error)
 	fromDb(dbPermission *db.Permission) (permission *m.Permission)
 	toDb(permission *m.Permission) (dbPermission *db.Permission)
@@ -59,9 +59,9 @@ func (n *Permission) Add(permission *m.Permission) (id int64, err error) {
 }
 
 // Delete ...
-func (n *Permission) Delete(packageName string, levelName []string) (err error) {
+func (n *Permission) Delete(roleName, packageName string, levelName []string) (err error) {
 
-	err = n.table.Delete(packageName, levelName)
+	err = n.table.Delete(roleName, packageName, levelName)
 
 	return
 }

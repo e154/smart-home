@@ -51,11 +51,10 @@ func (n Permissions) Add(permission *Permission) (id int64, err error) {
 }
 
 // Delete ...
-func (n Permissions) Delete(packageName string, levelName []string) (err error) {
+func (n Permissions) Delete(roleName, packageName string, levelName []string) (err error) {
 
 	err = n.Db.
-		Where("package_name = ? and level_name in (?)", packageName, levelName).
-		Delete(&Permission{}).
+		Delete(&Permission{}, "role_name = ? and package_name = ? and level_name in (?)", roleName, packageName, levelName).
 		Error
 
 	return

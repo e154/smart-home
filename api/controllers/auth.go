@@ -20,6 +20,7 @@ package controllers
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -55,7 +56,7 @@ func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api
 	var user *m.User
 	var accessToken string
 	if user, accessToken, err = a.endpoint.Auth.SignIn(username, pass, ""); err != nil {
-		return
+		return nil, internalServerError
 	}
 
 	currentUser := &api.CurrentUser{}
@@ -69,10 +70,39 @@ func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api
 	return
 }
 
-func (a ControllerAuth) Signout(context.Context, *api.SignoutRequest) (*emptypb.Empty, error) {
+func (a ControllerAuth) Signout(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+
+	var internalServerError = status.Error(codes.Unauthenticated, "INTERNAL_SERVER_ERROR")
+	currentUser, err := a.currentUser(ctx)
+	if err != nil {
+		return nil, internalServerError
+	}
+
+	if err := a.endpoint.Auth.SignOut(currentUser); err != nil {
+		return nil, internalServerError
+	}
+
 	return &emptypb.Empty{}, nil
 }
 
-func (a ControllerAuth) AccessList(context.Context, *api.AccessListRequest) (*api.AccessListResponse, error) {
-	return &api.AccessListResponse{}, nil
+func (a ControllerAuth) AccessList(ctx context.Context, _ *emptypb.Empty) (*api.AccessListResponse, error) {
+
+	var internalServerError = status.Error(codes.Unauthenticated, "INTERNAL_SERVER_ERROR")
+	currentUser, err := a.currentUser(ctx)
+	if err != nil {
+		return nil, internalServerError
+	}
+
+	accessList, err := a.endpoint.Auth.AccessList(currentUser, a.accessList)
+	if err != nil {
+		return nil, internalServerError
+	}
+
+	b, _ := json.Marshal(accessList)
+
+	result := &api.AccessListResponse{
+		AccessList: b,
+	}
+
+	return result, nil
 }

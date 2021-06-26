@@ -3,34 +3,166 @@ syntax = "proto3";
 package api;
 option go_package = "/api";
 
+import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
+import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 message Image {
-  int64 id = 1;
+  int32 id = 1;
   string thumb = 2;
-  string image = 3;
-  string mime_type = 4;
-  string title = 5;
-  int64 size = 6;
-  string name = 7;
-  google.protobuf.Timestamp created_at = 8;
+  string url = 3;
+  string image = 4;
+  string mime_type = 5;
+  string title = 6;
+  int32 size = 7;
+  string name = 8;
+  google.protobuf.Timestamp created_at = 9;
 }
 
-message NewImage {
+message NewImageRequest {
   string thumb = 1;
   string image = 2;
   string mime_type = 3;
   string title = 4;
-  int64 size = 5;
+  int32 size = 5;
   string name = 6;
 }
 
-message UpdateImage {
-  int64 id = 1;
+message UpdateImageRequest {
+  int32 id = 1;
   string thumb = 2;
   string image = 3;
   string mime_type = 4;
   string title = 5;
-  int64 size = 6;
+  int32 size = 6;
   string name = 7;
+}
+
+message GetImageRequest{
+  int32 id = 1;
+}
+
+message GetImageListRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+  string order = 3;
+  string sort_by = 4;
+}
+
+message GetImageListResult {
+  repeated Image items = 1;
+  message Meta {
+    uint32 limit = 1;
+    uint32 objects_count = 2;
+    uint32 offset = 3;
+  }
+  Meta meta = 2;
+}
+
+message DeleteImageRequest {
+  int32 id = 1;
+}
+
+message UploadImageRequest {
+  google.api.HttpBody http_body = 2;
+}
+
+service ImageService {
+
+  // add new image
+  rpc AddImage (NewImageRequest) returns (Image){
+    option (google.api.http) = {
+      post: "/v1/image"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get image by id
+  rpc GetImageById (GetImageRequest) returns (Image){
+    option (google.api.http) = {
+      get: "/v1/image/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update image
+  rpc UpdateImageById (UpdateImageRequest) returns (Image){
+    option (google.api.http) = {
+      put: "/v1/image/{id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get image list
+  rpc GetImageList (GetImageListRequest) returns (GetImageListResult){
+    option (google.api.http) = {
+      get: "/v1/images"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete image by id
+  rpc DeleteImageById (DeleteImageRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/image/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // upload image
+  rpc UploadImage (UploadImageRequest) returns (Image){
+    option (google.api.http) = {
+      post: "/v1/image/upload"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+      summary: "Upload file";
+      consumes: ["multipart/form-data"]
+    };
+  }
 }

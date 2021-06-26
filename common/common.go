@@ -27,6 +27,8 @@ import (
 	"time"
 )
 
+const DefaultPageSize int64 = 15
+
 //create md5 string
 func Strtomd5(s string) string {
 	h := md5.New()

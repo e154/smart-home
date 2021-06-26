@@ -29,6 +29,9 @@ type Controllers struct {
 	Auth   ControllerAuth
 	Stream ControllerStream
 	User   ControllerUser
+	Role   ControllerRole
+	Script ControllerScript
+	Image  ControllerImage
 }
 
 // NewControllers ...
@@ -40,5 +43,8 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Auth:   NewControllerAuth(common),
 		Stream: NewControllerStream(common),
 		User:   NewControllerUser(common),
+		Role:   NewControllerRole(common),
+		Script: NewControllerScript(common),
+		Image:  NewControllerImage(common),
 	}
 }

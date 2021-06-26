@@ -14,33 +14,11 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
       name: "Alex Filippov"
       url: "https://e154.github.io/smart-home/"
       email: "support@e154.ru"
-    };
+    }
   };
   schemes: [HTTP, HTTPS]
   consumes: "application/json"
   produces: "application/json"
-  responses: {
-    key: "404";
-    value: {
-      description: "Returned when the resource does not exist.";
-      schema: {
-        json_schema: {
-          type: STRING;
-        }
-      }
-    }
-  }
-  responses: {
-    key: "418";
-    value: {
-      description: "I'm a teapot.";
-      schema: {
-        json_schema: {
-          ref: ".grpc.gateway.examples.internal.examplepb.NumericEnum";
-        }
-      }
-    }
-  }
   security_definitions: {
     security: {
       key: "ApiKeyAuth";
@@ -51,7 +29,7 @@ option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
         extensions: {
           key: "x-api-key";
           value {
-            string_value: "oauth2";
+            string_value: "jwt";
           }
         }
       }

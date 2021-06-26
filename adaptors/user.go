@@ -195,6 +195,14 @@ func (n *User) Delete(userId int64) (err error) {
 
 // List ...
 func (n *User) List(limit, offset int64, orderBy, sort string) (list []*m.User, total int64, err error) {
+
+	if sort == "" {
+		sort = "id"
+	}
+	if orderBy == "" {
+		orderBy = "desc"
+	}
+
 	var dbList []*db.User
 	if dbList, total, err = n.table.List(limit, offset, orderBy, sort); err != nil {
 		return

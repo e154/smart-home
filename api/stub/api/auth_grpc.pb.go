@@ -22,9 +22,9 @@ type AuthServiceClient interface {
 	// sign in user
 	Signin(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SigninResponse, error)
 	// sign out user
-	Signout(ctx context.Context, in *SignoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Signout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// get user access list object
-	AccessList(ctx context.Context, in *AccessListRequest, opts ...grpc.CallOption) (*AccessListResponse, error)
+	AccessList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AccessListResponse, error)
 }
 
 type authServiceClient struct {
@@ -44,7 +44,7 @@ func (c *authServiceClient) Signin(ctx context.Context, in *emptypb.Empty, opts 
 	return out, nil
 }
 
-func (c *authServiceClient) Signout(ctx context.Context, in *SignoutRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *authServiceClient) Signout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.AuthService/Signout", in, out, opts...)
 	if err != nil {
@@ -53,7 +53,7 @@ func (c *authServiceClient) Signout(ctx context.Context, in *SignoutRequest, opt
 	return out, nil
 }
 
-func (c *authServiceClient) AccessList(ctx context.Context, in *AccessListRequest, opts ...grpc.CallOption) (*AccessListResponse, error) {
+func (c *authServiceClient) AccessList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AccessListResponse, error) {
 	out := new(AccessListResponse)
 	err := c.cc.Invoke(ctx, "/api.AuthService/AccessList", in, out, opts...)
 	if err != nil {
@@ -69,9 +69,9 @@ type AuthServiceServer interface {
 	// sign in user
 	Signin(context.Context, *emptypb.Empty) (*SigninResponse, error)
 	// sign out user
-	Signout(context.Context, *SignoutRequest) (*emptypb.Empty, error)
+	Signout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	// get user access list object
-	AccessList(context.Context, *AccessListRequest) (*AccessListResponse, error)
+	AccessList(context.Context, *emptypb.Empty) (*AccessListResponse, error)
 }
 
 // UnimplementedAuthServiceServer should be embedded to have forward compatible implementations.
@@ -81,10 +81,10 @@ type UnimplementedAuthServiceServer struct {
 func (UnimplementedAuthServiceServer) Signin(context.Context, *emptypb.Empty) (*SigninResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Signin not implemented")
 }
-func (UnimplementedAuthServiceServer) Signout(context.Context, *SignoutRequest) (*emptypb.Empty, error) {
+func (UnimplementedAuthServiceServer) Signout(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Signout not implemented")
 }
-func (UnimplementedAuthServiceServer) AccessList(context.Context, *AccessListRequest) (*AccessListResponse, error) {
+func (UnimplementedAuthServiceServer) AccessList(context.Context, *emptypb.Empty) (*AccessListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccessList not implemented")
 }
 
@@ -118,7 +118,7 @@ func _AuthService_Signin_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _AuthService_Signout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignoutRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -130,13 +130,13 @@ func _AuthService_Signout_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/api.AuthService/Signout",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Signout(ctx, req.(*SignoutRequest))
+		return srv.(AuthServiceServer).Signout(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AuthService_AccessList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AccessListRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -148,7 +148,7 @@ func _AuthService_AccessList_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/api.AuthService/AccessList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).AccessList(ctx, req.(*AccessListRequest))
+		return srv.(AuthServiceServer).AccessList(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

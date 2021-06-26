@@ -8,65 +8,63 @@ import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-message AccessItem {
-  repeated string actions = 1;
-  string method = 2;
-  string description = 3;
-  string role_name = 4;
-}
-
-message AccessLevels {
-  map<string, AccessItem> items = 1;
-}
-
-message AccessList {
-  map<string, AccessLevels> levels = 1;
-}
-
-message Role {
-  Role parent = 1;
-  string name = 2;
-  string description = 3;
-  repeated Role children = 4;
-
-  message AccessList {
-    message ListOfString {
-      repeated string items = 1;
-    }
-    map<string, ListOfString> levels = 1;
-  }
-
-  AccessList access_list = 5;
-
+message Script {
+  int32 id = 1;
+  string lang = 2;
+  string name = 3;
+  string source = 4;
+  string description = 5;
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
 }
 
-message NewRoleRequest {
-  string name = 1;
-  string description = 2;
-  string parent = 3;
+message NewScriptRequest {
+  string lang = 1;
+  string name = 2;
+  string source = 3;
+  string description = 4;
 }
 
-message GetRoleRequest {
-  string name = 1;
+message GetScriptRequest {
+  int32 id = 1;
 }
 
-message UpdateRoleRequest {
-  string name = 1;
-  string description = 2;
-  string parent = 3;
+message DeleteScriptRequest {
+  int32 id = 1;
 }
 
-message GetRoleListRequest {
+message UpdateScriptRequest {
+  int32 id = 1;
+  string lang = 2;
+  string name = 3;
+  string source = 4;
+  string description = 5;
+}
+
+message ExecScriptRequest {
+  int32 id = 1;
+}
+
+message ExecSrcScriptRequest {
+  string lang = 1;
+  string name = 2;
+  string source = 3;
+  string description = 4;
+}
+
+message ExecScriptResult {
+  string result = 1;
+}
+
+message GetScriptListRequest {
   uint32 limit = 1;
   uint32 offset = 2;
   string order = 3;
   string sort_by = 4;
 }
 
-message GetRoleListResult {
-  repeated Role items = 1;
+message GetScriptListResult {
+  repeated Script items = 1;
   message Meta {
     uint32 limit = 1;
     uint32 objects_count = 2;
@@ -75,41 +73,26 @@ message GetRoleListResult {
   Meta meta = 2;
 }
 
-message SearchRoleRequest {
+message SearchScriptRequest {
   string query = 1;
   int32 limit = 2;
   int32 offset = 3;
 }
 
-message SearchRoleListResult {
-  repeated Role items = 1;
+message SearchScriptListResult {
+  repeated Script items = 1;
 }
 
-message DeleteRoleRequest {
-  string name = 1;
+message CopyScriptRequest {
+  int32 id = 1;
 }
 
-message GetRoleAccessListRequest {
-  string name = 1;
-}
-message RoleAccessListResult {
-  map<string, AccessLevels> levels = 1;
-}
+service ScriptService {
 
-message UpdateRoleAccessListRequest {
-  string name = 1;
-  message AccessListDiff {
-    map<string, bool> items = 1;
-  }
-  map<string, AccessListDiff> accessListDiff = 2;
-}
-
-service RoleService {
-
-  // add new role
-  rpc AddRole (NewRoleRequest) returns (Role){
+  // add new script
+  rpc AddScript (NewScriptRequest) returns (Script){
     option (google.api.http) = {
-      post: "/v1/role"
+      post: "/v1/script"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -122,10 +105,10 @@ service RoleService {
     };
   }
 
-  // get role by name
-  rpc GetRoleByName (GetRoleRequest) returns (Role){
+  // get script by id
+  rpc GetScriptById (GetScriptRequest) returns (Script){
     option (google.api.http) = {
-      get: "/v1/role/{name}"
+      get: "/v1/script/{id}"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -137,25 +120,10 @@ service RoleService {
     };
   }
 
-  // get role access list
-  rpc GetRoleAccessList (GetRoleAccessListRequest) returns (RoleAccessListResult){
+  // update script
+  rpc UpdateScriptById (UpdateScriptRequest) returns (Script){
     option (google.api.http) = {
-      get: "/v1/role/{name}/access_list"
-    };
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-      security: {
-        security_requirement: {
-          key: "ApiKeyAuth"
-          value: {}
-        }
-      }
-    };
-  }
-
-  // update role access list
-  rpc UpdateRoleAccessList (UpdateRoleAccessListRequest) returns (RoleAccessListResult){
-    option (google.api.http) = {
-      put: "/v1/role/n/access_list"
+      put: "/v1/script/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -168,10 +136,70 @@ service RoleService {
     };
   }
 
-  // update role
-  rpc UpdateRoleByName (UpdateRoleRequest) returns (Role){
+  // get script list
+  rpc GetScriptList (GetScriptListRequest) returns (GetScriptListResult){
     option (google.api.http) = {
-      put: "/v1/role/{name}"
+      get: "/v1/scripts"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete script by id
+  rpc SearchScriptById (SearchScriptRequest) returns (SearchScriptListResult){
+    option (google.api.http) = {
+      get: "/v1/scripts/search"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete script by id
+  rpc DeleteScriptById (DeleteScriptRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/script/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // exec script by id
+  rpc ExecScriptById (ExecScriptRequest) returns (ExecScriptResult){
+    option (google.api.http) = {
+      post: "/v1/script/{id}/exec"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // exec src script by id
+  rpc ExecSrcScriptById (ExecSrcScriptRequest) returns (ExecScriptResult){
+    option (google.api.http) = {
+      post: "/v1/script/exec_src"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -184,40 +212,10 @@ service RoleService {
     };
   }
 
-  // get role list
-  rpc GetRoleList (GetRoleListRequest) returns (GetRoleListResult){
+  // copy script by id
+  rpc CopyScriptById (CopyScriptRequest) returns (Script){
     option (google.api.http) = {
-      get: "/v1/roles"
-    };
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-      security: {
-        security_requirement: {
-          key: "ApiKeyAuth"
-          value: {}
-        }
-      }
-    };
-  }
-
-  // delete role by name
-  rpc SearchRoleByName (SearchRoleRequest) returns (SearchRoleListResult){
-    option (google.api.http) = {
-      get: "/v1/roles/search"
-    };
-    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
-      security: {
-        security_requirement: {
-          key: "ApiKeyAuth"
-          value: {}
-        }
-      }
-    };
-  }
-
-  // delete role by name
-  rpc DeleteRoleByName (DeleteRoleRequest) returns (google.protobuf.Empty){
-    option (google.api.http) = {
-      delete: "/v1/role/{name}"
+      post: "/v1/script/{id}/copy"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

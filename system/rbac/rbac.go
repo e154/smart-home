@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"google.golang.org/grpc"
@@ -39,9 +38,10 @@ var (
 
 // AccessFilter ...
 type AccessFilter struct {
-	adaptors          *adaptors.Adaptors
-	jwtManager        jwt_manager.JwtManager
-	accessListService access_list.AccessListService
+	adaptors            *adaptors.Adaptors
+	jwtManager          jwt_manager.JwtManager
+	accessListService   access_list.AccessListService
+	internalServerError error
 }
 
 // NewAccessFilter ...
@@ -49,9 +49,10 @@ func NewAccessFilter(adaptors *adaptors.Adaptors,
 	jwtManager jwt_manager.JwtManager,
 	accessListService access_list.AccessListService) *AccessFilter {
 	return &AccessFilter{
-		adaptors:          adaptors,
-		jwtManager:        jwtManager,
-		accessListService: accessListService,
+		adaptors:            adaptors,
+		jwtManager:          jwtManager,
+		accessListService:   accessListService,
+		internalServerError: status.Error(codes.Unauthenticated, "UNAUTHORIZED"),
 	}
 }
 
@@ -76,61 +77,61 @@ func (f *AccessFilter) accessDecision(params, method string, accessList access_l
 
 func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 
+	meta, ok := metadata.FromIncomingContext(ctx)
+
 	switch info.FullMethod {
 	case "/api.AuthService/Signin":
 		return handler(ctx, req)
 	}
 
-	var internalServerError = status.Error(codes.Unauthenticated, "INTERNAL_SERVER_ERROR")
-
-	//check metadata
-	meta, ok := metadata.FromIncomingContext(ctx)
-
-	debug.Println(meta)
-
 	if !ok {
-		return nil, internalServerError
+		return nil, f.internalServerError
 	}
 	if len(meta["x-api-key"]) != 1 {
-		return nil, internalServerError
+		return nil, f.internalServerError
 	}
 
 	// get access token from meta
 	var accessToken = meta["x-api-key"][0]
 
-	fmt.Println("-----1")
-	fmt.Println(accessToken)
-
 	claims, err := f.jwtManager.Verify(accessToken)
 	if err != nil {
 		log.Error(err.Error())
-		return nil, internalServerError
+		return nil, f.internalServerError
 	}
 
 	// validate claim
 	if err = claims.Valid(); err != nil {
-		return nil, internalServerError
+		return nil, f.internalServerError
 	}
 
 	// если id == 1 is admin
 	if claims.UserId == 1 || claims.RoleName == "admin" {
-		return handler(ctx, req)
+		return f.getUser(claims.UserId, handler, ctx, req)
 	}
 
 	// check access filter
 	var accessList access_list.AccessList
 	if accessList, err = f.accessListService.GetFullAccessList(claims.RoleName); err != nil {
-		return nil, internalServerError
+		return nil, f.internalServerError
 	}
 
 	const method = "post"
 	var requestURI = info.FullMethod
 
 	if ret := f.accessDecision(requestURI, method, accessList); ret {
-		return handler(ctx, req)
+		return f.getUser(claims.UserId, handler, ctx, req)
 	}
 
 	log.Warnf(fmt.Sprintf("access denied: role(%s) [%s] url(%s)", claims.RoleName, method, requestURI))
 
-	return nil, internalServerError
+	return nil, f.internalServerError
+}
+
+func (f *AccessFilter) getUser(userId int64, handler grpc.UnaryHandler, ctx context.Context, req interface{}) (interface{}, error) {
+	user, err := f.adaptors.User.GetById(userId)
+	if err != nil {
+		return nil, f.internalServerError
+	}
+	return handler(context.WithValue(ctx, "currentUser", user), req)
 }
