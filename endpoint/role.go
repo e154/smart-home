@@ -101,7 +101,7 @@ func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validatio
 func (n *RoleEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Role, total int64, err error) {
 
 	if limit == 0 {
-		 limit = common.DefaultPageSize
+		limit = common.DefaultPageSize
 	}
 
 	result, total, err = n.adaptors.Role.List(limit, offset, order, sortBy)

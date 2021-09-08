@@ -16,7 +16,24 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package commands
+// The following command will run pingmq as a client, subscribing to /ping/failure/+
+// topic and receiving any failed ping attempts.
+//
+//   $ ./pingmq client -t /ping/failure/+
+//   8.8.8.6: Request timed out for seq 1
+//
+// The following command will run pingmq as a client, subscribing to /ping/failure/+
+// topic and receiving any failed ping attempts.
+//
+//   $ ./pingmq client -t /ping/success/+
+//   8 bytes from 8.8.8.8: seq=1 ttl=56 tos=32 time=21.753711ms
+//
+// One can also subscribe to a specific IP by using the following command.
+//
+//   $ ./pingmq client -t /ping/+/8.8.8.8
+//   8 bytes from 8.8.8.8: seq=1 ttl=56 tos=32 time=21.753711ms
+//
+package client
 
 import (
 	"fmt"
@@ -26,30 +43,53 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
 var (
-	clientCmd = &cobra.Command{
+	Client = &cobra.Command{
 		Use:   "client",
 		Short: "client subscribes to the pingmq server and prints out the ping results",
 	}
 
-	clientURI    string
-	clientTopics strlist
+	clientURI      string
+	clientTopics   strlist
 	user, password string
 
 	done chan struct{}
 )
 
-func init() {
-	clientCmd.Flags().StringVarP(&clientURI, "server", "s", "tcp://127.0.0.1:1883", "PingMQ server to connect to")
-	clientCmd.Flags().VarP(&clientTopics, "topic", "t", "Comma separated list of topics to subscribe to")
-	clientCmd.Flags().StringVarP(&user, "user", "u", "node1", "user name")
-	clientCmd.Flags().StringVarP(&password, "password", "p", "node1", "password")
-	clientCmd.Run = client
+type strlist []string
+
+// String ...
+func (s *strlist) String() string {
+	return fmt.Sprint(*s)
 }
 
+// Type ...
+func (s *strlist) Type() string {
+	return "strlist"
+}
+
+// Set ...
+func (s *strlist) Set(value string) error {
+	for _, ip := range strings.Split(value, ",") {
+		*s = append(*s, ip)
+	}
+
+	return nil
+}
+
+func init() {
+	Client.Flags().StringVarP(&clientURI, "server", "s", "tcp://127.0.0.1:1883", "PingMQ server to connect to")
+	Client.Flags().VarP(&clientTopics, "topic", "t", "Comma separated list of topics to subscribe to")
+	Client.Flags().StringVarP(&user, "user", "u", "node1", "user name")
+	Client.Flags().StringVarP(&password, "password", "p", "node1", "password")
+	Client.Run = client
+
+	done = make(chan struct{})
+}
 
 func onPublish(i mqtt.Client, msg mqtt.Message) {
 

@@ -16,35 +16,102 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package commands
+// The following commands will run pingmq as a server, pinging the 8.8.8.0/28 CIDR
+// block, and publishing the results to /ping/success/{ip} and /ping/failure/{ip}
+// topics every 30 seconds. `sudo` is needed because we are using RAW sockets and
+// that requires root privilege.
+//
+//   $ go build
+//   $ sudo ./pingmq server -p 8.8.8.0/28 -i 30
+//
+package server
 
 import (
 	"fmt"
 	"github.com/DrmagicE/gmqtt"
+	"github.com/DrmagicE/gmqtt/server"
+	"github.com/e154/smart-home/system/mqtt"
 	"github.com/koron/netx"
 	"github.com/spf13/cobra"
 	"log"
+	"net"
+	"strings"
 	"time"
 )
 
 var (
-	Pingmq = &cobra.Command{
-		Use:   "pingmq",
-		Short: "Pingmq is a program designed to demonstrate the SurgeMQ usage.",
-		Long: `Pingmq demonstrates the use of SurgeMQ by pinging a list of hosts, 
-publishing the result to any clients subscribed to two topics:
-/ping/success/{ip} and /ping/failure/{ip}.`,
+	Server = &cobra.Command{
+		Use:   "server",
+		Short: "server starts a SurgeMQ server and publishes to it all the ping results",
 	}
+
+	serverURI    string
+	serverQuiet  bool
+	serverIPs    strlist
+	pingInterval int
+
+	s mqtt.GMqttServer
 
 	p *netx.Pinger
 )
 
+type strlist []string
+
+// String ...
+func (s *strlist) String() string {
+	return fmt.Sprint(*s)
+}
+
+// Type ...
+func (s *strlist) Type() string {
+	return "strlist"
+}
+
+// Set ...
+func (s *strlist) Set(value string) error {
+	for _, ip := range strings.Split(value, ",") {
+		*s = append(*s, ip)
+	}
+
+	return nil
+}
+
 func init() {
+	Server.Flags().StringVarP(&serverURI, "uri", "u", "0.0.0.0:1883", "URI to run the server on")
+	Server.Flags().BoolVarP(&serverQuiet, "quiet", "q", false, "print out ping results")
+	Server.Flags().VarP(&serverIPs, "ping", "p", "Comma separated list of IPv4 addresses to ping")
+	Server.Flags().IntVarP(&pingInterval, "interval", "i", 60, "ping interval in seconds")
+	Server.Run = serv
 
-	Pingmq.AddCommand(serverCmd)
-	Pingmq.AddCommand(clientCmd)
+}
 
-	done = make(chan struct{})
+func serv(cmd *cobra.Command, args []string) {
+
+	log.Printf("Starting server...")
+	go func() {
+		ln, err := net.Listen("tcp", serverURI)
+		if err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+
+		options := []server.Options{
+			server.WithTCPListener(ln),
+		}
+
+		// Create a new server
+		s = server.New(options...)
+
+		if err = s.Run(); err != nil {
+			log.Println(err.Error())
+		}
+
+	}()
+	time.Sleep(300 * time.Millisecond)
+
+	log.Printf("Starting pinger...")
+
+	pinger()
 }
 
 func pinger() {
