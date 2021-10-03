@@ -41,6 +41,7 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/messagebird/go-rest-api v5.3.1-0.20190815153316-f1a991ff10ee+incompatible
 	github.com/nlopes/slack v0.6.0
+	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.5.0
 	github.com/prometheus/common v0.9.1

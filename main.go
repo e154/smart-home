@@ -1,1 +1,0 @@
-/Users/delta54/workspace/golang/src/github.com/e154/smart-home/cmd/cli/main.go
