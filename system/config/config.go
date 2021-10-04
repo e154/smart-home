@@ -51,15 +51,6 @@ func ReadConfig() (conf *AppConfig, err error) {
 
 func checkEnv(conf *AppConfig) {
 
-	if serverHost := os.Getenv("SERVER_HOST"); serverHost != "" {
-		conf.ServerHost = serverHost
-	}
-
-	if serverPort := os.Getenv("SERVER_PORT"); serverPort != "" {
-		v, _ := strconv.ParseInt(serverPort, 10, 32)
-		conf.ServerPort = int(v)
-	}
-
 	if pgUser := os.Getenv("PG_USER"); pgUser != "" {
 		conf.PgUser = pgUser
 	}

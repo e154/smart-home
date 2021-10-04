@@ -86,6 +86,8 @@ func (a *Api) Start() error {
 		return err
 	}
 
+	log.Infof("Serving GRPC server at %s", a.cfg.GrpcHostPort)
+
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(a.filter.AuthInterceptor),
 		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
@@ -140,12 +142,14 @@ func (a *Api) Start() error {
 		group.Go(func() error {
 			return http.ListenAndServe(a.cfg.WsHostPort, wsproxy.WebsocketProxy(mux))
 		})
+		log.Infof("Serving WS server at %s", a.cfg.WsHostPort)
 	}
 
 	if a.cfg.PromHostPort != "" {
 		group.Go(func() error {
 			return http.ListenAndServe(a.cfg.PromHostPort, promhttp.Handler())
 		})
+		log.Infof("Serving PROMETHEUS server at %s", a.cfg.PromHostPort)
 	}
 
 	if a.cfg.Swagger {
@@ -168,6 +172,7 @@ func (a *Api) Start() error {
 				log.Fatal(err.Error())
 			}
 		}()
+		log.Infof("Serving HTTP server at %s", a.cfg.HttpHostPort)
 	}
 
 	return group.Wait()

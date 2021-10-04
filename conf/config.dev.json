@@ -1,6 +1,4 @@
 {
-  "server_host": "0.0.0.0",
-  "server_port": 3000,
   "alexa_host": "0.0.0.0",
   "alexa_port": 3002,
   "mobile_host": "0.0.0.0",
