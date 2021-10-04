@@ -35,6 +35,10 @@ const (
 	StatusDelivered = "delivered"
 )
 
+const (
+	FuncEntityAction = "entityAction"
+)
+
 func NewAttr() m.Attributes {
 	return nil
 }
@@ -77,6 +81,7 @@ command:
 %s
 `
 
-const help = `/help - this help
+const help = `/start - subscriber again\n
+/help - this help\n
 /quit - unsubscribe from bot 
 `

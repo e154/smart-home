@@ -35,6 +35,15 @@ import (
 
 func TestTelegram(t *testing.T) {
 
+	const sourceScript = `
+checkStatus =->
+    print '----------------1'
+
+entityAction = (entityId, actionName)->
+    switch actionName
+        when 'CHECK' then checkStatus()
+`
+
 	Convey("telegram", t, func(ctx C) {
 		_ = container.Invoke(func(adaptors *adaptors.Adaptors,
 			migrations *migrations.Migrations,
@@ -54,11 +63,42 @@ func TestTelegram(t *testing.T) {
 			err = AddPlugin(adaptors, "telegram")
 			ctx.So(err, ShouldBeNil)
 
+			// add scripts
+			// ------------------------------------------------
+			plugScript := &m.Script{
+				Lang:        common.ScriptLangCoffee,
+				Name:        "script",
+				Source:      sourceScript,
+				Description: "script",
+			}
+
+			engineScript, err := scriptService.NewEngine(plugScript)
+			So(err, ShouldBeNil)
+			err = engineScript.Compile()
+			So(err, ShouldBeNil)
+
+			plugScript.Id, err = adaptors.Script.Add(plugScript)
+			So(err, ShouldBeNil)
+
 			// add entity
 			// ------------------------------------------------
 			tgEnt := GetNewTelegram("clavicus")
+			tgEnt.Actions = []*m.EntityAction{
+				{
+					Name:        "CHECK",
+					Description: "check status",
+					Script:      plugScript,
+				},
+			}
 			err = adaptors.Entity.Add(tgEnt)
 			ctx.So(err, ShouldBeNil)
+			_, err = adaptors.EntityStorage.Add(m.EntityStorage{
+				EntityId:   tgEnt.Id,
+				Attributes: tgEnt.Attributes.Serialize(),
+			})
+			So(err, ShouldBeNil)
+
+			// add chat
 			tgChan := m.TelegramChat{
 				EntityId: tgEnt.Id,
 				ChatId:   123,
@@ -119,6 +159,13 @@ func TestTelegram(t *testing.T) {
 					attr.Deserialize(list[0].Message.Attributes)
 					ctx.So(attr[telegram.AttrBody].String(), ShouldEqual, "body")
 
+				})
+			})
+
+			t.Run("call actions", func(t *testing.T) {
+				Convey("call actions", t, func(ctx C) {
+					entityManager.CallAction(tgEnt.Id, "CHECK", nil)
+					time.Sleep(time.Second)
 				})
 			})
 		})

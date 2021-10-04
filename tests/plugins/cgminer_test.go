@@ -185,7 +185,7 @@ entityAction = (entityId, actionName)->
 			// ------------------------------------------------
 			plugScript := &m.Script{
 				Lang:        common.ScriptLangCoffee,
-				Name:        "plug script",
+				Name:        "cgminer script",
 				Source:      cgminerSourceScript,
 				Description: "cgminer script",
 			}
