@@ -78,38 +78,8 @@ func (e *EntityManager) addL3(name, host string, script *m.Script) (ent *m.Entit
 	}
 	ent.Actions = []*m.EntityAction{
 		{
-			Name:        "ENABLE",
-			Description: "enable",
-			Script:      script,
-		},
-		{
-			Name:        "DISABLE",
-			Description: "disable",
-			Script:      script,
-		},
-		{
 			Name:        "CHECK",
 			Description: "condition check",
-			Script:      script,
-		},
-		{
-			Name:        "SUM",
-			Description: "summary",
-			Script:      script,
-		},
-		{
-			Name:        "DEVS",
-			Description: "devs",
-			Script:      script,
-		},
-		{
-			Name:        "POOLS",
-			Description: "pools",
-			Script:      script,
-		},
-		{
-			Name:        "VER",
-			Description: "version",
 			Script:      script,
 		},
 	}
