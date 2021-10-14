@@ -166,13 +166,13 @@ format =(entityId, stateName, attr)->
 		"chain_acn3: " +  attr.chain_acn3 + "\\r\\n" +
 		"chain_acn4: " +  attr.chain_acn4 + "\\r\\n" +
 		"chain1_temp_chip: " +  attr.chain1_temp_chip + "\\r\\n" +
+        "chain2_temp_chip: " +  attr.chain2_temp_chip + "\\r\\n" +
+		"chain3_temp_chip: " +  attr.chain3_temp_chip + "\\r\\n" +
+		"chain4_temp_chip: " +  attr.chain4_temp_chip + "\\r\\n" +
+		"chain1_temp_pcb: " +  attr.chain1_temp_pcb + "\\r\\n" +
 		"chain2_temp_pcb: " +  attr.chain2_temp_pcb + "\\r\\n" +
 		"chain3_temp_pcb: " +  attr.chain3_temp_pcb + "\\r\\n" +
         "chain4_temp_pcb: " +  attr.chain4_temp_pcb + "\\r\\n" +
-		"chain1_temp_pcb: " +  attr.chain1_temp_pcb + "\\r\\n" +
-		"chain2_temp_chip: " +  attr.chain2_temp_chip + "\\r\\n" +
-		"chain3_temp_chip: " +  attr.chain3_temp_chip + "\\r\\n" +
-		"chain4_temp_chip: " +  attr.chain4_temp_chip + "\\r\\n" +
 		"heat: " +  attr.heat + "\\r\\n" +
 		"hardware_errors: " +  attr.hardware_errors + "\\r\\n" +
 		"GHS av: " +  attr.ghs_av + "\\r\\n" +
