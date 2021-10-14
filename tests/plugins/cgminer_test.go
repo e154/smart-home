@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
-	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
@@ -162,7 +161,6 @@ entityAction = (entityId, actionName)->
 			migrations *migrations.Migrations,
 			scriptService scripts.ScriptService,
 			entityManager entity_manager.EntityManager,
-			mqttServer mqtt.MqttServ,
 			eventBus event_bus.EventBus,
 			pluginManager common.PluginManager) {
 
@@ -178,8 +176,6 @@ entityAction = (entityId, actionName)->
 			// register plugins
 			err = AddPlugin(adaptors, "cgminer")
 			ctx.So(err, ShouldBeNil)
-
-			go mqttServer.Start()
 
 			// add scripts
 			// ------------------------------------------------
@@ -324,7 +320,6 @@ entityAction = (entityId, actionName)->
 			entityManager.LoadEntities(pluginManager)
 
 			defer func() {
-				mqttServer.Shutdown()
 				entityManager.Shutdown()
 				pluginManager.Shutdown()
 			}()

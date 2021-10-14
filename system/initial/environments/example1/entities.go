@@ -126,6 +126,10 @@ func (e *EntityManager) addL3(name, host string, script *m.Script) (ent *m.Entit
 			Name:        "ERROR",
 			Description: "error state",
 		},
+		{
+			Name:        "WARNING",
+			Description: "warning state",
+		},
 	}
 	ent.Attributes = m.Attributes{
 		"heat": {

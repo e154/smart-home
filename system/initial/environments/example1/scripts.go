@@ -71,6 +71,8 @@ func (s *ScriptManager) add(name, source, desc string) (script *m.Script) {
 
 const sourceScript1 = `
 
+# entity
+# ##################################
 ifError =(res)->
     return !res || res.error || res.Error
 
@@ -95,6 +97,7 @@ checkStatus =->
         chain_acn2: p.chain_acn2
         chain_acn3: p.chain_acn3
         chain_acn4: p.chain_acn4
+        ghs_av: p["GHS av"]
         fan1: p.fan1
         fan2: p.fan2
     }
@@ -115,44 +118,8 @@ entityAction = (entityId, actionName)->
     switch actionName
         when 'CHECK' then checkStatus()
 
-telegramSendReport =->
-    entities = ['cgminer.l3n1','cgminer.l3n2','cgminer.l3n3','cgminer.l3n4']
-    for entityId, i in entities
-        entity = entityManager.getEntity(entityId).short()
-        attr = entityManager.getEntity(entityId).getAttributes()
-        txt = entityId + " status: " + entity.state.name + "\\r\\n" +
-            "chain_acn1: " +  attr.chain_acn1 + "\\r\\n" +
-            "chain_acn2: " +  attr.chain_acn2 + "\\r\\n" +
-            "chain_acn3: " +  attr.chain_acn3 + "\\r\\n" +
-            "chain_acn4: " +  attr.chain_acn4 + "\\r\\n" +
-            "chain1_temp_chip: " +  attr.chain1_temp_chip + "\\r\\n" +
-            "chain4_temp_pcb: " +  attr.chain4_temp_pcb + "\\r\\n" +
-            "chain2_temp_pcb: " +  attr.chain2_temp_pcb + "\\r\\n" +
-            "chain3_temp_pcb: " +  attr.chain3_temp_pcb + "\\r\\n" +
-            "chain1_temp_pcb: " +  attr.chain1_temp_pcb + "\\r\\n" +
-            "chain2_temp_chip: " +  attr.chain2_temp_chip + "\\r\\n" +
-            "chain3_temp_chip: " +  attr.chain3_temp_chip + "\\r\\n" +
-            "chain4_temp_chip: " +  attr.chain4_temp_chip + "\\r\\n" +
-            "heat: " +  attr.heat + "\\r\\n" +
-            "hardware_errors: " +  attr.hardware_errors + "\\r\\n" +
-            "ghs_av: " +  attr.ghs_av + "\\r\\n" +
-            "fan1: " +  attr.fan1 + "\\r\\n" +
-            "fan2: " +  attr.fan2 + "\\r\\n"
-        sendMsg(txt)
-
-telegramAction = (entityId, actionName)->
-    switch actionName
-       when 'CHECK' then telegramSendReport()
-
-sendMsg =(body)->
-    msg = notifr.newMessage();
-    msg.type = 'telegram';
-    msg.attributes = {
-        'name': 'clavicus',
-        'body': body
-    };
-    notifr.send(msg);
-
+# automation
+# ##################################
 automationTriggerTime = (msg)->
     entityManager.callAction(msg.entity_id, 'CHECK', {})
     return false
@@ -179,25 +146,49 @@ automationCondition = (entityId)->
 
 automationAction = (entityId)->
     #print '---action---'
-	entity = entityManager.getEntity(entityId).short()
-	attr = entityManager.getEntity(entityId).getAttributes()
-	txt = entityId + " status: " + entity.state.name + "\\r\\n" +
+    entity = entityManager.getEntity(entityId).short()
+    attr = entityManager.getEntity(entityId).getAttributes()
+    sendMsg(format(entityId, entity.state.name, attr))
+
+# telegram
+# ##################################
+telegramSendReport =->
+    entities = ['cgminer.l3n1','cgminer.l3n2','cgminer.l3n3','cgminer.l3n4']
+    for entityId, i in entities
+        entity = entityManager.getEntity(entityId).short()
+        attr = entityManager.getEntity(entityId).getAttributes()
+        sendMsg(format(entityId, entity.state.name, attr))
+
+format =(entityId, stateName, attr)->
+	return entityId + " status: " + stateName + "\\r\\n" +
 		"chain_acn1: " +  attr.chain_acn1 + "\\r\\n" +
 		"chain_acn2: " +  attr.chain_acn2 + "\\r\\n" +
 		"chain_acn3: " +  attr.chain_acn3 + "\\r\\n" +
 		"chain_acn4: " +  attr.chain_acn4 + "\\r\\n" +
 		"chain1_temp_chip: " +  attr.chain1_temp_chip + "\\r\\n" +
-		"chain4_temp_pcb: " +  attr.chain4_temp_pcb + "\\r\\n" +
 		"chain2_temp_pcb: " +  attr.chain2_temp_pcb + "\\r\\n" +
 		"chain3_temp_pcb: " +  attr.chain3_temp_pcb + "\\r\\n" +
+        "chain4_temp_pcb: " +  attr.chain4_temp_pcb + "\\r\\n" +
 		"chain1_temp_pcb: " +  attr.chain1_temp_pcb + "\\r\\n" +
 		"chain2_temp_chip: " +  attr.chain2_temp_chip + "\\r\\n" +
 		"chain3_temp_chip: " +  attr.chain3_temp_chip + "\\r\\n" +
 		"chain4_temp_chip: " +  attr.chain4_temp_chip + "\\r\\n" +
 		"heat: " +  attr.heat + "\\r\\n" +
 		"hardware_errors: " +  attr.hardware_errors + "\\r\\n" +
-		"ghs_av: " +  attr.ghs_av + "\\r\\n" +
+		"GHS av: " +  attr.ghs_av + "\\r\\n" +
 		"fan1: " +  attr.fan1 + "\\r\\n" +
 		"fan2: " +  attr.fan2 + "\\r\\n"
-	sendMsg(txt)
+
+telegramAction = (entityId, actionName)->
+    switch actionName
+       when 'CHECK' then telegramSendReport()
+
+sendMsg =(body)->
+    msg = notifr.newMessage();
+    msg.type = 'telegram';
+    msg.attributes = {
+        'name': 'clavicus',
+        'body': body
+    };
+    notifr.send(msg);
 `

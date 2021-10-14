@@ -133,7 +133,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	e.AttrMu.Unlock()
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-		StorageSave: true,
+		StorageSave: params.StorageSave,
 		Type:        e.Id.Type(),
 		EntityId:    e.Id,
 		OldState:    oldState,
