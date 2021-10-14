@@ -41,7 +41,7 @@ func TestTriggerTime(t *testing.T) {
 	const (
 		task3SourceScript = `
 automationTriggerTime = (msg)->
-    #print '---trigger---'
+    print '---trigger---', msg
     Done msg
     return false
 `
@@ -96,7 +96,7 @@ automationTriggerTime = (msg)->
 				Condition: common.ConditionAnd,
 			}
 			task3.AddTrigger(&m.Trigger{
-				Name:       "",
+				Name:       "trigger1",
 				Script:     task3Script,
 				PluginName: "time",
 				Payload: m.Attributes{

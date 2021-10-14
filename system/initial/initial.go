@@ -19,13 +19,19 @@
 package initial
 
 import (
+	_ "github.com/e154/smart-home/system/initial/environments/default"
+	_ "github.com/e154/smart-home/system/initial/environments/example1"
+
+	_ "github.com/e154/smart-home/plugins"
+	_ "github.com/e154/smart-home/system/initial/environments"
+
 	"context"
 	"errors"
 	"fmt"
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/system/initial/environments"
 
-	//"github.com/e154/smart-home/api/server"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
@@ -33,14 +39,11 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/gate_client"
 	. "github.com/e154/smart-home/system/initial/assertions"
-	"github.com/e154/smart-home/system/initial/env1"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
 	"strconv"
-
-	_ "github.com/e154/smart-home/plugins"
 )
 
 var (
@@ -119,16 +122,8 @@ func (n *Initial) InstallDemoData() {
 
 	tx := n.adaptors.Begin()
 
-	env1.InstallDemoData(tx, n.accessList, n.scriptService)
-
-	err := tx.Variable.Add(m.Variable{
-		Name:  "initial_version",
-		Value: fmt.Sprintf("%d", currentVersion),
-	})
-	if err != nil {
-		tx.Rollback()
-	}
-	So(err, ShouldBeNil)
+	// install demo
+	environments.InstallDemoData(tx, n.accessList, n.scriptService)
 
 	tx.Commit()
 
@@ -157,14 +152,14 @@ func (n *Initial) checkForUpgrade() {
 		}
 
 		// create
-		env1.Create(tx, n.accessList, n.scriptService)
+		environments.Create(tx, n.accessList, n.scriptService)
 	}
 
 	oldVersion, err := strconv.Atoi(v.Value)
 	So(err, ShouldBeNil)
 
 	// upgrade
-	env1.Upgrade(oldVersion, tx, n.accessList, n.scriptService)
+	environments.Upgrade(oldVersion, tx, n.accessList, n.scriptService)
 
 	if oldVersion >= currentVersion {
 		tx.Commit()
@@ -186,7 +181,7 @@ func (n *Initial) Start() {
 	n.pluginManager.Start()
 	n.entityManager.LoadEntities(n.pluginManager)
 	n.automation.Start()
-	n.api.Start()
+	go n.api.Start()
 	n.gateClient.Start()
 }
 

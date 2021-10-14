@@ -16,47 +16,44 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package env1
+package example1
 
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/initial/environments"
 	"github.com/e154/smart-home/system/scripts"
 )
 
+type Example1 struct{}
+
 // Demo ...
-func InstallDemoData(adaptors *adaptors.Adaptors,
+func (e Example1) InstallDemoData(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
 
-	NewImageManager(adaptors).Create()
-	NewRoleManager(adaptors, accessList).Create()
-	NewAreaManager(adaptors).Create()
-	NewZoneManager(adaptors).Create()
-	NewTemplateManager(adaptors).Create()
-	NewPluginManager(adaptors).Create()
+	scripts := NewScriptManager(adaptors, scriptService).Create()
+	entities := NewEntityManager(adaptors).Create(scripts)
+	NewTriggerManager(adaptors).Create(scripts, entities)
 }
 
 // Create ...
-func Create(adaptors *adaptors.Adaptors,
+func (e Example1) Create(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
 
-	NewImageManager(adaptors).Create()
-	NewRoleManager(adaptors, accessList).Create()
-	NewTemplateManager(adaptors).Create()
-	NewZoneManager(adaptors).Create()
-	NewAreaManager(adaptors).Create()
-	NewPluginManager(adaptors).Create()
+
 }
 
 // Upgrade ...
-func Upgrade(oldVersion int,
+func (e Example1) Upgrade(oldVersion int,
 	adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
 
-	NewImageManager(adaptors).Upgrade(oldVersion)
-	NewTemplateManager(adaptors).Upgrade(oldVersion)
-	NewRoleManager(adaptors, accessList).Upgrade(oldVersion)
 }
+
+func init() {
+	environments.Register("example1", &Example1{})
+}
+

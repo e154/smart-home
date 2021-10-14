@@ -20,7 +20,10 @@ package automation
 
 const TriggerFunc = "automationTrigger"
 
-// TriggerBind...
+// Javascript Binding
+//
+// Trigger
+//
 type TriggerBind struct {
 	tr *Trigger
 }

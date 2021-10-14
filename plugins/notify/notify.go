@@ -68,13 +68,8 @@ func NewNotify(
 		providerList: make(map[string]Provider),
 	}
 
-	scriptService.PushStruct("Notifr", &NotifyBind{
-		notify: notify,
-	})
-
-	scriptService.PushStruct("Template", &TemplateBind{
-		adaptor: adaptor,
-	})
+	scriptService.PushStruct("notifr", NewNotifyBind(notify))
+	scriptService.PushStruct("template", NewTemplateBind(adaptor))
 
 	return notify
 }
@@ -247,6 +242,11 @@ func (n *notify) RemoveProvider(name string) {
 }
 
 func (n *notify) Provider(name string) (provider Provider, err error) {
+	if name == "" {
+		err = errors.New("provider is empty")
+		return
+	}
+
 	n.providerMu.RLock()
 	defer n.providerMu.RUnlock()
 

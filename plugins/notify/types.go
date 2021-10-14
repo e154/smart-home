@@ -39,8 +39,8 @@ type Message struct {
 	Attributes m.AttributeValue `json:"attributes"`
 }
 
-func NewMessage() Message {
-	return Message{
+func NewMessage() *Message {
+	return &Message{
 		Attributes: make(m.AttributeValue),
 	}
 }

@@ -316,12 +316,6 @@ const coffeeScript24 = `
 print "run flow script (script 24)"
 
 main =->
-	tpl = Template.render('template2', {'code':'12345'})
-	sms = Notifr.NewSMS()
-	sms.addPhone('+79133819546')
-	sms.setRender(tpl)
-	Notifr.send(sms)
-	''
 
 `
 

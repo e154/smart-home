@@ -26,7 +26,7 @@ import (
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/initial/env1"
+	envDefault "github.com/e154/smart-home/system/initial/environments/default"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
@@ -65,7 +65,7 @@ sceneEvent = (args)->
 			So(err, ShouldBeNil)
 
 			// register plugins
-			env1.NewPluginManager(adaptors).Create()
+			envDefault.NewPluginManager(adaptors).Create()
 
 			go mqttServer.Start()
 

@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package env1
+package _default
 
 import (
 	"github.com/e154/smart-home/adaptors"
@@ -67,5 +67,7 @@ func (n PluginManager) Create() (home *m.Plugin) {
 	n.addPlugin("notify", true)
 	n.addPlugin("email", true)
 	n.addPlugin("slack", true)
+	n.addPlugin("cgminer", true)
+	n.addPlugin("telegram", true)
 	return
 }

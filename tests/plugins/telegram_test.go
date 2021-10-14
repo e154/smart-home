@@ -39,7 +39,7 @@ func TestTelegram(t *testing.T) {
 checkStatus =->
     print '----------------1'
 
-entityAction = (entityId, actionName)->
+telegramAction = (entityId, actionName)->
     switch actionName
         when 'CHECK' then checkStatus()
 `

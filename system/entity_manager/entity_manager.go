@@ -67,6 +67,9 @@ func NewEntityManager(lc fx.Lifecycle,
 		},
 	})
 
+	// script bind
+	scripts.PushStruct("entityManager", NewEntityManagerBind(manager))
+
 	return manager
 }
 
@@ -98,9 +101,6 @@ LOOP:
 		page++
 		goto LOOP
 	}
-
-	// scripts
-	e.scripts.PushStruct("entityManager", NewEntityManagerBind(e))
 
 	// event subscribe
 	e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)

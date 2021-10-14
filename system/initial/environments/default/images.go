@@ -16,7 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package env1
+package _default
 
 import (
 	"github.com/e154/smart-home/adaptors"

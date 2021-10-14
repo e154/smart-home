@@ -192,8 +192,11 @@ func (p *plugin) Send(name string, message m.Message) (err error) {
 	p.actorsLock.RLock()
 	defer p.actorsLock.RUnlock()
 
-	if actor, ok := p.actors[common.EntityId(fmt.Sprintf("telegram.%s", name))]; ok {
+	actor, ok := p.actors[common.EntityId(fmt.Sprintf("telegram.%s", name))]
+	if ok {
 		actor.Send(body)
+	} else {
+		err = fmt.Errorf("bot with name '%s' not found", name)
 	}
 
 	return

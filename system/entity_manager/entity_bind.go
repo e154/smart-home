@@ -26,15 +26,18 @@ import (
 // Javascript Binding
 //
 // Entity
-//  .SetState(stateName)
-//  .SetAttributes(key, value, args)
-//  .SetMetric(name, value)
+//  .setState(stateName)
+//  .setAttributes(key, value, args)
+//  .getAttributes()
+//  .setMetric(name, value)
+//  .short()
 //
 type EntityBind struct {
 	id      common.EntityId
 	manager EntityManager
 }
 
+// NewEntityBind ...
 func NewEntityBind(id common.EntityId, manager EntityManager) *EntityBind {
 	return &EntityBind{
 		id:      id,
@@ -42,18 +45,43 @@ func NewEntityBind(id common.EntityId, manager EntityManager) *EntityBind {
 	}
 }
 
+// SetState ...
 func (e *EntityBind) SetState(stateName string) {
 	e.manager.SetState(e.id, EntityStateParams{
 		NewState: common.String(stateName),
 	})
 }
 
+// SetAttributes ...
 func (e *EntityBind) SetAttributes(params m.AttributeValue) {
 	e.manager.SetState(e.id, EntityStateParams{
 		AttributeValues: params,
 	})
 }
 
+// GetAttributes ...
+func (e *EntityBind) GetAttributes() m.AttributeValue {
+
+	entity, err := e.manager.GetEntityById(e.id)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	return entity.Attributes.Serialize()
+}
+
+// SetMetric ...
 func (e *EntityBind) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
 	e.manager.SetMetric(id, name, value)
+}
+
+// Short ...
+func (e *EntityBind) Short() *m.EntityShort {
+
+	entity, err := e.manager.GetEntityById(e.id)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	return &entity
 }

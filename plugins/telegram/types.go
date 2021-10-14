@@ -36,7 +36,7 @@ const (
 )
 
 const (
-	FuncEntityAction = "entityAction"
+	FuncEntityAction = "telegramAction"
 )
 
 func NewAttr() m.Attributes {
@@ -81,7 +81,7 @@ command:
 %s
 `
 
-const help = `/start - subscriber again\n
-/help - this help\n
+const help = `/start - subscriber again
+/help - this help
 /quit - unsubscribe from bot 
 `
