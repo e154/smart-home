@@ -37,7 +37,7 @@ func TestTelegram(t *testing.T) {
 
 	const sourceScript = `
 checkStatus =->
-    print '----------------1'
+    #print '----------------1'
 
 telegramAction = (entityId, actionName)->
     switch actionName

@@ -16,11 +16,7 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package cgminer
-
-import (
-	"github.com/e154/smart-home/system/entity_manager"
-)
+package entity_manager
 
 // Javascript Binding
 //
@@ -28,15 +24,15 @@ import (
 //	.setState(params)
 //
 type ScriptBind struct {
-	actor *Actor
+	actor PluginActor
 }
 
 // NewScriptBind...
-func NewScriptBind(actor *Actor) *ScriptBind {
+func NewScriptBind(actor PluginActor) *ScriptBind {
 	return &ScriptBind{actor: actor}
 }
 
 // SetState...
-func (s *ScriptBind) SetState(params entity_manager.EntityStateParams) {
+func (s *ScriptBind) SetState(params EntityStateParams) {
 	s.actor.SetState(params)
 }

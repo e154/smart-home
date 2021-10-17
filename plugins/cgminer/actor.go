@@ -95,10 +95,16 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			// bind
-			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
+			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 			a.ScriptEngine.PushFunction("Miner", actor.miner.Bind())
+			a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			a.ScriptEngine.Do()
 		}
+	}
+
+	if actor.ScriptEngine != nil {
+		actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 	}
 
 	// action worker

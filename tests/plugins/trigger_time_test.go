@@ -41,8 +41,8 @@ func TestTriggerTime(t *testing.T) {
 	const (
 		task3SourceScript = `
 automationTriggerTime = (msg)->
-    print '---trigger---', msg
-    Done msg
+    #print '---trigger---'
+    Done msg.payload
     return false
 `
 	)

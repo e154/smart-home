@@ -41,7 +41,10 @@ func TestTriggerAlexa(t *testing.T) {
 		task3SourceScript = `
 automationTriggerAlexa = (msg)->
     #print '---trigger---'
-    Done msg
+    Done msg.payload
+    #msg.trigger_name
+    #msg.task_name
+    #msg.entity_id
     return false
 `
 	)
@@ -96,7 +99,7 @@ automationTriggerAlexa = (msg)->
 				Condition: common.ConditionAnd,
 			}
 			task3.AddTrigger(&m.Trigger{
-				Name:       "",
+				Name:       "alexa",
 				Script:     task3Script,
 				PluginName: "alexa",
 				Payload: m.Attributes{

@@ -19,6 +19,7 @@
 package script
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -61,14 +62,16 @@ func NewActor(entity *m.Entity,
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
-			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
+			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+			a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			a.ScriptEngine.Do()
 		}
 	}
 
 	// Script
 	if actor.ScriptEngine != nil {
-		actor.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
+		actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 	}
 
 	// action worker

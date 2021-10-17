@@ -73,18 +73,17 @@ func NewActor(entity *m.Entity,
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
 			// bind
-			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
+			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
+			a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
 			a.ScriptEngine.PushFunction("ModbusRtu", NewModbusRtu(eventBus, actor))
 			a.ScriptEngine.Do()
 		}
 	}
 
-	if actor.ScriptEngine == nil {
-		return
+	if actor.ScriptEngine != nil {
+		actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 	}
-
-	// bind
-	actor.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
 
 	// action worker
 	go func() {

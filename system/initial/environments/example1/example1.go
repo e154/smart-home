@@ -33,7 +33,8 @@ func (e Example1) InstallDemoData(adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService) {
 
 	scripts := NewScriptManager(adaptors, scriptService).Create()
-	entities := NewEntityManager(adaptors).Create(scripts)
+	areas := NewAreaManager(adaptors).create()
+	entities := NewEntityManager(adaptors).Create(scripts, areas)
 	NewTriggerManager(adaptors).Create(scripts, entities)
 }
 

@@ -42,7 +42,7 @@ func TestTriggerSystem(t *testing.T) {
 		task3SourceScript = `
 automationTriggerSystem = (msg)->
     #print '---trigger---'
-    Done msg.event
+    Done msg.payload.event
     return false
 `
 	)

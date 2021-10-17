@@ -290,6 +290,7 @@ func (p *Actor) commandQuit(cmd Command) {
 	p.sendMsg("/quit -unsubscribe from bot\n/start - subscriber again", cmd.ChatId)
 }
 
+//todo add command args
 func (p *Actor) commandAction(cmd Command) {
 	p.runAction(event_bus.EventCallAction{
 		ActionName: strings.Replace(cmd.Text, "/", "", 1),

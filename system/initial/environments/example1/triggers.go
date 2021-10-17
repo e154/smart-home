@@ -55,9 +55,9 @@ func (t *TriggerManager) Create(scripts []*m.Script,
 	t.addTimerTask("l3n4_timer4", script, entities[3])
 
 	t.addCheckTask("l3n1_check1", script, entities[0])
-	t.addCheckTask("l3n2_check2", script, entities[0])
-	t.addCheckTask("l3n3_check3", script, entities[0])
-	t.addCheckTask("l3n4_check4", script, entities[0])
+	t.addCheckTask("l3n2_check2", script, entities[1])
+	t.addCheckTask("l3n3_check3", script, entities[2])
+	t.addCheckTask("l3n4_check4", script, entities[3])
 	return []*m.Task{}
 }
 

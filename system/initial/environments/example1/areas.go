@@ -16,27 +16,34 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package modbus_tcp
+package example1
 
 import (
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/adaptors"
+	m "github.com/e154/smart-home/models"
 )
 
-// Javascript Binding
-//
-// Actor
-//	.setState(params)
-//
-type ScriptBind struct {
-	actor *Actor
+// AreaManager ...
+type AreaManager struct {
+	adaptors *adaptors.Adaptors
 }
 
-// NewScriptBind...
-func NewScriptBind(actor *Actor) *ScriptBind {
-	return &ScriptBind{actor: actor}
+// NewAreaManager ...
+func NewAreaManager(adaptors *adaptors.Adaptors) *AreaManager {
+	return &AreaManager{
+		adaptors: adaptors,
+	}
 }
 
-// SetState...
-func (s *ScriptBind) SetState(params entity_manager.EntityStateParams) {
-	s.actor.SetState(params)
+func (a *AreaManager) create() []*m.Area {
+	area1 := a.add("zone51")
+	return []*m.Area{area1}
+}
+
+func (a *AreaManager) add(name string) *m.Area {
+	area := &m.Area{
+		Name:        name,
+	}
+	area.Id, _ = a.adaptors.Area.Add(area)
+	return area
 }

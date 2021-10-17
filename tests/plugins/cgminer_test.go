@@ -64,6 +64,7 @@ checkStatus =->
     Actor.setState
         new_state: 'ENABLED'
         attribute_values: attrs
+        storage_save: true
 
 checkSum =->
     summary = Miner.summary()
@@ -78,6 +79,7 @@ checkSum =->
     Actor.setState
         new_state: 'ENABLED'
         attribute_values: attrs
+        storage_save: true
 
 checkDevs =->
     devs = Miner.devs()
@@ -92,6 +94,7 @@ checkDevs =->
     Actor.setState
         new_state: 'ENABLED'
         attribute_values: attrs
+        storage_save: true
 
 checkPools =->
     pools = Miner.pools()

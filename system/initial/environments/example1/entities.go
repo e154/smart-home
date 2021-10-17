@@ -42,24 +42,28 @@ func NewEntityManager(adaptors *adaptors.Adaptors) *EntityManager {
 	}
 }
 
-func (e *EntityManager) Create(scripts []*m.Script) []*m.Entity {
+func (e *EntityManager) Create(scripts []*m.Script, areas []*m.Area) []*m.Entity {
 
 	var script *m.Script
 	if len(scripts) > 0 {
 		script = scripts[0]
 	}
-	entity1 := e.addL3("l3n1", "192.168.0.247", script)
-	entity2 := e.addL3("l3n2", "192.168.0.242", script)
-	entity3 := e.addL3("l3n3", "192.168.0.244", script)
-	entity4 := e.addL3("l3n4", "192.168.0.243", script)
+	var area *m.Area
+	if len(areas) > 0 {
+		area = areas[0]
+	}
+	entity1 := e.addL3("l3n1", "192.168.0.247", script, area)
+	entity2 := e.addL3("l3n2", "192.168.0.242", script, area)
+	entity3 := e.addL3("l3n3", "192.168.0.244", script, area)
+	entity4 := e.addL3("l3n4", "192.168.0.243", script, area)
 
 	token := os.Getenv("SH_TG_BOT_TOKEN")
-	tgBot := e.addTgBot("clavicus", token, script)
+	tgBot := e.addTgBot("clavicus", token, script, area)
 
 	return []*m.Entity{entity1, entity2, entity3, entity4, tgBot}
 }
 
-func (e *EntityManager) addL3(name, host string, script *m.Script) (ent *m.Entity) {
+func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area) (ent *m.Entity) {
 	settings := cgminer.NewSettings()
 	settings[cgminer.SettingHost].Value = host
 	settings[cgminer.SettingPort].Value = 4028
@@ -75,6 +79,7 @@ func (e *EntityManager) addL3(name, host string, script *m.Script) (ent *m.Entit
 		AutoLoad:    true,
 		Attributes:  cgminer.NewAttr(),
 		Settings:    settings,
+		Area:        area,
 	}
 	ent.Actions = []*m.EntityAction{
 		{
@@ -184,7 +189,7 @@ func (e *EntityManager) addL3(name, host string, script *m.Script) (ent *m.Entit
 	return
 }
 
-func (e *EntityManager) addTgBot(name, token string, script *m.Script) (ent *m.Entity) {
+func (e *EntityManager) addTgBot(name, token string, script *m.Script, area *m.Area) (ent *m.Entity) {
 
 	settings := telegram.NewSettings()
 	settings[telegram.AttrToken].Value = token
@@ -202,6 +207,7 @@ func (e *EntityManager) addTgBot(name, token string, script *m.Script) (ent *m.E
 				Script:      script,
 			},
 		},
+		Area: area,
 	}
 	err := e.adaptors.Entity.Add(ent)
 	So(err, ShouldBeNil)
