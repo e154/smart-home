@@ -113,6 +113,7 @@ checkStatus =->
     Actor.setState
         new_state: status
         attribute_values: attrs
+        storage_save: false
 
 entityAction = (entityId, actionName)->
     switch actionName
@@ -130,7 +131,6 @@ automationTriggerStateChanged = (msg)->
         return
     newState = msg.payload.new_state.state.name
     oldState = msg.payload.old_state.state.name
-    return true
     if newState == oldState
         return false
     return newState == 'WARNING' || newState == 'ERROR'
