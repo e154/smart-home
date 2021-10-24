@@ -69,5 +69,6 @@ func (n PluginManager) Create() (home *m.Plugin) {
 	n.addPlugin("slack", true)
 	n.addPlugin("cgminer", true)
 	n.addPlugin("telegram", true)
+	n.addPlugin("sensor", true)
 	return
 }

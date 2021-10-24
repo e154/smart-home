@@ -28,10 +28,6 @@ import (
 	"sync"
 )
 
-const (
-	FuncSceneEvent = "sceneEvent"
-)
-
 type Actor struct {
 	entity_manager.BaseActor
 	adaptors      *adaptors.Adaptors

@@ -41,6 +41,7 @@ import (
 	"github.com/phayes/freeport"
 	"github.com/smartystreets/goconvey/convey"
 	"net"
+	"net/http"
 	"time"
 )
 
@@ -305,6 +306,16 @@ func GetNewBitmineL3(name string) *m.Entity {
 	}
 }
 
+func GetNewSensor(name string) *m.Entity {
+
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("sensor.%s", name)),
+		Description: "api",
+		Type:        "sensor",
+		AutoLoad:    true,
+	}
+}
+
 func GetNewModbusRtu(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
@@ -387,10 +398,41 @@ type accepted struct {
 	err  error
 }
 
-func MockTCPServer(ctx context.Context, ip string, port int64, payloads ...[]byte) (err error) {
-	addr := fmt.Sprintf("%s:%d", ip, port)
+func MockHttpServer(ctx context.Context, ip string, port int64, payload []byte) (err error) {
+
 	var listener net.Listener
-	if listener, err = net.Listen("tcp", addr); err != nil {
+	if listener, err = net.Listen("tcp", fmt.Sprintf("%s:%d", ip, port)); err != nil {
+		return
+	}
+
+	http.Serve(listener, http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		rw.WriteHeader(200)
+		fmt.Fprintf(rw, string(payload))
+	}))
+	c := make(chan accepted, 1)
+	for {
+		select {
+		case <-ctx.Done():
+			listener.Close()
+			return
+		case a := <-c:
+			if a.err != nil {
+				err = a.err
+				return
+			}
+			go func(conn net.Conn) {
+				conn.Write(payload)
+				conn.Close()
+			}(a.conn)
+		default:
+		}
+	}
+
+	return
+}
+func MockTCPServer(ctx context.Context, ip string, port int64, payloads ...[]byte) (err error) {
+	var listener net.Listener
+	if listener, err = net.Listen("tcp", fmt.Sprintf("%s:%d", ip, port)); err != nil {
 		return
 	}
 	c := make(chan accepted, 3)

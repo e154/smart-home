@@ -236,7 +236,7 @@ func (p *WeatherMet) fetchFromServer(lat, lon float64) (body []byte, err error) 
 
 	log.Debugf("fetch from server %s", uri.String())
 
-	body, err = web.Crawler(uri.String())
+	body, err = web.Crawler(web.Request{Method: "GET", Url: uri.String()})
 
 	return
 }

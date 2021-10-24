@@ -58,6 +58,8 @@ func (t *TriggerManager) Create(scripts []*m.Script,
 	t.addCheckTask("l3n2_check2", script, entities[1])
 	t.addCheckTask("l3n3_check3", script, entities[2])
 	t.addCheckTask("l3n4_check4", script, entities[3])
+
+	t.addTimerTask2("api_check", script, entities[5])
 	return []*m.Task{}
 }
 
@@ -80,6 +82,34 @@ func (t *TriggerManager) addTimerTask(name string,
 				Name:  triggers.CronOptionTrigger,
 				Type:  common.AttributeString,
 				Value: "0,5,10,15,20,25,30,35,40,45,50,55 * * * * *", //every 5 seconds
+			},
+		},
+	})
+	err := t.adaptors.Task.Add(task)
+	So(err, ShouldBeNil)
+
+	return
+}
+
+func (t *TriggerManager) addTimerTask2(name string,
+	script *m.Script,
+	entity *m.Entity) (task *m.Task) {
+
+	task = &m.Task{
+		Name:      fmt.Sprintf("task_%s", name),
+		Enabled:   true,
+		Condition: common.ConditionAnd,
+	}
+	task.AddTrigger(&m.Trigger{
+		Name:       fmt.Sprintf("trigger_%s", name),
+		Script:     script,
+		PluginName: "time",
+		EntityId:   &entity.Id,
+		Payload: m.Attributes{
+			triggers.CronOptionTrigger: {
+				Name:  triggers.CronOptionTrigger,
+				Type:  common.AttributeString,
+				Value: "0 0 0 * * *", //every 00:00 DAY
 			},
 		},
 	})

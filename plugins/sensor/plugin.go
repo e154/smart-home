@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
 	"sync"
@@ -58,7 +59,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	// ...
+	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
 
 	return nil
 }
@@ -67,6 +68,8 @@ func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
+
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	// remove actors
 	for entityId, actor := range p.actors {
@@ -79,6 +82,21 @@ func (p *plugin) Unload() (err error) {
 
 func (p *plugin) Name() string {
 	return Name
+}
+
+func (p *plugin) eventHandler(topic string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case event_bus.EventStateChanged:
+	case event_bus.EventCallAction:
+		actor, ok := p.actors[v.EntityId]
+		if !ok {
+			return
+		}
+		actor.addAction(v)
+	}
+
+	return
 }
 
 func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {

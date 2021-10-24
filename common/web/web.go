@@ -19,31 +19,61 @@
 package web
 
 import (
+	"bytes"
+	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
-func Crawler(uri string, headers ...map[string]string) (body []byte, err error) {
+type Request struct {
+	Method  string
+	Url     string
+	Body    []byte
+	headers []map[string]string
+	Timeout time.Duration
+}
 
-	var req *http.Request
-	req, err = http.NewRequest("GET", uri, nil)
-	if err != nil {
+func Crawler(options Request) (body []byte, err error) {
+
+	if options.Url == "" {
+		err = errors.New("empty address")
 		return
 	}
 
-	if len(headers) > 0 {
-		for k, v := range headers[0] {
+	var r io.Reader = nil
+	switch options.Method {
+	case "POST", "PUT", "UPDATE", "PATCH":
+		if options.Body != nil && len(options.Body) > 0 {
+			r = bytes.NewReader(options.Body)
+		}
+	}
+
+	var req *http.Request
+	if req, err = http.NewRequest(options.Method, options.Url, r); err != nil {
+		return
+	}
+
+	if len(options.headers) > 0 {
+		for k, v := range options.headers[0] {
 			req.Header.Set(k, v)
 		}
 	} else {
 		req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15")
 	}
 
-	client := &http.Client{}
+	var timeout = time.Second * 2
+	if options.Timeout > 0 {
+		timeout = options.Timeout
+	}
+
+	client := &http.Client{
+		Timeout: timeout,
+	}
 
 	var resp *http.Response
-	resp, err = client.Do(req)
-	if err != nil {
+	if resp, err = client.Do(req); err != nil {
 		return
 	}
 

@@ -27,12 +27,12 @@ type ScriptBind struct {
 	actor PluginActor
 }
 
-// NewScriptBind...
+// NewScriptBind  ...
 func NewScriptBind(actor PluginActor) *ScriptBind {
 	return &ScriptBind{actor: actor}
 }
 
-// SetState...
+// SetState  ...
 func (s *ScriptBind) SetState(params EntityStateParams) {
 	s.actor.SetState(params)
 }

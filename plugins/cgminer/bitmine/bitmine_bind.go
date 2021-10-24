@@ -20,7 +20,7 @@ package bitmine
 
 // Javascript Binding
 //
-// Actor
+// Miner
 //	.stats() result
 //  .devs() result
 //  .summary() result

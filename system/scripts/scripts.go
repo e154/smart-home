@@ -42,6 +42,7 @@ type scriptService struct {
 	cfg        *config.AppConfig
 	functions  *Pull
 	structures *Pull
+	storage    *storage.Storage
 }
 
 // NewScriptService ...
@@ -51,12 +52,14 @@ func NewScriptService(cfg *config.AppConfig, storage *storage.Storage) (service 
 		cfg:        cfg,
 		functions:  NewPull(),
 		structures: NewPull(),
+		storage:    storage,
 	}
 
 	service.PushStruct("Log", &bind.LogBind{})
 	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
 	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
 	service.PushStruct("Storage", bind.NewStorageBind(storage))
+	service.PushStruct("http", &bind.HttpBind{})
 	return service
 }
 
@@ -81,4 +84,9 @@ func (service *scriptService) PushFunctions(name string, s interface{}) {
 func (service *scriptService) Purge() {
 	service.functions.Purge()
 	service.structures.Purge()
+	service.PushStruct("Log", &bind.LogBind{})
+	service.PushFunctions("ExecuteSync", bind.ExecuteSync)
+	service.PushFunctions("ExecuteAsync", bind.ExecuteAsync)
+	service.PushStruct("Storage", bind.NewStorageBind(service.storage))
+	service.PushStruct("http", &bind.HttpBind{})
 }

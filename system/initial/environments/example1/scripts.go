@@ -19,11 +19,13 @@
 package example1
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/scripts"
+	"os"
 )
 
 // ScriptManager ...
@@ -45,8 +47,10 @@ func (s *ScriptManager) Create() []*m.Script {
 
 	// L3+ script
 	script := s.add("l3+_script_v1", sourceScript1, "l3+ script v1")
+	// api monitor
+	script2 := s.add("sensor_script_v1", fmt.Sprintf(sourceScript2, os.Getenv("LC_ADDRESS")), "sensor script v1")
 
-	return []*m.Script{script}
+	return []*m.Script{script, script2}
 }
 
 func (s *ScriptManager) add(name, source, desc string) (script *m.Script) {
@@ -191,4 +195,35 @@ sendMsg =(body)->
         'body': body
     };
     notifr.send(msg);
+`
+
+const sourceScript2 = `
+
+# entity
+# ##################################
+checkStatus =->
+    res = http.get("%s")
+    if res.error 
+        Actor.setState
+            'new_state': 'ERROR'
+        return
+    p = JSON.parse(res.body)
+    attrs =
+        paid_rewards: p.user.paid_rewards
+
+    Actor.setState
+        new_state: 'ENABLED'
+        attribute_values: attrs
+        storage_save: true
+
+entityAction = (entityId, actionName)->
+    switch actionName
+        when 'CHECK' then checkStatus()
+
+
+# automation
+# ##################################
+automationTriggerTime = (msg)->
+    entityManager.callAction(msg.entity_id, 'CHECK', {})
+    return false
 `

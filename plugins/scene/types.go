@@ -24,3 +24,7 @@ const (
 	Name        = "scene"
 	EntityScene = common.EntityType("scene")
 )
+
+const (
+	FuncSceneEvent = "sceneEvent"
+)

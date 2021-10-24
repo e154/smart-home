@@ -16,40 +16,46 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package location
+package bind
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/e154/smart-home/common/web"
-	m "github.com/e154/smart-home/models"
 )
 
-const (
-	IpApi = "http://ip-api.com/json"
-	IPAPI = "https://ipapi.co/json/"
-)
+type HttpResponse struct {
+	Body         string `json:"body"`
+	Error        bool   `json:"error"`
+	ErrorMessage string `json:"errorMessage"`
+}
 
-func GeoLocationFromIP(ip string) (location m.GeoLocation, err error) {
+// Javascript Binding
+//
+// http
+// 	 .get(url)
+// 	 .post(url, body)
+//
+type HttpBind struct {}
 
-	var body []byte
-	if body, err = web.Crawler(web.Request{Method: "GET", Url: fmt.Sprintf("%s/%s", IpApi, ip)}); err != nil {
+func (h *HttpBind) Get(url string) (response HttpResponse) {
+	log.Infof("call [GET ] request %s", url)
+	body, err := web.Crawler(web.Request{Method: "GET", Url: url})
+	if err != nil {
+		response.Error = true
+		response.ErrorMessage = err.Error()
 		return
 	}
-	location = m.GeoLocation{}
-	err = json.Unmarshal(body, &location)
-
+	response.Body = string(body)
 	return
 }
 
-func GetRegionInfo() (info m.RegionInfo, err error) {
-
-	var body []byte
-	if body, err = web.Crawler(web.Request{Method: "GET", Url: IPAPI}); err != nil {
+func (h *HttpBind) Post(url, data string) (response HttpResponse) {
+	log.Infof("call [POST] request %s", url)
+	body, err := web.Crawler(web.Request{Method: "POST", Url: url, Body: []byte(data)})
+	if err != nil {
+		response.Error = true
+		response.ErrorMessage = err.Error()
 		return
 	}
-	info = m.RegionInfo{}
-	err = json.Unmarshal(body, &info)
-
+	response.Body = string(body)
 	return
 }
