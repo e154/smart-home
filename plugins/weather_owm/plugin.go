@@ -16,26 +16,23 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package weather
+package weather_owm
 
 import (
-	"fmt"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/entity_manager"
+	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"sync"
+	"time"
 )
 
 const (
-	Name = "weather"
-	// EntityWeather ...
-	EntityWeather = common.EntityType("weather")
+	Name = "weather_owm"
 )
 
 var (
-	log = common.MustGetLogger("plugins.weather")
+	log = common.MustGetLogger("plugins.owm")
 )
 
 var _ plugins.Plugable = (*plugin)(nil)
@@ -46,15 +43,17 @@ func init() {
 
 type plugin struct {
 	*plugins.Plugin
-	actorsLock *sync.Mutex
-	actors     map[string]*Actor
+	quit    chan struct{}
+	pause   uint
+	service common.PluginManager
+	weather *WeatherOwm
 }
 
 func New() plugins.Plugable {
 	return &plugin{
-		Plugin:     plugins.NewPlugin(),
-		actorsLock: &sync.Mutex{},
-		actors:     make(map[string]*Actor),
+		Plugin: plugins.NewPlugin(),
+		quit:   make(chan struct{}),
+		pause:  60,
 	}
 }
 
@@ -63,9 +62,49 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
-	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	// load settings
+	var settings m.Attributes
+	settings, err = p.LoadSettings(p)
+	if err != nil {
+		log.Warn(err.Error())
+		settings = NewSettings()
+	}
 
-	return nil
+	if settings == nil {
+		settings = NewSettings()
+	}
+
+	p.weather = NewWeatherOwm(p.EventBus, p.Adaptors, settings)
+
+	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+	p.EventBus.Subscribe(weather.TopicPluginWeather, p.eventHandler)
+	p.quit = make(chan struct{})
+
+	go func() {
+		ticker := time.NewTicker(time.Minute * time.Duration(p.pause))
+
+		defer func() {
+			ticker.Stop()
+			close(p.quit)
+		}()
+
+		for {
+			select {
+			case <-p.quit:
+				return
+			case <-ticker.C:
+				if err = p.weather.UpdateForecastForAll(); err != nil {
+					log.Error(err.Error())
+				}
+			}
+		}
+	}()
+
+	if err = p.weather.UpdateForecastForAll(); err != nil {
+		log.Error(err.Error())
+	}
+
+	return
 }
 
 func (p *plugin) Unload() (err error) {
@@ -73,8 +112,9 @@ func (p *plugin) Unload() (err error) {
 		return
 	}
 
+	p.quit <- struct{}{}
 	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
-
+	p.EventBus.Unsubscribe(weather.TopicPluginWeather, p.eventHandler)
 	return nil
 }
 
@@ -83,73 +123,33 @@ func (p plugin) Name() string {
 }
 
 func (p *plugin) eventHandler(_ string, msg interface{}) {
-
 	switch v := msg.(type) {
-	case event_bus.EventRequestState:
-		if v.To.Type() != Name {
+	case event_bus.EventAddedActor:
+		if v.Type != "weather" {
 			return
 		}
 
-		p.AddOrUpdateForecast(v.To.Name(), v.Attributes)
+		if name, ok := v.Settings[weather.AttrPlugin]; ok {
+			if name.String() != Name {
+				return
+			}
+			p.weather.AddWeather(v.EntityId, v.Settings)
+		}
+
+	case weather.EventStateChanged:
+		if v.Type != "weather" || v.State != weather.StatePositionUpdate {
+			return
+		}
+
+		p.weather.UpdateWeatherList(v.EntityId, v.Settings)
+
+	case event_bus.EventRemoveActor:
+		if v.Type != "weather" {
+			return
+		}
+
+		p.weather.RemoveWeather(v.EntityId)
 	}
-
-	return
-}
-
-func (p *plugin) AddOrUpdateForecast(name string, attr m.Attributes) (err error) {
-
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	actor, ok := p.actors[name]
-	if !ok {
-		log.Warnf("forecast '%s.%s' not found", Name, name)
-		return
-	}
-
-	var stateName string
-
-	if a, ok := attr[AttrWeatherMain]; ok {
-		stateName = a.String()
-	}
-
-	actor.SetState(entity_manager.EntityStateParams{
-		NewState:        common.String(stateName),
-		AttributeValues: attr.Serialize(),
-	})
-
-	return
-}
-
-func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	name := entity.Id.Name()
-	if _, ok := p.actors[name]; !ok {
-		p.actors[name] = NewActor(entity, p.EntityManager, p.EventBus)
-		p.EntityManager.Spawn(p.actors[name].Spawn)
-	}
-	p.actors[name].UpdatePosition(entity.Settings)
-	return
-}
-
-func (p *plugin) RemoveActor(entityId common.EntityId) error {
-	return p.removeEntity(entityId.Name())
-}
-
-func (p *plugin) removeEntity(name string) (err error) {
-	p.actorsLock.Lock()
-	defer p.actorsLock.Unlock()
-
-	if _, ok := p.actors[name]; !ok {
-		err = fmt.Errorf("not found")
-		return
-	}
-
-	delete(p.actors, name)
-
-	return
 }
 
 func (p *plugin) Type() plugins.PluginType {
@@ -157,7 +157,7 @@ func (p *plugin) Type() plugins.PluginType {
 }
 
 func (p *plugin) Depends() []string {
-	return nil
+	return []string{weather.Name}
 }
 
 func (p *plugin) Version() string {
@@ -166,8 +166,6 @@ func (p *plugin) Version() string {
 
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		ActorAttrs:  BaseForecast(),
-		ActorSetts:  NewSettings(),
-		ActorStates: entity_manager.ToEntityStateShort(NewActorStates(false, false)),
+		ActorSetts: NewSettings(),
 	}
 }

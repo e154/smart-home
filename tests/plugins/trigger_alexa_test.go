@@ -122,7 +122,8 @@ automationTriggerAlexa = (msg)->
 
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 			go zigbee2mqtt.Start()
 
 			defer func() {

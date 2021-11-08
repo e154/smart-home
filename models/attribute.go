@@ -23,6 +23,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/debug"
 	"reflect"
 	"time"
 )
@@ -87,7 +88,7 @@ func (a Attribute) Float64() float64 {
 	if value, ok := a.Value.(float64); ok {
 		return value
 	}
-	return 0
+	return float64(a.Int64())
 }
 
 func (a Attribute) Map() Attributes {
@@ -331,20 +332,27 @@ func (a Attributes) Signature() (signature Attributes) {
 	return
 }
 
-func (e Attributes) Copy() (copy Attributes) {
-
+func (a Attributes) Copy() (copy Attributes) {
 	var buf bytes.Buffer
 
 	enc := gob.NewEncoder(&buf)
 	dec := gob.NewDecoder(&buf)
 
-	if err := enc.Encode(e); err != nil {
+	var err error
+	defer func() {
+		if err != nil {
+			log.Info("============= object with error =============")
+			debug.Println(a)
+		}
+	}()
+
+	if err = enc.Encode(a); err != nil {
 		log.Error(err.Error())
 		return
 	}
 
 	copy = make(Attributes)
-	if err := dec.Decode(&copy); err != nil {
+	if err = dec.Decode(&copy); err != nil {
 		log.Error(err.Error())
 	}
 	return
@@ -353,4 +361,5 @@ func (e Attributes) Copy() (copy Attributes) {
 func init() {
 	gob.Register(time.Time{})
 	gob.Register(Attributes{})
+	gob.Register(map[string]interface{}{})
 }

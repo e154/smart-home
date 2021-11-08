@@ -193,7 +193,8 @@ entityAction = (entityId, actionName)->
 			// ------------------------------------------------
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 
 			defer func() {
 				mqttServer.Shutdown()

@@ -35,6 +35,7 @@ import (
 	"github.com/e154/smart-home/plugins/sun"
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
+	"github.com/e154/smart-home/plugins/weather_owm"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/scripts"
@@ -269,6 +270,20 @@ func GetNewWeather(name string) *m.Entity {
 		Type:        "weather",
 		AutoLoad:    true,
 		Attributes:  weather.BaseForecast(),
+		Settings:    settings,
+	}
+}
+
+func GetNewWeatherOwm(name string) *m.Entity {
+	settings := weather_owm.NewSettings()
+	settings[weather_owm.AttrAppid].Value = "**************"
+	settings[weather_owm.AttrUnits].Value = "metric"
+	settings[weather_owm.AttrLang].Value = "ru"
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("weather_owm.%s", name)),
+		Description: "weather owm",
+		Type:        weather_owm.EntityWeatherOwm,
+		AutoLoad:    true,
 		Settings:    settings,
 	}
 }

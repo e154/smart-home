@@ -141,7 +141,8 @@ entityAction = (entityId, actionName)->
 
 			// ------------------------------------------------
 			pluginManager.Start()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 
 			defer func() {
 				entityManager.Shutdown()

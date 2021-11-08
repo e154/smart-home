@@ -304,7 +304,8 @@ skillOnIntent = ->
 
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 
 			defer func() {
 				entityManager.Shutdown()

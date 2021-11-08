@@ -73,10 +73,16 @@ func NewEntityManager(lc fx.Lifecycle,
 	return manager
 }
 
-// LoadEntities ...
-func (e *entityManager) LoadEntities(pluginManager common.PluginManager) {
-
+// SetPluginManager ...
+func (e *entityManager) SetPluginManager(pluginManager common.PluginManager) {
 	e.pluginManager = pluginManager
+
+	// event subscribe
+	e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
+}
+
+// LoadEntities ...
+func (e *entityManager) LoadEntities() {
 
 	var page int64
 	var entities []*m.Entity
@@ -101,9 +107,6 @@ LOOP:
 		page++
 		goto LOOP
 	}
-
-	// event subscribe
-	e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
 
 	return
 }
@@ -415,7 +418,7 @@ func (e *entityManager) Update(entity *m.Entity) (err error) {
 	e.unsafeRemove(entity.Id)
 
 	//todo fix
-	time.Sleep(time.Millisecond * 500)
+	time.Sleep(time.Millisecond * 1000)
 
 	e.Add(entity)
 
