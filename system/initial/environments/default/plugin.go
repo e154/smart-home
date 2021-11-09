@@ -57,7 +57,7 @@ func (n PluginManager) Create() (home *m.Plugin) {
 	n.addPlugin("update", true)
 	n.addPlugin("uptime", true)
 	n.addPlugin("weather", true)
-	n.addPlugin("weather_met", true)
+	n.addPlugin("weather_met", false)
 	n.addPlugin("weather_owm", true)
 	n.addPlugin("zigbee2mqtt", true)
 	n.addPlugin("zone", true)
