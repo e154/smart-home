@@ -34,7 +34,7 @@ func TestConfig(t *testing.T) {
 
 				t.Run("file", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
-						conf, err := config.ReadConfig("tests/data", "config.json", "")()
+						conf, err := config.ReadConfig("tests/data", "config.json", "")
 						ctx.So(err, ShouldBeNil)
 
 						//debug.Println(conf)
@@ -119,7 +119,7 @@ func TestConfig(t *testing.T) {
 						os.Setenv("API_WS_HOST_PORT", ":3003")
 						os.Setenv("API_SWAGGER", "true")
 
-						conf, err := config.ReadConfig("tests/data", "config.json", "")()
+						conf, err := config.ReadConfig("tests/data", "config.json", "")
 						ctx.So(err, ShouldBeNil)
 
 						//debug.Println(conf)
@@ -204,7 +204,7 @@ func TestConfig(t *testing.T) {
 						os.Setenv("APP_API_WS_HOST_PORT", "API_WS_HOST_PORT")
 						os.Setenv("APP_API_SWAGGER", "API_SWAGGER")
 
-						conf, err := config.ReadConfig("tests/data", "config.json", "APP")()
+						conf, err := config.ReadConfig("tests/data", "config.json", "APP")
 						ctx.So(err, ShouldBeNil)
 
 						//debug.Println(conf)

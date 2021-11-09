@@ -78,7 +78,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(endpoint.NewEndpoint)
 
 	container.Provide(func() (conf *models.AppConfig, err error) {
-		conf, err = config.ReadConfig("conf", "config.json", "")()
+		conf, err = config.ReadConfig("conf", "config.json", "")
 		conf.PgName = "smart_home_test"
 		conf.Logging = false
 		return

@@ -30,25 +30,23 @@ import (
 )
 
 // ReadConfig ...
-func ReadConfig(dir, fileName, pref string) func() (conf *models.AppConfig, err error) {
-	return func() (conf *models.AppConfig, err error) {
-		var file []byte
-		file, err = os.ReadFile(path.Join(dir, fileName))
-		if err != nil {
-			log.Fatal("Error reading config file")
-			return
-		}
-		conf = &models.AppConfig{}
-		err = json.Unmarshal(file, &conf)
-		if err != nil {
-			log.Fatal("Error: wrong format of config file")
-			return
-		}
+func ReadConfig(dir, fileName, pref string) (conf *models.AppConfig, err error) {
 
-		checkEnv(pref, conf)
-
+	var file []byte
+	file, err = os.ReadFile(path.Join(dir, fileName))
+	if err != nil {
+		log.Fatal("Error reading config file")
 		return
 	}
+	conf = &models.AppConfig{}
+	err = json.Unmarshal(file, &conf)
+	if err != nil {
+		log.Fatal("Error: wrong format of config file")
+		return
+	}
+	checkEnv(pref, conf)
+
+	return
 }
 
 func checkEnv(pref string, v *models.AppConfig) {

@@ -80,7 +80,7 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(jwt_manager.NewJwtManager)
 
 	container.Provide(func() (conf *models.AppConfig, err error) {
-		conf, err = config.ReadConfig("conf", "config.json", "")()
+		conf, err = config.ReadConfig("conf", "config.json", "")
 		conf.PgName = "smart_home_test"
 		conf.Logging = false
 		return

@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/endpoint"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
@@ -52,7 +53,9 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 
 	app = fx.New(
 		fx.Provide(
-			config.ReadConfig("conf", "config.json", ""),
+			func() (*models.AppConfig, error) {
+				return config.ReadConfig("conf", "config.json", "")
+			},
 			NewOrmConfig,
 			orm.NewOrm,
 			NewMigrationsConfig,
