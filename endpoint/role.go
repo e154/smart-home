@@ -20,9 +20,7 @@ package endpoint
 
 import (
 	"errors"
-	"fmt"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/validation"
@@ -180,8 +178,6 @@ func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[strin
 				}
 			}
 
-			fmt.Println(levelName, exist)
-
 			if dir && !exist {
 				addPerms = append(addPerms, &m.Permission{
 					RoleName:    role.Name,
@@ -203,8 +199,6 @@ func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[strin
 
 	if len(addPerms) > 0 {
 		for _, perm := range addPerms {
-			fmt.Println("----2")
-			debug.Println(perm)
 			tx.Permission.Add(perm)
 		}
 	}
