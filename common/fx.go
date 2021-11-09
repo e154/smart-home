@@ -32,7 +32,7 @@ func Start(app *fx.App) {
 	startCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	if err := app.Start(startCtx); err != nil {
-		fmt.Println(err)
+		fmt.Println("fx error:", err.Error())
 		return
 	}
 }
@@ -48,6 +48,6 @@ func Stop(app *fx.App) {
 	stopCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	if err := app.Stop(stopCtx); err != nil {
-		fmt.Println(err)
+		fmt.Println("fx error:", err.Error())
 	}
 }

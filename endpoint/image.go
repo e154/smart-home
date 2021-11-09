@@ -21,6 +21,7 @@ package endpoint
 import (
 	"bufio"
 	"errors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/validation"
 	"github.com/jinzhu/copier"
@@ -124,8 +125,11 @@ func (i *ImageEndpoint) Upload(files map[string][]*multipart.FileHeader) (fileLi
 		}
 
 		reader := bufio.NewReader(file)
-		if err = i.adaptors.Image.UploadImage(reader, fileHeader[0].Filename); err != nil {
+		var newImage *m.Image
+		if newImage, err = i.adaptors.Image.UploadImage(reader, fileHeader[0].Filename); err != nil {
 			errs = append(errs, err)
+		} else {
+			fileList = append(fileList, newImage)
 		}
 
 		file.Close()
@@ -136,6 +140,10 @@ func (i *ImageEndpoint) Upload(files map[string][]*multipart.FileHeader) (fileLi
 
 // GetList ...
 func (i *ImageEndpoint) GetList(limit, offset int64, order, sortBy string) (items []*m.Image, total int64, err error) {
+
+	if limit == 0 {
+		limit = common.DefaultPageSize
+	}
 
 	items, total, err = i.adaptors.Image.List(limit, offset, order, sortBy)
 

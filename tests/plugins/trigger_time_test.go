@@ -42,7 +42,7 @@ func TestTriggerTime(t *testing.T) {
 		task3SourceScript = `
 automationTriggerTime = (msg)->
     #print '---trigger---'
-    Done msg
+    Done msg.payload
     return false
 `
 	)
@@ -96,7 +96,7 @@ automationTriggerTime = (msg)->
 				Condition: common.ConditionAnd,
 			}
 			task3.AddTrigger(&m.Trigger{
-				Name:       "",
+				Name:       "trigger1",
 				Script:     task3Script,
 				PluginName: "time",
 				Payload: m.Attributes{
@@ -119,7 +119,8 @@ automationTriggerTime = (msg)->
 
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 			go zigbee2mqtt.Start()
 
 			time.Sleep(time.Second)

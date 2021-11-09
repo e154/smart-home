@@ -18,11 +18,13 @@
 
 package metrics
 
-import "github.com/e154/smart-home/system/config"
+import (
+	"github.com/e154/smart-home/common"
+)
 
 // MetricConfig ...
 type MetricConfig struct {
-	RunMode config.RunMode
+	RunMode common.RunMode
 	Host    string
 	Port    int
 	Enabled bool

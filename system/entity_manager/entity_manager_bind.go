@@ -26,11 +26,11 @@ import (
 // Javascript Binding
 //
 // entityManager
-//	.GetEntity(id) -> EntityBind
-//  .SetState(id, stateName)
-//  .SetAttributes(uniqueId, key, value, args)
-//  .SetMetric(uniqueId, name, value)
-//  .CallAction(uniqueId, actionName)
+//	.getEntity(id) -> EntityBind
+//  .setState(id, stateName)
+//  .setAttributes(uniqueId, key, value, args)
+//  .setMetric(uniqueId, name, value)
+//  .callAction(uniqueId, actionName)
 //
 type EntityManagerBind struct {
 	manager EntityManager

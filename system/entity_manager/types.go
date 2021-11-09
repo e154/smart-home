@@ -51,8 +51,11 @@ type ActorConstructor func() PluginActor
 
 type EntityManager interface {
 
+	// SetPluginManager ...
+	SetPluginManager(pluginManager common.PluginManager)
+
 	// LoadEntities ...
-	LoadEntities(pluginManager common.PluginManager)
+	LoadEntities()
 
 	// Shutdown ...
 	Shutdown()

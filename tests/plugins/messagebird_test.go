@@ -58,7 +58,8 @@ func TestMessagebird(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			pluginManager.Start()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 
 			defer func() {
 				entityManager.Shutdown()

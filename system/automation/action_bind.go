@@ -22,7 +22,11 @@ import "github.com/e154/smart-home/common"
 
 const ActionFunc = "automationAction"
 
-// ActionBind...
+// Javascript Binding
+//
+// Action
+//	.callAction(entityId, action, args)
+//
 type ActionBind struct {
 	action *Action
 }

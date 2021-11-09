@@ -42,7 +42,7 @@ func TestTriggerSystem(t *testing.T) {
 		task3SourceScript = `
 automationTriggerSystem = (msg)->
     #print '---trigger---'
-    Done msg.event
+    Done msg.payload.event
     return false
 `
 	)
@@ -114,7 +114,8 @@ automationTriggerSystem = (msg)->
 
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 			go zigbee2mqtt.Start()
 
 			defer func() {
@@ -131,7 +132,8 @@ automationTriggerSystem = (msg)->
 			// ------------------------------------------------
 
 			automation.Reload()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 			go zigbee2mqtt.Start()
 
 			time.Sleep(time.Second)

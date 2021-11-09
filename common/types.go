@@ -35,24 +35,6 @@ const (
 	ScriptLangJavascript = ScriptLang("javascript")
 )
 
-// FlowElementsPrototypeType ...
-type FlowElementsPrototypeType string
-
-const (
-	// FlowElementsPrototypeDefault ...
-	FlowElementsPrototypeDefault = FlowElementsPrototypeType("default")
-	// FlowElementsPrototypeMessageHandler ...
-	FlowElementsPrototypeMessageHandler = FlowElementsPrototypeType("MessageHandler")
-	// FlowElementsPrototypeMessageEmitter ...
-	FlowElementsPrototypeMessageEmitter = FlowElementsPrototypeType("MessageEmitter")
-	// FlowElementsPrototypeTask ...
-	FlowElementsPrototypeTask = FlowElementsPrototypeType("Task")
-	// FlowElementsPrototypeGateway ...
-	FlowElementsPrototypeGateway = FlowElementsPrototypeType("Gateway")
-	// FlowElementsPrototypeFlow ...
-	FlowElementsPrototypeFlow = FlowElementsPrototypeType("Flow")
-)
-
 // StatusType ...
 type StatusType string
 
@@ -211,4 +193,14 @@ type ConditionType string
 const (
 	ConditionOr  = ConditionType("or")
 	ConditionAnd = ConditionType("and")
+)
+
+// RunMode ...
+type RunMode string
+
+const (
+	// DebugMode ...
+	DebugMode = RunMode("debug")
+	// ReleaseMode ...
+	ReleaseMode = RunMode("release")
 )

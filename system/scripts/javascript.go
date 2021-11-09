@@ -200,6 +200,11 @@ func (j *Javascript) Do() (result string, err error) {
 
 // AssertFunction ...
 func (j *Javascript) AssertFunction(f string, args ...interface{}) (result string, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Warn("Recovered")
+		}
+	}()
 	if assertFunc, ok := goja.AssertFunction(j.vm.Get(f)); ok {
 		var value goja.Value
 		var gojaArgs []goja.Value

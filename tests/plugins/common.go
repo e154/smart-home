@@ -19,10 +19,13 @@
 package plugins
 
 import (
+	"context"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/cgminer"
+	"github.com/e154/smart-home/plugins/cgminer/bitmine"
 	"github.com/e154/smart-home/plugins/modbus_rtu"
 	"github.com/e154/smart-home/plugins/modbus_tcp"
 	"github.com/e154/smart-home/plugins/moon"
@@ -32,10 +35,14 @@ import (
 	"github.com/e154/smart-home/plugins/sun"
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/e154/smart-home/plugins/weather"
+	"github.com/e154/smart-home/plugins/weather_owm"
 	"github.com/e154/smart-home/plugins/zigbee2mqtt"
 	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/phayes/freeport"
 	"github.com/smartystreets/goconvey/convey"
+	"net"
+	"net/http"
 	"time"
 )
 
@@ -267,6 +274,20 @@ func GetNewWeather(name string) *m.Entity {
 	}
 }
 
+func GetNewWeatherOwm(name string) *m.Entity {
+	settings := weather_owm.NewSettings()
+	settings[weather_owm.AttrAppid].Value = "**************"
+	settings[weather_owm.AttrUnits].Value = "metric"
+	settings[weather_owm.AttrLang].Value = "ru"
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("weather_owm.%s", name)),
+		Description: "weather owm",
+		Type:        weather_owm.EntityWeatherOwm,
+		AutoLoad:    true,
+		Settings:    settings,
+	}
+}
+
 func GetNewSun(name string) *m.Entity {
 	settings := sun.NewSettings()
 	settings[sun.AttrLat].Value = 54.9022
@@ -278,6 +299,35 @@ func GetNewSun(name string) *m.Entity {
 		AutoLoad:    true,
 		Attributes:  sun.NewAttr(),
 		Settings:    settings,
+	}
+}
+
+func GetNewBitmineL3(name string) *m.Entity {
+	settings := cgminer.NewSettings()
+	settings[cgminer.SettingHost].Value = "192.168.0.243"
+	settings[cgminer.SettingPort].Value = 4028
+	settings[cgminer.SettingTimeout].Value = 2
+	settings[cgminer.SettingUser].Value = "user"
+	settings[cgminer.SettingPass].Value = "pass"
+	settings[cgminer.SettingManufacturer].Value = bitmine.ManufactureBitmine
+	settings[cgminer.SettingModel].Value = bitmine.DeviceL3Plus
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("cgminer.%s", name)),
+		Description: "antminer L3",
+		Type:        "cgminer",
+		AutoLoad:    true,
+		Attributes:  cgminer.NewAttr(),
+		Settings:    settings,
+	}
+}
+
+func GetNewSensor(name string) *m.Entity {
+
+	return &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("sensor.%s", name)),
+		Description: "api",
+		Type:        "sensor",
+		AutoLoad:    true,
 	}
 }
 
@@ -356,4 +406,85 @@ func Wait(t time.Duration, ch chan interface{}) (ok bool) {
 		break
 	}
 	return
+}
+
+type accepted struct {
+	conn net.Conn
+	err  error
+}
+
+func MockHttpServer(ctx context.Context, ip string, port int64, payload []byte) (err error) {
+
+	var listener net.Listener
+	if listener, err = net.Listen("tcp", fmt.Sprintf("%s:%d", ip, port)); err != nil {
+		return
+	}
+
+	http.Serve(listener, http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		rw.WriteHeader(200)
+		fmt.Fprintf(rw, string(payload))
+	}))
+	c := make(chan accepted, 1)
+	for {
+		select {
+		case <-ctx.Done():
+			listener.Close()
+			return
+		case a := <-c:
+			if a.err != nil {
+				err = a.err
+				return
+			}
+			go func(conn net.Conn) {
+				conn.Write(payload)
+				conn.Close()
+			}(a.conn)
+		default:
+		}
+	}
+
+	return
+}
+func MockTCPServer(ctx context.Context, ip string, port int64, payloads ...[]byte) (err error) {
+	var listener net.Listener
+	if listener, err = net.Listen("tcp", fmt.Sprintf("%s:%d", ip, port)); err != nil {
+		return
+	}
+	c := make(chan accepted, 3)
+	go func() {
+		for {
+			conn, err := listener.Accept()
+			c <- accepted{conn, err}
+		}
+	}()
+	var counter int
+	for {
+		select {
+		case <-ctx.Done():
+			listener.Close()
+			return
+		case a := <-c:
+			if a.err != nil {
+				err = a.err
+				return
+			}
+			go func(conn net.Conn) {
+				if counter < len(payloads) {
+					conn.Write(payloads[counter])
+				} else {
+					conn.Write(payloads[len(payloads)-1])
+				}
+				conn.Close()
+				counter++
+			}(a.conn)
+		default:
+		}
+	}
+
+	return
+}
+
+func GetPort() int64 {
+	port, _ := freeport.GetFreePort()
+	return int64(port)
 }

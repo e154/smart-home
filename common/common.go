@@ -22,10 +22,15 @@ import (
 	"crypto/md5"
 	crypto_rand "crypto/rand"
 	"encoding/hex"
+	"go/build"
 	"math/rand"
 	"os"
+	"path"
+	"strings"
 	"time"
 )
+
+const DefaultPageSize int64 = 15
 
 //create md5 string
 func Strtomd5(s string) string {
@@ -72,4 +77,16 @@ func RandomString(l int) string {
 
 func TestMode() bool {
 	return os.Getenv("TEST_MODE") == "true"
+}
+
+func Dir() string {
+	dir, _ := os.Getwd()
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		gopath = build.Default.GOPATH
+	}
+	project := path.Join(gopath, "src", "")
+	dir = strings.Replace(dir, project, "+", -1)
+	dir = strings.Replace(dir, "+/", "", -1)
+	return dir
 }

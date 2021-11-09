@@ -25,7 +25,6 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
@@ -54,7 +53,7 @@ func NewPluginManager(lc fx.Lifecycle,
 	entityManager entity_manager.EntityManager,
 	mqttServ mqtt.MqttServ,
 	scriptService scripts.ScriptService,
-	appConfig *config.AppConfig,
+	appConfig *m.AppConfig,
 	gateClient *gate_client.GateClient) common.PluginManager {
 	pluginManager := &pluginManager{
 		adaptors:       adaptors,

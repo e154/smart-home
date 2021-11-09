@@ -59,7 +59,7 @@ func (n *EntityStorages) GetLastByEntityId(entityId common.EntityId) (v EntitySt
 	v = EntityStorage{}
 	if err = n.Db.Model(&EntityStorage{}).
 		Order("created_at desc").
-		First(&v, "id = ?", entityId).
+		First(&v, "entity_id = ?", entityId).
 		Error; err != nil {
 		return
 	}

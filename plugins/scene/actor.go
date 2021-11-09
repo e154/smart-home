@@ -19,16 +19,13 @@
 package scene
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 	"sync"
-)
-
-const (
-	FuncSceneEvent = "sceneEvent"
 )
 
 type Actor struct {
@@ -62,11 +59,9 @@ func NewActor(entity *m.Entity,
 		if actor.scriptEngine, err = scriptService.NewEngine(&entity.Scripts[0]); err != nil {
 			return
 		}
-
+		actor.scriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+		actor.scriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 		actor.scriptEngine.Do()
-
-		// bind
-		actor.scriptEngine.PushStruct("Actor", NewScriptBind(actor))
 	}
 
 	// action worker

@@ -20,6 +20,7 @@ package endpoint
 
 import (
 	"errors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/validation"
@@ -97,6 +98,10 @@ func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validatio
 // GetList ...
 func (n *RoleEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Role, total int64, err error) {
 
+	if limit == 0 {
+		limit = common.DefaultPageSize
+	}
+
 	result, total, err = n.adaptors.Role.List(limit, offset, order, sortBy)
 
 	return
@@ -109,6 +114,11 @@ func (n *RoleEndpoint) Delete(name string) (err error) {
 		err = errors.New("admin is base role")
 		return
 	}
+
+	if _, err = n.adaptors.Role.GetByName(name); err != nil {
+		return
+	}
+
 	err = n.adaptors.Role.Delete(name)
 
 	return
@@ -116,6 +126,10 @@ func (n *RoleEndpoint) Delete(name string) (err error) {
 
 // Search ...
 func (n *RoleEndpoint) Search(query string, limit, offset int) (result []*m.Role, total int64, err error) {
+
+	if limit == 0 {
+		limit = int(common.DefaultPageSize)
+	}
 
 	result, total, err = n.adaptors.Role.Search(query, limit, offset)
 
@@ -131,7 +145,7 @@ func (n *RoleEndpoint) GetAccessList(roleName string,
 		return
 	}
 
-	accessList, err = accessListService.GetFullAccessList(role)
+	accessList, err = accessListService.GetFullAccessList(role.Name)
 
 	return
 }
@@ -153,20 +167,29 @@ func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[strin
 
 	addPerms := make([]*m.Permission, 0)
 	delPerms := make([]string, 0)
+	var exist bool
 	for packName, pack := range accessListDif {
 		for levelName, dir := range pack {
-			if dir {
+
+			exist = false
+			for _, lName := range role.AccessList[packName] {
+				if levelName == lName {
+					exist = true
+				}
+			}
+
+			if dir && !exist {
 				addPerms = append(addPerms, &m.Permission{
 					RoleName:    role.Name,
 					PackageName: packName,
 					LevelName:   levelName,
 				})
-			} else {
+			} else if !dir && exist {
 				delPerms = append(delPerms, levelName)
 			}
 
 			if len(delPerms) > 0 {
-				if err = tx.Permission.Delete(packName, delPerms); err != nil {
+				if err = tx.Permission.Delete(roleName, packName, delPerms); err != nil {
 					return
 				}
 				delPerms = []string{}
@@ -174,12 +197,10 @@ func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[strin
 		}
 	}
 
-	if len(addPerms) == 0 {
-		return
-	}
-
-	for _, perm := range addPerms {
-		tx.Permission.Add(perm)
+	if len(addPerms) > 0 {
+		for _, perm := range addPerms {
+			tx.Permission.Add(perm)
+		}
 	}
 
 	err = tx.Commit()

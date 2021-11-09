@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "protoc-gen-swagger/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info: {
+    title: "Smart home api"
+    version: "1.0"
+    description: "This documentation describes APIs found under https://github.com/e154/smart-home"
+    contact: {
+      name: "Alex Filippov"
+      url: "https://e154.github.io/smart-home/"
+      email: "support@e154.ru"
+    }
+  };
+  schemes: [HTTP, HTTPS]
+  consumes: "application/json"
+  produces: "application/json"
+  security_definitions: {
+    security: {
+      key: "ApiKeyAuth";
+      value: {
+        type: TYPE_API_KEY;
+        in: IN_HEADER;
+        name: "x-api-key";
+        extensions: {
+          key: "x-api-key";
+          value {
+            string_value: "jwt";
+          }
+        }
+      }
+    }
+    security: {
+      key: "BasicAuth";
+      value: {
+        type: TYPE_BASIC;
+      }
+    }
+  };
+
+  security: {
+    security_requirement: {
+      key: "BasicAuth";
+      value: {};
+    }
+    security_requirement: {
+      key: "ApiKeyAuth";
+      value: {};
+    }
+  };
+};

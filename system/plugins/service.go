@@ -21,7 +21,7 @@ package plugins
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
@@ -36,7 +36,7 @@ type service struct {
 	entityManager entity_manager.EntityManager
 	scriptService scripts.ScriptService
 	mqttServ      mqtt.MqttServ
-	appConfig     *config.AppConfig
+	appConfig     *models.AppConfig
 	gateClient    *gate_client.GateClient
 }
 
@@ -68,7 +68,7 @@ func (s service) MqttServ() mqtt.MqttServ {
 	return s.mqttServ
 }
 
-func (s service) AppConfig() *config.AppConfig {
+func (s service) AppConfig() *models.AppConfig {
 	return s.appConfig
 }
 

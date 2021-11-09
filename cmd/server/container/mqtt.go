@@ -19,12 +19,12 @@
 package container
 
 import (
-	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
 )
 
 // NewMqttConfig ...
-func NewMqttConfig(cfg *config.AppConfig) *mqtt.Config {
+func NewMqttConfig(cfg *models.AppConfig) *mqtt.Config {
 	return &mqtt.Config{
 		Port:                       cfg.MqttPort,
 		RetryInterval:              cfg.MqttRetryInterval,

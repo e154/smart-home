@@ -108,7 +108,8 @@ func TestZone(t *testing.T) {
 
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 			go zigbee2mqtt.Start()
 
 			defer func() {

@@ -91,7 +91,12 @@ func (t *Task) addTrigger(model *m.Trigger) (err error) {
 
 	queue := make(chan interface{}, taskMsgBuffer)
 	var handler = func(_ string, msg interface{}) {
-		queue <- msg
+		queue <- map[string]interface{}{
+			"payload":      msg,
+			"trigger_name": model.Name,
+			"task_name":    t.model.Name,
+			"entity_id":    model.EntityId.String(),
+		}
 	}
 
 	if err = triggerPLugin.Subscribe(triggers.Subscriber{

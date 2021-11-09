@@ -22,6 +22,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"unicode/utf8"
 )
@@ -123,5 +124,12 @@ func CopyFile(f, t string) {
 	_, err = io.Copy(to, from)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func FormatSourceCode(filename string) {
+	cmd := exec.Command("gofmt", "-w", filename)
+	if err := cmd.Run(); err != nil {
+		log.Fatalf("Error while running gofmt: %s", err.Error())
 	}
 }

@@ -24,6 +24,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
 	"sync"
 )
@@ -85,6 +86,8 @@ func (p *plugin) asyncLoad() (err error) {
 	// register telegram provider
 	p.notify.AddProvider(Name, p)
 
+	p.EventBus.Subscribe(event_bus.TopicEntities, p.eventHandler)
+
 	return
 }
 
@@ -92,6 +95,8 @@ func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
 	}
+
+	p.EventBus.Unsubscribe(event_bus.TopicEntities, p.eventHandler)
 
 	if p.notify == nil {
 		return
@@ -135,7 +140,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	}
 
 	var actor *Actor
-	if actor, err = NewActor(entity, p.EntityManager, p.EventBus, p.Adaptors); err != nil {
+	if actor, err = NewActor(entity, p.EntityManager, p.ScriptService, p.EventBus, p.Adaptors); err != nil {
 		return
 	}
 	p.actors[entity.Id] = actor
@@ -187,8 +192,11 @@ func (p *plugin) Send(name string, message m.Message) (err error) {
 	p.actorsLock.RLock()
 	defer p.actorsLock.RUnlock()
 
-	if actor, ok := p.actors[common.EntityId(fmt.Sprintf("telegram.%s", name))]; ok {
+	actor, ok := p.actors[common.EntityId(fmt.Sprintf("telegram.%s", name))]
+	if ok {
 		actor.Send(body)
+	} else {
+		err = fmt.Errorf("bot with name '%s' not found", name)
 	}
 
 	return
@@ -197,4 +205,19 @@ func (p *plugin) Send(name string, message m.Message) (err error) {
 // MessageParams ...
 func (p *plugin) MessageParams() m.Attributes {
 	return NewMessageParams()
+}
+
+func (p *plugin) eventHandler(topic string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case event_bus.EventStateChanged:
+	case event_bus.EventCallAction:
+		actor, ok := p.actors[v.EntityId]
+		if !ok {
+			return
+		}
+		actor.addAction(v)
+	}
+
+	return
 }

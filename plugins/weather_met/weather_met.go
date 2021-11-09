@@ -27,7 +27,6 @@ import (
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/weather"
-	"github.com/e154/smart-home/plugins/zone"
 	"github.com/e154/smart-home/system/event_bus"
 	"math"
 	"net/url"
@@ -64,8 +63,8 @@ func (p *WeatherMet) UpdateWeatherList(entityId common.EntityId, settings m.Attr
 
 	zone := Zone{
 		Name: entityId.Name(),
-		Lat:  settings[zone.AttrLat].Float64(),
-		Lon:  settings[zone.AttrLon].Float64(),
+		Lat:  settings[weather.AttrLat].Float64(),
+		Lon:  settings[weather.AttrLon].Float64(),
 	}
 
 	var update bool
@@ -164,9 +163,11 @@ func (p *WeatherMet) FetchData(name string, lat, lon float64, now time.Time) (zo
 
 	// get from storage
 	if zone, err = p.fetchFromLocalStorage(name); err == nil {
-		if zone.LoadetAt != nil && now.Sub(common.TimeValue(zone.LoadetAt)).Minutes() < 60 {
+		if zone.LoadedAt != nil && now.Sub(common.TimeValue(zone.LoadedAt)).Minutes() < 60 {
 			return
 		}
+	} else {
+		log.Error(err.Error())
 	}
 
 	// fetch from server
@@ -181,7 +182,7 @@ func (p *WeatherMet) FetchData(name string, lat, lon float64, now time.Time) (zo
 		Lon:  lon,
 	}
 	zone.Weatherdata = &Weatherdata{}
-	zone.LoadetAt = common.Time(time.Now())
+	zone.LoadedAt = common.Time(time.Now())
 	if err = xml.Unmarshal(body, zone.Weatherdata); err != nil {
 		return
 	}
@@ -236,7 +237,7 @@ func (p *WeatherMet) fetchFromServer(lat, lon float64) (body []byte, err error) 
 
 	log.Debugf("fetch from server %s", uri.String())
 
-	body, err = web.Crawler(uri.String())
+	body, err = web.Crawler(web.Request{Method: "GET", Url: uri.String()})
 
 	return
 }
@@ -281,7 +282,7 @@ func (p *WeatherMet) getWeather(zone Zone, t time.Time, maxHour float64) (w m.At
 		weather.AttrWeatherDatetime:       t,
 		weather.AttrWeatherMinTemperature: p.getMinTemperature(orderedEntries),
 		weather.AttrWeatherMaxTemperature: p.getMaxTemperature(orderedEntries),
-		weather.AttrWeatherCondition:      p.getCondition(orderedEntries),
+		weather.AttrWeatherMain:           p.getCondition(orderedEntries),
 		weather.AttrWeatherPressure:       p.getPressure(orderedEntries),
 		weather.AttrWeatherHumidity:       p.getHumidity(orderedEntries),
 		weather.AttrWeatherWindSpeed:      p.getWindSpeed(orderedEntries),
@@ -291,6 +292,8 @@ func (p *WeatherMet) getWeather(zone Zone, t time.Time, maxHour float64) (w m.At
 	if maxHour <= 6 {
 		w[weather.AttrWeatherTemperature] = p.getTemperature(orderedEntries)
 	}
+
+	w[weather.AttrWeatherAttribution] = Attribution
 
 	return
 }

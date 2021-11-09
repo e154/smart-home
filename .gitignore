@@ -17,4 +17,4 @@ bee.json
 /conf/notify.json
 /cmd/pingmq/pingmq
 server-linux-amd64
-./main.go
+._*

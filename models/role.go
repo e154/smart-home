@@ -23,7 +23,7 @@ import (
 	"time"
 )
 
-// Role ...
+// RoleName ...
 type Role struct {
 	Name        string              `json:"name" valid:"MaxSize(254);Required"`
 	Description string              `json:"description"`

@@ -19,11 +19,11 @@
 package container
 
 import (
-	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
 // NewZigbee2mqttConfig ...
-func NewZigbee2mqttConfig(cfg *config.AppConfig) *zigbee2mqtt.Config {
+func NewZigbee2mqttConfig(cfg *models.AppConfig) *zigbee2mqtt.Config {
 	return &zigbee2mqtt.Config{}
 }

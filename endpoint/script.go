@@ -142,6 +142,10 @@ func (n *ScriptEndpoint) Update(params *m.Script) (result *m.Script, errs []*val
 // GetList ...
 func (n *ScriptEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Script, total int64, err error) {
 
+	if limit == 0 {
+		limit = common.DefaultPageSize
+	}
+
 	result, total, err = n.adaptors.Script.List(limit, offset, order, sortBy)
 
 	return

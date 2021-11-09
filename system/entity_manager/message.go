@@ -35,4 +35,5 @@ type EntityStateParams struct {
 	NewState        *string          `json:"new_state"`
 	AttributeValues m.AttributeValue `json:"attribute_values"`
 	SettingsValue   m.AttributeValue `json:"settings_value"`
+	StorageSave     bool             `json:"storage_save"`
 }

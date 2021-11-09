@@ -25,11 +25,17 @@ import (
 
 // Javascript Binding
 //
-// Template()
-//	 .Render('name', {'key':'val'})
+// template
+//	 .render('name', {'key':'val'})
 //
 type TemplateBind struct {
 	adaptor *adaptors.Adaptors
+}
+
+func NewTemplateBind(adaptor *adaptors.Adaptors) *TemplateBind {
+	return &TemplateBind{
+		adaptor: adaptor,
+	}
 }
 
 // Render ...

@@ -122,6 +122,14 @@ postgres=# grant all privileges on database mydb to myuser;
 
 ### Installation for development
 
+```bash
+go install \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+    google.golang.org/protobuf/cmd/protoc-gen-go \
+    google.golang.org/grpc/cmd/protoc-gen-go-grpc
+```
+
 #### main server install
 
 ```bash
@@ -168,13 +176,13 @@ It's all
 The system supports self-testing of internal components, and is started by the command
 
 ```bash
-go test -v ./tests
+go test -v ./tests/...
 ```
 
 ### Support 
 
 Smart home Wiki: [e154.github.io/smart-home](https://e154.github.io/smart-home/)
-Bugs and feature requests: GitHub issues
+Bugs and feature requests: GitHub issues 
 
 ### Contributors
 

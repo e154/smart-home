@@ -19,12 +19,12 @@
 package container
 
 import (
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/backup"
-	"github.com/e154/smart-home/system/config"
 )
 
 // NewBackupConfig ...
-func NewBackupConfig(cfg *config.AppConfig) *backup.BackupConfig {
+func NewBackupConfig(cfg *models.AppConfig) *backup.BackupConfig {
 	return &backup.BackupConfig{
 		Path:   cfg.SnapshotDir,
 		PgUser: cfg.PgUser,

@@ -21,7 +21,7 @@ package adaptors
 import (
 	"context"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
@@ -76,7 +76,7 @@ type Adaptors struct {
 // NewAdaptors ...
 func NewAdaptors(lc fx.Lifecycle,
 	db *gorm.DB,
-	cfg *config.AppConfig,
+	cfg *models.AppConfig,
 	migrations *migrations.Migrations,
 	orm *orm.Orm) (adaptors *Adaptors) {
 

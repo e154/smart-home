@@ -21,6 +21,7 @@ package container
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/endpoint"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
@@ -76,8 +77,8 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(event_bus.NewEventBus)
 	container.Provide(endpoint.NewEndpoint)
 
-	container.Provide(func() (conf *config.AppConfig, err error) {
-		conf, err = config.ReadConfig()
+	container.Provide(func() (conf *models.AppConfig, err error) {
+		conf, err = config.ReadConfig("conf", "config.json", "")
 		conf.PgName = "smart_home_test"
 		conf.Logging = false
 		return

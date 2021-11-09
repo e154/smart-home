@@ -26,9 +26,10 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/version"
 	"go.uber.org/atomic"
-	"sync"
+	"strings"
 )
 
 // Actor ...
@@ -41,11 +42,13 @@ type Actor struct {
 	bot         *tgbotapi.BotAPI
 	commandPool chan Command
 	msgPool     chan string
+	actionPool  chan event_bus.EventCallAction
 }
 
 // NewActor ...
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
+	scriptService scripts.ScriptService,
 	eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors) (*Actor, error) {
 
@@ -53,23 +56,46 @@ func NewActor(entity *m.Entity,
 	settings.Deserialize(entity.Settings.Serialize())
 
 	actor := &Actor{
-		BaseActor: entity_manager.BaseActor{
-			Id:         entity.Id,
-			Name:       Name,
-			EntityType: entity.Type,
-			AttrMu:     &sync.RWMutex{},
-			Attrs:      NewAttr(),
-			Manager:    entityManager,
-			SettingsMu: &sync.RWMutex{},
-			Setts:      settings,
-		},
-		isStarted:   atomic.NewBool(false),
+		BaseActor:   entity_manager.NewBaseActor(entity, scriptService, adaptors),
 		eventBus:    eventBus,
+		actionPool:  make(chan event_bus.EventCallAction, 10),
+		isStarted:   atomic.NewBool(false),
 		adaptors:    adaptors,
 		AccessToken: settings[AttrToken].String(),
 		commandPool: make(chan Command, 99),
 		msgPool:     make(chan string, 99),
 	}
+
+	actor.Manager = entityManager
+
+	if actor.Attrs == nil {
+		actor.Attrs = NewAttr()
+	}
+
+	if actor.Setts == nil {
+		actor.Setts = NewSettings()
+	}
+
+	//if actor.Actions == nil {
+	//	actor.Actions = NewActions()
+	//}
+
+	// Actions
+	for _, a := range actor.Actions {
+		if a.ScriptEngine != nil {
+			// bind
+			a.ScriptEngine.Do()
+		}
+	}
+
+	actor.DeserializeAttr(entity.Attributes.Serialize())
+
+	// action worker
+	go func() {
+		for msg := range actor.actionPool {
+			actor.runAction(msg)
+		}
+	}()
 
 	return actor, nil
 }
@@ -162,12 +188,6 @@ func (p *Actor) Send(message string) (err error) {
 	return
 }
 
-// GetStatus ...
-func (p *Actor) GetStatus(smsId string) (string, error) {
-
-	return "", nil
-}
-
 func (p *Actor) commandHandler(cmd Command) {
 	switch cmd.Text {
 	case "/start":
@@ -177,7 +197,7 @@ func (p *Actor) commandHandler(cmd Command) {
 	case "/quit":
 		p.commandQuit(cmd)
 	default:
-		log.Infof("unknown command user(%s) chatId(%d) command(%s)", cmd.UserName, cmd.ChatId, cmd.Text)
+		p.commandAction(cmd)
 	}
 }
 
@@ -255,10 +275,41 @@ func (p *Actor) commandStart(cmd Command) {
 }
 
 func (p *Actor) commandHelp(cmd Command) {
-	p.sendMsg(help, cmd.ChatId)
+	builder := &strings.Builder{}
+	if len(p.Actions) > 0 {
+		for _, action := range p.Actions {
+			builder.WriteString(fmt.Sprintf("/%s - %s\n", action.Name, action.Description))
+		}
+	}
+	builder.WriteString(help)
+	p.sendMsg(builder.String(), cmd.ChatId)
 }
 
 func (p *Actor) commandQuit(cmd Command) {
 	p.adaptors.TelegramChat.Delete(p.Id, cmd.ChatId)
 	p.sendMsg("/quit -unsubscribe from bot\n/start - subscriber again", cmd.ChatId)
+}
+
+//todo add command args
+func (p *Actor) commandAction(cmd Command) {
+	p.runAction(event_bus.EventCallAction{
+		ActionName: strings.Replace(cmd.Text, "/", "", 1),
+		EntityId:   p.Id,
+	})
+}
+
+func (p *Actor) addAction(event event_bus.EventCallAction) {
+	p.actionPool <- event
+}
+
+func (p *Actor) runAction(msg event_bus.EventCallAction) {
+	action, ok := p.Actions[msg.ActionName]
+	if !ok {
+		log.Warnf("action %s not found", msg.ActionName)
+		return
+	}
+	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId.Name(), action.Name); err != nil {
+		log.Error(err.Error())
+		return
+	}
 }

@@ -19,6 +19,7 @@
 package zigbee2mqtt
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -72,21 +73,20 @@ func NewActor(entity *m.Entity,
 	// Actions
 	for _, a := range actor.Actions {
 		if a.ScriptEngine != nil {
-			// bind
-			a.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
+			a.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+			a.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 			a.ScriptEngine.Do()
 		}
 	}
 
-	if actor.ScriptEngine == nil {
-		return
+	if actor.ScriptEngine != nil {
+		// message
+		actor.ScriptEngine.PushStruct("message", actor.message)
+
+		// binds
+		actor.ScriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))
+		actor.ScriptEngine.PushStruct("Actor", entity_manager.NewScriptBind(actor))
 	}
-
-	// message
-	actor.ScriptEngine.PushStruct("message", actor.message)
-
-	// bind
-	actor.ScriptEngine.PushStruct("Actor", NewScriptBind(actor))
 
 	// mqtt worker
 	go func() {

@@ -20,9 +20,10 @@ package container
 
 import (
 	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/api/server"
-	controllersV1 "github.com/e154/smart-home/api/server/v1/controllers"
+	"github.com/e154/smart-home/api"
+	"github.com/e154/smart-home/api/controllers"
 	"github.com/e154/smart-home/endpoint"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/automation"
 	"github.com/e154/smart-home/system/backup"
@@ -31,6 +32,7 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/initial"
+	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/migrations"
@@ -51,7 +53,9 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 
 	app = fx.New(
 		fx.Provide(
-			config.ReadConfig,
+			func() (*models.AppConfig, error) {
+				return config.ReadConfig("conf", "config.json", "")
+			},
 			NewOrmConfig,
 			orm.NewOrm,
 			NewMigrationsConfig,
@@ -76,14 +80,15 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			automation.NewAutomation,
 			event_bus.NewEventBus,
 			endpoint.NewEndpoint,
-			NewApiServerConfig,
-			controllersV1.NewControllersV1,
-			server.NewServer,
+			NewApiConfig,
+			api.NewApi,
+			controllers.NewControllers,
 			stream.NewStreamService,
 			stream.NewHub,
 			NewBackupConfig,
 			backup.NewBackup,
 			gate_client.NewGateClient,
+			jwt_manager.NewJwtManager,
 		),
 		fx.Logger(NewPrinter()),
 		opt,

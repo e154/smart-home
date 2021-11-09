@@ -51,10 +51,9 @@ func NewActor(entity *m.Entity,
 			EntityType:        EntityWeather,
 			UnitOfMeasurement: "C°",
 			AttrMu:            &sync.RWMutex{},
-			Attrs:             entity.Attributes,
 			ParentId:          common.NewEntityId(fmt.Sprintf("%s.%s", zone.Name, name)),
 			Manager:           entityManager,
-			States:            NewStates(false, false),
+			States:            NewActorStates(false, false),
 		},
 		eventBus:     eventBus,
 		updateLock:   &sync.Mutex{},
@@ -127,10 +126,11 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	e.AttrMu.Unlock()
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-		Type:     e.Id.Type(),
-		EntityId: e.Id,
-		OldState: oldState,
-		NewState: e.GetEventState(e),
+		Type:        e.Id.Type(),
+		EntityId:    e.Id,
+		OldState:    oldState,
+		NewState:    e.GetEventState(e),
+		StorageSave: true,
 	})
 
 	return nil

@@ -93,7 +93,7 @@ entityAction = (entityId, actionName)->
 		task1SourceScript = `
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    if !msg.new_state || !msg.new_state.state
+    if !msg.payload.new_state || !msg.payload.new_state.state
         return false
     return msg.new_state.state.name == 'DOUBLE_CLICK'
 
@@ -114,7 +114,7 @@ automationAction = (entityId)->
 		task2SourceScript = `
 automationTriggerStateChanged = (msg)->
     #print '---trigger---'
-    if !msg.new_state || !msg.new_state.state
+    if !msg.payload.new_state || !msg.payload.new_state.state
         return false
     return msg.new_state.state.name == 'DOUBLE_CLICK'
 
@@ -340,7 +340,8 @@ automationAction = (entityId)->
 			// ------------------------------------------------
 			pluginManager.Start()
 			automation.Reload()
-			entityManager.LoadEntities(pluginManager)
+			entityManager.SetPluginManager(pluginManager)
+			entityManager.LoadEntities()
 			go zigbee2mqtt.Start()
 
 			defer func() {

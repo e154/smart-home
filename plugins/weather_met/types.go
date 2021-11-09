@@ -23,6 +23,10 @@ import (
 	"time"
 )
 
+const (
+	Attribution = "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute."
+)
+
 type MaxTemperature struct {
 	Id    string `xml:"id,attr"`
 	Unit  string `xml:"unit,attr"`
@@ -161,5 +165,5 @@ type Zone struct {
 	Lat         float64      `json:"lat"`
 	Lon         float64      `json:"lon"`
 	Weatherdata *Weatherdata `json:"weatherdata"`
-	LoadetAt    *time.Time   `json:"loadet_at"`
+	LoadedAt    *time.Time   `json:"loaded_at"`
 }

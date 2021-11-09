@@ -19,12 +19,12 @@
 package container
 
 import (
-	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 )
 
 // NewMetricConfig ...
-func NewMetricConfig(cfg *config.AppConfig) *metrics.MetricConfig {
+func NewMetricConfig(cfg *models.AppConfig) *metrics.MetricConfig {
 	return &metrics.MetricConfig{
 		RunMode: cfg.Mode,
 		Host:    "0.0.0.0",

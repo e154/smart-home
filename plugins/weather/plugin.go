@@ -109,7 +109,7 @@ func (p *plugin) AddOrUpdateForecast(name string, attr m.Attributes) (err error)
 
 	var stateName string
 
-	if a, ok := attr[AttrWeatherCondition]; ok {
+	if a, ok := attr[AttrWeatherMain]; ok {
 		stateName = a.String()
 	}
 
@@ -168,6 +168,6 @@ func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		ActorAttrs:  BaseForecast(),
 		ActorSetts:  NewSettings(),
-		ActorStates: entity_manager.ToEntityStateShort(NewStates(false, false)),
+		ActorStates: entity_manager.ToEntityStateShort(NewActorStates(false, false)),
 	}
 }

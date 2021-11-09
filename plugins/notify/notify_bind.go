@@ -20,16 +20,22 @@ package notify
 
 // Javascript Binding
 //
-// Notifr()
-//	 .NewMessage()
-//	 .Send(msg)
+// notifr
+//	 .newMessage()
+//	 .send(msg)
 //
 type NotifyBind struct {
 	notify *notify
 }
 
+func NewNotifyBind(notify *notify) *NotifyBind {
+	return &NotifyBind{
+		notify: notify,
+	}
+}
+
 // NewMessage ...
-func (b *NotifyBind) NewMessage() Message {
+func (b *NotifyBind) NewMessage() *Message {
 	return NewMessage()
 }
 
