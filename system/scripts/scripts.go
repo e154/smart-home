@@ -21,7 +21,6 @@ package scripts
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/scripts/bind"
 	"github.com/e154/smart-home/system/storage"
 )
@@ -39,14 +38,14 @@ type ScriptService interface {
 
 // scriptService ...
 type scriptService struct {
-	cfg        *config.AppConfig
+	cfg        *m.AppConfig
 	functions  *Pull
 	structures *Pull
 	storage    *storage.Storage
 }
 
 // NewScriptService ...
-func NewScriptService(cfg *config.AppConfig, storage *storage.Storage) (service ScriptService) {
+func NewScriptService(cfg *m.AppConfig, storage *storage.Storage) (service ScriptService) {
 
 	service = &scriptService{
 		cfg:        cfg,

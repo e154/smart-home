@@ -194,3 +194,13 @@ const (
 	ConditionOr  = ConditionType("or")
 	ConditionAnd = ConditionType("and")
 )
+
+// RunMode ...
+type RunMode string
+
+const (
+	// DebugMode ...
+	DebugMode = RunMode("debug")
+	// ReleaseMode ...
+	ReleaseMode = RunMode("release")
+)

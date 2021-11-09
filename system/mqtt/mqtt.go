@@ -29,7 +29,6 @@ import (
 	"github.com/DrmagicE/gmqtt/server"
 	_ "github.com/DrmagicE/gmqtt/topicalias/fifo"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/config"
 	"github.com/e154/smart-home/system/logging"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt/admin"
@@ -250,7 +249,7 @@ func (m *Mqtt) logging() *zap.Logger {
 	})
 
 	lowLevel := zapcore.ErrorLevel
-	if m.cfg.DebugMode == config.ReleaseMode {
+	if m.cfg.DebugMode == common.ReleaseMode {
 		lowLevel = zapcore.DebugLevel
 	}
 	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
@@ -263,7 +262,7 @@ func (m *Mqtt) logging() *zap.Logger {
 	consoleErrors := zapcore.Lock(os.Stderr)
 
 	var encConfig zapcore.EncoderConfig
-	if m.cfg.DebugMode == config.ReleaseMode {
+	if m.cfg.DebugMode == common.ReleaseMode {
 		encConfig = zap.NewProductionEncoderConfig()
 	} else {
 		encConfig = zap.NewDevelopmentEncoderConfig()

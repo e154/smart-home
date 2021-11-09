@@ -19,12 +19,12 @@
 package container
 
 import (
-	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/orm"
 )
 
 // NewOrmConfig ...
-func NewOrmConfig(cfg *config.AppConfig) *orm.Config {
+func NewOrmConfig(cfg *models.AppConfig) *orm.Config {
 	return &orm.Config{
 		Alias:           "default",
 		Name:            cfg.PgName,

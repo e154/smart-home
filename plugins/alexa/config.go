@@ -20,7 +20,7 @@ package alexa
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/models"
 )
 
 // Config ...
@@ -30,7 +30,7 @@ type Config struct {
 }
 
 // NewConfig ...
-func NewConfig(appConfig *config.AppConfig) Config {
+func NewConfig(appConfig *models.AppConfig) Config {
 	return Config{
 		Host: appConfig.AlexaHost,
 		Port: appConfig.AlexaPort,

@@ -34,5 +34,5 @@ func NewPrinter() *Printer {
 }
 
 func (p *Printer) Printf(msg string, fields ...interface{}) {
-	log.Infof(msg, fields...)
+	log.Fatal(msg, fields...)
 }

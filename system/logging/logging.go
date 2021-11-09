@@ -21,7 +21,6 @@ package logging
 import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
@@ -38,7 +37,7 @@ type Logging struct {
 }
 
 // NewLogger ...
-func NewLogger(appConfig *config.AppConfig) (logging *Logging) {
+func NewLogger(appConfig *m.AppConfig) (logging *Logging) {
 
 	// First, define our level-handling logic.
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {

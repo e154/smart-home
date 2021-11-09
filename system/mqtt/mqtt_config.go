@@ -19,7 +19,7 @@
 package mqtt
 
 import (
-	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/common"
 	"time"
 )
 
@@ -34,6 +34,6 @@ type Config struct {
 	MaxInflight                int
 	MaxAwaitRel                int
 	MaxMsgQueue                int
-	Logging                    bool
-	DebugMode                  config.RunMode
+	Logging   bool
+	DebugMode common.RunMode
 }

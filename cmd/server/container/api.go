@@ -20,11 +20,11 @@ package container
 
 import (
 	"github.com/e154/smart-home/api"
-	"github.com/e154/smart-home/system/config"
+	"github.com/e154/smart-home/models"
 )
 
 // NewApiConfig ...
-func NewApiConfig(cfg *config.AppConfig) api.Config {
+func NewApiConfig(cfg *models.AppConfig) api.Config {
 	if cfg.ApiGrpcHostPort == "" {
 		cfg.ApiGrpcHostPort = ":3000"
 	}

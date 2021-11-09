@@ -52,7 +52,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 
 	app = fx.New(
 		fx.Provide(
-			config.ReadConfig,
+			config.ReadConfig("conf", "config.json", ""),
 			NewOrmConfig,
 			orm.NewOrm,
 			NewMigrationsConfig,
