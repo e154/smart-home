@@ -21,6 +21,7 @@ package system
 import (
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/jwt_manager"
 	. "github.com/smartystreets/goconvey/convey"
@@ -33,8 +34,8 @@ func TestJwt(t *testing.T) {
 		Convey("", t, func(ctx C) {
 
 			err := container.Invoke(func(adaptors *adaptors.Adaptors,
-				manager jwt_manager.JwtManager) {
-				manager.Start()
+				jwtManager jwt_manager.JwtManager) {
+				jwtManager.Start()
 
 				t.Run("generate", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
@@ -44,31 +45,27 @@ func TestJwt(t *testing.T) {
 							Nickname: "John Doe",
 							RoleName: "user",
 						}
-						accessToken, err := manager.Generate(user)
+						accessToken, err := jwtManager.Generate(user)
 						fmt.Println(accessToken)
 						ctx.So(err, ShouldBeNil)
 						ctx.So(accessToken, ShouldNotBeBlank)
 					})
 				})
-				//todo fix
-				//t.Run("verify", func(t *testing.T) {
-				//	Convey("", t, func(ctx C) {
-				//
-				//		const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Mzg5ODA2NjcsImlhdCI6MTYzNjM4ODY2NywiaXNzIjoic2VydmVyIiwibmJmIjoxNjM2Mzg4NjY3LCJpIjoxLCJuIjoiSm9obiBEb2UiLCJyIjoidXNlciJ9.RxHgi86tgXJg_I_1ZCxDYZOdmldgDWnR5wGi1pgF4ig"
-				//
-				//		claims, err := manager.Verify(accessToken)
-				//		//debug.Println(claims)
-				//		ctx.So(err, ShouldBeNil)
-				//		ctx.So(claims, ShouldNotBeNil)
-				//		ctx.So(claims.ExpiresAt, ShouldEqual, 1638980667)
-				//		ctx.So(claims.IssuedAt, ShouldEqual, 1636388667)
-				//		ctx.So(claims.Issuer, ShouldEqual, "server")
-				//		ctx.So(claims.NotBefore, ShouldEqual, 1636388667)
-				//		ctx.So(claims.UserId, ShouldEqual, 1)
-				//		ctx.So(claims.Username, ShouldEqual, "John Doe")
-				//		ctx.So(claims.RoleName, ShouldEqual, "user")
-				//	})
-				//})
+
+				t.Run("verify", func(t *testing.T) {
+					Convey("", t, func(ctx C) {
+
+						const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjI0MjU2OTQ1MTgsImkiOjEsImlhdCI6MTYzNjc3NjExOCwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM2Nzc2MTE4LCJyIjoidXNlciJ9.gxLi_hKQvAdkZtydyMRCje228u3Y8Xiad-iJM-U8E38"
+
+						claims, err := jwtManager.Verify(accessToken)
+						debug.Println(claims)
+						ctx.So(err, ShouldBeNil)
+						ctx.So(claims, ShouldNotBeNil)
+						ctx.So(claims.UserId, ShouldEqual, 1)
+						ctx.So(claims.Username, ShouldEqual, "John Doe")
+						ctx.So(claims.RoleName, ShouldEqual, "user")
+					})
+				})
 
 				t.Run("generate + verify", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
@@ -78,46 +75,45 @@ func TestJwt(t *testing.T) {
 							Nickname: "John Doe",
 							RoleName: "user",
 						}
-						accessToken, err := manager.Generate(user)
+						accessToken, err := jwtManager.Generate(user)
 						ctx.So(err, ShouldBeNil)
 						ctx.So(accessToken, ShouldNotBeBlank)
 
-						claims, err := manager.Verify(accessToken)
+						claims, err := jwtManager.Verify(accessToken)
 						ctx.So(err, ShouldBeNil)
 						ctx.So(claims, ShouldNotBeNil)
-						//ctx.So(claims.ExpiresAt, ShouldEqual, 1626345821)
-						//ctx.So(claims.IssuedAt, ShouldEqual, 1623753821)
-						ctx.So(claims.Issuer, ShouldEqual, "server")
-						//ctx.So(claims.NotBefore, ShouldEqual, 1623753821)
 						ctx.So(claims.UserId, ShouldEqual, 1)
 						ctx.So(claims.Username, ShouldEqual, "John Doe")
 						ctx.So(claims.RoleName, ShouldEqual, "user")
-
-						err = claims.Valid()
-						ctx.So(err, ShouldBeNil)
 					})
 				})
 
 				t.Run("invalid signature", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
 
-						const accessToken1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzNDU4MjEsImlhdCI6MTYyMzc1MzgyMSwiaXNzIjoic2VydmVyIiwibmJmIjoxNjIzNzUzODIxLCJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6InVzZXIifQ.PlnyM928_KJaeBseB5IpCrphu4T7O4y-2oK0SeUgv8Qq"
-						claims, err := manager.Verify(accessToken1)
+						const accessToken1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjI0MjU2OTQ1MTgsImkiOjEsImlhdCI6MTYzNjc3NjExOCwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM2Nzc2MTE4LCJyIjoidXNlciJ9.gxLi_hKQvAdkZtydyMRCje228u3Y8Xiad-iJM-U8E38q"
+						claims, err := jwtManager.Verify(accessToken1)
 						ctx.So(err, ShouldNotBeNil)
 						ctx.So(claims, ShouldBeNil)
-						ctx.So(err.Error(), ShouldEqual, "invalid token: signature is invalid")
+						ctx.So(err.Error(), ShouldEqual, "invalid token claims")
 
-						const accessToken2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYzNDU4MjEsImlhdCI6MTYyMzc1MzgyMSwiaXNzIjoic2VydmVyIiwibmJmIjoxNjIzNzUzODIxLCJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6InVzZXIifQq.PlnyM928_KJaeBseB5IpCrphu4T7O4y-2oK0SeUgv8Q"
-						claims, err = manager.Verify(accessToken2)
+						const accessToken2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjI0MjU2OTQ1MTgsImkiOjEsImlhdCI6MTYzNjc3NjExOCwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM2Nzc2MTE4LCJyIjoidXNlciJ9q.gxLi_hKQvAdkZtydyMRCje228u3Y8Xiad-iJM-U8E38"
+						claims, err = jwtManager.Verify(accessToken2)
 						ctx.So(err, ShouldNotBeNil)
 						ctx.So(claims, ShouldBeNil)
-						ctx.So(err.Error(), ShouldEqual, "invalid token: signature is invalid")
+						ctx.So(err.Error(), ShouldEqual, "invalid token claims")
 
-						const accessToken3 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9q.eyJleHAiOjE2MjYzNDU4MjEsImlhdCI6MTYyMzc1MzgyMSwiaXNzIjoic2VydmVyIiwibmJmIjoxNjIzNzUzODIxLCJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6InVzZXIifQ.PlnyM928_KJaeBseB5IpCrphu4T7O4y-2oK0SeUgv8Q"
-						claims, err = manager.Verify(accessToken3)
+						const accessToken3 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9q.eyJleHAiOjI0MjU2OTQ1MTgsImkiOjEsImlhdCI6MTYzNjc3NjExOCwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM2Nzc2MTE4LCJyIjoidXNlciJ9.gxLi_hKQvAdkZtydyMRCje228u3Y8Xiad-iJM-U8E38"
+						claims, err = jwtManager.Verify(accessToken3)
 						ctx.So(err, ShouldNotBeNil)
 						ctx.So(claims, ShouldBeNil)
-						ctx.So(err.Error(), ShouldEqual, "invalid token: illegal base64 data at input byte 37")
+						ctx.So(err.Error(), ShouldEqual, "invalid token claims")
+
+						const accessToken4 = "sometext"
+						claims, err = jwtManager.Verify(accessToken4)
+						ctx.So(err, ShouldNotBeNil)
+						ctx.So(claims, ShouldBeNil)
+						ctx.So(err.Error(), ShouldEqual, "invalid access token")
 					})
 				})
 			})

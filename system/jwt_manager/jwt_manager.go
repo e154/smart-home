@@ -23,12 +23,11 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/fx"
-	"strings"
 	"time"
 )
 
@@ -61,61 +60,59 @@ func (j *jwtManager) Start() (err error) {
 	return
 }
 
-func (j *jwtManager) Generate(user *m.User) (accessToken string, err error) {
+func (j *jwtManager) Generate(user *m.User, opts ...*time.Time) (accessToken string, err error) {
+
+	var exp *int64
+	if len(opts) > 0 {
+		exp = common.Int64(opts[0].Unix())
+	}
 
 	now := time.Now()
-	data := UserClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: now.AddDate(0, 1, 0).Unix(),
-			IssuedAt:  now.Unix(),
-			Issuer:    "server",
-			NotBefore: now.Unix(),
-		},
-		UserId:   user.Id,
-		Username: user.Nickname,
-		RoleName: user.RoleName,
+	if exp == nil {
+		exp = common.Int64(now.AddDate(0, 1, 0).Unix())
+	}
+
+	data := jwt.MapClaims{
+		"exp": exp,
+		"iat": now.Unix(),
+		"iss": "server",
+		"nbf": now.Unix(),
+		"i":   user.Id,
+		"n":   user.Nickname,
+		"r":   user.RoleName,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, data)
 
-	if accessToken, err = token.SignedString(j.hmacKey); err != nil {
-		return
-	}
+	accessToken, err = token.SignedString(j.hmacKey)
 
 	return
 }
 
 func (j *jwtManager) Verify(accessToken string) (claims *UserClaims, err error) {
 
-	if len(strings.Split(accessToken, ".")) != 3 {
-		err = errors.New("access token invalid")
+	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return j.hmacKey, nil
+	})
+
+	if token == nil {
+		err = errors.New("invalid access token")
 		return
 	}
 
-	var token *jwt.Token
-	token, err = jwt.ParseWithClaims(
-		accessToken,
-		&UserClaims{},
-		func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
+	if mapClaims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if err = mapClaims.Valid(); err != nil {
+			return
+		}
 
-			return j.hmacKey, nil
-		},
-	)
-
-	if err != nil {
-		return nil, fmt.Errorf("invalid token: %w", err)
-	}
-
-	var ok bool
-	if claims, ok = token.Claims.(*UserClaims); !ok {
+		claims = &UserClaims{}
+		err = common.Copy(claims, mapClaims, common.JsonEngine)
+	} else {
 		return nil, fmt.Errorf("invalid token claims")
-	}
-
-	if err = claims.Valid(); err != nil {
-		claims = nil
 	}
 
 	return
