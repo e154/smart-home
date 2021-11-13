@@ -22,7 +22,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/golang/mock v1.5.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
-	github.com/gorilla/schema v1.1.0 // indirect
+	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -43,7 +43,7 @@ require (
 	github.com/prometheus/common v0.9.1
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a
 	github.com/rubenv/sql-migrate v0.0.0-20210215143335-f84234893558
-	github.com/sfreiberg/gotwilio v0.0.0-20191023035553-f6f740c7bffc
+	github.com/sfreiberg/gotwilio v1.0.0
 	github.com/shirou/gopsutil v3.21.9+incompatible
 	github.com/smartystreets/assertions v1.0.1
 	github.com/smartystreets/goconvey v1.6.4
@@ -75,7 +75,6 @@ require (
 	github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -83,6 +82,7 @@ require (
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gomodule/redigo v1.8.2 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
