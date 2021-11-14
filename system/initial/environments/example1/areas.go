@@ -21,6 +21,7 @@ package example1
 import (
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	. "github.com/e154/smart-home/system/initial/assertions"
 )
 
 // AreaManager ...
@@ -42,8 +43,23 @@ func (a *AreaManager) create() []*m.Area {
 
 func (a *AreaManager) add(name string) *m.Area {
 	area := &m.Area{
-		Name:        name,
+		Name: name,
 	}
 	area.Id, _ = a.adaptors.Area.Add(area)
 	return area
+}
+
+// Upgrade ...
+func (a *AreaManager) Upgrade(oldVersion int) (areas []*m.Area) {
+
+	switch oldVersion {
+	case 3:
+		area, err := a.adaptors.Area.GetByName("zone51")
+		So(err, ShouldBeNil)
+		areas = append(areas, area)
+	default:
+		return
+	}
+
+	return
 }

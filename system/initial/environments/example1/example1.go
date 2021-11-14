@@ -21,6 +21,7 @@ package example1
 import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
+	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/environments"
 	"github.com/e154/smart-home/system/scripts"
 )
@@ -43,7 +44,6 @@ func (e Example1) Create(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
 
-
 }
 
 // Upgrade ...
@@ -52,9 +52,19 @@ func (e Example1) Upgrade(oldVersion int,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
 
+	switch oldVersion {
+	case 3:
+		scripts := NewScriptManager(adaptors, scriptService).Upgrade(oldVersion)
+		areas := NewAreaManager(adaptors).Upgrade(oldVersion)
+		entities, err := NewEntityManager(adaptors).Upgrade(oldVersion, scripts, areas)
+		So(err, ShouldBeNil)
+		_, err = NewTriggerManager(adaptors).Upgrade(oldVersion, scripts, entities)
+		So(err, ShouldBeNil)
+	default:
+		return
+	}
 }
 
 func init() {
 	environments.Register("example1", &Example1{})
 }
-

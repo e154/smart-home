@@ -43,6 +43,7 @@ func NewEntityManager(adaptors *adaptors.Adaptors) *EntityManager {
 	}
 }
 
+// Create ...
 func (e *EntityManager) Create(scripts []*m.Script, areas []*m.Area) []*m.Entity {
 
 	var script *m.Script
@@ -57,11 +58,12 @@ func (e *EntityManager) Create(scripts []*m.Script, areas []*m.Area) []*m.Entity
 	entity2 := e.addL3("l3n2", "192.168.0.242", script, area)
 	entity3 := e.addL3("l3n3", "192.168.0.244", script, area)
 	entity4 := e.addL3("l3n4", "192.168.0.243", script, area)
+	entity5 := e.addL3("l3n5", "192.168.0.240", script, area)
 
 	tgBot := e.addTgBot("clavicus", os.Getenv("SH_TG_BOT_TOKEN"), script, area)
 	sensorEntity := e.addSensor("api", scripts[1], area)
 
-	return []*m.Entity{entity1, entity2, entity3, entity4, tgBot, sensorEntity}
+	return []*m.Entity{entity1, entity2, entity3, entity4, entity5, tgBot, sensorEntity}
 }
 
 func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area) (ent *m.Entity) {
@@ -265,5 +267,18 @@ func (e *EntityManager) addSensor(name string, script *m.Script, area *m.Area) (
 	})
 	So(err, ShouldBeNil)
 
+	return
+}
+
+// Upgrade ...
+func (e EntityManager) Upgrade(oldVersion int, scripts []*m.Script, areas []*m.Area) (entities []*m.Entity, err error) {
+
+	switch oldVersion {
+	case 3:
+		entity5 := e.addL3("l3n5", "192.168.0.240", scripts[0], areas[0])
+		entities = append(entities, entity5)
+	default:
+		return
+	}
 	return
 }

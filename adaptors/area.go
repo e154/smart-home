@@ -27,6 +27,7 @@ import (
 type IArea interface {
 	Add(ver *m.Area) (id int64, err error)
 	GetById(verId int64) (ver *m.Area, err error)
+	GetByName(name string) (ver *m.Area, err error)
 	Update(ver *m.Area) (err error)
 	DeleteByName(name string) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error)

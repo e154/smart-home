@@ -53,13 +53,15 @@ func (t *TriggerManager) Create(scripts []*m.Script,
 	t.addTimerTask("l3n2_timer2", script, entities[1])
 	t.addTimerTask("l3n3_timer3", script, entities[2])
 	t.addTimerTask("l3n4_timer4", script, entities[3])
+	t.addTimerTask("l3n5_timer5", script, entities[4])
 
 	t.addCheckTask("l3n1_check1", script, entities[0])
 	t.addCheckTask("l3n2_check2", script, entities[1])
 	t.addCheckTask("l3n3_check3", script, entities[2])
 	t.addCheckTask("l3n4_check4", script, entities[3])
+	t.addCheckTask("l3n5_check5", script, entities[4])
 
-	t.addTimerTask2("api_check", script, entities[5])
+	t.addTimerTask2("api_check", script, entities[6])
 	return []*m.Task{}
 }
 
@@ -144,6 +146,21 @@ func (t *TriggerManager) addCheckTask(name string,
 	})
 	err := t.adaptors.Task.Add(task)
 	So(err, ShouldBeNil)
+
+	return
+}
+
+// Upgrade ...
+func (t *TriggerManager) Upgrade(oldVersion int,
+	scripts []*m.Script, entities []*m.Entity) (tasks []*m.Task, err error) {
+
+	switch oldVersion {
+	case 3:
+		t.addTimerTask("l3n5_timer5", scripts[0], entities[0])
+		t.addCheckTask("l3n5_check5", scripts[0], entities[0])
+	default:
+		return
+	}
 
 	return
 }

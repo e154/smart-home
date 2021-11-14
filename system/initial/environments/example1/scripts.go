@@ -73,6 +73,31 @@ func (s *ScriptManager) add(name, source, desc string) (script *m.Script) {
 	return
 }
 
+// Upgrade ...
+func (s *ScriptManager) Upgrade(oldVersion int) (scripts []*m.Script) {
+
+	switch oldVersion {
+	case 3:
+		script, err := s.adaptors.Script.GetByName("l3+_script_v1")
+		So(err, ShouldBeNil)
+		// update source
+		script.Source = sourceScript1
+		engineScript, err := s.scriptService.NewEngine(script)
+		So(err, ShouldBeNil)
+		err = engineScript.Compile()
+		So(err, ShouldBeNil)
+		err = s.adaptors.Script.Update(script)
+		So(err, ShouldBeNil)
+
+		// ...
+		scripts = append(scripts, script)
+	default:
+		return
+	}
+
+	return
+}
+
 const sourceScript1 = `
 
 # entity
@@ -157,7 +182,7 @@ automationAction = (entityId)->
 # telegram
 # ##################################
 telegramSendReport =->
-    entities = ['cgminer.l3n1','cgminer.l3n2','cgminer.l3n3','cgminer.l3n4']
+    entities = ['cgminer.l3n1','cgminer.l3n2','cgminer.l3n3','cgminer.l3n4','cgminer.l3n5']
     for entityId, i in entities
         entity = entityManager.getEntity(entityId).short()
         attr = entityManager.getEntity(entityId).getAttributes()

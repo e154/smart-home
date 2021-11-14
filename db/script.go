@@ -48,18 +48,25 @@ func (d *Script) TableName() string {
 }
 
 // Add ...
-func (n Scripts) Add(node *Script) (id int64, err error) {
-	if err = n.Db.Create(&node).Error; err != nil {
+func (n Scripts) Add(script *Script) (id int64, err error) {
+	if err = n.Db.Create(&script).Error; err != nil {
 		return
 	}
-	id = node.Id
+	id = script.Id
 	return
 }
 
 // GetById ...
-func (n Scripts) GetById(nodeId int64) (node *Script, err error) {
-	node = &Script{Id: nodeId}
-	err = n.Db.First(&node).Error
+func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
+	script = &Script{Id: scriptId}
+	err = n.Db.First(&script).Error
+	return
+}
+
+// GetByName ...
+func (n Scripts) GetByName(name string) (script *Script, err error) {
+	script = &Script{Name: name}
+	err = n.Db.First(&script).Error
 	return
 }
 
@@ -76,8 +83,8 @@ func (n Scripts) Update(m *Script) (err error) {
 }
 
 // Delete ...
-func (n Scripts) Delete(nodeId int64) (err error) {
-	err = n.Db.Delete(&Script{Id: nodeId}).Error
+func (n Scripts) Delete(scriptId int64) (err error) {
+	err = n.Db.Delete(&Script{Id: scriptId}).Error
 	return
 }
 
