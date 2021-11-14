@@ -28,6 +28,7 @@ import (
 type IScript interface {
 	Add(script *m.Script) (id int64, err error)
 	GetById(scriptId int64) (script *m.Script, err error)
+	GetByName(name string) (script *m.Script, err error)
 	Update(script *m.Script) (err error)
 	Delete(scriptId int64) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error)
@@ -63,6 +64,19 @@ func (n *Script) GetById(scriptId int64) (script *m.Script, err error) {
 
 	var dbScript *db.Script
 	if dbScript, err = n.table.GetById(scriptId); err != nil {
+		return
+	}
+
+	script, _ = n.fromDb(dbScript)
+
+	return
+}
+
+// GetByName ...
+func (n *Script) GetByName(name string) (script *m.Script, err error) {
+
+	var dbScript *db.Script
+	if dbScript, err = n.table.GetByName(name); err != nil {
 		return
 	}
 

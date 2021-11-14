@@ -53,8 +53,12 @@ func (a Attribute) Int64() int64 {
 	}
 	t := reflect.TypeOf(a.Value)
 	switch t.Kind() {
+	case reflect.Int:
+		return int64(a.Value.(int))
 	case reflect.Float64:
 		return int64(a.Float64())
+	default:
+		log.Warnf("unknown type %s", t.String())
 	}
 	return 0
 }

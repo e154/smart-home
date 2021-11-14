@@ -213,6 +213,7 @@ func (p *Actor) sendMsg(body string, chatId int64) (messageID int, err error) {
 		return
 	}
 	msgCfg := tgbotapi.NewMessage(chatId, body)
+	p.genKeyboard(msgCfg)
 	var msg tgbotapi.Message
 	if msg, err = p.bot.Send(msgCfg); err != nil {
 		return
@@ -312,4 +313,30 @@ func (p *Actor) runAction(msg event_bus.EventCallAction) {
 		log.Error(err.Error())
 		return
 	}
+}
+
+// gen keyboard from actions
+// [button][button][button]
+// [button][button][button]
+// [button][button][button]
+func (p *Actor) genKeyboard(msgCfg tgbotapi.MessageConfig) () {
+	var row []tgbotapi.KeyboardButton
+	var rows [][]tgbotapi.KeyboardButton
+	var counter = 0
+	if len(p.Actions) == 0 {
+		return
+	}
+	for k, _ := range p.Actions {
+		counter++
+		if counter >= 3 {
+			counter = 1
+			rows = append(rows, row)
+			row = []tgbotapi.KeyboardButton{}
+		}
+		row = append(row, tgbotapi.NewKeyboardButton(fmt.Sprintf("/%s", k)))
+	}
+	if counter < 3 {
+		rows = append(rows, row)
+	}
+	msgCfg.ReplyMarkup = tgbotapi.NewReplyKeyboard(rows...)
 }

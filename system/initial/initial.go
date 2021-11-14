@@ -51,7 +51,7 @@ var (
 )
 
 var (
-	currentVersion = 3
+	currentVersion = 4
 )
 
 // Initial ...
