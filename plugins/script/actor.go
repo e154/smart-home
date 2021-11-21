@@ -142,7 +142,7 @@ func (e *Actor) runAction(msg event_bus.EventCallAction) {
 		log.Warnf("action %s not found", msg.ActionName)
 		return
 	}
-	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId.Name(), action.Name); err != nil {
+	if _, err := action.ScriptEngine.AssertFunction(FuncEntityAction, msg.EntityId, action.Name); err != nil {
 		log.Error(err.Error())
 	}
 }

@@ -74,10 +74,10 @@ telegramAction = (entityId, actionName)->
 # telegram
 # ##################################
 telegramSendReport =->
-  entities = ['cgminer.l3n1','cgminer.l3n2','cgminer.l3n3','cgminer.l3n4']
+  entities = ['device.l3n1','device.l3n2','device.l3n3','device.l3n4']
   for entityId, i in entities
-    entity = entityManager.getEntity(entityId).short()
-    attr = entityManager.getEntity(entityId).getAttributes()
+    entity = entityManager.getEntity(entityId)
+    attr = entity.getAttributes()
     sendMsg(format(entityId, entity.state.name, attr))
   
 telegramAction = (entityId, actionName)->

@@ -56,7 +56,7 @@ func NewJwtManager(lc fx.Lifecycle,
 }
 
 func (j *jwtManager) Start() (err error) {
-	_, err = j.secretKey()
+	_, err = j.getSecretKey()
 	return
 }
 
@@ -118,7 +118,7 @@ func (j *jwtManager) Verify(accessToken string) (claims *UserClaims, err error) 
 	return
 }
 
-func (j *jwtManager) secretKey() (hmacKey []byte, err error) {
+func (j *jwtManager) getSecretKey() (hmacKey []byte, err error) {
 
 	if j.hmacKey != nil && len(j.hmacKey) > 0 {
 		return j.hmacKey, nil
@@ -142,4 +142,8 @@ func (j *jwtManager) secretKey() (hmacKey []byte, err error) {
 	j.hmacKey = hmacKey
 
 	return
+}
+
+func (j *jwtManager) SetHmacKey(hmacKey []byte) {
+	j.hmacKey = hmacKey
 }

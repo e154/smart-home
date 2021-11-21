@@ -246,19 +246,15 @@ func (j *Javascript) bind() {
 
 	//
 	// print()
+	// console()
 	// hex2arr()
-	// CurrentNode()
-	// CurrentDevice()
 	//
 
 	j.vm.Set("print", fmt.Println)
 
 	_, _ = j.vm.RunString(`
 
-	var self = {},
     console = {log:print,warn:print,error:print,info:print},
-    global = {};
-
 	hex2arr = function (hexString) {
 	   var result = [];
 	   while (hexString.length >= 2) {
@@ -266,43 +262,6 @@ func (j *Javascript) bind() {
 		   hexString = hexString.substring(2, hexString.length);
 	   }
 	   return result;
-	};
-
-	CurrentNode = function(){
-
-		var action, flow, node;
-		node = null;
-
-		if (typeof Flow !== "undefined" && Flow !== null) {
-			node = Flow.Node();
-		}
-		if (!node && (typeof Action !== "undefined" && Action !== null)) {
-			node = Action.Node();
-		}
-
-		if (!node) {
-			//warn('node not found');
-			return null;
-		}
-
-		return node;
-	};
-
-	CurrentDevice = function(){
-
-		var action, dev;
-		dev = null;
-
-		if (!dev && (typeof Action !== "undefined" && Action !== null)) {
-			dev = Action.Device();
-		}
-
-		if (!dev) {
-			//warn('device not found');
-			return null;
-		}
-
-		return dev;
 	};
 
 	`)

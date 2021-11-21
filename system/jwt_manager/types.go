@@ -27,6 +27,7 @@ type JwtManager interface {
 	Start() (err error)
 	Generate(*m.User, ...*time.Time) (accessToken string, err error)
 	Verify(string) (claims *UserClaims, err error)
+	SetHmacKey(hmacKey []byte)
 }
 
 type UserClaims struct {

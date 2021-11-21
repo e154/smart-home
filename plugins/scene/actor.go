@@ -84,7 +84,7 @@ func (e *Actor) addEvent(event event_bus.EventCallScene) {
 
 func (e *Actor) runEvent(msg event_bus.EventCallScene) {
 
-	if _, err := e.scriptEngine.AssertFunction(FuncSceneEvent, msg.EntityId.Name()); err != nil {
+	if _, err := e.scriptEngine.AssertFunction(FuncSceneEvent, msg.EntityId); err != nil {
 		log.Error(err.Error())
 	}
 }

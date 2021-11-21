@@ -23,7 +23,7 @@ import (
 )
 
 type EntityShort struct {
-	Id          common.EntityId     `json:"unique_id"`
+	Id          common.EntityId     `json:"id"`
 	Type        common.EntityType   `json:"type"`
 	Name        string              `json:"name"`
 	Description string              `json:"description"`

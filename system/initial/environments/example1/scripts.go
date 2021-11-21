@@ -166,7 +166,7 @@ automationTriggerStateChanged = (msg)->
 
 automationCondition = (entityId)->
     #print '---condition---'
-    entity = entityManager.getEntity(entityId).short()
+    entity = entityManager.getEntity(entityId)
     if !entity
         return false
     if entity.state && (entity.state.name == 'WARNING' || entity.state.name == 'ERROR')
@@ -175,8 +175,8 @@ automationCondition = (entityId)->
 
 automationAction = (entityId)->
     #print '---action---'
-    entity = entityManager.getEntity(entityId).short()
-    attr = entityManager.getEntity(entityId).getAttributes()
+    entity = entityManager.getEntity(entityId)
+    attr = entity.getAttributes()
     sendMsg(format(entityId, entity.state.name, attr))
 
 # telegram
@@ -184,8 +184,8 @@ automationAction = (entityId)->
 telegramSendReport =->
     entities = ['cgminer.l3n1','cgminer.l3n2','cgminer.l3n3','cgminer.l3n4','cgminer.l3n5']
     for entityId, i in entities
-        entity = entityManager.getEntity(entityId).short()
-        attr = entityManager.getEntity(entityId).getAttributes()
+        entity = entityManager.getEntity(entityId)
+        attr = entity.getAttributes()
         sendMsg(format(entityId, entity.state.name, attr))
 
 format =(entityId, stateName, attr)->

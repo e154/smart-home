@@ -1,6 +1,6 @@
 
 ---
-title: "Notify"
+title: "Отправка сообщений"
 linkTitle: "notify"
 date: 2021-10-20
 description: >

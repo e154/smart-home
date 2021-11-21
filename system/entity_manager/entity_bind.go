@@ -27,34 +27,35 @@ import (
 //
 // Entity
 //  .setState(stateName)
-//  .setAttributes(key, value, args)
+//  .setAttributes(attrs)
 //  .getAttributes()
 //  .setMetric(name, value)
-//  .short()
+//  .callAction(name, value)
 //
 type EntityBind struct {
-	id      common.EntityId
+	m.EntityShort
 	manager EntityManager
 }
 
 // NewEntityBind ...
 func NewEntityBind(id common.EntityId, manager EntityManager) *EntityBind {
+	entity, _ := manager.GetEntityById(id)
 	return &EntityBind{
-		id:      id,
-		manager: manager,
+		EntityShort: entity,
+		manager:     manager,
 	}
 }
 
 // SetState ...
 func (e *EntityBind) SetState(stateName string) {
-	e.manager.SetState(e.id, EntityStateParams{
+	e.manager.SetState(e.Id, EntityStateParams{
 		NewState: common.String(stateName),
 	})
 }
 
 // SetAttributes ...
 func (e *EntityBind) SetAttributes(params m.AttributeValue) {
-	e.manager.SetState(e.id, EntityStateParams{
+	e.manager.SetState(e.Id, EntityStateParams{
 		AttributeValues: params,
 	})
 }
@@ -62,7 +63,7 @@ func (e *EntityBind) SetAttributes(params m.AttributeValue) {
 // GetAttributes ...
 func (e *EntityBind) GetAttributes() m.AttributeValue {
 
-	entity, err := e.manager.GetEntityById(e.id)
+	entity, err := e.manager.GetEntityById(e.Id)
 	if err != nil {
 		log.Error(err.Error())
 	}
@@ -71,17 +72,11 @@ func (e *EntityBind) GetAttributes() m.AttributeValue {
 }
 
 // SetMetric ...
-func (e *EntityBind) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
-	e.manager.SetMetric(id, name, value)
+func (e *EntityBind) SetMetric(name string, value map[string]interface{}) {
+	e.manager.SetMetric(e.Id, name, value)
 }
 
-// Short ...
-func (e *EntityBind) Short() *m.EntityShort {
-
-	entity, err := e.manager.GetEntityById(e.id)
-	if err != nil {
-		log.Error(err.Error())
-	}
-
-	return &entity
+// CallAction ...
+func (e *EntityBind) CallAction(action string, arg map[string]interface{}) {
+	e.manager.CallAction(e.Id, action, arg)
 }

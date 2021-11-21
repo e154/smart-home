@@ -25,6 +25,11 @@ other = "Все права защищены"
 [footer_privacy_policy]
 other = "Политика конфиденциальности"
 
+[footer_contrubutor]
+other = "Разработано при поддержке <a href='http://e154.ru'>e154.ru</a>"
+
+[footer_licensed]
+other = "Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a> документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>"
 
 # Post (blog, articles etc.)
 [post_byline_by]

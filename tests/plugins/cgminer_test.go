@@ -129,7 +129,7 @@ checkPools =->
     So(p[3]["User"], 'ShouldEqual', '*')
     So(p[3]["URL"], 'ShouldEqual', '*')
 
-checkVer =->
+checkVer =(entityId)->
     ver = Miner.version()
     if ifError(ver)
         Actor.setState
@@ -147,7 +147,7 @@ entityAction = (entityId, actionName)->
         when 'SUM' then checkSum()
         when 'DEVS' then checkDevs()
         when 'POOLS' then checkPools()
-        when 'VER' then checkVer()
+        when 'VER' then checkVer(entityId)
 `
 
 	const L3PlusStatsJson = `{"STATUS":[{"STATUS":"S","When":1633268527,"Code":70,"Msg":"CGMiner stats","Description":"cgminer 4.9.0 rwglr"}],"STATS":[{"CGMiner":"4.9.0 rwglr","Miner":"1.0.1.3","CompileTime":"Fri 11 Jun 15:32:42 MSK 2021","Type":"Antminer L3+ (024)"}{"STATS":0,"ID":"L30","Elapsed":373469,"Calls":0,"Wait":0.000000,"Max":0.000000,"Min":99999999.000000,"GHS 5s":"415.065","GHS av":411.84,"miner_count":3,"frequency":"425","fan_num":2,"frequency1":"425","frequency2":"422","frequency3":"423","frequency4":"419","fan1":3180,"fan2":3090,"temp_num":3,"temp1":0,"temp2":37,"temp3":37,"temp4":36,"temp2_1":0,"temp2_2":46,"temp2_3":44,"temp2_4":42,"temp31":0,"temp32":0,"temp33":0,"temp34":0,"temp4_1":0,"temp4_2":0,"temp4_3":0,"temp4_4":0,"temp_max":38,"Device Hardware%":0.0000,"no_matching_work":327,"chain_acn1":0,"chain_acn2":72,"chain_acn3":72,"chain_acn4":72,"chain_acs1":"","chain_acs2":" oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo","chain_acs3":" oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo","chain_acs4":" oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo","chain_hw1":0,"chain_hw2":26,"chain_hw3":43,"chain_hw4":258,"chain_rate1":"","chain_rate2":"138.50","chain_rate3":"138.85","chain_rate4":"137.72","chain_power1":0.00,"chain_power2":187.79,"chain_power3":188.24,"chain_power4":186.46,"chain_power":562.48,"voltage1":9.44,"voltage2":9.44,"voltage3":9.44,"voltage4":9.44}],"id":1}`

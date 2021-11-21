@@ -19,6 +19,7 @@
 package system
 
 import (
+	"encoding/hex"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/debug"
@@ -33,9 +34,13 @@ func TestJwt(t *testing.T) {
 	t.Run("jwt", func(t *testing.T) {
 		Convey("", t, func(ctx C) {
 
+			const hmac = "0a84d2275e242d99ceeaa93820bf64232435ab297d2d513d07596e661cc01957"
+
 			err := container.Invoke(func(adaptors *adaptors.Adaptors,
 				jwtManager jwt_manager.JwtManager) {
 				jwtManager.Start()
+				b, _ := hex.DecodeString(hmac)
+				jwtManager.SetHmacKey(b)
 
 				t.Run("generate", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
@@ -55,7 +60,7 @@ func TestJwt(t *testing.T) {
 				t.Run("verify", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
 
-						const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjI0MjU2OTQ1MTgsImkiOjEsImlhdCI6MTYzNjc3NjExOCwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM2Nzc2MTE4LCJyIjoidXNlciJ9.gxLi_hKQvAdkZtydyMRCje228u3Y8Xiad-iJM-U8E38"
+						const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Mzk1MDA0NTksImkiOjEsImlhdCI6MTYzNjkwODQ1OSwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM2OTA4NDU5LCJyIjoidXNlciJ9.8ERfipwtNRIIl6m3cp6k6Vm6IQzLoSEasEeJUFYgSJc"
 
 						claims, err := jwtManager.Verify(accessToken)
 						debug.Println(claims)
