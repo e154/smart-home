@@ -1,0 +1,541 @@
+<!doctype html><html lang=ru class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.88.1"><link rel=canonical type=text/html href=/docs/javascript/>
+<meta name=ROBOTS content="NOINDEX, NOFOLLOW">
+<link rel="shortcut icon" href=/favicons/favicon.ico>
+<link rel=apple-touch-icon href=/favicons/apple-touch-icon-180x180.png sizes=180x180>
+<link rel=icon type=image/png href=/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
+<title>Javascript | Умный дом</title>
+<meta name=description content="В програмном комплексе Умный Дом логика поведения и отвеная реакция описывается на javascript, или на интерпретируемом
+языке coffescript, здесь и …">
+<meta property="og:title" content="Javascript">
+<meta property="og:description" content="Програмный комплекс">
+<meta property="og:type" content="website">
+<meta property="og:url" content="/docs/javascript/"><meta property="og:site_name" content="Умный дом">
+<meta itemprop=name content="Javascript">
+<meta itemprop=description content="Програмный комплекс"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Javascript">
+<meta name=twitter:description content="Програмный комплекс">
+<link rel=preload href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
+<link href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
+</head>
+<body class=td-section>
+<header>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/>
+<span class=navbar-logo></span><span class="text-uppercase font-weight-bold">Умный дом</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class="nav-link active" href=/docs/><span class=active>Документация</span></a>
+</li>
+<li class="nav-item dropdown mr-4 d-none d-lg-block">
+<a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
+Русский
+</a>
+<div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
+<a class=dropdown-item href=/en/>English</a>
+</div>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block">
+</div>
+</nav>
+</header>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+</div>
+<div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
+</div>
+<main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
+<div class=td-content>
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This the multi-page printable view of this section.
+<a href=# onclick="return print(),!1">Click here to print</a>.
+</p><p>
+<a href=/docs/javascript/>Return to the regular view of this page</a>.
+</p>
+</div>
+<h1 class=title>Javascript</h1>
+<ul>
+<li>1: <a href=#pg-e20be52d8b581bb8e117649fd2265871>Менеджер устройств</a></li>
+<li>2: <a href=#pg-a9a66c35c8f75d979eae68e087939baf>Mqtt</a></li>
+<li>3: <a href=#pg-32950fcaf7eadb1a6af01e12b8d6fccc>Выполнение системных команд</a></li>
+<li>4: <a href=#pg-25ccac5b56080fcd6d09c27147bbc75c>Логирование</a></li>
+<li>5: <a href=#pg-def052376f274f2e8abb4278c4e332e3>Временное хранилище</a></li>
+<li>6: <a href=#pg-35746c1f299b0a71f998b8b6a7ff748a>http запросы</a></li>
+</ul>
+<div class=content>
+<p>В програмном комплексе <strong>Умный Дом</strong> логика поведения и отвеная реакция описывается на javascript, или на интерпретируемом
+языке coffescript, здесь и далее в документации примеры будут даны на данном языке.</p>
+<p>преимущества:</p>
+<ul>
+<li>выразительный и понятный код</li>
+<li>низкий уровень вхождения</li>
+<li>удобная работа с методами</li>
+</ul>
+</div>
+</div>
+<div class=td-content>
+<h1 id=pg-e20be52d8b581bb8e117649fd2265871>1 - Менеджер устройств</h1>
+<p>Предостовляет возможность работать напрямую с устройствами. Получение/изменение настроек, получение/изменение текущего
+состояния.</p>
+<div class="alert alert-success" role=alert>
+Функция доступна в любом скрипте системы.
+</div>
+<hr>
+<h3 id=объект-entitymanager>объект entityManager</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># доступные метода
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>entityManager</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>getEntity</span><span style=color:#000>(id) -&gt;</span> <span style=color:#000>Entity</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>setState</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>stateName</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>setAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>setMetric</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>name</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>value</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>callAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>id</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div><table>
+<thead>
+<tr>
+<th>значение</th>
+<th>описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>уникальному id устройства</td>
+</tr>
+<tr>
+<td>getEntity</td>
+<td>поиск устройства, возвращает <a href=#%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D1%8B-%D0%BE%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%B0-entity>Entity</a></td>
+</tr>
+<tr>
+<td>setState</td>
+<td>изменить текущее состояние, <strong>stateName</strong> - наименования будущего состояния</td>
+</tr>
+<tr>
+<td>setAttributes</td>
+<td>изменить свойство текущего состояния, <strong>attr</strong> - map параметрый {key:val}</td>
+</tr>
+<tr>
+<td>setMetric</td>
+<td>обновить метрики устройства, <strong>name</strong> - наименование метрики, <strong>attr</strong> - map параметрый {key:val}</td>
+</tr>
+<tr>
+<td>callAction</td>
+<td>иcполнение команды на устройстве, <strong>actionName</strong> - наименование команды, <strong>args</strong> - map параметрый {key:val}</td>
+</tr>
+</tbody>
+</table>
+<h3 id=методы-объекта-entity>методы объекта Entity</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>Entity</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>setState</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>stateName</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>setAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>key</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>attrs</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>getAttributes</span><span style=color:#000>() -&gt;</span> <span style=color:#000>attrs</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>setMetric</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>name</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>value</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>callAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>name</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>value</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div><table>
+<thead>
+<tr>
+<th>значение</th>
+<th>описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>setState</td>
+<td>изменить текущее состояние, <strong>stateName</strong> - наименования будущего состояния</td>
+</tr>
+<tr>
+<td>setAttributes</td>
+<td>изменить свойство текущего состояния, <strong>attr</strong> - map параметрый {key:val}</td>
+</tr>
+<tr>
+<td>getAttributes</td>
+<td>текущее состояние устройства, <strong>attrs</strong> - map параметрый {key:val}</td>
+</tr>
+<tr>
+<td>setMetric</td>
+<td>обновить метрики устройства, <strong>name</strong> - наименование метрики, <strong>attr</strong> - map параметрый {key:val}</td>
+</tr>
+<tr>
+<td>callAction</td>
+<td>иcполнение команды на устройстве, <strong>actionName</strong> - наименование команды, <strong>args</strong> - map параметрый {key:val}</td>
+</tr>
+<tr>
+<td>short</td>
+<td>срез свойств состояния и настроек устройства</td>
+</tr>
+</tbody>
+</table>
+<h3 id=свойства-объекта-entity>свойства объекта Entity</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000;font-weight:700>{</span>
+  <span style=color:#4e9a06>&#34;id&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;sensor.device1&#34;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#34;type&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;sensor&#34;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;&#34;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;device description&#34;</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#34;actions&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ENABLE&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;включить&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;DISABLE&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;выключить&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
+    <span style=color:#000;font-weight:700>}</span>
+  <span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#34;states&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ENABLED&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;enabled state&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;DISABLED&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;disabled state&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
+    <span style=color:#000;font-weight:700>}</span>
+  <span style=color:#000;font-weight:700>],</span>
+  <span style=color:#4e9a06>&#34;state&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ENABLED&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#4e9a06>&#34;description&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#34;enabled state&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#4e9a06>&#34;image_url&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#4e9a06>&#34;icon&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span>
+  <span style=color:#000;font-weight:700>},</span>
+  <span style=color:#4e9a06>&#34;attributes&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>{},</span>
+  <span style=color:#4e9a06>&#34;area&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>null</span><span style=color:#000;font-weight:700>,</span>
+  <span style=color:#4e9a06>&#34;metrics&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>[],</span>
+  <span style=color:#4e9a06>&#34;hidden&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>false</span>
+<span style=color:#000;font-weight:700>}</span>
+</code></pre></div><hr>
+<h3 id=пример-кода>пример кода</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># entity manager
+</span><span style=color:#8f5902;font-style:italic># ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#8f5902;font-style:italic># поиск устройства по уникальному id, возвращает [Entity](#объект-entity)
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>device = </span><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getEntity</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;telegram.clavicus&#39;</span><span style=color:#000;font-weight:700>)</span>
+
+<span style=color:#8f5902;font-style:italic># изменить текущее состояние по уникальному наименованию состояния
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>setState</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;telegram.clavicus&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;IN_WORK&#39;</span><span style=color:#000;font-weight:700>)</span>
+
+<span style=color:#8f5902;font-style:italic># изменить свойство текущего состояния
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>setAttributes</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;telegram.clavicus&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span><span style=color:#4e9a06>&#39;temp&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>23.3</span><span style=color:#000;font-weight:700>})</span>
+
+<span style=color:#8f5902;font-style:italic># обновить метрики устройства
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>setMetric</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;telegram.clavicus&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;cpu&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span><span style=color:#4e9a06>&#39;all&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>55</span><span style=color:#000;font-weight:700>})</span>
+
+<span style=color:#8f5902;font-style:italic># иcполнение команды на устройстве
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>entityManager</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>callAction</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#39;floor.light&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#39;ON&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span><span style=color:#4e9a06>&#39;power&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>30</span><span style=color:#000;font-weight:700>})</span>
+
+
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-a9a66c35c8f75d979eae68e087939baf>2 - Mqtt</h1>
+<p>Предостовляет возможность публиковать сообщения в mqtt брокере</p>
+<h4 id=качество-обслуживания-в-протоколе-mqtt-qos>Качество обслуживания в протоколе MQTT (QoS)</h4>
+<p>QoS 0 At most once. На этом уровне издатель один раз отправляет сообщение брокеру и не ждет подтверждения от него, то есть отправил и забыл.</p>
+<p>QoS 1 At least once. Этот уровень гарантирует, что сообщение точно будет доставлено брокеру, но есть вероятность дублирования сообщений от издателя. После получения дубликата сообщения, брокер снова рассылает это сообщение подписчикам, а издателю снова отправляет подтверждение о получении сообщения. Если издатель не получил PUBACK сообщения от брокера, он повторно отправляет этот пакет, при этом в DUP устанавливается «1».</p>
+<p>QoS 2 Exactly once. На этом уровне гарантируется доставка сообщений подписчику и исключается возможное дублирование отправленных сообщений.</p>
+<div class="alert alert-success" role=alert>
+Функция доступна в любом скрипте системы.
+</div>
+<hr>
+<h3 id=объект-mqtt>объект Mqtt</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># публикация сообщения
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>Mqtt</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>publish</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>topic</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>payload</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>qos</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>ratain</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div><table>
+<thead>
+<tr>
+<th>значение</th>
+<th>описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>topic</td>
+<td>канал для сообщения</td>
+</tr>
+<tr>
+<td>payload</td>
+<td>json объект предназначеный для передачи</td>
+</tr>
+<tr>
+<td>qos</td>
+<td>качества обслуживания (1,2,3)</td>
+</tr>
+<tr>
+<td>retain</td>
+<td>при публикации данных с установленным флагом retain, брокер сохранит его. При следующей подписке на этот топик брокер незамедлительно отправит сообщение с этим флагом. Используется только в сообщениях с типом PUBLISH.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id=пример-кода>пример кода</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># mqtt
+</span><span style=color:#8f5902;font-style:italic># ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>payload = </span><span style=color:#000>JSON</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>stringify</span><span style=color:#000;font-weight:700>({</span><span style=color:#4e9a06>&#34;state&#34;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000>actionName</span><span style=color:#000;font-weight:700>})</span>
+<span style=color:#000>Mqtt</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>publish</span><span style=color:#4e9a06>&#34;zigbee2mqtt/device/set&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>payload</span><span style=color:#000;font-weight:700>,</span> <span style=color:#0000cf;font-weight:700>0</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>false</span><span style=color:#000;font-weight:700>)</span>
+
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-32950fcaf7eadb1a6af01e12b8d6fccc>3 - Выполнение системных команд</h1>
+<p>Запуск произвольных файлов/скриптов. Запрос происходит в синхронном режиме.</p>
+<div class="alert alert-success" role=alert>
+Функция доступна в любом скрипте системы.
+</div>
+<hr>
+<h3 id=логирование>Логирование</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>ExecuteSync</span> <span style=color:#000>file</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>args</span>
+</code></pre></div><table>
+<thead>
+<tr>
+<th>значение</th>
+<th>описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>file</td>
+<td>путь до исполняемого файла</td>
+</tr>
+<tr>
+<td>args</td>
+<td>не обязательные аргументы передаваемые файлу</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id=пример-кода>пример кода</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># ExecuteSync
+</span><span style=color:#8f5902;font-style:italic># ##################################
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#4e9a06>&#34;use strict&#34;</span><span style=color:#000;font-weight:700>;</span>
+
+<span style=color:#000>r = </span><span style=color:#000>ExecuteSync</span> <span style=color:#4e9a06>&#34;data/scripts/ping.sh&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#34;google.com&#34;</span>
+<span style=color:#204a87;font-weight:700>if</span> <span style=color:#000>r</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>out</span> <span style=color:#ce5c00;font-weight:700>==</span> <span style=color:#4e9a06>&#39;ok&#39;</span>
+    <span style=color:#000>print</span> <span style=color:#4e9a06>&#34;site is available ^^&#34;</span>
+</code></pre></div><p>ping.sh</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#8f5902;font-style:italic>#!/usr/bin/env bash
+</span><span style=color:#8f5902;font-style:italic></span>
+ping -c1 <span style=color:#000>$1</span> &gt; /dev/null 2&gt; /dev/null<span style=color:#000;font-weight:700>;</span> <span style=color:#ce5c00;font-weight:700>[[</span> <span style=color:#000>$?</span> -eq <span style=color:#0000cf;font-weight:700>0</span> <span style=color:#ce5c00;font-weight:700>]]</span> <span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> <span style=color:#204a87>echo</span> ok <span style=color:#ce5c00;font-weight:700>||</span> <span style=color:#204a87>echo</span> <span style=color:#4e9a06>&#34;err&#34;</span>
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-25ccac5b56080fcd6d09c27147bbc75c>4 - Логирование</h1>
+<p>Предостовляет возможность логировать события. Позволяет упростить отладку, и последующий анализ поведения системы.</p>
+<div class="alert alert-success" role=alert>
+Функция доступна в любом скрипте системы.
+</div>
+<hr>
+<h3 id=логирование>Логирование</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>Log</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>info</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>txt</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>warn</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>txt</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>error</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>txt</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>debug</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>txt</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div><hr>
+<h3 id=пример-кода>пример кода</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># Log
+</span><span style=color:#8f5902;font-style:italic># ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>Log</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>info</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
+<span style=color:#000>Log</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>warn</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
+<span style=color:#000>Log</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>error</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
+<span style=color:#000>Log</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>debug</span> <span style=color:#4e9a06>&#39;some text&#39;</span>
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-def052376f274f2e8abb4278c4e332e3>5 - Временное хранилище</h1>
+<p>Предоставляет <code>in memory</code> хранилище. Для хранения/кеширования произвольного значения в памяти. Раз в минуту значение
+архивируется на диск. Поиск значения происходит сначала в пямяти, затем в БД.</p>
+<div class="alert alert-success" role=alert>
+Функция доступна в любом скрипте системы.
+</div>
+<hr>
+<h3 id=работа-с-хранилищем>Работа с хранилищем</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>Storage</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>push</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>key</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>value</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>getByName</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>key</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>search</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>key</span><span style=color:#000;font-weight:700>)</span>
+  <span style=color:#000;font-weight:700>.</span><span style=color:#000>pop</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>key</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div><table>
+<thead>
+<tr>
+<th>значение</th>
+<th>описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>push</td>
+<td>поместить значение в хранилище по ключу <code>key</code></td>
+</tr>
+<tr>
+<td>getByName</td>
+<td>получить значение из хранилища по ключу <code>key</code></td>
+</tr>
+<tr>
+<td>search</td>
+<td>поиск значения по ключу <code>key</code></td>
+</tr>
+<tr>
+<td>pop</td>
+<td>удаление записи</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id=пример-кода>пример кода</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># Storage
+</span><span style=color:#8f5902;font-style:italic># ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>foo =
+</span><span style=color:#000></span>  <span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#4e9a06>&#39;bar&#39;</span>
+
+<span style=color:#000>value = </span><span style=color:#000>JSON</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>stringify</span> <span style=color:#000>foo</span>
+
+<span style=color:#8f5902;font-style:italic># save var
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>push</span> <span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>value</span>
+
+<span style=color:#8f5902;font-style:italic># get exist var
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>value = </span><span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>getByName</span> <span style=color:#4e9a06>&#39;foo&#39;</span>
+
+<span style=color:#8f5902;font-style:italic># search
+</span><span style=color:#8f5902;font-style:italic></span><span style=color:#000>list = </span><span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>search</span> <span style=color:#4e9a06>&#39;bar&#39;</span>
+
+<span style=color:#000>Storage</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>pop</span> <span style=color:#4e9a06>&#39;foo&#39;</span>
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-35746c1f299b0a71f998b8b6a7ff748a>6 - http запросы</h1>
+<p>Выполнение произвольного http запроса. Позволяет выполнять синхронные запросы к сторонним ресурсам.</p>
+<p>поддерживаемые методы:</p>
+<ul>
+<li>GET</li>
+<li>POST</li>
+</ul>
+<div class="alert alert-success" role=alert>
+Функция доступна в любом скрипте системы.
+</div>
+<hr>
+<h3 id=get-запрос>GET запрос</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>response = </span><span style=color:#000>http</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>get</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>url</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div><table>
+<thead>
+<tr>
+<th>значение</th>
+<th>описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>url</td>
+<td>адрес запроса</td>
+</tr>
+<tr>
+<td>response</td>
+<td>рекзультат запроса</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id=post-запрос>POST запрос</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#000>response = </span><span style=color:#000>http</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>post</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>url</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>body</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div><table>
+<thead>
+<tr>
+<th>значение</th>
+<th>описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>url</td>
+<td>адрес запроса</td>
+</tr>
+<tr>
+<td>body</td>
+<td>тело запроса</td>
+</tr>
+<tr>
+<td>response</td>
+<td>рекзультат запроса</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id=пример-кода>пример кода</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-coffeescript data-lang=coffeescript><span style=color:#8f5902;font-style:italic># GET http
+</span><span style=color:#8f5902;font-style:italic># ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>res = </span><span style=color:#000>http</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>get</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;%s&#34;</span><span style=color:#000;font-weight:700>)</span>
+<span style=color:#204a87;font-weight:700>if</span> <span style=color:#000>res</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>error</span>
+  <span style=color:#204a87;font-weight:700>return</span>
+<span style=color:#000>p = </span><span style=color:#000>JSON</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>parse</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>res</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>body</span><span style=color:#000;font-weight:700>)</span>
+
+
+<span style=color:#8f5902;font-style:italic># POST http
+</span><span style=color:#8f5902;font-style:italic># ##################################
+</span><span style=color:#8f5902;font-style:italic></span>
+<span style=color:#000>res = </span><span style=color:#000>http</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>post</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;%s&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000;font-weight:700>{</span><span style=color:#4e9a06>&#39;foo&#39;</span><span style=color:#ce5c00;font-weight:700>:</span><span style=color:#4e9a06>&#39;bar&#39;</span><span style=color:#000;font-weight:700>})</span>
+<span style=color:#204a87;font-weight:700>if</span> <span style=color:#000>res</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>error</span>
+  <span style=color:#204a87;font-weight:700>return</span>
+<span style=color:#000>p = </span><span style=color:#000>JSON</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>parse</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>res</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>body</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div>
+</div>
+</main>
+</div>
+</div>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+<ul class="list-inline mb-0">
+<li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub>
+<a class=text-white target=_blank rel=noopener href=https://github.com/e154/smart-home aria-label=GitHub>
+<i class="fab fa-github"></i>
+</a>
+</li>
+</ul>
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+<small class=text-white>&copy; 2021 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js integrity=sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF crossorigin=anonymous></script>
+<script src=/js/tabpane-persist.js></script>
+<script src=/js/main.min.5c74b870c6953931a705f390a49c7e4c0a842ec5c83b24354758dd674343ed0d.js integrity="sha256-XHS4cMaVOTGnBfOQpJx+TAqELsXIOyQ1R1jdZ0ND7Q0=" crossorigin=anonymous></script>
+</body>
+</html>

@@ -1,764 +1,273 @@
-<!DOCTYPE html>
-<html lang="ru">
-    <head>
-        <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!doctype html><html lang=ru class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.88.1"><link rel=alternate type=application/rss+xml href=/index.xml>
+<meta name=ROBOTS content="INDEX, FOLLOW">
+<link rel="shortcut icon" href=/favicons/favicon.ico>
+<link rel=apple-touch-icon href=/favicons/apple-touch-icon-180x180.png sizes=180x180>
+<link rel=icon type=image/png href=/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
+<title>Умный дом</title>
+<meta name=description content="
 
 
-<meta name="generator" content="Hugo 0.34" />
-<title>Smart home</title>
 
-<!-- Favicon -->
 
-<!-- Bootstrap Core CSS -->
-<link rel="stylesheet" href="https://e154.github.io/smart-home/css/bootstrap.css" type="text/css">
-<!-- Custom Fonts -->
-<link rel="stylesheet" href="https://e154.github.io/smart-home/font-awesome/css/font-awesome.min.css" type="text/css">
-<!-- Plugin CSS -->
-<link rel="stylesheet" href="https://e154.github.io/smart-home/css/animate.min.css" type="text/css">
-<!-- Custom CSS -->
-<link rel="stylesheet" href="https://e154.github.io/smart-home/css/style.css" type="text/css">
-<link rel="stylesheet" href="https://e154.github.io/smart-home/css/modals.css" type="text/css">
-<link rel="stylesheet" href="https://e154.github.io/smart-home/css/magnific-popup.css" type="text/css">
-<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
-<link rel="stylesheet" href="https://e154.github.io/smart-home/css/jquery.fancybox.min.css" type="text/css">
-<link rel="stylesheet" href="https://e154.github.io/smart-home/css/magnific-popup.css" type="text/css">
 
-    </head>
-    <body id="page-top">
-        
-            <!-- main menu -->
-<nav id="mainNav" class="navbar  navbar-fixed-top navbar-inverse">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            
-                <a class="navbar-brand page-scroll" href="#page-top">Умный дом</a>
-            
-        </div>
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
 
-                
-                <li>
-                    <a class='btn btn-xs btn-default' href='https://github.com/e154/smart-home' target='_blank'>
-                        <i class='fa fa-github'></i><span class='gh-text'> GitHub</span>
-                    </a>
-                </li>
-                
 
-                
-                <li>
-                    <a href="https://e154.github.io/smart-home/">Домой</a>
-                </li>
-                
-                <li>
-                    <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
-                </li>
-                
-                <li>
-                    <a href="https://e154.github.io/smart-home/api">api</a>
-                </li>
-                
-                <li>
-                    <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
-                </li>
-                
 
-                
-                
-                <li>
-                    <a href="https://e154.github.io/smart-home/en/">English</a>
-                </li>
-                
-                
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container-fluid -->
-</nav>
 
-        
 
-        
-            <!-- HEADER -->
+
+
+
+
+
+">
+<meta property="og:title" content="Умный дом">
+<meta property="og:description" content="Програмный комплекс">
+<meta property="og:type" content="website">
+<meta property="og:url" content="/"><meta property="og:image" content="/featured-background.jpg"><meta property="og:site_name" content="Умный дом">
+<meta itemprop=name content="Умный дом">
+<meta itemprop=description content="Програмный комплекс"><meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="/featured-background.jpg">
+<meta name=twitter:title content="Умный дом">
+<meta name=twitter:description content="Програмный комплекс">
+<link rel=preload href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
+<link href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
+</head>
+<body class=td-home>
 <header>
-    <div class="header-content">
-        <div class="header-content-inner container">
-            
-                <h1>Программный комплекс для управления умным домом</h1>
-            
-            
-                <hr>
-            
-            
-                <p>Подойдёт как для любителей - электронщиков, так и профессионалам своего дела</p>
-            
-            
-                <a href="#services" class="btn btn-primary btn-xl page-scroll">Подробнее</a>
-            
-        </div>
-    </div>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark td-navbar-cover flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/>
+<span class=navbar-logo></span><span class="text-uppercase font-weight-bold">Умный дом</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class=nav-link href=/docs/><span>Документация</span></a>
+</li>
+<li class="nav-item dropdown mr-4 d-none d-lg-block">
+<a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
+Русский
+</a>
+<div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
+<a class=dropdown-item href=/en/>English</a>
+</div>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block">
+</div>
+</nav>
 </header>
-
-        
-
-        
-
-
-
-<section class="no-padding screenshots">
-    <div class="container">
-        <ul class="list-unstyled">
-        
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_003.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_003.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_003.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_004.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_004.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_004.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_005.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_005.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_005.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_006.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_006.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_006.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_007.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_007.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_007.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_008.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_008.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_008.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_009.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_009.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_009.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_010.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_010.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_010.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_011.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_011.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_011.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        
-        <li>
-            <a href="https://e154.github.io/smart-home/img/screenshots/DSC_012.jpg" class="screenshot-box screenshot-link" data-fancybox data-caption="DSC_012.jpg">
-                <img src="https://e154.github.io/smart-home/img/screenshots/DSC_012.jpg" class="img-responsive" alt="screenshot">
-
-            </a>
-        </li>
-        
-        </ul>
-        <div class="clearfix"></div>
-    </div>
+<div class="container-fluid td-default td-outer">
+<main role=main class=td-main>
+<link rel=preload as=image href=/featured-background_hu67a17dd0d433c564349ea7d2a32e7d32_125976_960x540_fill_q75_catmullrom_top.jpg media="(max-width: 1200px)">
+<link rel=preload as=image href=/featured-background_hu67a17dd0d433c564349ea7d2a32e7d32_125976_1920x1080_fill_q75_catmullrom_top.jpg media="(min-width: 1200px)">
+<style>#td-cover-block-0{background-image:url(/featured-background_hu67a17dd0d433c564349ea7d2a32e7d32_125976_960x540_fill_q75_catmullrom_top.jpg)}@media only screen and (min-width:1200px){#td-cover-block-0{background-image:url(/featured-background_hu67a17dd0d433c564349ea7d2a32e7d32_125976_1920x1080_fill_q75_catmullrom_top.jpg)}}</style>
+<section id=td-cover-block-0 class="row td-cover-block td-cover-block--height-full js-td-cover td-overlay td-overlay--dark -bg-orange">
+<div class="container td-overlay__inner">
+<div class=row>
+<div class=col-12>
+<div class=text-center>
+<h1 class="display-1 mt-0 mt-md-5 pb-4">Програмный комплекс для управления устройствами</h1>
+<div class="pt-3 lead">
+<div class=mx-auto>
+<a class="btn btn-lg btn-primary mr-3 mb-4" href=/docs/>
+Узнать больше <i class="fas fa-arrow-alt-circle-right ml-2"></i>
+</a>
+<a class="btn btn-lg btn-secondary mr-3 mb-4" href=https://github.com/e154/smart-home>
+Github <i class="fab fa-github ml-2"></i>
+</a>
+<p class="lead mt-5">Подойдёт как для любителей - электронщиков, так и профессионалам своего дела</p>
+<a class="btn btn-link text-info" href=#td-block-1 aria-label=Подробнее><i class="fa fa-chevron-circle-down" style=font-size:400%></i></a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
-
-
-        
-            <!-- feature -->
-<section class="bg-primary" id="feature">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 text-center">
-                
-                    <h2 class="section-heading">Это то, что Вы искали!</h2>
-                
-                
-                    <hr class="light">
-                
-                
-                    <p class="text-faded">Smart Home - Программный комплекс с открытым исходным кодом которым можно пользоваться абсолютно бесплатно. Безвоздмездно! Большое количество функционала уже присутствует из коробки и хорошо подаётся расширению. Smart Home система позволяет получить результат в кратчайшие сроки.</p>
-                
-                
-                    <a href="getting-started" class="btn btn-default btn-xl">С чего начать</a>
-                
-            </div>
-        </div>
-    </div>
+<a id=td-block-1 class=td-offset-anchor></a>
+<section class="row td-box td-box--primary position-relative td-box--gradient td-box--height-auto">
+<div class="container text-center td-arrow-down">
+<span class="h4 mb-0">
+<p>Smart Home - Программный комплекс с открытым исходным кодом которым можно пользоваться абсолютно бесплатно. Безвоздмездно! Большое количество функционала уже присутствует из коробки и хорошо подаётся расширению. Smart Home система позволяет получить результат в кратчайшие сроки.</p>
+</span>
+</div>
 </section>
-
-        
-
-        
-            <!-- SERVICES -->
-<section id="services">
-    
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2 class="section-heading">Сервисы</h2>
-                    <hr class="primary">
-                </div>
-            </div>
-        </div>
-    
-    <div class="container">
-        <div class="row">
-            
-            <div class="col-lg-3 col-md-3 text-center">
-                <div class="service-box">
-                    <i class="fa fa-4x fa-users wow bounceIn text-primary"></i>
-                    <h3>Система контроля доступа основанная на ролях</h3>
-                    
-                        <p class="text-muted">Позволяет гибко управлять доступом к оборудованию и системным компонентам</p>
-                    
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-3 text-center">
-                <div class="service-box">
-                    <i class="fa fa-4x fa-cogs wow bounceIn text-primary"></i>
-                    <h3>Панель управления</h3>
-                    
-                        <p class="text-muted">Удобная панель управления и конфигурирования оборудования и компклекса</p>
-                    
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-3 text-center">
-                <div class="service-box">
-                    <i class="fa fa-4x fa-paper-plane wow bounceIn text-primary"></i>
-                    <h3>Готов к использования</h3>
-                    
-                        <p class="text-muted">Вы можете использовать Smart home как есть, или Вы можете изменять его под свои нужды</p>
-                    
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-3 text-center">
-                <div class="service-box">
-                    <i class="fa fa-4x fa-line-chart wow bounceIn text-primary"></i>
-                    <h3>Расширяемость</h3>
-                    
-                        <p class="text-muted">Система расширяема настолько, насколько это требут поставленная задача</p>
-                    
-                </div>
-            </div>
-            
-        </div>
-
-        <div class="row">
-            
-            <div class="col-lg-3 col-md-3 text-center">
-                <div class="service-box">
-                    <i class="fa fa-4x fa-paper-plane-o wow bounceIn text-primary"></i>
-                    <h3>Информирование</h3>
-                    
-                    <p class="text-muted">Система информирование будет держать Вас в курсе всех событий</p>
-                    
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-3 text-center">
-                <div class="service-box">
-                    <i class="fa fa-4x fa-server wow bounceIn text-primary"></i>
-                    <h3>Микросервисная архитектура</h3>
-                    
-                    <p class="text-muted">Программный комплекс разбит на микросервисы для гибкости и лучшей производительности</p>
-                    
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-3 text-center">
-                <div class="service-box">
-                    <i class="fa fa-4x fa-file-text-o wow bounceIn text-primary"></i>
-                    <h3>Javascript скрипты</h3>
-                    
-                    <p class="text-muted">Система скриптов позволяет писать сценарии на языке javascript прямо в окне браузера</p>
-                    
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-3 text-center">
-                <div class="service-box">
-                    <i class="fa fa-4x fa-heart wow bounceIn text-primary"></i>
-                    <h3>Сделано с любовью</h3>
-                    
-                    <p class="text-muted">Весь код системы Умного дома написан с любовью и вниманием к квждой мелочи</p>
-                    
-                </div>
-            </div>
-            
-        </div>
-    </div>
+<a id=td-block-2 class=td-offset-anchor></a>
+<section class="row td-box td-box--dark td-box--gradient td-box--height-auto">
+<div class=col>
+<div class=row>
+<div class="col-lg-3 mb-5 mb-lg-0 text-center">
+<div class="mb-3 h1">
+<i class="fas fa-2x fa-users"></i>
+</div>
+<h4 class=h3>
+Система контроля доступа основанная на ролях
+</h4>
+<p class=mb-0>
+<p>Позволяет гибко управлять доступом к оборудованию и системным компонентам</p>
+</p>
+</div>
+<div class="col-lg-3 mb-5 mb-lg-0 text-center">
+<div class="mb-3 h1">
+<i class="fas fa-2x fa-cogs"></i>
+</div>
+<h4 class=h3>
+Панель управления
+</h4>
+<p class=mb-0>
+<p>Удобная панель управления и конфигурирования оборудования и компклекса</p>
+</p>
+</div>
+<div class="col-lg-3 mb-5 mb-lg-0 text-center">
+<div class="mb-3 h1">
+<i class="fas fa-2x fa-paper-plane"></i>
+</div>
+<h4 class=h3>
+Готов к использованию
+</h4>
+<p class=mb-0>
+<p>Вы можете использовать Smart home как есть, или Вы можете изменять его под свои нужды</p>
+</p>
+</div>
+<div class="col-lg-3 mb-5 mb-lg-0 text-center">
+<div class="mb-3 h1">
+<i class="fas fa-2x fa-chart-line"></i>
+</div>
+<h4 class=h3>
+Расширяемость
+</h4>
+<p class=mb-0>
+<p>Система расширяема настолько, насколько это требут поставленная задача</p>
+</p>
+</div>
+</div>
+</div>
 </section>
-
-        
-
-        <section class="no-padding">
-    <div class="container-fluid">
-        <div class="row no-gutter">
-            
-
-                <div class="col-lg-4 col-sm-6">
-                    <a href="#projectsModal5" class="projects-box projects-link" data-toggle="modal">
-                        <img src="img/projects/project5_prev.jpg" class="img-responsive" alt="">
-                        <div class="projects-box-caption">
-                            <div class="projects-box-caption-content">
-                                <div class="project-category text-faded">
-                                    Типовой проект
-                                </div>
-                                <div class="project-name">
-                                    Гостиница
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            
-
-                <div class="col-lg-4 col-sm-6">
-                    <a href="#projectsModal3" class="projects-box projects-link" data-toggle="modal">
-                        <img src="img/projects/project3_prev.jpg" class="img-responsive" alt="">
-                        <div class="projects-box-caption">
-                            <div class="projects-box-caption-content">
-                                <div class="project-category text-faded">
-                                    Типовой проект
-                                </div>
-                                <div class="project-name">
-                                    Квартира
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            
-
-                <div class="col-lg-4 col-sm-6">
-                    <a href="#projectsModal4" class="projects-box projects-link" data-toggle="modal">
-                        <img src="img/projects/project4_prev.jpg" class="img-responsive" alt="">
-                        <div class="projects-box-caption">
-                            <div class="projects-box-caption-content">
-                                <div class="project-category text-faded">
-                                    Типовой проект
-                                </div>
-                                <div class="project-name">
-                                    Многоквартирный дом
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            
-
-                <div class="col-lg-4 col-sm-6">
-                    <a href="#projectsModal6" class="projects-box projects-link" data-toggle="modal">
-                        <img src="img/projects/project6_prev.jpg" class="img-responsive" alt="">
-                        <div class="projects-box-caption">
-                            <div class="projects-box-caption-content">
-                                <div class="project-category text-faded">
-                                    Типовой проект
-                                </div>
-                                <div class="project-name">
-                                    Музыка, свет, домофон
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            
-
-                <div class="col-lg-4 col-sm-6">
-                    <a href="#projectsModal2" class="projects-box projects-link" data-toggle="modal">
-                        <img src="img/projects/project2_prev.jpg" class="img-responsive" alt="">
-                        <div class="projects-box-caption">
-                            <div class="projects-box-caption-content">
-                                <div class="project-category text-faded">
-                                    Типовой проект
-                                </div>
-                                <div class="project-name">
-                                    Система отопления
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            
-
-                <div class="col-lg-4 col-sm-6">
-                    <a href="#projectsModal1" class="projects-box projects-link" data-toggle="modal">
-                        <img src="img/projects/project1_prev.jpg" class="img-responsive" alt="">
-                        <div class="projects-box-caption">
-                            <div class="projects-box-caption-content">
-                                <div class="project-category text-faded">
-                                    Типовой проект
-                                </div>
-                                <div class="project-name">
-                                    Умный Дом
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            
-        </div>
-    </div>
+<a id=td-block-3 class=td-offset-anchor></a>
+<section class="row td-box td-box--dark td-box--gradient td-box--height-auto">
+<div class=col>
+<div class=row>
+<div class="col-lg-3 mb-5 mb-lg-0 text-center">
+<div class="mb-3 h1">
+<i class="fas fa-2x fa-paper-plane"></i>
+</div>
+<h4 class=h3>
+Информирование
+</h4>
+<p class=mb-0>
+<p>Система информирование будет держать Вас в курсе всех событий</p>
+</p>
+</div>
+<div class="col-lg-3 mb-5 mb-lg-0 text-center">
+<div class="mb-3 h1">
+<i class="fas fa-2x fa-server"></i>
+</div>
+<h4 class=h3>
+Микросервисная архитектура
+</h4>
+<p class=mb-0>
+<p>Программный комплекс разбит на микросервисы для гибкости и лучшей производительности</p>
+</p>
+</div>
+<div class="col-lg-3 mb-5 mb-lg-0 text-center">
+<div class="mb-3 h1">
+<i class="fas fa-2x fa-file"></i>
+</div>
+<h4 class=h3>
+Javascript скрипты
+</h4>
+<p class=mb-0>
+<p>Система скриптов позволяет писать сценарии на языке javascript прямо в окне браузера</p>
+</p>
+</div>
+<div class="col-lg-3 mb-5 mb-lg-0 text-center">
+<div class="mb-3 h1">
+<i class="fas fa-2x fa-heart"></i>
+</div>
+<h4 class=h3>
+Сделано с любовью
+</h4>
+<p class=mb-0>
+<p>Весь код системы Умного дома написан с любовью и вниманием к квждой мелочи</p>
+</p>
+</div>
+</div>
+</div>
 </section>
-
-
-        
-
-        
-            <!-- download -->
-<aside class="download-block">
-    <div class="container">
-        <div class="row download-block">
-            <div class="col-md-4 download-item text-center">
-                
-                <h3>Сервер</h3>
-                <p class="text-muted">Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.</p>
-                <a id="smart-home-server" href="//github.com/e154/smart-home/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
-                
-            </div>
-            <div class="col-md-4 download-item text-center">
-                
-                <h3>Конфигуратор</h3>
-                <p class="text-muted">Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.</p>
-                <a id="smart-home-configurator" href="//github.com/e154/smart-home-configurator/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
-                
-            </div>
-            <div class="col-md-4 download-item text-center">
-                
-                <h3>Нода</h3>
-                <p class="text-muted">Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.</p>
-                <a id="smart-home-node" href="//github.com/e154/smart-home-node/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
-                
-            </div>
-        </div>
-    </div>
-</aside>
-
-        
-
-        
-            <!-- footer -->
-<footer class="footer">
-    <div class="container">
-
-        <ul>
-
-            
-            <li>
-                <a class='btn btn-xs btn-default' href='https://github.com/e154/smart-home' target='_blank'>
-                    <i class='fa fa-github'></i><span class='gh-text'> GitHub</span>
-                </a>
-            </li>
-            
-
-            
-
-            <li>
-                <a href="https://e154.github.io/smart-home/">Домой</a>
-            </li>
-            
-
-            <li>
-                <a href="https://e154.github.io/smart-home/getting-started">С чего начать</a>
-            </li>
-            
-
-            <li>
-                <a href="https://e154.github.io/smart-home/api">api</a>
-            </li>
-            
-
-            <li>
-                <a href="https://e154.github.io/smart-home/javascript">Javascript</a>
-            </li>
-            
-
-            
-            
-            <li>
-                <a href="https://e154.github.io/smart-home/en/">en</a>
-            </li>
-            
-            
-
-        </ul>
-
-        
-        <div>Разработано при поддержке <a href='http://e154.ru'>e154.ru</a></div>
-        
-        
-        <p>Код лицензии <a href='https://github.com/e154/smart-home/blob/master/LICENSE'>MIT</a>, документы <a href='http://creativecommons.org/licenses/by/3.0/'>CC BY 3.0</a>.</p>
-        
-
-    </div>
+<a id=td-block-5 class=td-offset-anchor></a>
+<section class="row td-box td-box--primary td-box--gradient td-box--height-auto">
+<div class=col>
+<div class=row>
+<div class="col-lg-4 mb-5 mb-lg-0 text-center">
+<h4 class=h3>
+Сервер
+</h4>
+<p class=mb-0>
+<p>Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.</p>
+<p><a id=smart-home-server href=https://github.com/e154/smart-home/releases/latest target=_blank class="btn btn-primary btn-xl sr-button">Скачать</a></p>
+</p>
+</div>
+<div class="col-lg-4 mb-5 mb-lg-0 text-center">
+<h4 class=h3>
+Конфигуратор
+</h4>
+<p class=mb-0>
+<p>Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.</p>
+<p><a id=smart-home-configurator href=https://github.com/e154/smart-home-configurator/releases/latest target=_blank class="btn btn-primary btn-xl sr-button">Скачать</a></p>
+</p>
+</div>
+<div class="col-lg-4 mb-5 mb-lg-0 text-center">
+<h4 class=h3>
+Нода
+</h4>
+<p class=mb-0>
+<p>Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.</p>
+<p><a id=smart-home-node href=https://github.com/e154/smart-home-node/releases/latest target=_blank class="btn btn-primary btn-xl sr-button">Скачать</a></p>
+</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+<ul class="list-inline mb-0">
+<li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub>
+<a class=text-white target=_blank rel=noopener href=https://github.com/e154/smart-home aria-label=GitHub>
+<i class="fab fa-github"></i>
+</a>
+</li>
+</ul>
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+<small class=text-white>&copy; 2021 Разработано при поддержке <a href=http://e154.ru>e154.ru</a></small>
+<div><small class="ml-1 text-white">Код лицензии <a href=https://github.com/e154/smart-home/blob/master/LICENSE>MIT</a> документы <a href=http://creativecommons.org/licenses/by/3.0/>CC BY 3.0</a></small></div>
+</div>
+</div>
+</div>
 </footer>
-        
-
-        <!-- projects Modals -->
-
-<div class="projects-modal modal fade" id="projectsModal5" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-content">
-        <div class="close-modal" data-dismiss="modal">
-            <div class="lr">
-                <div class="rl">
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <div class="modal-body">
-                        <h2>Гостиница</h2>
-
-                        <hr class="star-primary">
-
-                        <img src="img/projects/project5.jpg" class="img-responsive img-centered" alt="">
-
-
-                        
-
-<h3 id="гостиница">Гостиница</h3>
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-
-<div class="projects-modal modal fade" id="projectsModal3" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-content">
-        <div class="close-modal" data-dismiss="modal">
-            <div class="lr">
-                <div class="rl">
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <div class="modal-body">
-                        <h2>Квартира</h2>
-
-                        <hr class="star-primary">
-
-                        <img src="img/projects/project3.jpg" class="img-responsive img-centered" alt="">
-
-
-                        
-
-<h3 id="квартира-в-многоквартирном-доме">Квартира в многоквартирном доме</h3>
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="projects-modal modal fade" id="projectsModal4" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-content">
-        <div class="close-modal" data-dismiss="modal">
-            <div class="lr">
-                <div class="rl">
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <div class="modal-body">
-                        <h2>Многоквартирный дом</h2>
-
-                        <hr class="star-primary">
-
-                        <img src="img/projects/project4.jpg" class="img-responsive img-centered" alt="">
-
-
-                        
-
-<h3 id="многоквартирный-дом">Многоквартирный дом</h3>
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="projects-modal modal fade" id="projectsModal6" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-content">
-        <div class="close-modal" data-dismiss="modal">
-            <div class="lr">
-                <div class="rl">
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <div class="modal-body">
-                        <h2>Музыка, свет, домофон</h2>
-
-                        <hr class="star-primary">
-
-                        <img src="img/projects/project6.jpg" class="img-responsive img-centered" alt="">
-
-
-                        
-
-<h3 id="управление-музыкой-светом-домофоном">Управление музыкой, светом, домофоном</h3>
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="projects-modal modal fade" id="projectsModal2" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-content">
-        <div class="close-modal" data-dismiss="modal">
-            <div class="lr">
-                <div class="rl">
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <div class="modal-body">
-                        <h2>Система отопления</h2>
-
-                        <hr class="star-primary">
-
-                        <img src="img/projects/project2.jpg" class="img-responsive img-centered" alt="">
-
-
-                        
-
-<h3 id="система-отопления-в-доме">Система отопления в доме</h3>
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="projects-modal modal fade" id="projectsModal1" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-content">
-        <div class="close-modal" data-dismiss="modal">
-            <div class="lr">
-                <div class="rl">
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <div class="modal-body">
-                        <h2>Умный Дом</h2>
-
-                        <hr class="star-primary">
-
-                        <img src="img/projects/project1.jpg" class="img-responsive img-centered" alt="">
-
-
-                        
-
-<h3 id="пример-типового-проекта-умного-дома">Пример типового проекта Умного дома</h3>
-
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-        <!-- jQuery -->
-<script src="https://e154.github.io/smart-home/js/jquery.min.js"></script>
-<!-- Bootstrap Core JavaScript -->
-<script src="https://e154.github.io/smart-home/js/bootstrap.min.js"></script>
-<!-- Plugin JavaScript -->
-<script src="https://e154.github.io/smart-home/js/jquery.easing.min.js"></script>
-<script src="https://e154.github.io/smart-home/js/anchor.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
-
-<script src="https://e154.github.io/smart-home/js/jquery.fancybox.min.js"></script>
-<!-- Custom Theme JavaScript -->
-<script src="https://e154.github.io/smart-home/js/scripts.min.js"></script>
-
-
-        
-
-        <div id="site-dummy-github">
-    <a href="https://github.com/e154/smart-home" target="_blank">
-        <img
-          src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67"
-          alt="Fork me on GitHub"
-          data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png">
-    </a>
-</div>
-
-    </body>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js integrity=sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF crossorigin=anonymous></script>
+<script src=/js/tabpane-persist.js></script>
+<script src=/js/main.min.5c74b870c6953931a705f390a49c7e4c0a842ec5c83b24354758dd674343ed0d.js integrity="sha256-XHS4cMaVOTGnBfOQpJx+TAqELsXIOyQ1R1jdZ0ND7Q0=" crossorigin=anonymous></script>
+</body>
 </html>
