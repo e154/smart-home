@@ -55,7 +55,7 @@ __init() {
 __build() {
     cd ${ROOT}/doc
     npm install postcss-cli
-    hugo
+    hugo --gc --minify
 }
 
 __clean() {

@@ -124,9 +124,13 @@ __clean() {
 __docs_deploy() {
 
     cd ${ROOT}/doc
-    npm install
-    npm install autoprefixer
-    npm audit fix
+    echo -e "node version.\n"
+    node -v
+    echo -e "npm version.\n"
+    npm -v
+    npm install -f
+    echo -e "hugo version.\n"
+    hugo version
     hugo --gc --minify
 
     cd ${ROOT}/doc/public

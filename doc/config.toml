@@ -1,4 +1,4 @@
-baseURL = "/"
+baseURL = "https://e154.github.io/smart-home"
 title = "Smart home"
 
 enableRobotsTXT = true
