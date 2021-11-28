@@ -1,0 +1,17 @@
+version: '3.3'
+
+services:
+  smart-home-server:
+    image: e154/smart-home-server:latest
+    environment:
+      PG_USER: smart_home
+      PG_PASS: smart_home
+    stdin_open: true
+    volumes:
+      - data:/opt/smart-home-server/conf
+      - data:/opt/smart-home-server/data
+      - data:/opt/smart-home-server/snapshots
+    tty: true
+
+volumes:
+  data:

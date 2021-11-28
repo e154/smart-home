@@ -205,12 +205,14 @@ __build() {
 #
 #    xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${ROOT}
 
+    FILE_NAME = ${EXEC}-linux-amd64
+
     echo ""
     echo "build command:"
-    echo "cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${EXEC}"
+    echo "cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${FILE_NAME}"
     echo ""
 
-    cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${EXEC}
+    cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${FILE_NAME}
 
     cp -r ${ROOT}/conf ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}
