@@ -1,0 +1,22 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres:11
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql
+      - ./db/scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: smart_home
+      POSTGRES_USER: smart_home
+      POSTGRES_DB: smart-home
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d smart_home -U smart_home" ]
+      interval: 10s
+      timeout: 10s
+
+volumes:
+  db-data:
