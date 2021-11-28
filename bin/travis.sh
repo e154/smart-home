@@ -205,7 +205,7 @@ __build() {
 #
 #    xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${ROOT}
 
-    FILE_NAME = ${EXEC}-linux-amd64
+    FILE_NAME=${EXEC}-linux-amd64
 
     echo ""
     echo "build command:"
