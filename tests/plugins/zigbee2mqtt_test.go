@@ -85,7 +85,7 @@ zigbee2mqttEvent = ->
 		plugActionOnOffSourceScript = `
 entityAction = (entityId, actionName)->
     #print '---action on/off--'
-    topic = 'zigbee2mqtt/'+entityId+'/set'
+    topic = entityId.replace(".", "/")+'/set'
     payload = JSON.stringify({"state": actionName})
     Mqtt.publish(topic, payload, 0, false)
 `

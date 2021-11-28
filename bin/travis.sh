@@ -123,13 +123,15 @@ __clean() {
 
 __docs_deploy() {
 
-    cd ${ROOT}/doc/themes/default
-
-    npm install
-    gulp
-
     cd ${ROOT}/doc
-    hugo
+    echo -e "node version.\n"
+    node -v
+    echo -e "npm version.\n"
+    npm -v
+    npm install -f
+    echo -e "hugo version.\n"
+    hugo version
+    hugo --gc --minify
 
     cd ${ROOT}/doc/public
 
@@ -156,33 +158,33 @@ __docs_deploy() {
     set -o errexit
 }
 
-__build_pingmq() {
+__build_cli() {
 
     cd ${TMP_DIR}
 
 #todo need fix xgo build
 #    echo ""
 #    echo "build command:"
-#    echo "xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq"
+#    echo "xgo --out=cli --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/cli"
 #    echo ""
 #
-#    xgo --out=pingmq --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/pingmq
+#    xgo --out=cli --targets=linux/*,windows/*,darwin/* ${ROOT}/cmd/cli
 
     echo ""
     echo "build command:"
-    echo "cd ${ROOT}/cmd/pingmq && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${ROOT}/bin/pingmq"
+    echo "cd ${ROOT}/cmd/cli && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${ROOT}/bin/cli"
     echo ""
 
-    cd ${ROOT}/cmd/pingmq && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${ROOT}/bin/pingmq
+    cd ${ROOT}/cmd/cli && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${ROOT}/bin/cli
 
-    chmod +x ${ROOT}/bin/pingmq
-    cp ${ROOT}/bin/pingmq ${TMP_DIR}
+    chmod +x ${ROOT}/bin/cli
+    cp ${ROOT}/bin/cli ${TMP_DIR}
 
 }
 
 __build() {
 
-    __build_pingmq
+    __build_cli
 
     # build
     cd ${TMP_DIR}
@@ -209,9 +211,6 @@ __build() {
     echo ""
 
     cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${EXEC}
-
-    mkdir -p ${TMP_DIR}/api/server/v1/docs/swagger
-    cp ${ROOT}/api/server/v1/docs/swagger/swagger.yaml ${TMP_DIR}/api/server/v1/docs/swagger/
 
     cp -r ${ROOT}/conf ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}

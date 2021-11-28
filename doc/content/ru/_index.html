@@ -1,81 +1,108 @@
 +++
-title = "Goldydocs"
-linkTitle = "Goldydocs"
+title = "Умный дом"
+linkTitle = "умный дом"
 
 +++
 
-{{< blocks/cover title="Welcome to Goldydocs: A Docsy Example Project!" image_anchor="top" height="full" color="orange" >}}
+{{< blocks/cover title="Програмный комплекс для управления устройствами" image_anchor="top" height="full" color="orange" >}}
 <div class="mx-auto">
 	<a class="btn btn-lg btn-primary mr-3 mb-4" href="{{< relref "/docs" >}}">
-		Learn More <i class="fas fa-arrow-alt-circle-right ml-2"></i>
+		Узнать больше <i class="fas fa-arrow-alt-circle-right ml-2"></i>
 	</a>
-	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="https://github.com/google/docsy-example">
-		Download <i class="fab fa-github ml-2 "></i>
+	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="https://github.com/e154/smart-home">
+		Github <i class="fab fa-github ml-2 "></i>
 	</a>
-	<p class="lead mt-5">Porridge temperature assessment - in the cloud!</p>
+	<p class="lead mt-5">Подойдёт как для любителей - электронщиков, так и профессионалам своего дела</p>
 	{{< blocks/link-down color="info" >}}
 </div>
 {{< /blocks/cover >}}
 
-
 {{% blocks/lead color="primary" %}}
-Goldydocs provides a single web UI providing visibility into porridge temperature, chair size, and bed softness metrics! You can even find out who's been eating **your** porridge.
-
-(Sadly, Goldydocs isn't a real project, but you can use this site as an example to create your own real websites with [Docsy](http://docsy.dev))
+Smart Home - Программный комплекс с открытым исходным кодом которым можно пользоваться абсолютно бесплатно. Безвоздмездно! Большое количество функционала уже присутствует из коробки и хорошо подаётся расширению. Smart Home система позволяет получить результат в кратчайшие сроки.
 {{% /blocks/lead %}}
 
+
 {{< blocks/section color="dark" >}}
-{{% blocks/feature icon="fa-lightbulb" title="New chair metrics!" %}}
-The Goldydocs UI now shows chair size metrics by default.
 
-Please follow this space for updates!
-{{% /blocks/feature %}}
+{{% blocks/feature_x4 icon="fa-2x fa-users" title="Система контроля доступа основанная на ролях" %}}
+Позволяет гибко управлять доступом к оборудованию и системным компонентам
+{{% /blocks/feature_x4 %}}
+
+{{% blocks/feature_x4 icon="fa-2x fa-cogs" title="Панель управления" %}}
+Удобная панель управления и конфигурирования оборудования и компклекса
+{{% /blocks/feature_x4 %}}
+
+{{% blocks/feature_x4 icon="fa-2x fa-paper-plane" title="Готов к использованию" %}}
+Вы можете использовать Smart home как есть, или Вы можете изменять его под свои нужды
+{{% /blocks/feature_x4 %}}
+
+{{% blocks/feature_x4 icon="fa-2x fa-chart-line" title="Расширяемость" %}}
+Система расширяема настолько, насколько это требут поставленная задача
+{{% /blocks/feature_x4 %}}
 
 
-{{% blocks/feature icon="fab fa-github" title="Contributions welcome!" url="https://github.com/google/docsy-example" %}}
-We do a [Pull Request](https://github.com/google/docsy-example/pulls) contributions workflow on **GitHub**. New users are always welcome!
-{{% /blocks/feature %}}
+{{< /blocks/section >}}
 
+{{< blocks/section color="dark" >}}
 
-{{% blocks/feature icon="fab fa-twitter" title="Follow us on Twitter!" url="https://twitter.com/docsydocs" %}}
-For announcement of latest features etc.
-{{% /blocks/feature %}}
+{{% blocks/feature_x4 icon="fa-2x fa-paper-plane" title="Информирование" %}}
+Система информирование будет держать Вас в курсе всех событий
+{{% /blocks/feature_x4 %}}
+
+{{% blocks/feature_x4 icon="fa-2x fa-server" title="Микросервисная архитектура" %}}
+Программный комплекс разбит на микросервисы для гибкости и лучшей производительности
+{{% /blocks/feature_x4 %}}
+
+{{% blocks/feature_x4 icon="fa-2x fa-file" title="Javascript скрипты" %}}
+Система скриптов позволяет писать сценарии на языке javascript прямо в окне браузера
+{{% /blocks/feature_x4 %}}
+
+{{% blocks/feature_x4 icon="fa-2x fa-heart" title="Сделано с любовью" %}}
+Весь код системы Умного дома написан с любовью и вниманием к квждой мелочи
+{{% /blocks/feature_x4 %}}
 
 
 {{< /blocks/section >}}
 
 
-{{< blocks/section >}}
-<div class="col">
-<h1 class="text-center">This is the second Section</h1>
-</div>
+
+
+<!--{{< blocks/section >}}-->
+<!--<div class="col">-->
+<!--<h1 class="text-center">This is the second Section</h1>-->
+<!--</div>-->
+
+<!--{{< /blocks/section >}}-->
+
+{{< blocks/section color="primary">}}
+
+{{% blocks/feature_without_icon  title="Сервер" %}}
+Ядро системы Умной дом, сервер управляющий логикой и бизнес-процессами системы, является сердцем умного дома.
+
+<a id="smart-home-server" href="https://github.com/e154/smart-home/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+{{% /blocks/feature_without_icon %}}
+
+
+{{% blocks/feature_without_icon icon="fab fa-github" title="Конфигуратор" %}}
+Клиентское приложение для конфигурирования систем умного дома, под поставленные задачи.
+
+<a id="smart-home-configurator" href="https://github.com/e154/smart-home-configurator/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+{{% /blocks/feature_without_icon %}}
+
+
+{{% blocks/feature_without_icon icon="fab fa-twitter" title="Нода" %}}
+Компонент системы отвечающий за связь сервера с активными устройствами, часть системы умный дом.
+
+<a id="smart-home-node" href="https://github.com/e154/smart-home-node/releases/latest" target="_blank" class="btn btn-primary btn-xl sr-button">Скачать</a>
+{{% /blocks/feature_without_icon %}}
+
 
 {{< /blocks/section >}}
 
+<!--{{< blocks/section >}}-->
 
+<!--<div class="col-12">-->
+<!--<h1 class="text-center">This is another Section</h1>-->
+<!--</div>-->
 
-{{< blocks/section >}}
-{{% blocks/feature icon="fab fa-app-store-ios" title="Download **from AppStore**" %}}
-Get the Goldydocs app!
-{{% /blocks/feature %}}
-
-
-{{% blocks/feature icon="fab fa-github" title="Contributions welcome!" url="https://github.com/google/docsy-example" %}}
-We do a [Pull Request](https://github.com/google/docsy-example/pulls) contributions workflow on **GitHub**. New users are always welcome!
-{{% /blocks/feature %}}
-
-
-{{% blocks/feature icon="fab fa-twitter" title="Follow us on Twitter!" url="https://twitter.com/GoHugoIO" %}}
-For announcement of latest features etc.
-{{% /blocks/feature %}}
-
-
-{{< /blocks/section >}}
-
-{{< blocks/section >}}
-
-<div class="col-12">
-<h1 class="text-center">This is another Section</h1>
-</div>
-
-{{< /blocks/section >}}
+<!--{{< /blocks/section >}}-->

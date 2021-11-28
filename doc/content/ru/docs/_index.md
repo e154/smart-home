@@ -8,10 +8,5 @@ menu:
     weight: 20
 ---
 
-Dette er landingssiden til en seksjon på øverste nivå.
-
-* Oppsummer
-* Seksjonen din
-* Her
-
+Документация включает в себя следующие разделы:
 

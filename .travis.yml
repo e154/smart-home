@@ -1,12 +1,10 @@
 language: go
 go:
-  - 1.16.x
+  - 1.17.x
 env:
   global:
     - secure: QE2OIwiBx9JyMEPsWx8+xVqey1jXWnVmDbkNRXSZN285+e5s+SuIuwQ7BuMUgoYtQ80hcRHM1eYHsK3awOHvWSw4iJ/OgHD7NBhR3q/ke7Wc0dKV2lqr7H4CQJK0VtkvL/MWdrVoDQ/re6j61TBw0tD7NROBw4q1jzerpoOCFfHfLq9VrdXSfSePo4M8ApK8MSQCwM2e0+RGeeQFHGKDLfFJXb8HvFo0tqOYDOD2e/VbQcHsBKFXQmWQrkTHcdxt6IuLlvWcaWkFQjcRA6r1kiu5yFhsL1rrfkBQoV+lbCoOPyphCuVjkiaSI8ERvbnqC6FS6W/Lee2e7ihobKizoZ5qbCDCE6qTaPW0Q+rIOAc+yNAi1qc3S+Y/Ig/OQPXzMT0Aa5AHkISSQNIJ76mgwHII49yndw8e6lH5arysdHEdDyue2od9j6FekbdM+lyA/K3uouJS7XLPz5Rc6rZbvp8hhAJUSStsa1Q/0owJiNR8188Y9vldt6gppE9d7CgiDB6fXYh9kt+uVq3+/vOoTMRXOfUBPnITWt08iwIbxmRvXN/Tf5r6T1QUvGZ1LjAKYTwccym5F1QI72+McsFoIHcipAD7bXSydk97W2ZPJ6+yVzopk4OKId933DoGFeE+B1sVTxmG1MYTKKeiZYONdHcuMxHZU61+mJNQF80IIwQ=
     - secure: ti1fnbjI6CBeKis7dDRlbdWg98Dq1U1lqb75DlF/DaV+E5uYC3Ux/S0dhfi+WLO1iT+Qntouhhe1ijQnWTDQYKB0UYa//uTJdbfmCw68H68NG1u8NcPbXFNmFvP0VB2ibqwWOOeCIe7wNUMpRiXmQ94PCRso7S6HnIZza/W1O1AIgSCnX3Y2blc2iG0QLFMlDuzEzEQLuc9lPrZAMCL+BbZrGujeboCS5ABHRh/ERHvguGBtEMDk7MlMs83gICpcCjxH3MMnzxkfBtY6KthqnNkDatUAhvZyRbyKG+6ikiU17lWqXWIg7W9e4qUxrhgEEBL7wVcUpAUtgRWSIWz/CfMgUOWDFyCM2wRVl8pZQW+fudtaUgl6qPIq6upbEhmzyJWiHuitluVxL8fgMHfiMLudtvKhOJubykWFV/HrKh/d0yblRYDCLRKnP3WxwwSOryN1CamWoxxp0zQZmT4JJIkt30qh336/v9O+BMbFDg8VJIton4nVLxSt2XFXmzOB7OlPR2JE72D/LpHchZT7hIz8do/0Uim4rj8jF2DRmhgYtWVKLYq76PhVf9VtNtAEqvVyN4yqxtW9yhXWEQ0SMkmtxlv6XojaWj/csgDSO/0v/jOHctNqtnOEHmBJDlTAb7gxmgw+YPNPaifsXJhV4992dX8PAdkhIx81fUGj/IQ=
-  matrix:
-    - NODE_VERSION="4.2.0"
 
 services:
   - docker
@@ -19,19 +17,20 @@ before_install:
   - psql -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
-  - go get github.com/karalabe/xgo
   - go env && pwd
-  - npm install -g gulp
 
 install:
   - go get github.com/lib/pq
-  - wget https://github.com/gohugoio/hugo/releases/download/v0.34/hugo_0.34_Linux-64bit.deb
+  - wget https://github.com/gohugoio/hugo/releases/download/v0.89.4/hugo_extended_0.89.4_Linux-64bit.deb
   - sudo dpkg -i hugo*.deb
-  - hugo version
+  - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
 
 script:
   - "./bin/travis.sh --init"
   - "./bin/travis.sh --test"
+  - "./bin/travis.sh --docs-deploy"
   - "./bin/travis.sh --build"
 
 deploy:

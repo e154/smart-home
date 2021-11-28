@@ -28,9 +28,9 @@ import (
 // entityManager
 //	.getEntity(id) -> EntityBind
 //  .setState(id, stateName)
-//  .setAttributes(uniqueId, key, value, args)
-//  .setMetric(uniqueId, name, value)
-//  .callAction(uniqueId, actionName)
+//  .setAttributes(id, attrs)
+//  .setMetric(id, name, value)
+//  .callAction(id, actionName)
 //
 type EntityManagerBind struct {
 	manager EntityManager

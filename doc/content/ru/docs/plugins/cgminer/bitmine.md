@@ -23,6 +23,12 @@ description: >
 ----------------
 
 ### Miner Базовая сущность 
+
+```coffeescript
+# константа с уникальным id устройства
+const ENTITY_ID
+````
+
 ```coffeescript
 result = Miner
     .stats()
