@@ -197,22 +197,20 @@ __build() {
 
     echo "BRANCH ${BRANCH}"
 
-#todo need fix xgo build
-#    echo ""
-#    echo "build command:"
-#    echo "xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags='${GOBUILD_LDFLAGS}' ${ROOT}"
-#    echo ""
-#
-#    xgo --out=${EXEC} --branch=${BRANCH} --targets=linux/*,windows/*,darwin/* --ldflags="${GOBUILD_LDFLAGS}" ${ROOT}
-
-    FILE_NAME=${EXEC}-linux-amd64
-
     echo ""
     echo "build command:"
-    echo "cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${FILE_NAME}"
+    echo "cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-linux-amd64"
+    echo "cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-linux-arm-7"
+    echo "cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-linux-arm-6"
+    echo "cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=5 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-linux-arm-5"
+    echo "cd ${ROOT} && CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-darwin-10.6-amd64"
     echo ""
 
-    cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${FILE_NAME}
+    cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-linux-amd64
+    cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-linux-arm-7
+    cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-linux-arm-6
+    cd ${ROOT} && CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=5 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-linux-arm-5
+    cd ${ROOT} && CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags="${GOBUILD_LDFLAGS}" -o ${TMP_DIR}/${EXEC}-darwin-10.6-amd64
 
     cp -r ${ROOT}/conf ${TMP_DIR}
     cp -r ${ROOT}/data ${TMP_DIR}

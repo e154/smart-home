@@ -4,13 +4,23 @@ services:
   smart-home-server:
     image: e154/smart-home-server:latest
     environment:
-      PG_USER: smart_home
-      PG_PASS: smart_home
+      SERVER_HOST: '0.0.0.0'
+      SERVER_PORT: 3000
+      PG_USER: 'smart_home'
+      PG_PASS: 'smart_home'
+      PG_HOST: host.docker.internal
+      PG_NAME: 'smart_home'
+      PG_PORT: 5432
+      PG_DEBUG: 'false'
+      MODE: 'release'
+      AUTO_MIGRATE: 'true'
     stdin_open: true
     volumes:
       - data:/opt/smart-home-server/conf
       - data:/opt/smart-home-server/data
       - data:/opt/smart-home-server/snapshots
+    ports:
+      - "3000:3000"
     tty: true
 
 volumes:

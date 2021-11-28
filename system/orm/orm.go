@@ -27,6 +27,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"go.uber.org/fx"
+	"strings"
 	"time"
 )
 
@@ -134,6 +135,12 @@ func (o *Orm) checkServerVersion() (err error) {
 	row = o.db.Raw("SHOW server_version").Row()
 	if err = row.Scan(&o.serverVersion); err != nil {
 		return
+	}
+
+	log.Infof("database version %s", o.serverVersion)
+	strArr := strings.Split(o.serverVersion, " ")
+	if len(strArr) > 1 {
+		o.serverVersion = strArr[0]
 	}
 
 	// check server version
