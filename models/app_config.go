@@ -61,4 +61,5 @@ type AppConfig struct {
 	ApiPromHostPort                string         `json:"api_prom_host_port" env:"API_PROM_HOST_PORT"`
 	ApiWsHostPort                  string         `json:"api_ws_host_port" env:"API_WS_HOST_PORT"`
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
+	Lang                           string         `json:"lang" env:"LANG"`
 }

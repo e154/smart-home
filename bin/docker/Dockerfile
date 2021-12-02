@@ -1,18 +1,13 @@
-FROM debian
+FROM golang:1.17 as build
+RUN update-ca-certificates
 MAINTAINER Filippov Alex <support@e154.ru>
 
-ENV APP_DIR /opt/smart-home-server
-RUN sed 's/main$/main universe/' -i /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install ca-certificates -y \
-    && mkdir -p $APP_DIR
-
-WORKDIR $APP_DIR
-
-ADD . $APP_DIR
-
-ENTRYPOINT (cd $APP_DIR && ./server)
+FROM scratch
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=build /etc/passwd /etc/passwd
+ENTRYPOINT ["/server"]
+USER nobody
+ADD . /
 
 EXPOSE 3000
 EXPOSE 1883

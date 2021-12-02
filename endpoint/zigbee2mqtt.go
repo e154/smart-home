@@ -21,8 +21,8 @@ package endpoint
 import (
 	"errors"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
+	"github.com/go-playground/validator/v10"
 )
 
 // Zigbee2mqttEndpoint ...
@@ -38,10 +38,10 @@ func NewZigbee2mqttEndpoint(common *CommonEndpoint) *Zigbee2mqttEndpoint {
 }
 
 // Add ...
-func (n *Zigbee2mqttEndpoint) Add(params *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, errs []*validation.Error, err error) {
+func (n *Zigbee2mqttEndpoint) Add(params *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
@@ -63,7 +63,7 @@ func (n *Zigbee2mqttEndpoint) GetById(id int64) (result *zigbee2mqtt.Zigbee2mqtt
 }
 
 // Update ...
-func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mqtt, errs []*validation.Error, err error) {
+func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mqtt, errs validator.ValidationErrorsTranslations, err error) {
 
 	bridge, err = n.zigbee2mqtt.GetBridgeById(params.Id)
 	if err != nil {
@@ -75,9 +75,8 @@ func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mq
 	bridge.Login = params.Login
 	bridge.PermitJoin = params.PermitJoin
 
-	// validation
-	_, errs = bridge.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 

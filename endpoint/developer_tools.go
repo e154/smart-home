@@ -23,7 +23,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/message_queue"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 )
 
 // DeveloperToolsEndpoint ...
@@ -46,7 +46,7 @@ func (d DeveloperToolsEndpoint) StateList() (states []m.EntityShort, total int64
 }
 
 // UpdateState ...
-func (d DeveloperToolsEndpoint) UpdateState(entityId string, state *string, attrs map[string]interface{}) (errs []*validation.Error, err error) {
+func (d DeveloperToolsEndpoint) UpdateState(entityId string, state *string, attrs map[string]interface{}) (errs validator.ValidationErrorsTranslations, err error) {
 	err = d.entityManager.SetState(common.EntityId(entityId), entity_manager.EntityStateParams{
 		NewState:        state,
 		AttributeValues: attrs,

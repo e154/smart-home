@@ -21,7 +21,7 @@ package endpoint
 import (
 	"encoding/json"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 	"strings"
 	"time"
 )
@@ -39,10 +39,10 @@ func NewLogEndpoint(common *CommonEndpoint) *LogEndpoint {
 }
 
 // Add ...
-func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs []*validation.Error, err error) {
+func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = log.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = l.validation.Valid(log); !ok {
 		return
 	}
 

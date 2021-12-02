@@ -23,6 +23,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	. "github.com/e154/smart-home/system/initial/assertions"
+	"github.com/e154/smart-home/system/validation"
 	"strings"
 )
 
@@ -30,14 +31,17 @@ import (
 type RoleManager struct {
 	adaptors   *adaptors.Adaptors
 	accessList access_list.AccessListService
+	validation *validation.Validate
 }
 
 // NewRoleManager ...
 func NewRoleManager(adaptors *adaptors.Adaptors,
-	accessList access_list.AccessListService) *RoleManager {
+	accessList access_list.AccessListService,
+	validation *validation.Validate) *RoleManager {
 	return &RoleManager{
 		adaptors:   adaptors,
 		accessList: accessList,
+		validation: validation,
 	}
 }
 
@@ -80,7 +84,7 @@ func (r RoleManager) addAdmin() (adminRole *m.Role) {
 		}
 	}
 
-	ok, _ := adminUser.Valid()
+	ok, _ := r.validation.Valid(adminUser)
 	So(ok, ShouldEqual, true)
 
 	adminUser.Id, err = r.adaptors.User.Add(adminUser)
@@ -133,7 +137,7 @@ func (r RoleManager) addUser(demoRole *m.Role) (userRole *m.Role) {
 	err = baseUser.SetPass("user")
 	So(err, ShouldBeNil)
 
-	ok, _ := baseUser.Valid()
+	ok, _ := r.validation.Valid(baseUser)
 	So(ok, ShouldEqual, true)
 
 	baseUser.Id, err = r.adaptors.User.Add(baseUser)
@@ -186,7 +190,7 @@ func (r RoleManager) addDemo() (demoRole *m.Role) {
 	err = demoUser.SetPass("demo")
 	So(err, ShouldBeNil)
 
-	ok, _ := demoUser.Valid()
+	ok, _ := r.validation.Valid(demoUser)
 	So(ok, ShouldEqual, true)
 
 	demoUser.Id, err = r.adaptors.User.Add(demoUser)

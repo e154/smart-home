@@ -19,7 +19,6 @@
 package models
 
 import (
-	"github.com/e154/smart-home/system/validation"
 	"time"
 )
 
@@ -29,23 +28,12 @@ type MapLayer struct {
 	Name        string        `json:"name" valid:"MaxSize(254);Required"`
 	Description string        `json:"description"`
 	Map         *Map          `json:"map"`
-	MapId       int64         `json:"map_id" valid:"Required"`
-	Status      string        `json:"status" valid:"Required"`
+	MapId       int64         `json:"map_id" validate:"required"`
+	Status      string        `json:"status" validate:"required"`
 	Weight      int64         `json:"weight"`
 	Elements    []*MapElement `json:"elements"`
 	CreatedAt   time.Time     `json:"created_at"`
 	UpdatedAt   time.Time     `json:"updated_at"`
-}
-
-// Valid ...
-func (m *MapLayer) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(m); !ok {
-		errs = valid.Errors
-	}
-
-	return
 }
 
 // SortMapLayersByWeight ...

@@ -23,7 +23,7 @@ import (
 	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 	"mime/multipart"
 )
@@ -41,10 +41,10 @@ func NewImageEndpoint(common *CommonEndpoint) *ImageEndpoint {
 }
 
 // Add ...
-func (i *ImageEndpoint) Add(params *m.Image) (image *m.Image, errs []*validation.Error, err error) {
+func (i *ImageEndpoint) Add(params *m.Image) (image *m.Image, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = i.validation.Valid(params); !ok {
 		return
 	}
 
@@ -67,7 +67,7 @@ func (i *ImageEndpoint) GetById(id int64) (image *m.Image, err error) {
 }
 
 // Update ...
-func (i *ImageEndpoint) Update(params *m.Image) (result *m.Image, errs []*validation.Error, err error) {
+func (i *ImageEndpoint) Update(params *m.Image) (result *m.Image, errs validator.ValidationErrorsTranslations, err error) {
 
 	var image *m.Image
 	if image, err = i.adaptors.Image.GetById(params.Id); err != nil {
@@ -78,8 +78,8 @@ func (i *ImageEndpoint) Update(params *m.Image) (result *m.Image, errs []*valida
 		return
 	}
 
-	_, errs = image.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = i.validation.Valid(params); !ok {
 		return
 	}
 

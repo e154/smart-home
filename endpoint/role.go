@@ -23,7 +23,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 )
 
 // RoleEndpoint ...
@@ -39,11 +39,10 @@ func NewRoleEndpoint(common *CommonEndpoint) *RoleEndpoint {
 }
 
 // Add ...
-func (n *RoleEndpoint) Add(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
+func (n *RoleEndpoint) Add(params *m.Role) (result *m.Role, errs validator.ValidationErrorsTranslations, err error) {
 
-	// validation
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
@@ -65,7 +64,7 @@ func (n *RoleEndpoint) GetByName(name string) (result *m.Role, err error) {
 }
 
 // Update ...
-func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
+func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs validator.ValidationErrorsTranslations, err error) {
 
 	role, err := n.adaptors.Role.GetByName(params.Name)
 	if err != nil {
@@ -80,9 +79,8 @@ func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validatio
 		}
 	}
 
-	// validation
-	_, errs = role.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 

@@ -20,7 +20,6 @@ package models
 
 import (
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
 	"time"
 )
 
@@ -45,21 +44,10 @@ type Metric struct {
 	Description string            `json:"description" valid:"MaxSize(254)"`
 	Options     MetricOptions     `json:"options"`
 	Data        []MetricDataItem  `json:"data"`
-	Type        common.MetricType `json:"type" valid:"Required"`
+	Type        common.MetricType `json:"type" validate:"required"`
 	Ranges      []string          `json:"ranges"`
 	UpdatedAt   time.Time         `json:"updated_at"`
 	CreatedAt   time.Time         `json:"created_at"`
-}
-
-// Valid ...
-func (d *Metric) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(d); !ok {
-		errs = valid.Errors
-	}
-
-	return
 }
 
 func (d *Metric) RangesByType() []string {

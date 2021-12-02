@@ -24,7 +24,7 @@ import (
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 	"strconv"
 	"strings"
 )
@@ -42,10 +42,10 @@ func NewScriptEndpoint(common *CommonEndpoint) *ScriptEndpoint {
 }
 
 // Add ...
-func (n *ScriptEndpoint) Add(params *m.Script) (result *m.Script, errs []*validation.Error, err error) {
+func (n *ScriptEndpoint) Add(params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
@@ -104,7 +104,7 @@ func (n *ScriptEndpoint) Copy(scriptId int64) (script *m.Script, err error) {
 }
 
 // Update ...
-func (n *ScriptEndpoint) Update(params *m.Script) (result *m.Script, errs []*validation.Error, err error) {
+func (n *ScriptEndpoint) Update(params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
 
 	var script *m.Script
 	if script, err = n.adaptors.Script.GetById(params.Id); err != nil {
@@ -115,9 +115,8 @@ func (n *ScriptEndpoint) Update(params *m.Script) (result *m.Script, errs []*val
 		return
 	}
 
-	// validation
-	_, errs = script.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 

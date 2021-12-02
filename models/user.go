@@ -21,7 +21,6 @@ package models
 import (
 	"database/sql"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
 	"time"
 )
 
@@ -57,17 +56,6 @@ type User struct {
 	UpdatedAt           time.Time      `json:"updated_at,omitempty"`
 	DeletedAt           *time.Time     `json:"deleted_at"`
 	History             []*UserHistory `json:"history,omitempty"`
-}
-
-// Valid ...
-func (u *User) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(u); !ok {
-		errs = valid.Errors
-	}
-
-	return
 }
 
 // UpdateHistory ...

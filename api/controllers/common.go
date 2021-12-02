@@ -29,8 +29,8 @@ import (
 	"github.com/e154/smart-home/endpoint"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/validation"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -136,13 +136,13 @@ func (c ControllerCommon) parseBasicAuth(auth string) (username, password string
 	return cs[:s], cs[s+1:], true
 }
 
-func (c ControllerCommon) prepareErrors(errs []*validation.Error) error {
+func (c ControllerCommon) prepareErrors(errs validator.ValidationErrorsTranslations) error {
 	if len(errs) > 0 {
 		st := status.New(codes.InvalidArgument, "One or more fields are invalid")
-		for _, e := range errs {
+		for k, v := range errs {
 			st, _ = st.WithDetails(&errdetails.BadRequest_FieldViolation{
-				Field:       e.Field,
-				Description: e.Message,
+				Field:       k,
+				Description: v,
 			})
 		}
 		return st.Err()

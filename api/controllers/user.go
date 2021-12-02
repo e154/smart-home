@@ -22,7 +22,7 @@ import (
 	"context"
 	"github.com/e154/smart-home/api/stub/api"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -52,7 +52,7 @@ func (c ControllerUser) AddUser(ctx context.Context, req *api.NewtUserRequest) (
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	var errs []*validation.Error
+	var errs validator.ValidationErrorsTranslations
 	var userF *m.User
 	userF, errs, err = c.endpoint.User.Add(user, currentUser)
 	if len(errs) > 0 {
