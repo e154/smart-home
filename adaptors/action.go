@@ -25,6 +25,7 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+// IAction ...
 type IAction interface {
 	DeleteByTaskId(id int64) (err error)
 	AddMultiple(items []*m.Action) (err error)

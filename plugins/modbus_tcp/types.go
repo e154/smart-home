@@ -25,20 +25,27 @@ import (
 )
 
 const (
-	Name                = "modbus_tcp"
-	FuncEntityAction    = "entityAction"
+	// Name ...
+	Name = "modbus_tcp"
+	// FuncEntityAction ...
+	FuncEntityAction = "entityAction"
+	// DeviceTypeModbusTcp ...
 	DeviceTypeModbusTcp = node.DeviceType("modbus_tcp")
 )
 
 const (
-	AttrSlaveId     = "slave_id"     // 1-32
-	AttrAddressPort = "address_port" // localhost:502
+	// AttrSlaveId ...
+	AttrSlaveId = "slave_id"
+	// AttrAddressPort ...
+	AttrAddressPort = "address_port"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return nil
 }
 
+// NewSettings ...
 func NewSettings() m.Attributes {
 	return m.Attributes{
 		AttrSlaveId: {

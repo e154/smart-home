@@ -30,6 +30,7 @@ import (
 	"time"
 )
 
+// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	updateLock   *sync.Mutex
@@ -37,6 +38,7 @@ type Actor struct {
 	positionLock *sync.Mutex
 }
 
+// NewActor ...
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	eventBus event_bus.EventBus) *Actor {
@@ -73,6 +75,7 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
+// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 
 	e.eventBus.Publish(TopicPluginWeather, EventStateChanged{
@@ -84,6 +87,7 @@ func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
+// UpdatePosition ...
 func (e *Actor) UpdatePosition(settings m.Attributes) {
 	if settings == nil {
 		return
@@ -102,6 +106,7 @@ func (e *Actor) UpdatePosition(settings m.Attributes) {
 	})
 }
 
+// SetState ...
 func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 
 	log.Infof("update forecast for '%s'", e.Id)

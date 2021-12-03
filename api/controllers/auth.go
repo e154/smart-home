@@ -30,16 +30,19 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// ControllerAuth ...
 type ControllerAuth struct {
 	*ControllerCommon
 }
 
+// NewControllerAuth ...
 func NewControllerAuth(common *ControllerCommon) ControllerAuth {
 	return ControllerAuth{
 		ControllerCommon: common,
 	}
 }
 
+// Signin ...
 func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api.SigninResponse, err error) {
 
 	var internalServerError = status.Error(codes.Unauthenticated, "INTERNAL_SERVER_ERROR")
@@ -70,6 +73,7 @@ func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api
 	return
 }
 
+// Signout ...
 func (a ControllerAuth) Signout(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
 
 	var internalServerError = status.Error(codes.Unauthenticated, "INTERNAL_SERVER_ERROR")
@@ -85,6 +89,7 @@ func (a ControllerAuth) Signout(ctx context.Context, _ *emptypb.Empty) (*emptypb
 	return &emptypb.Empty{}, nil
 }
 
+// AccessList ...
 func (a ControllerAuth) AccessList(ctx context.Context, _ *emptypb.Empty) (*api.AccessListResponse, error) {
 
 	var internalServerError = status.Error(codes.Unauthenticated, "INTERNAL_SERVER_ERROR")

@@ -56,6 +56,7 @@ func (n *Worker) send(msg m.MessageDelivery, provider Provider) {
 	n.adaptor.MessageDelivery.SetStatus(msg)
 }
 
+// InWork ...
 func (w *Worker) InWork() bool {
 	return w.inProcess.Load()
 }

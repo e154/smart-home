@@ -46,6 +46,7 @@ import (
 	"time"
 )
 
+// GetNewButton ...
 func GetNewButton(id string, scripts []m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
@@ -140,6 +141,7 @@ func GetNewButton(id string, scripts []m.Script) *m.Entity {
 	}
 }
 
+// GetNewPlug ...
 func GetNewPlug(id string, scrits []m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
@@ -186,6 +188,7 @@ func GetNewPlug(id string, scrits []m.Script) *m.Entity {
 	}
 }
 
+// GetNewScript ...
 func GetNewScript(id string, scrits []m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
@@ -207,6 +210,7 @@ func GetNewScript(id string, scrits []m.Script) *m.Entity {
 	}
 }
 
+// GetNewScene ...
 func GetNewScene(id string, scripts []m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
@@ -217,6 +221,7 @@ func GetNewScene(id string, scripts []m.Script) *m.Entity {
 	}
 }
 
+// GetNewZone ...
 func GetNewZone() *m.Entity {
 	setings := zone.NewSettings()
 	setings[zone.AttrLat].Value = 54.9022
@@ -232,6 +237,7 @@ func GetNewZone() *m.Entity {
 	}
 }
 
+// GetNewNode ...
 func GetNewNode(name string) *m.Entity {
 	settings := node.NewSettings()
 	settings[node.AttrNodeLogin].Value = "node1"
@@ -246,6 +252,7 @@ func GetNewNode(name string) *m.Entity {
 	}
 }
 
+// GetNewMoon ...
 func GetNewMoon(name string) *m.Entity {
 	settings := moon.NewSettings()
 	settings[moon.AttrLat].Value = 54.9022
@@ -260,6 +267,7 @@ func GetNewMoon(name string) *m.Entity {
 	}
 }
 
+// GetNewWeather ...
 func GetNewWeather(name string) *m.Entity {
 	settings := weather.NewSettings()
 	settings[weather.AttrLat].Value = 54.9022
@@ -274,6 +282,7 @@ func GetNewWeather(name string) *m.Entity {
 	}
 }
 
+// GetNewWeatherOwm ...
 func GetNewWeatherOwm(name string) *m.Entity {
 	settings := weather_owm.NewSettings()
 	settings[weather_owm.AttrAppid].Value = "**************"
@@ -288,6 +297,7 @@ func GetNewWeatherOwm(name string) *m.Entity {
 	}
 }
 
+// GetNewSun ...
 func GetNewSun(name string) *m.Entity {
 	settings := sun.NewSettings()
 	settings[sun.AttrLat].Value = 54.9022
@@ -302,6 +312,7 @@ func GetNewSun(name string) *m.Entity {
 	}
 }
 
+// GetNewBitmineL3 ...
 func GetNewBitmineL3(name string) *m.Entity {
 	settings := cgminer.NewSettings()
 	settings[cgminer.SettingHost].Value = "192.168.0.243"
@@ -321,6 +332,7 @@ func GetNewBitmineL3(name string) *m.Entity {
 	}
 }
 
+// GetNewSensor ...
 func GetNewSensor(name string) *m.Entity {
 
 	return &m.Entity{
@@ -331,6 +343,7 @@ func GetNewSensor(name string) *m.Entity {
 	}
 }
 
+// GetNewModbusRtu ...
 func GetNewModbusRtu(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
@@ -342,6 +355,7 @@ func GetNewModbusRtu(name string) *m.Entity {
 	}
 }
 
+// GetNewModbusTcp ...
 func GetNewModbusTcp(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("modbus_tcp.%s", name)),
@@ -353,6 +367,7 @@ func GetNewModbusTcp(name string) *m.Entity {
 	}
 }
 
+// GetNewTelegram ...
 func GetNewTelegram(name string) *m.Entity {
 	settings := telegram.NewSettings()
 	settings[telegram.AttrToken].Value = "XXXX"
@@ -366,6 +381,7 @@ func GetNewTelegram(name string) *m.Entity {
 	}
 }
 
+// AddPlugin ...
 func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.Attributes) (err error) {
 	plugin := m.Plugin{
 		Name:    name,
@@ -380,6 +396,7 @@ func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.Attributes) (
 	return
 }
 
+// RegisterConvey ...
 func RegisterConvey(scriptService scripts.ScriptService, ctx convey.C) {
 	scriptService.PushFunctions("So", func(actual interface{}, assert string, expected interface{}) {
 		//fmt.Printf("actual(%v), expected(%v)\n", actual, expected)
@@ -393,6 +410,7 @@ func RegisterConvey(scriptService scripts.ScriptService, ctx convey.C) {
 
 }
 
+// Wait ...
 func Wait(t time.Duration, ch chan interface{}) (ok bool) {
 
 	ticker := time.NewTimer(time.Second * t)
@@ -413,6 +431,7 @@ type accepted struct {
 	err  error
 }
 
+// MockHttpServer ...
 func MockHttpServer(ctx context.Context, ip string, port int64, payload []byte) (err error) {
 
 	var listener net.Listener
@@ -445,6 +464,8 @@ func MockHttpServer(ctx context.Context, ip string, port int64, payload []byte) 
 
 	return
 }
+
+// MockTCPServer ...
 func MockTCPServer(ctx context.Context, ip string, port int64, payloads ...[]byte) (err error) {
 	var listener net.Listener
 	if listener, err = net.Listen("tcp", fmt.Sprintf("%s:%d", ip, port)); err != nil {
@@ -484,6 +505,7 @@ func MockTCPServer(ctx context.Context, ip string, port int64, payloads ...[]byt
 	return
 }
 
+// GetPort ...
 func GetPort() int64 {
 	port, _ := freeport.GetFreePort()
 	return int64(port)

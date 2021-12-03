@@ -18,6 +18,7 @@
 
 package models
 
+// EntityStateShort ...
 type EntityStateShort struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`

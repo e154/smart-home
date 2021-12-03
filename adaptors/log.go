@@ -25,6 +25,7 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+// ILog ...
 type ILog interface {
 	Add(ver *m.Log) (id int64, err error)
 	AddMultiple(items []*m.Log) (err error)

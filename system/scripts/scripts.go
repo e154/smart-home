@@ -29,6 +29,7 @@ var (
 	log = common.MustGetLogger("scripts")
 )
 
+// ScriptService ...
 type ScriptService interface {
 	NewEngine(s *m.Script) (*Engine, error)
 	PushStruct(name string, s interface{})

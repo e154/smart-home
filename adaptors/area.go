@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IArea ...
 type IArea interface {
 	Add(ver *m.Area) (id int64, err error)
 	GetById(verId int64) (ver *m.Area, err error)

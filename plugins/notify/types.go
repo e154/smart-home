@@ -24,7 +24,9 @@ import (
 )
 
 const (
-	Name        = "notify"
+	// Name ...
+	Name = "notify"
+	// TopicNotify ...
 	TopicNotify = "notify"
 )
 
@@ -33,24 +35,28 @@ type Stat struct {
 	Workers int `json:"workers"`
 }
 
+// Message ...
 type Message struct {
 	From       common.EntityId  `json:"from"`
 	Type       string           `json:"type"`
 	Attributes m.AttributeValue `json:"attributes"`
 }
 
+// NewMessage ...
 func NewMessage() *Message {
 	return &Message{
 		Attributes: make(m.AttributeValue),
 	}
 }
 
+// ProviderRegistrar ...
 type ProviderRegistrar interface {
 	AddProvider(name string, provider Provider)
 	RemoveProvider(name string)
 	Provider(name string) (provider Provider, err error)
 }
 
+// Provider ...
 type Provider interface {
 	Save(Message) (addresses []string, message m.Message)
 	Send(addresses string, message m.Message) error

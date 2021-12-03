@@ -30,4 +30,3 @@ type MetricDataItem struct {
 	MetricId int64           `json:"metric_id"`
 	Time     time.Time       `json:"time"`
 }
-

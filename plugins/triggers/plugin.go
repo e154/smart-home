@@ -42,6 +42,7 @@ type plugin struct {
 	triggers map[string]ITrigger
 }
 
+// New ...
 func New() plugins.Plugable {
 	return &plugin{
 		Plugin:   plugins.NewPlugin(),
@@ -50,6 +51,7 @@ func New() plugins.Plugable {
 	}
 }
 
+// Load ...
 func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
@@ -60,6 +62,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	return
 }
 
+// Unload ...
 func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
@@ -67,6 +70,7 @@ func (p *plugin) Unload() (err error) {
 	return
 }
 
+// Name ...
 func (p plugin) Name() string {
 	return Name
 }
@@ -94,18 +98,22 @@ func (p *plugin) attachTrigger() {
 	wg.Wait()
 }
 
+// Type ...
 func (p *plugin) Type() plugins.PluginType {
 	return plugins.PluginBuiltIn
 }
 
+// Depends ...
 func (p *plugin) Depends() []string {
 	return nil
 }
 
+// Version ...
 func (p *plugin) Version() string {
 	return "0.0.1"
 }
 
+// GetTrigger ...
 func (p *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
 
 	p.mu.Lock()
@@ -118,6 +126,7 @@ func (p *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
 	return
 }
 
+// RegisterTrigger ...
 func (p *plugin) RegisterTrigger(tr ITrigger) (err error) {
 
 	p.mu.Lock()
@@ -138,6 +147,7 @@ func (p *plugin) RegisterTrigger(tr ITrigger) (err error) {
 	return
 }
 
+// UnregisterTrigger ...
 func (p *plugin) UnregisterTrigger(name string) error {
 
 	p.mu.Lock()
@@ -151,6 +161,7 @@ func (p *plugin) UnregisterTrigger(name string) error {
 	return nil
 }
 
+// TriggerList ...
 func (p *plugin) TriggerList() (list []string) {
 
 	p.mu.Lock()
@@ -163,6 +174,7 @@ func (p *plugin) TriggerList() (list []string) {
 	return
 }
 
+// Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		Triggers: true,

@@ -38,6 +38,7 @@ var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
 // ErrPrincipalDisabled ...
 var ErrPrincipalDisabled = fmt.Errorf("principal disabled")
 
+// MqttAuthenticator ...
 type MqttAuthenticator interface {
 	Authenticate(login string, pass interface{}) (err error)
 	Register(fn func(login, password string) (err error)) (err error)
@@ -93,6 +94,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 	return
 }
 
+// Register ...
 func (a *Authenticator) Register(fn func(login, password string) (err error)) (err error) {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
 		err = fmt.Errorf("%s is not a reflect.Func", reflect.TypeOf(fn))
@@ -116,6 +118,7 @@ func (a *Authenticator) Register(fn func(login, password string) (err error)) (e
 	return
 }
 
+// Unregister ...
 func (a *Authenticator) Unregister(fn func(login, password string) (err error)) (err error) {
 	a.handlerMu.Lock()
 	defer a.handlerMu.Unlock()

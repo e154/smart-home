@@ -29,9 +29,12 @@ import (
 )
 
 const (
-	TimeName         = "time"
+	// TimeName ...
+	TimeName = "time"
+	// TimeFunctionName ...
 	TimeFunctionName = "automationTriggerTime"
-	TimeQueueSize    = 10
+	// TimeQueueSize ...
+	TimeQueueSize = 10
 )
 
 var _ ITrigger = (*TimeTrigger)(nil)
@@ -41,6 +44,7 @@ type subscribe struct {
 	task     *cron.Task
 }
 
+// TimeTrigger ...
 type TimeTrigger struct {
 	baseTrigger
 	cron *cron.Cron
@@ -48,6 +52,7 @@ type TimeTrigger struct {
 	subscribers map[string][]*subscribe
 }
 
+// NewTimeTrigger ...
 func NewTimeTrigger(eventBus event_bus.EventBus) ITrigger {
 	c := cron.NewCron()
 	go c.Run()
@@ -63,11 +68,13 @@ func NewTimeTrigger(eventBus event_bus.EventBus) ITrigger {
 	}
 }
 
+// AsyncAttach ...
 func (t *TimeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
 	wg.Done()
 }
 
+// Subscribe ...
 func (t *TimeTrigger) Subscribe(options Subscriber) error {
 	schedule := options.Payload[CronOptionTrigger].String()
 	if schedule == "" {
@@ -93,6 +100,7 @@ func (t *TimeTrigger) Subscribe(options Subscriber) error {
 	return nil
 }
 
+// Unsubscribe ...
 func (t *TimeTrigger) Unsubscribe(options Subscriber) error {
 	schedule := options.Payload[CronOptionTrigger].String()
 	if schedule == "" {

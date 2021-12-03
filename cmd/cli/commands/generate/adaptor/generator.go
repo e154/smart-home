@@ -178,8 +178,10 @@ func init() {
 	}
 }
 
+// Generator ...
 type Generator struct{}
 
+// Generate ...
 func (e Generator) Generate(adaptorName, currpath string) {
 
 	log.Infof("Using '%s' as adaptor name", adaptorName)

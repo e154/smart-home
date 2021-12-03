@@ -125,9 +125,9 @@ func (n *{{.Name}}) Delete(id int64) (err error) {
 
 // Search ...
 func (n *{{.Name}}) Search(query string, limit, offset int) (result []m.{{.ModelName}}, total int64, err error) {
-	
+
 	//result, total, err = n.adaptors.{{.AdaptorName}}.Search(query, limit, offset)
-	
+
 	return
 }
 `
@@ -161,8 +161,10 @@ func init() {
 	}
 }
 
+// Generator ...
 type Generator struct{}
 
+// Generate ...
 func (e Generator) Generate(endpointName, currpath string) {
 
 	log.Infof("Using '%sEndpoint' as endpoint name", endpointName)

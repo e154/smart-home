@@ -27,47 +27,76 @@ import (
 )
 
 const (
+	// StatePositionUpdate ...
 	StatePositionUpdate = "positionUpdate"
 )
 
 const (
+	// TopicPluginWeather ...
 	TopicPluginWeather = string("plugin.weather")
 )
 
 const (
-	AttrForecast              = "forecast"
-	AttrForecastDay1          = "forecast_day1"
-	AttrForecastDay2          = "forecast_day2"
-	AttrForecastDay3          = "forecast_day3"
-	AttrForecastDay4          = "forecast_day4"
-	AttrForecastDay5          = "forecast_day5"
-	AttrWeatherCondition      = "condition"
-	AttrWeatherDatetime       = "datetime"
-	AttrWeatherAttribution    = "attribution"
-	AttrWeatherHumidity       = "humidity"
-	AttrWeatherOzone          = "ozone"
-	AttrWeatherPressure       = "pressure"
-	AttrWeatherTemperature    = "temperature"
+	// AttrForecast ...
+	AttrForecast = "forecast"
+	// AttrForecastDay1 ...
+	AttrForecastDay1 = "forecast_day1"
+	// AttrForecastDay2 ...
+	AttrForecastDay2 = "forecast_day2"
+	// AttrForecastDay3 ...
+	AttrForecastDay3 = "forecast_day3"
+	// AttrForecastDay4 ...
+	AttrForecastDay4 = "forecast_day4"
+	// AttrForecastDay5 ...
+	AttrForecastDay5 = "forecast_day5"
+	// AttrWeatherCondition ...
+	AttrWeatherCondition = "condition"
+	// AttrWeatherDatetime ...
+	AttrWeatherDatetime = "datetime"
+	// AttrWeatherAttribution ...
+	AttrWeatherAttribution = "attribution"
+	// AttrWeatherHumidity ...
+	AttrWeatherHumidity = "humidity"
+	// AttrWeatherOzone ...
+	AttrWeatherOzone = "ozone"
+	// AttrWeatherPressure ...
+	AttrWeatherPressure = "pressure"
+	// AttrWeatherTemperature ...
+	AttrWeatherTemperature = "temperature"
+	// AttrWeatherMinTemperature ...
 	AttrWeatherMinTemperature = "min_temperature"
+	// AttrWeatherMaxTemperature ...
 	AttrWeatherMaxTemperature = "max_temperature"
-	AttrWeatherVisibility     = "visibility"
-	AttrWeatherWindBearing    = "wind_bearing"
-	AttrWeatherWindSpeed      = "wind_speed"
-	AttrWeatherMain           = "main"
-	AttrWeatherDescription    = "description"
-	AttrWeatherIcon           = "icon"
+	// AttrWeatherVisibility ...
+	AttrWeatherVisibility = "visibility"
+	// AttrWeatherWindBearing ...
+	AttrWeatherWindBearing = "wind_bearing"
+	// AttrWeatherWindSpeed ...
+	AttrWeatherWindSpeed = "wind_speed"
+	// AttrWeatherMain ...
+	AttrWeatherMain = "main"
+	// AttrWeatherDescription ...
+	AttrWeatherDescription = "description"
+	// AttrWeatherIcon ...
+	AttrWeatherIcon = "icon"
 
+	// Attribution ...
 	Attribution = ""
 
-	AttrLat    = "lat"
-	AttrLon    = "lon"
+	// AttrLat ...
+	AttrLat = "lat"
+	// AttrLon ...
+	AttrLon = "lon"
+	// AttrPlugin ...
 	AttrPlugin = "plugin"
 )
 
+// BaseForecast ...
 func BaseForecast() m.Attributes {
 	return NewForecast(6)
 }
 
+// NewForecast ...
 func NewForecast(days int) m.Attributes {
 	attributes := NewAttr()
 
@@ -88,6 +117,7 @@ func NewForecast(days int) m.Attributes {
 	return attributes
 }
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return m.Attributes{
 		AttrWeatherDatetime: {
@@ -141,6 +171,7 @@ func NewAttr() m.Attributes {
 	}
 }
 
+// NewSettings ...
 func NewSettings() m.Attributes {
 	return m.Attributes{
 		AttrLat: {
@@ -158,6 +189,7 @@ func NewSettings() m.Attributes {
 	}
 }
 
+// EventStateChanged ...
 type EventStateChanged struct {
 	Type       common.EntityType `json:"type"`
 	EntityId   common.EntityId   `json:"entity_id"`
@@ -167,47 +199,88 @@ type EventStateChanged struct {
 }
 
 const (
-	StateClearSky                    = "clearSky"
-	StateFair                        = "fair"
-	StatePartlyCloudy                = "partlyCloudy"
-	StateCloudy                      = "cloudy"
-	StateLightRainShowers            = "lightRainShowers"
-	StateRainShowers                 = "rainShowers"
-	StateHeavyRainShowers            = "heavyRainShowers"
-	StateLightRainShowersAndThunder  = "lightRainShowersAndThunder"
-	StateRainShowersAndThunder       = "rainShowersAndThunder"
-	StateHeavyRainShowersAndThunder  = "heavyRainShowersAndThunder"
-	StateLightSleetShowers           = "lightSleetShowers"
-	StateSleetShowers                = "sleetShowers"
-	StateHeavySleetShowers           = "heavySleetShowers"
+	// StateClearSky ...
+	StateClearSky = "clearSky"
+	// StateFair ...
+	StateFair = "fair"
+	// StatePartlyCloudy ...
+	StatePartlyCloudy = "partlyCloudy"
+	// StateCloudy ...
+	StateCloudy = "cloudy"
+	// StateLightRainShowers ...
+	StateLightRainShowers = "lightRainShowers"
+	// StateRainShowers ...
+	StateRainShowers = "rainShowers"
+	// StateHeavyRainShowers ...
+	StateHeavyRainShowers = "heavyRainShowers"
+	// StateLightRainShowersAndThunder ...
+	StateLightRainShowersAndThunder = "lightRainShowersAndThunder"
+	// StateRainShowersAndThunder ...
+	StateRainShowersAndThunder = "rainShowersAndThunder"
+	// StateHeavyRainShowersAndThunder ...
+	StateHeavyRainShowersAndThunder = "heavyRainShowersAndThunder"
+	// StateLightSleetShowers ...
+	StateLightSleetShowers = "lightSleetShowers"
+	// StateSleetShowers ...
+	StateSleetShowers = "sleetShowers"
+	// StateHeavySleetShowers ...
+	StateHeavySleetShowers = "heavySleetShowers"
+	// StateLightSleetShowersAndThunder ...
 	StateLightSleetShowersAndThunder = "lightSleetShowersAndThunder"
-	StateSleetShowersAndThunder      = "sleetShowersAndThunder"
+	// StateSleetShowersAndThunder ...
+	StateSleetShowersAndThunder = "sleetShowersAndThunder"
+	// StateHeavySleetShowersAndThunder ...
 	StateHeavySleetShowersAndThunder = "heavySleetShowersAndThunder"
-	StateLightSnowShowers            = "lightSnowShowers"
-	StateSnowShowers                 = "snowShowers"
-	StateHeavySnowShowers            = "heavySnowShowers"
-	StateLightSnowShowersAndThunder  = "lightSnowShowersAndThunder"
-	StateSnowShowersAndThunder       = "snowShowersAndThunder"
-	StateHeavySnowShowersAndThunder  = "heavySnowShowersAndThunder"
-	StateLightRain                   = "lightRain"
-	StateRain                        = "rain"
-	StateHeavyRain                   = "heavyRain"
-	StateLightRainAndThunder         = "lightRainAndThunder"
-	StateRainAndThunder              = "rainAndThunder"
-	StateHeavyRainAndThunder         = "heavyRainAndThunder"
-	StateLightSleet                  = "lightSleet"
-	StateSleet                       = "sleet"
-	StateHeavySleet                  = "heavySleet"
-	StateLightSleetAndThunder        = "lightSleetAndThunder"
-	StateSleetAndThunder             = "sleetAndThunder"
-	StateHeavySleetAndThunder        = "heavySleetAndThunder"
-	StateLightSnow                   = "lightSnow"
-	StateSnow                        = "snow"
-	StateHeavySnow                   = "heavySnow"
-	StateLightSnowAndThunder         = "lightSnowAndThunder"
-	StateSnowAndThunder              = "snowAndThunder"
-	StateHeavySnowAndThunder         = "heavySnowAndThunder"
-	StateFog                         = "fog"
+	// StateLightSnowShowers ...
+	StateLightSnowShowers = "lightSnowShowers"
+	// StateSnowShowers ...
+	StateSnowShowers = "snowShowers"
+	// StateHeavySnowShowers ...
+	StateHeavySnowShowers = "heavySnowShowers"
+	// StateLightSnowShowersAndThunder ...
+	StateLightSnowShowersAndThunder = "lightSnowShowersAndThunder"
+	// StateSnowShowersAndThunder ...
+	StateSnowShowersAndThunder = "snowShowersAndThunder"
+	// StateHeavySnowShowersAndThunder ...
+	StateHeavySnowShowersAndThunder = "heavySnowShowersAndThunder"
+	// StateLightRain ...
+	StateLightRain = "lightRain"
+	// StateRain ...
+	StateRain = "rain"
+	// StateHeavyRain ...
+	StateHeavyRain = "heavyRain"
+	// StateLightRainAndThunder ...
+	StateLightRainAndThunder = "lightRainAndThunder"
+	// StateRainAndThunder ...
+	StateRainAndThunder = "rainAndThunder"
+	// StateHeavyRainAndThunder ...
+	StateHeavyRainAndThunder = "heavyRainAndThunder"
+	// StateLightSleet ...
+	StateLightSleet = "lightSleet"
+	// StateSleet ...
+	StateSleet = "sleet"
+	// StateHeavySleet ...
+	StateHeavySleet = "heavySleet"
+	// StateLightSleetAndThunder ...
+	StateLightSleetAndThunder = "lightSleetAndThunder"
+	// StateSleetAndThunder ...
+	StateSleetAndThunder = "sleetAndThunder"
+	// StateHeavySleetAndThunder ...
+	StateHeavySleetAndThunder = "heavySleetAndThunder"
+	// StateLightSnow ...
+	StateLightSnow = "lightSnow"
+	// StateSnow ...
+	StateSnow = "snow"
+	// StateHeavySnow ...
+	StateHeavySnow = "heavySnow"
+	// StateLightSnowAndThunder ...
+	StateLightSnowAndThunder = "lightSnowAndThunder"
+	// StateSnowAndThunder ...
+	StateSnowAndThunder = "snowAndThunder"
+	// StateHeavySnowAndThunder ...
+	StateHeavySnowAndThunder = "heavySnowAndThunder"
+	// StateFog ...
+	StateFog = "fog"
 )
 
 var (
@@ -256,6 +329,7 @@ var (
 	}
 )
 
+// GetActorState ...
 func GetActorState(state string, n, w bool) (actorState entity_manager.ActorState) {
 	switch state {
 	case StateClearSky:
@@ -345,6 +419,7 @@ func GetActorState(state string, n, w bool) (actorState entity_manager.ActorStat
 	return
 }
 
+// NewActorStates ...
 func NewActorStates(n, w bool) (states map[string]entity_manager.ActorState) {
 
 	states = map[string]entity_manager.ActorState{
@@ -394,11 +469,13 @@ func NewActorStates(n, w bool) (states map[string]entity_manager.ActorState) {
 	return
 }
 
+// GetIndexByState ...
 func GetIndexByState(state string) (idx int) {
 	idx = conditions[state]
 	return
 }
 
+// GetStateByIndex ...
 func GetStateByIndex(idx int) (state string) {
 	for s, i := range conditions {
 		if idx == i {
@@ -409,6 +486,7 @@ func GetStateByIndex(idx int) (state string) {
 	return
 }
 
+// GetImagePath ...
 func GetImagePath(state string, night, winter bool) (imagePath *string) {
 	idx := GetIndexByState(state)
 	var sfx = "d"

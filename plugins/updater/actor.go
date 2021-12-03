@@ -33,6 +33,7 @@ import (
 	"time"
 )
 
+// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	eventBus          event_bus.EventBus
@@ -44,6 +45,7 @@ type Actor struct {
 	currentVersion    *semver.Version
 }
 
+// NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
 	eventBus event_bus.EventBus) *Actor {
 
@@ -75,6 +77,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 	}
 }
 
+// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }

@@ -32,6 +32,7 @@ import (
 	"time"
 )
 
+// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	adaptors      *adaptors.Adaptors
@@ -44,6 +45,7 @@ type Actor struct {
 	lastState     m.AttributeValue
 }
 
+// NewActor ...
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
@@ -83,6 +85,7 @@ func (e *Actor) destroy() {
 	e.quit <- struct{}{}
 }
 
+// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 
 	e.quit = make(chan struct{})
@@ -173,10 +176,10 @@ func (e *Actor) updateStatus() {
 	}
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-		Type:        e.Id.Type(),
-		EntityId:    e.Id,
-		OldState:    oldState,
-		NewState:    e.GetEventState(e),
+		Type:     e.Id.Type(),
+		EntityId: e.Id,
+		OldState: oldState,
+		NewState: e.GetEventState(e),
 	})
 }
 

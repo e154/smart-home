@@ -24,15 +24,21 @@ import (
 )
 
 const (
+	// Name ...
 	Name = "slack"
 
-	AttrToken    = "token"
+	// AttrToken ...
+	AttrToken = "token"
+	// AttrUserName ...
 	AttrUserName = "user_name"
 
+	// AttrChannel ...
 	AttrChannel = "channel"
-	AttrText    = "text"
+	// AttrText ...
+	AttrText = "text"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrChannel: {
@@ -46,6 +52,7 @@ func NewAttr() m.Attributes {
 	}
 }
 
+// NewSettings ...
 func NewSettings() map[string]*m.Attribute {
 	return map[string]*m.Attribute{
 		AttrToken: {

@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IZigbee2mqttDevice ...
 type IZigbee2mqttDevice interface {
 	Add(ver *m.Zigbee2mqttDevice) (err error)
 	GetById(id string) (ver *m.Zigbee2mqttDevice, err error)

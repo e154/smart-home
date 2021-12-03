@@ -18,6 +18,7 @@
 
 package automation
 
+// ConditionFunc ...
 const ConditionFunc = "automationCondition"
 
 // ConditionBind...

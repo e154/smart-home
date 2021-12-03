@@ -29,13 +29,17 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
+// PluginType ...
 type PluginType string
 
 const (
-	PluginBuiltIn     = PluginType("System")
+	// PluginBuiltIn ...
+	PluginBuiltIn = PluginType("System")
+	// PluginInstallable ...
 	PluginInstallable = PluginType("Installable")
 )
 
+// Service ...
 type Service interface {
 	Plugins() map[string]Plugable
 	PluginManager() common.PluginManager
@@ -48,6 +52,7 @@ type Service interface {
 	GateClient() *gate_client.GateClient
 }
 
+// Plugable ...
 type Plugable interface {
 	Load(Service) error
 	Unload() error
@@ -58,6 +63,7 @@ type Plugable interface {
 	Options() m.PluginOptions
 }
 
+// Installable ...
 type Installable interface {
 	Install() error
 	Uninstall() error

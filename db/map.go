@@ -231,7 +231,6 @@ func (n *Maps) Search(query string, limit, offset int) (list []*Map, total int64
 		Offset(offset).
 		Order("name ASC")
 
-
 	list = make([]*Map, 0)
 	err = q.Find(&list).Error
 

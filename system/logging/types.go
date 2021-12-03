@@ -22,6 +22,7 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
+// ISaver ...
 type ISaver interface {
 	Save(log m.Log)
 }

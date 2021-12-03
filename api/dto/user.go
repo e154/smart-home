@@ -25,18 +25,22 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// User ...
 type User struct{}
 
+// NewUserDto ...
 func NewUserDto() User {
 	return User{}
 }
 
+// FromAddUser ...
 func (u User) FromAddUser(req *api.NewtUserRequest) (user *m.User) {
 	user = &m.User{}
 	common.Copy(&user, req, common.JsonEngine)
 	return
 }
 
+// ToUserFull ...
 func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 	roleDto := NewRoleDto()
 	imageDto := NewImageDto()
@@ -112,6 +116,7 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 	return
 }
 
+// ToUserShot ...
 func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 
 	roleDto := NewRoleDto()
@@ -145,6 +150,7 @@ func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 	return
 }
 
+// ToListResult ...
 func (u User) ToListResult(list []*m.User, total, limit, offset uint32) *api.GetUserListResult {
 
 	items := make([]*api.UserShot, 0, len(list))
@@ -163,6 +169,7 @@ func (u User) ToListResult(list []*m.User, total, limit, offset uint32) *api.Get
 	}
 }
 
+// FromUpdateUserRequest ...
 func (u User) FromUpdateUserRequest(req *api.UpdateUserRequest) (user *m.User) {
 	user = &m.User{}
 	common.Copy(&user, req, common.JsonEngine)

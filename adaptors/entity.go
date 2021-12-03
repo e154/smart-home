@@ -26,6 +26,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IEntity ...
 type IEntity interface {
 	Add(ver *m.Entity) (err error)
 	GetById(id common.EntityId) (ver *m.Entity, err error)

@@ -48,6 +48,7 @@ import (
 )
 
 var (
+	// Client ...
 	Client = &cobra.Command{
 		Use:   "client",
 		Short: "client subscribes to the pingmq server and prints out the ping results",

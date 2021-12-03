@@ -26,6 +26,7 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+// IEntityAction ...
 type IEntityAction interface {
 	Add(ver *m.EntityAction) (id int64, err error)
 	DeleteByEntityId(id common.EntityId) (err error)

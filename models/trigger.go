@@ -20,6 +20,7 @@ package models
 
 import "github.com/e154/smart-home/common"
 
+// TriggerPayload ...
 type TriggerPayload struct {
 	Obj Attributes `json:"obj"`
 }

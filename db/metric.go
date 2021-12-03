@@ -120,7 +120,6 @@ func (n *Metrics) Search(query string, limit, offset int) (list []Metric, total 
 		Offset(offset).
 		Order("name ASC")
 
-
 	list = make([]Metric, 0)
 	err = q.Find(&list).Error
 

@@ -23,10 +23,12 @@ import (
 	"time"
 )
 
+// EntityPayload ...
 type EntityPayload struct {
 	AttributeSignature Attributes `json:"attribute_signature"`
 }
 
+// EntitySettings ...
 type EntitySettings struct {
 	Settings Attributes `json:"settings"`
 }
@@ -52,4 +54,3 @@ type Entity struct {
 	CreatedAt   time.Time         `json:"created_at"`
 	UpdatedAt   time.Time         `json:"updated_at"`
 }
-

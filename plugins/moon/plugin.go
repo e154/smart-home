@@ -46,6 +46,7 @@ type plugin struct {
 	pause      time.Duration
 }
 
+// New ...
 func New() plugins.Plugable {
 	return &plugin{
 		Plugin:     plugins.NewPlugin(),
@@ -55,6 +56,7 @@ func New() plugins.Plugable {
 	}
 }
 
+// Load ...
 func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
@@ -83,6 +85,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	return nil
 }
 
+// Unload ...
 func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
@@ -92,10 +95,12 @@ func (p *plugin) Unload() (err error) {
 	return nil
 }
 
+// Name ...
 func (p *plugin) Name() string {
 	return Name
 }
 
+// AddOrUpdateActor ...
 func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	p.actorsLock.Lock()
 	defer p.actorsLock.Unlock()
@@ -112,6 +117,7 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	return
 }
 
+// RemoveActor ...
 func (p *plugin) RemoveActor(entityId common.EntityId) error {
 	return p.removeEntity(entityId.Name())
 }
@@ -140,18 +146,22 @@ func (p *plugin) updatePositionForAll() {
 	}
 }
 
+// Type ...
 func (p *plugin) Type() plugins.PluginType {
 	return plugins.PluginBuiltIn
 }
 
+// Depends ...
 func (p *plugin) Depends() []string {
 	return nil
 }
 
+// Version ...
 func (p *plugin) Version() string {
 	return "0.0.1"
 }
 
+// Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		Actors:      true,

@@ -21,126 +21,111 @@ package controllers
 import (
 	"context"
 	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// ControllerRole ...
 type ControllerRole struct {
 	*ControllerCommon
 }
 
+// NewControllerRole ...
 func NewControllerRole(common *ControllerCommon) ControllerRole {
 	return ControllerRole{
 		ControllerCommon: common,
 	}
 }
 
-func (c ControllerRole) GetRoleAccessList(_ context.Context, req *api.GetRoleAccessListRequest) (*api.RoleAccessListResult, error) {
+// GetRoleAccessList ...
+func (c ControllerRole) GetRoleAccessList(ctx context.Context, req *api.GetRoleAccessListRequest) (*api.RoleAccessListResult, error) {
 
 	accessList, err := c.endpoint.Role.GetAccessList(req.Name, c.accessList)
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Role.ToRoleAccessListResult(accessList), nil
 }
 
-func (c ControllerRole) UpdateRoleAccessList(_ context.Context, req *api.UpdateRoleAccessListRequest) (*api.RoleAccessListResult, error) {
+// UpdateRoleAccessList ...
+func (c ControllerRole) UpdateRoleAccessList(ctx context.Context, req *api.UpdateRoleAccessListRequest) (*api.RoleAccessListResult, error) {
 
 	if err := c.endpoint.Role.UpdateAccessList(req.Name, c.dto.Role.FromUpdateRoleAccessListRequest(req)); err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	accessList, err := c.endpoint.Role.GetAccessList(req.Name, c.accessList)
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Role.ToRoleAccessListResult(accessList), nil
 }
 
-func (c ControllerRole) AddRole(_ context.Context, req *api.NewRoleRequest) (*api.Role, error) {
+// AddRole ...
+func (c ControllerRole) AddRole(ctx context.Context, req *api.NewRoleRequest) (*api.Role, error) {
 
 	role := c.dto.Role.FromNewRoleRequest(req)
 
 	role, errs, err := c.endpoint.Role.Add(role)
-	if len(errs) > 0 {
-		return nil, c.prepareErrors(errs)
-	}
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return c.dto.Role.ToGRole(role), nil
 }
 
-func (c ControllerRole) GetRoleByName(_ context.Context, req *api.GetRoleRequest) (*api.Role, error) {
+// GetRoleByName ...
+func (c ControllerRole) GetRoleByName(ctx context.Context, req *api.GetRoleRequest) (*api.Role, error) {
 
 	role, err := c.endpoint.Role.GetByName(req.Name)
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Role.ToGRole(role), nil
 }
 
-func (c ControllerRole) UpdateRoleByName(_ context.Context, req *api.UpdateRoleRequest) (*api.Role, error) {
+// UpdateRoleByName ...
+func (c ControllerRole) UpdateRoleByName(ctx context.Context, req *api.UpdateRoleRequest) (*api.Role, error) {
 
 	role := c.dto.Role.FromUpdateRoleRequest(req)
 
 	role, errs, err := c.endpoint.Role.Update(role)
-	if len(errs) > 0 {
-		return nil, c.prepareErrors(errs)
-	}
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return c.dto.Role.ToGRole(role), nil
 }
 
-func (c ControllerRole) GetRoleList(_ context.Context, req *api.GetRoleListRequest) (*api.GetRoleListResult, error) {
+// GetRoleList ...
+func (c ControllerRole) GetRoleList(ctx context.Context, req *api.GetRoleListRequest) (*api.GetRoleListResult, error) {
 
 	items, total, err := c.endpoint.Role.GetList(int64(req.Limit), int64(req.Offset), req.Order, req.SortBy)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Role.ToListResult(items, uint32(total), req.Limit, req.Offset), nil
 }
 
-func (c ControllerRole) SearchRoleByName(_ context.Context, req *api.SearchRoleRequest) (*api.SearchRoleListResult, error) {
+// SearchRoleByName ...
+func (c ControllerRole) SearchRoleByName(ctx context.Context, req *api.SearchRoleRequest) (*api.SearchRoleListResult, error) {
 
 	items, _, err := c.endpoint.Role.Search(req.Query, int(req.Limit), int(req.Offset))
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Role.ToSearchResult(items), nil
 }
 
-func (c ControllerRole) DeleteRoleByName(_ context.Context, req *api.DeleteRoleRequest) (*emptypb.Empty, error) {
+// DeleteRoleByName ...
+func (c ControllerRole) DeleteRoleByName(ctx context.Context, req *api.DeleteRoleRequest) (*emptypb.Empty, error) {
 
 	if err := c.endpoint.Role.Delete(req.Name); err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return &emptypb.Empty{}, nil

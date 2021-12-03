@@ -19,6 +19,8 @@
 package sensor
 
 const (
-	Name             = "sensor"
+	// Name ...
+	Name = "sensor"
+	// FuncEntityAction ...
 	FuncEntityAction = "entityAction"
 )

@@ -30,12 +30,17 @@ func NewPluginActorEndpoint(common *CommonEndpoint) *PluginActorEndpoint {
 	}
 }
 
+// Add ...
 func (p *PluginActorEndpoint) Add() {}
 
+// GetByName ...
 func (p *PluginActorEndpoint) GetByName(name string) {}
 
+// Update ...
 func (p *PluginActorEndpoint) Update() {}
 
+// Delete ...
 func (p *PluginActorEndpoint) Delete() {}
 
+// Search ...
 func (p *PluginActorEndpoint) Search(query string, limit, offset int) {}

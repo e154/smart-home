@@ -34,6 +34,7 @@ import (
 	"time"
 )
 
+// WeatherOwm ...
 type WeatherOwm struct {
 	adaptors *adaptors.Adaptors
 	eventBus event_bus.EventBus
@@ -42,6 +43,7 @@ type WeatherOwm struct {
 	zones    *sync.Map
 }
 
+// NewWeatherOwm ...
 func NewWeatherOwm(eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors,
 	settings map[string]*m.Attribute) (weather *WeatherOwm) {
@@ -56,10 +58,12 @@ func NewWeatherOwm(eventBus event_bus.EventBus,
 	return
 }
 
+// AddWeather ...
 func (p *WeatherOwm) AddWeather(entityId common.EntityId, settings m.Attributes) {
 	p.UpdateWeatherList(entityId, settings)
 }
 
+// UpdateWeatherList ...
 func (p *WeatherOwm) UpdateWeatherList(entityId common.EntityId, settings m.Attributes) {
 
 	zone := Zone{
@@ -80,6 +84,7 @@ func (p *WeatherOwm) UpdateWeatherList(entityId common.EntityId, settings m.Attr
 	p.UpdateForecastForAll()
 }
 
+// RemoveWeather ...
 func (p *WeatherOwm) RemoveWeather(entityId common.EntityId) {
 	p.zones.Delete(entityId.Name())
 	log.Infof("unload weather_owm.%s", entityId.Name())
@@ -90,6 +95,7 @@ func (p *WeatherOwm) RemoveWeather(entityId common.EntityId) {
 	})
 }
 
+// UpdateForecastForAll ...
 func (p *WeatherOwm) UpdateForecastForAll() (err error) {
 
 	p.lock.Lock()
@@ -111,6 +117,7 @@ func (p *WeatherOwm) UpdateForecastForAll() (err error) {
 	return nil
 }
 
+// UpdateForecast ...
 func (p *WeatherOwm) UpdateForecast(zone Zone) (err error) {
 
 	var forecast m.AttributeValue
@@ -130,6 +137,7 @@ func (p *WeatherOwm) UpdateForecast(zone Zone) (err error) {
 	return nil
 }
 
+// GetForecast ...
 func (p *WeatherOwm) GetForecast(params Zone, now time.Time) (forecast m.AttributeValue, err error) {
 
 	var zone Zone
@@ -188,6 +196,7 @@ func (p *WeatherOwm) GetForecast(params Zone, now time.Time) (forecast m.Attribu
 	return
 }
 
+// FetchData ...
 func (p *WeatherOwm) FetchData(name string, lat, lon float64, now time.Time) (zone Zone, err error) {
 
 	if lat == 0 || lon == 0 {

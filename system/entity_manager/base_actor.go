@@ -31,6 +31,7 @@ import (
 	"time"
 )
 
+// BaseActor ...
 type BaseActor struct {
 	PluginActor
 	Id                common.EntityId
@@ -61,6 +62,7 @@ type BaseActor struct {
 	Setts             m.Attributes
 }
 
+// NewBaseActor ...
 func NewBaseActor(entity *m.Entity,
 	scriptService scripts.ScriptService,
 	adaptors *adaptors.Adaptors) BaseActor {
@@ -151,18 +153,22 @@ func NewBaseActor(entity *m.Entity,
 	return actor
 }
 
+// GetEventState ...
 func (b *BaseActor) GetEventState(actor PluginActor) event_bus.EventEntityState {
 	return GetEventState(actor)
 }
 
+// Metrics ...
 func (e *BaseActor) Metrics() []m.Metric {
 	return e.Metric
 }
 
+// SetState ...
 func (e *BaseActor) SetState(EntityStateParams) error {
 	return errors.New("method not implemented")
 }
 
+// Attributes ...
 func (e *BaseActor) Attributes() m.Attributes {
 	e.attrLock()
 	e.AttrMu.RLock()
@@ -170,6 +176,7 @@ func (e *BaseActor) Attributes() m.Attributes {
 	return e.Attrs.Copy()
 }
 
+// DeserializeAttr ...
 func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
 	e.attrLock()
 	e.AttrMu.Lock()
@@ -177,6 +184,7 @@ func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
 	e.Attrs.Deserialize(data)
 }
 
+// Info ...
 func (e *BaseActor) Info() (info ActorInfo) {
 	info = ActorInfo{
 		Id:                e.Id,
@@ -201,6 +209,7 @@ func (e *BaseActor) Info() (info ActorInfo) {
 	return
 }
 
+// Now ...
 func (e *BaseActor) Now(oldState event_bus.EventEntityState) time.Time {
 	now := time.Now()
 	e.LastUpdated = common.Time(now)
@@ -213,12 +222,14 @@ func (e *BaseActor) Now(oldState event_bus.EventEntityState) time.Time {
 	return now
 }
 
+// SetMetric ...
 func (e *BaseActor) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
 	if e.Manager != nil {
 		e.Manager.SetMetric(id, name, value)
 	}
 }
 
+// Settings ...
 func (e *BaseActor) Settings() m.Attributes {
 	e.settingsLock()
 	e.SettingsMu.RLock()
@@ -226,6 +237,7 @@ func (e *BaseActor) Settings() m.Attributes {
 	return e.Setts.Copy()
 }
 
+// DeserializeSettings ...
 func (e *BaseActor) DeserializeSettings(settings m.AttributeValue) {
 	if settings == nil {
 		return

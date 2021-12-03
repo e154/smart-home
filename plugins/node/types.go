@@ -27,21 +27,32 @@ import (
 )
 
 const (
-	Name            = "node"
-	EntityNode      = common.EntityType("node")
+	// Name ...
+	Name = "node"
+	// EntityNode ...
+	EntityNode = common.EntityType("node")
+	// TopicPluginNode ...
 	TopicPluginNode = "plugin.node"
 )
 
 const (
-	AttrThread    = "thread"
-	AttrRps       = "rps"
-	AttrMin       = "min"
-	AttrMax       = "max"
+	// AttrThread ...
+	AttrThread = "thread"
+	// AttrRps ...
+	AttrRps = "rps"
+	// AttrMin ...
+	AttrMin = "min"
+	// AttrMax ...
+	AttrMax = "max"
+	// AttrStartedAt ...
 	AttrStartedAt = "started_at"
+	// AttrNodeLogin ...
 	AttrNodeLogin = "node_login"
-	AttrNodePass  = "node_pass"
+	// AttrNodePass ...
+	AttrNodePass = "node_pass"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return m.Attributes{
 		AttrThread: {
@@ -67,6 +78,7 @@ func NewAttr() m.Attributes {
 	}
 }
 
+// NewSettings ...
 func NewSettings() m.Attributes {
 	return m.Attributes{
 		AttrNodeLogin: {
@@ -80,6 +92,7 @@ func NewSettings() m.Attributes {
 	}
 }
 
+// NewStates ...
 func NewStates() (states map[string]entity_manager.ActorState) {
 
 	states = map[string]entity_manager.ActorState{
@@ -130,6 +143,7 @@ type MessageResponse struct {
 	Status     string          `json:"status"`
 }
 
+// MessageStatus ...
 type MessageStatus struct {
 	Status    string    `json:"status"`
 	Thread    int       `json:"thread"`

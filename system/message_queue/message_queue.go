@@ -37,6 +37,7 @@ func New(handlerQueueSize int) MessageQueue {
 	}
 }
 
+// Publish ...
 func (b *messageQueue) Publish(topic string, args ...interface{}) {
 	rArgs := buildHandlerArgs(append([]interface{}{topic}, args...))
 
@@ -54,6 +55,7 @@ func (b *messageQueue) Publish(topic string, args ...interface{}) {
 	}
 }
 
+// Subscribe ...
 func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interface{}) error {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
 		return fmt.Errorf("%s is not a reflect.Func", reflect.TypeOf(fn))
@@ -95,6 +97,7 @@ func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interf
 	return nil
 }
 
+// Unsubscribe ...
 func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
 	b.Lock()
 	defer b.Unlock()
@@ -116,6 +119,7 @@ func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
 	return fmt.Errorf("topic %s doesn't exist", topic)
 }
 
+// Close ...
 func (b *messageQueue) Close(topic string) {
 	b.Lock()
 	defer b.Unlock()
@@ -131,6 +135,7 @@ func (b *messageQueue) Close(topic string) {
 	}
 }
 
+// Purge ...
 func (b *messageQueue) Purge() {
 	b.Lock()
 	defer b.Unlock()

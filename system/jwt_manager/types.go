@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// JwtManager ...
 type JwtManager interface {
 	Start() (err error)
 	Generate(*m.User, ...*time.Time) (accessToken string, err error)
@@ -30,6 +31,7 @@ type JwtManager interface {
 	SetHmacKey(hmacKey []byte)
 }
 
+// UserClaims ...
 type UserClaims struct {
 	UserId   int64  `json:"i,omitempty"`
 	Username string `json:"n,omitempty"`

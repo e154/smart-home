@@ -98,6 +98,7 @@ func (i *Indexer) Len() int {
 	return i.rows.Len()
 }
 
+// GetOffsetN ...
 func GetOffsetN(page, pageSize uint) (offset, n uint) {
 	offset = (page - 1) * pageSize
 	n = pageSize

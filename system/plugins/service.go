@@ -40,38 +40,47 @@ type service struct {
 	gateClient    *gate_client.GateClient
 }
 
+// Plugins ...
 func (s service) Plugins() map[string]Plugable {
 	return pluginList
 }
 
+// PluginManager ...
 func (s service) PluginManager() common.PluginManager {
 	return s.pluginManager
 }
 
+// EventBus ...
 func (s service) EventBus() event_bus.EventBus {
 	return s.bus
 }
 
+// EntityManager ...
 func (s service) EntityManager() entity_manager.EntityManager {
 	return s.entityManager
 }
 
+// Adaptors ...
 func (s service) Adaptors() *adaptors.Adaptors {
 	return s.adaptors
 }
 
+// ScriptService ...
 func (s service) ScriptService() scripts.ScriptService {
 	return s.scriptService
 }
 
+// MqttServ ...
 func (s service) MqttServ() mqtt.MqttServ {
 	return s.mqttServ
 }
 
+// AppConfig ...
 func (s service) AppConfig() *models.AppConfig {
 	return s.appConfig
 }
 
+// GateClient ...
 func (s service) GateClient() *gate_client.GateClient {
 	return s.gateClient
 }

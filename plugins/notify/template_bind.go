@@ -32,6 +32,7 @@ type TemplateBind struct {
 	adaptor *adaptors.Adaptors
 }
 
+// NewTemplateBind ...
 func NewTemplateBind(adaptor *adaptors.Adaptors) *TemplateBind {
 	return &TemplateBind{
 		adaptor: adaptor,

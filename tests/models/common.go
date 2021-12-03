@@ -23,6 +23,7 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
+// NetAttr ...
 func NetAttr() m.Attributes {
 	return m.Attributes{
 		"s": {

@@ -41,6 +41,7 @@ type Admin interface {
 	SearchTopic(query string) (result []*admin.SubscriptionInfo, err error)
 }
 
+// MqttCli ...
 type MqttCli interface {
 	Publish(topic string, payload []byte) error
 	Subscribe(topic string, handler MessageHandler) error
@@ -49,6 +50,7 @@ type MqttCli interface {
 	OnMsgArrived(ctx context.Context, client server.Client, req *server.MsgArrivedRequest)
 }
 
+// MqttServ ...
 type MqttServ interface {
 	Shutdown() error
 	Start()

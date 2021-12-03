@@ -127,6 +127,7 @@ func CopyFile(f, t string) {
 	}
 }
 
+// FormatSourceCode ...
 func FormatSourceCode(filename string) {
 	cmd := exec.Command("gofmt", "-w", filename)
 	if err := cmd.Run(); err != nil {

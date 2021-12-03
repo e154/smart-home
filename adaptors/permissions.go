@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IPermission ...
 type IPermission interface {
 	Add(permission *m.Permission) (id int64, err error)
 	Delete(roleName, packageName string, levelName []string) (err error)

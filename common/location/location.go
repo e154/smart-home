@@ -26,10 +26,13 @@ import (
 )
 
 const (
+	// IpApi ...
 	IpApi = "http://ip-api.com/json"
+	// IPAPI ...
 	IPAPI = "https://ipapi.co/json/"
 )
 
+// GeoLocationFromIP ...
 func GeoLocationFromIP(ip string) (location m.GeoLocation, err error) {
 
 	var body []byte
@@ -42,6 +45,7 @@ func GeoLocationFromIP(ip string) (location m.GeoLocation, err error) {
 	return
 }
 
+// GetRegionInfo ...
 func GetRegionInfo() (info m.RegionInfo, err error) {
 
 	var body []byte

@@ -47,6 +47,7 @@ type pluginManager struct {
 	enabledPlugins map[string]bool
 }
 
+// NewPluginManager ...
 func NewPluginManager(lc fx.Lifecycle,
 	adaptors *adaptors.Adaptors,
 	bus event_bus.EventBus,
@@ -81,6 +82,7 @@ func NewPluginManager(lc fx.Lifecycle,
 	return pluginManager
 }
 
+// Start ...
 func (p *pluginManager) Start() {
 	if p.isStarted.Load() {
 		return
@@ -92,6 +94,7 @@ func (p *pluginManager) Start() {
 	p.loadPlugins()
 }
 
+// Shutdown ...
 func (p *pluginManager) Shutdown() {
 
 	if !p.isStarted.Load() {
@@ -113,6 +116,7 @@ func (p *pluginManager) Shutdown() {
 	log.Info("Shutdown")
 }
 
+// GetPlugin ...
 func (p *pluginManager) GetPlugin(t string) (plugin interface{}, err error) {
 	p.loadLock.Lock()
 	defer p.loadLock.Unlock()
@@ -210,6 +214,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 	return
 }
 
+// Install ...
 func (p *pluginManager) Install(t string) {
 
 	pl, _ := p.adaptors.Plugin.GetByName(t)
@@ -251,10 +256,12 @@ func (p *pluginManager) Install(t string) {
 	}
 }
 
+// Uninstall ...
 func (p *pluginManager) Uninstall(name string) {
 
 }
 
+// EnablePlugin ...
 func (p *pluginManager) EnablePlugin(name string) (err error) {
 	if err = p.loadPlugin(name); err != nil {
 		return
@@ -269,6 +276,7 @@ func (p *pluginManager) EnablePlugin(name string) (err error) {
 	return
 }
 
+// DisablePlugin ...
 func (p *pluginManager) DisablePlugin(name string) (err error) {
 	if err = p.unloadPlugin(name); err != nil {
 		return
@@ -283,6 +291,7 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 	return
 }
 
+// PluginList ...
 func (p *pluginManager) PluginList() (list []common.PluginInfo, total int64, err error) {
 	t := len(pluginList)
 	list = make([]common.PluginInfo, 0, t)

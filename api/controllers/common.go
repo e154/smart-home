@@ -162,3 +162,14 @@ func (c ControllerCommon) writeJson(w http.ResponseWriter, p interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(p)
 }
+
+func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationErrorsTranslations, err error) error {
+	if len(errs) > 0 {
+		return c.prepareErrors(errs)
+	}
+
+	if err.Error() == "record not found" {
+		return status.Error(codes.NotFound, err.Error())
+	}
+	return status.Error(codes.Internal, err.Error())
+}

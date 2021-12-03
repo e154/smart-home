@@ -29,16 +29,21 @@ const (
 
 	icon = "microchip"
 
+	// AttrCpuCores ...
 	AttrCpuCores = "cores"
-	AttrCpuMhz   = "mhz"
-	AttrCpuAll   = "all"
+	// AttrCpuMhz ...
+	AttrCpuMhz = "mhz"
+	// AttrCpuAll ...
+	AttrCpuAll = "all"
 
 	// Name ...
 	Name = "cpuspeed"
 
+	// EntityType ...
 	EntityType = "cpuspeed"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return m.Attributes{
 		AttrCpuCores: {

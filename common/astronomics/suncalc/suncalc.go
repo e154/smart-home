@@ -29,7 +29,11 @@ import (
 // date/DayTime constants and conversions
 const millyToNano = 1000000
 const dayMs = 1000 * 60 * 60 * 24
+
+// J1970 ...
 const J1970 = 2440588
+
+// J2000 ...
 const J2000 = 2451545
 
 func timeToUnixMillis(date time.Time) int64   { return int64(float64(date.UnixNano()) / millyToNano) }
@@ -83,31 +87,47 @@ func eclipticLongitude(M float64) float64 {
 	return M + C + P + math.Pi
 }
 
+// DayTimeName ...
 type DayTimeName string
 
 const (
-	Sunrise DayTimeName = "sunrise" // sunrise (top edge of the sun appears on the horizon)
-	Sunset  DayTimeName = "sunset"  // sunset (sun disappears below the horizon, evening civil twilight starts)
+	// Sunrise ...
+	Sunrise DayTimeName = "sunrise"
+	// Sunset ...
+	Sunset DayTimeName = "sunset"
 
-	SunriseEnd  DayTimeName = "sunriseEnd"  // sunrise ends (bottom edge of the sun touches the horizon)
-	SunsetStart DayTimeName = "sunsetStart" // sunset starts (bottom edge of the sun touches the horizon)
+	// SunriseEnd ...
+	SunriseEnd DayTimeName = "sunriseEnd"
+	// SunsetStart ...
+	SunsetStart DayTimeName = "sunsetStart"
 
-	Dawn DayTimeName = "dawn" // dawn (morning nautical twilight ends, morning civil twilight starts)
-	Dusk DayTimeName = "dusk" // dusk (evening nautical twilight starts)
+	// Dawn ...
+	Dawn DayTimeName = "dawn"
+	// Dusk ...
+	Dusk DayTimeName = "dusk"
 
-	NauticalDawn DayTimeName = "nauticalDawn" // nautical dawn (morning nautical twilight starts)
-	NauticalDusk DayTimeName = "nauticalDusk" // nautical dusk (evening astronomical twilight starts)
+	// NauticalDawn ...
+	NauticalDawn DayTimeName = "nauticalDawn"
+	// NauticalDusk ...
+	NauticalDusk DayTimeName = "nauticalDusk"
 
-	NightEnd DayTimeName = "nightEnd" // night ends (morning astronomical twilight starts)
-	Night    DayTimeName = "night"    // night starts (dark enough for astronomical observations)
+	// NightEnd ...
+	NightEnd DayTimeName = "nightEnd"
+	// Night ...
+	Night DayTimeName = "night"
 
-	GoldenHourEnd DayTimeName = "goldenHourEnd" // morning golden hour (soft light, best DayTime for photography) ends
-	GoldenHour    DayTimeName = "goldenHour"    // evening golden hour starts
+	// GoldenHourEnd ...
+	GoldenHourEnd DayTimeName = "goldenHourEnd"
+	// GoldenHour ...
+	GoldenHour DayTimeName = "goldenHour"
 
-	SolarNoon DayTimeName = "solarNoon" // solar noon (sun is in the highest position)
-	Nadir     DayTimeName = "nadir"     // nadir (darkest moment of the night, sun is in the lowest position)
+	// SolarNoon ...
+	SolarNoon DayTimeName = "solarNoon"
+	// Nadir ...
+	Nadir DayTimeName = "nadir"
 )
 
+// DayTime ...
 type DayTime struct {
 	MorningName DayTimeName
 	Time        time.Time
@@ -134,6 +154,7 @@ func sunCoords(d float64) coord {
 	}
 }
 
+// SunPosition ...
 type SunPosition struct {
 	Azimuth  float64
 	Altitude float64
@@ -154,6 +175,7 @@ func GetSunPosition(date time.Time, lat float64, lng float64) SunPosition {
 	}
 }
 
+// IsNight ...
 func IsNight(sunrisePos SunPosition) bool {
 	solarElevation := sunrisePos.Altitude * 180 / math.Pi
 	return solarElevation < -0.833
@@ -249,6 +271,7 @@ func moonCoords(d float64) moonCoordinates { // geocentric ecliptic coordinates 
 	}
 }
 
+// MoonPosition ...
 type MoonPosition struct {
 	Azimuth          float64
 	Altitude         float64
@@ -256,6 +279,7 @@ type MoonPosition struct {
 	ParallacticAngle float64
 }
 
+// GetMoonPosition ...
 func GetMoonPosition(date time.Time, lat float64, lng float64) MoonPosition {
 	lw := rad * -lng
 	phi := rad * lat
@@ -276,6 +300,7 @@ func GetMoonPosition(date time.Time, lat float64, lng float64) MoonPosition {
 	}
 }
 
+// MoonIllumination ...
 type MoonIllumination struct {
 	fraction float64
 	phase    float64
@@ -312,6 +337,7 @@ func hoursLater(date time.Time, h int64) time.Time {
 	return date.Add(time.Duration(h * dayMs / 24 * millyToNano))
 }
 
+// MoonTimes ...
 type MoonTimes struct {
 	Rise       time.Time
 	Set        time.Time

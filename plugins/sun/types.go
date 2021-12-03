@@ -26,44 +26,70 @@ import (
 )
 
 const (
-	Name      = "sun"
+	// Name ...
+	Name = "sun"
+	// EntitySun ...
 	EntitySun = common.EntityType("sun")
 )
 
 const (
+	// StateAboveHorizon ...
 	StateAboveHorizon = "aboveHorizon"
+	// StateBelowHorizon ...
 	StateBelowHorizon = "belowHorizon"
 )
 
 const (
-	AttrHorizonState  = "horizonState" // aboveHorizon|belowHorizon
-	AttrPhase         = "phase"
-	AttrAzimuth       = "azimuth"
-	AttrElevation     = "elevation"
-	AttrSunrise       = "sunrise"       // sunrise (top edge of the sun appears on the horizon)
-	AttrSunset        = "sunset"        // sunset (sun disappears below the horizon, evening civil twilight starts)
-	AttrSunriseEnd    = "sunriseEnd"    // sunrise ends (bottom edge of the sun touches the horizon)
-	AttrSunsetStart   = "sunsetStart"   // sunset starts (bottom edge of the sun touches the horizon)
-	AttrDawn          = "dawn"          // dawn (morning nautical twilight ends, morning civil twilight starts)
-	AttrDusk          = "dusk"          // dusk (evening nautical twilight starts)
-	AttrNauticalDawn  = "nauticalDawn"  // nautical dawn (morning nautical twilight starts)
-	AttrNauticalDusk  = "nauticalDusk"  // nautical dusk (evening astronomical twilight starts)
-	AttrNightEnd      = "nightEnd"      // night ends (morning astronomical twilight starts)
-	AttrNight         = "night"         // night starts (dark enough for astronomical observations)
-	AttrGoldenHourEnd = "goldenHourEnd" // morning golden hour (soft light, best DayTime for photography) ends
-	AttrGoldenHour    = "goldenHour"    // evening golden hour starts
-	AttrSolarNoon     = "solarNoon"     // solar noon (sun is in the highest position)
-	AttrNadir         = "nadir"         // nadir (darkest moment of the night, sun is in the lowest position)
+	// AttrHorizonState ...
+	AttrHorizonState = "horizonState"
+	// AttrPhase ...
+	AttrPhase = "phase"
+	// AttrAzimuth ...
+	AttrAzimuth = "azimuth"
+	// AttrElevation ...
+	AttrElevation = "elevation"
+	// AttrSunrise ...
+	AttrSunrise = "sunrise"
+	// AttrSunset ...
+	AttrSunset = "sunset"
+	// AttrSunriseEnd ...
+	AttrSunriseEnd = "sunriseEnd"
+	// AttrSunsetStart ...
+	AttrSunsetStart = "sunsetStart"
+	// AttrDawn ...
+	AttrDawn = "dawn"
+	// AttrDusk ...
+	AttrDusk = "dusk"
+	// AttrNauticalDawn ...
+	AttrNauticalDawn = "nauticalDawn"
+	// AttrNauticalDusk ...
+	AttrNauticalDusk = "nauticalDusk"
+	// AttrNightEnd ...
+	AttrNightEnd = "nightEnd"
+	// AttrNight ...
+	AttrNight = "night"
+	// AttrGoldenHourEnd ...
+	AttrGoldenHourEnd = "goldenHourEnd"
+	// AttrGoldenHour ...
+	AttrGoldenHour = "goldenHour"
+	// AttrSolarNoon ...
+	AttrSolarNoon = "solarNoon"
+	// AttrNadir ...
+	AttrNadir = "nadir"
 
-	AttrLat          = "lat"
-	AttrLon          = "lon"
+	// AttrLat ...
+	AttrLat = "lat"
+	// AttrLon ...
+	AttrLon = "lon"
 )
 
+// DayTime ...
 type DayTime struct {
 	MorningName string
 	Time        time.Time
 }
 
+// DayTimes ...
 type DayTimes []DayTime
 
 // Len ...
@@ -75,6 +101,7 @@ func (l DayTimes) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
 // Less ...
 func (l DayTimes) Less(i, j int) bool { return l[i].Time.UnixNano() < l[j].Time.UnixNano() }
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return m.Attributes{
 		AttrSunrise: {
@@ -152,6 +179,7 @@ func NewAttr() m.Attributes {
 	}
 }
 
+// NewSettings ...
 func NewSettings() m.Attributes {
 	return m.Attributes{
 		AttrLat: {
@@ -166,28 +194,43 @@ func NewSettings() m.Attributes {
 }
 
 const (
-	Sunrise = "sunrise" // sunrise (top edge of the sun appears on the horizon)
-	Sunset  = "sunset"  // sunset (sun disappears below the horizon, evening civil twilight starts)
+	// Sunrise ...
+	Sunrise = "sunrise"
+	// Sunset ...
+	Sunset = "sunset"
 
-	SunriseEnd  = "sunriseEnd"  // sunrise ends (bottom edge of the sun touches the horizon)
-	SunsetStart = "sunsetStart" // sunset starts (bottom edge of the sun touches the horizon)
+	// SunriseEnd ...
+	SunriseEnd = "sunriseEnd"
+	// SunsetStart ...
+	SunsetStart = "sunsetStart"
 
-	Dawn = "dawn" // dawn (morning nautical twilight ends, morning civil twilight starts)
-	Dusk = "dusk" // dusk (evening nautical twilight starts)
+	// Dawn ...
+	Dawn = "dawn"
+	// Dusk ...
+	Dusk = "dusk"
 
-	NauticalDawn = "nauticalDawn" // nautical dawn (morning nautical twilight starts)
-	NauticalDusk = "nauticalDusk" // nautical dusk (evening astronomical twilight starts)
+	// NauticalDawn ...
+	NauticalDawn = "nauticalDawn"
+	// NauticalDusk ...
+	NauticalDusk = "nauticalDusk"
 
-	NightEnd = "nightEnd" // night ends (morning astronomical twilight starts)
-	Night    = "night"    // night starts (dark enough for astronomical observations)
+	// NightEnd ...
+	NightEnd = "nightEnd"
+	// Night ...
+	Night = "night"
 
-	GoldenHourEnd = "goldenHourEnd" // morning golden hour (soft light, best DayTime for photography) ends
-	GoldenHour    = "goldenHour"    // evening golden hour starts
+	// GoldenHourEnd ...
+	GoldenHourEnd = "goldenHourEnd"
+	// GoldenHour ...
+	GoldenHour = "goldenHour"
 
-	SolarNoon = "solarNoon" // solar noon (sun is in the highest position)
-	Nadir     = "nadir"     // nadir (darkest moment of the night, sun is in the lowest position)
+	// SolarNoon ...
+	SolarNoon = "solarNoon"
+	// Nadir ...
+	Nadir = "nadir"
 )
 
+// NewStates ...
 func NewStates() (states map[string]entity_manager.ActorState) {
 
 	states = map[string]entity_manager.ActorState{

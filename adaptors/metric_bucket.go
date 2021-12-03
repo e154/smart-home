@@ -28,6 +28,7 @@ import (
 	"time"
 )
 
+// IMetricBucket ...
 type IMetricBucket interface {
 	Add(ver m.MetricDataItem) error
 	AddMultiple(items []m.MetricDataItem) (err error)

@@ -27,16 +27,21 @@ import (
 )
 
 const (
+	// EntityWeatherOwm ...
 	EntityWeatherOwm = common.EntityType("weather_owm")
-	DefaultApiUrl    = "https://api.openweathermap.org/data/2.5/onecall"
-	Attribution      = "Weather forecast from openweathermap api"
+	// DefaultApiUrl ...
+	DefaultApiUrl = "https://api.openweathermap.org/data/2.5/onecall"
+	// Attribution ...
+	Attribution = "Weather forecast from openweathermap api"
 )
 
+// GeoPos ...
 type GeoPos struct {
 	Lat float64 `json:"lat"` // latitude
 	Lon float64 `json:"lon"` // longitude
 }
 
+// City ...
 type City struct {
 	Id         int64  `json:"id"`         // City ID
 	Name       string `json:"name"`       // City name
@@ -48,6 +53,7 @@ type City struct {
 	Sunset     int64  `json:"sunset"`     // Sunset time
 }
 
+// ProductMain ...
 type ProductMain struct {
 	Temp      float64 `json:"temp"`       // Temperature. Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
 	FeelsLike float64 `json:"feels_like"` // This temperature parameter accounts for the human perception of weather. Unit Default: Kelvin, Metric: Celsius, Imperial: Fahrenheit.
@@ -60,6 +66,7 @@ type ProductMain struct {
 	TempKf    float64 `json:"temp_kf"`    // Internal parameter
 }
 
+// ProductWeather ...
 type ProductWeather struct {
 	Id          int64  `json:"id"`          // Weather condition id
 	Main        string `json:"main"`        // Group of weather parameters (Rain, Snow, Extreme etc.)
@@ -67,28 +74,34 @@ type ProductWeather struct {
 	Icon        string `json:"icon"`        // Weather icon id
 }
 
+// ProductClouds ...
 type ProductClouds struct {
 	All int64 `json:"all"` // Cloudiness, %
 }
 
+// ProductWind ...
 type ProductWind struct {
 	Speed float64 `json:"speed"` // Wind speed. Unit Default: meter/sec, Metric: meter/sec, Imperial: miles/hour.
 	Deg   float64 `json:"deg"`   // Wind direction, degrees (meteorological)
 	Gust  float64 `json:"gust"`  // Wind gust. Unit Default: meter/sec, Metric: meter/sec, Imperial: miles/hour
 }
 
+// ProductSnow ...
 type ProductSnow struct {
 	Last3Hours float64 `json:"3h"` // Snow volume for last 3 hours
 }
 
+// ProductRain ...
 type ProductRain struct {
 	Last3Hours float64 `json:"3h"` // Rain volume for last 3 hours, mm
 }
 
+// ProductSys ...
 type ProductSys struct {
 	Pod string `json:"pod"` // Part of the day (n - night, d - day)
 }
 
+// Product ...
 type Product struct {
 	Dt         int64          `json:"dt"`         // Time of data forecasted, unix, UTC
 	Visibility int64          `json:"visibility"` // Average visibility, metres
@@ -103,6 +116,7 @@ type Product struct {
 	DtTxt      time.Time      `json:"dt_txt"`
 }
 
+// Products ...
 type Products []Product
 
 // Len ...
@@ -120,6 +134,7 @@ func (p Products) Less(a, b int) bool {
 	return p[a].Dt < p[b].Dt
 }
 
+// WeatherFor5Days ...
 type WeatherFor5Days struct {
 	Cod      string   `json:"cod"`     //  Internal parameter
 	Message  int      `json:"message"` //  Internal parameter
@@ -128,14 +143,17 @@ type WeatherFor5Days struct {
 	City     City     `json:"city"`
 }
 
+// WeatherCurrentRain ...
 type WeatherCurrentRain struct {
 	LastHour float64 `json:"1h"` // Rain volume for last hour, mm
 }
 
+// WeatherCurrentSnow ...
 type WeatherCurrentSnow struct {
 	LastHour float64 `json:"1h"` // Snow volume for last hour, mm
 }
 
+// WeatherCurrent ...
 type WeatherCurrent struct {
 	Dt         int64               `json:"dt"`                   // Current time, Unix, UTC
 	Sunrise    int64               `json:"sunrise"`              // Sunrise time, Unix, UTC
@@ -156,6 +174,7 @@ type WeatherCurrent struct {
 	Weather    []ProductWeather    `json:"weather"`              //
 }
 
+// WeatherHourly ...
 type WeatherHourly struct {
 	Dt         int64               `json:"dt"`                   // Current time, Unix, UTC
 	Temp       float64             `json:"temp"`                 // Temperature. Units - default: kelvin, metric: Celsius, imperial: Fahrenheit.
@@ -175,6 +194,7 @@ type WeatherHourly struct {
 	Pop        float64             `json:"pop"`                  // Probability of precipitation
 }
 
+// WeatherDailyTemp ...
 type WeatherDailyTemp struct {
 	Day   float64 `json:"day"`
 	Min   float64 `json:"min"`
@@ -184,6 +204,7 @@ type WeatherDailyTemp struct {
 	Morn  float64 `json:"morn"`
 }
 
+// WeatherDailyFeelsLike ...
 type WeatherDailyFeelsLike struct {
 	Day   float64 `json:"day"`
 	Min   float64 `json:"min"`
@@ -193,6 +214,7 @@ type WeatherDailyFeelsLike struct {
 	Morn  float64 `json:"morn"`
 }
 
+// Alert ...
 type Alert struct {
 	SenderName  string   `json:"sender_name"` // Name of the alert source
 	Event       string   `json:"event"`       // Alert event name
@@ -202,6 +224,7 @@ type Alert struct {
 	Tags        []string `json:"tags"`        // Type of severe weather
 }
 
+// WeatherDaily ...
 type WeatherDaily struct {
 	Dt         int64                 `json:"dt"`                   // Current time, Unix, UTC
 	Sunrise    int64                 `json:"sunrise"`              // Sunrise time, Unix, UTC
@@ -225,6 +248,7 @@ type WeatherDaily struct {
 	Weather    []ProductWeather      `json:"weather"`              //
 }
 
+// WeatherFor8Days ...
 type WeatherFor8Days struct {
 	GeoPos
 	Timezone       string          `json:"timezone"`        // Timezone name for the requested location
@@ -235,6 +259,7 @@ type WeatherFor8Days struct {
 	Alerts         []Alert         `json:"alerts"`
 }
 
+// Zone ...
 type Zone struct {
 	Name        string           `json:"name"`
 	Lat         float64          `json:"lat"`
@@ -244,11 +269,15 @@ type Zone struct {
 }
 
 const (
+	// AttrAppid ...
 	AttrAppid = "appid"
+	// AttrUnits ...
 	AttrUnits = "units"
-	AttrLang  = "lang"
+	// AttrLang ...
+	AttrLang = "lang"
 )
 
+// NewSettings ...
 func NewSettings() map[string]*m.Attribute {
 	return map[string]*m.Attribute{
 		AttrAppid: {

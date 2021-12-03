@@ -26,6 +26,7 @@ import (
 	"time"
 )
 
+// NewConditionGroup ...
 func NewConditionGroup(automation *automation,
 	t common.ConditionType) *ConditionGroup {
 	return &ConditionGroup{
@@ -35,6 +36,7 @@ func NewConditionGroup(automation *automation,
 	}
 }
 
+// ConditionGroup ...
 type ConditionGroup struct {
 	rules      []*Condition
 	t          common.ConditionType
@@ -43,10 +45,12 @@ type ConditionGroup struct {
 	sync.Mutex
 }
 
+// AddCondition ...
 func (c *ConditionGroup) AddCondition(condition *Condition) {
 	c.rules = append(c.rules, condition)
 }
 
+// Check ...
 func (c *ConditionGroup) Check(entityId *common.EntityId) (state bool, err error) {
 	c.Lock()
 	defer func() {

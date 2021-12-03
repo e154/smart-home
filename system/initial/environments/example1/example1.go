@@ -27,6 +27,7 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// Example1 ...
 type Example1 struct{}
 
 // Demo ...

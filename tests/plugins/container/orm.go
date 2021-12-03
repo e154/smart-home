@@ -39,4 +39,3 @@ func NewOrmConfig(cfg *models.AppConfig) *orm.Config {
 		ConnMaxLifeTime: cfg.PgConnMaxLifeTime,
 	}
 }
-

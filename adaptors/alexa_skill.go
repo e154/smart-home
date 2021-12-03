@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IAlexaSkill ...
 type IAlexaSkill interface {
 	Add(app *m.AlexaSkill) (id int64, err error)
 	GetById(appId int64) (app *m.AlexaSkill, err error)

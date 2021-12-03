@@ -31,6 +31,7 @@ import (
 )
 
 var (
+	// Cli ...
 	Cli = &cobra.Command{
 		Use:   "cli",
 		Short: "",

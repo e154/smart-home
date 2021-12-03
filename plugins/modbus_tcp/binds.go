@@ -31,6 +31,7 @@ import (
 
 type modbusTcp func(f string, address, count uint16, command []uint16) (result ModBusResponse)
 
+// NewModbusTcp ...
 func NewModbusTcp(eventBus event_bus.EventBus, actor *Actor) (modbus modbusTcp) {
 
 	var isStarted = atomic.NewBool(false)

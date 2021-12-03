@@ -136,7 +136,7 @@ func fillClientInfo(c *ClientInfo, stsReader server.StatsReader) {
 	c.QueueLen = uint32(sts.MessageStats.QueuedCurrent)
 }
 
-// GetClients
+// GetClients ...
 func (s *store) GetClients(limit, offset uint) (rs []*ClientInfo, total uint32, err error) {
 	rs = make([]*ClientInfo, 0)
 	fn := func(elem *list.Element) {

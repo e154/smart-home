@@ -28,6 +28,7 @@ import (
 	"time"
 )
 
+// IMetric ...
 type IMetric interface {
 	Add(ver m.Metric) (id int64, err error)
 	GetById(id int64) (metric m.Metric, err error)

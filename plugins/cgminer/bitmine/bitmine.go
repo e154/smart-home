@@ -31,12 +31,14 @@ var (
 	log = common.MustGetLogger("plugins.cgminer.bitmine")
 )
 
+// Bitmine ...
 type Bitmine struct {
 	device     DeviceType
 	transport  ITransport
 	user, pass string
 }
 
+// NewBitmine ...
 func NewBitmine(transport ITransport, device, user, pass string) (bitmine *Bitmine, err error) {
 
 	bitmine = &Bitmine{
@@ -80,6 +82,7 @@ func (b *Bitmine) checkStatus(statuses []Status) error {
 	return nil
 }
 
+// Stats ...
 func (b *Bitmine) Stats() (data []byte, err error) {
 
 	var commandResponse []byte
@@ -122,6 +125,7 @@ func (b *Bitmine) Stats() (data []byte, err error) {
 	return
 }
 
+// Devs ...
 func (b *Bitmine) Devs() (data []byte, err error) {
 	var commandResponse []byte
 	if commandResponse, err = b.transport.RunCommand("devs", ""); err != nil {
@@ -138,6 +142,7 @@ func (b *Bitmine) Devs() (data []byte, err error) {
 	return
 }
 
+// Summary ...
 func (b *Bitmine) Summary() (data []byte, err error) {
 	var commandResponse []byte
 	if commandResponse, err = b.transport.RunCommand("summary", ""); err != nil {
@@ -162,6 +167,7 @@ func (b *Bitmine) Summary() (data []byte, err error) {
 	return
 }
 
+// Pools ...
 func (b *Bitmine) Pools() (data []byte, err error) {
 	var commandResponse []byte
 	if commandResponse, err = b.transport.RunCommand("pools", ""); err != nil {
@@ -178,6 +184,7 @@ func (b *Bitmine) Pools() (data []byte, err error) {
 	return
 }
 
+// AddPool ...
 func (b *Bitmine) AddPool(url string) (err error) {
 	var commandResponse []byte
 	if commandResponse, err = b.transport.RunCommand("addpool", fmt.Sprintf("%s,%s,%s", url, b.user, b.pass)); err != nil {
@@ -193,6 +200,7 @@ func (b *Bitmine) AddPool(url string) (err error) {
 	return
 }
 
+// Version ...
 func (b *Bitmine) Version() (data []byte, err error) {
 	var commandResponse []byte
 	if commandResponse, err = b.transport.RunCommand("version", ""); err != nil {
@@ -217,36 +225,43 @@ func (b *Bitmine) Version() (data []byte, err error) {
 	return
 }
 
+// Enable ...
 func (b *Bitmine) Enable(poolId int64) error {
 	_, err := b.transport.RunCommand("enablepool", fmt.Sprintf("%d", poolId))
 	return err
 }
 
+// Disable ...
 func (b *Bitmine) Disable(poolId int64) error {
 	_, err := b.transport.RunCommand("disablepool", fmt.Sprintf("%d", poolId))
 	return err
 }
 
+// Delete ...
 func (b *Bitmine) Delete(poolId int64) error {
 	_, err := b.transport.RunCommand("removepool", fmt.Sprintf("%d", poolId))
 	return err
 }
 
+// SwitchPool ...
 func (b *Bitmine) SwitchPool(poolId int64) error {
 	_, err := b.transport.RunCommand("switchpool", fmt.Sprintf("%d", poolId))
 	return err
 }
 
+// Restart ...
 func (b *Bitmine) Restart() error {
 	_, err := b.transport.RunCommand("restart", "")
 	return err
 }
 
+// Quit ...
 func (b *Bitmine) Quit() error {
 	_, err := b.transport.RunCommand("quit", "")
 	return err
 }
 
+// Bind ...
 func (b *Bitmine) Bind() interface{} {
 	return NewBitmineBind(b)
 }

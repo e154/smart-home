@@ -18,6 +18,7 @@
 
 package common
 
+// PluginInfo ...
 type PluginInfo struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
@@ -25,6 +26,7 @@ type PluginInfo struct {
 	System  bool   `json:"system"`
 }
 
+// PluginManager ...
 type PluginManager interface {
 	Start()
 	Shutdown()

@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IUserMeta ...
 type IUserMeta interface {
 	UpdateOrCreate(meta *m.UserMeta) (id int64, err error)
 	fromDb(dbMeta *db.UserMeta) (meta *m.UserMeta)

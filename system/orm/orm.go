@@ -99,6 +99,7 @@ func (o *Orm) Start() (err error) {
 	return
 }
 
+// DB ...
 func (o *Orm) DB() *sql.DB {
 	return o.db.DB()
 }
@@ -210,6 +211,7 @@ func (o *Orm) checkExtensions() (err error) {
 	return
 }
 
+// ExtTimescaledbEnabled ...
 func (o Orm) ExtTimescaledbEnabled() bool {
 	return o.extTimescaledb
 }

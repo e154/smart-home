@@ -30,6 +30,7 @@ import (
 	"unicode/utf8"
 )
 
+// IUser ...
 type IUser interface {
 	Add(user *m.User) (id int64, err error)
 	GetById(userId int64) (user *m.User, err error)

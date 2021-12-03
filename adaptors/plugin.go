@@ -25,6 +25,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IPlugin ...
 type IPlugin interface {
 	Add(plugin m.Plugin) error
 	CreateOrUpdate(ver m.Plugin) error

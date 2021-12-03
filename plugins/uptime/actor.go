@@ -29,6 +29,7 @@ import (
 	"time"
 )
 
+// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	appStarted time.Time
@@ -36,6 +37,7 @@ type Actor struct {
 	eventBus   event_bus.EventBus
 }
 
+// NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
 	eventBus event_bus.EventBus) *Actor {
 	return &Actor{
@@ -54,6 +56,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 	}
 }
 
+// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }

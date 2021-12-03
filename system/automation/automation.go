@@ -47,6 +47,7 @@ const (
 	queueSize = 100
 )
 
+// Automation ...
 type Automation interface {
 	Start() (err error)
 	Shutdown() (err error)
@@ -69,6 +70,7 @@ type automation struct {
 	pluginManager common.PluginManager
 }
 
+// NewAutomation ...
 func NewAutomation(lc fx.Lifecycle,
 	eventBus event_bus.EventBus,
 	scriptService scripts.ScriptService,
@@ -95,11 +97,13 @@ func NewAutomation(lc fx.Lifecycle,
 	return
 }
 
+// Start ...
 func (a *automation) Start() (err error) {
 	a.load()
 	return
 }
 
+// Shutdown ...
 func (a *automation) Shutdown() (err error) {
 	a.unload()
 	return
@@ -159,11 +163,13 @@ func (a *automation) unload() {
 	log.Info("Unloaded ...")
 }
 
+// Reload ...
 func (a *automation) Reload() {
 	a.unload()
 	a.load()
 }
 
+// AddTask ...
 func (a *automation) AddTask(model *m.Task) {
 	a.taskLock.Lock()
 	defer a.taskLock.Unlock()
@@ -175,6 +181,7 @@ func (a *automation) AddTask(model *m.Task) {
 	task.Start()
 }
 
+// RemoveTask ...
 func (a *automation) RemoveTask(model *m.Task) {
 	a.taskLock.Lock()
 	defer a.taskLock.Unlock()

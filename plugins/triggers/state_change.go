@@ -27,17 +27,22 @@ import (
 )
 
 const (
-	StateChangeName         = "state_change"
+	// StateChangeName ...
+	StateChangeName = "state_change"
+	// StateChangeFunctionName ...
 	StateChangeFunctionName = "automationTriggerStateChanged"
-	StateChangeQueueSize    = 10
+	// StateChangeQueueSize ...
+	StateChangeQueueSize = 10
 )
 
 var _ ITrigger = (*StateChangeTrigger)(nil)
 
+// StateChangeTrigger ...
 type StateChangeTrigger struct {
 	baseTrigger
 }
 
+// NewStateChangedTrigger ...
 func NewStateChangedTrigger(eventBus event_bus.EventBus) ITrigger {
 	return &StateChangeTrigger{
 		baseTrigger{
@@ -49,6 +54,7 @@ func NewStateChangedTrigger(eventBus event_bus.EventBus) ITrigger {
 	}
 }
 
+// AsyncAttach ...
 func (t *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
 	if err := t.eventBus.Subscribe(event_bus.TopicEntities, t.eventHandler); err != nil {
@@ -66,11 +72,13 @@ func (t *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
 	}
 }
 
+// Subscribe ...
 func (t *StateChangeTrigger) Subscribe(options Subscriber) error {
 	log.Infof("subscribe topic %s", options.EntityId)
 	return t.msgQueue.Subscribe(options.EntityId.String(), options.Handler)
 }
 
+// Unsubscribe ...
 func (t *StateChangeTrigger) Unsubscribe(options Subscriber) error {
 	log.Infof("unsubscribe topic %s", options.EntityId)
 	return t.msgQueue.Unsubscribe(options.EntityId.String(), options.Handler)

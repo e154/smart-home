@@ -48,6 +48,7 @@ type entityManager struct {
 	quit          chan struct{}
 }
 
+// NewEntityManager ...
 func NewEntityManager(lc fx.Lifecycle,
 	eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors,

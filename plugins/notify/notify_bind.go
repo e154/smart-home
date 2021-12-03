@@ -28,6 +28,7 @@ type NotifyBind struct {
 	notify *notify
 }
 
+// NewNotifyBind ...
 func NewNotifyBind(notify *notify) *NotifyBind {
 	return &NotifyBind{
 		notify: notify,

@@ -22,6 +22,7 @@ var (
 	pluginList = make(map[string]Plugable)
 )
 
+// RegisterPlugin ...
 func RegisterPlugin(name string, new func() Plugable) {
 	if _, ok := pluginList[name]; ok {
 		panic("duplicated plugin: " + name)

@@ -20,10 +20,11 @@ package container
 
 import "go.uber.org/fx"
 
+// FxNull ...
 type FxNull struct {
-
 }
 
+// Append ...
 func (FxNull) Append(hook fx.Hook) {
 
 }

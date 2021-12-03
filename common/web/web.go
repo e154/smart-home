@@ -27,6 +27,7 @@ import (
 	"time"
 )
 
+// Request ...
 type Request struct {
 	Method  string
 	Url     string
@@ -35,6 +36,7 @@ type Request struct {
 	Timeout time.Duration
 }
 
+// Crawler ...
 func Crawler(options Request) (body []byte, err error) {
 
 	if options.Url == "" {

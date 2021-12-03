@@ -32,6 +32,7 @@ type Controllers struct {
 	Role   ControllerRole
 	Script ControllerScript
 	Image  ControllerImage
+	Plugin ControllerPlugin
 }
 
 // NewControllers ...
@@ -46,5 +47,6 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Role:   NewControllerRole(common),
 		Script: NewControllerScript(common),
 		Image:  NewControllerImage(common),
+		Plugin: NewControllerPlugin(common),
 	}
 }

@@ -24,16 +24,25 @@ import (
 )
 
 const (
-	Name          = "twilio"
-	AttrFrom      = "from"
-	AttrSid       = "sid"
+	// Name ...
+	Name = "twilio"
+	// AttrFrom ...
+	AttrFrom = "from"
+	// AttrSid ...
+	AttrSid = "sid"
+	// AttrAuthToken ...
 	AttrAuthToken = "authToken"
-	AttrPhone     = "phone"
-	AttrBody      = "body"
-	AttrAmount    = "amount"
-	AttrCurrency  = "currency"
+	// AttrPhone ...
+	AttrPhone = "phone"
+	// AttrBody ...
+	AttrBody = "body"
+	// AttrAmount ...
+	AttrAmount = "amount"
+	// AttrCurrency ...
+	AttrCurrency = "currency"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrAmount: {
@@ -51,6 +60,7 @@ func NewAttr() m.Attributes {
 	}
 }
 
+// NewMessageParams ...
 func NewMessageParams() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrPhone: {
@@ -64,6 +74,7 @@ func NewMessageParams() m.Attributes {
 	}
 }
 
+// NewSettings ...
 func NewSettings() map[string]*m.Attribute {
 	return map[string]*m.Attribute{
 		AttrFrom: {

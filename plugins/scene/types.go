@@ -21,10 +21,13 @@ package scene
 import "github.com/e154/smart-home/common"
 
 const (
-	Name        = "scene"
+	// Name ...
+	Name = "scene"
+	// EntityScene ...
 	EntityScene = common.EntityType("scene")
 )
 
 const (
+	// FuncSceneEvent ...
 	FuncSceneEvent = "sceneEvent"
 )

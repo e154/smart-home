@@ -74,6 +74,7 @@ func NewActor(settings m.Attributes,
 	return actor
 }
 
+// Spawn ...
 func (p *Actor) Spawn() entity_manager.PluginActor {
 	return p
 }

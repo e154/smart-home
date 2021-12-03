@@ -26,6 +26,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IEntityStorage ...
 type IEntityStorage interface {
 	Add(ver m.EntityStorage) (id int64, err error)
 	GetLastByEntityId(entityId common.EntityId) (ver m.EntityStorage, err error)

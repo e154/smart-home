@@ -24,7 +24,9 @@ import (
 )
 
 const (
-	Name             = "alexa"
+	// Name ...
+	Name = "alexa"
+	// TopicPluginAlexa ...
 	TopicPluginAlexa = "plugin.alexa"
 )
 
@@ -213,24 +215,29 @@ type Context struct {
 	} `json:"System,omitempty"`
 }
 
+// EventAlexaAction ...
 type EventAlexaAction struct {
 	SkillId    int64
 	IntentName string
 	Payload    interface{}
 }
 
+// EventAlexaAddSkill ...
 type EventAlexaAddSkill struct {
 	Skill *m.AlexaSkill
 }
 
+// EventAlexaUpdateSkill ...
 type EventAlexaUpdateSkill struct {
 	Skill *m.AlexaSkill
 }
 
+// EventAlexaDeleteSkill ...
 type EventAlexaDeleteSkill struct {
 	Skill *m.AlexaSkill
 }
 
+// IServer ...
 type IServer interface {
 	Start()
 	Stop()
@@ -243,10 +250,12 @@ type IServer interface {
 	DeleteSkill(skill *m.AlexaSkill)
 }
 
+// AlexaPlugin ...
 type AlexaPlugin interface {
 	Server() IServer
 }
 
 const (
+	// TriggerOptionSkillId ...
 	TriggerOptionSkillId = "skillId"
 )

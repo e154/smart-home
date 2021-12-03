@@ -23,16 +23,19 @@ import (
 	"github.com/e154/smart-home/api/stub/api"
 )
 
+// ControllerStream ...
 type ControllerStream struct {
 	*ControllerCommon
 }
 
+// NewControllerStream ...
 func NewControllerStream(common *ControllerCommon) ControllerStream {
 	return ControllerStream{
 		ControllerCommon: common,
 	}
 }
 
+// Subscribe ...
 func (a ControllerStream) Subscribe(req *api.SubscribeRequest, resp api.StreamService_SubscribeServer) error {
 	fmt.Println("method not implemented")
 	return nil

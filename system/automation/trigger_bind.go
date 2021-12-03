@@ -18,6 +18,7 @@
 
 package automation
 
+// TriggerFunc ...
 const TriggerFunc = "automationTrigger"
 
 // Javascript Binding

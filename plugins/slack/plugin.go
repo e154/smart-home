@@ -41,12 +41,14 @@ type plugin struct {
 	notify notify.ProviderRegistrar
 }
 
+// New ...
 func New() plugins.Plugable {
 	return &plugin{
 		Plugin: plugins.NewPlugin(),
 	}
 }
 
+// Load ...
 func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
@@ -96,6 +98,7 @@ func (p *plugin) asyncLoad() (err error) {
 	return
 }
 
+// Unload ...
 func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
@@ -109,22 +112,27 @@ func (p *plugin) Unload() (err error) {
 	return nil
 }
 
+// Name ...
 func (p *plugin) Name() string {
 	return Name
 }
 
+// Type ...
 func (p *plugin) Type() plugins.PluginType {
 	return plugins.PluginBuiltIn
 }
 
+// Depends ...
 func (p *plugin) Depends() []string {
 	return []string{notify.Name}
 }
 
+// Version ...
 func (p *plugin) Version() string {
 	return "0.0.1"
 }
 
+// Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		Setts: NewSettings(),

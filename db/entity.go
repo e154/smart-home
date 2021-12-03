@@ -84,7 +84,7 @@ func (n Entities) Update(v *Entity) (err error) {
 // UpdateSettings ...
 func (n Entities) UpdateSettings(entityId common.EntityId, settings []byte) (err error) {
 	q := map[string]interface{}{
-		"settings":    settings,
+		"settings": settings,
 	}
 
 	err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error

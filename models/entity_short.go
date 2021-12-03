@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/common"
 )
 
+// EntityShort ...
 type EntityShort struct {
 	Id          common.EntityId     `json:"id"`
 	Type        common.EntityType   `json:"type"`

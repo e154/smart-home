@@ -25,6 +25,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IScript ...
 type IScript interface {
 	Add(script *m.Script) (id int64, err error)
 	GetById(scriptId int64) (script *m.Script, err error)

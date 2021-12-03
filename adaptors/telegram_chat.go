@@ -25,6 +25,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// ITelegramChat ...
 type ITelegramChat interface {
 	Add(plugin m.TelegramChat) (err error)
 	Delete(entityId common.EntityId, channelId int64) (err error)

@@ -26,13 +26,16 @@ var (
 	log = common.MustGetLogger("fx")
 )
 
+// Printer ...
 type Printer struct {
 }
 
+// NewPrinter ...
 func NewPrinter() *Printer {
 	return &Printer{}
 }
 
+// Printf ...
 func (p *Printer) Printf(msg string, fields ...interface{}) {
 	log.Infof(msg, fields...)
 }

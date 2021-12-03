@@ -29,16 +29,19 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// ControllerUser ...
 type ControllerUser struct {
 	*ControllerCommon
 }
 
+// NewControllerUser ...
 func NewControllerUser(common *ControllerCommon) ControllerUser {
 	return ControllerUser{
 		ControllerCommon: common,
 	}
 }
 
+// AddUser ...
 func (c ControllerUser) AddUser(ctx context.Context, req *api.NewtUserRequest) (userFull *api.UserFull, err error) {
 
 	user := c.dto.User.FromAddUser(req)
@@ -55,31 +58,26 @@ func (c ControllerUser) AddUser(ctx context.Context, req *api.NewtUserRequest) (
 	var errs validator.ValidationErrorsTranslations
 	var userF *m.User
 	userF, errs, err = c.endpoint.User.Add(user, currentUser)
-	if len(errs) > 0 {
-		return nil, c.prepareErrors(errs)
-	}
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return c.dto.User.ToUserFull(userF), nil
 }
 
-func (c ControllerUser) GetUserById(_ context.Context, req *api.GetUserByIdRequest) (*api.UserFull, error) {
+// GetUserById ...
+func (c ControllerUser) GetUserById(ctx context.Context, req *api.GetUserByIdRequest) (*api.UserFull, error) {
 
 	user, err := c.endpoint.User.GetById(int64(req.Id))
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.User.ToUserFull(user), nil
 }
 
-func (c ControllerUser) UpdateUserById(_ context.Context, req *api.UpdateUserRequest) (*api.UserFull, error) {
+// UpdateUserById ...
+func (c ControllerUser) UpdateUserById(ctx context.Context, req *api.UpdateUserRequest) (*api.UserFull, error) {
 
 	user := c.dto.User.FromUpdateUserRequest(req)
 
@@ -97,37 +95,29 @@ func (c ControllerUser) UpdateUserById(_ context.Context, req *api.UpdateUserReq
 	}
 
 	user, errs, err := c.endpoint.User.Update(user)
-	if len(errs) > 0 {
-		return nil, c.prepareErrors(errs)
-	}
-
-	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return c.dto.User.ToUserFull(user), nil
 }
 
-func (c ControllerUser) GetUserList(_ context.Context, req *api.GetUserListRequest) (*api.GetUserListResult, error) {
+// GetUserList ...
+func (c ControllerUser) GetUserList(ctx context.Context, req *api.GetUserListRequest) (*api.GetUserListResult, error) {
 
 	items, total, err := c.endpoint.User.GetList(int64(req.Limit), int64(req.Offset), req.Order, req.SortBy)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.User.ToListResult(items, uint32(total), req.Limit, req.Offset), nil
 }
 
-func (c ControllerUser) DeleteUserById(_ context.Context, req *api.DeleteUserRequest) (*emptypb.Empty, error) {
+// DeleteUserById ...
+func (c ControllerUser) DeleteUserById(ctx context.Context, req *api.DeleteUserRequest) (*emptypb.Empty, error) {
 
 	if err := c.endpoint.User.Delete(int64(req.Id)); err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return &emptypb.Empty{}, nil

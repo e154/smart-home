@@ -47,12 +47,14 @@ var (
 	log = common.MustGetLogger("api")
 )
 
+// Api ...
 type Api struct {
 	controllers *controllers.Controllers
 	filter      *rbac.AccessFilter
 	cfg         Config
 }
 
+// NewApi ...
 func NewApi(controllers *controllers.Controllers,
 	filter *rbac.AccessFilter,
 	cfg Config) (api *Api) {
@@ -74,6 +76,7 @@ func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Ha
 	}), &http2.Server{})
 }
 
+// Start ...
 func (a *Api) Start() error {
 
 	ctx := context.Background()
@@ -98,6 +101,7 @@ func (a *Api) Start() error {
 	gw.RegisterRoleServiceServer(grpcServer, a.controllers.Role)
 	gw.RegisterScriptServiceServer(grpcServer, a.controllers.Script)
 	gw.RegisterImageServiceServer(grpcServer, a.controllers.Image)
+	gw.RegisterPluginServiceServer(grpcServer, a.controllers.Plugin)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
@@ -135,6 +139,7 @@ func (a *Api) Start() error {
 		gw.RegisterRoleServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterScriptServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterImageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterPluginServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 
@@ -178,6 +183,7 @@ func (a *Api) Start() error {
 	return group.Wait()
 }
 
+// CustomMatcher ...
 func (a *Api) CustomMatcher(key string) (string, bool) {
 	switch key {
 	case "X-Api-Key":

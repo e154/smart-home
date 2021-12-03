@@ -50,6 +50,7 @@ type Metric struct {
 	CreatedAt   time.Time         `json:"created_at"`
 }
 
+// RangesByType ...
 func (d *Metric) RangesByType() []string {
 
 	switch d.Type {

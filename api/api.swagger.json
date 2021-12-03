@@ -18,6 +18,9 @@
       "name": "ImageService"
     },
     {
+      "name": "PluginService"
+    },
+    {
       "name": "RoleService"
     },
     {
@@ -369,6 +372,170 @@
         ],
         "tags": [
           "ImageService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/plugin/{name}/disable": {
+      "post": {
+        "summary": "disable plugin",
+        "operationId": "PluginService_DisablePlugin",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDisablePluginResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PluginService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/plugin/{name}/enable": {
+      "post": {
+        "summary": "enable plugin",
+        "operationId": "PluginService_EnablePlugin",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiEnablePluginResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PluginService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/plugin/{name}/options": {
+      "get": {
+        "summary": "get plugin options",
+        "operationId": "PluginService_GetPluginOptions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetPluginOptionsResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PluginService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/plugins": {
+      "get": {
+        "summary": "get plugin list",
+        "operationId": "PluginService_GetPluginList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetPluginListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PluginService"
         ],
         "security": [
           {
@@ -1483,6 +1650,17 @@
         }
       }
     },
+    "apiAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
     "apiCurrentUser": {
       "type": "object",
       "properties": {
@@ -1548,6 +1726,46 @@
         }
       }
     },
+    "apiDisablePluginResult": {
+      "type": "object"
+    },
+    "apiEnablePluginResult": {
+      "type": "object"
+    },
+    "apiEntityActionShort": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        }
+      }
+    },
+    "apiEntityStateShort": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        }
+      }
+    },
     "apiExecScriptResult": {
       "type": "object",
       "properties": {
@@ -1601,6 +1819,87 @@
         "offset": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "apiGetPluginListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiPlugin"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiGetPluginListResultMeta"
+        }
+      }
+    },
+    "apiGetPluginListResultMeta": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "objectsCount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "apiGetPluginOptionsResult": {
+      "type": "object",
+      "properties": {
+        "triggers": {
+          "type": "boolean"
+        },
+        "actors": {
+          "type": "boolean"
+        },
+        "actorCustomAttrs": {
+          "type": "boolean"
+        },
+        "actorAttrs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
+        },
+        "actorCustomActions": {
+          "type": "boolean"
+        },
+        "actorActions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiEntityActionShort"
+          }
+        },
+        "actorCustomStates": {
+          "type": "boolean"
+        },
+        "actorStates": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiEntityStateShort"
+          }
+        },
+        "actorSetts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
+        },
+        "setts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
         }
       }
     },
@@ -1864,6 +2163,29 @@
       "properties": {
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "apiPlugin": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "system": {
+          "type": "boolean"
+        },
+        "settings": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
         }
       }
     },

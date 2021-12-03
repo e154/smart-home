@@ -29,6 +29,7 @@ import (
 	"sync"
 )
 
+// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	eventBus          event_bus.EventBus
@@ -42,6 +43,7 @@ type Actor struct {
 	stateMu           *sync.Mutex
 }
 
+// NewActor ...
 func NewActor(entity *m.Entity,
 	params map[string]interface{},
 	adaptors *adaptors.Adaptors,
@@ -105,10 +107,12 @@ func NewActor(entity *m.Entity,
 	return
 }
 
+// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
+// SetState ...
 func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	if !e.setState(params) {
 		return nil

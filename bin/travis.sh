@@ -35,8 +35,7 @@ VERSION_VALUE="$(git describe --always --dirty --tags 2>/dev/null)"
 # docker params
 #
 DEPLOY_IMAGE=smart-home-${EXEC}
-#DOCKER_VERSION="${VERSION_VALUE//-dirty}"
-DOCKER_VERSION=v0.5.0
+DOCKER_VERSION="${VERSION_VALUE//-dirty}"
 IMAGE=smart-home-${EXEC}
 DOCKER_ACCOUNT=e154
 DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${DOCKER_VERSION}

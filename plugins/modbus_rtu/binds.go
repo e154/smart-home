@@ -31,6 +31,7 @@ import (
 
 type modbusRtu func(f string, address, count uint16, command []uint16) (result ModBusResponse)
 
+// NewModbusRtu ...
 func NewModbusRtu(eventBus event_bus.EventBus, actor *Actor) (modbus modbusRtu) {
 
 	var isStarted = atomic.NewBool(false)

@@ -28,6 +28,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 )
 
+// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	eventBus   event_bus.EventBus
@@ -35,6 +36,7 @@ type Actor struct {
 	actionPool chan event_bus.EventCallAction
 }
 
+// NewActor ...
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	adaptors *adaptors.Adaptors,
@@ -117,11 +119,13 @@ func NewActor(entity *m.Entity,
 	return
 }
 
+// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 	e.Update()
 	return e
 }
 
+// SetState ...
 func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 
 	oldState := e.GetEventState(e)
@@ -149,6 +153,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	return nil
 }
 
+// Update ...
 func (e *Actor) Update() {
 
 }

@@ -25,6 +25,7 @@ import (
 	"sort"
 )
 
+// IMapLayer ...
 type IMapLayer interface {
 	Add(ver *m.MapLayer) (id int64, err error)
 	GetById(mapId int64) (ver *m.MapLayer, err error)

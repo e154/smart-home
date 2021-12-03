@@ -18,16 +18,24 @@
 
 package container
 
-//import (
-//	"github.com/e154/smart-home/api/server"
-//	"github.com/e154/smart-home/system/config"
-//)
-//
-//// NewApiServerConfig ...
-//func NewApiServerConfig(cfg *config.AppConfig) *server.Config {
-//	return &server.Config{
-//		Host:    cfg.ServerHost,
-//		Port:    cfg.ServerPort,
-//		RunMode: cfg.Mode,
-//	}
-//}
+import (
+	"github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/orm"
+)
+
+// NewOrmConfig ...
+func NewOrmConfig(cfg *models.AppConfig) *orm.Config {
+	return &orm.Config{
+		Alias:           "default",
+		Name:            cfg.PgName,
+		User:            cfg.PgUser,
+		Password:        cfg.PgPass,
+		Host:            cfg.PgHost,
+		Port:            cfg.PgPort,
+		Debug:           cfg.PgDebug,
+		Logger:          cfg.PgLogger,
+		MaxIdleConns:    cfg.PgMaxIdleConns,
+		MaxOpenConns:    cfg.PgMaxOpenConns,
+		ConnMaxLifeTime: cfg.PgConnMaxLifeTime,
+	}
+}

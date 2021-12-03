@@ -36,8 +36,8 @@ func NewPluginEndpoint(common *CommonEndpoint) *PluginEndpoint {
 	}
 }
 
-// Enabled ...
-func (p *PluginEndpoint) Enabled(pluginName string) (err error) {
+// Enable ...
+func (p *PluginEndpoint) Enable(pluginName string) (err error) {
 	err = p.pluginManager.EnablePlugin(pluginName)
 	return
 }
@@ -49,14 +49,14 @@ func (p *PluginEndpoint) Disable(pluginName string) (err error) {
 }
 
 // GetList ...
-func (p *PluginEndpoint) GetList(limit, offset int64, order, sortBy string) (list []m.Plugin, total int64, err error) {
+func (p *PluginEndpoint) GetList(limit, offset int64, order, sortBy string) (list []*m.Plugin, total int64, err error) {
 	var pluginList []common.PluginInfo
 	if pluginList, total, err = p.pluginManager.PluginList(); err != nil {
 		return
 	}
-	list = make([]m.Plugin, 0, len(pluginList))
+	list = make([]*m.Plugin, 0, len(pluginList))
 	for _, p := range pluginList {
-		list = append(list, m.Plugin{
+		list = append(list, &m.Plugin{
 			Name:    p.Name,
 			Version: p.Version,
 			Enabled: p.Enabled,

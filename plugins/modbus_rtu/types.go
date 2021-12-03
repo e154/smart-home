@@ -25,25 +25,37 @@ import (
 )
 
 const (
-	Name                = "modbus_rtu"
-	FuncEntityAction    = "entityAction"
+	// Name ...
+	Name = "modbus_rtu"
+	// FuncEntityAction ...
+	FuncEntityAction = "entityAction"
+	// DeviceTypeModbusRtu ...
 	DeviceTypeModbusRtu = node.DeviceType("modbus_rtu")
 )
 
 const (
-	AttrSlaveId  = "slave_id"  // 1-32
-	AttrBaud     = "baud"      // 9600, 19200, ...
-	AttrDataBits = "data_bits" // 5-9
-	AttrTimeout  = "timeout"   // milliseconds
-	AttrStopBits = "stop_bits" // 1-2
-	AttrSleep    = "sleep"     // milliseconds
-	AttrParity   = "parity"    // none, odd, even
+	// AttrSlaveId ...
+	AttrSlaveId = "slave_id"
+	// AttrBaud ...
+	AttrBaud = "baud"
+	// AttrDataBits ...
+	AttrDataBits = "data_bits"
+	// AttrTimeout ...
+	AttrTimeout = "timeout"
+	// AttrStopBits ...
+	AttrStopBits = "stop_bits"
+	// AttrSleep ...
+	AttrSleep = "sleep"
+	// AttrParity ...
+	AttrParity = "parity"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return nil
 }
 
+// NewSettings ...
 func NewSettings() m.Attributes {
 	return m.Attributes{
 		AttrBaud: {

@@ -25,6 +25,7 @@ import (
 	"github.com/e154/smart-home/system/validation"
 )
 
+// IEnvironment ...
 type IEnvironment interface {
 	InstallDemoData(*adaptors.Adaptors, access_list.AccessListService, scripts.ScriptService)
 	Create(*adaptors.Adaptors, access_list.AccessListService, scripts.ScriptService, *validation.Validate)
@@ -33,6 +34,7 @@ type IEnvironment interface {
 
 var environments = map[string]IEnvironment{}
 
+// Register ...
 func Register(name string, env IEnvironment) {
 	if _, ok := environments[name]; ok {
 		panic("duplicated environment: " + name)
@@ -40,6 +42,7 @@ func Register(name string, env IEnvironment) {
 	environments[name] = env
 }
 
+// InstallDemoData ...
 func InstallDemoData(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
@@ -48,6 +51,7 @@ func InstallDemoData(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Create ...
 func Create(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService,
@@ -57,6 +61,7 @@ func Create(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Upgrade ...
 func Upgrade(oldVersion int,
 	adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
