@@ -39,7 +39,7 @@ func NewControllerScript(common *ControllerCommon) ControllerScript {
 // AddScript ...
 func (c ControllerScript) AddScript(ctx context.Context, req *api.NewScriptRequest) (*api.Script, error) {
 
-	script, errs, err := c.endpoint.Script.Add(c.dto.Script.FromNewScriptRequest(req))
+	script, errs, err := c.endpoint.Script.Add(ctx, c.dto.Script.FromNewScriptRequest(req))
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
@@ -50,7 +50,7 @@ func (c ControllerScript) AddScript(ctx context.Context, req *api.NewScriptReque
 // GetScriptById ...
 func (c ControllerScript) GetScriptById(ctx context.Context, req *api.GetScriptRequest) (*api.Script, error) {
 
-	script, err := c.endpoint.Script.GetById(int64(req.Id))
+	script, err := c.endpoint.Script.GetById(ctx, int64(req.Id))
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -61,7 +61,7 @@ func (c ControllerScript) GetScriptById(ctx context.Context, req *api.GetScriptR
 // UpdateScriptById ...
 func (c ControllerScript) UpdateScriptById(ctx context.Context, req *api.UpdateScriptRequest) (*api.Script, error) {
 
-	script, errs, err := c.endpoint.Script.Update(c.dto.Script.FromUpdateScriptRequest(req))
+	script, errs, err := c.endpoint.Script.Update(ctx, c.dto.Script.FromUpdateScriptRequest(req))
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
@@ -72,7 +72,8 @@ func (c ControllerScript) UpdateScriptById(ctx context.Context, req *api.UpdateS
 // GetScriptList ...
 func (c ControllerScript) GetScriptList(ctx context.Context, req *api.GetScriptListRequest) (*api.GetScriptListResult, error) {
 
-	items, total, err := c.endpoint.Script.GetList(int64(req.Limit), int64(req.Offset), req.Order, req.SortBy)
+	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	items, total, err := c.endpoint.Script.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -83,7 +84,7 @@ func (c ControllerScript) GetScriptList(ctx context.Context, req *api.GetScriptL
 // SearchScriptById ...
 func (c ControllerScript) SearchScriptById(ctx context.Context, req *api.SearchScriptRequest) (*api.SearchScriptListResult, error) {
 
-	items, _, err := c.endpoint.Script.Search(req.Query, int(req.Limit), int(req.Offset))
+	items, _, err := c.endpoint.Script.Search(ctx, req.Query, int(req.Limit), int(req.Offset))
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -94,7 +95,7 @@ func (c ControllerScript) SearchScriptById(ctx context.Context, req *api.SearchS
 // DeleteScriptById ...
 func (c ControllerScript) DeleteScriptById(ctx context.Context, req *api.DeleteScriptRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.Script.DeleteScriptById(int64(req.Id)); err != nil {
+	if err := c.endpoint.Script.DeleteScriptById(ctx, int64(req.Id)); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
@@ -104,7 +105,7 @@ func (c ControllerScript) DeleteScriptById(ctx context.Context, req *api.DeleteS
 // ExecScriptById ...
 func (c ControllerScript) ExecScriptById(ctx context.Context, req *api.ExecScriptRequest) (*api.ExecScriptResult, error) {
 
-	result, err := c.endpoint.Script.Execute(int64(req.Id))
+	result, err := c.endpoint.Script.Execute(ctx, int64(req.Id))
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -115,7 +116,7 @@ func (c ControllerScript) ExecScriptById(ctx context.Context, req *api.ExecScrip
 // ExecSrcScriptById ...
 func (c ControllerScript) ExecSrcScriptById(ctx context.Context, req *api.ExecSrcScriptRequest) (*api.ExecScriptResult, error) {
 
-	result, err := c.endpoint.Script.ExecuteSource(c.dto.Script.FromExecSrcScriptRequest(req))
+	result, err := c.endpoint.Script.ExecuteSource(ctx, c.dto.Script.FromExecSrcScriptRequest(req))
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -126,7 +127,7 @@ func (c ControllerScript) ExecSrcScriptById(ctx context.Context, req *api.ExecSr
 // CopyScriptById ...
 func (c ControllerScript) CopyScriptById(ctx context.Context, req *api.CopyScriptRequest) (*api.Script, error) {
 
-	script, err := c.endpoint.Script.Copy(int64(req.Id))
+	script, err := c.endpoint.Script.Copy(ctx, int64(req.Id))
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}

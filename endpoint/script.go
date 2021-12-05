@@ -19,6 +19,7 @@
 package endpoint
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/e154/smart-home/common"
@@ -42,7 +43,7 @@ func NewScriptEndpoint(common *CommonEndpoint) *ScriptEndpoint {
 }
 
 // Add ...
-func (n *ScriptEndpoint) Add(params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
@@ -69,7 +70,7 @@ func (n *ScriptEndpoint) Add(params *m.Script) (result *m.Script, errs validator
 }
 
 // GetById ...
-func (n *ScriptEndpoint) GetById(scriptId int64) (result *m.Script, err error) {
+func (n *ScriptEndpoint) GetById(ctx context.Context, scriptId int64) (result *m.Script, err error) {
 
 	result, err = n.adaptors.Script.GetById(scriptId)
 
@@ -77,7 +78,7 @@ func (n *ScriptEndpoint) GetById(scriptId int64) (result *m.Script, err error) {
 }
 
 // Copy ...
-func (n *ScriptEndpoint) Copy(scriptId int64) (script *m.Script, err error) {
+func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Script, err error) {
 
 	if script, err = n.adaptors.Script.GetById(scriptId); err != nil {
 		return
@@ -104,7 +105,7 @@ func (n *ScriptEndpoint) Copy(scriptId int64) (script *m.Script, err error) {
 }
 
 // Update ...
-func (n *ScriptEndpoint) Update(params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
+func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
 
 	var script *m.Script
 	if script, err = n.adaptors.Script.GetById(params.Id); err != nil {
@@ -139,19 +140,15 @@ func (n *ScriptEndpoint) Update(params *m.Script) (result *m.Script, errs valida
 }
 
 // GetList ...
-func (n *ScriptEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Script, total int64, err error) {
 
-	if limit == 0 {
-		limit = common.DefaultPageSize
-	}
-
-	result, total, err = n.adaptors.Script.List(limit, offset, order, sortBy)
+	result, total, err = n.adaptors.Script.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }
 
 // DeleteScriptById ...
-func (n *ScriptEndpoint) DeleteScriptById(scriptId int64) (err error) {
+func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (err error) {
 
 	if scriptId == 0 {
 		err = errors.New("script id is null")
@@ -169,7 +166,7 @@ func (n *ScriptEndpoint) DeleteScriptById(scriptId int64) (err error) {
 }
 
 // Execute ...
-func (n *ScriptEndpoint) Execute(scriptId int64) (result string, err error) {
+func (n *ScriptEndpoint) Execute(ctx context.Context, scriptId int64) (result string, err error) {
 
 	var script *m.Script
 	if script, err = n.adaptors.Script.GetById(scriptId); err != nil {
@@ -187,7 +184,7 @@ func (n *ScriptEndpoint) Execute(scriptId int64) (result string, err error) {
 }
 
 // ExecuteSource ...
-func (n *ScriptEndpoint) ExecuteSource(script *m.Script) (result string, err error) {
+func (n *ScriptEndpoint) ExecuteSource(ctx context.Context, script *m.Script) (result string, err error) {
 
 	var engine *scripts.Engine
 	if engine, err = n.scriptService.NewEngine(script); err != nil {
@@ -204,7 +201,7 @@ func (n *ScriptEndpoint) ExecuteSource(script *m.Script) (result string, err err
 }
 
 // Search ...
-func (n *ScriptEndpoint) Search(query string, limit, offset int) (devices []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset int) (devices []*m.Script, total int64, err error) {
 
 	devices, total, err = n.adaptors.Script.Search(query, limit, offset)
 
