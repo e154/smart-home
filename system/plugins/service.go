@@ -42,7 +42,13 @@ type service struct {
 
 // Plugins ...
 func (s service) Plugins() map[string]Plugable {
-	return pluginList
+	list := make(map[string]Plugable)
+	pluginList.Range(func(key, value interface{}) bool {
+		name := key.(string)
+		list[name] = value.(Plugable)
+		return true
+	})
+	return list
 }
 
 // PluginManager ...

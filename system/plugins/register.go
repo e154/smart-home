@@ -18,14 +18,16 @@
 
 package plugins
 
+import "sync"
+
 var (
-	pluginList = make(map[string]Plugable)
+	pluginList = sync.Map{}
 )
 
 // RegisterPlugin ...
 func RegisterPlugin(name string, new func() Plugable) {
-	if _, ok := pluginList[name]; ok {
+	if _, ok := pluginList.Load(name); ok {
 		panic("duplicated plugin: " + name)
 	}
-	pluginList[name] = new()
+	pluginList.Store(name, new())
 }

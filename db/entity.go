@@ -184,7 +184,7 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 
 	list = make([]*Entity, 0)
 	err = n.Db.Model(&Entity{}).
-		Where("type = ? and autoload = true", t).
+		Where("type = ? and auto_load = true", t).
 		Preload("Image").
 		Preload("States").
 		Preload("States.Image").

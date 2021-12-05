@@ -373,6 +373,7 @@ func (e *entityManager) eventLoadedPlugin(msg event_bus.EventLoadedPlugin) (err 
 
 	var entities []*m.Entity
 	if entities, err = e.adaptors.Entity.GetByType(msg.PluginName.String(), 1000, 0); err != nil {
+		log.Error(err.Error())
 		return
 	}
 

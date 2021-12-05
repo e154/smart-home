@@ -32,7 +32,6 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
-	"sync"
 )
 
 var (
@@ -44,7 +43,6 @@ type pluginManager struct {
 	isStarted      *atomic.Bool
 	service        *service
 	eventBus       event_bus.EventBus
-	loadLock       *sync.Mutex
 	enabledPlugins map[string]bool
 }
 
@@ -62,7 +60,6 @@ func NewPluginManager(lc fx.Lifecycle,
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
 		eventBus:       eventBus,
-		loadLock:       &sync.Mutex{},
 		enabledPlugins: make(map[string]bool),
 	}
 	pluginManager.service = &service{
@@ -110,7 +107,8 @@ func (p *pluginManager) Shutdown() {
 			continue
 		}
 		log.Infof("unload plugin '%s'", name)
-		if plugin, ok := pluginList[name]; ok {
+		if item, ok := pluginList.Load(name); ok {
+			plugin := item.(Plugable)
 			plugin.Unload()
 		}
 		p.enabledPlugins[name] = false
@@ -121,18 +119,16 @@ func (p *pluginManager) Shutdown() {
 
 // GetPlugin ...
 func (p *pluginManager) GetPlugin(t string) (plugin interface{}, err error) {
-	p.loadLock.Lock()
-	defer p.loadLock.Unlock()
 
-	plugin, err = p.unsafeGetPlugin(t)
+	plugin, err = p.getPlugin(t)
 
 	return
 }
 
-func (p *pluginManager) unsafeGetPlugin(name string) (plugin Plugable, err error) {
+func (p *pluginManager) getPlugin(name string) (plugin Plugable, err error) {
 
-	var ok bool
-	if plugin, ok = pluginList[name]; ok {
+	if item, ok := pluginList.Load(name); ok {
+		plugin = item.(Plugable)
 		return
 	}
 
@@ -178,15 +174,15 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 		err = errors.New(fmt.Sprintf("plugin '%s' is loaded", name))
 		return
 	}
-
-	if plugin, ok := pluginList[name]; ok {
+	if item, ok := pluginList.Load(name); ok {
+		plugin := item.(Plugable)
 		log.Infof("load plugin %v", plugin.Name())
 		if err = plugin.Load(p.service); err != nil {
+			err = errors.Wrap(err, "load plugin")
 			return
 		}
 	} else {
-		err = errors.New("not found")
-		return
+		err = common.ErrNotFound
 	}
 
 	p.enabledPlugins[name] = true
@@ -205,12 +201,12 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 		return
 	}
 
-	if plugin, ok := pluginList[name]; ok {
+	if item, ok := pluginList.Load(name); ok {
+		plugin := item.(Plugable)
 		log.Infof("unload plugin %v", plugin.Name())
 		plugin.Unload()
 	} else {
-		err = errors.New("not found")
-		return
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
 	}
 
 	p.enabledPlugins[name] = false
@@ -230,10 +226,7 @@ func (p *pluginManager) Install(t string) {
 		return
 	}
 
-	p.loadLock.Lock()
-	defer p.loadLock.Unlock()
-
-	plugin, err := p.unsafeGetPlugin(t)
+	plugin, err := p.getPlugin(t)
 	if err != nil {
 		return
 	}
@@ -274,13 +267,17 @@ func (p *pluginManager) EnablePlugin(name string) (err error) {
 	if err = p.loadPlugin(name); err != nil {
 		return
 	}
-	pl := pluginList[name]
-	err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
-		Name:    pl.Name(),
-		Version: pl.Version(),
-		Enabled: true,
-		System:  pl.Type() == PluginBuiltIn,
-	})
+	if item, ok := pluginList.Load(name); ok {
+		plugin := item.(Plugable)
+		err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+			Name:    plugin.Name(),
+			Version: plugin.Version(),
+			Enabled: true,
+			System:  plugin.Type() == PluginBuiltIn,
+		})
+	} else {
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
+	}
 	return
 }
 
@@ -289,28 +286,34 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 	if err = p.unloadPlugin(name); err != nil {
 		return
 	}
-	pl := pluginList[name]
-	err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
-		Name:    pl.Name(),
-		Version: pl.Version(),
-		Enabled: false,
-		System:  pl.Type() == PluginBuiltIn,
-	})
+	if item, ok := pluginList.Load(name); ok {
+		plugin := item.(Plugable)
+		err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+			Name:    plugin.Name(),
+			Version: plugin.Version(),
+			Enabled: false,
+			System:  plugin.Type() == PluginBuiltIn,
+		})
+	} else {
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
+	}
 	return
 }
 
 // PluginList ...
 func (p *pluginManager) PluginList() (list []common.PluginInfo, total int64, err error) {
-	t := len(pluginList)
-	list = make([]common.PluginInfo, 0, t)
-	total = int64(t)
-	for _, pl := range pluginList {
+
+	list = make([]common.PluginInfo, 0)
+	pluginList.Range(func(key, value interface{}) bool {
+		total++
+		plugin := value.(Plugable)
 		list = append(list, common.PluginInfo{
-			Name:    pl.Name(),
-			Version: pl.Version(),
-			Enabled: p.enabledPlugins[pl.Name()],
-			System:  pl.Type() == PluginBuiltIn,
+			Name:    plugin.Name(),
+			Version: plugin.Version(),
+			Enabled: p.enabledPlugins[plugin.Name()],
+			System:  plugin.Type() == PluginBuiltIn,
 		})
-	}
+		return true
+	})
 	return
 }
