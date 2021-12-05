@@ -39,7 +39,8 @@ func NewControllerPlugin(common *ControllerCommon) ControllerPlugin {
 // GetPluginList ...
 func (c ControllerPlugin) GetPluginList(ctx context.Context, req *api.GetPluginListRequest) (*api.GetPluginListResult, error) {
 
-	items, total, err := c.endpoint.Plugin.GetList(int64(req.Limit), int64(req.Offset), req.Order, req.SortBy)
+	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	items, total, err := c.endpoint.Plugin.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -50,7 +51,7 @@ func (c ControllerPlugin) GetPluginList(ctx context.Context, req *api.GetPluginL
 // EnablePlugin ...
 func (c ControllerPlugin) EnablePlugin(ctx context.Context, req *api.EnablePluginRequest) (*api.EnablePluginResult, error) {
 
-	if err := c.endpoint.Plugin.Enable(req.Name); err != nil {
+	if err := c.endpoint.Plugin.Enable(ctx, req.Name); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
@@ -60,7 +61,7 @@ func (c ControllerPlugin) EnablePlugin(ctx context.Context, req *api.EnablePlugi
 // DisablePlugin ...
 func (c ControllerPlugin) DisablePlugin(ctx context.Context, req *api.DisablePluginRequest) (*api.DisablePluginResult, error) {
 
-	if err := c.endpoint.Plugin.Disable(req.Name); err != nil {
+	if err := c.endpoint.Plugin.Disable(ctx, req.Name); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
@@ -70,7 +71,7 @@ func (c ControllerPlugin) DisablePlugin(ctx context.Context, req *api.DisablePlu
 // GetPluginOptions ...
 func (c ControllerPlugin) GetPluginOptions(ctx context.Context, req *api.GetPluginOptionsRequest) (*api.GetPluginOptionsResult, error) {
 
-	options, err := c.endpoint.Plugin.GetOptions(req.Name)
+	options, err := c.endpoint.Plugin.GetOptions(ctx, req.Name)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}

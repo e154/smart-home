@@ -39,7 +39,7 @@ func NewControllerRole(common *ControllerCommon) ControllerRole {
 // GetRoleAccessList ...
 func (c ControllerRole) GetRoleAccessList(ctx context.Context, req *api.GetRoleAccessListRequest) (*api.RoleAccessListResult, error) {
 
-	accessList, err := c.endpoint.Role.GetAccessList(req.Name, c.accessList)
+	accessList, err := c.endpoint.Role.GetAccessList(ctx, req.Name, c.accessList)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -50,11 +50,11 @@ func (c ControllerRole) GetRoleAccessList(ctx context.Context, req *api.GetRoleA
 // UpdateRoleAccessList ...
 func (c ControllerRole) UpdateRoleAccessList(ctx context.Context, req *api.UpdateRoleAccessListRequest) (*api.RoleAccessListResult, error) {
 
-	if err := c.endpoint.Role.UpdateAccessList(req.Name, c.dto.Role.FromUpdateRoleAccessListRequest(req)); err != nil {
+	if err := c.endpoint.Role.UpdateAccessList(ctx, req.Name, c.dto.Role.FromUpdateRoleAccessListRequest(req)); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
-	accessList, err := c.endpoint.Role.GetAccessList(req.Name, c.accessList)
+	accessList, err := c.endpoint.Role.GetAccessList(ctx, req.Name, c.accessList)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -67,7 +67,7 @@ func (c ControllerRole) AddRole(ctx context.Context, req *api.NewRoleRequest) (*
 
 	role := c.dto.Role.FromNewRoleRequest(req)
 
-	role, errs, err := c.endpoint.Role.Add(role)
+	role, errs, err := c.endpoint.Role.Add(ctx, role)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
@@ -78,7 +78,7 @@ func (c ControllerRole) AddRole(ctx context.Context, req *api.NewRoleRequest) (*
 // GetRoleByName ...
 func (c ControllerRole) GetRoleByName(ctx context.Context, req *api.GetRoleRequest) (*api.Role, error) {
 
-	role, err := c.endpoint.Role.GetByName(req.Name)
+	role, err := c.endpoint.Role.GetByName(ctx, req.Name)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -91,7 +91,7 @@ func (c ControllerRole) UpdateRoleByName(ctx context.Context, req *api.UpdateRol
 
 	role := c.dto.Role.FromUpdateRoleRequest(req)
 
-	role, errs, err := c.endpoint.Role.Update(role)
+	role, errs, err := c.endpoint.Role.Update(ctx, role)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
@@ -102,7 +102,8 @@ func (c ControllerRole) UpdateRoleByName(ctx context.Context, req *api.UpdateRol
 // GetRoleList ...
 func (c ControllerRole) GetRoleList(ctx context.Context, req *api.GetRoleListRequest) (*api.GetRoleListResult, error) {
 
-	items, total, err := c.endpoint.Role.GetList(int64(req.Limit), int64(req.Offset), req.Order, req.SortBy)
+	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	items, total, err := c.endpoint.Role.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -113,7 +114,7 @@ func (c ControllerRole) GetRoleList(ctx context.Context, req *api.GetRoleListReq
 // SearchRoleByName ...
 func (c ControllerRole) SearchRoleByName(ctx context.Context, req *api.SearchRoleRequest) (*api.SearchRoleListResult, error) {
 
-	items, _, err := c.endpoint.Role.Search(req.Query, int(req.Limit), int(req.Offset))
+	items, _, err := c.endpoint.Role.Search(ctx, req.Query, int(req.Limit), int(req.Offset))
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -124,7 +125,7 @@ func (c ControllerRole) SearchRoleByName(ctx context.Context, req *api.SearchRol
 // DeleteRoleByName ...
 func (c ControllerRole) DeleteRoleByName(ctx context.Context, req *api.DeleteRoleRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.Role.Delete(req.Name); err != nil {
+	if err := c.endpoint.Role.Delete(ctx, req.Name); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
