@@ -58,7 +58,7 @@ func (a ControllerAuth) Signin(ctx context.Context, _ *emptypb.Empty) (resp *api
 
 	var user *m.User
 	var accessToken string
-	if user, accessToken, err = a.endpoint.Auth.SignIn(username, pass, ""); err != nil {
+	if user, accessToken, err = a.endpoint.Auth.SignIn(ctx, username, pass, ""); err != nil {
 		return nil, internalServerError
 	}
 
@@ -82,7 +82,7 @@ func (a ControllerAuth) Signout(ctx context.Context, _ *emptypb.Empty) (*emptypb
 		return nil, internalServerError
 	}
 
-	if err := a.endpoint.Auth.SignOut(currentUser); err != nil {
+	if err := a.endpoint.Auth.SignOut(ctx, currentUser); err != nil {
 		return nil, internalServerError
 	}
 
@@ -98,7 +98,7 @@ func (a ControllerAuth) AccessList(ctx context.Context, _ *emptypb.Empty) (*api.
 		return nil, internalServerError
 	}
 
-	accessList, err := a.endpoint.Auth.AccessList(currentUser, a.accessList)
+	accessList, err := a.endpoint.Auth.AccessList(ctx, currentUser, a.accessList)
 	if err != nil {
 		return nil, internalServerError
 	}
