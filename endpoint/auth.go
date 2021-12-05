@@ -19,9 +19,11 @@
 package endpoint
 
 import (
-	"errors"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -45,13 +47,13 @@ func NewAuthEndpoint(common *CommonEndpoint) *AuthEndpoint {
 func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, accessToken string, err error) {
 
 	if user, err = a.adaptors.User.GetByEmail(email); err != nil {
-		err = errors.New("user not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("email %s", email))
 		return
 	} else if !user.CheckPass(password) {
-		err = errors.New("password not valid")
+		err = common.ErrPassNotValid
 		return
 	} else if user.Status == "blocked" && user.Id != AdminId {
-		err = errors.New("account is blocked")
+		err = common.ErrAccountIsBlocked
 		return
 	}
 

@@ -21,7 +21,6 @@ package entity_manager
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -43,8 +42,7 @@ type entityManager struct {
 	adaptors      *adaptors.Adaptors
 	scripts       scripts.ScriptService
 	pluginManager common.PluginManager
-	lock          *sync.Mutex
-	actors        map[common.EntityId]*actorInfo
+	actors        sync.Map
 	quit          chan struct{}
 }
 
@@ -57,8 +55,7 @@ func NewEntityManager(lc fx.Lifecycle,
 		eventBus: eventBus,
 		adaptors: adaptors,
 		scripts:  scripts,
-		lock:     &sync.Mutex{},
-		actors:   make(map[common.EntityId]*actorInfo),
+		actors:   sync.Map{},
 		quit:     make(chan struct{}),
 	}
 	lc.Append(fx.Hook{
@@ -80,6 +77,7 @@ func (e *entityManager) SetPluginManager(pluginManager common.PluginManager) {
 
 	// event subscribe
 	e.eventBus.Subscribe(event_bus.TopicEntities, e.eventHandler)
+	e.eventBus.Subscribe(event_bus.TopicPlugins, e.eventHandler)
 }
 
 // LoadEntities ...
@@ -115,15 +113,15 @@ LOOP:
 // Shutdown ...
 func (e *entityManager) Shutdown() {
 
-	e.lock.Lock()
-	defer e.lock.Unlock()
-
 	e.eventBus.Unsubscribe(event_bus.TopicEntities, e.eventHandler)
+	e.eventBus.Unsubscribe(event_bus.TopicPlugins, e.eventHandler)
 
-	for id, actor := range e.actors {
+	e.actors.Range(func(key, value interface{}) bool {
+		actor := value.(*actorInfo)
 		actor.quit <- struct{}{}
-		delete(e.actors, id)
-	}
+		e.actors.Delete(key)
+		return true
+	})
 
 	log.Info("Shutdown")
 }
@@ -131,16 +129,14 @@ func (e *entityManager) Shutdown() {
 // SetMetric ...
 func (e *entityManager) SetMetric(id common.EntityId, name string, value map[string]interface{}) {
 
-	e.lock.Lock()
-	defer e.lock.Unlock()
-
-	actorInfo, ok := e.actors[id]
+	item, ok := e.actors.Load(id)
 	if !ok {
 		return
 	}
+	actor := item.(*actorInfo)
 
 	var err error
-	for _, metric := range actorInfo.Actor.Metrics() {
+	for _, metric := range actor.Actor.Metrics() {
 		if metric.Name != name {
 			continue
 		}
@@ -165,69 +161,70 @@ func (e *entityManager) SetMetric(id common.EntityId, name string, value map[str
 
 // SetState ...
 func (e *entityManager) SetState(id common.EntityId, params EntityStateParams) (err error) {
-	e.lock.Lock()
-	defer e.lock.Unlock()
 
-	actorInfo, ok := e.actors[id]
+	item, ok := e.actors.Load(id)
 	if !ok {
-		err = errors.New("not found")
+		err = common.ErrNotFound
 		return
 	}
+	actor := item.(*actorInfo)
 
 	// store old state
-	actorInfo.OldState = GetEventState(actorInfo.Actor)
+	actor.OldState = GetEventState(actor.Actor)
 
-	err = actorInfo.Actor.SetState(params)
+	err = actor.Actor.SetState(params)
 
 	return
 }
 
 // GetEntityById ...
 func (e *entityManager) GetEntityById(id common.EntityId) (entity m.EntityShort, err error) {
-	e.lock.Lock()
-	defer e.lock.Unlock()
 
-	if actorInfo, ok := e.actors[id]; ok {
-		entity = NewEntity(actorInfo.Actor)
-	} else {
-		err = fmt.Errorf("actor '%v' not found", id)
+	item, ok := e.actors.Load(id)
+	if !ok {
+		err = common.ErrNotFound
+		return
 	}
+	actor := item.(*actorInfo)
+	entity = NewEntity(actor.Actor)
 	return
 }
 
 // GetActorById ...
 func (e *entityManager) GetActorById(id common.EntityId) (actor PluginActor, err error) {
-	e.lock.Lock()
-	defer e.lock.Unlock()
 
-	if actorInfo, ok := e.actors[id]; ok {
-		actor = actorInfo.Actor
-	} else {
-		err = fmt.Errorf("actor '%v' not found", id)
+	item, ok := e.actors.Load(id)
+	if !ok {
+		err = common.ErrNotFound
+		return
 	}
+	actor = item.(*actorInfo).Actor
 	return
 }
 
 // List ...
 func (e *entityManager) List() (entities []m.EntityShort, err error) {
-	e.lock.Lock()
-	defer e.lock.Unlock()
 
 	// sort index
-	var index = make([]string, 0, len(e.actors))
-	for _, actor := range e.actors {
+	var index = make([]string, 0)
+	e.actors.Range(func(key, value interface{}) bool {
+		actor := value.(*actorInfo)
 		info := actor.Actor.Info()
 		index = append(index, info.Id.String())
-	}
+		return true
+	})
 	sort.Strings(index)
 
-	entities = make([]m.EntityShort, len(e.actors))
+	entities = make([]m.EntityShort, 0, len(index))
 	var i int
 	for _, n := range index {
 
-		actorInfo := e.actors[common.EntityId(n)]
-
-		entities[i] = NewEntity(actorInfo.Actor)
+		item, ok := e.actors.Load(n)
+		if !ok {
+			continue
+		}
+		actor := item.(*actorInfo)
+		entities = append(entities, NewEntity(actor.Actor))
 
 		// metric preview
 		if len(entities[i].Metrics) > 0 {
@@ -252,9 +249,6 @@ func (e *entityManager) List() (entities []m.EntityShort, err error) {
 // Spawn ...
 func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) {
 
-	e.lock.Lock()
-	defer e.lock.Unlock()
-
 	actor = constructor()
 	info := actor.Info()
 
@@ -264,16 +258,19 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 
 	var entityId = info.Id
 
-	if _, ok := e.actors[entityId]; ok {
+	item, ok := e.actors.Load(entityId)
+	if ok {
 		log.Warnf("entityId %v exist", entityId)
+		actor = item.(PluginActor)
 		return
 	}
 
-	e.actors[entityId] = &actorInfo{
+	actorInfo := &actorInfo{
 		Actor:    actor,
 		quit:     make(chan struct{}),
 		OldState: GetEventState(actor),
 	}
+	e.actors.Store(entityId, actorInfo)
 
 	//e.metric.Update(metrics.EntityAdd{Num: 1})
 
@@ -297,7 +294,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			//e.metric.Update(metrics.EntityDelete{Num: 1})
 		}()
 
-		<-e.actors[entityId].quit
+		<-actorInfo.quit
 	}()
 
 	attr := actor.Attributes()
@@ -329,39 +326,76 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 // eventHandler ...
 func (e *entityManager) eventHandler(_ string, message interface{}) {
 
-	switch v := message.(type) {
+	switch msg := message.(type) {
 	case event_bus.EventStateChanged:
-
-		e.lock.Lock()
-		defer e.lock.Unlock()
-
-		if _, ok := e.actors[v.EntityId]; !ok {
-			return
-		}
-
-		if v.NewState.Compare(v.OldState) {
-			return
-		}
-
-		e.actors[v.EntityId].OldState = v.NewState
-
-		// store state to db
-		var state string
-		if v.NewState.State != nil {
-			state = v.NewState.State.Name
-		}
-
-		if !v.StorageSave {
-			return
-		}
-
-		go e.adaptors.EntityStorage.Add(m.EntityStorage{
-			State:      state,
-			EntityId:   v.EntityId,
-			Attributes: v.NewState.Attributes.Serialize(),
-		})
-
+		go e.eventStateChangedHandler(msg)
+	case event_bus.EventLoadedPlugin:
+		go e.eventLoadedPlugin(msg)
+	case event_bus.EventUnloadedPlugin:
+		go e.eventUnloadedPlugin(msg)
 	}
+}
+
+func (e *entityManager) eventStateChangedHandler(msg event_bus.EventStateChanged) {
+
+	item, ok := e.actors.Load(msg.EntityId)
+	if !ok {
+		return
+	}
+	actor := item.(*actorInfo)
+
+	if msg.NewState.Compare(msg.OldState) {
+		return
+	}
+
+	actor.OldState = msg.NewState
+
+	// store state to db
+	var state string
+	if msg.NewState.State != nil {
+		state = msg.NewState.State.Name
+	}
+
+	if !msg.StorageSave {
+		return
+	}
+
+	go e.adaptors.EntityStorage.Add(m.EntityStorage{
+		State:      state,
+		EntityId:   msg.EntityId,
+		Attributes: msg.NewState.Attributes.Serialize(),
+	})
+}
+
+func (e *entityManager) eventLoadedPlugin(msg event_bus.EventLoadedPlugin) (err error) {
+
+	log.Infof("Load plugin \"%s\" entities", msg.PluginName)
+
+	var entities []*m.Entity
+	if entities, err = e.adaptors.Entity.GetByType(msg.PluginName.String(), 1000, 0); err != nil {
+		return
+	}
+
+	for _, entity := range entities {
+		if err := e.Add(entity); err != nil {
+			log.Warnf("%s, %s", entity.Id, err.Error())
+		}
+	}
+	return
+}
+
+func (e *entityManager) eventUnloadedPlugin(msg event_bus.EventUnloadedPlugin) {
+
+	log.Infof("Unload plugin \"%s\" entities", msg.PluginName)
+
+	e.actors.Range(func(key, value interface{}) bool {
+		entityId := key.(common.EntityId)
+		if entityId.Type() != msg.PluginName {
+			return true
+		}
+		e.unsafeRemove(entityId)
+		return true
+	})
 }
 
 // CallAction ...
@@ -428,21 +462,19 @@ func (e *entityManager) Update(entity *m.Entity) (err error) {
 
 // Remove ...
 func (e *entityManager) Remove(id common.EntityId) {
-	e.lock.Lock()
-	defer e.lock.Unlock()
 
 	e.unsafeRemove(id)
 }
 
 func (e *entityManager) unsafeRemove(id common.EntityId) {
 
-	if actor, ok := e.actors[id]; ok {
-		actor.quit <- struct{}{}
-	} else {
+	item, ok := e.actors.Load(id)
+	if !ok {
 		return
 	}
-
-	delete(e.actors, id)
+	actor := item.(*actorInfo)
+	actor.quit <- struct{}{}
+	e.actors.Delete(id)
 }
 
 // GetEventState ...

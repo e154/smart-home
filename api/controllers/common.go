@@ -31,6 +31,7 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -168,8 +169,10 @@ func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationEr
 		return c.prepareErrors(errs)
 	}
 
-	if err.Error() == "record not found" {
+	switch {
+	case errors.Is(err, common.ErrNotFound):
 		return status.Error(codes.NotFound, err.Error())
+	default:
+		return status.Error(codes.Internal, err.Error())
 	}
-	return status.Error(codes.Internal, err.Error())
 }

@@ -182,9 +182,8 @@ func (n *Initial) Start() {
 
 	n.checkForUpgrade()
 	n.metrics.Start()
-	n.pluginManager.Start()
 	n.entityManager.SetPluginManager(n.pluginManager)
-	n.entityManager.LoadEntities()
+	n.pluginManager.Start()
 	n.automation.Start()
 	go n.api.Start()
 	n.gateClient.Start()

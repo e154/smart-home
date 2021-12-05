@@ -67,3 +67,13 @@ type EventRemoveActor struct {
 	Type     common.EntityType `json:"type"`
 	EntityId common.EntityId   `json:"entity_id"`
 }
+
+// EventLoadedPlugin ...
+type EventLoadedPlugin struct {
+	PluginName common.EntityType `json:"plugin_name"`
+}
+
+// EventUnloadedPlugin ...
+type EventUnloadedPlugin struct {
+	PluginName common.EntityType `json:"plugin_name"`
+}

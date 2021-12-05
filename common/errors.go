@@ -21,8 +21,19 @@ package common
 import "errors"
 
 var (
+	// BASE ERRORS
+
 	// ErrInternal ...
 	ErrInternal = errors.New("internal error")
 	// ErrNotFound ...
 	ErrNotFound = errors.New("not found")
+
+	// AUTH ERRORS
+
+	// ErrPassNotValid ...
+	ErrPassNotValid = errors.New("password not valid")
+	// ErrAccountIsBlocked ...
+	ErrAccountIsBlocked = errors.New("account is blocked")
+
+
 )

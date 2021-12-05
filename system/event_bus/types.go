@@ -71,4 +71,6 @@ type EventType string
 const (
 	// TopicEntities ...
 	TopicEntities = "entities"
+	// TopicPlugins ...
+	TopicPlugins = "plugins"
 )

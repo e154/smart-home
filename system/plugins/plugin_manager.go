@@ -20,7 +20,6 @@ package plugins
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -30,6 +29,7 @@ import (
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
 	"sync"
@@ -43,6 +43,7 @@ type pluginManager struct {
 	adaptors       *adaptors.Adaptors
 	isStarted      *atomic.Bool
 	service        *service
+	eventBus       event_bus.EventBus
 	loadLock       *sync.Mutex
 	enabledPlugins map[string]bool
 }
@@ -55,10 +56,12 @@ func NewPluginManager(lc fx.Lifecycle,
 	mqttServ mqtt.MqttServ,
 	scriptService scripts.ScriptService,
 	appConfig *m.AppConfig,
-	gateClient *gate_client.GateClient) common.PluginManager {
+	gateClient *gate_client.GateClient,
+	eventBus event_bus.EventBus) common.PluginManager {
 	pluginManager := &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
+		eventBus:       eventBus,
 		loadLock:       &sync.Mutex{},
 		enabledPlugins: make(map[string]bool),
 	}
@@ -126,19 +129,14 @@ func (p *pluginManager) GetPlugin(t string) (plugin interface{}, err error) {
 	return
 }
 
-func (p *pluginManager) unsafeGetPlugin(t string) (plugin Plugable, err error) {
-
-	if enabled := p.enabledPlugins[t]; !enabled {
-		err = fmt.Errorf("plugin '%v' disabled", t)
-		return
-	}
+func (p *pluginManager) unsafeGetPlugin(name string) (plugin Plugable, err error) {
 
 	var ok bool
-	if plugin, ok = pluginList[t]; ok {
+	if plugin, ok = pluginList[name]; ok {
 		return
 	}
 
-	err = fmt.Errorf("plugin '%v' not found", t)
+	err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
 
 	return
 }
@@ -192,6 +190,11 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 	}
 
 	p.enabledPlugins[name] = true
+
+	p.eventBus.Publish(event_bus.TopicPlugins, event_bus.EventLoadedPlugin{
+		PluginName: common.EntityType(name),
+	})
+
 	return
 }
 
@@ -211,6 +214,11 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 	}
 
 	p.enabledPlugins[name] = false
+
+	p.eventBus.Publish(event_bus.TopicPlugins, event_bus.EventUnloadedPlugin{
+		PluginName: common.EntityType(name),
+	})
+
 	return
 }
 
