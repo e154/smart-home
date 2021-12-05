@@ -19,23 +19,18 @@
 package api
 
 import (
-	"context"
 	"fmt"
 	container2 "github.com/e154/smart-home/tests/api/container"
-	"log"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-	"google.golang.org/grpc"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
-	gw "github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestScript(t *testing.T) {
@@ -50,21 +45,21 @@ func TestScript(t *testing.T) {
 			controllers *controllers.Controllers,
 			dialer *container2.Dialer) {
 
-			eventBus.Purge()
-			scriptService.Purge()
-
-			err := migrations.Purge()
-			ctx.So(err, ShouldBeNil)
-
-			c := context.Background()
-			conn, err := grpc.DialContext(c, "", grpc.WithInsecure(), grpc.WithContextDialer(dialer.Call()))
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer conn.Close()
-
-			/*client := */
-			gw.NewScriptServiceClient(conn)
+			//eventBus.Purge()
+			//scriptService.Purge()
+			//
+			//err := migrations.Purge()
+			//ctx.So(err, ShouldBeNil)
+			//
+			//c := context.Background()
+			//conn, err := grpc.DialContext(c, "", grpc.WithInsecure(), grpc.WithContextDialer(dialer.Call()))
+			//if err != nil {
+			//	log.Fatal(err)
+			//}
+			//defer conn.Close()
+			//
+			///*client := */
+			//gw.NewScriptServiceClient(conn)
 
 			t.Run("add", func(t *testing.T) {
 				Convey("", t, func(ctx C) {

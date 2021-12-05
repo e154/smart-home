@@ -28,7 +28,6 @@ import (
 	"go.uber.org/dig"
 	"path/filepath"
 
-	"github.com/e154/smart-home/system/logging"
 	. "github.com/e154/smart-home/tests/api/container"
 )
 
@@ -49,7 +48,7 @@ func TestMain(m *testing.M) {
 
 	container = BuildContainer()
 	err := container.Invoke(func(
-		logging *logging.Logging,
+		//logging *logging.Logging,
 	) {
 
 		time.Sleep(time.Millisecond * 500)
