@@ -29,14 +29,12 @@ import (
 	"github.com/e154/smart-home/endpoint"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -62,50 +60,6 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 		accessList: accessList,
 		endpoint:   endpoint,
 	}
-}
-
-//query
-//limit
-//offset
-func (c ControllerCommon) select2(ctx *gin.Context) (query string, limit, offset int) {
-	query = ctx.Request.URL.Query().Get("query")
-	limit, _ = strconv.Atoi(ctx.Request.URL.Query().Get("limit"))
-	offset, _ = strconv.Atoi(ctx.Request.URL.Query().Get("offset"))
-	return
-}
-
-//query
-//sortby
-//order
-//limit
-//offset
-func (c ControllerCommon) list(ctx *gin.Context) (query, sortBy, order string, limit, offset int) {
-
-	limit = 15
-	offset = 0
-	order = "DESC"
-	sortBy = "created_at"
-
-	if ctx.Request.URL.Query().Get("query") != "" {
-		query = ctx.Request.URL.Query().Get("query")
-	}
-
-	if ctx.Request.URL.Query().Get("sortby") != "" {
-		sortBy = ctx.Request.URL.Query().Get("sortby")
-	}
-
-	if ctx.Request.URL.Query().Get("order") != "" {
-		order = ctx.Request.URL.Query().Get("order")
-	}
-
-	if ctx.Request.URL.Query().Get("limit") != "" {
-		limit, _ = strconv.Atoi(ctx.Request.URL.Query().Get("limit"))
-	}
-
-	if ctx.Request.URL.Query().Get("offset") != "" {
-		offset, _ = strconv.Atoi(ctx.Request.URL.Query().Get("offset"))
-	}
-	return
 }
 
 func (c ControllerCommon) currentUser(ctx context.Context) (*m.User, error) {
@@ -175,4 +129,29 @@ func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationEr
 	default:
 		return status.Error(codes.Internal, err.Error())
 	}
+}
+
+func (c ControllerCommon) Pagination(limit, offset uint32, order, sortBy string) (pagination common.PageParams) {
+
+	pagination = common.PageParams{
+		Limit:  200,
+		Offset: 0,
+		Order:  "created_at",
+		SortBy: "desc",
+	}
+
+	if limit != 0 {
+		pagination.Limit = int64(limit)
+	}
+	if offset != 0 {
+		pagination.Offset = int64(offset)
+	}
+	if order != "" {
+		pagination.Order = order
+	}
+	if sortBy != "" {
+		pagination.SortBy = sortBy
+	}
+
+	return
 }
