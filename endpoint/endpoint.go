@@ -54,6 +54,7 @@ type Endpoint struct {
 	Mqtt            *MqttEndpoint
 	Plugin          *PluginEndpoint
 	PluginActor     *PluginActorEndpoint
+	Task            *TaskEndpoint
 }
 
 // NewEndpoint ...
@@ -86,5 +87,6 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 		Mqtt:            NewMqttEndpoint(common),
 		Plugin:          NewPluginEndpoint(common),
 		PluginActor:     NewPluginActorEndpoint(common),
+		Task:            NewTaskEndpoint(common),
 	}
 }
