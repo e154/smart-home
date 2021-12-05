@@ -136,8 +136,8 @@ func (c ControllerCommon) Pagination(limit, offset uint32, order, sortBy string)
 	pagination = common.PageParams{
 		Limit:  200,
 		Offset: 0,
-		Order:  "created_at",
-		SortBy: "desc",
+		Order:  "desc",
+		SortBy: "created_at",
 	}
 
 	if limit != 0 {
