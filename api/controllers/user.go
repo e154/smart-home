@@ -57,7 +57,7 @@ func (c ControllerUser) AddUser(ctx context.Context, req *api.NewtUserRequest) (
 
 	var errs validator.ValidationErrorsTranslations
 	var userF *m.User
-	userF, errs, err = c.endpoint.User.Add(user, currentUser)
+	userF, errs, err = c.endpoint.User.Add(ctx, user, currentUser)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
@@ -68,7 +68,7 @@ func (c ControllerUser) AddUser(ctx context.Context, req *api.NewtUserRequest) (
 // GetUserById ...
 func (c ControllerUser) GetUserById(ctx context.Context, req *api.GetUserByIdRequest) (*api.UserFull, error) {
 
-	user, err := c.endpoint.User.GetById(int64(req.Id))
+	user, err := c.endpoint.User.GetById(ctx, int64(req.Id))
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -94,7 +94,7 @@ func (c ControllerUser) UpdateUserById(ctx context.Context, req *api.UpdateUserR
 		user.SetPass(req.Password)
 	}
 
-	user, errs, err := c.endpoint.User.Update(user)
+	user, errs, err := c.endpoint.User.Update(ctx, user)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)
 	}
@@ -105,7 +105,8 @@ func (c ControllerUser) UpdateUserById(ctx context.Context, req *api.UpdateUserR
 // GetUserList ...
 func (c ControllerUser) GetUserList(ctx context.Context, req *api.GetUserListRequest) (*api.GetUserListResult, error) {
 
-	items, total, err := c.endpoint.User.GetList(int64(req.Limit), int64(req.Offset), req.Order, req.SortBy)
+	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	items, total, err := c.endpoint.User.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
@@ -116,7 +117,7 @@ func (c ControllerUser) GetUserList(ctx context.Context, req *api.GetUserListReq
 // DeleteUserById ...
 func (c ControllerUser) DeleteUserById(ctx context.Context, req *api.DeleteUserRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.User.Delete(int64(req.Id)); err != nil {
+	if err := c.endpoint.User.Delete(ctx, int64(req.Id)); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
