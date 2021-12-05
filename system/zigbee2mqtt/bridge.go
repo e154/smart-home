@@ -213,7 +213,7 @@ func (g *Bridge) safeGetDevice(friendlyName string) (device *Device, err error) 
 
 	var ok bool
 	if device, ok = g.devices[friendlyName]; !ok {
-		err = adaptors.ErrRecordNotFound
+		err = common.ErrNotFound
 		return
 	}
 
