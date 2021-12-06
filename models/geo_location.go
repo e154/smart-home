@@ -98,7 +98,7 @@ type RegionInfo struct {
 	Currency           string  `json:"currency"`
 	CurrencyName       string  `json:"currency_name"`
 	Languages          string  `json:"languages"`
-	CountryArea        float64  `json:"country_area"`
+	CountryArea        float64 `json:"country_area"`
 	CountryPopulation  float64 `json:"country_population"`
 	Asn                string  `json:"asn"`
 	Org                string  `json:"org"`

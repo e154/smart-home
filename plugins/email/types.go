@@ -24,18 +24,28 @@ import (
 )
 
 const (
-	Name       = "email"
-	AttrAuth   = "auth"
-	AttrPass   = "pass"
-	AttrSmtp   = "smtp"
-	AttrPort   = "port"
+	// Name ...
+	Name = "email"
+	// AttrAuth ...
+	AttrAuth = "auth"
+	// AttrPass ...
+	AttrPass = "pass"
+	// AttrSmtp ...
+	AttrSmtp = "smtp"
+	// AttrPort ...
+	AttrPort = "port"
+	// AttrSender ...
 	AttrSender = "sender"
 
+	// AttrAddresses ...
 	AttrAddresses = "addresses"
-	AttrSubject   = "subject"
-	AttrBody      = "body"
+	// AttrSubject ...
+	AttrSubject = "subject"
+	// AttrBody ...
+	AttrBody = "body"
 )
 
+// NewMessageParams ...
 func NewMessageParams() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrAddresses: {
@@ -53,6 +63,7 @@ func NewMessageParams() m.Attributes {
 	}
 }
 
+// NewSettings ...
 func NewSettings() map[string]*m.Attribute {
 	return map[string]*m.Attribute{
 		AttrAuth: {

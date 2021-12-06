@@ -21,11 +21,15 @@ package zigbee2mqtt
 import "github.com/e154/smart-home/common"
 
 const (
-	Name              = "zigbee2mqtt"
+	// Name ...
+	Name = "zigbee2mqtt"
+	// EntityZigbee2mqtt ...
 	EntityZigbee2mqtt = common.EntityType("zigbee2mqtt")
 )
 
 const (
+	// FuncZigbee2mqttEvent ...
 	FuncZigbee2mqttEvent = "zigbee2mqttEvent"
-	FuncEntityAction     = "entityAction"
+	// FuncEntityAction ...
+	FuncEntityAction = "entityAction"
 )

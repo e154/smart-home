@@ -27,12 +27,14 @@ import (
 	"time"
 )
 
+// Transport ...
 type Transport struct {
 	server  string
 	timeout time.Duration
 	device  DeviceType
 }
 
+// NewTransport ...
 func NewTransport(host string, port int, timeout int64) ITransport {
 	return &Transport{
 		server:  fmt.Sprintf("%s:%d", host, port),
@@ -40,6 +42,7 @@ func NewTransport(host string, port int, timeout int64) ITransport {
 	}
 }
 
+// RunCommand ...
 func (tr Transport) RunCommand(command, argument string) (res []byte, err error) {
 	var conn net.Conn
 	if conn, err = net.DialTimeout("tcp", tr.server, tr.timeout); err != nil {

@@ -27,6 +27,7 @@ import (
 	"sync"
 )
 
+// Action ...
 type Action struct {
 	model         *m.Action
 	scriptService scripts.ScriptService
@@ -36,6 +37,7 @@ type Action struct {
 	sync.Mutex
 }
 
+// NewAction ...
 func NewAction(scriptService scripts.ScriptService,
 	entityManager entity_manager.EntityManager,
 	model *m.Action) (action *Action, err error) {
@@ -59,6 +61,7 @@ func NewAction(scriptService scripts.ScriptService,
 	return
 }
 
+// Run ...
 func (a *Action) Run(entityId *common.EntityId) (result string, err error) {
 	a.Lock()
 	defer a.Unlock()

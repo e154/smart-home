@@ -23,12 +23,14 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
+// EventRequestState ...
 type EventRequestState struct {
 	From       common.EntityId `json:"from"`
 	To         common.EntityId `json:"to"`
 	Attributes m.Attributes    `json:"attributes"`
 }
 
+// EventStateChanged ...
 type EventStateChanged struct {
 	StorageSave bool              `json:"storage_save"`
 	Type        common.EntityType `json:"type"`
@@ -37,6 +39,7 @@ type EventStateChanged struct {
 	NewState    EventEntityState  `json:"new_state"`
 }
 
+// EventCallAction ...
 type EventCallAction struct {
 	Type       common.EntityType      `json:"type"`
 	EntityId   common.EntityId        `json:"entity_id"`
@@ -44,12 +47,14 @@ type EventCallAction struct {
 	Args       map[string]interface{} `json:"args"`
 }
 
+// EventCallScene ...
 type EventCallScene struct {
 	Type     common.EntityType      `json:"type"`
 	EntityId common.EntityId        `json:"entity_id"`
 	Args     map[string]interface{} `json:"args"`
 }
 
+// EventAddedActor ...
 type EventAddedActor struct {
 	Type       common.EntityType `json:"type"`
 	EntityId   common.EntityId   `json:"entity_id"`
@@ -57,7 +62,18 @@ type EventAddedActor struct {
 	Settings   m.Attributes      `json:"settings"` //???
 }
 
+// EventRemoveActor ...
 type EventRemoveActor struct {
 	Type     common.EntityType `json:"type"`
 	EntityId common.EntityId   `json:"entity_id"`
+}
+
+// EventLoadedPlugin ...
+type EventLoadedPlugin struct {
+	PluginName common.EntityType `json:"plugin_name"`
+}
+
+// EventUnloadedPlugin ...
+type EventUnloadedPlugin struct {
+	PluginName common.EntityType `json:"plugin_name"`
 }

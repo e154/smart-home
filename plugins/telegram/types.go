@@ -24,10 +24,14 @@ import (
 )
 
 const (
-	Name      = "telegram"
+	// Name ...
+	Name = "telegram"
+	// AttrToken ...
 	AttrToken = "token"
-	AttrName  = "name"
-	AttrBody  = "body"
+	// AttrName ...
+	AttrName = "name"
+	// AttrBody ...
+	AttrBody = "body"
 )
 
 const (
@@ -36,13 +40,16 @@ const (
 )
 
 const (
+	// FuncEntityAction ...
 	FuncEntityAction = "telegramAction"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return nil
 }
 
+// NewMessageParams ...
 func NewMessageParams() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrName: {
@@ -56,6 +63,7 @@ func NewMessageParams() m.Attributes {
 	}
 }
 
+// NewSettings ...
 func NewSettings() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrToken: {

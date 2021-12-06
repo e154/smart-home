@@ -21,128 +21,115 @@ package controllers
 import (
 	"context"
 	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// ControllerScript ...
 type ControllerScript struct {
 	*ControllerCommon
 }
 
+// NewControllerScript ...
 func NewControllerScript(common *ControllerCommon) ControllerScript {
 	return ControllerScript{
 		ControllerCommon: common,
 	}
 }
 
-func (c ControllerScript) AddScript(_ context.Context, req *api.NewScriptRequest) (*api.Script, error) {
+// AddScript ...
+func (c ControllerScript) AddScript(ctx context.Context, req *api.NewScriptRequest) (*api.Script, error) {
 
-	script, errs, err := c.endpoint.Script.Add(c.dto.Script.FromNewScriptRequest(req))
-	if len(errs) > 0 {
-		return nil, c.prepareErrors(errs)
-	}
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	script, errs, err := c.endpoint.Script.Add(ctx, c.dto.Script.FromNewScriptRequest(req))
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return c.dto.Script.ToGScript(script), nil
 }
 
-func (c ControllerScript) GetScriptById(_ context.Context, req *api.GetScriptRequest) (*api.Script, error) {
+// GetScriptById ...
+func (c ControllerScript) GetScriptById(ctx context.Context, req *api.GetScriptRequest) (*api.Script, error) {
 
-	script, err := c.endpoint.Script.GetById(int64(req.Id))
+	script, err := c.endpoint.Script.GetById(ctx, int64(req.Id))
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Script.ToGScript(script), nil
 }
 
-func (c ControllerScript) UpdateScriptById(_ context.Context, req *api.UpdateScriptRequest) (*api.Script, error) {
+// UpdateScriptById ...
+func (c ControllerScript) UpdateScriptById(ctx context.Context, req *api.UpdateScriptRequest) (*api.Script, error) {
 
-	script, errs, err := c.endpoint.Script.Update(c.dto.Script.FromUpdateScriptRequest(req))
-	if len(errs) > 0 {
-		return nil, c.prepareErrors(errs)
-	}
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	script, errs, err := c.endpoint.Script.Update(ctx, c.dto.Script.FromUpdateScriptRequest(req))
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return c.dto.Script.ToGScript(script), nil
 }
 
-func (c ControllerScript) GetScriptList(_ context.Context, req *api.GetScriptListRequest) (*api.GetScriptListResult, error) {
+// GetScriptList ...
+func (c ControllerScript) GetScriptList(ctx context.Context, req *api.GetScriptListRequest) (*api.GetScriptListResult, error) {
 
-	items, total, err := c.endpoint.Script.GetList(int64(req.Limit), int64(req.Offset), req.Order, req.SortBy)
+	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	items, total, err := c.endpoint.Script.GetList(ctx, pagination)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Script.ToListResult(items, uint32(total), req.Limit, req.Offset), nil
 }
 
-func (c ControllerScript) SearchScriptById(_ context.Context, req *api.SearchScriptRequest) (*api.SearchScriptListResult, error) {
+// SearchScriptById ...
+func (c ControllerScript) SearchScriptById(ctx context.Context, req *api.SearchScriptRequest) (*api.SearchScriptListResult, error) {
 
-	items, _, err := c.endpoint.Script.Search(req.Query, int(req.Limit), int(req.Offset))
+	items, _, err := c.endpoint.Script.Search(ctx, req.Query, int(req.Limit), int(req.Offset))
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Script.ToSearchResult(items), nil
 }
 
-func (c ControllerScript) DeleteScriptById(_ context.Context, req *api.DeleteScriptRequest) (*emptypb.Empty, error) {
+// DeleteScriptById ...
+func (c ControllerScript) DeleteScriptById(ctx context.Context, req *api.DeleteScriptRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.Script.DeleteScriptById(int64(req.Id)); err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+	if err := c.endpoint.Script.DeleteScriptById(ctx, int64(req.Id)); err != nil {
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
-func (c ControllerScript) ExecScriptById(_ context.Context, req *api.ExecScriptRequest) (*api.ExecScriptResult, error) {
+// ExecScriptById ...
+func (c ControllerScript) ExecScriptById(ctx context.Context, req *api.ExecScriptRequest) (*api.ExecScriptResult, error) {
 
-	result, err := c.endpoint.Script.Execute(int64(req.Id))
+	result, err := c.endpoint.Script.Execute(ctx, int64(req.Id))
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return &api.ExecScriptResult{Result: result}, nil
 }
 
-func (c ControllerScript) ExecSrcScriptById(_ context.Context, req *api.ExecSrcScriptRequest) (*api.ExecScriptResult, error) {
+// ExecSrcScriptById ...
+func (c ControllerScript) ExecSrcScriptById(ctx context.Context, req *api.ExecSrcScriptRequest) (*api.ExecScriptResult, error) {
 
-	result, err := c.endpoint.Script.ExecuteSource(c.dto.Script.FromExecSrcScriptRequest(req))
+	result, err := c.endpoint.Script.ExecuteSource(ctx, c.dto.Script.FromExecSrcScriptRequest(req))
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return &api.ExecScriptResult{Result: result}, nil
 }
 
-func (c ControllerScript) CopyScriptById(_ context.Context, req *api.CopyScriptRequest) (*api.Script, error) {
+// CopyScriptById ...
+func (c ControllerScript) CopyScriptById(ctx context.Context, req *api.CopyScriptRequest) (*api.Script, error) {
 
-	script, err := c.endpoint.Script.Copy(int64(req.Id))
+	script, err := c.endpoint.Script.Copy(ctx, int64(req.Id))
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Script.ToGScript(script), nil

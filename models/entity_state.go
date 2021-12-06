@@ -20,7 +20,6 @@ package models
 
 import (
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
 	"time"
 )
 
@@ -30,23 +29,12 @@ type EntityState struct {
 	Name        string          `json:"name" valid:"MaxSize(254);Required"`
 	Description string          `json:"description"`
 	Icon        *string         `json:"icon"`
-	EntityId    common.EntityId `json:"entity_id" valid:"Required"`
+	EntityId    common.EntityId `json:"entity_id" validate:"required"`
 	Image       *Image          `json:"image"`
-	ImageId     *int64          `json:"image_id" valid:"Required"`
+	ImageId     *int64          `json:"image_id" validate:"required"`
 	Style       string          `json:"style"`
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
-}
-
-// Valid ...
-func (m *EntityState) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(m); !ok {
-		errs = valid.Errors
-	}
-
-	return
 }
 
 // Short ...

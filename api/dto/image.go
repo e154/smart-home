@@ -24,12 +24,15 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// Image ...
 type Image struct{}
 
+// NewImageDto ...
 func NewImageDto() Image {
 	return Image{}
 }
 
+// ToImage ...
 func (i Image) ToImage(image *m.Image) (result *api.Image) {
 	result = &api.Image{
 		Id:        int32(image.Id),
@@ -44,6 +47,7 @@ func (i Image) ToImage(image *m.Image) (result *api.Image) {
 	return
 }
 
+// FromNewImageRequest ...
 func (i Image) FromNewImageRequest(req *api.NewImageRequest) (image *m.Image) {
 	image = &m.Image{
 		Thumb:    req.Thumb,
@@ -55,6 +59,7 @@ func (i Image) FromNewImageRequest(req *api.NewImageRequest) (image *m.Image) {
 	return
 }
 
+// FromUpdateImageRequest ...
 func (i Image) FromUpdateImageRequest(req *api.UpdateImageRequest) (image *m.Image) {
 	image = &m.Image{
 		Id:       int64(req.Id),
@@ -68,6 +73,7 @@ func (i Image) FromUpdateImageRequest(req *api.UpdateImageRequest) (image *m.Ima
 	return
 }
 
+// ToImageListResult ...
 func (i Image) ToImageListResult(items []*m.Image, total, limit, offset uint32) (result *api.GetImageListResult) {
 
 	result = &api.GetImageListResult{

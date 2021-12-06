@@ -19,10 +19,11 @@
 package endpoint
 
 import (
+	"context"
 	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 )
 
 // UserEndpoint ...
@@ -38,16 +39,16 @@ func NewUserEndpoint(common *CommonEndpoint) *UserEndpoint {
 }
 
 // Add ...
-func (n *UserEndpoint) Add(params *m.User,
-	currentUser *m.User) (result *m.User, errs []*validation.Error, err error) {
+func (n *UserEndpoint) Add(ctx context.Context, params *m.User,
+	currentUser *m.User) (result *m.User, errs validator.ValidationErrorsTranslations, err error) {
 
 	user := &m.User{}
 	if err = common.Copy(&user, &params); err != nil {
 		return
 	}
 
-	_, errs = user.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
@@ -80,9 +81,7 @@ func (n *UserEndpoint) Add(params *m.User,
 		user.Status = "blocked"
 	}
 
-	// validation user model
-	_, errs = user.Valid()
-	if len(errs) > 0 {
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
@@ -91,13 +90,13 @@ func (n *UserEndpoint) Add(params *m.User,
 		return
 	}
 
-	result, err = n.GetById(id)
+	result, err = n.GetById(ctx, id)
 
 	return
 }
 
 // GetById ...
-func (n *UserEndpoint) GetById(userId int64) (result *m.User, err error) {
+func (n *UserEndpoint) GetById(ctx context.Context, userId int64) (result *m.User, err error) {
 
 	result, err = n.adaptors.User.GetById(userId)
 
@@ -105,7 +104,7 @@ func (n *UserEndpoint) GetById(userId int64) (result *m.User, err error) {
 }
 
 // Delete ...
-func (n *UserEndpoint) Delete(userId int64) (err error) {
+func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 
 	var user *m.User
 	if user, err = n.adaptors.User.GetById(userId); err != nil {
@@ -123,19 +122,15 @@ func (n *UserEndpoint) Delete(userId int64) (err error) {
 }
 
 // GetList ...
-func (n *UserEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.User, total int64, err error) {
+func (n *UserEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.User, total int64, err error) {
 
-	if limit == 0 {
-		limit = common.DefaultPageSize
-	}
-
-	result, total, err = n.adaptors.User.List(limit, offset, order, sortBy)
+	result, total, err = n.adaptors.User.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }
 
 // Update ...
-func (n *UserEndpoint) Update(params *m.User) (result *m.User, errs []*validation.Error, err error) {
+func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.User, errs validator.ValidationErrorsTranslations, err error) {
 
 	var user *m.User
 	if user, err = n.adaptors.User.GetById(params.Id); err != nil {
@@ -162,8 +157,8 @@ func (n *UserEndpoint) Update(params *m.User) (result *m.User, errs []*validatio
 		}
 	}
 
-	_, errs = user.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
@@ -171,13 +166,13 @@ func (n *UserEndpoint) Update(params *m.User) (result *m.User, errs []*validatio
 		return
 	}
 
-	result, err = n.GetById(user.Id)
+	result, err = n.GetById(ctx, user.Id)
 
 	return
 }
 
 // UpdateStatus ...
-func (n *UserEndpoint) UpdateStatus(userId int64, newStatus string) (err error) {
+func (n *UserEndpoint) UpdateStatus(ctx context.Context, userId int64, newStatus string) (err error) {
 
 	var user *m.User
 	if user, err = n.adaptors.User.GetById(userId); err != nil {

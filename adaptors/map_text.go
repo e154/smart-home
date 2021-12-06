@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IMapText ...
 type IMapText interface {
 	Add(ver *m.MapText) (id int64, err error)
 	GetById(mapId int64) (ver *m.MapText, err error)

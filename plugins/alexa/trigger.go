@@ -29,11 +29,14 @@ import (
 var _ triggers.ITrigger = (*Trigger)(nil)
 
 const (
-	TriggerName         = "alexa"
+	// TriggerName ...
+	TriggerName = "alexa"
+	// TriggerFunctionName ...
 	TriggerFunctionName = "automationTriggerAlexa"
 	queueSize           = 10 //todo update
 )
 
+// Trigger ...
 type Trigger struct {
 	eventBus     event_bus.EventBus
 	msgQueue     message_queue.MessageQueue
@@ -41,6 +44,7 @@ type Trigger struct {
 	name         string
 }
 
+// NewTrigger ...
 func NewTrigger(eventBus event_bus.EventBus) (tr triggers.ITrigger) {
 	return &Trigger{
 		eventBus:     eventBus,
@@ -50,10 +54,12 @@ func NewTrigger(eventBus event_bus.EventBus) (tr triggers.ITrigger) {
 	}
 }
 
+// Name ...
 func (t Trigger) Name() string {
 	return t.name
 }
 
+// AsyncAttach ...
 func (t Trigger) AsyncAttach(wg *sync.WaitGroup) {
 
 	if err := t.eventBus.Subscribe(TopicPluginAlexa, t.eventHandler); err != nil {
@@ -70,6 +76,7 @@ func (t *Trigger) eventHandler(topic string, msg interface{}) {
 	}
 }
 
+// Subscribe ...
 func (t Trigger) Subscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("trigger '%s' subscribe to empty topic", t.name)
@@ -79,6 +86,7 @@ func (t Trigger) Subscribe(options triggers.Subscriber) error {
 	return t.msgQueue.Subscribe(topic, options.Handler)
 }
 
+// Unsubscribe ...
 func (t Trigger) Unsubscribe(options triggers.Subscriber) error {
 	if options.Payload == nil {
 		return fmt.Errorf("trigger '%s' unsubscribe from empty topic", t.name)
@@ -88,6 +96,7 @@ func (t Trigger) Unsubscribe(options triggers.Subscriber) error {
 	return t.msgQueue.Unsubscribe(topic, options.Handler)
 }
 
+// FunctionName ...
 func (t Trigger) FunctionName() string {
 	return t.functionName
 }

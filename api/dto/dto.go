@@ -18,18 +18,24 @@
 
 package dto
 
+// Dto ...
 type Dto struct {
 	Role   Role
 	User   User
 	Image  Image
 	Script Script
+	Plugin Plugin
+	Entity Entity
 }
 
+// NewDto ...
 func NewDto() Dto {
 	return Dto{
 		Role:   NewRoleDto(),
 		User:   NewUserDto(),
 		Image:  NewImageDto(),
 		Script: NewScriptDto(),
+		Plugin: NewPluginDto(),
+		Entity: NewEntityDto(),
 	}
 }

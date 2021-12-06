@@ -101,7 +101,7 @@ const (
 	EntityHistoryOption = EntityHistoryType("option")
 )
 
-// MetricType
+// MetricType ...
 type MetricType string
 
 const (
@@ -142,11 +142,13 @@ type EntityType string
 // EntityId ...
 type EntityId string
 
+// NewEntityId ...
 func NewEntityId(s string) *EntityId {
 	e := EntityId(s)
 	return &e
 }
 
+// Name ...
 func (e EntityId) Name() string {
 	arr := strings.Split(string(e), ".")
 	if len(arr) > 1 {
@@ -155,6 +157,7 @@ func (e EntityId) Name() string {
 	return string(e)
 }
 
+// Type ...
 func (e EntityId) Type() EntityType {
 	arr := strings.Split(string(e), ".")
 	if len(arr) > 1 {
@@ -163,6 +166,7 @@ func (e EntityId) Type() EntityType {
 	return EntityType(e)
 }
 
+// String ...
 func (e *EntityId) String() string {
 	if e == nil {
 		return ""
@@ -171,27 +175,38 @@ func (e *EntityId) String() string {
 	}
 }
 
+// String ...
 func (e EntityType) String() string {
 	return string(e)
 }
 
+// AttributeType ...
 type AttributeType string
 
 const (
+	// AttributeString ...
 	AttributeString = AttributeType("string")
-	AttributeInt    = AttributeType("int")
-	AttributeTime   = AttributeType("time")
-	AttributeBool   = AttributeType("bool")
-	AttributeFloat  = AttributeType("float")
+	// AttributeInt ...
+	AttributeInt = AttributeType("int")
+	// AttributeTime ...
+	AttributeTime = AttributeType("time")
+	// AttributeBool ...
+	AttributeBool = AttributeType("bool")
+	// AttributeFloat ...
+	AttributeFloat = AttributeType("float")
 	//DEPRECATED
 	AttributeArray = AttributeType("array")
-	AttributeMap   = AttributeType("map")
+	// AttributeMap ...
+	AttributeMap = AttributeType("map")
 )
 
+// ConditionType ...
 type ConditionType string
 
 const (
-	ConditionOr  = ConditionType("or")
+	// ConditionOr ...
+	ConditionOr = ConditionType("or")
+	// ConditionAnd ...
 	ConditionAnd = ConditionType("and")
 )
 
@@ -204,3 +219,11 @@ const (
 	// ReleaseMode ...
 	ReleaseMode = RunMode("release")
 )
+
+// PageParams ...
+type PageParams struct {
+	Limit  int64  `json:"limit" validate:"required,gte=1,lte=1000"`
+	Offset int64  `json:"offset" validate:"required,gte=0,lte=1000"`
+	Order  string `json:"order" validate:"required,oneof=created_at"`
+	SortBy string `json:"sort_by" validate:"required,oneof=desc asc"`
+}

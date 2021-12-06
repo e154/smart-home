@@ -23,24 +23,26 @@ import (
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/initial/environments"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/validation"
 )
 
+// Default ...
 type Default struct{}
 
 // Demo ...
 func (e Default) InstallDemoData(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
-
 }
 
 // Create ...
 func (e Default) Create(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	scriptService scripts.ScriptService) {
+	scriptService scripts.ScriptService,
+	validation *validation.Validate) {
 
 	NewImageManager(adaptors).Create()
-	NewRoleManager(adaptors, accessList).Create()
+	NewRoleManager(adaptors, accessList, validation).Create()
 	NewTemplateManager(adaptors).Create()
 	NewZoneManager(adaptors).Create()
 	NewAreaManager(adaptors).Create()
@@ -51,11 +53,12 @@ func (e Default) Create(adaptors *adaptors.Adaptors,
 func (e Default) Upgrade(oldVersion int,
 	adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	scriptService scripts.ScriptService) {
+	scriptService scripts.ScriptService,
+	validation *validation.Validate) {
 
 	NewImageManager(adaptors).Upgrade(oldVersion)
 	NewTemplateManager(adaptors).Upgrade(oldVersion)
-	NewRoleManager(adaptors, accessList).Upgrade(oldVersion)
+	NewRoleManager(adaptors, accessList, validation).Upgrade(oldVersion)
 }
 
 func init() {

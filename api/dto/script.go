@@ -25,12 +25,15 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// Script ...
 type Script struct{}
 
+// NewScriptDto ...
 func NewScriptDto() Script {
 	return Script{}
 }
 
+// FromNewScriptRequest ...
 func (s Script) FromNewScriptRequest(req *api.NewScriptRequest) (script *m.Script) {
 	script = &m.Script{
 		Lang:        common.ScriptLang(req.Lang),
@@ -41,6 +44,7 @@ func (s Script) FromNewScriptRequest(req *api.NewScriptRequest) (script *m.Scrip
 	return
 }
 
+// FromUpdateScriptRequest ...
 func (s Script) FromUpdateScriptRequest(req *api.UpdateScriptRequest) (script *m.Script) {
 	script = &m.Script{
 		Id:          int64(req.Id),
@@ -52,6 +56,7 @@ func (s Script) FromUpdateScriptRequest(req *api.UpdateScriptRequest) (script *m
 	return
 }
 
+// FromExecSrcScriptRequest ...
 func (s Script) FromExecSrcScriptRequest(req *api.ExecSrcScriptRequest) (script *m.Script) {
 	script = &m.Script{
 		Lang:        common.ScriptLang(req.Lang),
@@ -62,6 +67,7 @@ func (s Script) FromExecSrcScriptRequest(req *api.ExecSrcScriptRequest) (script 
 	return
 }
 
+// ToGScript ...
 func (s Script) ToGScript(script *m.Script) (result *api.Script) {
 	result = &api.Script{
 		Id:          int32(script.Id),
@@ -75,6 +81,7 @@ func (s Script) ToGScript(script *m.Script) (result *api.Script) {
 	return
 }
 
+// ToSearchResult ...
 func (s Script) ToSearchResult(list []*m.Script) *api.SearchScriptListResult {
 
 	items := make([]*api.Script, 0, len(list))
@@ -88,6 +95,7 @@ func (s Script) ToSearchResult(list []*m.Script) *api.SearchScriptListResult {
 	}
 }
 
+// ToListResult ...
 func (s Script) ToListResult(list []*m.Script, total, limit, offset uint32) *api.GetScriptListResult {
 
 	items := make([]*api.Script, 0, len(list))

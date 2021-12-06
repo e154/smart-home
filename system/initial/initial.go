@@ -21,6 +21,7 @@ package initial
 import (
 	_ "github.com/e154/smart-home/system/initial/environments/default"
 	_ "github.com/e154/smart-home/system/initial/environments/example1"
+	"github.com/e154/smart-home/system/validation"
 
 	_ "github.com/e154/smart-home/plugins"
 	_ "github.com/e154/smart-home/system/initial/environments"
@@ -66,6 +67,7 @@ type Initial struct {
 	api           *api.Api
 	metrics       *metrics.MetricManager
 	gateClient    *gate_client.GateClient
+	validation    *validation.Validate
 }
 
 // NewInitial ...
@@ -79,7 +81,8 @@ func NewInitial(lc fx.Lifecycle,
 	automation automation.Automation,
 	api *api.Api,
 	metrics *metrics.MetricManager,
-	gateClient *gate_client.GateClient) *Initial {
+	gateClient *gate_client.GateClient,
+	validation *validation.Validate) *Initial {
 	initial := &Initial{
 		migrations:    migrations,
 		adaptors:      adaptors,
@@ -91,6 +94,7 @@ func NewInitial(lc fx.Lifecycle,
 		api:           api,
 		metrics:       metrics,
 		gateClient:    gateClient,
+		validation:    validation,
 	}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
@@ -152,14 +156,14 @@ func (n *Initial) checkForUpgrade() {
 		}
 
 		// create
-		environments.Create(tx, n.accessList, n.scriptService)
+		environments.Create(tx, n.accessList, n.scriptService, n.validation)
 	}
 
 	oldVersion, err := strconv.Atoi(v.Value)
 	So(err, ShouldBeNil)
 
 	// upgrade
-	environments.Upgrade(oldVersion, tx, n.accessList, n.scriptService)
+	environments.Upgrade(oldVersion, tx, n.accessList, n.scriptService, n.validation)
 
 	if oldVersion >= currentVersion {
 		tx.Commit()
@@ -178,9 +182,8 @@ func (n *Initial) Start() {
 
 	n.checkForUpgrade()
 	n.metrics.Start()
-	n.pluginManager.Start()
 	n.entityManager.SetPluginManager(n.pluginManager)
-	n.entityManager.LoadEntities()
+	n.pluginManager.Start()
 	n.automation.Start()
 	go n.api.Start()
 	n.gateClient.Start()

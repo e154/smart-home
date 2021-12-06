@@ -30,6 +30,7 @@ var (
 	log = common.MustGetLogger("access_list")
 )
 
+// AccessListService ...
 type AccessListService interface {
 	ReadConfig() (err error)
 	GetFullAccessList(roleName string) (accessList AccessList, err error)
@@ -115,6 +116,7 @@ func (a *accessListService) GetShotAccessList(role *m.Role) (err error) {
 	return
 }
 
+// List ...
 func (a *accessListService) List() *AccessList {
 	return a.list
 }

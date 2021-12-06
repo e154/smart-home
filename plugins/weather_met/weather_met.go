@@ -36,6 +36,7 @@ import (
 	"time"
 )
 
+// WeatherMet ...
 type WeatherMet struct {
 	adaptors *adaptors.Adaptors
 	eventBus event_bus.EventBus
@@ -43,6 +44,7 @@ type WeatherMet struct {
 	zones    *sync.Map
 }
 
+// NewWeatherMet ...
 func NewWeatherMet(eventBus event_bus.EventBus,
 	adaptors *adaptors.Adaptors) (weather *WeatherMet) {
 	weather = &WeatherMet{
@@ -55,10 +57,12 @@ func NewWeatherMet(eventBus event_bus.EventBus,
 	return
 }
 
+// AddWeather ...
 func (p *WeatherMet) AddWeather(entityId common.EntityId, settings m.Attributes) {
 	p.UpdateWeatherList(entityId, settings)
 }
 
+// UpdateWeatherList ...
 func (p *WeatherMet) UpdateWeatherList(entityId common.EntityId, settings m.Attributes) {
 
 	zone := Zone{
@@ -79,6 +83,7 @@ func (p *WeatherMet) UpdateWeatherList(entityId common.EntityId, settings m.Attr
 	p.UpdateForecastForAll()
 }
 
+// RemoveWeather ...
 func (p *WeatherMet) RemoveWeather(entityId common.EntityId) {
 	p.zones.Delete(entityId.Name())
 	log.Infof("unload weather_met.%s", entityId.Name())
@@ -89,6 +94,7 @@ func (p *WeatherMet) RemoveWeather(entityId common.EntityId) {
 	})
 }
 
+// UpdateForecastForAll ...
 func (p *WeatherMet) UpdateForecastForAll() (err error) {
 
 	p.lock.Lock()
@@ -110,6 +116,7 @@ func (p *WeatherMet) UpdateForecastForAll() (err error) {
 	return nil
 }
 
+// UpdateForecast ...
 func (p *WeatherMet) UpdateForecast(zone Zone) (err error) {
 
 	var forecast m.AttributeValue
@@ -129,6 +136,7 @@ func (p *WeatherMet) UpdateForecast(zone Zone) (err error) {
 	return nil
 }
 
+// GetForecast ...
 func (p *WeatherMet) GetForecast(params Zone, now time.Time) (forecast m.AttributeValue, err error) {
 
 	var zone Zone
@@ -154,6 +162,7 @@ func (p *WeatherMet) GetForecast(params Zone, now time.Time) (forecast m.Attribu
 	return
 }
 
+// FetchData ...
 func (p *WeatherMet) FetchData(name string, lat, lon float64, now time.Time) (zone Zone, err error) {
 
 	if lat == 0 || lon == 0 {

@@ -32,6 +32,7 @@ const (
 	queueSize = 30
 )
 
+// Notify ...
 type Notify interface {
 	Shutdown() error
 	Start() (err error)
@@ -139,6 +140,7 @@ func (n *notify) stop() {
 	n.isStarted.Store(false)
 }
 
+// Send ...
 func (n notify) Send(msg Message) {
 
 	if !n.isStarted.Load() {
@@ -241,6 +243,7 @@ func (n *notify) RemoveProvider(name string) {
 	delete(n.providerList, name)
 }
 
+// Provider ...
 func (n *notify) Provider(name string) (provider Provider, err error) {
 	if name == "" {
 		err = errors.New("provider is empty")

@@ -160,6 +160,7 @@ func (s *Server) handlerFunc(ctx *gin.Context) {
 	ctx.Writer.Write(b)
 }
 
+// OnLaunchHandler ...
 func (s *Server) OnLaunchHandler(ctx *gin.Context, req *Request, resp *Response) {
 	s.skillLock.Lock()
 	defer s.skillLock.Unlock()
@@ -169,6 +170,7 @@ func (s *Server) OnLaunchHandler(ctx *gin.Context, req *Request, resp *Response)
 	}
 }
 
+// OnIntentHandle ...
 func (s *Server) OnIntentHandle(ctx *gin.Context, req *Request, resp *Response) {
 	s.skillLock.Lock()
 	defer s.skillLock.Unlock()
@@ -178,6 +180,7 @@ func (s *Server) OnIntentHandle(ctx *gin.Context, req *Request, resp *Response) 
 	}
 }
 
+// OnSessionEndedHandler ...
 func (s *Server) OnSessionEndedHandler(ctx *gin.Context, req *Request, resp *Response) {
 	s.skillLock.Lock()
 	defer s.skillLock.Unlock()
@@ -187,6 +190,7 @@ func (s *Server) OnSessionEndedHandler(ctx *gin.Context, req *Request, resp *Res
 	}
 }
 
+// OnAudioPlayerHandler ...
 func (s *Server) OnAudioPlayerHandler(ctx *gin.Context, req *Request, resp *Response) {
 	s.skillLock.Lock()
 	defer s.skillLock.Unlock()

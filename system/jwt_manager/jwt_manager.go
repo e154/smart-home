@@ -41,6 +41,7 @@ type jwtManager struct {
 	hmacKey       []byte
 }
 
+// NewJwtManager ...
 func NewJwtManager(lc fx.Lifecycle,
 	adaptors *adaptors.Adaptors) (mananger JwtManager) {
 
@@ -55,11 +56,13 @@ func NewJwtManager(lc fx.Lifecycle,
 	return
 }
 
+// Start ...
 func (j *jwtManager) Start() (err error) {
 	_, err = j.getSecretKey()
 	return
 }
 
+// Generate ...
 func (j *jwtManager) Generate(user *m.User, opts ...*time.Time) (accessToken string, err error) {
 
 	var exp *int64
@@ -89,6 +92,7 @@ func (j *jwtManager) Generate(user *m.User, opts ...*time.Time) (accessToken str
 	return
 }
 
+// Verify ...
 func (j *jwtManager) Verify(accessToken string) (claims *UserClaims, err error) {
 
 	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
@@ -144,6 +148,7 @@ func (j *jwtManager) getSecretKey() (hmacKey []byte, err error) {
 	return
 }
 
+// SetHmacKey ...
 func (j *jwtManager) SetHmacKey(hmacKey []byte) {
 	j.hmacKey = hmacKey
 }

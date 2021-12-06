@@ -20,7 +20,6 @@ package plugins
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -30,9 +29,9 @@ import (
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/pkg/errors"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
-	"sync"
 )
 
 var (
@@ -43,10 +42,11 @@ type pluginManager struct {
 	adaptors       *adaptors.Adaptors
 	isStarted      *atomic.Bool
 	service        *service
-	loadLock       *sync.Mutex
+	eventBus       event_bus.EventBus
 	enabledPlugins map[string]bool
 }
 
+// NewPluginManager ...
 func NewPluginManager(lc fx.Lifecycle,
 	adaptors *adaptors.Adaptors,
 	bus event_bus.EventBus,
@@ -54,11 +54,12 @@ func NewPluginManager(lc fx.Lifecycle,
 	mqttServ mqtt.MqttServ,
 	scriptService scripts.ScriptService,
 	appConfig *m.AppConfig,
-	gateClient *gate_client.GateClient) common.PluginManager {
+	gateClient *gate_client.GateClient,
+	eventBus event_bus.EventBus) common.PluginManager {
 	pluginManager := &pluginManager{
 		adaptors:       adaptors,
 		isStarted:      atomic.NewBool(false),
-		loadLock:       &sync.Mutex{},
+		eventBus:       eventBus,
 		enabledPlugins: make(map[string]bool),
 	}
 	pluginManager.service = &service{
@@ -81,6 +82,7 @@ func NewPluginManager(lc fx.Lifecycle,
 	return pluginManager
 }
 
+// Start ...
 func (p *pluginManager) Start() {
 	if p.isStarted.Load() {
 		return
@@ -92,6 +94,7 @@ func (p *pluginManager) Start() {
 	p.loadPlugins()
 }
 
+// Shutdown ...
 func (p *pluginManager) Shutdown() {
 
 	if !p.isStarted.Load() {
@@ -104,7 +107,8 @@ func (p *pluginManager) Shutdown() {
 			continue
 		}
 		log.Infof("unload plugin '%s'", name)
-		if plugin, ok := pluginList[name]; ok {
+		if item, ok := pluginList.Load(name); ok {
+			plugin := item.(Plugable)
 			plugin.Unload()
 		}
 		p.enabledPlugins[name] = false
@@ -113,28 +117,22 @@ func (p *pluginManager) Shutdown() {
 	log.Info("Shutdown")
 }
 
+// GetPlugin ...
 func (p *pluginManager) GetPlugin(t string) (plugin interface{}, err error) {
-	p.loadLock.Lock()
-	defer p.loadLock.Unlock()
 
-	plugin, err = p.unsafeGetPlugin(t)
+	plugin, err = p.getPlugin(t)
 
 	return
 }
 
-func (p *pluginManager) unsafeGetPlugin(t string) (plugin Plugable, err error) {
+func (p *pluginManager) getPlugin(name string) (plugin Plugable, err error) {
 
-	if enabled := p.enabledPlugins[t]; !enabled {
-		err = fmt.Errorf("plugin '%v' disabled", t)
+	if item, ok := pluginList.Load(name); ok {
+		plugin = item.(Plugable)
 		return
 	}
 
-	var ok bool
-	if plugin, ok = pluginList[t]; ok {
-		return
-	}
-
-	err = fmt.Errorf("plugin '%v' not found", t)
+	err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
 
 	return
 }
@@ -176,18 +174,23 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 		err = errors.New(fmt.Sprintf("plugin '%s' is loaded", name))
 		return
 	}
-
-	if plugin, ok := pluginList[name]; ok {
+	if item, ok := pluginList.Load(name); ok {
+		plugin := item.(Plugable)
 		log.Infof("load plugin %v", plugin.Name())
 		if err = plugin.Load(p.service); err != nil {
+			err = errors.Wrap(err, "load plugin")
 			return
 		}
 	} else {
-		err = errors.New("not found")
-		return
+		err = common.ErrNotFound
 	}
 
 	p.enabledPlugins[name] = true
+
+	p.eventBus.Publish(event_bus.TopicPlugins, event_bus.EventLoadedPlugin{
+		PluginName: common.EntityType(name),
+	})
+
 	return
 }
 
@@ -198,18 +201,24 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 		return
 	}
 
-	if plugin, ok := pluginList[name]; ok {
+	if item, ok := pluginList.Load(name); ok {
+		plugin := item.(Plugable)
 		log.Infof("unload plugin %v", plugin.Name())
 		plugin.Unload()
 	} else {
-		err = errors.New("not found")
-		return
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
 	}
 
 	p.enabledPlugins[name] = false
+
+	p.eventBus.Publish(event_bus.TopicPlugins, event_bus.EventUnloadedPlugin{
+		PluginName: common.EntityType(name),
+	})
+
 	return
 }
 
+// Install ...
 func (p *pluginManager) Install(t string) {
 
 	pl, _ := p.adaptors.Plugin.GetByName(t)
@@ -217,10 +226,7 @@ func (p *pluginManager) Install(t string) {
 		return
 	}
 
-	p.loadLock.Lock()
-	defer p.loadLock.Unlock()
-
-	plugin, err := p.unsafeGetPlugin(t)
+	plugin, err := p.getPlugin(t)
 	if err != nil {
 		return
 	}
@@ -251,49 +257,63 @@ func (p *pluginManager) Install(t string) {
 	}
 }
 
+// Uninstall ...
 func (p *pluginManager) Uninstall(name string) {
 
 }
 
+// EnablePlugin ...
 func (p *pluginManager) EnablePlugin(name string) (err error) {
 	if err = p.loadPlugin(name); err != nil {
 		return
 	}
-	pl := pluginList[name]
-	err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
-		Name:    pl.Name(),
-		Version: pl.Version(),
-		Enabled: true,
-		System:  pl.Type() == PluginBuiltIn,
-	})
+	if item, ok := pluginList.Load(name); ok {
+		plugin := item.(Plugable)
+		err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+			Name:    plugin.Name(),
+			Version: plugin.Version(),
+			Enabled: true,
+			System:  plugin.Type() == PluginBuiltIn,
+		})
+	} else {
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
+	}
 	return
 }
 
+// DisablePlugin ...
 func (p *pluginManager) DisablePlugin(name string) (err error) {
 	if err = p.unloadPlugin(name); err != nil {
 		return
 	}
-	pl := pluginList[name]
-	err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
-		Name:    pl.Name(),
-		Version: pl.Version(),
-		Enabled: false,
-		System:  pl.Type() == PluginBuiltIn,
-	})
+	if item, ok := pluginList.Load(name); ok {
+		plugin := item.(Plugable)
+		err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
+			Name:    plugin.Name(),
+			Version: plugin.Version(),
+			Enabled: false,
+			System:  plugin.Type() == PluginBuiltIn,
+		})
+	} else {
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
+	}
 	return
 }
 
+// PluginList ...
 func (p *pluginManager) PluginList() (list []common.PluginInfo, total int64, err error) {
-	t := len(pluginList)
-	list = make([]common.PluginInfo, 0, t)
-	total = int64(t)
-	for _, pl := range pluginList {
+
+	list = make([]common.PluginInfo, 0)
+	pluginList.Range(func(key, value interface{}) bool {
+		total++
+		plugin := value.(Plugable)
 		list = append(list, common.PluginInfo{
-			Name:    pl.Name(),
-			Version: pl.Version(),
-			Enabled: p.enabledPlugins[pl.Name()],
-			System:  pl.Type() == PluginBuiltIn,
+			Name:    plugin.Name(),
+			Version: plugin.Version(),
+			Enabled: p.enabledPlugins[plugin.Name()],
+			System:  plugin.Type() == PluginBuiltIn,
 		})
-	}
+		return true
+	})
 	return
 }

@@ -24,73 +24,87 @@ import (
 )
 
 const (
+	// Attribution ...
 	Attribution = "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute."
 )
 
+// MaxTemperature ...
 type MaxTemperature struct {
 	Id    string `xml:"id,attr"`
 	Unit  string `xml:"unit,attr"`
 	Value string `xml:"value,attr"`
 }
 
+// MinTemperature ...
 type MinTemperature struct {
 	Id    string `xml:"id,attr"`
 	Unit  string `xml:"unit,attr"`
 	Value string `xml:"value,attr"`
 }
 
+// Symbol ...
 type Symbol struct {
 	Id     string `xml:"id,attr"`
 	Number string `xml:"number,attr"`
 }
 
+// Precipitation ...
 type Precipitation struct {
 	Unit  string `xml:"unit,attr"`
 	Value string `xml:"value,attr"`
 }
 
+// DewpointTemperature ...
 type DewpointTemperature struct {
 	Id    string `xml:"id,attr"`
 	Unit  string `xml:"unit,attr"`
 	Value string `xml:"value,attr"`
 }
 
+// HighClouds ...
 type HighClouds struct {
 	Id      string `xml:"id,attr"`
 	Percent string `xml:"percent,attr"`
 }
 
+// MediumClouds ...
 type MediumClouds struct {
 	Id      string `xml:"id,attr"`
 	Percent string `xml:"percent,attr"`
 }
 
+// LowClouds ...
 type LowClouds struct {
 	Id      string `xml:"id,attr"`
 	Percent string `xml:"percent,attr"`
 }
 
+// Fog ...
 type Fog struct {
 	Id      string `xml:"id,attr"`
 	Percent string `xml:"percent,attr"`
 }
 
+// Cloudiness ...
 type Cloudiness struct {
 	Id      string `xml:"id,attr"`
 	Percent string `xml:"percent,attr"`
 }
 
+// Pressure ...
 type Pressure struct {
 	Id    string `xml:"id,attr"`
 	Unit  string `xml:"unit,attr"`
 	Value string `xml:"value,attr"`
 }
 
+// Humidity ...
 type Humidity struct {
 	Unit  string `xml:"unit,attr"`
 	Value string `xml:"value,attr"`
 }
 
+// WindSpeed ...
 type WindSpeed struct {
 	Id       string `xml:"id,attr"`
 	Mps      string `xml:"mps,attr"`
@@ -98,18 +112,21 @@ type WindSpeed struct {
 	Name     string `xml:"name,attr"`
 }
 
+// WindDirection ...
 type WindDirection struct {
 	Id   string `xml:"id,attr"`
 	Deg  string `xml:"deg,attr"`
 	Name string `xml:"name,attr"`
 }
 
+// Temperature ...
 type Temperature struct {
 	Id    string `xml:"id,attr"`
 	Unit  string `xml:"unit,attr"`
 	Value string `xml:"value,attr"`
 }
 
+// Location ...
 type Location struct {
 	Altitude            string               `xml:"altitude,attr"`
 	Latitude            string               `xml:"latitude,attr"`
@@ -131,6 +148,7 @@ type Location struct {
 	MaxTemperature      *MaxTemperature      `xml:"maxTemperature,omitempty" json:"maxTemperature,omitempty"`
 }
 
+// Product ...
 type Product struct {
 	Datatype string    `xml:"datatype,attr"`
 	From     time.Time `xml:"from,attr"`
@@ -138,6 +156,7 @@ type Product struct {
 	Location Location  `xml:"location"`
 }
 
+// Products ...
 type Products []Product
 
 // Len ...
@@ -155,11 +174,13 @@ func (p Products) Less(a, b int) bool {
 	return p[a].From.Unix() < p[b].From.Unix()
 }
 
+// Weatherdata ...
 type Weatherdata struct {
 	XMLName  xml.Name `xml:"weatherdata"`
 	Products Products `xml:"product>time"`
 }
 
+// Zone ...
 type Zone struct {
 	Name        string       `json:"name"`
 	Lat         float64      `json:"lat"`

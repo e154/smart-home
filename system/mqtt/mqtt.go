@@ -101,12 +101,13 @@ func (m *Mqtt) Shutdown() (err error) {
 	m.clientsLock.Unlock()
 
 	if m.server != nil {
-		ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(100 * time.Millisecond))
+		ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(100*time.Millisecond))
 		err = m.server.Stop(ctx)
 	}
 	return
 }
 
+// Start ...
 func (m *Mqtt) Start() {
 
 	ln, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", m.cfg.Port))
@@ -284,6 +285,7 @@ func (m *Mqtt) logging() *zap.Logger {
 	return zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Named("mqtt")
 }
 
+// Authenticator ...
 func (m *Mqtt) Authenticator() mqtt_authenticator.MqttAuthenticator {
 	return m.authenticator
 }

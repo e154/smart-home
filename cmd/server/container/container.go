@@ -44,6 +44,7 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	"github.com/e154/smart-home/system/stream"
+	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"go.uber.org/fx"
 )
@@ -56,6 +57,7 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			func() (*models.AppConfig, error) {
 				return config.ReadConfig("conf", "config.json", "")
 			},
+			validation.NewValidate,
 			NewOrmConfig,
 			orm.NewOrm,
 			NewMigrationsConfig,

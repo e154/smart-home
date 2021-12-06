@@ -320,6 +320,7 @@ func (z *zigbee2mqtt) DeviceRename(friendlyName, name string) (err error) {
 	return
 }
 
+// Authenticator ...
 func (z *zigbee2mqtt) Authenticator(login, password string) (err error) {
 
 	z.bridgesLock.Lock()

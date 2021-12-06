@@ -28,12 +28,14 @@ import (
 	"time"
 )
 
+// Attribute ...
 type Attribute struct {
 	Name  string               `json:"name"`
 	Type  common.AttributeType `json:"type"`
 	Value interface{}          `json:"value,omitempty"`
 }
 
+// String ...
 func (a Attribute) String() string {
 	if a.Value == nil {
 		return ""
@@ -44,6 +46,7 @@ func (a Attribute) String() string {
 	return fmt.Sprintf("%v", a.Value)
 }
 
+// Int64 ...
 func (a Attribute) Int64() int64 {
 	if a.Value == nil {
 		return 0
@@ -63,6 +66,7 @@ func (a Attribute) Int64() int64 {
 	return 0
 }
 
+// Time ...
 func (a Attribute) Time() time.Time {
 	if value, ok := a.Value.(time.Time); ok {
 		return value
@@ -75,6 +79,7 @@ func (a Attribute) Time() time.Time {
 	return time.Time{}
 }
 
+// Bool ...
 func (a Attribute) Bool() bool {
 	if a.Value == nil {
 		return false
@@ -85,6 +90,7 @@ func (a Attribute) Bool() bool {
 	return false
 }
 
+// Float64 ...
 func (a Attribute) Float64() float64 {
 	if a.Value == nil {
 		return 0
@@ -95,6 +101,7 @@ func (a Attribute) Float64() float64 {
 	return float64(a.Int64())
 }
 
+// Map ...
 func (a Attribute) Map() Attributes {
 	if value, ok := a.Value.(Attributes); ok {
 		return value
@@ -102,10 +109,13 @@ func (a Attribute) Map() Attributes {
 	return nil
 }
 
+// AttributeValue ...
 type AttributeValue map[string]interface{}
 
+// Attributes ...
 type Attributes map[string]*Attribute
 
+// Serialize ...
 func (a Attributes) Serialize() (to AttributeValue) {
 
 	var serialize func(from Attributes, to AttributeValue)
@@ -164,6 +174,7 @@ func (a Attributes) Serialize() (to AttributeValue) {
 	return
 }
 
+// Deserialize ...
 func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 
 	var deserialize func(from AttributeValue, to Attributes)
@@ -274,6 +285,7 @@ func (a Attributes) Deserialize(data AttributeValue) (changed bool, err error) {
 	return
 }
 
+// Signature ...
 func (a Attributes) Signature() (signature Attributes) {
 
 	var serialize func(from, to Attributes)
@@ -336,6 +348,7 @@ func (a Attributes) Signature() (signature Attributes) {
 	return
 }
 
+// Copy ...
 func (a Attributes) Copy() (copy Attributes) {
 	var buf bytes.Buffer
 

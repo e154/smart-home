@@ -38,12 +38,14 @@ type plugin struct {
 	notify Notify
 }
 
+// New ...
 func New() plugins.Plugable {
 	return &plugin{
 		Plugin: plugins.NewPlugin(),
 	}
 }
 
+// Load ...
 func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
@@ -57,6 +59,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	return nil
 }
 
+// Unload ...
 func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
@@ -79,18 +82,22 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 	return
 }
 
+// Name ...
 func (p *plugin) Name() string {
 	return Name
 }
 
+// Type ...
 func (p *plugin) Type() plugins.PluginType {
 	return plugins.PluginBuiltIn
 }
 
+// Depends ...
 func (p *plugin) Depends() []string {
 	return nil
 }
 
+// Version ...
 func (p *plugin) Version() string {
 	return "0.0.1"
 }
@@ -105,6 +112,7 @@ func (p *plugin) RemoveProvider(name string) {
 	p.notify.RemoveProvider(name)
 }
 
+// Provider ...
 func (p *plugin) Provider(name string) (provider Provider, err error) {
 	panic("implement me")
 }

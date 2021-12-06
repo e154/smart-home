@@ -123,7 +123,6 @@ func (n *Logs) Search(query string, limit, offset int) (list []*Log, total int64
 		Offset(offset).
 		Order("body ASC")
 
-
 	list = make([]*Log, 0)
 	err = q.Find(&list).Error
 

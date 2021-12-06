@@ -30,10 +30,12 @@ type baseTrigger struct {
 	name         string
 }
 
+// Name ...
 func (b *baseTrigger) Name() string {
 	return b.name
 }
 
+// FunctionName ...
 func (b *baseTrigger) FunctionName() string {
 	return b.functionName
 }

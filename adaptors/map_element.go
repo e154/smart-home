@@ -27,6 +27,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IMapElement ...
 type IMapElement interface {
 	Add(ver *m.MapElement) (id int64, err error)
 	GetById(mapId int64) (ver *m.MapElement, err error)

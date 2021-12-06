@@ -27,6 +27,7 @@ import (
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
@@ -41,6 +42,7 @@ type CommonEndpoint struct {
 	entityManager entity_manager.EntityManager
 	mqtt          mqtt.MqttServ
 	jwtManager    jwt_manager.JwtManager
+	validation    *validation.Validate
 }
 
 // NewCommonEndpoint ...
@@ -53,6 +55,7 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 	entityManager entity_manager.EntityManager,
 	mqtt mqtt.MqttServ,
 	jwtManager jwt_manager.JwtManager,
+	validation *validation.Validate,
 ) *CommonEndpoint {
 	return &CommonEndpoint{
 		adaptors:      adaptors,
@@ -64,5 +67,6 @@ func NewCommonEndpoint(adaptors *adaptors.Adaptors,
 		entityManager: entityManager,
 		mqtt:          mqtt,
 		jwtManager:    jwtManager,
+		validation:    validation,
 	}
 }

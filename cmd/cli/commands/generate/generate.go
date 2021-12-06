@@ -28,6 +28,7 @@ var (
 )
 
 var (
+	// Generate ...
 	Generate = &cobra.Command{
 		Use:   "g [command]",
 		Short: "Source code generator",

@@ -39,6 +39,7 @@ type plugin struct {
 	actor *Actor
 }
 
+// New ...
 func New() plugins.Plugable {
 	p := &plugin{
 		Plugin: plugins.NewPlugin(),
@@ -47,6 +48,7 @@ func New() plugins.Plugable {
 	return p
 }
 
+// Load ...
 func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
@@ -115,6 +117,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	return nil
 }
 
+// Unload ...
 func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
@@ -123,22 +126,27 @@ func (p *plugin) Unload() (err error) {
 	return nil
 }
 
+// Name ...
 func (p plugin) Name() string {
 	return Name
 }
 
+// Type ...
 func (p *plugin) Type() plugins.PluginType {
 	return plugins.PluginBuiltIn
 }
 
+// Depends ...
 func (p *plugin) Depends() []string {
 	return nil
 }
 
+// Version ...
 func (p *plugin) Version() string {
 	return "0.0.1"
 }
 
+// Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		ActorAttrs: NewAttr(),

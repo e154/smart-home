@@ -22,6 +22,7 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
+// NewEntity ...
 func NewEntity(a PluginActor) m.EntityShort {
 
 	info := a.Info()

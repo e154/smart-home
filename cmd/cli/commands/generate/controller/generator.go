@@ -156,8 +156,10 @@ func init() {
 	}
 }
 
+// Generator ...
 type Generator struct{}
 
+// Generate ...
 func (e Generator) Generate(controllerName, currpath string) {
 
 	log.Infof("Using '%s' as controller name", controllerName)

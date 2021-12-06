@@ -26,6 +26,7 @@ import (
 	"time"
 )
 
+// PluginActor ...
 type PluginActor interface {
 
 	// Spawn ...
@@ -47,8 +48,10 @@ type PluginActor interface {
 	Info() ActorInfo
 }
 
+// ActorConstructor ...
 type ActorConstructor func() PluginActor
 
+// EntityManager ...
 type EntityManager interface {
 
 	// SetPluginManager ...
@@ -94,6 +97,7 @@ type EntityManager interface {
 	Update(*m.Entity) error
 }
 
+// ActorAction ...
 type ActorAction struct {
 	Name         string          `json:"name"`
 	Description  string          `json:"description"`
@@ -102,6 +106,7 @@ type ActorAction struct {
 	ScriptEngine *scripts.Engine `json:"-"`
 }
 
+// ToEntityActionShort ...
 func ToEntityActionShort(from map[string]ActorAction) (to map[string]m.EntityActionShort) {
 	to = make(map[string]m.EntityActionShort)
 	for k, v := range from {
@@ -115,6 +120,7 @@ func ToEntityActionShort(from map[string]ActorAction) (to map[string]m.EntityAct
 	return
 }
 
+// ActorState ...
 type ActorState struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
@@ -122,6 +128,7 @@ type ActorState struct {
 	Icon        *string `json:"icon"`
 }
 
+// ToEntityStateShort ...
 func ToEntityStateShort(from map[string]ActorState) (to map[string]m.EntityStateShort) {
 	to = make(map[string]m.EntityStateShort)
 	for k, v := range from {
@@ -135,6 +142,7 @@ func ToEntityStateShort(from map[string]ActorState) (to map[string]m.EntityState
 	return
 }
 
+// Copy ...
 func (a *ActorState) Copy() (state *ActorState) {
 
 	if a == nil {
@@ -154,6 +162,7 @@ func (a *ActorState) Copy() (state *ActorState) {
 	return
 }
 
+// Message ...
 type Message struct {
 	From    common.EntityId
 	To      common.EntityId
@@ -161,9 +170,13 @@ type Message struct {
 }
 
 const (
-	StateAwait     = "await"
-	StateOk        = "ok"
-	StateError     = "error"
+	// StateAwait ...
+	StateAwait = "await"
+	// StateOk ...
+	StateOk = "ok"
+	// StateError ...
+	StateError = "error"
+	// StateInProcess ...
 	StateInProcess = "in process"
 )
 
@@ -173,6 +186,7 @@ type actorInfo struct {
 	OldState event_bus.EventEntityState
 }
 
+// ActorInfo ...
 type ActorInfo struct {
 	Id                common.EntityId        `json:"id"`
 	ParentId          *common.EntityId       `json:"parent_id"`

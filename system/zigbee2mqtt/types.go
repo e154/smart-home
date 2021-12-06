@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// Zigbee2mqtt ...
 type Zigbee2mqtt interface {
 	Start()
 	Shutdown()

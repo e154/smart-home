@@ -26,6 +26,7 @@ import (
 	"sort"
 )
 
+// IMap ...
 type IMap interface {
 	Add(ver *m.Map) (id int64, err error)
 	GetById(mapId int64) (ver *m.Map, err error)

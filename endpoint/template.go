@@ -20,7 +20,7 @@ package endpoint
 
 import (
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 )
 
 // TemplateEndpoint ...
@@ -36,10 +36,10 @@ func NewTemplateEndpoint(common *CommonEndpoint) *TemplateEndpoint {
 }
 
 // UpdateOrCreate ...
-func (t *TemplateEndpoint) UpdateOrCreate(params *m.Template) (errs []*validation.Error, err error) {
+func (t *TemplateEndpoint) UpdateOrCreate(params *m.Template) (errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = t.validation.Valid(params); !ok {
 		return
 	}
 
@@ -50,10 +50,10 @@ func (t *TemplateEndpoint) UpdateOrCreate(params *m.Template) (errs []*validatio
 }
 
 // UpdateStatus ...
-func (t *TemplateEndpoint) UpdateStatus(params *m.Template) (errs []*validation.Error, err error) {
+func (t *TemplateEndpoint) UpdateStatus(params *m.Template) (errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = t.validation.Valid(params); !ok {
 		return
 	}
 

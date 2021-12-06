@@ -25,26 +25,41 @@ import (
 )
 
 const (
-	Name             = "cgminer"
+	// Name ...
+	Name = "cgminer"
+	// FuncEntityAction ...
 	FuncEntityAction = "entityAction"
 )
 
 const (
-	SettingHost         = "host"
-	SettingPort         = "port"
-	SettingTimeout      = "timeout"
-	SettingUser         = "user"
-	SettingPass         = "pass"
+	// SettingHost ...
+	SettingHost = "host"
+	// SettingPort ...
+	SettingPort = "port"
+	// SettingTimeout ...
+	SettingTimeout = "timeout"
+	// SettingUser ...
+	SettingUser = "user"
+	// SettingPass ...
+	SettingPass = "pass"
+	// SettingManufacturer ...
 	SettingManufacturer = "manufacturer"
-	SettingModel        = "model"
+	// SettingModel ...
+	SettingModel = "model"
 
-	StateEnabled  = "ENABLED"
+	// StateEnabled ...
+	StateEnabled = "ENABLED"
+	// StateDisabled ...
 	StateDisabled = "DISABLED"
-	StateError    = "ERROR"
+	// StateError ...
+	StateError = "ERROR"
 
+	// ActionEnabled ...
 	ActionEnabled = "ENABLE"
+	// ActionDisable ...
 	ActionDisable = "DISABLE"
-	ActionCheck   = "CHECK"
+	// ActionCheck ...
+	ActionCheck = "CHECK"
 )
 
 // store entity status in this struct
@@ -125,6 +140,7 @@ func NewActions() map[string]entity_manager.ActorAction {
 	}
 }
 
+// IMiner ...
 type IMiner interface {
 	Stats() (data []byte, err error)
 	Devs() (data []byte, err error)
@@ -140,5 +156,3 @@ type IMiner interface {
 	Quit() error
 	Bind() interface{}
 }
-
-

@@ -31,6 +31,7 @@ import (
 	"time"
 )
 
+// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	eventBus      event_bus.EventBus
@@ -42,6 +43,7 @@ type Actor struct {
 	horizonState  string
 }
 
+// NewActor ...
 func NewActor(entity *m.Entity,
 	entityManager entity_manager.EntityManager,
 	eventBus event_bus.EventBus) *Actor {
@@ -73,6 +75,7 @@ func NewActor(entity *m.Entity,
 	return actor
 }
 
+// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 	e.UpdateMoonPosition(time.Now())
 	return e
@@ -90,6 +93,7 @@ func (e *Actor) setPosition(settings m.Attributes) {
 	e.lon = settings[AttrLon].Float64()
 }
 
+// UpdateMoonPosition ...
 func (e *Actor) UpdateMoonPosition(now time.Time) {
 
 	e.positionLock.Lock()

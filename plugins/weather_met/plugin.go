@@ -27,7 +27,9 @@ import (
 )
 
 const (
-	Name          = "weather_met"
+	// Name ...
+	Name = "weather_met"
+	// DefaultApiUrl ...
 	DefaultApiUrl = "https://api.met.no/weatherapi/locationforecast/2.0/classic"
 )
 
@@ -49,6 +51,7 @@ type plugin struct {
 	weather *WeatherMet
 }
 
+// New ...
 func New() plugins.Plugable {
 	return &plugin{
 		Plugin: plugins.NewPlugin(),
@@ -57,6 +60,7 @@ func New() plugins.Plugable {
 	}
 }
 
+// Load ...
 func (p *plugin) Load(service plugins.Service) (err error) {
 	if err = p.Plugin.Load(service); err != nil {
 		return
@@ -95,6 +99,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 	return
 }
 
+// Unload ...
 func (p *plugin) Unload() (err error) {
 	if err = p.Plugin.Unload(); err != nil {
 		return
@@ -106,6 +111,7 @@ func (p *plugin) Unload() (err error) {
 	return nil
 }
 
+// Name ...
 func (p plugin) Name() string {
 	return Name
 }
@@ -135,14 +141,17 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 	}
 }
 
+// Type ...
 func (p *plugin) Type() plugins.PluginType {
 	return plugins.PluginBuiltIn
 }
 
+// Depends ...
 func (p *plugin) Depends() []string {
 	return []string{weather.Name}
 }
 
+// Version ...
 func (p *plugin) Version() string {
 	return "0.0.1"
 }

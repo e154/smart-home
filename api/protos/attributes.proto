@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "/api";
+
+message Attribute {
+  string name = 1;
+  string type = 2;
+}

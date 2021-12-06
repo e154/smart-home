@@ -31,6 +31,7 @@ const (
 	taskMsgBuffer = 50
 )
 
+// Task ...
 type Task struct {
 	model          *m.Task
 	automation     *automation
@@ -44,6 +45,7 @@ type Task struct {
 	rawPlugin      triggers.IGetTrigger
 }
 
+// NewTask ...
 func NewTask(automation *automation,
 	scriptService scripts.ScriptService,
 	model *m.Task,
@@ -60,10 +62,12 @@ func NewTask(automation *automation,
 	}
 }
 
+// Id ...
 func (t *Task) Id() int64 {
 	return t.model.Id
 }
 
+// Name ...
 func (t *Task) Name() string {
 	return t.model.Name
 }
@@ -144,6 +148,7 @@ func (t *Task) addTrigger(model *m.Trigger) (err error) {
 	return
 }
 
+// Start ...
 func (t *Task) Start() {
 	if t.enabled.Load() {
 		return
@@ -181,6 +186,7 @@ func (t *Task) Start() {
 	}
 }
 
+// Stop ...
 func (t *Task) Stop() {
 	if !t.enabled.Load() {
 		return

@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IRole ...
 type IRole interface {
 	Add(role *m.Role) (err error)
 	GetByName(name string) (role *m.Role, err error)

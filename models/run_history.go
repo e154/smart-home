@@ -20,10 +20,12 @@ package models
 
 import "time"
 
+// RunStory ...
 type RunStory struct {
 	Id    int64      `json:"id"`
 	Start time.Time  `json:"start"`
 	End   *time.Time `json:"end"`
 }
 
+// RunHistory ...
 type RunHistory []RunStory

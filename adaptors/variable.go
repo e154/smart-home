@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IVariable ...
 type IVariable interface {
 	Add(ver m.Variable) (err error)
 	CreateOrUpdate(ver m.Variable) (err error)

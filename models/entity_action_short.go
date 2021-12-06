@@ -18,6 +18,7 @@
 
 package models
 
+// EntityActionShort ...
 type EntityActionShort struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`

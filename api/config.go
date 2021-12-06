@@ -23,6 +23,6 @@ type Config struct {
 	GrpcHostPort string
 	HttpHostPort string
 	PromHostPort string
-	WsHostPort string
-	Swagger bool
+	WsHostPort   string
+	Swagger      bool
 }

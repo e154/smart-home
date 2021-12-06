@@ -236,7 +236,6 @@ func (p *plugin) Options() m.PluginOptions {
 	}
 }
 
-
 `
 
 var typesTpl = `//CODE GENERATED AUTOMATICALLY
@@ -350,8 +349,10 @@ func init() {
 	}
 }
 
+// Generator ...
 type Generator struct{}
 
+// Generate ...
 func (e Generator) Generate(pluginName, currpath string) {
 
 	log.Infof("Using '%s' as controller name", pluginName)

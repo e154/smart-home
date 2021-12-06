@@ -40,6 +40,7 @@ import (
 	"{{.Dir}}/common"
 	m "{{.Dir}}/models"
 	"{{.Dir}}/system/validation"
+	"github.com/go-playground/validator/v10"
 )
 
 // {{.Name}} ...
@@ -55,11 +56,11 @@ func New{{.Name}}(common *CommonEndpoint) *{{.Name}} {
 }
 
 // Add ...
-func (n *{{.Name}}) Add(params m.{{.ModelName}}) (result m.{{.ModelName}}, errs []*validation.Error, err error) {
+func (n *{{.Name}}) Add(params m.{{.ModelName}}) (result m.{{.ModelName}}, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = params.Valid()
-	if len(errs) > 0 {
-		return
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
+		return 
 	}
 
 	var id int64
@@ -81,7 +82,7 @@ func (n *{{.Name}}) GetById(id int64) (result m.{{.ModelName}}, err error) {
 }
 
 // Update ...
-func (n *{{.Name}}) Update(params m.{{.ModelName}}) (result m.{{.ModelName}}, errs []*validation.Error, err error) {
+func (n *{{.Name}}) Update(params m.{{.ModelName}}) (result m.{{.ModelName}}, errs validator.ValidationErrorsTranslations, err error) {
 
 	var user m.{{.ModelName}}
 	if user, err = n.adaptors.{{.AdaptorName}}.GetById(params.Id); err != nil {
@@ -90,10 +91,9 @@ func (n *{{.Name}}) Update(params m.{{.ModelName}}) (result m.{{.ModelName}}, er
 
 	common.Copy(&user, &params, common.JsonEngine)
 
-	// validation
-	_, errs = user.Valid()
-	if len(errs) > 0 {
-		return
+	var ok bool
+	if ok, errs = n.validation.Valid(user); !ok {
+		return 
 	}
 
 	if err = n.adaptors.{{.AdaptorName}}.Update(user); err != nil {
@@ -125,9 +125,9 @@ func (n *{{.Name}}) Delete(id int64) (err error) {
 
 // Search ...
 func (n *{{.Name}}) Search(query string, limit, offset int) (result []m.{{.ModelName}}, total int64, err error) {
-	
+
 	//result, total, err = n.adaptors.{{.AdaptorName}}.Search(query, limit, offset)
-	
+
 	return
 }
 `
@@ -161,8 +161,10 @@ func init() {
 	}
 }
 
+// Generator ...
 type Generator struct{}
 
+// Generate ...
 func (e Generator) Generate(endpointName, currpath string) {
 
 	log.Infof("Using '%sEndpoint' as endpoint name", endpointName)

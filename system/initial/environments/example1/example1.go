@@ -24,8 +24,10 @@ import (
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/initial/environments"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/validation"
 )
 
+// Example1 ...
 type Example1 struct{}
 
 // Demo ...
@@ -42,7 +44,8 @@ func (e Example1) InstallDemoData(adaptors *adaptors.Adaptors,
 // Create ...
 func (e Example1) Create(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	scriptService scripts.ScriptService) {
+	scriptService scripts.ScriptService,
+	validation *validation.Validate) {
 
 }
 
@@ -50,7 +53,8 @@ func (e Example1) Create(adaptors *adaptors.Adaptors,
 func (e Example1) Upgrade(oldVersion int,
 	adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	scriptService scripts.ScriptService) {
+	scriptService scripts.ScriptService,
+	validation *validation.Validate) {
 
 	switch oldVersion {
 	case 3:

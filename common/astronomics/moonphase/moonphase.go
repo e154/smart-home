@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// Moon ...
 type Moon struct {
 	phase     float64
 	illum     float64
@@ -38,6 +39,7 @@ type Moon struct {
 
 var synmonth float64 = 29.53058868 // Synodic month (new Moon to new Moon)
 
+// New ...
 func New(t time.Time) (moonP *Moon) {
 	moonP = new(Moon)
 
@@ -273,70 +275,82 @@ func truePhase(k float64, phase float64) float64 {
 	return pt
 }
 
-//func (m *Moon) getPhase(n int8) float64 {
-//    return m.quarters[n]
-//}
-
+// Phase ...
 func (m *Moon) Phase() float64 {
 	return m.phase
 }
 
+// Illumination ...
 func (m *Moon) Illumination() float64 {
 	return m.illum
 }
 
+// Age ...
 func (m *Moon) Age() float64 {
 	return m.age
 }
 
+// Distance ...
 func (m *Moon) Distance() float64 {
 	return m.dist
 }
 
+// Diameter ...
 func (m *Moon) Diameter() float64 {
 	return m.angdia
 }
 
+// SunDistance ...
 func (m *Moon) SunDistance() float64 {
 	return m.sundist
 }
 
+// SunDiameter ...
 func (m *Moon) SunDiameter() float64 {
 	return m.sunangdia
 }
 
+// NewMoon ...
 func (m *Moon) NewMoon() float64 {
 	return m.quarters[0]
 }
 
+// FirstQuarter ...
 func (m *Moon) FirstQuarter() float64 {
 	return m.quarters[1]
 }
 
+// FullMoon ...
 func (m *Moon) FullMoon() float64 {
 	return m.quarters[2]
 }
 
+// LastQuarter ...
 func (m *Moon) LastQuarter() float64 {
 	return m.quarters[3]
 }
 
+// NextNewMoon ...
 func (m *Moon) NextNewMoon() float64 {
 	return m.quarters[4]
 }
 
+// NextFirstQuarter ...
 func (m *Moon) NextFirstQuarter() float64 {
 	return m.quarters[1]
 }
 
+// NextFullMoon ...
 func (m *Moon) NextFullMoon() float64 {
 	return m.quarters[6]
 }
 
+// NextLastQuarter ...
 func (m *Moon) NextLastQuarter() float64 {
 	return m.quarters[7]
 }
 
+// PhaseName ...
 func (m *Moon) PhaseName() string {
 	names := map[int]string{
 		0: "New Moon",

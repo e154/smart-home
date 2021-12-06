@@ -21,7 +21,6 @@ package debug
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/system/validation"
 	"runtime"
 	"strings"
 )
@@ -57,11 +56,4 @@ func Trace() (trace string) {
 func Println(i interface{}) {
 	b, _ := json.MarshalIndent(i, " ", "  ")
 	fmt.Println(string(b))
-}
-
-// PrintValidationErrs ...
-func PrintValidationErrs(errs []*validation.Error) {
-	for _, err := range errs {
-		fmt.Printf("%s - %s", err.Name, err.String())
-	}
 }

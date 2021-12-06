@@ -25,20 +25,28 @@ import (
 )
 
 const (
-	TopicSystem        = "system"
-	EventStart         = "START"
-	EventStop          = "STOP"
-	SystemName         = "system"
+	// TopicSystem ...
+	TopicSystem = "system"
+	// EventStart ...
+	EventStart = "START"
+	// EventStop ...
+	EventStop = "STOP"
+	// SystemName ...
+	SystemName = "system"
+	// SystemFunctionName ...
 	SystemFunctionName = "automationTriggerSystem"
-	SystemQueueSize    = 10
+	// SystemQueueSize ...
+	SystemQueueSize = 10
 )
 
 var _ ITrigger = (*SystemTrigger)(nil)
 
+// SystemTrigger ...
 type SystemTrigger struct {
 	baseTrigger
 }
 
+// NewSystemTrigger ...
 func NewSystemTrigger(eventBus event_bus.EventBus) ITrigger {
 	return &SystemTrigger{
 		baseTrigger{
@@ -50,24 +58,27 @@ func NewSystemTrigger(eventBus event_bus.EventBus) ITrigger {
 	}
 }
 
+// AsyncAttach ...
 func (t *SystemTrigger) AsyncAttach(wg *sync.WaitGroup) {
 
 	t.eventBus.Subscribe(TopicSystemStart, func(_ string, msg interface{}) {
-		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStart,})
+		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStart})
 	})
 
 	t.eventBus.Subscribe(TopicSystemStop, func(_ string, msg interface{}) {
-		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStop,})
+		t.msgQueue.Publish(TopicSystem, map[string]interface{}{"event": EventStop})
 	})
 
 	wg.Done()
 }
 
+// Subscribe ...
 func (t *SystemTrigger) Subscribe(options Subscriber) error {
 	log.Infof("subscribe topic %s", TopicSystem)
 	return t.msgQueue.Subscribe(TopicSystem, options.Handler)
 }
 
+// Unsubscribe ...
 func (t *SystemTrigger) Unsubscribe(options Subscriber) error {
 	log.Infof("unsubscribe topic %s", TopicSystem)
 	return t.msgQueue.Unsubscribe(TopicSystem, options.Handler)

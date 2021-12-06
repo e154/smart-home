@@ -25,15 +25,20 @@ import (
 )
 
 const (
-	Name             = "triggers"
+	// Name ...
+	Name = "triggers"
+	// TopicSystemStart ...
 	TopicSystemStart = "system_start"
-	TopicSystemStop  = "system_stop"
+	// TopicSystemStop ...
+	TopicSystemStop = "system_stop"
 )
 
+// IGetTrigger ...
 type IGetTrigger interface {
 	GetTrigger(string) (ITrigger, error)
 }
 
+// IRegistrar ...
 type IRegistrar interface {
 	RegisterTrigger(ITrigger) error
 	UnregisterTrigger(string) error
@@ -49,6 +54,7 @@ type ITrigger interface {
 	FunctionName() string
 }
 
+// Subscriber ...
 type Subscriber struct {
 	EntityId *common.EntityId
 	Handler  interface{}
@@ -56,5 +62,6 @@ type Subscriber struct {
 }
 
 const (
+	// CronOptionTrigger ...
 	CronOptionTrigger = "cron"
 )

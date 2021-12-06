@@ -20,6 +20,7 @@ package automation
 
 import "github.com/e154/smart-home/common"
 
+// ActionFunc ...
 const ActionFunc = "automationAction"
 
 // Javascript Binding

@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IStorage ...
 type IStorage interface {
 	CreateOrUpdate(ver m.Storage) (err error)
 	Delete(name string) (err error)

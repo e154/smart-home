@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IMessageDelivery ...
 type IMessageDelivery interface {
 	Add(msg m.MessageDelivery) (id int64, err error)
 	SetStatus(msg m.MessageDelivery) (err error)

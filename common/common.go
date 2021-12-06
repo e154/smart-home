@@ -30,6 +30,7 @@ import (
 	"time"
 )
 
+// DefaultPageSize ...
 const DefaultPageSize int64 = 15
 
 //create md5 string
@@ -75,10 +76,12 @@ func RandomString(l int) string {
 	return string(bytes)
 }
 
+// TestMode ...
 func TestMode() bool {
 	return os.Getenv("TEST_MODE") == "true"
 }
 
+// Dir ...
 func Dir() string {
 	dir, _ := os.Getwd()
 	gopath := os.Getenv("GOPATH")

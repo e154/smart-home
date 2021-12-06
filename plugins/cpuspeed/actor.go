@@ -28,6 +28,7 @@ import (
 	"sync"
 )
 
+// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	cores           int64
@@ -40,6 +41,7 @@ type Actor struct {
 	updateLock      *sync.Mutex
 }
 
+// NewActor ...
 func NewActor(entityManager entity_manager.EntityManager,
 	eventBus event_bus.EventBus) *Actor {
 
@@ -68,6 +70,7 @@ func NewActor(entityManager entity_manager.EntityManager,
 	return actor
 }
 
+// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }

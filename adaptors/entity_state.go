@@ -26,6 +26,7 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+// IEntityState ...
 type IEntityState interface {
 	Add(ver *m.EntityState) (id int64, err error)
 	DeleteByEntityId(entityId common.EntityId) (err error)

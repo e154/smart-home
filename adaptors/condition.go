@@ -25,6 +25,7 @@ import (
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
+// ICondition ...
 type ICondition interface {
 	DeleteByTaskId(id int64) (err error)
 	AddMultiple(items []*m.Condition) (err error)

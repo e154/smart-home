@@ -22,7 +22,7 @@ import (
 	"errors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/alexa"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 )
 
 // AlexaSkillEndpoint ...
@@ -38,10 +38,10 @@ func NewAlexaSkillEndpoint(common *CommonEndpoint) *AlexaSkillEndpoint {
 }
 
 // Add ...
-func (n *AlexaSkillEndpoint) Add(params *m.AlexaSkill) (result *m.AlexaSkill, errs []*validation.Error, err error) {
+func (n *AlexaSkillEndpoint) Add(params *m.AlexaSkill) (result *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
@@ -70,10 +70,10 @@ func (n *AlexaSkillEndpoint) GetById(appId int64) (result *m.AlexaSkill, err err
 }
 
 // Update ...
-func (n *AlexaSkillEndpoint) Update(params *m.AlexaSkill) (skill *m.AlexaSkill, errs []*validation.Error, err error) {
+func (n *AlexaSkillEndpoint) Update(params *m.AlexaSkill) (skill *m.AlexaSkill, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 

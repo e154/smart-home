@@ -24,22 +24,29 @@ import (
 )
 
 const (
+	// Name ...
 	Name = "zone"
 	// EntityZone ...
 	EntityZone = common.EntityType(Name)
 )
 
 const (
-	AttrLat       = "lat"
-	AttrLon       = "lon"
+	// AttrLat ...
+	AttrLat = "lat"
+	// AttrLon ...
+	AttrLon = "lon"
+	// AttrElevation ...
 	AttrElevation = "elevation"
-	AttrTimezone  = "timezone"
+	// AttrTimezone ...
+	AttrTimezone = "timezone"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return nil
 }
 
+// NewSettings ...
 func NewSettings() m.Attributes {
 
 	attributes := m.Attributes{

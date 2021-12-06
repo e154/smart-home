@@ -29,6 +29,7 @@ import (
 	"go.uber.org/atomic"
 )
 
+// Plugin ...
 type Plugin struct {
 	EntityManager entity_manager.EntityManager
 	Adaptors      *adaptors.Adaptors
@@ -38,12 +39,14 @@ type Plugin struct {
 	IsStarted     *atomic.Bool
 }
 
+// NewPlugin ...
 func NewPlugin() *Plugin {
 	return &Plugin{
 		IsStarted: atomic.NewBool(false),
 	}
 }
 
+// Load ...
 func (p *Plugin) Load(service Service) error {
 	p.Adaptors = service.Adaptors()
 	p.EventBus = service.EventBus()
@@ -59,6 +62,7 @@ func (p *Plugin) Load(service Service) error {
 	return nil
 }
 
+// Unload ...
 func (p *Plugin) Unload() error {
 
 	if !p.IsStarted.Load() {
@@ -69,22 +73,27 @@ func (p *Plugin) Unload() error {
 	return nil
 }
 
+// Name ...
 func (p *Plugin) Name() string {
 	panic("implement me")
 }
 
+// Type ...
 func (p *Plugin) Type() PluginType {
 	panic("implement me")
 }
 
+// Depends ...
 func (p *Plugin) Depends() []string {
 	panic("implement me")
 }
 
+// Version ...
 func (p *Plugin) Version() string {
 	panic("implement me")
 }
 
+// Options ...
 func (p *Plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
 		ActorCustomAttrs: false,

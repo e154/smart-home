@@ -32,17 +32,17 @@ type EntityStates struct {
 
 // EntityState ...
 type EntityState struct {
-	Id            int64 `gorm:"primary_key"`
-	Name          string
-	Description   string
-	Icon          *string
-	Entity        *Entity
-	EntityId      common.EntityId
-	Image         *Image
-	ImageId       *int64
-	Style         string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	Id          int64 `gorm:"primary_key"`
+	Name        string
+	Description string
+	Icon        *string
+	Entity      *Entity
+	EntityId    common.EntityId
+	Image       *Image
+	ImageId     *int64
+	Style       string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 // TableName ...
@@ -69,13 +69,13 @@ func (n EntityStates) GetById(mapId int64) (v *EntityState, err error) {
 // Update ...
 func (n EntityStates) Update(m *EntityState) (err error) {
 	err = n.Db.Model(&EntityState{Id: m.Id}).Updates(map[string]interface{}{
-		"name":            m.Name,
-		"description":     m.Description,
-		"icon":            m.Icon,
+		"name":        m.Name,
+		"description": m.Description,
+		"icon":        m.Icon,
 		//"device_state_id": m.DeviceStateId,
-		"entity_id":       m.EntityId,
-		"image_id":        m.ImageId,
-		"style":           m.Style,
+		"entity_id": m.EntityId,
+		"image_id":  m.ImageId,
+		"style":     m.Style,
 	}).Error
 	return
 }

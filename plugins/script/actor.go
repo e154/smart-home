@@ -29,9 +29,11 @@ import (
 )
 
 const (
+	// FuncEntityAction ...
 	FuncEntityAction = "entityAction"
 )
 
+// Actor ...
 type Actor struct {
 	entity_manager.BaseActor
 	eventBus      event_bus.EventBus
@@ -42,6 +44,7 @@ type Actor struct {
 	actionPool    chan event_bus.EventCallAction
 }
 
+// NewActor ...
 func NewActor(entity *m.Entity,
 	adaptors *adaptors.Adaptors,
 	scriptService scripts.ScriptService,
@@ -84,10 +87,12 @@ func NewActor(entity *m.Entity,
 	return
 }
 
+// Spawn ...
 func (e *Actor) Spawn() entity_manager.PluginActor {
 	return e
 }
 
+// SetState ...
 func (e *Actor) SetState(params entity_manager.EntityStateParams) (err error) {
 
 	e.stateMu.Lock()

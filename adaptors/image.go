@@ -35,6 +35,7 @@ import (
 	"strings"
 )
 
+// IImage ...
 type IImage interface {
 	Add(ver *m.Image) (id int64, err error)
 	GetByImageName(imageName string) (ver *m.Image, err error)

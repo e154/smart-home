@@ -22,7 +22,7 @@ import (
 	"encoding/json"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/null"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 	"time"
 )
 
@@ -68,7 +68,10 @@ func (n *MapElementPrototype) UnmarshalJSON(data []byte) (err error) {
 
 	entity := &Entity{}
 	err = json.Unmarshal(data, entity)
-	if ok, _ := entity.Valid(); ok {
+
+	validate := validator.New()
+	err = validate.Struct(entity)
+	if err == nil {
 		n.Entity = entity
 		return
 	}
@@ -89,29 +92,18 @@ func (n *MapElementPrototype) UnmarshalJSON(data []byte) (err error) {
 // Entity ...
 type MapElement struct {
 	Id            int64                   `json:"id"`
-	Name          string                  `json:"name" valid:"Required"`
+	Name          string                  `json:"name" validate:"required"`
 	Description   string                  `json:"description"`
 	PrototypeId   interface{}             `json:"prototype_id"`
 	PrototypeType MapElementPrototypeType `json:"prototype_type"`
-	Prototype     MapElementPrototype     `json:"prototype" valid:"Required"`
-	MapId         int64                   `json:"map_id" valid:"Required"`
-	LayerId       int64                   `json:"layer_id" valid:"Required"`
+	Prototype     MapElementPrototype     `json:"prototype" validate:"required"`
+	MapId         int64                   `json:"map_id" validate:"required"`
+	LayerId       int64                   `json:"layer_id" validate:"required"`
 	GraphSettings MapElementGraphSettings `json:"graph_settings"`
-	Status        StatusType              `json:"status" valid:"Required"`
+	Status        StatusType              `json:"status" validate:"required"`
 	Weight        int64                   `json:"weight"`
 	CreatedAt     time.Time               `json:"created_at"`
 	UpdatedAt     time.Time               `json:"updated_at"`
-}
-
-// Valid ...
-func (m *MapElement) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(m); !ok {
-		errs = valid.Errors
-	}
-
-	return
 }
 
 // SortMapElementByWeight ...

@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/common/web"
 )
 
+// HttpResponse ...
 type HttpResponse struct {
 	Body         string `json:"body"`
 	Error        bool   `json:"error"`
@@ -34,8 +35,9 @@ type HttpResponse struct {
 // 	 .get(url)
 // 	 .post(url, body)
 //
-type HttpBind struct {}
+type HttpBind struct{}
 
+// Get ...
 func (h *HttpBind) Get(url string) (response HttpResponse) {
 	log.Infof("call [GET ] request %s", url)
 	body, err := web.Crawler(web.Request{Method: "GET", Url: url})
@@ -48,6 +50,7 @@ func (h *HttpBind) Get(url string) (response HttpResponse) {
 	return
 }
 
+// Post ...
 func (h *HttpBind) Post(url, data string) (response HttpResponse) {
 	log.Infof("call [POST] request %s", url)
 	body, err := web.Crawler(web.Request{Method: "POST", Url: url, Body: []byte(data)})

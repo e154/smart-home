@@ -25,35 +25,54 @@ import (
 )
 
 const (
-	Name       = "moon"
+	// Name ...
+	Name = "moon"
+	// EntityMoon ...
 	EntityMoon = common.EntityType("moon")
 )
 
 const (
+	// StateAboveHorizon ...
 	StateAboveHorizon = "aboveHorizon"
+	// StateBelowHorizon ...
 	StateBelowHorizon = "belowHorizon"
 )
 
 const (
-	StateNewMoon        = "new_moon"        // New Moon
-	StateWaxingCrescent = "waxing_crescent" // Waxing Crescent
-	StateFirstQuarter   = "first_quarter"   // First Quarter
-	StateWaxingGibbous  = "waxing_gibbous"  // Waxing Gibbous
-	StateFullMoon       = "full_moon"       // Full Moon
-	StateWaningGibbous  = "waning_gibbous"  // Waning Gibbous
-	StateThirdQuarter   = "third_quarter"   // Third Quarter
-	StateWaningCrescent = "waning_crescent" // Waning Crescent
+	// StateNewMoon ...
+	StateNewMoon = "new_moon"
+	// StateWaxingCrescent ...
+	StateWaxingCrescent = "waxing_crescent"
+	// StateFirstQuarter ...
+	StateFirstQuarter = "first_quarter"
+	// StateWaxingGibbous ...
+	StateWaxingGibbous = "waxing_gibbous"
+	// StateFullMoon ...
+	StateFullMoon = "full_moon"
+	// StateWaningGibbous ...
+	StateWaningGibbous = "waning_gibbous"
+	// StateThirdQuarter ...
+	StateThirdQuarter = "third_quarter"
+	// StateWaningCrescent ...
+	StateWaningCrescent = "waning_crescent"
 )
 
 const (
-	AttrHorizonState = "horizonState" // aboveHorizon|belowHorizon
-	AttrPhase        = "phase"
-	AttrAzimuth      = "azimuth"
-	AttrElevation    = "elevation"
-	AttrLat          = "lat"
-	AttrLon          = "lon"
+	// AttrHorizonState ...
+	AttrHorizonState = "horizonState"
+	// AttrPhase ...
+	AttrPhase = "phase"
+	// AttrAzimuth ...
+	AttrAzimuth = "azimuth"
+	// AttrElevation ...
+	AttrElevation = "elevation"
+	// AttrLat ...
+	AttrLat = "lat"
+	// AttrLon ...
+	AttrLon = "lon"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return m.Attributes{
 
@@ -76,6 +95,7 @@ func NewAttr() m.Attributes {
 	}
 }
 
+// NewSettings ...
 func NewSettings() m.Attributes {
 	return m.Attributes{
 		AttrLat: {
@@ -89,6 +109,7 @@ func NewSettings() m.Attributes {
 	}
 }
 
+// NewStates ...
 func NewStates() (states map[string]entity_manager.ActorState) {
 
 	states = map[string]entity_manager.ActorState{

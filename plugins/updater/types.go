@@ -25,11 +25,13 @@ import (
 	"time"
 )
 
+// GithubRelease ...
 type GithubRelease struct {
 	Name               string `json:"name"`
 	BrowserDownloadUrl string `json:"browser_download_url"`
 }
 
+// GithubReleaseLatest ...
 type GithubReleaseLatest struct {
 	TagName   string          `json:"tag_name"`
 	CreatedAt time.Time       `json:"created_at"`
@@ -37,14 +39,21 @@ type GithubReleaseLatest struct {
 }
 
 const (
-	AttrUpdaterLatestVersion           = "latest_version"
-	AttrUpdaterLatestVersionTime       = "latest_version_time"
+	// AttrUpdaterLatestVersion ...
+	AttrUpdaterLatestVersion = "latest_version"
+	// AttrUpdaterLatestVersionTime ...
+	AttrUpdaterLatestVersionTime = "latest_version_time"
+	// AttrUpdaterLatestLatestDownloadUrl ...
 	AttrUpdaterLatestLatestDownloadUrl = "latest_download_url"
-	AttrUpdaterLatestCheck             = "last_check"
-	Name                               = "updater"
-	EntityUpdater                      = common.EntityType(Name)
+	// AttrUpdaterLatestCheck ...
+	AttrUpdaterLatestCheck = "last_check"
+	// Name ...
+	Name = "updater"
+	// EntityUpdater ...
+	EntityUpdater = common.EntityType(Name)
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return m.Attributes{
 		AttrUpdaterLatestVersion: {
@@ -66,6 +75,7 @@ func NewAttr() m.Attributes {
 	}
 }
 
+// NewStates ...
 func NewStates() map[string]entity_manager.ActorState {
 	return map[string]entity_manager.ActorState{
 		"enabled": {
@@ -87,6 +97,7 @@ func NewStates() map[string]entity_manager.ActorState {
 	}
 }
 
+// NewActions ...
 func NewActions() map[string]entity_manager.ActorAction {
 	return map[string]entity_manager.ActorAction{
 		"check": {

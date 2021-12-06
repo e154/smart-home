@@ -16,21 +16,26 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package common
+package container
 
-import "github.com/e154/smart-home/system/validation"
+import (
+	"github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/orm"
+)
 
-// Validation ...
-type Validation struct {
-}
-
-// Valid ...
-func (d Validation) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(d); !ok {
-		errs = valid.Errors
+// NewOrmConfig ...
+func NewOrmConfig(cfg *models.AppConfig) *orm.Config {
+	return &orm.Config{
+		Alias:           "default",
+		Name:            cfg.PgName,
+		User:            cfg.PgUser,
+		Password:        cfg.PgPass,
+		Host:            cfg.PgHost,
+		Port:            cfg.PgPort,
+		Debug:           cfg.PgDebug,
+		Logger:          cfg.PgLogger,
+		MaxIdleConns:    cfg.PgMaxIdleConns,
+		MaxOpenConns:    cfg.PgMaxOpenConns,
+		ConnMaxLifeTime: cfg.PgConnMaxLifeTime,
 	}
-
-	return
 }

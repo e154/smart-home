@@ -20,30 +20,18 @@ package models
 
 import (
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
 	"time"
 )
 
 // AlexaSkill ...
 type AlexaSkill struct {
 	Id          int64             `json:"id"`
-	SkillId     string            `json:"skill_id" valid:"Required"`
+	SkillId     string            `json:"skill_id" validate:"required"`
 	Description string            `json:"description"`
-	Status      common.StatusType `json:"status" valid:"Required"`
+	Status      common.StatusType `json:"status" validate:"required"`
 	Intents     []*AlexaIntent    `json:"intents"`
 	Script      *Script           `json:"script"`
 	ScriptId    *int64            `json:"script_id"`
 	CreatedAt   time.Time         `json:"created_at"`
 	UpdatedAt   time.Time         `json:"updated_at"`
-}
-
-// Valid ...
-func (d *AlexaSkill) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(d); !ok {
-		errs = valid.Errors
-	}
-
-	return
 }

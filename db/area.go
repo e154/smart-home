@@ -79,7 +79,6 @@ func (n *Areas) Search(query string, limit, offset int) (list []*Area, total int
 		Offset(offset).
 		Order("name ASC")
 
-
 	list = make([]*Area, 0)
 	err = q.Find(&list).Error
 

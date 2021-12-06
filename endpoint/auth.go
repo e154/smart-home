@@ -19,9 +19,12 @@
 package endpoint
 
 import (
-	"errors"
+	"context"
+	"fmt"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -42,16 +45,16 @@ func NewAuthEndpoint(common *CommonEndpoint) *AuthEndpoint {
 }
 
 // SignIn ...
-func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, accessToken string, err error) {
+func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip string) (user *m.User, accessToken string, err error) {
 
 	if user, err = a.adaptors.User.GetByEmail(email); err != nil {
-		err = errors.New("user not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("email %s", email))
 		return
 	} else if !user.CheckPass(password) {
-		err = errors.New("password not valid")
+		err = common.ErrPassNotValid
 		return
 	} else if user.Status == "blocked" && user.Id != AdminId {
-		err = errors.New("account is blocked")
+		err = common.ErrAccountIsBlocked
 		return
 	}
 
@@ -67,19 +70,19 @@ func (a *AuthEndpoint) SignIn(email, password string, ip string) (user *m.User, 
 }
 
 // SignOut ...
-func (a *AuthEndpoint) SignOut(user *m.User) (err error) {
+func (a *AuthEndpoint) SignOut(ctx context.Context, user *m.User) (err error) {
 	err = a.adaptors.User.ClearToken(user)
 	return
 }
 
 // Recovery ...
-func (a *AuthEndpoint) Recovery() {}
+func (a *AuthEndpoint) Recovery(ctx context.Context, ) {}
 
 // Reset ...
-func (a *AuthEndpoint) Reset() {}
+func (a *AuthEndpoint) Reset(ctx context.Context, ) {}
 
 // AccessList ...
-func (a *AuthEndpoint) AccessList(user *m.User, accessListService access_list.AccessListService) (accessList *access_list.AccessList, err error) {
+func (a *AuthEndpoint) AccessList(ctx context.Context, user *m.User, accessListService access_list.AccessListService) (accessList *access_list.AccessList, err error) {
 	accessList = accessListService.List()
 	return
 }

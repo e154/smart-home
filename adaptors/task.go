@@ -25,6 +25,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// ITask ...
 type ITask interface {
 	Add(ver *m.Task) (err error)
 	Delete(id int64) (err error)

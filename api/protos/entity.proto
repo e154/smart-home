@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "/api";
+
+message EntityActionShort {
+  string name = 1;
+  string description = 2;
+  string image_url = 3;
+  string icon = 4;
+}
+
+message EntityStateShort {
+  string name = 1;
+  string description = 2;
+  string image_url = 3;
+  string icon = 4;
+}
+

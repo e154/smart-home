@@ -23,6 +23,7 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
+// CrudActor ...
 type CrudActor interface {
 	AddOrUpdateActor(*m.Entity) error
 	RemoveActor(common.EntityId) error

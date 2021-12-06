@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IAlexaIntent ...
 type IAlexaIntent interface {
 	Add(ver *m.AlexaIntent) (err error)
 	GetByName(name string) (ver *m.AlexaIntent, err error)

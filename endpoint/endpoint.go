@@ -27,6 +27,7 @@ import (
 	"github.com/e154/smart-home/system/jwt_manager"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/validation"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 )
 
@@ -64,8 +65,9 @@ func NewEndpoint(adaptors *adaptors.Adaptors,
 	eventBus event_bus.EventBus,
 	pluginManager common.PluginManager,
 	mqtt mqtt.MqttServ,
-	jwtManager jwt_manager.JwtManager) *Endpoint {
-	common := NewCommonEndpoint(adaptors, accessList, scriptService, zigbee2mqtt, eventBus, pluginManager, entityManager, mqtt, jwtManager)
+	jwtManager jwt_manager.JwtManager,
+	validation *validation.Validate) *Endpoint {
+	common := NewCommonEndpoint(adaptors, accessList, scriptService, zigbee2mqtt, eventBus, pluginManager, entityManager, mqtt, jwtManager, validation)
 	return &Endpoint{
 		AlexaSkill:      NewAlexaSkillEndpoint(common),
 		Auth:            NewAuthEndpoint(common),

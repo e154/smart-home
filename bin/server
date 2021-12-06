@@ -16,7 +16,7 @@
 # License along with this library.  If not, see
 # <https://www.gnu.org/licenses/>.
 
-#!/usr/bin/env bash
+#!/bin/sh
 
 FILENAME=$0
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"

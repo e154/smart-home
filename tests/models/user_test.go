@@ -23,6 +23,7 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/migrations"
+	"github.com/go-playground/validator/v10"
 	. "github.com/smartystreets/goconvey/convey"
 	"strings"
 	"testing"
@@ -85,8 +86,9 @@ func TestUser(t *testing.T) {
 			err = user.SetPass("123456")
 			So(err, ShouldBeNil)
 
-			ok, _ := user.Valid()
-			So(ok, ShouldEqual, true)
+			validate := validator.New()
+			err = validate.Struct(user)
+			So(err, ShouldBeNil)
 
 			user.Id, err = adaptors.User.Add(user)
 			So(err, ShouldBeNil)

@@ -26,6 +26,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// ITemplate ...
 type ITemplate interface {
 	UpdateOrCreate(ver *m.Template) (err error)
 	Create(ver *m.Template) (err error)

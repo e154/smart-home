@@ -43,6 +43,7 @@ func NewScriptManager(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Create ...
 func (s *ScriptManager) Create() []*m.Script {
 
 	// L3+ script
@@ -244,7 +245,6 @@ checkStatus =->
 entityAction = (entityId, actionName)->
     switch actionName
         when 'CHECK' then checkStatus()
-
 
 # automation
 # ##################################

@@ -40,6 +40,7 @@ import (
 )
 
 var (
+	// Server ...
 	Server = &cobra.Command{
 		Use:   "server",
 		Short: "server starts a SurgeMQ server and publishes to it all the ping results",

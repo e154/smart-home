@@ -108,19 +108,6 @@ func (d *HistoryManager) init() {
 	d.updateLock.Lock()
 	defer d.updateLock.Unlock()
 
-	//if list, err := d.adaptors.EntityHistory.List(8, 0); err == nil {
-	//	for _, item := range list {
-	//		d.queue.PushBack(HistoryItem{
-	//			DeviceName:        item.Entity.Name,
-	//			DeviceDescription: item.Entity.Description,
-	//			Type:              string(item.Type),
-	//			LogLevel:          string(item.LogLevel),
-	//			Description:       item.Description,
-	//			CreatedAt:         item.CreatedAt,
-	//		})
-	//	}
-	//}
-
 }
 
 // HistoryItem ...

@@ -25,6 +25,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IMessage ...
 type IMessage interface {
 	Add(msg m.Message) (id int64, err error)
 	fromDb(dbVer db.Message) (ver m.Message)

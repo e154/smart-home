@@ -100,10 +100,12 @@ func NewActor(entity *m.Entity,
 	return actor, nil
 }
 
+// Spawn ...
 func (p *Actor) Spawn() entity_manager.PluginActor {
 	return p
 }
 
+// Start ...
 func (p *Actor) Start() (err error) {
 
 	if p.isStarted.Load() {
@@ -167,6 +169,7 @@ func (p *Actor) Start() (err error) {
 	return
 }
 
+// Stop ...
 func (p *Actor) Stop() {
 	if !p.isStarted.Load() {
 		return
@@ -319,7 +322,7 @@ func (p *Actor) runAction(msg event_bus.EventCallAction) {
 // [button][button][button]
 // [button][button][button]
 // [button][button][button]
-func (p *Actor) genKeyboard(msgCfg tgbotapi.MessageConfig) () {
+func (p *Actor) genKeyboard(msgCfg tgbotapi.MessageConfig) {
 	var row []tgbotapi.KeyboardButton
 	var rows [][]tgbotapi.KeyboardButton
 	var counter = 0

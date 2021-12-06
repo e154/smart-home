@@ -26,14 +26,19 @@ import (
 const (
 	icon = "clock-o"
 
-	AttrUptimeTotal      = "total"
+	// AttrUptimeTotal ...
+	AttrUptimeTotal = "total"
+	// AttrUptimeAppStarted ...
 	AttrUptimeAppStarted = "app_started"
 
+	// EntitySensor ...
 	EntitySensor = common.EntityType("uptime")
 
+	// Name ...
 	Name = "uptime"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return m.Attributes{
 		AttrUptimeTotal: {

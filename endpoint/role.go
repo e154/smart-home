@@ -19,11 +19,12 @@
 package endpoint
 
 import (
+	"context"
 	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 )
 
 // RoleEndpoint ...
@@ -39,11 +40,10 @@ func NewRoleEndpoint(common *CommonEndpoint) *RoleEndpoint {
 }
 
 // Add ...
-func (n *RoleEndpoint) Add(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
+func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role, errs validator.ValidationErrorsTranslations, err error) {
 
-	// validation
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
@@ -57,7 +57,7 @@ func (n *RoleEndpoint) Add(params *m.Role) (result *m.Role, errs []*validation.E
 }
 
 // GetByName ...
-func (n *RoleEndpoint) GetByName(name string) (result *m.Role, err error) {
+func (n *RoleEndpoint) GetByName(ctx context.Context, name string) (result *m.Role, err error) {
 
 	result, err = n.adaptors.Role.GetByName(name)
 
@@ -65,7 +65,7 @@ func (n *RoleEndpoint) GetByName(name string) (result *m.Role, err error) {
 }
 
 // Update ...
-func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validation.Error, err error) {
+func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Role, errs validator.ValidationErrorsTranslations, err error) {
 
 	role, err := n.adaptors.Role.GetByName(params.Name)
 	if err != nil {
@@ -80,9 +80,8 @@ func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validatio
 		}
 	}
 
-	// validation
-	_, errs = role.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
@@ -96,19 +95,15 @@ func (n *RoleEndpoint) Update(params *m.Role) (result *m.Role, errs []*validatio
 }
 
 // GetList ...
-func (n *RoleEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*m.Role, total int64, err error) {
+func (n *RoleEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Role, total int64, err error) {
 
-	if limit == 0 {
-		limit = common.DefaultPageSize
-	}
-
-	result, total, err = n.adaptors.Role.List(limit, offset, order, sortBy)
+	result, total, err = n.adaptors.Role.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }
 
 // Delete ...
-func (n *RoleEndpoint) Delete(name string) (err error) {
+func (n *RoleEndpoint) Delete(ctx context.Context, name string) (err error) {
 
 	if name == "admin" {
 		err = errors.New("admin is base role")
@@ -125,7 +120,7 @@ func (n *RoleEndpoint) Delete(name string) (err error) {
 }
 
 // Search ...
-func (n *RoleEndpoint) Search(query string, limit, offset int) (result []*m.Role, total int64, err error) {
+func (n *RoleEndpoint) Search(ctx context.Context, query string, limit, offset int) (result []*m.Role, total int64, err error) {
 
 	if limit == 0 {
 		limit = int(common.DefaultPageSize)
@@ -137,7 +132,7 @@ func (n *RoleEndpoint) Search(query string, limit, offset int) (result []*m.Role
 }
 
 // GetAccessList ...
-func (n *RoleEndpoint) GetAccessList(roleName string,
+func (n *RoleEndpoint) GetAccessList(ctx context.Context, roleName string,
 	accessListService access_list.AccessListService) (accessList access_list.AccessList, err error) {
 
 	var role *m.Role
@@ -151,7 +146,7 @@ func (n *RoleEndpoint) GetAccessList(roleName string,
 }
 
 // UpdateAccessList ...
-func (n *RoleEndpoint) UpdateAccessList(roleName string, accessListDif map[string]map[string]bool) (err error) {
+func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, accessListDif map[string]map[string]bool) (err error) {
 
 	var role *m.Role
 	if role, err = n.adaptors.Role.GetByName(roleName); err != nil {

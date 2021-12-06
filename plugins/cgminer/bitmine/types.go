@@ -18,23 +18,32 @@
 
 package bitmine
 
+// DeviceType ...
 type DeviceType string
 
+// String ...
 func (d DeviceType) String() string {
 	return string(d)
 }
 
 const (
+	// ManufactureBitmine ...
 	ManufactureBitmine = "bitmine"
 )
 
 const (
-	DeviceS9     = DeviceType("S9")
-	DeviceS7     = DeviceType("S7")
-	DeviceL3     = DeviceType("L3")
+	// DeviceS9 ...
+	DeviceS9 = DeviceType("S9")
+	// DeviceS7 ...
+	DeviceS7 = DeviceType("S7")
+	// DeviceL3 ...
+	DeviceL3 = DeviceType("L3")
+	// DeviceL3Plus ...
 	DeviceL3Plus = DeviceType("L3+")
-	DeviceD3     = DeviceType("D3")
-	DeviceT9     = DeviceType("T9")
+	// DeviceD3 ...
+	DeviceD3 = DeviceType("D3")
+	// DeviceT9 ...
+	DeviceT9 = DeviceType("T9")
 )
 
 type commandRequest struct {
@@ -42,7 +51,8 @@ type commandRequest struct {
 	Parameter string `json:"parameter,omitempty"`
 }
 
-type ITransport interface 	{
+// ITransport ...
+type ITransport interface {
 	RunCommand(command, argument string) (res []byte, err error)
 }
 
@@ -55,16 +65,11 @@ type Status struct {
 	Description string
 }
 
+// GenericResponse ...
 type GenericResponse struct {
 	ID     int      `json:"id"`
 	Status []Status `json:"STATUS"`
 }
-
-//TODO uncomment in go2
-//type StatsResponse[T struct{}] struct {
-//	GenericResponse
-//	Stats []T `json:"STATS"`
-//}
 
 //TODO remove in go2
 type StatsResponse struct {
@@ -72,21 +77,25 @@ type StatsResponse struct {
 	Stats []StatsL3 `json:"STATS"`
 }
 
+// DevsResponse ...
 type DevsResponse struct {
 	GenericResponse
 	Devs []Dev `json:"DEVS"`
 }
 
+// SummaryResponse ...
 type SummaryResponse struct {
 	GenericResponse
 	Summary []Summary `json:"SUMMARY"`
 }
 
+// PoolsResponse ...
 type PoolsResponse struct {
 	GenericResponse
 	Pools []Pool `json:"POOLS"`
 }
 
+// VersionResponse ...
 type VersionResponse struct {
 	GenericResponse
 	Version []Version `json:"VERSION"`
@@ -256,10 +265,10 @@ type StatsL3 struct {
 	ChainAcn2             int     `json:"chain_acn2"`
 	ChainAcn3             int     `json:"chain_acn3"`
 	ChainAcn4             int     `json:"chain_acn4"`
-	ChainRate1            string `json:"chain_rate1"`
-	ChainRate2            string `json:"chain_rate2"`
-	ChainRate3            string `json:"chain_rate3"`
-	ChainRate4            string `json:"chain_rate4"`
+	ChainRate1            string  `json:"chain_rate1"`
+	ChainRate2            string  `json:"chain_rate2"`
+	ChainRate3            string  `json:"chain_rate3"`
+	ChainRate4            string  `json:"chain_rate4"`
 }
 
 // D3
@@ -302,9 +311,9 @@ type StatsD3 struct {
 	ChainHW1              int     `json:"chain_hw1"`
 	ChainHW2              int     `json:"chain_hw2"`
 	ChainHW3              int     `json:"chain_hw3"`
-	ChainRate1            string `json:"chain_rate1"`
-	ChainRate2            string `json:"chain_rate2"`
-	ChainRate3            string `json:"chain_rate3"`
+	ChainRate1            string  `json:"chain_rate1"`
+	ChainRate2            string  `json:"chain_rate2"`
+	ChainRate3            string  `json:"chain_rate3"`
 }
 
 // T9
@@ -442,6 +451,7 @@ type StatsT9 struct {
 	MinerVersion          string  `json:"miner_version"`
 }
 
+// Dev ...
 type Dev struct {
 	GPU                 int64
 	Enabled             string
@@ -473,6 +483,7 @@ type Dev struct {
 	DeviceElapsed       int64   `json:"Device Elapsed"`
 }
 
+// Summary ...
 type Summary struct {
 	Accepted              int64
 	BestShare             int64   `json:"Best Share"`
@@ -506,6 +517,7 @@ type Summary struct {
 	LastGetWork         int     `json:"Last getwork"`
 }
 
+// Pool ...
 type Pool struct {
 	Accepted            int64
 	BestShare           int64   `json:"Best Share"`
@@ -539,6 +551,7 @@ type Pool struct {
 	Works               int64
 }
 
+// Version ...
 type Version struct {
 	BMMiner     string
 	API         string

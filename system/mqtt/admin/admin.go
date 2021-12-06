@@ -33,12 +33,15 @@ var (
 	log = common.MustGetLogger("mqtt.admin")
 )
 
+// Name ...
 const Name = "admin"
 
+// New ...
 func New() *Admin {
 	return &Admin{}
 }
 
+// Admin ...
 type Admin struct {
 	store               *store
 	statsReader         server.StatsReader
@@ -47,6 +50,7 @@ type Admin struct {
 	subscriptionService server.SubscriptionService
 }
 
+// HookWrapper ...
 func (a *Admin) HookWrapper() server.HookWrapper {
 	return server.HookWrapper{
 		OnSessionCreatedWrapper:    a.OnSessionCreatedWrapper,
@@ -58,6 +62,7 @@ func (a *Admin) HookWrapper() server.HookWrapper {
 	}
 }
 
+// Load ...
 func (a *Admin) Load(service server.Server) error {
 
 	a.store = newStore(service.StatsManager(), service.SubscriptionService(), service.ClientService())
@@ -71,11 +76,13 @@ func (a *Admin) Load(service server.Server) error {
 	return nil
 }
 
+// Unload ...
 func (a *Admin) Unload() error {
 	log.Info("unloaded ...")
 	return nil
 }
 
+// Name ...
 func (a *Admin) Name() string {
 	return Name
 }

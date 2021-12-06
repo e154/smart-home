@@ -23,6 +23,7 @@ import "time"
 // MessageType ...
 type MessageType string
 
+// MessagePayload ...
 type MessagePayload struct {
 	AttributeSignature Attributes `json:"attribute_signature"`
 }

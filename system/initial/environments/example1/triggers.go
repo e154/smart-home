@@ -41,6 +41,7 @@ func NewTriggerManager(adaptors *adaptors.Adaptors) *TriggerManager {
 	}
 }
 
+// Create ...
 func (t *TriggerManager) Create(scripts []*m.Script,
 	entities []*m.Entity) []*m.Task {
 

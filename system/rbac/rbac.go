@@ -75,6 +75,7 @@ func (f *AccessFilter) accessDecision(params, method string, accessList access_l
 	return false
 }
 
+// AuthInterceptor ...
 func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 
 	meta, ok := metadata.FromIncomingContext(ctx)

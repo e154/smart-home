@@ -22,7 +22,7 @@ import (
 	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 )
 
 // EntityEndpoint ...
@@ -38,10 +38,10 @@ func NewEntityEndpoint(common *CommonEndpoint) *EntityEndpoint {
 }
 
 // Add ...
-func (n *EntityEndpoint) Add(entity *m.Entity) (result *m.Entity, errs []*validation.Error, err error) {
+func (n *EntityEndpoint) Add(entity *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = entity.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(entity); !ok {
 		return
 	}
 
@@ -67,7 +67,7 @@ func (n *EntityEndpoint) GetById(id common.EntityId) (result *m.Entity, err erro
 }
 
 // Update ...
-func (n *EntityEndpoint) Update(params *m.Entity) (result *m.Entity, errs []*validation.Error, err error) {
+func (n *EntityEndpoint) Update(params *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
 
 	var entity *m.Entity
 	if entity, err = n.adaptors.Entity.GetById(params.Id); err != nil {
@@ -76,9 +76,8 @@ func (n *EntityEndpoint) Update(params *m.Entity) (result *m.Entity, errs []*val
 
 	common.Copy(&entity, &params, common.JsonEngine)
 
-	// validation
-	_, errs = entity.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 

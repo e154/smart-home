@@ -37,18 +37,21 @@ type BitmineBind struct {
 	bitmine *Bitmine
 }
 
+// NewBitmineBind ...
 func NewBitmineBind(bitmine *Bitmine) *BitmineBind {
 	return &BitmineBind{
 		bitmine: bitmine,
 	}
 }
 
+// Result ...
 type Result struct {
 	Error      bool   `json:"error"`
 	ErrMessage string `json:"errMessage"`
 	Result     string `json:"result"`
 }
 
+// Stats ...
 func (b *BitmineBind) Stats() (res Result) {
 	data, err := b.bitmine.Stats()
 	if err != nil {
@@ -61,6 +64,7 @@ func (b *BitmineBind) Stats() (res Result) {
 	return
 }
 
+// Devs ...
 func (b *BitmineBind) Devs() (res Result) {
 	data, err := b.bitmine.Devs()
 	if err != nil {
@@ -73,6 +77,7 @@ func (b *BitmineBind) Devs() (res Result) {
 	return
 }
 
+// Summary ...
 func (b *BitmineBind) Summary() (res Result) {
 	data, err := b.bitmine.Summary()
 	if err != nil {
@@ -85,6 +90,7 @@ func (b *BitmineBind) Summary() (res Result) {
 	return
 }
 
+// Pools ...
 func (b *BitmineBind) Pools() (res Result) {
 	data, err := b.bitmine.Pools()
 	if err != nil {
@@ -97,6 +103,7 @@ func (b *BitmineBind) Pools() (res Result) {
 	return
 }
 
+// AddPool ...
 func (b *BitmineBind) AddPool(url string) (res Result) {
 	err := b.bitmine.AddPool(url)
 	if err != nil {
@@ -108,6 +115,7 @@ func (b *BitmineBind) AddPool(url string) (res Result) {
 	return
 }
 
+// Version ...
 func (b *BitmineBind) Version() (res Result) {
 	data, err := b.bitmine.Version()
 	if err != nil {
@@ -120,6 +128,7 @@ func (b *BitmineBind) Version() (res Result) {
 	return
 }
 
+// Enable ...
 func (b *BitmineBind) Enable(poolId int64) (res Result) {
 	err := b.bitmine.Enable(poolId)
 	if err != nil {
@@ -131,6 +140,7 @@ func (b *BitmineBind) Enable(poolId int64) (res Result) {
 	return
 }
 
+// Disable ...
 func (b *BitmineBind) Disable(poolId int64) (res Result) {
 	err := b.bitmine.Disable(poolId)
 	if err != nil {
@@ -142,6 +152,7 @@ func (b *BitmineBind) Disable(poolId int64) (res Result) {
 	return
 }
 
+// Delete ...
 func (b *BitmineBind) Delete(poolId int64) (res Result) {
 	err := b.bitmine.Delete(poolId)
 	if err != nil {
@@ -153,6 +164,7 @@ func (b *BitmineBind) Delete(poolId int64) (res Result) {
 	return
 }
 
+// SwitchPool ...
 func (b *BitmineBind) SwitchPool(poolId int64) (res Result) {
 	err := b.bitmine.SwitchPool(poolId)
 	if err != nil {
@@ -164,6 +176,7 @@ func (b *BitmineBind) SwitchPool(poolId int64) (res Result) {
 	return
 }
 
+// Restart ...
 func (b *BitmineBind) Restart() (res Result) {
 	err := b.bitmine.Restart()
 	if err != nil {

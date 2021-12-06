@@ -20,14 +20,15 @@ package models
 
 import (
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/validation"
 	"time"
 )
 
+// EntityPayload ...
 type EntityPayload struct {
 	AttributeSignature Attributes `json:"attribute_signature"`
 }
 
+// EntitySettings ...
 type EntitySettings struct {
 	Settings Attributes `json:"settings"`
 }
@@ -36,7 +37,7 @@ type EntitySettings struct {
 type Entity struct {
 	Id          common.EntityId   `json:"id"`
 	Description string            `json:"description"`
-	Type        common.EntityType `json:"type" valid:"Required"`
+	Type        common.EntityType `json:"type" validate:"required"`
 	Icon        *common.Icon      `json:"icon"`
 	Image       *Image            `json:"image"`
 	Actions     []*EntityAction   `json:"actions"`
@@ -52,15 +53,4 @@ type Entity struct {
 	ParentId    *common.EntityId  `json:"parent_id"`
 	CreatedAt   time.Time         `json:"created_at"`
 	UpdatedAt   time.Time         `json:"updated_at"`
-}
-
-// Valid ...
-func (m *Entity) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(m); !ok {
-		errs = valid.Errors
-	}
-
-	return
 }

@@ -21,93 +21,84 @@ package controllers
 import (
 	"context"
 	"github.com/e154/smart-home/api/stub/api"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"net/http"
 )
 
+// ControllerImage ...
 type ControllerImage struct {
 	*ControllerCommon
 }
 
+// NewControllerImage ...
 func NewControllerImage(common *ControllerCommon) ControllerImage {
 	return ControllerImage{
 		ControllerCommon: common,
 	}
 }
 
-func (c ControllerImage) AddImage(_ context.Context, req *api.NewImageRequest) (*api.Image, error) {
+// AddImage ...
+func (c ControllerImage) AddImage(ctx context.Context, req *api.NewImageRequest) (*api.Image, error) {
 
-	image, errs, err := c.endpoint.Image.Add(c.dto.Image.FromNewImageRequest(req))
-	if len(errs) > 0 {
-		return nil, c.prepareErrors(errs)
-	}
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	image, errs, err := c.endpoint.Image.Add(ctx, c.dto.Image.FromNewImageRequest(req))
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return c.dto.Image.ToImage(image), nil
 }
 
-func (c ControllerImage) GetImageById(_ context.Context, req *api.GetImageRequest) (*api.Image, error) {
+// GetImageById ...
+func (c ControllerImage) GetImageById(ctx context.Context, req *api.GetImageRequest) (*api.Image, error) {
 
-	image, err := c.endpoint.Image.GetById(int64(req.Id))
+	image, err := c.endpoint.Image.GetById(ctx, int64(req.Id))
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Image.ToImage(image), nil
 }
 
-func (c ControllerImage) UpdateImageById(_ context.Context, req *api.UpdateImageRequest) (*api.Image, error) {
+// UpdateImageById ...
+func (c ControllerImage) UpdateImageById(ctx context.Context, req *api.UpdateImageRequest) (*api.Image, error) {
 
-	image, errs, err := c.endpoint.Image.Update(c.dto.Image.FromUpdateImageRequest(req))
-	if len(errs) > 0 {
-		return nil, c.prepareErrors(errs)
-	}
-
-	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+	image, errs, err := c.endpoint.Image.Update(ctx, c.dto.Image.FromUpdateImageRequest(req))
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return c.dto.Image.ToImage(image), nil
 }
 
-func (c ControllerImage) GetImageList(_ context.Context, req *api.GetImageListRequest) (*api.GetImageListResult, error) {
+// GetImageList ...
+func (c ControllerImage) GetImageList(ctx context.Context, req *api.GetImageListRequest) (*api.GetImageListResult, error) {
 
-	items, total, err := c.endpoint.Image.GetList(int64(req.Limit), int64(req.Offset), req.Order, req.SortBy)
+	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	items, total, err := c.endpoint.Image.GetList(ctx, pagination)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return c.dto.Image.ToImageListResult(items, uint32(total), req.Limit, req.Offset), nil
 }
 
-func (c ControllerImage) DeleteImageById(_ context.Context, req *api.DeleteImageRequest) (*emptypb.Empty, error) {
+// DeleteImageById ...
+func (c ControllerImage) DeleteImageById(ctx context.Context, req *api.DeleteImageRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.Image.Delete(int64(req.Id)); err != nil {
-		if err.Error() == "record not found" {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.Internal, err.Error())
+	if err := c.endpoint.Image.Delete(ctx, int64(req.Id)); err != nil {
+		return nil, c.error(ctx, nil, err)
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
-func (c ControllerImage) UploadImage(_ context.Context, req *api.UploadImageRequest) (*api.Image, error) {
+// UploadImage ...
+func (c ControllerImage) UploadImage(ctx context.Context, req *api.UploadImageRequest) (*api.Image, error) {
 
 	return nil, nil
 }
 
+// MuxUploadImage ...
 func (c ControllerImage) MuxUploadImage() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -121,7 +112,7 @@ func (c ControllerImage) MuxUploadImage() func(w http.ResponseWriter, r *http.Re
 			return
 		}
 
-		images, errs := c.endpoint.Image.Upload(form.File)
+		images, errs := c.endpoint.Image.Upload(r.Context(), form.File)
 
 		var resultImages = make([]interface{}, 0)
 

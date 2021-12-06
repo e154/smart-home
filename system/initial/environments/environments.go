@@ -22,16 +22,19 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/e154/smart-home/system/validation"
 )
 
+// IEnvironment ...
 type IEnvironment interface {
 	InstallDemoData(*adaptors.Adaptors, access_list.AccessListService, scripts.ScriptService)
-	Create(*adaptors.Adaptors, access_list.AccessListService, scripts.ScriptService)
-	Upgrade(int, *adaptors.Adaptors, access_list.AccessListService, scripts.ScriptService)
+	Create(*adaptors.Adaptors, access_list.AccessListService, scripts.ScriptService, *validation.Validate)
+	Upgrade(int, *adaptors.Adaptors, access_list.AccessListService, scripts.ScriptService, *validation.Validate)
 }
 
 var environments = map[string]IEnvironment{}
 
+// Register ...
 func Register(name string, env IEnvironment) {
 	if _, ok := environments[name]; ok {
 		panic("duplicated environment: " + name)
@@ -39,6 +42,7 @@ func Register(name string, env IEnvironment) {
 	environments[name] = env
 }
 
+// InstallDemoData ...
 func InstallDemoData(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
@@ -47,19 +51,23 @@ func InstallDemoData(adaptors *adaptors.Adaptors,
 	}
 }
 
+// Create ...
 func Create(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	scriptService scripts.ScriptService) {
+	scriptService scripts.ScriptService,
+	validation *validation.Validate) {
 	for _, env := range environments {
-		env.Create(adaptors, accessList, scriptService)
+		env.Create(adaptors, accessList, scriptService, validation)
 	}
 }
 
+// Upgrade ...
 func Upgrade(oldVersion int,
 	adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	scriptService scripts.ScriptService) {
+	scriptService scripts.ScriptService,
+	validation *validation.Validate) {
 	for _, env := range environments {
-		env.Upgrade(oldVersion, adaptors, accessList, scriptService)
+		env.Upgrade(oldVersion, adaptors, accessList, scriptService, validation)
 	}
 }

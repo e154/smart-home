@@ -28,6 +28,7 @@ import (
 	"time"
 )
 
+// Start ...
 func Start(app *fx.App) {
 	startCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -37,6 +38,7 @@ func Start(app *fx.App) {
 	}
 }
 
+// Work ...
 func Work() {
 	var gracefulStop = make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGINT, syscall.SIGTERM)
@@ -44,6 +46,7 @@ func Work() {
 	<-gracefulStop
 }
 
+// Stop ...
 func Stop(app *fx.App) {
 	stopCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()

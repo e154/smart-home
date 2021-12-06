@@ -34,6 +34,6 @@ type Config struct {
 	MaxInflight                int
 	MaxAwaitRel                int
 	MaxMsgQueue                int
-	Logging   bool
-	DebugMode common.RunMode
+	Logging                    bool
+	DebugMode                  common.RunMode
 }

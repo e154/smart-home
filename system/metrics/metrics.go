@@ -123,10 +123,6 @@ func (m *MetricManager) Start() {
 // Shutdown ...
 func (m MetricManager) Shutdown() {
 
-	//m.Cpu.stop()
-	//m.Disk.stop()
-	//m.Memory.stop()
-	//m.AppMemory.stop()
 }
 
 // Update ...

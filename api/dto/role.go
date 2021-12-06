@@ -25,12 +25,15 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// Role ...
 type Role struct{}
 
+// NewRoleDto ...
 func NewRoleDto() Role {
 	return Role{}
 }
 
+// FromNewRoleRequest ...
 func (r Role) FromNewRoleRequest(from *api.NewRoleRequest) (to *m.Role) {
 	to = &m.Role{
 		Name:        from.Name,
@@ -44,6 +47,7 @@ func (r Role) FromNewRoleRequest(from *api.NewRoleRequest) (to *m.Role) {
 	return
 }
 
+// FromUpdateRoleRequest ...
 func (r Role) FromUpdateRoleRequest(from *api.UpdateRoleRequest) (to *m.Role) {
 	to = &m.Role{
 		Name:        from.Name,
@@ -57,6 +61,7 @@ func (r Role) FromUpdateRoleRequest(from *api.UpdateRoleRequest) (to *m.Role) {
 	return
 }
 
+// ToSearchResult ...
 func (r Role) ToSearchResult(list []*m.Role) *api.SearchRoleListResult {
 
 	items := make([]*api.Role, 0, len(list))
@@ -70,6 +75,7 @@ func (r Role) ToSearchResult(list []*m.Role) *api.SearchRoleListResult {
 	}
 }
 
+// ToListResult ...
 func (r Role) ToListResult(list []*m.Role, total, limit, offset uint32) *api.GetRoleListResult {
 
 	items := make([]*api.Role, 0, len(list))
@@ -88,6 +94,7 @@ func (r Role) ToListResult(list []*m.Role, total, limit, offset uint32) *api.Get
 	}
 }
 
+// ToGRole ...
 func (r Role) ToGRole(from *m.Role) (to *api.Role) {
 	to = &api.Role{
 		Name:        from.Name,
@@ -120,6 +127,7 @@ func (r Role) ToGRole(from *m.Role) (to *api.Role) {
 	return
 }
 
+// ToRoleAccessListResult ...
 func (r Role) ToRoleAccessListResult(accessList access_list.AccessList) *api.RoleAccessListResult {
 	res := &api.RoleAccessListResult{
 		Levels: make(map[string]*api.AccessLevels),
@@ -142,6 +150,7 @@ func (r Role) ToRoleAccessListResult(accessList access_list.AccessList) *api.Rol
 	return res
 }
 
+// FromUpdateRoleAccessListRequest ...
 func (r Role) FromUpdateRoleAccessListRequest(req *api.UpdateRoleAccessListRequest) (accessListDif map[string]map[string]bool) {
 
 	accessListDif = make(map[string]map[string]bool)

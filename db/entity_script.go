@@ -18,9 +18,11 @@
 
 package db
 
+// EntityScripts ...
 type EntityScripts struct {
 }
 
+// EntityScript ...
 type EntityScript struct {
 	Id       int64  `gorm:"primary_key"`
 	EntityId string `gorm:"primary_key;auto_increment:false"`

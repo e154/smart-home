@@ -20,10 +20,11 @@ package endpoint
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"github.com/e154/smart-home/system/validation"
+	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 	"mime/multipart"
 )
@@ -41,10 +42,10 @@ func NewImageEndpoint(common *CommonEndpoint) *ImageEndpoint {
 }
 
 // Add ...
-func (i *ImageEndpoint) Add(params *m.Image) (image *m.Image, errs []*validation.Error, err error) {
+func (i *ImageEndpoint) Add(ctx context.Context, params *m.Image) (image *m.Image, errs validator.ValidationErrorsTranslations, err error) {
 
-	_, errs = params.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = i.validation.Valid(params); !ok {
 		return
 	}
 
@@ -59,7 +60,7 @@ func (i *ImageEndpoint) Add(params *m.Image) (image *m.Image, errs []*validation
 }
 
 // GetById ...
-func (i *ImageEndpoint) GetById(id int64) (image *m.Image, err error) {
+func (i *ImageEndpoint) GetById(ctx context.Context, id int64) (image *m.Image, err error) {
 
 	image, err = i.adaptors.Image.GetById(id)
 
@@ -67,7 +68,7 @@ func (i *ImageEndpoint) GetById(id int64) (image *m.Image, err error) {
 }
 
 // Update ...
-func (i *ImageEndpoint) Update(params *m.Image) (result *m.Image, errs []*validation.Error, err error) {
+func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.Image, errs validator.ValidationErrorsTranslations, err error) {
 
 	var image *m.Image
 	if image, err = i.adaptors.Image.GetById(params.Id); err != nil {
@@ -78,8 +79,8 @@ func (i *ImageEndpoint) Update(params *m.Image) (result *m.Image, errs []*valida
 		return
 	}
 
-	_, errs = image.Valid()
-	if len(errs) > 0 {
+	var ok bool
+	if ok, errs = i.validation.Valid(params); !ok {
 		return
 	}
 
@@ -93,7 +94,7 @@ func (i *ImageEndpoint) Update(params *m.Image) (result *m.Image, errs []*valida
 }
 
 // Delete ...
-func (i *ImageEndpoint) Delete(imageId int64) (err error) {
+func (i *ImageEndpoint) Delete(ctx context.Context, imageId int64) (err error) {
 
 	if imageId == 0 {
 		err = errors.New("image id is null")
@@ -111,7 +112,7 @@ func (i *ImageEndpoint) Delete(imageId int64) (err error) {
 }
 
 // Upload ...
-func (i *ImageEndpoint) Upload(files map[string][]*multipart.FileHeader) (fileList []*m.Image, errs []error) {
+func (i *ImageEndpoint) Upload(ctx context.Context, files map[string][]*multipart.FileHeader) (fileList []*m.Image, errs []error) {
 
 	fileList = make([]*m.Image, 0)
 	errs = make([]error, 0)
@@ -139,13 +140,9 @@ func (i *ImageEndpoint) Upload(files map[string][]*multipart.FileHeader) (fileLi
 }
 
 // GetList ...
-func (i *ImageEndpoint) GetList(limit, offset int64, order, sortBy string) (items []*m.Image, total int64, err error) {
+func (i *ImageEndpoint) GetList(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
 
-	if limit == 0 {
-		limit = common.DefaultPageSize
-	}
-
-	items, total, err = i.adaptors.Image.List(limit, offset, order, sortBy)
+	items, total, err = i.adaptors.Image.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 
 	return
 }

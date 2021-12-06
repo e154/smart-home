@@ -84,7 +84,7 @@ func (n Entities) Update(v *Entity) (err error) {
 // UpdateSettings ...
 func (n Entities) UpdateSettings(entityId common.EntityId, settings []byte) (err error) {
 	q := map[string]interface{}{
-		"settings":    settings,
+		"settings": settings,
 	}
 
 	err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error
@@ -184,7 +184,7 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 
 	list = make([]*Entity, 0)
 	err = n.Db.Model(&Entity{}).
-		Where("type = ?", t).
+		Where("type = ? and auto_load = true", t).
 		Preload("Image").
 		Preload("States").
 		Preload("States.Image").

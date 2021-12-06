@@ -18,6 +18,7 @@
 
 package orm
 
+// AvailableExtension ...
 type AvailableExtension struct {
 	Name             string  `json:"name"`
 	DefaultVersion   string  `json:"default_version"`

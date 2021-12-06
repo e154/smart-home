@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IRunHistory ...
 type IRunHistory interface {
 	Add(story *m.RunStory) (id int64, err error)
 	Update(story *m.RunStory) (err error)

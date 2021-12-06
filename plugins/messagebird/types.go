@@ -24,14 +24,22 @@ import (
 )
 
 const (
-	Name          = "messagebird"
+	// Name ...
+	Name = "messagebird"
+	// AttrAccessKey ...
 	AttrAccessKey = "access_key"
-	AttrName      = "name"
-	AttrPhone     = "phone"
-	AttrBody      = "body"
-	AttrPayment   = "Payment"
-	AttrType      = "Type"
-	AttrAmount    = "Amount"
+	// AttrName ...
+	AttrName = "name"
+	// AttrPhone ...
+	AttrPhone = "phone"
+	// AttrBody ...
+	AttrBody = "body"
+	// AttrPayment ...
+	AttrPayment = "Payment"
+	// AttrType ...
+	AttrType = "Type"
+	// AttrAmount ...
+	AttrAmount = "Amount"
 )
 
 const (
@@ -39,6 +47,7 @@ const (
 	StatusDelivered = "delivered"
 )
 
+// NewAttr ...
 func NewAttr() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrPayment: {
@@ -56,6 +65,7 @@ func NewAttr() m.Attributes {
 	}
 }
 
+// NewMessageParams ...
 func NewMessageParams() m.Attributes {
 	return map[string]*m.Attribute{
 		AttrPhone: {
@@ -69,6 +79,7 @@ func NewMessageParams() m.Attributes {
 	}
 }
 
+// NewSettings ...
 func NewSettings() map[string]*m.Attribute {
 	return map[string]*m.Attribute{
 		AttrAccessKey: {
@@ -82,6 +93,7 @@ func NewSettings() map[string]*m.Attribute {
 	}
 }
 
+// Balance ...
 type Balance struct {
 	Payment string
 	Type    string

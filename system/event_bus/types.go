@@ -26,6 +26,7 @@ import (
 	"time"
 )
 
+// EntityState ...
 type EntityState struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
@@ -33,6 +34,7 @@ type EntityState struct {
 	Icon        *string `json:"icon"`
 }
 
+// EventEntityState ...
 type EventEntityState struct {
 	EntityId    common.EntityId `json:"entity_id"`
 	Value       interface{}     `json:"value"`
@@ -43,6 +45,7 @@ type EventEntityState struct {
 	LastUpdated *time.Time      `json:"last_updated"`
 }
 
+// Compare ...
 func (e1 EventEntityState) Compare(e2 EventEntityState) (ident bool) {
 
 	if e1.State != e2.State {
@@ -62,8 +65,12 @@ func (e1 EventEntityState) Compare(e2 EventEntityState) (ident bool) {
 	return
 }
 
+// EventType ...
 type EventType string
 
 const (
+	// TopicEntities ...
 	TopicEntities = "entities"
+	// TopicPlugins ...
+	TopicPlugins = "plugins"
 )

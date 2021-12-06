@@ -163,8 +163,10 @@ func init() {
 	}
 }
 
+// Generator ...
 type Generator struct{}
 
+// Generate ...
 func (e Generator) Generate(modelName, currpath string) {
 
 	log.Infof("Using '%s' as model name", modelName)
@@ -200,8 +202,8 @@ func (e Generator) addModel(fp, modelName string) {
 		ModelName   string
 		AdaptorName string
 	}{
-		Package:     packageName,
-		Name:        modelName,
+		Package: packageName,
+		Name:    modelName,
 	}
 	t := template.Must(template.New("dbModel").Parse(dbModelTpl))
 
@@ -211,4 +213,3 @@ func (e Generator) addModel(fp, modelName string) {
 
 	common.FormatSourceCode(fpath)
 }
-

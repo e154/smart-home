@@ -24,6 +24,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// IMapImage ...
 type IMapImage interface {
 	Add(ver *m.MapImage) (id int64, err error)
 	GetById(mapId int64) (ver *m.MapImage, err error)

@@ -30,6 +30,7 @@ import (
 )
 
 var (
+	// Server ...
 	Server = &cobra.Command{
 		Use:   "server",
 		Short: fmt.Sprintf(version.ShortVersionBanner, ""),

@@ -18,22 +18,9 @@
 
 package models
 
-import "github.com/e154/smart-home/system/validation"
-
 // Area ...
 type Area struct {
 	Id          int64  `json:"id"`
-	Name        string `json:"name" valid:"Required"`
+	Name        string `json:"name" validate:"required"`
 	Description string `json:"description"`
-}
-
-// Valid ...
-func (d *Area) Valid() (ok bool, errs []*validation.Error) {
-
-	valid := validation.Validation{}
-	if ok, _ = valid.Valid(d); !ok {
-		errs = valid.Errors
-	}
-
-	return
 }
