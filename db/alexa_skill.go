@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -51,6 +52,7 @@ func (d *AlexaSkill) TableName() string {
 // Add ...
 func (n AlexaSkills) Add(v *AlexaSkill) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = v.Id
@@ -67,6 +69,7 @@ func (n AlexaSkills) GetById(id int64) (v *AlexaSkill, err error) {
 		Find(v).
 		Error
 	if err != nil {
+		err = errors.Wrap(err, "getById failed")
 		return
 	}
 	err = n.preload(v)
@@ -91,7 +94,9 @@ func (n *AlexaSkills) List(limit, offset int64, orderBy, sort string) (list []*A
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
 
-	err = q.Find(&list).Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 
 	return
 }
@@ -110,6 +115,7 @@ func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err 
 		Find(&list).Error
 
 	if err != nil {
+		err = errors.Wrap(err, "list enabled failed")
 		return
 	}
 
@@ -124,6 +130,11 @@ func (n *AlexaSkills) ListEnabled(limit, offset int64) (list []*AlexaSkill, err 
 func (n AlexaSkills) preload(v *AlexaSkill) (err error) {
 	err = n.Db.Model(v).
 		Related(&v.Intents).Error
+
+	if err != nil {
+		err = errors.Wrap(err, "get related intents failed")
+		return
+	}
 
 	for _, intent := range v.Intents {
 		intent.Script = &Script{Id: intent.ScriptId}
@@ -143,12 +154,16 @@ func (n AlexaSkills) Update(v *AlexaSkill) (err error) {
 	if v.ScriptId != nil {
 		q["script_id"] = common.Int64Value(v.ScriptId)
 	}
-	err = n.Db.Model(&AlexaSkill{}).Where("id = ?", v.Id).Updates(q).Error
+	if err = n.Db.Model(&AlexaSkill{}).Where("id = ?", v.Id).Updates(q).Error; err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
 // Delete ...
 func (n AlexaSkills) Delete(id int64) (err error) {
-	err = n.Db.Delete(&AlexaSkill{}, "id = ?", id).Error
+	if err = n.Db.Delete(&AlexaSkill{}, "id = ?", id).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }

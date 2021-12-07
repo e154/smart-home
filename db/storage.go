@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -50,20 +51,24 @@ func (s *Storages) CreateOrUpdate(v Storage) (err error) {
 			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', updated_at = '%s'", v.Value, time.Now().Format(time.RFC3339))).
 		Create(&v).Error
 	if err != nil {
-		log.Error(err.Error())
+		err = errors.Wrap(err, "createOrUpdate failed")
 	}
 	return
 }
 
 // GetByName ...
 func (s *Storages) GetByName(name string) (v Storage, err error) {
-	err = s.Db.Model(&Storage{}).Where("name = ?", name).First(&v).Error
+	if err = s.Db.Model(&Storage{}).Where("name = ?", name).First(&v).Error; err != nil {
+		err = errors.Wrap(err, "getByName failed")
+	}
 	return
 }
 
 // Delete ...
 func (s *Storages) Delete(name string) (err error) {
-	err = s.Db.Delete(&Storage{}, "name = ?", name).Error
+	if err = s.Db.Delete(&Storage{}, "name = ?", name).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -74,6 +79,7 @@ func (s *Storages) Search(query string, limit, offset int) (list []Storage, tota
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -83,7 +89,8 @@ func (s *Storages) Search(query string, limit, offset int) (list []Storage, tota
 		Order("name ASC")
 
 	list = make([]Storage, 0)
-	err = q.Find(&list).Error
-
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 	return
 }

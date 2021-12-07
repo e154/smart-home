@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -44,8 +45,11 @@ func (d *TelegramChat) TableName() string {
 }
 
 // Add ...
-func (n TelegramChats) Add(ch TelegramChat) error {
-	return n.Db.Create(&ch).Error
+func (n TelegramChats) Add(ch TelegramChat) (err error) {
+	if err = n.Db.Create(&ch).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
+	}
+	return
 }
 
 // Delete ...
@@ -54,6 +58,9 @@ func (n TelegramChats) Delete(entityId common.EntityId, chatId int64) (err error
 		EntityId: entityId,
 		ChatId:   chatId,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -61,6 +68,7 @@ func (n TelegramChats) Delete(entityId common.EntityId, chatId int64) (err error
 func (n *TelegramChats) List(limit, offset int64, orderBy, sort string, entityId common.EntityId) (list []TelegramChat, total int64, err error) {
 
 	if err = n.Db.Model(TelegramChat{EntityId: entityId}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -76,9 +84,8 @@ func (n *TelegramChats) List(limit, offset int64, orderBy, sort string, entityId
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
 
-	err = q.
-		Find(&list).
-		Error
-
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }

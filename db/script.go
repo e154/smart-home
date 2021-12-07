@@ -22,6 +22,7 @@ import (
 	"fmt"
 	. "github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -50,6 +51,7 @@ func (d *Script) TableName() string {
 // Add ...
 func (n Scripts) Add(script *Script) (id int64, err error) {
 	if err = n.Db.Create(&script).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = script.Id
@@ -59,14 +61,18 @@ func (n Scripts) Add(script *Script) (id int64, err error) {
 // GetById ...
 func (n Scripts) GetById(scriptId int64) (script *Script, err error) {
 	script = &Script{Id: scriptId}
-	err = n.Db.First(&script).Error
+	if err = n.Db.First(&script).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
 // GetByName ...
 func (n Scripts) GetByName(name string) (script *Script, err error) {
 	script = &Script{Name: name}
-	err = n.Db.First(&script).Error
+	if err = n.Db.First(&script).Error; err != nil {
+		err = errors.Wrap(err, "getByName failed")
+	}
 	return
 }
 
@@ -79,12 +85,17 @@ func (n Scripts) Update(m *Script) (err error) {
 		"source":      m.Source,
 		"compiled":    m.Compiled,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
 // Delete ...
 func (n Scripts) Delete(scriptId int64) (err error) {
-	err = n.Db.Delete(&Script{Id: scriptId}).Error
+	if err = n.Db.Delete(&Script{Id: scriptId}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -92,6 +103,7 @@ func (n Scripts) Delete(scriptId int64) (err error) {
 func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Script, total int64, err error) {
 
 	if err = n.Db.Model(Script{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -102,7 +114,9 @@ func (n *Scripts) List(limit, offset int64, orderBy, sort string) (list []*Scrip
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }
 
@@ -113,6 +127,7 @@ func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -122,7 +137,8 @@ func (n *Scripts) Search(query string, limit, offset int) (list []*Script, total
 		Order("name ASC")
 
 	list = make([]*Script, 0)
-	err = q.Find(&list).Error
-
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 	return
 }

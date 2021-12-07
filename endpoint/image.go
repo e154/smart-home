@@ -21,11 +21,11 @@ package endpoint
 import (
 	"bufio"
 	"context"
-	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
+	"github.com/pkg/errors"
 	"mime/multipart"
 )
 
@@ -51,18 +51,33 @@ func (i *ImageEndpoint) Add(ctx context.Context, params *m.Image) (image *m.Imag
 
 	var id int64
 	if id, err = i.adaptors.Image.Add(params); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	image, err = i.adaptors.Image.GetById(id)
+	if image, err = i.adaptors.Image.GetById(id); err != nil {
+		if !errors.Is(err, common.ErrNotFound) {
+			err = errors.Wrap(common.ErrInternal, err.Error())
+		}
+		return
+	}
 
 	return
 }
 
 // GetById ...
-func (i *ImageEndpoint) GetById(ctx context.Context, id int64) (image *m.Image, err error) {
+func (i *ImageEndpoint) GetById(ctx context.Context, imageId int64) (image *m.Image, errs validator.ValidationErrorsTranslations, err error) {
 
-	image, err = i.adaptors.Image.GetById(id)
+	var ok bool
+	if ok, errs = i.validation.ValidVar(imageId, "id", "required,numeric"); !ok {
+		return
+	}
+
+	if image, err = i.adaptors.Image.GetById(imageId); err != nil {
+		if !errors.Is(err, common.ErrNotFound) {
+			err = errors.Wrap(common.ErrInternal, err.Error())
+		}
+	}
 
 	return
 }
@@ -85,28 +100,38 @@ func (i *ImageEndpoint) Update(ctx context.Context, params *m.Image) (result *m.
 	}
 
 	if err = i.adaptors.Image.Update(image); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	image, err = i.adaptors.Image.GetById(params.Id)
+	if image, err = i.adaptors.Image.GetById(params.Id); err != nil {
+		if !errors.Is(err, common.ErrNotFound) {
+			err = errors.Wrap(common.ErrInternal, err.Error())
+		}
+	}
 
 	return
 }
 
 // Delete ...
-func (i *ImageEndpoint) Delete(ctx context.Context, imageId int64) (err error) {
+func (i *ImageEndpoint) Delete(ctx context.Context, imageId int64) (errs validator.ValidationErrorsTranslations, err error) {
 
-	if imageId == 0 {
-		err = errors.New("image id is null")
+	var ok bool
+	if ok, errs = i.validation.ValidVar(imageId, "id", "required,numeric"); !ok {
 		return
 	}
 
 	var image *m.Image
 	if image, err = i.adaptors.Image.GetById(imageId); err != nil {
+		if !errors.Is(err, common.ErrNotFound) {
+			err = errors.Wrap(common.ErrInternal, err.Error())
+		}
 		return
 	}
 
-	err = i.adaptors.Image.Delete(image.Id)
+	if err = i.adaptors.Image.Delete(image.Id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -142,7 +167,9 @@ func (i *ImageEndpoint) Upload(ctx context.Context, files map[string][]*multipar
 // GetList ...
 func (i *ImageEndpoint) GetList(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
 
-	items, total, err = i.adaptors.Image.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	if items, total, err = i.adaptors.Image.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }

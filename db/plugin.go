@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // Plugins ...
@@ -46,6 +47,7 @@ func (d Plugin) TableName() string {
 // Add ...
 func (n Plugins) Add(plugin Plugin) (err error) {
 	if err = n.Db.Create(&plugin).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	return
@@ -58,7 +60,7 @@ func (n Plugins) CreateOrUpdate(v Plugin) (err error) {
 			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET version = '%s', enabled = '%t', system = '%t', settings = '%s'", v.Version, v.Enabled, v.System, v.Settings)).
 		Create(&v).Error
 	if err != nil {
-		log.Error(err.Error())
+		err = errors.Wrap(err, "createOrUpdate failed")
 	}
 	return
 }
@@ -71,13 +73,17 @@ func (n Plugins) Update(m Plugin) (err error) {
 		"system":    m.System,
 		"settings":  m.Settings,
 	}
-	err = n.Db.Model(&Plugin{Name: m.Name}).Updates(q).Error
+	if err = n.Db.Model(&Plugin{Name: m.Name}).Updates(q).Error; err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
 // Delete ...
 func (n Plugins) Delete(name string) (err error) {
-	err = n.Db.Delete(&Plugin{Name: name}).Error
+	if err = n.Db.Delete(&Plugin{Name: name}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -85,6 +91,7 @@ func (n Plugins) Delete(name string) (err error) {
 func (n Plugins) List(limit, offset int64, orderBy, sort string) (list []Plugin, total int64, err error) {
 
 	if err = n.Db.Model(Plugin{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -98,9 +105,9 @@ func (n Plugins) List(limit, offset int64, orderBy, sort string) (list []Plugin,
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
 
-	err = q.
-		Find(&list).
-		Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 
 	return
 }
@@ -112,6 +119,7 @@ func (n Plugins) Search(query string, limit, offset int) (list []Plugin, total i
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -121,7 +129,9 @@ func (n Plugins) Search(query string, limit, offset int) (list []Plugin, total i
 		Order("name ASC")
 
 	list = make([]Plugin, 0)
-	err = q.Find(&list).Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 
 	return
 }
@@ -134,6 +144,8 @@ func (n Plugins) GetByName(name string) (plugin Plugin, err error) {
 		Where("name = ?", name).
 		First(&plugin).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getByName failed")
+	}
 	return
 }

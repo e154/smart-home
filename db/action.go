@@ -20,6 +20,7 @@ package db
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // Actions ...
@@ -44,6 +45,8 @@ func (d *Action) TableName() string {
 
 // DeleteByTaskId ...
 func (n Actions) DeleteByTaskId(id int64) (err error) {
-	err = n.Db.Delete(&Action{}, "task_id = ?", id).Error
+	if err = n.Db.Delete(&Action{}, "task_id = ?", id).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }

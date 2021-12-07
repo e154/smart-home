@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -44,8 +45,11 @@ func (d *MetricBucket) TableName() string {
 }
 
 // Add ...
-func (n MetricBuckets) Add(metric MetricBucket) error {
-	return n.Db.Create(&metric).Error
+func (n MetricBuckets) Add(metric MetricBucket) (err error) {
+	if err = n.Db.Create(&metric).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
+	}
+	return
 }
 
 // SimpleListWithSoftRange ...
@@ -75,7 +79,9 @@ GROUP BY round(extract('epoch' from c.time) / %[1]d)
 order by time asc
 LIMIT 3600`
 	q = fmt.Sprintf(q, num)
-	err = n.Db.Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error
+	if err = n.Db.Raw(q, metricId, from.Format(time.RFC3339), to.Format(time.RFC3339)).Scan(&list).Error; err != nil {
+		err = errors.Wrap(err, "simpleListWithSoftRange failed")
+	}
 	return
 }
 
@@ -148,7 +154,10 @@ where b.metric_id = ? and b.time > NOW() - interval '1 hour'
 limit 3600`
 	}
 	list = make([]MetricBucket, 0)
-	err = n.Db.Raw(q, metricId).Scan(&list).Error
+	if err = n.Db.Raw(q, metricId).Scan(&list).Error; err != nil {
+		err = errors.Wrap(err, "simpleListByRangeType failed")
+	}
+
 	return
 }
 
@@ -172,7 +181,9 @@ GROUP BY round(extract('epoch' from c.time) / 250)
 order by time asc
 LIMIT 345`
 
-	err = n.Db.Raw(q, metricId).Scan(&list).Error
+	if err = n.Db.Raw(q, metricId).Scan(&list).Error; err != nil {
+		err = errors.Wrap(err, "simple24HPreview failed")
+	}
 	return
 }
 
@@ -181,23 +192,32 @@ func (n *MetricBuckets) DeleteOldest(days int) (err error) {
 	err = n.Db.Raw(`delete
     from metric_bucket
     where time < now() - interval '? days'`, days).Error
+	if err != nil {
+		err = errors.Wrap(err, "deleteOldest failed")
+	}
 	return
 }
 
 // DeleteByMetricId ...
 func (n MetricBuckets) DeleteByMetricId(metricId int64) (err error) {
-	err = n.Db.Delete(&MetricBucket{}, "metric_id = ?", metricId).Error
+	if err = n.Db.Delete(&MetricBucket{}, "metric_id = ?", metricId).Error; err != nil {
+		err = errors.Wrap(err, "deleteByMetricId failed")
+	}
 	return
 }
 
 // DeleteById ...
 func (n MetricBuckets) DeleteById(id int64) (err error) {
-	err = n.Db.Delete(&MetricBucket{}, "id = ?", id).Error
+	if err = n.Db.Delete(&MetricBucket{}, "id = ?", id).Error; err != nil {
+		err = errors.Wrap(err, "deleteById failed")
+	}
 	return
 }
 
 // CreateHypertable ...
 func (n MetricBuckets) CreateHypertable() (err error) {
-	err = n.Db.Raw(`SELECT create_hypertable('metric_bucket', 'time', migrate_data=>'TRUE')`).Error
+	if err = n.Db.Raw(`SELECT create_hypertable('metric_bucket', 'time', migrate_data=>'TRUE')`).Error; err != nil {
+		err = errors.Wrap(err, "createHypertable failed")
+	}
 	return
 }

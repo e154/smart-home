@@ -21,6 +21,7 @@ package db
 import (
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // Triggers ...
@@ -49,6 +50,8 @@ func (d *Trigger) TableName() string {
 
 // DeleteByTaskId ...
 func (n Triggers) DeleteByTaskId(id int64) (err error) {
-	err = n.Db.Delete(&Trigger{}, "task_id = ?", id).Error
+	if err = n.Db.Delete(&Trigger{}, "task_id = ?", id).Error; err != nil {
+		err = errors.Wrap(err, "deleteByTaskId failed")
+	}
 	return
 }

@@ -20,12 +20,12 @@ package endpoint
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 	"strconv"
 	"strings"
 )
@@ -52,20 +52,29 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.S
 
 	var engine *scripts.Engine
 	if engine, err = n.scriptService.NewEngine(params); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if err = engine.Compile(); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	var id int64
 	if id, err = n.adaptors.Script.Add(params); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = n.adaptors.Script.GetById(id)
-
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 
@@ -73,14 +82,25 @@ func (n *ScriptEndpoint) Add(ctx context.Context, params *m.Script) (result *m.S
 func (n *ScriptEndpoint) GetById(ctx context.Context, scriptId int64) (result *m.Script, err error) {
 
 	result, err = n.adaptors.Script.GetById(scriptId)
-
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 
 // Copy ...
 func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Script, err error) {
 
-	if script, err = n.adaptors.Script.GetById(scriptId); err != nil {
+	script, err = n.adaptors.Script.GetById(scriptId)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -96,10 +116,18 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 
 	var id int64
 	if id, err = n.adaptors.Script.Add(script); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	script, err = n.adaptors.Script.GetById(id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 
 	return
 }
@@ -108,11 +136,17 @@ func (n *ScriptEndpoint) Copy(ctx context.Context, scriptId int64) (script *m.Sc
 func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *m.Script, errs validator.ValidationErrorsTranslations, err error) {
 
 	var script *m.Script
-	if script, err = n.adaptors.Script.GetById(params.Id); err != nil {
+	script, err = n.adaptors.Script.GetById(params.Id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if err = common.Copy(&script, &params); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -123,19 +157,28 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 
 	var engine *scripts.Engine
 	if engine, err = n.scriptService.NewEngine(script); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if err = engine.Compile(); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if err = n.adaptors.Script.Update(script); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = n.adaptors.Script.GetById(script.Id)
-
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 
@@ -143,6 +186,9 @@ func (n *ScriptEndpoint) Update(ctx context.Context, params *m.Script) (result *
 func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Script, total int64, err error) {
 
 	result, total, err = n.adaptors.Script.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -156,12 +202,18 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 	}
 
 	var script *m.Script
-	if script, err = n.adaptors.Script.GetById(scriptId); err != nil {
+	script, err = n.adaptors.Script.GetById(scriptId)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	err = n.adaptors.Script.Delete(script.Id)
-
+	if err = n.adaptors.Script.Delete(script.Id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
@@ -169,16 +221,25 @@ func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (
 func (n *ScriptEndpoint) Execute(ctx context.Context, scriptId int64) (result string, err error) {
 
 	var script *m.Script
-	if script, err = n.adaptors.Script.GetById(scriptId); err != nil {
+	script, err = n.adaptors.Script.GetById(scriptId)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	var engine *scripts.Engine
 	if engine, err = n.scriptService.NewEngine(script); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = engine.DoFull()
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -188,14 +249,19 @@ func (n *ScriptEndpoint) ExecuteSource(ctx context.Context, script *m.Script) (r
 
 	var engine *scripts.Engine
 	if engine, err = n.scriptService.NewEngine(script); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if err = engine.Compile(); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = engine.DoFull()
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -204,6 +270,9 @@ func (n *ScriptEndpoint) ExecuteSource(ctx context.Context, script *m.Script) (r
 func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset int) (devices []*m.Script, total int64, err error) {
 
 	devices, total, err = n.adaptors.Script.Search(query, limit, offset)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }

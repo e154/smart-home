@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -61,7 +62,9 @@ func (d *Entity) TableName() string {
 
 // Add ...
 func (n Entities) Add(v *Entity) (err error) {
-	err = n.Db.Create(&v).Error
+	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
+	}
 	return
 }
 
@@ -77,7 +80,9 @@ func (n Entities) Update(v *Entity) (err error) {
 		"settings":    v.Settings,
 	}
 
-	err = n.Db.Model(&Entity{Id: v.Id}).Updates(q).Error
+	if err = n.Db.Model(&Entity{Id: v.Id}).Updates(q).Error; err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
@@ -87,7 +92,9 @@ func (n Entities) UpdateSettings(entityId common.EntityId, settings []byte) (err
 		"settings": settings,
 	}
 
-	err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error
+	if err = n.Db.Model(&Entity{Id: entityId}).Updates(q).Error; err != nil {
+		err = errors.Wrap(err, "update settings failed")
+	}
 	return
 }
 
@@ -108,10 +115,12 @@ func (n Entities) GetById(id common.EntityId) (v *Entity, err error) {
 		First(&v).Error
 
 	if err != nil {
+		err = errors.Wrap(err, "getById failed")
 		return
 	}
 
 	if err = n.preloadStorage(v); err != nil {
+		err = errors.Wrap(err, "preload failed")
 		return
 	}
 
@@ -122,6 +131,7 @@ func (n Entities) GetById(id common.EntityId) (v *Entity, err error) {
 func (n Entities) Delete(id common.EntityId) (err error) {
 
 	if err = n.Db.Delete(&Entity{Id: id}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
 		return
 	}
 
@@ -129,6 +139,9 @@ func (n Entities) Delete(id common.EntityId) (err error) {
 		Where("prototype_id = ? and prototype_type = 'entity'", id).
 		Update("prototype_id", "").
 		Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 
 	return
 }
@@ -137,6 +150,7 @@ func (n Entities) Delete(id common.EntityId) (err error) {
 func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool) (list []*Entity, total int64, err error) {
 
 	if err = n.Db.Model(Entity{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -167,11 +181,13 @@ func (n *Entities) List(limit, offset int64, orderBy, sort string, autoLoad bool
 		Error
 
 	if err != nil {
+		err = errors.Wrap(err, "find failed")
 		return
 	}
 
 	for _, entity := range list {
 		if err = n.preloadStorage(entity); err != nil {
+			err = errors.Wrap(err, "preload failed")
 			return
 		}
 	}
@@ -200,11 +216,13 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 		Error
 
 	if err != nil {
+		err = errors.Wrap(err, "getByType failed")
 		return
 	}
 
 	for _, entity := range list {
 		if err = n.preloadStorage(entity); err != nil {
+			err = errors.Wrap(err, "preload failed")
 			return
 		}
 	}
@@ -219,6 +237,7 @@ func (n *Entities) Search(query string, limit, offset int) (list []*Entity, tota
 		Where("id LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -228,44 +247,58 @@ func (n *Entities) Search(query string, limit, offset int) (list []*Entity, tota
 		Order("id ASC")
 
 	list = make([]*Entity, 0)
-	err = q.Find(&list).Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 
 	return
 }
 
 // AppendMetric ...
 func (n Entities) AppendMetric(id common.EntityId, metric Metric) (err error) {
-	err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Append(&metric).Error
+	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Append(&metric).Error; err != nil {
+		err = errors.Wrap(err, "append metric failed")
+	}
 	return
 }
 
 // DeleteMetric ...
 func (n Entities) DeleteMetric(id common.EntityId, metricId int64) (err error) {
-	err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Delete(&Metric{Id: metricId}).Error
+	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Delete(&Metric{Id: metricId}).Error; err != nil {
+		err = errors.Wrap(err, "delete metric failed")
+	}
 	return
 }
 
 // ReplaceMetric ...
 func (n Entities) ReplaceMetric(id common.EntityId, metric Metric) (err error) {
-	err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Replace(&metric).Error
+	if err = n.Db.Model(&Entity{Id: id}).Association("Metrics").Replace(&metric).Error; err != nil {
+		err = errors.Wrap(err, "replace metric failed")
+	}
 	return
 }
 
 // AppendScript ...
 func (n Entities) AppendScript(id common.EntityId, script *Script) (err error) {
-	err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Append(script).Error
+	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Append(script).Error; err != nil {
+		err = errors.Wrap(err, "append script failed")
+	}
 	return
 }
 
 // DeleteScript ...
 func (n Entities) DeleteScript(id common.EntityId, scriptId int64) (err error) {
-	err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Delete(&Script{Id: scriptId}).Error
+	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Delete(&Script{Id: scriptId}).Error; err != nil {
+		err = errors.Wrap(err, "delete metric failed")
+	}
 	return
 }
 
 // ReplaceScript ...
 func (n Entities) ReplaceScript(id common.EntityId, script Script) (err error) {
-	err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(&script).Error
+	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(&script).Error; err != nil {
+		err = errors.Wrap(err, "replace metric failed")
+	}
 	return
 }
 

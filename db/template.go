@@ -55,24 +55,23 @@ func (d *Template) TableName() string {
 }
 
 // UpdateOrCreate ...
-func (n Templates) UpdateOrCreate(tpl *Template) error {
+func (n Templates) UpdateOrCreate(tpl *Template) (err error) {
 
-	if err := n.Db.Create(tpl).Error; err != nil {
-		if err := n.Update(tpl); err != nil {
-			return errors.New(err.Error())
+	if err = n.Db.Create(tpl).Error; err != nil {
+		if err = n.Update(tpl); err != nil {
+			err = errors.Wrap(err, "updateOrCreate failed")
+			return
 		}
 	}
 
-	return nil
+	return
 }
 
 // Create ...
 func (n Templates) Create(tpl *Template) error {
-
 	if err := n.Db.Create(tpl).Error; err != nil {
-		return errors.New(err.Error())
+		err = errors.Wrap(err, "create failed")
 	}
-
 	return nil
 }
 
@@ -85,7 +84,7 @@ func (n Templates) GetByName(name, itemType string) (*Template, error) {
 		First(&tpl).Error
 
 	if err != nil {
-		return nil, errors.New(err.Error())
+		return nil, errors.Wrap(err, "getByName failed")
 	}
 
 	return tpl, nil
@@ -101,7 +100,7 @@ func (n Templates) GetItemsSortedList() (count int64, newItems []string, err err
 		Error
 
 	if err != nil {
-		err = errors.New(err.Error())
+		err = errors.Wrap(err, "get items failed")
 		return
 	}
 
@@ -140,7 +139,7 @@ func (n Templates) Update(m *Template) error {
 	}).Error
 
 	if err != nil {
-		return errors.New(err.Error())
+		return errors.Wrap(err, "update failed")
 	}
 	return nil
 }
@@ -152,14 +151,16 @@ func (n Templates) UpdateStatus(m *Template) error {
 	}).Error
 
 	if err != nil {
-		return errors.New(err.Error())
+		return errors.Wrap(err, "updateStatus failed")
 	}
 	return nil
 }
 
 // Delete ...
 func (n Templates) Delete(name string) (err error) {
-	err = n.Db.Delete(&Template{Name: name}).Error
+	if err = n.Db.Delete(&Template{Name: name}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -168,6 +169,7 @@ func (n Templates) GetItemsTree() (tree []*TemplateTree, err error) {
 
 	var items []*Template
 	if items, err = n.GetList("item"); err != nil {
+		err = errors.Wrap(err, "getItemsTree failed")
 		return
 	}
 
@@ -197,7 +199,7 @@ func (n Templates) GetList(templateType string) ([]*Template, error) {
 		Error
 
 	if err != nil {
-		return nil, errors.New(err.Error())
+		return nil, errors.Wrap(err, "getList failed")
 	}
 
 	return items, nil
@@ -211,7 +213,7 @@ func (n *Templates) Search(query string, limit, offset int) (items []*Template, 
 		Where("type = 'template'")
 
 	if err = q.Count(&total).Error; err != nil {
-		err = errors.New(err.Error())
+		err = errors.Wrap(err, "get template failed")
 		return
 	}
 
@@ -222,7 +224,7 @@ func (n *Templates) Search(query string, limit, offset int) (items []*Template, 
 
 	items = make([]*Template, 0)
 	if err = q.Find(&items).Error; err != nil {
-		err = errors.New(err.Error())
+		err = errors.Wrap(err, "search failed")
 	}
 
 	return
@@ -257,7 +259,7 @@ func (n Templates) UpdateItemsTree(tree []*TemplateTree, parent string) error {
 			"parent": nil,
 		}).Error
 		if err != nil {
-			return errors.New(err.Error())
+			return errors.Wrap(err, "updateItemsTree failed")
 		}
 
 		if len(v.Nodes) == 0 {
@@ -279,7 +281,7 @@ func (n Templates) emailItemParentUpdate(name, parent string) error {
 		}).Error
 
 	if err != nil {
-		return errors.New(err.Error())
+		return errors.Wrap(err, "emailItemParentUpdate failed")
 	}
 
 	return nil

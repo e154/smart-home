@@ -19,14 +19,10 @@
 package endpoint
 
 import (
-	"errors"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/mqtt/admin"
 )
 
-var (
-	// ErrMqttServerNoWorked ...
-	ErrMqttServerNoWorked = errors.New("mqtt server not worked")
-)
 
 // MqttEndpoint ...
 type MqttEndpoint struct {
@@ -43,7 +39,7 @@ func NewMqttEndpoint(common *CommonEndpoint) *MqttEndpoint {
 // GetClients ...
 func (m *MqttEndpoint) GetClients(limit, offset uint) (list []*admin.ClientInfo, total uint32, err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 	list, total, err = m.mqtt.Admin().GetClients(limit, offset)
@@ -53,7 +49,7 @@ func (m *MqttEndpoint) GetClients(limit, offset uint) (list []*admin.ClientInfo,
 // GetClient ...
 func (m *MqttEndpoint) GetClient(clientId string) (client *admin.ClientInfo, err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 	client, err = m.mqtt.Admin().GetClient(clientId)
@@ -63,7 +59,7 @@ func (m *MqttEndpoint) GetClient(clientId string) (client *admin.ClientInfo, err
 // GetSessions ...
 func (m *MqttEndpoint) GetSessions(limit, offset uint) (list []*admin.SessionInfo, total int, err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 	list, total, err = m.mqtt.Admin().GetSessions(limit, offset)
@@ -73,7 +69,7 @@ func (m *MqttEndpoint) GetSessions(limit, offset uint) (list []*admin.SessionInf
 // GetSession ...
 func (m *MqttEndpoint) GetSession(clientId string) (session *admin.SessionInfo, err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 	session, err = m.mqtt.Admin().GetSession(clientId)
@@ -83,7 +79,7 @@ func (m *MqttEndpoint) GetSession(clientId string) (session *admin.SessionInfo, 
 // GetSubscriptions ...
 func (m *MqttEndpoint) GetSubscriptions(clientId string, limit, offset uint) (list []*admin.SubscriptionInfo, total int, err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 	list, total, err = m.mqtt.Admin().GetSubscriptions(clientId, limit, offset)
@@ -93,7 +89,7 @@ func (m *MqttEndpoint) GetSubscriptions(clientId string, limit, offset uint) (li
 // Subscribe ...
 func (m *MqttEndpoint) Subscribe(clientId, topic string, qos int) (err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 	err = m.mqtt.Admin().Subscribe(clientId, topic, qos)
@@ -103,7 +99,7 @@ func (m *MqttEndpoint) Subscribe(clientId, topic string, qos int) (err error) {
 // Unsubscribe ...
 func (m *MqttEndpoint) Unsubscribe(clientId, topic string) (err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 	err = m.mqtt.Admin().Unsubscribe(clientId, topic)
@@ -113,7 +109,7 @@ func (m *MqttEndpoint) Unsubscribe(clientId, topic string) (err error) {
 // Publish ...
 func (m *MqttEndpoint) Publish(topic string, qos int, payload []byte, retain bool) (err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 	err = m.mqtt.Admin().Publish(topic, qos, payload, retain)
@@ -123,7 +119,7 @@ func (m *MqttEndpoint) Publish(topic string, qos int, payload []byte, retain boo
 // CloseClient ...
 func (m *MqttEndpoint) CloseClient(clientId string) (err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 	err = m.mqtt.Admin().CloseClient(clientId)
@@ -133,7 +129,7 @@ func (m *MqttEndpoint) CloseClient(clientId string) (err error) {
 // SearchTopic ...
 func (m *MqttEndpoint) SearchTopic(query string, limit, offset int) (result []*admin.SubscriptionInfo, total int64, err error) {
 	if m.mqtt.Admin() == nil {
-		err = ErrMqttServerNoWorked
+		err = common.ErrMqttServerNoWorked
 		return
 	}
 

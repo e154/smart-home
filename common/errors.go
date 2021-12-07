@@ -34,6 +34,11 @@ var (
 	ErrPassNotValid = errors.New("password not valid")
 	// ErrAccountIsBlocked ...
 	ErrAccountIsBlocked = errors.New("account is blocked")
+	// ErrNotAuthorized ...
+	ErrNotAuthorized = errors.New("not authorized")
 
+	// MQTT
 
+	// ErrMqttServerNoWorked ...
+	ErrMqttServerNoWorked = errors.New("mqtt server not worked")
 )

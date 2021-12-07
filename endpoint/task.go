@@ -22,11 +22,9 @@ import (
 	"context"
 	"github.com/pkg/errors"
 
-	"fmt"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
-	"github.com/jinzhu/gorm"
 )
 
 // TaskEndpoint ...
@@ -75,9 +73,7 @@ func (n *TaskEndpoint) Update(ctx context.Context, params *m.Task) (result *m.Ta
 func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
 	if err = n.adaptors.Task.Delete(id); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("card with id \"%s\"", id))
-		} else {
+		if !errors.Is(err, common.ErrNotFound) {
 			err = errors.Wrap(common.ErrInternal, err.Error())
 		}
 	}

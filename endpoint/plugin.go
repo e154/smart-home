@@ -20,9 +20,11 @@ package endpoint
 
 import (
 	"context"
+	"fmt"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
+	"github.com/pkg/errors"
 )
 
 // PluginEndpoint ...
@@ -39,13 +41,17 @@ func NewPluginEndpoint(common *CommonEndpoint) *PluginEndpoint {
 
 // Enable ...
 func (p *PluginEndpoint) Enable(ctx context.Context, pluginName string) (err error) {
-	err = p.pluginManager.EnablePlugin(pluginName)
+	if err = p.pluginManager.EnablePlugin(pluginName); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
 // Disable ...
 func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err error) {
-	err = p.pluginManager.DisablePlugin(pluginName)
+	if err = p.pluginManager.DisablePlugin(pluginName); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
@@ -53,6 +59,7 @@ func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err er
 func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []*m.Plugin, total int64, err error) {
 	var pluginList []common.PluginInfo
 	if pluginList, total, err = p.pluginManager.PluginList(); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 	list = make([]*m.Plugin, 0, len(pluginList))
@@ -72,11 +79,13 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 
 	var pl interface{}
 	if pl, err = p.pluginManager.GetPlugin(pluginName); err != nil {
+		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("name %s", pluginName))
 		return
 	}
 
 	plugin, ok := pl.(plugins.Plugable)
 	if !ok {
+		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("name %s", pluginName))
 		return
 	}
 

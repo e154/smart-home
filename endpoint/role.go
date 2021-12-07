@@ -20,11 +20,11 @@ package endpoint
 
 import (
 	"context"
-	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 )
 
 // RoleEndpoint ...
@@ -48,11 +48,18 @@ func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role,
 	}
 
 	if err = n.adaptors.Role.Add(params); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = n.adaptors.Role.GetByName(params.Name)
-
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 
@@ -60,15 +67,26 @@ func (n *RoleEndpoint) Add(ctx context.Context, params *m.Role) (result *m.Role,
 func (n *RoleEndpoint) GetByName(ctx context.Context, name string) (result *m.Role, err error) {
 
 	result, err = n.adaptors.Role.GetByName(name)
-
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 
 // Update ...
 func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Role, errs validator.ValidationErrorsTranslations, err error) {
 
-	role, err := n.adaptors.Role.GetByName(params.Name)
+	var role *m.Role
+	role, err = n.adaptors.Role.GetByName(params.Name)
 	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -86,11 +104,18 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 	}
 
 	if err = n.adaptors.Role.Update(role); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	role, err = n.adaptors.Role.GetByName(params.Name)
-
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 
@@ -98,7 +123,9 @@ func (n *RoleEndpoint) Update(ctx context.Context, params *m.Role) (result *m.Ro
 func (n *RoleEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Role, total int64, err error) {
 
 	result, total, err = n.adaptors.Role.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
-
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
@@ -110,11 +137,19 @@ func (n *RoleEndpoint) Delete(ctx context.Context, name string) (err error) {
 		return
 	}
 
-	if _, err = n.adaptors.Role.GetByName(name); err != nil {
+	_, err = n.adaptors.Role.GetByName(name)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	err = n.adaptors.Role.Delete(name)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -127,6 +162,9 @@ func (n *RoleEndpoint) Search(ctx context.Context, query string, limit, offset i
 	}
 
 	result, total, err = n.adaptors.Role.Search(query, limit, offset)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -136,11 +174,19 @@ func (n *RoleEndpoint) GetAccessList(ctx context.Context, roleName string,
 	accessListService access_list.AccessListService) (accessList access_list.AccessList, err error) {
 
 	var role *m.Role
-	if role, err = n.adaptors.Role.GetByName(roleName); err != nil {
+	role, err = n.adaptors.Role.GetByName(roleName)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	accessList, err = accessListService.GetFullAccessList(role.Name)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -149,7 +195,12 @@ func (n *RoleEndpoint) GetAccessList(ctx context.Context, roleName string,
 func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, accessListDif map[string]map[string]bool) (err error) {
 
 	var role *m.Role
-	if role, err = n.adaptors.Role.GetByName(roleName); err != nil {
+	role, err = n.adaptors.Role.GetByName(roleName)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -198,7 +249,9 @@ func (n *RoleEndpoint) UpdateAccessList(ctx context.Context, roleName string, ac
 		}
 	}
 
-	err = tx.Commit()
+	if err = tx.Commit(); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }

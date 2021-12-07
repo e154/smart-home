@@ -20,6 +20,7 @@ package db
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // Permissions ...
@@ -44,6 +45,7 @@ func (m *Permission) TableName() string {
 // Add ...
 func (n Permissions) Add(permission *Permission) (id int64, err error) {
 	if err = n.Db.Create(&permission).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = permission.Id
@@ -56,6 +58,9 @@ func (n Permissions) Delete(roleName, packageName string, levelName []string) (e
 	err = n.Db.
 		Delete(&Permission{}, "role_name = ? and package_name = ? and level_name in (?)", roleName, packageName, levelName).
 		Error
+	if err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 
 	return
 }
@@ -86,6 +91,8 @@ order by p.id;
 `, name).
 		Scan(&permissions).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getAllPermissions failed")
+	}
 	return
 }

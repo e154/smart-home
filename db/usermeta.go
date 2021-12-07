@@ -18,7 +18,10 @@
 
 package db
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
+)
 
 // UserMetas ...
 type UserMetas struct {
@@ -47,7 +50,10 @@ func (m *UserMetas) UpdateOrCreate(meta *UserMeta) (id int64, err error) {
 		Error
 
 	if err != nil {
-		err = m.Db.Create(&meta).Error
+		if err = m.Db.Create(&meta).Error; err != nil {
+			err = errors.Wrap(err, "create failed")
+			return
+		}
 		id = meta.Id
 	}
 

@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -48,6 +49,7 @@ func (d *EntityStorage) TableName() string {
 // Add ...
 func (n *EntityStorages) Add(v EntityStorage) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = v.Id
@@ -61,6 +63,7 @@ func (n *EntityStorages) GetLastByEntityId(entityId common.EntityId) (v EntitySt
 		Order("created_at desc").
 		First(&v, "entity_id = ?", entityId).
 		Error; err != nil {
+		err = errors.Wrap(err, "getLastByEntityId failed")
 		return
 	}
 	return
@@ -70,6 +73,7 @@ func (n *EntityStorages) GetLastByEntityId(entityId common.EntityId) (v EntitySt
 func (n *EntityStorages) List(limit, offset int64, orderBy, sort string) (list []EntityStorage, total int64, err error) {
 
 	if err = n.Db.Model(EntityStorage{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -86,6 +90,9 @@ func (n *EntityStorages) List(limit, offset int64, orderBy, sort string) (list [
 	err = q.
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+		return
+	}
 	return
 }

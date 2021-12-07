@@ -21,6 +21,7 @@ package db
 import (
 	"encoding/json"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -47,6 +48,7 @@ func (d *Message) TableName() string {
 // Add ...
 func (n Messages) Add(msg Message) (id int64, err error) {
 	if err = n.Db.Create(&msg).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = msg.Id

@@ -51,9 +51,9 @@ func (c ControllerImage) AddImage(ctx context.Context, req *api.NewImageRequest)
 // GetImageById ...
 func (c ControllerImage) GetImageById(ctx context.Context, req *api.GetImageRequest) (*api.Image, error) {
 
-	image, err := c.endpoint.Image.GetById(ctx, int64(req.Id))
+	image, errs, err := c.endpoint.Image.GetById(ctx, int64(req.Id))
 	if err != nil {
-		return nil, c.error(ctx, nil, err)
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return c.dto.Image.ToImage(image), nil
@@ -85,8 +85,8 @@ func (c ControllerImage) GetImageList(ctx context.Context, req *api.GetImageList
 // DeleteImageById ...
 func (c ControllerImage) DeleteImageById(ctx context.Context, req *api.DeleteImageRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.Image.Delete(ctx, int64(req.Id)); err != nil {
-		return nil, c.error(ctx, nil, err)
+	if errs, err := c.endpoint.Image.Delete(ctx, int64(req.Id)); err != nil {
+		return nil, c.error(ctx, errs, err)
 	}
 
 	return &emptypb.Empty{}, nil

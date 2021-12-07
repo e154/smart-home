@@ -21,6 +21,7 @@ package db
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -44,6 +45,7 @@ func (d *RunStory) TableName() string {
 // Add ...
 func (n RunHistory) Add(story *RunStory) (id int64, err error) {
 	if err = n.Db.Create(&story).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = story.Id
@@ -55,7 +57,9 @@ func (n RunHistory) Update(m *RunStory) (err error) {
 	q := map[string]interface{}{
 		"end": m.End,
 	}
-	err = n.Db.Model(&RunStory{Id: m.Id}).Updates(q).Error
+	if err = n.Db.Model(&RunStory{Id: m.Id}).Updates(q).Error; err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
@@ -63,6 +67,7 @@ func (n RunHistory) Update(m *RunStory) (err error) {
 func (n *RunHistory) List(limit, offset int64, orderBy, sort string) (list []*RunStory, total int64, err error) {
 
 	if err = n.Db.Model(RunStory{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -76,9 +81,9 @@ func (n *RunHistory) List(limit, offset int64, orderBy, sort string) (list []*Ru
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
 
-	err = q.
-		Find(&list).
-		Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 
 	return
 }

@@ -19,10 +19,10 @@
 package endpoint
 
 import (
-	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 )
 
 // EntityEndpoint ...
@@ -46,15 +46,22 @@ func (n *EntityEndpoint) Add(entity *m.Entity) (result *m.Entity, errs validator
 	}
 
 	if err = n.adaptors.Entity.Add(entity); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	if result, err = n.adaptors.Entity.GetById(entity.Id); err != nil {
+	result, err = n.adaptors.Entity.GetById(entity.Id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	err = n.entityManager.Add(entity)
-
+	if err = n.entityManager.Add(entity); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
@@ -62,7 +69,13 @@ func (n *EntityEndpoint) Add(entity *m.Entity) (result *m.Entity, errs validator
 func (n *EntityEndpoint) GetById(id common.EntityId) (result *m.Entity, err error) {
 
 	result, err = n.adaptors.Entity.GetById(id)
-
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 
@@ -70,11 +83,16 @@ func (n *EntityEndpoint) GetById(id common.EntityId) (result *m.Entity, err erro
 func (n *EntityEndpoint) Update(params *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
 
 	var entity *m.Entity
-	if entity, err = n.adaptors.Entity.GetById(params.Id); err != nil {
+	entity, err = n.adaptors.Entity.GetById(params.Id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	common.Copy(&entity, &params, common.JsonEngine)
+	_ = common.Copy(&entity, &params, common.JsonEngine)
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
@@ -82,10 +100,16 @@ func (n *EntityEndpoint) Update(params *m.Entity) (result *m.Entity, errs valida
 	}
 
 	if err = n.adaptors.Entity.Update(entity); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	if result, err = n.adaptors.Entity.GetById(entity.Id); err != nil {
+	result, err = n.adaptors.Entity.GetById(entity.Id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -97,6 +121,9 @@ func (n *EntityEndpoint) Update(params *m.Entity) (result *m.Entity, errs valida
 // List ...
 func (n *EntityEndpoint) List(limit, offset int64, order, sortBy string) (result []*m.Entity, total int64, err error) {
 	result, total, err = n.adaptors.Entity.List(limit, offset, order, sortBy, false)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
@@ -109,11 +136,17 @@ func (n *EntityEndpoint) Delete(id common.EntityId) (err error) {
 	}
 
 	var entity *m.Entity
-	if entity, err = n.adaptors.Entity.GetById(id); err != nil {
+	entity, err = n.adaptors.Entity.GetById(id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	if err = n.adaptors.Entity.Delete(entity.Id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -126,6 +159,8 @@ func (n *EntityEndpoint) Delete(id common.EntityId) (err error) {
 func (n *EntityEndpoint) Search(query string, limit, offset int) (result []*m.Entity, total int64, err error) {
 
 	result, total, err = n.adaptors.Entity.Search(query, limit, offset)
-
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }

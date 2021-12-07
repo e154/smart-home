@@ -21,6 +21,7 @@ package db
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // MapImages ...
@@ -44,6 +45,7 @@ func (d *MapImage) TableName() string {
 // Add ...
 func (n MapImages) Add(v *MapImage) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = v.Id
@@ -53,7 +55,9 @@ func (n MapImages) Add(v *MapImage) (id int64, err error) {
 // GetById ...
 func (n MapImages) GetById(mapId int64) (v *MapImage, err error) {
 	v = &MapImage{Id: mapId}
-	err = n.Db.First(&v).Error
+	if err = n.Db.First(&v).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
@@ -63,6 +67,9 @@ func (n MapImages) Update(m *MapImage) (err error) {
 		"image_id": m.ImageId,
 		"style":    m.Style,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
@@ -72,6 +79,9 @@ func (n MapImages) Sort(m *MapImage) (err error) {
 		"image_id": m.ImageId,
 		"style":    m.Style,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "sort failed")
+	}
 	return
 }
 
@@ -79,6 +89,7 @@ func (n MapImages) Sort(m *MapImage) (err error) {
 func (n MapImages) Delete(id int64) (err error) {
 
 	if err = n.Db.Delete(&MapImage{Id: id}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
 		return
 	}
 
@@ -88,7 +99,9 @@ func (n MapImages) Delete(id int64) (err error) {
 			Update("prototype_id", "").
 			Error
 	}
-
+	if err != nil {
+		err = errors.Wrap(err, "update mapElement failed")
+	}
 	return
 }
 
@@ -96,6 +109,7 @@ func (n MapImages) Delete(id int64) (err error) {
 func (n *MapImages) List(limit, offset int64, orderBy, sort string) (list []*MapImage, total int64, err error) {
 
 	if err = n.Db.Model(MapImage{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count mapElement failed")
 		return
 	}
 
@@ -106,6 +120,8 @@ func (n *MapImages) List(limit, offset int64, orderBy, sort string) (list []*Map
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }
