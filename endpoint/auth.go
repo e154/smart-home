@@ -59,10 +59,14 @@ func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip st
 	}
 
 	if accessToken, err = a.jwtManager.Generate(user); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	err = a.adaptors.User.SignIn(user, ip)
+	if err = a.adaptors.User.SignIn(user, ip); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 
 	log.Infof("Successful login, user: %s", user.Email)
 
@@ -72,6 +76,10 @@ func (a *AuthEndpoint) SignIn(ctx context.Context, email, password string, ip st
 // SignOut ...
 func (a *AuthEndpoint) SignOut(ctx context.Context, user *m.User) (err error) {
 	err = a.adaptors.User.ClearToken(user)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 

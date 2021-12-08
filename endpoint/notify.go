@@ -19,7 +19,15 @@
 package endpoint
 
 import (
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/plugins/email"
+	"github.com/e154/smart-home/plugins/messagebird"
+	"github.com/e154/smart-home/plugins/notify"
+	"github.com/e154/smart-home/plugins/slack"
+	"github.com/e154/smart-home/plugins/telegram"
+	"github.com/pkg/errors"
+	"strings"
 )
 
 // NotifyEndpoint ...
@@ -37,12 +45,20 @@ func NewNotifyEndpoint(common *CommonEndpoint) *NotifyEndpoint {
 // Repeat ...
 func (n *NotifyEndpoint) Repeat(id int64) (err error) {
 
-	//var msg *m.MessageDelivery
-	//if msg, err = n.adaptors.MessageDelivery.GetById(id); err != nil {
-	//	return
-	//}
-	//
-	//n.notify.Repeat(msg)
+	var msg m.MessageDelivery
+	msg, err = n.adaptors.MessageDelivery.GetById(id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+
+	n.eventBus.Publish(notify.TopicNotify, notify.Message{
+		Type:       msg.Message.Type,
+		Attributes: msg.Message.Attributes,
+	})
 
 	return
 }
@@ -50,55 +66,72 @@ func (n *NotifyEndpoint) Repeat(id int64) (err error) {
 // Send ...
 func (n *NotifyEndpoint) Send(params *m.NewNotifrMessage) (err error) {
 
-	//var render *m.TemplateRender
-	//if params.BodyType == "template" && params.Template != nil && params.Params != nil {
-	//	if render, err = n.adaptors.Template.Render(common.StringValue(params.Template), params.Params); err != nil {
-	//		return
-	//	}
-	//}
-	//
-	//switch params.Type {
-	//case "email":
-	//	message := notify.NewEmail()
-	//	message.From = common.StringValue(params.EmailFrom)
-	//	message.Subject = common.StringValue(params.EmailSubject)
-	//	message.Body = common.StringValue(params.EmailBody)
-	//	message.To = params.Address
-	//
-	//	if render != nil {
-	//		message.SetRender(render)
-	//	}
-	//	n.notify.Send(message)
-	//case "sms":
-	//
-	//	message := notify.NewSMS()
-	//	message.Text = common.StringValue(params.SmsText)
-	//
-	//	for _, address := range strings.Split(params.Address, ",") {
-	//		phone := strings.Replace(address, " ", "", -1)
-	//		if phone == "" {
-	//			continue
-	//		}
-	//		message.AddPhone(phone)
-	//	}
-	//	if render != nil {
-	//		message.SetRender(render)
-	//	}
-	//	n.notify.Send(message)
-	//
-	//case "slack":
-	//	message := notify.NewSlackMessage(common.StringValue(params.SlackText), params.Address)
-	//	if render != nil {
-	//		message.SetRender(render)
-	//	}
-	//	n.notify.Send(message)
-	//case "telegram_notify":
-	//	message := notify.NewTelegram(common.StringValue(params.TelegramText))
-	//	if render != nil {
-	//		message.SetRender(render)
-	//	}
-	//	n.notify.Send(message)
-	//}
+	var render *m.TemplateRender
+	if params.BodyType == "template" && params.Template != nil && params.Params != nil {
+		if render, err = n.adaptors.Template.Render(common.StringValue(params.Template), params.Params); err != nil {
+			err = errors.Wrap(common.ErrInternal, err.Error())
+			return
+		}
+	}
+
+	switch params.Type {
+	case "email":
+		var body = common.StringValue(params.EmailBody)
+		if render != nil {
+			body = render.Body
+		}
+		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+			Type: email.Name,
+			Attributes: map[string]interface{}{
+				"addresses": params.Address,
+				"subject":   common.StringValue(params.EmailSubject),
+				"body":      body,
+			},
+		})
+	case "sms":
+		var body = common.StringValue(params.SmsText)
+		if render != nil {
+			body = render.Body
+		}
+		for _, address := range strings.Split(params.Address, ",") {
+			phone := strings.Replace(address, " ", "", -1)
+			if phone == "" {
+				continue
+			}
+			n.eventBus.Publish(notify.TopicNotify, notify.Message{
+				Type: messagebird.Name,
+				Attributes: map[string]interface{}{
+					messagebird.AttrPhone: phone,
+					messagebird.AttrBody:  body,
+				},
+			})
+		}
+		//todo add sms service....
+	case "slack":
+		var body = common.StringValue(params.SlackText)
+		if render != nil {
+			body = render.Body
+		}
+		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+			Type: slack.Name,
+			Attributes: map[string]interface{}{
+				slack.AttrChannel: params.Address,
+				slack.AttrText:    body,
+			},
+		})
+	case "telegram_notify":
+		var body = common.StringValue(params.TelegramText)
+		if render != nil {
+			body = render.Body
+		}
+		n.eventBus.Publish(notify.TopicNotify, notify.Message{
+			Type: telegram.Name,
+			Attributes: map[string]interface{}{
+				telegram.AttrName: params.Address,
+				telegram.AttrBody: body,
+			},
+		})
+	}
 
 	return
 }

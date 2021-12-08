@@ -155,7 +155,7 @@ func (z *zigbee2mqtt) GetBridgeById(id int64) (*m.Zigbee2mqtt, error) {
 		model := br.GetModel()
 		return &model, nil
 	}
-	return nil, adaptors.ErrRecordNotFound
+	return nil, common.ErrNotFound
 }
 
 // GetBridgeInfo ...
@@ -166,7 +166,7 @@ func (z *zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error) {
 	if br, ok := z.bridges[id]; ok {
 		return br.Info(), nil
 	}
-	return nil, adaptors.ErrRecordNotFound
+	return nil, common.ErrNotFound
 }
 
 // ListBridges ...
@@ -286,7 +286,7 @@ func (z *zigbee2mqtt) BridgeUpdateNetworkmap(bridgeId int64) (err error) {
 func (z *zigbee2mqtt) unsafeGetBridge(bridgeId int64) (bridge *Bridge, err error) {
 	var ok bool
 	if bridge, ok = z.bridges[bridgeId]; !ok {
-		err = adaptors.ErrRecordNotFound
+		err = common.ErrNotFound
 	}
 	return
 }
@@ -299,7 +299,7 @@ func (z *zigbee2mqtt) GetTopicByDevice(model *m.Zigbee2mqttDevice) (topic string
 
 	br, ok := z.bridges[model.Zigbee2mqttId]
 	if !ok {
-		err = adaptors.ErrRecordNotFound
+		err = common.ErrNotFound
 		return
 	}
 

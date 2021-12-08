@@ -19,10 +19,11 @@
 package endpoint
 
 import (
-	"errors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 )
 
 // Zigbee2mqttEndpoint ...
@@ -50,6 +51,13 @@ func (n *Zigbee2mqttEndpoint) Add(params *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 	}
 
 	result, err = n.zigbee2mqtt.GetBridgeById(params.Id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 
 	return
 }
@@ -58,7 +66,13 @@ func (n *Zigbee2mqttEndpoint) Add(params *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 func (n *Zigbee2mqttEndpoint) GetById(id int64) (result *zigbee2mqtt.Zigbee2mqttInfo, err error) {
 
 	result, err = n.zigbee2mqtt.GetBridgeInfo(id)
-
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 
@@ -67,6 +81,10 @@ func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mq
 
 	bridge, err = n.zigbee2mqtt.GetBridgeById(params.Id)
 	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -80,7 +98,9 @@ func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mq
 		return
 	}
 
-	bridge, err = n.zigbee2mqtt.UpdateBridge(bridge)
+	if bridge, err = n.zigbee2mqtt.UpdateBridge(bridge); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -89,6 +109,9 @@ func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mq
 func (n *Zigbee2mqttEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*zigbee2mqtt.Zigbee2mqttInfo, total int64, err error) {
 
 	result, total, err = n.zigbee2mqtt.ListBridges(limit, offset, order, sortBy)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -101,7 +124,9 @@ func (n *Zigbee2mqttEndpoint) Delete(id int64) (err error) {
 		return
 	}
 
-	err = n.zigbee2mqtt.DeleteBridge(id)
+	if err = n.zigbee2mqtt.DeleteBridge(id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -109,7 +134,9 @@ func (n *Zigbee2mqttEndpoint) Delete(id int64) (err error) {
 // ResetBridge ...
 func (n *Zigbee2mqttEndpoint) ResetBridge(id int64) (err error) {
 
-	err = n.zigbee2mqtt.ResetBridge(id)
+	if err = n.zigbee2mqtt.ResetBridge(id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -117,7 +144,9 @@ func (n *Zigbee2mqttEndpoint) ResetBridge(id int64) (err error) {
 // DeviceBan ...
 func (n *Zigbee2mqttEndpoint) DeviceBan(id int64, friendlyName string) (err error) {
 
-	err = n.zigbee2mqtt.BridgeDeviceBan(id, friendlyName)
+	if err = n.zigbee2mqtt.BridgeDeviceBan(id, friendlyName); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -125,7 +154,9 @@ func (n *Zigbee2mqttEndpoint) DeviceBan(id int64, friendlyName string) (err erro
 // DeviceWhitelist ...
 func (n *Zigbee2mqttEndpoint) DeviceWhitelist(id int64, friendlyName string) (err error) {
 
-	err = n.zigbee2mqtt.BridgeDeviceWhitelist(id, friendlyName)
+	if err = n.zigbee2mqtt.BridgeDeviceWhitelist(id, friendlyName); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -133,7 +164,9 @@ func (n *Zigbee2mqttEndpoint) DeviceWhitelist(id int64, friendlyName string) (er
 // Networkmap ...
 func (n *Zigbee2mqttEndpoint) Networkmap(id int64) (networkmap string, err error) {
 
-	networkmap, err = n.zigbee2mqtt.BridgeNetworkmap(id)
+	if networkmap, err = n.zigbee2mqtt.BridgeNetworkmap(id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -141,7 +174,9 @@ func (n *Zigbee2mqttEndpoint) Networkmap(id int64) (networkmap string, err error
 // UpdateNetworkmap ...
 func (n *Zigbee2mqttEndpoint) UpdateNetworkmap(id int64) (err error) {
 
-	err = n.zigbee2mqtt.BridgeUpdateNetworkmap(id)
+	if err = n.zigbee2mqtt.BridgeUpdateNetworkmap(id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -149,7 +184,9 @@ func (n *Zigbee2mqttEndpoint) UpdateNetworkmap(id int64) (err error) {
 // DeviceRename ...
 func (n *Zigbee2mqttEndpoint) DeviceRename(friendlyName, name string) (err error) {
 
-	err = n.zigbee2mqtt.DeviceRename(friendlyName, name)
+	if err = n.zigbee2mqtt.DeviceRename(friendlyName, name); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -157,7 +194,9 @@ func (n *Zigbee2mqttEndpoint) DeviceRename(friendlyName, name string) (err error
 // SearchDevice ...
 func (n *Zigbee2mqttEndpoint) SearchDevice(query string, limit, offset int) (result []*m.Zigbee2mqttDevice, total int64, err error) {
 
-	result, total, err = n.adaptors.Zigbee2mqttDevice.Search(query, limit, offset)
+	if result, total, err = n.adaptors.Zigbee2mqttDevice.Search(query, limit, offset); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }

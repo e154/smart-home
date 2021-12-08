@@ -21,6 +21,7 @@ package db
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -50,6 +51,7 @@ func (d *MessageDelivery) TableName() string {
 // Add ...
 func (n MessageDeliveries) Add(msg MessageDelivery) (id int64, err error) {
 	if err = n.Db.Create(&msg).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = msg.Id
@@ -60,6 +62,7 @@ func (n MessageDeliveries) Add(msg MessageDelivery) (id int64, err error) {
 func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (list []MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(MessageDelivery{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -74,7 +77,9 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (lis
 		Preload("Message").
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }
 
@@ -82,6 +87,7 @@ func (n *MessageDeliveries) List(limit, offset int64, orderBy, sort string) (lis
 func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []MessageDelivery, total int64, err error) {
 
 	if err = n.Db.Model(MessageDelivery{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -93,7 +99,9 @@ func (n *MessageDeliveries) GetAllUncompleted(limit, offset int64) (list []Messa
 		Preload("Message").
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getAllUncompleted failed")
+	}
 	return
 }
 
@@ -106,12 +114,17 @@ func (n MessageDeliveries) SetStatus(msg MessageDelivery) (err error) {
 			"error_system_code":    msg.ErrorMessageStatus,
 			"error_system_message": msg.ErrorMessageBody,
 		}).Error
+	if err != nil {
+		err = errors.Wrap(err, "setStatus failed")
+	}
 	return
 }
 
 // Delete ...
 func (n MessageDeliveries) Delete(id int64) (err error) {
-	err = n.Db.Delete(&MessageDelivery{Id: id}).Error
+	if err = n.Db.Delete(&MessageDelivery{Id: id}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -124,6 +137,8 @@ func (n MessageDeliveries) GetById(id int64) (msg MessageDelivery, err error) {
 		Preload("Message").
 		First(&msg).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }

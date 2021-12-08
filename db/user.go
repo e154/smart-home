@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -70,7 +71,10 @@ func (u *User) TableName() string {
 // Add ...
 func (u *Users) Add(user *User) (id int64, err error) {
 
-	err = u.Db.Create(&user).Error
+	if err = u.Db.Create(&user).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
+		return
+	}
 	id = user.Id
 	return
 }
@@ -87,7 +91,9 @@ func (u *Users) GetById(userId int64) (user *User, err error) {
 		Preload("User").
 		Find(&user).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
@@ -103,7 +109,9 @@ func (u *Users) GetByEmail(email string) (user *User, err error) {
 		Preload("User").
 		Find(&user).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getByEmail failed")
+	}
 	return
 }
 
@@ -119,7 +127,9 @@ func (u *Users) GetByNickname(nickname string) (user *User, err error) {
 		Preload("User").
 		Find(&user).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getByNickname failed")
+	}
 	return
 }
 
@@ -135,7 +145,9 @@ func (u *Users) GetByAuthenticationToken(token string) (user *User, err error) {
 		Preload("User").
 		Find(&user).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getByAuthenticationToken failed")
+	}
 	return
 }
 
@@ -151,7 +163,9 @@ func (u *Users) GetByResetPassToken(token string) (user *User, err error) {
 		Preload("User").
 		Find(&user).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "GetByResetPassToken failed")
+	}
 	return
 }
 
@@ -184,8 +198,9 @@ func (u *Users) Update(user *User) (err error) {
 	if user.EncryptedPassword != "" {
 		q["encrypted_password"] = user.EncryptedPassword
 	}
-	err = u.Db.Model(&User{Id: user.Id}).Updates(q).Error
-
+	if err = u.Db.Model(&User{Id: user.Id}).Updates(q).Error; err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
@@ -195,6 +210,9 @@ func (u *Users) NewResetPassToken(userId int64, token string) (err error) {
 		"reset_password_token":   token,
 		"reset_password_sent_at": time.Now(),
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "newResetPassToken failed")
+	}
 	return
 }
 
@@ -204,6 +222,9 @@ func (u *Users) ClearResetPassToken(userId int64) (err error) {
 		"reset_password_token":   "",
 		"reset_password_sent_at": nil,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "clearResetPassToken failed")
+	}
 	return
 }
 
@@ -212,6 +233,9 @@ func (u *Users) ClearToken(userId int64) (err error) {
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"authentication_token": "",
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "clearToken failed")
+	}
 	return
 }
 
@@ -220,6 +244,9 @@ func (u *Users) UpdateAuthenticationToken(userId int64, token string) (err error
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"authentication_token": token,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "updateAuthenticationToken failed")
+	}
 	return
 }
 
@@ -228,6 +255,9 @@ func (u *Users) Delete(userId int64) (err error) {
 	err = u.Db.Model(&User{Id: userId}).Updates(map[string]interface{}{
 		"deleted_at": time.Now(),
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -250,6 +280,8 @@ func (n *Users) List(limit, offset int64, orderBy, sort string) (list []*User, t
 		Where("deleted_at isnull").
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }

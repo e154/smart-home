@@ -146,7 +146,7 @@ func (n *Initial) checkForUpgrade() {
 	v, err := tx.Variable.GetByName("initial_version")
 	if err != nil {
 
-		if errors.Is(err, ErrRecordNotFound) {
+		if errors.Is(err, common.ErrNotFound) {
 			v = m.Variable{
 				Name:  "initial_version",
 				Value: fmt.Sprintf("%d", 1),

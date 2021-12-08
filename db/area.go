@@ -21,6 +21,7 @@ package db
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -46,6 +47,7 @@ func (d *Area) TableName() string {
 // Add ...
 func (n Areas) Add(area *Area) (id int64, err error) {
 	if err = n.Db.Create(&area).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = area.Id
@@ -61,6 +63,9 @@ func (n Areas) GetByName(name string) (area *Area, err error) {
 		First(&area).
 		Error
 
+	if err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
@@ -80,19 +85,23 @@ func (n *Areas) Search(query string, limit, offset int) (list []*Area, total int
 		Order("name ASC")
 
 	list = make([]*Area, 0)
-	err = q.Find(&list).Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 
 	return
 }
 
-// Delete ...
+// DeleteByName ...
 func (n Areas) DeleteByName(name string) (err error) {
 	if name == "" {
 		err = fmt.Errorf("zero name")
 		return
 	}
 
-	err = n.Db.Delete(&Area{}, "name = ?", name).Error
+	if err = n.Db.Delete(&Area{}, "name = ?", name).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -108,6 +117,10 @@ where id not in (
     )
 `).Error
 
+	if err != nil {
+		err = errors.Wrap(err, "clean failed")
+	}
+
 	return
 }
 
@@ -117,6 +130,10 @@ func (n Areas) Update(m *Area) (err error) {
 		"name":        m.Name,
 		"description": m.Description,
 	}).Error
+
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
@@ -124,6 +141,7 @@ func (n Areas) Update(m *Area) (err error) {
 func (n *Areas) List(limit, offset int64, orderBy, sort string) (list []*Area, total int64, err error) {
 
 	if err = n.Db.Model(Area{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -140,6 +158,9 @@ func (n *Areas) List(limit, offset int64, orderBy, sort string) (list []*Area, t
 	err = q.
 		Find(&list).
 		Error
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 
 	return
 }
@@ -147,6 +168,8 @@ func (n *Areas) List(limit, offset int64, orderBy, sort string) (list []*Area, t
 // GetById ...
 func (n Areas) GetById(areaId int64) (area *Area, err error) {
 	area = &Area{Id: areaId}
-	err = n.Db.First(&area).Error
+	if err = n.Db.First(&area).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }

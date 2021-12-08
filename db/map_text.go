@@ -21,6 +21,7 @@ package db
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // MapTexts ...
@@ -43,6 +44,7 @@ func (d *MapText) TableName() string {
 // Add ...
 func (n MapTexts) Add(v *MapText) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = v.Id
@@ -52,7 +54,9 @@ func (n MapTexts) Add(v *MapText) (id int64, err error) {
 // GetById ...
 func (n MapTexts) GetById(mapId int64) (v *MapText, err error) {
 	v = &MapText{Id: mapId}
-	err = n.Db.First(&v).Error
+	if err = n.Db.First(&v).Error; err != nil {
+		err = errors.Wrap(err, "geById failed")
+	}
 	return
 }
 
@@ -62,6 +66,9 @@ func (n MapTexts) Update(m *MapText) (err error) {
 		"text":  m.Text,
 		"style": m.Style,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
@@ -71,6 +78,9 @@ func (n MapTexts) Sort(m *MapText) (err error) {
 		"text":  m.Text,
 		"style": m.Style,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "sort failed")
+	}
 	return
 }
 
@@ -78,6 +88,7 @@ func (n MapTexts) Sort(m *MapText) (err error) {
 func (n MapTexts) Delete(id int64) (err error) {
 
 	if err = n.Db.Delete(&MapText{Id: id}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
 		return
 	}
 
@@ -87,7 +98,9 @@ func (n MapTexts) Delete(id int64) (err error) {
 			Update("prototype_id", "").
 			Error
 	}
-
+	if err != nil {
+		err = errors.Wrap(err, "update mapElement failed")
+	}
 	return
 }
 
@@ -95,6 +108,7 @@ func (n MapTexts) Delete(id int64) (err error) {
 func (n *MapTexts) List(limit, offset int64, orderBy, sort string) (list []*MapText, total int64, err error) {
 
 	if err = n.Db.Model(MapText{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -105,6 +119,8 @@ func (n *MapTexts) List(limit, offset int64, orderBy, sort string) (list []*MapT
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }

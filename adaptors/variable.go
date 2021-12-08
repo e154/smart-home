@@ -19,9 +19,12 @@
 package adaptors
 
 import (
+	"fmt"
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // IVariable ...
@@ -86,6 +89,9 @@ func (n *Variable) GetByName(name string) (ver m.Variable, err error) {
 
 	var dbVer db.Variable
 	if dbVer, err = n.table.GetByName(name); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name %s", name))
+		}
 		return
 	}
 

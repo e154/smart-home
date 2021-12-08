@@ -126,7 +126,10 @@ func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationEr
 	switch {
 	case errors.Is(err, common.ErrNotFound):
 		return status.Error(codes.NotFound, err.Error())
+	case errors.Is(err, common.ErrNotAuthorized):
+		return status.Error(codes.Unauthenticated, err.Error())
 	default:
+		log.Errorf("%+v\n", err)
 		return status.Error(codes.Internal, err.Error())
 	}
 }
@@ -136,8 +139,8 @@ func (c ControllerCommon) Pagination(limit, offset uint32, order, sortBy string)
 	pagination = common.PageParams{
 		Limit:  200,
 		Offset: 0,
-		Order:  "created_at",
-		SortBy: "desc",
+		Order:  "desc",
+		SortBy: "created_at",
 	}
 
 	if limit != 0 {

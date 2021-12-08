@@ -98,12 +98,11 @@ func (v *Validate) ValidVar(s interface{}, key, tag string) (ok bool, errs valid
 // Valid ...
 func (v *Validate) Valid(s interface{}) (ok bool, errs validator.ValidationErrorsTranslations) {
 	err := v.validate.Struct(s)
-	if err != nil {
+	if ok = err == nil; !ok {
 		if validationErrors, valid := err.(validator.ValidationErrors); valid {
 			errs = validationErrors.Translate(v.trans)
 		}
 		return
 	}
-	ok = true
 	return
 }

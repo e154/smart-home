@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -55,6 +56,7 @@ func (d *EntityAction) TableName() string {
 // Add ...
 func (n EntityActions) Add(v *EntityAction) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = v.Id
@@ -64,7 +66,9 @@ func (n EntityActions) Add(v *EntityAction) (id int64, err error) {
 // GetById ...
 func (n EntityActions) GetById(mapId int64) (v *EntityAction, err error) {
 	v = &EntityAction{Id: mapId}
-	err = n.Db.First(&v).Error
+	if err = n.Db.First(&v).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
@@ -79,12 +83,18 @@ func (n EntityActions) Update(m *EntityAction) (err error) {
 		"script_id":   m.ScriptId,
 		"type":        m.Type,
 	}).Error
+
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
 // DeleteByEntityId ...
 func (n EntityActions) DeleteByEntityId(deviceId common.EntityId) (err error) {
-	err = n.Db.Delete(&EntityAction{}, "entity_id = ?", deviceId).Error
+	if err = n.Db.Delete(&EntityAction{}, "entity_id = ?", deviceId).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -103,5 +113,8 @@ func (n *EntityActions) List(limit, offset int64, orderBy, sort string) (list []
 		Find(&list).
 		Error
 
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }

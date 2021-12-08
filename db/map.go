@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -50,6 +51,7 @@ func (d *Map) TableName() string {
 // Add ...
 func (n Maps) Add(v *Map) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = v.Id
@@ -59,7 +61,9 @@ func (n Maps) Add(v *Map) (id int64, err error) {
 // GetById ...
 func (n Maps) GetById(mapId int64) (v *Map, err error) {
 	v = &Map{Id: mapId}
-	err = n.Db.First(&v).Error
+	if err = n.Db.First(&v).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
@@ -77,6 +81,7 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 		Error
 
 	if err != nil {
+		err = errors.Wrap(err, "get map failed")
 		return
 	}
 
@@ -110,6 +115,9 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 			Preload("Image").
 			Find(&images).
 			Error
+		if err != nil {
+			err = errors.Wrap(err, "get mapImage failed")
+		}
 	}
 
 	if len(textIds) > 0 {
@@ -117,6 +125,9 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 			Where("id in (?)", textIds).
 			Find(&texts).
 			Error
+		if err != nil {
+			err = errors.Wrap(err, "get mapText failed")
+		}
 	}
 
 	if len(deviceIds) > 0 {
@@ -135,12 +146,16 @@ func (n Maps) GetFullById(mapId int64) (v *Map, err error) {
 			Preload("Zone").
 			Find(&entities).
 			Error
+		if err != nil {
+			err = errors.Wrap(err, "get mapEntity failed")
+		}
 	}
 
 	for _, l := range v.Layers {
 		for _, e := range l.Elements {
 
 			if err = n.Db.Preload("Metrics").First(e).Error; err != nil {
+				err = errors.Wrap(err, "preload metric failed")
 				return
 			}
 
@@ -189,12 +204,17 @@ func (n Maps) Update(m *Map) (err error) {
 		"description": m.Description,
 		"options":     m.Options,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
 // Delete ...
 func (n Maps) Delete(mapId int64) (err error) {
-	err = n.Db.Delete(&Map{Id: mapId}).Error
+	if err = n.Db.Delete(&Map{Id: mapId}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -202,6 +222,7 @@ func (n Maps) Delete(mapId int64) (err error) {
 func (n *Maps) List(limit, offset int64, orderBy, sort string) (list []*Map, total int64, err error) {
 
 	if err = n.Db.Model(Map{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -212,7 +233,9 @@ func (n *Maps) List(limit, offset int64, orderBy, sort string) (list []*Map, tot
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }
 
@@ -223,6 +246,7 @@ func (n *Maps) Search(query string, limit, offset int) (list []*Map, total int64
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -232,7 +256,8 @@ func (n *Maps) Search(query string, limit, offset int) (list []*Map, total int64
 		Order("name ASC")
 
 	list = make([]*Map, 0)
-	err = q.Find(&list).Error
-
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 	return
 }

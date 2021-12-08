@@ -21,6 +21,7 @@ package db
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -51,6 +52,7 @@ func (d *MapLayer) TableName() string {
 // Add ...
 func (n MapLayers) Add(v *MapLayer) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = v.Id
@@ -60,7 +62,9 @@ func (n MapLayers) Add(v *MapLayer) (id int64, err error) {
 // GetById ...
 func (n MapLayers) GetById(mapId int64) (v *MapLayer, err error) {
 	v = &MapLayer{Id: mapId}
-	err = n.Db.First(&v).Error
+	if err = n.Db.First(&v).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
@@ -73,6 +77,9 @@ func (n MapLayers) Update(m *MapLayer) (err error) {
 		"weight":      m.Weight,
 		"map_id":      m.MapId,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
@@ -81,12 +88,17 @@ func (n MapLayers) Sort(m *MapLayer) (err error) {
 	err = n.Db.Model(&MapLayer{Id: m.Id}).Updates(map[string]interface{}{
 		"weight": m.Weight,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "sort failed")
+	}
 	return
 }
 
 // Delete ...
 func (n MapLayers) Delete(mapId int64) (err error) {
-	err = n.Db.Delete(&MapLayer{Id: mapId}).Error
+	if err = n.Db.Delete(&MapLayer{Id: mapId}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -94,6 +106,7 @@ func (n MapLayers) Delete(mapId int64) (err error) {
 func (n *MapLayers) List(limit, offset int64, orderBy, sort string) (list []*MapLayer, total int64, err error) {
 
 	if err = n.Db.Model(MapLayer{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -104,6 +117,8 @@ func (n *MapLayers) List(limit, offset int64, orderBy, sort string) (list []*Map
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }

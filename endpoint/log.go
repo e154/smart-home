@@ -20,8 +20,10 @@ package endpoint
 
 import (
 	"encoding/json"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 	"strings"
 	"time"
 )
@@ -48,10 +50,13 @@ func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs validator.ValidationE
 
 	var id int64
 	if id, err = l.adaptors.Log.Add(log); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	log, err = l.adaptors.Log.GetById(id)
+	if log, err = l.adaptors.Log.GetById(id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -59,7 +64,9 @@ func (l *LogEndpoint) Add(log *m.Log) (result *m.Log, errs validator.ValidationE
 // GetById ...
 func (l *LogEndpoint) GetById(id int64) (log *m.Log, err error) {
 
-	log, err = l.adaptors.Log.GetById(id)
+	if log, err = l.adaptors.Log.GetById(id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -72,6 +79,7 @@ func (l *LogEndpoint) GetList(limit, offset int64, order, sortBy, query string) 
 		queryObj = &m.LogQuery{}
 		d := make(map[string]string, 0)
 		if err = json.Unmarshal([]byte(query), &d); err != nil {
+			err = errors.Wrap(common.ErrInternal, err.Error())
 			return
 		}
 
@@ -89,7 +97,9 @@ func (l *LogEndpoint) GetList(limit, offset int64, order, sortBy, query string) 
 	}
 
 	list, total, err = l.adaptors.Log.List(limit, offset, order, sortBy, queryObj)
-
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
@@ -97,18 +107,27 @@ func (l *LogEndpoint) GetList(limit, offset int64, order, sortBy, query string) 
 func (l *LogEndpoint) Search(query string, limit, offset int) (list []*m.Log, total int64, err error) {
 
 	list, total, err = l.adaptors.Log.Search(query, limit, offset)
-
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
 // Delete ...
 func (l *LogEndpoint) Delete(logId int64) (err error) {
 
-	if _, err = l.adaptors.Log.GetById(logId); err != nil {
+	_, err = l.adaptors.Log.GetById(logId)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	err = l.adaptors.Log.Delete(logId)
-
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }

@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -54,6 +55,7 @@ func (d *Task) TableName() string {
 // Add ...
 func (n Tasks) Add(task *Task) (id int64, err error) {
 	if err = n.Db.Create(&task).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = task.Id
@@ -72,6 +74,11 @@ func (n Tasks) GetAllEnabled() (list []*Task, err error) {
 		Preload("Actions.Script").
 		Preload("Area").
 		Find(&list).Error
+	if err != nil {
+		err = errors.Wrap(err, "getAllEnabled failed")
+		return
+	}
+
 	return
 }
 
@@ -88,6 +95,10 @@ func (n Tasks) GetById(taskId int64) (task *Task, err error) {
 		Preload("Actions.Script").
 		Preload("Area").
 		First(task).Error
+	if err != nil {
+		err = errors.Wrap(err, "getById failed")
+		return
+	}
 
 	return
 }
@@ -102,13 +113,19 @@ func (n Tasks) Update(m *Task) (err error) {
 		"enabled":     m.Enabled,
 	}
 
-	err = n.Db.Model(&Task{Id: m.Id}).Updates(q).Error
+	if err = n.Db.Model(&Task{Id: m.Id}).Updates(q).Error; err != nil {
+		err = errors.Wrap(err, "update failed")
+		return
+	}
 	return
 }
 
 // Delete ...
 func (n Tasks) Delete(id int64) (err error) {
-	err = n.Db.Delete(&Task{Id: id}).Error
+	if err = n.Db.Delete(&Task{Id: id}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+		return
+	}
 	return
 }
 
@@ -116,6 +133,7 @@ func (n Tasks) Delete(id int64) (err error) {
 func (n *Tasks) List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*Task, total int64, err error) {
 
 	if err = n.Db.Model(Task{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -141,10 +159,9 @@ func (n *Tasks) List(limit, offset int64, orderBy, sort string, onlyEnabled bool
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
 
-	err = q.
-		Find(&list).
-		Error
-
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }
 
@@ -155,6 +172,7 @@ func (n *Tasks) Search(query string, limit, offset int) (list []*Task, total int
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -164,7 +182,8 @@ func (n *Tasks) Search(query string, limit, offset int) (list []*Task, total int
 		Order("name ASC")
 
 	list = make([]*Task, 0)
-	err = q.Find(&list).Error
-
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 	return
 }

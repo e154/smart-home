@@ -28,6 +28,7 @@ import (
 // ITask ...
 type ITask interface {
 	Add(ver *m.Task) (err error)
+	Update(ver *m.Task) (err error)
 	Delete(id int64) (err error)
 	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Task, total int64, err error)
 	fromDb(dbVer *db.Task) (ver *m.Task)
@@ -106,6 +107,12 @@ func (n *Task) Add(ver *m.Task) (err error) {
 	if transaction {
 		err = tx.Commit().Error
 	}
+
+	return
+}
+
+// Update ...
+func (n *Task) Update(ver *m.Task) (err error) {
 
 	return
 }

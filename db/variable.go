@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -47,7 +48,9 @@ func (d *Variable) TableName() string {
 
 // Add ...
 func (n Variables) Add(variable Variable) (err error) {
-	err = n.Db.Create(&variable).Error
+	if err = n.Db.Create(&variable).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
+	}
 	return
 }
 
@@ -58,7 +61,7 @@ func (n *Variables) CreateOrUpdate(v Variable) (err error) {
 			fmt.Sprintf("ON CONFLICT (name) DO UPDATE SET value = '%s', entity_id = '%s', updated_at = '%s'", v.Value, v.EntityId, time.Now().Format(time.RFC3339))).
 		Create(&v).Error
 	if err != nil {
-		log.Error(err.Error())
+		err = errors.Wrap(err, "createOrUpdate failed")
 	}
 	return
 }
@@ -70,6 +73,9 @@ func (n Variables) GetByName(name string) (variable Variable, err error) {
 		Where("name = ?", name).
 		First(&variable).
 		Error
+	if err != nil {
+		err = errors.Wrap(err, "getByName failed")
+	}
 	return
 }
 
@@ -78,6 +84,9 @@ func (n Variables) GetAllEnabled() (list []Variable, err error) {
 	list = make([]Variable, 0)
 	err = n.Db.Where("autoload = ?", true).
 		Find(&list).Error
+	if err != nil {
+		err = errors.Wrap(err, "getAllEnabled failed")
+	}
 	return
 }
 
@@ -88,12 +97,17 @@ func (n Variables) Update(m Variable) (err error) {
 		"autoload":  m.Autoload,
 		"entity_id": m.EntityId,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
 // Delete ...
 func (n Variables) Delete(name string) (err error) {
-	err = n.Db.Delete(&Variable{Name: name}).Error
+	if err = n.Db.Delete(&Variable{Name: name}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -111,6 +125,8 @@ func (n *Variables) List(limit, offset int64, orderBy, sort string) (list []Vari
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }

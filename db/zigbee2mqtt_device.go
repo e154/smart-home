@@ -21,6 +21,7 @@ package db
 import (
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -53,6 +54,7 @@ func (m *Zigbee2mqttDevice) TableName() string {
 // Add ...
 func (z Zigbee2mqttDevices) Add(v *Zigbee2mqttDevice) (err error) {
 	if err = z.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	return
@@ -61,7 +63,9 @@ func (z Zigbee2mqttDevices) Add(v *Zigbee2mqttDevice) (err error) {
 // GetById ...
 func (z Zigbee2mqttDevices) GetById(id string) (v *Zigbee2mqttDevice, err error) {
 	v = &Zigbee2mqttDevice{Id: id}
-	err = z.Db.First(&v).Error
+	if err = z.Db.First(&v).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
@@ -76,12 +80,17 @@ func (z Zigbee2mqttDevices) Update(m *Zigbee2mqttDevice) (err error) {
 		"Functions":    m.Functions,
 		"Status":       m.Status,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
 // Delete ...
 func (z Zigbee2mqttDevices) Delete(id string) (err error) {
-	err = z.Db.Delete(&Zigbee2mqttDevice{Id: id}).Error
+	if err = z.Db.Delete(&Zigbee2mqttDevice{Id: id}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -98,7 +107,9 @@ func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevic
 		Offset(offset).
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }
 
@@ -118,7 +129,9 @@ func (z *Zigbee2mqttDevices) Search(query string, limit, offset int) (list []*Zi
 		Order("name ASC")
 
 	list = make([]*Zigbee2mqttDevice, 0)
-	err = q.Find(&list).Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 
 	return
 }

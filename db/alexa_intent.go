@@ -20,6 +20,7 @@ package db
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -47,14 +48,18 @@ func (d *AlexaIntent) TableName() string {
 
 // Add ...
 func (n AlexaIntents) Add(v *AlexaIntent) (err error) {
-	err = n.Db.Create(&v).Error
+	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
+	}
 	return
 }
 
 // GetByName ...
 func (n AlexaIntents) GetByName(name string) (intent *AlexaIntent, err error) {
 	intent = &AlexaIntent{}
-	err = n.Db.Model(intent).Where("name = ?", name).Error
+	if err = n.Db.Model(intent).Where("name = ?", name).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
@@ -65,11 +70,16 @@ func (n AlexaIntents) Update(v *AlexaIntent) (err error) {
 		"description": v.Description,
 		"script_id":   v.ScriptId,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "Update failed")
+	}
 	return
 }
 
 // Delete ...
 func (n AlexaIntents) Delete(v *AlexaIntent) (err error) {
-	err = n.Db.Delete(&AlexaIntent{}, "name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Error
+	if err = n.Db.Delete(&AlexaIntent{}, "name = ? and alexa_skill_id = ?", v.Name, v.AlexaSkillId).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }

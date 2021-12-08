@@ -20,10 +20,10 @@ package endpoint
 
 import (
 	"context"
-	"errors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 )
 
 // UserEndpoint ...
@@ -91,6 +91,13 @@ func (n *UserEndpoint) Add(ctx context.Context, params *m.User,
 	}
 
 	result, err = n.GetById(ctx, id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 
 	return
 }
@@ -99,6 +106,13 @@ func (n *UserEndpoint) Add(ctx context.Context, params *m.User,
 func (n *UserEndpoint) GetById(ctx context.Context, userId int64) (result *m.User, err error) {
 
 	result, err = n.adaptors.User.GetById(userId)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 
 	return
 }
@@ -107,7 +121,12 @@ func (n *UserEndpoint) GetById(ctx context.Context, userId int64) (result *m.Use
 func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 
 	var user *m.User
-	if user, err = n.adaptors.User.GetById(userId); err != nil {
+	user, err = n.adaptors.User.GetById(userId)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -116,7 +135,9 @@ func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 		return
 	}
 
-	err = n.adaptors.User.Delete(user.Id)
+	if err = n.adaptors.User.Delete(user.Id); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -125,6 +146,9 @@ func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 func (n *UserEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.User, total int64, err error) {
 
 	result, total, err = n.adaptors.User.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
@@ -133,7 +157,12 @@ func (n *UserEndpoint) GetList(ctx context.Context, pagination common.PageParams
 func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.User, errs validator.ValidationErrorsTranslations, err error) {
 
 	var user *m.User
-	if user, err = n.adaptors.User.GetById(params.Id); err != nil {
+	user, err = n.adaptors.User.GetById(params.Id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -163,10 +192,18 @@ func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.Us
 	}
 
 	if err = n.adaptors.User.Update(user); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
 	result, err = n.GetById(ctx, user.Id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 
 	return
 }
@@ -175,7 +212,12 @@ func (n *UserEndpoint) Update(ctx context.Context, params *m.User) (result *m.Us
 func (n *UserEndpoint) UpdateStatus(ctx context.Context, userId int64, newStatus string) (err error) {
 
 	var user *m.User
-	if user, err = n.adaptors.User.GetById(userId); err != nil {
+	user, err = n.adaptors.User.GetById(userId)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -188,7 +230,9 @@ func (n *UserEndpoint) UpdateStatus(ctx context.Context, userId int64, newStatus
 		user.Status = "blocked"
 	}
 
-	err = n.adaptors.User.Update(user)
+	if err = n.adaptors.User.Update(user); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }

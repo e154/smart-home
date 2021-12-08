@@ -21,7 +21,9 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -50,6 +52,7 @@ func (m *Role) TableName() string {
 // Add ...
 func (n Roles) Add(role *Role) (err error) {
 	if err = n.Db.Create(&role).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	return
@@ -61,6 +64,11 @@ func (n Roles) GetByName(name string) (role *Role, err error) {
 	role = &Role{Name: name}
 	err = n.Db.First(&role).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("name \"%s\"", name))
+			return
+		}
+		err = errors.Wrap(err, "getByName failed")
 		return
 	}
 
@@ -75,12 +83,18 @@ func (n Roles) Update(m *Role) (err error) {
 		"description": m.Description,
 		"parent":      m.RoleName,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
+
 	return
 }
 
 // Delete ...
 func (n Roles) Delete(name string) (err error) {
-	err = n.Db.Delete(&Role{Name: name}).Error
+	if err = n.Db.Delete(&Role{Name: name}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -88,6 +102,7 @@ func (n Roles) Delete(name string) (err error) {
 func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, total int64, err error) {
 
 	if err = n.Db.Model(Role{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -100,6 +115,7 @@ func (n *Roles) List(limit, offset int64, orderBy, sort string) (list []*Role, t
 		Error
 
 	if err != nil {
+		err = errors.Wrap(err, "list failed")
 		return
 	}
 
@@ -117,6 +133,7 @@ func (n *Roles) Search(query string, limit, offset int) (list []*Role, total int
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -126,7 +143,9 @@ func (n *Roles) Search(query string, limit, offset int) (list []*Role, total int
 		Order("name ASC")
 
 	list = make([]*Role, 0)
-	err = q.Find(&list).Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 
 	return
 }
@@ -141,6 +160,9 @@ func (n *Roles) RelData(role *Role) (err error) {
 			Where("name = ?", role.RoleName.String).
 			Find(&role.Role).
 			Error
+		if err != nil {
+			err = errors.Wrap(err, "get parent failed")
+		}
 	}
 
 	// get children
@@ -149,6 +171,9 @@ func (n *Roles) RelData(role *Role) (err error) {
 		Where("parent = ?", role.Name).
 		Find(&role.Children).
 		Error
+	if err != nil {
+		err = errors.Wrap(err, "get children failed")
+	}
 
 	return
 }

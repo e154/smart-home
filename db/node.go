@@ -21,6 +21,7 @@ package db
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -49,6 +50,7 @@ func (d *Node) TableName() string {
 // Add ...
 func (n Nodes) Add(node *Node) (id int64, err error) {
 	if err = n.Db.Create(&node).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = node.Id
@@ -60,13 +62,18 @@ func (n Nodes) GetAllEnabled() (list []*Node, err error) {
 	list = make([]*Node, 0)
 	err = n.Db.Where("status = ?", "enabled").
 		Find(&list).Error
+	if err != nil {
+		err = errors.Wrap(err, "getAllEnabled failed")
+	}
 	return
 }
 
 // GetById ...
 func (n Nodes) GetById(nodeId int64) (node *Node, err error) {
 	node = &Node{Id: nodeId}
-	err = n.Db.First(&node).Error
+	if err = n.Db.First(&node).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
+	}
 	return
 }
 
@@ -81,13 +88,17 @@ func (n Nodes) Update(m *Node) (err error) {
 	if m.EncryptedPassword != "" {
 		q["encrypted_password"] = m.EncryptedPassword
 	}
-	err = n.Db.Model(&Node{Id: m.Id}).Updates(q).Error
+	if err = n.Db.Model(&Node{Id: m.Id}).Updates(q).Error; err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
 // Delete ...
 func (n Nodes) Delete(nodeId int64) (err error) {
-	err = n.Db.Delete(&Node{Id: nodeId}).Error
+	if err = n.Db.Delete(&Node{Id: nodeId}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -95,6 +106,7 @@ func (n Nodes) Delete(nodeId int64) (err error) {
 func (n *Nodes) List(limit, offset int64, orderBy, sort string) (list []*Node, total int64, err error) {
 
 	if err = n.Db.Model(Node{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -108,9 +120,9 @@ func (n *Nodes) List(limit, offset int64, orderBy, sort string) (list []*Node, t
 			Order(fmt.Sprintf("%s %s", sort, orderBy))
 	}
 
-	err = q.
-		Find(&list).
-		Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 
 	return
 }
@@ -122,6 +134,7 @@ func (n *Nodes) Search(query string, limit, offset int) (list []*Node, total int
 		Where("name LIKE ?", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -131,7 +144,9 @@ func (n *Nodes) Search(query string, limit, offset int) (list []*Node, total int
 		Order("name ASC")
 
 	list = make([]*Node, 0)
-	err = q.Find(&list).Error
+	if err = q.Find(&list).Error; err != nil {
+		err = errors.Wrap(err, "search failed")
+	}
 
 	return
 }
@@ -144,7 +159,9 @@ func (n *Nodes) GetByLogin(login string) (node *Node, err error) {
 		Where("login = ?", login).
 		First(&node).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getByLogin failed")
+	}
 	return
 }
 
@@ -156,6 +173,8 @@ func (n *Nodes) GetByName(name string) (node *Node, err error) {
 		Where("name = ?", name).
 		First(&node).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "getByName failed")
+	}
 	return
 }

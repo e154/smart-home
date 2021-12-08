@@ -23,6 +23,7 @@ import (
 	"fmt"
 	. "github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -65,6 +66,7 @@ func (d *MapElement) TableName() string {
 // Add ...
 func (n MapElements) Add(v *MapElement) (id int64, err error) {
 	if err = n.Db.Create(&v).Error; err != nil {
+		err = errors.Wrap(err, "add failed")
 		return
 	}
 	id = v.Id
@@ -76,10 +78,14 @@ func (n MapElements) GetById(mapId int64) (v *MapElement, err error) {
 	v = &MapElement{Id: mapId}
 	if err = n.Db.
 		First(&v).Error; err != nil {
+		err = errors.Wrap(err, "getById failed")
 		return
 	}
 
-	err = n.gePrototype(v)
+	if err = n.gePrototype(v); err != nil {
+		err = errors.Wrap(err, "get prototype failed")
+		return
+	}
 	return
 }
 
@@ -89,10 +95,14 @@ func (n MapElements) GetByName(name string) (v *MapElement, err error) {
 	if err = n.Db.
 		Where("name = ?", name).
 		First(&v).Error; err != nil {
+		err = errors.Wrap(err, "getByType failed")
 		return
 	}
 
-	err = n.gePrototype(v)
+	if err = n.gePrototype(v); err != nil {
+		err = errors.Wrap(err, "get prototype failed")
+		return
+	}
 	return
 }
 
@@ -163,6 +173,9 @@ func (n MapElements) Update(m *MapElement) (err error) {
 		"status":         m.Status,
 		"weight":         m.Weight,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "update failed")
+	}
 	return
 }
 
@@ -171,12 +184,17 @@ func (n MapElements) Sort(m *MapElement) (err error) {
 	err = n.Db.Model(&MapElement{Id: m.Id}).Updates(map[string]interface{}{
 		"weight": m.Weight,
 	}).Error
+	if err != nil {
+		err = errors.Wrap(err, "sort failed")
+	}
 	return
 }
 
 // Delete ...
 func (n MapElements) Delete(mapId int64) (err error) {
-	err = n.Db.Delete(&MapElement{Id: mapId}).Error
+	if err = n.Db.Delete(&MapElement{Id: mapId}).Error; err != nil {
+		err = errors.Wrap(err, "delete failed")
+	}
 	return
 }
 
@@ -184,6 +202,7 @@ func (n MapElements) Delete(mapId int64) (err error) {
 func (n *MapElements) List(limit, offset int64, orderBy, sort string) (list []*MapElement, total int64, err error) {
 
 	if err = n.Db.Model(MapElement{}).Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -194,7 +213,9 @@ func (n *MapElements) List(limit, offset int64, orderBy, sort string) (list []*M
 		Order(fmt.Sprintf("%s %s", sort, orderBy)).
 		Find(&list).
 		Error
-
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
 	return
 }
 
@@ -207,6 +228,7 @@ func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort strin
 		Where("prototype_type = 'entity'")
 
 	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
 		return
 	}
 
@@ -225,6 +247,7 @@ func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort strin
 		Error
 
 	if err != nil {
+		err = errors.Wrap(err, "find failed")
 		return
 	}
 
@@ -249,6 +272,7 @@ func (n *MapElements) GetActiveElements(limit, offset int64, orderBy, sort strin
 			Error
 
 		if err != nil {
+			err = errors.Wrap(err, "get entities failed")
 			return
 		}
 	}

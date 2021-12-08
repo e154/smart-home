@@ -24,6 +24,7 @@ import (
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/message_queue"
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 )
 
 // DeveloperToolsEndpoint ...
@@ -41,6 +42,10 @@ func NewDeveloperToolsEndpoint(common *CommonEndpoint) *DeveloperToolsEndpoint {
 // StateList ...
 func (d DeveloperToolsEndpoint) StateList() (states []m.EntityShort, total int64, err error) {
 	states, err = d.entityManager.List()
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	total = int64(len(states))
 	return
 }
@@ -51,12 +56,19 @@ func (d DeveloperToolsEndpoint) UpdateState(entityId string, state *string, attr
 		NewState:        state,
 		AttributeValues: attrs,
 	})
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
 // EventList ...
 func (d DeveloperToolsEndpoint) EventList() (events []message_queue.Stat, total int64, err error) {
 	events, err = d.eventBus.Stat()
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	total = int64(len(events))
 	return
 }

@@ -19,8 +19,10 @@
 package endpoint
 
 import (
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
 )
 
 // TemplateEndpoint ...
@@ -44,7 +46,7 @@ func (t *TemplateEndpoint) UpdateOrCreate(params *m.Template) (errs validator.Va
 	}
 
 	if err = t.adaptors.Template.UpdateOrCreate(params); err != nil {
-		return
+		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
 	return
 }
@@ -58,14 +60,19 @@ func (t *TemplateEndpoint) UpdateStatus(params *m.Template) (errs validator.Vali
 	}
 
 	if err = t.adaptors.Template.UpdateStatus(params); err != nil {
-		return
+		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
 	return
 }
 
 // GetByName ...
 func (t *TemplateEndpoint) GetByName(name string) (result *m.Template, err error) {
-	if result, err = t.adaptors.Template.GetByName(name); err != nil {
+	result, err = t.adaptors.Template.GetByName(name)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -76,42 +83,63 @@ func (t *TemplateEndpoint) GetByName(name string) (result *m.Template, err error
 // GetItemByName ...
 func (t *TemplateEndpoint) GetItemByName(name string) (result *m.Template, err error) {
 	result, err = t.adaptors.Template.GetItemByName(name)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
 	return
 }
 
 // GetItemsSortedList ...
 func (t *TemplateEndpoint) GetItemsSortedList() (count int64, items []string, err error) {
 	count, items, err = t.adaptors.Template.GetItemsSortedList()
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
 // GetList ...
 func (t *TemplateEndpoint) GetList() (count int64, templates []*m.Template, err error) {
 	templates, err = t.adaptors.Template.GetList(m.TemplateTypeTemplate)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
 // Delete ...
 func (t *TemplateEndpoint) Delete(name string) (err error) {
-	err = t.adaptors.Template.Delete(name)
+	if err = t.adaptors.Template.Delete(name); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
 // GetItemsTree ...
 func (t *TemplateEndpoint) GetItemsTree() (tree []*m.TemplateTree, err error) {
-	tree, err = t.adaptors.Template.GetItemsTree()
+	if tree, err = t.adaptors.Template.GetItemsTree(); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
 // UpdateItemsTree ...
 func (t *TemplateEndpoint) UpdateItemsTree(tree []*m.TemplateTree) (err error) {
-	err = t.adaptors.Template.UpdateItemsTree(tree)
+	if err = t.adaptors.Template.UpdateItemsTree(tree); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
 // Search ...
 func (t *TemplateEndpoint) Search(query string, limit, offset int) (result []*m.Template, total int64, err error) {
-	result, total, err = t.adaptors.Template.Search(query, limit, offset)
+	if result, total, err = t.adaptors.Template.Search(query, limit, offset); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }
 
@@ -120,10 +148,13 @@ func (t *TemplateEndpoint) Preview(template *m.TemplateContent) (data string, er
 
 	var items []*m.Template
 	if items, err = t.adaptors.Template.GetList(m.TemplateTypeItem); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	data, err = m.PreviewTemplate(items, template)
+	if data, err = m.PreviewTemplate(items, template); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }

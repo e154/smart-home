@@ -118,7 +118,7 @@ func (g *Bridge) onBridgePublish(client mqtt.MqttCli, message mqtt.Message) {
 	switch topic[2] {
 	case "state":
 		g.onBridgeStatePublish(client, message)
-	case "log":
+	case "log", "logging":
 		g.onLogPublish(client, message)
 	case "config":
 		g.onConfigPublish(client, message)
@@ -213,7 +213,7 @@ func (g *Bridge) safeGetDevice(friendlyName string) (device *Device, err error) 
 
 	var ok bool
 	if device, ok = g.devices[friendlyName]; !ok {
-		err = adaptors.ErrRecordNotFound
+		err = common.ErrNotFound
 		return
 	}
 
