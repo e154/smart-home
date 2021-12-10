@@ -35,12 +35,12 @@ func NewImageDto() Image {
 // ToImage ...
 func (i Image) ToImage(image *m.Image) (result *api.Image) {
 	result = &api.Image{
-		Id:        int32(image.Id),
+		Id:        image.Id,
 		Thumb:     image.Thumb,
 		Image:     image.Image,
 		MimeType:  image.MimeType,
 		Title:     image.Title,
-		Size:      int32(image.Size),
+		Size:      image.Size,
 		Name:      image.Name,
 		CreatedAt: timestamppb.New(image.CreatedAt),
 	}
@@ -74,7 +74,7 @@ func (i Image) FromUpdateImageRequest(req *api.UpdateImageRequest) (image *m.Ima
 }
 
 // ToImageListResult ...
-func (i Image) ToImageListResult(items []*m.Image, total, limit, offset uint32) (result *api.GetImageListResult) {
+func (i Image) ToImageListResult(items []*m.Image, total, limit, offset uint64) (result *api.GetImageListResult) {
 
 	result = &api.GetImageListResult{
 		Items: make([]*api.Image, 0, len(items)),
@@ -87,13 +87,13 @@ func (i Image) ToImageListResult(items []*m.Image, total, limit, offset uint32) 
 
 	for _, item := range items {
 		result.Items = append(result.Items, &api.Image{
-			Id:        int32(item.Id),
+			Id:        item.Id,
 			Thumb:     item.Thumb,
 			Url:       item.Url,
 			Image:     item.Image,
 			MimeType:  item.MimeType,
 			Title:     item.Title,
-			Size:      int32(item.Size),
+			Size:      item.Size,
 			Name:      item.Name,
 			CreatedAt: timestamppb.New(item.CreatedAt),
 		})

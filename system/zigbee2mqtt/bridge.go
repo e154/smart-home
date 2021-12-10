@@ -52,7 +52,7 @@ type Bridge struct {
 	model          *m.Zigbee2mqtt
 	networkmapLock sync.Mutex
 	scanInProcess  bool
-	lastScan       time.Time
+	lastScan       *time.Time
 	networkmap     string
 }
 
@@ -177,7 +177,7 @@ func (g *Bridge) onNetworkmapPublish(client mqtt.MqttCli, message mqtt.Message) 
 	case "graphviz":
 		g.networkmapLock.Lock()
 		g.scanInProcess = false
-		g.lastScan = time.Now()
+		g.lastScan = common.Time(time.Now())
 		g.networkmap = string(message.Payload)
 		g.networkmapLock.Unlock()
 	}
@@ -275,7 +275,7 @@ func (g *Bridge) safeGetDeviceList() (err error) {
 func (g *Bridge) onLogPublish(client mqtt.MqttCli, message mqtt.Message) {
 	var lm BridgeLog
 	_ = json.Unmarshal(message.Payload, &lm)
-	log.Infof("%v, %v, %v", lm.Type, lm.Message, lm.Meta)
+	log.Infof("%s, %v, %s", lm.Message, lm.Meta, lm.Type)
 	switch lm.Type {
 	case "device_removed":
 		g.deviceRemoved(lm.Message)

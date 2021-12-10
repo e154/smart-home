@@ -9,7 +9,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 message Script {
-  int32 id = 1;
+  int64 id = 1;
   string lang = 2;
   string name = 3;
   string source = 4;
@@ -26,15 +26,15 @@ message NewScriptRequest {
 }
 
 message GetScriptRequest {
-  int32 id = 1;
+  int64 id = 1;
 }
 
 message DeleteScriptRequest {
-  int32 id = 1;
+  int64 id = 1;
 }
 
 message UpdateScriptRequest {
-  int32 id = 1;
+  int64 id = 1;
   string lang = 2;
   string name = 3;
   string source = 4;
@@ -42,7 +42,7 @@ message UpdateScriptRequest {
 }
 
 message ExecScriptRequest {
-  int32 id = 1;
+  int64 id = 1;
 }
 
 message ExecSrcScriptRequest {
@@ -57,8 +57,8 @@ message ExecScriptResult {
 }
 
 message GetScriptListRequest {
-  uint32 limit = 1;
-  uint32 offset = 2;
+  uint64 limit = 1;
+  uint64 offset = 2;
   string order = 3;
   string sort_by = 4;
 }
@@ -66,17 +66,17 @@ message GetScriptListRequest {
 message GetScriptListResult {
   repeated Script items = 1;
   message Meta {
-    uint32 limit = 1;
-    uint32 objects_count = 2;
-    uint32 offset = 3;
+    uint64 limit = 1;
+    uint64 objects_count = 2;
+    uint64 offset = 3;
   }
   Meta meta = 2;
 }
 
 message SearchScriptRequest {
   string query = 1;
-  int32 limit = 2;
-  int32 offset = 3;
+  int64 limit = 2;
+  int64 offset = 3;
 }
 
 message SearchScriptListResult {
@@ -84,7 +84,7 @@ message SearchScriptListResult {
 }
 
 message CopyScriptRequest {
-  int32 id = 1;
+  int64 id = 1;
 }
 
 service ScriptService {

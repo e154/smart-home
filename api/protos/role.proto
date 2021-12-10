@@ -59,8 +59,8 @@ message UpdateRoleRequest {
 }
 
 message GetRoleListRequest {
-  uint32 limit = 1;
-  uint32 offset = 2;
+  uint64 limit = 1;
+  uint64 offset = 2;
   string order = 3;
   string sort_by = 4;
 }
@@ -68,17 +68,17 @@ message GetRoleListRequest {
 message GetRoleListResult {
   repeated Role items = 1;
   message Meta {
-    uint32 limit = 1;
-    uint32 objects_count = 2;
-    uint32 offset = 3;
+    uint64 limit = 1;
+    uint64 objects_count = 2;
+    uint64 offset = 3;
   }
   Meta meta = 2;
 }
 
 message SearchRoleRequest {
   string query = 1;
-  int32 limit = 2;
-  int32 offset = 3;
+  int64 limit = 2;
+  int64 offset = 3;
 }
 
 message SearchRoleListResult {

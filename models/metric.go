@@ -40,8 +40,8 @@ type MetricOptions struct {
 // Metric ...
 type Metric struct {
 	Id          int64             `json:"id"`
-	Name        string            `json:"name" valid:"MaxSize(254);Required"`
-	Description string            `json:"description" valid:"MaxSize(254)"`
+	Name        string            `json:"name" validate:"max=254;required"`
+	Description string            `json:"description" validate:"max=254"`
 	Options     MetricOptions     `json:"options"`
 	Data        []MetricDataItem  `json:"data"`
 	Type        common.MetricType `json:"type" validate:"required"`

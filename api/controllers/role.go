@@ -108,7 +108,7 @@ func (c ControllerRole) GetRoleList(ctx context.Context, req *api.GetRoleListReq
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Role.ToListResult(items, uint32(total), req.Limit, req.Offset), nil
+	return c.dto.Role.ToListResult(items, uint64(total), req.Limit, req.Offset), nil
 }
 
 // SearchRoleByName ...

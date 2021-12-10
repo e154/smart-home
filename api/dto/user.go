@@ -45,13 +45,13 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 	roleDto := NewRoleDto()
 	imageDto := NewImageDto()
 	result = &api.UserFull{
-		Id:                  int32(user.Id),
+		Id:                  user.Id,
 		Nickname:            user.Nickname,
 		FirstName:           user.FirstName,
 		LastName:            user.LastName,
 		Email:               user.Email,
 		Status:              user.Status,
-		SignInCount:         int32(user.SignInCount),
+		SignInCount:         user.SignInCount,
 		Role:                roleDto.ToGRole(user.Role),
 		RoleName:            user.RoleName,
 		Lang:                user.Lang,
@@ -109,7 +109,7 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 	// parent
 	if user.User != nil {
 		result.User = &api.UserFull_Parent{
-			Id:       int32(user.User.Id),
+			Id:       user.User.Id,
 			Nickname: user.User.Nickname,
 		}
 	}
@@ -122,7 +122,7 @@ func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 	roleDto := NewRoleDto()
 	imageDto := NewImageDto()
 	result = &api.UserShot{
-		Id:        int32(user.Id),
+		Id:        user.Id,
 		Nickname:  user.Nickname,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
@@ -143,7 +143,7 @@ func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 	// parent
 	if user.User != nil {
 		result.User = &api.UserShot_Parent{
-			Id:       int32(user.User.Id),
+			Id:       user.User.Id,
 			Nickname: user.User.Nickname,
 		}
 	}
@@ -151,7 +151,7 @@ func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 }
 
 // ToListResult ...
-func (u User) ToListResult(list []*m.User, total, limit, offset uint32) *api.GetUserListResult {
+func (u User) ToListResult(list []*m.User, total, limit, offset uint64) *api.GetUserListResult {
 
 	items := make([]*api.UserShot, 0, len(list))
 

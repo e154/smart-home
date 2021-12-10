@@ -28,7 +28,7 @@ import (
 type Zigbee2mqttDevice struct {
 	Id            string    `json:"id"`
 	Zigbee2mqttId int64     `json:"zigbee2mqtt_id" validate:"required"`
-	Name          string    `json:"name" valid:"MaxSize(254);Required"`
+	Name          string    `json:"name" validate:"required,max=254"`
 	Type          string    `json:"type"`
 	Model         string    `json:"model"`
 	Description   string    `json:"description"`

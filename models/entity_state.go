@@ -26,7 +26,7 @@ import (
 // EntityState ...
 type EntityState struct {
 	Id          int64           `json:"id"`
-	Name        string          `json:"name" valid:"MaxSize(254);Required"`
+	Name        string          `json:"name" validate:"max=254;required"`
 	Description string          `json:"description"`
 	Icon        *string         `json:"icon"`
 	EntityId    common.EntityId `json:"entity_id" validate:"required"`

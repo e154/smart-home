@@ -25,7 +25,7 @@ import (
 // MapLayer ...
 type MapLayer struct {
 	Id          int64         `json:"id"`
-	Name        string        `json:"name" valid:"MaxSize(254);Required"`
+	Name        string        `json:"name" validate:"max=254;required"`
 	Description string        `json:"description"`
 	Map         *Map          `json:"map"`
 	MapId       int64         `json:"map_id" validate:"required"`

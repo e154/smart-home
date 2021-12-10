@@ -25,7 +25,7 @@ import (
 // Zigbee2mqtt ...
 type Zigbee2mqtt struct {
 	Id                int64                `json:"id"`
-	Name              string               `json:"name" valid:"MaxSize(254);Required"`
+	Name              string               `json:"name" validate:"required,max=254"`
 	Login             string               `json:"login"`
 	Password          *string              `json:"password"`
 	EncryptedPassword string               `json:"encrypted_password"`

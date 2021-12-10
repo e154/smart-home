@@ -111,7 +111,7 @@ func (c ControllerUser) GetUserList(ctx context.Context, req *api.GetUserListReq
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.User.ToListResult(items, uint32(total), req.Limit, req.Offset), nil
+	return c.dto.User.ToListResult(items, uint64(total), req.Limit, req.Offset), nil
 }
 
 // DeleteUserById ...

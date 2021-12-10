@@ -19,8 +19,8 @@ message Plugin {
 }
 
 message GetPluginListRequest {
-  uint32 limit = 1;
-  uint32 offset = 2;
+  uint64 limit = 1;
+  uint64 offset = 2;
   string order = 3;
   string sort_by = 4;
 }
@@ -28,9 +28,9 @@ message GetPluginListRequest {
 message GetPluginListResult {
   repeated Plugin items = 1;
   message Meta {
-    uint32 limit = 1;
-    uint32 objects_count = 2;
-    uint32 offset = 3;
+    uint64 limit = 1;
+    uint64 objects_count = 2;
+    uint64 offset = 3;
   }
   Meta meta = 2;
 }

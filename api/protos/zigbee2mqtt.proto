@@ -1,0 +1,307 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+message NewtZigbee2mqttRequest {
+  string name = 1;
+  string login = 2;
+  optional string password = 3;
+  bool permit_join = 4;
+  string base_topic = 5;
+}
+
+message Zigbee2mqtt {
+  int64 id = 1;
+  string name = 2;
+  string login = 3;
+  bool permit_join = 4;
+  string base_topic = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message Zigbee2mqttInfo {
+  bool scan_in_process = 1;
+  optional google.protobuf.Timestamp last_scan = 2;
+  string networkmap = 3;
+  string status = 4;
+  Zigbee2mqtt model = 5;
+}
+
+message GetBridgeRequest {
+  int64 id = 1;
+}
+
+message UpdateBridgeRequest {
+  int64 id = 1;
+  string name = 2;
+  string login = 3;
+  optional string password = 4;
+  bool permit_join = 5;
+  string base_topic = 6;
+}
+
+message GetBridgeListRequest {
+  uint64 limit = 1;
+  uint64 offset = 2;
+  string order = 3;
+  string sort_by = 4;
+}
+
+message GetBridgeListResult {
+  repeated Zigbee2mqttInfo items = 1;
+  message Meta {
+    uint64 limit = 1;
+    uint64 objects_count = 2;
+    uint64 offset = 3;
+  }
+  Meta meta = 2;
+}
+
+message DeleteBridgeRequest {
+  int64 id = 1;
+}
+
+message ResetBridgeRequest {
+  int64 id = 1;
+}
+
+message DeviceBanRequest {
+  int64 id = 1;
+  string friendly_name = 2;
+}
+
+message DeviceWhitelistRequest {
+  int64 id = 1;
+  string friendly_name = 2;
+}
+
+message NetworkmapRequest {
+  int64 id = 1;
+}
+
+message NetworkmapResponse {
+  string networkmap = 1;
+}
+
+message DeviceRenameRequest {
+  string friendly_name = 1;
+  string new_name = 2;
+}
+
+message SearchDeviceRequest {
+  string query = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}
+
+message Zigbee2mqttDevice {
+  int64 id = 1;
+  int64 zigbee2mqtt_id = 2;
+  string  name = 3;
+  string     type = 4;
+  string  model = 5;
+  string     description = 6;
+  string  manufacturer = 7;
+  repeated string functions = 8;
+  string image_url = 9;
+  string status = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+}
+
+message SearchDeviceResult {
+  repeated Zigbee2mqttDevice items = 1;
+}
+
+service Zigbee2mqttService {
+
+  // add new bridge
+  rpc AddZigbee2mqttBridge (NewtZigbee2mqttRequest) returns (Zigbee2mqtt){
+    option (google.api.http) = {
+      post: "/v1/zigbee2mqtt/bridge"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get bridge
+  rpc GetZigbee2mqttBridge (GetBridgeRequest) returns (Zigbee2mqttInfo){
+    option (google.api.http) = {
+      get: "/v1/zigbee2mqtt/bridge/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update bridge by id
+  rpc UpdateBridgeById (UpdateBridgeRequest) returns (Zigbee2mqtt){
+    option (google.api.http) = {
+      put: "/v1/zigbee2mqtt/bridge"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get bridge list
+  rpc GetBridgeList (GetBridgeListRequest) returns (GetBridgeListResult){
+    option (google.api.http) = {
+      get: "/v1/zigbee2mqtt/bridge"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete bridge by id
+  rpc DeleteBridgeById (DeleteBridgeRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/zigbee2mqtt/bridge/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // reset bridge by id
+  rpc ResetBridgeById (ResetBridgeRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/zigbee2mqtt/bridge/{id}/reset"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // device ban
+  rpc DeviceBan (DeviceBanRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/zigbee2mqtt/device_ban"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // device whitelist
+  rpc DeviceWhitelist (DeviceWhitelistRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/zigbee2mqtt/device_whitelist"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // device rename
+  rpc DeviceRename (DeviceRenameRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/zigbee2mqtt/device_rename"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // search device
+  rpc SearchDevice (SearchDeviceRequest) returns (SearchDeviceResult){
+    option (google.api.http) = {
+      get: "/v1/zigbee2mqtt/search_device"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // networkmap
+  rpc Networkmap (NetworkmapRequest) returns (NetworkmapResponse){
+    option (google.api.http) = {
+      get: "/v1/zigbee2mqtt/networkmap"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update networkmap
+  rpc UpdateNetworkmap (NetworkmapRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/zigbee2mqtt/networkmap"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+}
