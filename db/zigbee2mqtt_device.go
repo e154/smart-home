@@ -19,6 +19,7 @@
 package db
 
 import (
+	"encoding/json"
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
@@ -41,7 +42,8 @@ type Zigbee2mqttDevice struct {
 	Description   string
 	Manufacturer  string
 	Status        string
-	Functions     pq.StringArray `gorm:"type:varchar(100)[]"`
+	Functions     pq.StringArray  `gorm:"type:varchar(100)[]"`
+	Payload       json.RawMessage `gorm:"type:jsonb;not null"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -79,6 +81,7 @@ func (z Zigbee2mqttDevices) Update(m *Zigbee2mqttDevice) (err error) {
 		"Manufacturer": m.Manufacturer,
 		"Functions":    m.Functions,
 		"Status":       m.Status,
+		"Payload":      m.Payload,
 	}).Error
 	if err != nil {
 		err = errors.Wrap(err, "update failed")
@@ -114,7 +117,7 @@ func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevic
 }
 
 // Search ...
-func (z *Zigbee2mqttDevices) Search(query string, limit, offset int) (list []*Zigbee2mqttDevice, total int64, err error) {
+func (z *Zigbee2mqttDevices) Search(query string, limit, offset int64) (list []*Zigbee2mqttDevice, total int64, err error) {
 
 	q := z.Db.Model(&Zigbee2mqttDevice{}).
 		Where("name LIKE ?", "%"+query+"%")

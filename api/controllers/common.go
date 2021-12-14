@@ -158,3 +158,21 @@ func (c ControllerCommon) Pagination(limit, offset uint64, order, sortBy string)
 
 	return
 }
+
+func (c ControllerCommon) Search(query string, limit, offset int64) (search common.SearchParams) {
+
+	search = common.SearchParams{
+		Query:  query,
+		Limit:  200,
+		Offset: 0,
+	}
+
+	if limit > 0 {
+		search.Limit = limit
+	}
+	if offset > 0 {
+		search.Offset = offset
+	}
+
+	return
+}

@@ -36,6 +36,7 @@ type Zigbee2mqttDevice struct {
 	Functions     []string  `json:"functions"`
 	ImageUrl      string    `json:"image_url"`
 	Status        string    `json:"status"`
+	Payload       []byte    `json:"payload"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }

@@ -28,6 +28,7 @@ type Device struct {
 	friendlyName string
 	modelLock    *sync.Mutex
 	model        models.Zigbee2mqttDevice
+	payload      DeviceInfo
 }
 
 // NewDevice ...

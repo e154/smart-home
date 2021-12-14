@@ -155,10 +155,10 @@ func (n *RoleEndpoint) Delete(ctx context.Context, name string) (err error) {
 }
 
 // Search ...
-func (n *RoleEndpoint) Search(ctx context.Context, query string, limit, offset int) (result []*m.Role, total int64, err error) {
+func (n *RoleEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Role, total int64, err error) {
 
 	if limit == 0 {
-		limit = int(common.DefaultPageSize)
+		limit = common.DefaultPageSize
 	}
 
 	result, total, err = n.adaptors.Role.Search(query, limit, offset)

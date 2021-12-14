@@ -84,7 +84,8 @@ func (c ControllerScript) GetScriptList(ctx context.Context, req *api.GetScriptL
 // SearchScriptById ...
 func (c ControllerScript) SearchScriptById(ctx context.Context, req *api.SearchScriptRequest) (*api.SearchScriptListResult, error) {
 
-	items, _, err := c.endpoint.Script.Search(ctx, req.Query, int(req.Limit), int(req.Offset))
+	search := c.Search(req.Query, req.Limit, req.Offset)
+	items, _, err := c.endpoint.Script.Search(ctx, search.Query, search.Limit, search.Offset)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}

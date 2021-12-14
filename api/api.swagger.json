@@ -1653,43 +1653,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/apiNewtZigbee2mqttRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Zigbee2mqttService"
-        ],
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      },
-      "put": {
-        "summary": "update bridge by id",
-        "operationId": "Zigbee2mqttService_UpdateBridgeById",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/apiZigbee2mqtt"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/apiUpdateBridgeRequest"
+              "$ref": "#/definitions/apiNewZigbee2mqttRequest"
             }
           }
         ],
@@ -1711,7 +1675,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/apiZigbee2mqttInfo"
+              "$ref": "#/definitions/apiZigbee2mqtt"
             }
           },
           "default": {
@@ -1742,6 +1706,140 @@
       "delete": {
         "summary": "delete bridge by id",
         "operationId": "Zigbee2mqttService_DeleteBridgeById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/bridge/{id}/bridge": {
+      "put": {
+        "summary": "update bridge by id",
+        "operationId": "Zigbee2mqttService_UpdateBridgeById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiZigbee2mqtt"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "login": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "permitJoin": {
+                  "type": "boolean"
+                },
+                "baseTopic": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/bridge/{id}/networkmap": {
+      "get": {
+        "summary": "networkmap",
+        "operationId": "Zigbee2mqttService_Networkmap",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiNetworkmapResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "update networkmap",
+        "operationId": "Zigbee2mqttService_UpdateNetworkmap",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1830,6 +1928,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDeviceBanRequest"
+            }
+          }
+        ],
         "tags": [
           "Zigbee2mqttService"
         ],
@@ -1858,6 +1966,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDeviceRenameRequest"
+            }
+          }
+        ],
         "tags": [
           "Zigbee2mqttService"
         ],
@@ -1886,69 +2004,16 @@
             }
           }
         },
-        "tags": [
-          "Zigbee2mqttService"
-        ],
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      }
-    },
-    "/v1/zigbee2mqtt/networkmap": {
-      "get": {
-        "summary": "networkmap",
-        "operationId": "Zigbee2mqttService_Networkmap",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/apiNetworkmapResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
         "parameters": [
           {
-            "name": "id",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          }
-        ],
-        "tags": [
-          "Zigbee2mqttService"
-        ],
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      },
-      "post": {
-        "summary": "update networkmap",
-        "operationId": "Zigbee2mqttService_UpdateNetworkmap",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
+            "name": "body",
+            "in": "body",
+            "required": true,
             "schema": {
-              "properties": {}
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/apiDeviceWhitelistRequest"
             }
           }
-        },
+        ],
         "tags": [
           "Zigbee2mqttService"
         ],
@@ -2163,6 +2228,41 @@
         }
       }
     },
+    "apiDeviceBanRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "friendlyName": {
+          "type": "string"
+        }
+      }
+    },
+    "apiDeviceRenameRequest": {
+      "type": "object",
+      "properties": {
+        "friendlyName": {
+          "type": "string"
+        },
+        "newName": {
+          "type": "string"
+        }
+      }
+    },
+    "apiDeviceWhitelistRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "friendlyName": {
+          "type": "string"
+        }
+      }
+    },
     "apiDisablePluginResult": {
       "type": "object"
     },
@@ -2234,7 +2334,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiZigbee2mqttInfo"
+            "$ref": "#/definitions/apiZigbee2mqttShort"
           }
         },
         "meta": {
@@ -2584,6 +2684,26 @@
         }
       }
     },
+    "apiNewZigbee2mqttRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "login": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "permitJoin": {
+          "type": "boolean"
+        },
+        "baseTopic": {
+          "type": "string"
+        }
+      }
+    },
     "apiNewtUserRequest": {
       "type": "object",
       "properties": {
@@ -2638,26 +2758,6 @@
       "type": "object",
       "properties": {
         "name": {
-          "type": "string"
-        }
-      }
-    },
-    "apiNewtZigbee2mqttRequest": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "login": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "permitJoin": {
-          "type": "boolean"
-        },
-        "baseTopic": {
           "type": "string"
         }
       }
@@ -2825,30 +2925,6 @@
           "items": {
             "$ref": "#/definitions/SubscribeResponseEvent"
           }
-        }
-      }
-    },
-    "apiUpdateBridgeRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "login": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "permitJoin": {
-          "type": "boolean"
-        },
-        "baseTopic": {
-          "type": "string"
         }
       }
     },
@@ -3076,6 +3152,19 @@
     "apiZigbee2mqtt": {
       "type": "object",
       "properties": {
+        "scanInProcess": {
+          "type": "boolean"
+        },
+        "lastScan": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "networkmap": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -3106,8 +3195,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
-          "format": "int64"
+          "type": "string"
         },
         "zigbee2mqttId": {
           "type": "string",
@@ -3150,24 +3238,32 @@
         }
       }
     },
-    "apiZigbee2mqttInfo": {
+    "apiZigbee2mqttShort": {
       "type": "object",
       "properties": {
-        "scanInProcess": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "login": {
+          "type": "string"
+        },
+        "permitJoin": {
           "type": "boolean"
         },
-        "lastScan": {
+        "baseTopic": {
+          "type": "string"
+        },
+        "createdAt": {
           "type": "string",
           "format": "date-time"
         },
-        "networkmap": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        },
-        "model": {
-          "$ref": "#/definitions/apiZigbee2mqtt"
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

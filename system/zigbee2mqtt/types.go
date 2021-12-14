@@ -29,8 +29,8 @@ type Zigbee2mqtt interface {
 	Shutdown()
 	AddBridge(model *m.Zigbee2mqtt) (err error)
 	GetBridgeById(id int64) (*m.Zigbee2mqtt, error)
-	GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error)
-	ListBridges(limit, offset int64, order, sortBy string) (models []*Zigbee2mqttInfo, total int64, err error)
+	GetBridgeInfo(id int64) (*Zigbee2mqttBridge, error)
+	ListBridges(limit, offset int64, order, sortBy string) (models []*Zigbee2mqttBridge, total int64, err error)
 	UpdateBridge(model *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, err error)
 	DeleteBridge(bridgeId int64) (err error)
 	ResetBridge(bridgeId int64) (err error)
@@ -42,23 +42,20 @@ type Zigbee2mqtt interface {
 	DeviceRename(friendlyName, name string) (err error)
 }
 
-// DeviceType ...
-type DeviceType string
+// Zigbee2mqttBridge ...
+type Zigbee2mqttBridge struct {
+	m.Zigbee2mqtt
+	ScanInProcess bool       `json:"scan_in_process"`
+	LastScan      *time.Time `json:"last_scan"`
+	Networkmap    string     `json:"networkmap"`
+	Status        string     `json:"status"`
+}
 
 // BridgeLog ...
 type BridgeLog struct {
 	Type    string                 `json:"type"`
 	Message string                 `json:"message"`
 	Meta    map[string]interface{} `json:"meta"`
-}
-
-// BridgePairingMeta ...
-type BridgePairingMeta struct {
-	FriendlyName string `json:"friendly_name"`
-	Model        string `json:"model"`
-	Vendor       string `json:"vendor"`
-	Description  string `json:"description"`
-	Supported    bool   `json:"supported"`
 }
 
 // BridgeConfigMeta ...
@@ -86,29 +83,68 @@ type BridgeConfig struct {
 	PermitJoin  string                  `json:"permit_join"`
 }
 
-// AssistDeviceInfo ...
-type AssistDeviceInfo struct {
-	Name         string `json:"name"`
-	Model        string `json:"model"`
-	Manufacturer string `json:"manufacturer"`
-}
-
-// AssistDevice ...
-type AssistDevice struct {
-	Device AssistDeviceInfo `json:"device"`
-}
-
 const (
 	active  = "active"
 	banned  = "banned"
 	removed = "removed"
 )
 
-// Zigbee2mqttInfo ...
-type Zigbee2mqttInfo struct {
-	ScanInProcess bool          `json:"scan_in_process"`
-	LastScan      *time.Time    `json:"last_scan"`
-	Networkmap    string        `json:"networkmap"`
-	Status        string        `json:"status"`
-	Model         m.Zigbee2mqtt `json:"model"`
+const (
+	EventDeviceAnnounce  = "device_announce"
+	EventDeviceLeave     = "device_leave"
+	EventDeviceJoined    = "device_joined"
+	EventDeviceInterview = "device_interview"
+)
+
+const (
+	StatusStarted = "started"
+	StatusFailed  = "failed"
+)
+
+type EventDeviceInfoDefExpose struct {
+	Access      int64                      `json:"access,omitempty"`
+	Description string                     `json:"description,omitempty"`
+	Name        string                     `json:"name,omitempty"`
+	Property    string                     `json:"property,omitempty"`
+	Type        string                     `json:"type,omitempty"`
+	Unit        string                     `json:"unit,omitempty"`
+	ValueMax    int64                      `json:"value_max,omitempty"`
+	ValueMin    int64                      `json:"value_min,omitempty"`
+	Values      []string                   `json:"values,omitempty"`
+	Features    []EventDeviceInfoDefExpose `json:"features,omitempty"`
+}
+
+// EventDeviceInfoDef ...
+type EventDeviceInfoDef struct {
+	Description string                     `json:"description,omitempty"`
+	Exposes     []EventDeviceInfoDefExpose `json:"exposes"`
+	Model       string                     `json:"model"`
+	Options     []string                   `json:"options"`
+	SupportsOta bool                       `json:"supports_ota"`
+	Vendor      string                     `json:"vendor"`
+}
+
+const (
+	Coordinator = "Coordinator"
+	EndDevice   = "EndDevice"
+)
+
+// DeviceInfo ...
+type DeviceInfo struct {
+	Definition         EventDeviceInfoDef `json:"definition"`
+	FriendlyName       string             `json:"friendly_name"`
+	IeeeAddress        string             `json:"ieee_address"`
+	Status             string             `json:"status,omitempty"`
+	InterviewCompleted bool               `json:"interview_completed,omitempty"`
+	Interviewing       bool               `json:"interviewing,omitempty"`
+	ModelId            string             `json:"model_id,omitempty"`
+	NetworkAddress     int64              `json:"network_address,omitempty"`
+	PowerSource        string             `json:"power_source,omitempty"`
+	Supported          bool               `json:"supported,omitempty"`
+	Type               string             `json:"type,omitempty"`
+}
+
+type Event struct {
+	Data DeviceInfo `json:"data"`
+	Type string     `json:"type"`
 }

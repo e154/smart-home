@@ -33,7 +33,7 @@ type IScript interface {
 	Update(script *m.Script) (err error)
 	Delete(scriptId int64) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Script, total int64, err error)
-	Search(query string, limit, offset int) (list []*m.Script, total int64, err error)
+	Search(query string, limit, offset int64) (list []*m.Script, total int64, err error)
 	fromDb(dbScript *db.Script) (script *m.Script, err error)
 	toDb(script *m.Script) (dbScript *db.Script)
 }
@@ -124,7 +124,7 @@ func (n *Script) List(limit, offset int64, orderBy, sort string) (list []*m.Scri
 }
 
 // Search ...
-func (n *Script) Search(query string, limit, offset int) (list []*m.Script, total int64, err error) {
+func (n *Script) Search(query string, limit, offset int64) (list []*m.Script, total int64, err error) {
 	var dbList []*db.Script
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
 		return

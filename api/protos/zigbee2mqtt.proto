@@ -8,7 +8,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
-message NewtZigbee2mqttRequest {
+message NewZigbee2mqttRequest {
   string name = 1;
   string login = 2;
   optional string password = 3;
@@ -16,7 +16,7 @@ message NewtZigbee2mqttRequest {
   string base_topic = 5;
 }
 
-message Zigbee2mqtt {
+message Zigbee2mqttShort {
   int64 id = 1;
   string name = 2;
   string login = 3;
@@ -26,12 +26,18 @@ message Zigbee2mqtt {
   google.protobuf.Timestamp updated_at = 7;
 }
 
-message Zigbee2mqttInfo {
+message Zigbee2mqtt {
   bool scan_in_process = 1;
   optional google.protobuf.Timestamp last_scan = 2;
   string networkmap = 3;
   string status = 4;
-  Zigbee2mqtt model = 5;
+  int64 id = 5;
+  string name = 6;
+  string login = 7;
+  bool permit_join = 8;
+  string base_topic = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
 }
 
 message GetBridgeRequest {
@@ -55,7 +61,7 @@ message GetBridgeListRequest {
 }
 
 message GetBridgeListResult {
-  repeated Zigbee2mqttInfo items = 1;
+  repeated Zigbee2mqttShort items = 1;
   message Meta {
     uint64 limit = 1;
     uint64 objects_count = 2;
@@ -102,7 +108,7 @@ message SearchDeviceRequest {
 }
 
 message Zigbee2mqttDevice {
-  int64 id = 1;
+  string id = 1;
   int64 zigbee2mqtt_id = 2;
   string  name = 3;
   string     type = 4;
@@ -123,7 +129,7 @@ message SearchDeviceResult {
 service Zigbee2mqttService {
 
   // add new bridge
-  rpc AddZigbee2mqttBridge (NewtZigbee2mqttRequest) returns (Zigbee2mqtt){
+  rpc AddZigbee2mqttBridge (NewZigbee2mqttRequest) returns (Zigbee2mqtt){
     option (google.api.http) = {
       post: "/v1/zigbee2mqtt/bridge"
       body: "*"
@@ -139,7 +145,7 @@ service Zigbee2mqttService {
   }
 
   // get bridge
-  rpc GetZigbee2mqttBridge (GetBridgeRequest) returns (Zigbee2mqttInfo){
+  rpc GetZigbee2mqttBridge (GetBridgeRequest) returns (Zigbee2mqtt){
     option (google.api.http) = {
       get: "/v1/zigbee2mqtt/bridge/{id}"
     };
@@ -156,7 +162,7 @@ service Zigbee2mqttService {
   // update bridge by id
   rpc UpdateBridgeById (UpdateBridgeRequest) returns (Zigbee2mqtt){
     option (google.api.http) = {
-      put: "/v1/zigbee2mqtt/bridge"
+      put: "/v1/zigbee2mqtt/bridge/{id}/bridge"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -218,6 +224,7 @@ service Zigbee2mqttService {
   rpc DeviceBan (DeviceBanRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       post: "/v1/zigbee2mqtt/device_ban"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -233,6 +240,7 @@ service Zigbee2mqttService {
   rpc DeviceWhitelist (DeviceWhitelistRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       post: "/v1/zigbee2mqtt/device_whitelist"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -248,6 +256,7 @@ service Zigbee2mqttService {
   rpc DeviceRename (DeviceRenameRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       post: "/v1/zigbee2mqtt/device_rename"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -277,7 +286,7 @@ service Zigbee2mqttService {
   // networkmap
   rpc Networkmap (NetworkmapRequest) returns (NetworkmapResponse){
     option (google.api.http) = {
-      get: "/v1/zigbee2mqtt/networkmap"
+      get: "/v1/zigbee2mqtt/bridge/{id}/networkmap"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -292,7 +301,7 @@ service Zigbee2mqttService {
   // update networkmap
   rpc UpdateNetworkmap (NetworkmapRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/zigbee2mqtt/networkmap"
+      post: "/v1/zigbee2mqtt/bridge/{id}/networkmap"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

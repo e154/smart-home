@@ -22,7 +22,6 @@ import (
 	"context"
 	"fmt"
 	container2 "github.com/e154/smart-home/tests/api/container"
-	"log"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -58,9 +57,7 @@ func TestPlugins(t *testing.T) {
 
 			c := context.Background()
 			conn, err := grpc.DialContext(c, "", grpc.WithInsecure(), grpc.WithContextDialer(dialer.Call()))
-			if err != nil {
-				log.Fatal(err)
-			}
+			ctx.So(err, ShouldBeNil)
 			defer conn.Close()
 
 			client := gw.NewPluginServiceClient(conn)

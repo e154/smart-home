@@ -19,37 +19,34 @@
 package container
 
 import (
+	"context"
+	"github.com/DrmagicE/gmqtt/server"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/mqtt_authenticator"
 )
 
-type Mqtt struct {
+type MqttCli struct {
 }
 
-func NewMqtt() mqtt.MqttServ {
-	return &Mqtt{}
+func NewMqttCli() mqtt.MqttCli {
+	return &MqttCli{}
 }
 
-func (m Mqtt) Shutdown() error {
+func (m MqttCli) Publish(topic string, payload []byte) error {
 	return nil
 }
 
-func (m Mqtt) Start() {}
-
-func (m Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) error {
+func (m MqttCli) Subscribe(topic string, handler mqtt.MessageHandler) error {
 	return nil
 }
 
-func (m Mqtt) NewClient(name string) mqtt.MqttCli {
-	return NewMqttCli()
+func (m MqttCli) Unsubscribe(topic string) {
+
 }
 
-func (m Mqtt) RemoveClient(name string) {}
+func (m MqttCli) UnsubscribeAll() {
 
-func (m Mqtt) Admin() mqtt.Admin {
-	return nil
 }
 
-func (m Mqtt) Authenticator() mqtt_authenticator.MqttAuthenticator {
-	return nil
+func (m MqttCli) OnMsgArrived(ctx context.Context, client server.Client, req *server.MsgArrivedRequest) {
+
 }

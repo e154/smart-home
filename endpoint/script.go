@@ -267,7 +267,7 @@ func (n *ScriptEndpoint) ExecuteSource(ctx context.Context, script *m.Script) (r
 }
 
 // Search ...
-func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset int) (devices []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset int64) (devices []*m.Script, total int64, err error) {
 
 	devices, total, err = n.adaptors.Script.Search(query, limit, offset)
 	if err != nil {

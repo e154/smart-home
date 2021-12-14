@@ -154,7 +154,7 @@ func (m *Mqtt) onMsgArrived(ctx context.Context, client server.Client, msg *serv
 
 // OnConnect ...
 func (m *Mqtt) onBasicAuth(ctx context.Context, client server.Client, req *server.ConnectRequest) (err error) {
-	log.Debugf("connect... %v", client.ClientOptions().ClientID)
+	log.Debugf("connect client version %v ...", client.Version())
 
 	username := string(req.Connect.Username)
 	password := string(req.Connect.Password)

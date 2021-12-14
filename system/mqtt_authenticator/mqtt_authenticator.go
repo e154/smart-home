@@ -79,17 +79,24 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 		}
 	}
 
+	defer func() {
+		if err == nil {
+			a.cache.Put(login, pass, 60*time.Second)
+		}
+	}()
+
 	for _, v := range a.handlers {
 		result := v.Call([]reflect.Value{reflect.ValueOf(login), reflect.ValueOf(pass)})
 		if result[0].Interface() != nil {
-			err = result[0].Interface().(error)
+			if err, ok = result[0].Interface().(error); !ok {
+				err = nil
+				return
+			}
 		} else {
-			continue
+			err = nil
+			return
 		}
-		break
 	}
-
-	a.cache.Put(login, pass, 60*time.Second)
 
 	return
 }

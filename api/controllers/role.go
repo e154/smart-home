@@ -114,7 +114,8 @@ func (c ControllerRole) GetRoleList(ctx context.Context, req *api.GetRoleListReq
 // SearchRoleByName ...
 func (c ControllerRole) SearchRoleByName(ctx context.Context, req *api.SearchRoleRequest) (*api.SearchRoleListResult, error) {
 
-	items, _, err := c.endpoint.Role.Search(ctx, req.Query, int(req.Limit), int(req.Offset))
+	search := c.Search(req.Query, req.Limit, req.Offset)
+	items, _, err := c.endpoint.Role.Search(ctx, search.Query, search.Limit, search.Offset)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}

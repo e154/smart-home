@@ -37,7 +37,7 @@ func NewControllerZigbee2mqtt(common *ControllerCommon) ControllerZigbee2mqtt {
 }
 
 // AddZigbee2MqttBridge ...
-func (c ControllerZigbee2mqtt) AddZigbee2MqttBridge(ctx context.Context, req *api.NewtZigbee2MqttRequest) (*api.Zigbee2Mqtt, error) {
+func (c ControllerZigbee2mqtt) AddZigbee2MqttBridge(ctx context.Context, req *api.NewZigbee2MqttRequest) (*api.Zigbee2Mqtt, error) {
 
 	bridge := c.dto.Zigbee2mqtt.AddZigbee2MqttBridgeRequest(req)
 
@@ -50,7 +50,7 @@ func (c ControllerZigbee2mqtt) AddZigbee2MqttBridge(ctx context.Context, req *ap
 }
 
 // GetZigbee2MqttBridge ...
-func (c ControllerZigbee2mqtt) GetZigbee2MqttBridge(ctx context.Context, req *api.GetBridgeRequest) (*api.Zigbee2MqttInfo, error) {
+func (c ControllerZigbee2mqtt) GetZigbee2MqttBridge(ctx context.Context, req *api.GetBridgeRequest) (*api.Zigbee2Mqtt, error) {
 
 	info, err := c.endpoint.Zigbee2mqtt.GetBridgeById(ctx, req.Id)
 	if err != nil {
@@ -87,40 +87,89 @@ func (c ControllerZigbee2mqtt) GetBridgeList(ctx context.Context, req *api.GetBr
 
 // DeleteBridgeById ...
 func (c ControllerZigbee2mqtt) DeleteBridgeById(ctx context.Context, req *api.DeleteBridgeRequest) (*emptypb.Empty, error) {
-	panic("implement me")
+
+	err := c.endpoint.Zigbee2mqtt.Delete(ctx, req.Id)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 // ResetBridgeById ...
 func (c ControllerZigbee2mqtt) ResetBridgeById(ctx context.Context, req *api.ResetBridgeRequest) (*emptypb.Empty, error) {
-	panic("implement me")
+
+	err := c.endpoint.Zigbee2mqtt.ResetBridge(ctx, req.Id)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 // DeviceBan ...
 func (c ControllerZigbee2mqtt) DeviceBan(ctx context.Context, req *api.DeviceBanRequest) (*emptypb.Empty, error) {
-	panic("implement me")
+
+	err := c.endpoint.Zigbee2mqtt.DeviceBan(ctx, req.Id, req.FriendlyName)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 // DeviceWhitelist ...
 func (c ControllerZigbee2mqtt) DeviceWhitelist(ctx context.Context, req *api.DeviceWhitelistRequest) (*emptypb.Empty, error) {
-	panic("implement me")
+
+	err := c.endpoint.Zigbee2mqtt.DeviceWhitelist(ctx, req.Id, req.FriendlyName)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 // DeviceRename ...
 func (c ControllerZigbee2mqtt) DeviceRename(ctx context.Context, req *api.DeviceRenameRequest) (*emptypb.Empty, error) {
-	panic("implement me")
+
+	err := c.endpoint.Zigbee2mqtt.DeviceRename(ctx, req.FriendlyName, req.NewName)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 // SearchDevice ...
 func (c ControllerZigbee2mqtt) SearchDevice(ctx context.Context, req *api.SearchDeviceRequest) (*api.SearchDeviceResult, error) {
-	panic("implement me")
+
+	search := c.Search(req.Query, req.Limit, req.Offset)
+	items, _, err := c.endpoint.Zigbee2mqtt.SearchDevice(ctx, search)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Zigbee2mqtt.SearchDevice(items), nil
 }
 
 // Networkmap ...
 func (c ControllerZigbee2mqtt) Networkmap(ctx context.Context, req *api.NetworkmapRequest) (*api.NetworkmapResponse, error) {
-	panic("implement me")
+
+	networkMap, err := c.endpoint.Zigbee2mqtt.Networkmap(ctx, req.Id)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &api.NetworkmapResponse{Networkmap: networkMap}, nil
 }
 
 // UpdateNetworkmap ...
 func (c ControllerZigbee2mqtt) UpdateNetworkmap(ctx context.Context, req *api.NetworkmapRequest) (*emptypb.Empty, error) {
-	panic("implement me")
+
+	err := c.endpoint.Zigbee2mqtt.UpdateNetworkmap(ctx, req.Id)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
 }
