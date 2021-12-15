@@ -19,8 +19,9 @@
 package zigbee2mqtt
 
 import (
-	"github.com/e154/smart-home/models"
 	"sync"
+
+	"github.com/e154/smart-home/models"
 )
 
 // Device ...

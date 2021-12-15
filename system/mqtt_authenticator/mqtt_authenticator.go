@@ -20,12 +20,13 @@ package mqtt_authenticator
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/adaptors"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/system/cache"
 	"reflect"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/system/cache"
 )
 
 var (

@@ -22,14 +22,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
-	"strings"
-	"sync"
-	"time"
 )
 
 // Bridge ...

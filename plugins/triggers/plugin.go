@@ -20,10 +20,11 @@ package triggers
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
-	"sync"
 )
 
 var (
@@ -168,7 +169,7 @@ func (p *plugin) TriggerList() (list []string) {
 	defer p.mu.Unlock()
 
 	list = make([]string, 0, len(p.triggers))
-	for name, _ := range p.triggers {
+	for name := range p.triggers {
 		list = append(list, name)
 	}
 	return

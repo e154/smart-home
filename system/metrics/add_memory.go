@@ -19,10 +19,11 @@
 package metrics
 
 import (
-	"go.uber.org/atomic"
 	"runtime"
 	"sync"
 	"time"
+
+	"go.uber.org/atomic"
 )
 
 // AppMemory ...

@@ -19,10 +19,11 @@
 package metrics
 
 import (
-	"github.com/e154/smart-home/adaptors"
-	"github.com/gammazero/deque"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/adaptors"
+	"github.com/gammazero/deque"
 )
 
 // History ...

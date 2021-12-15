@@ -22,15 +22,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
-	"sort"
-	"sync"
-	"time"
 )
 
 var (

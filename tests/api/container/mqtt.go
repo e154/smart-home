@@ -24,10 +24,13 @@ import (
 )
 
 type Mqtt struct {
+	authenticator mqtt_authenticator.MqttAuthenticator
 }
 
-func NewMqtt() mqtt.MqttServ {
-	return &Mqtt{}
+func NewMqtt(authenticator mqtt_authenticator.MqttAuthenticator) mqtt.MqttServ {
+	return &Mqtt{
+		authenticator: authenticator,
+	}
 }
 
 func (m Mqtt) Shutdown() error {
@@ -51,5 +54,5 @@ func (m Mqtt) Admin() mqtt.Admin {
 }
 
 func (m Mqtt) Authenticator() mqtt_authenticator.MqttAuthenticator {
-	return nil
+	return m.authenticator
 }

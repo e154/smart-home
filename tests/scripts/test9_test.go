@@ -20,13 +20,14 @@ package scripts
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func Test9(t *testing.T) {
@@ -94,7 +95,6 @@ func Test9(t *testing.T) {
 				err := adaptors.Template.UpdateOrCreate(template)
 				So(err, ShouldBeNil)
 			}
-
 
 			// ------------------------------------------------
 			render, err := adaptors.Template.Render("template2", map[string]interface{}{

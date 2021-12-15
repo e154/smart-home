@@ -19,8 +19,9 @@
 package zigbee2mqtt
 
 import (
-	m "github.com/e154/smart-home/models"
 	"time"
+
+	m "github.com/e154/smart-home/models"
 )
 
 // Zigbee2mqtt ...

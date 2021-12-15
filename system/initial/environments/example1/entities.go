@@ -20,6 +20,8 @@ package example1
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -28,7 +30,6 @@ import (
 	"github.com/e154/smart-home/plugins/sensor"
 	"github.com/e154/smart-home/plugins/telegram"
 	. "github.com/e154/smart-home/system/initial/assertions"
-	"os"
 )
 
 // EntityManager ...

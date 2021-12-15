@@ -19,6 +19,8 @@
 package endpoint
 
 import (
+	"strings"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/email"
@@ -27,7 +29,6 @@ import (
 	"github.com/e154/smart-home/plugins/slack"
 	"github.com/e154/smart-home/plugins/telegram"
 	"github.com/pkg/errors"
-	"strings"
 )
 
 // NotifyEndpoint ...

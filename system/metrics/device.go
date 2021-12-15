@@ -20,8 +20,9 @@ package metrics
 
 import (
 	"fmt"
-	"github.com/rcrowley/go-metrics"
 	"sync"
+
+	"github.com/rcrowley/go-metrics"
 )
 
 // Device ...

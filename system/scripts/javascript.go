@@ -21,11 +21,12 @@ package scripts
 import (
 	"errors"
 	"fmt"
+	"strings"
+	"sync"
+
 	"github.com/dop251/goja"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/scripts/eventloop"
-	"strings"
-	"sync"
 )
 
 var (

@@ -19,12 +19,13 @@
 package _default
 
 import (
+	"strings"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/validation"
-	"strings"
 )
 
 // RoleManager ...

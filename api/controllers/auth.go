@@ -21,6 +21,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"

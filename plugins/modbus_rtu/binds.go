@@ -22,11 +22,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/event_bus"
 	"go.uber.org/atomic"
-	"strings"
-	"time"
 )
 
 type modbusRtu func(f string, address, count uint16, command []uint16) (result ModBusResponse)

@@ -19,10 +19,11 @@
 package metrics
 
 import (
-	"github.com/shirou/gopsutil/mem"
-	"go.uber.org/atomic"
 	"sync"
 	"time"
+
+	"github.com/shirou/gopsutil/mem"
+	"go.uber.org/atomic"
 )
 
 // Memory ...

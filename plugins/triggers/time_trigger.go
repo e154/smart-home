@@ -20,12 +20,13 @@ package triggers
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/cron"
-	"github.com/e154/smart-home/system/event_bus"
-	"github.com/e154/smart-home/system/message_queue"
 	"reflect"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/cron"
+	"github.com/e154/smart-home/system/event_bus"
+	"github.com/e154/smart-home/system/message_queue"
 )
 
 const (

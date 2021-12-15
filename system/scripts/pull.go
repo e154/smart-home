@@ -56,7 +56,7 @@ func (p *Pull) Purge() {
 	p.Lock()
 	defer p.Unlock()
 
-	for k, _ := range p.heap {
+	for k := range p.heap {
 		delete(p.heap, k)
 	}
 }

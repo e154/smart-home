@@ -23,6 +23,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/common"
@@ -34,8 +37,6 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"net/http"
-	"strings"
 )
 
 var (

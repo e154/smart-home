@@ -23,8 +23,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/e154/smart-home/common"
 	"net/url"
+
+	"github.com/e154/smart-home/common"
 )
 
 var (

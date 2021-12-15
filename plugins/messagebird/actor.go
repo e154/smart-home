@@ -21,6 +21,9 @@ package messagebird
 import (
 	"errors"
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -29,8 +32,6 @@ import (
 	messagebird "github.com/messagebird/go-rest-api"
 	"github.com/messagebird/go-rest-api/balance"
 	"github.com/messagebird/go-rest-api/sms"
-	"sync"
-	"time"
 )
 
 // Actor ...

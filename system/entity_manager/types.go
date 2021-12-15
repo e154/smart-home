@@ -19,11 +19,12 @@
 package entity_manager
 
 import (
+	"time"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
-	"time"
 )
 
 // PluginActor ...

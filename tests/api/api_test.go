@@ -21,14 +21,16 @@ package api
 import (
 	"context"
 	"fmt"
-	"github.com/e154/smart-home/system/validation"
 	"os"
 	"runtime"
 	"testing"
 	"time"
 
-	"go.uber.org/dig"
+	"github.com/e154/smart-home/system/validation"
+
 	"path/filepath"
+
+	"go.uber.org/dig"
 
 	. "github.com/e154/smart-home/tests/api/container"
 )

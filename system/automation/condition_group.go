@@ -20,10 +20,11 @@ package automation
 
 import (
 	"context"
-	"github.com/e154/smart-home/common"
-	"go.uber.org/atomic"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common"
+	"go.uber.org/atomic"
 )
 
 // NewConditionGroup ...

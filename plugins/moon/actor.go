@@ -20,15 +20,16 @@ package moon
 
 import (
 	"fmt"
+	"math"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/astronomics/moonphase"
 	"github.com/e154/smart-home/common/astronomics/suncalc"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"math"
-	"sync"
-	"time"
 )
 
 // Actor ...

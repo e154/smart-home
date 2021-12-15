@@ -20,6 +20,7 @@ package access_list
 
 import (
 	"encoding/json"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/debug"

@@ -73,7 +73,7 @@ func (n *Task) Add(ver *m.Task) (err error) {
 
 	//conditions
 	if len(ver.Conditions) > 0 {
-		for i, _ := range ver.Conditions {
+		for i := range ver.Conditions {
 			ver.Conditions[i].TaskId = ver.Id
 		}
 		conditionAction := GetConditionAdaptor(tx)
@@ -84,7 +84,7 @@ func (n *Task) Add(ver *m.Task) (err error) {
 
 	//triggers
 	if len(ver.Triggers) > 0 {
-		for i, _ := range ver.Triggers {
+		for i := range ver.Triggers {
 			ver.Triggers[i].TaskId = ver.Id
 		}
 		triggerAction := GetTriggerAdaptor(tx)
@@ -95,7 +95,7 @@ func (n *Task) Add(ver *m.Task) (err error) {
 
 	//actions
 	if len(ver.Actions) > 0 {
-		for i, _ := range ver.Actions {
+		for i := range ver.Actions {
 			ver.Actions[i].TaskId = ver.Id
 		}
 		actionAction := GetActionAdaptor(tx)

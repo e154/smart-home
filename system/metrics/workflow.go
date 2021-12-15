@@ -19,9 +19,10 @@
 package metrics
 
 import (
+	"sync"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/rcrowley/go-metrics"
-	"sync"
 )
 
 // WorkflowStatus ...

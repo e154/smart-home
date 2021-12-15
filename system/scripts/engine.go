@@ -21,11 +21,12 @@ package scripts
 import (
 	"errors"
 	"fmt"
+	"os"
+	"strconv"
+
 	. "github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/hashicorp/go-multierror"
-	"os"
-	"strconv"
 )
 
 // IScript ...

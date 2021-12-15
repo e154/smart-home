@@ -21,8 +21,9 @@ package admin
 import (
 	"container/list"
 	"errors"
-	"github.com/DrmagicE/gmqtt/server"
 	"time"
+
+	"github.com/DrmagicE/gmqtt/server"
 )
 
 // ErrNotFound represents a not found error.

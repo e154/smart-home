@@ -20,13 +20,14 @@ package scripts
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/storage"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func Test12(t *testing.T) {
@@ -102,7 +103,7 @@ func Test12(t *testing.T) {
 			So(string(storage.Value), ShouldEqual, `{"bar": "foo"}`)
 
 			err = adaptors.Storage.CreateOrUpdate(m.Storage{
-				Name: "foo2",
+				Name:  "foo2",
 				Value: []byte(`{"foo":"bar"}`),
 			})
 			So(err, ShouldBeNil)

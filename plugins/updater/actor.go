@@ -21,16 +21,17 @@ package updater
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"sync"
+	"time"
+
 	"github.com/Masterminds/semver"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/version"
 	"go.uber.org/atomic"
-	"io"
-	"net/http"
-	"sync"
-	"time"
 )
 
 // Actor ...

@@ -21,12 +21,13 @@ package metrics
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/pprof"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/fx"
-	"net/http"
-	"net/http/pprof"
 )
 
 var (

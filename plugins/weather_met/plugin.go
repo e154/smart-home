@@ -19,11 +19,12 @@
 package weather_met
 
 import (
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/plugins"
-	"time"
 )
 
 const (

@@ -20,11 +20,12 @@ package logging
 
 import (
 	"context"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
-	"time"
 )
 
 // LogDbSaver ...

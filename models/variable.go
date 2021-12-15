@@ -20,8 +20,9 @@ package models
 
 import (
 	"encoding/json"
-	"github.com/e154/smart-home/common"
 	"time"
+
+	"github.com/e154/smart-home/common"
 )
 
 // Variable ...

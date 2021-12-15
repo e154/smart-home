@@ -20,12 +20,13 @@ package migrations
 
 import (
 	"fmt"
+	"path"
+
 	"github.com/e154/smart-home/common"
 	. "github.com/e154/smart-home/system/migrations/assets"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
-	"github.com/rubenv/sql-migrate"
-	"path"
+	migrate "github.com/rubenv/sql-migrate"
 )
 
 var (

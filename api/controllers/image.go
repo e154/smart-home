@@ -20,9 +20,10 @@ package controllers
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"net/http"
 )
 
 // ControllerImage ...

@@ -20,10 +20,11 @@ package models
 
 import (
 	"encoding/json"
+	"time"
+
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/null"
 	"github.com/go-playground/validator/v10"
-	"time"
 )
 
 // MapElementGraphSettingsPosition ...

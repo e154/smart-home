@@ -19,11 +19,12 @@
 package alexa
 
 import (
+	"sync"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/plugins"
-	"sync"
 )
 
 var (

@@ -267,6 +267,7 @@ __docker_deploy() {
 __test() {
     cd ${ROOT}
 
+    go test -v ./tests/api
     go test -v ./tests/models
     go test -v ./tests/plugins
     go test -v ./tests/scripts

@@ -20,11 +20,12 @@ package slack
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/nlopes/slack"
-	"strings"
 )
 
 // Provider ...

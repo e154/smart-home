@@ -19,13 +19,14 @@
 package adaptor
 
 import (
-	"github.com/e154/smart-home/cmd/cli/commands/generate"
-	"github.com/e154/smart-home/common"
-	"github.com/spf13/cobra"
 	"os"
 	"path"
 	"strings"
 	"text/template"
+
+	"github.com/e154/smart-home/cmd/cli/commands/generate"
+	"github.com/e154/smart-home/common"
+	"github.com/spf13/cobra"
 )
 
 var (

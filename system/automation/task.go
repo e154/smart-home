@@ -193,7 +193,7 @@ func (t *Task) Stop() {
 	}
 	t.enabled.Store(false)
 	log.Infof("task %d stopped", t.Id())
-	for trigger, _ := range t.triggers {
+	for trigger := range t.triggers {
 		trigger.Stop()
 	}
 	t.triggers = make(map[*Trigger]struct{})

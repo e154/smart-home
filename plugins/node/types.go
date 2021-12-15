@@ -20,10 +20,11 @@ package node
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
-	"time"
 )
 
 const (

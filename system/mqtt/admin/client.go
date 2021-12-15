@@ -19,8 +19,9 @@
 package admin
 
 import (
-	"github.com/DrmagicE/gmqtt/server"
 	"time"
+
+	"github.com/DrmagicE/gmqtt/server"
 )
 
 // ClientInfo represents the client information

@@ -20,13 +20,14 @@ package scripts
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func Test4(t *testing.T) {
@@ -44,12 +45,12 @@ func Test4(t *testing.T) {
 			storeRegisterCallback(scriptService)
 
 			script1 := &m.Script{
-				Lang:   common.ScriptLangCoffee,
+				Lang: common.ScriptLangCoffee,
 			}
 			engine, err := scriptService.NewEngine(script1)
 			So(err, ShouldBeNil)
 
-			for i:=0;i<2;i++ {
+			for i := 0; i < 2; i++ {
 				engine.PushStruct("test", &MyStruct{
 					Int:     42,
 					Float64: 21.0,

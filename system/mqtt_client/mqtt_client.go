@@ -20,12 +20,13 @@ package mqtt_client
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common"
-	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/pkg/errors"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -152,7 +153,7 @@ func (c *Client) UnsubscribeAll() {
 	c.Lock()
 	defer c.Unlock()
 
-	for topic, _ := range c.subscribes {
+	for topic := range c.subscribes {
 		if token := c.client.Unsubscribe(topic); token.Error() != nil {
 			log.Error(token.Error().Error())
 		}
@@ -186,7 +187,7 @@ func (c *Client) onConnectionLostHandler(client MQTT.Client, e error) {
 
 	log.Debug("connection lost...")
 
-	for topic, _ := range c.subscribes {
+	for topic := range c.subscribes {
 		if token := c.client.Unsubscribe(topic); token.Error() != nil {
 			log.Error(token.Error().Error())
 		}
