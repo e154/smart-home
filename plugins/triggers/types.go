@@ -19,9 +19,10 @@
 package triggers
 
 import (
+	"sync"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"sync"
 )
 
 const (

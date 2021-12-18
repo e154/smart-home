@@ -19,14 +19,18 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"runtime"
 	"testing"
 	"time"
 
-	"go.uber.org/dig"
+	"github.com/e154/smart-home/system/validation"
+
 	"path/filepath"
+
+	"go.uber.org/dig"
 
 	. "github.com/e154/smart-home/tests/api/container"
 )
@@ -48,11 +52,11 @@ func TestMain(m *testing.M) {
 
 	container = BuildContainer()
 	err := container.Invoke(func(
+		validation *validation.Validate,
 		//logging *logging.Logging,
 	) {
-
+		validation.Start(context.Background())
 		time.Sleep(time.Millisecond * 500)
-
 		os.Exit(m.Run())
 	})
 

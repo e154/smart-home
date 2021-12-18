@@ -21,13 +21,14 @@ package endpoint
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"strings"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"strconv"
-	"strings"
 )
 
 // ScriptEndpoint ...
@@ -267,7 +268,7 @@ func (n *ScriptEndpoint) ExecuteSource(ctx context.Context, script *m.Script) (r
 }
 
 // Search ...
-func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset int) (devices []*m.Script, total int64, err error) {
+func (n *ScriptEndpoint) Search(ctx context.Context, query string, limit, offset int64) (devices []*m.Script, total int64, err error) {
 
 	devices, total, err = n.adaptors.Script.Search(query, limit, offset)
 	if err != nil {

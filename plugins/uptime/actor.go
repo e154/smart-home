@@ -20,13 +20,14 @@ package uptime
 
 import (
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/shirou/gopsutil/host"
 	"go.uber.org/atomic"
-	"sync"
-	"time"
 )
 
 // Actor ...

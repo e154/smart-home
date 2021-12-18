@@ -31,11 +31,11 @@ import (
 // Template ...
 type Template struct {
 	Validity
-	Name         string         `json:"name" valid:"Required;MaxSize(64)" `
+	Name         string         `json:"name" validate:"required,max=64" `
 	Description  string         `json:"description"`
 	Content      string         `json:"content"`
-	Status       TemplateStatus `json:"status" valid:"Required;MaxSize(64)"`
-	Type         TemplateType   `json:"type" valid:"Required;MaxSize(64)"`
+	Status       TemplateStatus `json:"status" validate:"required,max=64"`
+	Type         TemplateType   `json:"type" validate:"required,max=64"`
 	ParentsCount int            `json:"parents_count"`
 	ParentName   *string        `json:"parent"`
 	Markers      []string       `json:"markers"`

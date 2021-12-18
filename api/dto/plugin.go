@@ -33,7 +33,7 @@ func NewPluginDto() Plugin {
 }
 
 // ToPluginListResult ...
-func (p Plugin) ToPluginListResult(items []*m.Plugin, total, limit, offset uint32) (result *api.GetPluginListResult) {
+func (p Plugin) ToPluginListResult(items []*m.Plugin, total, limit, offset uint64) (result *api.GetPluginListResult) {
 
 	result = &api.GetPluginListResult{
 		Items: make([]*api.Plugin, 0, len(items)),
@@ -57,6 +57,7 @@ func (p Plugin) ToPluginListResult(items []*m.Plugin, total, limit, offset uint3
 	return
 }
 
+// Options ...
 func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsResult) {
 
 	var actions = make(map[string]*api.EntityActionShort)

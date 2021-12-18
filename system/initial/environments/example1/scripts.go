@@ -20,12 +20,13 @@ package example1
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
 	"github.com/e154/smart-home/system/scripts"
-	"os"
 )
 
 // ScriptManager ...

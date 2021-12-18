@@ -19,13 +19,14 @@
 package models
 
 import (
+	"strings"
 	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/e154/smart-home/system/migrations"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"strings"
+	"github.com/e154/smart-home/system/migrations"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestRole(t *testing.T) {

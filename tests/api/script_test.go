@@ -20,8 +20,9 @@ package api
 
 import (
 	"fmt"
-	container2 "github.com/e154/smart-home/tests/api/container"
 	"testing"
+
+	container2 "github.com/e154/smart-home/tests/api/container"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"

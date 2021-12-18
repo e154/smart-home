@@ -21,12 +21,13 @@ package endpoint
 import (
 	"bufio"
 	"context"
+	"mime/multipart"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
-	"mime/multipart"
 )
 
 // ImageEndpoint ...

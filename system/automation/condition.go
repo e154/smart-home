@@ -20,6 +20,7 @@ package automation
 
 import (
 	"context"
+
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/scripts"

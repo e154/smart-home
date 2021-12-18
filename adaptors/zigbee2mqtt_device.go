@@ -31,7 +31,7 @@ type IZigbee2mqttDevice interface {
 	Update(ver *m.Zigbee2mqttDevice) (err error)
 	Delete(id string) (err error)
 	List(limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error)
-	Search(query string, limit, offset int) (list []*m.Zigbee2mqttDevice, total int64, err error)
+	Search(query string, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error)
 	fromDb(dbVer *db.Zigbee2mqttDevice) (ver *m.Zigbee2mqttDevice)
 	toDb(ver *m.Zigbee2mqttDevice) (dbVer *db.Zigbee2mqttDevice)
 }
@@ -102,7 +102,7 @@ func (n *Zigbee2mqttDevice) List(limit, offset int64) (list []*m.Zigbee2mqttDevi
 }
 
 // Search ...
-func (n *Zigbee2mqttDevice) Search(query string, limit, offset int) (list []*m.Zigbee2mqttDevice, total int64, err error) {
+func (n *Zigbee2mqttDevice) Search(query string, limit, offset int64) (list []*m.Zigbee2mqttDevice, total int64, err error) {
 	var dbList []*db.Zigbee2mqttDevice
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
 		return
@@ -128,6 +128,7 @@ func (n *Zigbee2mqttDevice) fromDb(dbVer *db.Zigbee2mqttDevice) (ver *m.Zigbee2m
 		Manufacturer:  dbVer.Manufacturer,
 		Functions:     dbVer.Functions,
 		Status:        dbVer.Status,
+		Payload:       dbVer.Payload,
 		CreatedAt:     dbVer.CreatedAt,
 		UpdatedAt:     dbVer.UpdatedAt,
 	}
@@ -146,6 +147,7 @@ func (n *Zigbee2mqttDevice) toDb(ver *m.Zigbee2mqttDevice) (dbVer *db.Zigbee2mqt
 		Manufacturer:  ver.Manufacturer,
 		Functions:     ver.Functions,
 		Status:        ver.Status,
+		Payload:       ver.Payload,
 		CreatedAt:     ver.CreatedAt,
 		UpdatedAt:     ver.UpdatedAt,
 	}

@@ -22,17 +22,18 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/db"
-	m "github.com/e154/smart-home/models"
-	"github.com/jinzhu/gorm"
-	"github.com/t-tiger/gorm-bulk-insert"
 	"io"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/db"
+	m "github.com/e154/smart-home/models"
+	"github.com/jinzhu/gorm"
+	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 
 // IImage ...

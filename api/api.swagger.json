@@ -31,6 +31,9 @@
     },
     {
       "name": "UserService"
+    },
+    {
+      "name": "Zigbee2mqttService"
     }
   ],
   "schemes": [
@@ -211,8 +214,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -246,8 +249,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -281,8 +284,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           },
           {
             "name": "body",
@@ -304,8 +307,8 @@
                   "type": "string"
                 },
                 "size": {
-                  "type": "integer",
-                  "format": "int32"
+                  "type": "string",
+                  "format": "int64"
                 },
                 "name": {
                   "type": "string"
@@ -347,15 +350,15 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "order",
@@ -511,15 +514,15 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "order",
@@ -799,15 +802,15 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "order",
@@ -861,15 +864,15 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -981,8 +984,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -1016,8 +1019,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -1051,8 +1054,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           },
           {
             "name": "body",
@@ -1110,8 +1113,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -1147,8 +1150,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -1184,15 +1187,15 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "order",
@@ -1246,15 +1249,15 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -1385,8 +1388,8 @@
             "description": "user id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -1421,8 +1424,8 @@
             "description": "user id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -1456,8 +1459,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "format": "int64"
           },
           {
             "name": "body",
@@ -1539,15 +1542,15 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uint64"
           },
           {
             "name": "order",
@@ -1564,6 +1567,505 @@
         ],
         "tags": [
           "UserService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/bridge": {
+      "get": {
+        "summary": "get bridge list",
+        "operationId": "Zigbee2mqttService_GetBridgeList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetBridgeListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "add new bridge",
+        "operationId": "Zigbee2mqttService_AddZigbee2mqttBridge",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiZigbee2mqtt"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewZigbee2mqttRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/bridge/{id}": {
+      "get": {
+        "summary": "get bridge",
+        "operationId": "Zigbee2mqttService_GetZigbee2mqttBridge",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiZigbee2mqtt"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete bridge by id",
+        "operationId": "Zigbee2mqttService_DeleteBridgeById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/bridge/{id}/bridge": {
+      "put": {
+        "summary": "update bridge by id",
+        "operationId": "Zigbee2mqttService_UpdateBridgeById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiZigbee2mqtt"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "login": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "permitJoin": {
+                  "type": "boolean"
+                },
+                "baseTopic": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/bridge/{id}/networkmap": {
+      "get": {
+        "summary": "networkmap",
+        "operationId": "Zigbee2mqttService_Networkmap",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiNetworkmapResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "update networkmap",
+        "operationId": "Zigbee2mqttService_UpdateNetworkmap",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/bridge/{id}/reset": {
+      "post": {
+        "summary": "reset bridge by id",
+        "operationId": "Zigbee2mqttService_ResetBridgeById",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/device_ban": {
+      "post": {
+        "summary": "device ban",
+        "operationId": "Zigbee2mqttService_DeviceBan",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDeviceBanRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/device_rename": {
+      "post": {
+        "summary": "device rename",
+        "operationId": "Zigbee2mqttService_DeviceRename",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDeviceRenameRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/device_whitelist": {
+      "post": {
+        "summary": "device whitelist",
+        "operationId": "Zigbee2mqttService_DeviceWhitelist",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDeviceWhitelistRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/zigbee2mqtt/search_device": {
+      "get": {
+        "summary": "search device",
+        "operationId": "Zigbee2mqttService_SearchDevice",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiSearchDeviceResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
         ],
         "security": [
           {
@@ -1665,8 +2167,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "nickname": {
           "type": "string"
@@ -1693,8 +2195,8 @@
           "$ref": "#/definitions/apiImage"
         },
         "signInCount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "meta": {
           "type": "array",
@@ -1723,6 +2225,41 @@
         "lastSignInAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "apiDeviceBanRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "friendlyName": {
+          "type": "string"
+        }
+      }
+    },
+    "apiDeviceRenameRequest": {
+      "type": "object",
+      "properties": {
+        "friendlyName": {
+          "type": "string"
+        },
+        "newName": {
+          "type": "string"
+        }
+      }
+    },
+    "apiDeviceWhitelistRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "friendlyName": {
+          "type": "string"
         }
       }
     },
@@ -1791,6 +2328,37 @@
         }
       }
     },
+    "apiGetBridgeListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiZigbee2mqttShort"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiGetBridgeListResultMeta"
+        }
+      }
+    },
+    "apiGetBridgeListResultMeta": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "objectsCount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "offset": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
     "apiGetImageListResult": {
       "type": "object",
       "properties": {
@@ -1809,16 +2377,16 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "objectsCount": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "offset": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         }
       }
     },
@@ -1840,16 +2408,16 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "objectsCount": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "offset": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         }
       }
     },
@@ -1921,16 +2489,16 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "objectsCount": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "offset": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         }
       }
     },
@@ -1952,16 +2520,16 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "objectsCount": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "offset": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         }
       }
     },
@@ -1983,16 +2551,16 @@
       "type": "object",
       "properties": {
         "limit": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "objectsCount": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         },
         "offset": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string",
+          "format": "uint64"
         }
       }
     },
@@ -2022,8 +2590,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "thumb": {
           "type": "string"
@@ -2041,8 +2609,8 @@
           "type": "string"
         },
         "size": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "name": {
           "type": "string"
@@ -2050,6 +2618,14 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "apiNetworkmapResponse": {
+      "type": "object",
+      "properties": {
+        "networkmap": {
+          "type": "string"
         }
       }
     },
@@ -2069,8 +2645,8 @@
           "type": "string"
         },
         "size": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "name": {
           "type": "string"
@@ -2104,6 +2680,26 @@
           "type": "string"
         },
         "description": {
+          "type": "string"
+        }
+      }
+    },
+    "apiNewZigbee2mqttRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "login": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "permitJoin": {
+          "type": "boolean"
+        },
+        "baseTopic": {
           "type": "string"
         }
       }
@@ -2153,8 +2749,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -2246,8 +2842,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "lang": {
           "type": "string"
@@ -2268,6 +2864,17 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "apiSearchDeviceResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiZigbee2mqttDevice"
+          }
         }
       }
     },
@@ -2339,8 +2946,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -2364,8 +2971,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "nickname": {
           "type": "string"
@@ -2392,8 +2999,8 @@
           "$ref": "#/definitions/apiImage"
         },
         "signInCount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "meta": {
           "type": "array",
@@ -2452,8 +3059,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "nickname": {
           "type": "string"
@@ -2487,8 +3094,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "nickname": {
           "type": "string"
@@ -2534,11 +3141,129 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "nickname": {
           "type": "string"
+        }
+      }
+    },
+    "apiZigbee2mqtt": {
+      "type": "object",
+      "properties": {
+        "scanInProcess": {
+          "type": "boolean"
+        },
+        "lastScan": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "networkmap": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "login": {
+          "type": "string"
+        },
+        "permitJoin": {
+          "type": "boolean"
+        },
+        "baseTopic": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiZigbee2mqttDevice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "zigbee2mqttId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "manufacturer": {
+          "type": "string"
+        },
+        "functions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiZigbee2mqttShort": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "login": {
+          "type": "string"
+        },
+        "permitJoin": {
+          "type": "boolean"
+        },
+        "baseTopic": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

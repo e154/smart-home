@@ -20,10 +20,11 @@ package models
 
 import (
 	"encoding/json"
+	"testing"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func TestAttributes(t *testing.T) {

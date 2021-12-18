@@ -21,6 +21,7 @@ package location
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/e154/smart-home/common/web"
 	m "github.com/e154/smart-home/models"
 )

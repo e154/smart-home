@@ -20,6 +20,7 @@ package plugins
 
 import (
 	"errors"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"

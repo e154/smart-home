@@ -21,6 +21,9 @@ package plugins
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -33,8 +36,6 @@ import (
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
-	"time"
 )
 
 func TestModbusRtu(t *testing.T) {
@@ -390,7 +391,6 @@ entityAction = (entityId, actionName)->
 				ctx.So(cmd.Address, ShouldEqual, 0)
 				ctx.So(cmd.Count, ShouldEqual, 16)
 				ctx.So(cmd.Command, ShouldResemble, []uint16{})
-
 
 				// response from node
 				r := modbus_rtu.ModBusResponse{

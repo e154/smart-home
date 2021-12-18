@@ -20,22 +20,24 @@ package dto
 
 // Dto ...
 type Dto struct {
-	Role   Role
-	User   User
-	Image  Image
-	Script Script
-	Plugin Plugin
-	Entity Entity
+	Role        Role
+	User        User
+	Image       Image
+	Script      Script
+	Plugin      Plugin
+	Entity      Entity
+	Zigbee2mqtt Zigbee2mqtt
 }
 
 // NewDto ...
 func NewDto() Dto {
 	return Dto{
-		Role:   NewRoleDto(),
-		User:   NewUserDto(),
-		Image:  NewImageDto(),
-		Script: NewScriptDto(),
-		Plugin: NewPluginDto(),
-		Entity: NewEntityDto(),
+		Role:        NewRoleDto(),
+		User:        NewUserDto(),
+		Image:       NewImageDto(),
+		Script:      NewScriptDto(),
+		Plugin:      NewPluginDto(),
+		Entity:      NewEntityDto(),
+		Zigbee2mqtt: NewZigbee2mqttDto(),
 	}
 }

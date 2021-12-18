@@ -21,11 +21,12 @@ package scripts
 import (
 	"fmt"
 	"testing"
-	. "github.com/smartystreets/goconvey/convey"
-	"github.com/e154/smart-home/system/migrations"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func Test1(t *testing.T) {

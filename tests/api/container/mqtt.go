@@ -19,23 +19,49 @@
 package container
 
 import (
-	"github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/mqtt"
+	"github.com/e154/smart-home/system/mqtt_authenticator"
 )
 
-// NewMqttConfig ...
-func NewMqttConfig(cfg *models.AppConfig) *mqtt.Config {
-	return &mqtt.Config{
-		Port:                       cfg.MqttPort,
-		RetryInterval:              cfg.MqttRetryInterval,
-		RetryCheckInterval:         cfg.MqttRetryCheckInterval,
-		SessionExpiryInterval:      cfg.MqttSessionExpiryInterval,
-		SessionExpireCheckInterval: cfg.MqttSessionExpireCheckInterval,
-		QueueQos0Messages:          cfg.MqttQueueQos0Messages,
-		MaxInflight:                cfg.MqttMaxInflight,
-		MaxAwaitRel:                cfg.MqttMaxAwaitRel,
-		MaxMsgQueue:                cfg.MqttMaxMsgQueue,
-		Logging:                    cfg.Logging,
-		DebugMode:                  cfg.Mode,
+// Mqtt ...
+type Mqtt struct {
+	authenticator mqtt_authenticator.MqttAuthenticator
+}
+
+// NewMqtt ...
+func NewMqtt(authenticator mqtt_authenticator.MqttAuthenticator) mqtt.MqttServ {
+	return &Mqtt{
+		authenticator: authenticator,
 	}
+}
+
+// Shutdown ...
+func (m Mqtt) Shutdown() error {
+	return nil
+}
+
+// Start ...
+func (m Mqtt) Start() {}
+
+// Publish ...
+func (m Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) error {
+	return nil
+}
+
+// NewClient ...
+func (m Mqtt) NewClient(name string) mqtt.MqttCli {
+	return NewMqttCli()
+}
+
+// RemoveClient ...
+func (m Mqtt) RemoveClient(name string) {}
+
+// Admin ...
+func (m Mqtt) Admin() mqtt.Admin {
+	return nil
+}
+
+// Authenticator ...
+func (m Mqtt) Authenticator() mqtt_authenticator.MqttAuthenticator {
+	return m.authenticator
 }

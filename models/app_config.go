@@ -19,8 +19,9 @@
 package models
 
 import (
-	"github.com/e154/smart-home/common"
 	"time"
+
+	"github.com/e154/smart-home/common"
 )
 
 // AppConfig ...
@@ -62,4 +63,5 @@ type AppConfig struct {
 	ApiWsHostPort                  string         `json:"api_ws_host_port" env:"API_WS_HOST_PORT"`
 	ApiSwagger                     bool           `json:"api_swagger" env:"API_SWAGGER"`
 	Lang                           string         `json:"lang" env:"LANG"`
+	GodMode                        bool           `json:"god_mode" env:"GOD_MODE"`
 }

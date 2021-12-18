@@ -21,11 +21,12 @@ package common
 import (
 	"context"
 	"fmt"
-	"go.uber.org/fx"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"go.uber.org/fx"
 )
 
 // Start ...

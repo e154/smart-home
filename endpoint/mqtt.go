@@ -23,7 +23,6 @@ import (
 	"github.com/e154/smart-home/system/mqtt/admin"
 )
 
-
 // MqttEndpoint ...
 type MqttEndpoint struct {
 	*CommonEndpoint

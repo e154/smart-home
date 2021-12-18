@@ -20,11 +20,12 @@ package stream
 
 import (
 	"errors"
+	"net/http"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"net/http"
-	"time"
 )
 
 var (

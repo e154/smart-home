@@ -15,12 +15,12 @@ before_install:
   - psql -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
   - psql -c "ALTER ROLE smart_home SUPERUSER;" -U postgres
   - psql -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
-  - go get github.com/mattn/goveralls
-  - go get golang.org/x/tools/cmd/cover
+  - go install github.com/mattn/goveralls@latest
+  - go install golang.org/x/tools/cmd/cover@latest
   - go env && pwd
 
 install:
-  - go get github.com/lib/pq
+  - go get -d github.com/lib/pq
   - wget https://github.com/gohugoio/hugo/releases/download/v0.89.4/hugo_extended_0.89.4_Linux-64bit.deb
   - sudo dpkg -i hugo*.deb
   - . $HOME/.nvm/nvm.sh
@@ -28,15 +28,14 @@ install:
   - nvm use stable
 
 script:
-  - "./bin/travis.sh --init"
-  - "./bin/travis.sh --test"
-  - "./bin/travis.sh --docs-deploy"
-  - "./bin/travis.sh --build"
+  - "make get_deps"
+  - "make test"
+  - "make all"
 
 deploy:
   - provider: script
     skip_cleanup: true
-    script: bash ./bin/travis.sh --docker_deploy
+    script: bash make deploy
     on:
       tags: true
       branch: master

@@ -19,13 +19,14 @@
 package storage
 
 import (
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"go.uber.org/atomic"
-	"strings"
-	"sync"
-	"time"
 )
 
 var (

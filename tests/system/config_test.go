@@ -19,10 +19,11 @@
 package system
 
 import (
-	"github.com/e154/smart-home/system/config"
-	. "github.com/smartystreets/goconvey/convey"
 	"os"
 	"testing"
+
+	"github.com/e154/smart-home/system/config"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestConfig(t *testing.T) {

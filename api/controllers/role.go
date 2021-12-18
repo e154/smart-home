@@ -20,6 +20,7 @@ package controllers
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -108,13 +109,14 @@ func (c ControllerRole) GetRoleList(ctx context.Context, req *api.GetRoleListReq
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Role.ToListResult(items, uint32(total), req.Limit, req.Offset), nil
+	return c.dto.Role.ToListResult(items, uint64(total), req.Limit, req.Offset), nil
 }
 
 // SearchRoleByName ...
 func (c ControllerRole) SearchRoleByName(ctx context.Context, req *api.SearchRoleRequest) (*api.SearchRoleListResult, error) {
 
-	items, _, err := c.endpoint.Role.Search(ctx, req.Query, int(req.Limit), int(req.Offset))
+	search := c.Search(req.Query, req.Limit, req.Offset)
+	items, _, err := c.endpoint.Role.Search(ctx, search.Query, search.Limit, search.Offset)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}

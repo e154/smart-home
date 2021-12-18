@@ -17,3 +17,23 @@ message EntityStateShort {
   string icon = 4;
 }
 
+
+message Entity {
+  int64 id = 1;
+  string type = 2;
+  string description = 3;
+  int64 area_id = 4;
+  string icon = 5;
+  int64 image_id = 6;
+}
+
+message NewEntityRequest {
+  string type = 1;
+  string description = 2;
+  int64 area_id = 3;
+}
+
+service EntityService {
+
+
+}

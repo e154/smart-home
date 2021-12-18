@@ -20,13 +20,14 @@ package models
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/endpoint"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/migrations"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func TestTemplate(t *testing.T) {

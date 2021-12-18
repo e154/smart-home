@@ -20,9 +20,10 @@ package db
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // Messages ...

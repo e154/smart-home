@@ -19,11 +19,12 @@
 package metrics
 
 import (
+	"sync"
+	"time"
+
 	"github.com/rcrowley/go-metrics"
 	"github.com/shirou/gopsutil/cpu"
 	"go.uber.org/atomic"
-	"sync"
-	"time"
 )
 
 // Cpu ...

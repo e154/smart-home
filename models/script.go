@@ -19,15 +19,16 @@
 package models
 
 import (
-	. "github.com/e154/smart-home/common"
 	"time"
+
+	. "github.com/e154/smart-home/common"
 )
 
 // Script ...
 type Script struct {
 	Id          int64      `json:"id"`
 	Lang        ScriptLang `json:"lang" validate:"required"`
-	Name        string     `json:"name" valid:"MaxSize(254);Required"`
+	Name        string     `json:"name" validate:"max=254,required"`
 	Source      string     `json:"source"`
 	Description string     `json:"description"`
 	Compiled    string     `json:"-"`

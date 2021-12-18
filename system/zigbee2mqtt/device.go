@@ -19,8 +19,9 @@
 package zigbee2mqtt
 
 import (
-	"github.com/e154/smart-home/models"
 	"sync"
+
+	"github.com/e154/smart-home/models"
 )
 
 // Device ...
@@ -28,6 +29,7 @@ type Device struct {
 	friendlyName string
 	modelLock    *sync.Mutex
 	model        models.Zigbee2mqttDevice
+	payload      DeviceInfo
 }
 
 // NewDevice ...

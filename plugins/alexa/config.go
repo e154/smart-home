@@ -20,6 +20,7 @@ package alexa
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/models"
 )
 

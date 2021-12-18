@@ -20,11 +20,12 @@ package messagebird
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/notify"
 	"github.com/e154/smart-home/system/plugins"
-	"strings"
 )
 
 var (

@@ -20,6 +20,8 @@ package zigbee2mqtt
 
 import (
 	"context"
+	"sync"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -28,7 +30,6 @@ import (
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
-	"sync"
 )
 
 var (
@@ -159,7 +160,7 @@ func (z *zigbee2mqtt) GetBridgeById(id int64) (*m.Zigbee2mqtt, error) {
 }
 
 // GetBridgeInfo ...
-func (z *zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error) {
+func (z *zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttBridge, error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
@@ -170,14 +171,14 @@ func (z *zigbee2mqtt) GetBridgeInfo(id int64) (*Zigbee2mqttInfo, error) {
 }
 
 // ListBridges ...
-func (z *zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (models []*Zigbee2mqttInfo, total int64, err error) {
+func (z *zigbee2mqtt) ListBridges(limit, offset int64, order, sortBy string) (bridge []*Zigbee2mqttBridge, total int64, err error) {
 	z.bridgesLock.Lock()
 	defer z.bridgesLock.Unlock()
 
 	total = int64(len(z.bridges))
 
 	for _, br := range z.bridges {
-		models = append(models, br.Info())
+		bridge = append(bridge, br.Info())
 	}
 
 	return
@@ -333,6 +334,7 @@ func (z *zigbee2mqtt) Authenticator(login, password string) (err error) {
 		}
 
 		if ok := common.CheckPasswordHash(password, bridge.model.EncryptedPassword); ok {
+			err = nil
 			return
 		}
 	}

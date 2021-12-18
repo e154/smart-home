@@ -22,18 +22,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
-	"strings"
-	"sync"
-	"time"
-)
-
-const (
-	homeassistantTopic = "homeassistant"
 )
 
 // Bridge ...
@@ -52,7 +49,7 @@ type Bridge struct {
 	model          *m.Zigbee2mqtt
 	networkmapLock sync.Mutex
 	scanInProcess  bool
-	lastScan       time.Time
+	lastScan       *time.Time
 	networkmap     string
 }
 
@@ -91,9 +88,6 @@ func (g *Bridge) Start() {
 	// /zigbee2mqtt/bridge/#
 	g.mqttClient.Subscribe(fmt.Sprintf("%s/bridge/#", g.model.BaseTopic), g.onBridgePublish)
 
-	// /homeassistant/#
-	g.mqttClient.Subscribe(fmt.Sprintf("%s/#", homeassistantTopic), g.onAssistPublish)
-
 	if err := g.safeGetDeviceList(); err != nil {
 		log.Error(err.Error())
 
@@ -124,36 +118,12 @@ func (g *Bridge) onBridgePublish(client mqtt.MqttCli, message mqtt.Message) {
 		g.onConfigPublish(client, message)
 	case "networkmap":
 		g.onNetworkmapPublish(client, message)
+	case "devices":
+		g.onDevices(client, message)
+	case "event":
+		g.onEvent(client, message)
 	default:
 		log.Warnf("unknown topic %v", topic)
-	}
-}
-
-func (g *Bridge) onAssistPublish(client mqtt.MqttCli, message mqtt.Message) {
-
-	var topic = strings.Split(message.Topic, "/")
-
-	// hemeassistant/sensor/0x00158d00031c8ef3/click/config
-	// hemeassistant/sensor/0x00158d00031c8ef3/battery/config
-	// hemeassistant/sensor/0x00158d00031c8ef3/linkquality/config
-
-	deviceType := topic[1]
-	friendlyName := topic[2]
-	function := topic[3]
-	deviceInfo := AssistDevice{}
-	_ = json.Unmarshal(message.Payload, &deviceInfo)
-
-	device, err := g.safeGetDevice(friendlyName)
-	if err != nil {
-		return
-	}
-
-	device.AddFunc(function)
-	device.DeviceType(deviceType)
-	device.SetStatus(active)
-
-	if err = g.safeUpdateDevice(device); err != nil {
-		log.Error(err.Error())
 	}
 }
 
@@ -177,7 +147,7 @@ func (g *Bridge) onNetworkmapPublish(client mqtt.MqttCli, message mqtt.Message) 
 	case "graphviz":
 		g.networkmapLock.Lock()
 		g.scanInProcess = false
-		g.lastScan = time.Now()
+		g.lastScan = common.Time(time.Now())
 		g.networkmap = string(message.Payload)
 		g.networkmapLock.Unlock()
 	}
@@ -275,16 +245,23 @@ func (g *Bridge) safeGetDeviceList() (err error) {
 func (g *Bridge) onLogPublish(client mqtt.MqttCli, message mqtt.Message) {
 	var lm BridgeLog
 	_ = json.Unmarshal(message.Payload, &lm)
-	log.Infof("%v, %v, %v", lm.Type, lm.Message, lm.Meta)
-	switch lm.Type {
-	case "device_removed":
-		g.deviceRemoved(lm.Message)
-	case "device_force_removed":
-		g.deviceForceRemoved(lm.Message)
-	case "pairing":
-		params := BridgePairingMeta{}
-		_ = common.Copy(&params, lm.Meta, common.JsonEngine)
-		g.devicePairing(params)
+	log.Infof("%s, %v, %s", lm.Message, lm.Meta, lm.Type)
+}
+
+func (g *Bridge) onEvent(client mqtt.MqttCli, message mqtt.Message) {
+	event := Event{}
+	_ = json.Unmarshal(message.Payload, &event)
+	switch event.Type {
+	case EventDeviceAnnounce:
+	case EventDeviceLeave:
+		g.deviceLeave(event.Data.FriendlyName)
+	case EventDeviceJoined:
+		g.deviceJoined(event.Data.FriendlyName)
+	case EventDeviceInterview:
+		g.deviceInterview(event)
+	default:
+		log.Warnf("unknown event type \"%s\"", event.Type)
+
 	}
 }
 
@@ -399,7 +376,7 @@ func (g *Bridge) GetDeviceTopic(friendlyName string) string {
 	return g.topic("/" + friendlyName)
 }
 
-func (g *Bridge) deviceRemoved(friendlyName string) {
+func (g *Bridge) deviceLeave(friendlyName string) {
 	device, err := g.safeGetDevice(friendlyName)
 	if err != nil {
 		return
@@ -407,6 +384,43 @@ func (g *Bridge) deviceRemoved(friendlyName string) {
 	device.SetStatus(removed)
 	if err = g.safeUpdateDevice(device); err != nil {
 		log.Error(err.Error())
+	}
+}
+
+func (g *Bridge) deviceJoined(friendlyName string) {
+	device, err := g.safeGetDevice(friendlyName)
+	if err != nil {
+		return
+	}
+	device.SetStatus(active)
+	if err = g.safeUpdateDevice(device); err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (g *Bridge) deviceInterview(event Event) {
+
+	log.Infof("device interview %s, status: %s", event.Data.FriendlyName, event.Data.Status)
+
+	if event.Data.Status != "successful" {
+		return
+	}
+
+	g.updateDevice(event.Data)
+}
+
+func (g *Bridge) onDevices(client mqtt.MqttCli, message mqtt.Message) {
+
+	devices := make([]DeviceInfo, 0)
+	json.Unmarshal(message.Payload, &devices)
+
+	for _, device := range devices {
+		if device.Type == Coordinator || !device.InterviewCompleted {
+			continue
+		}
+		g.updateDevice(device)
+
+		go g.UpdateNetworkmap()
 	}
 }
 
@@ -422,37 +436,23 @@ func (g *Bridge) deviceForceRemoved(friendlyName string) {
 	}
 }
 
-func (g *Bridge) devicePairing(params BridgePairingMeta) {
+func (g *Bridge) updateDevice(params DeviceInfo) {
 
-	device, err := g.safeGetDevice(params.FriendlyName)
-	if err != nil && err.Error() != "record not found" {
-		log.Error(err.Error())
-		return
+	payload, _ := json.Marshal(params)
+	model := &m.Zigbee2mqttDevice{
+		Id:            params.FriendlyName,
+		Zigbee2mqttId: g.model.Id,
+		Name:          params.FriendlyName,
+		Type:          params.Type,
+		Model:         params.Definition.Model,
+		Description:   params.Definition.Description,
+		Manufacturer:  params.Definition.Vendor,
+		Status:        active,
+		Payload:       payload,
 	}
 
-	if err != nil && err.Error() == "record not found" {
-		model := &m.Zigbee2mqttDevice{
-			Id:            params.FriendlyName,
-			Status:        active,
-			Zigbee2mqttId: g.model.Id,
-			Name:          params.FriendlyName,
-			Model:         params.Model,
-			Description:   params.Description,
-			Manufacturer:  params.Vendor,
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
-		}
-		model.GetImageUrl()
-
-		device = NewDevice(params.FriendlyName, model)
-	}
-
-	device.SetStatus(active)
-	device.SetModel(params.Model)
-	device.SetDescription(params.Description)
-	device.SetVendor(params.Vendor)
-
-	if err = g.safeUpdateDevice(device); err != nil {
+	device := NewDevice(params.FriendlyName, model)
+	if err := g.safeUpdateDevice(device); err != nil {
 		log.Error(err.Error())
 	}
 }
@@ -483,7 +483,7 @@ func (g *Bridge) UpdateModel(model *m.Zigbee2mqtt) {
 }
 
 // Info ...
-func (g *Bridge) Info() (info *Zigbee2mqttInfo) {
+func (g *Bridge) Info() (info *Zigbee2mqttBridge) {
 
 	g.networkmapLock.Lock()
 	g.settingsLock.Lock()
@@ -499,12 +499,12 @@ func (g *Bridge) Info() (info *Zigbee2mqttInfo) {
 
 	_ = common.Copy(&model, g.model, common.JsonEngine)
 
-	info = &Zigbee2mqttInfo{
+	info = &Zigbee2mqttBridge{
+		Zigbee2mqtt:   model,
 		ScanInProcess: g.scanInProcess,
 		LastScan:      g.lastScan,
 		Networkmap:    g.networkmap,
 		Status:        g.state,
-		Model:         model,
 	}
 
 	return

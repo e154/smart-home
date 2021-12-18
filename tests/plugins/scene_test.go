@@ -20,6 +20,9 @@ package plugins
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -33,8 +36,6 @@ import (
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
-	"testing"
-	"time"
 )
 
 func TestScene(t *testing.T) {
@@ -89,7 +90,7 @@ sceneEvent = (args)->
 
 			// add entity
 			// ------------------------------------------------
-			romanticEnt := GetNewScene(fmt.Sprintf("scene.romantic"), []m.Script{*sceneScript,})
+			romanticEnt := GetNewScene(fmt.Sprintf("scene.romantic"), []m.Script{*sceneScript})
 			err = adaptors.Entity.Add(romanticEnt)
 			So(err, ShouldBeNil)
 

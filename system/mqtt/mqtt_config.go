@@ -19,8 +19,9 @@
 package mqtt
 
 import (
-	"github.com/e154/smart-home/common"
 	"time"
+
+	"github.com/e154/smart-home/common"
 )
 
 // Config ...

@@ -22,10 +22,11 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	"reflect"
 	"time"
+
+	"github.com/e154/smart-home/common"
+	"github.com/e154/smart-home/common/debug"
 )
 
 // Attribute ...

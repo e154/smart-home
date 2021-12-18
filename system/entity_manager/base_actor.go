@@ -21,14 +21,15 @@ package entity_manager
 import (
 	"errors"
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
-	"sync"
-	"time"
 )
 
 // BaseActor ...

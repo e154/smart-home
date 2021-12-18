@@ -20,6 +20,9 @@ package plugins
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -31,8 +34,6 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
-	"time"
 )
 
 func TestZigbee2mqtt(t *testing.T) {
@@ -173,6 +174,7 @@ automationAction = (entityId)->
 				Description:   "MiJia wireless switch",
 				Manufacturer:  "Xiaomi",
 				Status:        "active",
+				Payload:       []byte("{}"),
 			}
 			err = adaptors.Zigbee2mqttDevice.Add(butonDevice)
 			So(err, ShouldBeNil)
@@ -185,6 +187,7 @@ automationAction = (entityId)->
 				Description:   "Mi power plug ZigBee",
 				Manufacturer:  "Xiaomi",
 				Status:        "active",
+				Payload:       []byte("{}"),
 			}
 			err = adaptors.Zigbee2mqttDevice.Add(plugDevice)
 			So(err, ShouldBeNil)

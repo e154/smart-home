@@ -21,9 +21,10 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // MetricBuckets ...

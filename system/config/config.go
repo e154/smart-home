@@ -21,12 +21,13 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/e154/smart-home/models"
 	"log"
 	"os"
 	"path"
 	"reflect"
 	"strconv"
+
+	"github.com/e154/smart-home/models"
 )
 
 // ReadConfig ...

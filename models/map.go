@@ -32,7 +32,7 @@ type MapOptions struct {
 // Map ...
 type Map struct {
 	Id          int64       `json:"id"`
-	Name        string      `json:"name" valid:"MaxSize(254);Required"`
+	Name        string      `json:"name" validate:"max=254;required"`
 	Description string      `json:"description" validate:"required"`
 	Options     MapOptions  `json:"options"`
 	Layers      []*MapLayer `json:"layers"`

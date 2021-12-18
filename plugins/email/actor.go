@@ -21,13 +21,14 @@ package email
 import (
 	"errors"
 	"fmt"
+	"sync"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"gopkg.in/gomail.v2"
-	"sync"
 )
 
 // Actor ...

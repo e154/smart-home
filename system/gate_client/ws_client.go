@@ -19,13 +19,14 @@
 package gate_client
 
 import (
-	"github.com/e154/smart-home/system/metrics"
-	"github.com/e154/smart-home/system/stream"
-	"github.com/gorilla/websocket"
 	"net/http"
 	"net/url"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/system/metrics"
+	"github.com/e154/smart-home/system/stream"
+	"github.com/gorilla/websocket"
 )
 
 const (

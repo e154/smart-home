@@ -19,8 +19,9 @@
 package metrics
 
 import (
-	"github.com/rcrowley/go-metrics"
 	"sync"
+
+	"github.com/rcrowley/go-metrics"
 )
 
 // Node ...

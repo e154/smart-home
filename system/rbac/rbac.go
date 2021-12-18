@@ -21,15 +21,17 @@ package rbac
 import (
 	"context"
 	"fmt"
+	"regexp"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
+	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/jwt_manager"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"regexp"
 )
 
 var (
@@ -42,17 +44,20 @@ type AccessFilter struct {
 	jwtManager          jwt_manager.JwtManager
 	accessListService   access_list.AccessListService
 	internalServerError error
+	config              *m.AppConfig
 }
 
 // NewAccessFilter ...
 func NewAccessFilter(adaptors *adaptors.Adaptors,
 	jwtManager jwt_manager.JwtManager,
-	accessListService access_list.AccessListService) *AccessFilter {
+	accessListService access_list.AccessListService,
+	config *m.AppConfig) *AccessFilter {
 	return &AccessFilter{
 		adaptors:            adaptors,
 		jwtManager:          jwtManager,
 		accessListService:   accessListService,
 		internalServerError: status.Error(codes.Unauthenticated, "UNAUTHORIZED"),
+		config:              config,
 	}
 }
 
@@ -77,6 +82,10 @@ func (f *AccessFilter) accessDecision(params, method string, accessList access_l
 
 // AuthInterceptor ...
 func (f *AccessFilter) AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+
+	if f.config.GodMode {
+		return f.getUser(1, handler, ctx, req)
+	}
 
 	meta, ok := metadata.FromIncomingContext(ctx)
 

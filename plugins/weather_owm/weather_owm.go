@@ -22,6 +22,10 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"net/url"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/web"
@@ -29,9 +33,6 @@ import (
 	"github.com/e154/smart-home/plugins/weather"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
-	"net/url"
-	"sync"
-	"time"
 )
 
 // WeatherOwm ...

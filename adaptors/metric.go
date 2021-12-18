@@ -20,12 +20,13 @@ package adaptors
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/cache"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
-	"time"
 )
 
 // IMetric ...

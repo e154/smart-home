@@ -19,6 +19,8 @@
 package endpoint
 
 import (
+	"context"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
@@ -38,8 +40,8 @@ func NewZigbee2mqttEndpoint(common *CommonEndpoint) *Zigbee2mqttEndpoint {
 	}
 }
 
-// Add ...
-func (n *Zigbee2mqttEndpoint) Add(params *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, errs validator.ValidationErrorsTranslations, err error) {
+// AddBridge ...
+func (n *Zigbee2mqttEndpoint) AddBridge(ctx context.Context, params *m.Zigbee2mqtt) (result *m.Zigbee2mqtt, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
@@ -62,8 +64,8 @@ func (n *Zigbee2mqttEndpoint) Add(params *m.Zigbee2mqtt) (result *m.Zigbee2mqtt,
 	return
 }
 
-// GetById ...
-func (n *Zigbee2mqttEndpoint) GetById(id int64) (result *zigbee2mqtt.Zigbee2mqttInfo, err error) {
+// GetBridgeById ...
+func (n *Zigbee2mqttEndpoint) GetBridgeById(ctx context.Context, id int64) (result *zigbee2mqtt.Zigbee2mqttBridge, err error) {
 
 	result, err = n.zigbee2mqtt.GetBridgeInfo(id)
 	if err != nil {
@@ -76,8 +78,8 @@ func (n *Zigbee2mqttEndpoint) GetById(id int64) (result *zigbee2mqtt.Zigbee2mqtt
 	return
 }
 
-// Update ...
-func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mqtt, errs validator.ValidationErrorsTranslations, err error) {
+// UpdateBridge ...
+func (n *Zigbee2mqttEndpoint) UpdateBridge(ctx context.Context, params *m.Zigbee2mqtt) (bridge *m.Zigbee2mqtt, errs validator.ValidationErrorsTranslations, err error) {
 
 	bridge, err = n.zigbee2mqtt.GetBridgeById(params.Id)
 	if err != nil {
@@ -105,10 +107,10 @@ func (n *Zigbee2mqttEndpoint) Update(params *m.Zigbee2mqtt) (bridge *m.Zigbee2mq
 	return
 }
 
-// GetList ...
-func (n *Zigbee2mqttEndpoint) GetList(limit, offset int64, order, sortBy string) (result []*zigbee2mqtt.Zigbee2mqttInfo, total int64, err error) {
+// GetBridgeList ...
+func (n *Zigbee2mqttEndpoint) GetBridgeList(ctx context.Context, pagination common.PageParams) (result []*zigbee2mqtt.Zigbee2mqttBridge, total int64, err error) {
 
-	result, total, err = n.zigbee2mqtt.ListBridges(limit, offset, order, sortBy)
+	result, total, err = n.zigbee2mqtt.ListBridges(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
@@ -117,84 +119,114 @@ func (n *Zigbee2mqttEndpoint) GetList(limit, offset int64, order, sortBy string)
 }
 
 // Delete ...
-func (n *Zigbee2mqttEndpoint) Delete(id int64) (err error) {
+func (n *Zigbee2mqttEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
-	if id == 0 {
-		err = errors.New("node id is null")
-		return
-	}
-
-	if err = n.zigbee2mqtt.DeleteBridge(id); err != nil {
+	err = n.zigbee2mqtt.DeleteBridge(id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return
 }
 
 // ResetBridge ...
-func (n *Zigbee2mqttEndpoint) ResetBridge(id int64) (err error) {
+func (n *Zigbee2mqttEndpoint) ResetBridge(ctx context.Context, id int64) (err error) {
 
-	if err = n.zigbee2mqtt.ResetBridge(id); err != nil {
+	err = n.zigbee2mqtt.ResetBridge(id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return
 }
 
 // DeviceBan ...
-func (n *Zigbee2mqttEndpoint) DeviceBan(id int64, friendlyName string) (err error) {
+func (n *Zigbee2mqttEndpoint) DeviceBan(ctx context.Context, id int64, friendlyName string) (err error) {
 
-	if err = n.zigbee2mqtt.BridgeDeviceBan(id, friendlyName); err != nil {
+	err = n.zigbee2mqtt.BridgeDeviceBan(id, friendlyName)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return
 }
 
 // DeviceWhitelist ...
-func (n *Zigbee2mqttEndpoint) DeviceWhitelist(id int64, friendlyName string) (err error) {
+func (n *Zigbee2mqttEndpoint) DeviceWhitelist(ctx context.Context, id int64, friendlyName string) (err error) {
 
-	if err = n.zigbee2mqtt.BridgeDeviceWhitelist(id, friendlyName); err != nil {
+	err = n.zigbee2mqtt.BridgeDeviceWhitelist(id, friendlyName)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return
 }
 
 // Networkmap ...
-func (n *Zigbee2mqttEndpoint) Networkmap(id int64) (networkmap string, err error) {
+func (n *Zigbee2mqttEndpoint) Networkmap(ctx context.Context, id int64) (networkmap string, err error) {
 
-	if networkmap, err = n.zigbee2mqtt.BridgeNetworkmap(id); err != nil {
+	networkmap, err = n.zigbee2mqtt.BridgeNetworkmap(id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return
 }
 
 // UpdateNetworkmap ...
-func (n *Zigbee2mqttEndpoint) UpdateNetworkmap(id int64) (err error) {
+func (n *Zigbee2mqttEndpoint) UpdateNetworkmap(ctx context.Context, id int64) (err error) {
 
-	if err = n.zigbee2mqtt.BridgeUpdateNetworkmap(id); err != nil {
+	err = n.zigbee2mqtt.BridgeUpdateNetworkmap(id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return
 }
 
 // DeviceRename ...
-func (n *Zigbee2mqttEndpoint) DeviceRename(friendlyName, name string) (err error) {
+func (n *Zigbee2mqttEndpoint) DeviceRename(ctx context.Context, friendlyName, name string) (err error) {
 
-	if err = n.zigbee2mqtt.DeviceRename(friendlyName, name); err != nil {
+	err = n.zigbee2mqtt.DeviceRename(friendlyName, name)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return
 }
 
 // SearchDevice ...
-func (n *Zigbee2mqttEndpoint) SearchDevice(query string, limit, offset int) (result []*m.Zigbee2mqttDevice, total int64, err error) {
+func (n *Zigbee2mqttEndpoint) SearchDevice(ctx context.Context, search common.SearchParams) (result []*m.Zigbee2mqttDevice, total int64, err error) {
 
-	if result, total, err = n.adaptors.Zigbee2mqttDevice.Search(query, limit, offset); err != nil {
+	if result, total, err = n.adaptors.Zigbee2mqttDevice.Search(search.Query, search.Limit, search.Offset); err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
 

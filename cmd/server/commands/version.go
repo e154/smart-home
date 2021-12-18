@@ -20,6 +20,7 @@ package commands
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/version"
 	"github.com/spf13/cobra"
 )

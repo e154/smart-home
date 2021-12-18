@@ -19,9 +19,10 @@
 package stream
 
 import (
-	"github.com/gorilla/websocket"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 // Client ...

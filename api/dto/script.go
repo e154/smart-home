@@ -70,7 +70,7 @@ func (s Script) FromExecSrcScriptRequest(req *api.ExecSrcScriptRequest) (script 
 // ToGScript ...
 func (s Script) ToGScript(script *m.Script) (result *api.Script) {
 	result = &api.Script{
-		Id:          int32(script.Id),
+		Id:          script.Id,
 		Lang:        string(script.Lang),
 		Name:        script.Name,
 		Source:      script.Source,
@@ -96,7 +96,7 @@ func (s Script) ToSearchResult(list []*m.Script) *api.SearchScriptListResult {
 }
 
 // ToListResult ...
-func (s Script) ToListResult(list []*m.Script, total, limit, offset uint32) *api.GetScriptListResult {
+func (s Script) ToListResult(list []*m.Script, total, limit, offset uint64) *api.GetScriptListResult {
 
 	items := make([]*api.Script, 0, len(list))
 

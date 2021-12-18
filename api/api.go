@@ -21,6 +21,10 @@ package api
 import (
 	"context"
 	"embed"
+	"net"
+	"net/http"
+	"strings"
+
 	"github.com/e154/smart-home/api/controllers"
 	gw "github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
@@ -34,9 +38,6 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
-	"net"
-	"net/http"
-	"strings"
 )
 
 //go:embed swagger-ui/*
@@ -102,6 +103,7 @@ func (a *Api) Start() error {
 	gw.RegisterScriptServiceServer(grpcServer, a.controllers.Script)
 	gw.RegisterImageServiceServer(grpcServer, a.controllers.Image)
 	gw.RegisterPluginServiceServer(grpcServer, a.controllers.Plugin)
+	gw.RegisterZigbee2MqttServiceServer(grpcServer, a.controllers.Zigbee2mqtt)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
@@ -140,6 +142,7 @@ func (a *Api) Start() error {
 		gw.RegisterScriptServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterImageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterPluginServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterZigbee2MqttServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 

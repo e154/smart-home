@@ -51,14 +51,15 @@ func NewValidate(lc fx.Lifecycle,
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			return v.start(ctx)
+			return v.Start(ctx)
 		},
 	})
 
 	return
 }
 
-func (v *Validate) start(_ context.Context) (err error) {
+// Start ...
+func (v *Validate) Start(_ context.Context) (err error) {
 
 	_en := en.New()
 	uni := ut.New(_en, _en, ru.New(), es.New())

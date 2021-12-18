@@ -22,13 +22,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/Masterminds/semver"
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"go.uber.org/fx"
-	"strings"
-	"time"
 )
 
 // Orm ...

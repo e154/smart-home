@@ -20,8 +20,9 @@ package models
 
 import (
 	"database/sql"
-	"github.com/e154/smart-home/common"
 	"time"
+
+	"github.com/e154/smart-home/common"
 )
 
 // HistoryMax ...
@@ -30,12 +31,12 @@ const HistoryMax = 8
 // User ...
 type User struct {
 	Id                  int64          `json:"id"`
-	Nickname            string         `json:"nickname" valid:"Required;MinSize(3);MaxSize(255)"`
-	FirstName           string         `json:"first_name" valid:"MaxSize(255)"`
-	LastName            string         `json:"last_name" valid:"MaxSize(255)"`
+	Nickname            string         `json:"nickname" validate:"required,min=3,max=255"`
+	FirstName           string         `json:"first_name" validate:"max=255"`
+	LastName            string         `json:"last_name" validate:"max=255"`
 	EncryptedPassword   string         `json:"encrypted_password,omitempty"`
-	Email               string         `json:"email" valid:"Required;Email"`
-	Status              string         `json:"status" valid:"MaxSize(255)"`
+	Email               string         `json:"email" validate:"required;email"`
+	Status              string         `json:"status" validate:"max=255"`
 	ResetPasswordToken  string         `json:"-,omitempty"`
 	AuthenticationToken *string        `json:"authentication_token,omitempty"`
 	Image               *Image         `json:"image,omitempty"`

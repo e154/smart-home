@@ -24,6 +24,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/uuid"
@@ -34,11 +40,6 @@ import (
 	"github.com/gorilla/websocket"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
-	"sync"
-	"time"
 )
 
 const (

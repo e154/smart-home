@@ -21,14 +21,11 @@ package common
 import "errors"
 
 var (
-	// BASE ERRORS
 
 	// ErrInternal ...
 	ErrInternal = errors.New("internal error")
 	// ErrNotFound ...
 	ErrNotFound = errors.New("not found")
-
-	// AUTH ERRORS
 
 	// ErrPassNotValid ...
 	ErrPassNotValid = errors.New("password not valid")
@@ -36,8 +33,6 @@ var (
 	ErrAccountIsBlocked = errors.New("account is blocked")
 	// ErrNotAuthorized ...
 	ErrNotAuthorized = errors.New("not authorized")
-
-	// MQTT
 
 	// ErrMqttServerNoWorked ...
 	ErrMqttServerNoWorked = errors.New("mqtt server not worked")

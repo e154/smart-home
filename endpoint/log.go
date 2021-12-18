@@ -20,12 +20,13 @@ package endpoint
 
 import (
 	"encoding/json"
+	"strings"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"strings"
-	"time"
 )
 
 // LogEndpoint ...

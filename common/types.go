@@ -19,8 +19,9 @@
 package common
 
 import (
-	"github.com/gin-gonic/gin"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 // ScriptLang ...
@@ -226,4 +227,11 @@ type PageParams struct {
 	Offset int64  `json:"offset" validate:"required,gte=0,lte=1000"`
 	Order  string `json:"order" validate:"required,oneof=created_at"`
 	SortBy string `json:"sort_by" validate:"required,oneof=desc asc"`
+}
+
+// SearchParams ...
+type SearchParams struct {
+	Query  string `json:"query" validate:"required,min=1,max;255"`
+	Limit  int64  `json:"limit" validate:"required,gte=1,lte=1000"`
+	Offset int64  `json:"offset" validate:"required,gte=0,lte=1000"`
 }

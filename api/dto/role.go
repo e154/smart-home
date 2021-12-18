@@ -76,7 +76,7 @@ func (r Role) ToSearchResult(list []*m.Role) *api.SearchRoleListResult {
 }
 
 // ToListResult ...
-func (r Role) ToListResult(list []*m.Role, total, limit, offset uint32) *api.GetRoleListResult {
+func (r Role) ToListResult(list []*m.Role, total, limit, offset uint64) *api.GetRoleListResult {
 
 	items := make([]*api.Role, 0, len(list))
 

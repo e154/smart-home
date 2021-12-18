@@ -235,9 +235,9 @@ type bintree struct {
 }
 
 var _bintree = &bintree{nil, map[string]*bintree{
-	"scripts": &bintree{nil, map[string]*bintree{
-		"coffee-script.js":      &bintree{scriptsCoffeeScriptJs, map[string]*bintree{}},
-		"typescriptServices.js": &bintree{scriptsTypescriptservicesJs, map[string]*bintree{}},
+	"scripts": {nil, map[string]*bintree{
+		"coffee-script.js":      {scriptsCoffeeScriptJs, map[string]*bintree{}},
+		"typescriptServices.js": {scriptsTypescriptservicesJs, map[string]*bintree{}},
 	}},
 }}
 

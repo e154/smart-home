@@ -31,7 +31,7 @@ type IRole interface {
 	Update(role *m.Role) (err error)
 	Delete(name string) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Role, total int64, err error)
-	Search(query string, limit, offset int) (list []*m.Role, total int64, err error)
+	Search(query string, limit, offset int64) (list []*m.Role, total int64, err error)
 	GetAccessList(role *m.Role) (err error)
 	fromDb(dbRole *db.Role) (role *m.Role)
 	toDb(role *m.Role) (dbRole *db.Role)
@@ -114,7 +114,7 @@ func (n *Role) List(limit, offset int64, orderBy, sort string) (list []*m.Role, 
 }
 
 // Search ...
-func (n *Role) Search(query string, limit, offset int) (list []*m.Role, total int64, err error) {
+func (n *Role) Search(query string, limit, offset int64) (list []*m.Role, total int64, err error) {
 	var dbList []*db.Role
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
 		return
