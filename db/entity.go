@@ -21,10 +21,11 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // Entities ...

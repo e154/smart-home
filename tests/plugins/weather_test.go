@@ -19,6 +19,9 @@
 package plugins
 
 import (
+	"testing"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	weatherPlugin "github.com/e154/smart-home/plugins/weather"
@@ -27,8 +30,6 @@ import (
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
-	"time"
 )
 
 func TestWeather(t *testing.T) {

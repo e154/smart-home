@@ -20,14 +20,15 @@ package zigbee2mqtt
 
 import (
 	"fmt"
+	"strings"
+	"sync"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
-	"strings"
-	"sync"
 )
 
 var (

@@ -21,6 +21,8 @@ package rbac
 import (
 	"context"
 	"fmt"
+	"regexp"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -30,7 +32,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"regexp"
 )
 
 var (

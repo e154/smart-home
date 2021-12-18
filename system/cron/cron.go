@@ -240,7 +240,7 @@ func (c *Cron) timePrepare(t time.Time) {
 	c.Lock()
 	defer c.Unlock()
 
-	for task, _ := range c.tasks {
+	for task := range c.tasks {
 		if !task.Enabled() {
 			continue
 		}

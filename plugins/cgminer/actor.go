@@ -20,6 +20,7 @@ package cgminer
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/cgminer/bitmine"

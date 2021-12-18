@@ -16,14 +16,16 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-//+build linux windows darwin,!386
+//go:build linux || windows || (darwin && !386)
+// +build linux windows darwin,!386
 
 package metrics
 
 import (
-	"go.uber.org/atomic"
 	"sync"
 	"time"
+
+	"go.uber.org/atomic"
 )
 
 // DiskManager ...

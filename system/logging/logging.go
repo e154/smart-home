@@ -19,13 +19,14 @@
 package logging
 
 import (
+	"os"
+	"strings"
+	"sync"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
-	"strings"
-	"sync"
 )
 
 // Logging ...

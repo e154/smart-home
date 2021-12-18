@@ -20,6 +20,8 @@ package telegram
 
 import (
 	"fmt"
+	"strings"
+
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -29,7 +31,6 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/e154/smart-home/version"
 	"go.uber.org/atomic"
-	"strings"
 )
 
 // Actor ...
@@ -329,7 +330,7 @@ func (p *Actor) genKeyboard(msgCfg tgbotapi.MessageConfig) {
 	if len(p.Actions) == 0 {
 		return
 	}
-	for k, _ := range p.Actions {
+	for k := range p.Actions {
 		counter++
 		if counter >= 3 {
 			counter = 1

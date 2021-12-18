@@ -19,14 +19,15 @@
 package models
 
 import (
+	"strings"
+	"testing"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/go-playground/validator/v10"
 	. "github.com/smartystreets/goconvey/convey"
-	"strings"
-	"testing"
 )
 
 func TestUser(t *testing.T) {
@@ -77,7 +78,7 @@ func TestUser(t *testing.T) {
 				Email:    email,
 				Lang:     "en",
 				Meta: []*m.UserMeta{
-					&m.UserMeta{
+					{
 						Key:   "phone1",
 						Value: "+18004001234",
 					},

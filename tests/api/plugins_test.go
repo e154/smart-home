@@ -21,8 +21,9 @@ package api
 import (
 	"context"
 	"fmt"
-	container2 "github.com/e154/smart-home/tests/api/container"
 	"testing"
+
+	container2 "github.com/e154/smart-home/tests/api/container"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"

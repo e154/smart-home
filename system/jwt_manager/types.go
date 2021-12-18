@@ -19,8 +19,9 @@
 package jwt_manager
 
 import (
-	m "github.com/e154/smart-home/models"
 	"time"
+
+	m "github.com/e154/smart-home/models"
 )
 
 // JwtManager ...

@@ -20,10 +20,11 @@ package db
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // Zigbee2mqttDevices ...

@@ -23,12 +23,13 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/golang-jwt/jwt/v4"
 	"go.uber.org/fx"
-	"time"
 )
 
 var (

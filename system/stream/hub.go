@@ -19,12 +19,13 @@
 package stream
 
 import (
-	"github.com/gorilla/websocket"
 	"io"
 	"os"
 	"os/signal"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 const (

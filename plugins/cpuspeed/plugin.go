@@ -19,11 +19,12 @@
 package cpuspeed
 
 import (
+	"time"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
 	"github.com/prometheus/common/log"
-	"time"
 )
 
 var _ plugins.Plugable = (*plugin)(nil)

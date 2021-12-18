@@ -22,6 +22,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
+	"os"
+	"sync"
+	"time"
+
 	"github.com/DrmagicE/gmqtt"
 	_ "github.com/DrmagicE/gmqtt/persistence"
 	"github.com/DrmagicE/gmqtt/pkg/codes"
@@ -37,10 +42,6 @@ import (
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"net"
-	"os"
-	"sync"
-	"time"
 )
 
 var (

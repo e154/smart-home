@@ -16,15 +16,17 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
+//go:build (linux && !mips64 && !mips64le) || darwin
 // +build linux,!mips64,!mips64le darwin
 
 package uptime
 
 import (
+	"time"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
-	"time"
 )
 
 const (

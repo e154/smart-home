@@ -21,13 +21,14 @@ package endpoint
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"strings"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"strconv"
-	"strings"
 )
 
 // ScriptEndpoint ...

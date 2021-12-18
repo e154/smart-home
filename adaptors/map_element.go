@@ -21,6 +21,7 @@ package adaptors
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"

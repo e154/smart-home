@@ -20,12 +20,13 @@ package scripts
 
 import (
 	"fmt"
-	. "github.com/e154/smart-home/tests/scripts/container"
-	"go.uber.org/dig"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	. "github.com/e154/smart-home/tests/scripts/container"
+	"go.uber.org/dig"
 )
 
 func init() {

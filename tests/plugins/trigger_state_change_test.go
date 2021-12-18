@@ -20,6 +20,10 @@ package plugins
 
 import (
 	"fmt"
+	"sync"
+	"testing"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -32,9 +36,6 @@ import (
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.uber.org/atomic"
-	"sync"
-	"testing"
-	"time"
 )
 
 func TestTriggerStateChange(t *testing.T) {
@@ -115,6 +116,7 @@ automationTriggerStateChanged = (msg)->
 				Description:   "MiJia wireless switch",
 				Manufacturer:  "Xiaomi",
 				Status:        "active",
+				Payload:       []byte("{}"),
 			}
 			err = adaptors.Zigbee2mqttDevice.Add(butonDevice)
 			So(err, ShouldBeNil)

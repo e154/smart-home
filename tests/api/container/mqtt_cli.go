@@ -20,33 +20,41 @@ package container
 
 import (
 	"context"
+
 	"github.com/DrmagicE/gmqtt/server"
 	"github.com/e154/smart-home/system/mqtt"
 )
 
+// MqttCli ...
 type MqttCli struct {
 }
 
+// NewMqttCli ...
 func NewMqttCli() mqtt.MqttCli {
 	return &MqttCli{}
 }
 
+// Publish ...
 func (m MqttCli) Publish(topic string, payload []byte) error {
 	return nil
 }
 
+// Subscribe ...
 func (m MqttCli) Subscribe(topic string, handler mqtt.MessageHandler) error {
 	return nil
 }
 
+// Unsubscribe ...
 func (m MqttCli) Unsubscribe(topic string) {
 
 }
 
+// UnsubscribeAll ...
 func (m MqttCli) UnsubscribeAll() {
 
 }
 
+// OnMsgArrived ...
 func (m MqttCli) OnMsgArrived(ctx context.Context, client server.Client, req *server.MsgArrivedRequest) {
 
 }

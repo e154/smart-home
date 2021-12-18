@@ -20,6 +20,10 @@ package alexa
 
 import (
 	"errors"
+	"net/http"
+	"os"
+	"sync"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
@@ -27,9 +31,6 @@ import (
 	"github.com/e154/smart-home/system/scripts"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/atomic"
-	"net/http"
-	"os"
-	"sync"
 )
 
 // Server ...

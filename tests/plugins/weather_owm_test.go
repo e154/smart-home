@@ -20,6 +20,11 @@ package plugins
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -30,10 +35,6 @@ import (
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	. "github.com/smartystreets/goconvey/convey"
-	"reflect"
-	"strings"
-	"testing"
-	"time"
 )
 
 func TestWeatherOwm(t *testing.T) {
@@ -81,7 +82,7 @@ func TestWeatherOwm(t *testing.T) {
 			// ------------------------------------------------
 
 			err = adaptors.Variable.CreateOrUpdate(m.Variable{
-				Name:  "weather_owm.home",
+				Name: "weather_owm.home",
 				//Value: serverData,
 				Value: strings.Replace(serverData, "LOADED_AT", time.Now().Format(time.RFC3339), -1),
 			})
@@ -269,7 +270,6 @@ func TestWeatherOwm(t *testing.T) {
 
 			t.Run("weather_owm", func(t *testing.T) {
 				Convey("weather_owm", t, func(ctx C) {
-
 
 					w := weather_owm.NewWeatherOwm(eventBus, adaptors, weather_owm.NewSettings())
 					w.AddWeather("weather.home", weatherEnt.Settings)

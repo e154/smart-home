@@ -28,15 +28,16 @@ package server
 
 import (
 	"fmt"
+	"log"
+	"net"
+	"strings"
+	"time"
+
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/server"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/koron/netx"
 	"github.com/spf13/cobra"
-	"log"
-	"net"
-	"strings"
-	"time"
 )
 
 var (

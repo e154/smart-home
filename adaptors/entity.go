@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"encoding/json"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -81,7 +82,7 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 
 	//actions
 	if len(ver.Actions) > 0 {
-		for i, _ := range ver.Actions {
+		for i := range ver.Actions {
 			ver.Actions[i].EntityId = ver.Id
 		}
 		entityAction := GetEntityActionAdaptor(tx)
@@ -92,7 +93,7 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 
 	//states
 	if len(ver.States) > 0 {
-		for i, _ := range ver.States {
+		for i := range ver.States {
 			ver.States[i].EntityId = ver.Id
 		}
 		stateAdaptor := GetEntityStateAdaptor(tx)

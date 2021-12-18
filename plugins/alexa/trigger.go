@@ -20,10 +20,11 @@ package alexa
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/e154/smart-home/plugins/triggers"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/message_queue"
-	"sync"
 )
 
 var _ triggers.ITrigger = (*Trigger)(nil)

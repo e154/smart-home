@@ -20,6 +20,7 @@ package controllers
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/api/stub/api"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"

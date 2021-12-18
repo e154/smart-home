@@ -19,8 +19,9 @@
 package models
 
 import (
-	. "github.com/e154/smart-home/common"
 	"time"
+
+	. "github.com/e154/smart-home/common"
 )
 
 // Script ...

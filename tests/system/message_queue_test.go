@@ -20,12 +20,13 @@ package system
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/message_queue"
-	. "github.com/smartystreets/goconvey/convey"
-	"go.uber.org/atomic"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/message_queue"
+	. "github.com/smartystreets/goconvey/convey"
+	"go.uber.org/atomic"
 )
 
 func TestMessageQueue(t *testing.T) {
@@ -155,7 +156,7 @@ func TestMessageQueue(t *testing.T) {
 			}
 			queue.Subscribe("a/#", fn)
 
-			for i:=0;i<15;i++ {
+			for i := 0; i < 15; i++ {
 				queue.Publish("a/b", "msg")
 			}
 

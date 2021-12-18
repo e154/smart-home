@@ -20,6 +20,7 @@ package controllers
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/api/stub/api"
 )
 

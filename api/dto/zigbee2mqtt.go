@@ -110,6 +110,7 @@ func (u Zigbee2mqtt) UpdateBridgeByIdResult(bridge *m.Zigbee2mqtt) (obj *api.Zig
 	return
 }
 
+// GetBridgeListResult ...
 func (u Zigbee2mqtt) GetBridgeListResult(list []*zigbee2mqtt.Zigbee2mqttBridge, total, limit, offset uint64) (obj *api.GetBridgeListResult) {
 	items := make([]*api.Zigbee2MqttShort, 0, len(list))
 	for _, item := range list {
@@ -134,6 +135,7 @@ func (u Zigbee2mqtt) GetBridgeListResult(list []*zigbee2mqtt.Zigbee2mqttBridge, 
 	return
 }
 
+// ToZigbee2MqttDevice ...
 func (u Zigbee2mqtt) ToZigbee2MqttDevice(device *m.Zigbee2mqttDevice) (obj *api.Zigbee2MqttDevice) {
 
 	return &api.Zigbee2MqttDevice{
@@ -152,6 +154,7 @@ func (u Zigbee2mqtt) ToZigbee2MqttDevice(device *m.Zigbee2mqttDevice) (obj *api.
 	}
 }
 
+// SearchDevice ...
 func (u Zigbee2mqtt) SearchDevice(list []*m.Zigbee2mqttDevice) (obj *api.SearchDeviceResult) {
 
 	items := make([]*api.Zigbee2MqttDevice, 0, len(list))

@@ -20,9 +20,10 @@ package db
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // MessageDeliveries ...

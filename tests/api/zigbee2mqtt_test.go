@@ -21,19 +21,19 @@ package api
 import (
 	"context"
 	"fmt"
-	gw "github.com/e154/smart-home/api/stub/api"
-	container2 "github.com/e154/smart-home/tests/api/container"
-	"google.golang.org/grpc"
 	"testing"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/controllers"
+	gw "github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
+	container2 "github.com/e154/smart-home/tests/api/container"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/grpc"
 )
 
 func TestZigbee2mqtt(t *testing.T) {

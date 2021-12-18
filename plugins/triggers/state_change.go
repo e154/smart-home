@@ -21,9 +21,10 @@
 package triggers
 
 import (
+	"sync"
+
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/message_queue"
-	"sync"
 )
 
 const (

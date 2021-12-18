@@ -22,6 +22,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
+
 	"github.com/francoispqt/gojay"
 	"github.com/jinzhu/copier"
 )

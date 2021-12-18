@@ -21,6 +21,7 @@ package endpoint
 import (
 	"context"
 	"fmt"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
@@ -84,10 +85,10 @@ func (a *AuthEndpoint) SignOut(ctx context.Context, user *m.User) (err error) {
 }
 
 // Recovery ...
-func (a *AuthEndpoint) Recovery(ctx context.Context, ) {}
+func (a *AuthEndpoint) Recovery(ctx context.Context) {}
 
 // Reset ...
-func (a *AuthEndpoint) Reset(ctx context.Context, ) {}
+func (a *AuthEndpoint) Reset(ctx context.Context) {}
 
 // AccessList ...
 func (a *AuthEndpoint) AccessList(ctx context.Context, user *m.User, accessListService access_list.AccessListService) (accessList *access_list.AccessList, err error) {

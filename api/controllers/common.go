@@ -23,6 +23,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/dto"
 	"github.com/e154/smart-home/common"
@@ -34,8 +37,6 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"net/http"
-	"strings"
 )
 
 var (
@@ -134,6 +135,7 @@ func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationEr
 	}
 }
 
+// Pagination ...
 func (c ControllerCommon) Pagination(limit, offset uint64, order, sortBy string) (pagination common.PageParams) {
 
 	pagination = common.PageParams{
@@ -159,6 +161,7 @@ func (c ControllerCommon) Pagination(limit, offset uint64, order, sortBy string)
 	return
 }
 
+// Search ...
 func (c ControllerCommon) Search(query string, limit, offset int64) (search common.SearchParams) {
 
 	search = common.SearchParams{

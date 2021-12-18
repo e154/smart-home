@@ -19,13 +19,14 @@
 package adaptors
 
 import (
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/orm"
 	"github.com/jinzhu/gorm"
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
-	"time"
 )
 
 // IMetricBucket ...

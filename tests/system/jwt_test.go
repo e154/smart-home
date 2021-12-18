@@ -21,12 +21,13 @@ package system
 import (
 	"encoding/hex"
 	"fmt"
+	"testing"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/jwt_manager"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func TestJwt(t *testing.T) {
@@ -60,7 +61,7 @@ func TestJwt(t *testing.T) {
 				t.Run("verify", func(t *testing.T) {
 					Convey("", t, func(ctx C) {
 
-						const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Mzk1MDA0NTksImkiOjEsImlhdCI6MTYzNjkwODQ1OSwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM2OTA4NDU5LCJyIjoidXNlciJ9.8ERfipwtNRIIl6m3cp6k6Vm6IQzLoSEasEeJUFYgSJc"
+						const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjI0Mjg1MDUyOTksImkiOjEsImlhdCI6MTYzOTU4Njg5OSwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM5NTg2ODk5LCJyIjoidXNlciJ9.QI35ZYqSsQkP7SW2gp4VCPXfs9jh6DOHfP7WKlPU71A"
 
 						claims, err := jwtManager.Verify(accessToken)
 						debug.Println(claims)

@@ -30,14 +30,17 @@ import (
 	gw "github.com/e154/smart-home/api/stub/api"
 )
 
+// Dialer ...
 type Dialer struct {
 	controllers *controllers.Controllers
 }
 
+// NewDialer ...
 func NewDialer(controllers *controllers.Controllers) *Dialer {
 	return &Dialer{controllers: controllers}
 }
 
+// Call ...
 func (d *Dialer) Call() func(context.Context, string) (net.Conn, error) {
 
 	grpcServer := grpc.NewServer()

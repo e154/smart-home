@@ -21,9 +21,10 @@ package mqtt
 import (
 	"context"
 	"errors"
+	"sync"
+
 	"github.com/DrmagicE/gmqtt/pkg/packets"
 	"github.com/DrmagicE/gmqtt/server"
-	"sync"
 )
 
 // client ...
@@ -80,7 +81,7 @@ func (m *client) Unsubscribe(topic string) {
 func (m *client) UnsubscribeAll() {
 	m.subscribersLock.Lock()
 	defer m.subscribersLock.Unlock()
-	for topic, _ := range m.subscribers {
+	for topic := range m.subscribers {
 		delete(m.subscribers, topic)
 	}
 }

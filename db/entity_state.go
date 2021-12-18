@@ -20,10 +20,11 @@ package db
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // EntityStates ...

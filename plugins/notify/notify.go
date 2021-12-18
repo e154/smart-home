@@ -20,12 +20,13 @@ package notify
 
 import (
 	"errors"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/atomic"
-	"sync"
-	"time"
 )
 
 const (

@@ -21,15 +21,16 @@ package node
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
-	"strings"
-	"sync"
-	"time"
 )
 
 // Actor ...

@@ -20,12 +20,13 @@ package sensor
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/plugins"
-	"sync"
 )
 
 var (

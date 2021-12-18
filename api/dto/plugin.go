@@ -57,6 +57,7 @@ func (p Plugin) ToPluginListResult(items []*m.Plugin, total, limit, offset uint6
 	return
 }
 
+// Options ...
 func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsResult) {
 
 	var actions = make(map[string]*api.EntityActionShort)

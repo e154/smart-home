@@ -20,10 +20,11 @@ package weather
 
 import (
 	"fmt"
+	"path"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
-	"path"
 )
 
 const (

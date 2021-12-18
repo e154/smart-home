@@ -20,6 +20,7 @@ package db
 
 import (
 	"fmt"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )

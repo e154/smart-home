@@ -20,13 +20,14 @@ package system
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/logging"
-	. "github.com/e154/smart-home/tests/system/container"
-	"go.uber.org/dig"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/e154/smart-home/system/logging"
+	. "github.com/e154/smart-home/tests/system/container"
+	"go.uber.org/dig"
 )
 
 func init() {
@@ -41,7 +42,7 @@ var (
 func TestMain(m *testing.M) {
 
 	container = BuildContainer()
-	err := container.Invoke(func(logger *logging.Logging,) {
+	err := container.Invoke(func(logger *logging.Logging) {
 
 		time.Sleep(time.Millisecond * 500)
 

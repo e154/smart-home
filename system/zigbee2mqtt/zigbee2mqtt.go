@@ -20,6 +20,8 @@ package zigbee2mqtt
 
 import (
 	"context"
+	"sync"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -28,7 +30,6 @@ import (
 	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
-	"sync"
 )
 
 var (

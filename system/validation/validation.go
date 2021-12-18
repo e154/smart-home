@@ -58,6 +58,7 @@ func NewValidate(lc fx.Lifecycle,
 	return
 }
 
+// Start ...
 func (v *Validate) Start(_ context.Context) (err error) {
 
 	_en := en.New()

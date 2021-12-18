@@ -20,6 +20,7 @@ package assertions
 
 import (
 	"fmt"
+
 	adaptors2 "github.com/e154/smart-home/adaptors"
 	"github.com/smartystreets/assertions"
 	"github.com/smartystreets/goconvey/convey/reporting"

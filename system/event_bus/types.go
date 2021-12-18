@@ -21,9 +21,10 @@ package event_bus
 import (
 	"bytes"
 	"encoding/json"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
-	"time"
 )
 
 // EntityState ...

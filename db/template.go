@@ -19,9 +19,10 @@
 package db
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // Templates ...

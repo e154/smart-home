@@ -20,6 +20,7 @@ package commands
 
 import (
 	"fmt"
+
 	. "github.com/e154/smart-home/cmd/server/container"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/initial"

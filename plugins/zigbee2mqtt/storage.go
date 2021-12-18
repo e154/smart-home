@@ -59,7 +59,7 @@ func (s *Storage) SetVar(key string, value interface{}) {
 
 func (s *Storage) copy(newPull map[string]interface{}) {
 	s.mx.Lock()
-	for key, _ := range s.pull {
+	for key := range s.pull {
 		delete(s.pull, key)
 	}
 	for k, v := range newPull {

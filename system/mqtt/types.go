@@ -20,6 +20,7 @@ package mqtt
 
 import (
 	"context"
+
 	"github.com/DrmagicE/gmqtt/config"
 	"github.com/DrmagicE/gmqtt/retained"
 	"github.com/DrmagicE/gmqtt/server"

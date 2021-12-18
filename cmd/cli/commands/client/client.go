@@ -37,14 +37,15 @@ package client
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/system/mqtt_client"
-	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/koron/netx"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/e154/smart-home/system/mqtt_client"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/koron/netx"
+	"github.com/spf13/cobra"
 )
 
 var (

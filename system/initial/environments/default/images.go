@@ -19,13 +19,14 @@
 package _default
 
 import (
+	"os"
+	"path"
+	"strings"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	. "github.com/e154/smart-home/system/initial/assertions"
-	"os"
-	"path"
-	"strings"
 )
 
 // ImageManager ...

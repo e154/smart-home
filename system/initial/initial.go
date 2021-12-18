@@ -29,9 +29,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	. "github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api"
 	"github.com/e154/smart-home/system/initial/environments"
+
+	"strconv"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -44,7 +47,6 @@ import (
 	"github.com/e154/smart-home/system/migrations"
 	"github.com/e154/smart-home/system/scripts"
 	"go.uber.org/fx"
-	"strconv"
 )
 
 var (
