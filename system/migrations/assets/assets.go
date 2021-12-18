@@ -63,21 +63,32 @@ type bindataFileInfo struct {
 	modTime time.Time
 }
 
+// Name ...
 func (fi bindataFileInfo) Name() string {
 	return fi.name
 }
+
+// Size ...
 func (fi bindataFileInfo) Size() int64 {
 	return fi.size
 }
+
+// Mode ...
 func (fi bindataFileInfo) Mode() os.FileMode {
 	return fi.mode
 }
+
+// ModTime ...
 func (fi bindataFileInfo) ModTime() time.Time {
 	return fi.modTime
 }
+
+// IsDir ...
 func (fi bindataFileInfo) IsDir() bool {
 	return false
 }
+
+// Sys ...
 func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }

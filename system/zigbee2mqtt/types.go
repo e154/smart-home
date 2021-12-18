@@ -91,17 +91,24 @@ const (
 )
 
 const (
-	EventDeviceAnnounce  = "device_announce"
-	EventDeviceLeave     = "device_leave"
-	EventDeviceJoined    = "device_joined"
+	// EventDeviceAnnounce ...
+	EventDeviceAnnounce = "device_announce"
+	// EventDeviceLeave ...
+	EventDeviceLeave = "device_leave"
+	// EventDeviceJoined ...
+	EventDeviceJoined = "device_joined"
+	// EventDeviceInterview ...
 	EventDeviceInterview = "device_interview"
 )
 
 const (
+	// StatusStarted ...
 	StatusStarted = "started"
-	StatusFailed  = "failed"
+	// StatusFailed ...
+	StatusFailed = "failed"
 )
 
+// EventDeviceInfoDefExpose ...
 type EventDeviceInfoDefExpose struct {
 	Access      int64                      `json:"access,omitempty"`
 	Description string                     `json:"description,omitempty"`
@@ -126,8 +133,10 @@ type EventDeviceInfoDef struct {
 }
 
 const (
+	// Coordinator ...
 	Coordinator = "Coordinator"
-	EndDevice   = "EndDevice"
+	// EndDevice ...
+	EndDevice = "EndDevice"
 )
 
 // DeviceInfo ...
@@ -145,6 +154,7 @@ type DeviceInfo struct {
 	Type               string             `json:"type,omitempty"`
 }
 
+// Event ...
 type Event struct {
 	Data DeviceInfo `json:"data"`
 	Type string     `json:"type"`

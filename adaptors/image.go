@@ -33,7 +33,6 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
-	"github.com/t-tiger/gorm-bulk-insert"
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
 )
 

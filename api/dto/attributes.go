@@ -23,10 +23,12 @@ import (
 	m "github.com/e154/smart-home/models"
 )
 
+// AttributeFromApi ...
 func AttributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attributes) {
 	return
 }
 
+// AttributeToApi ...
 func AttributeToApi(attributes m.Attributes) (apiAttr map[string]*api.Attribute) {
 	apiAttr = make(map[string]*api.Attribute)
 	for k, v := range attributes {

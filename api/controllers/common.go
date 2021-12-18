@@ -135,6 +135,7 @@ func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationEr
 	}
 }
 
+// Pagination ...
 func (c ControllerCommon) Pagination(limit, offset uint64, order, sortBy string) (pagination common.PageParams) {
 
 	pagination = common.PageParams{
@@ -160,6 +161,7 @@ func (c ControllerCommon) Pagination(limit, offset uint64, order, sortBy string)
 	return
 }
 
+// Search ...
 func (c ControllerCommon) Search(query string, limit, offset int64) (search common.SearchParams) {
 
 	search = common.SearchParams{
