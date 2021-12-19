@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // ITask ...
@@ -53,17 +54,18 @@ func GetTaskAdaptor(d *gorm.DB) ITask {
 // Add ...
 func (n *Task) Add(ver *m.Task) (err error) {
 
-	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		tx = n.db
-		transaction = false
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
+		return
 	}
-
 	defer func() {
-		if err != nil && transaction {
+		if err != nil {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
 		}
+		tx.Commit()
 	}()
 
 	table := db.Tasks{Db: tx}
@@ -104,10 +106,6 @@ func (n *Task) Add(ver *m.Task) (err error) {
 		}
 	}
 
-	if transaction {
-		err = tx.Commit().Error
-	}
-
 	return
 }
 
@@ -119,25 +117,26 @@ func (n *Task) Update(ver *m.Task) (err error) {
 
 // Delete ...
 func (n *Task) Delete(id int64) (err error) {
-	transaction := true
+
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		tx = n.db
-		transaction = false
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
+		return
 	}
-
 	defer func() {
-		if err != nil && transaction {
+		if err != nil {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
 		}
+		tx.Commit()
 	}()
+
 	table := &db.Tasks{Db: tx}
 	if err = table.Delete(id); err != nil {
 		return
 	}
-	if transaction {
-		err = tx.Commit().Error
-	}
+
 	return
 }
 

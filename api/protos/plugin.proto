@@ -8,7 +8,6 @@ import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
 import "attributes.proto";
-import "entity.proto";
 
 message Plugin {
   string name = 1;
@@ -58,9 +57,21 @@ message GetPluginOptionsResult {
   bool actor_custom_attrs = 3;
   map<string, Attribute> actor_attrs = 4;
   bool actor_custom_actions = 5;
-  map<string, EntityActionShort>  actor_actions = 6;
+  message EntityAction {
+    string name = 1;
+    string description = 2;
+    string image_url = 3;
+    string icon = 4;
+  }
+  map<string, EntityAction>  actor_actions = 6;
   bool actor_custom_states = 7;
-  map<string, EntityStateShort>  actor_states = 8;
+  message EntityState {
+    string name = 1;
+    string description = 2;
+    string image_url = 3;
+    string icon = 4;
+  }
+  map<string, EntityState>  actor_states = 8;
   map<string, Attribute> actor_setts = 9;
   map<string, Attribute> setts = 10;
 }

@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"encoding/json"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
@@ -62,17 +63,22 @@ func GetEntityAdaptor(d *gorm.DB) IEntity {
 // Add ...
 func (n *Entity) Add(ver *m.Entity) (err error) {
 
-	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		tx = n.db
-		transaction = false
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
+		return
 	}
-
+	if err = tx.Error; err != nil {
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
+		return
+	}
 	defer func() {
-		if err != nil && transaction {
+		if err != nil {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
 		}
+		tx.Commit()
 	}()
 
 	table := db.Entities{Db: tx}
@@ -118,10 +124,6 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 		}
 	}
 
-	if transaction {
-		err = tx.Commit().Error
-	}
-
 	return
 }
 
@@ -142,25 +144,25 @@ func (n *Entity) GetById(id common.EntityId) (ver *m.Entity, err error) {
 
 // Delete ...
 func (n *Entity) Delete(id common.EntityId) (err error) {
-	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		tx = n.db
-		transaction = false
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
+		return
 	}
-
 	defer func() {
-		if err != nil && transaction {
+		if err != nil {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
 		}
+		tx.Commit()
 	}()
+
 	table := &db.Entities{Db: tx}
 	if err = table.Delete(id); err != nil {
 		return
 	}
-	if transaction {
-		err = tx.Commit().Error
-	}
+
 	return
 }
 
@@ -196,7 +198,7 @@ func (n *Entity) GetByType(t string, limit, offset int64) (list []*m.Entity, err
 	return
 }
 
-// Update ...
+// UpdateSettings ...
 func (n *Entity) UpdateSettings(entity common.EntityId, settings m.Attributes) (err error) {
 	b, _ := json.Marshal(m.EntitySettings{
 		Settings: settings,
@@ -205,7 +207,7 @@ func (n *Entity) UpdateSettings(entity common.EntityId, settings m.Attributes) (
 	return
 }
 
-// UpdateAll ...
+// Update ...
 func (n *Entity) Update(ver *m.Entity) (err error) {
 
 	var oldVer *m.Entity
@@ -213,17 +215,18 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 		return
 	}
 
-	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		tx = n.db
-		transaction = false
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
+		return
 	}
-
 	defer func() {
-		if err != nil && transaction {
+		if err != nil {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
 		}
+		tx.Commit()
 	}()
 
 	table := db.Entities{Db: tx}
@@ -293,10 +296,6 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 		}
 	}
 
-	if transaction {
-		err = tx.Commit().Error
-	}
-
 	return
 }
 
@@ -356,7 +355,7 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 	ver = &m.Entity{
 		Id:          dbVer.Id,
 		Description: dbVer.Description,
-		Type:        common.EntityType(dbVer.Type),
+		Type:        common.EntityType(dbVer.Plugin),
 		Actions:     make([]*m.EntityAction, 0),
 		States:      make([]*m.EntityState, 0),
 		Icon:        dbVer.Icon,
@@ -439,7 +438,7 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 	dbVer = &db.Entity{
 		Id:          ver.Id,
 		Description: ver.Description,
-		Type:        ver.Type.String(),
+		Plugin:      ver.Type.String(),
 		Icon:        ver.Icon,
 		AutoLoad:    ver.AutoLoad,
 		ParentId:    ver.ParentId,

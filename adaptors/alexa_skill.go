@@ -19,9 +19,11 @@
 package adaptors
 
 import (
+	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // IAlexaSkill ...
@@ -79,10 +81,17 @@ func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 	}
 
 	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
+		return
+	}
 	defer func() {
 		if err != nil {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
 		}
+		tx.Commit()
 	}()
 
 	intentAdaptor := GetAlexaIntentAdaptor(tx)
@@ -124,8 +133,6 @@ func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 
 	table := &db.AlexaSkills{Db: tx}
 	err = table.Update(n.toDb(params))
-
-	tx.Commit()
 
 	return
 }

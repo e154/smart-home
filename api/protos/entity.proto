@@ -3,20 +3,20 @@ syntax = "proto3";
 package api;
 option go_package = "/api";
 
-message EntityActionShort {
-  string name = 1;
-  string description = 2;
-  string image_url = 3;
-  string icon = 4;
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+import "attributes.proto";
+
+message EntityAction {
+
 }
 
-message EntityStateShort {
-  string name = 1;
-  string description = 2;
-  string image_url = 3;
-  string icon = 4;
-}
+message EntityState {
 
+}
 
 message Entity {
   int64 id = 1;
@@ -28,12 +28,111 @@ message Entity {
 }
 
 message NewEntityRequest {
-  string type = 1;
-  string description = 2;
-  int64 area_id = 3;
+  string type = 2;
+  string description = 3;
+  optional int64 area_id = 4;
+  optional string icon = 5;
+  optional int64 image_id = 6;
+  bool hidden = 7;
+  bool auto_load = 8;
+  string parent_id = 9;
+  message Action {
+    string name = 1;
+    string description = 2;
+    optional string icon = 3;
+    optional int64 image_id = 4;
+    optional int64 script_id = 5;
+    string type = 6;
+  }
+  repeated Action actions = 10;
+  message State {
+    string name = 1;
+    string description = 2;
+    optional string icon = 3;
+    optional int64 image_id = 4;
+    string style = 5;
+  }
+  repeated State states = 11;
+  map<string, Attribute> attributes = 12;
+  map<string, Attribute> settings = 13;
 }
 
 service EntityService {
 
+  // add new entity
+  rpc AddEntity (NewEntityRequest) returns (Entity){
+    option (google.api.http) = {
+      post: "/v1/entity"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
 
+  // update entity
+  rpc UpdateEntityByName (UpdateEntityRequest) returns (Entity){
+    option (google.api.http) = {
+      put: "/v1/entity/{name}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get entity by name
+  rpc GetEntityByName (GetEntityRequest) returns (Entity){
+    option (google.api.http) = {
+      get: "/v1/entity/{name}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get entity list
+  rpc GetEntityList (GetEntityListRequest) returns (GetEntityListResult){
+    option (google.api.http) = {
+      get: "/v1/entities"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete entity by name
+  rpc DeleteEntityByName (DeleteEntityRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/entity/{name}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
 }

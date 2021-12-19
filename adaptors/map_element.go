@@ -21,6 +21,7 @@ package adaptors
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
@@ -60,17 +61,18 @@ func GetMapElementAdaptor(d *gorm.DB) IMapElement {
 // Add ...
 func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 
-	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		tx = n.db
-		transaction = false
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
+		return
 	}
-
 	defer func() {
-		if err != nil && transaction {
+		if err != nil {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
 		}
+		tx.Commit()
 	}()
 
 	var protId int64
@@ -102,10 +104,6 @@ func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 	table := db.MapElements{Db: tx}
 	if id, err = table.Add(dbVer); err != nil {
 		return
-	}
-
-	if transaction {
-		err = tx.Commit().Error
 	}
 
 	return
@@ -151,12 +149,16 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
 		return
 	}
 	defer func() {
 		if err != nil {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
 		}
+		tx.Commit()
 	}()
 
 	var deleted bool
@@ -239,8 +241,6 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		return
 	}
 
-	err = tx.Commit().Error
-
 	return
 }
 
@@ -254,14 +254,16 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
+		err = errors.Wrap(common.ErrTransactionError, err.Error())
 		return
 	}
-
 	defer func() {
 		if err != nil {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
+		tx.Commit()
 	}()
 
 	if ver.PrototypeId != "" {
@@ -295,8 +297,6 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 	if err = table.Delete(mapId); err != nil {
 		return
 	}
-
-	err = tx.Commit().Error
 
 	return
 }
