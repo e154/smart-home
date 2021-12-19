@@ -123,13 +123,14 @@ build_archive:
 
 build_docs:
 	@echo MARK: build doc
-	cd ${ROOT}/doc
-	npm install postcss-cli
+	cd ${ROOT}/doc && \
+	npm install postcss-cli && \
 	hugo --gc --minify
 
 docs_dev:
-	cd ${ROOT}/doc
-	hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.toml" --port=1377 --disableFastRender
+	cd ${ROOT}/doc && \
+	ls -ll && \
+ 	hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.toml" --port=1377 --disableFastRender
 
 doc_deploy:
 	@echo MARK: deploy doc
@@ -153,9 +154,11 @@ doc_deploy:
 	git reset upstream/gh-pages  && \
 	rev=$(git rev-parse --short HEAD)  && \
 	git add -A .  && \
+	set +o errexit && \
 	git commit -m "rebuild pages at ${rev}" && \
-	git push -q upstream HEAD:gh-pages
-	echo -e "Done documentation deploy.\n"
+	git push -q upstream HEAD:gh-pages && \
+	echo -e "Done documentation deploy.\n" && \
+	set -o errexit
 
 docker_image:
 	cd ${TMP_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
