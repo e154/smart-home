@@ -189,7 +189,7 @@ func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
 func (e *BaseActor) Info() (info ActorInfo) {
 	info = ActorInfo{
 		Id:                e.Id,
-		Type:              e.EntityType,
+		PluginName:        e.EntityType,
 		Name:              e.Name,
 		Description:       e.Description,
 		Hidde:             e.Hidden,

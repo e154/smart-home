@@ -20,6 +20,7 @@ package controllers
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -56,4 +57,3 @@ func NewControllerArea(common *ControllerCommon) ControllerArea {
 		ControllerCommon: common,
 	}
 }
-

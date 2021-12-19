@@ -281,7 +281,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			log.Infof("unload %v", entityId)
 
 			e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
-				PluginName: info.Type,
+				PluginName: info.PluginName,
 				EntityId:   entityId,
 			})
 
@@ -302,7 +302,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	settings := actor.Settings()
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedActor{
-		PluginName: info.Type,
+		PluginName: info.PluginName,
 		EntityId:   entityId,
 		Attributes: attr,
 		Settings:   settings,
@@ -311,7 +311,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	e.adaptors.Entity.Add(&m.Entity{
 		Id:          entityId,
 		Description: info.Description,
-		PluginName:  info.Type,
+		PluginName:  info.PluginName,
 		Icon:        info.Icon,
 		Area:        info.Area,
 		Hidden:      info.Hidde,
