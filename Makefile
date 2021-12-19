@@ -142,10 +142,13 @@ doc_deploy:
 	npm install -f  && \
 	echo -e "hugo version.\n"  && \
 	hugo version  && \
-	hugo --gc --minify
+	echo -e "build ...\n"  && \
+	hugo --gc --minify && \
+	ls -ll
 
 	cd ${ROOT}/doc/public  && \
 	git init  && \
+	ls -ll  && \
 	echo -e "Starting to documentation commit.\n"  && \
 	git config --global user.email "support@e154.ru"  && \
 	git config --global user.name "delta54"  && \
@@ -156,6 +159,7 @@ doc_deploy:
 	git add -A .
 	set +o errexit
 	cd ${ROOT}/doc/public  && \
+	ls -ll  && \
 	git commit -m "rebuild pages at ${rev}" && \
 	git push -q upstream HEAD:gh-pages && \
 	echo -e "Done documentation deploy.\n"
