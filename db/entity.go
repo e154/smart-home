@@ -37,7 +37,7 @@ type Entities struct {
 type Entity struct {
 	Id          common.EntityId `gorm:"primary_key"`
 	Description string
-	Plugin      string
+	PluginName  string
 	Image       *Image
 	ImageId     *int64
 	States      []*EntityState
@@ -75,7 +75,7 @@ func (n Entities) Update(v *Entity) (err error) {
 		"image_id":    v.ImageId,
 		"area_id":     v.AreaId,
 		"description": v.Description,
-		"plugin":      v.Plugin,
+		"plugin_name": v.PluginName,
 		"icon":        v.Icon,
 		"payload":     v.Payload,
 		"settings":    v.Settings,
@@ -201,7 +201,7 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 
 	list = make([]*Entity, 0)
 	err = n.Db.Model(&Entity{}).
-		Where("plugin = ? and auto_load = true", t).
+		Where("plugin_name = ? and auto_load = true", t).
 		Preload("Image").
 		Preload("States").
 		Preload("States.Image").
