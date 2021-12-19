@@ -14,8 +14,8 @@ message Script {
   string name = 3;
   string source = 4;
   string description = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message NewScriptRequest {

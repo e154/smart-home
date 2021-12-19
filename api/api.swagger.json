@@ -12,7 +12,16 @@
   },
   "tags": [
     {
+      "name": "AreaService"
+    },
+    {
       "name": "AuthService"
+    },
+    {
+      "name": "AutomationService"
+    },
+    {
+      "name": "EntityService"
     },
     {
       "name": "ImageService"
@@ -107,6 +116,483 @@
         },
         "tags": [
           "AuthService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/area": {
+      "post": {
+        "summary": "add new area",
+        "operationId": "AreaService_AddArea",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiArea"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewAreaRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AreaService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/area/{id}": {
+      "get": {
+        "summary": "get area by id",
+        "operationId": "AreaService_GetAreaByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiArea"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "AreaService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete area by id",
+        "operationId": "AreaService_DeleteAreaByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "AreaService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/area/{name}": {
+      "put": {
+        "summary": "update area",
+        "operationId": "AreaService_UpdateAreaByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiArea"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "int64"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "AreaService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/areas": {
+      "get": {
+        "summary": "get area list",
+        "operationId": "AreaService_GetAreaList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetAreaListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AreaService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/entities": {
+      "get": {
+        "summary": "get entity list",
+        "operationId": "EntityService_GetEntityList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetEntityListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/entity": {
+      "post": {
+        "summary": "add new entity",
+        "operationId": "EntityService_AddEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiEntity"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewEntityRequest"
+            }
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/entity/{id}": {
+      "get": {
+        "summary": "get entity by id",
+        "operationId": "EntityService_GetEntityByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiEntity"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete entity by id",
+        "operationId": "EntityService_DeleteEntityByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/entity/{name}": {
+      "put": {
+        "summary": "update entity",
+        "operationId": "EntityService_UpdateEntityByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiEntity"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "pluginName": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "area": {
+                  "$ref": "#/definitions/apiUpdateEntityRequestArea"
+                },
+                "icon": {
+                  "type": "string"
+                },
+                "image": {
+                  "$ref": "#/definitions/apiUpdateEntityRequestImage"
+                },
+                "hidden": {
+                  "type": "boolean"
+                },
+                "autoLoad": {
+                  "type": "boolean"
+                },
+                "parent": {
+                  "$ref": "#/definitions/apiEntityParent"
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/apiUpdateEntityRequestAction"
+                  }
+                },
+                "states": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/apiUpdateEntityRequestState"
+                  }
+                },
+                "attributes": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/definitions/apiAttribute"
+                  }
+                },
+                "settings": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/definitions/apiAttribute"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "EntityService"
         ],
         "security": [
           {
@@ -1326,6 +1812,248 @@
         ]
       }
     },
+    "/v1/task": {
+      "post": {
+        "summary": "add new task",
+        "operationId": "AutomationService_AddTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiTask"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewTaskRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AutomationService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/task/{id}": {
+      "get": {
+        "summary": "get task by id",
+        "operationId": "AutomationService_GetTaskByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiTask"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "AutomationService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "delete task by name",
+        "operationId": "AutomationService_DeleteTaskByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "AutomationService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/task/{name}": {
+      "put": {
+        "summary": "update task",
+        "operationId": "AutomationService_UpdateTaskByName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiTask"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "condition": {
+                  "$ref": "#/definitions/apiUpdateTaskRequestConditionEnum"
+                },
+                "triggers": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/apiUpdateTaskRequestTrigger"
+                  }
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/apiUpdateTaskRequestCondition"
+                  }
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/apiUpdateTaskRequestAction"
+                  }
+                },
+                "area": {
+                  "$ref": "#/definitions/apiArea"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "AutomationService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/tasks": {
+      "get": {
+        "summary": "get task list",
+        "operationId": "AutomationService_GetTaskList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetTaskListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AutomationService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/user": {
       "post": {
         "summary": "add new user",
@@ -2152,6 +2880,40 @@
         }
       }
     },
+    "apiAction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "script": {
+          "$ref": "#/definitions/apiScript"
+        }
+      }
+    },
+    "apiArea": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
     "apiAttribute": {
       "type": "object",
       "properties": {
@@ -2269,7 +3031,66 @@
     "apiEnablePluginResult": {
       "type": "object"
     },
-    "apiEntityActionShort": {
+    "apiEntity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pluginName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "area": {
+          "$ref": "#/definitions/apiArea"
+        },
+        "image": {
+          "$ref": "#/definitions/apiImage"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "autoLoad": {
+          "type": "boolean"
+        },
+        "parent": {
+          "$ref": "#/definitions/apiEntityParent"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiEntityAction"
+          }
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiEntityState"
+          }
+        },
+        "scripts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiScript"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiEntityAction": {
       "type": "object",
       "properties": {
         "name": {
@@ -2278,15 +3099,30 @@
         "description": {
           "type": "string"
         },
-        "imageUrl": {
+        "icon": {
           "type": "string"
         },
-        "icon": {
+        "image": {
+          "$ref": "#/definitions/apiImage"
+        },
+        "script": {
+          "$ref": "#/definitions/apiScript"
+        },
+        "type": {
           "type": "string"
         }
       }
     },
-    "apiEntityStateShort": {
+    "apiEntityParent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiEntityState": {
       "type": "object",
       "properties": {
         "name": {
@@ -2295,10 +3131,13 @@
         "description": {
           "type": "string"
         },
-        "imageUrl": {
+        "icon": {
           "type": "string"
         },
-        "icon": {
+        "image": {
+          "$ref": "#/definitions/apiImage"
+        },
+        "style": {
           "type": "string"
         }
       }
@@ -2328,6 +3167,37 @@
         }
       }
     },
+    "apiGetAreaListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiArea"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiGetAreaListResultMeta"
+        }
+      }
+    },
+    "apiGetAreaListResultMeta": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "objectsCount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "offset": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
     "apiGetBridgeListResult": {
       "type": "object",
       "properties": {
@@ -2343,6 +3213,37 @@
       }
     },
     "apiGetBridgeListResultMeta": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "objectsCount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "offset": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "apiGetEntityListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiEntity"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiGetEntityListResultMeta"
+        }
+      }
+    },
+    "apiGetEntityListResultMeta": {
       "type": "object",
       "properties": {
         "limit": {
@@ -2445,7 +3346,7 @@
         "actorActions": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/apiEntityActionShort"
+            "$ref": "#/definitions/apiGetPluginOptionsResultEntityAction"
           }
         },
         "actorCustomStates": {
@@ -2454,7 +3355,7 @@
         "actorStates": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/apiEntityStateShort"
+            "$ref": "#/definitions/apiGetPluginOptionsResultEntityState"
           }
         },
         "actorSetts": {
@@ -2468,6 +3369,40 @@
           "additionalProperties": {
             "$ref": "#/definitions/apiAttribute"
           }
+        }
+      }
+    },
+    "apiGetPluginOptionsResultEntityAction": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        }
+      }
+    },
+    "apiGetPluginOptionsResultEntityState": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
         }
       }
     },
@@ -2517,6 +3452,37 @@
       }
     },
     "apiGetScriptListResultMeta": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "objectsCount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "offset": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "apiGetTaskListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiTask"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiGetTaskListResultMeta"
+        }
+      }
+    },
+    "apiGetTaskListResultMeta": {
       "type": "object",
       "properties": {
         "limit": {
@@ -2629,6 +3595,143 @@
         }
       }
     },
+    "apiNewAreaRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "apiNewEntityRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "pluginName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "area": {
+          "$ref": "#/definitions/apiNewEntityRequestArea"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/apiNewEntityRequestImage"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "autoLoad": {
+          "type": "boolean"
+        },
+        "parent": {
+          "$ref": "#/definitions/apiEntityParent"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiNewEntityRequestAction"
+          }
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiNewEntityRequestState"
+          }
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
+        },
+        "settings": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
+        }
+      }
+    },
+    "apiNewEntityRequestAction": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/apiNewEntityRequestImage"
+        },
+        "script": {
+          "$ref": "#/definitions/apiNewEntityRequestActionScript"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "apiNewEntityRequestActionScript": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiNewEntityRequestArea": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiNewEntityRequestImage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiNewEntityRequestState": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/apiNewEntityRequestImage"
+        },
+        "style": {
+          "type": "string"
+        }
+      }
+    },
     "apiNewImageRequest": {
       "type": "object",
       "properties": {
@@ -2681,6 +3784,112 @@
         },
         "description": {
           "type": "string"
+        }
+      }
+    },
+    "apiNewTaskRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "condition": {
+          "$ref": "#/definitions/apiNewTaskRequestConditionEnum"
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiNewTaskRequestTrigger"
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiNewTaskRequestCondition"
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiNewTaskRequestAction"
+          }
+        },
+        "area": {
+          "$ref": "#/definitions/apiArea"
+        }
+      }
+    },
+    "apiNewTaskRequestAction": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiNewTaskRequestCondition": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiNewTaskRequestConditionEnum": {
+      "type": "string",
+      "enum": [
+        "OR",
+        "AND"
+      ],
+      "default": "OR"
+    },
+    "apiNewTaskRequestTrigger": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pluginName": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
         }
       }
     },
@@ -2928,6 +4137,165 @@
         }
       }
     },
+    "apiTask": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "condition": {
+          "$ref": "#/definitions/apiTaskCondition"
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiTrigger"
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiTaskCondition"
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiAction"
+          }
+        },
+        "area": {
+          "$ref": "#/definitions/apiArea"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiTaskCondition": {
+      "type": "string",
+      "enum": [
+        "OR",
+        "AND"
+      ],
+      "default": "OR"
+    },
+    "apiTrigger": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "script": {
+          "$ref": "#/definitions/apiScript"
+        },
+        "pluginName": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
+        }
+      }
+    },
+    "apiUpdateEntityRequestAction": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/apiUpdateEntityRequestImage"
+        },
+        "script": {
+          "$ref": "#/definitions/apiUpdateEntityRequestActionScript"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "apiUpdateEntityRequestActionScript": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiUpdateEntityRequestArea": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiUpdateEntityRequestImage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiUpdateEntityRequestState": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/apiUpdateEntityRequestImage"
+        },
+        "style": {
+          "type": "string"
+        }
+      }
+    },
     "apiUpdateRoleAccessListRequest": {
       "type": "object",
       "properties": {
@@ -2938,6 +4306,74 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/UpdateRoleAccessListRequestAccessListDiff"
+          }
+        }
+      }
+    },
+    "apiUpdateTaskRequestAction": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiUpdateTaskRequestCondition": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "apiUpdateTaskRequestConditionEnum": {
+      "type": "string",
+      "enum": [
+        "OR",
+        "AND"
+      ],
+      "default": "OR"
+    },
+    "apiUpdateTaskRequestTrigger": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "entityId": {
+          "type": "string"
+        },
+        "scriptId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pluginName": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
           }
         }
       }

@@ -162,7 +162,7 @@ func (e *Actor) UpdateMoonPosition(now time.Time) {
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
 		StorageSave: true,
-		Type:        e.Id.Type(),
+		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
 		NewState:    e.GetEventState(e),

@@ -38,8 +38,8 @@ message Role {
 
   AccessList access_list = 5;
 
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message NewRoleRequest {

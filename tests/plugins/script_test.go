@@ -92,7 +92,7 @@ entityAction = (entityId, actionName)->
 			// add entity
 			// ------------------------------------------------
 			plugEnt := GetNewScript(fmt.Sprintf("script.1"), []m.Script{})
-			plugEnt.Type = script.EntityScript
+			plugEnt.PluginName = script.EntityScript
 			plugEnt.Actions = []*m.EntityAction{
 				{
 					Name:        "ON",

@@ -251,7 +251,7 @@ import (
 
 const (
 	Name        = "{{.PluginName}}"
-	Entity{{.PluginName}} = common.EntityType("{{.PluginName}}")
+	Entity{{.PluginName}} = string("{{.PluginName}}")
 )
 
 const (

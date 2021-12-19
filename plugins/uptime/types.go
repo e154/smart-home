@@ -32,7 +32,7 @@ const (
 	AttrUptimeAppStarted = "app_started"
 
 	// EntitySensor ...
-	EntitySensor = common.EntityType("uptime")
+	EntitySensor = string("uptime")
 
 	// Name ...
 	Name = "uptime"

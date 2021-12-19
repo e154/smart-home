@@ -33,7 +33,7 @@ const (
 	// Name ...
 	Name = "weather"
 	// EntityWeather ...
-	EntityWeather = common.EntityType("weather")
+	EntityWeather = string("weather")
 )
 
 var (
@@ -92,7 +92,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventRequestState:
-		if v.To.Type() != Name {
+		if v.To.PluginName() != Name {
 			return
 		}
 

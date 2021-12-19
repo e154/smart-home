@@ -281,8 +281,8 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 			log.Infof("unload %v", entityId)
 
 			e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
-				Type:     info.Type,
-				EntityId: entityId,
+				PluginName: info.Type,
+				EntityId:   entityId,
 			})
 
 			var err error
@@ -302,7 +302,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	settings := actor.Settings()
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedActor{
-		Type:       info.Type,
+		PluginName: info.Type,
 		EntityId:   entityId,
 		Attributes: attr,
 		Settings:   settings,
@@ -311,7 +311,7 @@ func (e *entityManager) Spawn(constructor ActorConstructor) (actor PluginActor) 
 	e.adaptors.Entity.Add(&m.Entity{
 		Id:          entityId,
 		Description: info.Description,
-		Type:        info.Type,
+		PluginName:  info.Type,
 		Icon:        info.Icon,
 		Area:        info.Area,
 		Hidden:      info.Hidde,
@@ -373,7 +373,7 @@ func (e *entityManager) eventLoadedPlugin(msg event_bus.EventLoadedPlugin) (err 
 	log.Infof("Load plugin \"%s\" entities", msg.PluginName)
 
 	var entities []*m.Entity
-	if entities, err = e.adaptors.Entity.GetByType(msg.PluginName.String(), 1000, 0); err != nil {
+	if entities, err = e.adaptors.Entity.GetByType(msg.PluginName, 1000, 0); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -392,7 +392,7 @@ func (e *entityManager) eventUnloadedPlugin(msg event_bus.EventUnloadedPlugin) {
 
 	e.actors.Range(func(key, value interface{}) bool {
 		entityId := key.(common.EntityId)
-		if entityId.Type() != msg.PluginName {
+		if entityId.PluginName() != msg.PluginName {
 			return true
 		}
 		e.unsafeRemove(entityId)
@@ -403,7 +403,7 @@ func (e *entityManager) eventUnloadedPlugin(msg event_bus.EventUnloadedPlugin) {
 // CallAction ...
 func (e *entityManager) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallAction{
-		Type:       id.Type(),
+		PluginName: id.PluginName(),
 		EntityId:   id,
 		ActionName: action,
 		Args:       arg,
@@ -413,15 +413,15 @@ func (e *entityManager) CallAction(id common.EntityId, action string, arg map[st
 // CallScene ...
 func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}) {
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallScene{
-		Type:     id.Type(),
-		EntityId: id,
-		Args:     arg,
+		PluginName: id.PluginName(),
+		EntityId:   id,
+		Args:       arg,
 	})
 }
 
 func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor, err error) {
 	var plugin interface{}
-	if plugin, err = e.pluginManager.GetPlugin(entityId.Type().String()); err != nil {
+	if plugin, err = e.pluginManager.GetPlugin(entityId.PluginName()); err != nil {
 		err = fmt.Errorf("from plugin manager, %s", err.Error())
 		return
 	}
@@ -431,7 +431,7 @@ func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor
 		return
 		//...
 	} else {
-		err = fmt.Errorf("cannot cast to the desired type plugin '%s' to plugins.CrudActor", entityId.Type().String())
+		err = fmt.Errorf("cannot cast to the desired type plugin '%s' to plugins.CrudActor", entityId.PluginName())
 	}
 	return
 }

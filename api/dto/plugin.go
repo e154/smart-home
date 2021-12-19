@@ -60,9 +60,9 @@ func (p Plugin) ToPluginListResult(items []*m.Plugin, total, limit, offset uint6
 // Options ...
 func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsResult) {
 
-	var actions = make(map[string]*api.EntityActionShort)
+	var actions = make(map[string]*api.GetPluginOptionsResult_EntityAction)
 	for k, v := range options.ActorActions {
-		actions[k] = &api.EntityActionShort{
+		actions[k] = &api.GetPluginOptionsResult_EntityAction{
 			Name:        v.Name,
 			Description: v.Description,
 			ImageUrl:    common.StringValue(v.ImageUrl),
@@ -70,9 +70,9 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsRe
 		}
 	}
 
-	var states = make(map[string]*api.EntityStateShort)
+	var states = make(map[string]*api.GetPluginOptionsResult_EntityState)
 	for k, v := range options.ActorStates {
-		states[k] = &api.EntityStateShort{
+		states[k] = &api.GetPluginOptionsResult_EntityState{
 			Name:        v.Name,
 			Description: v.Description,
 			ImageUrl:    common.StringValue(v.ImageUrl),

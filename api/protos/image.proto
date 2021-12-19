@@ -18,7 +18,7 @@ message Image {
   string title = 6;
   int64 size = 7;
   string name = 8;
-  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp created_at = 99;
 }
 
 message NewImageRequest {

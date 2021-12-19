@@ -137,9 +137,6 @@ func (i *Icon) String() string {
 	return string(*i)
 }
 
-// EntityType ...
-type EntityType string
-
 // EntityId ...
 type EntityId string
 
@@ -158,13 +155,13 @@ func (e EntityId) Name() string {
 	return string(e)
 }
 
-// Type ...
-func (e EntityId) Type() EntityType {
+// PluginName ...
+func (e EntityId) PluginName() string {
 	arr := strings.Split(string(e), ".")
 	if len(arr) > 1 {
-		return EntityType(arr[0])
+		return arr[0]
 	}
-	return EntityType(e)
+	return string(e)
 }
 
 // String ...
@@ -174,11 +171,6 @@ func (e *EntityId) String() string {
 	} else {
 		return string(*e)
 	}
-}
-
-// String ...
-func (e EntityType) String() string {
-	return string(e)
 }
 
 // AttributeType ...

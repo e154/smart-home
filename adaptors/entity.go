@@ -355,7 +355,7 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 	ver = &m.Entity{
 		Id:          dbVer.Id,
 		Description: dbVer.Description,
-		Type:        common.EntityType(dbVer.PluginName),
+		PluginName:  dbVer.PluginName,
 		Actions:     make([]*m.EntityAction, 0),
 		States:      make([]*m.EntityState, 0),
 		Icon:        dbVer.Icon,
@@ -438,7 +438,7 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 	dbVer = &db.Entity{
 		Id:          ver.Id,
 		Description: ver.Description,
-		PluginName:  ver.Type.String(),
+		PluginName:  ver.PluginName,
 		Icon:        ver.Icon,
 		AutoLoad:    ver.AutoLoad,
 		ParentId:    ver.ParentId,

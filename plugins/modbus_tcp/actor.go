@@ -121,10 +121,10 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	e.AttrMu.Unlock()
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-		Type:     e.Id.Type(),
-		EntityId: e.Id,
-		OldState: oldState,
-		NewState: e.GetEventState(e),
+		PluginName: e.Id.PluginName(),
+		EntityId:   e.Id,
+		OldState:   oldState,
+		NewState:   e.GetEventState(e),
 	})
 
 	return nil

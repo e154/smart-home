@@ -91,8 +91,8 @@ func (p *WeatherOwm) RemoveWeather(entityId common.EntityId) {
 	log.Infof("unload weather_owm.%s", entityId.Name())
 
 	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
-		Type:     "weather_owm",
-		EntityId: common.EntityId(fmt.Sprintf("weather_owm.%s", entityId.Name())),
+		PluginName: "weather_owm",
+		EntityId:   common.EntityId(fmt.Sprintf("weather_owm.%s", entityId.Name())),
 	})
 }
 

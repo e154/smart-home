@@ -90,8 +90,8 @@ func (p *WeatherMet) RemoveWeather(entityId common.EntityId) {
 	log.Infof("unload weather_met.%s", entityId.Name())
 
 	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
-		Type:     "weather_met",
-		EntityId: common.EntityId(fmt.Sprintf("weather_met.%s", entityId.Name())),
+		PluginName: "weather_met",
+		EntityId:   common.EntityId(fmt.Sprintf("weather_met.%s", entityId.Name())),
 	})
 }
 

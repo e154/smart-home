@@ -28,7 +28,7 @@ const (
 	// Name ...
 	Name = "moon"
 	// EntityMoon ...
-	EntityMoon = common.EntityType("moon")
+	EntityMoon = string("moon")
 )
 
 const (

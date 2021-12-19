@@ -22,8 +22,8 @@ message Zigbee2mqttShort {
   string login = 3;
   bool permit_join = 4;
   string base_topic = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message Zigbee2mqtt {
@@ -36,8 +36,8 @@ message Zigbee2mqtt {
   string login = 7;
   bool permit_join = 8;
   string base_topic = 9;
-  google.protobuf.Timestamp created_at = 10;
-  google.protobuf.Timestamp updated_at = 11;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message GetBridgeRequest {
@@ -118,8 +118,8 @@ message Zigbee2mqttDevice {
   repeated string functions = 8;
   string image_url = 9;
   string status = 10;
-  google.protobuf.Timestamp created_at = 11;
-  google.protobuf.Timestamp updated_at = 12;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message SearchDeviceResult {

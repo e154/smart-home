@@ -133,9 +133,12 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Actors:     true,
-		ActorAttrs: NewAttr(),
-		ActorSetts: NewSettings(),
+		Actors:             true,
+		ActorCustomActions: true,
+		ActorCustomStates:  true,
+		ActorCustomAttrs:   true,
+		ActorAttrs:         NewAttr(),
+		ActorSetts:         NewSettings(),
 	}
 }
 

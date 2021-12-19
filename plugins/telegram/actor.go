@@ -260,7 +260,7 @@ func (p *Actor) UpdateStatus() (err error) {
 
 	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
 		StorageSave: true,
-		Type:        p.Id.Type(),
+		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
 		OldState:    oldState,
 		NewState:    p.GetEventState(p),

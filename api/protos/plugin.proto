@@ -51,6 +51,7 @@ message DisablePluginResult {
 message GetPluginOptionsRequest {
   string name = 1;
 }
+
 message GetPluginOptionsResult {
   bool triggers = 1;
   bool actors = 2;

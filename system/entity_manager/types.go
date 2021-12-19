@@ -191,7 +191,7 @@ type actorInfo struct {
 type ActorInfo struct {
 	Id                common.EntityId        `json:"id"`
 	ParentId          *common.EntityId       `json:"parent_id"`
-	Type              common.EntityType      `json:"type"`
+	Type              string      `json:"type"`
 	Name              string                 `json:"name"`
 	Description       string                 `json:"description"`
 	Hidde             bool                   `json:"hidde"`

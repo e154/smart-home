@@ -34,10 +34,10 @@ message CurrentUser {
   repeated UserMeta meta = 10;
   Role role = 11;
   string lang = 12;
-  google.protobuf.Timestamp created_at = 13;
-  google.protobuf.Timestamp updated_at = 14;
-  google.protobuf.Timestamp current_sign_in_at = 15;
-  google.protobuf.Timestamp last_sign_in_at = 16;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+  google.protobuf.Timestamp current_sign_in_at = 101;
+  google.protobuf.Timestamp last_sign_in_at = 102;
 }
 
 message NewtUserRequest {
@@ -107,12 +107,12 @@ message UserFull {
 
   Parent user = 17;
 
-  google.protobuf.Timestamp created_at = 18;
-  google.protobuf.Timestamp updated_at = 19;
-  google.protobuf.Timestamp current_sign_in_at = 20;
-  google.protobuf.Timestamp last_sign_in_at = 21;
-  google.protobuf.Timestamp reset_password_sent_at = 22;
-  google.protobuf.Timestamp deleted_at = 23;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+  google.protobuf.Timestamp current_sign_in_at = 101;
+  google.protobuf.Timestamp last_sign_in_at = 102;
+  google.protobuf.Timestamp reset_password_sent_at = 103;
+  google.protobuf.Timestamp deleted_at = 104;
 
 }
 

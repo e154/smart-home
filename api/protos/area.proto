@@ -3,6 +3,128 @@ syntax = "proto3";
 package api;
 option go_package = "/api";
 
-message Area {
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/empty.proto";
 
+message Area {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message NewAreaRequest {
+  string name = 2;
+  string description = 3;
+}
+
+message UpdateAreaRequest {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message GetAreaRequest {
+  int64 id = 1;
+}
+
+message GetAreaListRequest {
+  uint64 limit = 1;
+  uint64 offset = 2;
+  string order = 3;
+  string sort_by = 4;
+}
+
+message GetAreaListResult {
+  repeated Area items = 1;
+  message Meta {
+    uint64 limit = 1;
+    uint64 objects_count = 2;
+    uint64 offset = 3;
+  }
+  Meta meta = 2;
+}
+
+message DeleteAreaRequest {
+  int64 id = 1;
+}
+
+service AreaService {
+
+  // add new area
+  rpc AddArea (NewAreaRequest) returns (Area){
+    option (google.api.http) = {
+      post: "/v1/area"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update area
+  rpc UpdateAreaByName (UpdateAreaRequest) returns (Area){
+    option (google.api.http) = {
+      put: "/v1/area/{name}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get area by id
+  rpc GetAreaByName (GetAreaRequest) returns (Area){
+    option (google.api.http) = {
+      get: "/v1/area/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get area list
+  rpc GetAreaList (GetAreaListRequest) returns (GetAreaListResult){
+    option (google.api.http) = {
+      get: "/v1/areas"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete area by id
+  rpc DeleteAreaByName (DeleteAreaRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/area/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
 }

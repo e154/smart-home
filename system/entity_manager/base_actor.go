@@ -39,7 +39,7 @@ type BaseActor struct {
 	ParentId          *common.EntityId
 	Name              string
 	Description       string
-	EntityType        common.EntityType
+	EntityType        string
 	Manager           EntityManager
 	State             *ActorState
 	Area              *m.Area
@@ -69,10 +69,10 @@ func NewBaseActor(entity *m.Entity,
 	adaptors *adaptors.Adaptors) BaseActor {
 	actor := BaseActor{
 		adaptors:          adaptors,
-		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.Type, entity.Id.Name())),
+		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.PluginName, entity.Id.Name())),
 		Name:              entity.Id.Name(),
 		Description:       entity.Description,
-		EntityType:        entity.Type,
+		EntityType:        entity.PluginName,
 		ParentId:          entity.ParentId,
 		Manager:           nil,
 		State:             nil,

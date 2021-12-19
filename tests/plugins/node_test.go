@@ -93,7 +93,7 @@ func TestNode(t *testing.T) {
 					fn := func(topic string, msg interface{}) {
 						switch v := msg.(type) {
 						case event_bus.EventStateChanged:
-							if v.Type != "node" {
+							if v.PluginName != "node" {
 								return
 							}
 							ctx.So(v.OldState.State, ShouldNotBeNil)

@@ -129,6 +129,8 @@ func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationEr
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, common.ErrNotAuthorized):
 		return status.Error(codes.Unauthenticated, err.Error())
+	case errors.Is(err, common.ErrUnimplemented):
+		return status.Error(codes.Unimplemented, err.Error())
 	default:
 		log.Errorf("%+v\n", err)
 		return status.Error(codes.Internal, err.Error())

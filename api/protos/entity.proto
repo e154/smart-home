@@ -8,40 +8,74 @@ import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
+import "area.proto";
+import "image.proto";
+import "script.proto";
 import "attributes.proto";
 
 message EntityAction {
-
+  string name = 1;
+  string description = 2;
+  optional string icon = 3;
+  optional Image image = 5;
+  optional Script script = 6;
+  string type = 7;
 }
 
 message EntityState {
+  string name = 1;
+  string description = 2;
+  optional string icon = 3;
+  optional Image image = 5;
+  string style = 6;
+}
 
+message EntityParent {
+  int64 id = 1;
 }
 
 message Entity {
   int64 id = 1;
-  string type = 2;
+  string plugin_name = 2;
   string description = 3;
-  int64 area_id = 4;
-  string icon = 5;
-  int64 image_id = 6;
+  optional Area area = 4;
+  optional Image image = 6;
+  optional string icon = 5;
+  bool hidden = 7;
+  bool auto_load = 8;
+  optional EntityParent parent = 9;
+  repeated EntityAction actions = 10;
+  repeated EntityState states = 11;
+  repeated Script scripts = 12;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message NewEntityRequest {
-  string type = 2;
+  string name = 1;
+  string plugin_name = 2;
   string description = 3;
-  optional int64 area_id = 4;
+  message Area {
+    int64 id = 1;
+  }
+  optional Area area = 4;
   optional string icon = 5;
-  optional int64 image_id = 6;
+  message Image {
+    int64 id = 1;
+  }
+  optional Image image = 6;
   bool hidden = 7;
   bool auto_load = 8;
-  string parent_id = 9;
+  optional EntityParent parent = 9;
   message Action {
     string name = 1;
     string description = 2;
     optional string icon = 3;
-    optional int64 image_id = 4;
-    optional int64 script_id = 5;
+    optional Image image = 4;
+    message Script {
+      int64 id = 1;
+    }
+    optional Script script = 5;
     string type = 6;
   }
   repeated Action actions = 10;
@@ -49,12 +83,78 @@ message NewEntityRequest {
     string name = 1;
     string description = 2;
     optional string icon = 3;
-    optional int64 image_id = 4;
+    optional Image image = 4;
     string style = 5;
   }
   repeated State states = 11;
   map<string, Attribute> attributes = 12;
   map<string, Attribute> settings = 13;
+}
+
+message UpdateEntityRequest {
+  string name = 1;
+  string plugin_name = 2;
+  string description = 3;
+  message Area {
+    int64 id = 1;
+  }
+  optional Area area = 4;
+  optional string icon = 5;
+  message Image {
+    int64 id = 1;
+  }
+  optional Image image = 6;
+  bool hidden = 7;
+  bool auto_load = 8;
+  optional EntityParent parent = 9;
+  message Action {
+    string name = 1;
+    string description = 2;
+    optional string icon = 3;
+    optional Image image = 4;
+    message Script {
+      int64 id = 1;
+    }
+    optional Script script = 5;
+    string type = 6;
+  }
+  repeated Action actions = 10;
+  message State {
+    string name = 1;
+    string description = 2;
+    optional string icon = 3;
+    optional Image image = 4;
+    string style = 5;
+  }
+  repeated State states = 11;
+  map<string, Attribute> attributes = 12;
+  map<string, Attribute> settings = 13;
+}
+
+message GetEntityRequest {
+  string id = 1;
+}
+
+
+message GetEntityListRequest {
+  uint64 limit = 1;
+  uint64 offset = 2;
+  string order = 3;
+  string sort_by = 4;
+}
+
+message GetEntityListResult {
+  repeated Entity items = 1;
+  message Meta {
+    uint64 limit = 1;
+    uint64 objects_count = 2;
+    uint64 offset = 3;
+  }
+  Meta meta = 2;
+}
+
+message DeleteEntityRequest {
+  string id = 1;
 }
 
 service EntityService {
@@ -91,10 +191,10 @@ service EntityService {
     };
   }
 
-  // get entity by name
+  // get entity by id
   rpc GetEntityByName (GetEntityRequest) returns (Entity){
     option (google.api.http) = {
-      get: "/v1/entity/{name}"
+      get: "/v1/entity/{id}"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -121,10 +221,10 @@ service EntityService {
     };
   }
 
-  // delete entity by name
+  // delete entity by id
   rpc DeleteEntityByName (DeleteEntityRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
-      delete: "/v1/entity/{name}"
+      delete: "/v1/entity/{id}"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

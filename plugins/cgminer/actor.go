@@ -145,7 +145,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
 		StorageSave: params.StorageSave,
-		Type:        e.Id.Type(),
+		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
 		NewState:    e.GetEventState(e),
