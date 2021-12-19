@@ -153,11 +153,12 @@ doc_deploy:
 	git fetch upstream  && \
 	git reset upstream/gh-pages  && \
 	rev=$(git rev-parse --short HEAD)  && \
-	git add -A .  && \
-	set +o errexit && \
+	git add -A .
+	set +o errexit
+	cd ${ROOT}/doc/public  && \
 	git commit -m "rebuild pages at ${rev}" && \
 	git push -q upstream HEAD:gh-pages && \
-	echo -e "Done documentation deploy.\n" && \
+	echo -e "Done documentation deploy.\n"
 	set -o errexit
 
 docker_image:
