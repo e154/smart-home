@@ -38,22 +38,68 @@ func NewControllerEntity(common *ControllerCommon) ControllerEntity {
 	}
 }
 
-func (c ControllerEntity) AddEntity(ctx context.Context, request *api.NewEntityRequest) (*api.Entity, error) {
-	return nil, c.error(ctx, nil, common.ErrUnimplemented)
+func (c ControllerEntity) AddEntity(ctx context.Context, req *api.NewEntityRequest) (*api.Entity, error) {
+
+	entity := c.dto.Entity.AddEntity(req)
+
+	entity, errs, err := c.endpoint.Entity.Add(ctx, entity)
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
+	}
+
+	return c.dto.Entity.ToEntity(entity), nil
 }
 
-func (c ControllerEntity) UpdateEntityByName(ctx context.Context, request *api.UpdateEntityRequest) (*api.Entity, error) {
-	return nil, c.error(ctx, nil, common.ErrUnimplemented)
+func (c ControllerEntity) UpdateEntity(ctx context.Context, req *api.UpdateEntityRequest) (*api.Entity, error) {
+
+	entity := c.dto.Entity.UpdateEntity(req)
+
+	entity, errs, err := c.endpoint.Entity.Update(ctx, entity)
+	if len(errs) != 0 || err != nil {
+		return nil, c.error(ctx, errs, err)
+	}
+
+	return c.dto.Entity.ToEntity(entity), nil
 }
 
-func (c ControllerEntity) GetEntityByName(ctx context.Context, request *api.GetEntityRequest) (*api.Entity, error) {
-	return nil, c.error(ctx, nil, common.ErrUnimplemented)
+func (c ControllerEntity) GetEntity(ctx context.Context, req *api.GetEntityRequest) (*api.Entity, error) {
+
+	entity, err := c.endpoint.Entity.GetById(ctx, common.EntityId(req.Id))
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Entity.ToEntity(entity), nil
 }
 
-func (c ControllerEntity) GetEntityList(ctx context.Context, request *api.GetEntityListRequest) (*api.GetEntityListResult, error) {
-	return nil, c.error(ctx, nil, common.ErrUnimplemented)
+func (c ControllerEntity) GetEntityList(ctx context.Context, req *api.GetEntityListRequest) (*api.GetEntityListResult, error) {
+
+	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	items, total, err := c.endpoint.Entity.List(ctx, pagination)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Entity.ToListResult(items, uint64(total), req.Limit, req.Offset), nil
 }
 
-func (c ControllerEntity) DeleteEntityByName(ctx context.Context, request *api.DeleteEntityRequest) (*emptypb.Empty, error) {
-	return nil, c.error(ctx, nil, common.ErrUnimplemented)
+func (c ControllerEntity) DeleteEntity(ctx context.Context, req *api.DeleteEntityRequest) (*emptypb.Empty, error) {
+
+	if err := c.endpoint.Entity.Delete(ctx, common.EntityId(req.Id)); err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// SearchEntity ...
+func (c ControllerEntity) SearchEntity(ctx context.Context, req *api.SearchEntityRequest) (*api.SearchEntityResult, error) {
+
+	search := c.Search(req.Query, req.Limit, req.Offset)
+	items, _, err := c.endpoint.Entity.Search(ctx, search.Query, search.Limit, search.Offset)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Entity.ToSearchResult(items), nil
 }

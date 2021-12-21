@@ -22,13 +22,13 @@ type AutomationServiceClient interface {
 	// add new task
 	AddTask(ctx context.Context, in *NewTaskRequest, opts ...grpc.CallOption) (*Task, error)
 	// update task
-	UpdateTaskByName(ctx context.Context, in *UpdateTaskRequest, opts ...grpc.CallOption) (*Task, error)
-	// get task by id
-	GetTaskByName(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*Task, error)
+	UpdateTask(ctx context.Context, in *UpdateTaskRequest, opts ...grpc.CallOption) (*Task, error)
+	// get task
+	GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*Task, error)
 	// get task list
 	GetTaskList(ctx context.Context, in *GetTaskListRequest, opts ...grpc.CallOption) (*GetTaskListResult, error)
-	// delete task by name
-	DeleteTaskByName(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// delete task
+	DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type automationServiceClient struct {
@@ -48,18 +48,18 @@ func (c *automationServiceClient) AddTask(ctx context.Context, in *NewTaskReques
 	return out, nil
 }
 
-func (c *automationServiceClient) UpdateTaskByName(ctx context.Context, in *UpdateTaskRequest, opts ...grpc.CallOption) (*Task, error) {
+func (c *automationServiceClient) UpdateTask(ctx context.Context, in *UpdateTaskRequest, opts ...grpc.CallOption) (*Task, error) {
 	out := new(Task)
-	err := c.cc.Invoke(ctx, "/api.AutomationService/UpdateTaskByName", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.AutomationService/UpdateTask", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *automationServiceClient) GetTaskByName(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*Task, error) {
+func (c *automationServiceClient) GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*Task, error) {
 	out := new(Task)
-	err := c.cc.Invoke(ctx, "/api.AutomationService/GetTaskByName", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.AutomationService/GetTask", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,9 +75,9 @@ func (c *automationServiceClient) GetTaskList(ctx context.Context, in *GetTaskLi
 	return out, nil
 }
 
-func (c *automationServiceClient) DeleteTaskByName(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *automationServiceClient) DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/api.AutomationService/DeleteTaskByName", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.AutomationService/DeleteTask", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -91,13 +91,13 @@ type AutomationServiceServer interface {
 	// add new task
 	AddTask(context.Context, *NewTaskRequest) (*Task, error)
 	// update task
-	UpdateTaskByName(context.Context, *UpdateTaskRequest) (*Task, error)
-	// get task by id
-	GetTaskByName(context.Context, *GetTaskRequest) (*Task, error)
+	UpdateTask(context.Context, *UpdateTaskRequest) (*Task, error)
+	// get task
+	GetTask(context.Context, *GetTaskRequest) (*Task, error)
 	// get task list
 	GetTaskList(context.Context, *GetTaskListRequest) (*GetTaskListResult, error)
-	// delete task by name
-	DeleteTaskByName(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error)
+	// delete task
+	DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedAutomationServiceServer should be embedded to have forward compatible implementations.
@@ -107,17 +107,17 @@ type UnimplementedAutomationServiceServer struct {
 func (UnimplementedAutomationServiceServer) AddTask(context.Context, *NewTaskRequest) (*Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddTask not implemented")
 }
-func (UnimplementedAutomationServiceServer) UpdateTaskByName(context.Context, *UpdateTaskRequest) (*Task, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateTaskByName not implemented")
+func (UnimplementedAutomationServiceServer) UpdateTask(context.Context, *UpdateTaskRequest) (*Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTask not implemented")
 }
-func (UnimplementedAutomationServiceServer) GetTaskByName(context.Context, *GetTaskRequest) (*Task, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTaskByName not implemented")
+func (UnimplementedAutomationServiceServer) GetTask(context.Context, *GetTaskRequest) (*Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTask not implemented")
 }
 func (UnimplementedAutomationServiceServer) GetTaskList(context.Context, *GetTaskListRequest) (*GetTaskListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskList not implemented")
 }
-func (UnimplementedAutomationServiceServer) DeleteTaskByName(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteTaskByName not implemented")
+func (UnimplementedAutomationServiceServer) DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTask not implemented")
 }
 
 // UnsafeAutomationServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -149,38 +149,38 @@ func _AutomationService_AddTask_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AutomationService_UpdateTaskByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AutomationService_UpdateTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateTaskRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AutomationServiceServer).UpdateTaskByName(ctx, in)
+		return srv.(AutomationServiceServer).UpdateTask(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.AutomationService/UpdateTaskByName",
+		FullMethod: "/api.AutomationService/UpdateTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AutomationServiceServer).UpdateTaskByName(ctx, req.(*UpdateTaskRequest))
+		return srv.(AutomationServiceServer).UpdateTask(ctx, req.(*UpdateTaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AutomationService_GetTaskByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AutomationService_GetTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetTaskRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AutomationServiceServer).GetTaskByName(ctx, in)
+		return srv.(AutomationServiceServer).GetTask(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.AutomationService/GetTaskByName",
+		FullMethod: "/api.AutomationService/GetTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AutomationServiceServer).GetTaskByName(ctx, req.(*GetTaskRequest))
+		return srv.(AutomationServiceServer).GetTask(ctx, req.(*GetTaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -203,20 +203,20 @@ func _AutomationService_GetTaskList_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AutomationService_DeleteTaskByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AutomationService_DeleteTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteTaskRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AutomationServiceServer).DeleteTaskByName(ctx, in)
+		return srv.(AutomationServiceServer).DeleteTask(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.AutomationService/DeleteTaskByName",
+		FullMethod: "/api.AutomationService/DeleteTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AutomationServiceServer).DeleteTaskByName(ctx, req.(*DeleteTaskRequest))
+		return srv.(AutomationServiceServer).DeleteTask(ctx, req.(*DeleteTaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -233,20 +233,20 @@ var AutomationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AutomationService_AddTask_Handler,
 		},
 		{
-			MethodName: "UpdateTaskByName",
-			Handler:    _AutomationService_UpdateTaskByName_Handler,
+			MethodName: "UpdateTask",
+			Handler:    _AutomationService_UpdateTask_Handler,
 		},
 		{
-			MethodName: "GetTaskByName",
-			Handler:    _AutomationService_GetTaskByName_Handler,
+			MethodName: "GetTask",
+			Handler:    _AutomationService_GetTask_Handler,
 		},
 		{
 			MethodName: "GetTaskList",
 			Handler:    _AutomationService_GetTaskList_Handler,
 		},
 		{
-			MethodName: "DeleteTaskByName",
-			Handler:    _AutomationService_DeleteTaskByName_Handler,
+			MethodName: "DeleteTask",
+			Handler:    _AutomationService_DeleteTask_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -152,7 +152,7 @@ service ScriptService {
   }
 
   // delete script by id
-  rpc SearchScriptById (SearchScriptRequest) returns (SearchScriptListResult){
+  rpc SearchScript (SearchScriptRequest) returns (SearchScriptListResult){
     option (google.api.http) = {
       get: "/v1/scripts/search"
     };

@@ -65,7 +65,7 @@ func local_request_AreaService_AddArea_0(ctx context.Context, marshaler runtime.
 
 }
 
-func request_AreaService_UpdateAreaByName_0(ctx context.Context, marshaler runtime.Marshaler, client AreaServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_AreaService_UpdateArea_0(ctx context.Context, marshaler runtime.Marshaler, client AreaServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateAreaRequest
 	var metadata runtime.ServerMetadata
 
@@ -94,12 +94,12 @@ func request_AreaService_UpdateAreaByName_0(ctx context.Context, marshaler runti
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
 
-	msg, err := client.UpdateAreaByName(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.UpdateArea(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_AreaService_UpdateAreaByName_0(ctx context.Context, marshaler runtime.Marshaler, server AreaServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_AreaService_UpdateArea_0(ctx context.Context, marshaler runtime.Marshaler, server AreaServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateAreaRequest
 	var metadata runtime.ServerMetadata
 
@@ -128,12 +128,12 @@ func local_request_AreaService_UpdateAreaByName_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
 
-	msg, err := server.UpdateAreaByName(ctx, &protoReq)
+	msg, err := server.UpdateArea(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_AreaService_GetAreaByName_0(ctx context.Context, marshaler runtime.Marshaler, client AreaServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_AreaService_GetAreaById_0(ctx context.Context, marshaler runtime.Marshaler, client AreaServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetAreaRequest
 	var metadata runtime.ServerMetadata
 
@@ -154,12 +154,12 @@ func request_AreaService_GetAreaByName_0(ctx context.Context, marshaler runtime.
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.GetAreaByName(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetAreaById(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_AreaService_GetAreaByName_0(ctx context.Context, marshaler runtime.Marshaler, server AreaServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_AreaService_GetAreaById_0(ctx context.Context, marshaler runtime.Marshaler, server AreaServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetAreaRequest
 	var metadata runtime.ServerMetadata
 
@@ -180,7 +180,7 @@ func local_request_AreaService_GetAreaByName_0(ctx context.Context, marshaler ru
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.GetAreaByName(ctx, &protoReq)
+	msg, err := server.GetAreaById(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -221,7 +221,7 @@ func local_request_AreaService_GetAreaList_0(ctx context.Context, marshaler runt
 
 }
 
-func request_AreaService_DeleteAreaByName_0(ctx context.Context, marshaler runtime.Marshaler, client AreaServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_AreaService_DeleteArea_0(ctx context.Context, marshaler runtime.Marshaler, client AreaServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteAreaRequest
 	var metadata runtime.ServerMetadata
 
@@ -242,12 +242,12 @@ func request_AreaService_DeleteAreaByName_0(ctx context.Context, marshaler runti
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.DeleteAreaByName(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.DeleteArea(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_AreaService_DeleteAreaByName_0(ctx context.Context, marshaler runtime.Marshaler, server AreaServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_AreaService_DeleteArea_0(ctx context.Context, marshaler runtime.Marshaler, server AreaServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteAreaRequest
 	var metadata runtime.ServerMetadata
 
@@ -268,7 +268,43 @@ func local_request_AreaService_DeleteAreaByName_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.DeleteAreaByName(ctx, &protoReq)
+	msg, err := server.DeleteArea(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+var (
+	filter_AreaService_SearchArea_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
+func request_AreaService_SearchArea_0(ctx context.Context, marshaler runtime.Marshaler, client AreaServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SearchAreaRequest
+	var metadata runtime.ServerMetadata
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AreaService_SearchArea_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.SearchArea(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_AreaService_SearchArea_0(ctx context.Context, marshaler runtime.Marshaler, server AreaServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SearchAreaRequest
+	var metadata runtime.ServerMetadata
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AreaService_SearchArea_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.SearchArea(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -302,18 +338,18 @@ func RegisterAreaServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("PUT", pattern_AreaService_UpdateAreaByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_AreaService_UpdateArea_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AreaService/UpdateAreaByName", runtime.WithHTTPPathPattern("/v1/area/{name}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AreaService/UpdateArea", runtime.WithHTTPPathPattern("/v1/area/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_AreaService_UpdateAreaByName_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_AreaService_UpdateArea_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -321,22 +357,22 @@ func RegisterAreaServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_AreaService_UpdateAreaByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AreaService_UpdateArea_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_AreaService_GetAreaByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_AreaService_GetAreaById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AreaService/GetAreaByName", runtime.WithHTTPPathPattern("/v1/area/{id}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AreaService/GetAreaById", runtime.WithHTTPPathPattern("/v1/area/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_AreaService_GetAreaByName_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_AreaService_GetAreaById_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -344,7 +380,7 @@ func RegisterAreaServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_AreaService_GetAreaByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AreaService_GetAreaById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -371,18 +407,18 @@ func RegisterAreaServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("DELETE", pattern_AreaService_DeleteAreaByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_AreaService_DeleteArea_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AreaService/DeleteAreaByName", runtime.WithHTTPPathPattern("/v1/area/{id}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AreaService/DeleteArea", runtime.WithHTTPPathPattern("/v1/area/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_AreaService_DeleteAreaByName_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_AreaService_DeleteArea_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -390,7 +426,30 @@ func RegisterAreaServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_AreaService_DeleteAreaByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AreaService_DeleteArea_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_AreaService_SearchArea_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AreaService/SearchArea", runtime.WithHTTPPathPattern("/v1/area/search"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_AreaService_SearchArea_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_AreaService_SearchArea_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -455,43 +514,43 @@ func RegisterAreaServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("PUT", pattern_AreaService_UpdateAreaByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_AreaService_UpdateArea_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AreaService/UpdateAreaByName", runtime.WithHTTPPathPattern("/v1/area/{name}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AreaService/UpdateArea", runtime.WithHTTPPathPattern("/v1/area/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_AreaService_UpdateAreaByName_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AreaService_UpdateArea_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_AreaService_UpdateAreaByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AreaService_UpdateArea_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_AreaService_GetAreaByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_AreaService_GetAreaById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AreaService/GetAreaByName", runtime.WithHTTPPathPattern("/v1/area/{id}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AreaService/GetAreaById", runtime.WithHTTPPathPattern("/v1/area/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_AreaService_GetAreaByName_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AreaService_GetAreaById_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_AreaService_GetAreaByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AreaService_GetAreaById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -515,23 +574,43 @@ func RegisterAreaServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("DELETE", pattern_AreaService_DeleteAreaByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_AreaService_DeleteArea_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AreaService/DeleteAreaByName", runtime.WithHTTPPathPattern("/v1/area/{id}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AreaService/DeleteArea", runtime.WithHTTPPathPattern("/v1/area/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_AreaService_DeleteAreaByName_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AreaService_DeleteArea_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_AreaService_DeleteAreaByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AreaService_DeleteArea_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_AreaService_SearchArea_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AreaService/SearchArea", runtime.WithHTTPPathPattern("/v1/area/search"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_AreaService_SearchArea_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_AreaService_SearchArea_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -541,23 +620,27 @@ func RegisterAreaServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 var (
 	pattern_AreaService_AddArea_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "area"}, ""))
 
-	pattern_AreaService_UpdateAreaByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "area", "name"}, ""))
+	pattern_AreaService_UpdateArea_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "area", "name"}, ""))
 
-	pattern_AreaService_GetAreaByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "area", "id"}, ""))
+	pattern_AreaService_GetAreaById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "area", "id"}, ""))
 
 	pattern_AreaService_GetAreaList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "areas"}, ""))
 
-	pattern_AreaService_DeleteAreaByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "area", "id"}, ""))
+	pattern_AreaService_DeleteArea_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "area", "id"}, ""))
+
+	pattern_AreaService_SearchArea_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "area", "search"}, ""))
 )
 
 var (
 	forward_AreaService_AddArea_0 = runtime.ForwardResponseMessage
 
-	forward_AreaService_UpdateAreaByName_0 = runtime.ForwardResponseMessage
+	forward_AreaService_UpdateArea_0 = runtime.ForwardResponseMessage
 
-	forward_AreaService_GetAreaByName_0 = runtime.ForwardResponseMessage
+	forward_AreaService_GetAreaById_0 = runtime.ForwardResponseMessage
 
 	forward_AreaService_GetAreaList_0 = runtime.ForwardResponseMessage
 
-	forward_AreaService_DeleteAreaByName_0 = runtime.ForwardResponseMessage
+	forward_AreaService_DeleteArea_0 = runtime.ForwardResponseMessage
+
+	forward_AreaService_SearchArea_0 = runtime.ForwardResponseMessage
 )

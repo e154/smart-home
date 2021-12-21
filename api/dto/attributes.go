@@ -19,12 +19,23 @@
 package dto
 
 import (
+	"encoding/json"
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
 // AttributeFromApi ...
 func AttributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attributes) {
+	attributes = make(m.Attributes)
+	for k, v := range apiAttr {
+		attr := &m.Attribute{
+			Name: v.Name,
+			Type: common.AttributeType(v.Type),
+		}
+		_ = json.Unmarshal(v.Value.Value, attr.Value)
+		attributes[k] = attr
+	}
 	return
 }
 

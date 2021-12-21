@@ -120,23 +120,6 @@ const (
 	MetricTypeHorizontalBar = MetricType("horizontal bar")
 )
 
-// Icon ...
-type Icon string
-
-// NewIcon ...
-func NewIcon(v string) *Icon {
-	s := Icon(v)
-	return &s
-}
-
-// String ...
-func (i *Icon) String() string {
-	if i == nil {
-		return ""
-	}
-	return string(*i)
-}
-
 // EntityId ...
 type EntityId string
 

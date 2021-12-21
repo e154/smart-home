@@ -48,7 +48,7 @@ import (
 )
 
 // GetNewButton ...
-func GetNewButton(id string, scripts []m.Script) *m.Entity {
+func GetNewButton(id string, scripts []*m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
 		Description: "MiJia wireless switch",
@@ -143,7 +143,7 @@ func GetNewButton(id string, scripts []m.Script) *m.Entity {
 }
 
 // GetNewPlug ...
-func GetNewPlug(id string, scrits []m.Script) *m.Entity {
+func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
 		Description: "MiJia power plug ZigBee",
@@ -190,7 +190,7 @@ func GetNewPlug(id string, scrits []m.Script) *m.Entity {
 }
 
 // GetNewScript ...
-func GetNewScript(id string, scrits []m.Script) *m.Entity {
+func GetNewScript(id string, scrits []*m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
 		Description: "MiJia power plug ZigBee",
@@ -212,7 +212,7 @@ func GetNewScript(id string, scrits []m.Script) *m.Entity {
 }
 
 // GetNewScene ...
-func GetNewScene(id string, scripts []m.Script) *m.Entity {
+func GetNewScene(id string, scripts []*m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
 		Description: "scene",

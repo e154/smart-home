@@ -59,7 +59,7 @@ func NewActor(entity *m.Entity,
 
 	// todo move to baseActor
 	if len(entity.Scripts) != 0 {
-		if actor.scriptEngine, err = scriptService.NewEngine(&entity.Scripts[0]); err != nil {
+		if actor.scriptEngine, err = scriptService.NewEngine(entity.Scripts[0]); err != nil {
 			return
 		}
 		actor.scriptEngine.EvalString(fmt.Sprintf("const ENTITY_ID = \"%s\";", entity.Id))

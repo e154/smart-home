@@ -50,10 +50,10 @@ type BaseActor struct {
 	Actions           map[string]ActorAction
 	States            map[string]ActorState
 	ScriptEngine      *scripts.Engine
-	Icon              *common.Icon
+	Icon              *string
 	ImageUrl          *string
 	UnitOfMeasurement string
-	Sripts            []m.Script
+	Scripts           []*m.Script
 	Value             *atomic.String
 	AutoLoad          bool
 	LastChanged       *time.Time
@@ -83,7 +83,7 @@ func NewBaseActor(entity *m.Entity,
 		Icon:              entity.Icon,
 		ImageUrl:          nil,
 		UnitOfMeasurement: "",
-		Sripts:            entity.Scripts,
+		Scripts:           entity.Scripts,
 		Value:             nil,
 		LastChanged:       nil,
 		LastUpdated:       nil,
@@ -139,7 +139,7 @@ func NewBaseActor(entity *m.Entity,
 
 	// Scripts
 	if len(entity.Scripts) != 0 {
-		if actor.ScriptEngine, err = scriptService.NewEngine(&entity.Scripts[0]); err != nil {
+		if actor.ScriptEngine, err = scriptService.NewEngine(entity.Scripts[0]); err != nil {
 			log.Error(err.Error())
 		}
 

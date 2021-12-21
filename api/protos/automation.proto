@@ -165,7 +165,7 @@ service AutomationService {
   }
 
   // update task
-  rpc UpdateTaskByName (UpdateTaskRequest) returns (Task){
+  rpc UpdateTask (UpdateTaskRequest) returns (Task){
     option (google.api.http) = {
       put: "/v1/task/{name}"
       body: "*"
@@ -180,8 +180,8 @@ service AutomationService {
     };
   }
 
-  // get task by id
-  rpc GetTaskByName (GetTaskRequest) returns (Task){
+  // get task
+  rpc GetTask (GetTaskRequest) returns (Task){
     option (google.api.http) = {
       get: "/v1/task/{id}"
     };
@@ -210,8 +210,8 @@ service AutomationService {
     };
   }
 
-  // delete task by name
-  rpc DeleteTaskByName (DeleteTaskRequest) returns (google.protobuf.Empty){
+  // delete task
+  rpc DeleteTask (DeleteTaskRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       delete: "/v1/task/{id}"
     };

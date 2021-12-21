@@ -28,7 +28,7 @@ type EntityShort struct {
 	Type        string              `json:"type"`
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
-	Icon        *common.Icon        `json:"icon"`
+	Icon        *string             `json:"icon"`
 	ImageUrl    *string             `json:"image_url"`
 	Actions     []EntityActionShort `json:"actions"`
 	States      []EntityStateShort  `json:"states"`

@@ -38,7 +38,7 @@ type IEntity interface {
 	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
 	Update(ver *m.Entity) (err error)
 	UpdateSettings(entityId common.EntityId, settings m.Attributes) (err error)
-	Search(query string, limit, offset int) (list []*m.Entity, total int64, err error)
+	Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error)
 	AppendMetric(entityId common.EntityId, metric m.Metric) (err error)
 	DeleteMetric(entityId common.EntityId, metric m.Metric) (err error)
 	preloadMetric(ver *m.Entity) (err error)
@@ -120,7 +120,7 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 	//scripts
 	scriptAdaptor := GetScriptAdaptor(tx)
 	for _, script := range ver.Scripts {
-		if err = table.AppendScript(ver.Id, scriptAdaptor.toDb(&script)); err != nil {
+		if err = table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
 			return
 		}
 	}
@@ -301,7 +301,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 }
 
 // Search ...
-func (n *Entity) Search(query string, limit, offset int) (list []*m.Entity, total int64, err error) {
+func (n *Entity) Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error) {
 	var dbList []*db.Entity
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
 		return
@@ -406,10 +406,10 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		for _, script := range dbVer.Scripts {
 			s, _ := scriptAdaptor.fromDb(&script)
-			ver.Scripts = append(ver.Scripts, *s)
+			ver.Scripts = append(ver.Scripts, s)
 		}
 	} else {
-		ver.Scripts = make([]m.Script, 0)
+		ver.Scripts = make([]*m.Script, 0)
 	}
 
 	// deserialize payload
@@ -443,17 +443,15 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 		Icon:        ver.Icon,
 		AutoLoad:    ver.AutoLoad,
 		ParentId:    ver.ParentId,
+		AreaId:      ver.AreaId,
 	}
 
+	// image
 	if ver.Image != nil && ver.Image.Id != 0 {
 		dbVer.ImageId = common.Int64(ver.Image.Id)
 	}
 
 	// area
-	if ver.AreaId != nil {
-		dbVer.AreaId = ver.AreaId
-	}
-
 	if ver.Area != nil && ver.Area.Id != 0 {
 		dbVer.AreaId = &ver.Area.Id
 	}

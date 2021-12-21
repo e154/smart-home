@@ -90,7 +90,7 @@ sceneEvent = (args)->
 
 			// add entity
 			// ------------------------------------------------
-			romanticEnt := GetNewScene(fmt.Sprintf("scene.romantic"), []m.Script{*sceneScript})
+			romanticEnt := GetNewScene(fmt.Sprintf("scene.romantic"), []*m.Script{sceneScript})
 			err = adaptors.Entity.Add(romanticEnt)
 			So(err, ShouldBeNil)
 

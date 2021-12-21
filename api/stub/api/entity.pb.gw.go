@@ -65,7 +65,7 @@ func local_request_EntityService_AddEntity_0(ctx context.Context, marshaler runt
 
 }
 
-func request_EntityService_UpdateEntityByName_0(ctx context.Context, marshaler runtime.Marshaler, client EntityServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_EntityService_UpdateEntity_0(ctx context.Context, marshaler runtime.Marshaler, client EntityServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateEntityRequest
 	var metadata runtime.ServerMetadata
 
@@ -84,22 +84,22 @@ func request_EntityService_UpdateEntityByName_0(ctx context.Context, marshaler r
 		_   = err
 	)
 
-	val, ok = pathParams["name"]
+	val, ok = pathParams["id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Name, err = runtime.String(val)
+	protoReq.Id, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.UpdateEntityByName(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.UpdateEntity(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_EntityService_UpdateEntityByName_0(ctx context.Context, marshaler runtime.Marshaler, server EntityServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_EntityService_UpdateEntity_0(ctx context.Context, marshaler runtime.Marshaler, server EntityServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateEntityRequest
 	var metadata runtime.ServerMetadata
 
@@ -118,22 +118,22 @@ func local_request_EntityService_UpdateEntityByName_0(ctx context.Context, marsh
 		_   = err
 	)
 
-	val, ok = pathParams["name"]
+	val, ok = pathParams["id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Name, err = runtime.String(val)
+	protoReq.Id, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.UpdateEntityByName(ctx, &protoReq)
+	msg, err := server.UpdateEntity(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_EntityService_GetEntityByName_0(ctx context.Context, marshaler runtime.Marshaler, client EntityServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_EntityService_GetEntity_0(ctx context.Context, marshaler runtime.Marshaler, client EntityServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetEntityRequest
 	var metadata runtime.ServerMetadata
 
@@ -154,12 +154,12 @@ func request_EntityService_GetEntityByName_0(ctx context.Context, marshaler runt
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.GetEntityByName(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetEntity(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_EntityService_GetEntityByName_0(ctx context.Context, marshaler runtime.Marshaler, server EntityServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_EntityService_GetEntity_0(ctx context.Context, marshaler runtime.Marshaler, server EntityServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetEntityRequest
 	var metadata runtime.ServerMetadata
 
@@ -180,7 +180,7 @@ func local_request_EntityService_GetEntityByName_0(ctx context.Context, marshale
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.GetEntityByName(ctx, &protoReq)
+	msg, err := server.GetEntity(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -221,7 +221,7 @@ func local_request_EntityService_GetEntityList_0(ctx context.Context, marshaler 
 
 }
 
-func request_EntityService_DeleteEntityByName_0(ctx context.Context, marshaler runtime.Marshaler, client EntityServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_EntityService_DeleteEntity_0(ctx context.Context, marshaler runtime.Marshaler, client EntityServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteEntityRequest
 	var metadata runtime.ServerMetadata
 
@@ -242,12 +242,12 @@ func request_EntityService_DeleteEntityByName_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.DeleteEntityByName(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.DeleteEntity(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_EntityService_DeleteEntityByName_0(ctx context.Context, marshaler runtime.Marshaler, server EntityServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_EntityService_DeleteEntity_0(ctx context.Context, marshaler runtime.Marshaler, server EntityServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteEntityRequest
 	var metadata runtime.ServerMetadata
 
@@ -268,7 +268,43 @@ func local_request_EntityService_DeleteEntityByName_0(ctx context.Context, marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.DeleteEntityByName(ctx, &protoReq)
+	msg, err := server.DeleteEntity(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+var (
+	filter_EntityService_SearchEntity_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
+func request_EntityService_SearchEntity_0(ctx context.Context, marshaler runtime.Marshaler, client EntityServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SearchEntityRequest
+	var metadata runtime.ServerMetadata
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_EntityService_SearchEntity_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.SearchEntity(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_EntityService_SearchEntity_0(ctx context.Context, marshaler runtime.Marshaler, server EntityServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SearchEntityRequest
+	var metadata runtime.ServerMetadata
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_EntityService_SearchEntity_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.SearchEntity(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -302,18 +338,18 @@ func RegisterEntityServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("PUT", pattern_EntityService_UpdateEntityByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_EntityService_UpdateEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.EntityService/UpdateEntityByName", runtime.WithHTTPPathPattern("/v1/entity/{name}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.EntityService/UpdateEntity", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_EntityService_UpdateEntityByName_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_EntityService_UpdateEntity_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -321,22 +357,22 @@ func RegisterEntityServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_EntityService_UpdateEntityByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_EntityService_UpdateEntity_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_EntityService_GetEntityByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_EntityService_GetEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.EntityService/GetEntityByName", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.EntityService/GetEntity", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_EntityService_GetEntityByName_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_EntityService_GetEntity_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -344,7 +380,7 @@ func RegisterEntityServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_EntityService_GetEntityByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_EntityService_GetEntity_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -371,18 +407,18 @@ func RegisterEntityServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("DELETE", pattern_EntityService_DeleteEntityByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_EntityService_DeleteEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.EntityService/DeleteEntityByName", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.EntityService/DeleteEntity", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_EntityService_DeleteEntityByName_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_EntityService_DeleteEntity_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -390,7 +426,30 @@ func RegisterEntityServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_EntityService_DeleteEntityByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_EntityService_DeleteEntity_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_EntityService_SearchEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.EntityService/SearchEntity", runtime.WithHTTPPathPattern("/v1/entity/search"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_EntityService_SearchEntity_0(rctx, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_EntityService_SearchEntity_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -455,43 +514,43 @@ func RegisterEntityServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("PUT", pattern_EntityService_UpdateEntityByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_EntityService_UpdateEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.EntityService/UpdateEntityByName", runtime.WithHTTPPathPattern("/v1/entity/{name}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.EntityService/UpdateEntity", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_EntityService_UpdateEntityByName_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_EntityService_UpdateEntity_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_EntityService_UpdateEntityByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_EntityService_UpdateEntity_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_EntityService_GetEntityByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_EntityService_GetEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.EntityService/GetEntityByName", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.EntityService/GetEntity", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_EntityService_GetEntityByName_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_EntityService_GetEntity_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_EntityService_GetEntityByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_EntityService_GetEntity_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -515,23 +574,43 @@ func RegisterEntityServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("DELETE", pattern_EntityService_DeleteEntityByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_EntityService_DeleteEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.EntityService/DeleteEntityByName", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.EntityService/DeleteEntity", runtime.WithHTTPPathPattern("/v1/entity/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_EntityService_DeleteEntityByName_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_EntityService_DeleteEntity_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_EntityService_DeleteEntityByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_EntityService_DeleteEntity_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_EntityService_SearchEntity_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.EntityService/SearchEntity", runtime.WithHTTPPathPattern("/v1/entity/search"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_EntityService_SearchEntity_0(rctx, inboundMarshaler, client, req, pathParams)
+		ctx = runtime.NewServerMetadataContext(ctx, md)
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_EntityService_SearchEntity_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -541,23 +620,27 @@ func RegisterEntityServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 var (
 	pattern_EntityService_AddEntity_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "entity"}, ""))
 
-	pattern_EntityService_UpdateEntityByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "entity", "name"}, ""))
+	pattern_EntityService_UpdateEntity_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "entity", "id"}, ""))
 
-	pattern_EntityService_GetEntityByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "entity", "id"}, ""))
+	pattern_EntityService_GetEntity_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "entity", "id"}, ""))
 
 	pattern_EntityService_GetEntityList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "entities"}, ""))
 
-	pattern_EntityService_DeleteEntityByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "entity", "id"}, ""))
+	pattern_EntityService_DeleteEntity_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "entity", "id"}, ""))
+
+	pattern_EntityService_SearchEntity_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "entity", "search"}, ""))
 )
 
 var (
 	forward_EntityService_AddEntity_0 = runtime.ForwardResponseMessage
 
-	forward_EntityService_UpdateEntityByName_0 = runtime.ForwardResponseMessage
+	forward_EntityService_UpdateEntity_0 = runtime.ForwardResponseMessage
 
-	forward_EntityService_GetEntityByName_0 = runtime.ForwardResponseMessage
+	forward_EntityService_GetEntity_0 = runtime.ForwardResponseMessage
 
 	forward_EntityService_GetEntityList_0 = runtime.ForwardResponseMessage
 
-	forward_EntityService_DeleteEntityByName_0 = runtime.ForwardResponseMessage
+	forward_EntityService_DeleteEntity_0 = runtime.ForwardResponseMessage
+
+	forward_EntityService_SearchEntity_0 = runtime.ForwardResponseMessage
 )

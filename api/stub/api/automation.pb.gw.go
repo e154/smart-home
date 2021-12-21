@@ -65,7 +65,7 @@ func local_request_AutomationService_AddTask_0(ctx context.Context, marshaler ru
 
 }
 
-func request_AutomationService_UpdateTaskByName_0(ctx context.Context, marshaler runtime.Marshaler, client AutomationServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_AutomationService_UpdateTask_0(ctx context.Context, marshaler runtime.Marshaler, client AutomationServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateTaskRequest
 	var metadata runtime.ServerMetadata
 
@@ -94,12 +94,12 @@ func request_AutomationService_UpdateTaskByName_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
 
-	msg, err := client.UpdateTaskByName(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.UpdateTask(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_AutomationService_UpdateTaskByName_0(ctx context.Context, marshaler runtime.Marshaler, server AutomationServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_AutomationService_UpdateTask_0(ctx context.Context, marshaler runtime.Marshaler, server AutomationServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq UpdateTaskRequest
 	var metadata runtime.ServerMetadata
 
@@ -128,12 +128,12 @@ func local_request_AutomationService_UpdateTaskByName_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
 
-	msg, err := server.UpdateTaskByName(ctx, &protoReq)
+	msg, err := server.UpdateTask(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_AutomationService_GetTaskByName_0(ctx context.Context, marshaler runtime.Marshaler, client AutomationServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_AutomationService_GetTask_0(ctx context.Context, marshaler runtime.Marshaler, client AutomationServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetTaskRequest
 	var metadata runtime.ServerMetadata
 
@@ -154,12 +154,12 @@ func request_AutomationService_GetTaskByName_0(ctx context.Context, marshaler ru
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.GetTaskByName(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetTask(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_AutomationService_GetTaskByName_0(ctx context.Context, marshaler runtime.Marshaler, server AutomationServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_AutomationService_GetTask_0(ctx context.Context, marshaler runtime.Marshaler, server AutomationServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetTaskRequest
 	var metadata runtime.ServerMetadata
 
@@ -180,7 +180,7 @@ func local_request_AutomationService_GetTaskByName_0(ctx context.Context, marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.GetTaskByName(ctx, &protoReq)
+	msg, err := server.GetTask(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -221,7 +221,7 @@ func local_request_AutomationService_GetTaskList_0(ctx context.Context, marshale
 
 }
 
-func request_AutomationService_DeleteTaskByName_0(ctx context.Context, marshaler runtime.Marshaler, client AutomationServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_AutomationService_DeleteTask_0(ctx context.Context, marshaler runtime.Marshaler, client AutomationServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteTaskRequest
 	var metadata runtime.ServerMetadata
 
@@ -242,12 +242,12 @@ func request_AutomationService_DeleteTaskByName_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.DeleteTaskByName(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.DeleteTask(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_AutomationService_DeleteTaskByName_0(ctx context.Context, marshaler runtime.Marshaler, server AutomationServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_AutomationService_DeleteTask_0(ctx context.Context, marshaler runtime.Marshaler, server AutomationServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteTaskRequest
 	var metadata runtime.ServerMetadata
 
@@ -268,7 +268,7 @@ func local_request_AutomationService_DeleteTaskByName_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.DeleteTaskByName(ctx, &protoReq)
+	msg, err := server.DeleteTask(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -302,18 +302,18 @@ func RegisterAutomationServiceHandlerServer(ctx context.Context, mux *runtime.Se
 
 	})
 
-	mux.Handle("PUT", pattern_AutomationService_UpdateTaskByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_AutomationService_UpdateTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AutomationService/UpdateTaskByName", runtime.WithHTTPPathPattern("/v1/task/{name}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AutomationService/UpdateTask", runtime.WithHTTPPathPattern("/v1/task/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_AutomationService_UpdateTaskByName_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_AutomationService_UpdateTask_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -321,22 +321,22 @@ func RegisterAutomationServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_AutomationService_UpdateTaskByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AutomationService_UpdateTask_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_AutomationService_GetTaskByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_AutomationService_GetTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AutomationService/GetTaskByName", runtime.WithHTTPPathPattern("/v1/task/{id}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AutomationService/GetTask", runtime.WithHTTPPathPattern("/v1/task/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_AutomationService_GetTaskByName_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_AutomationService_GetTask_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -344,7 +344,7 @@ func RegisterAutomationServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_AutomationService_GetTaskByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AutomationService_GetTask_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -371,18 +371,18 @@ func RegisterAutomationServiceHandlerServer(ctx context.Context, mux *runtime.Se
 
 	})
 
-	mux.Handle("DELETE", pattern_AutomationService_DeleteTaskByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_AutomationService_DeleteTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AutomationService/DeleteTaskByName", runtime.WithHTTPPathPattern("/v1/task/{id}"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.AutomationService/DeleteTask", runtime.WithHTTPPathPattern("/v1/task/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_AutomationService_DeleteTaskByName_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_AutomationService_DeleteTask_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -390,7 +390,7 @@ func RegisterAutomationServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_AutomationService_DeleteTaskByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AutomationService_DeleteTask_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -455,43 +455,43 @@ func RegisterAutomationServiceHandlerClient(ctx context.Context, mux *runtime.Se
 
 	})
 
-	mux.Handle("PUT", pattern_AutomationService_UpdateTaskByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_AutomationService_UpdateTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AutomationService/UpdateTaskByName", runtime.WithHTTPPathPattern("/v1/task/{name}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AutomationService/UpdateTask", runtime.WithHTTPPathPattern("/v1/task/{name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_AutomationService_UpdateTaskByName_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AutomationService_UpdateTask_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_AutomationService_UpdateTaskByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AutomationService_UpdateTask_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_AutomationService_GetTaskByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_AutomationService_GetTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AutomationService/GetTaskByName", runtime.WithHTTPPathPattern("/v1/task/{id}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AutomationService/GetTask", runtime.WithHTTPPathPattern("/v1/task/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_AutomationService_GetTaskByName_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AutomationService_GetTask_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_AutomationService_GetTaskByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AutomationService_GetTask_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -515,23 +515,23 @@ func RegisterAutomationServiceHandlerClient(ctx context.Context, mux *runtime.Se
 
 	})
 
-	mux.Handle("DELETE", pattern_AutomationService_DeleteTaskByName_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_AutomationService_DeleteTask_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AutomationService/DeleteTaskByName", runtime.WithHTTPPathPattern("/v1/task/{id}"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.AutomationService/DeleteTask", runtime.WithHTTPPathPattern("/v1/task/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_AutomationService_DeleteTaskByName_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AutomationService_DeleteTask_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_AutomationService_DeleteTaskByName_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AutomationService_DeleteTask_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -541,23 +541,23 @@ func RegisterAutomationServiceHandlerClient(ctx context.Context, mux *runtime.Se
 var (
 	pattern_AutomationService_AddTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "task"}, ""))
 
-	pattern_AutomationService_UpdateTaskByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "task", "name"}, ""))
+	pattern_AutomationService_UpdateTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "task", "name"}, ""))
 
-	pattern_AutomationService_GetTaskByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "task", "id"}, ""))
+	pattern_AutomationService_GetTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "task", "id"}, ""))
 
 	pattern_AutomationService_GetTaskList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "tasks"}, ""))
 
-	pattern_AutomationService_DeleteTaskByName_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "task", "id"}, ""))
+	pattern_AutomationService_DeleteTask_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "task", "id"}, ""))
 )
 
 var (
 	forward_AutomationService_AddTask_0 = runtime.ForwardResponseMessage
 
-	forward_AutomationService_UpdateTaskByName_0 = runtime.ForwardResponseMessage
+	forward_AutomationService_UpdateTask_0 = runtime.ForwardResponseMessage
 
-	forward_AutomationService_GetTaskByName_0 = runtime.ForwardResponseMessage
+	forward_AutomationService_GetTask_0 = runtime.ForwardResponseMessage
 
 	forward_AutomationService_GetTaskList_0 = runtime.ForwardResponseMessage
 
-	forward_AutomationService_DeleteTaskByName_0 = runtime.ForwardResponseMessage
+	forward_AutomationService_DeleteTask_0 = runtime.ForwardResponseMessage
 )

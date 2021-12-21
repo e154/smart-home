@@ -39,14 +39,14 @@ type Entity struct {
 	Id          common.EntityId  `json:"id"`
 	Description string           `json:"description"`
 	PluginName  string           `json:"plugin_name" validate:"required"`
-	Icon        *common.Icon     `json:"icon"`
+	Icon        *string          `json:"icon"`
 	Image       *Image           `json:"image"`
 	Actions     []*EntityAction  `json:"actions"`
 	States      []*EntityState   `json:"states"`
 	Area        *Area            `json:"area"`
 	AreaId      *int64           `json:"area_id"`
 	Metrics     []Metric         `json:"metrics"`
-	Scripts     []Script         `json:"scripts"`
+	Scripts     []*Script        `json:"scripts"`
 	Hidden      bool             `json:"hidden"`
 	Attributes  Attributes       `json:"attributes"`
 	Settings    Attributes       `json:"settings"`

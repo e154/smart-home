@@ -42,11 +42,11 @@ func (c ControllerAutomation) AddTask(ctx context.Context, request *api.NewTaskR
 	return nil, c.error(ctx, nil, common.ErrUnimplemented)
 }
 
-func (c ControllerAutomation) UpdateTaskByName(ctx context.Context, request *api.UpdateTaskRequest) (*api.Task, error) {
+func (c ControllerAutomation) UpdateTask(ctx context.Context, request *api.UpdateTaskRequest) (*api.Task, error) {
 	return nil, c.error(ctx, nil, common.ErrUnimplemented)
 }
 
-func (c ControllerAutomation) GetTaskByName(ctx context.Context, request *api.GetTaskRequest) (*api.Task, error) {
+func (c ControllerAutomation) GetTask(ctx context.Context, request *api.GetTaskRequest) (*api.Task, error) {
 	return nil, c.error(ctx, nil, common.ErrUnimplemented)
 }
 
@@ -54,6 +54,6 @@ func (c ControllerAutomation) GetTaskList(ctx context.Context, request *api.GetT
 	return nil, c.error(ctx, nil, common.ErrUnimplemented)
 }
 
-func (c ControllerAutomation) DeleteTaskByName(ctx context.Context, request *api.DeleteTaskRequest) (*emptypb.Empty, error) {
+func (c ControllerAutomation) DeleteTask(ctx context.Context, request *api.DeleteTaskRequest) (*emptypb.Empty, error) {
 	return nil, c.error(ctx, nil, common.ErrUnimplemented)
 }

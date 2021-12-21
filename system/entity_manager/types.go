@@ -201,7 +201,7 @@ type ActorInfo struct {
 	DependsOn         []string               `json:"depends_on"`
 	State             *ActorState            `json:"state"`
 	ImageUrl          *string                `json:"image_url"`
-	Icon              *common.Icon           `json:"icon"`
+	Icon              *string                `json:"icon"`
 	Area              *m.Area                `json:"area"`
 	AutoLoad          bool                   `json:"auto_load"`
 	Value             interface{}            `json:"value"`

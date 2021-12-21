@@ -32,7 +32,7 @@ type IArea interface {
 	Update(ver *m.Area) (err error)
 	DeleteByName(name string) (err error)
 	List(limit, offset int64, orderBy, sort string) (list []*m.Area, total int64, err error)
-	Search(query string, limit, offset int) (list []*m.Area, total int64, err error)
+	Search(query string, limit, offset int64) (list []*m.Area, total int64, err error)
 	fromDb(dbVer *db.Area) (ver *m.Area)
 	toDb(ver *m.Area) (dbVer *db.Area)
 }
@@ -102,7 +102,7 @@ func (n *Area) List(limit, offset int64, orderBy, sort string) (list []*m.Area, 
 }
 
 // Search ...
-func (n *Area) Search(query string, limit, offset int) (list []*m.Area, total int64, err error) {
+func (n *Area) Search(query string, limit, offset int64) (list []*m.Area, total int64, err error) {
 	var dbList []*db.Area
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
 		return

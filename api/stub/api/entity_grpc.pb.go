@@ -22,13 +22,15 @@ type EntityServiceClient interface {
 	// add new entity
 	AddEntity(ctx context.Context, in *NewEntityRequest, opts ...grpc.CallOption) (*Entity, error)
 	// update entity
-	UpdateEntityByName(ctx context.Context, in *UpdateEntityRequest, opts ...grpc.CallOption) (*Entity, error)
-	// get entity by id
-	GetEntityByName(ctx context.Context, in *GetEntityRequest, opts ...grpc.CallOption) (*Entity, error)
+	UpdateEntity(ctx context.Context, in *UpdateEntityRequest, opts ...grpc.CallOption) (*Entity, error)
+	// get entity
+	GetEntity(ctx context.Context, in *GetEntityRequest, opts ...grpc.CallOption) (*Entity, error)
 	// get entity list
 	GetEntityList(ctx context.Context, in *GetEntityListRequest, opts ...grpc.CallOption) (*GetEntityListResult, error)
-	// delete entity by id
-	DeleteEntityByName(ctx context.Context, in *DeleteEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// delete entity
+	DeleteEntity(ctx context.Context, in *DeleteEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// search entity
+	SearchEntity(ctx context.Context, in *SearchEntityRequest, opts ...grpc.CallOption) (*SearchEntityResult, error)
 }
 
 type entityServiceClient struct {
@@ -48,18 +50,18 @@ func (c *entityServiceClient) AddEntity(ctx context.Context, in *NewEntityReques
 	return out, nil
 }
 
-func (c *entityServiceClient) UpdateEntityByName(ctx context.Context, in *UpdateEntityRequest, opts ...grpc.CallOption) (*Entity, error) {
+func (c *entityServiceClient) UpdateEntity(ctx context.Context, in *UpdateEntityRequest, opts ...grpc.CallOption) (*Entity, error) {
 	out := new(Entity)
-	err := c.cc.Invoke(ctx, "/api.EntityService/UpdateEntityByName", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.EntityService/UpdateEntity", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *entityServiceClient) GetEntityByName(ctx context.Context, in *GetEntityRequest, opts ...grpc.CallOption) (*Entity, error) {
+func (c *entityServiceClient) GetEntity(ctx context.Context, in *GetEntityRequest, opts ...grpc.CallOption) (*Entity, error) {
 	out := new(Entity)
-	err := c.cc.Invoke(ctx, "/api.EntityService/GetEntityByName", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.EntityService/GetEntity", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,9 +77,18 @@ func (c *entityServiceClient) GetEntityList(ctx context.Context, in *GetEntityLi
 	return out, nil
 }
 
-func (c *entityServiceClient) DeleteEntityByName(ctx context.Context, in *DeleteEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *entityServiceClient) DeleteEntity(ctx context.Context, in *DeleteEntityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/api.EntityService/DeleteEntityByName", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.EntityService/DeleteEntity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *entityServiceClient) SearchEntity(ctx context.Context, in *SearchEntityRequest, opts ...grpc.CallOption) (*SearchEntityResult, error) {
+	out := new(SearchEntityResult)
+	err := c.cc.Invoke(ctx, "/api.EntityService/SearchEntity", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -91,13 +102,15 @@ type EntityServiceServer interface {
 	// add new entity
 	AddEntity(context.Context, *NewEntityRequest) (*Entity, error)
 	// update entity
-	UpdateEntityByName(context.Context, *UpdateEntityRequest) (*Entity, error)
-	// get entity by id
-	GetEntityByName(context.Context, *GetEntityRequest) (*Entity, error)
+	UpdateEntity(context.Context, *UpdateEntityRequest) (*Entity, error)
+	// get entity
+	GetEntity(context.Context, *GetEntityRequest) (*Entity, error)
 	// get entity list
 	GetEntityList(context.Context, *GetEntityListRequest) (*GetEntityListResult, error)
-	// delete entity by id
-	DeleteEntityByName(context.Context, *DeleteEntityRequest) (*emptypb.Empty, error)
+	// delete entity
+	DeleteEntity(context.Context, *DeleteEntityRequest) (*emptypb.Empty, error)
+	// search entity
+	SearchEntity(context.Context, *SearchEntityRequest) (*SearchEntityResult, error)
 }
 
 // UnimplementedEntityServiceServer should be embedded to have forward compatible implementations.
@@ -107,17 +120,20 @@ type UnimplementedEntityServiceServer struct {
 func (UnimplementedEntityServiceServer) AddEntity(context.Context, *NewEntityRequest) (*Entity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddEntity not implemented")
 }
-func (UnimplementedEntityServiceServer) UpdateEntityByName(context.Context, *UpdateEntityRequest) (*Entity, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateEntityByName not implemented")
+func (UnimplementedEntityServiceServer) UpdateEntity(context.Context, *UpdateEntityRequest) (*Entity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateEntity not implemented")
 }
-func (UnimplementedEntityServiceServer) GetEntityByName(context.Context, *GetEntityRequest) (*Entity, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetEntityByName not implemented")
+func (UnimplementedEntityServiceServer) GetEntity(context.Context, *GetEntityRequest) (*Entity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEntity not implemented")
 }
 func (UnimplementedEntityServiceServer) GetEntityList(context.Context, *GetEntityListRequest) (*GetEntityListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEntityList not implemented")
 }
-func (UnimplementedEntityServiceServer) DeleteEntityByName(context.Context, *DeleteEntityRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteEntityByName not implemented")
+func (UnimplementedEntityServiceServer) DeleteEntity(context.Context, *DeleteEntityRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteEntity not implemented")
+}
+func (UnimplementedEntityServiceServer) SearchEntity(context.Context, *SearchEntityRequest) (*SearchEntityResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchEntity not implemented")
 }
 
 // UnsafeEntityServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -149,38 +165,38 @@ func _EntityService_AddEntity_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _EntityService_UpdateEntityByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _EntityService_UpdateEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateEntityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EntityServiceServer).UpdateEntityByName(ctx, in)
+		return srv.(EntityServiceServer).UpdateEntity(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.EntityService/UpdateEntityByName",
+		FullMethod: "/api.EntityService/UpdateEntity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EntityServiceServer).UpdateEntityByName(ctx, req.(*UpdateEntityRequest))
+		return srv.(EntityServiceServer).UpdateEntity(ctx, req.(*UpdateEntityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _EntityService_GetEntityByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _EntityService_GetEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetEntityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EntityServiceServer).GetEntityByName(ctx, in)
+		return srv.(EntityServiceServer).GetEntity(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.EntityService/GetEntityByName",
+		FullMethod: "/api.EntityService/GetEntity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EntityServiceServer).GetEntityByName(ctx, req.(*GetEntityRequest))
+		return srv.(EntityServiceServer).GetEntity(ctx, req.(*GetEntityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -203,20 +219,38 @@ func _EntityService_GetEntityList_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _EntityService_DeleteEntityByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _EntityService_DeleteEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteEntityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(EntityServiceServer).DeleteEntityByName(ctx, in)
+		return srv.(EntityServiceServer).DeleteEntity(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.EntityService/DeleteEntityByName",
+		FullMethod: "/api.EntityService/DeleteEntity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EntityServiceServer).DeleteEntityByName(ctx, req.(*DeleteEntityRequest))
+		return srv.(EntityServiceServer).DeleteEntity(ctx, req.(*DeleteEntityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EntityService_SearchEntity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchEntityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EntityServiceServer).SearchEntity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.EntityService/SearchEntity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EntityServiceServer).SearchEntity(ctx, req.(*SearchEntityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -233,20 +267,24 @@ var EntityService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _EntityService_AddEntity_Handler,
 		},
 		{
-			MethodName: "UpdateEntityByName",
-			Handler:    _EntityService_UpdateEntityByName_Handler,
+			MethodName: "UpdateEntity",
+			Handler:    _EntityService_UpdateEntity_Handler,
 		},
 		{
-			MethodName: "GetEntityByName",
-			Handler:    _EntityService_GetEntityByName_Handler,
+			MethodName: "GetEntity",
+			Handler:    _EntityService_GetEntity_Handler,
 		},
 		{
 			MethodName: "GetEntityList",
 			Handler:    _EntityService_GetEntityList_Handler,
 		},
 		{
-			MethodName: "DeleteEntityByName",
-			Handler:    _EntityService_DeleteEntityByName_Handler,
+			MethodName: "DeleteEntity",
+			Handler:    _EntityService_DeleteEntity_Handler,
+		},
+		{
+			MethodName: "SearchEntity",
+			Handler:    _EntityService_SearchEntity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

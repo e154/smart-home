@@ -49,6 +49,16 @@ message DeleteAreaRequest {
   int64 id = 1;
 }
 
+message SearchAreaRequest {
+  string query = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}
+
+message SearchAreaResult {
+  repeated Area items = 1;
+}
+
 service AreaService {
 
   // add new area
@@ -68,7 +78,7 @@ service AreaService {
   }
 
   // update area
-  rpc UpdateAreaByName (UpdateAreaRequest) returns (Area){
+  rpc UpdateArea (UpdateAreaRequest) returns (Area){
     option (google.api.http) = {
       put: "/v1/area/{name}"
       body: "*"
@@ -84,7 +94,7 @@ service AreaService {
   }
 
   // get area by id
-  rpc GetAreaByName (GetAreaRequest) returns (Area){
+  rpc GetAreaById (GetAreaRequest) returns (Area){
     option (google.api.http) = {
       get: "/v1/area/{id}"
     };
@@ -113,10 +123,25 @@ service AreaService {
     };
   }
 
-  // delete area by id
-  rpc DeleteAreaByName (DeleteAreaRequest) returns (google.protobuf.Empty){
+  // delete area
+  rpc DeleteArea (DeleteAreaRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       delete: "/v1/area/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // search area
+  rpc SearchArea (SearchAreaRequest) returns (SearchAreaResult){
+    option (google.api.http) = {
+      get: "/v1/area/search"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

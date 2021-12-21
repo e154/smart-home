@@ -20,38 +20,39 @@ package endpoint
 
 import (
 	"context"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 )
 
-// EntityEndpoint ...
-type EntityEndpoint struct {
+// AreaEndpoint ...
+type AreaEndpoint struct {
 	*CommonEndpoint
 }
 
-// NewEntityEndpoint ...
-func NewEntityEndpoint(common *CommonEndpoint) *EntityEndpoint {
-	return &EntityEndpoint{
+// NewAreaEndpoint ...
+func NewAreaEndpoint(common *CommonEndpoint) *AreaEndpoint {
+	return &AreaEndpoint{
 		CommonEndpoint: common,
 	}
 }
 
 // Add ...
-func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AreaEndpoint) Add(ctx context.Context, params *m.Area) (result *m.Area, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
-	if ok, errs = n.validation.Valid(entity); !ok {
+	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
-	if err = n.adaptors.Entity.Add(entity); err != nil {
+	if _, err = n.adaptors.Area.Add(params); err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	result, err = n.adaptors.Entity.GetById(entity.Id)
+	result, err = n.adaptors.Area.GetByName(params.Name)
 	if err != nil {
 		if errors.Is(err, common.ErrNotFound) {
 			return
@@ -59,17 +60,27 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
-
-	if err = n.entityManager.Add(entity); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
 	return
 }
 
 // GetById ...
-func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (result *m.Entity, err error) {
+func (n *AreaEndpoint) GetById(ctx context.Context, id int64) (result *m.Area, err error) {
 
-	result, err = n.adaptors.Entity.GetById(id)
+	result, err = n.adaptors.Area.GetById(id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+	return
+}
+
+// GetByName ...
+func (n *AreaEndpoint) GetByName(ctx context.Context, name string) (result *m.Area, err error) {
+
+	result, err = n.adaptors.Area.GetByName(name)
 	if err != nil {
 		if errors.Is(err, common.ErrNotFound) {
 			return
@@ -81,10 +92,10 @@ func (n *EntityEndpoint) GetById(ctx context.Context, id common.EntityId) (resul
 }
 
 // Update ...
-func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *m.Entity, errs validator.ValidationErrorsTranslations, err error) {
+func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (result *m.Area, errs validator.ValidationErrorsTranslations, err error) {
 
-	var entity *m.Entity
-	entity, err = n.adaptors.Entity.GetById(params.Id)
+	var area *m.Area
+	area, err = n.adaptors.Area.GetByName(params.Name)
 	if err != nil {
 		if errors.Is(err, common.ErrNotFound) {
 			return
@@ -92,20 +103,18 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
-
-	_ = common.Copy(&entity, &params, common.JsonEngine)
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
 		return
 	}
 
-	if err = n.adaptors.Entity.Update(entity); err != nil {
+	if err = n.adaptors.Area.Update(area); err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
-	result, err = n.adaptors.Entity.GetById(entity.Id)
+	area, err = n.adaptors.Area.GetById(params.Id)
 	if err != nil {
 		if errors.Is(err, common.ErrNotFound) {
 			return
@@ -113,15 +122,13 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
-
-	err = n.entityManager.Update(entity)
-
 	return
 }
 
-// List ...
-func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams) (result []*m.Entity, total int64, err error) {
-	result, total, err = n.adaptors.Entity.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
+// GetList ...
+func (n *AreaEndpoint) GetList(ctx context.Context, pagination common.PageParams) (result []*m.Area, total int64, err error) {
+
+	result, total, err = n.adaptors.Area.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
@@ -129,15 +136,10 @@ func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams)
 }
 
 // Delete ...
-func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err error) {
+func (n *AreaEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
-	if id == "" {
-		err = errors.New("entity id is null")
-		return
-	}
-
-	var entity *m.Entity
-	entity, err = n.adaptors.Entity.GetById(id)
+	var area *m.Area
+	area, err = n.adaptors.Area.GetById(id)
 	if err != nil {
 		if errors.Is(err, common.ErrNotFound) {
 			return
@@ -146,22 +148,25 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	if err = n.adaptors.Entity.Delete(entity.Id); err != nil {
+	err = n.adaptors.Area.DeleteByName(area.Name)
+	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
 	}
-
-	n.entityManager.Remove(id)
 
 	return
 }
 
 // Search ...
-func (n *EntityEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Entity, total int64, err error) {
+func (n *AreaEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []*m.Area, total int64, err error) {
 
-	result, total, err = n.adaptors.Entity.Search(query, limit, offset)
+	if limit == 0 {
+		limit = common.DefaultPageSize
+	}
+
+	result, total, err = n.adaptors.Area.Search(query, limit, offset)
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
+
 	return
 }

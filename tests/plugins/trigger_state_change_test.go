@@ -156,7 +156,7 @@ automationTriggerStateChanged = (msg)->
 
 			// add entity
 			// ------------------------------------------------
-			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []m.Script{*buttonScript})
+			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*m.Script{buttonScript})
 			err = adaptors.Entity.Add(buttonEnt)
 			So(err, ShouldBeNil)
 

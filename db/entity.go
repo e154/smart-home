@@ -46,7 +46,7 @@ type Entity struct {
 	Area        *Area
 	Metrics     []Metric `gorm:"many2many:entity_metrics;"`
 	Scripts     []Script `gorm:"many2many:entity_scripts;"`
-	Icon        *common.Icon
+	Icon        *string
 	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
 	Settings    json.RawMessage `gorm:"type:jsonb;not null"`
 	Storage     []*EntityStorage
@@ -232,7 +232,7 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 }
 
 // Search ...
-func (n *Entities) Search(query string, limit, offset int) (list []*Entity, total int64, err error) {
+func (n *Entities) Search(query string, limit, offset int64) (list []*Entity, total int64, err error) {
 
 	q := n.Db.Model(&Entity{}).
 		Where("id LIKE ?", "%"+query+"%")
