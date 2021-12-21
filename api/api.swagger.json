@@ -2027,9 +2027,7 @@
             "ApiKeyAuth": []
           }
         ]
-      }
-    },
-    "/v1/task/{name}": {
+      },
       "put": {
         "summary": "update task",
         "operationId": "AutomationService_UpdateTask",
@@ -2049,10 +2047,11 @@
         },
         "parameters": [
           {
-            "name": "name",
+            "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "format": "int64"
           },
           {
             "name": "body",
@@ -2061,6 +2060,9 @@
             "schema": {
               "type": "object",
               "properties": {
+                "name": {
+                  "type": "string"
+                },
                 "description": {
                   "type": "string"
                 },

@@ -20,7 +20,6 @@ package adaptors
 
 import (
 	"encoding/json"
-
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -64,22 +63,21 @@ func GetEntityAdaptor(d *gorm.DB) IEntity {
 // Add ...
 func (n *Entity) Add(ver *m.Entity) (err error) {
 
+	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		err = errors.Wrap(common.ErrTransactionError, err.Error())
-		return
-	}
-	if err = tx.Error; err != nil {
-		err = errors.Wrap(common.ErrTransactionError, err.Error())
-		return
+		tx = n.db
+		transaction = false
 	}
 	defer func() {
-		if err != nil {
+		if err != nil && transaction {
 			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
-		tx.Commit()
+		if transaction {
+			err = tx.Commit().Error
+		}
 	}()
 
 	table := db.Entities{Db: tx}
@@ -145,18 +143,22 @@ func (n *Entity) GetById(id common.EntityId) (ver *m.Entity, err error) {
 
 // Delete ...
 func (n *Entity) Delete(id common.EntityId) (err error) {
+
+	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		err = errors.Wrap(common.ErrTransactionError, err.Error())
-		return
+		tx = n.db
+		transaction = false
 	}
 	defer func() {
-		if err != nil {
+		if err != nil && transaction {
 			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
-		tx.Commit()
+		if transaction {
+			err = tx.Commit().Error
+		}
 	}()
 
 	table := &db.Entities{Db: tx}
@@ -216,18 +218,21 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 		return
 	}
 
+	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		err = errors.Wrap(common.ErrTransactionError, err.Error())
-		return
+		tx = n.db
+		transaction = false
 	}
 	defer func() {
-		if err != nil {
+		if err != nil && transaction {
 			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
-		tx.Commit()
+		if transaction {
+			err = tx.Commit().Error
+		}
 	}()
 
 	table := db.Entities{Db: tx}

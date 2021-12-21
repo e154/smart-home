@@ -79,7 +79,7 @@ func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area)
 	ent = &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("cgminer.%s", name)),
 		Description: "antminer L3+",
-		PluginName:  "cgminer",
+		PluginName:  cgminer.Name,
 		AutoLoad:    true,
 		Attributes:  cgminer.NewAttr(),
 		Settings:    settings,

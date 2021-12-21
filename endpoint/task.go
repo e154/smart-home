@@ -64,7 +64,25 @@ func (n *TaskEndpoint) Update(ctx context.Context, params *m.Task) (result *m.Ta
 	}
 
 	if err = n.adaptors.Task.Update(params); err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+
+	return
+}
+
+// GetById ...
+func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+
+	if task, err = n.adaptors.Task.GetById(id); err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return

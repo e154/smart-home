@@ -17,7 +17,7 @@ message Trigger {
   string name = 2;
   int64 task_id = 3;
   string entity_id = 4;
-  optional Script script = 5;
+  Script script = 5;
   string plugin_name = 6;
   map<string, Attribute> payload = 7;
 }
@@ -26,14 +26,14 @@ message Condition {
   int64 id = 1;
   string name = 2;
   int64 task_id = 3;
-  optional Script script = 4;
+  Script script = 4;
 }
 
 message Action {
   int64 id = 1;
   string name = 2;
   int64 task_id = 3;
-  optional Script script = 4;
+  Script script = 4;
 }
 
 message Task {
@@ -68,7 +68,7 @@ message NewTaskRequest {
     string name = 2;
     int64 task_id = 3;
     string entity_id = 4;
-    optional int64 script_id = 5;
+    int64 script_id = 5;
     string plugin_name = 6;
     map<string, Attribute> payload = 7;
   }
@@ -76,19 +76,20 @@ message NewTaskRequest {
   message Condition {
     string name = 2;
     int64 task_id = 3;
-    optional int64 script_id = 4;
+    int64 script_id = 4;
   }
   repeated Condition conditions = 7;
   message Action {
     string name = 2;
     int64 task_id = 3;
-    optional int64 script_id = 4;
+    int64 script_id = 4;
   }
   repeated Action actions = 8;
   optional Area area = 9;
 }
 
 message UpdateTaskRequest {
+  int64 id = 1;
   string name = 2;
   string description = 3;
   bool enabled = 4;
@@ -101,7 +102,7 @@ message UpdateTaskRequest {
     string name = 2;
     int64 task_id = 3;
     string entity_id = 4;
-    optional int64 script_id = 5;
+    int64 script_id = 5;
     string plugin_name = 6;
     map<string, Attribute> payload = 7;
   }
@@ -109,13 +110,13 @@ message UpdateTaskRequest {
   message Condition {
     string name = 2;
     int64 task_id = 3;
-    optional int64 script_id = 4;
+    int64 script_id = 4;
   }
   repeated Condition conditions = 7;
   message Action {
     string name = 2;
     int64 task_id = 3;
-    optional int64 script_id = 4;
+    int64 script_id = 4;
   }
   repeated Action actions = 8;
   optional Area area = 9;
@@ -167,7 +168,7 @@ service AutomationService {
   // update task
   rpc UpdateTask (UpdateTaskRequest) returns (Task){
     option (google.api.http) = {
-      put: "/v1/task/{name}"
+      put: "/v1/task/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {

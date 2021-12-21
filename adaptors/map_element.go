@@ -62,18 +62,21 @@ func GetMapElementAdaptor(d *gorm.DB) IMapElement {
 // Add ...
 func (n *MapElement) Add(ver *m.MapElement) (id int64, err error) {
 
+	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		err = errors.Wrap(common.ErrTransactionError, err.Error())
-		return
+		tx = n.db
+		transaction = false
 	}
 	defer func() {
-		if err != nil {
+		if err != nil && transaction {
 			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
-		tx.Commit()
+		if transaction {
+			err = tx.Commit().Error
+		}
 	}()
 
 	var protId int64
@@ -148,18 +151,21 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		oldVer.PrototypeType = ""
 	}
 
+	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		err = errors.Wrap(common.ErrTransactionError, err.Error())
-		return
+		tx = n.db
+		transaction = false
 	}
 	defer func() {
-		if err != nil {
+		if err != nil && transaction {
 			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
-		tx.Commit()
+		if transaction {
+			err = tx.Commit().Error
+		}
 	}()
 
 	var deleted bool
@@ -253,18 +259,21 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 		return
 	}
 
+	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		err = errors.Wrap(common.ErrTransactionError, err.Error())
-		return
+		tx = n.db
+		transaction = false
 	}
 	defer func() {
-		if err != nil {
+		if err != nil && transaction {
 			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
-		tx.Commit()
+		if transaction {
+			err = tx.Commit().Error
+		}
 	}()
 
 	if ver.PrototypeId != "" {

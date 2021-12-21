@@ -116,6 +116,10 @@ func (n Entities) GetById(id common.EntityId) (v *Entity, err error) {
 		First(&v).Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("id \"%s\"", id))
+			return
+		}
 		err = errors.Wrap(err, "getById failed")
 		return
 	}
@@ -217,6 +221,10 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 		Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("type \"%s\"", t))
+			return
+		}
 		err = errors.Wrap(err, "getByType failed")
 		return
 	}

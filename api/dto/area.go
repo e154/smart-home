@@ -85,6 +85,9 @@ func (r Area) ToListResult(list []*m.Area, total, limit, offset uint64) *api.Get
 
 // ToArea ...
 func (r Area) ToArea(area *m.Area) (obj *api.Area) {
+	if area == nil {
+		return
+	}
 	obj = &api.Area{
 		Id:          area.Id,
 		Name:        area.Name,

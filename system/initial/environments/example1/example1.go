@@ -30,7 +30,7 @@ import (
 // Example1 ...
 type Example1 struct{}
 
-// Demo ...
+// InstallDemoData ...
 func (e Example1) InstallDemoData(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
@@ -70,5 +70,5 @@ func (e Example1) Upgrade(oldVersion int,
 }
 
 func init() {
-	environments.Register("example1", &Example1{})
+	environments.Register("env2", &Example1{})
 }

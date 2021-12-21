@@ -20,7 +20,6 @@ package adaptors
 
 import (
 	"encoding/json"
-
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
@@ -61,8 +60,8 @@ func (p *Plugin) Add(plugin m.Plugin) (err error) {
 }
 
 // CreateOrUpdate ...
-func (p *Plugin) CreateOrUpdate(ver m.Plugin) (err error) {
-	err = p.table.CreateOrUpdate(p.toDb(ver))
+func (p *Plugin) CreateOrUpdate(plugin m.Plugin) (err error) {
+	err = p.table.CreateOrUpdate(p.toDb(plugin))
 	return
 }
 
