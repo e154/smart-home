@@ -30,19 +30,23 @@ func AttributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 	for k, v := range apiAttr {
 		attr := &m.Attribute{
 			Name: v.Name,
-			Type: common.AttributeType(v.Type),
 		}
 		switch v.Type {
 		case api.Types_INT:
 			attr.Value = v.GetInt()
+			attr.Type = common.AttributeInt
 		case api.Types_STRING:
-			attr.Value = v.String()
+			attr.Value = v.GetString_()
+			attr.Type = common.AttributeString
 		case api.Types_BOOL:
 			attr.Value = v.GetBool()
+			attr.Type = common.AttributeBool
 		case api.Types_FLOAT:
 			attr.Value = v.GetFloat()
+			attr.Type = common.AttributeFloat
 		case api.Types_ARRAY:
 			//	attr.Value = v.GetArray()
+			attr.Type = common.AttributeArray
 		}
 		attributes[k] = attr
 	}

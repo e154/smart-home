@@ -20,10 +20,8 @@ package dto
 
 import (
 	"fmt"
-
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
-	"github.com/e154/smart-home/common/debug"
 	m "github.com/e154/smart-home/models"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -39,22 +37,15 @@ func NewEntityDto() Entity {
 // AddEntity ...
 func (r Entity) AddEntity(obj *api.NewEntityRequest) (entity *m.Entity) {
 
-	fmt.Println("--------")
-	debug.Println(obj)
-	fmt.Println("--------")
-
-	return
 	entity = &m.Entity{
+		Id:          common.EntityId(fmt.Sprintf("%s.%s", obj.PluginName, obj.Name)),
 		Description: obj.Description,
 		PluginName:  obj.PluginName,
-		//Actions:     make([]*m.EntityAction, 0, len(entity.Actions)),
-		//States:      make([]*m.EntityState, 0, len(entity.States)),
-		//Scripts:     make([]*m.Script, 0, len(entity.Scripts)),
-		Hidden:   obj.Hidden,
-		AutoLoad: obj.AutoLoad,
-		Icon:     obj.Icon,
-		//Attributes:  AttributeFromApi(obj.Attributes),
-		//Settings:    AttributeFromApi(obj.Settings),
+		Hidden:      obj.Hidden,
+		AutoLoad:    obj.AutoLoad,
+		Icon:        obj.Icon,
+		Attributes:  AttributeFromApi(obj.Attributes),
+		Settings:    AttributeFromApi(obj.Settings),
 	}
 
 	// image
