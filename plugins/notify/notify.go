@@ -19,9 +19,10 @@
 package notify
 
 import (
-	"github.com/e154/smart-home/common"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"

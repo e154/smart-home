@@ -87,7 +87,7 @@ entityAction = (entityId, actionName)->
 			// add scripts
 			// ------------------------------------------------
 
-			plugScript, err := AddScript("sensor script",  fmt.Sprintf(sensorSourceScript, host, port), adaptors, scriptService)
+			plugScript, err := AddScript("sensor script", fmt.Sprintf(sensorSourceScript, host, port), adaptors, scriptService)
 			So(err, ShouldBeNil)
 
 			// add entity

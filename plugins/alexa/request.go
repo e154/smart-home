@@ -20,9 +20,10 @@ package alexa
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/e154/smart-home/common"
 	"github.com/pkg/errors"
-	"time"
 )
 
 // Request represents all fields sent from the Server service to the skillserver.

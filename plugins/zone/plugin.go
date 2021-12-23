@@ -20,8 +20,9 @@ package zone
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"sync"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"

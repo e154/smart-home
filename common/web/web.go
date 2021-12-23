@@ -20,11 +20,12 @@ package web
 
 import (
 	"bytes"
-	"github.com/e154/smart-home/common"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/e154/smart-home/common"
 )
 
 // Request ...

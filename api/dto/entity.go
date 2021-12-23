@@ -20,6 +20,7 @@ package dto
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/debug"
@@ -49,9 +50,9 @@ func (r Entity) AddEntity(obj *api.NewEntityRequest) (entity *m.Entity) {
 		//Actions:     make([]*m.EntityAction, 0, len(entity.Actions)),
 		//States:      make([]*m.EntityState, 0, len(entity.States)),
 		//Scripts:     make([]*m.Script, 0, len(entity.Scripts)),
-		Hidden:      obj.Hidden,
-		AutoLoad:    obj.AutoLoad,
-		Icon:        obj.Icon,
+		Hidden:   obj.Hidden,
+		AutoLoad: obj.AutoLoad,
+		Icon:     obj.Icon,
 		//Attributes:  AttributeFromApi(obj.Attributes),
 		//Settings:    AttributeFromApi(obj.Settings),
 	}

@@ -20,6 +20,7 @@ package adaptors
 
 import (
 	"encoding/json"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"

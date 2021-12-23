@@ -20,9 +20,10 @@ package scripts
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"strings"
 	"sync"
+
+	"github.com/pkg/errors"
 
 	"github.com/dop251/goja"
 	. "github.com/e154/smart-home/common"

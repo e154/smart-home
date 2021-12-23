@@ -22,13 +22,14 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/pkg/errors"
 	"math"
 	"net/url"
 	"sort"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"

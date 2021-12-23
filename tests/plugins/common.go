@@ -512,7 +512,6 @@ func GetPort() int64 {
 	return int64(port)
 }
 
-
 // AddScript ...
 func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scripts.ScriptService) (script *m.Script, err error) {
 

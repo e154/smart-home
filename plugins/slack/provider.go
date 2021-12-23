@@ -19,8 +19,9 @@
 package slack
 
 import (
-	"github.com/e154/smart-home/common"
 	"strings"
+
+	"github.com/e154/smart-home/common"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"

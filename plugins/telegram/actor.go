@@ -20,8 +20,9 @@ package telegram
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	"github.com/e154/smart-home/adaptors"

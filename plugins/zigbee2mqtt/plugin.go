@@ -20,9 +20,10 @@ package zigbee2mqtt
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"strings"
 	"sync"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"

@@ -20,12 +20,13 @@ package cron
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common"
-	"github.com/pkg/errors"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common"
+	"github.com/pkg/errors"
 )
 
 const (

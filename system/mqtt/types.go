@@ -20,6 +20,7 @@ package mqtt
 
 import (
 	"context"
+
 	"github.com/pkg/errors"
 
 	"github.com/DrmagicE/gmqtt/config"
@@ -31,8 +32,8 @@ import (
 
 var (
 	ErrInvalidTopicFilter = errors.New("invalid topic filter")
-	ErrInvalidQos = errors.New("invalid Qos")
-	ErrInvalidUtf8String = errors.New("invalid utf-8 string")
+	ErrInvalidQos         = errors.New("invalid Qos")
+	ErrInvalidUtf8String  = errors.New("invalid utf-8 string")
 )
 
 // Admin ...

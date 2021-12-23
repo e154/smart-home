@@ -20,10 +20,11 @@ package mqtt_authenticator
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"reflect"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"

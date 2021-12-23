@@ -195,7 +195,6 @@ automationAction = (entityId)->
 			// add scripts
 			// ------------------------------------------------
 
-
 			buttonScript, err := AddScript("button", buttonSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 

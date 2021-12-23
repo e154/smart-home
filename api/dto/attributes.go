@@ -42,7 +42,7 @@ func AttributeFromApi(apiAttr map[string]*api.Attribute) (attributes m.Attribute
 		case api.Types_FLOAT:
 			attr.Value = v.GetFloat()
 		case api.Types_ARRAY:
-		//	attr.Value = v.GetArray()
+			//	attr.Value = v.GetArray()
 		}
 		attributes[k] = attr
 	}

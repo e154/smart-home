@@ -20,10 +20,11 @@ package message_queue
 
 import (
 	"fmt"
-	"github.com/e154/smart-home/common"
-	"github.com/pkg/errors"
 	"reflect"
 	"sort"
+
+	"github.com/e154/smart-home/common"
+	"github.com/pkg/errors"
 )
 
 // New creates new MessageQueue

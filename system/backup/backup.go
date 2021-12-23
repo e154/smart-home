@@ -20,12 +20,13 @@ package backup
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"

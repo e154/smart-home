@@ -30,7 +30,7 @@ type Value interface{}
 
 var (
 	ErrDestinationPointerIsNil = errors.New("destination pointer is nil")
-	ErrDestinationNotAPointer =  errors.New("destination not a pointer")
+	ErrDestinationNotAPointer  = errors.New("destination not a pointer")
 )
 
 func cloneBytes(b []byte) []byte {

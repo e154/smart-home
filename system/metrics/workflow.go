@@ -19,8 +19,9 @@
 package metrics
 
 import (
-	"github.com/e154/smart-home/common"
 	"sync"
+
+	"github.com/e154/smart-home/common"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/rcrowley/go-metrics"
