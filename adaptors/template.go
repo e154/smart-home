@@ -164,7 +164,6 @@ func (n *Template) UpdateItemsTree(tree []*m.TemplateTree) (err error) {
 
 	dbTree := make([]*db.TemplateTree, 0)
 	if err = common.Copy(&dbTree, &tree, common.JsonEngine); err != nil {
-		err = errors.New(err.Error())
 		return
 	}
 

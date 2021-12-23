@@ -183,19 +183,8 @@ entityAction = (entityId, actionName)->
 
 			// add scripts
 			// ------------------------------------------------
-			plugScript := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "cgminer script",
-				Source:      cgminerSourceScript,
-				Description: "cgminer script",
-			}
 
-			engineScript, err := scriptService.NewEngine(plugScript)
-			So(err, ShouldBeNil)
-			err = engineScript.Compile()
-			So(err, ShouldBeNil)
-
-			plugScript.Id, err = adaptors.Script.Add(plugScript)
+			plugScript, err := AddScript("cgminer script", cgminerSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
 			// add entity

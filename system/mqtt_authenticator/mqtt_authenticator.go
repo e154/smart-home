@@ -20,6 +20,7 @@ package mqtt_authenticator
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"reflect"
 	"sync"
 	"time"
@@ -32,12 +33,6 @@ import (
 var (
 	log = common.MustGetLogger("mqtt_authenticator")
 )
-
-// ErrBadLoginOrPassword ...
-var ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
-
-// ErrPrincipalDisabled ...
-var ErrPrincipalDisabled = fmt.Errorf("principal disabled")
 
 // MqttAuthenticator ...
 type MqttAuthenticator interface {
@@ -71,7 +66,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 
 	password, ok := pass.(string)
 	if !ok || password == "" {
-		err = ErrBadLoginOrPassword
+		err = common.ErrBadLoginOrPassword
 	}
 
 	if a.cache.IsExist(login) {
@@ -105,7 +100,7 @@ func (a *Authenticator) Authenticate(login string, pass interface{}) (err error)
 // Register ...
 func (a *Authenticator) Register(fn func(login, password string) (err error)) (err error) {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
-		err = fmt.Errorf("%s is not a reflect.Func", reflect.TypeOf(fn))
+		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("%s is not a reflect.Func", reflect.TypeOf(fn)))
 	}
 
 	a.handlerMu.Lock()

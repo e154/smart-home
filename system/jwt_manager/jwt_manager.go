@@ -21,8 +21,8 @@ package jwt_manager
 import (
 	"context"
 	"encoding/hex"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"time"
 
 	"github.com/e154/smart-home/adaptors"
@@ -96,16 +96,21 @@ func (j *jwtManager) Generate(user *m.User, opts ...*time.Time) (accessToken str
 // Verify ...
 func (j *jwtManager) Verify(accessToken string) (claims *UserClaims, err error) {
 
-	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+	var token *jwt.Token
+	token, err = jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, errors.Wrap(ErrUnexpectedSigningMethod, fmt.Sprintf("%v", token.Header["alg"]))
 		}
 
 		return j.hmacKey, nil
 	})
 
+	if err != nil {
+		return
+	}
+
 	if token == nil {
-		err = errors.New("invalid access token")
+		err = ErrInvalidAccessToken
 		return
 	}
 
@@ -117,7 +122,7 @@ func (j *jwtManager) Verify(accessToken string) (claims *UserClaims, err error) 
 		claims = &UserClaims{}
 		err = common.Copy(claims, mapClaims, common.JsonEngine)
 	} else {
-		return nil, fmt.Errorf("invalid token claims")
+		return nil, ErrInvalidTokenClaims
 	}
 
 	return

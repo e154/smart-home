@@ -20,6 +20,7 @@ package cgminer
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"sync"
 
 	"github.com/e154/smart-home/common"
@@ -126,7 +127,7 @@ func (p *plugin) removeEntity(name common.EntityId) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
-		err = fmt.Errorf("not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
 		return
 	}
 

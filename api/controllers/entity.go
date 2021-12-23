@@ -42,6 +42,7 @@ func (c ControllerEntity) AddEntity(ctx context.Context, req *api.NewEntityReque
 
 	entity := c.dto.Entity.AddEntity(req)
 
+	return nil, nil
 	entity, errs, err := c.endpoint.Entity.Add(ctx, entity)
 	if len(errs) != 0 || err != nil {
 		return nil, c.error(ctx, errs, err)

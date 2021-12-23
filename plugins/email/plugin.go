@@ -19,7 +19,7 @@
 package email
 
 import (
-	"errors"
+	"github.com/pkg/errors"
 	"strings"
 
 	"github.com/e154/smart-home/common"
@@ -89,7 +89,7 @@ func (p *plugin) asyncLoad() (err error) {
 	var ok bool
 	p.notify, ok = pl.(notify.ProviderRegistrar)
 	if !ok {
-		err = errors.New("fail static cast to notify.ProviderRegistrar")
+		err = errors.Wrap(common.ErrInternal, "can`t static cast to  notify.ProviderRegistrar")
 		return
 	}
 

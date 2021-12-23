@@ -132,7 +132,7 @@ func (n *UserEndpoint) Delete(ctx context.Context, userId int64) (err error) {
 	}
 
 	if user.Role.Name == "admin" {
-		err = errors.New("admin is main user")
+		err = common.ErrBadRequestParams
 		return
 	}
 

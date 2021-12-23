@@ -22,7 +22,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -67,7 +66,7 @@ func (c ControllerCommon) currentUser(ctx context.Context) (*m.User, error) {
 
 	user, ok := ctx.Value("currentUser").(*m.User)
 	if !ok {
-		return nil, fmt.Errorf("bad user object")
+		return nil, errors.Wrap(common.ErrBadRequestParams, "bad user object")
 	}
 
 	return user, nil

@@ -19,9 +19,10 @@
 package telegram
 
 import (
-	"errors"
 	"fmt"
 	"sync"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -82,7 +83,7 @@ func (p *plugin) asyncLoad() (err error) {
 	var ok bool
 	p.notify, ok = pl.(notify.ProviderRegistrar)
 	if !ok {
-		err = errors.New("fail static cast to notify.ProviderRegistrar")
+		err = errors.Wrap(common.ErrInternal, "can`t static cast to notify.ProviderRegistrar")
 		return
 	}
 
@@ -148,7 +149,6 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[entity.Id]; ok {
-		err = fmt.Errorf("the actor with id '%s' has already been created", entity.Id)
 		return
 	}
 
@@ -168,7 +168,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[entityId]; !ok {
-		err = fmt.Errorf("not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("entityId \"%s\"", entityId))
 		return
 	}
 
@@ -210,7 +210,7 @@ func (p *plugin) Send(name string, message m.Message) (err error) {
 	if ok {
 		actor.Send(body)
 	} else {
-		err = fmt.Errorf("bot with name '%s' not found", name)
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("bot \"%s\"", name))
 	}
 
 	return

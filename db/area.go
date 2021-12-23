@@ -20,6 +20,7 @@ package db
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/common"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -96,7 +97,7 @@ func (n *Areas) Search(query string, limit, offset int64) (list []*Area, total i
 // DeleteByName ...
 func (n Areas) DeleteByName(name string) (err error) {
 	if name == "" {
-		err = fmt.Errorf("zero name")
+		err = errors.Wrap(common.ErrBadRequestParams, "zero name")
 		return
 	}
 

@@ -4,7 +4,6 @@ package api;
 option go_package = "/api";
 
 import "google/api/annotations.proto";
-import "google/api/httpbody.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -66,7 +65,7 @@ message DeleteImageRequest {
 }
 
 message UploadImageRequest {
-  google.api.HttpBody http_body = 2;
+  bytes body = 2;
 }
 
 service ImageService {
@@ -161,8 +160,6 @@ service ImageService {
           value: {}
         }
       }
-      summary: "Upload file";
-      consumes: ["multipart/form-data"]
     };
   }
 }

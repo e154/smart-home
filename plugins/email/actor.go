@@ -19,7 +19,6 @@
 package email
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 
@@ -78,7 +77,7 @@ func (p *Actor) Spawn() entity_manager.PluginActor {
 func (e *Actor) Send(address string, message m.Message) error {
 
 	if e.Auth == "" || e.Pass == "" || e.Smtp == "" || e.Port == 0 || e.Sender == "" {
-		return errors.New("bad settings parameters")
+		return common.ErrBadActorSettingsParameters
 	}
 
 	attr := NewMessageParams()
@@ -106,7 +105,7 @@ func (e *Actor) Send(address string, message m.Message) error {
 
 	d := gomail.NewPlainDialer(e.Smtp, int(e.Port), e.Auth, e.Pass)
 	if err := d.DialAndSend(m); err != nil {
-		return errors.New(err.Error())
+		return err
 	}
 
 	return nil

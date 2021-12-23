@@ -19,7 +19,6 @@
 package stream
 
 import (
-	"errors"
 	"net/http"
 	"time"
 
@@ -78,7 +77,7 @@ func (w *StreamService) Ws(ctx *gin.Context) {
 		return
 	}
 	if _, ok := err.(websocket.HandshakeError); ok {
-		ctx.AbortWithError(400, errors.New("not a websocket handshake"))
+		ctx.AbortWithError(400, ErrNotAWebsocketHandshake)
 		return
 	} else if err != nil {
 		ctx.AbortWithError(400, err)

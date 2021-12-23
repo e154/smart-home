@@ -18,7 +18,10 @@
 
 package common
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var (
 
@@ -37,7 +40,26 @@ var (
 	ErrAccountIsBlocked = errors.New("account is blocked")
 	// ErrNotAuthorized ...
 	ErrNotAuthorized = errors.New("not authorized")
+	// ErrTokenIsDeprecated ...
+	ErrTokenIsDeprecated = errors.New("token is deprecated")
+	// ErrBadLoginOrPassword ...
+	ErrBadLoginOrPassword = fmt.Errorf("bad login or password")
 
 	// ErrMqttServerNoWorked ...
 	ErrMqttServerNoWorked = errors.New("mqtt server not worked")
+
+	// ErrBadRequestParams ...
+	ErrBadRequestParams = errors.New("bad request params")
+
+	// ErrBadActorSettingsParameters ...
+	ErrBadActorSettingsParameters = errors.New("bad actor settings parameters")
+
+	// ErrTimeout ...
+	ErrTimeout = errors.New("timeout")
+
+	// ErrProviderIsEmpty ...
+	ErrProviderIsEmpty = errors.New("provider is empty")
+
+	// ErrUnknownPrototype ...
+	ErrUnknownPrototype = errors.New("unknown prototype")
 )

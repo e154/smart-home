@@ -20,7 +20,6 @@ package adaptors
 
 import (
 	"encoding/json"
-	"errors"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -164,7 +163,7 @@ func (n *User) GetByResetPassToken(token string) (user *m.User, err error) {
 	t := time.Now()
 	sub := t.Sub(user.ResetPasswordSentAt.Add(time.Hour * 24)).String()
 	if !strings.Contains(sub, "-") {
-		err = errors.New("max 24 hour")
+		err = common.ErrTokenIsDeprecated
 	}
 
 	n.ClearResetPassToken(user)

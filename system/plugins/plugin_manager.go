@@ -172,7 +172,7 @@ LOOP:
 func (p *pluginManager) loadPlugin(name string) (err error) {
 
 	if p.enabledPlugins[name] {
-		err = errors.New(fmt.Sprintf("plugin '%s' is loaded", name))
+		err = errors.Wrap(ErrPluginIsLoaded, name)
 		return
 	}
 	if item, ok := pluginList.Load(name); ok {
@@ -198,7 +198,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 func (p *pluginManager) unloadPlugin(name string) (err error) {
 
 	if !p.enabledPlugins[name] {
-		err = errors.New("plugin not loaded")
+		err = errors.Wrap(ErrPluginNotLoaded, name)
 		return
 	}
 

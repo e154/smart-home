@@ -20,6 +20,7 @@ package sensor
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"sync"
 
 	"github.com/e154/smart-home/common"
@@ -110,7 +111,6 @@ func (p *plugin) AddOrUpdateActor(entity *m.Entity) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[entity.Id]; ok {
-		err = fmt.Errorf("the actor with id '%s' has already been created", entity.Id)
 		return
 	}
 
@@ -130,7 +130,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 
 	actor, ok := p.actors[entityId]
 	if !ok {
-		err = fmt.Errorf("not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
 		return
 	}
 

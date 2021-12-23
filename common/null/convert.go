@@ -28,7 +28,10 @@ import (
 // Value ...
 type Value interface{}
 
-var errNilPtr = errors.New("destination pointer is nil")
+var (
+	ErrDestinationPointerIsNil = errors.New("destination pointer is nil")
+	ErrDestinationNotAPointer =  errors.New("destination not a pointer")
+)
 
 func cloneBytes(b []byte) []byte {
 	if b == nil {
@@ -51,10 +54,10 @@ func convertAssign(dest, src interface{}) error {
 
 	dpv := reflect.ValueOf(dest)
 	if dpv.Kind() != reflect.Ptr {
-		return errors.New("destination not a pointer")
+		return ErrDestinationNotAPointer
 	}
 	if dpv.IsNil() {
-		return errNilPtr
+		return ErrDestinationPointerIsNil
 	}
 
 	var sv reflect.Value

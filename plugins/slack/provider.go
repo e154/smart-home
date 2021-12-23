@@ -19,7 +19,7 @@
 package slack
 
 import (
-	"errors"
+	"github.com/e154/smart-home/common"
 	"strings"
 
 	"github.com/e154/smart-home/adaptors"
@@ -73,7 +73,7 @@ func (e *Provider) Save(msg notify.Message) (addresses []string, message m.Messa
 func (e *Provider) Send(address string, message m.Message) (err error) {
 
 	if e.Token == "" || e.UserName == "" {
-		return errors.New("bad settings parameters")
+		return common.ErrBadActorSettingsParameters
 	}
 
 	attr := NewAttr()

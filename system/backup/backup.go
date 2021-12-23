@@ -19,8 +19,8 @@
 package backup
 
 import (
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"os"
 	"os/exec"
 	"path"
@@ -109,7 +109,7 @@ func (b *Backup) Restore(name string) (err error) {
 
 	_, err = os.Stat(file)
 	if os.IsNotExist(err) {
-		err = errors.New("file not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("path %s", file))
 		return
 	}
 

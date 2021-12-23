@@ -22,6 +22,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"sort"
 	"sync"
 	"time"
@@ -334,6 +335,12 @@ func (e *entityManager) eventHandler(_ string, message interface{}) {
 		go e.eventLoadedPlugin(msg)
 	case event_bus.EventUnloadedPlugin:
 		go e.eventUnloadedPlugin(msg)
+	case event_bus.EventCreatedEntity:
+		go e.eventCreatedEntity(msg)
+	case event_bus.EventUpdatedEntity:
+		go e.eventUpdatedEntity(msg)
+	case event_bus.EventDeletedEntity:
+		go e.eventDeletedEntity(msg)
 	}
 }
 
@@ -400,6 +407,35 @@ func (e *entityManager) eventUnloadedPlugin(msg event_bus.EventUnloadedPlugin) {
 	})
 }
 
+func (e *entityManager) eventCreatedEntity(msg event_bus.EventCreatedEntity) {
+
+	entity, err := e.adaptors.Entity.GetById(msg.Id)
+	if err != nil {
+		return
+	}
+
+	if err = e.Add(entity); err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (e *entityManager) eventUpdatedEntity(msg event_bus.EventUpdatedEntity) {
+
+	entity, err := e.adaptors.Entity.GetById(msg.Id)
+	if err != nil {
+		return
+	}
+
+	if err = e.Update(entity); err != nil {
+		log.Error(err.Error())
+	}
+}
+
+func (e *entityManager) eventDeletedEntity(msg event_bus.EventDeletedEntity) {
+
+	e.Remove(msg.Id)
+}
+
 // CallAction ...
 func (e *entityManager) CallAction(id common.EntityId, action string, arg map[string]interface{}) {
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCallAction{
@@ -422,7 +458,7 @@ func (e *entityManager) CallScene(id common.EntityId, arg map[string]interface{}
 func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor, err error) {
 	var plugin interface{}
 	if plugin, err = e.pluginManager.GetPlugin(entityId.PluginName()); err != nil {
-		err = fmt.Errorf("from plugin manager, %s", err.Error())
+		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
 
@@ -431,7 +467,7 @@ func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor
 		return
 		//...
 	} else {
-		err = fmt.Errorf("cannot cast to the desired type plugin '%s' to plugins.CrudActor", entityId.PluginName())
+		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("can`t static cast '%s' to plugins.CrudActor", entityId.PluginName()))
 	}
 	return
 }

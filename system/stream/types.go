@@ -18,6 +18,8 @@
 
 package stream
 
+import "github.com/pkg/errors"
+
 const (
 	// Request ...
 	Request = "request"
@@ -31,6 +33,10 @@ const (
 	Notify = "notify"
 	// Broadcast ...
 	Broadcast = "broadcast"
+)
+
+var (
+	ErrNotAWebsocketHandshake = errors.New("not a websocket handshake")
 )
 
 // BroadcastClient ...

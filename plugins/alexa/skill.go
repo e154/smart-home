@@ -19,6 +19,7 @@
 package alexa
 
 import (
+	"fmt"
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
@@ -89,11 +90,11 @@ func (h *Skill) OnIntent(_ *gin.Context, req *Request, resp *Response) {
 
 		h.jsBind.update(req, resp)
 		if _, err := h.engine.EvalScript(intent.Script); err != nil {
-			log.Error(err.Error())
+			log.Error(fmt.Sprintf("%+v", err))
 			return
 		}
 		if _, err := h.engine.AssertFunction("skillOnIntent"); err != nil {
-			log.Error(err.Error())
+			log.Error(fmt.Sprintf("%+v", err))
 			return
 		}
 	}

@@ -19,6 +19,7 @@
 package metrics
 
 import (
+	"github.com/e154/smart-home/common"
 	"sync"
 
 	"github.com/e154/smart-home/adaptors"
@@ -76,7 +77,7 @@ func (d *WorkflowManager) GetStatus(workflowId int64) (status WorkflowStatus, er
 		return
 	}
 
-	err = ErrRecordNotFound
+	err = common.ErrNotFound
 
 	return
 }

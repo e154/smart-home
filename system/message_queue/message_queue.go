@@ -20,6 +20,8 @@ package message_queue
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/common"
+	"github.com/pkg/errors"
 	"reflect"
 	"sort"
 )
@@ -58,7 +60,7 @@ func (b *messageQueue) Publish(topic string, args ...interface{}) {
 // Subscribe ...
 func (b *messageQueue) Subscribe(topic string, fn interface{}, options ...interface{}) error {
 	if reflect.TypeOf(fn).Kind() != reflect.Func {
-		return fmt.Errorf("%s is not a reflect.Func", reflect.TypeOf(fn))
+		return errors.Wrap(common.ErrInternal, fmt.Sprintf("%s is not a reflect.Func", reflect.TypeOf(fn)))
 	}
 
 	h := &handler{
@@ -116,7 +118,7 @@ func (b *messageQueue) Unsubscribe(topic string, fn interface{}) error {
 		return nil
 	}
 
-	return fmt.Errorf("topic %s doesn't exist", topic)
+	return errors.Wrap(common.ErrInternal, fmt.Sprintf("topic %s doesn't exist", topic))
 }
 
 // Close ...

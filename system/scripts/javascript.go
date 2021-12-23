@@ -19,19 +19,14 @@
 package scripts
 
 import (
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"strings"
 	"sync"
 
 	"github.com/dop251/goja"
 	. "github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/scripts/eventloop"
-)
-
-var (
-	// ErrorProgramNotFound ...
-	ErrorProgramNotFound = errors.New("program not found")
 )
 
 // Javascript ...
@@ -293,7 +288,7 @@ func (j *Javascript) RunProgram(name string) (result string, err error) {
 
 	program, ok := j.programs[name]
 	if !ok {
-		err = ErrorProgramNotFound
+		err = errors.Wrap(ErrNotFound, fmt.Sprintf("name \"%s\"", name))
 		return
 	}
 

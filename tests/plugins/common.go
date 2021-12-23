@@ -511,3 +511,28 @@ func GetPort() int64 {
 	port, _ := freeport.GetFreePort()
 	return int64(port)
 }
+
+
+// AddScript ...
+func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scripts.ScriptService) (script *m.Script, err error) {
+
+	script = &m.Script{
+		Lang:        common.ScriptLangCoffee,
+		Name:        name,
+		Source:      src,
+		Description: "description " + name,
+	}
+
+	var engine *scripts.Engine
+	if engine, err = scriptService.NewEngine(script); err != nil {
+		return
+	}
+
+	if err = engine.Compile(); err != nil {
+		return
+	}
+
+	script.Id, err = adaptors.Script.Add(script)
+
+	return
+}

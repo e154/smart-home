@@ -22,6 +22,7 @@ import (
 	"context"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/event_bus"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 )
@@ -60,9 +61,10 @@ func (n *EntityEndpoint) Add(ctx context.Context, entity *m.Entity) (result *m.E
 		return
 	}
 
-	if err = n.entityManager.Add(entity); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-	}
+	n.eventBus.Publish(event_bus.TopicEntities, event_bus.EventCreatedEntity{
+		Id: result.Id,
+	})
+
 	return
 }
 
@@ -114,7 +116,9 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		return
 	}
 
-	err = n.entityManager.Update(entity)
+	n.eventBus.Publish(event_bus.TopicEntities, event_bus.EventUpdatedEntity{
+		Id: result.Id,
+	})
 
 	return
 }
@@ -132,7 +136,7 @@ func (n *EntityEndpoint) List(ctx context.Context, pagination common.PageParams)
 func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err error) {
 
 	if id == "" {
-		err = errors.New("entity id is null")
+		err = common.ErrBadRequestParams
 		return
 	}
 
@@ -151,7 +155,9 @@ func (n *EntityEndpoint) Delete(ctx context.Context, id common.EntityId) (err er
 		return
 	}
 
-	n.entityManager.Remove(id)
+	n.eventBus.Publish(event_bus.TopicEntities, event_bus.EventDeletedEntity{
+		Id: id,
+	})
 
 	return
 }

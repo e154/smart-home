@@ -22,7 +22,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -381,7 +380,7 @@ func (g *GateClient) UnSubscribe(command string) {
 func (g *GateClient) Send(command string, payload map[string]interface{}, ctx context.Context, f func(msg stream.Message)) (err error) {
 
 	if g.wsClient.Status() != GateStatusConnected {
-		err = errors.New("gate not connected")
+		err = ErrGateNotConnected
 		return
 	}
 

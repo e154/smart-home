@@ -19,8 +19,9 @@
 package twilio
 
 import (
-	"errors"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -89,7 +90,7 @@ func (p *plugin) asyncLoad() (err error) {
 	var ok bool
 	p.notify, ok = pl.(notify.ProviderRegistrar)
 	if !ok {
-		err = errors.New("fail static cast to notify.ProviderRegistrar")
+		err = errors.Wrap(common.ErrInternal, "can`t static cast to notify.ProviderRegistrar")
 		return
 	}
 

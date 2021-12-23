@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/pkg/errors"
 	"math"
 	"net/url"
 	"sort"
@@ -167,7 +168,7 @@ func (p *WeatherMet) GetForecast(params Zone, now time.Time) (forecast m.Attribu
 func (p *WeatherMet) FetchData(name string, lat, lon float64, now time.Time) (zone Zone, err error) {
 
 	if lat == 0 || lon == 0 {
-		err = fmt.Errorf("zero positions")
+		err = errors.Wrap(common.ErrBadRequestParams, "zero positions")
 		return
 	}
 

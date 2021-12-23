@@ -77,3 +77,18 @@ type EventLoadedPlugin struct {
 type EventUnloadedPlugin struct {
 	PluginName string `json:"plugin_name"`
 }
+
+// EventCreatedEntity ...
+type EventCreatedEntity struct {
+	Id common.EntityId `json:"id"`
+}
+
+// EventUpdatedEntity ...
+type EventUpdatedEntity struct {
+	Id common.EntityId `json:"id"`
+}
+
+// EventDeletedEntity ...
+type EventDeletedEntity struct {
+	Id common.EntityId `json:"id"`
+}

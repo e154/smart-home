@@ -194,80 +194,21 @@ automationAction = (entityId)->
 
 			// add scripts
 			// ------------------------------------------------
-			buttonScript := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "button",
-				Source:      buttonSourceScript,
-				Description: "button sensor",
-			}
 
-			engine1, err := scriptService.NewEngine(buttonScript)
-			So(err, ShouldBeNil)
-			err = engine1.Compile()
+
+			buttonScript, err := AddScript("button", buttonSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
-			buttonScript.Id, err = adaptors.Script.Add(buttonScript)
+			plugScript, err := AddScript("plug", plugSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
-			plugScript := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "plug",
-				Source:      plugSourceScript,
-				Description: "plug",
-			}
-			engine2, err := scriptService.NewEngine(plugScript)
-			So(err, ShouldBeNil)
-			err = engine2.Compile()
+			plugActionOnOffScript, err := AddScript("plug on", plugActionOnOffSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
-			plugScript.Id, err = adaptors.Script.Add(plugScript)
+			task1Script, err := AddScript("task1", task1SourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
-			plugActionOnOffScript := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "plug on",
-				Source:      plugActionOnOffSourceScript,
-				Description: "включение",
-			}
-
-			enginePlugOnOffScript, err := scriptService.NewEngine(plugActionOnOffScript)
-			So(err, ShouldBeNil)
-			err = enginePlugOnOffScript.Compile()
-			So(err, ShouldBeNil)
-
-			plugActionOnOffScript.Id, err = adaptors.Script.Add(plugActionOnOffScript)
-			So(err, ShouldBeNil)
-
-			// task1 scripts
-			task1Script := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "trigger_script_entityId_",
-				Source:      task1SourceScript,
-				Description: "",
-			}
-
-			task1ScriptEngine, err := scriptService.NewEngine(task1Script)
-			So(err, ShouldBeNil)
-			err = task1ScriptEngine.Compile()
-			So(err, ShouldBeNil)
-
-			task1Script.Id, err = adaptors.Script.Add(task1Script)
-			So(err, ShouldBeNil)
-
-			// task2 scripts
-			task2Script := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "task2",
-				Source:      task2SourceScript,
-				Description: "",
-			}
-
-			task2ScriptEngine, err := scriptService.NewEngine(task2Script)
-			So(err, ShouldBeNil)
-			err = task2ScriptEngine.Compile()
-			So(err, ShouldBeNil)
-
-			task2Script.Id, err = adaptors.Script.Add(task2Script)
+			task2Script, err := AddScript("task2", task2SourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
 			// add entity

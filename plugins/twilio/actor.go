@@ -21,8 +21,8 @@ package twilio
 import (
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
 	"strings"
@@ -119,7 +119,7 @@ func (e *Actor) Send(phone string, message m.Message) (err error) {
 	i := 0
 	for range ticker.C {
 		if i > 15 {
-			err = errors.New("status timeout")
+			err = errors.Wrap(common.ErrTimeout, "wait ticker")
 			return
 		}
 		if status, err = e.GetStatus(resp.Sid); err != nil {
@@ -154,7 +154,7 @@ func (e *Actor) GetStatus(smsId string) (string, error) {
 	}
 
 	if ex != nil {
-		return "", errors.New(ex.Message)
+		return "", errors.Wrap(common.ErrInternal, ex.Message)
 	}
 
 	return resp.Status, nil
@@ -244,7 +244,7 @@ func (p *Actor) UpdateBalance() (err error) {
 
 func (e *Actor) client() (client *gotwilio.Twilio, err error) {
 	if e.authToken == "" || e.sid == "" {
-		err = errors.New("bad settings parameters")
+		err = common.ErrBadActorSettingsParameters
 		return
 	}
 	client = gotwilio.NewTwilioClient(e.sid, e.authToken)

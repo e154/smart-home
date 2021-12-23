@@ -20,6 +20,7 @@ package sun
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"sync"
 	"time"
 
@@ -128,7 +129,7 @@ func (p *plugin) removeEntity(name string) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
-		err = fmt.Errorf("not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
 		return
 	}
 

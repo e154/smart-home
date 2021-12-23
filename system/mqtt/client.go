@@ -20,7 +20,6 @@ package mqtt
 
 import (
 	"context"
-	"errors"
 	"sync"
 
 	"github.com/DrmagicE/gmqtt/pkg/packets"
@@ -61,7 +60,7 @@ func (m *client) Subscribe(topic string, handler MessageHandler) (err error) {
 		delete(m.subscribers, topic)
 	}
 	if !packets.ValidTopicFilter(true, []byte(topic)) {
-		err = errors.New("invalid topic filter")
+		err = ErrInvalidTopicFilter
 		return
 	}
 	m.subscribers[topic] = handler

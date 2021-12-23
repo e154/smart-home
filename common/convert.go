@@ -80,3 +80,29 @@ func Rounding(num float64, k uint) float64 {
 	p := math.Pow(10, float64(k))
 	return math.Floor(num*p) / p
 }
+
+// Bool ...
+func Bool(v bool) *bool {
+	return &v
+}
+
+// BoolValue ...
+func BoolValue(v *bool) bool {
+	if v != nil {
+		return *v
+	}
+	return false
+}
+
+// Float32 ...
+func Float32(v float32) *float32 {
+	return &v
+}
+
+// Float32Value ...
+func Float32Value(v *float32) float32 {
+	if v != nil {
+		return *v
+	}
+	return 0
+}

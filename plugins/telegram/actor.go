@@ -20,6 +20,7 @@ package telegram
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"strings"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
@@ -121,7 +122,7 @@ func (p *Actor) Start() (err error) {
 	if !common.TestMode() {
 		p.bot, err = tgbotapi.NewBotAPI(p.AccessToken)
 		if err != nil {
-			err = fmt.Errorf("telegram error: %s", err.Error())
+			err = errors.Wrap(common.ErrInternal, err.Error())
 			return
 		}
 

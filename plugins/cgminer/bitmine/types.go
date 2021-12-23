@@ -18,6 +18,8 @@
 
 package bitmine
 
+import "github.com/pkg/errors"
+
 // DeviceType ...
 type DeviceType string
 
@@ -25,6 +27,15 @@ type DeviceType string
 func (d DeviceType) String() string {
 	return string(d)
 }
+
+var (
+	ErrNoStatsInJsonResponse          = errors.New("no stats in JSON response")
+	ErrTooManyStatsInJsonResponse     = errors.New("too many stats in JSON response")
+	ErrReceivedMultipleSummaryObjects = errors.New("received multiple Summary objects")
+	ErrNoSummaryInfoReceived          = errors.New("no summary info received")
+	ErrNoVersionInJsonResponse        = errors.New("no version in JSON response")
+	ErrTooManyVersionsInJsonResponse  = errors.New("too many versions in JSON response")
+)
 
 const (
 	// ManufactureBitmine ...

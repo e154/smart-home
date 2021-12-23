@@ -23,6 +23,8 @@ package entity_manager
 // Actor
 //	.setState(params)
 //
+
+// ScriptBind ...
 type ScriptBind struct {
 	actor PluginActor
 }

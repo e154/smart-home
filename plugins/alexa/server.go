@@ -19,18 +19,19 @@
 package alexa
 
 import (
-	"errors"
 	"net/http"
 	"os"
 	"sync"
+
+	"github.com/e154/smart-home/common"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/gin-gonic/gin"
-	"go.uber.org/atomic"
 )
 
 // Server ...
@@ -214,7 +215,7 @@ func (s Server) Auth(ctx *gin.Context) {
 	}
 
 	if !IsValidAlexaRequest(ctx.Writer, ctx.Request) {
-		ctx.AbortWithError(401, errors.New("invalid request"))
+		ctx.AbortWithError(401, common.ErrBadRequestParams)
 		return
 	}
 }

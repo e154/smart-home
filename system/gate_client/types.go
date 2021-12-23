@@ -18,12 +18,18 @@
 
 package gate_client
 
+import "github.com/pkg/errors"
+
 // IWsCallback ...
 type IWsCallback interface {
 	onMessage(payload []byte)
 	onConnected()
 	onClosed()
 }
+
+var (
+	ErrGateNotConnected = errors.New("gate not connected")
+)
 
 const (
 	// ClientTypeServer ...

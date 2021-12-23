@@ -19,7 +19,6 @@
 package entity_manager
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -166,7 +165,7 @@ func (e *BaseActor) Metrics() []m.Metric {
 
 // SetState ...
 func (e *BaseActor) SetState(EntityStateParams) error {
-	return errors.New("method not implemented")
+	return common.ErrUnimplemented
 }
 
 // Attributes ...

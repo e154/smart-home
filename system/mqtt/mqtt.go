@@ -20,7 +20,6 @@ package mqtt
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -184,15 +183,15 @@ func (m *Mqtt) Admin() Admin {
 // Publish ...
 func (m *Mqtt) Publish(topic string, payload []byte, qos uint8, retain bool) (err error) {
 	if qos < 0 || qos > 2 {
-		err = errors.New("invalid Qos")
+		err = ErrInvalidQos
 		return
 	}
 	if !packets.ValidTopicFilter(true, []byte(topic)) {
-		err = errors.New("invalid topic filter")
+		err = ErrInvalidTopicFilter
 		return
 	}
 	if !packets.ValidUTF8(payload) {
-		err = errors.New("invalid utf-8 string")
+		err = ErrInvalidUtf8String
 		return
 	}
 

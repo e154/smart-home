@@ -19,8 +19,8 @@
 package scripts
 
 import (
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"os"
 	"strconv"
 
@@ -73,7 +73,7 @@ func NewEngine(s *m.Script, functions, structures *Pull) (engine *Engine, err er
 	case ScriptLangTs, ScriptLangCoffee, ScriptLangJavascript:
 		engine.script = NewJavascript(engine)
 	default:
-		err = errors.New(fmt.Sprintf("undefined language %s", s.Lang))
+		err = errors.Wrap(ErrNotFound, string(s.Lang))
 		return
 	}
 
@@ -120,9 +120,9 @@ func (s *Engine) EvalScript(script *m.Script) (result string, err error) {
 	if result, err = s.script.RunProgram(programName); err == nil {
 		return
 	}
-
-	if err == ErrorProgramNotFound {
+	if errors.Is(err, ErrNotFound) {
 		if err = s.script.CreateProgram(programName, script.Compiled); err != nil {
+			err = errors.Wrap(ErrInternal, err.Error())
 			return
 		}
 		result, err = s.script.RunProgram(programName)

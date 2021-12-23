@@ -19,7 +19,7 @@
 package notify
 
 import (
-	"errors"
+	"github.com/e154/smart-home/common"
 	"sync"
 	"time"
 
@@ -247,7 +247,7 @@ func (n *notify) RemoveProvider(name string) {
 // Provider ...
 func (n *notify) Provider(name string) (provider Provider, err error) {
 	if name == "" {
-		err = errors.New("provider is empty")
+		err = common.ErrProviderIsEmpty
 		return
 	}
 
@@ -257,7 +257,7 @@ func (n *notify) Provider(name string) (provider Provider, err error) {
 	var ok bool
 	if provider, ok = n.providerList[name]; !ok {
 		log.Warnf("provider '%s' not found", name)
-		err = errors.New("not found")
+		err = common.ErrNotFound
 		return
 	}
 	return

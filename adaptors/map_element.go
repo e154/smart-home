@@ -197,7 +197,7 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 	}
 
 	if ver.PrototypeId == "" {
-		err = fmt.Errorf("prototype_id is zero")
+		err = errors.Wrap(common.ErrBadRequestParams, "prototype_id is zero")
 		return
 	}
 
@@ -234,7 +234,7 @@ func (n *MapElement) Update(ver *m.MapElement) (err error) {
 		ver.PrototypeId = ver.Prototype.Entity.Id
 		ver.PrototypeType = common.MapElementPrototypeEntity
 	default:
-		err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
+		err = errors.Wrap(common.ErrUnknownPrototype, string(ver.PrototypeType))
 		log.Warnf(err.Error())
 	}
 
@@ -294,7 +294,7 @@ func (n *MapElement) Delete(mapId int64) (err error) {
 				err = entityAdaptor.Delete(id)
 			}
 		default:
-			err = fmt.Errorf("unknown prototype: %v", ver.PrototypeType)
+			err = errors.Wrap(common.ErrUnknownPrototype, string(ver.PrototypeType))
 			log.Warnf(err.Error())
 		}
 	}

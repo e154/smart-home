@@ -73,19 +73,7 @@ sceneEvent = (args)->
 			// add scripts
 			// ------------------------------------------------
 
-			sceneScript := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "romantic",
-				Source:      sceneSourceScript,
-				Description: "romantic scene",
-			}
-
-			engineSceneScript, err := scriptService.NewEngine(sceneScript)
-			So(err, ShouldBeNil)
-			err = engineSceneScript.Compile()
-			So(err, ShouldBeNil)
-
-			sceneScript.Id, err = adaptors.Script.Add(sceneScript)
+			sceneScript, err := AddScript("romantic script", sceneSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
 			// add entity

@@ -19,10 +19,11 @@
 package messagebird
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -101,11 +102,11 @@ func (p *Actor) Send(phone string, message m.Message) (err error) {
 		if msg, err = sms.Create(client, p.Name, []string{phone}, attr[AttrBody].String(), params); err != nil {
 			mbErr, ok := err.(messagebird.ErrorResponse)
 			if !ok {
-				err = errors.New(err.Error())
+				err = errors.Wrap(err, "can`t static cast to messagebird.ErrorResponse")
 				return
 			}
 
-			err = errors.New(mbErr.Errors[0].Description)
+			err = errors.Wrap(err, mbErr.Errors[0].Description)
 			return
 		}
 	}
@@ -153,7 +154,7 @@ func (p *Actor) GetStatus(smsId string) (string, error) {
 
 	msg, err := sms.Read(client, smsId)
 	if err != nil {
-		return "", errors.New(err.Error())
+		return "", errors.Wrap(err, "failed read sms")
 	}
 
 	return msg.Recipients.Items[0].Status, nil
@@ -221,7 +222,7 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 
 func (p *Actor) client() (client *messagebird.Client, err error) {
 	if p.AccessToken == "" {
-		err = errors.New("bad settings parameters")
+		err = common.ErrBadActorSettingsParameters
 		return
 	}
 	client = messagebird.New(p.AccessToken)

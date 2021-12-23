@@ -20,6 +20,7 @@ package script
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"sync"
 
 	"github.com/e154/smart-home/common"
@@ -89,7 +90,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[entityId.Name()]; !ok {
-		err = fmt.Errorf("not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", entityId))
 		return
 	}
 

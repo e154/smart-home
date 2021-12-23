@@ -260,19 +260,8 @@ skillOnIntent = ->
 
 			// add scripts
 			// ------------------------------------------------
-			alexaSkillScript := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "alexa skill script",
-				Source:      skillScriptSrc,
-				Description: "",
-			}
 
-			engineAlexaSkill, err := scriptService.NewEngine(alexaSkillScript)
-			So(err, ShouldBeNil)
-			err = engineAlexaSkill.Compile()
-			So(err, ShouldBeNil)
-
-			alexaSkillScript.Id, err = adaptors.Script.Add(alexaSkillScript)
+			alexaSkillScript, err := AddScript("alexa skill script", skillScriptSrc, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
 			// add alexa skills
