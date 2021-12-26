@@ -79,7 +79,7 @@ func (c ControllerScript) GetScriptList(ctx context.Context, req *api.GetScriptL
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Script.ToListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Script.ToListResult(items, uint64(total), pagination), nil
 }
 
 // SearchScript ...

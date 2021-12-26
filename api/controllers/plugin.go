@@ -45,7 +45,7 @@ func (c ControllerPlugin) GetPluginList(ctx context.Context, req *api.GetPluginL
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Plugin.ToPluginListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Plugin.ToPluginListResult(items, uint64(total), pagination), nil
 }
 
 // EnablePlugin ...

@@ -20,6 +20,7 @@ package dto
 
 import (
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 )
 
@@ -65,7 +66,7 @@ func (r Area) ToSearchResult(list []*m.Area) *api.SearchAreaResult {
 }
 
 // ToListResult ...
-func (r Area) ToListResult(list []*m.Area, total, limit, offset uint64) *api.GetAreaListResult {
+func (r Area) ToListResult(list []*m.Area, total uint64, pagination common.PageParams) *api.GetAreaListResult {
 
 	items := make([]*api.Area, 0, len(list))
 
@@ -76,9 +77,9 @@ func (r Area) ToListResult(list []*m.Area, total, limit, offset uint64) *api.Get
 	return &api.GetAreaListResult{
 		Items: items,
 		Meta: &api.GetAreaListResult_Meta{
-			Limit:        limit,
+			Limit:        uint64(pagination.Limit),
 			ObjectsCount: total,
-			Offset:       offset,
+			Offset:       uint64(pagination.Offset),
 		},
 	}
 }

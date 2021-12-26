@@ -79,6 +79,7 @@ func (n Entities) Update(v *Entity) (err error) {
 		"icon":        v.Icon,
 		"payload":     v.Payload,
 		"settings":    v.Settings,
+		"auto_load":   v.AutoLoad,
 	}
 
 	if err = n.Db.Model(&Entity{Id: v.Id}).Updates(q).Error; err != nil {

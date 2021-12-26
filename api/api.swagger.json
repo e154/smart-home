@@ -655,9 +655,6 @@
                 "image": {
                   "$ref": "#/definitions/apiUpdateEntityRequestImage"
                 },
-                "hidden": {
-                  "type": "boolean"
-                },
                 "autoLoad": {
                   "type": "boolean"
                 },
@@ -3181,9 +3178,6 @@
         "icon": {
           "type": "string"
         },
-        "hidden": {
-          "type": "boolean"
-        },
         "autoLoad": {
           "type": "boolean"
         },
@@ -3206,6 +3200,18 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiScript"
+          }
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
+          }
+        },
+        "settings": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAttribute"
           }
         },
         "createdAt": {
@@ -3246,6 +3252,43 @@
       "properties": {
         "id": {
           "type": "string"
+        }
+      }
+    },
+    "apiEntityShort": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "pluginName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "area": {
+          "$ref": "#/definitions/apiArea"
+        },
+        "image": {
+          "$ref": "#/definitions/apiImage"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "autoLoad": {
+          "type": "boolean"
+        },
+        "parent": {
+          "$ref": "#/definitions/apiEntityParent"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -3732,9 +3775,6 @@
         "image": {
           "$ref": "#/definitions/apiNewEntityRequestImage"
         },
-        "hidden": {
-          "type": "boolean"
-        },
         "autoLoad": {
           "type": "boolean"
         },
@@ -4215,7 +4255,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiEntity"
+            "$ref": "#/definitions/apiEntityShort"
           }
         }
       }

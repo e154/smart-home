@@ -38,6 +38,7 @@ func NewControllerEntity(common *ControllerCommon) ControllerEntity {
 	}
 }
 
+// AddEntity ...
 func (c ControllerEntity) AddEntity(ctx context.Context, req *api.NewEntityRequest) (*api.Entity, error) {
 
 	entity := c.dto.Entity.AddEntity(req)
@@ -50,6 +51,7 @@ func (c ControllerEntity) AddEntity(ctx context.Context, req *api.NewEntityReque
 	return c.dto.Entity.ToEntity(entity), nil
 }
 
+// UpdateEntity ...
 func (c ControllerEntity) UpdateEntity(ctx context.Context, req *api.UpdateEntityRequest) (*api.Entity, error) {
 
 	entity := c.dto.Entity.UpdateEntity(req)
@@ -62,6 +64,7 @@ func (c ControllerEntity) UpdateEntity(ctx context.Context, req *api.UpdateEntit
 	return c.dto.Entity.ToEntity(entity), nil
 }
 
+// GetEntity ...
 func (c ControllerEntity) GetEntity(ctx context.Context, req *api.GetEntityRequest) (*api.Entity, error) {
 
 	entity, err := c.endpoint.Entity.GetById(ctx, common.EntityId(req.Id))
@@ -72,6 +75,7 @@ func (c ControllerEntity) GetEntity(ctx context.Context, req *api.GetEntityReque
 	return c.dto.Entity.ToEntity(entity), nil
 }
 
+// GetEntityList ...
 func (c ControllerEntity) GetEntityList(ctx context.Context, req *api.GetEntityListRequest) (*api.GetEntityListResult, error) {
 
 	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
@@ -80,9 +84,10 @@ func (c ControllerEntity) GetEntityList(ctx context.Context, req *api.GetEntityL
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Entity.ToListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Entity.ToListResult(items, uint64(total), pagination), nil
 }
 
+// DeleteEntity ...
 func (c ControllerEntity) DeleteEntity(ctx context.Context, req *api.DeleteEntityRequest) (*emptypb.Empty, error) {
 
 	if err := c.endpoint.Entity.Delete(ctx, common.EntityId(req.Id)); err != nil {

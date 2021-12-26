@@ -79,7 +79,7 @@ func (c ControllerArea) GetAreaList(ctx context.Context, req *api.GetAreaListReq
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Area.ToListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Area.ToListResult(items, uint64(total), pagination), nil
 }
 
 func (c ControllerArea) DeleteArea(ctx context.Context, req *api.DeleteAreaRequest) (*emptypb.Empty, error) {

@@ -33,14 +33,14 @@ func NewPluginDto() Plugin {
 }
 
 // ToPluginListResult ...
-func (p Plugin) ToPluginListResult(items []*m.Plugin, total, limit, offset uint64) (result *api.GetPluginListResult) {
+func (p Plugin) ToPluginListResult(items []*m.Plugin, total uint64, pagination common.PageParams) (result *api.GetPluginListResult) {
 
 	result = &api.GetPluginListResult{
 		Items: make([]*api.Plugin, 0, len(items)),
 		Meta: &api.GetPluginListResult_Meta{
-			Limit:        limit,
+			Limit:        uint64(pagination.Limit),
 			ObjectsCount: total,
-			Offset:       offset,
+			Offset:       uint64(pagination.Offset),
 		},
 	}
 

@@ -30,6 +30,8 @@ import (
 // 	 .getByName(name)
 // 	 .pop(name)
 //
+
+// StorageBind ...
 type StorageBind struct {
 	storage *storage.Storage
 }

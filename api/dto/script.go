@@ -96,7 +96,7 @@ func (s Script) ToSearchResult(list []*m.Script) *api.SearchScriptListResult {
 }
 
 // ToListResult ...
-func (s Script) ToListResult(list []*m.Script, total, limit, offset uint64) *api.GetScriptListResult {
+func (s Script) ToListResult(list []*m.Script, total uint64, pagination common.PageParams) *api.GetScriptListResult {
 
 	items := make([]*api.Script, 0, len(list))
 
@@ -107,9 +107,9 @@ func (s Script) ToListResult(list []*m.Script, total, limit, offset uint64) *api
 	return &api.GetScriptListResult{
 		Items: items,
 		Meta: &api.GetScriptListResult_Meta{
-			Limit:        limit,
+			Limit:        uint64(pagination.Limit),
 			ObjectsCount: total,
-			Offset:       offset,
+			Offset:       uint64(pagination.Offset),
 		},
 	}
 }

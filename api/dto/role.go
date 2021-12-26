@@ -20,6 +20,7 @@ package dto
 
 import (
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -76,7 +77,7 @@ func (r Role) ToSearchResult(list []*m.Role) *api.SearchRoleListResult {
 }
 
 // ToListResult ...
-func (r Role) ToListResult(list []*m.Role, total, limit, offset uint64) *api.GetRoleListResult {
+func (r Role) ToListResult(list []*m.Role, total uint64, pagination common.PageParams) *api.GetRoleListResult {
 
 	items := make([]*api.Role, 0, len(list))
 
@@ -87,9 +88,9 @@ func (r Role) ToListResult(list []*m.Role, total, limit, offset uint64) *api.Get
 	return &api.GetRoleListResult{
 		Items: items,
 		Meta: &api.GetRoleListResult_Meta{
-			Limit:        limit,
+			Limit:        uint64(pagination.Limit),
 			ObjectsCount: total,
-			Offset:       offset,
+			Offset:       uint64(pagination.Offset),
 		},
 	}
 }

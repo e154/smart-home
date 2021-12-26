@@ -140,7 +140,7 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 }
 
 // ToListResult ...
-func (r Automation) ToListResult(list []*m.Task, total, limit, offset uint64) *api.GetTaskListResult {
+func (r Automation) ToListResult(list []*m.Task, total uint64, pagination common.PageParams) *api.GetTaskListResult {
 
 	items := make([]*api.Task, 0, len(list))
 
@@ -151,9 +151,9 @@ func (r Automation) ToListResult(list []*m.Task, total, limit, offset uint64) *a
 	return &api.GetTaskListResult{
 		Items: items,
 		Meta: &api.GetTaskListResult_Meta{
-			Limit:        limit,
+			Limit:        uint64(pagination.Limit),
 			ObjectsCount: total,
-			Offset:       offset,
+			Offset:       uint64(pagination.Offset),
 		},
 	}
 }

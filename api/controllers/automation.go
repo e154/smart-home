@@ -79,7 +79,7 @@ func (c ControllerAutomation) GetTaskList(ctx context.Context, req *api.GetTaskL
 		return nil, c.error(ctx, errs, err)
 	}
 
-	return c.dto.Automation.ToListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Automation.ToListResult(items, uint64(total), pagination), nil
 }
 
 func (c ControllerAutomation) DeleteTask(ctx context.Context, req *api.DeleteTaskRequest) (*emptypb.Empty, error) {

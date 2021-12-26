@@ -83,7 +83,7 @@ func (c ControllerZigbee2mqtt) GetBridgeList(ctx context.Context, req *api.GetBr
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Zigbee2mqtt.GetBridgeListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Zigbee2mqtt.GetBridgeListResult(items, uint64(total), pagination), nil
 }
 
 // DeleteBridgeById ...

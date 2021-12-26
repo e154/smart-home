@@ -41,7 +41,6 @@ func (r Entity) AddEntity(obj *api.NewEntityRequest) (entity *m.Entity) {
 		Id:          common.EntityId(fmt.Sprintf("%s.%s", obj.PluginName, obj.Name)),
 		Description: obj.Description,
 		PluginName:  obj.PluginName,
-		Hidden:      obj.Hidden,
 		AutoLoad:    obj.AutoLoad,
 		Icon:        obj.Icon,
 		Attributes:  AttributeFromApi(obj.Attributes),
@@ -110,14 +109,13 @@ func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
 		Id:          common.EntityId(obj.Id),
 		Description: obj.Description,
 		PluginName:  obj.PluginName,
-		Actions:     make([]*m.EntityAction, 0, len(entity.Actions)),
-		States:      make([]*m.EntityState, 0, len(entity.States)),
-		Scripts:     make([]*m.Script, 0, len(entity.Scripts)),
-		Hidden:      obj.Hidden,
+		Actions:     make([]*m.EntityAction, 0),
+		States:      make([]*m.EntityState, 0),
+		Scripts:     make([]*m.Script, 0),
 		AutoLoad:    obj.AutoLoad,
 		Icon:        obj.Icon,
-		//Attributes:  AttributeFromApi(obj.Attributes),
-		//Settings:    AttributeFromApi(obj.Settings),
+		Attributes:  AttributeFromApi(obj.Attributes),
+		Settings:    AttributeFromApi(obj.Settings),
 	}
 
 	// image
@@ -178,10 +176,10 @@ func (r Entity) UpdateEntity(obj *api.UpdateEntityRequest) (entity *m.Entity) {
 // ToSearchResult ...
 func (r Entity) ToSearchResult(list []*m.Entity) *api.SearchEntityResult {
 
-	items := make([]*api.Entity, 0, len(list))
+	items := make([]*api.EntityShort, 0, len(list))
 
 	for _, i := range list {
-		items = append(items, r.ToEntity(i))
+		items = append(items, r.ToEntityShort(i))
 	}
 
 	return &api.SearchEntityResult{
@@ -190,7 +188,7 @@ func (r Entity) ToSearchResult(list []*m.Entity) *api.SearchEntityResult {
 }
 
 // ToListResult ...
-func (r Entity) ToListResult(list []*m.Entity, total, limit, offset uint64) *api.GetEntityListResult {
+func (r Entity) ToListResult(list []*m.Entity, total uint64, pagination common.PageParams) *api.GetEntityListResult {
 
 	items := make([]*api.Entity, 0, len(list))
 
@@ -201,9 +199,9 @@ func (r Entity) ToListResult(list []*m.Entity, total, limit, offset uint64) *api
 	return &api.GetEntityListResult{
 		Items: items,
 		Meta: &api.GetEntityListResult_Meta{
-			Limit:        limit,
+			Limit:        uint64(pagination.Limit),
 			ObjectsCount: total,
-			Offset:       offset,
+			Offset:       uint64(pagination.Offset),
 		},
 	}
 }
@@ -217,13 +215,14 @@ func (r Entity) ToEntity(entity *m.Entity) (obj *api.Entity) {
 		PluginName:  entity.PluginName,
 		Description: entity.Description,
 		Icon:        entity.Icon,
-		Hidden:      entity.Hidden,
 		AutoLoad:    entity.AutoLoad,
 		Actions:     make([]*api.EntityAction, 0, len(entity.Actions)),
 		States:      make([]*api.EntityState, 0, len(entity.States)),
 		Scripts:     make([]*api.Script, 0, len(entity.Scripts)),
 		CreatedAt:   timestamppb.New(entity.CreatedAt),
 		UpdatedAt:   timestamppb.New(entity.UpdatedAt),
+		Attributes:  AttributeToApi(entity.Attributes),
+		Settings:    AttributeToApi(entity.Settings),
 	}
 	// area
 	if entity.Area != nil {
@@ -281,5 +280,39 @@ func (r Entity) ToEntity(entity *m.Entity) (obj *api.Entity) {
 		script := scriptDto.ToGScript(s)
 		obj.Scripts = append(obj.Scripts, script)
 	}
+	return
+}
+
+// ToEntityShort ...
+func (r Entity) ToEntityShort(entity *m.Entity) (obj *api.EntityShort) {
+	imageDto := NewImageDto()
+	obj = &api.EntityShort{
+		Id:          entity.Id.String(),
+		PluginName:  entity.PluginName,
+		Description: entity.Description,
+		Icon:        entity.Icon,
+		AutoLoad:    entity.AutoLoad,
+		CreatedAt:   timestamppb.New(entity.CreatedAt),
+		UpdatedAt:   timestamppb.New(entity.UpdatedAt),
+	}
+	// area
+	if entity.Area != nil {
+		obj.Area = &api.Area{
+			Id:          entity.Area.Id,
+			Name:        entity.Area.Name,
+			Description: entity.Area.Description,
+		}
+	}
+	// image
+	if entity.Image != nil {
+		obj.Image = imageDto.ToImage(entity.Image)
+	}
+	// parent
+	if entity.ParentId != nil {
+		obj.Parent = &api.EntityParent{
+			Id: entity.ParentId.String(),
+		}
+	}
+
 	return
 }

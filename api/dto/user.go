@@ -151,7 +151,7 @@ func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 }
 
 // ToListResult ...
-func (u User) ToListResult(list []*m.User, total, limit, offset uint64) *api.GetUserListResult {
+func (u User) ToListResult(list []*m.User, total uint64, pagination common.PageParams) *api.GetUserListResult {
 
 	items := make([]*api.UserShot, 0, len(list))
 
@@ -162,9 +162,9 @@ func (u User) ToListResult(list []*m.User, total, limit, offset uint64) *api.Get
 	return &api.GetUserListResult{
 		Items: items,
 		Meta: &api.GetUserListResult_Meta{
-			Limit:        limit,
+			Limit:        uint64(pagination.Limit),
 			ObjectsCount: total,
-			Offset:       offset,
+			Offset:       uint64(pagination.Offset),
 		},
 	}
 }
