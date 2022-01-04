@@ -2977,12 +2977,22 @@
         }
       }
     },
+    "apiAccessList": {
+      "type": "object",
+      "properties": {
+        "levels": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/apiAccessLevels"
+          }
+        }
+      }
+    },
     "apiAccessListResponse": {
       "type": "object",
       "properties": {
         "accessList": {
-          "type": "string",
-          "format": "byte"
+          "$ref": "#/definitions/apiAccessList"
         }
       }
     },

@@ -47,8 +47,8 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 	result = &api.UserFull{
 		Id:                  user.Id,
 		Nickname:            user.Nickname,
-		FirstName:           user.FirstName,
-		LastName:            user.LastName,
+		FirstName:           common.String(user.FirstName),
+		LastName:            common.String(user.LastName),
 		Email:               user.Email,
 		Status:              user.Status,
 		SignInCount:         user.SignInCount,
@@ -56,10 +56,16 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 		RoleName:            user.RoleName,
 		Lang:                user.Lang,
 		AuthenticationToken: common.StringValue(user.AuthenticationToken),
-		CurrentSignInIp:     user.CurrentSignInIp,
-		LastSignInIp:        user.LastSignInIp,
 		CreatedAt:           timestamppb.New(user.CreatedAt),
 		UpdatedAt:           timestamppb.New(user.UpdatedAt),
+	}
+
+	if user.LastSignInIp != "" {
+		result.LastSignInIp = common.String(user.LastSignInIp)
+	}
+
+	if user.CurrentSignInIp != "" {
+		result.CurrentSignInIp = common.String(user.CurrentSignInIp)
 	}
 
 	// history
@@ -89,6 +95,7 @@ func (u User) ToUserFull(user *m.User) (result *api.UserFull) {
 		result.Image = imageDto.ToImage(user.Image)
 	}
 
+	// todo fix time
 	// times ...
 	if user.CurrentSignInAt != nil {
 		result.CurrentSignInAt = timestamppb.New(common.TimeValue(user.CurrentSignInAt))
@@ -124,8 +131,8 @@ func (u User) ToUserShot(user *m.User) (result *api.UserShot) {
 	result = &api.UserShot{
 		Id:        user.Id,
 		Nickname:  user.Nickname,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
+		FirstName: common.String(user.FirstName),
+		LastName:  common.String(user.LastName),
 		Email:     user.Email,
 		Status:    user.Status,
 		Lang:      user.Lang,

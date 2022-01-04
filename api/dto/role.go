@@ -151,6 +151,29 @@ func (r Role) ToRoleAccessListResult(accessList access_list.AccessList) *api.Rol
 	return res
 }
 
+// ToAccessListResult ...
+func (r Role) ToAccessListResult(accessList access_list.AccessList) *api.AccessList {
+	res := &api.AccessList{
+		Levels: make(map[string]*api.AccessLevels),
+	}
+	for levelName, levels := range accessList {
+		for itemName, item := range levels {
+			if _, ok := res.Levels[levelName]; !ok {
+				res.Levels[levelName] = &api.AccessLevels{
+					Items: make(map[string]*api.AccessItem),
+				}
+			}
+			res.Levels[levelName].Items[itemName] = &api.AccessItem{
+				Actions:     item.Actions,
+				Method:      item.Method,
+				Description: item.Description,
+				RoleName:    item.RoleName,
+			}
+		}
+	}
+	return res
+}
+
 // FromUpdateRoleAccessListRequest ...
 func (r Role) FromUpdateRoleAccessListRequest(req *api.UpdateRoleAccessListRequest) (accessListDif map[string]map[string]bool) {
 

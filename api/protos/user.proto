@@ -16,6 +16,7 @@ message UserHistory {
   string ip = 1;
   google.protobuf.Timestamp time = 2;
 }
+
 message UserMeta {
   string key = 1;
   string value = 2;
@@ -24,20 +25,20 @@ message UserMeta {
 message CurrentUser {
   int64 id = 1;
   string nickname = 2;
-  string first_name = 3;
-  string last_name = 4;
+  optional string first_name = 3;
+  optional string last_name = 4;
   string email = 5;
   string status = 6;
   repeated UserHistory history = 7;
-  Image image = 8;
+  optional Image image = 8;
   int64 sign_in_count = 9;
   repeated UserMeta meta = 10;
   Role role = 11;
   string lang = 12;
-  google.protobuf.Timestamp created_at = 99;
-  google.protobuf.Timestamp updated_at = 100;
-  google.protobuf.Timestamp current_sign_in_at = 101;
-  google.protobuf.Timestamp last_sign_in_at = 102;
+  optional google.protobuf.Timestamp created_at = 99;
+  optional google.protobuf.Timestamp updated_at = 100;
+  optional google.protobuf.Timestamp current_sign_in_at = 101;
+  optional google.protobuf.Timestamp last_sign_in_at = 102;
 }
 
 message NewtUserRequest {
@@ -84,12 +85,12 @@ message UpdateUserRequest {
 message UserFull {
   int64 id = 1;
   string nickname = 2;
-  string first_name = 3;
-  string last_name = 4;
+  optional string first_name = 3;
+  optional string last_name = 4;
   string email = 5;
   string status = 6;
   repeated UserHistory history = 7;
-  Image image = 8;
+  optional Image image = 8;
   int64 sign_in_count = 9;
   repeated UserMeta meta = 10;
   Role role = 11;
@@ -97,36 +98,36 @@ message UserFull {
   string lang = 13;
 
   string authentication_token = 14;
-  string current_sign_in_ip = 15;
-  string last_sign_in_ip = 16;
+  optional string current_sign_in_ip = 15;
+  optional string last_sign_in_ip = 16;
 
   message Parent {
     int64 id = 1;
     string nickname = 2;
   }
 
-  Parent user = 17;
+  optional Parent user = 17;
 
-  google.protobuf.Timestamp created_at = 99;
-  google.protobuf.Timestamp updated_at = 100;
-  google.protobuf.Timestamp current_sign_in_at = 101;
-  google.protobuf.Timestamp last_sign_in_at = 102;
-  google.protobuf.Timestamp reset_password_sent_at = 103;
-  google.protobuf.Timestamp deleted_at = 104;
+  optional google.protobuf.Timestamp created_at = 99;
+  optional google.protobuf.Timestamp updated_at = 100;
+  optional google.protobuf.Timestamp current_sign_in_at = 101;
+  optional google.protobuf.Timestamp last_sign_in_at = 102;
+  optional google.protobuf.Timestamp reset_password_sent_at = 103;
+  optional google.protobuf.Timestamp deleted_at = 104;
 
 }
 
 message UserShot {
   int64 id = 1;
   string nickname = 2;
-  string first_name = 3;
-  string last_name = 4;
+  optional string first_name = 3;
+  optional string last_name = 4;
   string email = 5;
   string status = 7;
   message NewImage {
     int64 id = 1;
   }
-  Image image = 9;
+  optional Image image = 9;
   string lang = 8;
   Role role = 10;
   string role_name = 11;
@@ -135,9 +136,9 @@ message UserShot {
     string nickname = 2;
   }
 
-  Parent user = 12;
-  google.protobuf.Timestamp created_at = 13;
-  google.protobuf.Timestamp updated_at = 14;
+  optional Parent user = 12;
+  optional google.protobuf.Timestamp created_at = 13;
+  optional google.protobuf.Timestamp updated_at = 14;
 }
 
 message GetUserByIdRequest {
