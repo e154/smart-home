@@ -8,6 +8,7 @@ import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
 import "attributes.proto";
+import "pagination.proto";
 
 message Plugin {
   string name = 1;
@@ -17,20 +18,8 @@ message Plugin {
   map<string, Attribute> settings = 5;
 }
 
-message GetPluginListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetPluginListResult {
   repeated Plugin items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
 }
 
@@ -80,7 +69,7 @@ message GetPluginOptionsResult {
 service PluginService {
 
   // get plugin list
-  rpc GetPluginList(GetPluginListRequest) returns (GetPluginListResult) {
+  rpc GetPluginList(PaginationRequest) returns (GetPluginListResult) {
     option (google.api.http) = {
       get: "/v1/plugins"
     };

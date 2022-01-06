@@ -8,6 +8,8 @@ import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
+import "pagination.proto";
+
 message Image {
   int64 id = 1;
   string thumb = 2;
@@ -43,20 +45,8 @@ message GetImageRequest{
   int64 id = 1;
 }
 
-message GetImageListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetImageListResult {
   repeated Image items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
 }
 
@@ -118,7 +108,7 @@ service ImageService {
   }
 
   // get image list
-  rpc GetImageList (GetImageListRequest) returns (GetImageListResult){
+  rpc GetImageList (PaginationRequest) returns (GetImageListResult){
     option (google.api.http) = {
       get: "/v1/images"
     };

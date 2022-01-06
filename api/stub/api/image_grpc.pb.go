@@ -26,7 +26,7 @@ type ImageServiceClient interface {
 	// update image
 	UpdateImageById(ctx context.Context, in *UpdateImageRequest, opts ...grpc.CallOption) (*Image, error)
 	// get image list
-	GetImageList(ctx context.Context, in *GetImageListRequest, opts ...grpc.CallOption) (*GetImageListResult, error)
+	GetImageList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetImageListResult, error)
 	// delete image by id
 	DeleteImageById(ctx context.Context, in *DeleteImageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// upload image
@@ -68,7 +68,7 @@ func (c *imageServiceClient) UpdateImageById(ctx context.Context, in *UpdateImag
 	return out, nil
 }
 
-func (c *imageServiceClient) GetImageList(ctx context.Context, in *GetImageListRequest, opts ...grpc.CallOption) (*GetImageListResult, error) {
+func (c *imageServiceClient) GetImageList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetImageListResult, error) {
 	out := new(GetImageListResult)
 	err := c.cc.Invoke(ctx, "/api.ImageService/GetImageList", in, out, opts...)
 	if err != nil {
@@ -106,7 +106,7 @@ type ImageServiceServer interface {
 	// update image
 	UpdateImageById(context.Context, *UpdateImageRequest) (*Image, error)
 	// get image list
-	GetImageList(context.Context, *GetImageListRequest) (*GetImageListResult, error)
+	GetImageList(context.Context, *PaginationRequest) (*GetImageListResult, error)
 	// delete image by id
 	DeleteImageById(context.Context, *DeleteImageRequest) (*emptypb.Empty, error)
 	// upload image
@@ -126,7 +126,7 @@ func (UnimplementedImageServiceServer) GetImageById(context.Context, *GetImageRe
 func (UnimplementedImageServiceServer) UpdateImageById(context.Context, *UpdateImageRequest) (*Image, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateImageById not implemented")
 }
-func (UnimplementedImageServiceServer) GetImageList(context.Context, *GetImageListRequest) (*GetImageListResult, error) {
+func (UnimplementedImageServiceServer) GetImageList(context.Context, *PaginationRequest) (*GetImageListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetImageList not implemented")
 }
 func (UnimplementedImageServiceServer) DeleteImageById(context.Context, *DeleteImageRequest) (*emptypb.Empty, error) {
@@ -202,7 +202,7 @@ func _ImageService_UpdateImageById_Handler(srv interface{}, ctx context.Context,
 }
 
 func _ImageService_GetImageList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetImageListRequest)
+	in := new(PaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -214,7 +214,7 @@ func _ImageService_GetImageList_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/api.ImageService/GetImageList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ImageServiceServer).GetImageList(ctx, req.(*GetImageListRequest))
+		return srv.(ImageServiceServer).GetImageList(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -10,7 +10,7 @@ import "protoc-gen-swagger/options/annotations.proto";
 
 import "image.proto";
 import "role.proto";
-
+import "pagination.proto";
 
 message UserHistory {
   string ip = 1;
@@ -146,25 +146,9 @@ message GetUserByIdRequest {
   int64 id = 1;
 }
 
-message GetUserListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetUserListResult {
   repeated UserShot items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
-}
-
-message GetUserSearchResult {
-  repeated UserShot items = 1;
 }
 
 message DeleteUserRequest {
@@ -222,7 +206,7 @@ service UserService {
   }
 
   // get user list
-  rpc GetUserList (GetUserListRequest) returns (GetUserListResult){
+  rpc GetUserList (PaginationRequest) returns (GetUserListResult){
     option (google.api.http) = {
       get: "/v1/users"
     };

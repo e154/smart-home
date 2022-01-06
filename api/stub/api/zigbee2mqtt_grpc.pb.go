@@ -26,7 +26,7 @@ type Zigbee2MqttServiceClient interface {
 	// update bridge by id
 	UpdateBridgeById(ctx context.Context, in *UpdateBridgeRequest, opts ...grpc.CallOption) (*Zigbee2Mqtt, error)
 	// get bridge list
-	GetBridgeList(ctx context.Context, in *GetBridgeListRequest, opts ...grpc.CallOption) (*GetBridgeListResult, error)
+	GetBridgeList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetBridgeListResult, error)
 	// delete bridge by id
 	DeleteBridgeById(ctx context.Context, in *DeleteBridgeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// reset bridge by id
@@ -38,7 +38,7 @@ type Zigbee2MqttServiceClient interface {
 	// device rename
 	DeviceRename(ctx context.Context, in *DeviceRenameRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// search device
-	SearchDevice(ctx context.Context, in *SearchDeviceRequest, opts ...grpc.CallOption) (*SearchDeviceResult, error)
+	SearchDevice(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchDeviceResult, error)
 	// networkmap
 	Networkmap(ctx context.Context, in *NetworkmapRequest, opts ...grpc.CallOption) (*NetworkmapResponse, error)
 	// update networkmap
@@ -80,7 +80,7 @@ func (c *zigbee2MqttServiceClient) UpdateBridgeById(ctx context.Context, in *Upd
 	return out, nil
 }
 
-func (c *zigbee2MqttServiceClient) GetBridgeList(ctx context.Context, in *GetBridgeListRequest, opts ...grpc.CallOption) (*GetBridgeListResult, error) {
+func (c *zigbee2MqttServiceClient) GetBridgeList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetBridgeListResult, error) {
 	out := new(GetBridgeListResult)
 	err := c.cc.Invoke(ctx, "/api.Zigbee2mqttService/GetBridgeList", in, out, opts...)
 	if err != nil {
@@ -134,7 +134,7 @@ func (c *zigbee2MqttServiceClient) DeviceRename(ctx context.Context, in *DeviceR
 	return out, nil
 }
 
-func (c *zigbee2MqttServiceClient) SearchDevice(ctx context.Context, in *SearchDeviceRequest, opts ...grpc.CallOption) (*SearchDeviceResult, error) {
+func (c *zigbee2MqttServiceClient) SearchDevice(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchDeviceResult, error) {
 	out := new(SearchDeviceResult)
 	err := c.cc.Invoke(ctx, "/api.Zigbee2mqttService/SearchDevice", in, out, opts...)
 	if err != nil {
@@ -172,7 +172,7 @@ type Zigbee2MqttServiceServer interface {
 	// update bridge by id
 	UpdateBridgeById(context.Context, *UpdateBridgeRequest) (*Zigbee2Mqtt, error)
 	// get bridge list
-	GetBridgeList(context.Context, *GetBridgeListRequest) (*GetBridgeListResult, error)
+	GetBridgeList(context.Context, *PaginationRequest) (*GetBridgeListResult, error)
 	// delete bridge by id
 	DeleteBridgeById(context.Context, *DeleteBridgeRequest) (*emptypb.Empty, error)
 	// reset bridge by id
@@ -184,7 +184,7 @@ type Zigbee2MqttServiceServer interface {
 	// device rename
 	DeviceRename(context.Context, *DeviceRenameRequest) (*emptypb.Empty, error)
 	// search device
-	SearchDevice(context.Context, *SearchDeviceRequest) (*SearchDeviceResult, error)
+	SearchDevice(context.Context, *SearchRequest) (*SearchDeviceResult, error)
 	// networkmap
 	Networkmap(context.Context, *NetworkmapRequest) (*NetworkmapResponse, error)
 	// update networkmap
@@ -204,7 +204,7 @@ func (UnimplementedZigbee2MqttServiceServer) GetZigbee2MqttBridge(context.Contex
 func (UnimplementedZigbee2MqttServiceServer) UpdateBridgeById(context.Context, *UpdateBridgeRequest) (*Zigbee2Mqtt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBridgeById not implemented")
 }
-func (UnimplementedZigbee2MqttServiceServer) GetBridgeList(context.Context, *GetBridgeListRequest) (*GetBridgeListResult, error) {
+func (UnimplementedZigbee2MqttServiceServer) GetBridgeList(context.Context, *PaginationRequest) (*GetBridgeListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBridgeList not implemented")
 }
 func (UnimplementedZigbee2MqttServiceServer) DeleteBridgeById(context.Context, *DeleteBridgeRequest) (*emptypb.Empty, error) {
@@ -222,7 +222,7 @@ func (UnimplementedZigbee2MqttServiceServer) DeviceWhitelist(context.Context, *D
 func (UnimplementedZigbee2MqttServiceServer) DeviceRename(context.Context, *DeviceRenameRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeviceRename not implemented")
 }
-func (UnimplementedZigbee2MqttServiceServer) SearchDevice(context.Context, *SearchDeviceRequest) (*SearchDeviceResult, error) {
+func (UnimplementedZigbee2MqttServiceServer) SearchDevice(context.Context, *SearchRequest) (*SearchDeviceResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchDevice not implemented")
 }
 func (UnimplementedZigbee2MqttServiceServer) Networkmap(context.Context, *NetworkmapRequest) (*NetworkmapResponse, error) {
@@ -298,7 +298,7 @@ func _Zigbee2MqttService_UpdateBridgeById_Handler(srv interface{}, ctx context.C
 }
 
 func _Zigbee2MqttService_GetBridgeList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetBridgeListRequest)
+	in := new(PaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -310,7 +310,7 @@ func _Zigbee2MqttService_GetBridgeList_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/api.Zigbee2mqttService/GetBridgeList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(Zigbee2MqttServiceServer).GetBridgeList(ctx, req.(*GetBridgeListRequest))
+		return srv.(Zigbee2MqttServiceServer).GetBridgeList(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -406,7 +406,7 @@ func _Zigbee2MqttService_DeviceRename_Handler(srv interface{}, ctx context.Conte
 }
 
 func _Zigbee2MqttService_SearchDevice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchDeviceRequest)
+	in := new(SearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -418,7 +418,7 @@ func _Zigbee2MqttService_SearchDevice_Handler(srv interface{}, ctx context.Conte
 		FullMethod: "/api.Zigbee2mqttService/SearchDevice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(Zigbee2MqttServiceServer).SearchDevice(ctx, req.(*SearchDeviceRequest))
+		return srv.(Zigbee2MqttServiceServer).SearchDevice(ctx, req.(*SearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

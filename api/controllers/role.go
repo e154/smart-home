@@ -101,9 +101,9 @@ func (c ControllerRole) UpdateRoleByName(ctx context.Context, req *api.UpdateRol
 }
 
 // GetRoleList ...
-func (c ControllerRole) GetRoleList(ctx context.Context, req *api.GetRoleListRequest) (*api.GetRoleListResult, error) {
+func (c ControllerRole) GetRoleList(ctx context.Context, req *api.PaginationRequest) (*api.GetRoleListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, err := c.endpoint.Role.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
@@ -113,7 +113,7 @@ func (c ControllerRole) GetRoleList(ctx context.Context, req *api.GetRoleListReq
 }
 
 // SearchRoleByName ...
-func (c ControllerRole) SearchRoleByName(ctx context.Context, req *api.SearchRoleRequest) (*api.SearchRoleListResult, error) {
+func (c ControllerRole) SearchRoleByName(ctx context.Context, req *api.SearchRequest) (*api.SearchRoleListResult, error) {
 
 	search := c.Search(req.Query, req.Limit, req.Offset)
 	items, _, err := c.endpoint.Role.Search(ctx, search.Query, search.Limit, search.Offset)

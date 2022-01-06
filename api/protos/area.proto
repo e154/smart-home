@@ -7,6 +7,8 @@ import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/empty.proto";
 
+import "pagination.proto";
+
 message Area {
   int64 id = 1;
   string name = 2;
@@ -28,31 +30,13 @@ message GetAreaRequest {
   int64 id = 1;
 }
 
-message GetAreaListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetAreaListResult {
   repeated Area items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
 }
 
 message DeleteAreaRequest {
   int64 id = 1;
-}
-
-message SearchAreaRequest {
-  string query = 1;
-  int64 limit = 2;
-  int64 offset = 3;
 }
 
 message SearchAreaResult {
@@ -109,7 +93,7 @@ service AreaService {
   }
 
   // get area list
-  rpc GetAreaList (GetAreaListRequest) returns (GetAreaListResult){
+  rpc GetAreaList (PaginationRequest) returns (GetAreaListResult){
     option (google.api.http) = {
       get: "/v1/areas"
     };
@@ -139,7 +123,7 @@ service AreaService {
   }
 
   // search area
-  rpc SearchArea (SearchAreaRequest) returns (SearchAreaResult){
+  rpc SearchArea (SearchRequest) returns (SearchAreaResult){
     option (google.api.http) = {
       get: "/v1/area/search"
     };

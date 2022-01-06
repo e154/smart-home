@@ -11,6 +11,7 @@ import "google/protobuf/empty.proto";
 import "area.proto";
 import "script.proto";
 import "attributes.proto";
+import "pagination.proto";
 
 message Trigger {
   int64 id = 1;
@@ -126,20 +127,8 @@ message GetTaskRequest {
   int64 id = 1;
 }
 
-message GetTaskListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetTaskListResult {
   repeated Task items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
 }
 
@@ -197,7 +186,7 @@ service AutomationService {
   }
 
   // get task list
-  rpc GetTaskList (GetTaskListRequest) returns (GetTaskListResult){
+  rpc GetTaskList (PaginationRequest) returns (GetTaskListResult){
     option (google.api.http) = {
       get: "/v1/tasks"
     };

@@ -76,9 +76,9 @@ func (c ControllerEntity) GetEntity(ctx context.Context, req *api.GetEntityReque
 }
 
 // GetEntityList ...
-func (c ControllerEntity) GetEntityList(ctx context.Context, req *api.GetEntityListRequest) (*api.GetEntityListResult, error) {
+func (c ControllerEntity) GetEntityList(ctx context.Context, req *api.PaginationRequest) (*api.GetEntityListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, err := c.endpoint.Entity.List(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
@@ -98,7 +98,7 @@ func (c ControllerEntity) DeleteEntity(ctx context.Context, req *api.DeleteEntit
 }
 
 // SearchEntity ...
-func (c ControllerEntity) SearchEntity(ctx context.Context, req *api.SearchEntityRequest) (*api.SearchEntityResult, error) {
+func (c ControllerEntity) SearchEntity(ctx context.Context, req *api.SearchRequest) (*api.SearchEntityResult, error) {
 
 	search := c.Search(req.Query, req.Limit, req.Offset)
 	items, _, err := c.endpoint.Entity.Search(ctx, search.Query, search.Limit, search.Offset)

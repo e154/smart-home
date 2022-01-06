@@ -106,10 +106,11 @@ func (s Script) ToListResult(list []*m.Script, total uint64, pagination common.P
 
 	return &api.GetScriptListResult{
 		Items: items,
-		Meta: &api.GetScriptListResult_Meta{
-			Limit:        uint64(pagination.Limit),
-			ObjectsCount: total,
-			Offset:       uint64(pagination.Offset),
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
 		},
 	}
 }

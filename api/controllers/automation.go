@@ -71,9 +71,9 @@ func (c ControllerAutomation) GetTask(ctx context.Context, req *api.GetTaskReque
 	return c.dto.Automation.ToTask(task), nil
 }
 
-func (c ControllerAutomation) GetTaskList(ctx context.Context, req *api.GetTaskListRequest) (*api.GetTaskListResult, error) {
+func (c ControllerAutomation) GetTaskList(ctx context.Context, req *api.PaginationRequest) (*api.GetTaskListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, errs, err := c.endpoint.Task.List(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, errs, err)

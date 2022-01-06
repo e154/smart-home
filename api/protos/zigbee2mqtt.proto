@@ -8,6 +8,8 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
+import "pagination.proto";
+
 message NewZigbee2mqttRequest {
   string name = 1;
   string login = 2;
@@ -53,20 +55,8 @@ message UpdateBridgeRequest {
   string base_topic = 6;
 }
 
-message GetBridgeListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetBridgeListResult {
   repeated Zigbee2mqttShort items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
 }
 
@@ -99,12 +89,6 @@ message NetworkmapResponse {
 message DeviceRenameRequest {
   string friendly_name = 1;
   string new_name = 2;
-}
-
-message SearchDeviceRequest {
-  string query = 1;
-  int64 limit = 2;
-  int64 offset = 3;
 }
 
 message Zigbee2mqttDevice {
@@ -176,7 +160,7 @@ service Zigbee2mqttService {
   }
 
   // get bridge list
-  rpc GetBridgeList (GetBridgeListRequest) returns (GetBridgeListResult){
+  rpc GetBridgeList (PaginationRequest) returns (GetBridgeListResult){
     option (google.api.http) = {
       get: "/v1/zigbee2mqtt/bridge"
     };
@@ -269,7 +253,7 @@ service Zigbee2mqttService {
   }
 
   // search device
-  rpc SearchDevice (SearchDeviceRequest) returns (SearchDeviceResult){
+  rpc SearchDevice (SearchRequest) returns (SearchDeviceResult){
     option (google.api.http) = {
       get: "/v1/zigbee2mqtt/search_device"
     };

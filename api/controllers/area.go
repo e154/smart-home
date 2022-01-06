@@ -71,9 +71,9 @@ func (c ControllerArea) GetAreaById(ctx context.Context, req *api.GetAreaRequest
 	return c.dto.Area.ToArea(area), nil
 }
 
-func (c ControllerArea) GetAreaList(ctx context.Context, req *api.GetAreaListRequest) (*api.GetAreaListResult, error) {
+func (c ControllerArea) GetAreaList(ctx context.Context, req *api.PaginationRequest) (*api.GetAreaListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, err := c.endpoint.Area.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
@@ -92,7 +92,7 @@ func (c ControllerArea) DeleteArea(ctx context.Context, req *api.DeleteAreaReque
 }
 
 // SearchArea ...
-func (c ControllerArea) SearchArea(ctx context.Context, req *api.SearchAreaRequest) (*api.SearchAreaResult, error) {
+func (c ControllerArea) SearchArea(ctx context.Context, req *api.SearchRequest) (*api.SearchAreaResult, error) {
 
 	search := c.Search(req.Query, req.Limit, req.Offset)
 	items, _, err := c.endpoint.Area.Search(ctx, search.Query, search.Limit, search.Offset)

@@ -37,9 +37,9 @@ func NewControllerPlugin(common *ControllerCommon) ControllerPlugin {
 }
 
 // GetPluginList ...
-func (c ControllerPlugin) GetPluginList(ctx context.Context, req *api.GetPluginListRequest) (*api.GetPluginListResult, error) {
+func (c ControllerPlugin) GetPluginList(ctx context.Context, req *api.PaginationRequest) (*api.GetPluginListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, err := c.endpoint.Plugin.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)

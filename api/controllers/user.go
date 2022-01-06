@@ -104,9 +104,9 @@ func (c ControllerUser) UpdateUserById(ctx context.Context, req *api.UpdateUserR
 }
 
 // GetUserList ...
-func (c ControllerUser) GetUserList(ctx context.Context, req *api.GetUserListRequest) (*api.GetUserListResult, error) {
+func (c ControllerUser) GetUserList(ctx context.Context, req *api.PaginationRequest) (*api.GetUserListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, err := c.endpoint.User.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)

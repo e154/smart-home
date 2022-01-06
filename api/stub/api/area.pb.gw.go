@@ -190,7 +190,7 @@ var (
 )
 
 func request_AreaService_GetAreaList_0(ctx context.Context, marshaler runtime.Marshaler, client AreaServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAreaListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -206,7 +206,7 @@ func request_AreaService_GetAreaList_0(ctx context.Context, marshaler runtime.Ma
 }
 
 func local_request_AreaService_GetAreaList_0(ctx context.Context, marshaler runtime.Marshaler, server AreaServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAreaListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -278,7 +278,7 @@ var (
 )
 
 func request_AreaService_SearchArea_0(ctx context.Context, marshaler runtime.Marshaler, client AreaServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchAreaRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -294,7 +294,7 @@ func request_AreaService_SearchArea_0(ctx context.Context, marshaler runtime.Mar
 }
 
 func local_request_AreaService_SearchArea_0(ctx context.Context, marshaler runtime.Marshaler, server AreaServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchAreaRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {

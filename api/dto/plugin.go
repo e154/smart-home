@@ -37,10 +37,11 @@ func (p Plugin) ToPluginListResult(items []*m.Plugin, total uint64, pagination c
 
 	result = &api.GetPluginListResult{
 		Items: make([]*api.Plugin, 0, len(items)),
-		Meta: &api.GetPluginListResult_Meta{
-			Limit:        uint64(pagination.Limit),
-			ObjectsCount: total,
-			Offset:       uint64(pagination.Offset),
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
 		},
 	}
 

@@ -190,7 +190,7 @@ var (
 )
 
 func request_ImageService_GetImageList_0(ctx context.Context, marshaler runtime.Marshaler, client ImageServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetImageListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -206,7 +206,7 @@ func request_ImageService_GetImageList_0(ctx context.Context, marshaler runtime.
 }
 
 func local_request_ImageService_GetImageList_0(ctx context.Context, marshaler runtime.Marshaler, server ImageServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetImageListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {

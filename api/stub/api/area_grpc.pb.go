@@ -26,11 +26,11 @@ type AreaServiceClient interface {
 	// get area by id
 	GetAreaById(ctx context.Context, in *GetAreaRequest, opts ...grpc.CallOption) (*Area, error)
 	// get area list
-	GetAreaList(ctx context.Context, in *GetAreaListRequest, opts ...grpc.CallOption) (*GetAreaListResult, error)
+	GetAreaList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetAreaListResult, error)
 	// delete area
 	DeleteArea(ctx context.Context, in *DeleteAreaRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// search area
-	SearchArea(ctx context.Context, in *SearchAreaRequest, opts ...grpc.CallOption) (*SearchAreaResult, error)
+	SearchArea(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchAreaResult, error)
 }
 
 type areaServiceClient struct {
@@ -68,7 +68,7 @@ func (c *areaServiceClient) GetAreaById(ctx context.Context, in *GetAreaRequest,
 	return out, nil
 }
 
-func (c *areaServiceClient) GetAreaList(ctx context.Context, in *GetAreaListRequest, opts ...grpc.CallOption) (*GetAreaListResult, error) {
+func (c *areaServiceClient) GetAreaList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetAreaListResult, error) {
 	out := new(GetAreaListResult)
 	err := c.cc.Invoke(ctx, "/api.AreaService/GetAreaList", in, out, opts...)
 	if err != nil {
@@ -86,7 +86,7 @@ func (c *areaServiceClient) DeleteArea(ctx context.Context, in *DeleteAreaReques
 	return out, nil
 }
 
-func (c *areaServiceClient) SearchArea(ctx context.Context, in *SearchAreaRequest, opts ...grpc.CallOption) (*SearchAreaResult, error) {
+func (c *areaServiceClient) SearchArea(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchAreaResult, error) {
 	out := new(SearchAreaResult)
 	err := c.cc.Invoke(ctx, "/api.AreaService/SearchArea", in, out, opts...)
 	if err != nil {
@@ -106,11 +106,11 @@ type AreaServiceServer interface {
 	// get area by id
 	GetAreaById(context.Context, *GetAreaRequest) (*Area, error)
 	// get area list
-	GetAreaList(context.Context, *GetAreaListRequest) (*GetAreaListResult, error)
+	GetAreaList(context.Context, *PaginationRequest) (*GetAreaListResult, error)
 	// delete area
 	DeleteArea(context.Context, *DeleteAreaRequest) (*emptypb.Empty, error)
 	// search area
-	SearchArea(context.Context, *SearchAreaRequest) (*SearchAreaResult, error)
+	SearchArea(context.Context, *SearchRequest) (*SearchAreaResult, error)
 }
 
 // UnimplementedAreaServiceServer should be embedded to have forward compatible implementations.
@@ -126,13 +126,13 @@ func (UnimplementedAreaServiceServer) UpdateArea(context.Context, *UpdateAreaReq
 func (UnimplementedAreaServiceServer) GetAreaById(context.Context, *GetAreaRequest) (*Area, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAreaById not implemented")
 }
-func (UnimplementedAreaServiceServer) GetAreaList(context.Context, *GetAreaListRequest) (*GetAreaListResult, error) {
+func (UnimplementedAreaServiceServer) GetAreaList(context.Context, *PaginationRequest) (*GetAreaListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAreaList not implemented")
 }
 func (UnimplementedAreaServiceServer) DeleteArea(context.Context, *DeleteAreaRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteArea not implemented")
 }
-func (UnimplementedAreaServiceServer) SearchArea(context.Context, *SearchAreaRequest) (*SearchAreaResult, error) {
+func (UnimplementedAreaServiceServer) SearchArea(context.Context, *SearchRequest) (*SearchAreaResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchArea not implemented")
 }
 
@@ -202,7 +202,7 @@ func _AreaService_GetAreaById_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _AreaService_GetAreaList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAreaListRequest)
+	in := new(PaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -214,7 +214,7 @@ func _AreaService_GetAreaList_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/api.AreaService/GetAreaList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AreaServiceServer).GetAreaList(ctx, req.(*GetAreaListRequest))
+		return srv.(AreaServiceServer).GetAreaList(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -238,7 +238,7 @@ func _AreaService_DeleteArea_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _AreaService_SearchArea_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchAreaRequest)
+	in := new(SearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -250,7 +250,7 @@ func _AreaService_SearchArea_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/api.AreaService/SearchArea",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AreaServiceServer).SearchArea(ctx, req.(*SearchAreaRequest))
+		return srv.(AreaServiceServer).SearchArea(ctx, req.(*SearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

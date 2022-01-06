@@ -190,7 +190,7 @@ var (
 )
 
 func request_AutomationService_GetTaskList_0(ctx context.Context, marshaler runtime.Marshaler, client AutomationServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -206,7 +206,7 @@ func request_AutomationService_GetTaskList_0(ctx context.Context, marshaler runt
 }
 
 func local_request_AutomationService_GetTaskList_0(ctx context.Context, marshaler runtime.Marshaler, server AutomationServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetTaskListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {

@@ -127,10 +127,11 @@ func (u Zigbee2mqtt) GetBridgeListResult(list []*zigbee2mqtt.Zigbee2mqttBridge, 
 	}
 	obj = &api.GetBridgeListResult{
 		Items: items,
-		Meta: &api.GetBridgeListResult_Meta{
-			Limit:        uint64(pagination.Limit),
-			ObjectsCount: total,
-			Offset:       uint64(pagination.Offset),
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
 		},
 	}
 	return

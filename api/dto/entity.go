@@ -198,10 +198,11 @@ func (r Entity) ToListResult(list []*m.Entity, total uint64, pagination common.P
 
 	return &api.GetEntityListResult{
 		Items: items,
-		Meta: &api.GetEntityListResult_Meta{
-			Limit:        uint64(pagination.Limit),
-			ObjectsCount: total,
-			Offset:       uint64(pagination.Offset),
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
 		},
 	}
 }

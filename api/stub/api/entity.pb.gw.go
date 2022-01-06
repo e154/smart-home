@@ -190,7 +190,7 @@ var (
 )
 
 func request_EntityService_GetEntityList_0(ctx context.Context, marshaler runtime.Marshaler, client EntityServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetEntityListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -206,7 +206,7 @@ func request_EntityService_GetEntityList_0(ctx context.Context, marshaler runtim
 }
 
 func local_request_EntityService_GetEntityList_0(ctx context.Context, marshaler runtime.Marshaler, server EntityServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetEntityListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -278,7 +278,7 @@ var (
 )
 
 func request_EntityService_SearchEntity_0(ctx context.Context, marshaler runtime.Marshaler, client EntityServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchEntityRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -294,7 +294,7 @@ func request_EntityService_SearchEntity_0(ctx context.Context, marshaler runtime
 }
 
 func local_request_EntityService_SearchEntity_0(ctx context.Context, marshaler runtime.Marshaler, server EntityServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchEntityRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {

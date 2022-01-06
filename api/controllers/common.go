@@ -22,8 +22,15 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/iancoleman/strcase"
 	"net/http"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/dto"
@@ -31,11 +38,6 @@ import (
 	"github.com/e154/smart-home/endpoint"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
-	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 var (
@@ -119,9 +121,9 @@ func (c ControllerCommon) writeJson(w http.ResponseWriter, p interface{}) {
 }
 
 func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationErrorsTranslations, err error) error {
-	if len(errs) > 0 {
-		return c.prepareErrors(errs)
-	}
+	//if len(errs) > 0 {
+	//	return c.prepareErrors(errs)
+	//}
 
 	switch {
 	case errors.Is(err, common.ErrNotFound):
@@ -137,26 +139,42 @@ func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationEr
 }
 
 // Pagination ...
-func (c ControllerCommon) Pagination(limit, offset uint64, order, sortBy string) (pagination common.PageParams) {
+func (c ControllerCommon) Pagination(page, limit uint64, sort string) (pagination common.PageParams) {
+
+	if sort == "" {
+		sort = "-createdAt"
+	}
+
+	if page == 0 {
+		page = 1
+	}
+
+	if limit == 0 {
+		limit = 200
+	}
 
 	pagination = common.PageParams{
-		Limit:  200,
-		Offset: 0,
-		Order:  "desc",
-		SortBy: "created_at",
+		Limit:   int64(limit),
+		Offset:  int64(page*limit - limit),
+		Order:   "desc",
+		SortBy:  "created_at",
+		PageReq: page,
+		SortReq: sort,
 	}
 
-	if limit != 0 {
-		pagination.Limit = int64(limit)
-	}
-	if offset != 0 {
-		pagination.Offset = int64(offset)
-	}
-	if order != "" {
-		pagination.Order = order
-	}
-	if sortBy != "" {
-		pagination.SortBy = sortBy
+	if len(sort) > 1 {
+		firstChar := string([]rune(sort)[0])
+		switch firstChar {
+		case "+":
+			pagination.Order = "asc"
+		case "-":
+			pagination.Order = "desc"
+		default:
+			//...
+		}
+
+		sort = strings.Replace(sort, firstChar, "", 1)
+		pagination.SortBy = strcase.ToSnake(sort)
 	}
 
 	return

@@ -36,7 +36,7 @@ var (
 )
 
 func request_PluginService_GetPluginList_0(ctx context.Context, marshaler runtime.Marshaler, client PluginServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetPluginListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -52,7 +52,7 @@ func request_PluginService_GetPluginList_0(ctx context.Context, marshaler runtim
 }
 
 func local_request_PluginService_GetPluginList_0(ctx context.Context, marshaler runtime.Marshaler, server PluginServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetPluginListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {

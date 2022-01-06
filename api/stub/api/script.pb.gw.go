@@ -190,7 +190,7 @@ var (
 )
 
 func request_ScriptService_GetScriptList_0(ctx context.Context, marshaler runtime.Marshaler, client ScriptServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetScriptListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -206,7 +206,7 @@ func request_ScriptService_GetScriptList_0(ctx context.Context, marshaler runtim
 }
 
 func local_request_ScriptService_GetScriptList_0(ctx context.Context, marshaler runtime.Marshaler, server ScriptServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetScriptListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -226,7 +226,7 @@ var (
 )
 
 func request_ScriptService_SearchScript_0(ctx context.Context, marshaler runtime.Marshaler, client ScriptServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchScriptRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -242,7 +242,7 @@ func request_ScriptService_SearchScript_0(ctx context.Context, marshaler runtime
 }
 
 func local_request_ScriptService_SearchScript_0(ctx context.Context, marshaler runtime.Marshaler, server ScriptServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchScriptRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {

@@ -125,7 +125,7 @@ func (a *Api) Start() error {
 		MarshalOptions: protojson.MarshalOptions{
 			UseEnumNumbers:  false,
 			EmitUnpopulated: true,
-			UseProtoNames:   true,
+			UseProtoNames:   false,
 		},
 	}
 

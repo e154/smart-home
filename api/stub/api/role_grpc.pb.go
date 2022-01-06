@@ -30,9 +30,9 @@ type RoleServiceClient interface {
 	// update role
 	UpdateRoleByName(ctx context.Context, in *UpdateRoleRequest, opts ...grpc.CallOption) (*Role, error)
 	// get role list
-	GetRoleList(ctx context.Context, in *GetRoleListRequest, opts ...grpc.CallOption) (*GetRoleListResult, error)
+	GetRoleList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetRoleListResult, error)
 	// delete role by name
-	SearchRoleByName(ctx context.Context, in *SearchRoleRequest, opts ...grpc.CallOption) (*SearchRoleListResult, error)
+	SearchRoleByName(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchRoleListResult, error)
 	// delete role by name
 	DeleteRoleByName(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -90,7 +90,7 @@ func (c *roleServiceClient) UpdateRoleByName(ctx context.Context, in *UpdateRole
 	return out, nil
 }
 
-func (c *roleServiceClient) GetRoleList(ctx context.Context, in *GetRoleListRequest, opts ...grpc.CallOption) (*GetRoleListResult, error) {
+func (c *roleServiceClient) GetRoleList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetRoleListResult, error) {
 	out := new(GetRoleListResult)
 	err := c.cc.Invoke(ctx, "/api.RoleService/GetRoleList", in, out, opts...)
 	if err != nil {
@@ -99,7 +99,7 @@ func (c *roleServiceClient) GetRoleList(ctx context.Context, in *GetRoleListRequ
 	return out, nil
 }
 
-func (c *roleServiceClient) SearchRoleByName(ctx context.Context, in *SearchRoleRequest, opts ...grpc.CallOption) (*SearchRoleListResult, error) {
+func (c *roleServiceClient) SearchRoleByName(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchRoleListResult, error) {
 	out := new(SearchRoleListResult)
 	err := c.cc.Invoke(ctx, "/api.RoleService/SearchRoleByName", in, out, opts...)
 	if err != nil {
@@ -132,9 +132,9 @@ type RoleServiceServer interface {
 	// update role
 	UpdateRoleByName(context.Context, *UpdateRoleRequest) (*Role, error)
 	// get role list
-	GetRoleList(context.Context, *GetRoleListRequest) (*GetRoleListResult, error)
+	GetRoleList(context.Context, *PaginationRequest) (*GetRoleListResult, error)
 	// delete role by name
-	SearchRoleByName(context.Context, *SearchRoleRequest) (*SearchRoleListResult, error)
+	SearchRoleByName(context.Context, *SearchRequest) (*SearchRoleListResult, error)
 	// delete role by name
 	DeleteRoleByName(context.Context, *DeleteRoleRequest) (*emptypb.Empty, error)
 }
@@ -158,10 +158,10 @@ func (UnimplementedRoleServiceServer) UpdateRoleAccessList(context.Context, *Upd
 func (UnimplementedRoleServiceServer) UpdateRoleByName(context.Context, *UpdateRoleRequest) (*Role, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRoleByName not implemented")
 }
-func (UnimplementedRoleServiceServer) GetRoleList(context.Context, *GetRoleListRequest) (*GetRoleListResult, error) {
+func (UnimplementedRoleServiceServer) GetRoleList(context.Context, *PaginationRequest) (*GetRoleListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRoleList not implemented")
 }
-func (UnimplementedRoleServiceServer) SearchRoleByName(context.Context, *SearchRoleRequest) (*SearchRoleListResult, error) {
+func (UnimplementedRoleServiceServer) SearchRoleByName(context.Context, *SearchRequest) (*SearchRoleListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchRoleByName not implemented")
 }
 func (UnimplementedRoleServiceServer) DeleteRoleByName(context.Context, *DeleteRoleRequest) (*emptypb.Empty, error) {
@@ -270,7 +270,7 @@ func _RoleService_UpdateRoleByName_Handler(srv interface{}, ctx context.Context,
 }
 
 func _RoleService_GetRoleList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRoleListRequest)
+	in := new(PaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -282,13 +282,13 @@ func _RoleService_GetRoleList_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/api.RoleService/GetRoleList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoleServiceServer).GetRoleList(ctx, req.(*GetRoleListRequest))
+		return srv.(RoleServiceServer).GetRoleList(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RoleService_SearchRoleByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchRoleRequest)
+	in := new(SearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -300,7 +300,7 @@ func _RoleService_SearchRoleByName_Handler(srv interface{}, ctx context.Context,
 		FullMethod: "/api.RoleService/SearchRoleByName",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RoleServiceServer).SearchRoleByName(ctx, req.(*SearchRoleRequest))
+		return srv.(RoleServiceServer).SearchRoleByName(ctx, req.(*SearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -26,7 +26,7 @@ type AutomationServiceClient interface {
 	// get task
 	GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*Task, error)
 	// get task list
-	GetTaskList(ctx context.Context, in *GetTaskListRequest, opts ...grpc.CallOption) (*GetTaskListResult, error)
+	GetTaskList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetTaskListResult, error)
 	// delete task
 	DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -66,7 +66,7 @@ func (c *automationServiceClient) GetTask(ctx context.Context, in *GetTaskReques
 	return out, nil
 }
 
-func (c *automationServiceClient) GetTaskList(ctx context.Context, in *GetTaskListRequest, opts ...grpc.CallOption) (*GetTaskListResult, error) {
+func (c *automationServiceClient) GetTaskList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetTaskListResult, error) {
 	out := new(GetTaskListResult)
 	err := c.cc.Invoke(ctx, "/api.AutomationService/GetTaskList", in, out, opts...)
 	if err != nil {
@@ -95,7 +95,7 @@ type AutomationServiceServer interface {
 	// get task
 	GetTask(context.Context, *GetTaskRequest) (*Task, error)
 	// get task list
-	GetTaskList(context.Context, *GetTaskListRequest) (*GetTaskListResult, error)
+	GetTaskList(context.Context, *PaginationRequest) (*GetTaskListResult, error)
 	// delete task
 	DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error)
 }
@@ -113,7 +113,7 @@ func (UnimplementedAutomationServiceServer) UpdateTask(context.Context, *UpdateT
 func (UnimplementedAutomationServiceServer) GetTask(context.Context, *GetTaskRequest) (*Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTask not implemented")
 }
-func (UnimplementedAutomationServiceServer) GetTaskList(context.Context, *GetTaskListRequest) (*GetTaskListResult, error) {
+func (UnimplementedAutomationServiceServer) GetTaskList(context.Context, *PaginationRequest) (*GetTaskListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTaskList not implemented")
 }
 func (UnimplementedAutomationServiceServer) DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error) {
@@ -186,7 +186,7 @@ func _AutomationService_GetTask_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _AutomationService_GetTaskList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTaskListRequest)
+	in := new(PaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -198,7 +198,7 @@ func _AutomationService_GetTaskList_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/api.AutomationService/GetTaskList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AutomationServiceServer).GetTaskList(ctx, req.(*GetTaskListRequest))
+		return srv.(AutomationServiceServer).GetTaskList(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

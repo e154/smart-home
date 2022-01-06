@@ -276,7 +276,7 @@ var (
 )
 
 func request_RoleService_GetRoleList_0(ctx context.Context, marshaler runtime.Marshaler, client RoleServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetRoleListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -292,7 +292,7 @@ func request_RoleService_GetRoleList_0(ctx context.Context, marshaler runtime.Ma
 }
 
 func local_request_RoleService_GetRoleList_0(ctx context.Context, marshaler runtime.Marshaler, server RoleServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetRoleListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -312,7 +312,7 @@ var (
 )
 
 func request_RoleService_SearchRoleByName_0(ctx context.Context, marshaler runtime.Marshaler, client RoleServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchRoleRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -328,7 +328,7 @@ func request_RoleService_SearchRoleByName_0(ctx context.Context, marshaler runti
 }
 
 func local_request_RoleService_SearchRoleByName_0(ctx context.Context, marshaler runtime.Marshaler, server RoleServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchRoleRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {

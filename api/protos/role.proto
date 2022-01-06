@@ -8,6 +8,8 @@ import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
+import "pagination.proto";
+
 message AccessItem {
   repeated string actions = 1;
   string method = 2;
@@ -58,27 +60,9 @@ message UpdateRoleRequest {
   string parent = 3;
 }
 
-message GetRoleListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetRoleListResult {
   repeated Role items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
-}
-
-message SearchRoleRequest {
-  string query = 1;
-  int64 limit = 2;
-  int64 offset = 3;
 }
 
 message SearchRoleListResult {
@@ -185,7 +169,7 @@ service RoleService {
   }
 
   // get role list
-  rpc GetRoleList (GetRoleListRequest) returns (GetRoleListResult){
+  rpc GetRoleList (PaginationRequest) returns (GetRoleListResult){
     option (google.api.http) = {
       get: "/v1/roles"
     };
@@ -200,7 +184,7 @@ service RoleService {
   }
 
   // delete role by name
-  rpc SearchRoleByName (SearchRoleRequest) returns (SearchRoleListResult){
+  rpc SearchRoleByName (SearchRequest) returns (SearchRoleListResult){
     option (google.api.http) = {
       get: "/v1/roles/search"
     };

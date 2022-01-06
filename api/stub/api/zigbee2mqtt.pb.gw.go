@@ -190,7 +190,7 @@ var (
 )
 
 func request_Zigbee2MqttService_GetBridgeList_0(ctx context.Context, marshaler runtime.Marshaler, client Zigbee2MqttServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetBridgeListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -206,7 +206,7 @@ func request_Zigbee2MqttService_GetBridgeList_0(ctx context.Context, marshaler r
 }
 
 func local_request_Zigbee2MqttService_GetBridgeList_0(ctx context.Context, marshaler runtime.Marshaler, server Zigbee2MqttServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetBridgeListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -432,7 +432,7 @@ var (
 )
 
 func request_Zigbee2MqttService_SearchDevice_0(ctx context.Context, marshaler runtime.Marshaler, client Zigbee2MqttServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchDeviceRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -448,7 +448,7 @@ func request_Zigbee2MqttService_SearchDevice_0(ctx context.Context, marshaler ru
 }
 
 func local_request_Zigbee2MqttService_SearchDevice_0(ctx context.Context, marshaler runtime.Marshaler, server Zigbee2MqttServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchDeviceRequest
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {

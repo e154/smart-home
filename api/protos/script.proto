@@ -8,6 +8,8 @@ import "protoc-gen-swagger/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
+import "pagination.proto";
+
 message Script {
   int64 id = 1;
   string lang = 2;
@@ -56,27 +58,9 @@ message ExecScriptResult {
   string result = 1;
 }
 
-message GetScriptListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetScriptListResult {
   repeated Script items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
-}
-
-message SearchScriptRequest {
-  string query = 1;
-  int64 limit = 2;
-  int64 offset = 3;
 }
 
 message SearchScriptListResult {
@@ -137,7 +121,7 @@ service ScriptService {
   }
 
   // get script list
-  rpc GetScriptList (GetScriptListRequest) returns (GetScriptListResult){
+  rpc GetScriptList (PaginationRequest) returns (GetScriptListResult){
     option (google.api.http) = {
       get: "/v1/scripts"
     };
@@ -152,7 +136,7 @@ service ScriptService {
   }
 
   // delete script by id
-  rpc SearchScript (SearchScriptRequest) returns (SearchScriptListResult){
+  rpc SearchScript (SearchRequest) returns (SearchScriptListResult){
     option (google.api.http) = {
       get: "/v1/scripts/search"
     };

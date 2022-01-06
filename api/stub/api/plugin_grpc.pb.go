@@ -19,7 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PluginServiceClient interface {
 	// get plugin list
-	GetPluginList(ctx context.Context, in *GetPluginListRequest, opts ...grpc.CallOption) (*GetPluginListResult, error)
+	GetPluginList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetPluginListResult, error)
 	// enable plugin
 	EnablePlugin(ctx context.Context, in *EnablePluginRequest, opts ...grpc.CallOption) (*EnablePluginResult, error)
 	// disable plugin
@@ -36,7 +36,7 @@ func NewPluginServiceClient(cc grpc.ClientConnInterface) PluginServiceClient {
 	return &pluginServiceClient{cc}
 }
 
-func (c *pluginServiceClient) GetPluginList(ctx context.Context, in *GetPluginListRequest, opts ...grpc.CallOption) (*GetPluginListResult, error) {
+func (c *pluginServiceClient) GetPluginList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetPluginListResult, error) {
 	out := new(GetPluginListResult)
 	err := c.cc.Invoke(ctx, "/api.PluginService/GetPluginList", in, out, opts...)
 	if err != nil {
@@ -77,7 +77,7 @@ func (c *pluginServiceClient) GetPluginOptions(ctx context.Context, in *GetPlugi
 // for forward compatibility
 type PluginServiceServer interface {
 	// get plugin list
-	GetPluginList(context.Context, *GetPluginListRequest) (*GetPluginListResult, error)
+	GetPluginList(context.Context, *PaginationRequest) (*GetPluginListResult, error)
 	// enable plugin
 	EnablePlugin(context.Context, *EnablePluginRequest) (*EnablePluginResult, error)
 	// disable plugin
@@ -90,7 +90,7 @@ type PluginServiceServer interface {
 type UnimplementedPluginServiceServer struct {
 }
 
-func (UnimplementedPluginServiceServer) GetPluginList(context.Context, *GetPluginListRequest) (*GetPluginListResult, error) {
+func (UnimplementedPluginServiceServer) GetPluginList(context.Context, *PaginationRequest) (*GetPluginListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPluginList not implemented")
 }
 func (UnimplementedPluginServiceServer) EnablePlugin(context.Context, *EnablePluginRequest) (*EnablePluginResult, error) {
@@ -115,7 +115,7 @@ func RegisterPluginServiceServer(s grpc.ServiceRegistrar, srv PluginServiceServe
 }
 
 func _PluginService_GetPluginList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPluginListRequest)
+	in := new(PaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func _PluginService_GetPluginList_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/api.PluginService/GetPluginList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PluginServiceServer).GetPluginList(ctx, req.(*GetPluginListRequest))
+		return srv.(PluginServiceServer).GetPluginList(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

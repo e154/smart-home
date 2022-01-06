@@ -12,6 +12,7 @@ import "area.proto";
 import "image.proto";
 import "script.proto";
 import "attributes.proto";
+import "pagination.proto";
 
 message EntityAction {
   string name = 1;
@@ -150,32 +151,13 @@ message GetEntityRequest {
   string id = 1;
 }
 
-
-message GetEntityListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetEntityListResult {
   repeated Entity items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
 }
 
 message DeleteEntityRequest {
   string id = 1;
-}
-
-message SearchEntityRequest {
-  string query = 1;
-  int64 limit = 2;
-  int64 offset = 3;
 }
 
 message SearchEntityResult {
@@ -232,7 +214,7 @@ service EntityService {
   }
 
   // get entity list
-  rpc GetEntityList (GetEntityListRequest) returns (GetEntityListResult){
+  rpc GetEntityList (PaginationRequest) returns (GetEntityListResult){
     option (google.api.http) = {
       get: "/v1/entities"
     };
@@ -262,7 +244,7 @@ service EntityService {
   }
 
   // search entity
-  rpc SearchEntity (SearchEntityRequest) returns (SearchEntityResult){
+  rpc SearchEntity (SearchRequest) returns (SearchEntityResult){
     option (google.api.http) = {
       get: "/v1/entity/search"
     };
