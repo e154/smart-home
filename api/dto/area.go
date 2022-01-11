@@ -87,9 +87,6 @@ func (r Area) ToListResult(list []*m.Area, total uint64, pagination common.PageP
 
 // ToArea ...
 func (r Area) ToArea(area *m.Area) (obj *api.Area) {
-	if area == nil {
-		return
-	}
 	obj = &api.Area{
 		Id:          area.Id,
 		Name:        area.Name,

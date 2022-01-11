@@ -64,7 +64,7 @@ service AreaService {
   // update area
   rpc UpdateArea (UpdateAreaRequest) returns (Area){
     option (google.api.http) = {
-      put: "/v1/area/{name}"
+      put: "/v1/area/{id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
@@ -125,7 +125,7 @@ service AreaService {
   // search area
   rpc SearchArea (SearchRequest) returns (SearchAreaResult){
     option (google.api.http) = {
-      get: "/v1/area/search"
+      get: "/v1/areas/search"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

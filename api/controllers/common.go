@@ -121,9 +121,9 @@ func (c ControllerCommon) writeJson(w http.ResponseWriter, p interface{}) {
 }
 
 func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationErrorsTranslations, err error) error {
-	//if len(errs) > 0 {
-	//	return c.prepareErrors(errs)
-	//}
+	if len(errs) > 0 {
+		return c.prepareErrors(errs)
+	}
 
 	switch {
 	case errors.Is(err, common.ErrNotFound):

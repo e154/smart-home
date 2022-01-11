@@ -33,7 +33,7 @@ type IPlugin interface {
 	Update(plugin m.Plugin) error
 	Delete(pluginId string) error
 	List(limit, offset int64, orderBy, sort string) (list []m.Plugin, total int64, err error)
-	Search(query string, limit, offset int) (list []m.Plugin, total int64, err error)
+	Search(query string, limit, offset int64) (list []m.Plugin, total int64, err error)
 	GetByName(name string) (ver m.Plugin, err error)
 	fromDb(dbVer db.Plugin) (plugin m.Plugin)
 	toDb(plugin m.Plugin) (dbVer db.Plugin)
@@ -93,7 +93,7 @@ func (p *Plugin) List(limit, offset int64, orderBy, sort string) (list []m.Plugi
 }
 
 // Search ...
-func (p *Plugin) Search(query string, limit, offset int) (list []m.Plugin, total int64, err error) {
+func (p *Plugin) Search(query string, limit, offset int64) (list []m.Plugin, total int64, err error) {
 	var dbList []db.Plugin
 	if dbList, total, err = p.table.Search(query, limit, offset); err != nil {
 		return

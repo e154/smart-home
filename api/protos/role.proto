@@ -139,7 +139,7 @@ service RoleService {
   // update role access list
   rpc UpdateRoleAccessList (UpdateRoleAccessListRequest) returns (RoleAccessListResult){
     option (google.api.http) = {
-      put: "/v1/role/n/access_list"
+      put: "/v1/role/{name}/access_list"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {

@@ -155,10 +155,16 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Actors:       true,
-		ActorAttrs:   NewAttr(),
-		ActorSetts:   NewSettings(),
-		ActorActions: entity_manager.ToEntityActionShort(NewActions()),
-		ActorStates:  entity_manager.ToEntityStateShort(NewStates()),
+		Triggers:           false,
+		Actors:             true,
+		ActorCustomAttrs:   true,
+		ActorAttrs:         NewAttr(),
+		ActorCustomActions: true,
+		ActorActions:       entity_manager.ToEntityActionShort(NewActions()),
+		ActorCustomStates:  true,
+		ActorStates:        entity_manager.ToEntityStateShort(NewStates()),
+		ActorCustomSetts:   true,
+		ActorSetts:         NewSettings(),
+		Setts:              nil,
 	}
 }

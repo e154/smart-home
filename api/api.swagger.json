@@ -162,56 +162,6 @@
         ]
       }
     },
-    "/v1/area/search": {
-      "get": {
-        "summary": "search area",
-        "operationId": "AreaService_SearchArea",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/apiSearchAreaResult"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "query",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          }
-        ],
-        "tags": [
-          "AreaService"
-        ],
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      }
-    },
     "/v1/area/{id}": {
       "get": {
         "summary": "get area by id",
@@ -282,9 +232,7 @@
             "ApiKeyAuth": []
           }
         ]
-      }
-    },
-    "/v1/area/{name}": {
+      },
       "put": {
         "summary": "update area",
         "operationId": "AreaService_UpdateArea",
@@ -304,10 +252,11 @@
         },
         "parameters": [
           {
-            "name": "name",
+            "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "format": "int64"
           },
           {
             "name": "body",
@@ -316,9 +265,8 @@
             "schema": {
               "type": "object",
               "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "int64"
+                "name": {
+                  "type": "string"
                 },
                 "description": {
                   "type": "string"
@@ -375,6 +323,56 @@
             "in": "query",
             "required": false,
             "type": "string"
+          }
+        ],
+        "tags": [
+          "AreaService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/areas/search": {
+      "get": {
+        "summary": "search area",
+        "operationId": "AreaService_SearchArea",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiSearchAreaResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -1113,6 +1111,56 @@
         ]
       }
     },
+    "/v1/plugins/search": {
+      "get": {
+        "summary": "search plugin",
+        "operationId": "PluginService_SearchPlugin",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiSearchPluginResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "PluginService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/role": {
       "post": {
         "summary": "add new role",
@@ -1138,44 +1186,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/apiNewRoleRequest"
-            }
-          }
-        ],
-        "tags": [
-          "RoleService"
-        ],
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      }
-    },
-    "/v1/role/n/access_list": {
-      "put": {
-        "summary": "update role access list",
-        "operationId": "RoleService_UpdateRoleAccessList",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/apiRoleAccessListResult"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/apiUpdateRoleAccessListRequest"
             }
           }
         ],
@@ -1333,6 +1343,56 @@
             "in": "path",
             "required": true,
             "type": "string"
+          }
+        ],
+        "tags": [
+          "RoleService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "update role access list",
+        "operationId": "RoleService_UpdateRoleAccessList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiRoleAccessListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "accessListDiff": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/definitions/UpdateRoleAccessListRequestAccessListDiff"
+                  }
+                }
+              }
+            }
           }
         ],
         "tags": [
@@ -3399,6 +3459,9 @@
             "$ref": "#/definitions/apiGetPluginOptionsResultEntityState"
           }
         },
+        "actorCustomSetts": {
+          "type": "boolean"
+        },
         "actorSetts": {
           "type": "object",
           "additionalProperties": {
@@ -4083,6 +4146,17 @@
         }
       }
     },
+    "apiSearchPluginResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiPlugin"
+          }
+        }
+      }
+    },
     "apiSearchRoleListResult": {
       "type": "object",
       "properties": {
@@ -4300,20 +4374,6 @@
         },
         "style": {
           "type": "string"
-        }
-      }
-    },
-    "apiUpdateRoleAccessListRequest": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "accessListDiff": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/UpdateRoleAccessListRequestAccessListDiff"
-          }
         }
       }
     },

@@ -62,8 +62,13 @@ message GetPluginOptionsResult {
     string icon = 4;
   }
   map<string, EntityState>  actor_states = 8;
-  map<string, Attribute> actor_setts = 9;
-  map<string, Attribute> setts = 10;
+  bool actor_custom_setts = 9;
+  map<string, Attribute> actor_setts = 10;
+  map<string, Attribute> setts = 11;
+}
+
+message SearchPluginResult {
+  repeated Plugin items = 1;
 }
 
 service PluginService {
@@ -117,6 +122,21 @@ service PluginService {
   rpc GetPluginOptions(GetPluginOptionsRequest) returns (GetPluginOptionsResult) {
     option (google.api.http) = {
       get: "/v1/plugin/{name}/options"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // search plugin
+  rpc SearchPlugin (SearchRequest) returns (SearchPluginResult){
+    option (google.api.http) = {
+      get: "/v1/plugins/search"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

@@ -20,7 +20,6 @@ package endpoint
 
 import (
 	"context"
-
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/go-playground/validator/v10"
@@ -95,25 +94,6 @@ func (n *AreaEndpoint) GetByName(ctx context.Context, name string) (result *m.Ar
 func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (result *m.Area, errs validator.ValidationErrorsTranslations, err error) {
 
 	var area *m.Area
-	area, err = n.adaptors.Area.GetByName(params.Name)
-	if err != nil {
-		if errors.Is(err, common.ErrNotFound) {
-			return
-		}
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
-
-	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
-		return
-	}
-
-	if err = n.adaptors.Area.Update(area); err != nil {
-		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
-
 	area, err = n.adaptors.Area.GetById(params.Id)
 	if err != nil {
 		if errors.Is(err, common.ErrNotFound) {
@@ -122,6 +102,26 @@ func (n *AreaEndpoint) Update(ctx context.Context, params *m.Area) (result *m.Ar
 		err = errors.Wrap(common.ErrInternal, err.Error())
 		return
 	}
+
+	area.Name = params.Name
+	area.Description = params.Description
+
+	var ok bool
+	if ok, errs = n.validation.Valid(area); !ok {
+		return
+	}
+
+	if err = n.adaptors.Area.Update(area); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+
+	result = &m.Area{
+		Id:          area.Id,
+		Name:        area.Name,
+		Description: area.Description,
+	}
+
 	return
 }
 

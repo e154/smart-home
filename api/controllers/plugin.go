@@ -78,3 +78,15 @@ func (c ControllerPlugin) GetPluginOptions(ctx context.Context, req *api.GetPlug
 
 	return c.dto.Plugin.Options(options), nil
 }
+
+// SearchPlugin ...
+func (c ControllerPlugin) SearchPlugin(ctx context.Context, req *api.SearchRequest) (*api.SearchPluginResult, error) {
+
+	search := c.Search(req.Query, req.Limit, req.Offset)
+	items, _, err := c.endpoint.Plugin.Search(ctx, search.Query, search.Limit, search.Offset)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Plugin.ToSearchResult(items), nil
+}

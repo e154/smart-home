@@ -114,7 +114,7 @@ func (n Plugins) List(limit, offset int64, orderBy, sort string) (list []Plugin,
 }
 
 // Search ...
-func (n Plugins) Search(query string, limit, offset int) (list []Plugin, total int64, err error) {
+func (n Plugins) Search(query string, limit, offset int64) (list []Plugin, total int64, err error) {
 
 	q := n.Db.Model(&Plugin{}).
 		Where("name LIKE ?", "%"+query+"%")
