@@ -81,7 +81,7 @@ build_cli:
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
 
 server:
-	@echo "Building golang grpc server"
+	@echo "Building http server"
 	cd ${ROOT}/api/protos/ && \
 	mkdir -p ${ROOT}/api/stub && \
 	protoc -I/usr/local/include -I. \
@@ -89,7 +89,25 @@ server:
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
       --grpc-gateway_out=logtostderr=true:${ROOT}/api/stub \
+      *.proto
+
+	@echo "Building grpc server"
+	cd ${ROOT}/api/protos/ && \
+	mkdir -p ${ROOT}/api/stub && \
+	protoc -I/usr/local/include -I. \
+      -I${GOPATH}/src \
+      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
+      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
       --go-grpc_out=require_unimplemented_servers=false:${ROOT}/api/stub \
+      *.proto
+
+	@echo "Building protobuf files"
+	cd ${ROOT}/api/protos/ && \
+	mkdir -p ${ROOT}/api/stub && \
+	protoc -I/usr/local/include -I. \
+      -I${GOPATH}/src \
+      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
+      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
       --go_out=${ROOT}/api/stub \
       *.proto
 
