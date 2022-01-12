@@ -305,8 +305,8 @@ func (n Entities) DeleteScript(id common.EntityId, scriptId int64) (err error) {
 }
 
 // ReplaceScript ...
-func (n Entities) ReplaceScript(id common.EntityId, script Script) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(&script).Error; err != nil {
+func (n Entities) ReplaceScript(id common.EntityId, script *Script) (err error) {
+	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(script).Error; err != nil {
 		err = errors.Wrap(err, "replace metric failed")
 	}
 	return

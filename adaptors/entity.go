@@ -253,8 +253,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	for _, action := range ver.Actions {
 		action.EntityId = ver.Id
 	}
-	deviceAction := GetEntityActionAdaptor(tx)
-	if err = deviceAction.AddMultiple(ver.Actions); err != nil {
+	if err = entityActionAdaptor.AddMultiple(ver.Actions); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -263,8 +262,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	for _, state := range ver.States {
 		state.EntityId = ver.Id
 	}
-	stateAdaptor := GetEntityStateAdaptor(tx)
-	if err = stateAdaptor.AddMultiple(ver.States); err != nil {
+	if err = entityStateAdaptor.AddMultiple(ver.States); err != nil {
 		log.Errorf(err.Error())
 		return
 	}
@@ -298,6 +296,40 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 			}
 		} else {
 			if err = n.table.ReplaceMetric(ver.Id, metricAdaptor.toDb(metric)); err != nil {
+				return
+			}
+		}
+	}
+
+	// script
+	for _, oldScript := range oldVer.Scripts {
+		var exist bool
+		for _, script := range ver.Scripts {
+			if script.Id == oldScript.Id {
+				exist = true
+			}
+		}
+		if !exist {
+			if err = n.table.DeleteMetric(oldVer.Id, oldScript.Id); err != nil {
+				return
+			}
+		}
+	}
+
+	scriptAdaptor := GetScriptAdaptor(tx)
+	for _, script := range ver.Scripts {
+		var exist bool
+		for _, oldMetric := range oldVer.Scripts {
+			if script.Id == oldMetric.Id {
+				exist = true
+			}
+		}
+		if !exist {
+			if err = n.table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
+				return
+			}
+		} else {
+			if err = n.table.ReplaceScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
 				return
 			}
 		}

@@ -62,4 +62,7 @@ var (
 
 	// ErrUnknownPrototype ...
 	ErrUnknownPrototype = errors.New("unknown prototype")
+
+	// ErrBadSettings ...
+	ErrBadSettings = errors.New("there are no settings or the parameters are incorrectly set")
 )

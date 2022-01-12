@@ -95,7 +95,9 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 		return
 	}
 
-	_ = common.Copy(&entity, &params, common.JsonEngine)
+	_ = common.Copy(entity, params, common.JsonEngine)
+	entity.Settings = params.Settings
+	entity.Attributes = params.Attributes
 
 	var ok bool
 	if ok, errs = n.validation.Valid(params); !ok {
