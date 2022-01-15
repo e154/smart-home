@@ -66,7 +66,7 @@ func (s *StreamService) UnSubscribe(command string) {
 }
 
 // Ws ...
-func (w *StreamService) Ws(ctx *gin.Context) {
+func (s *StreamService) Ws(ctx *gin.Context) {
 
 	// CORS
 	ctx.Writer.Header().Del("Access-Control-Allow-Credentials")
@@ -99,5 +99,5 @@ func (w *StreamService) Ws(ctx *gin.Context) {
 	}
 
 	go client.WritePump()
-	w.Hub.AddClient(client)
+	s.Hub.AddClient(client)
 }

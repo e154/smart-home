@@ -20,6 +20,7 @@ package controllers
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/e154/smart-home/api/stub/api"
 )
@@ -29,6 +30,7 @@ type ControllerStream struct {
 	*ControllerCommon
 }
 
+
 // NewControllerStream ...
 func NewControllerStream(common *ControllerCommon) ControllerStream {
 	return ControllerStream{
@@ -37,7 +39,23 @@ func NewControllerStream(common *ControllerCommon) ControllerStream {
 }
 
 // Subscribe ...
-func (a ControllerStream) Subscribe(req *api.SubscribeRequest, resp api.StreamService_SubscribeServer) error {
-	fmt.Println("method not implemented")
-	return nil
+func (a ControllerStream) Subscribe(server api.StreamService_SubscribeServer) error {
+	fmt.Println("query ...")
+	for {
+		in, err := server.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		query := in.GetQuery()
+
+		err = server.Send(&api.SubscribeResponse{
+			Query:  query + "!!!",
+		})
+		if err != nil {
+			return err
+		}
+	}
 }

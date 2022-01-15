@@ -99,8 +99,7 @@ func (c *Client) selfWrite(opCode int, payload []byte) error {
 	return c.Connect.WriteMessage(opCode, payload)
 }
 
-// send message to client
-//
+// WritePump ...
 func (c *Client) WritePump() {
 
 	ticker := time.NewTicker(pingPeriod)

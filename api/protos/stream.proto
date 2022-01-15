@@ -6,7 +6,7 @@ option go_package = "/api";
 import "google/api/annotations.proto";
 import "google/protobuf/struct.proto";
 
-message SubscribeRequest {
+message Request {
   string query = 1;
 }
 
@@ -22,9 +22,9 @@ message SubscribeResponse {
 
 service StreamService {
   // stream
-  rpc Subscribe (SubscribeRequest) returns (stream SubscribeResponse) {
+  rpc Subscribe (stream Request) returns (stream SubscribeResponse) {
     option (google.api.http) = {
-      get: "/subscribe"
+      get: "/ws"
     };
   }
 }
