@@ -39,6 +39,8 @@ type Zigbee2MqttServiceClient interface {
 	DeviceRename(ctx context.Context, in *DeviceRenameRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// search device
 	SearchDevice(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchDeviceResult, error)
+	// list device
+	DeviceList(ctx context.Context, in *DeviceListRequest, opts ...grpc.CallOption) (*DeviceListResult, error)
 	// networkmap
 	Networkmap(ctx context.Context, in *NetworkmapRequest, opts ...grpc.CallOption) (*NetworkmapResponse, error)
 	// update networkmap
@@ -143,6 +145,15 @@ func (c *zigbee2MqttServiceClient) SearchDevice(ctx context.Context, in *SearchR
 	return out, nil
 }
 
+func (c *zigbee2MqttServiceClient) DeviceList(ctx context.Context, in *DeviceListRequest, opts ...grpc.CallOption) (*DeviceListResult, error) {
+	out := new(DeviceListResult)
+	err := c.cc.Invoke(ctx, "/api.Zigbee2mqttService/DeviceList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *zigbee2MqttServiceClient) Networkmap(ctx context.Context, in *NetworkmapRequest, opts ...grpc.CallOption) (*NetworkmapResponse, error) {
 	out := new(NetworkmapResponse)
 	err := c.cc.Invoke(ctx, "/api.Zigbee2mqttService/Networkmap", in, out, opts...)
@@ -185,6 +196,8 @@ type Zigbee2MqttServiceServer interface {
 	DeviceRename(context.Context, *DeviceRenameRequest) (*emptypb.Empty, error)
 	// search device
 	SearchDevice(context.Context, *SearchRequest) (*SearchDeviceResult, error)
+	// list device
+	DeviceList(context.Context, *DeviceListRequest) (*DeviceListResult, error)
 	// networkmap
 	Networkmap(context.Context, *NetworkmapRequest) (*NetworkmapResponse, error)
 	// update networkmap
@@ -224,6 +237,9 @@ func (UnimplementedZigbee2MqttServiceServer) DeviceRename(context.Context, *Devi
 }
 func (UnimplementedZigbee2MqttServiceServer) SearchDevice(context.Context, *SearchRequest) (*SearchDeviceResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchDevice not implemented")
+}
+func (UnimplementedZigbee2MqttServiceServer) DeviceList(context.Context, *DeviceListRequest) (*DeviceListResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeviceList not implemented")
 }
 func (UnimplementedZigbee2MqttServiceServer) Networkmap(context.Context, *NetworkmapRequest) (*NetworkmapResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Networkmap not implemented")
@@ -423,6 +439,24 @@ func _Zigbee2MqttService_SearchDevice_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Zigbee2MqttService_DeviceList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeviceListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Zigbee2MqttServiceServer).DeviceList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.Zigbee2mqttService/DeviceList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Zigbee2MqttServiceServer).DeviceList(ctx, req.(*DeviceListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Zigbee2MqttService_Networkmap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NetworkmapRequest)
 	if err := dec(in); err != nil {
@@ -505,6 +539,10 @@ var Zigbee2MqttService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchDevice",
 			Handler:    _Zigbee2MqttService_SearchDevice_Handler,
+		},
+		{
+			MethodName: "DeviceList",
+			Handler:    _Zigbee2MqttService_DeviceList_Handler,
 		},
 		{
 			MethodName: "Networkmap",

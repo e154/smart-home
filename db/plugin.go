@@ -21,7 +21,6 @@ package db
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -37,6 +36,7 @@ type Plugin struct {
 	Version  string
 	Enabled  bool
 	System   bool
+	Actor    bool
 	Settings json.RawMessage `gorm:"type:jsonb;not null"`
 }
 
@@ -72,7 +72,9 @@ func (n Plugins) Update(m Plugin) (err error) {
 		"version":   m.Version,
 		"installed": m.Enabled,
 		"system":    m.System,
+		"enabled":   m.Enabled,
 		"settings":  m.Settings,
+		"actor":     m.Actor,
 	}
 	if err = n.Db.Model(&Plugin{Name: m.Name}).Updates(q).Error; err != nil {
 		err = errors.Wrap(err, "update failed")
@@ -117,7 +119,7 @@ func (n Plugins) List(limit, offset int64, orderBy, sort string) (list []Plugin,
 func (n Plugins) Search(query string, limit, offset int64) (list []Plugin, total int64, err error) {
 
 	q := n.Db.Model(&Plugin{}).
-		Where("name LIKE ?", "%"+query+"%")
+		Where("name LIKE ? and actor=true and enabled=true", "%"+query+"%")
 
 	if err = q.Count(&total).Error; err != nil {
 		err = errors.Wrap(err, "get count failed")

@@ -170,7 +170,7 @@ func (p *plugin) mqttOnPublish(client mqtt.MqttCli, msg mqtt.Message) {
 	var actor *Actor
 	var err error
 	if actor, err = p.getActorByZigbeeDeviceId(topic[1]); err != nil {
-		log.Warn(err.Error())
+		//log.Warn(err.Error())
 		return
 	}
 
@@ -209,7 +209,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 // Type ...
 func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+	return plugins.PluginInstallable
 }
 
 // Depends ...
@@ -220,4 +220,21 @@ func (p *plugin) Depends() []string {
 // Version ...
 func (p *plugin) Version() string {
 	return "0.0.1"
+}
+
+// Options ...
+func (p *plugin) Options() m.PluginOptions {
+	return m.PluginOptions{
+		Triggers:           false,
+		Actors:             true,
+		ActorCustomAttrs:   true,
+		//ActorAttrs:         NewAttr(),
+		ActorCustomActions: true,
+		//ActorActions:       entity_manager.ToEntityActionShort(NewActions()),
+		ActorCustomStates:  true,
+		//ActorStates:        entity_manager.ToEntityStateShort(NewStates()),
+		ActorCustomSetts:   true,
+		//ActorSetts:         NewSettings(),
+		Setts:              nil,
+	}
 }

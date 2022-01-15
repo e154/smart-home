@@ -169,3 +169,22 @@ func (u Zigbee2mqtt) SearchDevice(list []*m.Zigbee2mqttDevice) (obj *api.SearchD
 		Items: items,
 	}
 }
+
+func (u Zigbee2mqtt) ToListResult(list []*m.Zigbee2mqttDevice, total uint64, pagination common.PageParams) *api.DeviceListResult {
+
+	items := make([]*api.Zigbee2MqttDevice, 0, len(list))
+
+	for _, i := range list {
+		items = append(items, u.ToZigbee2MqttDevice(i))
+	}
+
+	return &api.DeviceListResult{
+		Items: items,
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
+		},
+	}
+}

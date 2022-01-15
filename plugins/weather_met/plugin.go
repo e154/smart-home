@@ -144,7 +144,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 // Type ...
 func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+	return plugins.PluginInstallable
 }
 
 // Depends ...

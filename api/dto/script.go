@@ -69,15 +69,7 @@ func (s Script) FromExecSrcScriptRequest(req *api.ExecSrcScriptRequest) (script 
 
 // ToGScript ...
 func (s Script) ToGScript(script *m.Script) (result *api.Script) {
-	result = &api.Script{
-		Id:          script.Id,
-		Lang:        string(script.Lang),
-		Name:        script.Name,
-		Source:      script.Source,
-		Description: script.Description,
-		CreatedAt:   timestamppb.New(script.CreatedAt),
-		UpdatedAt:   timestamppb.New(script.UpdatedAt),
-	}
+	result = ToGScript(script)
 	return
 }
 
@@ -113,4 +105,20 @@ func (s Script) ToListResult(list []*m.Script, total uint64, pagination common.P
 			Sort:  pagination.SortReq,
 		},
 	}
+}
+
+func ToGScript(script *m.Script) (result *api.Script) {
+	if script == nil {
+		return
+	}
+	result = &api.Script{
+		Id:          script.Id,
+		Lang:        string(script.Lang),
+		Name:        script.Name,
+		Source:      script.Source,
+		Description: script.Description,
+		CreatedAt:   timestamppb.New(script.CreatedAt),
+		UpdatedAt:   timestamppb.New(script.UpdatedAt),
+	}
+	return
 }

@@ -27,13 +27,13 @@ import (
 // Task ...
 type Task struct {
 	Id          int64                `json:"id"`
-	Name        string               `json:"name"`
-	Description string               `json:"description"`
+	Name        string               `json:"name" validate:"required,lte=255"`
+	Description string               `json:"description" validate:"lte=255"`
 	Enabled     bool                 `json:"enabled"`
-	Condition   common.ConditionType `json:"condition"`
-	Triggers    []*Trigger           `json:"triggers"`
-	Conditions  []*Condition         `json:"conditions"`
-	Actions     []*Action            `json:"actions"`
+	Condition   common.ConditionType `json:"condition" validate:"required,oneof=or and"`
+	Triggers    []*Trigger           `json:"triggers" validate:"dive"`
+	Conditions  []*Condition         `json:"conditions" validate:"dive"`
+	Actions     []*Action            `json:"actions" validate:"dive"`
 	Area        *Area                `json:"area"`
 	CreatedAt   time.Time            `json:"created_at"`
 	UpdatedAt   time.Time            `json:"updated_at"`

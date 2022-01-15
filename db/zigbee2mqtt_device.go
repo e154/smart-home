@@ -117,6 +117,26 @@ func (z *Zigbee2mqttDevices) List(limit, offset int64) (list []*Zigbee2mqttDevic
 	return
 }
 
+// ListByBridgeId ...
+func (z *Zigbee2mqttDevices) ListByBridgeId(bridgeId, limit, offset int64) (list []*Zigbee2mqttDevice, total int64, err error) {
+
+	if err = z.Db.Model(Zigbee2mqttDevice{}).Where("zigbee2mqtt_id = ?", bridgeId).Count(&total).Error; err != nil {
+		return
+	}
+
+	list = make([]*Zigbee2mqttDevice, 0)
+	err = z.Db.
+		Where("zigbee2mqtt_id = ?", bridgeId).
+		Limit(limit).
+		Offset(offset).
+		Find(&list).
+		Error
+	if err != nil {
+		err = errors.Wrap(err, "list failed")
+	}
+	return
+}
+
 // Search ...
 func (z *Zigbee2mqttDevices) Search(query string, limit, offset int64) (list []*Zigbee2mqttDevice, total int64, err error) {
 

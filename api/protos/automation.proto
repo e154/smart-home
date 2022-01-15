@@ -14,26 +14,26 @@ import "attributes.proto";
 import "pagination.proto";
 
 message Trigger {
-  int64 id = 1;
+  optional int64 id = 1;
   string name = 2;
-  int64 task_id = 3;
-  string entity_id = 4;
+  message Entity {
+    string id = 1;
+  }
+  Entity entity = 4;
   Script script = 5;
   string plugin_name = 6;
-  map<string, Attribute> payload = 7;
+  map<string, Attribute> attributes = 7;
 }
 
 message Condition {
-  int64 id = 1;
+  optional int64 id = 1;
   string name = 2;
-  int64 task_id = 3;
   Script script = 4;
 }
 
 message Action {
-  int64 id = 1;
+  optional int64 id = 1;
   string name = 2;
-  int64 task_id = 3;
   Script script = 4;
 }
 
@@ -42,11 +42,7 @@ message Task {
   string name = 2;
   string description = 3;
   bool enabled = 4;
-  enum Condition {
-    OR = 0;
-    AND = 1;
-  }
-  Condition condition = 5;
+  string condition = 5;
   repeated Trigger triggers = 6;
   repeated Condition conditions = 7;
   repeated Action actions = 8;
@@ -60,31 +56,9 @@ message NewTaskRequest {
   string name = 2;
   string description = 3;
   bool enabled = 4;
-  enum ConditionEnum {
-    OR = 0;
-    AND = 1;
-  }
-  ConditionEnum condition = 5;
-  message Trigger {
-    string name = 2;
-    int64 task_id = 3;
-    string entity_id = 4;
-    int64 script_id = 5;
-    string plugin_name = 6;
-    map<string, Attribute> payload = 7;
-  }
+  string condition = 5;
   repeated Trigger triggers = 6;
-  message Condition {
-    string name = 2;
-    int64 task_id = 3;
-    int64 script_id = 4;
-  }
   repeated Condition conditions = 7;
-  message Action {
-    string name = 2;
-    int64 task_id = 3;
-    int64 script_id = 4;
-  }
   repeated Action actions = 8;
   optional Area area = 9;
 }
@@ -94,31 +68,9 @@ message UpdateTaskRequest {
   string name = 2;
   string description = 3;
   bool enabled = 4;
-  enum ConditionEnum {
-    OR = 0;
-    AND = 1;
-  }
-  ConditionEnum condition = 5;
-  message Trigger {
-    string name = 2;
-    int64 task_id = 3;
-    string entity_id = 4;
-    int64 script_id = 5;
-    string plugin_name = 6;
-    map<string, Attribute> payload = 7;
-  }
+  string condition = 5;
   repeated Trigger triggers = 6;
-  message Condition {
-    string name = 2;
-    int64 task_id = 3;
-    int64 script_id = 4;
-  }
   repeated Condition conditions = 7;
-  message Action {
-    string name = 2;
-    int64 task_id = 3;
-    int64 script_id = 4;
-  }
   repeated Action actions = 8;
   optional Area area = 9;
 }

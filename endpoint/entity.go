@@ -100,7 +100,7 @@ func (n *EntityEndpoint) Update(ctx context.Context, params *m.Entity) (result *
 	entity.Attributes = params.Attributes
 
 	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs = n.validation.Valid(entity); !ok {
 		return
 	}
 
@@ -171,5 +171,24 @@ func (n *EntityEndpoint) Search(ctx context.Context, query string, limit, offset
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
+	return
+}
+
+// Reload ...
+func (n *EntityEndpoint) Reload(ctx context.Context, id common.EntityId) (err error) {
+
+	_, err = n.adaptors.Entity.GetById(id)
+	if err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+
+	n.eventBus.Publish(event_bus.TopicEntities, event_bus.EventUpdatedEntity{
+		Id: id,
+	})
+
 	return
 }

@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Automation ...
@@ -34,6 +35,9 @@ func NewAutomationDto() Automation {
 
 // AddTask ...
 func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
+	if obj == nil {
+		return
+	}
 	task = &m.Task{
 		Name:        obj.Name,
 		Description: obj.Description,
@@ -53,32 +57,35 @@ func (r Automation) AddTask(obj *api.NewTaskRequest) (task *m.Task) {
 	}
 	// triggers
 	for _, t := range obj.Triggers {
-		entityId := common.EntityId(t.EntityId)
 		trigger := &m.Trigger{
 			Name:       t.Name,
-			TaskId:     t.TaskId,
-			EntityId:   &entityId,
-			ScriptId:   t.ScriptId,
+			ScriptId:   t.Script.Id,
 			PluginName: t.PluginName,
-			Payload:    AttributeFromApi(t.Payload),
+			Payload:    AttributeFromApi(t.Attributes),
+		}
+		if t.Entity != nil {
+			entityId := common.EntityId(t.Entity.Id)
+			trigger.EntityId = &entityId
 		}
 		task.Triggers = append(task.Triggers, trigger)
 	}
 	// conditions
 	for _, c := range obj.Conditions {
 		condition := &m.Condition{
-			Name:     c.Name,
-			TaskId:   c.TaskId,
-			ScriptId: c.ScriptId,
+			Name: c.Name,
+		}
+		if c.Script != nil {
+			condition.ScriptId = c.Script.Id
 		}
 		task.Conditions = append(task.Conditions, condition)
 	}
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.Action{
-			Name:     a.Name,
-			TaskId:   a.TaskId,
-			ScriptId: a.ScriptId,
+			Name: a.Name,
+		}
+		if a.Script != nil {
+			action.ScriptId = a.Script.Id
 		}
 		task.Actions = append(task.Actions, action)
 	}
@@ -107,23 +114,27 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 	}
 	// triggers
 	for _, t := range obj.Triggers {
-		entityId := common.EntityId(t.EntityId)
 		trigger := &m.Trigger{
 			Name:       t.Name,
-			TaskId:     t.TaskId,
-			EntityId:   &entityId,
-			ScriptId:   t.ScriptId,
 			PluginName: t.PluginName,
-			Payload:    AttributeFromApi(t.Payload),
+			Payload:    AttributeFromApi(t.Attributes),
+		}
+		if t.Entity != nil {
+			entityId := common.EntityId(t.Entity.Id)
+			trigger.EntityId = &entityId
+		}
+		if t.Script != nil {
+			trigger.ScriptId = t.Script.Id
 		}
 		task.Triggers = append(task.Triggers, trigger)
 	}
 	// conditions
 	for _, c := range obj.Conditions {
 		condition := &m.Condition{
-			Name:     c.Name,
-			TaskId:   c.TaskId,
-			ScriptId: c.ScriptId,
+			Name: c.Name,
+		}
+		if c.Script != nil {
+			condition.ScriptId = c.Script.Id
 		}
 		task.Conditions = append(task.Conditions, condition)
 	}
@@ -131,8 +142,9 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 	for _, a := range obj.Actions {
 		action := &m.Action{
 			Name:     a.Name,
-			TaskId:   a.TaskId,
-			ScriptId: a.ScriptId,
+		}
+		if a.Script != nil {
+			action.ScriptId = a.Script.Id
 		}
 		task.Actions = append(task.Actions, action)
 	}
@@ -161,6 +173,46 @@ func (r Automation) ToListResult(list []*m.Task, total uint64, pagination common
 
 // ToTask ...
 func (r Automation) ToTask(task *m.Task) (obj *api.Task) {
+
+	obj = &api.Task{
+		Id:          task.Id,
+		Name:        task.Name,
+		Description: task.Description,
+		Enabled:     task.Enabled,
+		Area:        ToArea(task.Area),
+		Condition:   string(task.Condition),
+		CreatedAt:   timestamppb.New(task.CreatedAt),
+		UpdatedAt:   timestamppb.New(task.UpdatedAt),
+	}
+
+	// triggers
+	for _, tr := range task.Triggers {
+		obj.Triggers = append(obj.Triggers, &api.Trigger{
+			Name:       tr.Name,
+			Script:     ToGScript(tr.Script),
+			PluginName: tr.PluginName,
+			Entity: &api.Trigger_Entity{
+				Id: tr.EntityId.String(),
+			},
+			Attributes: AttributeToApi(tr.Payload),
+		})
+	}
+
+	// conditions
+	for _, con := range task.Conditions {
+		obj.Conditions = append(obj.Conditions, &api.Condition{
+			Name:   con.Name,
+			Script: ToGScript(con.Script),
+		})
+	}
+
+	// actions
+	for _, con := range task.Actions {
+		obj.Actions = append(obj.Actions, &api.Action{
+			Name:   con.Name,
+			Script: ToGScript(con.Script),
+		})
+	}
 
 	return
 }

@@ -83,6 +83,11 @@ func (n *Trigger) fromDb(dbVer *db.Trigger) (ver *m.Trigger) {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		ver.Script, _ = scriptAdaptor.fromDb(dbVer.Script)
 	}
+	// entity
+	if dbVer.Entity != nil {
+		scriptAdaptor := GetEntityAdaptor(n.db)
+		ver.Entity = scriptAdaptor.fromDb(dbVer.Entity)
+	}
 
 	// deserialize payload
 	payload := m.TriggerPayload{}

@@ -209,6 +209,48 @@ func (r Entity) ToListResult(list []*m.Entity, total uint64, pagination common.P
 
 // ToEntity ...
 func (r Entity) ToEntity(entity *m.Entity) (obj *api.Entity) {
+	if entity == nil {
+		return
+	}
+	obj = ToEntity(entity)
+	return
+}
+
+// ToEntityShort ...
+func (r Entity) ToEntityShort(entity *m.Entity) (obj *api.EntityShort) {
+	imageDto := NewImageDto()
+	obj = &api.EntityShort{
+		Id:          entity.Id.String(),
+		PluginName:  entity.PluginName,
+		Description: entity.Description,
+		Icon:        entity.Icon,
+		AutoLoad:    entity.AutoLoad,
+		CreatedAt:   timestamppb.New(entity.CreatedAt),
+		UpdatedAt:   timestamppb.New(entity.UpdatedAt),
+	}
+	// area
+	if entity.Area != nil {
+		obj.Area = &api.Area{
+			Id:          entity.Area.Id,
+			Name:        entity.Area.Name,
+			Description: entity.Area.Description,
+		}
+	}
+	// image
+	if entity.Image != nil {
+		obj.Image = imageDto.ToImage(entity.Image)
+	}
+	// parent
+	if entity.ParentId != nil {
+		obj.Parent = &api.EntityParent{
+			Id: entity.ParentId.String(),
+		}
+	}
+
+	return
+}
+
+func ToEntity(entity *m.Entity) (obj *api.Entity) {
 	imageDto := NewImageDto()
 	scriptDto := NewScriptDto()
 	obj = &api.Entity{
@@ -281,39 +323,5 @@ func (r Entity) ToEntity(entity *m.Entity) (obj *api.Entity) {
 		script := scriptDto.ToGScript(s)
 		obj.Scripts = append(obj.Scripts, script)
 	}
-	return
-}
-
-// ToEntityShort ...
-func (r Entity) ToEntityShort(entity *m.Entity) (obj *api.EntityShort) {
-	imageDto := NewImageDto()
-	obj = &api.EntityShort{
-		Id:          entity.Id.String(),
-		PluginName:  entity.PluginName,
-		Description: entity.Description,
-		Icon:        entity.Icon,
-		AutoLoad:    entity.AutoLoad,
-		CreatedAt:   timestamppb.New(entity.CreatedAt),
-		UpdatedAt:   timestamppb.New(entity.UpdatedAt),
-	}
-	// area
-	if entity.Area != nil {
-		obj.Area = &api.Area{
-			Id:          entity.Area.Id,
-			Name:        entity.Area.Name,
-			Description: entity.Area.Description,
-		}
-	}
-	// image
-	if entity.Image != nil {
-		obj.Image = imageDto.ToImage(entity.Image)
-	}
-	// parent
-	if entity.ParentId != nil {
-		obj.Parent = &api.EntityParent{
-			Id: entity.ParentId.String(),
-		}
-	}
-
 	return
 }

@@ -71,9 +71,6 @@ message NewEntityRequest {
   string name = 1;
   string plugin_name = 2;
   string description = 3;
-  message Area {
-    int64 id = 1;
-  }
   optional Area area = 4;
   optional string icon = 5;
   message Image {
@@ -113,9 +110,6 @@ message UpdateEntityRequest {
   string name = 2;
   string plugin_name = 3;
   string description = 4;
-  message Area {
-    int64 id = 1;
-  }
   optional Area area = 5;
   optional string icon = 6;
   message Image {
@@ -162,6 +156,10 @@ message DeleteEntityRequest {
 
 message SearchEntityResult {
   repeated EntityShort items = 1;
+}
+
+message ReloadRequest {
+  string id = 1;
 }
 
 service EntityService {
@@ -247,6 +245,21 @@ service EntityService {
   rpc SearchEntity (SearchRequest) returns (SearchEntityResult){
     option (google.api.http) = {
       get: "/v1/entity/search"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // reload entity
+  rpc ReloadEntity (ReloadRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/entity/{id}/reload"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

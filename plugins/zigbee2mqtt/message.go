@@ -32,7 +32,9 @@ func NewMessage() (m *Message) {
 //
 // message
 //	.SetState(params)
-//.
+//
+
+// Message ...
 type Message struct {
 	Payload   string                           `json:"payload"`
 	Topic     string                           `json:"topic"`

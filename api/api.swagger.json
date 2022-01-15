@@ -633,7 +633,7 @@
                   "type": "string"
                 },
                 "area": {
-                  "$ref": "#/definitions/apiUpdateEntityRequestArea"
+                  "$ref": "#/definitions/apiArea"
                 },
                 "icon": {
                   "type": "string"
@@ -685,6 +685,42 @@
                 }
               }
             }
+          }
+        ],
+        "tags": [
+          "EntityService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/entity/{id}/reload": {
+      "post": {
+        "summary": "reload entity",
+        "operationId": "EntityService_ReloadEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -2097,24 +2133,24 @@
                   "type": "boolean"
                 },
                 "condition": {
-                  "$ref": "#/definitions/apiUpdateTaskRequestConditionEnum"
+                  "type": "string"
                 },
                 "triggers": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/apiUpdateTaskRequestTrigger"
+                    "$ref": "#/definitions/apiTrigger"
                   }
                 },
                 "conditions": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/apiUpdateTaskRequestCondition"
+                    "$ref": "#/definitions/apiCondition"
                   }
                 },
                 "actions": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/apiUpdateTaskRequestAction"
+                    "$ref": "#/definitions/apiAction"
                   }
                 },
                 "area": {
@@ -2647,6 +2683,63 @@
         ]
       }
     },
+    "/v1/zigbee2mqtt/bridge/{id}/devices": {
+      "get": {
+        "summary": "list device",
+        "operationId": "Zigbee2mqttService_DeviceList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiDeviceListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Zigbee2mqttService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/zigbee2mqtt/bridge/{id}/networkmap": {
       "get": {
         "summary": "networkmap",
@@ -3027,10 +3120,6 @@
         "name": {
           "type": "string"
         },
-        "taskId": {
-          "type": "string",
-          "format": "int64"
-        },
         "script": {
           "$ref": "#/definitions/apiScript"
         }
@@ -3079,6 +3168,21 @@
           "items": {
             "$ref": "#/definitions/apiAttribute"
           }
+        }
+      }
+    },
+    "apiCondition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "script": {
+          "$ref": "#/definitions/apiScript"
         }
       }
     },
@@ -3156,6 +3260,20 @@
         },
         "friendlyName": {
           "type": "string"
+        }
+      }
+    },
+    "apiDeviceListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiZigbee2mqttDevice"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
         }
       }
     },
@@ -3674,7 +3792,7 @@
           "type": "string"
         },
         "area": {
-          "$ref": "#/definitions/apiNewEntityRequestArea"
+          "$ref": "#/definitions/apiArea"
         },
         "icon": {
           "type": "string"
@@ -3746,15 +3864,6 @@
         },
         "type": {
           "type": "string"
-        }
-      }
-    },
-    "apiNewEntityRequestArea": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -3855,96 +3964,28 @@
           "type": "boolean"
         },
         "condition": {
-          "$ref": "#/definitions/apiNewTaskRequestConditionEnum"
+          "type": "string"
         },
         "triggers": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiNewTaskRequestTrigger"
+            "$ref": "#/definitions/apiTrigger"
           }
         },
         "conditions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiNewTaskRequestCondition"
+            "$ref": "#/definitions/apiCondition"
           }
         },
         "actions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiNewTaskRequestAction"
+            "$ref": "#/definitions/apiAction"
           }
         },
         "area": {
           "$ref": "#/definitions/apiArea"
-        }
-      }
-    },
-    "apiNewTaskRequestAction": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "taskId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "scriptId": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "apiNewTaskRequestCondition": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "taskId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "scriptId": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "apiNewTaskRequestConditionEnum": {
-      "type": "string",
-      "enum": [
-        "OR",
-        "AND"
-      ],
-      "default": "OR"
-    },
-    "apiNewTaskRequestTrigger": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "taskId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "entityId": {
-          "type": "string"
-        },
-        "scriptId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "pluginName": {
-          "type": "string"
-        },
-        "payload": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/apiAttribute"
-          }
         }
       }
     },
@@ -4039,6 +4080,9 @@
           "type": "boolean"
         },
         "system": {
+          "type": "boolean"
+        },
+        "actor": {
           "type": "boolean"
         },
         "settings": {
@@ -4242,7 +4286,7 @@
           "type": "boolean"
         },
         "condition": {
-          "$ref": "#/definitions/apiTaskCondition"
+          "type": "string"
         },
         "triggers": {
           "type": "array",
@@ -4253,7 +4297,7 @@
         "conditions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/apiTaskCondition"
+            "$ref": "#/definitions/apiCondition"
           }
         },
         "actions": {
@@ -4275,14 +4319,6 @@
         }
       }
     },
-    "apiTaskCondition": {
-      "type": "string",
-      "enum": [
-        "OR",
-        "AND"
-      ],
-      "default": "OR"
-    },
     "apiTrigger": {
       "type": "object",
       "properties": {
@@ -4293,12 +4329,8 @@
         "name": {
           "type": "string"
         },
-        "taskId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "entityId": {
-          "type": "string"
+        "entity": {
+          "$ref": "#/definitions/apiTriggerEntity"
         },
         "script": {
           "$ref": "#/definitions/apiScript"
@@ -4306,11 +4338,19 @@
         "pluginName": {
           "type": "string"
         },
-        "payload": {
+        "attributes": {
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/apiAttribute"
           }
+        }
+      }
+    },
+    "apiTriggerEntity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
         }
       }
     },
@@ -4348,15 +4388,6 @@
         }
       }
     },
-    "apiUpdateEntityRequestArea": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "apiUpdateEntityRequestImage": {
       "type": "object",
       "properties": {
@@ -4383,74 +4414,6 @@
         },
         "style": {
           "type": "string"
-        }
-      }
-    },
-    "apiUpdateTaskRequestAction": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "taskId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "scriptId": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "apiUpdateTaskRequestCondition": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "taskId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "scriptId": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "apiUpdateTaskRequestConditionEnum": {
-      "type": "string",
-      "enum": [
-        "OR",
-        "AND"
-      ],
-      "default": "OR"
-    },
-    "apiUpdateTaskRequestTrigger": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "taskId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "entityId": {
-          "type": "string"
-        },
-        "scriptId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "pluginName": {
-          "type": "string"
-        },
-        "payload": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/apiAttribute"
-          }
         }
       }
     },

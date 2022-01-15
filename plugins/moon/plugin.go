@@ -151,7 +151,7 @@ func (p *plugin) updatePositionForAll() {
 
 // Type ...
 func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+	return plugins.PluginInstallable
 }
 
 // Depends ...

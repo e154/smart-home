@@ -159,10 +159,11 @@ func (e *Actor) setState(params entity_manager.EntityStateParams) (changed bool)
 	e.AttrMu.Unlock()
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-		PluginName: e.Id.PluginName(),
-		EntityId:   e.Id,
-		OldState:   oldState,
-		NewState:   e.GetEventState(e),
+		PluginName:  e.Id.PluginName(),
+		EntityId:    e.Id,
+		OldState:    oldState,
+		NewState:    e.GetEventState(e),
+		StorageSave: params.StorageSave,
 	})
 
 	return

@@ -110,6 +110,18 @@ message SearchDeviceResult {
   repeated Zigbee2mqttDevice items = 1;
 }
 
+message DeviceListRequest {
+  int64 id = 1;
+  uint64 page = 2;
+  uint64 limit = 3;
+  string sort = 4;
+}
+
+message DeviceListResult {
+  repeated Zigbee2mqttDevice items = 1;
+  Meta meta = 2;
+}
+
 service Zigbee2mqttService {
 
   // add new bridge
@@ -256,6 +268,21 @@ service Zigbee2mqttService {
   rpc SearchDevice (SearchRequest) returns (SearchDeviceResult){
     option (google.api.http) = {
       get: "/v1/zigbee2mqtt/search_device"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // list device
+  rpc DeviceList (DeviceListRequest) returns (DeviceListResult){
+    option (google.api.http) = {
+      get: "/v1/zigbee2mqtt/bridge/{id}/devices"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

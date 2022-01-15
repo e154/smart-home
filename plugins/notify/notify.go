@@ -63,7 +63,7 @@ func NewNotify(
 	adaptor *adaptors.Adaptors,
 	scriptService scripts.ScriptService) Notify {
 
-	notify := &notify{
+	n := &notify{
 		adaptor:      adaptor,
 		isStarted:    atomic.NewBool(false),
 		queue:        make(chan m.MessageDelivery, queueSize),
@@ -71,10 +71,17 @@ func NewNotify(
 		providerList: make(map[string]Provider),
 	}
 
-	scriptService.PushStruct("notifr", NewNotifyBind(notify))
+	// workers
+	n.workers = []*Worker{
+		NewWorker(adaptor),
+		NewWorker(adaptor),
+		NewWorker(adaptor),
+	}
+
+	scriptService.PushStruct("notifr", NewNotifyBind(n))
 	scriptService.PushStruct("template", NewTemplateBind(adaptor))
 
-	return notify
+	return n
 }
 
 // Shutdown ...
@@ -90,13 +97,6 @@ func (n *notify) Start() (err error) {
 		return
 	}
 	n.isStarted.Store(true)
-
-	// workers
-	n.workers = []*Worker{
-		NewWorker(n.adaptor),
-		NewWorker(n.adaptor),
-		NewWorker(n.adaptor),
-	}
 
 	n.updateStat()
 

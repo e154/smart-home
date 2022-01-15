@@ -476,12 +476,21 @@ func (e *entityManager) getCrudActor(entityId common.EntityId) (result CrudActor
 // Add ...
 func (e *entityManager) Add(entity *m.Entity) (err error) {
 
-	var plugin CrudActor
-	if plugin, err = e.getCrudActor(entity.Id); err != nil {
+	var plugin m.Plugin
+	if plugin, err = e.adaptors.Plugin.GetByName(entity.PluginName); err != nil {
 		return
 	}
 
-	err = plugin.AddOrUpdateActor(entity)
+	if !plugin.Enabled {
+		return
+	}
+
+	var creudActor CrudActor
+	if creudActor, err = e.getCrudActor(entity.Id); err != nil {
+		return
+	}
+
+	err = creudActor.AddOrUpdateActor(entity)
 
 	return
 }

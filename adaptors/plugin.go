@@ -126,6 +126,7 @@ func (p *Plugin) fromDb(dbVer db.Plugin) (ver m.Plugin) {
 		Version: dbVer.Version,
 		Enabled: dbVer.Enabled,
 		System:  dbVer.System,
+		Actor:   dbVer.Actor,
 	}
 
 	// deserialize settings
@@ -143,6 +144,7 @@ func (p *Plugin) toDb(ver m.Plugin) (dbVer db.Plugin) {
 		Version: ver.Version,
 		Enabled: ver.Enabled,
 		System:  ver.System,
+		Actor:   ver.Actor,
 	}
 
 	// serialize settings

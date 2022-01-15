@@ -108,3 +108,14 @@ func (c ControllerEntity) SearchEntity(ctx context.Context, req *api.SearchReque
 
 	return c.dto.Entity.ToSearchResult(items), nil
 }
+
+// ReloadEntity ...
+func (c ControllerEntity) ReloadEntity(ctx context.Context, req *api.ReloadRequest) (*emptypb.Empty, error) {
+
+	err := c.endpoint.Entity.Reload(ctx, common.EntityId(req.Id))
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
+}

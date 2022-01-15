@@ -15,7 +15,8 @@ message Plugin {
   string version = 2;
   bool enabled = 3;
   bool system = 4;
-  map<string, Attribute> settings = 5;
+  bool actor = 5;
+  map<string, Attribute> settings = 6;
 }
 
 message GetPluginListResult {

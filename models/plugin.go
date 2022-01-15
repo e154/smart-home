@@ -29,6 +29,7 @@ type Plugin struct {
 	Version  string     `json:"version"`
 	Enabled  bool       `json:"enabled"`
 	System   bool       `json:"system"`
+	Actor    bool       `json:"actor"`
 	Settings Attributes `json:"settings"`
 }
 

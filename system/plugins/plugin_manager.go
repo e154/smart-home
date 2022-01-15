@@ -292,7 +292,7 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 		err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
 			Name:    plugin.Name(),
 			Version: plugin.Version(),
-			Enabled: false,
+			Enabled: plugin.Type() == PluginBuiltIn,
 			System:  plugin.Type() == PluginBuiltIn,
 		})
 	} else {
