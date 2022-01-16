@@ -19,85 +19,126 @@
 package stream
 
 import (
-	"net/http"
-	"time"
+	"context"
+	"go.uber.org/fx"
+	"sync"
 
+	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 )
 
 var (
-	log        = common.MustGetLogger("stream")
-	wsupgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin: func(r *http.Request) bool {
-			return true
-		},
-	}
+	log = common.MustGetLogger("stream")
 )
 
-// StreamService ...
-type StreamService struct {
-	Hub *Hub
+// Stream ...
+type Stream struct {
+	subMx       sync.Mutex
+	subscribers map[string]func(client IStreamClient, id string, msg []byte)
+	sesMx       sync.Mutex
+	sessions    map[*Client]bool
 }
 
 // NewStreamService ...
-func NewStreamService(hub *Hub) *StreamService {
-	return &StreamService{
-		Hub: hub,
+func NewStreamService(lc fx.Lifecycle) *Stream {
+	s := &Stream{
+		subscribers: make(map[string]func(client IStreamClient, id string, msg []byte)),
+		sessions:    make(map[*Client]bool),
 	}
+
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) (err error) {
+			return s.Start(ctx)
+		},
+		OnStop: func(ctx context.Context) (err error) {
+			return s.Shutdown(ctx)
+		},
+	})
+
+	return s
+}
+
+// Start ...
+func (s *Stream) Start(cts context.Context) error {
+	return nil
+}
+
+// Shutdown ...
+func (s *Stream) Shutdown(cts context.Context) error {
+	s.sesMx.Lock()
+	defer s.sesMx.Unlock()
+
+	for client, ok := range s.sessions {
+		if !ok {
+			continue
+		}
+		client.Close()
+	}
+	return nil
 }
 
 // Broadcast ...
-func (s *StreamService) Broadcast(message []byte) {
-	s.Hub.Broadcast(message)
+func (s *Stream) Broadcast(query string, message []byte) {
+	s.sesMx.Lock()
+	defer s.sesMx.Unlock()
+
+	for client, ok := range s.sessions {
+		if !ok {
+			continue
+		}
+		client.Broadcast(query, message)
+	}
 }
 
 // Subscribe ...
-func (s *StreamService) Subscribe(command string, f func(client IStreamClient, msg Message)) {
-	s.Hub.Subscribe(command, f)
+func (s *Stream) Subscribe(command string, f func(IStreamClient, string, []byte)) {
+	log.Infof("subscribe %s", command)
+	s.subMx.Lock()
+	defer s.subMx.Unlock()
+	if s.subscribers[command] != nil {
+		delete(s.subscribers, command)
+	}
+	s.subscribers[command] = f
+
 }
 
 // UnSubscribe ...
-func (s *StreamService) UnSubscribe(command string) {
-	s.Hub.UnSubscribe(command)
+func (s *Stream) UnSubscribe(command string) {
+	log.Infof("unsubscribe %s", command)
+	s.subMx.Lock()
+	defer s.subMx.Unlock()
+	if s.subscribers[command] != nil {
+		delete(s.subscribers, command)
+	}
 }
 
-// Ws ...
-func (s *StreamService) Ws(ctx *gin.Context) {
+// NewConnection ...
+func (s *Stream) NewConnection(server api.StreamService_SubscribeServer) error {
 
-	// CORS
-	ctx.Writer.Header().Del("Access-Control-Allow-Credentials")
+	client := NewClient(server)
+	defer func() {
+		log.Infof("websocket session closed")
+		s.sesMx.Lock()
+		delete(s.sessions, client)
+		s.sesMx.Unlock()
+	}()
 
-	conn, err := wsupgrader.Upgrade(ctx.Writer, ctx.Request, nil)
-	if err != nil {
-		log.Errorf("Failed to set websocket upgrade: %v", err)
-		return
+	s.sesMx.Lock()
+	s.sessions[client] = true
+	s.sesMx.Unlock()
+
+	log.Infof("new websocket session established")
+
+	err := client.WritePump(s.Recv)
+	return err
+}
+
+// Recv ...
+func (s *Stream) Recv(client *Client, id, query string, b []byte) {
+	s.subMx.Lock()
+	f, ok := s.subscribers[query]
+	s.subMx.Unlock()
+	if ok {
+		f(client, id, b)
 	}
-	if _, ok := err.(websocket.HandshakeError); ok {
-		ctx.AbortWithError(400, ErrNotAWebsocketHandshake)
-		return
-	} else if err != nil {
-		ctx.AbortWithError(400, err)
-		return
-	}
-
-	conn.SetReadDeadline(time.Now().Add(pongWait))
-	conn.SetPongHandler(func(string) error {
-		conn.SetReadDeadline(time.Now().Add(pongWait))
-		return nil
-	})
-
-	client := &Client{
-		Connect:   conn,
-		Ip:        ctx.ClientIP(),
-		Referer:   ctx.Request.Referer(),
-		UserAgent: ctx.Request.UserAgent(),
-		Send:      make(chan []byte),
-	}
-
-	go client.WritePump()
-	s.Hub.AddClient(client)
 }

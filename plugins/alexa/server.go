@@ -98,7 +98,8 @@ func (s *Server) Start() {
 		}
 	}()
 
-	s.gate.SetAlexaApiEngine(s.engine)
+	//todo fix
+	//s.gate.SetAlexaApiEngine(s.engine)
 
 	log.Infof("Serving server at %s", s.config.String())
 }
@@ -123,7 +124,8 @@ func (s *Server) Stop() {
 	}
 	s.isStarted.Store(false)
 
-	s.gate.SetAlexaApiEngine(nil)
+	//todo fix
+	//s.gate.SetAlexaApiEngine(nil)
 
 	if s.server != nil {
 		s.server.Close()

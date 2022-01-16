@@ -18,34 +18,26 @@
 
 package stream
 
-import "github.com/pkg/errors"
-
-const (
-	// Request ...
-	Request = "request"
-	// Response ...
-	Response = "response"
-	// StatusSuccess ...
-	StatusSuccess = "success"
-	// StatusError ...
-	StatusError = "error"
-	// Notify ...
-	Notify = "notify"
-	// Broadcast ...
-	Broadcast = "broadcast"
-)
-
-var (
-	ErrNotAWebsocketHandshake = errors.New("not a websocket handshake")
-)
+import "github.com/e154/smart-home/common/uuid"
 
 // BroadcastClient ...
 type BroadcastClient interface {
-	Broadcast(message []byte)
+	Broadcast(query string, message []byte)
 }
 
 // IStreamClient ...
 type IStreamClient interface {
-	Write(payload []byte) error
+	Send(id string, query string, body []byte) error
 	Notify(t, b string)
 }
+
+// Message ...
+type Message struct {
+	Id      uuid.UUID              `json:"id"`
+	Command string                 `json:"command"`
+	Payload map[string]interface{} `json:"payload"`
+	Forward string                 `json:"forward"`
+	Status  string                 `json:"status"`
+	Type    string                 `json:"type"`
+}
+

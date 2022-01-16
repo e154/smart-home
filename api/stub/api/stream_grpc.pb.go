@@ -41,7 +41,7 @@ func (c *streamServiceClient) Subscribe(ctx context.Context, opts ...grpc.CallOp
 
 type StreamService_SubscribeClient interface {
 	Send(*Request) error
-	Recv() (*SubscribeResponse, error)
+	Recv() (*Response, error)
 	grpc.ClientStream
 }
 
@@ -53,8 +53,8 @@ func (x *streamServiceSubscribeClient) Send(m *Request) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *streamServiceSubscribeClient) Recv() (*SubscribeResponse, error) {
-	m := new(SubscribeResponse)
+func (x *streamServiceSubscribeClient) Recv() (*Response, error) {
+	m := new(Response)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func _StreamService_Subscribe_Handler(srv interface{}, stream grpc.ServerStream)
 }
 
 type StreamService_SubscribeServer interface {
-	Send(*SubscribeResponse) error
+	Send(*Response) error
 	Recv() (*Request, error)
 	grpc.ServerStream
 }
@@ -102,7 +102,7 @@ type streamServiceSubscribeServer struct {
 	grpc.ServerStream
 }
 
-func (x *streamServiceSubscribeServer) Send(m *SubscribeResponse) error {
+func (x *streamServiceSubscribeServer) Send(m *Response) error {
 	return x.ServerStream.SendMsg(m)
 }
 

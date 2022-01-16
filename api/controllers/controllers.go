@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/stream"
 )
 
 // Controllers ...
@@ -42,8 +43,9 @@ type Controllers struct {
 // NewControllers ...
 func NewControllers(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	command *endpoint.Endpoint) *Controllers {
-	common := NewControllerCommon(adaptors, accessList, command)
+	command *endpoint.Endpoint,
+	stream *stream.Stream) *Controllers {
+	common := NewControllerCommon(adaptors, accessList, command, stream)
 	return &Controllers{
 		Auth:        NewControllerAuth(common),
 		Stream:      NewControllerStream(common),

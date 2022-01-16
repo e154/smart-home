@@ -22,6 +22,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/e154/smart-home/system/stream"
 	"github.com/iancoleman/strcase"
 	"net/http"
 	"strings"
@@ -50,17 +51,20 @@ type ControllerCommon struct {
 	accessList access_list.AccessListService
 	endpoint   *endpoint.Endpoint
 	dto        dto.Dto
+	stream *stream.Stream
 }
 
 // NewControllerCommon ...
 func NewControllerCommon(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	endpoint *endpoint.Endpoint) *ControllerCommon {
+	endpoint *endpoint.Endpoint,
+	stream *stream.Stream) *ControllerCommon {
 	return &ControllerCommon{
 		dto:        dto.NewDto(),
 		adaptors:   adaptors,
 		accessList: accessList,
 		endpoint:   endpoint,
+		stream: stream,
 	}
 }
 
