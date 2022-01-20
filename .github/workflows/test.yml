@@ -33,7 +33,12 @@ jobs:
           - 5432:5432
 
     steps:
-      - name: setup postgres
+      - name: Install PostgreSQL client
+        run: |
+          apt-get update
+          apt-get install --yes postgresql-client
+
+      - name: set up postgres
         run: |
           psql -c 'CREATE DATABASE smart_home_test;' -U postgres
           psql -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
