@@ -187,9 +187,16 @@ func (p *plugin) Authenticator(login, password string) (err error) {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Actors:      true,
-		ActorAttrs:  NewAttr(),
-		ActorSetts:  NewSettings(),
-		ActorStates: entity_manager.ToEntityStateShort(NewStates()),
+		Triggers:           false,
+		Actors:             true,
+		ActorCustomAttrs:   false,
+		ActorAttrs:         NewAttr(),
+		ActorCustomActions: false,
+		ActorActions:       nil,
+		ActorCustomStates:  false,
+		ActorStates:        entity_manager.ToEntityStateShort(NewStates()),
+		ActorCustomSetts:   false,
+		ActorSetts:         NewSettings(),
+		Setts:              nil,
 	}
 }
