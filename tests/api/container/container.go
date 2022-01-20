@@ -86,7 +86,6 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(func() (conf *models.AppConfig, err error) {
 		conf, err = config.ReadConfig("conf", "config.json", "")
 		conf.PgName = "smart_home_test"
-		conf.PgHost = "postgres"
 		conf.Logging = false
 		return
 	})
