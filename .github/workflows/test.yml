@@ -15,7 +15,29 @@ jobs:
     name: Testing
     runs-on: ubuntu-latest
 
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
+      - name: setup postgres
+        run: |
+          - psql -c 'CREATE DATABASE smart_home_test;' -U postgres
+          - psql -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
+          - psql -c "ALTER ROLE smart_home SUPERUSER;" -U postgres
+          - psql -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -28,7 +50,7 @@ jobs:
         run: |
           echo -e "machine github.com\n  login ${{ secrets.GUTHUBTOKEN }}" > ~/.netrc
           make get_deps
-    
+
       - name: Test code
         id: test-code
         run: make test
