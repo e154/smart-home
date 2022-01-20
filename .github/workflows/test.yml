@@ -33,10 +33,10 @@ jobs:
     steps:
       - name: setup postgres
         run: |
-          - psql -c 'CREATE DATABASE smart_home_test;' -U postgres
-          - psql -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
-          - psql -c "ALTER ROLE smart_home SUPERUSER;" -U postgres
-          - psql -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
+          psql -c 'CREATE DATABASE smart_home_test;' -U postgres
+          psql -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
+          psql -c "ALTER ROLE smart_home SUPERUSER;" -U postgres
+          psql -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
 
       - name: Checkout
         uses: actions/checkout@v2
