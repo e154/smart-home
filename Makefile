@@ -49,8 +49,14 @@ test:
 	go test -v ./tests/scripts
 	go test -v ./tests/system
 
+install_linter:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.42.1
+
 lint:
 	golangci-lint run ./...
+
+get_deps:
+	go mod tidy
 
 fmt:
 	@gofmt -l -w -s .
