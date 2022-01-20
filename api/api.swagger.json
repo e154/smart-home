@@ -2975,7 +2975,6 @@
     },
     "/ws": {
       "get": {
-        "summary": "stream",
         "operationId": "StreamService_Subscribe",
         "responses": {
           "200": {

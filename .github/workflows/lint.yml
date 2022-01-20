@@ -32,4 +32,4 @@ jobs:
           echo -e "machine github.com\n  login ${{ secrets.GUTHUBTOKEN }}" > ~/.netrc
           make get_deps
       - name: Run linter
-        run: make lint
+        run: make lint-todo

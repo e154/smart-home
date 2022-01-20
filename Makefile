@@ -52,6 +52,9 @@ test:
 install_linter:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.42.1
 
+lint-todo:
+	@echo MARK: make lint todo
+
 lint:
 	golangci-lint run ./...
 
@@ -69,9 +72,6 @@ cmd:
 svgo:
 	DIR=${ROOT}/data/icons/*
 	cd ${ROOT} && svgo ${DIR} --enable=inlineStyles  --config '{ "plugins": [ { "inlineStyles": { "onlyMatchedOnce": false } }] }' --pretty
-
-get_deps:
-	go mod download
 
 build_server:
 	@echo MARK: build server

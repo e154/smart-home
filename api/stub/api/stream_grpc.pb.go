@@ -18,7 +18,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StreamServiceClient interface {
-	// stream
 	Subscribe(ctx context.Context, opts ...grpc.CallOption) (StreamService_SubscribeClient, error)
 }
 
@@ -65,7 +64,6 @@ func (x *streamServiceSubscribeClient) Recv() (*Response, error) {
 // All implementations should embed UnimplementedStreamServiceServer
 // for forward compatibility
 type StreamServiceServer interface {
-	// stream
 	Subscribe(StreamService_SubscribeServer) error
 }
 
