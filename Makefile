@@ -41,13 +41,19 @@ GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
 GO_BUILD_ENV= CGO_ENABLED=0
 GO_BUILD_TAGS= -tags 'production'
 
-test:
+test_system:
+	@echo MARK: system tests
 	cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
 	go test -v ./tests/api
 	go test -v ./tests/models
 	go test -v ./tests/plugins
 	go test -v ./tests/scripts
 	go test -v ./tests/system
+
+test:
+	@echo MARK: unit tests
+	go test $(go list ./... | grep -v /tests/)
+	go test -race $(go list ./... | grep -v /tests/)
 
 install_linter:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.42.1

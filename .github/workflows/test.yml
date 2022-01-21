@@ -19,10 +19,12 @@ jobs:
       # Label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres
+        image: postgres:11
         # Provide the password for postgres
         env:
+          POSTGRES_DB: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -35,8 +37,9 @@ jobs:
     steps:
       - name: Install PostgreSQL client
         run: |
-          apt-get update
-          apt-get install --yes postgresql-client
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+          sudo apt-get -y install libpq-dev
 
       - name: set up postgres
         run: |
@@ -58,6 +61,10 @@ jobs:
           echo -e "machine github.com\n  login ${{ secrets.GUTHUBTOKEN }}" > ~/.netrc
           make get_deps
 
-      - name: Test code
+      - name: Unit test code
         id: test-code
         run: make test
+
+      - name: System test code
+        id: system-code
+        run: make test_system
