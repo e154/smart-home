@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := build
 build: get_deps build_server build_cli
 tests: lint test
-all: build build_structure build_archive docker_image
+all: build build_structure build_archive docker_image doc_deploy
 deploy: docker_image_upload
 
 EXEC=server
@@ -20,10 +20,8 @@ REV_URL_VALUE=https://${PACKAGE}/commit/${REV_VALUE}
 GENERATED_VALUE=$(shell date -u +'%Y-%m-%dT%H:%M:%S%z')
 DEVELOPERS_VALUE=delta54<support@e154.ru>
 BUILD_NUMBER_VALUE=$(shell echo ${TRAVIS_BUILD_NUMBER})
-#VERSION_VALUE=$(shell git describe --always --dirty --tags 2>/dev/null)
 
 DEPLOY_IMAGE=smart-home-${EXEC}
-#DOCKER_VERSION="${VERSION_VALUE//-dirty}"
 IMAGE=smart-home-${EXEC}
 DOCKER_ACCOUNT=e154
 DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
@@ -82,15 +80,15 @@ svgo:
 build_server:
 	@echo MARK: build server
 	${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-amd64
-#	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7
-#	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6
-#	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=5 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-5
-#	${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-amd64
+	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=7 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-7
+	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=6 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-6
+	${GO_BUILD_ENV} GOOS=linux GOARCH=arm GOARM=5 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-linux-arm-5
+	${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${EXEC}-darwin-10.6-amd64
 
 build_cli:
 	@echo MARK: build cli
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=linux GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-linux-amd64
-#	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
+	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
 
 server:
 	@echo "Building http server"
@@ -147,11 +145,11 @@ build_structure:
 	cp ${ROOT}/bin/server-installer.sh ${TMP_DIR}
 	chmod +x ${TMP_DIR}/data/scripts/ping.sh
 	cp ${ROOT}/${EXEC}-linux-amd64 ${TMP_DIR}
-#	cp ${ROOT}/${EXEC}-linux-arm-7 ${TMP_DIR}
-#	cp ${ROOT}/${EXEC}-linux-arm-6 ${TMP_DIR}
-#	cp ${ROOT}/${EXEC}-linux-arm-5 ${TMP_DIR}
-#	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${TMP_DIR}
-#	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${TMP_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-7 ${TMP_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-6 ${TMP_DIR}
+	cp ${ROOT}/${EXEC}-linux-arm-5 ${TMP_DIR}
+	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${TMP_DIR}
+	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${TMP_DIR}
 	cp ${ROOT}/${CLI}-linux-amd64 ${TMP_DIR}
 	cp ${ROOT}/bin/server ${TMP_DIR}
 
@@ -159,17 +157,17 @@ build_archive:
 	@echo MARK: build app archive
 	cd ${TMP_DIR} && ls -l && tar -zcf ${HOME}/${ARCHIVE} .
 
-docs_build:
+build_docs:
 	@echo MARK: build doc
-	cd ${ROOT}/doc && \
-	npm install postcss-cli && \
+	cd ${ROOT}/doc
+	npm install postcss-cli
 	hugo --gc --minify
 
 docs_dev:
-	cd ${ROOT}/doc && \
+	cd ${ROOT}/doc
 	hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.toml" --port=1377 --disableFastRender
 
-docs_deploy:
+doc_deploy:
 	@echo MARK: deploy doc
 	cd ${ROOT}/doc && \
 	echo -e "node version.\n"  && \
@@ -199,8 +197,7 @@ docker_image:
 	cd ${TMP_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
-	echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-	echo -e "run command docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}"
+	echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
 	echo -e "docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}"
 	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
