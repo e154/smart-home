@@ -40,4 +40,3 @@ type Message struct {
 	Status  string                 `json:"status"`
 	Type    string                 `json:"type"`
 }
-

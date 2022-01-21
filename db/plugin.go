@@ -21,6 +21,7 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )

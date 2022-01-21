@@ -22,10 +22,11 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/e154/smart-home/system/stream"
-	"github.com/iancoleman/strcase"
 	"net/http"
 	"strings"
+
+	"github.com/e154/smart-home/system/stream"
+	"github.com/iancoleman/strcase"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
@@ -51,7 +52,7 @@ type ControllerCommon struct {
 	accessList access_list.AccessListService
 	endpoint   *endpoint.Endpoint
 	dto        dto.Dto
-	stream *stream.Stream
+	stream     *stream.Stream
 }
 
 // NewControllerCommon ...
@@ -64,7 +65,7 @@ func NewControllerCommon(adaptors *adaptors.Adaptors,
 		adaptors:   adaptors,
 		accessList: accessList,
 		endpoint:   endpoint,
-		stream: stream,
+		stream:     stream,
 	}
 }
 

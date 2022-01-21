@@ -20,6 +20,7 @@ package cgminer
 
 import (
 	"fmt"
+
 	"github.com/e154/smart-home/common"
 	"github.com/pkg/errors"
 

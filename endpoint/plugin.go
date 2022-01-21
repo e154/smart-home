@@ -21,6 +21,7 @@ package endpoint
 import (
 	"context"
 	"fmt"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"

@@ -20,8 +20,9 @@ package stream
 
 import (
 	"context"
-	"go.uber.org/fx"
 	"sync"
+
+	"go.uber.org/fx"
 
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"

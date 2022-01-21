@@ -45,7 +45,7 @@ func TestEntity(t *testing.T) {
 		Name:        "light",
 		PluginName:  "sensor",
 		Description: "light toggle",
-		Area:        &gw.NewEntityRequest_Area{},
+		Area:        &gw.Area{},
 		AutoLoad:    true,
 		Actions: []*gw.NewEntityRequest_Action{
 			{
@@ -125,28 +125,28 @@ func TestEntity(t *testing.T) {
 		Name:        "light",
 		PluginName:  "sensor",
 		Description: "light toggle FX",
-		Area:        &gw.UpdateEntityRequest_Area{},
+		Area:        &gw.Area{},
 		AutoLoad:    false,
 		Actions: []*gw.UpdateEntityRequest_Action{
 			{
 				Name:        "ON FX",
 				Description: "toggle on FX",
-				Script:      &gw.UpdateEntityRequest_Action_Script{},
+				Script:      &gw.Script{},
 			},
 			{
 				Name:        "OFF FX",
 				Description: "toggle off FX",
-				Script:      &gw.UpdateEntityRequest_Action_Script{},
+				Script:      &gw.Script{},
 			},
 			{
 				Name:        "CHECK FX",
 				Description: "check status FX",
-				Script:      &gw.UpdateEntityRequest_Action_Script{},
+				Script:      &gw.Script{},
 			},
 			{
 				Name:        "FX",
 				Description: "status FX",
-				Script:      &gw.UpdateEntityRequest_Action_Script{},
+				Script:      &gw.Script{},
 			},
 		},
 		States: []*gw.UpdateEntityRequest_State{
@@ -244,11 +244,11 @@ func TestEntity(t *testing.T) {
 			ctx.So(err, ShouldBeNil)
 
 			createRequest.Area.Id = area.Id
-			for i, _ := range createRequest.Actions {
+			for i := range createRequest.Actions {
 				createRequest.Actions[i].Script.Id = script.Id
 			}
 			updateRequest.Area.Id = area2.Id
-			for i, _ := range updateRequest.Actions {
+			for i := range updateRequest.Actions {
 				updateRequest.Actions[i].Script.Id = script2.Id
 			}
 
@@ -459,16 +459,16 @@ func TestEntity(t *testing.T) {
 							ctx.So(entity.Id, ShouldEqual, "sensor.light2")
 
 							// list
-							listRequest := &gw.GetEntityListRequest{}
+							listRequest := &gw.PaginationRequest{}
 							result, err := client.GetEntityList(c, listRequest)
 							ctx.So(err, ShouldBeNil)
 
 							//debug.Println(result)
 
 							ctx.So(len(result.Items), ShouldEqual, 2)
-							ctx.So(result.Meta.ObjectsCount, ShouldEqual, 2)
+							ctx.So(result.Meta.Total, ShouldEqual, 2)
 							ctx.So(result.Meta.Limit, ShouldEqual, 200)
-							ctx.So(result.Meta.Offset, ShouldEqual, 0)
+							ctx.So(result.Meta.Page, ShouldEqual, 1)
 						})
 					})
 
@@ -571,7 +571,7 @@ func TestEntity(t *testing.T) {
 
 					t.Run("search", func(t *testing.T) {
 						Convey("", t, func(ctx C) {
-							searchRequest := &gw.SearchEntityRequest{
+							searchRequest := &gw.SearchRequest{
 								Query:  "light2",
 								Limit:  10,
 								Offset: 0,
@@ -598,13 +598,13 @@ func TestEntity(t *testing.T) {
 							ctx.So(err, ShouldBeNil)
 
 							// list
-							listRequest := &gw.GetEntityListRequest{}
+							listRequest := &gw.PaginationRequest{}
 							result, err := client.GetEntityList(c, listRequest)
 							ctx.So(err, ShouldBeNil)
 							ctx.So(len(result.Items), ShouldEqual, 1)
-							ctx.So(result.Meta.ObjectsCount, ShouldEqual, 1)
+							ctx.So(result.Meta.Total, ShouldEqual, 1)
 							ctx.So(result.Meta.Limit, ShouldEqual, 200)
-							ctx.So(result.Meta.Offset, ShouldEqual, 0)
+							ctx.So(result.Meta.Page, ShouldEqual, 1)
 
 						})
 					})

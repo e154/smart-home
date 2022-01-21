@@ -141,7 +141,7 @@ func (r Automation) UpdateTask(obj *api.UpdateTaskRequest) (task *m.Task) {
 	// actions
 	for _, a := range obj.Actions {
 		action := &m.Action{
-			Name:     a.Name,
+			Name: a.Name,
 		}
 		if a.Script != nil {
 			action.ScriptId = a.Script.Id

@@ -20,8 +20,9 @@ package stream
 
 import (
 	"encoding/json"
-	"github.com/e154/smart-home/api/stub/api"
 	"io"
+
+	"github.com/e154/smart-home/api/stub/api"
 )
 
 // Client ...

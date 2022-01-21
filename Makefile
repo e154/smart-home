@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := build
 build: get_deps build_server build_cli
 tests: lint test
-all: build build_structure build_archive docker_image docs_deploy
+all: build build_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
@@ -41,7 +41,8 @@ GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
 GO_BUILD_ENV= CGO_ENABLED=0
 GO_BUILD_TAGS= -tags 'production'
 
-test:
+test_system:
+	@echo MARK: system tests
 	cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
 	go test -v ./tests/api
 	go test -v ./tests/models
@@ -49,8 +50,22 @@ test:
 	go test -v ./tests/scripts
 	go test -v ./tests/system
 
+test:
+	@echo MARK: unit tests
+	go test $(go list ./... | grep -v /tests/)
+	go test -race $(go list ./... | grep -v /tests/)
+
+install_linter:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.42.1
+
+lint-todo:
+	@echo MARK: make lint todo
+
 lint:
 	golangci-lint run ./...
+
+get_deps:
+	go mod tidy
 
 fmt:
 	@gofmt -l -w -s .
@@ -63,9 +78,6 @@ cmd:
 svgo:
 	DIR=${ROOT}/data/icons/*
 	cd ${ROOT} && svgo ${DIR} --enable=inlineStyles  --config '{ "plugins": [ { "inlineStyles": { "onlyMatchedOnce": false } }] }' --pretty
-
-get_deps:
-	go mod download
 
 build_server:
 	@echo MARK: build server
