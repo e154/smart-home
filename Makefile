@@ -147,11 +147,11 @@ build_structure:
 	cp ${ROOT}/bin/server-installer.sh ${TMP_DIR}
 	chmod +x ${TMP_DIR}/data/scripts/ping.sh
 	cp ${ROOT}/${EXEC}-linux-amd64 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-7 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-6 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-linux-arm-5 ${TMP_DIR}
-	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${TMP_DIR}
-	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${TMP_DIR}
+#	cp ${ROOT}/${EXEC}-linux-arm-7 ${TMP_DIR}
+#	cp ${ROOT}/${EXEC}-linux-arm-6 ${TMP_DIR}
+#	cp ${ROOT}/${EXEC}-linux-arm-5 ${TMP_DIR}
+#	cp ${ROOT}/${EXEC}-darwin-10.6-amd64 ${TMP_DIR}
+#	cp ${ROOT}/${CLI}-darwin-10.6-amd64 ${TMP_DIR}
 	cp ${ROOT}/${CLI}-linux-amd64 ${TMP_DIR}
 	cp ${ROOT}/bin/server ${TMP_DIR}
 
