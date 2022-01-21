@@ -10,8 +10,8 @@ on:
 env:
   GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUBTOKEN }}
   TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
-  DOCKER_PASSWORD: ${{ github.DOCKER_PASSWORD }}
-  DOCKER_USERNAME: ${{ github.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
 jobs:
   build:
