@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -121,7 +123,7 @@ func (p *Actor) Start() (err error) {
 	if !common.TestMode() {
 		p.bot, err = tgbotapi.NewBotAPI(p.AccessToken)
 		if err != nil {
-			err = fmt.Errorf("telegram error: %s", err.Error())
+			err = errors.Wrap(common.ErrInternal, err.Error())
 			return
 		}
 
@@ -260,7 +262,7 @@ func (p *Actor) UpdateStatus() (err error) {
 
 	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
 		StorageSave: true,
-		Type:        p.Id.Type(),
+		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
 		OldState:    oldState,
 		NewState:    p.GetEventState(p),

@@ -198,7 +198,7 @@ func (n *ScriptEndpoint) GetList(ctx context.Context, pagination common.PagePara
 func (n *ScriptEndpoint) DeleteScriptById(ctx context.Context, scriptId int64) (err error) {
 
 	if scriptId == 0 {
-		err = errors.New("script id is null")
+		err = common.ErrBadRequestParams
 		return
 	}
 

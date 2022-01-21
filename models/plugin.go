@@ -29,7 +29,25 @@ type Plugin struct {
 	Version  string     `json:"version"`
 	Enabled  bool       `json:"enabled"`
 	System   bool       `json:"system"`
+	Actor    bool       `json:"actor"`
 	Settings Attributes `json:"settings"`
+}
+
+type Plugins []*Plugin
+
+// Len ...
+func (i Plugins) Len() int {
+	return len(i)
+}
+
+// Swap ...
+func (i Plugins) Swap(a, b int) {
+	i[a], i[b] = i[b], i[a]
+}
+
+// Less ...
+func (i Plugins) Less(a, b int) bool {
+	return i[a].Name < i[b].Name
 }
 
 // PluginOptions ...
@@ -42,6 +60,7 @@ type PluginOptions struct {
 	ActorActions       map[string]EntityActionShort `json:"actor_actions"`
 	ActorCustomStates  bool                         `json:"actor_custom_states"`
 	ActorStates        map[string]EntityStateShort  `json:"actor_states"`
+	ActorCustomSetts   bool                         `json:"actor_custom_setts"`
 	ActorSetts         Attributes                   `json:"actor_setts"`
 	Setts              Attributes                   `json:"setts"`
 }

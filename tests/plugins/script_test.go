@@ -74,25 +74,13 @@ entityAction = (entityId, actionName)->
 			// add scripts
 			// ------------------------------------------------
 
-			plugActionOnOffScript := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "plug on",
-				Source:      plugActionOnOffSourceScript,
-				Description: "включение",
-			}
-
-			enginePlugOnOffScript, err := scriptService.NewEngine(plugActionOnOffScript)
-			So(err, ShouldBeNil)
-			err = enginePlugOnOffScript.Compile()
-			So(err, ShouldBeNil)
-
-			plugActionOnOffScript.Id, err = adaptors.Script.Add(plugActionOnOffScript)
+			plugActionOnOffScript, err := AddScript("plug script", plugActionOnOffSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
 			// add entity
 			// ------------------------------------------------
-			plugEnt := GetNewScript(fmt.Sprintf("script.1"), []m.Script{})
-			plugEnt.Type = script.EntityScript
+			plugEnt := GetNewScript(fmt.Sprintf("script.1"), []*m.Script{})
+			plugEnt.PluginName = script.EntityScript
 			plugEnt.Actions = []*m.EntityAction{
 				{
 					Name:        "ON",

@@ -33,14 +33,15 @@ func NewPluginDto() Plugin {
 }
 
 // ToPluginListResult ...
-func (p Plugin) ToPluginListResult(items []*m.Plugin, total, limit, offset uint64) (result *api.GetPluginListResult) {
+func (p Plugin) ToPluginListResult(items []m.Plugin, total uint64, pagination common.PageParams) (result *api.GetPluginListResult) {
 
 	result = &api.GetPluginListResult{
 		Items: make([]*api.Plugin, 0, len(items)),
-		Meta: &api.GetPluginListResult_Meta{
-			Limit:        limit,
-			ObjectsCount: total,
-			Offset:       offset,
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
 		},
 	}
 
@@ -60,9 +61,9 @@ func (p Plugin) ToPluginListResult(items []*m.Plugin, total, limit, offset uint6
 // Options ...
 func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsResult) {
 
-	var actions = make(map[string]*api.EntityActionShort)
+	var actions = make(map[string]*api.GetPluginOptionsResult_EntityAction)
 	for k, v := range options.ActorActions {
-		actions[k] = &api.EntityActionShort{
+		actions[k] = &api.GetPluginOptionsResult_EntityAction{
 			Name:        v.Name,
 			Description: v.Description,
 			ImageUrl:    common.StringValue(v.ImageUrl),
@@ -70,9 +71,9 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsRe
 		}
 	}
 
-	var states = make(map[string]*api.EntityStateShort)
+	var states = make(map[string]*api.GetPluginOptionsResult_EntityState)
 	for k, v := range options.ActorStates {
-		states[k] = &api.EntityStateShort{
+		states[k] = &api.GetPluginOptionsResult_EntityState{
 			Name:        v.Name,
 			Description: v.Description,
 			ImageUrl:    common.StringValue(v.ImageUrl),
@@ -89,8 +90,29 @@ func (p Plugin) Options(options m.PluginOptions) (result *api.GetPluginOptionsRe
 		ActorActions:       actions,
 		ActorCustomStates:  options.ActorCustomStates,
 		ActorStates:        states,
+		ActorCustomSetts:   options.ActorCustomSetts,
 		ActorSetts:         AttributeToApi(options.ActorSetts),
 		Setts:              AttributeToApi(options.Setts),
 	}
 	return
+}
+
+// ToSearchResult ...
+func (p Plugin) ToSearchResult(list []m.Plugin) *api.SearchPluginResult {
+
+	items := make([]*api.Plugin, 0, len(list))
+
+	for _, i := range list {
+		items = append(items, &api.Plugin{
+			Name:     i.Name,
+			Version:  i.Version,
+			Enabled:  i.Enabled,
+			System:   i.System,
+			Settings: AttributeToApi(i.Settings),
+		})
+	}
+
+	return &api.SearchPluginResult{
+		Items: items,
+	}
 }

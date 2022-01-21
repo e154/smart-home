@@ -20,7 +20,6 @@ package admin
 
 import (
 	"container/list"
-	"errors"
 	"strings"
 	"sync"
 	"time"
@@ -181,7 +180,7 @@ func (s *store) newSessionInfo(client server.Client, c config.Config) *SessionIn
 func (s *store) GetSessionByID(clientID string) (*SessionInfo, error) {
 	client := s.GetClientByID(clientID)
 	if client == nil {
-		return nil, errors.New("not found")
+		return nil, ErrNotFound
 	}
 	return s.newSessionInfo(s.clientService.GetClient(clientID), s.config), nil
 }

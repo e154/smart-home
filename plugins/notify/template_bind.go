@@ -28,6 +28,8 @@ import (
 // template
 //	 .render('name', {'key':'val'})
 //
+
+// TemplateBind ...
 type TemplateBind struct {
 	adaptor *adaptors.Adaptors
 }

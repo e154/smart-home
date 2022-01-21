@@ -79,7 +79,7 @@ func (e *EntityManager) addL3(name, host string, script *m.Script, area *m.Area)
 	ent = &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("cgminer.%s", name)),
 		Description: "antminer L3+",
-		Type:        "cgminer",
+		PluginName:  cgminer.Name,
 		AutoLoad:    true,
 		Attributes:  cgminer.NewAttr(),
 		Settings:    settings,
@@ -200,7 +200,7 @@ func (e *EntityManager) addTgBot(name, token string, script *m.Script, area *m.A
 	ent = &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name)),
 		Description: "",
-		Type:        telegram.Name,
+		PluginName:  telegram.Name,
 		AutoLoad:    true,
 		Attributes:  telegram.NewAttr(),
 		Settings:    settings,
@@ -229,7 +229,7 @@ func (e *EntityManager) addSensor(name string, script *m.Script, area *m.Area) (
 	ent = &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("%s.%s", sensor.Name, name)),
 		Description: "",
-		Type:        sensor.Name,
+		PluginName:  sensor.Name,
 		AutoLoad:    true,
 		Attributes: m.Attributes{
 			"paid_rewards": {

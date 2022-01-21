@@ -20,6 +20,7 @@ package dto
 
 import (
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/zigbee2mqtt"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -111,7 +112,7 @@ func (u Zigbee2mqtt) UpdateBridgeByIdResult(bridge *m.Zigbee2mqtt) (obj *api.Zig
 }
 
 // GetBridgeListResult ...
-func (u Zigbee2mqtt) GetBridgeListResult(list []*zigbee2mqtt.Zigbee2mqttBridge, total, limit, offset uint64) (obj *api.GetBridgeListResult) {
+func (u Zigbee2mqtt) GetBridgeListResult(list []*zigbee2mqtt.Zigbee2mqttBridge, total uint64, pagination common.PageParams) (obj *api.GetBridgeListResult) {
 	items := make([]*api.Zigbee2MqttShort, 0, len(list))
 	for _, item := range list {
 		items = append(items, &api.Zigbee2MqttShort{
@@ -126,10 +127,11 @@ func (u Zigbee2mqtt) GetBridgeListResult(list []*zigbee2mqtt.Zigbee2mqttBridge, 
 	}
 	obj = &api.GetBridgeListResult{
 		Items: items,
-		Meta: &api.GetBridgeListResult_Meta{
-			Limit:        limit,
-			ObjectsCount: total,
-			Offset:       offset,
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
 		},
 	}
 	return
@@ -165,5 +167,24 @@ func (u Zigbee2mqtt) SearchDevice(list []*m.Zigbee2mqttDevice) (obj *api.SearchD
 
 	return &api.SearchDeviceResult{
 		Items: items,
+	}
+}
+
+func (u Zigbee2mqtt) ToListResult(list []*m.Zigbee2mqttDevice, total uint64, pagination common.PageParams) *api.DeviceListResult {
+
+	items := make([]*api.Zigbee2MqttDevice, 0, len(list))
+
+	for _, i := range list {
+		items = append(items, u.ToZigbee2MqttDevice(i))
+	}
+
+	return &api.DeviceListResult{
+		Items: items,
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
+		},
 	}
 }

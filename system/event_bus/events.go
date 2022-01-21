@@ -32,16 +32,16 @@ type EventRequestState struct {
 
 // EventStateChanged ...
 type EventStateChanged struct {
-	StorageSave bool              `json:"storage_save"`
-	Type        common.EntityType `json:"type"`
-	EntityId    common.EntityId   `json:"entity_id"`
-	OldState    EventEntityState  `json:"old_state"`
-	NewState    EventEntityState  `json:"new_state"`
+	StorageSave bool             `json:"storage_save"`
+	PluginName  string           `json:"plugin_name"`
+	EntityId    common.EntityId  `json:"entity_id"`
+	OldState    EventEntityState `json:"old_state"`
+	NewState    EventEntityState `json:"new_state"`
 }
 
 // EventCallAction ...
 type EventCallAction struct {
-	Type       common.EntityType      `json:"type"`
+	PluginName string                 `json:"plugin_name"`
 	EntityId   common.EntityId        `json:"entity_id"`
 	ActionName string                 `json:"action_name"`
 	Args       map[string]interface{} `json:"args"`
@@ -49,31 +49,46 @@ type EventCallAction struct {
 
 // EventCallScene ...
 type EventCallScene struct {
-	Type     common.EntityType      `json:"type"`
-	EntityId common.EntityId        `json:"entity_id"`
-	Args     map[string]interface{} `json:"args"`
+	PluginName string                 `json:"type"`
+	EntityId   common.EntityId        `json:"entity_id"`
+	Args       map[string]interface{} `json:"args"`
 }
 
 // EventAddedActor ...
 type EventAddedActor struct {
-	Type       common.EntityType `json:"type"`
-	EntityId   common.EntityId   `json:"entity_id"`
-	Attributes m.Attributes      `json:"attributes"`
-	Settings   m.Attributes      `json:"settings"` //???
+	PluginName string          `json:"plugin_name"`
+	EntityId   common.EntityId `json:"entity_id"`
+	Attributes m.Attributes    `json:"attributes"`
+	Settings   m.Attributes    `json:"settings"` //???
 }
 
 // EventRemoveActor ...
 type EventRemoveActor struct {
-	Type     common.EntityType `json:"type"`
-	EntityId common.EntityId   `json:"entity_id"`
+	PluginName string          `json:"plugin_name"`
+	EntityId   common.EntityId `json:"entity_id"`
 }
 
 // EventLoadedPlugin ...
 type EventLoadedPlugin struct {
-	PluginName common.EntityType `json:"plugin_name"`
+	PluginName string `json:"plugin_name"`
 }
 
 // EventUnloadedPlugin ...
 type EventUnloadedPlugin struct {
-	PluginName common.EntityType `json:"plugin_name"`
+	PluginName string `json:"plugin_name"`
+}
+
+// EventCreatedEntity ...
+type EventCreatedEntity struct {
+	Id common.EntityId `json:"id"`
+}
+
+// EventUpdatedEntity ...
+type EventUpdatedEntity struct {
+	Id common.EntityId `json:"id"`
+}
+
+// EventDeletedEntity ...
+type EventDeletedEntity struct {
+	Id common.EntityId `json:"id"`
 }

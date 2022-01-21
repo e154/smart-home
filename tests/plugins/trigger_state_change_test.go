@@ -123,40 +123,16 @@ automationTriggerStateChanged = (msg)->
 
 			// add scripts
 			// ------------------------------------------------
-			buttonScript := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "button",
-				Source:      buttonSourceScript,
-				Description: "button sensor",
-			}
 
-			engine1, err := scriptService.NewEngine(buttonScript)
-			So(err, ShouldBeNil)
-			err = engine1.Compile()
+			buttonScript, err := AddScript("button", buttonSourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
-			buttonScript.Id, err = adaptors.Script.Add(buttonScript)
-			So(err, ShouldBeNil)
-
-			// task1 scripts
-			task1Script := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "trigger_script_entityId_",
-				Source:      task1SourceScript,
-				Description: "",
-			}
-
-			task1ScriptEngine, err := scriptService.NewEngine(task1Script)
-			So(err, ShouldBeNil)
-			err = task1ScriptEngine.Compile()
-			So(err, ShouldBeNil)
-
-			task1Script.Id, err = adaptors.Script.Add(task1Script)
+			task1Script, err := AddScript("task", task1SourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
 			// add entity
 			// ------------------------------------------------
-			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []m.Script{*buttonScript})
+			buttonEnt := GetNewButton(fmt.Sprintf("zigbee2mqtt.%s", zigbeeButtonId), []*m.Script{buttonScript})
 			err = adaptors.Entity.Add(buttonEnt)
 			So(err, ShouldBeNil)
 

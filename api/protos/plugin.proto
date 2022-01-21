@@ -8,29 +8,19 @@ import "google/api/annotations.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
 import "attributes.proto";
+import "pagination.proto";
 
 message Plugin {
   string name = 1;
   string version = 2;
   bool enabled = 3;
   bool system = 4;
-  map<string, Attribute> settings = 5;
-}
-
-message GetPluginListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
+  bool actor = 5;
+  map<string, Attribute> settings = 6;
 }
 
 message GetPluginListResult {
   repeated Plugin items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
 }
 
@@ -51,6 +41,7 @@ message DisablePluginResult {
 message GetPluginOptionsRequest {
   string name = 1;
 }
+
 message GetPluginOptionsResult {
   bool triggers = 1;
   bool actors = 2;
@@ -72,14 +63,19 @@ message GetPluginOptionsResult {
     string icon = 4;
   }
   map<string, EntityState>  actor_states = 8;
-  map<string, Attribute> actor_setts = 9;
-  map<string, Attribute> setts = 10;
+  bool actor_custom_setts = 9;
+  map<string, Attribute> actor_setts = 10;
+  map<string, Attribute> setts = 11;
+}
+
+message SearchPluginResult {
+  repeated Plugin items = 1;
 }
 
 service PluginService {
 
   // get plugin list
-  rpc GetPluginList(GetPluginListRequest) returns (GetPluginListResult) {
+  rpc GetPluginList(PaginationRequest) returns (GetPluginListResult) {
     option (google.api.http) = {
       get: "/v1/plugins"
     };
@@ -127,6 +123,21 @@ service PluginService {
   rpc GetPluginOptions(GetPluginOptionsRequest) returns (GetPluginOptionsResult) {
     option (google.api.http) = {
       get: "/v1/plugin/{name}/options"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // search plugin
+  rpc SearchPlugin (SearchRequest) returns (SearchPluginResult){
+    option (google.api.http) = {
+      get: "/v1/plugins/search"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

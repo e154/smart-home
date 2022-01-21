@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := build
 build: get_deps build_server build_cli
 tests: lint test
-all: build build_structure build_archive docker_image doc_deploy
+all: build build_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
@@ -20,13 +20,11 @@ REV_URL_VALUE=https://${PACKAGE}/commit/${REV_VALUE}
 GENERATED_VALUE=$(shell date -u +'%Y-%m-%dT%H:%M:%S%z')
 DEVELOPERS_VALUE=delta54<support@e154.ru>
 BUILD_NUMBER_VALUE=$(shell echo ${TRAVIS_BUILD_NUMBER})
-VERSION_VALUE=$(shell git describe --always --dirty --tags 2>/dev/null)
 
 DEPLOY_IMAGE=smart-home-${EXEC}
-DOCKER_VERSION="${VERSION_VALUE//-dirty}"
 IMAGE=smart-home-${EXEC}
 DOCKER_ACCOUNT=e154
-DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${DOCKER_VERSION}
+DOCKER_IMAGE_VER=${DOCKER_ACCOUNT}/${IMAGE}:${RELEASE_VERSION}
 DOCKER_IMAGE_LATEST=${DOCKER_ACCOUNT}/${IMAGE}:latest
 
 VERSION_VAR=${PACKAGE}/version.VersionString
@@ -36,12 +34,13 @@ GENERATED_VAR=${PACKAGE}/version.GeneratedString
 DEVELOPERS_VAR=${PACKAGE}/version.DevelopersString
 BUILD_NUMBER_VAR=${PACKAGE}/version.BuildNumString
 DOCKER_IMAGE_VAR=${PACKAGE}/version.DockerImageString
-GO_BUILD_LDFLAGS= -X ${VERSION_VAR}=${VERSION_VALUE} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
+GO_BUILD_LDFLAGS= -X ${VERSION_VAR}=${RELEASE_VERSION} -X ${REV_VAR}=${REV_VALUE} -X ${REV_URL_VAR}=${REV_URL_VALUE} -X ${GENERATED_VAR}=${GENERATED_VALUE} -X ${DEVELOPERS_VAR}=${DEVELOPERS_VALUE} -X ${BUILD_NUMBER_VAR}=${BUILD_NUMBER_VALUE} -X ${DOCKER_IMAGE_VAR}=${DOCKER_IMAGE_VER}
 GO_BUILD_FLAGS= -a -installsuffix cgo -v --ldflags '${GO_BUILD_LDFLAGS}'
 GO_BUILD_ENV= CGO_ENABLED=0
 GO_BUILD_TAGS= -tags 'production'
 
-test:
+test_system:
+	@echo MARK: system tests
 	cp ${ROOT}/conf/config.dev.json ${ROOT}/conf/config.json
 	go test -v ./tests/api
 	go test -v ./tests/models
@@ -49,8 +48,22 @@ test:
 	go test -v ./tests/scripts
 	go test -v ./tests/system
 
+test:
+	@echo MARK: unit tests
+	go test $(go list ./... | grep -v /tests/)
+	go test -race $(go list ./... | grep -v /tests/)
+
+install_linter:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.42.1
+
+lint-todo:
+	@echo MARK: make lint todo
+
 lint:
 	golangci-lint run ./...
+
+get_deps:
+	go mod tidy
 
 fmt:
 	@gofmt -l -w -s .
@@ -63,9 +76,6 @@ cmd:
 svgo:
 	DIR=${ROOT}/data/icons/*
 	cd ${ROOT} && svgo ${DIR} --enable=inlineStyles  --config '{ "plugins": [ { "inlineStyles": { "onlyMatchedOnce": false } }] }' --pretty
-
-get_deps:
-	go mod download
 
 build_server:
 	@echo MARK: build server
@@ -81,19 +91,45 @@ build_cli:
 	cd ${ROOT}/cmd/cli && ${GO_BUILD_ENV} GOOS=darwin GOARCH=amd64 go build ${GO_BUILD_FLAGS} ${GO_BUILD_TAGS} -o ${ROOT}/${CLI}-darwin-10.6-amd64
 
 server:
-	@echo MARK: generate server stub
+	@echo "Building http server"
 	cd ${ROOT}/api/protos/ && \
 	mkdir -p ${ROOT}/api/stub && \
 	protoc -I/usr/local/include -I. \
       -I${GOPATH}/src \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
-      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway/v2@v2.5.0/protoc-gen-openapiv2 \
       -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
       --grpc-gateway_out=logtostderr=true:${ROOT}/api/stub \
-      --openapiv2_out=allow_merge=true,merge_file_name=api,logtostderr=true:${ROOT}/api \
+      *.proto
+
+	@echo "Building grpc server"
+	cd ${ROOT}/api/protos/ && \
+	mkdir -p ${ROOT}/api/stub && \
+	protoc -I/usr/local/include -I. \
+      -I${GOPATH}/src \
+      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
+      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
       --go-grpc_out=require_unimplemented_servers=false:${ROOT}/api/stub \
+      *.proto
+
+	@echo "Building protobuf files"
+	cd ${ROOT}/api/protos/ && \
+	mkdir -p ${ROOT}/api/stub && \
+	protoc -I/usr/local/include -I. \
+      -I${GOPATH}/src \
+      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
+      -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
       --go_out=${ROOT}/api/stub \
       *.proto
+
+	@echo "Building swagger.json"
+	cd ${ROOT}/api/protos/ && \
+	protoc -I/usr/local/include -I. \
+	  -I${GOPATH}/src \
+	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
+	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway/v2@v2.5.0/protoc-gen-openapiv2 \
+	  -I${GOPATH}/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0 \
+	  --openapiv2_out=allow_merge=true,merge_file_name=api,logtostderr=true:${ROOT}/api \
+	  *.proto
 
 build_structure:
 	@echo MARK: create app structure
@@ -121,17 +157,17 @@ build_archive:
 	@echo MARK: build app archive
 	cd ${TMP_DIR} && ls -l && tar -zcf ${HOME}/${ARCHIVE} .
 
-build_docs:
+docs_build:
 	@echo MARK: build doc
-	cd ${ROOT}/doc
-	npm install postcss-cli
+	cd ${ROOT}/doc && \
+	npm install postcss-cli && \
 	hugo --gc --minify
 
 docs_dev:
-	cd ${ROOT}/doc
+	cd ${ROOT}/doc && \
 	hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.toml" --port=1377 --disableFastRender
 
-doc_deploy:
+docs_deploy:
 	@echo MARK: deploy doc
 	cd ${ROOT}/doc && \
 	echo -e "node version.\n"  && \
@@ -161,8 +197,10 @@ docker_image:
 	cd ${TMP_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
-	echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+	echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+	echo -e "run command docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}"
 	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
+	echo -e "docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}"
 	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
 	docker push ${DOCKER_IMAGE_VER}
 	docker push ${DOCKER_IMAGE_LATEST}

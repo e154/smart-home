@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/e154/smart-home/common"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
@@ -71,7 +73,7 @@ func (n Areas) GetByName(name string) (area *Area, err error) {
 }
 
 // Search ...
-func (n *Areas) Search(query string, limit, offset int) (list []*Area, total int64, err error) {
+func (n *Areas) Search(query string, limit, offset int64) (list []*Area, total int64, err error) {
 
 	q := n.Db.Model(&Area{}).
 		Where("name LIKE ?", "%"+query+"%")
@@ -96,7 +98,7 @@ func (n *Areas) Search(query string, limit, offset int) (list []*Area, total int
 // DeleteByName ...
 func (n Areas) DeleteByName(name string) (err error) {
 	if name == "" {
-		err = fmt.Errorf("zero name")
+		err = errors.Wrap(common.ErrBadRequestParams, "zero name")
 		return
 	}
 

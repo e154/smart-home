@@ -20,7 +20,6 @@ package admin
 
 import (
 	"context"
-	"errors"
 
 	"github.com/DrmagicE/gmqtt"
 	"github.com/DrmagicE/gmqtt/pkg/packets"
@@ -169,15 +168,15 @@ func (a *Admin) GetSubscriptions(clientId string, limit, offset uint) (list []*S
 // Subscribe ...
 func (a *Admin) Subscribe(clientId, topic string, qos int) (err error) {
 	if qos < 0 || qos > 2 {
-		err = errors.New("invalid Qos")
+		err = ErrInvalidQos
 		return
 	}
 	if !packets.ValidTopicFilter(true, []byte(topic)) {
-		err = errors.New("invalid topic filter")
+		err = ErrInvalidTopicFilter
 		return
 	}
 	if clientId == "" {
-		err = errors.New("invalid clientID")
+		err = ErrInvalidClientID
 		return
 	}
 	_, err = a.subscriptionService.Subscribe(clientId, &gmqtt.Subscription{
@@ -190,11 +189,11 @@ func (a *Admin) Subscribe(clientId, topic string, qos int) (err error) {
 // Unsubscribe ...
 func (a *Admin) Unsubscribe(clientId, topic string) (err error) {
 	if !packets.ValidTopicFilter(true, []byte(topic)) {
-		err = errors.New("invalid topic filter")
+		err = ErrInvalidTopicFilter
 		return
 	}
 	if clientId == "" {
-		err = errors.New("invalid clientID")
+		err = ErrInvalidClientID
 		return
 	}
 	a.subscriptionService.Unsubscribe(clientId, topic)
@@ -204,15 +203,15 @@ func (a *Admin) Unsubscribe(clientId, topic string) (err error) {
 // Publish ...
 func (a *Admin) Publish(topic string, qos int, payload []byte, retain bool) (err error) {
 	if qos < 0 || qos > 2 {
-		err = errors.New("invalid Qos")
+		err = ErrInvalidQos
 		return
 	}
 	if !packets.ValidTopicFilter(true, []byte(topic)) {
-		err = errors.New("invalid topic filter")
+		err = ErrInvalidTopicFilter
 		return
 	}
 	if !packets.ValidUTF8(payload) {
-		err = errors.New("invalid utf-8 string")
+		err = ErrInvalidUtf8String
 		return
 	}
 	a.publisher.Publish(&gmqtt.Message{
@@ -227,7 +226,7 @@ func (a *Admin) Publish(topic string, qos int, payload []byte, retain bool) (err
 // CloseClient ...
 func (a *Admin) CloseClient(clientId string) (err error) {
 	if clientId == "" {
-		err = errors.New("invalid clientID")
+		err = ErrInvalidClientID
 		return
 	}
 	client := a.clientService.GetClient(clientId)

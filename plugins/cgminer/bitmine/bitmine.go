@@ -21,7 +21,6 @@ package bitmine
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/url"
 
@@ -115,11 +114,11 @@ func (b *Bitmine) Stats() (data []byte, err error) {
 		return
 	}
 	if len(resp.Stats) < 1 {
-		err = errors.New("no stats in JSON response")
+		err = ErrNoStatsInJsonResponse
 		return
 	}
 	if len(resp.Stats) > 1 {
-		err = errors.New("too many stats in JSON response")
+		err = ErrTooManyStatsInJsonResponse
 		return
 	}
 	data, err = json.Marshal(resp.Stats[0])
@@ -157,11 +156,11 @@ func (b *Bitmine) Summary() (data []byte, err error) {
 		return
 	}
 	if len(resp.Summary) > 1 {
-		err = errors.New("received multiple Summary objects")
+		err = ErrReceivedMultipleSummaryObjects
 		return
 	}
 	if len(resp.Summary) < 1 {
-		err = errors.New("no summary info received")
+		err = ErrNoSummaryInfoReceived
 		return
 	}
 	data, err = json.Marshal(resp.Summary[0])
@@ -215,11 +214,11 @@ func (b *Bitmine) Version() (data []byte, err error) {
 		return
 	}
 	if len(resp.Version) < 1 {
-		err = errors.New("no version in JSON response")
+		err = ErrNoVersionInJsonResponse
 		return
 	}
 	if len(resp.Version) > 1 {
-		err = errors.New("too many versions in JSON response")
+		err = ErrTooManyVersionsInJsonResponse
 		return
 	}
 	data, err = json.Marshal(resp.Version[0])

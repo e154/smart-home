@@ -55,6 +55,7 @@ func (p *plugin) Load(service plugins.Service) (err error) {
 		return
 	}
 
+	p.actor = NewActor(service.EntityManager(), service.EventBus())
 	p.EntityManager.Spawn(p.actor.Spawn)
 
 	list, _, err := p.Adaptors.Metric.Search("cpuspeed", 1, 0)
@@ -134,7 +135,7 @@ func (p plugin) Name() string {
 
 // Type ...
 func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+	return plugins.PluginInstallable
 }
 
 // Depends ...

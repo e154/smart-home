@@ -25,7 +25,7 @@ import (
 
 const (
 	// EntityCpuspeed ...
-	EntityCpuspeed = common.EntityType("cpuspeed")
+	EntityCpuspeed = string("cpuspeed")
 
 	icon = "microchip"
 

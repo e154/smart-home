@@ -19,18 +19,19 @@
 package alexa
 
 import (
-	"errors"
 	"net/http"
 	"os"
 	"sync"
+
+	"github.com/e154/smart-home/common"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/atomic"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/scripts"
-	"github.com/gin-gonic/gin"
-	"go.uber.org/atomic"
 )
 
 // Server ...
@@ -97,7 +98,8 @@ func (s *Server) Start() {
 		}
 	}()
 
-	s.gate.SetAlexaApiEngine(s.engine)
+	//todo fix
+	//s.gate.SetAlexaApiEngine(s.engine)
 
 	log.Infof("Serving server at %s", s.config.String())
 }
@@ -122,7 +124,8 @@ func (s *Server) Stop() {
 	}
 	s.isStarted.Store(false)
 
-	s.gate.SetAlexaApiEngine(nil)
+	//todo fix
+	//s.gate.SetAlexaApiEngine(nil)
 
 	if s.server != nil {
 		s.server.Close()
@@ -214,7 +217,7 @@ func (s Server) Auth(ctx *gin.Context) {
 	}
 
 	if !IsValidAlexaRequest(ctx.Writer, ctx.Request) {
-		ctx.AbortWithError(401, errors.New("invalid request"))
+		ctx.AbortWithError(401, common.ErrBadRequestParams)
 		return
 	}
 }

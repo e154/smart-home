@@ -23,6 +23,8 @@ package mqtt
 // Mqtt
 //	.Publish
 //
+
+// MqttBind ...
 type MqttBind struct {
 	mqtt MqttServ
 }

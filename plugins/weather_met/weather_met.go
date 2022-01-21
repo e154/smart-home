@@ -29,6 +29,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/common/web"
@@ -90,8 +92,8 @@ func (p *WeatherMet) RemoveWeather(entityId common.EntityId) {
 	log.Infof("unload weather_met.%s", entityId.Name())
 
 	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
-		Type:     "weather_met",
-		EntityId: common.EntityId(fmt.Sprintf("weather_met.%s", entityId.Name())),
+		PluginName: "weather_met",
+		EntityId:   common.EntityId(fmt.Sprintf("weather_met.%s", entityId.Name())),
 	})
 }
 
@@ -167,7 +169,7 @@ func (p *WeatherMet) GetForecast(params Zone, now time.Time) (forecast m.Attribu
 func (p *WeatherMet) FetchData(name string, lat, lon float64, now time.Time) (zone Zone, err error) {
 
 	if lat == 0 || lon == 0 {
-		err = fmt.Errorf("zero positions")
+		err = errors.Wrap(common.ErrBadRequestParams, "zero positions")
 		return
 	}
 

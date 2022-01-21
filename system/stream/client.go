@@ -19,130 +19,86 @@
 package stream
 
 import (
-	"sync"
-	"time"
+	"encoding/json"
+	"io"
 
-	"github.com/gorilla/websocket"
+	"github.com/e154/smart-home/api/stub/api"
 )
 
 // Client ...
 type Client struct {
-	Ip        string
-	Referer   string
-	UserAgent string
-	Width     int
-	Height    int
-	Cookie    bool
-	Language  string
-	Platform  string
-	Location  string
-	Href      string
-	Send      chan []byte // message buffered channel
-	writeLock sync.Mutex
-	Connect   *websocket.Conn
+	closed bool
+	server api.StreamService_SubscribeServer
 }
 
-// UpdateInfo ...
-func (c *Client) UpdateInfo(msg Message) {
-
-	v := msg.Payload
-
-	width, ok := v["width"].(float64)
-	if ok {
-		c.Width = int(width)
-	}
-
-	if height, ok := v["height"].(float64); ok {
-		c.Height = int(height)
-	}
-
-	if cookie, ok := v["cookie"].(bool); ok {
-		c.Cookie = cookie
-	}
-
-	if language, ok := v["language"].(string); ok {
-		c.Language = language
-	}
-
-	if platform, ok := v["platform"].(string); ok {
-		c.Platform = platform
-	}
-
-	if location, ok := v["location"].(string); ok {
-		c.Location = location
-	}
-
-	if href, ok := v["href"].(string); ok {
-		c.Href = href
-	}
+func NewClient(server api.StreamService_SubscribeServer) *Client {
+	return &Client{server: server}
 }
 
-// Notify ...
-func (c *Client) Notify(t, b string) {
+// WritePump ...
+func (c *Client) WritePump(f func(*Client, string, string, []byte)) (err error) {
 
-	msg := &Message{
-		Type:    Notify,
-		Forward: Request,
-		Payload: map[string]interface{}{
-			"type": t,
-			"body": b,
-		},
-	}
-
-	c.Send <- msg.Pack()
-}
-
-func (c *Client) selfWrite(opCode int, payload []byte) error {
-	c.writeLock.Lock()
-	defer c.writeLock.Unlock()
-	_ = c.Connect.SetWriteDeadline(time.Now().Add(writeWait))
-	return c.Connect.WriteMessage(opCode, payload)
-}
-
-// send message to client
-//
-func (c *Client) WritePump() {
-
-	ticker := time.NewTicker(pingPeriod)
-
-	defer func() {
-		ticker.Stop()
-		if c.Connect != nil {
-			_ = c.Connect.Close()
+	var in *api.Request
+	for !c.closed {
+		in, err = c.server.Recv()
+		if err == io.EOF {
+			break
 		}
-	}()
-
-	for {
-		select {
-		case message, ok := <-c.Send:
-
-			if !ok {
-				c.selfWrite(websocket.CloseMessage, []byte{})
-				return
-			}
-			if err := c.selfWrite(websocket.TextMessage, message); err != nil {
-				return
-			}
-
-		case <-ticker.C:
-			if err := c.selfWrite(websocket.PingMessage, []byte{}); err != nil {
-				return
-			}
+		if err != nil {
+			return
 		}
+
+		f(c, in.Id, in.Query, in.Body)
 	}
+
+	return
 }
 
 // Close ...
 func (c *Client) Close() {
-
-	err := c.selfWrite(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-	if err != nil {
-		return
-	}
+	c.closed = true
 }
 
-// Write ...
-func (c *Client) Write(payload []byte) (err error) {
-	c.Send <- payload
+// Send ...
+func (c *Client) Send(id, query string, body []byte) (err error) {
+	err = c.server.Send(&api.Response{
+		Id:    id,
+		Query: query,
+		Body:  body,
+	})
+	if err != nil {
+		c.closed = true
+	}
+	return
+}
+
+// Broadcast ...
+func (c *Client) Broadcast(query string, body []byte) (err error) {
+	err = c.server.Send(&api.Response{
+		Id:    "",
+		Query: query,
+		Body:  body,
+	})
+	if err != nil {
+		c.closed = true
+	}
+	return
+}
+
+// Notify ...
+func (c *Client) Notify(t, b string) {
+	msg := &map[string]string{
+		"title": t,
+		"body":  b,
+	}
+	body, _ := json.Marshal(msg)
+	err := c.server.Send(&api.Response{
+		Id:    "",
+		Query: "notify",
+		Body:  body,
+	})
+	if err != nil {
+		c.closed = true
+	}
 	return
 }

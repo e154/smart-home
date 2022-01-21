@@ -71,19 +71,19 @@ func (c ControllerScript) UpdateScriptById(ctx context.Context, req *api.UpdateS
 }
 
 // GetScriptList ...
-func (c ControllerScript) GetScriptList(ctx context.Context, req *api.GetScriptListRequest) (*api.GetScriptListResult, error) {
+func (c ControllerScript) GetScriptList(ctx context.Context, req *api.PaginationRequest) (*api.GetScriptListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, err := c.endpoint.Script.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Script.ToListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Script.ToListResult(items, uint64(total), pagination), nil
 }
 
-// SearchScriptById ...
-func (c ControllerScript) SearchScriptById(ctx context.Context, req *api.SearchScriptRequest) (*api.SearchScriptListResult, error) {
+// SearchScript ...
+func (c ControllerScript) SearchScript(ctx context.Context, req *api.SearchRequest) (*api.SearchScriptListResult, error) {
 
 	search := c.Search(req.Query, req.Limit, req.Offset)
 	items, _, err := c.endpoint.Script.Search(ctx, search.Query, search.Limit, search.Offset)

@@ -172,7 +172,7 @@ LOOP:
 func (p *pluginManager) loadPlugin(name string) (err error) {
 
 	if p.enabledPlugins[name] {
-		err = errors.New(fmt.Sprintf("plugin '%s' is loaded", name))
+		err = errors.Wrap(ErrPluginIsLoaded, name)
 		return
 	}
 	if item, ok := pluginList.Load(name); ok {
@@ -189,7 +189,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 	p.enabledPlugins[name] = true
 
 	p.eventBus.Publish(event_bus.TopicPlugins, event_bus.EventLoadedPlugin{
-		PluginName: common.EntityType(name),
+		PluginName: string(name),
 	})
 
 	return
@@ -198,7 +198,7 @@ func (p *pluginManager) loadPlugin(name string) (err error) {
 func (p *pluginManager) unloadPlugin(name string) (err error) {
 
 	if !p.enabledPlugins[name] {
-		err = errors.New("plugin not loaded")
+		err = errors.Wrap(ErrPluginNotLoaded, name)
 		return
 	}
 
@@ -213,7 +213,7 @@ func (p *pluginManager) unloadPlugin(name string) (err error) {
 	p.enabledPlugins[name] = false
 
 	p.eventBus.Publish(event_bus.TopicPlugins, event_bus.EventUnloadedPlugin{
-		PluginName: common.EntityType(name),
+		PluginName: string(name),
 	})
 
 	return
@@ -292,7 +292,7 @@ func (p *pluginManager) DisablePlugin(name string) (err error) {
 		err = p.adaptors.Plugin.CreateOrUpdate(m.Plugin{
 			Name:    plugin.Name(),
 			Version: plugin.Version(),
-			Enabled: false,
+			Enabled: plugin.Type() == PluginBuiltIn,
 			System:  plugin.Type() == PluginBuiltIn,
 		})
 	} else {

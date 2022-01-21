@@ -120,7 +120,7 @@ func (p plugin) Name() string {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 	switch v := msg.(type) {
 	case event_bus.EventAddedActor:
-		if v.Type != "weather" {
+		if v.PluginName != "weather" {
 			return
 		}
 
@@ -134,7 +134,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 		p.weather.UpdateWeatherList(v.EntityId, v.Settings)
 
 	case event_bus.EventRemoveActor:
-		if v.Type != "weather" {
+		if v.PluginName != "weather" {
 			return
 		}
 
@@ -144,7 +144,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 // Type ...
 func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+	return plugins.PluginInstallable
 }
 
 // Depends ...

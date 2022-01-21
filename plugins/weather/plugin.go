@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -33,7 +35,7 @@ const (
 	// Name ...
 	Name = "weather"
 	// EntityWeather ...
-	EntityWeather = common.EntityType("weather")
+	EntityWeather = string("weather")
 )
 
 var (
@@ -92,7 +94,7 @@ func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
 	case event_bus.EventRequestState:
-		if v.To.Type() != Name {
+		if v.To.PluginName() != Name {
 			return
 		}
 
@@ -152,7 +154,7 @@ func (p *plugin) removeEntity(name string) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
-		err = fmt.Errorf("not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
 		return
 	}
 

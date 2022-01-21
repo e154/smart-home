@@ -20,6 +20,7 @@ package dto
 
 import (
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -76,7 +77,7 @@ func (r Role) ToSearchResult(list []*m.Role) *api.SearchRoleListResult {
 }
 
 // ToListResult ...
-func (r Role) ToListResult(list []*m.Role, total, limit, offset uint64) *api.GetRoleListResult {
+func (r Role) ToListResult(list []*m.Role, total uint64, pagination common.PageParams) *api.GetRoleListResult {
 
 	items := make([]*api.Role, 0, len(list))
 
@@ -86,10 +87,11 @@ func (r Role) ToListResult(list []*m.Role, total, limit, offset uint64) *api.Get
 
 	return &api.GetRoleListResult{
 		Items: items,
-		Meta: &api.GetRoleListResult_Meta{
-			Limit:        limit,
-			ObjectsCount: total,
-			Offset:       offset,
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
 		},
 	}
 }
@@ -130,6 +132,29 @@ func (r Role) ToGRole(from *m.Role) (to *api.Role) {
 // ToRoleAccessListResult ...
 func (r Role) ToRoleAccessListResult(accessList access_list.AccessList) *api.RoleAccessListResult {
 	res := &api.RoleAccessListResult{
+		Levels: make(map[string]*api.AccessLevels),
+	}
+	for levelName, levels := range accessList {
+		for itemName, item := range levels {
+			if _, ok := res.Levels[levelName]; !ok {
+				res.Levels[levelName] = &api.AccessLevels{
+					Items: make(map[string]*api.AccessItem),
+				}
+			}
+			res.Levels[levelName].Items[itemName] = &api.AccessItem{
+				Actions:     item.Actions,
+				Method:      item.Method,
+				Description: item.Description,
+				RoleName:    item.RoleName,
+			}
+		}
+	}
+	return res
+}
+
+// ToAccessListResult ...
+func (r Role) ToAccessListResult(accessList access_list.AccessList) *api.AccessList {
+	res := &api.AccessList{
 		Levels: make(map[string]*api.AccessLevels),
 	}
 	for levelName, levels := range accessList {

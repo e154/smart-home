@@ -62,7 +62,7 @@ func NewEntity(a PluginActor) m.EntityShort {
 	entity := m.EntityShort{
 		Id:          info.Id,
 		Description: info.Description,
-		Type:        info.Type,
+		Type:        info.PluginName,
 		Icon:        info.Icon,
 		ImageUrl:    info.ImageUrl,
 		Actions:     actions,

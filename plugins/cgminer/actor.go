@@ -21,6 +21,9 @@ package cgminer
 import (
 	"fmt"
 
+	"github.com/e154/smart-home/common"
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/plugins/cgminer/bitmine"
@@ -70,6 +73,11 @@ func NewActor(entity *m.Entity,
 
 	actor.DeserializeAttr(entity.Attributes.Serialize())
 
+	if actor.Setts == nil || actor.Setts[SettingManufacturer] == nil {
+		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		return
+	}
+
 	switch actor.Setts[SettingManufacturer].Value {
 	case bitmine.ManufactureBitmine:
 		switch actor.Setts[SettingModel].Value {
@@ -84,6 +92,41 @@ func NewActor(entity *m.Entity,
 		}
 	default:
 		err = fmt.Errorf("unknown manufacture %s", actor.Setts[SettingManufacturer].Value)
+	}
+
+	if _, ok := actor.Setts[SettingHost]; !ok {
+		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		return
+	}
+
+	if _, ok := actor.Setts[SettingPort]; !ok {
+		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		return
+	}
+
+	if _, ok := actor.Setts[SettingTimeout]; !ok {
+		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		return
+	}
+
+	if _, ok := actor.Setts[SettingModel]; !ok {
+		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		return
+	}
+
+	if _, ok := actor.Setts[SettingHost]; !ok {
+		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		return
+	}
+
+	if _, ok := actor.Setts[SettingUser]; !ok {
+		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		return
+	}
+
+	if _, ok := actor.Setts[SettingPass]; !ok {
+		err = errors.Wrap(common.ErrBadSettings, fmt.Sprintf("actor 'cgminer', current settings %+v", actor.Setts))
+		return
 	}
 
 	host := actor.Setts[SettingHost].String()
@@ -145,7 +188,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
 		StorageSave: params.StorageSave,
-		Type:        e.Id.Type(),
+		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
 		NewState:    e.GetEventState(e),

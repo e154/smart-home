@@ -2,11 +2,13 @@ syntax = "proto3";
 
 package api;
 option go_package = "/api";
-import "user.proto";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "protoc-gen-swagger/options/annotations.proto";
+
+import "user.proto";
+import "role.proto";
 
 message SigninResponse {
   CurrentUser current_user = 1;
@@ -14,7 +16,7 @@ message SigninResponse {
 }
 
 message AccessListResponse {
-  bytes access_list = 1;
+  AccessList access_list = 1;
 }
 
 service AuthService {

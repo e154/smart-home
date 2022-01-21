@@ -37,7 +37,7 @@ type Entities struct {
 type Entity struct {
 	Id          common.EntityId `gorm:"primary_key"`
 	Description string
-	Plugin      string
+	PluginName  string
 	Image       *Image
 	ImageId     *int64
 	States      []*EntityState
@@ -46,7 +46,7 @@ type Entity struct {
 	Area        *Area
 	Metrics     []Metric `gorm:"many2many:entity_metrics;"`
 	Scripts     []Script `gorm:"many2many:entity_scripts;"`
-	Icon        *common.Icon
+	Icon        *string
 	Payload     json.RawMessage `gorm:"type:jsonb;not null"`
 	Settings    json.RawMessage `gorm:"type:jsonb;not null"`
 	Storage     []*EntityStorage
@@ -75,10 +75,11 @@ func (n Entities) Update(v *Entity) (err error) {
 		"image_id":    v.ImageId,
 		"area_id":     v.AreaId,
 		"description": v.Description,
-		"plugin":      v.Plugin,
+		"plugin_name": v.PluginName,
 		"icon":        v.Icon,
 		"payload":     v.Payload,
 		"settings":    v.Settings,
+		"auto_load":   v.AutoLoad,
 	}
 
 	if err = n.Db.Model(&Entity{Id: v.Id}).Updates(q).Error; err != nil {
@@ -116,6 +117,10 @@ func (n Entities) GetById(id common.EntityId) (v *Entity, err error) {
 		First(&v).Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("id \"%s\"", id))
+			return
+		}
 		err = errors.Wrap(err, "getById failed")
 		return
 	}
@@ -201,7 +206,7 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 
 	list = make([]*Entity, 0)
 	err = n.Db.Model(&Entity{}).
-		Where("plugin = ? and auto_load = true", t).
+		Where("plugin_name = ? and auto_load = true", t).
 		Preload("Image").
 		Preload("States").
 		Preload("States.Image").
@@ -217,6 +222,10 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 		Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("type \"%s\"", t))
+			return
+		}
 		err = errors.Wrap(err, "getByType failed")
 		return
 	}
@@ -232,7 +241,7 @@ func (n *Entities) GetByType(t string, limit, offset int64) (list []*Entity, err
 }
 
 // Search ...
-func (n *Entities) Search(query string, limit, offset int) (list []*Entity, total int64, err error) {
+func (n *Entities) Search(query string, limit, offset int64) (list []*Entity, total int64, err error) {
 
 	q := n.Db.Model(&Entity{}).
 		Where("id LIKE ?", "%"+query+"%")
@@ -296,8 +305,8 @@ func (n Entities) DeleteScript(id common.EntityId, scriptId int64) (err error) {
 }
 
 // ReplaceScript ...
-func (n Entities) ReplaceScript(id common.EntityId, script Script) (err error) {
-	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(&script).Error; err != nil {
+func (n Entities) ReplaceScript(id common.EntityId, script *Script) (err error) {
+	if err = n.Db.Model(&Entity{Id: id}).Association("Scripts").Replace(script).Error; err != nil {
 		err = errors.Wrap(err, "replace metric failed")
 	}
 	return

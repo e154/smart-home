@@ -77,7 +77,7 @@ func TestZone(t *testing.T) {
 
 				switch v := msg.(type) {
 				case event_bus.EventStateChanged:
-					if v.Type != "zone" {
+					if v.PluginName != "zone" {
 						return
 					}
 
@@ -89,7 +89,7 @@ func TestZone(t *testing.T) {
 					wgUpdate.Done()
 
 				case event_bus.EventAddedActor:
-					if v.Type != "zone" {
+					if v.PluginName != "zone" {
 						return
 					}
 

@@ -19,8 +19,6 @@
 package plugins
 
 import (
-	"errors"
-
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
@@ -56,7 +54,7 @@ func (p *Plugin) Load(service Service) error {
 	p.PluginManager = service.PluginManager()
 
 	if p.IsStarted.Load() {
-		return errors.New("plugin is loaded")
+		return ErrPluginIsLoaded
 	}
 	p.IsStarted.Store(true)
 
@@ -67,7 +65,7 @@ func (p *Plugin) Load(service Service) error {
 func (p *Plugin) Unload() error {
 
 	if !p.IsStarted.Load() {
-		return errors.New("plugin is unloaded")
+		return ErrPluginIsUnloaded
 	}
 	p.IsStarted.Store(false)
 

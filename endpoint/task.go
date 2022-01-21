@@ -41,30 +41,64 @@ func NewTaskEndpoint(common *CommonEndpoint) *TaskEndpoint {
 }
 
 // Add ...
-func (n *TaskEndpoint) Add(ctx context.Context, params *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) Add(ctx context.Context, task *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs = n.validation.Valid(task); !ok {
 		return
 	}
 
-	if err = n.adaptors.Task.Add(params); err != nil {
+	if err = n.adaptors.Task.Add(task); err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
+
+	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return
 }
 
 // Update ...
-func (n *TaskEndpoint) Update(ctx context.Context, params *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+func (n *TaskEndpoint) Update(ctx context.Context, task *m.Task) (result *m.Task, errs validator.ValidationErrorsTranslations, err error) {
 
 	var ok bool
-	if ok, errs = n.validation.Valid(params); !ok {
+	if ok, errs = n.validation.Valid(task); !ok {
 		return
 	}
 
-	if err = n.adaptors.Task.Update(params); err != nil {
+	if err = n.adaptors.Task.Update(task); err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
 		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+
+	if result, err = n.adaptors.Task.GetById(task.Id); err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
+	}
+
+	return
+}
+
+// GetById ...
+func (n *TaskEndpoint) GetById(ctx context.Context, id int64) (task *m.Task, errs validator.ValidationErrorsTranslations, err error) {
+
+	if task, err = n.adaptors.Task.GetById(id); err != nil {
+		if errors.Is(err, common.ErrNotFound) {
+			return
+		}
+		err = errors.Wrap(common.ErrInternal, err.Error())
+		return
 	}
 
 	return
@@ -84,11 +118,6 @@ func (n *TaskEndpoint) Delete(ctx context.Context, id int64) (err error) {
 
 // List ...
 func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (list []*m.Task, total int64, errs validator.ValidationErrorsTranslations, err error) {
-
-	var ok bool
-	if ok, errs = n.validation.Valid(pagination); !ok {
-		return
-	}
 
 	list, total, err = n.adaptors.Task.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy, false)
 	if err != nil {

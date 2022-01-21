@@ -49,7 +49,7 @@ import (
 	"go.uber.org/fx"
 )
 
-// BuildContainer...
+// BuildContainer ...
 func BuildContainer(opt fx.Option) (app *fx.App) {
 
 	app = fx.New(
@@ -86,7 +86,6 @@ func BuildContainer(opt fx.Option) (app *fx.App) {
 			api.NewApi,
 			controllers.NewControllers,
 			stream.NewStreamService,
-			stream.NewHub,
 			NewBackupConfig,
 			backup.NewBackup,
 			gate_client.NewGateClient,

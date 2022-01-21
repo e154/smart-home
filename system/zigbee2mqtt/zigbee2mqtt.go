@@ -27,7 +27,6 @@ import (
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/metrics"
 	"github.com/e154/smart-home/system/mqtt"
-	"github.com/e154/smart-home/system/mqtt_authenticator"
 	"go.uber.org/atomic"
 	"go.uber.org/fx"
 )
@@ -329,7 +328,7 @@ func (z *zigbee2mqtt) Authenticator(login, password string) (err error) {
 
 	for _, bridge := range z.bridges {
 		if bridge.model.Login != login {
-			err = mqtt_authenticator.ErrBadLoginOrPassword
+			err = common.ErrBadLoginOrPassword
 			return
 		}
 
@@ -339,7 +338,7 @@ func (z *zigbee2mqtt) Authenticator(login, password string) (err error) {
 		}
 	}
 
-	err = mqtt_authenticator.ErrBadLoginOrPassword
+	err = common.ErrBadLoginOrPassword
 
 	return
 }

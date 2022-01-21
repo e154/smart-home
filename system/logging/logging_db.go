@@ -116,5 +116,5 @@ func (l *LogDbSaver) Save(log m.Log) {
 	if !l.isRunning.Load() {
 		return
 	}
-	l.pool <- log
+	l.pool <- log //todo fix: some time panic: send on closed channel
 }

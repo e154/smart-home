@@ -35,41 +35,43 @@ func NewPluginManager(adaptors *adaptors.Adaptors) *PluginManager {
 	}
 }
 
-func (n PluginManager) addPlugin(name string, enabled bool) (node *m.Plugin) {
+func (n PluginManager) addPlugin(name string, enabled, system, actor bool) (node *m.Plugin) {
 	n.adaptors.Plugin.CreateOrUpdate(m.Plugin{
 		Name:    name,
 		Version: "0.0.1",
 		Enabled: enabled,
-		System:  true,
+		System:  system,
+		Actor:   actor,
 	})
 	return
 }
 
 // Create ...
 func (n PluginManager) Create() (home *m.Plugin) {
-	n.addPlugin("cpuspeed", false)
-	n.addPlugin("moon", true)
-	n.addPlugin("scene", true)
-	n.addPlugin("script", true)
-	n.addPlugin("sun", true)
-	n.addPlugin("zone", true)
-	n.addPlugin("triggers", true)
-	n.addPlugin("update", true)
-	n.addPlugin("uptime", true)
-	n.addPlugin("weather", true)
-	n.addPlugin("weather_met", false)
-	n.addPlugin("weather_owm", true)
-	n.addPlugin("zigbee2mqtt", true)
-	n.addPlugin("zone", true)
-	n.addPlugin("node", true)
-	n.addPlugin("modbus_rtu", true)
-	n.addPlugin("modbus_tcp", true)
-	n.addPlugin("alexa", true)
-	n.addPlugin("notify", true)
-	n.addPlugin("email", true)
-	n.addPlugin("slack", true)
-	n.addPlugin("cgminer", true)
-	n.addPlugin("telegram", true)
-	n.addPlugin("sensor", true)
+	n.addPlugin("alexa", false, false, false)
+	n.addPlugin("cgminer", true, false, true)
+	n.addPlugin("cpuspeed", false, false, false)
+	n.addPlugin("email", true, false, false)
+	n.addPlugin("messagebird", false, false, false)
+	n.addPlugin("modbus_rtu", false, false, true)
+	n.addPlugin("modbus_tcp", false, false, true)
+	n.addPlugin("moon", false, false, true)
+	n.addPlugin("node", true, true, true)
+	n.addPlugin("notify", true, true, false)
+	n.addPlugin("scene", true, false, true)
+	n.addPlugin("script", true, false, true)
+	n.addPlugin("sensor", true, false, true)
+	n.addPlugin("slack", false, false, false)
+	n.addPlugin("sun", false, false, true)
+	n.addPlugin("telegram", true, false, true)
+	n.addPlugin("triggers", true, true, false)
+	n.addPlugin("twilio", false, false, false)
+	n.addPlugin("updater", false, false, false)
+	n.addPlugin("uptime", false, false, false)
+	n.addPlugin("weather", false, false, false)
+	n.addPlugin("weather_met", false, false, true)
+	n.addPlugin("weather_owm", false, false, true)
+	n.addPlugin("zigbee2mqtt", false, false, true)
+	n.addPlugin("zone", false, false, true)
 	return
 }

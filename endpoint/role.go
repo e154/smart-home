@@ -134,7 +134,7 @@ func (n *RoleEndpoint) GetList(ctx context.Context, pagination common.PageParams
 func (n *RoleEndpoint) Delete(ctx context.Context, name string) (err error) {
 
 	if name == "admin" {
-		err = errors.New("admin is base role")
+		err = common.ErrBadRequestParams
 		return
 	}
 

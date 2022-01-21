@@ -19,9 +19,10 @@
 package notify
 
 import (
-	"errors"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -62,7 +63,7 @@ func NewNotify(
 	adaptor *adaptors.Adaptors,
 	scriptService scripts.ScriptService) Notify {
 
-	notify := &notify{
+	n := &notify{
 		adaptor:      adaptor,
 		isStarted:    atomic.NewBool(false),
 		queue:        make(chan m.MessageDelivery, queueSize),
@@ -70,10 +71,17 @@ func NewNotify(
 		providerList: make(map[string]Provider),
 	}
 
-	scriptService.PushStruct("notifr", NewNotifyBind(notify))
+	// workers
+	n.workers = []*Worker{
+		NewWorker(adaptor),
+		NewWorker(adaptor),
+		NewWorker(adaptor),
+	}
+
+	scriptService.PushStruct("notifr", NewNotifyBind(n))
 	scriptService.PushStruct("template", NewTemplateBind(adaptor))
 
-	return notify
+	return n
 }
 
 // Shutdown ...
@@ -89,13 +97,6 @@ func (n *notify) Start() (err error) {
 		return
 	}
 	n.isStarted.Store(true)
-
-	// workers
-	n.workers = []*Worker{
-		NewWorker(n.adaptor),
-		NewWorker(n.adaptor),
-		NewWorker(n.adaptor),
-	}
 
 	n.updateStat()
 
@@ -247,7 +248,7 @@ func (n *notify) RemoveProvider(name string) {
 // Provider ...
 func (n *notify) Provider(name string) (provider Provider, err error) {
 	if name == "" {
-		err = errors.New("provider is empty")
+		err = common.ErrProviderIsEmpty
 		return
 	}
 
@@ -257,7 +258,7 @@ func (n *notify) Provider(name string) (provider Provider, err error) {
 	var ok bool
 	if provider, ok = n.providerList[name]; !ok {
 		log.Warnf("provider '%s' not found", name)
-		err = errors.New("not found")
+		err = common.ErrNotFound
 		return
 	}
 	return

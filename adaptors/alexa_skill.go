@@ -80,18 +80,21 @@ func (n *AlexaSkill) Update(params *m.AlexaSkill) (err error) {
 		return
 	}
 
+	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
-		err = errors.Wrap(common.ErrTransactionError, err.Error())
-		return
+		tx = n.db
+		transaction = false
 	}
 	defer func() {
-		if err != nil {
+		if err != nil && transaction {
 			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
 			return
 		}
-		tx.Commit()
+		if transaction {
+			err = tx.Commit().Error
+		}
 	}()
 
 	intentAdaptor := GetAlexaIntentAdaptor(tx)

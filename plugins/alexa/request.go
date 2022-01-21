@@ -19,8 +19,11 @@
 package alexa
 
 import (
-	"errors"
+	"fmt"
 	"time"
+
+	"github.com/e154/smart-home/common"
+	"github.com/pkg/errors"
 )
 
 // Request represents all fields sent from the Server service to the skillserver.
@@ -96,7 +99,7 @@ func (r *Request) GetSlot(slotName string) (Slot, error) {
 		return r.Request.Intent.Slots[slotName], nil
 	}
 
-	return Slot{}, errors.New("slot name not found")
+	return Slot{}, errors.Wrap(common.ErrNotFound, fmt.Sprintf("name \"%s\"", slotName))
 }
 
 // AllSlots will return a map of all the slots in the Request mapped by their name.

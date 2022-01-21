@@ -4,7 +4,6 @@ package api
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -27,7 +26,7 @@ type UserServiceClient interface {
 	// update user by id
 	UpdateUserById(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UserFull, error)
 	// get user list
-	GetUserList(ctx context.Context, in *GetUserListRequest, opts ...grpc.CallOption) (*GetUserListResult, error)
+	GetUserList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetUserListResult, error)
 	// delete user by id
 	DeleteUserById(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -67,7 +66,7 @@ func (c *userServiceClient) UpdateUserById(ctx context.Context, in *UpdateUserRe
 	return out, nil
 }
 
-func (c *userServiceClient) GetUserList(ctx context.Context, in *GetUserListRequest, opts ...grpc.CallOption) (*GetUserListResult, error) {
+func (c *userServiceClient) GetUserList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetUserListResult, error) {
 	out := new(GetUserListResult)
 	err := c.cc.Invoke(ctx, "/api.UserService/GetUserList", in, out, opts...)
 	if err != nil {
@@ -96,7 +95,7 @@ type UserServiceServer interface {
 	// update user by id
 	UpdateUserById(context.Context, *UpdateUserRequest) (*UserFull, error)
 	// get user list
-	GetUserList(context.Context, *GetUserListRequest) (*GetUserListResult, error)
+	GetUserList(context.Context, *PaginationRequest) (*GetUserListResult, error)
 	// delete user by id
 	DeleteUserById(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
 }
@@ -114,7 +113,7 @@ func (UnimplementedUserServiceServer) GetUserById(context.Context, *GetUserByIdR
 func (UnimplementedUserServiceServer) UpdateUserById(context.Context, *UpdateUserRequest) (*UserFull, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserById not implemented")
 }
-func (UnimplementedUserServiceServer) GetUserList(context.Context, *GetUserListRequest) (*GetUserListResult, error) {
+func (UnimplementedUserServiceServer) GetUserList(context.Context, *PaginationRequest) (*GetUserListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserList not implemented")
 }
 func (UnimplementedUserServiceServer) DeleteUserById(context.Context, *DeleteUserRequest) (*emptypb.Empty, error) {
@@ -187,7 +186,7 @@ func _UserService_UpdateUserById_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _UserService_GetUserList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserListRequest)
+	in := new(PaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -199,7 +198,7 @@ func _UserService_GetUserList_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/api.UserService/GetUserList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUserList(ctx, req.(*GetUserListRequest))
+		return srv.(UserServiceServer).GetUserList(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

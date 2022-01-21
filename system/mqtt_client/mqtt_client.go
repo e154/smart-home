@@ -112,7 +112,7 @@ func (c *Client) Disconnect() {
 func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler) (err error) {
 
 	if topic == "" {
-		err = errors.New("Invalid EntityId; empty string")
+		err = errors.Wrap(common.ErrInternal, "zero topic")
 		return
 	}
 
@@ -125,7 +125,7 @@ func (c *Client) Subscribe(topic string, qos byte, callback MQTT.MessageHandler)
 			Callback: callback,
 		}
 	} else {
-		err = fmt.Errorf("topic %s exist", topic)
+		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("topic %s exist", topic))
 		return
 	}
 

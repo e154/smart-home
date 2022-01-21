@@ -22,6 +22,7 @@ import (
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/endpoint"
 	"github.com/e154/smart-home/system/access_list"
+	"github.com/e154/smart-home/system/stream"
 )
 
 // Controllers ...
@@ -34,13 +35,17 @@ type Controllers struct {
 	Image       ControllerImage
 	Plugin      ControllerPlugin
 	Zigbee2mqtt ControllerZigbee2mqtt
+	Entity      ControllerEntity
+	Automation  ControllerAutomation
+	Area        ControllerArea
 }
 
 // NewControllers ...
 func NewControllers(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	command *endpoint.Endpoint) *Controllers {
-	common := NewControllerCommon(adaptors, accessList, command)
+	command *endpoint.Endpoint,
+	stream *stream.Stream) *Controllers {
+	common := NewControllerCommon(adaptors, accessList, command, stream)
 	return &Controllers{
 		Auth:        NewControllerAuth(common),
 		Stream:      NewControllerStream(common),
@@ -50,5 +55,8 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Image:       NewControllerImage(common),
 		Plugin:      NewControllerPlugin(common),
 		Zigbee2mqtt: NewControllerZigbee2mqtt(common),
+		Entity:      NewControllerEntity(common),
+		Automation:  NewControllerAutomation(common),
+		Area:        NewControllerArea(common),
 	}
 }

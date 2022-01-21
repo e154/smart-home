@@ -104,6 +104,9 @@ func (a *Api) Start() error {
 	gw.RegisterImageServiceServer(grpcServer, a.controllers.Image)
 	gw.RegisterPluginServiceServer(grpcServer, a.controllers.Plugin)
 	gw.RegisterZigbee2MqttServiceServer(grpcServer, a.controllers.Zigbee2mqtt)
+	gw.RegisterEntityServiceServer(grpcServer, a.controllers.Entity)
+	gw.RegisterAutomationServiceServer(grpcServer, a.controllers.Automation)
+	gw.RegisterAreaServiceServer(grpcServer, a.controllers.Area)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
@@ -122,7 +125,7 @@ func (a *Api) Start() error {
 		MarshalOptions: protojson.MarshalOptions{
 			UseEnumNumbers:  false,
 			EmitUnpopulated: true,
-			UseProtoNames:   true,
+			UseProtoNames:   false,
 		},
 	}
 
@@ -143,6 +146,9 @@ func (a *Api) Start() error {
 		gw.RegisterImageServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterPluginServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterZigbee2MqttServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterEntityServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterAutomationServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterAreaServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 

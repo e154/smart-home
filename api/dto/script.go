@@ -69,15 +69,7 @@ func (s Script) FromExecSrcScriptRequest(req *api.ExecSrcScriptRequest) (script 
 
 // ToGScript ...
 func (s Script) ToGScript(script *m.Script) (result *api.Script) {
-	result = &api.Script{
-		Id:          script.Id,
-		Lang:        string(script.Lang),
-		Name:        script.Name,
-		Source:      script.Source,
-		Description: script.Description,
-		CreatedAt:   timestamppb.New(script.CreatedAt),
-		UpdatedAt:   timestamppb.New(script.UpdatedAt),
-	}
+	result = ToGScript(script)
 	return
 }
 
@@ -96,7 +88,7 @@ func (s Script) ToSearchResult(list []*m.Script) *api.SearchScriptListResult {
 }
 
 // ToListResult ...
-func (s Script) ToListResult(list []*m.Script, total, limit, offset uint64) *api.GetScriptListResult {
+func (s Script) ToListResult(list []*m.Script, total uint64, pagination common.PageParams) *api.GetScriptListResult {
 
 	items := make([]*api.Script, 0, len(list))
 
@@ -106,10 +98,27 @@ func (s Script) ToListResult(list []*m.Script, total, limit, offset uint64) *api
 
 	return &api.GetScriptListResult{
 		Items: items,
-		Meta: &api.GetScriptListResult_Meta{
-			Limit:        limit,
-			ObjectsCount: total,
-			Offset:       offset,
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
 		},
 	}
+}
+
+func ToGScript(script *m.Script) (result *api.Script) {
+	if script == nil {
+		return
+	}
+	result = &api.Script{
+		Id:          script.Id,
+		Lang:        string(script.Lang),
+		Name:        script.Name,
+		Source:      script.Source,
+		Description: script.Description,
+		CreatedAt:   timestamppb.New(script.CreatedAt),
+		UpdatedAt:   timestamppb.New(script.UpdatedAt),
+	}
+	return
 }

@@ -18,13 +18,11 @@
 
 package scene
 
-import "github.com/e154/smart-home/common"
-
 const (
 	// Name ...
 	Name = "scene"
 	// EntityScene ...
-	EntityScene = common.EntityType("scene")
+	EntityScene = string("scene")
 )
 
 const (

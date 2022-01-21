@@ -20,11 +20,12 @@ package web
 
 import (
 	"bytes"
-	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/e154/smart-home/common"
 )
 
 // Request ...
@@ -40,7 +41,7 @@ type Request struct {
 func Crawler(options Request) (body []byte, err error) {
 
 	if options.Url == "" {
-		err = errors.New("empty address")
+		err = common.ErrBadRequestParams
 		return
 	}
 

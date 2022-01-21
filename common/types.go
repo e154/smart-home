@@ -120,26 +120,6 @@ const (
 	MetricTypeHorizontalBar = MetricType("horizontal bar")
 )
 
-// Icon ...
-type Icon string
-
-// NewIcon ...
-func NewIcon(v string) *Icon {
-	s := Icon(v)
-	return &s
-}
-
-// String ...
-func (i *Icon) String() string {
-	if i == nil {
-		return ""
-	}
-	return string(*i)
-}
-
-// EntityType ...
-type EntityType string
-
 // EntityId ...
 type EntityId string
 
@@ -158,13 +138,13 @@ func (e EntityId) Name() string {
 	return string(e)
 }
 
-// Type ...
-func (e EntityId) Type() EntityType {
+// PluginName ...
+func (e EntityId) PluginName() string {
 	arr := strings.Split(string(e), ".")
 	if len(arr) > 1 {
-		return EntityType(arr[0])
+		return arr[0]
 	}
-	return EntityType(e)
+	return string(e)
 }
 
 // String ...
@@ -174,11 +154,6 @@ func (e *EntityId) String() string {
 	} else {
 		return string(*e)
 	}
-}
-
-// String ...
-func (e EntityType) String() string {
-	return string(e)
 }
 
 // AttributeType ...
@@ -223,10 +198,12 @@ const (
 
 // PageParams ...
 type PageParams struct {
-	Limit  int64  `json:"limit" validate:"required,gte=1,lte=1000"`
-	Offset int64  `json:"offset" validate:"required,gte=0,lte=1000"`
-	Order  string `json:"order" validate:"required,oneof=created_at"`
-	SortBy string `json:"sort_by" validate:"required,oneof=desc asc"`
+	Limit   int64  `json:"limit" validate:"required,gte=1,lte=1000"`
+	Offset  int64  `json:"offset" validate:"required,gte=0,lte=1000"`
+	Order   string `json:"order" validate:"required,oneof=created_at"`
+	SortBy  string `json:"sort_by" validate:"required,oneof=desc asc"`
+	PageReq uint64
+	SortReq string
 }
 
 // SearchParams ...

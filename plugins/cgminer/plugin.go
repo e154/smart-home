@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -126,7 +128,7 @@ func (p *plugin) removeEntity(name common.EntityId) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[name]; !ok {
-		err = fmt.Errorf("not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove \"%s\"", name))
 		return
 	}
 
@@ -137,7 +139,7 @@ func (p *plugin) removeEntity(name common.EntityId) (err error) {
 
 // Type ...
 func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+	return plugins.PluginInstallable
 }
 
 // Depends ...
@@ -153,10 +155,16 @@ func (p *plugin) Version() string {
 // Options ...
 func (p *plugin) Options() m.PluginOptions {
 	return m.PluginOptions{
-		Actors:       true,
-		ActorAttrs:   NewAttr(),
-		ActorSetts:   NewSettings(),
-		ActorActions: entity_manager.ToEntityActionShort(NewActions()),
-		ActorStates:  entity_manager.ToEntityStateShort(NewStates()),
+		Triggers:           false,
+		Actors:             true,
+		ActorCustomAttrs:   true,
+		ActorAttrs:         NewAttr(),
+		ActorCustomActions: true,
+		ActorActions:       entity_manager.ToEntityActionShort(NewActions()),
+		ActorCustomStates:  true,
+		ActorStates:        entity_manager.ToEntityStateShort(NewStates()),
+		ActorCustomSetts:   true,
+		ActorSetts:         NewSettings(),
+		Setts:              nil,
 	}
 }

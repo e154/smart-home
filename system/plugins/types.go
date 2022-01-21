@@ -27,6 +27,7 @@ import (
 	"github.com/e154/smart-home/system/gate_client"
 	"github.com/e154/smart-home/system/mqtt"
 	"github.com/e154/smart-home/system/scripts"
+	"github.com/pkg/errors"
 )
 
 // PluginType ...
@@ -37,6 +38,12 @@ const (
 	PluginBuiltIn = PluginType("System")
 	// PluginInstallable ...
 	PluginInstallable = PluginType("Installable")
+)
+
+var (
+	ErrPluginIsLoaded   = errors.New("plugin is loaded")
+	ErrPluginIsUnloaded = errors.New("plugin is unloaded")
+	ErrPluginNotLoaded  = errors.New("plugin not loaded")
 )
 
 // Service ...

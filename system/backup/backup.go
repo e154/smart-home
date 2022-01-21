@@ -19,13 +19,14 @@
 package backup
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
 	"github.com/jinzhu/gorm"
@@ -109,7 +110,7 @@ func (b *Backup) Restore(name string) (err error) {
 
 	_, err = os.Stat(file)
 	if os.IsNotExist(err) {
-		err = errors.New("file not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("path %s", file))
 		return
 	}
 

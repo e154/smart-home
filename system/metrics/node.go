@@ -21,6 +21,8 @@ package metrics
 import (
 	"sync"
 
+	"github.com/e154/smart-home/common"
+
 	"github.com/rcrowley/go-metrics"
 )
 
@@ -86,7 +88,7 @@ func (d *NodeManager) GetStatus(nodeId int64) (status string, err error) {
 		return
 	}
 
-	err = ErrRecordNotFound
+	err = common.ErrNotFound
 
 	return
 }

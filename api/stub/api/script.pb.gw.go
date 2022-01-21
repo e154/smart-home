@@ -190,7 +190,7 @@ var (
 )
 
 func request_ScriptService_GetScriptList_0(ctx context.Context, marshaler runtime.Marshaler, client ScriptServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetScriptListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -206,7 +206,7 @@ func request_ScriptService_GetScriptList_0(ctx context.Context, marshaler runtim
 }
 
 func local_request_ScriptService_GetScriptList_0(ctx context.Context, marshaler runtime.Marshaler, server ScriptServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetScriptListRequest
+	var protoReq PaginationRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -222,37 +222,37 @@ func local_request_ScriptService_GetScriptList_0(ctx context.Context, marshaler 
 }
 
 var (
-	filter_ScriptService_SearchScriptById_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_ScriptService_SearchScript_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_ScriptService_SearchScriptById_0(ctx context.Context, marshaler runtime.Marshaler, client ScriptServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchScriptRequest
+func request_ScriptService_SearchScript_0(ctx context.Context, marshaler runtime.Marshaler, client ScriptServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ScriptService_SearchScriptById_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ScriptService_SearchScript_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.SearchScriptById(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.SearchScript(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_ScriptService_SearchScriptById_0(ctx context.Context, marshaler runtime.Marshaler, server ScriptServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SearchScriptRequest
+func local_request_ScriptService_SearchScript_0(ctx context.Context, marshaler runtime.Marshaler, server ScriptServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ScriptService_SearchScriptById_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_ScriptService_SearchScript_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.SearchScriptById(ctx, &protoReq)
+	msg, err := server.SearchScript(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -545,18 +545,18 @@ func RegisterScriptServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("GET", pattern_ScriptService_SearchScriptById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ScriptService_SearchScript_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.ScriptService/SearchScriptById", runtime.WithHTTPPathPattern("/v1/scripts/search"))
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/api.ScriptService/SearchScript", runtime.WithHTTPPathPattern("/v1/scripts/search"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_ScriptService_SearchScriptById_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_ScriptService_SearchScript_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -564,7 +564,7 @@ func RegisterScriptServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_ScriptService_SearchScriptById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ScriptService_SearchScript_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -781,23 +781,23 @@ func RegisterScriptServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 
 	})
 
-	mux.Handle("GET", pattern_ScriptService_SearchScriptById_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_ScriptService_SearchScript_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.ScriptService/SearchScriptById", runtime.WithHTTPPathPattern("/v1/scripts/search"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.ScriptService/SearchScript", runtime.WithHTTPPathPattern("/v1/scripts/search"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_ScriptService_SearchScriptById_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_ScriptService_SearchScript_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_ScriptService_SearchScriptById_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_ScriptService_SearchScript_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -893,7 +893,7 @@ var (
 
 	pattern_ScriptService_GetScriptList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "scripts"}, ""))
 
-	pattern_ScriptService_SearchScriptById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "scripts", "search"}, ""))
+	pattern_ScriptService_SearchScript_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "scripts", "search"}, ""))
 
 	pattern_ScriptService_DeleteScriptById_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "script", "id"}, ""))
 
@@ -913,7 +913,7 @@ var (
 
 	forward_ScriptService_GetScriptList_0 = runtime.ForwardResponseMessage
 
-	forward_ScriptService_SearchScriptById_0 = runtime.ForwardResponseMessage
+	forward_ScriptService_SearchScript_0 = runtime.ForwardResponseMessage
 
 	forward_ScriptService_DeleteScriptById_0 = runtime.ForwardResponseMessage
 

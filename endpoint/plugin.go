@@ -57,20 +57,10 @@ func (p *PluginEndpoint) Disable(ctx context.Context, pluginName string) (err er
 }
 
 // GetList ...
-func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []*m.Plugin, total int64, err error) {
-	var pluginList []common.PluginInfo
-	if pluginList, total, err = p.pluginManager.PluginList(); err != nil {
+func (p *PluginEndpoint) GetList(ctx context.Context, pagination common.PageParams) (list []m.Plugin, total int64, err error) {
+	list, total, err = p.adaptors.Plugin.List(pagination.Limit, pagination.Offset, pagination.Order, pagination.SortBy)
+	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
-		return
-	}
-	list = make([]*m.Plugin, 0, len(pluginList))
-	for _, p := range pluginList {
-		list = append(list, &m.Plugin{
-			Name:    p.Name,
-			Version: p.Version,
-			Enabled: p.Enabled,
-			System:  p.System,
-		})
 	}
 	return
 }
@@ -92,5 +82,15 @@ func (p *PluginEndpoint) GetOptions(ctx context.Context, pluginName string) (opt
 
 	options = plugin.Options()
 
+	return
+}
+
+// Search ...
+func (n *PluginEndpoint) Search(ctx context.Context, query string, limit, offset int64) (result []m.Plugin, total int64, err error) {
+
+	result, total, err = n.adaptors.Plugin.Search(query, limit, offset)
+	if err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 	return
 }

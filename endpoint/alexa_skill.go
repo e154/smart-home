@@ -126,7 +126,7 @@ func (n *AlexaSkillEndpoint) GetList(limit, offset int64, order, sortBy string) 
 func (n *AlexaSkillEndpoint) Delete(skillId int64) (err error) {
 
 	if skillId == 0 {
-		err = errors.New("skill id is null")
+		err = common.ErrBadRequestParams
 		return
 	}
 
