@@ -23,6 +23,7 @@ import (
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 )
 
 // ITask ...
@@ -30,6 +31,7 @@ type ITask interface {
 	Add(ver *m.Task) (err error)
 	Update(ver *m.Task) (err error)
 	Delete(id int64) (err error)
+	GetById(id int64) (task *m.Task, err error)
 	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Task, total int64, err error)
 	fromDb(dbVer *db.Task) (ver *m.Task)
 	toDb(ver *m.Task) (dbVer *db.Task)
@@ -59,10 +61,14 @@ func (n *Task) Add(ver *m.Task) (err error) {
 		tx = n.db
 		transaction = false
 	}
-
 	defer func() {
 		if err != nil && transaction {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
 		}
 	}()
 
@@ -104,40 +110,111 @@ func (n *Task) Add(ver *m.Task) (err error) {
 		}
 	}
 
-	if transaction {
-		err = tx.Commit().Error
-	}
-
 	return
 }
 
 // Update ...
 func (n *Task) Update(ver *m.Task) (err error) {
 
-	return
-}
-
-// Delete ...
-func (n *Task) Delete(id int64) (err error) {
 	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
 		tx = n.db
 		transaction = false
 	}
-
 	defer func() {
 		if err != nil && transaction {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
 		}
 	}()
+
+	table := db.Tasks{Db: tx}
+	if err = table.Update(n.toDb(ver)); err != nil {
+		return
+	}
+
+	//conditions
+	if len(ver.Conditions) > 0 {
+		for i := range ver.Conditions {
+			ver.Conditions[i].TaskId = ver.Id
+		}
+		conditionAction := GetConditionAdaptor(tx)
+		conditionAction.DeleteByTaskId(ver.Id)
+		if err = conditionAction.AddMultiple(ver.Conditions); err != nil {
+			return
+		}
+	}
+
+	//triggers
+	if len(ver.Triggers) > 0 {
+		for i := range ver.Triggers {
+			ver.Triggers[i].TaskId = ver.Id
+		}
+		triggerAction := GetTriggerAdaptor(tx)
+		triggerAction.DeleteByTaskId(ver.Id)
+		if err = triggerAction.AddMultiple(ver.Triggers); err != nil {
+			return
+		}
+	}
+
+	//actions
+	if len(ver.Actions) > 0 {
+		for i := range ver.Actions {
+			ver.Actions[i].TaskId = ver.Id
+		}
+		actionAction := GetActionAdaptor(tx)
+		actionAction.DeleteByTaskId(ver.Id)
+		if err = actionAction.AddMultiple(ver.Actions); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+// GetById ...
+func (n *Task) GetById(id int64) (task *m.Task, err error) {
+
+	var dbVer *db.Task
+	if dbVer, err = n.table.GetById(id); err != nil {
+		return
+	}
+
+	task = n.fromDb(dbVer)
+
+	return
+}
+
+// Delete ...
+func (n *Task) Delete(id int64) (err error) {
+
+	transaction := true
+	tx := n.db.Begin()
+	if err = tx.Error; err != nil {
+		tx = n.db
+		transaction = false
+	}
+	defer func() {
+		if err != nil && transaction {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
+			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
+		}
+	}()
+
 	table := &db.Tasks{Db: tx}
 	if err = table.Delete(id); err != nil {
 		return
 	}
-	if transaction {
-		err = tx.Commit().Error
-	}
+
 	return
 }
 

@@ -53,6 +53,9 @@ func (d *Dialer) Call() func(context.Context, string) (net.Conn, error) {
 	gw.RegisterImageServiceServer(grpcServer, d.controllers.Image)
 	gw.RegisterPluginServiceServer(grpcServer, d.controllers.Plugin)
 	gw.RegisterZigbee2MqttServiceServer(grpcServer, d.controllers.Zigbee2mqtt)
+	gw.RegisterAreaServiceServer(grpcServer, d.controllers.Area)
+	gw.RegisterEntityServiceServer(grpcServer, d.controllers.Entity)
+	gw.RegisterAutomationServiceServer(grpcServer, d.controllers.Automation)
 
 	listener := bufconn.Listen(1024 * 1024)
 

@@ -31,32 +31,56 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-var (
-	filter_StreamService_Subscribe_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_StreamService_Subscribe_0(ctx context.Context, marshaler runtime.Marshaler, client StreamServiceClient, req *http.Request, pathParams map[string]string) (StreamService_SubscribeClient, runtime.ServerMetadata, error) {
-	var protoReq SubscribeRequest
 	var metadata runtime.ServerMetadata
-
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_StreamService_Subscribe_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	stream, err := client.Subscribe(ctx, &protoReq)
+	stream, err := client.Subscribe(ctx)
 	if err != nil {
+		grpclog.Infof("Failed to start streaming: %v", err)
 		return nil, metadata, err
 	}
+	dec := marshaler.NewDecoder(req.Body)
+	handleSend := func() error {
+		var protoReq Request
+		err := dec.Decode(&protoReq)
+		if err == io.EOF {
+			return err
+		}
+		if err != nil {
+			grpclog.Infof("Failed to decode request: %v", err)
+			return err
+		}
+		if err := stream.Send(&protoReq); err != nil {
+			grpclog.Infof("Failed to send request: %v", err)
+			return err
+		}
+		return nil
+	}
+	if err := handleSend(); err != nil {
+		if cerr := stream.CloseSend(); cerr != nil {
+			grpclog.Infof("Failed to terminate client stream: %v", cerr)
+		}
+		if err == io.EOF {
+			return stream, metadata, nil
+		}
+		return nil, metadata, err
+	}
+	go func() {
+		for {
+			if err := handleSend(); err != nil {
+				break
+			}
+		}
+		if err := stream.CloseSend(); err != nil {
+			grpclog.Infof("Failed to terminate client stream: %v", err)
+		}
+	}()
 	header, err := stream.Header()
 	if err != nil {
+		grpclog.Infof("Failed to get header from client: %v", err)
 		return nil, metadata, err
 	}
 	metadata.HeaderMD = header
 	return stream, metadata, nil
-
 }
 
 // RegisterStreamServiceHandlerServer registers the http handlers for service StreamService to "mux".
@@ -117,7 +141,7 @@ func RegisterStreamServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.StreamService/Subscribe", runtime.WithHTTPPathPattern("/subscribe"))
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/api.StreamService/Subscribe", runtime.WithHTTPPathPattern("/ws"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -137,7 +161,7 @@ func RegisterStreamServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 }
 
 var (
-	pattern_StreamService_Subscribe_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"subscribe"}, ""))
+	pattern_StreamService_Subscribe_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"ws"}, ""))
 )
 
 var (

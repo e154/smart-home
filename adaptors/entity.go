@@ -21,6 +21,8 @@ package adaptors
 import (
 	"encoding/json"
 
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/db"
 	m "github.com/e154/smart-home/models"
@@ -36,7 +38,7 @@ type IEntity interface {
 	GetByType(t string, limit, offset int64) (list []*m.Entity, err error)
 	Update(ver *m.Entity) (err error)
 	UpdateSettings(entityId common.EntityId, settings m.Attributes) (err error)
-	Search(query string, limit, offset int) (list []*m.Entity, total int64, err error)
+	Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error)
 	AppendMetric(entityId common.EntityId, metric m.Metric) (err error)
 	DeleteMetric(entityId common.EntityId, metric m.Metric) (err error)
 	preloadMetric(ver *m.Entity) (err error)
@@ -68,10 +70,14 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 		tx = n.db
 		transaction = false
 	}
-
 	defer func() {
 		if err != nil && transaction {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
 		}
 	}()
 
@@ -113,13 +119,9 @@ func (n *Entity) Add(ver *m.Entity) (err error) {
 	//scripts
 	scriptAdaptor := GetScriptAdaptor(tx)
 	for _, script := range ver.Scripts {
-		if err = table.AppendScript(ver.Id, scriptAdaptor.toDb(&script)); err != nil {
+		if err = table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
 			return
 		}
-	}
-
-	if transaction {
-		err = tx.Commit().Error
 	}
 
 	return
@@ -142,25 +144,29 @@ func (n *Entity) GetById(id common.EntityId) (ver *m.Entity, err error) {
 
 // Delete ...
 func (n *Entity) Delete(id common.EntityId) (err error) {
+
 	transaction := true
 	tx := n.db.Begin()
 	if err = tx.Error; err != nil {
 		tx = n.db
 		transaction = false
 	}
-
 	defer func() {
 		if err != nil && transaction {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
 		}
 	}()
+
 	table := &db.Entities{Db: tx}
 	if err = table.Delete(id); err != nil {
 		return
 	}
-	if transaction {
-		err = tx.Commit().Error
-	}
+
 	return
 }
 
@@ -196,7 +202,7 @@ func (n *Entity) GetByType(t string, limit, offset int64) (list []*m.Entity, err
 	return
 }
 
-// Update ...
+// UpdateSettings ...
 func (n *Entity) UpdateSettings(entity common.EntityId, settings m.Attributes) (err error) {
 	b, _ := json.Marshal(m.EntitySettings{
 		Settings: settings,
@@ -205,7 +211,7 @@ func (n *Entity) UpdateSettings(entity common.EntityId, settings m.Attributes) (
 	return
 }
 
-// UpdateAll ...
+// Update ...
 func (n *Entity) Update(ver *m.Entity) (err error) {
 
 	var oldVer *m.Entity
@@ -219,10 +225,14 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 		tx = n.db
 		transaction = false
 	}
-
 	defer func() {
 		if err != nil && transaction {
+			err = errors.Wrap(common.ErrTransactionError, err.Error())
 			tx.Rollback()
+			return
+		}
+		if transaction {
+			err = tx.Commit().Error
 		}
 	}()
 
@@ -243,8 +253,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	for _, action := range ver.Actions {
 		action.EntityId = ver.Id
 	}
-	deviceAction := GetEntityActionAdaptor(tx)
-	if err = deviceAction.AddMultiple(ver.Actions); err != nil {
+	if err = entityActionAdaptor.AddMultiple(ver.Actions); err != nil {
 		log.Error(err.Error())
 		return
 	}
@@ -253,8 +262,7 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 	for _, state := range ver.States {
 		state.EntityId = ver.Id
 	}
-	stateAdaptor := GetEntityStateAdaptor(tx)
-	if err = stateAdaptor.AddMultiple(ver.States); err != nil {
+	if err = entityStateAdaptor.AddMultiple(ver.States); err != nil {
 		log.Errorf(err.Error())
 		return
 	}
@@ -293,15 +301,45 @@ func (n *Entity) Update(ver *m.Entity) (err error) {
 		}
 	}
 
-	if transaction {
-		err = tx.Commit().Error
+	// script
+	for _, oldScript := range oldVer.Scripts {
+		var exist bool
+		for _, script := range ver.Scripts {
+			if script.Id == oldScript.Id {
+				exist = true
+			}
+		}
+		if !exist {
+			if err = n.table.DeleteMetric(oldVer.Id, oldScript.Id); err != nil {
+				return
+			}
+		}
+	}
+
+	scriptAdaptor := GetScriptAdaptor(tx)
+	for _, script := range ver.Scripts {
+		var exist bool
+		for _, oldMetric := range oldVer.Scripts {
+			if script.Id == oldMetric.Id {
+				exist = true
+			}
+		}
+		if !exist {
+			if err = n.table.AppendScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
+				return
+			}
+		} else {
+			if err = n.table.ReplaceScript(ver.Id, scriptAdaptor.toDb(script)); err != nil {
+				return
+			}
+		}
 	}
 
 	return
 }
 
 // Search ...
-func (n *Entity) Search(query string, limit, offset int) (list []*m.Entity, total int64, err error) {
+func (n *Entity) Search(query string, limit, offset int64) (list []*m.Entity, total int64, err error) {
 	var dbList []*db.Entity
 	if dbList, total, err = n.table.Search(query, limit, offset); err != nil {
 		return
@@ -356,7 +394,7 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 	ver = &m.Entity{
 		Id:          dbVer.Id,
 		Description: dbVer.Description,
-		Type:        common.EntityType(dbVer.Type),
+		PluginName:  dbVer.PluginName,
 		Actions:     make([]*m.EntityAction, 0),
 		States:      make([]*m.EntityState, 0),
 		Icon:        dbVer.Icon,
@@ -406,10 +444,10 @@ func (n *Entity) fromDb(dbVer *db.Entity) (ver *m.Entity) {
 		scriptAdaptor := GetScriptAdaptor(n.db)
 		for _, script := range dbVer.Scripts {
 			s, _ := scriptAdaptor.fromDb(&script)
-			ver.Scripts = append(ver.Scripts, *s)
+			ver.Scripts = append(ver.Scripts, s)
 		}
 	} else {
-		ver.Scripts = make([]m.Script, 0)
+		ver.Scripts = make([]*m.Script, 0)
 	}
 
 	// deserialize payload
@@ -439,21 +477,19 @@ func (n *Entity) toDb(ver *m.Entity) (dbVer *db.Entity) {
 	dbVer = &db.Entity{
 		Id:          ver.Id,
 		Description: ver.Description,
-		Type:        ver.Type.String(),
+		PluginName:  ver.PluginName,
 		Icon:        ver.Icon,
 		AutoLoad:    ver.AutoLoad,
 		ParentId:    ver.ParentId,
+		AreaId:      ver.AreaId,
 	}
 
+	// image
 	if ver.Image != nil && ver.Image.Id != 0 {
 		dbVer.ImageId = common.Int64(ver.Image.Id)
 	}
 
 	// area
-	if ver.AreaId != nil {
-		dbVer.AreaId = ver.AreaId
-	}
-
 	if ver.Area != nil && ver.Area.Id != 0 {
 		dbVer.AreaId = &ver.Area.Id
 	}

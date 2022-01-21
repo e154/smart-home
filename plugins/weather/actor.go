@@ -80,7 +80,7 @@ func NewActor(entity *m.Entity,
 func (e *Actor) Spawn() entity_manager.PluginActor {
 
 	e.eventBus.Publish(TopicPluginWeather, EventStateChanged{
-		Type:     e.Id.Type(),
+		Type:     e.Id.PluginName(),
 		EntityId: e.Id,
 		State:    StatePositionUpdate,
 		Settings: e.Setts.Copy(),
@@ -100,7 +100,7 @@ func (e *Actor) UpdatePosition(settings m.Attributes) {
 	defer e.positionLock.Unlock()
 
 	e.eventBus.Publish(TopicPluginWeather, EventStateChanged{
-		Type:     e.Id.Type(),
+		Type:     e.Id.PluginName(),
 		EntityId: e.Id,
 		State:    StatePositionUpdate,
 		Settings: e.Setts,
@@ -132,7 +132,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	e.AttrMu.Unlock()
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-		Type:        e.Id.Type(),
+		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
 		OldState:    oldState,
 		NewState:    e.GetEventState(e),

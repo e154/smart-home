@@ -37,15 +37,15 @@ func NewControllerPlugin(common *ControllerCommon) ControllerPlugin {
 }
 
 // GetPluginList ...
-func (c ControllerPlugin) GetPluginList(ctx context.Context, req *api.GetPluginListRequest) (*api.GetPluginListResult, error) {
+func (c ControllerPlugin) GetPluginList(ctx context.Context, req *api.PaginationRequest) (*api.GetPluginListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, err := c.endpoint.Plugin.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Plugin.ToPluginListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Plugin.ToPluginListResult(items, uint64(total), pagination), nil
 }
 
 // EnablePlugin ...
@@ -77,4 +77,16 @@ func (c ControllerPlugin) GetPluginOptions(ctx context.Context, req *api.GetPlug
 	}
 
 	return c.dto.Plugin.Options(options), nil
+}
+
+// SearchPlugin ...
+func (c ControllerPlugin) SearchPlugin(ctx context.Context, req *api.SearchRequest) (*api.SearchPluginResult, error) {
+
+	search := c.Search(req.Query, req.Limit, req.Offset)
+	items, _, err := c.endpoint.Plugin.Search(ctx, search.Query, search.Limit, search.Offset)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Plugin.ToSearchResult(items), nil
 }

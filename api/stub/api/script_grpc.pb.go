@@ -4,7 +4,6 @@ package api
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -27,9 +26,9 @@ type ScriptServiceClient interface {
 	// update script
 	UpdateScriptById(ctx context.Context, in *UpdateScriptRequest, opts ...grpc.CallOption) (*Script, error)
 	// get script list
-	GetScriptList(ctx context.Context, in *GetScriptListRequest, opts ...grpc.CallOption) (*GetScriptListResult, error)
+	GetScriptList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error)
 	// delete script by id
-	SearchScriptById(ctx context.Context, in *SearchScriptRequest, opts ...grpc.CallOption) (*SearchScriptListResult, error)
+	SearchScript(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchScriptListResult, error)
 	// delete script by id
 	DeleteScriptById(ctx context.Context, in *DeleteScriptRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// exec script by id
@@ -75,7 +74,7 @@ func (c *scriptServiceClient) UpdateScriptById(ctx context.Context, in *UpdateSc
 	return out, nil
 }
 
-func (c *scriptServiceClient) GetScriptList(ctx context.Context, in *GetScriptListRequest, opts ...grpc.CallOption) (*GetScriptListResult, error) {
+func (c *scriptServiceClient) GetScriptList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetScriptListResult, error) {
 	out := new(GetScriptListResult)
 	err := c.cc.Invoke(ctx, "/api.ScriptService/GetScriptList", in, out, opts...)
 	if err != nil {
@@ -84,9 +83,9 @@ func (c *scriptServiceClient) GetScriptList(ctx context.Context, in *GetScriptLi
 	return out, nil
 }
 
-func (c *scriptServiceClient) SearchScriptById(ctx context.Context, in *SearchScriptRequest, opts ...grpc.CallOption) (*SearchScriptListResult, error) {
+func (c *scriptServiceClient) SearchScript(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchScriptListResult, error) {
 	out := new(SearchScriptListResult)
-	err := c.cc.Invoke(ctx, "/api.ScriptService/SearchScriptById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.ScriptService/SearchScript", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -140,9 +139,9 @@ type ScriptServiceServer interface {
 	// update script
 	UpdateScriptById(context.Context, *UpdateScriptRequest) (*Script, error)
 	// get script list
-	GetScriptList(context.Context, *GetScriptListRequest) (*GetScriptListResult, error)
+	GetScriptList(context.Context, *PaginationRequest) (*GetScriptListResult, error)
 	// delete script by id
-	SearchScriptById(context.Context, *SearchScriptRequest) (*SearchScriptListResult, error)
+	SearchScript(context.Context, *SearchRequest) (*SearchScriptListResult, error)
 	// delete script by id
 	DeleteScriptById(context.Context, *DeleteScriptRequest) (*emptypb.Empty, error)
 	// exec script by id
@@ -166,11 +165,11 @@ func (UnimplementedScriptServiceServer) GetScriptById(context.Context, *GetScrip
 func (UnimplementedScriptServiceServer) UpdateScriptById(context.Context, *UpdateScriptRequest) (*Script, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateScriptById not implemented")
 }
-func (UnimplementedScriptServiceServer) GetScriptList(context.Context, *GetScriptListRequest) (*GetScriptListResult, error) {
+func (UnimplementedScriptServiceServer) GetScriptList(context.Context, *PaginationRequest) (*GetScriptListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetScriptList not implemented")
 }
-func (UnimplementedScriptServiceServer) SearchScriptById(context.Context, *SearchScriptRequest) (*SearchScriptListResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SearchScriptById not implemented")
+func (UnimplementedScriptServiceServer) SearchScript(context.Context, *SearchRequest) (*SearchScriptListResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchScript not implemented")
 }
 func (UnimplementedScriptServiceServer) DeleteScriptById(context.Context, *DeleteScriptRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteScriptById not implemented")
@@ -251,7 +250,7 @@ func _ScriptService_UpdateScriptById_Handler(srv interface{}, ctx context.Contex
 }
 
 func _ScriptService_GetScriptList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetScriptListRequest)
+	in := new(PaginationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -263,25 +262,25 @@ func _ScriptService_GetScriptList_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/api.ScriptService/GetScriptList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ScriptServiceServer).GetScriptList(ctx, req.(*GetScriptListRequest))
+		return srv.(ScriptServiceServer).GetScriptList(ctx, req.(*PaginationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ScriptService_SearchScriptById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchScriptRequest)
+func _ScriptService_SearchScript_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ScriptServiceServer).SearchScriptById(ctx, in)
+		return srv.(ScriptServiceServer).SearchScript(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.ScriptService/SearchScriptById",
+		FullMethod: "/api.ScriptService/SearchScript",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ScriptServiceServer).SearchScriptById(ctx, req.(*SearchScriptRequest))
+		return srv.(ScriptServiceServer).SearchScript(ctx, req.(*SearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -382,8 +381,8 @@ var ScriptService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ScriptService_GetScriptList_Handler,
 		},
 		{
-			MethodName: "SearchScriptById",
-			Handler:    _ScriptService_SearchScriptById_Handler,
+			MethodName: "SearchScript",
+			Handler:    _ScriptService_SearchScript_Handler,
 		},
 		{
 			MethodName: "DeleteScriptById",

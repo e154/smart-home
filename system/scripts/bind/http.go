@@ -35,6 +35,8 @@ type HttpResponse struct {
 // 	 .get(url)
 // 	 .post(url, body)
 //
+
+// HttpBind ...
 type HttpBind struct{}
 
 // Get ...

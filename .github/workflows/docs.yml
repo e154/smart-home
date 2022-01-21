@@ -1,0 +1,34 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - docs
+    tags:
+      - "*"
+
+env:
+  GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUBTOKEN }}
+  TRAVIS_BUILD_NUMBER: ${{ github.run_number }}
+
+jobs:
+  build:
+    name: Build_Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up HUGO
+        run: |
+          wget https://github.com/gohugoio/hugo/releases/download/v0.89.4/hugo_extended_0.89.4_Linux-64bit.deb
+          sudo dpkg -i hugo*.deb
+
+      - name: Build docs
+        id: build-docs
+        run: make docs_build
+
+      - name: Deploy docs
+        id: docs-deploy
+        run: make docs_deploy

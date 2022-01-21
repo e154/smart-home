@@ -19,8 +19,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/e154/smart-home/api/stub/api"
 )
 
@@ -37,7 +35,6 @@ func NewControllerStream(common *ControllerCommon) ControllerStream {
 }
 
 // Subscribe ...
-func (a ControllerStream) Subscribe(req *api.SubscribeRequest, resp api.StreamService_SubscribeServer) error {
-	fmt.Println("method not implemented")
-	return nil
+func (a ControllerStream) Subscribe(server api.StreamService_SubscribeServer) error {
+	return a.stream.NewConnection(server)
 }

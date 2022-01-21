@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+package api;
+option go_package = "/api";
+
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+import "area.proto";
+import "script.proto";
+import "attributes.proto";
+import "pagination.proto";
+
+message Trigger {
+  optional int64 id = 1;
+  string name = 2;
+  message Entity {
+    string id = 1;
+  }
+  Entity entity = 4;
+  Script script = 5;
+  string plugin_name = 6;
+  map<string, Attribute> attributes = 7;
+}
+
+message Condition {
+  optional int64 id = 1;
+  string name = 2;
+  Script script = 4;
+}
+
+message Action {
+  optional int64 id = 1;
+  string name = 2;
+  Script script = 4;
+}
+
+message Task {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  bool enabled = 4;
+  string condition = 5;
+  repeated Trigger triggers = 6;
+  repeated Condition conditions = 7;
+  repeated Action actions = 8;
+  optional Area area = 9;
+
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+}
+
+message NewTaskRequest {
+  string name = 2;
+  string description = 3;
+  bool enabled = 4;
+  string condition = 5;
+  repeated Trigger triggers = 6;
+  repeated Condition conditions = 7;
+  repeated Action actions = 8;
+  optional Area area = 9;
+}
+
+message UpdateTaskRequest {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  bool enabled = 4;
+  string condition = 5;
+  repeated Trigger triggers = 6;
+  repeated Condition conditions = 7;
+  repeated Action actions = 8;
+  optional Area area = 9;
+}
+
+message GetTaskRequest {
+  int64 id = 1;
+}
+
+message GetTaskListResult {
+  repeated Task items = 1;
+  Meta meta = 2;
+}
+
+message DeleteTaskRequest {
+  int64 id = 1;
+}
+
+service AutomationService {
+
+  // add new task
+  rpc AddTask (NewTaskRequest) returns (Task){
+    option (google.api.http) = {
+      post: "/v1/task"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // update task
+  rpc UpdateTask (UpdateTaskRequest) returns (Task){
+    option (google.api.http) = {
+      put: "/v1/task/{id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get task
+  rpc GetTask (GetTaskRequest) returns (Task){
+    option (google.api.http) = {
+      get: "/v1/task/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get task list
+  rpc GetTaskList (PaginationRequest) returns (GetTaskListResult){
+    option (google.api.http) = {
+      get: "/v1/tasks"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete task
+  rpc DeleteTask (DeleteTaskRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/task/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+}

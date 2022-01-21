@@ -19,7 +19,6 @@
 package metrics
 
 import (
-	"errors"
 	"time"
 )
 
@@ -47,11 +46,6 @@ type Uptime struct {
 	Total      uint64    `json:"total"`
 	AppStarted time.Time `json:"app_started"`
 }
-
-var (
-	// ErrRecordNotFound ...
-	ErrRecordNotFound = errors.New("record not found")
-)
 
 func bToMb(b uint64) uint64 {
 	return b / 1024

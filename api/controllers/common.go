@@ -22,9 +22,17 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/e154/smart-home/system/stream"
+	"github.com/iancoleman/strcase"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/pkg/errors"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/api/dto"
@@ -32,11 +40,6 @@ import (
 	"github.com/e154/smart-home/endpoint"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/access_list"
-	"github.com/go-playground/validator/v10"
-	"github.com/pkg/errors"
-	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 var (
@@ -49,17 +52,20 @@ type ControllerCommon struct {
 	accessList access_list.AccessListService
 	endpoint   *endpoint.Endpoint
 	dto        dto.Dto
+	stream     *stream.Stream
 }
 
 // NewControllerCommon ...
 func NewControllerCommon(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
-	endpoint *endpoint.Endpoint) *ControllerCommon {
+	endpoint *endpoint.Endpoint,
+	stream *stream.Stream) *ControllerCommon {
 	return &ControllerCommon{
 		dto:        dto.NewDto(),
 		adaptors:   adaptors,
 		accessList: accessList,
 		endpoint:   endpoint,
+		stream:     stream,
 	}
 }
 
@@ -67,7 +73,7 @@ func (c ControllerCommon) currentUser(ctx context.Context) (*m.User, error) {
 
 	user, ok := ctx.Value("currentUser").(*m.User)
 	if !ok {
-		return nil, fmt.Errorf("bad user object")
+		return nil, errors.Wrap(common.ErrBadRequestParams, "bad user object")
 	}
 
 	return user, nil
@@ -129,6 +135,8 @@ func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationEr
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, common.ErrNotAuthorized):
 		return status.Error(codes.Unauthenticated, err.Error())
+	case errors.Is(err, common.ErrUnimplemented):
+		return status.Error(codes.Unimplemented, err.Error())
 	default:
 		log.Errorf("%+v\n", err)
 		return status.Error(codes.Internal, err.Error())
@@ -136,26 +144,42 @@ func (c ControllerCommon) error(ctx context.Context, errs validator.ValidationEr
 }
 
 // Pagination ...
-func (c ControllerCommon) Pagination(limit, offset uint64, order, sortBy string) (pagination common.PageParams) {
+func (c ControllerCommon) Pagination(page, limit uint64, sort string) (pagination common.PageParams) {
+
+	if sort == "" {
+		sort = "-createdAt"
+	}
+
+	if page == 0 {
+		page = 1
+	}
+
+	if limit == 0 {
+		limit = 200
+	}
 
 	pagination = common.PageParams{
-		Limit:  200,
-		Offset: 0,
-		Order:  "desc",
-		SortBy: "created_at",
+		Limit:   int64(limit),
+		Offset:  int64(page*limit - limit),
+		Order:   "desc",
+		SortBy:  "created_at",
+		PageReq: page,
+		SortReq: sort,
 	}
 
-	if limit != 0 {
-		pagination.Limit = int64(limit)
-	}
-	if offset != 0 {
-		pagination.Offset = int64(offset)
-	}
-	if order != "" {
-		pagination.Order = order
-	}
-	if sortBy != "" {
-		pagination.SortBy = sortBy
+	if len(sort) > 1 {
+		firstChar := string([]rune(sort)[0])
+		switch firstChar {
+		case "+":
+			pagination.Order = "asc"
+		case "-":
+			pagination.Order = "desc"
+		default:
+			//...
+		}
+
+		sort = strings.Replace(sort, firstChar, "", 1)
+		pagination.SortBy = strcase.ToSnake(sort)
 	}
 
 	return

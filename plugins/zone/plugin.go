@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/entity_manager"
@@ -104,7 +106,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 	defer p.actorsLock.Unlock()
 
 	if _, ok := p.actors[entityId.Name()]; !ok {
-		err = fmt.Errorf("not found")
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("failed remove '%s", entityId))
 		return
 	}
 

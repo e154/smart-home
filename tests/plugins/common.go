@@ -48,11 +48,11 @@ import (
 )
 
 // GetNewButton ...
-func GetNewButton(id string, scripts []m.Script) *m.Entity {
+func GetNewButton(id string, scripts []*m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
 		Description: "MiJia wireless switch",
-		Type:        zigbee2mqtt.EntityZigbee2mqtt,
+		PluginName:  zigbee2mqtt.EntityZigbee2mqtt,
 		Scripts:     scripts,
 		AutoLoad:    true,
 		Attributes: m.Attributes{
@@ -143,11 +143,11 @@ func GetNewButton(id string, scripts []m.Script) *m.Entity {
 }
 
 // GetNewPlug ...
-func GetNewPlug(id string, scrits []m.Script) *m.Entity {
+func GetNewPlug(id string, scrits []*m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
 		Description: "MiJia power plug ZigBee",
-		Type:        zigbee2mqtt.EntityZigbee2mqtt,
+		PluginName:  zigbee2mqtt.EntityZigbee2mqtt,
 		Scripts:     scrits,
 		AutoLoad:    true,
 		Attributes: m.Attributes{
@@ -190,11 +190,11 @@ func GetNewPlug(id string, scrits []m.Script) *m.Entity {
 }
 
 // GetNewScript ...
-func GetNewScript(id string, scrits []m.Script) *m.Entity {
+func GetNewScript(id string, scrits []*m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
 		Description: "MiJia power plug ZigBee",
-		Type:        script.EntityScript,
+		PluginName:  script.EntityScript,
 		Scripts:     scrits,
 		Attributes:  m.Attributes{},
 		AutoLoad:    true,
@@ -212,11 +212,11 @@ func GetNewScript(id string, scrits []m.Script) *m.Entity {
 }
 
 // GetNewScene ...
-func GetNewScene(id string, scripts []m.Script) *m.Entity {
+func GetNewScene(id string, scripts []*m.Script) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(id),
 		Description: "scene",
-		Type:        scene.EntityScene,
+		PluginName:  scene.EntityScene,
 		Scripts:     scripts,
 		AutoLoad:    true,
 	}
@@ -232,7 +232,7 @@ func GetNewZone() *m.Entity {
 	return &m.Entity{
 		Id:          "zone.home",
 		Description: "main geo zone",
-		Type:        "zone",
+		PluginName:  "zone",
 		AutoLoad:    true,
 		Settings:    setings,
 	}
@@ -246,7 +246,7 @@ func GetNewNode(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("node.%s", name)),
 		Description: "main node",
-		Type:        "node",
+		PluginName:  "node",
 		AutoLoad:    true,
 		Attributes:  node.NewAttr(),
 		Settings:    settings,
@@ -261,7 +261,7 @@ func GetNewMoon(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("moon.%s", name)),
 		Description: "home",
-		Type:        "moon",
+		PluginName:  "moon",
 		AutoLoad:    true,
 		Attributes:  moon.NewAttr(),
 		Settings:    settings,
@@ -276,7 +276,7 @@ func GetNewWeather(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("weather.%s", name)),
 		Description: "home",
-		Type:        "weather",
+		PluginName:  "weather",
 		AutoLoad:    true,
 		Attributes:  weather.BaseForecast(),
 		Settings:    settings,
@@ -292,7 +292,7 @@ func GetNewWeatherOwm(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("weather_owm.%s", name)),
 		Description: "weather owm",
-		Type:        weather_owm.EntityWeatherOwm,
+		PluginName:  weather_owm.EntityWeatherOwm,
 		AutoLoad:    true,
 		Settings:    settings,
 	}
@@ -306,7 +306,7 @@ func GetNewSun(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("sun.%s", name)),
 		Description: "home",
-		Type:        "sun",
+		PluginName:  "sun",
 		AutoLoad:    true,
 		Attributes:  sun.NewAttr(),
 		Settings:    settings,
@@ -326,7 +326,7 @@ func GetNewBitmineL3(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("cgminer.%s", name)),
 		Description: "antminer L3",
-		Type:        "cgminer",
+		PluginName:  "cgminer",
 		AutoLoad:    true,
 		Attributes:  cgminer.NewAttr(),
 		Settings:    settings,
@@ -339,7 +339,7 @@ func GetNewSensor(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("sensor.%s", name)),
 		Description: "api",
-		Type:        "sensor",
+		PluginName:  "sensor",
 		AutoLoad:    true,
 	}
 }
@@ -349,7 +349,7 @@ func GetNewModbusRtu(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("modbus_rtu.%s", name)),
 		Description: fmt.Sprintf("%s entity", name),
-		Type:        "modbus_rtu",
+		PluginName:  "modbus_rtu",
 		AutoLoad:    true,
 		Attributes:  modbus_rtu.NewAttr(),
 		Settings:    modbus_rtu.NewSettings(),
@@ -361,7 +361,7 @@ func GetNewModbusTcp(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("modbus_tcp.%s", name)),
 		Description: fmt.Sprintf("%s entity", name),
-		Type:        "modbus_tcp",
+		PluginName:  "modbus_tcp",
 		AutoLoad:    true,
 		Attributes:  modbus_tcp.NewAttr(),
 		Settings:    modbus_tcp.NewSettings(),
@@ -375,7 +375,7 @@ func GetNewTelegram(name string) *m.Entity {
 	return &m.Entity{
 		Id:          common.EntityId(fmt.Sprintf("%s.%s", telegram.Name, name)),
 		Description: "",
-		Type:        telegram.Name,
+		PluginName:  telegram.Name,
 		AutoLoad:    true,
 		Attributes:  telegram.NewAttr(),
 		Settings:    settings,
@@ -510,4 +510,28 @@ func MockTCPServer(ctx context.Context, ip string, port int64, payloads ...[]byt
 func GetPort() int64 {
 	port, _ := freeport.GetFreePort()
 	return int64(port)
+}
+
+// AddScript ...
+func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scripts.ScriptService) (script *m.Script, err error) {
+
+	script = &m.Script{
+		Lang:        common.ScriptLangCoffee,
+		Name:        name,
+		Source:      src,
+		Description: "description " + name,
+	}
+
+	var engine *scripts.Engine
+	if engine, err = scriptService.NewEngine(script); err != nil {
+		return
+	}
+
+	if err = engine.Compile(); err != nil {
+		return
+	}
+
+	script.Id, err = adaptors.Script.Add(script)
+
+	return
 }

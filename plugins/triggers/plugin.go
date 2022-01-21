@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/pkg/errors"
+
 	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"github.com/e154/smart-home/system/plugins"
@@ -122,7 +124,7 @@ func (p *plugin) GetTrigger(name string) (trigger ITrigger, err error) {
 
 	var ok bool
 	if trigger, ok = p.triggers[name]; !ok {
-		err = fmt.Errorf("not found trigger with name(%s)", name)
+		err = errors.Wrap(common.ErrNotFound, fmt.Sprintf("trigger name \"%s\"", name))
 	}
 	return
 }
@@ -134,7 +136,7 @@ func (p *plugin) RegisterTrigger(tr ITrigger) (err error) {
 	defer p.mu.Unlock()
 
 	if _, ok := p.triggers[tr.Name()]; ok {
-		err = fmt.Errorf("trigger with name %s is registerred", tr.Name())
+		err = errors.Wrap(common.ErrInternal, fmt.Sprintf("trigger \"%s\" is registerred", tr.Name()))
 		return
 	}
 

@@ -21,7 +21,15 @@ package jwt_manager
 import (
 	"time"
 
+	"github.com/pkg/errors"
+
 	m "github.com/e154/smart-home/models"
+)
+
+var (
+	ErrInvalidAccessToken      = errors.New("invalid access token")
+	ErrUnexpectedSigningMethod = errors.New("unexpected signing method")
+	ErrInvalidTokenClaims      = errors.New("invalid token claims")
 )
 
 // JwtManager ...

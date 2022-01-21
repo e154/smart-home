@@ -19,7 +19,6 @@
 package entity_manager
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -39,7 +38,7 @@ type BaseActor struct {
 	ParentId          *common.EntityId
 	Name              string
 	Description       string
-	EntityType        common.EntityType
+	EntityType        string
 	Manager           EntityManager
 	State             *ActorState
 	Area              *m.Area
@@ -50,10 +49,10 @@ type BaseActor struct {
 	Actions           map[string]ActorAction
 	States            map[string]ActorState
 	ScriptEngine      *scripts.Engine
-	Icon              *common.Icon
+	Icon              *string
 	ImageUrl          *string
 	UnitOfMeasurement string
-	Sripts            []m.Script
+	Scripts           []*m.Script
 	Value             *atomic.String
 	AutoLoad          bool
 	LastChanged       *time.Time
@@ -69,10 +68,10 @@ func NewBaseActor(entity *m.Entity,
 	adaptors *adaptors.Adaptors) BaseActor {
 	actor := BaseActor{
 		adaptors:          adaptors,
-		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.Type, entity.Id.Name())),
+		Id:                common.EntityId(fmt.Sprintf("%s.%s", entity.PluginName, entity.Id.Name())),
 		Name:              entity.Id.Name(),
 		Description:       entity.Description,
-		EntityType:        entity.Type,
+		EntityType:        entity.PluginName,
 		ParentId:          entity.ParentId,
 		Manager:           nil,
 		State:             nil,
@@ -83,7 +82,7 @@ func NewBaseActor(entity *m.Entity,
 		Icon:              entity.Icon,
 		ImageUrl:          nil,
 		UnitOfMeasurement: "",
-		Sripts:            entity.Scripts,
+		Scripts:           entity.Scripts,
 		Value:             nil,
 		LastChanged:       nil,
 		LastUpdated:       nil,
@@ -139,7 +138,7 @@ func NewBaseActor(entity *m.Entity,
 
 	// Scripts
 	if len(entity.Scripts) != 0 {
-		if actor.ScriptEngine, err = scriptService.NewEngine(&entity.Scripts[0]); err != nil {
+		if actor.ScriptEngine, err = scriptService.NewEngine(entity.Scripts[0]); err != nil {
 			log.Error(err.Error())
 		}
 
@@ -166,7 +165,7 @@ func (e *BaseActor) Metrics() []m.Metric {
 
 // SetState ...
 func (e *BaseActor) SetState(EntityStateParams) error {
-	return errors.New("method not implemented")
+	return common.ErrUnimplemented
 }
 
 // Attributes ...
@@ -189,7 +188,7 @@ func (e *BaseActor) DeserializeAttr(data m.AttributeValue) {
 func (e *BaseActor) Info() (info ActorInfo) {
 	info = ActorInfo{
 		Id:                e.Id,
-		Type:              e.EntityType,
+		PluginName:        e.EntityType,
 		Name:              e.Name,
 		Description:       e.Description,
 		Hidde:             e.Hidden,

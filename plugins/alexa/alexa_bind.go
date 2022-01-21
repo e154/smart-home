@@ -32,6 +32,8 @@ import (
 //	.session() string
 //	.sendMessage(msg interface{})
 //
+
+// AlexaBind ...
 type AlexaBind struct {
 	Slots      map[string]string `json:"slots"`
 	req        *Request

@@ -177,10 +177,10 @@ func (e *Actor) updateStatus() {
 	}
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-		Type:     e.Id.Type(),
-		EntityId: e.Id,
-		OldState: oldState,
-		NewState: e.GetEventState(e),
+		PluginName: e.Id.PluginName(),
+		EntityId:   e.Id,
+		OldState:   oldState,
+		NewState:   e.GetEventState(e),
 	})
 }
 

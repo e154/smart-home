@@ -173,9 +173,9 @@ func (e *Actor) UpdateSunPosition(now time.Time) {
 	e.DeserializeAttr(attributeValues)
 
 	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
-		Type:     e.Id.Type(),
-		EntityId: e.Id,
-		OldState: oldState,
-		NewState: e.GetEventState(e),
+		PluginName: e.Id.PluginName(),
+		EntityId:   e.Id,
+		OldState:   oldState,
+		NewState:   e.GetEventState(e),
 	})
 }

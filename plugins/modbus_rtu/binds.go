@@ -20,10 +20,13 @@ package modbus_rtu
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
+
+	"github.com/e154/smart-home/common"
 
 	"github.com/e154/smart-home/plugins/node"
 	"github.com/e154/smart-home/system/event_bus"
@@ -109,7 +112,7 @@ func NewModbusRtu(eventBus event_bus.EventBus, actor *Actor) (modbus modbusRtu) 
 
 		select {
 		case <-ticker.C:
-			err = errors.New("timeout")
+			err = errors.Wrap(common.ErrTimeout, "wait timeout")
 		case resp := <-ch:
 			if err = json.Unmarshal(resp.Response, &result); err != nil {
 				log.Error(err.Error())

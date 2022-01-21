@@ -120,7 +120,7 @@ func (p *plugin) RemoveActor(entityId common.EntityId) (err error) {
 
 // Type ...
 func (p *plugin) Type() plugins.PluginType {
-	return plugins.PluginBuiltIn
+	return plugins.PluginInstallable
 }
 
 // Depends ...

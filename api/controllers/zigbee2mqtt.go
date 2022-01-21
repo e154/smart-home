@@ -75,15 +75,15 @@ func (c ControllerZigbee2mqtt) UpdateBridgeById(ctx context.Context, req *api.Up
 }
 
 // GetBridgeList ...
-func (c ControllerZigbee2mqtt) GetBridgeList(ctx context.Context, req *api.GetBridgeListRequest) (*api.GetBridgeListResult, error) {
+func (c ControllerZigbee2mqtt) GetBridgeList(ctx context.Context, req *api.PaginationRequest) (*api.GetBridgeListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, err := c.endpoint.Zigbee2mqtt.GetBridgeList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Zigbee2mqtt.GetBridgeListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Zigbee2mqtt.GetBridgeListResult(items, uint64(total), pagination), nil
 }
 
 // DeleteBridgeById ...
@@ -142,7 +142,7 @@ func (c ControllerZigbee2mqtt) DeviceRename(ctx context.Context, req *api.Device
 }
 
 // SearchDevice ...
-func (c ControllerZigbee2mqtt) SearchDevice(ctx context.Context, req *api.SearchDeviceRequest) (*api.SearchDeviceResult, error) {
+func (c ControllerZigbee2mqtt) SearchDevice(ctx context.Context, req *api.SearchRequest) (*api.SearchDeviceResult, error) {
 
 	search := c.Search(req.Query, req.Limit, req.Offset)
 	items, _, err := c.endpoint.Zigbee2mqtt.SearchDevice(ctx, search)
@@ -173,4 +173,16 @@ func (c ControllerZigbee2mqtt) UpdateNetworkmap(ctx context.Context, req *api.Ne
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+// DeviceList ...
+func (c ControllerZigbee2mqtt) DeviceList(ctx context.Context, req *api.DeviceListRequest) (*api.DeviceListResult, error) {
+
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
+	items, total, err := c.endpoint.Zigbee2mqtt.DeviceList(ctx, req.Id, pagination)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Zigbee2mqtt.ToListResult(items, uint64(total), pagination), nil
 }

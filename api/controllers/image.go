@@ -72,15 +72,15 @@ func (c ControllerImage) UpdateImageById(ctx context.Context, req *api.UpdateIma
 }
 
 // GetImageList ...
-func (c ControllerImage) GetImageList(ctx context.Context, req *api.GetImageListRequest) (*api.GetImageListResult, error) {
+func (c ControllerImage) GetImageList(ctx context.Context, req *api.PaginationRequest) (*api.GetImageListResult, error) {
 
-	pagination := c.Pagination(req.Limit, req.Offset, req.Order, req.SortBy)
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
 	items, total, err := c.endpoint.Image.GetList(ctx, pagination)
 	if err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
-	return c.dto.Image.ToImageListResult(items, uint64(total), req.Limit, req.Offset), nil
+	return c.dto.Image.ToImageListResult(items, uint64(total), pagination), nil
 }
 
 // DeleteImageById ...

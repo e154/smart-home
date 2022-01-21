@@ -101,25 +101,25 @@ func TestJwt(t *testing.T) {
 						claims, err := jwtManager.Verify(accessToken1)
 						ctx.So(err, ShouldNotBeNil)
 						ctx.So(claims, ShouldBeNil)
-						ctx.So(err.Error(), ShouldEqual, "invalid token claims")
+						ctx.So(err.Error(), ShouldEqual, "signature is invalid")
 
 						const accessToken2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjI0MjU2OTQ1MTgsImkiOjEsImlhdCI6MTYzNjc3NjExOCwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM2Nzc2MTE4LCJyIjoidXNlciJ9q.gxLi_hKQvAdkZtydyMRCje228u3Y8Xiad-iJM-U8E38"
 						claims, err = jwtManager.Verify(accessToken2)
 						ctx.So(err, ShouldNotBeNil)
 						ctx.So(claims, ShouldBeNil)
-						ctx.So(err.Error(), ShouldEqual, "invalid token claims")
+						ctx.So(err.Error(), ShouldEqual, "illegal base64 data at input byte 132")
 
 						const accessToken3 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9q.eyJleHAiOjI0MjU2OTQ1MTgsImkiOjEsImlhdCI6MTYzNjc3NjExOCwiaXNzIjoic2VydmVyIiwibiI6IkpvaG4gRG9lIiwibmJmIjoxNjM2Nzc2MTE4LCJyIjoidXNlciJ9.gxLi_hKQvAdkZtydyMRCje228u3Y8Xiad-iJM-U8E38"
 						claims, err = jwtManager.Verify(accessToken3)
 						ctx.So(err, ShouldNotBeNil)
 						ctx.So(claims, ShouldBeNil)
-						ctx.So(err.Error(), ShouldEqual, "invalid token claims")
+						ctx.So(err.Error(), ShouldEqual, "illegal base64 data at input byte 36")
 
 						const accessToken4 = "sometext"
 						claims, err = jwtManager.Verify(accessToken4)
 						ctx.So(err, ShouldNotBeNil)
 						ctx.So(claims, ShouldBeNil)
-						ctx.So(err.Error(), ShouldEqual, "invalid access token")
+						ctx.So(err.Error(), ShouldEqual, "token contains an invalid number of segments")
 					})
 				})
 			})

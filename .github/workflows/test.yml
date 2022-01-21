@@ -1,0 +1,70 @@
+name: Testing
+
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    name: Testing
+    runs-on: ubuntu-latest
+
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:11
+        # Provide the password for postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+          sudo apt-get -y install libpq-dev
+
+      - name: set up postgres
+        run: |
+          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c 'CREATE DATABASE smart_home_test;' -U postgres
+          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
+          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "ALTER ROLE smart_home SUPERUSER;" -U postgres
+          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Prepary deps
+        run: |
+          echo -e "machine github.com\n  login ${{ secrets.GITHUBTOKEN }}" > ~/.netrc
+          make get_deps
+
+      - name: Unit test code
+        id: test-code
+        run: make test
+
+      - name: System test code
+        id: system-code
+        run: make test_system

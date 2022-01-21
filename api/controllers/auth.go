@@ -20,7 +20,6 @@ package controllers
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/e154/smart-home/api/stub/api"
 	"github.com/e154/smart-home/common"
@@ -104,10 +103,8 @@ func (a ControllerAuth) AccessList(ctx context.Context, _ *emptypb.Empty) (*api.
 		return nil, internalServerError
 	}
 
-	b, _ := json.Marshal(accessList)
-
 	result := &api.AccessListResponse{
-		AccessList: b,
+		AccessList: a.dto.Role.ToAccessListResult(*accessList),
 	}
 
 	return result, nil

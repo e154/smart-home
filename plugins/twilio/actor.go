@@ -21,13 +21,14 @@ package twilio
 import (
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/adaptors"
 	"github.com/e154/smart-home/common"
@@ -119,7 +120,7 @@ func (e *Actor) Send(phone string, message m.Message) (err error) {
 	i := 0
 	for range ticker.C {
 		if i > 15 {
-			err = errors.New("status timeout")
+			err = errors.Wrap(common.ErrTimeout, "wait ticker")
 			return
 		}
 		if status, err = e.GetStatus(resp.Sid); err != nil {
@@ -154,7 +155,7 @@ func (e *Actor) GetStatus(smsId string) (string, error) {
 	}
 
 	if ex != nil {
-		return "", errors.New(ex.Message)
+		return "", errors.Wrap(common.ErrInternal, ex.Message)
 	}
 
 	return resp.Status, nil
@@ -233,7 +234,7 @@ func (p *Actor) UpdateBalance() (err error) {
 
 	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
 		StorageSave: true,
-		Type:        p.Id.Type(),
+		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,
 		OldState:    oldState,
 		NewState:    p.GetEventState(p),
@@ -244,7 +245,7 @@ func (p *Actor) UpdateBalance() (err error) {
 
 func (e *Actor) client() (client *gotwilio.Twilio, err error) {
 	if e.authToken == "" || e.sid == "" {
-		err = errors.New("bad settings parameters")
+		err = common.ErrBadActorSettingsParameters
 		return
 	}
 	client = gotwilio.NewTwilioClient(e.sid, e.authToken)

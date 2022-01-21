@@ -192,11 +192,11 @@ func NewSettings() m.Attributes {
 
 // EventStateChanged ...
 type EventStateChanged struct {
-	Type       common.EntityType `json:"type"`
-	EntityId   common.EntityId   `json:"entity_id"`
-	State      string            `json:"state"`
-	Attributes m.Attributes      `json:"attributes"`
-	Settings   m.Attributes      `json:"settings"`
+	Type       string          `json:"type"`
+	EntityId   common.EntityId `json:"entity_id"`
+	State      string          `json:"state"`
+	Attributes m.Attributes    `json:"attributes"`
+	Settings   m.Attributes    `json:"settings"`
 }
 
 const (

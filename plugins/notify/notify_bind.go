@@ -24,6 +24,8 @@ package notify
 //	 .newMessage()
 //	 .send(msg)
 //
+
+// NotifyBind ...
 type NotifyBind struct {
 	notify *notify
 }

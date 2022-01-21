@@ -40,7 +40,7 @@ type Prototype struct {
 	*Entity
 }
 
-// Entity ...
+// MapElement ...
 type MapElement struct {
 	Id            int64 `gorm:"primary_key"`
 	Name          string

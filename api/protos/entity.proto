@@ -3,37 +3,271 @@ syntax = "proto3";
 package api;
 option go_package = "/api";
 
-message EntityActionShort {
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+import "area.proto";
+import "image.proto";
+import "script.proto";
+import "attributes.proto";
+import "pagination.proto";
+
+message EntityAction {
   string name = 1;
   string description = 2;
-  string image_url = 3;
-  string icon = 4;
+  optional string icon = 3;
+  optional Image image = 5;
+  optional Script script = 6;
+  string type = 7;
 }
 
-message EntityStateShort {
+message EntityState {
   string name = 1;
   string description = 2;
-  string image_url = 3;
-  string icon = 4;
+  optional string icon = 3;
+  optional Image image = 5;
+  string style = 6;
 }
 
+message EntityParent {
+  string id = 1;
+}
 
 message Entity {
-  int64 id = 1;
-  string type = 2;
+  string id = 1;
+  string plugin_name = 2;
   string description = 3;
-  int64 area_id = 4;
-  string icon = 5;
-  int64 image_id = 6;
+  optional Area area = 4;
+  optional Image image = 6;
+  optional string icon = 5;
+  bool auto_load = 8;
+  optional EntityParent parent = 9;
+  repeated EntityAction actions = 10;
+  repeated EntityState states = 11;
+  repeated Script scripts = 12;
+  map<string, Attribute> attributes = 13;
+  map<string, Attribute> settings = 14;
+  map<string, Attribute> metrics = 15;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
+}
+
+message EntityShort {
+  string id = 1;
+  string plugin_name = 2;
+  string description = 3;
+  optional Area area = 4;
+  optional Image image = 6;
+  optional string icon = 5;
+  bool auto_load = 8;
+  optional EntityParent parent = 9;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message NewEntityRequest {
-  string type = 1;
-  string description = 2;
-  int64 area_id = 3;
+  string name = 1;
+  string plugin_name = 2;
+  string description = 3;
+  optional Area area = 4;
+  optional string icon = 5;
+  message Image {
+    int64 id = 1;
+  }
+  optional Image image = 6;
+  bool auto_load = 8;
+  optional EntityParent parent = 9;
+  message Action {
+    string name = 1;
+    string description = 2;
+    optional string icon = 3;
+    optional Image image = 4;
+    message Script {
+      int64 id = 1;
+    }
+    optional Script script = 5;
+    string type = 6;
+  }
+  repeated Action actions = 10;
+  message State {
+    string name = 1;
+    string description = 2;
+    optional string icon = 3;
+    optional Image image = 4;
+    string style = 5;
+  }
+  repeated State states = 11;
+  map<string, Attribute> attributes = 12;
+  map<string, Attribute> settings = 13;
+  map<string, Attribute> metrics = 14;
+  repeated Script scripts = 15;
+}
+
+message UpdateEntityRequest {
+  string id = 1;
+  string name = 2;
+  string plugin_name = 3;
+  string description = 4;
+  optional Area area = 5;
+  optional string icon = 6;
+  message Image {
+    int64 id = 1;
+  }
+  optional Image image = 7;
+  bool auto_load = 9;
+  optional EntityParent parent = 10;
+  message Action {
+    string name = 1;
+    string description = 2;
+    optional string icon = 3;
+    optional Image image = 4;
+    optional Script script = 5;
+    string type = 6;
+  }
+  repeated Action actions = 11;
+  message State {
+    string name = 1;
+    string description = 2;
+    optional string icon = 3;
+    optional Image image = 4;
+    string style = 5;
+  }
+  repeated State states = 12;
+  map<string, Attribute> attributes = 13;
+  map<string, Attribute> settings = 14;
+  repeated Script scripts = 15;
+  map<string, Attribute> metrics = 16;
+}
+
+message GetEntityRequest {
+  string id = 1;
+}
+
+message GetEntityListResult {
+  repeated Entity items = 1;
+  Meta meta = 2;
+}
+
+message DeleteEntityRequest {
+  string id = 1;
+}
+
+message SearchEntityResult {
+  repeated EntityShort items = 1;
+}
+
+message ReloadRequest {
+  string id = 1;
 }
 
 service EntityService {
 
+  // add new entity
+  rpc AddEntity (NewEntityRequest) returns (Entity){
+    option (google.api.http) = {
+      post: "/v1/entity"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
 
+  // update entity
+  rpc UpdateEntity (UpdateEntityRequest) returns (Entity){
+    option (google.api.http) = {
+      put: "/v1/entity/{id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get entity
+  rpc GetEntity (GetEntityRequest) returns (Entity){
+    option (google.api.http) = {
+      get: "/v1/entity/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get entity list
+  rpc GetEntityList (PaginationRequest) returns (GetEntityListResult){
+    option (google.api.http) = {
+      get: "/v1/entities"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // delete entity
+  rpc DeleteEntity (DeleteEntityRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/v1/entity/{id}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // search entity
+  rpc SearchEntity (SearchRequest) returns (SearchEntityResult){
+    option (google.api.http) = {
+      get: "/v1/entity/search"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // reload entity
+  rpc ReloadEntity (ReloadRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/entity/{id}/reload"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
 }

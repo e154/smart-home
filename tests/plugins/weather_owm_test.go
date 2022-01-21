@@ -231,7 +231,7 @@ func TestWeatherOwm(t *testing.T) {
 						case event_bus.EventRequestState:
 						case event_bus.EventAddedActor:
 						case event_bus.EventRemoveActor:
-							if v.Type == "weather_owm" {
+							if v.PluginName == "weather_owm" {
 								ch <- v
 							}
 						}

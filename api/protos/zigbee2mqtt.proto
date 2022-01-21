@@ -8,6 +8,8 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 
+import "pagination.proto";
+
 message NewZigbee2mqttRequest {
   string name = 1;
   string login = 2;
@@ -22,8 +24,8 @@ message Zigbee2mqttShort {
   string login = 3;
   bool permit_join = 4;
   string base_topic = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message Zigbee2mqtt {
@@ -36,8 +38,8 @@ message Zigbee2mqtt {
   string login = 7;
   bool permit_join = 8;
   string base_topic = 9;
-  google.protobuf.Timestamp created_at = 10;
-  google.protobuf.Timestamp updated_at = 11;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message GetBridgeRequest {
@@ -53,20 +55,8 @@ message UpdateBridgeRequest {
   string base_topic = 6;
 }
 
-message GetBridgeListRequest {
-  uint64 limit = 1;
-  uint64 offset = 2;
-  string order = 3;
-  string sort_by = 4;
-}
-
 message GetBridgeListResult {
   repeated Zigbee2mqttShort items = 1;
-  message Meta {
-    uint64 limit = 1;
-    uint64 objects_count = 2;
-    uint64 offset = 3;
-  }
   Meta meta = 2;
 }
 
@@ -101,12 +91,6 @@ message DeviceRenameRequest {
   string new_name = 2;
 }
 
-message SearchDeviceRequest {
-  string query = 1;
-  int64 limit = 2;
-  int64 offset = 3;
-}
-
 message Zigbee2mqttDevice {
   string id = 1;
   int64 zigbee2mqtt_id = 2;
@@ -118,12 +102,24 @@ message Zigbee2mqttDevice {
   repeated string functions = 8;
   string image_url = 9;
   string status = 10;
-  google.protobuf.Timestamp created_at = 11;
-  google.protobuf.Timestamp updated_at = 12;
+  google.protobuf.Timestamp created_at = 99;
+  google.protobuf.Timestamp updated_at = 100;
 }
 
 message SearchDeviceResult {
   repeated Zigbee2mqttDevice items = 1;
+}
+
+message DeviceListRequest {
+  int64 id = 1;
+  uint64 page = 2;
+  uint64 limit = 3;
+  string sort = 4;
+}
+
+message DeviceListResult {
+  repeated Zigbee2mqttDevice items = 1;
+  Meta meta = 2;
 }
 
 service Zigbee2mqttService {
@@ -176,7 +172,7 @@ service Zigbee2mqttService {
   }
 
   // get bridge list
-  rpc GetBridgeList (GetBridgeListRequest) returns (GetBridgeListResult){
+  rpc GetBridgeList (PaginationRequest) returns (GetBridgeListResult){
     option (google.api.http) = {
       get: "/v1/zigbee2mqtt/bridge"
     };
@@ -269,9 +265,24 @@ service Zigbee2mqttService {
   }
 
   // search device
-  rpc SearchDevice (SearchDeviceRequest) returns (SearchDeviceResult){
+  rpc SearchDevice (SearchRequest) returns (SearchDeviceResult){
     option (google.api.http) = {
       get: "/v1/zigbee2mqtt/search_device"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // list device
+  rpc DeviceList (DeviceListRequest) returns (DeviceListResult){
+    option (google.api.http) = {
+      get: "/v1/zigbee2mqtt/bridge/{id}/devices"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

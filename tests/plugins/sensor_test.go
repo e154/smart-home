@@ -86,19 +86,8 @@ entityAction = (entityId, actionName)->
 
 			// add scripts
 			// ------------------------------------------------
-			plugScript := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "sensor script",
-				Source:      fmt.Sprintf(sensorSourceScript, host, port),
-				Description: "sensor script",
-			}
 
-			engineScript, err := scriptService.NewEngine(plugScript)
-			So(err, ShouldBeNil)
-			err = engineScript.Compile()
-			So(err, ShouldBeNil)
-
-			plugScript.Id, err = adaptors.Script.Add(plugScript)
+			plugScript, err := AddScript("sensor script", fmt.Sprintf(sensorSourceScript, host, port), adaptors, scriptService)
 			So(err, ShouldBeNil)
 
 			// add entity

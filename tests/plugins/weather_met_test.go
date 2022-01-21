@@ -104,7 +104,7 @@ func TestWeatherMet(t *testing.T) {
 					settings[weatherPlugin.AttrLat].Value = 54.9022
 					settings[weatherPlugin.AttrLon].Value = 83.0335
 					eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedActor{
-						Type:       weatherPlugin.EntityWeather,
+						PluginName: weatherPlugin.EntityWeather,
 						EntityId:   "weather.home",
 						Attributes: weatherPlugin.BaseForecast(),
 						Settings:   settings,
@@ -199,7 +199,7 @@ func TestWeatherMet(t *testing.T) {
 						case event_bus.EventRequestState:
 						case event_bus.EventAddedActor:
 						case event_bus.EventRemoveActor:
-							if v.Type == "weather_met" {
+							if v.PluginName == "weather_met" {
 								ch <- v
 							}
 						}
@@ -208,8 +208,8 @@ func TestWeatherMet(t *testing.T) {
 					So(err, ShouldBeNil)
 
 					eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
-						Type:     weatherPlugin.EntityWeather,
-						EntityId: "weather.home",
+						PluginName: weatherPlugin.EntityWeather,
+						EntityId:   "weather.home",
 					})
 
 					ticker := time.NewTimer(time.Second * 2)

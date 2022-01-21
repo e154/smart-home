@@ -29,7 +29,7 @@ import (
 // Default ...
 type Default struct{}
 
-// Demo ...
+// InstallDemoData ...
 func (e Default) InstallDemoData(adaptors *adaptors.Adaptors,
 	accessList access_list.AccessListService,
 	scriptService scripts.ScriptService) {
@@ -44,9 +44,9 @@ func (e Default) Create(adaptors *adaptors.Adaptors,
 	NewImageManager(adaptors).Create()
 	NewRoleManager(adaptors, accessList, validation).Create()
 	NewTemplateManager(adaptors).Create()
-	NewZoneManager(adaptors).Create()
 	NewAreaManager(adaptors).Create()
 	NewPluginManager(adaptors).Create()
+	NewZoneManager(adaptors).Create()
 }
 
 // Upgrade ...

@@ -24,6 +24,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/e154/smart-home/common"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -105,7 +108,7 @@ func (c *Cron) timeParser(t string) (result map[int][]int, err error) {
 	args := strings.Split(t, " ")
 
 	if len(args) != 6 {
-		err = fmt.Errorf("bad time string %s", t)
+		err = errors.Wrap(common.ErrBadRequestParams, fmt.Sprintf("bad time string %s", t))
 		return
 	}
 

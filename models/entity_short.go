@@ -25,10 +25,10 @@ import (
 // EntityShort ...
 type EntityShort struct {
 	Id          common.EntityId     `json:"id"`
-	Type        common.EntityType   `json:"type"`
+	Type        string              `json:"type"`
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
-	Icon        *common.Icon        `json:"icon"`
+	Icon        *string             `json:"icon"`
 	ImageUrl    *string             `json:"image_url"`
 	Actions     []EntityActionShort `json:"actions"`
 	States      []EntityStateShort  `json:"states"`

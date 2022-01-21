@@ -20,6 +20,7 @@ package dto
 
 import (
 	"github.com/e154/smart-home/api/stub/api"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -74,14 +75,15 @@ func (i Image) FromUpdateImageRequest(req *api.UpdateImageRequest) (image *m.Ima
 }
 
 // ToImageListResult ...
-func (i Image) ToImageListResult(items []*m.Image, total, limit, offset uint64) (result *api.GetImageListResult) {
+func (i Image) ToImageListResult(items []*m.Image, total uint64, pagination common.PageParams) (result *api.GetImageListResult) {
 
 	result = &api.GetImageListResult{
 		Items: make([]*api.Image, 0, len(items)),
-		Meta: &api.GetImageListResult_Meta{
-			Limit:        limit,
-			ObjectsCount: total,
-			Offset:       offset,
+		Meta: &api.Meta{
+			Limit: uint64(pagination.Limit),
+			Page:  pagination.PageReq,
+			Total: total,
+			Sort:  pagination.SortReq,
 		},
 	}
 

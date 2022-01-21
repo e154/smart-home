@@ -21,8 +21,8 @@ package models
 // Action ...
 type Action struct {
 	Id       int64   `json:"id"`
-	Name     string  `json:"name"`
+	Name     string  `json:"name" validate:"required,lte=255"`
 	TaskId   int64   `json:"task_id"`
 	Script   *Script `json:"script"`
-	ScriptId int64   `json:"script_id"`
+	ScriptId int64   `json:"script_id" validate:"required"`
 }

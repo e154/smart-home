@@ -32,6 +32,8 @@ var (
 // 	 .error()
 // 	 .debug()
 //
+
+// LogBind ...
 type LogBind struct{}
 
 // Info ...

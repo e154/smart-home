@@ -27,6 +27,8 @@ type Dto struct {
 	Plugin      Plugin
 	Entity      Entity
 	Zigbee2mqtt Zigbee2mqtt
+	Area        Area
+	Automation  Automation
 }
 
 // NewDto ...
@@ -39,5 +41,7 @@ func NewDto() Dto {
 		Plugin:      NewPluginDto(),
 		Entity:      NewEntityDto(),
 		Zigbee2mqtt: NewZigbee2mqttDto(),
+		Area:        NewAreaDto(),
+		Automation:  NewAutomationDto(),
 	}
 }

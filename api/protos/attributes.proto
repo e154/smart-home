@@ -4,7 +4,20 @@ package api;
 
 option go_package = "/api";
 
+enum Types {
+  INT = 0;
+  STRING = 1;
+  FLOAT = 2;
+  BOOL = 3;
+  ARRAY = 4;
+}
+
 message Attribute {
   string name = 1;
-  string type = 2;
+  Types type = 2;
+  optional int64 int = 3;
+  optional string string = 4;
+  optional bool bool = 5;
+  optional float float = 6;
+  repeated Attribute array = 7;
 }

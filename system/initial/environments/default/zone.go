@@ -80,7 +80,7 @@ func (n ZoneManager) addZone(name, desc string) {
 	err = n.adaptors.Entity.Add(&m.Entity{
 		Id:          common.EntityId("zone." + name),
 		Description: desc,
-		Type:        "zone",
+		PluginName:  "zone",
 		Attributes:  attributes,
 		AutoLoad:    true,
 	})

@@ -35,7 +35,7 @@ type User struct {
 	FirstName           string         `json:"first_name" validate:"max=255"`
 	LastName            string         `json:"last_name" validate:"max=255"`
 	EncryptedPassword   string         `json:"encrypted_password,omitempty"`
-	Email               string         `json:"email" validate:"required;email"`
+	Email               string         `json:"email" validate:"required,email"`
 	Status              string         `json:"status" validate:"max=255"`
 	ResetPasswordToken  string         `json:"-,omitempty"`
 	AuthenticationToken *string        `json:"authentication_token,omitempty"`

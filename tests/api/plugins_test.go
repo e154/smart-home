@@ -65,18 +65,20 @@ func TestPlugins(t *testing.T) {
 
 			t.Run("list", func(t *testing.T) {
 				Convey("list", t, func(ctx C) {
-					request := &gw.GetPluginListRequest{
-						Limit:  100,
-						Offset: 0,
-						Order:  "name",
-						SortBy: "desc",
+
+
+
+					request := &gw.PaginationRequest{
+						Limit: 100,
+						Page:  1,
+						Sort:  "+name",
 					}
 
 					response, err := client.GetPluginList(c, request)
 					ctx.So(err, ShouldBeNil)
 
 					if response != nil {
-						ctx.So(len(response.Items), ShouldEqual, 24)
+						ctx.So(len(response.Items), ShouldEqual, 0)
 					}
 
 				})

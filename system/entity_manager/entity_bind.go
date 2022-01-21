@@ -32,6 +32,8 @@ import (
 //  .setMetric(name, value)
 //  .callAction(name, value)
 //
+
+// EntityBind ...
 type EntityBind struct {
 	m.EntityShort
 	manager EntityManager

@@ -74,20 +74,10 @@ automationTriggerAlexa = (msg)->
 
 			go mqttServer.Start()
 
-			// task3 scripts
-			task3Script := &m.Script{
-				Lang:        common.ScriptLangCoffee,
-				Name:        "task3",
-				Source:      task3SourceScript,
-				Description: "",
-			}
+			// add scripts
+			// ------------------------------------------------
 
-			task3ScriptEngine, err := scriptService.NewEngine(task3Script)
-			So(err, ShouldBeNil)
-			err = task3ScriptEngine.Compile()
-			So(err, ShouldBeNil)
-
-			task3Script.Id, err = adaptors.Script.Add(task3Script)
+			task3Script, err := AddScript("task3", task3SourceScript, adaptors, scriptService)
 			So(err, ShouldBeNil)
 
 			// automation

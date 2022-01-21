@@ -27,7 +27,7 @@ const (
 	// Name ...
 	Name = "zone"
 	// EntityZone ...
-	EntityZone = common.EntityType(Name)
+	EntityZone = string(Name)
 )
 
 const (

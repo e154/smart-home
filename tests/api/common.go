@@ -20,7 +20,9 @@ package api
 
 import (
 	"github.com/e154/smart-home/adaptors"
+	"github.com/e154/smart-home/common"
 	m "github.com/e154/smart-home/models"
+	"github.com/e154/smart-home/system/scripts"
 )
 
 // AddPlugin ...
@@ -35,5 +37,40 @@ func AddPlugin(adaptors *adaptors.Adaptors, name string, opts ...m.Attributes) (
 		plugin.Settings = opts[0]
 	}
 	err = adaptors.Plugin.CreateOrUpdate(plugin)
+	return
+}
+
+// AddArea ...
+func AddArea(adaptors *adaptors.Adaptors, name string, opts ...m.Attributes) (area *m.Area, err error) {
+	area = &m.Area{
+		Name:        name,
+		Description: "description " + name,
+	}
+
+	area.Id, err = adaptors.Area.Add(area)
+	return
+}
+
+// AddScript ...
+func AddScript(name, src string, adaptors *adaptors.Adaptors, scriptService scripts.ScriptService) (script *m.Script, err error) {
+
+	script = &m.Script{
+		Lang:        common.ScriptLangCoffee,
+		Name:        name,
+		Source:      src,
+		Description: "description " + name,
+	}
+
+	var engine *scripts.Engine
+	if engine, err = scriptService.NewEngine(script); err != nil {
+		return
+	}
+
+	if err = engine.Compile(); err != nil {
+		return
+	}
+
+	script.Id, err = adaptors.Script.Add(script)
+
 	return
 }

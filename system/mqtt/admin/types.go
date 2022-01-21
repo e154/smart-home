@@ -26,8 +26,13 @@ import (
 	"github.com/DrmagicE/gmqtt/server"
 )
 
-// ErrNotFound represents a not found error.
-var ErrNotFound = errors.New("not found")
+var (
+	ErrInvalidTopicFilter = errors.New("invalid topic filter")
+	ErrInvalidQos         = errors.New("invalid Qos")
+	ErrInvalidClientID    = errors.New("invalid clientID")
+	ErrInvalidUtf8String  = errors.New("invalid utf-8 string")
+	ErrNotFound           = errors.New("not found")
+)
 
 // Indexer provides a index for a ordered list that supports queries in O(1).
 // All methods are not concurrency-safe.

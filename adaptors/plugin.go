@@ -33,7 +33,7 @@ type IPlugin interface {
 	Update(plugin m.Plugin) error
 	Delete(pluginId string) error
 	List(limit, offset int64, orderBy, sort string) (list []m.Plugin, total int64, err error)
-	Search(query string, limit, offset int) (list []m.Plugin, total int64, err error)
+	Search(query string, limit, offset int64) (list []m.Plugin, total int64, err error)
 	GetByName(name string) (ver m.Plugin, err error)
 	fromDb(dbVer db.Plugin) (plugin m.Plugin)
 	toDb(plugin m.Plugin) (dbVer db.Plugin)
@@ -61,8 +61,8 @@ func (p *Plugin) Add(plugin m.Plugin) (err error) {
 }
 
 // CreateOrUpdate ...
-func (p *Plugin) CreateOrUpdate(ver m.Plugin) (err error) {
-	err = p.table.CreateOrUpdate(p.toDb(ver))
+func (p *Plugin) CreateOrUpdate(plugin m.Plugin) (err error) {
+	err = p.table.CreateOrUpdate(p.toDb(plugin))
 	return
 }
 
@@ -93,7 +93,7 @@ func (p *Plugin) List(limit, offset int64, orderBy, sort string) (list []m.Plugi
 }
 
 // Search ...
-func (p *Plugin) Search(query string, limit, offset int) (list []m.Plugin, total int64, err error) {
+func (p *Plugin) Search(query string, limit, offset int64) (list []m.Plugin, total int64, err error) {
 	var dbList []db.Plugin
 	if dbList, total, err = p.table.Search(query, limit, offset); err != nil {
 		return
@@ -126,6 +126,7 @@ func (p *Plugin) fromDb(dbVer db.Plugin) (ver m.Plugin) {
 		Version: dbVer.Version,
 		Enabled: dbVer.Enabled,
 		System:  dbVer.System,
+		Actor:   dbVer.Actor,
 	}
 
 	// deserialize settings
@@ -143,6 +144,7 @@ func (p *Plugin) toDb(ver m.Plugin) (dbVer db.Plugin) {
 		Version: ver.Version,
 		Enabled: ver.Enabled,
 		System:  ver.System,
+		Actor:   ver.Actor,
 	}
 
 	// serialize settings

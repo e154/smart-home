@@ -191,7 +191,7 @@ type actorInfo struct {
 type ActorInfo struct {
 	Id                common.EntityId        `json:"id"`
 	ParentId          *common.EntityId       `json:"parent_id"`
-	Type              common.EntityType      `json:"type"`
+	PluginName        string                 `json:"plugin_name"`
 	Name              string                 `json:"name"`
 	Description       string                 `json:"description"`
 	Hidde             bool                   `json:"hidde"`
@@ -201,7 +201,7 @@ type ActorInfo struct {
 	DependsOn         []string               `json:"depends_on"`
 	State             *ActorState            `json:"state"`
 	ImageUrl          *string                `json:"image_url"`
-	Icon              *common.Icon           `json:"icon"`
+	Icon              *string                `json:"icon"`
 	Area              *m.Area                `json:"area"`
 	AutoLoad          bool                   `json:"auto_load"`
 	Value             interface{}            `json:"value"`

@@ -63,7 +63,6 @@ func BuildContainer() (container *dig.Container) {
 	container.Provide(mqtt_authenticator.NewAuthenticator)
 	container.Provide(access_list.NewAccessListService)
 	container.Provide(stream.NewStreamService)
-	container.Provide(stream.NewHub)
 	container.Provide(gate_client.NewGateClient)
 	container.Provide(NewMetricConfig)
 	container.Provide(metrics.NewMetricManager)

@@ -15,6 +15,8 @@
 // migrations/20210605_133028_update_message.sql
 // migrations/20210609_161535_add_telegram.sql
 // migrations/20211213_002431_update_zigbee2mqtt_devices.sql
+// migrations/20211219_181232_update_entity.sql
+// migrations/20220114_222818_update_plugins.sql
 // DO NOT EDIT!
 
 package database
@@ -63,32 +65,21 @@ type bindataFileInfo struct {
 	modTime time.Time
 }
 
-// Name ...
 func (fi bindataFileInfo) Name() string {
 	return fi.name
 }
-
-// Size ...
 func (fi bindataFileInfo) Size() int64 {
 	return fi.size
 }
-
-// Mode ...
 func (fi bindataFileInfo) Mode() os.FileMode {
 	return fi.mode
 }
-
-// ModTime ...
 func (fi bindataFileInfo) ModTime() time.Time {
 	return fi.modTime
 }
-
-// IsDir ...
 func (fi bindataFileInfo) IsDir() bool {
 	return false
 }
-
-// Sys ...
 func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
@@ -388,7 +379,47 @@ func migrations20211213_002431_update_zigbee2mqtt_devicesSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20211213_002431_update_zigbee2mqtt_devices.sql", size: 316, mode: os.FileMode(420), modTime: time.Unix(1639329922, 0)}
+	info := bindataFileInfo{name: "migrations/20211213_002431_update_zigbee2mqtt_devices.sql", size: 316, mode: os.FileMode(420), modTime: time.Unix(1639848845, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20211219_181232_update_entitySql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x91\xb1\x6e\xf3\x30\x0c\x84\x77\x3f\xc5\x6d\xc9\x8f\x1f\x5e\xba\x66\xed\xd8\xa5\x28\x32\x1b\x8a\x74\x71\x08\xcb\x94\x20\xd1\x48\xf3\xf6\x85\xea\x36\xf0\x12\x34\x1a\x79\xa4\xc8\xfb\xae\xef\xf1\x7f\x96\xb1\x38\x23\x8e\xb9\xeb\x7b\x7c\xbc\xbf\x41\x14\x95\xde\x24\x29\x76\xc7\xbc\x83\x54\xf0\x93\x7e\x31\x06\x5c\x2f\x54\xd8\x45\x2a\xd6\xb9\xd6\x24\x15\x2e\xe7\x28\x0c\x9d\x8b\xc6\x02\x73\xa7\x48\x50\x4d\x4c\x58\x3b\x00\x28\x54\x37\x13\x3e\xc5\x65\x56\xd8\x2d\x13\x96\x90\xe3\x32\x8a\x0e\x4d\x3a\x74\x8f\x87\x5d\x08\xf0\x49\xab\x15\x27\x6a\x77\x6d\x78\x19\xd6\x0f\xea\x70\x9e\xbe\x1b\xdb\x3b\xa7\x42\x19\x15\x13\x6f\xd8\x6f\x16\xfc\x43\xe1\x99\x85\xea\x59\x7f\x16\x57\xec\x57\x25\x29\x02\x23\x8d\xa8\x34\xe8\x12\x63\x2b\x2d\x39\x34\x30\xde\x55\xef\x42\x3b\x70\x8b\xeb\x35\x5d\xf5\x17\xd8\x9d\x56\x2b\x3e\xc5\xab\xa4\x18\x19\x70\x72\x7e\x7a\x6c\x3b\x94\x94\xff\xf4\xbd\x39\xef\x49\xf8\x1b\x26\x2d\x83\x96\xc5\xa1\xfb\x0a\x00\x00\xff\xff\xb0\x3e\xce\xcb\x0a\x02\x00\x00")
+
+func migrations20211219_181232_update_entitySqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20211219_181232_update_entitySql,
+		"migrations/20211219_181232_update_entity.sql",
+	)
+}
+
+func migrations20211219_181232_update_entitySql() (*asset, error) {
+	bytes, err := migrations20211219_181232_update_entitySqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20211219_181232_update_entity.sql", size: 522, mode: os.FileMode(420), modTime: time.Unix(1641468876, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20220114_222818_update_pluginsSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xce\x31\x4e\x04\x31\x0c\x85\xe1\x3e\xa7\x78\xdd\x16\x28\x27\xa0\xa5\xa4\x41\x68\x0f\xe0\x89\xbd\x3b\x16\x9e\x38\x4a\x1c\x0d\xc7\x47\x23\x18\x44\x83\xb4\xed\xaf\xf7\xa4\x2f\x67\x3c\x6d\x7a\xef\x14\x82\x6b\x4b\x39\xe3\xfd\xed\x15\x5a\x31\xa4\x84\x7a\xc5\xe5\xda\x2e\xd0\x01\xf9\x94\x32\x43\x18\xfb\x2a\x15\xb1\xea\xc0\xf7\xef\x18\xe9\x00\xb5\x66\x2a\x9c\xc8\x42\x3a\x82\x16\x13\x34\x9b\x77\xad\x23\x01\x00\x31\xa3\xb8\xcd\xad\x82\x4a\x78\xc7\xe2\x6e\x60\xb9\xd1\xb4\xc0\x8d\x6c\xc8\x73\x4a\x7f\x39\x2f\xbe\xd7\x13\xf4\xab\x39\xe2\x43\x9e\xee\x66\xc2\x58\xa8\x7c\xfc\x6b\xe2\xee\xed\x44\xfd\x74\x14\x1a\x85\xf8\xb0\x7c\x05\x00\x00\xff\xff\x72\xc0\x53\x96\x1b\x01\x00\x00")
+
+func migrations20220114_222818_update_pluginsSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20220114_222818_update_pluginsSql,
+		"migrations/20220114_222818_update_plugins.sql",
+	)
+}
+
+func migrations20220114_222818_update_pluginsSql() (*asset, error) {
+	bytes, err := migrations20220114_222818_update_pluginsSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20220114_222818_update_plugins.sql", size: 283, mode: os.FileMode(420), modTime: time.Unix(1642174199, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -460,6 +491,8 @@ var _bindata = map[string]func() (*asset, error){
 	"migrations/20210605_133028_update_message.sql":             migrations20210605_133028_update_messageSql,
 	"migrations/20210609_161535_add_telegram.sql":               migrations20210609_161535_add_telegramSql,
 	"migrations/20211213_002431_update_zigbee2mqtt_devices.sql": migrations20211213_002431_update_zigbee2mqtt_devicesSql,
+	"migrations/20211219_181232_update_entity.sql":              migrations20211219_181232_update_entitySql,
+	"migrations/20220114_222818_update_plugins.sql":             migrations20220114_222818_update_pluginsSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -519,6 +552,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"20210605_133028_update_message.sql":             {migrations20210605_133028_update_messageSql, map[string]*bintree{}},
 		"20210609_161535_add_telegram.sql":               {migrations20210609_161535_add_telegramSql, map[string]*bintree{}},
 		"20211213_002431_update_zigbee2mqtt_devices.sql": {migrations20211213_002431_update_zigbee2mqtt_devicesSql, map[string]*bintree{}},
+		"20211219_181232_update_entity.sql":              {migrations20211219_181232_update_entitySql, map[string]*bintree{}},
+		"20220114_222818_update_plugins.sql":             {migrations20220114_222818_update_pluginsSql, map[string]*bintree{}},
 	}},
 }}
 

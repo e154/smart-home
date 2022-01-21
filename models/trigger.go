@@ -28,11 +28,12 @@ type TriggerPayload struct {
 // Trigger ...
 type Trigger struct {
 	Id         int64            `json:"id"`
-	Name       string           `json:"name"`
+	Name       string           `json:"name" validate:"required,lte=255"`
 	TaskId     int64            `json:"task_id"`
+	Entity     *Entity          `json:"entity"`
 	EntityId   *common.EntityId `json:"entity_id"`
 	Script     *Script          `json:"script"`
-	ScriptId   int64            `json:"script_id"`
-	PluginName string           `json:"plugin_name"`
+	ScriptId   int64            `json:"script_id" validate:"required"`
+	PluginName string           `json:"plugin_name" validate:"required,lte=255"`
 	Payload    Attributes       `json:"payload"`
 }

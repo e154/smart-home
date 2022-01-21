@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-// RoleName ...
+// Role ...
 type Role struct {
 	Name        string              `json:"name" validate:"max=254,required"`
 	Description string              `json:"description"`

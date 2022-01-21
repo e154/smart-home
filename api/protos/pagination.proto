@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "/api";
+
+//import "pagination.proto";
+
+message PaginationRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+  string sort = 3;
+}
+
+message Meta {
+  uint64 limit = 1;
+  uint64 page = 2;
+  uint64 total = 3;
+  string sort = 4;
+}
+
+message SearchRequest {
+  string query = 1;
+  int64 limit = 2;
+  int64 offset = 3;
+}
