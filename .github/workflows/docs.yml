@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - docs
-    tags:
-      - "*"
 
 env:
   GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUBTOKEN }}

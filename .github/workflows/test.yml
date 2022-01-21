@@ -68,3 +68,7 @@ jobs:
       - name: System test code
         id: system-code
         run: make test_system
+
+      - name: trying to build
+        id: build-all
+        run: make all
