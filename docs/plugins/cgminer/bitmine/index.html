@@ -34,12 +34,12 @@ Miner Базовая сущность …">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://e154.github.io/smart-home/docs/plugins/cgminer/bitmine/"><meta property="article:section" content="docs">
 <meta property="article:published_time" content="2021-10-20T00:00:00+00:00">
-<meta property="article:modified_time" content="2022-01-21T14:28:33+07:00"><meta property="og:site_name" content="Умный дом">
+<meta property="article:modified_time" content="2022-01-21T22:04:57+07:00"><meta property="og:site_name" content="Умный дом">
 <meta itemprop=name content="Bitmine">
 <meta itemprop=description content="Работа с устройствами ASIC производителя Bitmine Antminer.
 поддерживаемые усторойства:
  S9 S7 L3 L3 D3 T9  javascript свойства  Miner Базовая сущность # константа с уникальным id устройства const ENTITY_ID result = Miner .stats() .devs() .summary() .pools() .addPool(url string) .version() .enable(poolId int64) .disable(poolId int64) .delete(poolId int64) .switchPool(poolId int64) .restart()    значение описание     result type: Object (Result)       значение описание     stats type: метод, статистика   devs type: метод, статистика   summary type: метод, статистика   pools type: метод, список серверов   addPool type: метод, добавление сервера   version type: метод, версия прошивки   enable type: метод, включение в работу сервера   disable type: метод, включение сервера   delete type: метод, удаление сервера   switchPool type: метод, переключние сервера   restart type: метод, мягкий перезапуск устройства     объект Result result = { error: false, errMessage: &#34;&#34;, result: &#34;&#34; }    значение описание     error type: boolean, признак ошибки   errMessage type: string, человекопонятное описание ошибки   result type: string, json объект в текстовом формате, если запрос завершился без ошибок     функция entityAction entityAction = (entityId, actionName)->    значение описание     entityId type: string, id сущности отправляющего сообщение   actionName type: string, название действия, без символа &lsquo;/&rsquo; в верхнем регистре     Обект Actor Actor."><meta itemprop=datePublished content="2021-10-20T00:00:00+00:00">
-<meta itemprop=dateModified content="2022-01-21T14:28:33+07:00">
+<meta itemprop=dateModified content="2022-01-21T22:04:57+07:00">
 <meta itemprop=wordCount content="293">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Bitmine">
@@ -444,7 +444,7 @@ Miner Базовая сущность …">
     <span style=color:#204a87;font-weight:700>when</span> <span style=color:#4e9a06>&#39;SUM&#39;</span> <span style=color:#204a87;font-weight:700>then</span> <span style=color:#000>checkSum</span><span style=color:#000;font-weight:700>()</span>
 </code></pre></div>
 <div class="text-muted mt-5 pt-3 border-top">
-Изменено 21.01.2022: <a href=https://github.com/e154/smart-home/commit/8974a146f00f5b270d9720743369fc84400eca1c>github actions (8974a14)</a>
+Изменено 21.01.2022: <a href=https://github.com/e154/smart-home/commit/dd47c042f3e8c8098c81c328dcbcea4cb6136d18>Merge pull request #171 from e154/develop (dd47c04)</a>
 </div>
 </div>
 </main>
