@@ -43,10 +43,10 @@ jobs:
 
       - name: set up postgres
         run: |
-          psql -h localhost -p 5432 -c 'CREATE DATABASE smart_home_test;' -U postgres
-          psql -h localhost -p 5432 -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
-          psql -h localhost -p 5432 -c "ALTER ROLE smart_home SUPERUSER;" -U postgres
-          psql -h localhost -p 5432 -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
+          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c 'CREATE DATABASE smart_home_test;' -U postgres
+          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE USER smart_home WITH PASSWORD 'smart_home';" -U postgres
+          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "ALTER ROLE smart_home SUPERUSER;" -U postgres
+          export PGPASSWORD=postgres && psql -h localhost -p 5432 -c "CREATE EXTENSION pgcrypto;" -U postgres smart_home_test;
 
       - name: Checkout
         uses: actions/checkout@v2
