@@ -174,3 +174,21 @@ func (i *ImageEndpoint) GetList(ctx context.Context, pagination common.PageParam
 
 	return
 }
+
+// AddMultiple ...
+func (i *ImageEndpoint) AddMultiple(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
+
+	return
+}
+
+// GetAllByDate ...
+func (i *ImageEndpoint) GetAllByDate(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
+
+	return
+}
+
+// GetFilterList ...
+func (i *ImageEndpoint) GetFilterList(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
+
+	return
+}
