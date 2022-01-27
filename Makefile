@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := build
 build: get_deps build_server build_cli
 tests: lint test
-all: build build_structure build_archive docker_image doc_deploy
+all: build build_structure build_archive docker_image
 deploy: docker_image_upload
 
 EXEC=server
