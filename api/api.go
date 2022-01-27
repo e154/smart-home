@@ -21,6 +21,7 @@ package api
 import (
 	"context"
 	"embed"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net"
 	"net/http"
 	"strings"
@@ -31,7 +32,6 @@ import (
 	"github.com/e154/smart-home/system/rbac"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tmc/grpc-websocket-proxy/wsproxy"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -90,8 +90,6 @@ func (a *Api) Start() error {
 		return err
 	}
 
-	log.Infof("Serving GRPC server at %s", a.cfg.GrpcHostPort)
-
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(a.filter.AuthInterceptor),
 		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
@@ -111,12 +109,16 @@ func (a *Api) Start() error {
 
 	var group errgroup.Group
 
-	group.Go(func() (err error) {
-		if err = grpcServer.Serve(lis); err != nil {
-			log.Error(err.Error())
-		}
-		return
-	})
+	// GRPC
+	if a.cfg.GrpcHostPort != "" {
+		group.Go(func() (err error) {
+			if err = grpcServer.Serve(lis); err != nil {
+				log.Error(err.Error())
+			}
+			return
+		})
+		log.Infof("Serving GRPC server at %s", a.cfg.GrpcHostPort)
+	}
 
 	//todo check ...
 	//OrigName:     true,
@@ -152,6 +154,7 @@ func (a *Api) Start() error {
 		return nil
 	})
 
+	// WS
 	if a.cfg.WsHostPort != "" {
 		group.Go(func() error {
 			return http.ListenAndServe(a.cfg.WsHostPort, wsproxy.WebsocketProxy(mux))
@@ -159,6 +162,7 @@ func (a *Api) Start() error {
 		log.Infof("Serving WS server at %s", a.cfg.WsHostPort)
 	}
 
+	// PROMETHEUS
 	if a.cfg.PromHostPort != "" {
 		group.Go(func() error {
 			return http.ListenAndServe(a.cfg.PromHostPort, promhttp.Handler())
@@ -166,28 +170,27 @@ func (a *Api) Start() error {
 		log.Infof("Serving PROMETHEUS server at %s", a.cfg.PromHostPort)
 	}
 
+	// HTTP
+	httpv1 := http.NewServeMux()
+	httpv1.Handle("/", grpcHandlerFunc(grpcServer, mux))
+
+	// upload handler
+	httpv1.HandleFunc("/v1/image/upload", a.controllers.Image.MuxUploadImage())
+
+	// uploaded and other static files
+	httpv1.Handle("/upload", http.FileServer(http.Dir(common.StoragePath())))
+	httpv1.Handle("/api_static", http.FileServer(http.Dir(common.StoragePath())))
+
+	// swagger
 	if a.cfg.Swagger {
-		httpv1 := http.NewServeMux()
-		httpv1.Handle("/", grpcHandlerFunc(grpcServer, mux))
-
-		// upload handler
-		httpv1.HandleFunc("/v1/image/upload", a.controllers.Image.MuxUploadImage())
-
-		// uploaded and other static files
-		httpv1.Handle("/upload", http.FileServer(http.Dir(common.StoragePath())))
-		httpv1.Handle("/api_static", http.FileServer(http.Dir(common.StoragePath())))
-
-		// swagger
 		httpv1.Handle("/swagger-ui/", http.StripPrefix("/", http.FileServer(http.FS(f))))
 		httpv1.Handle("/api.swagger.json", http.StripPrefix("/", http.FileServer(http.FS(f))))
-
-		go func() {
-			if err = http.ListenAndServe(a.cfg.HttpHostPort, httpv1); err != nil {
-				log.Fatal(err.Error())
-			}
-		}()
-		log.Infof("Serving HTTP server at %s", a.cfg.HttpHostPort)
 	}
+
+	group.Go(func() error {
+		return http.ListenAndServe(a.cfg.HttpHostPort, httpv1)
+	})
+	log.Infof("Serving HTTP server at %s", a.cfg.HttpHostPort)
 
 	return group.Wait()
 }
