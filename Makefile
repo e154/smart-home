@@ -157,17 +157,17 @@ build_archive:
 	@echo MARK: build app archive
 	cd ${TMP_DIR} && ls -l && tar -zcf ${HOME}/${ARCHIVE} .
 
-docs_build:
+build_docs:
 	@echo MARK: build doc
-	cd ${ROOT}/doc && \
-	npm install postcss-cli && \
+	cd ${ROOT}/doc
+	npm install postcss-cli
 	hugo --gc --minify
 
 docs_dev:
-	cd ${ROOT}/doc && \
+	cd ${ROOT}/doc
 	hugo server --buildDrafts --verbose --source="${ROOT}/doc" --config="${ROOT}/doc/config.toml" --port=1377 --disableFastRender
 
-docs_deploy:
+doc_deploy:
 	@echo MARK: deploy doc
 	cd ${ROOT}/doc && \
 	echo -e "node version.\n"  && \
@@ -197,8 +197,7 @@ docker_image:
 	cd ${TMP_DIR} && ls -ll && docker build -f ${ROOT}/bin/docker/Dockerfile -t ${DOCKER_ACCOUNT}/${IMAGE} .
 
 docker_image_upload:
-	echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-	echo -e "run command docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}"
+	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
 	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_VER}
 	echo -e "docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}"
 	docker tag ${DOCKER_ACCOUNT}/${IMAGE} ${DOCKER_IMAGE_LATEST}
