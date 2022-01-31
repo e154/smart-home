@@ -58,6 +58,22 @@ message UploadImageRequest {
   bytes body = 2;
 }
 
+message GetImageListByDateRequest {
+  string filter = 1;
+}
+
+message GetImageListByDateResult {
+  repeated Image items = 1;
+}
+
+message GetImageFilterListResult {
+  message filter {
+    string date = 1;
+    int32 count = 2;
+  }
+  repeated filter items = 1;
+}
+
 service ImageService {
 
   // add new image
@@ -152,4 +168,35 @@ service ImageService {
       }
     };
   }
+
+  // get image list by date
+  rpc GetImageListByDate (GetImageListByDateRequest) returns (GetImageListByDateResult){
+    option (google.api.http) = {
+      get: "/v1/images/filtered"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // get image filter list
+  rpc GetImageFilterList (google.protobuf.Empty) returns (GetImageFilterListResult){
+    option (google.api.http) = {
+      get: "/v1/images/filter_list"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
 }

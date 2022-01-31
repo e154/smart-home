@@ -105,3 +105,8 @@ func (t Trigger) FunctionName() string {
 func (t Trigger) topic(n int64) string {
 	return fmt.Sprintf("skill_%d", n)
 }
+
+// CallManual ...
+func (t Trigger) CallManual() {
+	log.Warn("method not implemented")
+}

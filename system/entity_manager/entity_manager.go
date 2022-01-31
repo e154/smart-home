@@ -378,7 +378,7 @@ func (e *entityManager) eventStateChangedHandler(msg event_bus.EventStateChanged
 
 func (e *entityManager) eventLoadedPlugin(msg event_bus.EventLoadedPlugin) (err error) {
 
-	log.Infof("Load plugin \"%s\" entities", msg.PluginName)
+	log.Infof("Load plugin '%s' entities", msg.PluginName)
 
 	var entities []*m.Entity
 	if entities, err = e.adaptors.Entity.GetByType(msg.PluginName, 1000, 0); err != nil {
@@ -396,7 +396,7 @@ func (e *entityManager) eventLoadedPlugin(msg event_bus.EventLoadedPlugin) (err 
 
 func (e *entityManager) eventUnloadedPlugin(msg event_bus.EventUnloadedPlugin) {
 
-	log.Infof("Unload plugin \"%s\" entities", msg.PluginName)
+	log.Infof("Unload plugin '%s' entities", msg.PluginName)
 
 	e.actors.Range(func(key, value interface{}) bool {
 		entityId := key.(common.EntityId)

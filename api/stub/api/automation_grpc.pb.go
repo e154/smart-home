@@ -29,6 +29,10 @@ type AutomationServiceClient interface {
 	GetTaskList(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*GetTaskListResult, error)
 	// delete task
 	DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// task call trigger
+	TaskCallTrigger(ctx context.Context, in *CallRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// task call action
+	TaskCallAction(ctx context.Context, in *CallRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type automationServiceClient struct {
@@ -84,6 +88,24 @@ func (c *automationServiceClient) DeleteTask(ctx context.Context, in *DeleteTask
 	return out, nil
 }
 
+func (c *automationServiceClient) TaskCallTrigger(ctx context.Context, in *CallRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.AutomationService/TaskCallTrigger", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *automationServiceClient) TaskCallAction(ctx context.Context, in *CallRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/api.AutomationService/TaskCallAction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AutomationServiceServer is the server API for AutomationService service.
 // All implementations should embed UnimplementedAutomationServiceServer
 // for forward compatibility
@@ -98,6 +120,10 @@ type AutomationServiceServer interface {
 	GetTaskList(context.Context, *PaginationRequest) (*GetTaskListResult, error)
 	// delete task
 	DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error)
+	// task call trigger
+	TaskCallTrigger(context.Context, *CallRequest) (*emptypb.Empty, error)
+	// task call action
+	TaskCallAction(context.Context, *CallRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedAutomationServiceServer should be embedded to have forward compatible implementations.
@@ -118,6 +144,12 @@ func (UnimplementedAutomationServiceServer) GetTaskList(context.Context, *Pagina
 }
 func (UnimplementedAutomationServiceServer) DeleteTask(context.Context, *DeleteTaskRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTask not implemented")
+}
+func (UnimplementedAutomationServiceServer) TaskCallTrigger(context.Context, *CallRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TaskCallTrigger not implemented")
+}
+func (UnimplementedAutomationServiceServer) TaskCallAction(context.Context, *CallRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TaskCallAction not implemented")
 }
 
 // UnsafeAutomationServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -221,6 +253,42 @@ func _AutomationService_DeleteTask_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AutomationService_TaskCallTrigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CallRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AutomationServiceServer).TaskCallTrigger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.AutomationService/TaskCallTrigger",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AutomationServiceServer).TaskCallTrigger(ctx, req.(*CallRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AutomationService_TaskCallAction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CallRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AutomationServiceServer).TaskCallAction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.AutomationService/TaskCallAction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AutomationServiceServer).TaskCallAction(ctx, req.(*CallRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AutomationService_ServiceDesc is the grpc.ServiceDesc for AutomationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -247,6 +315,14 @@ var AutomationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteTask",
 			Handler:    _AutomationService_DeleteTask_Handler,
+		},
+		{
+			MethodName: "TaskCallTrigger",
+			Handler:    _AutomationService_TaskCallTrigger_Handler,
+		},
+		{
+			MethodName: "TaskCallAction",
+			Handler:    _AutomationService_TaskCallAction_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

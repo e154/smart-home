@@ -21,6 +21,8 @@ package endpoint
 import (
 	"context"
 
+	"github.com/e154/smart-home/system/event_bus"
+
 	"github.com/pkg/errors"
 
 	"github.com/e154/smart-home/common"
@@ -123,6 +125,28 @@ func (n *TaskEndpoint) List(ctx context.Context, pagination common.PageParams) (
 	if err != nil {
 		err = errors.Wrap(common.ErrInternal, err.Error())
 	}
+
+	return
+}
+
+// TaskCallTrigger ...
+func (n *TaskEndpoint) TaskCallTrigger(ctx context.Context, id int64, name string) (err error) {
+
+	n.eventBus.Publish(event_bus.TopicAutomation, event_bus.EventCallTaskTrigger{
+		Id:   id,
+		Name: name,
+	})
+
+	return
+}
+
+// TaskCallAction ...
+func (n *TaskEndpoint) TaskCallAction(ctx context.Context, id int64, name string) (err error) {
+
+	n.eventBus.Publish(event_bus.TopicAutomation, event_bus.EventCallTaskAction{
+		Id:   id,
+		Name: name,
+	})
 
 	return
 }

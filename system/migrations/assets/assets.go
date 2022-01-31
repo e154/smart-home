@@ -17,6 +17,7 @@
 // migrations/20211213_002431_update_zigbee2mqtt_devices.sql
 // migrations/20211219_181232_update_entity.sql
 // migrations/20220114_222818_update_plugins.sql
+// migrations/20220201_003002_update_triggers.sql
 // DO NOT EDIT!
 
 package database
@@ -399,7 +400,7 @@ func migrations20211219_181232_update_entitySql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20211219_181232_update_entity.sql", size: 522, mode: os.FileMode(420), modTime: time.Unix(1641468876, 0)}
+	info := bindataFileInfo{name: "migrations/20211219_181232_update_entity.sql", size: 522, mode: os.FileMode(420), modTime: time.Unix(1642782060, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -419,7 +420,27 @@ func migrations20220114_222818_update_pluginsSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "migrations/20220114_222818_update_plugins.sql", size: 283, mode: os.FileMode(420), modTime: time.Unix(1642174199, 0)}
+	info := bindataFileInfo{name: "migrations/20220114_222818_update_plugins.sql", size: 283, mode: os.FileMode(420), modTime: time.Unix(1642782060, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _migrations20220201_003002_update_triggersSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x8f\x3d\x4e\xc4\x30\x10\x46\x7b\x9f\xe2\xeb\x16\x04\x3e\xc1\xb6\x94\x34\x08\x6d\x6d\x0d\xf6\x28\x3b\xda\xec\xd8\xf1\x8f\x92\xe3\x23\x03\x81\x20\x50\xb4\xed\xa7\x37\x4f\xf3\xac\xc5\xc3\x55\x86\x4c\x95\x71\x4a\xc6\x5a\xbc\xbe\x3c\x43\x14\x85\x7d\x95\xa8\x38\x9c\xd2\x01\x52\xc0\x0b\xfb\x56\x39\x60\x3e\xb3\xa2\x9e\xa5\xe0\xf3\xae\x43\x52\x40\x29\x8d\xc2\xc1\xf8\xcc\xdd\xd5\x54\xa6\xc6\x10\x0d\xbc\x40\xe9\xca\x8e\xaa\xab\x59\x86\x81\x73\x71\x4d\x27\x03\x00\x51\xb1\x6e\xb8\xeb\xd4\x23\x2a\x95\x8b\x93\x70\x7f\xdc\x35\xd1\xc7\x73\xbf\x44\x5f\xd3\x5f\x8f\xd9\x36\x3e\xc5\x59\xd7\xca\xef\xc4\x3e\xde\x14\x99\xe3\x38\x72\xc0\x1b\xf9\x8b\x09\x39\xa6\x9d\x3e\x78\x2a\x9e\x02\x1f\xff\x03\x37\xef\xff\x70\xe6\x3d\x00\x00\xff\xff\x20\x00\x08\x6f\x8c\x01\x00\x00")
+
+func migrations20220201_003002_update_triggersSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_migrations20220201_003002_update_triggersSql,
+		"migrations/20220201_003002_update_triggers.sql",
+	)
+}
+
+func migrations20220201_003002_update_triggersSql() (*asset, error) {
+	bytes, err := migrations20220201_003002_update_triggersSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "migrations/20220201_003002_update_triggers.sql", size: 396, mode: os.FileMode(420), modTime: time.Unix(1643650547, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -476,23 +497,24 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"migrations/20210314_133041_global_reset.sql":               migrations20210314_133041_global_resetSql,
-	"migrations/20210401_225727_add_automation.sql":             migrations20210401_225727_add_automationSql,
-	"migrations/20210415_172812_run_history.sql":                migrations20210415_172812_run_historySql,
-	"migrations/20210422_161648_update_variables.sql":           migrations20210422_161648_update_variablesSql,
-	"migrations/20210422_220814_update_entity.sql":              migrations20210422_220814_update_entitySql,
-	"migrations/20210426_184659_add_plugins.sql":                migrations20210426_184659_add_pluginsSql,
-	"migrations/20210505_161526_drop_nodes.sql":                 migrations20210505_161526_drop_nodesSql,
-	"migrations/20210514_161024_update_alexa.sql":               migrations20210514_161024_update_alexaSql,
-	"migrations/20210519_173101_add_settings.sql":               migrations20210519_173101_add_settingsSql,
-	"migrations/20210521_235148_remove_zone.sql":                migrations20210521_235148_remove_zoneSql,
-	"migrations/20210603_153850_update_messages.sql":            migrations20210603_153850_update_messagesSql,
-	"migrations/20210604_200254_update_plugin.sql":              migrations20210604_200254_update_pluginSql,
-	"migrations/20210605_133028_update_message.sql":             migrations20210605_133028_update_messageSql,
-	"migrations/20210609_161535_add_telegram.sql":               migrations20210609_161535_add_telegramSql,
+	"migrations/20210314_133041_global_reset.sql": migrations20210314_133041_global_resetSql,
+	"migrations/20210401_225727_add_automation.sql": migrations20210401_225727_add_automationSql,
+	"migrations/20210415_172812_run_history.sql": migrations20210415_172812_run_historySql,
+	"migrations/20210422_161648_update_variables.sql": migrations20210422_161648_update_variablesSql,
+	"migrations/20210422_220814_update_entity.sql": migrations20210422_220814_update_entitySql,
+	"migrations/20210426_184659_add_plugins.sql": migrations20210426_184659_add_pluginsSql,
+	"migrations/20210505_161526_drop_nodes.sql": migrations20210505_161526_drop_nodesSql,
+	"migrations/20210514_161024_update_alexa.sql": migrations20210514_161024_update_alexaSql,
+	"migrations/20210519_173101_add_settings.sql": migrations20210519_173101_add_settingsSql,
+	"migrations/20210521_235148_remove_zone.sql": migrations20210521_235148_remove_zoneSql,
+	"migrations/20210603_153850_update_messages.sql": migrations20210603_153850_update_messagesSql,
+	"migrations/20210604_200254_update_plugin.sql": migrations20210604_200254_update_pluginSql,
+	"migrations/20210605_133028_update_message.sql": migrations20210605_133028_update_messageSql,
+	"migrations/20210609_161535_add_telegram.sql": migrations20210609_161535_add_telegramSql,
 	"migrations/20211213_002431_update_zigbee2mqtt_devices.sql": migrations20211213_002431_update_zigbee2mqtt_devicesSql,
-	"migrations/20211219_181232_update_entity.sql":              migrations20211219_181232_update_entitySql,
-	"migrations/20220114_222818_update_plugins.sql":             migrations20220114_222818_update_pluginsSql,
+	"migrations/20211219_181232_update_entity.sql": migrations20211219_181232_update_entitySql,
+	"migrations/20220114_222818_update_plugins.sql": migrations20220114_222818_update_pluginsSql,
+	"migrations/20220201_003002_update_triggers.sql": migrations20220201_003002_update_triggersSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -534,26 +556,26 @@ type bintree struct {
 	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
-
 var _bintree = &bintree{nil, map[string]*bintree{
-	"migrations": {nil, map[string]*bintree{
-		"20210314_133041_global_reset.sql":               {migrations20210314_133041_global_resetSql, map[string]*bintree{}},
-		"20210401_225727_add_automation.sql":             {migrations20210401_225727_add_automationSql, map[string]*bintree{}},
-		"20210415_172812_run_history.sql":                {migrations20210415_172812_run_historySql, map[string]*bintree{}},
-		"20210422_161648_update_variables.sql":           {migrations20210422_161648_update_variablesSql, map[string]*bintree{}},
-		"20210422_220814_update_entity.sql":              {migrations20210422_220814_update_entitySql, map[string]*bintree{}},
-		"20210426_184659_add_plugins.sql":                {migrations20210426_184659_add_pluginsSql, map[string]*bintree{}},
-		"20210505_161526_drop_nodes.sql":                 {migrations20210505_161526_drop_nodesSql, map[string]*bintree{}},
-		"20210514_161024_update_alexa.sql":               {migrations20210514_161024_update_alexaSql, map[string]*bintree{}},
-		"20210519_173101_add_settings.sql":               {migrations20210519_173101_add_settingsSql, map[string]*bintree{}},
-		"20210521_235148_remove_zone.sql":                {migrations20210521_235148_remove_zoneSql, map[string]*bintree{}},
-		"20210603_153850_update_messages.sql":            {migrations20210603_153850_update_messagesSql, map[string]*bintree{}},
-		"20210604_200254_update_plugin.sql":              {migrations20210604_200254_update_pluginSql, map[string]*bintree{}},
-		"20210605_133028_update_message.sql":             {migrations20210605_133028_update_messageSql, map[string]*bintree{}},
-		"20210609_161535_add_telegram.sql":               {migrations20210609_161535_add_telegramSql, map[string]*bintree{}},
-		"20211213_002431_update_zigbee2mqtt_devices.sql": {migrations20211213_002431_update_zigbee2mqtt_devicesSql, map[string]*bintree{}},
-		"20211219_181232_update_entity.sql":              {migrations20211219_181232_update_entitySql, map[string]*bintree{}},
-		"20220114_222818_update_plugins.sql":             {migrations20220114_222818_update_pluginsSql, map[string]*bintree{}},
+	"migrations": &bintree{nil, map[string]*bintree{
+		"20210314_133041_global_reset.sql": &bintree{migrations20210314_133041_global_resetSql, map[string]*bintree{}},
+		"20210401_225727_add_automation.sql": &bintree{migrations20210401_225727_add_automationSql, map[string]*bintree{}},
+		"20210415_172812_run_history.sql": &bintree{migrations20210415_172812_run_historySql, map[string]*bintree{}},
+		"20210422_161648_update_variables.sql": &bintree{migrations20210422_161648_update_variablesSql, map[string]*bintree{}},
+		"20210422_220814_update_entity.sql": &bintree{migrations20210422_220814_update_entitySql, map[string]*bintree{}},
+		"20210426_184659_add_plugins.sql": &bintree{migrations20210426_184659_add_pluginsSql, map[string]*bintree{}},
+		"20210505_161526_drop_nodes.sql": &bintree{migrations20210505_161526_drop_nodesSql, map[string]*bintree{}},
+		"20210514_161024_update_alexa.sql": &bintree{migrations20210514_161024_update_alexaSql, map[string]*bintree{}},
+		"20210519_173101_add_settings.sql": &bintree{migrations20210519_173101_add_settingsSql, map[string]*bintree{}},
+		"20210521_235148_remove_zone.sql": &bintree{migrations20210521_235148_remove_zoneSql, map[string]*bintree{}},
+		"20210603_153850_update_messages.sql": &bintree{migrations20210603_153850_update_messagesSql, map[string]*bintree{}},
+		"20210604_200254_update_plugin.sql": &bintree{migrations20210604_200254_update_pluginSql, map[string]*bintree{}},
+		"20210605_133028_update_message.sql": &bintree{migrations20210605_133028_update_messageSql, map[string]*bintree{}},
+		"20210609_161535_add_telegram.sql": &bintree{migrations20210609_161535_add_telegramSql, map[string]*bintree{}},
+		"20211213_002431_update_zigbee2mqtt_devices.sql": &bintree{migrations20211213_002431_update_zigbee2mqtt_devicesSql, map[string]*bintree{}},
+		"20211219_181232_update_entity.sql": &bintree{migrations20211219_181232_update_entitySql, map[string]*bintree{}},
+		"20220114_222818_update_plugins.sql": &bintree{migrations20220114_222818_update_pluginsSql, map[string]*bintree{}},
+		"20220201_003002_update_triggers.sql": &bintree{migrations20220201_003002_update_triggersSql, map[string]*bintree{}},
 	}},
 }}
 
@@ -603,3 +625,4 @@ func _filePath(dir, name string) string {
 	cannonicalName := strings.Replace(name, "\\", "/", -1)
 	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
+

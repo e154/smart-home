@@ -103,3 +103,44 @@ func (i Image) ToImageListResult(items []*m.Image, total uint64, pagination comm
 
 	return
 }
+
+// ToImageList ...
+func (i Image) ToImageList(items []*m.Image) (result *api.GetImageListByDateResult) {
+
+	result = &api.GetImageListByDateResult{
+		Items: make([]*api.Image, 0, len(items)),
+	}
+
+	for _, item := range items {
+		result.Items = append(result.Items, &api.Image{
+			Id:        item.Id,
+			Thumb:     item.Thumb,
+			Url:       item.Url,
+			Image:     item.Image,
+			MimeType:  item.MimeType,
+			Title:     item.Title,
+			Size:      item.Size,
+			Name:      item.Name,
+			CreatedAt: timestamppb.New(item.CreatedAt),
+		})
+	}
+
+	return
+}
+
+// ToFilterList ...
+func (i Image) ToFilterList(items []*m.ImageFilterList) (result *api.GetImageFilterListResult) {
+
+	result = &api.GetImageFilterListResult{
+		Items: make([]*api.GetImageFilterListResultFilter, 0, len(items)),
+	}
+
+	for _, item := range items {
+		result.Items = append(result.Items, &api.GetImageFilterListResultFilter{
+			Date:  item.Date,
+			Count: int32(item.Count),
+		})
+	}
+
+	return
+}

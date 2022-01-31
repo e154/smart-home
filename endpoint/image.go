@@ -175,20 +175,22 @@ func (i *ImageEndpoint) GetList(ctx context.Context, pagination common.PageParam
 	return
 }
 
-// AddMultiple ...
-func (i *ImageEndpoint) AddMultiple(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
+// GetListByDate ...
+func (i *ImageEndpoint) GetListByDate(ctx context.Context, filter string) (images []*m.Image, err error) {
 
-	return
-}
-
-// GetAllByDate ...
-func (i *ImageEndpoint) GetAllByDate(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
+	if images, err = i.adaptors.Image.GetAllByDate(filter); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }
 
 // GetFilterList ...
-func (i *ImageEndpoint) GetFilterList(ctx context.Context, pagination common.PageParams) (items []*m.Image, total int64, err error) {
+func (i *ImageEndpoint) GetFilterList(ctx context.Context) (filterList []*m.ImageFilterList, err error) {
+
+	if filterList, err = i.adaptors.Image.GetFilterList(); err != nil {
+		err = errors.Wrap(common.ErrInternal, err.Error())
+	}
 
 	return
 }

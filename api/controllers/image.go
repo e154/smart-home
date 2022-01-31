@@ -129,3 +129,21 @@ func (c ControllerImage) MuxUploadImage() func(w http.ResponseWriter, r *http.Re
 		})
 	}
 }
+
+// GetImageListByDate ...
+func (c ControllerImage) GetImageListByDate(ctx context.Context, request *api.GetImageListByDateRequest) (*api.GetImageListByDateResult, error) {
+	images, err := c.endpoint.Image.GetListByDate(ctx, request.Filter)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+	return c.dto.Image.ToImageList(images), nil
+}
+
+// GetImageFilterList ...
+func (c ControllerImage) GetImageFilterList(ctx context.Context, empty *emptypb.Empty) (*api.GetImageFilterListResult, error) {
+	filters, err := c.endpoint.Image.GetFilterList(ctx)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+	return c.dto.Image.ToFilterList(filters), nil
+}

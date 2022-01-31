@@ -955,6 +955,70 @@
         ]
       }
     },
+    "/v1/images/filter_list": {
+      "get": {
+        "summary": "get image filter list",
+        "operationId": "ImageService_GetImageFilterList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetImageFilterListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ImageService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/images/filtered": {
+      "get": {
+        "summary": "get image list by date",
+        "operationId": "ImageService_GetImageListByDate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetImageListByDateResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ImageService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/plugin/{name}/disable": {
       "post": {
         "summary": "disable plugin",
@@ -2130,6 +2194,92 @@
         ]
       }
     },
+    "/v1/task/{id}/call_action/{name}": {
+      "post": {
+        "summary": "task call action",
+        "operationId": "AutomationService_TaskCallAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AutomationService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/task/{id}/call_trigger/{name}": {
+      "post": {
+        "summary": "task call trigger",
+        "operationId": "AutomationService_TaskCallTrigger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AutomationService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/tasks": {
       "get": {
         "summary": "get task list",
@@ -3038,6 +3188,18 @@
         }
       }
     },
+    "GetImageFilterListResultfilter": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "NewEntityRequestActionScript": {
       "type": "object",
       "properties": {
@@ -3529,6 +3691,28 @@
         },
         "meta": {
           "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
+    "apiGetImageFilterListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetImageFilterListResultfilter"
+          }
+        }
+      }
+    },
+    "apiGetImageListByDateResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiImage"
+          }
         }
       }
     },

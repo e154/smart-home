@@ -92,3 +92,15 @@ type EventUpdatedEntity struct {
 type EventDeletedEntity struct {
 	Id common.EntityId `json:"id"`
 }
+
+// EventCallTaskTrigger ...
+type EventCallTaskTrigger struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+// EventCallTaskAction ...
+type EventCallTaskAction struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+}

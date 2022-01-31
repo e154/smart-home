@@ -88,6 +88,11 @@ message DeleteTaskRequest {
   int64 id = 1;
 }
 
+message CallRequest {
+  int64 id = 1;
+  string name = 2;
+}
+
 service AutomationService {
 
   // add new task
@@ -166,4 +171,35 @@ service AutomationService {
       }
     };
   }
+
+  // task call trigger
+  rpc TaskCallTrigger (CallRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/task/{id}/call_trigger/{name}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
+  // task call action
+  rpc TaskCallAction (CallRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v1/task/{id}/call_action/{name}"
+    };
+    option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "ApiKeyAuth"
+          value: {}
+        }
+      }
+    };
+  }
+
 }

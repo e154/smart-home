@@ -90,3 +90,21 @@ func (c ControllerAutomation) DeleteTask(ctx context.Context, req *api.DeleteTas
 
 	return &emptypb.Empty{}, nil
 }
+
+func (c ControllerAutomation) TaskCallTrigger(ctx context.Context, req *api.CallRequest) (*emptypb.Empty, error) {
+
+	if err := c.endpoint.Task.TaskCallAction(ctx, req.Id, req.Name); err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+func (c ControllerAutomation) TaskCallAction(ctx context.Context, req *api.CallRequest) (*emptypb.Empty, error) {
+
+	if err := c.endpoint.Task.TaskCallAction(ctx, req.Id, req.Name); err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return &emptypb.Empty{}, nil
+}

@@ -22,6 +22,7 @@
 // │ TASK │  │ TASK │  │ TASK │
 // └──────┘  └──────┘  └──────┘   ...
 //
+
 package automation
 
 import (
@@ -101,12 +102,14 @@ func NewAutomation(lc fx.Lifecycle,
 // Start ...
 func (a *automation) Start() (err error) {
 	a.load()
+	_ = a.eventBus.Subscribe(event_bus.TopicAutomation, a.eventHandler)
 	return
 }
 
 // Shutdown ...
 func (a *automation) Shutdown() (err error) {
 	a.unload()
+	_ = a.eventBus.Unsubscribe(event_bus.TopicAutomation, a.eventHandler)
 	return
 }
 
@@ -191,5 +194,35 @@ func (a *automation) RemoveTask(model *m.Task) {
 		task.Stop()
 		delete(a.tasks, model.Id)
 		a.taskCount.Dec()
+	}
+}
+
+func (a *automation) eventHandler(_ string, msg interface{}) {
+
+	switch v := msg.(type) {
+	case event_bus.EventCallTaskAction:
+		go a.CallAction(v.Id, v.Name)
+	case event_bus.EventCallTaskTrigger:
+		go a.CallTrigger(v.Id, v.Name)
+	}
+
+	return
+}
+
+func (a *automation) CallTrigger(id int64, name string) {
+	a.taskLock.Lock()
+	defer a.taskLock.Unlock()
+
+	if task, ok := a.tasks[id]; ok {
+		task.CallTrigger(name)
+	}
+}
+
+func (a *automation) CallAction(id int64, name string) {
+	a.taskLock.Lock()
+	defer a.taskLock.Unlock()
+
+	if task, ok := a.tasks[id]; ok {
+		task.CallAction(name)
 	}
 }

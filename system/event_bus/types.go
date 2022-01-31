@@ -74,4 +74,6 @@ const (
 	TopicEntities = "entities"
 	// TopicPlugins ...
 	TopicPlugins = "plugins"
+	// TopicAutomation ...
+	TopicAutomation = "automation"
 )

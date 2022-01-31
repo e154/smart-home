@@ -513,6 +513,202 @@ func (x *UploadImageRequest) GetBody() []byte {
 	return nil
 }
 
+type GetImageListByDateRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Filter string `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+}
+
+func (x *GetImageListByDateRequest) Reset() {
+	*x = GetImageListByDateRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_image_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetImageListByDateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetImageListByDateRequest) ProtoMessage() {}
+
+func (x *GetImageListByDateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_image_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetImageListByDateRequest.ProtoReflect.Descriptor instead.
+func (*GetImageListByDateRequest) Descriptor() ([]byte, []int) {
+	return file_image_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetImageListByDateRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+type GetImageListByDateResult struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Items []*Image `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+}
+
+func (x *GetImageListByDateResult) Reset() {
+	*x = GetImageListByDateResult{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_image_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetImageListByDateResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetImageListByDateResult) ProtoMessage() {}
+
+func (x *GetImageListByDateResult) ProtoReflect() protoreflect.Message {
+	mi := &file_image_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetImageListByDateResult.ProtoReflect.Descriptor instead.
+func (*GetImageListByDateResult) Descriptor() ([]byte, []int) {
+	return file_image_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetImageListByDateResult) GetItems() []*Image {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+type GetImageFilterListResult struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Items []*GetImageFilterListResultFilter `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+}
+
+func (x *GetImageFilterListResult) Reset() {
+	*x = GetImageFilterListResult{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_image_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetImageFilterListResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetImageFilterListResult) ProtoMessage() {}
+
+func (x *GetImageFilterListResult) ProtoReflect() protoreflect.Message {
+	mi := &file_image_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetImageFilterListResult.ProtoReflect.Descriptor instead.
+func (*GetImageFilterListResult) Descriptor() ([]byte, []int) {
+	return file_image_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *GetImageFilterListResult) GetItems() []*GetImageFilterListResultFilter {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+type GetImageFilterListResultFilter struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Date  string `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
+	Count int32  `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
+}
+
+func (x *GetImageFilterListResultFilter) Reset() {
+	*x = GetImageFilterListResultFilter{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_image_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetImageFilterListResultFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetImageFilterListResultFilter) ProtoMessage() {}
+
+func (x *GetImageFilterListResultFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_image_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetImageFilterListResultFilter.ProtoReflect.Descriptor instead.
+func (*GetImageFilterListResultFilter) Descriptor() ([]byte, []int) {
+	return file_image_proto_rawDescGZIP(), []int{9, 0}
+}
+
+func (x *GetImageFilterListResultFilter) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *GetImageFilterListResultFilter) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
 var File_image_proto protoreflect.FileDescriptor
 
 var file_image_proto_rawDesc = []byte{
@@ -574,8 +770,24 @@ var file_image_proto_rawDesc = []byte{
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x03, 0x52, 0x02, 0x69, 0x64, 0x22, 0x28, 0x0a, 0x12, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x49,
 	0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x62,
-	0x6f, 0x64, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x32,
-	0xef, 0x04, 0x0a, 0x0c, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x6f, 0x64, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x22,
+	0x33, 0x0a, 0x19, 0x47, 0x65, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x42,
+	0x79, 0x44, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06,
+	0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x66, 0x69,
+	0x6c, 0x74, 0x65, 0x72, 0x22, 0x3c, 0x0a, 0x18, 0x47, 0x65, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65,
+	0x4c, 0x69, 0x73, 0x74, 0x42, 0x79, 0x44, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74,
+	0x12, 0x20, 0x0a, 0x05, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x05, 0x69, 0x74, 0x65,
+	0x6d, 0x73, 0x22, 0x8a, 0x01, 0x0a, 0x18, 0x47, 0x65, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x46,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x12,
+	0x3a, 0x0a, 0x05, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x24,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x65, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x46, 0x69, 0x6c,
+	0x74, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x2e, 0x66, 0x69,
+	0x6c, 0x74, 0x65, 0x72, 0x52, 0x05, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x1a, 0x32, 0x0a, 0x06, 0x66,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x04, 0x64, 0x61, 0x74, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x32,
+	0xfa, 0x06, 0x0a, 0x0c, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
 	0x12, 0x57, 0x0a, 0x08, 0x41, 0x64, 0x64, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x14, 0x2e, 0x61,
 	0x70, 0x69, 0x2e, 0x4e, 0x65, 0x77, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
 	0x73, 0x74, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x22, 0x29,
@@ -614,8 +826,24 @@ var file_image_proto_rawDesc = []byte{
 	0x30, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x15, 0x22, 0x10, 0x2f, 0x76, 0x31, 0x2f, 0x69, 0x6d, 0x61,
 	0x67, 0x65, 0x2f, 0x75, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x3a, 0x01, 0x2a, 0x92, 0x41, 0x12, 0x62,
 	0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12,
-	0x00, 0x42, 0x06, 0x5a, 0x04, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x00, 0x12, 0x85, 0x01, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x4c, 0x69,
+	0x73, 0x74, 0x42, 0x79, 0x44, 0x61, 0x74, 0x65, 0x12, 0x1e, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47,
+	0x65, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x42, 0x79, 0x44, 0x61, 0x74,
+	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47,
+	0x65, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x42, 0x79, 0x44, 0x61, 0x74,
+	0x65, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x30, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x15, 0x12,
+	0x13, 0x2f, 0x76, 0x31, 0x2f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x2f, 0x66, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x65, 0x64, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69,
+	0x4b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x80, 0x01, 0x0a, 0x12, 0x47, 0x65,
+	0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74,
+	0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x1d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47,
+	0x65, 0x74, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x4c, 0x69, 0x73,
+	0x74, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x33, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x18, 0x12,
+	0x16, 0x2f, 0x76, 0x31, 0x2f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x73, 0x2f, 0x66, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x5f, 0x6c, 0x69, 0x73, 0x74, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a,
+	0x41, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x42, 0x06, 0x5a, 0x04,
+	0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -630,41 +858,51 @@ func file_image_proto_rawDescGZIP() []byte {
 	return file_image_proto_rawDescData
 }
 
-var file_image_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_image_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_image_proto_goTypes = []interface{}{
-	(*Image)(nil),                 // 0: api.Image
-	(*NewImageRequest)(nil),       // 1: api.NewImageRequest
-	(*UpdateImageRequest)(nil),    // 2: api.UpdateImageRequest
-	(*GetImageRequest)(nil),       // 3: api.GetImageRequest
-	(*GetImageListResult)(nil),    // 4: api.GetImageListResult
-	(*DeleteImageRequest)(nil),    // 5: api.DeleteImageRequest
-	(*UploadImageRequest)(nil),    // 6: api.UploadImageRequest
-	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
-	(*Meta)(nil),                  // 8: api.Meta
-	(*PaginationRequest)(nil),     // 9: api.PaginationRequest
-	(*emptypb.Empty)(nil),         // 10: google.protobuf.Empty
+	(*Image)(nil),                          // 0: api.Image
+	(*NewImageRequest)(nil),                // 1: api.NewImageRequest
+	(*UpdateImageRequest)(nil),             // 2: api.UpdateImageRequest
+	(*GetImageRequest)(nil),                // 3: api.GetImageRequest
+	(*GetImageListResult)(nil),             // 4: api.GetImageListResult
+	(*DeleteImageRequest)(nil),             // 5: api.DeleteImageRequest
+	(*UploadImageRequest)(nil),             // 6: api.UploadImageRequest
+	(*GetImageListByDateRequest)(nil),      // 7: api.GetImageListByDateRequest
+	(*GetImageListByDateResult)(nil),       // 8: api.GetImageListByDateResult
+	(*GetImageFilterListResult)(nil),       // 9: api.GetImageFilterListResult
+	(*GetImageFilterListResultFilter)(nil), // 10: api.GetImageFilterListResult.filter
+	(*timestamppb.Timestamp)(nil),          // 11: google.protobuf.Timestamp
+	(*Meta)(nil),                           // 12: api.Meta
+	(*PaginationRequest)(nil),              // 13: api.PaginationRequest
+	(*emptypb.Empty)(nil),                  // 14: google.protobuf.Empty
 }
 var file_image_proto_depIdxs = []int32{
-	7,  // 0: api.Image.created_at:type_name -> google.protobuf.Timestamp
+	11, // 0: api.Image.created_at:type_name -> google.protobuf.Timestamp
 	0,  // 1: api.GetImageListResult.items:type_name -> api.Image
-	8,  // 2: api.GetImageListResult.meta:type_name -> api.Meta
-	1,  // 3: api.ImageService.AddImage:input_type -> api.NewImageRequest
-	3,  // 4: api.ImageService.GetImageById:input_type -> api.GetImageRequest
-	2,  // 5: api.ImageService.UpdateImageById:input_type -> api.UpdateImageRequest
-	9,  // 6: api.ImageService.GetImageList:input_type -> api.PaginationRequest
-	5,  // 7: api.ImageService.DeleteImageById:input_type -> api.DeleteImageRequest
-	6,  // 8: api.ImageService.UploadImage:input_type -> api.UploadImageRequest
-	0,  // 9: api.ImageService.AddImage:output_type -> api.Image
-	0,  // 10: api.ImageService.GetImageById:output_type -> api.Image
-	0,  // 11: api.ImageService.UpdateImageById:output_type -> api.Image
-	4,  // 12: api.ImageService.GetImageList:output_type -> api.GetImageListResult
-	10, // 13: api.ImageService.DeleteImageById:output_type -> google.protobuf.Empty
-	0,  // 14: api.ImageService.UploadImage:output_type -> api.Image
-	9,  // [9:15] is the sub-list for method output_type
-	3,  // [3:9] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	12, // 2: api.GetImageListResult.meta:type_name -> api.Meta
+	0,  // 3: api.GetImageListByDateResult.items:type_name -> api.Image
+	10, // 4: api.GetImageFilterListResult.items:type_name -> api.GetImageFilterListResult.filter
+	1,  // 5: api.ImageService.AddImage:input_type -> api.NewImageRequest
+	3,  // 6: api.ImageService.GetImageById:input_type -> api.GetImageRequest
+	2,  // 7: api.ImageService.UpdateImageById:input_type -> api.UpdateImageRequest
+	13, // 8: api.ImageService.GetImageList:input_type -> api.PaginationRequest
+	5,  // 9: api.ImageService.DeleteImageById:input_type -> api.DeleteImageRequest
+	6,  // 10: api.ImageService.UploadImage:input_type -> api.UploadImageRequest
+	7,  // 11: api.ImageService.GetImageListByDate:input_type -> api.GetImageListByDateRequest
+	14, // 12: api.ImageService.GetImageFilterList:input_type -> google.protobuf.Empty
+	0,  // 13: api.ImageService.AddImage:output_type -> api.Image
+	0,  // 14: api.ImageService.GetImageById:output_type -> api.Image
+	0,  // 15: api.ImageService.UpdateImageById:output_type -> api.Image
+	4,  // 16: api.ImageService.GetImageList:output_type -> api.GetImageListResult
+	14, // 17: api.ImageService.DeleteImageById:output_type -> google.protobuf.Empty
+	0,  // 18: api.ImageService.UploadImage:output_type -> api.Image
+	8,  // 19: api.ImageService.GetImageListByDate:output_type -> api.GetImageListByDateResult
+	9,  // 20: api.ImageService.GetImageFilterList:output_type -> api.GetImageFilterListResult
+	13, // [13:21] is the sub-list for method output_type
+	5,  // [5:13] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_image_proto_init() }
@@ -758,6 +996,54 @@ func file_image_proto_init() {
 				return nil
 			}
 		}
+		file_image_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetImageListByDateRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_image_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetImageListByDateResult); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_image_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetImageFilterListResult); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_image_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetImageFilterListResultFilter); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -765,7 +1051,7 @@ func file_image_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_image_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

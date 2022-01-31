@@ -70,13 +70,13 @@ func (service *scriptService) NewEngine(s *m.Script) (*Engine, error) {
 
 // PushStruct ...
 func (service *scriptService) PushStruct(name string, s interface{}) {
-	log.Infof("register structure: \"%s\"", name)
+	log.Infof("register structure: '%s'", name)
 	service.structures.Add(name, s)
 }
 
 // PushFunctions ...
 func (service *scriptService) PushFunctions(name string, s interface{}) {
-	log.Infof("register function: \"%s\"", name)
+	log.Infof("register function: '%s'", name)
 	service.functions.Add(name, s)
 }
 

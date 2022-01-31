@@ -84,3 +84,8 @@ func (t *StateChangeTrigger) Unsubscribe(options Subscriber) error {
 	log.Infof("unsubscribe topic %s", options.EntityId)
 	return t.msgQueue.Unsubscribe(options.EntityId.String(), options.Handler)
 }
+
+// CallManual ...
+func (t *StateChangeTrigger) CallManual() {
+	log.Warn("method not implemented")
+}
