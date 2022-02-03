@@ -19,6 +19,7 @@
 package zone
 
 import (
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/e154/smart-home/adaptors"
@@ -86,7 +87,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	}
 	e.SettingsMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

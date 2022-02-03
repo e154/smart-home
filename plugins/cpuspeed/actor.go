@@ -20,6 +20,7 @@ package cpuspeed
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/e154/smart-home/common"
@@ -106,7 +107,7 @@ func (u *Actor) selfUpdate() {
 		"all": common.Rounding(u.all.Value(), 2),
 	})
 
-	u.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	u.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		PluginName: u.Id.PluginName(),
 		EntityId:   u.Id,
 		OldState:   oldState,

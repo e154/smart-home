@@ -20,6 +20,7 @@ package uptime
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 	"time"
 
@@ -80,7 +81,7 @@ func (e *Actor) update() {
 	e.Attrs[AttrUptimeAppStarted].Value = e.appStarted
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

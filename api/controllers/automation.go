@@ -37,6 +37,7 @@ func NewControllerAutomation(common *ControllerCommon) ControllerAutomation {
 	}
 }
 
+// AddTask ...
 func (c ControllerAutomation) AddTask(ctx context.Context, req *api.NewTaskRequest) (*api.Task, error) {
 
 	task := c.dto.Automation.AddTask(req)
@@ -49,6 +50,7 @@ func (c ControllerAutomation) AddTask(ctx context.Context, req *api.NewTaskReque
 	return c.dto.Automation.ToTask(task), nil
 }
 
+// UpdateTask ...
 func (c ControllerAutomation) UpdateTask(ctx context.Context, req *api.UpdateTaskRequest) (*api.Task, error) {
 
 	task := c.dto.Automation.UpdateTask(req)
@@ -61,6 +63,7 @@ func (c ControllerAutomation) UpdateTask(ctx context.Context, req *api.UpdateTas
 	return c.dto.Automation.ToTask(task), nil
 }
 
+// GetTask ...
 func (c ControllerAutomation) GetTask(ctx context.Context, req *api.GetTaskRequest) (*api.Task, error) {
 
 	task, errs, err := c.endpoint.Task.GetById(ctx, req.Id)
@@ -71,6 +74,7 @@ func (c ControllerAutomation) GetTask(ctx context.Context, req *api.GetTaskReque
 	return c.dto.Automation.ToTask(task), nil
 }
 
+// GetTaskList ...
 func (c ControllerAutomation) GetTaskList(ctx context.Context, req *api.PaginationRequest) (*api.GetTaskListResult, error) {
 
 	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
@@ -82,6 +86,7 @@ func (c ControllerAutomation) GetTaskList(ctx context.Context, req *api.Paginati
 	return c.dto.Automation.ToListResult(items, uint64(total), pagination), nil
 }
 
+// DeleteTask ...
 func (c ControllerAutomation) DeleteTask(ctx context.Context, req *api.DeleteTaskRequest) (*emptypb.Empty, error) {
 
 	if err := c.endpoint.Task.Delete(ctx, req.Id); err != nil {
@@ -91,18 +96,20 @@ func (c ControllerAutomation) DeleteTask(ctx context.Context, req *api.DeleteTas
 	return &emptypb.Empty{}, nil
 }
 
-func (c ControllerAutomation) TaskCallTrigger(ctx context.Context, req *api.CallRequest) (*emptypb.Empty, error) {
+// EnableTask ...
+func (c ControllerAutomation) EnableTask(ctx context.Context, req *api.EnableTaskRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.Task.TaskCallAction(ctx, req.Id, req.Name); err != nil {
+	if err := c.endpoint.Task.Enable(ctx, req.Id); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
-func (c ControllerAutomation) TaskCallAction(ctx context.Context, req *api.CallRequest) (*emptypb.Empty, error) {
+// DisableTask ...
+func (c ControllerAutomation) DisableTask(ctx context.Context, req *api.DisableTaskRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.Task.TaskCallAction(ctx, req.Id, req.Name); err != nil {
+	if err := c.endpoint.Task.Disable(ctx, req.Id); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 

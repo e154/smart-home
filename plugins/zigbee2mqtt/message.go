@@ -28,12 +28,6 @@ func NewMessage() (m *Message) {
 	return
 }
 
-// Javascript Binding
-//
-// message
-//	.SetState(params)
-//
-
 // Message ...
 type Message struct {
 	Payload   string                           `json:"payload"`

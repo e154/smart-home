@@ -1029,53 +1029,6 @@ func (x *SearchEntityResult) GetItems() []*EntityShort {
 	return nil
 }
 
-type ReloadRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-}
-
-func (x *ReloadRequest) Reset() {
-	*x = ReloadRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_entity_proto_msgTypes[11]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ReloadRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReloadRequest) ProtoMessage() {}
-
-func (x *ReloadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_entity_proto_msgTypes[11]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReloadRequest.ProtoReflect.Descriptor instead.
-func (*ReloadRequest) Descriptor() ([]byte, []int) {
-	return file_entity_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *ReloadRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
 type NewEntityRequest_Image struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1087,7 +1040,7 @@ type NewEntityRequest_Image struct {
 func (x *NewEntityRequest_Image) Reset() {
 	*x = NewEntityRequest_Image{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_entity_proto_msgTypes[15]
+		mi := &file_entity_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1100,7 +1053,7 @@ func (x *NewEntityRequest_Image) String() string {
 func (*NewEntityRequest_Image) ProtoMessage() {}
 
 func (x *NewEntityRequest_Image) ProtoReflect() protoreflect.Message {
-	mi := &file_entity_proto_msgTypes[15]
+	mi := &file_entity_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1139,7 +1092,7 @@ type NewEntityRequest_Action struct {
 func (x *NewEntityRequest_Action) Reset() {
 	*x = NewEntityRequest_Action{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_entity_proto_msgTypes[16]
+		mi := &file_entity_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1152,7 +1105,7 @@ func (x *NewEntityRequest_Action) String() string {
 func (*NewEntityRequest_Action) ProtoMessage() {}
 
 func (x *NewEntityRequest_Action) ProtoReflect() protoreflect.Message {
-	mi := &file_entity_proto_msgTypes[16]
+	mi := &file_entity_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1225,7 +1178,7 @@ type NewEntityRequest_State struct {
 func (x *NewEntityRequest_State) Reset() {
 	*x = NewEntityRequest_State{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_entity_proto_msgTypes[17]
+		mi := &file_entity_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1238,7 +1191,7 @@ func (x *NewEntityRequest_State) String() string {
 func (*NewEntityRequest_State) ProtoMessage() {}
 
 func (x *NewEntityRequest_State) ProtoReflect() protoreflect.Message {
-	mi := &file_entity_proto_msgTypes[17]
+	mi := &file_entity_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1300,7 +1253,7 @@ type NewEntityRequest_Action_Script struct {
 func (x *NewEntityRequest_Action_Script) Reset() {
 	*x = NewEntityRequest_Action_Script{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_entity_proto_msgTypes[21]
+		mi := &file_entity_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1313,7 +1266,7 @@ func (x *NewEntityRequest_Action_Script) String() string {
 func (*NewEntityRequest_Action_Script) ProtoMessage() {}
 
 func (x *NewEntityRequest_Action_Script) ProtoReflect() protoreflect.Message {
-	mi := &file_entity_proto_msgTypes[21]
+	mi := &file_entity_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1347,7 +1300,7 @@ type UpdateEntityRequest_Image struct {
 func (x *UpdateEntityRequest_Image) Reset() {
 	*x = UpdateEntityRequest_Image{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_entity_proto_msgTypes[22]
+		mi := &file_entity_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1360,7 +1313,7 @@ func (x *UpdateEntityRequest_Image) String() string {
 func (*UpdateEntityRequest_Image) ProtoMessage() {}
 
 func (x *UpdateEntityRequest_Image) ProtoReflect() protoreflect.Message {
-	mi := &file_entity_proto_msgTypes[22]
+	mi := &file_entity_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1399,7 +1352,7 @@ type UpdateEntityRequest_Action struct {
 func (x *UpdateEntityRequest_Action) Reset() {
 	*x = UpdateEntityRequest_Action{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_entity_proto_msgTypes[23]
+		mi := &file_entity_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1412,7 +1365,7 @@ func (x *UpdateEntityRequest_Action) String() string {
 func (*UpdateEntityRequest_Action) ProtoMessage() {}
 
 func (x *UpdateEntityRequest_Action) ProtoReflect() protoreflect.Message {
-	mi := &file_entity_proto_msgTypes[23]
+	mi := &file_entity_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1485,7 +1438,7 @@ type UpdateEntityRequest_State struct {
 func (x *UpdateEntityRequest_State) Reset() {
 	*x = UpdateEntityRequest_State{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_entity_proto_msgTypes[24]
+		mi := &file_entity_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1498,7 +1451,7 @@ func (x *UpdateEntityRequest_State) String() string {
 func (*UpdateEntityRequest_State) ProtoMessage() {}
 
 func (x *UpdateEntityRequest_State) ProtoReflect() protoreflect.Message {
-	mi := &file_entity_proto_msgTypes[24]
+	mi := &file_entity_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1871,57 +1824,48 @@ var file_entity_proto_rawDesc = []byte{
 	0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x26, 0x0a, 0x05,
 	0x69, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x61, 0x70,
 	0x69, 0x2e, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x52, 0x05, 0x69,
-	0x74, 0x65, 0x6d, 0x73, 0x22, 0x1f, 0x0a, 0x0d, 0x52, 0x65, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x02, 0x69, 0x64, 0x32, 0xef, 0x05, 0x0a, 0x0d, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79,
-	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5b, 0x0a, 0x09, 0x41, 0x64, 0x64, 0x45, 0x6e,
-	0x74, 0x69, 0x74, 0x79, 0x12, 0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x65, 0x77, 0x45, 0x6e,
-	0x74, 0x69, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0b, 0x2e, 0x61, 0x70,
-	0x69, 0x2e, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x22, 0x2a, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0f,
-	0x22, 0x0a, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x3a, 0x01, 0x2a, 0x92,
-	0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x41, 0x75,
-	0x74, 0x68, 0x12, 0x00, 0x12, 0x66, 0x0a, 0x0c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e,
-	0x74, 0x69, 0x74, 0x79, 0x12, 0x18, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0b,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x22, 0x2f, 0x82, 0xd3, 0xe4,
-	0x93, 0x02, 0x14, 0x1a, 0x0f, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x2f,
-	0x7b, 0x69, 0x64, 0x7d, 0x3a, 0x01, 0x2a, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a,
-	0x41, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x5d, 0x0a, 0x09,
-	0x47, 0x65, 0x74, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x47, 0x65, 0x74, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x22, 0x2c, 0x82,
-	0xd3, 0xe4, 0x93, 0x02, 0x11, 0x12, 0x0f, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74,
-	0x79, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41,
-	0x70, 0x69, 0x4b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x6c, 0x0a, 0x0d, 0x47,
-	0x65, 0x74, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x16, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x65, 0x74, 0x45, 0x6e,
-	0x74, 0x69, 0x74, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x29,
-	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0e, 0x12, 0x0c, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69,
-	0x74, 0x69, 0x65, 0x73, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69,
-	0x4b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x6e, 0x0a, 0x0c, 0x44, 0x65, 0x6c,
-	0x65, 0x74, 0x65, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x18, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x2c, 0x82, 0xd3, 0xe4,
-	0x93, 0x02, 0x11, 0x2a, 0x0f, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x2f,
-	0x7b, 0x69, 0x64, 0x7d, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69,
-	0x4b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x6b, 0x0a, 0x0c, 0x53, 0x65, 0x61,
-	0x72, 0x63, 0x68, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x12, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79,
-	0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x2e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x13, 0x12, 0x11,
-	0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x2f, 0x73, 0x65, 0x61, 0x72, 0x63,
-	0x68, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69, 0x4b, 0x65, 0x79,
-	0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x6f, 0x0a, 0x0c, 0x52, 0x65, 0x6c, 0x6f, 0x61, 0x64,
-	0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x12, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x6c,
-	0x6f, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70,
-	0x74, 0x79, 0x22, 0x33, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x18, 0x22, 0x16, 0x2f, 0x76, 0x31, 0x2f,
-	0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x2f, 0x72, 0x65, 0x6c, 0x6f,
-	0x61, 0x64, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69, 0x4b, 0x65,
-	0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x42, 0x06, 0x5a, 0x04, 0x2f, 0x61, 0x70, 0x69, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x65, 0x6d, 0x73, 0x32, 0xfe, 0x04, 0x0a, 0x0d, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5b, 0x0a, 0x09, 0x41, 0x64, 0x64, 0x45, 0x6e, 0x74,
+	0x69, 0x74, 0x79, 0x12, 0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x65, 0x77, 0x45, 0x6e, 0x74,
+	0x69, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0b, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x22, 0x2a, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0f, 0x22,
+	0x0a, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x3a, 0x01, 0x2a, 0x92, 0x41,
+	0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x41, 0x75, 0x74,
+	0x68, 0x12, 0x00, 0x12, 0x66, 0x0a, 0x0c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x74,
+	0x69, 0x74, 0x79, 0x12, 0x18, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0b, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x22, 0x2f, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x14, 0x1a, 0x0f, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x2f, 0x7b,
+	0x69, 0x64, 0x7d, 0x3a, 0x01, 0x2a, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41,
+	0x70, 0x69, 0x4b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x5d, 0x0a, 0x09, 0x47,
+	0x65, 0x74, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47,
+	0x65, 0x74, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x22, 0x2c, 0x82, 0xd3,
+	0xe4, 0x93, 0x02, 0x11, 0x12, 0x0f, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79,
+	0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70,
+	0x69, 0x4b, 0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x6c, 0x0a, 0x0d, 0x47, 0x65,
+	0x74, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x16, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x50, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x65, 0x74, 0x45, 0x6e, 0x74,
+	0x69, 0x74, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x29, 0x82,
+	0xd3, 0xe4, 0x93, 0x02, 0x0e, 0x12, 0x0c, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74,
+	0x69, 0x65, 0x73, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69, 0x4b,
+	0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x6e, 0x0a, 0x0c, 0x44, 0x65, 0x6c, 0x65,
+	0x74, 0x65, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x18, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44,
+	0x65, 0x6c, 0x65, 0x74, 0x65, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x2c, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x11, 0x2a, 0x0f, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x2f, 0x7b,
+	0x69, 0x64, 0x7d, 0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69, 0x4b,
+	0x65, 0x79, 0x41, 0x75, 0x74, 0x68, 0x12, 0x00, 0x12, 0x6b, 0x0a, 0x0c, 0x53, 0x65, 0x61, 0x72,
+	0x63, 0x68, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x12, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53,
+	0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x52,
+	0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x2e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x13, 0x12, 0x11, 0x2f,
+	0x76, 0x31, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x2f, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68,
+	0x92, 0x41, 0x12, 0x62, 0x10, 0x0a, 0x0e, 0x0a, 0x0a, 0x41, 0x70, 0x69, 0x4b, 0x65, 0x79, 0x41,
+	0x75, 0x74, 0x68, 0x12, 0x00, 0x42, 0x06, 0x5a, 0x04, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1936,7 +1880,7 @@ func file_entity_proto_rawDescGZIP() []byte {
 	return file_entity_proto_rawDescData
 }
 
-var file_entity_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
+var file_entity_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_entity_proto_goTypes = []interface{}{
 	(*EntityAction)(nil),                   // 0: api.EntityAction
 	(*EntityState)(nil),                    // 1: api.EntityState
@@ -1949,105 +1893,102 @@ var file_entity_proto_goTypes = []interface{}{
 	(*GetEntityListResult)(nil),            // 8: api.GetEntityListResult
 	(*DeleteEntityRequest)(nil),            // 9: api.DeleteEntityRequest
 	(*SearchEntityResult)(nil),             // 10: api.SearchEntityResult
-	(*ReloadRequest)(nil),                  // 11: api.ReloadRequest
-	nil,                                    // 12: api.Entity.AttributesEntry
-	nil,                                    // 13: api.Entity.SettingsEntry
-	nil,                                    // 14: api.Entity.MetricsEntry
-	(*NewEntityRequest_Image)(nil),         // 15: api.NewEntityRequest.Image
-	(*NewEntityRequest_Action)(nil),        // 16: api.NewEntityRequest.Action
-	(*NewEntityRequest_State)(nil),         // 17: api.NewEntityRequest.State
-	nil,                                    // 18: api.NewEntityRequest.AttributesEntry
-	nil,                                    // 19: api.NewEntityRequest.SettingsEntry
-	nil,                                    // 20: api.NewEntityRequest.MetricsEntry
-	(*NewEntityRequest_Action_Script)(nil), // 21: api.NewEntityRequest.Action.Script
-	(*UpdateEntityRequest_Image)(nil),      // 22: api.UpdateEntityRequest.Image
-	(*UpdateEntityRequest_Action)(nil),     // 23: api.UpdateEntityRequest.Action
-	(*UpdateEntityRequest_State)(nil),      // 24: api.UpdateEntityRequest.State
-	nil,                                    // 25: api.UpdateEntityRequest.AttributesEntry
-	nil,                                    // 26: api.UpdateEntityRequest.SettingsEntry
-	nil,                                    // 27: api.UpdateEntityRequest.MetricsEntry
-	(*Image)(nil),                          // 28: api.Image
-	(*Script)(nil),                         // 29: api.Script
-	(*Area)(nil),                           // 30: api.Area
-	(*timestamppb.Timestamp)(nil),          // 31: google.protobuf.Timestamp
-	(*Meta)(nil),                           // 32: api.Meta
-	(*Attribute)(nil),                      // 33: api.Attribute
-	(*PaginationRequest)(nil),              // 34: api.PaginationRequest
-	(*SearchRequest)(nil),                  // 35: api.SearchRequest
-	(*emptypb.Empty)(nil),                  // 36: google.protobuf.Empty
+	nil,                                    // 11: api.Entity.AttributesEntry
+	nil,                                    // 12: api.Entity.SettingsEntry
+	nil,                                    // 13: api.Entity.MetricsEntry
+	(*NewEntityRequest_Image)(nil),         // 14: api.NewEntityRequest.Image
+	(*NewEntityRequest_Action)(nil),        // 15: api.NewEntityRequest.Action
+	(*NewEntityRequest_State)(nil),         // 16: api.NewEntityRequest.State
+	nil,                                    // 17: api.NewEntityRequest.AttributesEntry
+	nil,                                    // 18: api.NewEntityRequest.SettingsEntry
+	nil,                                    // 19: api.NewEntityRequest.MetricsEntry
+	(*NewEntityRequest_Action_Script)(nil), // 20: api.NewEntityRequest.Action.Script
+	(*UpdateEntityRequest_Image)(nil),      // 21: api.UpdateEntityRequest.Image
+	(*UpdateEntityRequest_Action)(nil),     // 22: api.UpdateEntityRequest.Action
+	(*UpdateEntityRequest_State)(nil),      // 23: api.UpdateEntityRequest.State
+	nil,                                    // 24: api.UpdateEntityRequest.AttributesEntry
+	nil,                                    // 25: api.UpdateEntityRequest.SettingsEntry
+	nil,                                    // 26: api.UpdateEntityRequest.MetricsEntry
+	(*Image)(nil),                          // 27: api.Image
+	(*Script)(nil),                         // 28: api.Script
+	(*Area)(nil),                           // 29: api.Area
+	(*timestamppb.Timestamp)(nil),          // 30: google.protobuf.Timestamp
+	(*Meta)(nil),                           // 31: api.Meta
+	(*Attribute)(nil),                      // 32: api.Attribute
+	(*PaginationRequest)(nil),              // 33: api.PaginationRequest
+	(*SearchRequest)(nil),                  // 34: api.SearchRequest
+	(*emptypb.Empty)(nil),                  // 35: google.protobuf.Empty
 }
 var file_entity_proto_depIdxs = []int32{
-	28, // 0: api.EntityAction.image:type_name -> api.Image
-	29, // 1: api.EntityAction.script:type_name -> api.Script
-	28, // 2: api.EntityState.image:type_name -> api.Image
-	30, // 3: api.Entity.area:type_name -> api.Area
-	28, // 4: api.Entity.image:type_name -> api.Image
+	27, // 0: api.EntityAction.image:type_name -> api.Image
+	28, // 1: api.EntityAction.script:type_name -> api.Script
+	27, // 2: api.EntityState.image:type_name -> api.Image
+	29, // 3: api.Entity.area:type_name -> api.Area
+	27, // 4: api.Entity.image:type_name -> api.Image
 	2,  // 5: api.Entity.parent:type_name -> api.EntityParent
 	0,  // 6: api.Entity.actions:type_name -> api.EntityAction
 	1,  // 7: api.Entity.states:type_name -> api.EntityState
-	29, // 8: api.Entity.scripts:type_name -> api.Script
-	12, // 9: api.Entity.attributes:type_name -> api.Entity.AttributesEntry
-	13, // 10: api.Entity.settings:type_name -> api.Entity.SettingsEntry
-	14, // 11: api.Entity.metrics:type_name -> api.Entity.MetricsEntry
-	31, // 12: api.Entity.created_at:type_name -> google.protobuf.Timestamp
-	31, // 13: api.Entity.updated_at:type_name -> google.protobuf.Timestamp
-	30, // 14: api.EntityShort.area:type_name -> api.Area
-	28, // 15: api.EntityShort.image:type_name -> api.Image
+	28, // 8: api.Entity.scripts:type_name -> api.Script
+	11, // 9: api.Entity.attributes:type_name -> api.Entity.AttributesEntry
+	12, // 10: api.Entity.settings:type_name -> api.Entity.SettingsEntry
+	13, // 11: api.Entity.metrics:type_name -> api.Entity.MetricsEntry
+	30, // 12: api.Entity.created_at:type_name -> google.protobuf.Timestamp
+	30, // 13: api.Entity.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 14: api.EntityShort.area:type_name -> api.Area
+	27, // 15: api.EntityShort.image:type_name -> api.Image
 	2,  // 16: api.EntityShort.parent:type_name -> api.EntityParent
-	31, // 17: api.EntityShort.created_at:type_name -> google.protobuf.Timestamp
-	31, // 18: api.EntityShort.updated_at:type_name -> google.protobuf.Timestamp
-	30, // 19: api.NewEntityRequest.area:type_name -> api.Area
-	15, // 20: api.NewEntityRequest.image:type_name -> api.NewEntityRequest.Image
+	30, // 17: api.EntityShort.created_at:type_name -> google.protobuf.Timestamp
+	30, // 18: api.EntityShort.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 19: api.NewEntityRequest.area:type_name -> api.Area
+	14, // 20: api.NewEntityRequest.image:type_name -> api.NewEntityRequest.Image
 	2,  // 21: api.NewEntityRequest.parent:type_name -> api.EntityParent
-	16, // 22: api.NewEntityRequest.actions:type_name -> api.NewEntityRequest.Action
-	17, // 23: api.NewEntityRequest.states:type_name -> api.NewEntityRequest.State
-	18, // 24: api.NewEntityRequest.attributes:type_name -> api.NewEntityRequest.AttributesEntry
-	19, // 25: api.NewEntityRequest.settings:type_name -> api.NewEntityRequest.SettingsEntry
-	20, // 26: api.NewEntityRequest.metrics:type_name -> api.NewEntityRequest.MetricsEntry
-	29, // 27: api.NewEntityRequest.scripts:type_name -> api.Script
-	30, // 28: api.UpdateEntityRequest.area:type_name -> api.Area
-	22, // 29: api.UpdateEntityRequest.image:type_name -> api.UpdateEntityRequest.Image
+	15, // 22: api.NewEntityRequest.actions:type_name -> api.NewEntityRequest.Action
+	16, // 23: api.NewEntityRequest.states:type_name -> api.NewEntityRequest.State
+	17, // 24: api.NewEntityRequest.attributes:type_name -> api.NewEntityRequest.AttributesEntry
+	18, // 25: api.NewEntityRequest.settings:type_name -> api.NewEntityRequest.SettingsEntry
+	19, // 26: api.NewEntityRequest.metrics:type_name -> api.NewEntityRequest.MetricsEntry
+	28, // 27: api.NewEntityRequest.scripts:type_name -> api.Script
+	29, // 28: api.UpdateEntityRequest.area:type_name -> api.Area
+	21, // 29: api.UpdateEntityRequest.image:type_name -> api.UpdateEntityRequest.Image
 	2,  // 30: api.UpdateEntityRequest.parent:type_name -> api.EntityParent
-	23, // 31: api.UpdateEntityRequest.actions:type_name -> api.UpdateEntityRequest.Action
-	24, // 32: api.UpdateEntityRequest.states:type_name -> api.UpdateEntityRequest.State
-	25, // 33: api.UpdateEntityRequest.attributes:type_name -> api.UpdateEntityRequest.AttributesEntry
-	26, // 34: api.UpdateEntityRequest.settings:type_name -> api.UpdateEntityRequest.SettingsEntry
-	29, // 35: api.UpdateEntityRequest.scripts:type_name -> api.Script
-	27, // 36: api.UpdateEntityRequest.metrics:type_name -> api.UpdateEntityRequest.MetricsEntry
+	22, // 31: api.UpdateEntityRequest.actions:type_name -> api.UpdateEntityRequest.Action
+	23, // 32: api.UpdateEntityRequest.states:type_name -> api.UpdateEntityRequest.State
+	24, // 33: api.UpdateEntityRequest.attributes:type_name -> api.UpdateEntityRequest.AttributesEntry
+	25, // 34: api.UpdateEntityRequest.settings:type_name -> api.UpdateEntityRequest.SettingsEntry
+	28, // 35: api.UpdateEntityRequest.scripts:type_name -> api.Script
+	26, // 36: api.UpdateEntityRequest.metrics:type_name -> api.UpdateEntityRequest.MetricsEntry
 	3,  // 37: api.GetEntityListResult.items:type_name -> api.Entity
-	32, // 38: api.GetEntityListResult.meta:type_name -> api.Meta
+	31, // 38: api.GetEntityListResult.meta:type_name -> api.Meta
 	4,  // 39: api.SearchEntityResult.items:type_name -> api.EntityShort
-	33, // 40: api.Entity.AttributesEntry.value:type_name -> api.Attribute
-	33, // 41: api.Entity.SettingsEntry.value:type_name -> api.Attribute
-	33, // 42: api.Entity.MetricsEntry.value:type_name -> api.Attribute
-	15, // 43: api.NewEntityRequest.Action.image:type_name -> api.NewEntityRequest.Image
-	21, // 44: api.NewEntityRequest.Action.script:type_name -> api.NewEntityRequest.Action.Script
-	15, // 45: api.NewEntityRequest.State.image:type_name -> api.NewEntityRequest.Image
-	33, // 46: api.NewEntityRequest.AttributesEntry.value:type_name -> api.Attribute
-	33, // 47: api.NewEntityRequest.SettingsEntry.value:type_name -> api.Attribute
-	33, // 48: api.NewEntityRequest.MetricsEntry.value:type_name -> api.Attribute
-	22, // 49: api.UpdateEntityRequest.Action.image:type_name -> api.UpdateEntityRequest.Image
-	29, // 50: api.UpdateEntityRequest.Action.script:type_name -> api.Script
-	22, // 51: api.UpdateEntityRequest.State.image:type_name -> api.UpdateEntityRequest.Image
-	33, // 52: api.UpdateEntityRequest.AttributesEntry.value:type_name -> api.Attribute
-	33, // 53: api.UpdateEntityRequest.SettingsEntry.value:type_name -> api.Attribute
-	33, // 54: api.UpdateEntityRequest.MetricsEntry.value:type_name -> api.Attribute
+	32, // 40: api.Entity.AttributesEntry.value:type_name -> api.Attribute
+	32, // 41: api.Entity.SettingsEntry.value:type_name -> api.Attribute
+	32, // 42: api.Entity.MetricsEntry.value:type_name -> api.Attribute
+	14, // 43: api.NewEntityRequest.Action.image:type_name -> api.NewEntityRequest.Image
+	20, // 44: api.NewEntityRequest.Action.script:type_name -> api.NewEntityRequest.Action.Script
+	14, // 45: api.NewEntityRequest.State.image:type_name -> api.NewEntityRequest.Image
+	32, // 46: api.NewEntityRequest.AttributesEntry.value:type_name -> api.Attribute
+	32, // 47: api.NewEntityRequest.SettingsEntry.value:type_name -> api.Attribute
+	32, // 48: api.NewEntityRequest.MetricsEntry.value:type_name -> api.Attribute
+	21, // 49: api.UpdateEntityRequest.Action.image:type_name -> api.UpdateEntityRequest.Image
+	28, // 50: api.UpdateEntityRequest.Action.script:type_name -> api.Script
+	21, // 51: api.UpdateEntityRequest.State.image:type_name -> api.UpdateEntityRequest.Image
+	32, // 52: api.UpdateEntityRequest.AttributesEntry.value:type_name -> api.Attribute
+	32, // 53: api.UpdateEntityRequest.SettingsEntry.value:type_name -> api.Attribute
+	32, // 54: api.UpdateEntityRequest.MetricsEntry.value:type_name -> api.Attribute
 	5,  // 55: api.EntityService.AddEntity:input_type -> api.NewEntityRequest
 	6,  // 56: api.EntityService.UpdateEntity:input_type -> api.UpdateEntityRequest
 	7,  // 57: api.EntityService.GetEntity:input_type -> api.GetEntityRequest
-	34, // 58: api.EntityService.GetEntityList:input_type -> api.PaginationRequest
+	33, // 58: api.EntityService.GetEntityList:input_type -> api.PaginationRequest
 	9,  // 59: api.EntityService.DeleteEntity:input_type -> api.DeleteEntityRequest
-	35, // 60: api.EntityService.SearchEntity:input_type -> api.SearchRequest
-	11, // 61: api.EntityService.ReloadEntity:input_type -> api.ReloadRequest
-	3,  // 62: api.EntityService.AddEntity:output_type -> api.Entity
-	3,  // 63: api.EntityService.UpdateEntity:output_type -> api.Entity
-	3,  // 64: api.EntityService.GetEntity:output_type -> api.Entity
-	8,  // 65: api.EntityService.GetEntityList:output_type -> api.GetEntityListResult
-	36, // 66: api.EntityService.DeleteEntity:output_type -> google.protobuf.Empty
-	10, // 67: api.EntityService.SearchEntity:output_type -> api.SearchEntityResult
-	36, // 68: api.EntityService.ReloadEntity:output_type -> google.protobuf.Empty
-	62, // [62:69] is the sub-list for method output_type
-	55, // [55:62] is the sub-list for method input_type
+	34, // 60: api.EntityService.SearchEntity:input_type -> api.SearchRequest
+	3,  // 61: api.EntityService.AddEntity:output_type -> api.Entity
+	3,  // 62: api.EntityService.UpdateEntity:output_type -> api.Entity
+	3,  // 63: api.EntityService.GetEntity:output_type -> api.Entity
+	8,  // 64: api.EntityService.GetEntityList:output_type -> api.GetEntityListResult
+	35, // 65: api.EntityService.DeleteEntity:output_type -> google.protobuf.Empty
+	10, // 66: api.EntityService.SearchEntity:output_type -> api.SearchEntityResult
+	61, // [61:67] is the sub-list for method output_type
+	55, // [55:61] is the sub-list for method input_type
 	55, // [55:55] is the sub-list for extension type_name
 	55, // [55:55] is the sub-list for extension extendee
 	0,  // [0:55] is the sub-list for field type_name
@@ -2196,19 +2137,7 @@ func file_entity_proto_init() {
 				return nil
 			}
 		}
-		file_entity_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReloadRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_entity_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+		file_entity_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NewEntityRequest_Image); i {
 			case 0:
 				return &v.state
@@ -2220,7 +2149,7 @@ func file_entity_proto_init() {
 				return nil
 			}
 		}
-		file_entity_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+		file_entity_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NewEntityRequest_Action); i {
 			case 0:
 				return &v.state
@@ -2232,7 +2161,7 @@ func file_entity_proto_init() {
 				return nil
 			}
 		}
-		file_entity_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+		file_entity_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NewEntityRequest_State); i {
 			case 0:
 				return &v.state
@@ -2244,7 +2173,7 @@ func file_entity_proto_init() {
 				return nil
 			}
 		}
-		file_entity_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+		file_entity_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NewEntityRequest_Action_Script); i {
 			case 0:
 				return &v.state
@@ -2256,7 +2185,7 @@ func file_entity_proto_init() {
 				return nil
 			}
 		}
-		file_entity_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+		file_entity_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*UpdateEntityRequest_Image); i {
 			case 0:
 				return &v.state
@@ -2268,7 +2197,7 @@ func file_entity_proto_init() {
 				return nil
 			}
 		}
-		file_entity_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+		file_entity_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*UpdateEntityRequest_Action); i {
 			case 0:
 				return &v.state
@@ -2280,7 +2209,7 @@ func file_entity_proto_init() {
 				return nil
 			}
 		}
-		file_entity_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
+		file_entity_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*UpdateEntityRequest_State); i {
 			case 0:
 				return &v.state
@@ -2299,17 +2228,17 @@ func file_entity_proto_init() {
 	file_entity_proto_msgTypes[4].OneofWrappers = []interface{}{}
 	file_entity_proto_msgTypes[5].OneofWrappers = []interface{}{}
 	file_entity_proto_msgTypes[6].OneofWrappers = []interface{}{}
+	file_entity_proto_msgTypes[15].OneofWrappers = []interface{}{}
 	file_entity_proto_msgTypes[16].OneofWrappers = []interface{}{}
-	file_entity_proto_msgTypes[17].OneofWrappers = []interface{}{}
+	file_entity_proto_msgTypes[22].OneofWrappers = []interface{}{}
 	file_entity_proto_msgTypes[23].OneofWrappers = []interface{}{}
-	file_entity_proto_msgTypes[24].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_entity_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   28,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

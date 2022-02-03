@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 	"testing"
 	"time"
@@ -76,7 +77,7 @@ func TestZone(t *testing.T) {
 			eventBus.Subscribe(event_bus.TopicEntities, func(_ string, msg interface{}) {
 
 				switch v := msg.(type) {
-				case event_bus.EventStateChanged:
+				case events.EventStateChanged:
 					if v.PluginName != "zone" {
 						return
 					}
@@ -88,7 +89,7 @@ func TestZone(t *testing.T) {
 					ctx.So(settings["timezone"].Value, ShouldEqual, 7)
 					wgUpdate.Done()
 
-				case event_bus.EventAddedActor:
+				case events.EventAddedActor:
 					if v.PluginName != "zone" {
 						return
 					}

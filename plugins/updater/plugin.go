@@ -19,6 +19,7 @@
 package updater
 
 import (
+	"github.com/e154/smart-home/system/event_bus/events"
 	"time"
 
 	"github.com/e154/smart-home/common"
@@ -127,7 +128,7 @@ func (p *plugin) Version() string {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case event_bus.EventCallAction:
+	case events.EventCallAction:
 		if v.EntityId != p.actor.Id {
 			return
 		}

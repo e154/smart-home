@@ -20,6 +20,7 @@ package weather
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -93,7 +94,7 @@ func (p plugin) Name() string {
 func (p *plugin) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case event_bus.EventRequestState:
+	case events.EventRequestState:
 		if v.To.PluginName() != Name {
 			return
 		}

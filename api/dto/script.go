@@ -107,6 +107,7 @@ func (s Script) ToListResult(list []*m.Script, total uint64, pagination common.P
 	}
 }
 
+// ToGScript ...
 func ToGScript(script *m.Script) (result *api.Script) {
 	if script == nil {
 		return

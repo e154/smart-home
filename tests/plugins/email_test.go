@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	"github.com/e154/smart-home/system/event_bus/events"
 	"testing"
 	"time"
 
@@ -78,7 +79,7 @@ func TestEmail(t *testing.T) {
 					ch := make(chan interface{}, 2)
 					fn := func(topic string, message interface{}) {
 						switch v := message.(type) {
-						case event_bus.EventStateChanged:
+						case events.EventStateChanged:
 							ch <- v
 						default:
 						}

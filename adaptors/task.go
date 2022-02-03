@@ -33,6 +33,8 @@ type ITask interface {
 	Delete(id int64) (err error)
 	GetById(id int64) (task *m.Task, err error)
 	List(limit, offset int64, orderBy, sort string, onlyEnabled bool) (list []*m.Task, total int64, err error)
+	Enable(id int64) (err error)
+	Disable(id int64) (err error)
 	fromDb(dbVer *db.Task) (ver *m.Task)
 	toDb(ver *m.Task) (dbVer *db.Task)
 }
@@ -174,6 +176,18 @@ func (n *Task) Update(ver *m.Task) (err error) {
 		}
 	}
 
+	return
+}
+
+// Enable ...
+func (n *Task) Enable(id int64) (err error) {
+	err = n.table.Enable(id)
+	return
+}
+
+// Disable ...
+func (n *Task) Disable(id int64) (err error) {
+	err = n.table.Disable(id)
 	return
 }
 

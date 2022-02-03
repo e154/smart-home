@@ -88,9 +88,12 @@ message DeleteTaskRequest {
   int64 id = 1;
 }
 
-message CallRequest {
+message EnableTaskRequest {
   int64 id = 1;
-  string name = 2;
+}
+
+message DisableTaskRequest {
+  int64 id = 1;
 }
 
 service AutomationService {
@@ -172,10 +175,10 @@ service AutomationService {
     };
   }
 
-  // task call trigger
-  rpc TaskCallTrigger (CallRequest) returns (google.protobuf.Empty){
+  // enable task
+  rpc EnableTask (EnableTaskRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/task/{id}/call_trigger/{name}"
+      post: "/v1/task/{id}/enable"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
@@ -187,10 +190,10 @@ service AutomationService {
     };
   }
 
-  // task call action
-  rpc TaskCallAction (CallRequest) returns (google.protobuf.Empty){
+  // disable task
+  rpc DisableTask (DisableTaskRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
-      post: "/v1/task/{id}/call_action/{name}"
+      post: "/v1/task/{id}/disable"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {

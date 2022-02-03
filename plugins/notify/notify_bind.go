@@ -18,13 +18,6 @@
 
 package notify
 
-// Javascript Binding
-//
-// notifr
-//	 .newMessage()
-//	 .send(msg)
-//
-
 // NotifyBind ...
 type NotifyBind struct {
 	notify *notify

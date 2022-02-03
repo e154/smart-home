@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	queueSize = 100
+	queueSize = 1024 * 16
 )
 
 // EventBus ...

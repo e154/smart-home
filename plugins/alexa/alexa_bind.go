@@ -22,17 +22,6 @@ import (
 	"github.com/e154/smart-home/system/event_bus"
 )
 
-// Javascript Binding
-//
-// Alexa
-//  .slots['slot_name']
-//	.outputSpeech(text string) *AlexaBind
-//	.card(title string, content string) *AlexaBind
-//	.endSession(flag bool) *AlexaBind
-//	.session() string
-//	.sendMessage(msg interface{})
-//
-
 // AlexaBind ...
 type AlexaBind struct {
 	Slots      map[string]string `json:"slots"`

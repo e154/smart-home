@@ -22,6 +22,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"net/http"
 	"net/url"
 	"strings"
@@ -232,7 +233,7 @@ func (p *Actor) UpdateBalance() (err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	p.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,

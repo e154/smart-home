@@ -21,6 +21,7 @@
 package triggers
 
 import (
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/e154/smart-home/system/event_bus"
@@ -68,7 +69,7 @@ func (t *StateChangeTrigger) AsyncAttach(wg *sync.WaitGroup) {
 func (t *StateChangeTrigger) eventHandler(_ string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case event_bus.EventStateChanged:
+	case events.EventStateChanged:
 		t.msgQueue.Publish(string(v.EntityId), v)
 	}
 }

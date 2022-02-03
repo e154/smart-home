@@ -19,6 +19,7 @@
 package plugins
 
 import (
+	"github.com/e154/smart-home/system/event_bus/events"
 	"strings"
 	"testing"
 	"time"
@@ -87,13 +88,13 @@ func TestWeatherMet(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan event_bus.EventRequestState)
+					ch := make(chan events.EventRequestState)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case event_bus.EventRequestState:
+						case events.EventRequestState:
 							ch <- v
-						case event_bus.EventAddedActor:
+						case events.EventAddedActor:
 
 						}
 					}
@@ -103,7 +104,7 @@ func TestWeatherMet(t *testing.T) {
 					settings := weatherPlugin.NewSettings()
 					settings[weatherPlugin.AttrLat].Value = 54.9022
 					settings[weatherPlugin.AttrLon].Value = 83.0335
-					eventBus.Publish(event_bus.TopicEntities, event_bus.EventAddedActor{
+					eventBus.Publish(event_bus.TopicEntities, events.EventAddedActor{
 						PluginName: weatherPlugin.EntityWeather,
 						EntityId:   "weather.home",
 						Attributes: weatherPlugin.BaseForecast(),
@@ -113,7 +114,7 @@ func TestWeatherMet(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
-					var msg event_bus.EventRequestState
+					var msg events.EventRequestState
 					var ok bool
 					select {
 					case msg = <-ch:
@@ -139,13 +140,13 @@ func TestWeatherMet(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan event_bus.EventRequestState, 3)
+					ch := make(chan events.EventRequestState, 3)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case event_bus.EventRequestState:
+						case events.EventRequestState:
 							ch <- v
-						case event_bus.EventAddedActor:
+						case events.EventAddedActor:
 
 						}
 					}
@@ -166,7 +167,7 @@ func TestWeatherMet(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
-					var msg event_bus.EventRequestState
+					var msg events.EventRequestState
 					var ok bool
 					select {
 					case msg = <-ch:
@@ -192,13 +193,13 @@ func TestWeatherMet(t *testing.T) {
 
 					// subscribe
 					// ------------------------------------------------
-					ch := make(chan event_bus.EventRemoveActor)
+					ch := make(chan events.EventRemoveActor)
 					fn := func(topic string, msg interface{}) {
 
 						switch v := msg.(type) {
-						case event_bus.EventRequestState:
-						case event_bus.EventAddedActor:
-						case event_bus.EventRemoveActor:
+						case events.EventRequestState:
+						case events.EventAddedActor:
+						case events.EventRemoveActor:
 							if v.PluginName == "weather_met" {
 								ch <- v
 							}
@@ -207,7 +208,7 @@ func TestWeatherMet(t *testing.T) {
 					err = eventBus.Subscribe(event_bus.TopicEntities, fn)
 					So(err, ShouldBeNil)
 
-					eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
+					eventBus.Publish(event_bus.TopicEntities, events.EventRemoveActor{
 						PluginName: weatherPlugin.EntityWeather,
 						EntityId:   "weather.home",
 					})
@@ -215,7 +216,7 @@ func TestWeatherMet(t *testing.T) {
 					ticker := time.NewTimer(time.Second * 2)
 					defer ticker.Stop()
 
-					var msg event_bus.EventRemoveActor
+					var msg events.EventRemoveActor
 					var ok bool
 					select {
 					case msg = <-ch:

@@ -27,11 +27,16 @@ import (
 )
 
 var (
+	// ErrInvalidTopicFilter ...
 	ErrInvalidTopicFilter = errors.New("invalid topic filter")
-	ErrInvalidQos         = errors.New("invalid Qos")
-	ErrInvalidClientID    = errors.New("invalid clientID")
-	ErrInvalidUtf8String  = errors.New("invalid utf-8 string")
-	ErrNotFound           = errors.New("not found")
+	// ErrInvalidQos ...
+	ErrInvalidQos = errors.New("invalid Qos")
+	// ErrInvalidClientID ...
+	ErrInvalidClientID = errors.New("invalid clientID")
+	// ErrInvalidUtf8String ...
+	ErrInvalidUtf8String = errors.New("invalid utf-8 string")
+	// ErrNotFound ...
+	ErrNotFound = errors.New("not found")
 )
 
 // Indexer provides a index for a ordered list that supports queries in O(1).

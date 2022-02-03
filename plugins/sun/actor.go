@@ -20,6 +20,7 @@ package sun
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"math"
 	"sort"
 	"sync"
@@ -172,7 +173,7 @@ func (e *Actor) UpdateSunPosition(now time.Time) {
 
 	e.DeserializeAttr(attributeValues)
 
-	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

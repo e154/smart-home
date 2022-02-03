@@ -31,6 +31,7 @@ type Client struct {
 	server api.StreamService_SubscribeServer
 }
 
+// NewClient ...
 func NewClient(server api.StreamService_SubscribeServer) *Client {
 	return &Client{server: server}
 }

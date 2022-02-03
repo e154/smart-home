@@ -20,6 +20,7 @@ package telegram
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -224,8 +225,8 @@ func (p *plugin) MessageParams() m.Attributes {
 func (p *plugin) eventHandler(topic string, msg interface{}) {
 
 	switch v := msg.(type) {
-	case event_bus.EventStateChanged:
-	case event_bus.EventCallAction:
+	case events.EventStateChanged:
+	case events.EventCallAction:
 		actor, ok := p.actors[v.EntityId]
 		if !ok {
 			return

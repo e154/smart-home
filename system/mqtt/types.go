@@ -31,9 +31,12 @@ import (
 )
 
 var (
+	// ErrInvalidTopicFilter ...
 	ErrInvalidTopicFilter = errors.New("invalid topic filter")
-	ErrInvalidQos         = errors.New("invalid Qos")
-	ErrInvalidUtf8String  = errors.New("invalid utf-8 string")
+	// ErrInvalidQos ...
+	ErrInvalidQos = errors.New("invalid Qos")
+	// ErrInvalidUtf8String ...
+	ErrInvalidUtf8String = errors.New("invalid utf-8 string")
 )
 
 // Admin ...

@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"net/url"
 	"sync"
 	"time"
@@ -92,7 +93,7 @@ func (p *WeatherOwm) RemoveWeather(entityId common.EntityId) {
 	p.zones.Delete(entityId.Name())
 	log.Infof("unload weather_owm.%s", entityId.Name())
 
-	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRemoveActor{
+	p.eventBus.Publish(event_bus.TopicEntities, events.EventRemoveActor{
 		PluginName: "weather_owm",
 		EntityId:   common.EntityId(fmt.Sprintf("weather_owm.%s", entityId.Name())),
 	})
@@ -131,7 +132,7 @@ func (p *WeatherOwm) UpdateForecast(zone Zone) (err error) {
 	attr := weather.BaseForecast()
 	attr.Deserialize(forecast)
 
-	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventRequestState{
+	p.eventBus.Publish(event_bus.TopicEntities, events.EventRequestState{
 		From:       common.EntityId(fmt.Sprintf("weather_owm.%s", zone.Name)),
 		To:         common.EntityId(fmt.Sprintf("weather.%s", zone.Name)),
 		Attributes: attr,

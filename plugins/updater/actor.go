@@ -21,6 +21,7 @@ package updater
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"io"
 	"net/http"
 	"sync"
@@ -161,7 +162,7 @@ func (e *Actor) check() {
 	e.Attrs[AttrUpdaterLatestCheck].Value = e.lastCheck
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		PluginName: e.Id.PluginName(),
 		EntityId:   e.Id,
 		OldState:   oldState,

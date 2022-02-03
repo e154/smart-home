@@ -20,6 +20,7 @@ package sensor
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 
 	"github.com/e154/smart-home/adaptors"
 	m "github.com/e154/smart-home/models"
@@ -34,7 +35,7 @@ type Actor struct {
 	adaptors      *adaptors.Adaptors
 	scriptService scripts.ScriptService
 	eventBus      event_bus.EventBus
-	actionPool    chan event_bus.EventCallAction
+	actionPool    chan events.EventCallAction
 }
 
 // NewActor ...
@@ -49,7 +50,7 @@ func NewActor(entity *m.Entity,
 		adaptors:      adaptors,
 		scriptService: scriptService,
 		eventBus:      eventBus,
-		actionPool:    make(chan event_bus.EventCallAction, 10),
+		actionPool:    make(chan events.EventCallAction, 10),
 	}
 
 	actor.Manager = entityManager
@@ -106,7 +107,7 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	e.Attrs.Deserialize(params.AttributeValues)
 	e.AttrMu.Unlock()
 
-	e.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	e.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		StorageSave: params.StorageSave,
 		PluginName:  e.Id.PluginName(),
 		EntityId:    e.Id,
@@ -117,11 +118,11 @@ func (e *Actor) SetState(params entity_manager.EntityStateParams) error {
 	return nil
 }
 
-func (e *Actor) addAction(event event_bus.EventCallAction) {
+func (e *Actor) addAction(event events.EventCallAction) {
 	e.actionPool <- event
 }
 
-func (e *Actor) runAction(msg event_bus.EventCallAction) {
+func (e *Actor) runAction(msg events.EventCallAction) {
 	action, ok := e.Actions[msg.ActionName]
 	if !ok {
 		log.Warnf("action %s not found", msg.ActionName)

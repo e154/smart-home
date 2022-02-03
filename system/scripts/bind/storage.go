@@ -22,15 +22,6 @@ import (
 	"github.com/e154/smart-home/system/storage"
 )
 
-// Javascript Binding
-//
-// Storage
-// 	 .search(name)
-// 	 .push(name, value)
-// 	 .getByName(name)
-// 	 .pop(name)
-//
-
 // StorageBind ...
 type StorageBind struct {
 	storage *storage.Storage

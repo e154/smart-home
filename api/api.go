@@ -106,6 +106,7 @@ func (a *Api) Start() error {
 	gw.RegisterEntityServiceServer(grpcServer, a.controllers.Entity)
 	gw.RegisterAutomationServiceServer(grpcServer, a.controllers.Automation)
 	gw.RegisterAreaServiceServer(grpcServer, a.controllers.Area)
+	gw.RegisterDeveloperToolsServiceServer(grpcServer, a.controllers.Dev)
 	grpc_prometheus.Register(grpcServer)
 
 	var group errgroup.Group
@@ -152,6 +153,7 @@ func (a *Api) Start() error {
 		gw.RegisterEntityServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterAutomationServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		gw.RegisterAreaServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
+		gw.RegisterDeveloperToolsServiceHandlerFromEndpoint(ctx, mux, a.cfg.GrpcHostPort, opts)
 		return nil
 	})
 

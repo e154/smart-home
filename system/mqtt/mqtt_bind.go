@@ -18,12 +18,6 @@
 
 package mqtt
 
-// Javascript Binding
-//
-// Mqtt
-//	.Publish
-//
-
 // MqttBind ...
 type MqttBind struct {
 	mqtt MqttServ

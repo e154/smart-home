@@ -20,6 +20,7 @@ package messagebird
 
 import (
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"sync"
 	"time"
 
@@ -209,7 +210,7 @@ func (p *Actor) UpdateBalance() (bal Balance, err error) {
 	}
 	p.AttrMu.Unlock()
 
-	p.eventBus.Publish(event_bus.TopicEntities, event_bus.EventStateChanged{
+	p.eventBus.Publish(event_bus.TopicEntities, events.EventStateChanged{
 		StorageSave: true,
 		PluginName:  p.Id.PluginName(),
 		EntityId:    p.Id,

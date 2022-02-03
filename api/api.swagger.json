@@ -21,10 +21,16 @@
       "name": "AutomationService"
     },
     {
+      "name": "DeveloperToolsService"
+    },
+    {
       "name": "EntityService"
     },
     {
       "name": "ImageService"
+    },
+    {
+      "name": "InteractService"
     },
     {
       "name": "PluginService"
@@ -337,6 +343,90 @@
         ],
         "tags": [
           "AreaService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/developer_tools/entity_set_state": {
+      "post": {
+        "summary": "entity set state",
+        "operationId": "DeveloperToolsService_EntitySetState",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "DeveloperToolsService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/developer_tools/task_call_action": {
+      "post": {
+        "summary": "task call action",
+        "operationId": "DeveloperToolsService_TaskCallAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "DeveloperToolsService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/developer_tools/task_call_trigger": {
+      "post": {
+        "summary": "task call trigger",
+        "operationId": "DeveloperToolsService_TaskCallTrigger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "DeveloperToolsService"
         ],
         "security": [
           {
@@ -660,7 +750,7 @@
     "/v1/entity/{id}/reload": {
       "post": {
         "summary": "reload entity",
-        "operationId": "EntityService_ReloadEntity",
+        "operationId": "DeveloperToolsService_ReloadEntity",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -684,7 +774,7 @@
           }
         ],
         "tags": [
-          "EntityService"
+          "DeveloperToolsService"
         ],
         "security": [
           {
@@ -1011,6 +1101,34 @@
         ],
         "tags": [
           "ImageService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/interact/entity_call_action": {
+      "post": {
+        "summary": "entity call action",
+        "operationId": "InteractService_EntityCallAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "InteractService"
         ],
         "security": [
           {
@@ -2194,10 +2312,10 @@
         ]
       }
     },
-    "/v1/task/{id}/call_action/{name}": {
+    "/v1/task/{id}/disable": {
       "post": {
-        "summary": "task call action",
-        "operationId": "AutomationService_TaskCallAction",
+        "summary": "disable task",
+        "operationId": "AutomationService_DisableTask",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -2219,12 +2337,6 @@
             "required": true,
             "type": "string",
             "format": "int64"
-          },
-          {
-            "name": "name",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "tags": [
@@ -2237,10 +2349,10 @@
         ]
       }
     },
-    "/v1/task/{id}/call_trigger/{name}": {
+    "/v1/task/{id}/enable": {
       "post": {
-        "summary": "task call trigger",
-        "operationId": "AutomationService_TaskCallTrigger",
+        "summary": "enable task",
+        "operationId": "AutomationService_EnableTask",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -2262,12 +2374,6 @@
             "required": true,
             "type": "string",
             "format": "int64"
-          },
-          {
-            "name": "name",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "tags": [

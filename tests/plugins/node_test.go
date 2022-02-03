@@ -21,6 +21,7 @@ package plugins
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/e154/smart-home/system/event_bus/events"
 	"testing"
 	"time"
 
@@ -92,7 +93,7 @@ func TestNode(t *testing.T) {
 					ch := make(chan struct{})
 					fn := func(topic string, msg interface{}) {
 						switch v := msg.(type) {
-						case event_bus.EventStateChanged:
+						case events.EventStateChanged:
 							if v.PluginName != "node" {
 								return
 							}

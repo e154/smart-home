@@ -68,7 +68,7 @@ fmt:
 	@gofmt -l -w -s .
 	@goimports -w .
 
-cmd:
+comments:
 	@echo MARK: update comments
 	@gocmt -i -d .
 
