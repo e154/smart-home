@@ -154,6 +154,7 @@ func (d *DeveloperToolsEndpoint) EntitySetState(ctx context.Context, id common.E
 	}
 
 	d.eventBus.Publish(event_bus.TopicEntities, events.EventEntitySetState{
+		Id:       id,
 		NewState: common.String(name),
 	})
 

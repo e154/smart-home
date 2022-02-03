@@ -62,7 +62,7 @@ func (c ControllerDeveloperTools) ReloadEntity(ctx context.Context, req *api.Rel
 // TaskCallTrigger ...
 func (c ControllerDeveloperTools) TaskCallTrigger(ctx context.Context, req *api.AutomationRequest) (*emptypb.Empty, error) {
 
-	if err := c.endpoint.DeveloperTools.TaskCallAction(ctx, req.Id, req.Name); err != nil {
+	if err := c.endpoint.DeveloperTools.TaskCallTrigger(ctx, req.Id, req.Name); err != nil {
 		return nil, c.error(ctx, nil, err)
 	}
 

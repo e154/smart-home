@@ -18,6 +18,12 @@
 
 package controllers
 
+import (
+	"context"
+	"github.com/e154/smart-home/api/stub/api"
+	"google.golang.org/protobuf/types/known/emptypb"
+)
+
 // ControllerInteract ...
 type ControllerInteract struct {
 	*ControllerCommon
@@ -28,4 +34,14 @@ func NewControllerInteract(common *ControllerCommon) ControllerInteract {
 	return ControllerInteract{
 		ControllerCommon: common,
 	}
+}
+
+func (c ControllerInteract) EntityCallAction(ctx context.Context, req *api.EntityCallActionRequest) (*emptypb.Empty, error) {
+
+	errs, err := c.endpoint.Interact.EntityCallAction(ctx, req.Id, req.Name, nil)
+	if err != nil {
+		return nil, c.error(ctx, errs, err)
+	}
+
+	return &emptypb.Empty{}, nil
 }

@@ -351,6 +351,44 @@
         ]
       }
     },
+    "/v1/developer_tools/entity_reload": {
+      "post": {
+        "summary": "reload entity",
+        "operationId": "DeveloperToolsService_ReloadEntity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiReloadRequest"
+            }
+          }
+        ],
+        "tags": [
+          "DeveloperToolsService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
     "/v1/developer_tools/entity_set_state": {
       "post": {
         "summary": "entity set state",
@@ -369,6 +407,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiEntityRequest"
+            }
+          }
+        ],
         "tags": [
           "DeveloperToolsService"
         ],
@@ -397,6 +445,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiAutomationRequest"
+            }
+          }
+        ],
         "tags": [
           "DeveloperToolsService"
         ],
@@ -425,6 +483,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiAutomationRequest"
+            }
+          }
+        ],
         "tags": [
           "DeveloperToolsService"
         ],
@@ -739,42 +807,6 @@
         ],
         "tags": [
           "EntityService"
-        ],
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ]
-      }
-    },
-    "/v1/entity/{id}/reload": {
-      "post": {
-        "summary": "reload entity",
-        "operationId": "DeveloperToolsService_ReloadEntity",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "properties": {}
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "DeveloperToolsService"
         ],
         "security": [
           {
@@ -1127,6 +1159,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiEntityCallActionRequest"
+            }
+          }
+        ],
         "tags": [
           "InteractService"
         ],
@@ -3437,6 +3479,18 @@
         }
       }
     },
+    "apiAutomationRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "apiCondition": {
       "type": "object",
       "properties": {
@@ -3668,10 +3722,32 @@
         }
       }
     },
+    "apiEntityCallActionRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "apiEntityParent": {
       "type": "object",
       "properties": {
         "id": {
+          "type": "string"
+        }
+      }
+    },
+    "apiEntityRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
           "type": "string"
         }
       }
@@ -4378,6 +4454,14 @@
           "additionalProperties": {
             "$ref": "#/definitions/apiAttribute"
           }
+        }
+      }
+    },
+    "apiReloadRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
         }
       }
     },

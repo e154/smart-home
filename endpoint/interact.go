@@ -1,6 +1,7 @@
 package endpoint
 
 import (
+	"context"
 	"github.com/e154/smart-home/common"
 	"github.com/e154/smart-home/system/event_bus"
 	"github.com/e154/smart-home/system/event_bus/events"
@@ -20,8 +21,8 @@ func NewInteractEndpoint(common *CommonEndpoint) *InteractEndpoint {
 	}
 }
 
-// CallEntityAction ...
-func (d InteractEndpoint) CallEntityAction(entityId string, action string, args map[string]interface{}) (errs validator.ValidationErrorsTranslations, err error) {
+// EntityCallAction ...
+func (d InteractEndpoint) EntityCallAction(ctx context.Context, entityId string, action string, args map[string]interface{}) (errs validator.ValidationErrorsTranslations, err error) {
 
 	id := common.EntityId(entityId)
 	_, err = d.adaptors.Entity.GetById(id)

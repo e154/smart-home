@@ -18,6 +18,7 @@ service InteractService {
   rpc EntityCallAction (EntityCallActionRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/interact/entity_call_action"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
       security: {
