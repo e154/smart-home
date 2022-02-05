@@ -16,34 +16,34 @@
 // License along with this library.  If not, see
 // <https://www.gnu.org/licenses/>.
 
-package dto
+package controllers
 
-// Dto ...
-type Dto struct {
-	Role        Role
-	User        User
-	Image       Image
-	Script      Script
-	Plugin      Plugin
-	Entity      Entity
-	Zigbee2mqtt Zigbee2mqtt
-	Area        Area
-	Automation  Automation
-	Log         Log
+import (
+	"context"
+
+	"github.com/e154/smart-home/api/stub/api"
+)
+
+// ControllerLogs ...
+type ControllerLogs struct {
+	*ControllerCommon
 }
 
-// NewDto ...
-func NewDto() Dto {
-	return Dto{
-		Role:        NewRoleDto(),
-		User:        NewUserDto(),
-		Image:       NewImageDto(),
-		Script:      NewScriptDto(),
-		Plugin:      NewPluginDto(),
-		Entity:      NewEntityDto(),
-		Zigbee2mqtt: NewZigbee2mqttDto(),
-		Area:        NewAreaDto(),
-		Automation:  NewAutomationDto(),
-		Log:         NewLogDto(),
+// NewControllerLogs ...
+func NewControllerLogs(common *ControllerCommon) ControllerLogs {
+	return ControllerLogs{
+		ControllerCommon: common,
 	}
+}
+
+// GetLogList ...
+func (c ControllerLogs) GetLogList(ctx context.Context, req *api.LogPaginationRequest) (*api.GetLogListResult, error) {
+
+	pagination := c.Pagination(req.Page, req.Limit, req.Sort)
+	items, total, err := c.endpoint.Log.GetList(ctx, pagination, req.Query, req.StartDate, req.EndDate)
+	if err != nil {
+		return nil, c.error(ctx, nil, err)
+	}
+
+	return c.dto.Log.ToListResult(items, uint64(total), pagination), nil
 }

@@ -82,16 +82,7 @@ func (n Logs) Delete(mapId int64) (err error) {
 // List ...
 func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuery) (list []*Log, total int64, err error) {
 
-	if err = n.Db.Model(Log{}).Count(&total).Error; err != nil {
-		err = errors.Wrap(err, "get count failed")
-		return
-	}
-
-	list = make([]*Log, 0)
-	q := n.Db.
-		Limit(limit).
-		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sort, orderBy))
+	q := n.Db.Model(Log{})
 
 	if queryObj != nil {
 		if queryObj.StartDate != nil {
@@ -105,9 +96,17 @@ func (n *Logs) List(limit, offset int64, orderBy, sort string, queryObj *LogQuer
 		}
 	}
 
+	if err = q.Count(&total).Error; err != nil {
+		err = errors.Wrap(err, "get count failed")
+		return
+	}
+
+	list = make([]*Log, 0)
 	err = q.
-		Find(&list).
-		Error
+		Limit(limit).
+		Offset(offset).
+		Order(fmt.Sprintf("%s %s", sort, orderBy)).
+		Find(&list).Error
 
 	if err != nil {
 		err = errors.Wrap(err, "list failed")

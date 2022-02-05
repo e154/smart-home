@@ -40,6 +40,7 @@ type Controllers struct {
 	Area        ControllerArea
 	Dev         ControllerDeveloperTools
 	Interact    ControllerInteract
+	Logs        ControllerLogs
 }
 
 // NewControllers ...
@@ -62,5 +63,6 @@ func NewControllers(adaptors *adaptors.Adaptors,
 		Area:        NewControllerArea(common),
 		Dev:         NewControllerDeveloperTools(common),
 		Interact:    NewControllerInteract(common),
+		Logs:        NewControllerLogs(common),
 	}
 }

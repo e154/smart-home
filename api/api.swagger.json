@@ -33,6 +33,9 @@
       "name": "InteractService"
     },
     {
+      "name": "LogService"
+    },
+    {
       "name": "PluginService"
     },
     {
@@ -1171,6 +1174,73 @@
         ],
         "tags": [
           "InteractService"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/logs": {
+      "get": {
+        "operationId": "LogService_GetLogList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiGetLogListResult"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "LogService"
         ],
         "security": [
           {
@@ -3912,6 +3982,20 @@
         }
       }
     },
+    "apiGetLogListResult": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiLog"
+          }
+        },
+        "meta": {
+          "$ref": "#/definitions/apiMeta"
+        }
+      }
+    },
     "apiGetPluginListResult": {
       "type": "object",
       "properties": {
@@ -4096,6 +4180,25 @@
           "format": "int64"
         },
         "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "apiLog": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "level": {
+          "type": "string"
+        },
+        "body": {
           "type": "string"
         },
         "createdAt": {

@@ -44,7 +44,7 @@ var (
 				dbSaver logging.ISaver,
 				initialService *initial.Initial,
 			) {
-				logger.SetSaver(dbSaver)
+				logger.SetDbSaver(dbSaver)
 			}))
 
 			Start(app)

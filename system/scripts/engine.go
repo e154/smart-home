@@ -145,6 +145,10 @@ func (s *Engine) DoFull() (res string, err error) {
 	s.IsRun = true
 	var result string
 	result, err = s.script.Do()
+	if err != nil {
+		err = errors.Wrap(err, "do full")
+		return
+	}
 	for _, r := range s.buf {
 		res += r + "\n"
 	}
